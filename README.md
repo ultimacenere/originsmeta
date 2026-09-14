@@ -38,6 +38,12 @@ In `src/lib/data/cards.ts` aggiungi un oggetto all'array `cards` con `slug`, `na
 
 In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle tre mappe `en`, `it`, `fr`. Il corpo è Markdown.
 
+## Deploy e dominio
+
+- Progetto Vercel `originsmeta` nel team "Ultima Cenere's projects", collegato a GitHub `ultimacenere/originsmeta` (branch `main` = produzione). URL Vercel: https://originsmeta.vercel.app
+- Dominio principale `originsmeta.com` (Register.it): record **A `@` → 216.150.1.1** (Vercel; il legacy 76.76.21.21 funziona ancora). `www.originsmeta.com` è un redirect verso l'apex configurato su Vercel: record **CNAME `www` → 4cb33c26b92bb944.vercel-dns-016.com** (valore indicato da Vercel per questo progetto; il legacy cname.vercel-dns.com funziona ancora).
+- Push da questa cartella: il repo ha un credential helper locale che legge il token GitHub dal file usato da transferbeat; il token deve avere `Contents: Read and write` sul repo.
+
 ## Convenzioni
 
 - Ogni dato ha una fonte ufficiale (pagina Steam, patch notes, Discord). Se un dato non è verificato non entra.
