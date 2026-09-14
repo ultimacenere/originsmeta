@@ -2,7 +2,9 @@ import { formatDateShort, formatDate, type Dictionary, type Locale } from "@/lib
 import type { Event } from "@/lib/data/events";
 
 export function EventCard({ event, locale, dict, compact = false }: { event: Event; locale: Locale; dict: Dictionary; compact?: boolean }) {
-  const range = event.end ? `${formatDateShort(locale, event.start)} – ${formatDate(locale, event.end)}` : formatDate(locale, event.start);
+  const range = event.end
+    ? `${formatDateShort(locale, event.start)} – ${formatDateShort(locale, event.end)} ${event.end.slice(0, 4)}`
+    : formatDate(locale, event.start);
   return (
     <article className="card-ivory flex h-full flex-col p-5">
       <div className="flex items-center justify-between gap-3">
