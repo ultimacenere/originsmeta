@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+/*
+  OriginsMeta — "ink & ivory"
+  Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte (avorio).
+  Menta del logo per gli accenti, giallo citrino per le leggendarie, magenta per ciò che scotta.
+  I nomi dei token restano "felt / chalk / crimson / gold" per ruolo, non per tinta.
+*/
+@theme {
+  --color-felt: #170d30;
+  --color-felt-deep: #0f0822;
+  --color-felt-soft: #23153f;
+  --color-felt-line: #3b2a62;
+  --color-ivory: #f6f1e6;
+  --color-ivory-2: #ebe3d3;
+  --color-ivory-3: #dbd0bb;
+  --color-ink: #16102a;
+  --color-ink-muted: #5e5672;
+  --color-chalk: #efeaf8;
+  --color-chalk-muted: #b3a8cf;
+  --color-crimson: #c81e7a;
+  --color-crimson-deep: #971359;
+  --color-gold: #f2d23c;
+  --color-gold-deep: #c4a516;
+  --color-mint: #31e3bd;
+  --color-mint-deep: #17a689;
+  --color-sky: #6fb7c9;
+
+  --font-display: var(--font-syne), "Arial Black", Impact, sans-serif;
+  --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;
+  --font-mono: var(--font-jet), Consolas, "Courier New", monospace;
+
+  --shadow-card: 0 1px 0 rgba(20, 17, 12, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+  --shadow-lift: 0 2px 0 rgba(20, 17, 12, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+  body {
+    background-color: var(--color-felt);
+    background-image:
+      radial-gradient(1200px 600px at 15% -10%, rgba(200, 30, 122, 0.28), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(49, 227, 189, 0.10), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px);
+    color: var(--color-chalk);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  /* Una carta appoggiata sul tavolo */
+  .card-ivory {
+    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
+    color: var(--color-ink);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(20, 17, 12, 0.18);
+    position: relative;
+  }
+  .card-ivory::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 9px;
+    border: 1px solid rgba(20, 17, 12, 0.12);
+    pointer-events: none;
+  }
+  .card-ivory-hover {
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+  .card-ivory-hover:hover {
+    transform: translateY(-3px) rotate(-0.4deg);
+    box-shadow: var(--shadow-lift);
+  }
+  /* Riquadro "sul feltro": bordo gessato */
+  .felt-panel {
+    border: 1px solid var(--color-felt-line);
+    background: rgba(7, 32, 25, 0.55);
+    border-radius: 14px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .lane-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-mint) 20%, var(--color-mint) 80%, transparent);
+    opacity: 0.5;
+  }
+  .hero-art {
+    border-radius: 18px;
+    border: 6px solid var(--color-ivory);
+    box-shadow: var(--shadow-lift);
+    transform: rotate(1.5deg);
+    overflow: hidden;
+    background: var(--color-ivory);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    padding: 0.7rem 1.15rem;
+    transition: transform 120ms ease, background-color 120ms ease, color 120ms ease;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-gold {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .btn-gold:hover {
+    background: #f0c65a;
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-chalk-muted);
+    color: var(--color-chalk);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+  }
+  .btn-ink {
+    background: var(--color-ink);
+    color: var(--color-ivory);
+  }
+  .btn-ink:hover {
+    background: #2a251d;
+  }
+  .stat-pill {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
+  }
+  .prose-ivory {
+    color: var(--color-ink);
+    line-height: 1.7;
+  }
+  .prose-ivory h2 {
+    font-size: 1.5rem;
+    margin: 1.8em 0 0.6em;
+  }
+  .prose-ivory h3 {
+    font-size: 1.15rem;
+    margin: 1.5em 0 0.5em;
+  }
+  .prose-ivory p {
+    margin: 0 0 1em;
+  }
+  .prose-ivory ul, .prose-ivory ol {
+    margin: 0 0 1.1em;
+    padding-left: 1.4em;
+  }
+  .prose-ivory li {
+    margin-bottom: 0.35em;
+  }
+  .prose-ivory a {
+    color: var(--color-crimson-deep);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-ivory strong {
+    font-weight: 700;
+  }
+  .prose-ivory blockquote {
+    border-left: 3px solid var(--color-gold);
+    margin: 1em 0;
+    padding: 0.2em 1em;
+    color: var(--color-ink-muted);
+  }
+  .prose-ivory table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 1em 0;
+  }
+  .prose-ivory th, .prose-ivory td {
+    border-bottom: 1px solid rgba(20, 17, 12, 0.15);
+    padding: 0.5em 0.6em;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose-ivory th {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
