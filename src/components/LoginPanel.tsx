@@ -15,11 +15,12 @@ export type LoginLabels = {
   sent: string;
   error: string;
   providerError: string;
+  rateLimited: string;
   disabled: string;
   backHint: string;
 };
 
-type Status = "idle" | "sending" | "sent" | "error" | "providerError";
+type Status = "idle" | "sending" | "sent" | "error" | "providerError" | "rateLimited";
 
 function safePath(raw: string | null): string | null {
   return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : null;
@@ -66,7 +67,8 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
     if (!sb || !address) return;
     setStatus("sending");
     const { error } = await sb.auth.signInWithOtp({ email: address, options: { emailRedirectTo: redirectTo(), shouldCreateUser: true } });
-    setStatus(error ? "error" : "sent");
+    // Supabase accetta una richiesta per indirizzo al minuto: meglio dirlo che mostrare un errore generico.
+    setStatus(!error ? "sent" : error.status === 429 || error.code === "over_email_send_rate_limit" ? "rateLimited" : "error");
   };
 
   if (!supabaseEnabled) return <p className="card-ivory p-6 text-ink-muted">{labels.disabled}</p>;
@@ -109,6 +111,7 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
       {status === "sent" ? <p className="mt-4 rounded-lg bg-mint-soft px-3 py-2 text-sm text-ink" aria-live="polite">{labels.sent}</p> : null}
       {status === "error" || urlError ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson-deep" aria-live="polite">{labels.error}</p> : null}
       {status === "providerError" ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson-deep" aria-live="polite">{labels.providerError}</p> : null}
+      {status === "rateLimited" ? <p className="mt-4 rounded-lg bg-gold/30 px-3 py-2 text-sm text-ink" aria-live="polite">{labels.rateLimited}</p> : null}
       <p className="mt-4 text-xs text-ink-muted">{labels.backHint}</p>
     </div>
   );

@@ -319,6 +319,7 @@ export const en = {
     sent: "Check your inbox: we sent you a link to sign in. It works once and expires in an hour.",
     error: "Sign-in failed. Try again or use the other method.",
     providerError: "Discord sign-in is not available right now. Use the email link.",
+    rateLimited: "A link was sent to this address a moment ago: check your inbox (and spam), or wait a minute and try again.",
     disabled: "Accounts are not enabled on this site yet.",
     whyTitle: "What you can do with an account",
     why: ["Publish decks from the deck builder, with your guide.", "Rate community decks from 1 to 5 stars.", "Edit, hide or delete your decks at any time."],

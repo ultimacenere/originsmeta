@@ -70,6 +70,7 @@ export default async function EditDeckPage({ params }: { params: Params }) {
             sent: a.sent,
             error: a.error,
             providerError: a.providerError,
+            rateLimited: a.rateLimited,
             disabled: a.disabled,
             backHint: a.backHint,
           }}

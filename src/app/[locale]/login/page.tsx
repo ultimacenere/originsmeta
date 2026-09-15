@@ -30,6 +30,7 @@ export default async function LoginPage({ params }: { params: LocaleParams }) {
             sent: a.sent,
             error: a.error,
             providerError: a.providerError,
+            rateLimited: a.rateLimited,
             disabled: a.disabled,
             backHint: a.backHint,
           }}
