@@ -92,6 +92,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span>
             {c.by} <strong className="text-pale">{author}</strong>
             {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
+            <span className="stat-pill ml-2 bg-night-3 text-[10px] uppercase tracking-wider text-pale">{c.badges[(deck.profile?.badge ?? "community") as keyof typeof c.badges] ?? deck.profile?.badge}</span>
           </span>
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -99,6 +100,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span className="stat-pill border border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
+          <span className="stat-pill bg-night-3 text-pale">{c.deckTypes[deck.deck_type as keyof typeof c.deckTypes] ?? deck.deck_type}</span>
           {legendary || customLegendary ? <span className="stat-pill bg-gold/50 text-pale">★ {legendary?.name ?? customLegendary?.name}</span> : null}
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>

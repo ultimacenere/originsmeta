@@ -40,6 +40,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
         updated: deck.updated_at.slice(0, 10),
         rating: deck.rating,
+        deckTypeLabel: d.community.deckTypes[deck.deck_type as keyof typeof d.community.deckTypes] ?? deck.deck_type,
+        creatorBadge: d.community.badges[(deck.profile?.badge ?? "community") as keyof typeof d.community.badges] ?? deck.profile?.badge ?? undefined,
       };
     });
   const list: ExplorerDeck[] = decks.map((deck) => {

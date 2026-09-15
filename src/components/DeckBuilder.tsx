@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { initials } from "@/lib/cardArt";
 import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, validateConquest, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { supabaseEnabled } from "@/lib/supabase/env";
 
 type Issues = {
   missingLegendary: string;
@@ -65,6 +67,8 @@ export type BuilderLabels = {
   submitHint: string;
   publish: string;
   publishHint: string;
+  publishLocked: string;
+  lockedHint: string;
   tournamentTitle: string;
   tournamentHint: string;
   minDifferent: string;
@@ -117,6 +121,26 @@ export function DeckBuilder({
   const [hydrated, setHydrated] = useState(false);
 
   const deck = decks[active];
+
+  /* Accesso: "pubblica sul sito" è riservato agli utenti registrati (lucchetto); builder, link e codici restano liberi. */
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(supabaseEnabled ? null : false);
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    let alive = true;
+    sb.auth.getSession().then(({ data }) => {
+      if (alive) setLoggedIn(Boolean(data.session));
+    });
+    const {
+      data: { subscription },
+    } = sb.auth.onAuthStateChange((_event, session) => {
+      if (alive) setLoggedIn(Boolean(session));
+    });
+    return () => {
+      alive = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const lookup = useCallback(
     (slug: string): BuilderCard | undefined => pool.find((c) => c.slug === slug) ?? decks.flatMap((d) => d.customCards).find((c) => c.slug === slug),
@@ -173,11 +197,13 @@ export function DeckBuilder({
     const needle = q.trim().toLowerCase();
     return pool
       .filter((c) => c.type !== "token")
+      // scelta la Leggendaria, le altre spariscono dalla lista
+      .filter((c) => !c.legendary || !deck.legendary || c.slug === deck.legendary)
       .filter((c) => (typeFilter === "all" ? true : c.type === typeFilter))
       .filter((c) => (costFilter === "all" ? true : costFilter === "8" ? (c.mana ?? 0) >= 8 : String(c.mana ?? "?") === costFilter))
       .filter((c) => !needle || c.name.toLowerCase().includes(needle) || c.sagaLabel.toLowerCase().includes(needle))
       .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
-  }, [pool, q, typeFilter, costFilter]);
+  }, [pool, q, typeFilter, costFilter, deck.legendary]);
 
   const addCard = (c: BuilderCard) => {
     updateDeck((d) => {
@@ -426,13 +452,16 @@ export function DeckBuilder({
 
         {/* Azioni */}
         <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.actions}</h3>
+        {loggedIn === false ? <p className="mt-1 text-xs text-pale-muted">{labels.lockedHint}</p> : null}
         <div className="mt-2 flex flex-wrap gap-2">
           {complete ? (
-            <a className="btn btn-mint text-xs" href={`${publishHref}#${encodeOmCode(deck)}`} title={labels.publishHint}>
+            <a className="btn btn-mint text-xs" href={`${publishHref}#${encodeOmCode(deck)}`} title={loggedIn === false ? labels.publishLocked : labels.publishHint}>
+              {loggedIn === false ? <LockIcon /> : null}
               {labels.publish}
             </a>
           ) : (
             <span className="btn cursor-not-allowed border border-sky text-xs text-pale-muted" title={labels.publishHint} aria-disabled="true">
+              {loggedIn === false ? <LockIcon /> : null}
               {labels.publish}
             </span>
           )}
@@ -616,7 +645,21 @@ export function DeckBuilder({
             const inDeck = deck.legendary === c.slug || deck.cards.includes(c.slug);
             const full = !c.legendary && deck.cards.length >= RULES.distinctCards;
             return (
-              <li key={c.slug} className="flex items-center gap-2 rounded-lg bg-night px-2 py-1.5 text-pale">
+              <li
+                key={c.slug}
+                role="button"
+                tabIndex={0}
+                aria-pressed={inDeck}
+                onClick={() => (inDeck ? removeCard(c.slug) : full ? undefined : addCard(c))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    if (inDeck) removeCard(c.slug);
+                    else if (!full) addCard(c);
+                  }
+                }}
+                className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-pale transition hover:bg-night-3 ${inDeck ? "bg-night-3 ring-1 ring-sky" : "bg-night"}`}
+              >
                 <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(c.name)}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-display text-xs font-bold">
@@ -628,11 +671,25 @@ export function DeckBuilder({
                   </span>
                 </span>
                 {inDeck ? (
-                  <button type="button" onClick={() => removeCard(c.slug)} className="stat-pill bg-night-3 text-chalk text-[10px]">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeCard(c.slug);
+                    }}
+                    className="stat-pill bg-night-3 text-chalk text-[10px]"
+                  >
                     {labels.inDeck} ✕
                   </button>
                 ) : (
-                  <button type="button" onClick={() => addCard(c)} disabled={full} className={`stat-pill text-[10px] font-bold ${full ? "bg-chalk/10 text-pale-muted" : "bg-mint text-ink"}`}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addCard(c);
+                    }}
+                    disabled={full}
+                    className={`stat-pill text-[10px] font-bold ${full ? "bg-chalk/10 text-pale-muted" : "bg-mint text-ink"}`}>
                     {full ? labels.full : `+ ${labels.add}`}
                   </button>
                 )}
@@ -659,6 +716,14 @@ export function DeckBuilder({
         {!hydrated ? <span className="sr-only">…</span> : null}
       </section>
     </div>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="-ml-0.5">
+      <path d="M17 9V7a5 5 0 0 0-10 0v2H5v13h14V9h-2zm-8 0V7a3 3 0 0 1 6 0v2H9z" />
+    </svg>
   );
 }
 

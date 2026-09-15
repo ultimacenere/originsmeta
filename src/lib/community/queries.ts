@@ -2,7 +2,7 @@ import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { CommunityDeck } from "./types";
 
 const DECK_SELECT =
-  "id, slug, owner, name, legendary, cards, custom_cards, archetype, video_url, guide, code_om, status, created_at, updated_at, profile:profiles!community_decks_owner_fkey(username, display_name, avatar_url)";
+  "id, slug, owner, name, legendary, cards, custom_cards, archetype, deck_type, video_url, guide, code_om, status, created_at, updated_at, profile:profiles!community_decks_owner_fkey(username, display_name, avatar_url, badge)";
 
 async function withRatings(client: Db, decks: CommunityDeck[]): Promise<CommunityDeck[]> {
   if (!decks.length) return decks;

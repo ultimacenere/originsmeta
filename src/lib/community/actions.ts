@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { archetypeLabels } from "@/lib/data/decks";
+import { deckTypes } from "@/lib/community/types";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
@@ -41,6 +42,8 @@ async function parseSubmission(formData: FormData) {
   if (name.length < 3) return { error: "invalidName" } as const;
   const archetype = String(formData.get("archetype") ?? "");
   if (!Object.prototype.hasOwnProperty.call(archetypeLabels, archetype)) return { error: "archetype" } as const;
+  const deckType = String(formData.get("deck_type") ?? "ladder");
+  if (!(deckTypes as readonly string[]).includes(deckType)) return { error: "deckType" } as const;
   const guide = parseGuide(formData, locale);
   if (!guide.ok) return { error: guide.code } as const;
   const video = cleanVideo(String(formData.get("video") ?? ""));
@@ -56,6 +59,7 @@ async function parseSubmission(formData: FormData) {
       cards: checked.deck.cards,
       custom_cards: checked.deck.customCards,
       archetype,
+      deck_type: deckType,
       video_url: video.value,
       guide: guide.guide,
       code_om: encodeOmCode(state),

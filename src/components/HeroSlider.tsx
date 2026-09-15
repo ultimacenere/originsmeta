@@ -25,7 +25,7 @@ const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(
  * Slider a tutta larghezza con le immagini ufficiali del media kit: rotazione automatica (ferma al passaggio
  * del mouse, con il focus e se l'utente preferisce meno animazioni), frecce, puntini, tastiera e swipe.
  */
-export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[]; labels: SliderLabels; interval?: number }) {
+export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[]; labels: SliderLabels; interval?: number }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchX = useRef<number | null>(null);

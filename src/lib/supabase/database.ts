@@ -12,6 +12,7 @@ export type ProfileRow = {
   avatar_url: string | null;
   discord_id: string | null;
   role: "user" | "admin";
+  badge: string;
   created_at: string;
 };
 
@@ -24,6 +25,7 @@ export type CommunityDeckRow = {
   cards: string[];
   custom_cards: BuilderCard[];
   archetype: string;
+  deck_type: string;
   video_url: string | null;
   guide: Guide;
   code_om: string | null;
@@ -32,8 +34,9 @@ export type CommunityDeckRow = {
   updated_at: string;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_type"> & {
   id?: string;
+  deck_type?: string;
   status?: DeckStatus;
   video_url?: string | null;
   code_om?: string | null;

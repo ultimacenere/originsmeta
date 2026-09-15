@@ -58,6 +58,8 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           publishHref={href(locale, "/decks/publish")}
           labels={{
             publish: b.publish,
+            publishLocked: b.publishLocked,
+            lockedHint: b.lockedHint,
             publishHint: b.publishHint,
             modeSingle: b.modeSingle,
             modeTournament: b.modeTournament,

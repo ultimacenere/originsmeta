@@ -10,7 +10,15 @@ export type Guide = { lang: GuideLang; summary: string } & Partial<Record<GuideS
 
 export type DeckStatus = "published" | "hidden" | "draft";
 
-export type Profile = { username: string | null; display_name: string | null; avatar_url: string | null };
+/** Tipo di mazzo dichiarato da chi pubblica (note per sito 5.0). */
+export const deckTypes = ["ladder", "competitive", "fun", "tournament"] as const;
+export type DeckType = (typeof deckTypes)[number];
+
+/** Tag autore: lo assegna solo lo staff (scripts/set-badge.mjs), mai l'utente. */
+export const authorBadges = ["community", "influencer", "pro", "staff"] as const;
+export type AuthorBadge = (typeof authorBadges)[number];
+
+export type Profile = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
 
 /** Riga di public.community_decks (vedi supabase/schema.sql) con autore e media voti. */
 export type CommunityDeck = {
@@ -22,6 +30,7 @@ export type CommunityDeck = {
   cards: string[];
   custom_cards: BuilderCard[];
   archetype: string;
+  deck_type: string;
   video_url: string | null;
   guide: Guide;
   code_om: string | null;

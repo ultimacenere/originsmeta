@@ -242,42 +242,68 @@
     text-align: center;
   }
 
-  /* Striscia scorrevole del calendario */
+  /* Striscia del calendario: scorre da sola (JS), si ferma al passaggio del mouse, frecce ai lati, navigabile a mano */
   .ticker {
-    overflow: hidden;
+    position: relative;
     border-top: 1px solid var(--color-felt-line);
     border-bottom: 1px solid var(--color-felt-line);
     background: rgba(14, 7, 31, 0.7);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  }
+  .ticker-scroll {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+  .ticker-scroll::-webkit-scrollbar {
+    display: none;
   }
   .ticker-track {
     display: flex;
     width: max-content;
+    align-items: center;
     gap: 0.75rem;
-    padding: 0.55rem 0;
-    animation: ticker 48s linear infinite;
+    padding: 0.55rem 3rem;
   }
-  .ticker:hover .ticker-track {
-    animation-play-state: paused;
+  .ticker-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    border: 1px solid var(--color-sky);
+    background: rgba(14, 7, 31, 0.9);
+    color: var(--color-sky);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .ticker {
-      overflow-x: auto;
-      mask-image: none;
-      -webkit-mask-image: none;
-    }
-    .ticker-track {
-      animation: none;
-    }
+  .ticker-arrow:hover {
+    background: var(--color-night-3);
   }
-  @keyframes ticker {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
+  /* Stacco tra la fine e l'inizio del ciclo: blocco con il logo del gioco */
+  .ticker-spacer {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0.75rem;
+    padding: 0.25rem 1.25rem;
+    border-left: 2px solid var(--color-sky);
+    border-right: 2px solid var(--color-sky);
+    color: var(--color-chalk-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ticker-spacer img {
+    height: 26px;
+    width: auto;
   }
   .date-cube {
     display: grid;

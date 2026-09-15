@@ -18,6 +18,9 @@ export type ExplorerDeck = {
   updated: string;
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
+  /** tipo di mazzo e tag autore (solo mazzi della community) */
+  deckTypeLabel?: string;
+  creatorBadge?: string;
 };
 
 type Labels = {
@@ -112,6 +115,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="flex flex-wrap items-center gap-2">
                   <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-chalk" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
                   <span className="stat-pill border border-sky text-pale">{d.archetypeLabel}</span>
+                  {d.deckTypeLabel ? <span className="stat-pill bg-night-3 text-pale text-[11px]">{d.deckTypeLabel}</span> : null}
                   {d.legendary ? <span className="stat-pill bg-gold/50 text-pale">★ {d.legendary.name}</span> : null}
                   {d.rating && d.rating.votes > 0 ? (
                     <span className="stat-pill border border-mint-deep/40 font-mono text-[11px] text-mint">
@@ -123,6 +127,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="mt-1 block text-sm text-pale-muted">{d.tagline}</span>
                 <span className="mt-3 block text-xs text-pale-muted">
                   {labels.creator}: <strong className="text-pale">{d.creator}</strong>
+                  {d.creatorBadge ? <span className="stat-pill ml-1 bg-night-3 text-[10px] uppercase tracking-wider text-pale">{d.creatorBadge}</span> : null}
                 </span>
                 <span className="mt-3 block border-t border-sky pt-3 text-xs text-pale-muted">
                   <span className="kicker">{labels.cardsInDeck}</span>

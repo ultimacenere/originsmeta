@@ -7,14 +7,15 @@ import type { Dictionary } from "@/lib/i18n";
 import { OM_PREFIX, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
-import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY, type Guide } from "@/lib/community/types";
+import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY, deckTypes, type Guide } from "@/lib/community/types";
+import { suggestArchetype } from "@/lib/archetype";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { LoginPanel, type LoginLabels } from "./LoginPanel";
 
 export type PoolCard = { slug: string; name: string; legendary: boolean };
-export type InitialDeck = { id: string; code: string; name: string; archetype: string; video: string; guide: Guide };
+export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckType: string; video: string; guide: Guide };
 
 type Props = {
   locale: string;
@@ -103,6 +104,10 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   }, [state, router]);
 
   const deck = useMemo(() => (code ? decodeOmCode(code) : null), [code]);
+  /* archetipo: suggerito dalla composizione, ma l'utente può cambiarlo */
+  const suggested = useMemo(() => (deck ? suggestArchetype(deck) : null), [deck]);
+  const [archetypeChoice, setArchetypeChoice] = useState<string | null>(null);
+  const archetypeValue = archetypeChoice ?? initial?.archetype ?? suggested ?? "midrange";
   const errors = deck ? validateDeck(deck).filter((i) => i.level === "error") : [];
   const nameOf = (slug: string) => pool.find((c) => c.slug === slug)?.name ?? deck?.customCards.find((c) => c.slug === slug)?.name ?? slug;
   const hasCustom = Boolean(deck && [deck.legendary, ...deck.cards].some((s) => s?.startsWith("custom:")));
@@ -154,10 +159,21 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           </label>
           <label className="block">
             <span className="kicker text-pale-muted">{labels.archetype}</span>
-            <select id="pub-archetype" name="archetype" required defaultValue={initial?.archetype ?? "midrange"} className={inputCls}>
+            <select id="pub-archetype" name="archetype" required value={archetypeValue} onChange={(e) => setArchetypeChoice(e.target.value)} className={inputCls}>
               {archetypes.map(([id, label]) => (
                 <option key={id} value={id}>
                   {label}
+                </option>
+              ))}
+            </select>
+            {mode === "create" && suggested && !archetypeChoice ? <span className="mt-1 block text-xs text-pale-muted">{labels.archetypeSuggested}</span> : null}
+          </label>
+          <label className="block">
+            <span className="kicker text-pale-muted">{labels.deckType}</span>
+            <select id="pub-deck-type" name="deck_type" defaultValue={initial?.deckType ?? "ladder"} className={inputCls}>
+              {deckTypes.map((t) => (
+                <option key={t} value={t}>
+                  {labels.deckTypes[t]}
                 </option>
               ))}
             </select>

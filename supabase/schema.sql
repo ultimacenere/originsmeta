@@ -152,3 +152,24 @@ grant select on public.profiles, public.community_decks, public.deck_votes, publ
 grant insert, update, delete on public.community_decks, public.deck_votes to authenticated;
 grant insert, select on public.deck_reports to authenticated;
 grant update on public.profiles to authenticated;
+
+-- 15/09/2026 (note per sito 5.0): tipo di mazzo dichiarato da chi pubblica e tag autore assegnato dallo staff
+alter table public.community_decks add column if not exists deck_type text not null default 'ladder';
+alter table public.community_decks drop constraint if exists community_decks_deck_type_check;
+alter table public.community_decks add constraint community_decks_deck_type_check check (deck_type in ('ladder','competitive','fun','tournament'));
+alter table public.profiles add column if not exists badge text not null default 'community';
+alter table public.profiles drop constraint if exists profiles_badge_check;
+alter table public.profiles add constraint profiles_badge_check check (badge in ('community','influencer','pro','staff'));
+
+create or replace function public.protect_profile_badge()
+returns trigger language plpgsql as $$
+begin
+  -- il tag autore lo cambia solo un admin dal sito o uno script con connessione diretta (auth.uid() nullo)
+  if new.badge is distinct from old.badge and auth.uid() is not null and not public.is_admin() then
+    raise exception 'badge is assigned by staff';
+  end if;
+  return new;
+end $$;
+drop trigger if exists profiles_protect_badge on public.profiles;
+create trigger profiles_protect_badge before update on public.profiles
+  for each row execute function public.protect_profile_badge();
