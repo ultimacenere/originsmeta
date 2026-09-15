@@ -28,6 +28,14 @@ export function initials(name: string): string {
     .join("");
 }
 
+/** Tag autore dei mazzi community: Staff giallo acceso con scritta nera (richiesta di Pierluigi, 15/09/2026), Pro celeste, Influencer magenta. */
+export const badgeStyle: Record<string, string> = {
+  staff: "bg-gold text-ink font-bold",
+  pro: "bg-sky text-ink font-bold",
+  influencer: "bg-crimson text-chalk font-bold",
+  community: "bg-night-3 text-pale",
+};
+
 /** Pill di allineamento (Good / Evil / Neutral) sugli elementi avorio. */
 export const alignStyle: Record<string, string> = {
   good: "bg-mint-soft text-ink",

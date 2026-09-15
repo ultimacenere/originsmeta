@@ -42,6 +42,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         rating: deck.rating,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
         creatorBadge: d.community.badges[(deck.profile?.badge ?? "community") as keyof typeof d.community.badges] ?? deck.profile?.badge ?? undefined,
+        creatorBadgeId: deck.profile?.badge ?? "community",
       };
     });
   const list: ExplorerDeck[] = decks.map((deck) => {

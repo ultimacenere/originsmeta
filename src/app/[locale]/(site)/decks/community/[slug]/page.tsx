@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
+import { badgeStyle } from "@/lib/cardArt";
 import { getCard } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
@@ -92,10 +93,12 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span>
             {c.by} <strong className="text-pale">{author}</strong>
             {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
-            <span className="stat-pill ml-2 bg-night-3 text-[10px] uppercase tracking-wider text-pale">{c.badges[(deck.profile?.badge ?? "community") as keyof typeof c.badges] ?? deck.profile?.badge}</span>
           </span>
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
+          {deck.profile?.badge && deck.profile.badge !== "community" ? (
+            <span className={`stat-pill text-[11px] uppercase ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{c.badges[deck.profile.badge as keyof typeof c.badges] ?? deck.profile.badge}</span>
+          ) : null}
           <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>
           <span className="stat-pill border border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
