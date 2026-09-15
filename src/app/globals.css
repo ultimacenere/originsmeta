@@ -32,6 +32,9 @@
   --color-mint-soft: #bff5e8;
   --color-sky: #3fc4e8;
   --color-sky-deep: #1a9ec4;
+  --color-pink: #ff3d9a;
+  --color-good: #46d369;
+  --color-bad: #ff5c5c;
 
   --font-display: var(--font-unbounded), "Arial Black", Impact, sans-serif;
   --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;

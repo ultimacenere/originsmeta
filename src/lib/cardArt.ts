@@ -28,13 +28,15 @@ export function initials(name: string): string {
     .join("");
 }
 
-/** Tag autore dei mazzi community: Staff giallo acceso con scritta nera (richiesta di Pierluigi, 15/09/2026), Pro celeste, Influencer magenta. */
+/** Tag autore dei mazzi community, colori forti da memorizzare (mappa di Davdas, approvata da Pierluigi il 15/09/2026): Staff verde acqua, Pro rosa, Influencer giallo, sempre con scritta nera. Chi è Staff non è "Community". */
 export const badgeStyle: Record<string, string> = {
-  staff: "bg-gold text-ink font-bold",
-  pro: "bg-sky text-ink font-bold",
-  influencer: "bg-crimson text-chalk font-bold",
+  staff: "bg-mint text-ink",
+  pro: "bg-pink text-ink",
+  influencer: "bg-gold text-ink",
   community: "bg-night-3 text-pale",
 };
+/** Tag autore più grandi e marcati (richiesta di Davdas). */
+export const badgePill = "stat-pill px-3 py-1 text-xs font-extrabold uppercase tracking-wider";
 
 /** Pill di allineamento (Good / Evil / Neutral) sugli elementi avorio. */
 export const alignStyle: Record<string, string> = {

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { badgeStyle } from "@/lib/cardArt";
+import { badgePill, badgeStyle } from "@/lib/cardArt";
 
 export type ExplorerDeck = {
   slug: string;
@@ -117,9 +117,11 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
               <Link href={d.href} className="card-night card-night-hover flex h-full flex-col p-5">
                 <span className="flex flex-wrap items-center gap-2">
                   {d.creatorBadgeId && d.creatorBadgeId !== "community" && d.creatorBadge ? (
-                    <span className={`stat-pill text-[11px] uppercase ${badgeStyle[d.creatorBadgeId] ?? badgeStyle.community}`}>{d.creatorBadge}</span>
+                    <span className={`${badgePill} ${badgeStyle[d.creatorBadgeId] ?? badgeStyle.community}`}>{d.creatorBadge}</span>
                   ) : null}
-                  <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-chalk" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
+                  {d.source === "community" && d.creatorBadgeId === "staff" ? null : (
+                    <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-chalk" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
+                  )}
                   <span className="stat-pill border border-sky text-pale">{d.archetypeLabel}</span>
                   {d.deckTypeLabels?.map((t) => (
                     <span key={t} className="stat-pill bg-night-3 text-pale text-[11px]">

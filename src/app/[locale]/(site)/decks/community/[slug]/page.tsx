@@ -4,13 +4,13 @@ import { notFound } from "next/navigation";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
-import { badgeStyle } from "@/lib/cardArt";
+import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections } from "@/lib/community/types";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
-import { CardChip, CardChipList } from "@/components/CardChip";
+import { CardArt, CardChip, CardChipList } from "@/components/CardChip";
 import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
@@ -21,6 +21,12 @@ import { deckStats } from "@/lib/deckstats";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
+
+/** Punti di forza in verde e punti deboli in rosso, su sfondo "lavagna" (richiesta di Davdas, 15/09/2026). */
+const sectionStyle: Record<string, { box: string; title: string }> = {
+  strengths: { box: "border-good bg-good/10", title: "text-good" },
+  weaknesses: { box: "border-bad bg-bad/10", title: "text-bad" },
+};
 
 /**
  * Pagine generate alla prima richiesta e rigenerate al massimo ogni minuto (voti e modifiche).
@@ -84,22 +90,31 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
       </p>
 
       <article className="card-night mt-6 p-6 sm:p-8">
-        <p className="kicker text-pale-muted">
-          {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
-        </p>
-        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{deck.name}</h1>
-        <p className="mt-3 flex items-center gap-2 text-pale-muted">
-          <Avatar profile={deck.profile} name={author} size={32} />
-          <span>
-            {c.by} <strong className="text-pale">{author}</strong>
-            {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
-          </span>
-        </p>
+        <div className="flex flex-wrap items-start gap-5">
+          {legendary ? (
+            <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
+              <CardArt card={legendary} className="!h-[168px] !w-[120px] text-2xl" />
+            </Link>
+          ) : null}
+          <div className="min-w-0 flex-1">
+            <p className="kicker text-pale-muted">
+              {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
+            </p>
+            <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{deck.name}</h1>
+            <p className="mt-3 flex items-center gap-2 text-pale-muted">
+              <Avatar profile={deck.profile} name={author} size={32} />
+              <span>
+                {c.by} <strong className="text-pale">{author}</strong>
+                {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
+              </span>
+            </p>
+          </div>
+        </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {deck.profile?.badge && deck.profile.badge !== "community" ? (
-            <span className={`stat-pill text-[11px] uppercase ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{c.badges[deck.profile.badge as keyof typeof c.badges] ?? deck.profile.badge}</span>
+            <span className={`${badgePill} ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{c.badges[deck.profile.badge as keyof typeof c.badges] ?? deck.profile.badge}</span>
           ) : null}
-          <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>
+          {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>}
           <span className="stat-pill border border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
@@ -112,7 +127,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>
 
-        <p className="mt-6 whitespace-pre-line text-lg text-pale">{deck.guide.summary}</p>
+        <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
+          <p className="kicker text-mint">{c.summary}</p>
+          <p className="mt-2 whitespace-pre-line text-lg text-pale">{deck.guide.summary}</p>
+        </div>
 
         <div className="mt-6">
           <StarRating
@@ -213,8 +231,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             <h2 className="mt-10 text-2xl font-extrabold text-sky">{c.guide}</h2>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               {sections.map((k) => (
-                <section key={k} className={`rounded-lg border border-sky p-4 ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
-                  <h3 className="kicker text-mint">{c[k]}</h3>
+                <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
+                  <h3 className={`kicker ${sectionStyle[k]?.title ?? "text-mint"}`}>{c[k]}</h3>
                   <p className="mt-2 whitespace-pre-line text-sm text-pale">{deck.guide[k]}</p>
                 </section>
               ))}

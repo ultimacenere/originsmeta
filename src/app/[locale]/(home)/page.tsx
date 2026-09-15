@@ -19,7 +19,7 @@ import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
-import { badgeStyle } from "@/lib/cardArt";
+import { badgePill, badgeStyle } from "@/lib/cardArt";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -212,9 +212,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   <Link href={href(locale, `/decks/community/${deck.slug}`)} className="card-night card-night-hover flex h-full flex-col p-5">
                     <span className="flex flex-wrap gap-2">
                       {deck.profile?.badge && deck.profile.badge !== "community" ? (
-                        <span className={`stat-pill text-[11px] uppercase ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{d.community.badges[deck.profile.badge as keyof typeof d.community.badges] ?? deck.profile.badge}</span>
+                        <span className={`${badgePill} ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{d.community.badges[deck.profile.badge as keyof typeof d.community.badges] ?? deck.profile.badge}</span>
                       ) : null}
-                      <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>
+                      {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>}
                       <span className="stat-pill border border-sky text-pale">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
                       {deck.deck_types.map((t) => (
                         <span key={t} className="stat-pill bg-night-3 text-pale">
