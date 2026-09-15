@@ -3,6 +3,7 @@ import Image from "next/image";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { SteamButton, isSteamUrl } from "@/components/SteamButton";
+import { DiscordButton, isDiscordUrl } from "@/components/DiscordButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -44,6 +45,8 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
                 <SteamButton href={url} variant={url === officialLinks.news ? "dark" : "blue"}>
                   {label}
                 </SteamButton>
+              ) : isDiscordUrl(url) ? (
+                <DiscordButton href={url}>{label}</DiscordButton>
               ) : (
                 <a className="btn btn-ink text-xs" href={url} rel="noopener">
                   {label}

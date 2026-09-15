@@ -3,6 +3,7 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { SteamLogo } from "./SteamButton";
+import { DiscordLogo } from "./DiscordButton";
 
 export const officialLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
@@ -60,7 +61,12 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 Demo
               </a>
             </li>
-            <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.discord} rel="noopener">Discord</a></li>
+            <li>
+              <a className="inline-flex items-center gap-1.5 text-chalk-muted hover:text-[#5865f2]" href={officialLinks.discord} rel="noopener">
+                <DiscordLogo className="h-3.5 w-3.5" />
+                Discord
+              </a>
+            </li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.site} rel="noopener">origins-tcg.com</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.x} rel="noopener">X / Twitter</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.youtube} rel="noopener">YouTube</a></li>

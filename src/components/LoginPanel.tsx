@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
+import { DiscordLogo } from "./DiscordButton";
 
 export type LoginLabels = {
   discord: string;
@@ -76,11 +77,9 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
   const busy = status === "sending";
   return (
     <div className="card-ivory p-6 sm:p-8">
-      <button type="button" onClick={discord} disabled={busy} className="btn btn-ink w-full justify-center gap-2 py-3 text-base disabled:opacity-60">
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-          <path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4a13 13 0 0 1 4.5 2.3 15.6 15.6 0 0 0-15.4 0 13 13 0 0 1 4.5-2.3L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.6 9 0 13.5.3 17.9a19.9 19.9 0 0 0 6 3l1.3-2a12.7 12.7 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1l1.3 2a19.9 19.9 0 0 0 6-3c.4-5.1-.7-9.5-3.4-13.5ZM8.5 15.2c-1.2 0-2.1-1.1-2.1-2.4s1-2.4 2.1-2.4c1.2 0 2.2 1.1 2.1 2.4 0 1.3-.9 2.4-2.1 2.4Zm7 0c-1.2 0-2.1-1.1-2.1-2.4s1-2.4 2.1-2.4c1.2 0 2.2 1.1 2.1 2.4 0 1.3-.9 2.4-2.1 2.4Z" />
-        </svg>
-        {labels.discord}
+      <button type="button" onClick={discord} disabled={busy} className="btn-discord w-full justify-center py-3.5 text-base disabled:opacity-60">
+        <DiscordLogo className="h-5 w-5" />
+        <span>{labels.discord}</span>
       </button>
 
       <p className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-ink-muted">

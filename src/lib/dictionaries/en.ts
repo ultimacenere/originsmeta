@@ -130,6 +130,7 @@ export const en = {
     },
     statusNote: "Figures from the official Steam page and Koin Games announcements. Community numbers move daily.",
     ctaDiscord: "Join the official Discord",
+    ctaDemo: "Play the demo on Steam",
   },
   cards: {
     title: "Card database",

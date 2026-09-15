@@ -1,6 +1,7 @@
 import { formatDateShort, formatDate, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Event } from "@/lib/data/events";
 import { SteamButton, isSteamUrl } from "./SteamButton";
+import { DiscordButton, isDiscordUrl } from "./DiscordButton";
 
 export function EventCard({ event, locale, dict, compact = false }: { event: Event; locale: Locale; dict: Dictionary; compact?: boolean }) {
   const range = event.end
@@ -37,6 +38,10 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
             <SteamButton href={event.signup.url} size="sm">
               {event.signup.label[locale]}
             </SteamButton>
+          ) : isDiscordUrl(event.signup.url) ? (
+            <DiscordButton href={event.signup.url} size="sm">
+              {event.signup.label[locale]}
+            </DiscordButton>
           ) : (
             <a className="btn btn-ink text-xs" href={event.signup.url} rel="noopener">
               {event.signup.label[locale]}

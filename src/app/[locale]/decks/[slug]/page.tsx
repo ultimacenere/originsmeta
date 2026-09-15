@@ -8,6 +8,7 @@ import { getCard } from "@/lib/data/cards";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { CardChip, CardChipList } from "@/components/CardChip";
+import { DiscordLogo, isDiscordUrl } from "@/components/DiscordButton";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -55,7 +56,8 @@ export default async function DeckPage({ params }: { params: Params }) {
           <span className="stat-pill border border-ink/20 text-ink">
             {d.common.creator}:{" "}
             {deck.creator.url ? (
-              <a className="underline" href={deck.creator.url} rel="noopener">
+              <a className={isDiscordUrl(deck.creator.url) ? "link-discord inline-flex items-center gap-1 align-middle" : "underline"} href={deck.creator.url} rel="noopener">
+                {isDiscordUrl(deck.creator.url) ? <DiscordLogo className="h-3 w-3" /> : null}
                 {deck.creator.name}
               </a>
             ) : (

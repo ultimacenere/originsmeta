@@ -132,6 +132,7 @@ export const it: Dictionary = {
     },
     statusNote: "Dati dalla pagina Steam ufficiale e dagli annunci di Koin Games. I numeri della community cambiano ogni giorno.",
     ctaDiscord: "Entra nel Discord ufficiale",
+    ctaDemo: "Gioca la demo su Steam",
   },
   cards: {
     title: "Database carte",

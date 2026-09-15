@@ -12,6 +12,8 @@ import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
+import { SteamButton } from "@/components/SteamButton";
+import { DiscordButton } from "@/components/DiscordButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -37,9 +39,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
             <h1 className="mt-2 text-3xl font-extrabold leading-tight text-chalk sm:text-4xl">{d.home.title}</h1>
             <p className="mt-2 max-w-2xl text-chalk-muted">{d.home.sub}</p>
           </div>
-          <a href={officialLinks.discord} rel="noopener" className="btn btn-ghost">
-            {d.home.ctaDiscord}
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <SteamButton href={officialLinks.demo} variant="green">
+              {d.home.ctaDemo}
+            </SteamButton>
+            <DiscordButton href={officialLinks.discord}>{d.home.ctaDiscord}</DiscordButton>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.25fr_1fr_0.9fr]">

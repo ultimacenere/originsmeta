@@ -8,6 +8,7 @@ import { tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tie
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChip } from "@/components/CardChip";
 import { contactEmail, officialLinks } from "@/components/Footer";
+import { DiscordLogo } from "@/components/DiscordButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -62,7 +63,8 @@ export default async function TierListPage({ params }: { params: LocaleParams })
           </ol>
           <p className="mt-6 text-sm text-ink-muted">
             {d.tier.ctaText}{" "}
-            <a className="text-crimson-deep underline" href={officialLinks.discord} rel="noopener">
+            <a className="link-discord inline-flex items-center gap-1 align-middle" href={officialLinks.discord} rel="noopener">
+              <DiscordLogo className="h-3.5 w-3.5" />
               Discord
             </a>{" "}
             · <a className="text-crimson-deep underline" href={`mailto:${contactEmail}`}>{contactEmail}</a>
