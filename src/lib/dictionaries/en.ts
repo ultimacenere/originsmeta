@@ -131,6 +131,14 @@ export const en = {
     statusNote: "Figures from the official Steam page and Koin Games announcements. Community numbers move daily.",
     ctaDiscord: "Join the official Discord",
     ctaDemo: "Play the demo on Steam",
+    slider: { prev: "Previous image", next: "Next image", goTo: "Go to image {n}", credit: "Official art © Koin Games" },
+    slides: {
+      keyArt: { kicker: "Steam demo live · early access late 2026", title: "Origins TCG", text: "The free-to-compete digital card game by Koin Games: legends from every story, one Legendary leading each deck.", cta: "Play the demo on Steam" },
+      rapunzel: { kicker: "Official key art", title: "Legends from every story", text: "Rapunzel in the official banner: the roster of Legendaries grows with every reveal.", cta: "Card database" },
+      zeroPay: { kicker: "Official loading screen", title: "Zero pay-to-win", text: "Every competitive card is earned by playing: that is the promise of the free-to-compete model.", cta: "How the game works" },
+      realCollecting: { kicker: "Official loading screen", title: "Real collecting", text: "Collector packs hold cards you can trade: the collector economy, explained.", cta: "Collector economy" },
+      collectAll: { kicker: "Official loading screen", title: "Collect them all", text: "Every card from the playtest patch notes, with current stats and balance history.", cta: "Browse the cards" },
+    },
   },
   cards: {
     title: "Card database",

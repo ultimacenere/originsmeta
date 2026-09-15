@@ -14,6 +14,7 @@ import { CardChipList } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
 import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
+import { HeroSlider, type Slide } from "@/components/HeroSlider";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -28,9 +29,20 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const [today, ...rest] = sortedNews;
   const latest = rest.slice(0, 4);
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
+  const sl = d.home.slides;
+  const slides: Slide[] = [
+    { src: "/media/hero-1920.webp", alt: "Origins TCG key art", ...sl.keyArt, href: officialLinks.demo, external: true },
+    { src: "/media/banner-rapunzel.webp", alt: "Origins TCG official banner with Rapunzel", ...sl.rapunzel, href: href(locale, "/cards") },
+    { src: "/media/ls-zero-pay-to-win.webp", alt: "Official loading screen: zero pay to win", ...sl.zeroPay, href: href(locale, "/guides/origins-tcg-explained") },
+    { src: "/media/ls-real-collecting.webp", alt: "Official loading screen: real collecting", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
+    { src: "/media/ls-collect-them-all.webp", alt: "Official loading screen: collect them all", ...sl.collectAll, href: href(locale, "/cards") },
+  ];
 
   return (
     <>
+      {/* Slider a tutta larghezza con le immagini ufficiali del media kit */}
+      <HeroSlider slides={slides} labels={d.home.slider} />
+
       {/* Above the fold: titolo compatto + news del giorno + MetaShift + tier list */}
       <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">

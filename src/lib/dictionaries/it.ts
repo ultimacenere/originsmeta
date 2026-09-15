@@ -133,6 +133,14 @@ export const it: Dictionary = {
     statusNote: "Dati dalla pagina Steam ufficiale e dagli annunci di Koin Games. I numeri della community cambiano ogni giorno.",
     ctaDiscord: "Entra nel Discord ufficiale",
     ctaDemo: "Gioca la demo su Steam",
+    slider: { prev: "Immagine precedente", next: "Immagine successiva", goTo: "Vai all'immagine {n}", credit: "Immagini ufficiali © Koin Games" },
+    slides: {
+      keyArt: { kicker: "Demo Steam disponibile · early access fine 2026", title: "Origins TCG", text: "Il gioco di carte digitale free-to-compete di Koin Games: leggende da ogni storia, una Leggendaria a guidare ogni mazzo.", cta: "Gioca la demo su Steam" },
+      rapunzel: { kicker: "Key art ufficiale", title: "Leggende da ogni storia", text: "Rapunzel nel banner ufficiale: il roster delle Leggendarie cresce a ogni reveal.", cta: "Database carte" },
+      zeroPay: { kicker: "Schermata ufficiale", title: "Zero pay-to-win", text: "Ogni carta competitiva si guadagna giocando: è la promessa del modello free-to-compete.", cta: "Come funziona il gioco" },
+      realCollecting: { kicker: "Schermata ufficiale", title: "Collezionismo vero", text: "I collector pack contengono carte che si possono scambiare: l'economia da collezione, spiegata.", cta: "Economia da collezione" },
+      collectAll: { kicker: "Schermata ufficiale", title: "Prendile tutte", text: "Ogni carta dalle patch notes del playtest, con statistiche attuali e storico dei bilanciamenti.", cta: "Sfoglia le carte" },
+    },
   },
   cards: {
     title: "Database carte",
