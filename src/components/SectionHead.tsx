@@ -15,7 +15,7 @@ export function SectionHead({
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-2xl">
         {kicker ? <p className="kicker text-gold">{kicker}</p> : null}
-        <h2 className="mt-1 text-2xl font-extrabold text-sky sm:text-3xl">{title}</h2>
+        <h2 className="mt-1 text-2xl font-extrabold text-mint sm:text-3xl">{title}</h2>
         {sub ? <p className="mt-2 text-chalk-muted">{sub}</p> : null}
       </div>
       {link ? (

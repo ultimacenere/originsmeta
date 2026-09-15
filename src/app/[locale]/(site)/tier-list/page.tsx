@@ -46,7 +46,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.tierList}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.tier.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.tier.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
@@ -55,7 +55,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
             {d.tier.statusKicker} · {d.common.updated} {formatDate(locale, tierList.updated)}
           </p>
           <p className="mt-2 text-lg font-bold text-pale">{d.tier.statusText}</p>
-          <h2 className="mt-6 text-xl font-extrabold text-sky">{d.tier.methodTitle}</h2>
+          <h2 className="mt-6 text-xl font-extrabold text-mint">{d.tier.methodTitle}</h2>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-pale">
             {d.tier.method.map((m) => (
               <li key={m}>{m}</li>
@@ -86,7 +86,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         const meta = d.tier.sections[section.id];
         return (
           <section key={section.id} id={section.id} className="mt-14 scroll-mt-24">
-            <h2 className="text-2xl font-extrabold text-sky sm:text-3xl">{meta.title}</h2>
+            <h2 className="text-2xl font-extrabold text-mint sm:text-3xl">{meta.title}</h2>
             <p className="mt-1 max-w-2xl text-chalk-muted">{meta.text}</p>
             <div className="mt-5 overflow-hidden rounded-xl border border-felt-line">
               {tierIds.map((t) => (
@@ -116,7 +116,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
       })}
 
       <section id="tracker" className="mt-14 scroll-mt-24">
-        <h2 className="text-2xl font-extrabold text-sky sm:text-3xl">{d.tier.trackerTitle}</h2>
+        <h2 className="text-2xl font-extrabold text-mint sm:text-3xl">{d.tier.trackerTitle}</h2>
         <p className="mt-2 max-w-2xl text-chalk-muted">{d.tier.trackerSub}</p>
         <div className="mt-6 overflow-x-auto rounded-xl border border-felt-line">
           <table className="w-full min-w-[640px] text-sm">

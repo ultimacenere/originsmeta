@@ -3,7 +3,8 @@
 /*
   OriginsMeta — "ink & mint", versione notte (15/09/2026)
   Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte come pannelli blu notte
-  (night), con cornici celesti (sky, il cristallo del mana), titoli celesti e testi grigio chiaro (pale / chalk).
+  (night), con cornici celesti piene (sky, il cristallo del mana), titoli in menta come il blocco MetaShift
+  e testi grigio chiaro (pale / chalk).
   Niente elementi bianchi né neri pieni: richiesta esplicita di Pierluigi. Menta del logo per bottoni e accenti,
   giallo citrino solo per le leggendarie e l'evento evidenziato, magenta per ciò che scotta.
   "ink" resta il testo scuro sui fondi menta/oro. I nomi dei token sono per ruolo, non per tinta.
@@ -86,16 +87,8 @@
     color: var(--color-pale);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
-    border: 1px solid rgba(63, 196, 232, 0.55);
+    border: 3px solid var(--color-sky);
     position: relative;
-  }
-  .card-night::after {
-    content: "";
-    position: absolute;
-    inset: 6px;
-    border-radius: 9px;
-    border: 1px solid rgba(63, 196, 232, 0.22);
-    pointer-events: none;
   }
   .card-night-hover {
     transition: transform 160ms ease, box-shadow 160ms ease;
@@ -111,7 +104,7 @@
     border-radius: 14px;
   }
   .felt-panel-mint {
-    border: 1px solid rgba(63, 196, 232, 0.45);
+    border: 3px solid var(--color-sky);
     background: linear-gradient(180deg, rgba(49, 227, 189, 0.10), rgba(14, 7, 31, 0.6));
     border-radius: 14px;
   }
@@ -128,8 +121,8 @@
   }
   .hero-art {
     border-radius: 18px;
-    border: 6px solid var(--color-night-3);
-    box-shadow: 0 0 0 1px rgba(63, 196, 232, 0.55), var(--shadow-lift);
+    border: 6px solid var(--color-sky);
+    box-shadow: var(--shadow-lift);
     overflow: hidden;
     background: var(--color-night);
   }
@@ -173,11 +166,11 @@
   .btn-ink {
     background: var(--color-night-3);
     color: var(--color-chalk);
-    border: 1px solid rgba(63, 196, 232, 0.35);
+    border: 1px solid var(--color-sky);
   }
   .btn-ink:hover {
     background: #2c3d5e;
-    color: var(--color-sky);
+    color: var(--color-mint);
   }
   .stat-pill {
     font-family: var(--font-mono);
@@ -203,7 +196,7 @@
     align-items: center;
     background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
     color: var(--color-pale);
-    border: 1px solid rgba(63, 196, 232, 0.55);
+    border: 2px solid var(--color-sky);
     border-radius: 10px;
     padding: 0.35rem 0.55rem 0.35rem 0.35rem;
     box-shadow: var(--shadow-card);
@@ -218,7 +211,7 @@
     height: 60px;
     border-radius: 6px;
     overflow: hidden;
-    border: 1px solid rgba(63, 196, 232, 0.65);
+    border: 1px solid var(--color-sky);
     display: grid;
     place-items: center;
     font-family: var(--font-display);
@@ -293,8 +286,8 @@
     height: 44px;
     border-radius: 8px;
     background: var(--color-night-3);
-    color: var(--color-sky);
-    border: 1px solid rgba(63, 196, 232, 0.45);
+    color: var(--color-mint);
+    border: 2px solid var(--color-sky);
     font-family: var(--font-display);
     font-weight: 800;
     line-height: 1;
@@ -321,7 +314,7 @@
     line-height: 1.7;
   }
   .prose-night h2, .prose-night h3 {
-    color: var(--color-sky);
+    color: var(--color-mint);
   }
   .prose-night h2 {
     font-size: 1.5rem;
@@ -362,7 +355,7 @@
     margin: 1em 0;
   }
   .prose-night th, .prose-night td {
-    border-bottom: 1px solid rgba(63, 196, 232, 0.25);
+    border-bottom: 1px solid rgba(63, 196, 232, 0.5);
     padding: 0.5em 0.6em;
     text-align: left;
     vertical-align: top;

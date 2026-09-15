@@ -95,10 +95,10 @@ export function StarRating({
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky/50 bg-night-2/60 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky bg-night-2/60 px-4 py-3">
       <div>
         <p className="kicker text-pale-muted">{labels.rating}</p>
-        <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-sky">
+        <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-mint">
           {stats.votes ? stats.avg.toFixed(1) : "–"}
           <span className="ml-1 text-sm font-medium text-pale-muted">/ 5</span>
         </p>

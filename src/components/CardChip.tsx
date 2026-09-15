@@ -26,7 +26,7 @@ export function CardChip({ slug, locale }: { slug: string; locale: Locale }) {
     <Link href={href(locale, `/cards/${card.slug}`)} className="card-chip" title={card.name}>
       <CardArt card={card} />
       <span className="min-w-0">
-        <span className="block truncate font-display text-[0.8rem] font-bold leading-tight text-sky">{card.name}</span>
+        <span className="block truncate font-display text-[0.8rem] font-bold leading-tight text-mint">{card.name}</span>
         <span className="block font-mono text-[11px] text-pale-muted">
           {card.legendary ? "★ " : ""}
           {stats || "—"}

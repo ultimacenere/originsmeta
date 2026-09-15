@@ -17,7 +17,7 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.guides}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.guides.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
@@ -38,7 +38,7 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
                 <p className="kicker text-pale-muted">
                   {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {formatDate(locale, g.updated)}
                 </p>
-                <h2 className="mt-1 text-xl font-extrabold leading-tight text-sky">{g.title}</h2>
+                <h2 className="mt-1 text-xl font-extrabold leading-tight text-mint">{g.title}</h2>
                 <p className="mt-2 flex-1 text-sm text-pale-muted">{g.excerpt}</p>
                 <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
               </div>

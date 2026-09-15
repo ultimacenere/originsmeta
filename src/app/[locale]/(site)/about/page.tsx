@@ -22,7 +22,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.about}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.about.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.about.title}</h1>
       <div className="hero-art mt-8" style={{ transform: "none" }}>
         <Image src="/media/banner-rapunzel.webp" alt="Origins TCG official banner" width={1500} height={500} sizes="(max-width: 896px) 92vw, 860px" className="w-full" />
       </div>

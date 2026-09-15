@@ -51,14 +51,14 @@ export default async function DeckPage({ params }: { params: Params }) {
         <p className="kicker text-pale-muted">
           {d.decks.detailKicker} · {d.common.updated} {formatDate(locale, deck.updated)}
         </p>
-        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{deck.name}</h1>
+        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-mint sm:text-5xl">{deck.name}</h1>
         <p className="mt-2 text-lg text-pale-muted">{deck.tagline[locale]}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="stat-pill bg-night-3 text-chalk text-[11px] font-semibold uppercase">{d.common[deck.source]}</span>
-          <span className="stat-pill border border-sky/60 text-pale">
+          <span className="stat-pill border border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype][locale]}
           </span>
-          <span className="stat-pill border border-sky/60 text-pale">
+          <span className="stat-pill border border-sky text-pale">
             {d.common.creator}:{" "}
             {deck.creator.url ? (
               <a className={isDiscordUrl(deck.creator.url) ? "link-discord inline-flex items-center gap-1 align-middle" : "underline"} href={deck.creator.url} rel="noopener">
@@ -83,7 +83,7 @@ export default async function DeckPage({ params }: { params: Params }) {
           </p>
         ) : null}
 
-        <h2 className="mt-8 text-xl font-extrabold text-sky">{d.common.legendary}</h2>
+        <h2 className="mt-8 text-xl font-extrabold text-mint">{d.common.legendary}</h2>
         {legendary ? (
           <div className="mt-2">
             <CardChip slug={legendary.slug} locale={locale} />
@@ -92,7 +92,7 @@ export default async function DeckPage({ params }: { params: Params }) {
           <p className="mt-2 text-sm text-pale-muted">{d.common.unknownStats}</p>
         )}
 
-        <h2 className="mt-8 text-xl font-extrabold text-sky">{d.common.cardsInDeck}</h2>
+        <h2 className="mt-8 text-xl font-extrabold text-mint">{d.common.cardsInDeck}</h2>
         <div className="mt-3">
           <CardChipList slugs={deck.cards} locale={locale} />
         </div>
@@ -101,10 +101,10 @@ export default async function DeckPage({ params }: { params: Params }) {
 
         {deck.changes?.length ? (
           <>
-            <h2 className="mt-8 text-xl font-extrabold text-sky">{d.decks.changes}</h2>
+            <h2 className="mt-8 text-xl font-extrabold text-mint">{d.decks.changes}</h2>
             <ul className="mt-3 space-y-3">
               {deck.changes.map((c, i) => (
-                <li key={i} className="rounded-lg border border-sky/50 p-4 text-sm">
+                <li key={i} className="rounded-lg border border-sky p-4 text-sm">
                   <p className="font-mono">
                     <span className="text-pale-muted">{d.common.patch} {c.patch}</span> · <span className="text-crimson">− {c.removed}</span> · <span className="text-mint">+ {c.added}</span>
                   </p>
@@ -118,13 +118,13 @@ export default async function DeckPage({ params }: { params: Params }) {
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
+          <h2 className="text-2xl font-extrabold text-mint">{d.common.relatedGuides}</h2>
           <ul className="mt-4 grid gap-4 md:grid-cols-2">
             {guides.map((g) => (
               <li key={g.slug}>
                 <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover block p-5">
                   <p className="kicker text-pale-muted">{d.guides.categories[g.category]}</p>
-                  <h3 className="mt-1 text-lg font-extrabold text-sky">{g.title}</h3>
+                  <h3 className="mt-1 text-lg font-extrabold text-mint">{g.title}</h3>
                   <p className="mt-1 text-sm text-pale-muted">{g.excerpt}</p>
                 </Link>
               </li>
@@ -134,7 +134,7 @@ export default async function DeckPage({ params }: { params: Params }) {
       ) : null}
 
       <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-sky">{d.decks.otherDecks}</h2>
+        <h2 className="text-2xl font-extrabold text-mint">{d.decks.otherDecks}</h2>
         <ul className="mt-4 flex flex-wrap gap-2">
           {others.map((x) => (
             <li key={x.slug}>

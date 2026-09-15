@@ -15,7 +15,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.news}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.news.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.news.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.news.intro}</p>
       <ol className="mt-10 space-y-4">
         {sortedNews.map((n) => (
@@ -26,7 +26,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
                 {n.source === "steam" ? "Steam" : d.common.source}
               </span>
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">{n.title[locale]}</h2>
+            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-mint">{n.title[locale]}</h2>
             <p className="mt-3 text-pale">{n.summary[locale]}</p>
             {n.cards?.length ? (
               <div className="mt-4">

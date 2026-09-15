@@ -37,7 +37,7 @@ export function OwnerActions({
   }, [ownerId]);
   if (!isOwner) return null;
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-sky/70 p-3">
+    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-sky p-3">
       <Link href={editHref} className="btn btn-ink text-xs">
         {labels.edit}
       </Link>
@@ -45,7 +45,7 @@ export function OwnerActions({
         <input type="hidden" name="id" value={deckId} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="status" value={status === "hidden" ? "published" : "hidden"} />
-        <button type="submit" className="btn border border-sky/80 text-xs text-pale">
+        <button type="submit" className="btn border border-sky text-xs text-pale">
           {status === "hidden" ? labels.unhide : labels.hide}
         </button>
       </form>

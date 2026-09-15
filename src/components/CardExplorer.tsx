@@ -214,7 +214,7 @@ export function CardExplorer({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="kicker block text-pale-muted">{c.sagaLabel}</span>
-                  <span className="mt-1 block truncate font-display text-lg font-bold leading-tight text-sky">
+                  <span className="mt-1 block truncate font-display text-lg font-bold leading-tight text-mint">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>
@@ -235,7 +235,7 @@ export function CardExplorer({
                   </span>
                   <span className="mt-2 flex flex-wrap gap-1.5">
                     {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
-                      <span key={k} className="rounded border border-sky/50 px-1.5 py-0.5 text-[11px] text-pale-muted">
+                      <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[11px] text-pale-muted">
                         {k}
                       </span>
                     ))}

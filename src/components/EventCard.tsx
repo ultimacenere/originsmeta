@@ -16,7 +16,7 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
           {event.official ? dict.events.officialBadge : dict.events.communityBadge}
         </span>
       </div>
-      <h3 className="mt-2 text-xl font-extrabold leading-tight text-sky">{event.title[locale]}</h3>
+      <h3 className="mt-2 text-xl font-extrabold leading-tight text-mint">{event.title[locale]}</h3>
       <p className="mt-1 text-sm text-pale-muted">{event.where[locale]}</p>
       <p className="mt-3 text-sm text-pale">{event.text[locale]}</p>
       {!compact && event.format ? (
@@ -60,7 +60,7 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
               {dict.common.source}
             </SteamButton>
           ) : (
-            <a className="btn border border-sky/80 text-pale text-xs hover:text-crimson" href={event.source} rel="noopener">
+            <a className="btn border border-sky text-pale text-xs hover:text-crimson" href={event.source} rel="noopener">
               {dict.common.source}
             </a>
           )

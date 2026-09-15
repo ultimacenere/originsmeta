@@ -325,7 +325,7 @@ export function DeckBuilder({
       {/* ---------- mazzo ---------- */}
       <section className="card-night p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex gap-1 rounded-full border border-sky/60 p-0.5">
+          <div className="flex gap-1 rounded-full border border-sky p-0.5">
             {(["single", "tournament"] as const).map((m) => (
               <button
                 key={m}
@@ -334,7 +334,7 @@ export function DeckBuilder({
                   setMode(m);
                   persist({ mode: m });
                 }}
-                className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
+                className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-mint" : "text-pale-muted hover:text-mint"}`}
               >
                 {m === "single" ? labels.modeSingle : labels.modeTournament}
               </button>
@@ -350,7 +350,7 @@ export function DeckBuilder({
                     setActive(i);
                     persist({ active: i });
                   }}
-                  className={`rounded-lg px-3 py-1 font-display text-xs font-bold ${active === i ? "bg-mint text-ink" : "border border-sky/60 text-pale-muted"}`}
+                  className={`rounded-lg px-3 py-1 font-display text-xs font-bold ${active === i ? "bg-mint text-ink" : "border border-sky text-pale-muted"}`}
                 >
                   {labels.deckLabel} {String.fromCharCode(65 + i)} {isComplete(decks[i]) ? "✓" : ""}
                 </button>
@@ -366,7 +366,7 @@ export function DeckBuilder({
             value={deck.name}
             onChange={(e) => updateDeck((d) => ({ ...d, name: e.target.value.slice(0, 60) }))}
             placeholder={labels.deckNamePlaceholder}
-            className="mt-1 w-full rounded-lg border border-sky/60 bg-night px-3 py-2 text-pale"
+            className="mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale"
           />
         </label>
 
@@ -387,15 +387,15 @@ export function DeckBuilder({
         ) : null}
 
         {/* Leggendaria */}
-        <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.legendarySlot}</h3>
+        <h3 className="mt-5 text-lg font-extrabold text-mint">{labels.legendarySlot}</h3>
         {deck.legendary && slotCard(deck.legendary) ? (
           <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} removeLabel={labels.remove} />
         ) : (
-          <p className="mt-1 rounded-lg border border-dashed border-sky/80 px-3 py-3 text-sm text-pale-muted">{labels.pickLegendary}</p>
+          <p className="mt-1 rounded-lg border border-dashed border-sky px-3 py-3 text-sm text-pale-muted">{labels.pickLegendary}</p>
         )}
 
         {/* Carte base */}
-        <h3 className="mt-5 text-lg font-extrabold text-sky">
+        <h3 className="mt-5 text-lg font-extrabold text-mint">
           {labels.slots} <span className="font-mono text-sm font-normal text-pale-muted">{deck.cards.length}/{RULES.distinctCards} · {labels.slotsHint}</span>
         </h3>
         <ul className="mt-2 space-y-1.5">
@@ -408,12 +408,12 @@ export function DeckBuilder({
             ) : null;
           })}
           {Array.from({ length: Math.max(0, RULES.distinctCards - deck.cards.length) }).map((_, i) => (
-            <li key={`empty-${i}`} className="h-9 rounded-lg border border-dashed border-sky/60" aria-hidden="true" />
+            <li key={`empty-${i}`} className="h-9 rounded-lg border border-dashed border-sky" aria-hidden="true" />
           ))}
         </ul>
 
         {/* Curva */}
-        <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.curve}</h3>
+        <h3 className="mt-5 text-lg font-extrabold text-mint">{labels.curve}</h3>
         <div className="mt-2 flex h-24 items-end gap-1">
           {curve.map((n, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
@@ -425,14 +425,14 @@ export function DeckBuilder({
         </div>
 
         {/* Azioni */}
-        <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.actions}</h3>
+        <h3 className="mt-5 text-lg font-extrabold text-mint">{labels.actions}</h3>
         <div className="mt-2 flex flex-wrap gap-2">
           {complete ? (
             <a className="btn btn-mint text-xs" href={`${publishHref}#${encodeOmCode(deck)}`} title={labels.publishHint}>
               {labels.publish}
             </a>
           ) : (
-            <span className="btn cursor-not-allowed border border-sky/60 text-xs text-pale-muted" title={labels.publishHint} aria-disabled="true">
+            <span className="btn cursor-not-allowed border border-sky text-xs text-pale-muted" title={labels.publishHint} aria-disabled="true">
               {labels.publish}
             </span>
           )}
@@ -457,7 +457,7 @@ export function DeckBuilder({
             {labels.save}
           </button>
           <a
-            className="btn border border-sky/80 text-xs text-pale"
+            className="btn border border-sky text-xs text-pale"
             href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Deck OriginsMeta: ${deck.name || "senza nome"}`)}&body=${encodeURIComponent(`${textList}\n\n${shareLink}\n\n`)}`}
             title={labels.submitHint}
           >
@@ -465,7 +465,7 @@ export function DeckBuilder({
           </a>
           <button
             type="button"
-            className="btn border border-sky/80 text-xs text-pale hover:text-crimson"
+            className="btn border border-sky text-xs text-pale hover:text-crimson"
             onClick={() => updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }))}
           >
             {labels.clear}
@@ -478,14 +478,14 @@ export function DeckBuilder({
         ) : null}
 
         {/* Import */}
-        <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.importTitle}</h3>
+        <h3 className="mt-5 text-lg font-extrabold text-mint">{labels.importTitle}</h3>
         <p className="mt-1 text-xs text-pale-muted">{labels.importHint}</p>
         <textarea
           id="deck-import"
           value={importText}
           onChange={(e) => setImportText(e.target.value)}
           rows={3}
-          className="mt-2 w-full rounded-lg border border-sky/60 bg-night px-3 py-2 font-mono text-xs text-pale"
+          className="mt-2 w-full rounded-lg border border-sky bg-night px-3 py-2 font-mono text-xs text-pale"
         />
         <button type="button" className="btn btn-ink mt-2 text-xs" onClick={doImport}>
           {labels.importButton}
@@ -493,7 +493,7 @@ export function DeckBuilder({
 
         {unknownKeys.length ? (
           <div className="mt-4 rounded-lg border border-gold bg-gold/15 p-3">
-            <h4 className="font-display text-sm font-bold text-sky">{labels.teachTitle}</h4>
+            <h4 className="font-display text-sm font-bold text-mint">{labels.teachTitle}</h4>
             <p className="mt-1 text-xs text-pale-muted">{labels.teachHint}</p>
             <ul className="mt-2 space-y-1">
               {unknownKeys.map((k) => (
@@ -502,7 +502,7 @@ export function DeckBuilder({
                   <select
                     value={teach[k] ?? ""}
                     onChange={(e) => setTeach((t) => ({ ...t, [k]: e.target.value }))}
-                    className="flex-1 rounded border border-sky/60 bg-night px-2 py-1 text-xs"
+                    className="flex-1 rounded border border-sky bg-night px-2 py-1 text-xs"
                   >
                     <option value="">—</option>
                     {pool.map((c) => (
@@ -522,8 +522,8 @@ export function DeckBuilder({
 
         {/* Conquest */}
         {mode === "tournament" ? (
-          <div className="mt-6 rounded-lg border border-sky/60 p-4">
-            <h3 className="text-lg font-extrabold text-sky">{labels.tournamentTitle}</h3>
+          <div className="mt-6 rounded-lg border border-sky p-4">
+            <h3 className="text-lg font-extrabold text-mint">{labels.tournamentTitle}</h3>
             <p className="mt-1 text-xs text-pale-muted">{fmt(labels.tournamentHint, { min: minDifferent })}</p>
             <label className="mt-2 flex items-center gap-2 text-xs text-pale-muted">
               {labels.minDifferent}
@@ -534,7 +534,7 @@ export function DeckBuilder({
                 max={25}
                 value={minDifferent}
                 onChange={(e) => setMinDifferent(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
-                className="w-16 rounded border border-sky/60 bg-night px-2 py-1 font-mono text-pale"
+                className="w-16 rounded border border-sky bg-night px-2 py-1 font-mono text-pale"
               />
             </label>
             <table className="mt-3 w-full text-xs">
@@ -548,7 +548,7 @@ export function DeckBuilder({
               </thead>
               <tbody>
                 {[0, 1, 2].map((i) => (
-                  <tr key={i} className="border-t border-sky/40">
+                  <tr key={i} className="border-t border-sky">
                     <td className="py-1 font-bold">
                       {labels.deckLabel} {String.fromCharCode(65 + i)}
                     </td>
@@ -583,7 +583,7 @@ export function DeckBuilder({
 
       {/* ---------- pool ---------- */}
       <section className="felt-panel p-5">
-        <h3 className="text-lg font-extrabold text-sky">{labels.pool}</h3>
+        <h3 className="text-lg font-extrabold text-mint">{labels.pool}</h3>
         <p className="mt-1 text-xs text-chalk-muted">{labels.poolHint}</p>
         <div className="mt-3 grid gap-2 sm:grid-cols-[1.5fr_1fr_1fr]">
           <input
@@ -642,7 +642,7 @@ export function DeckBuilder({
         </ul>
 
         <div className="mt-4 rounded-lg border border-felt-line p-3">
-          <h4 className="font-display text-sm font-bold text-sky">{labels.customTitle}</h4>
+          <h4 className="font-display text-sm font-bold text-mint">{labels.customTitle}</h4>
           <p className="mt-1 text-xs text-chalk-muted">{labels.customHint}</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-[1.6fr_0.6fr_auto]">
             <input id="custom-name" value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder={labels.customName} className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk" />
@@ -664,11 +664,11 @@ export function DeckBuilder({
 
 function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-sky/50 bg-night-2/60 px-2 py-1.5">
+    <div className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-2 py-1.5">
       <span className="font-mono text-xs text-pale-muted">{copies}×</span>
       <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(card.name)}</span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-display text-xs font-bold text-sky">
+        <span className="block truncate font-display text-xs font-bold text-mint">
           {card.legendary ? "★ " : ""}
           {card.name}
           {card.custom ? " *" : ""}
@@ -677,7 +677,7 @@ function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; c
           {card.mana ?? "?"} · {card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : "spell"}
         </span>
       </span>
-      <button type="button" onClick={onRemove} className="stat-pill border border-sky/60 text-[10px] text-pale hover:bg-crimson hover:text-chalk" aria-label={`${removeLabel} ${card.name}`}>
+      <button type="button" onClick={onRemove} className="stat-pill border border-sky text-[10px] text-pale hover:bg-crimson hover:text-chalk" aria-label={`${removeLabel} ${card.name}`}>
         ✕
       </button>
     </div>

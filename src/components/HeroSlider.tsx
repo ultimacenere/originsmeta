@@ -76,7 +76,7 @@ export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 pb-6 sm:px-6">
           <div className="max-w-2xl" aria-live="polite">
             <p className="kicker text-mint">{active.kicker}</p>
-            <h2 className="mt-1 text-2xl font-extrabold leading-tight text-sky sm:text-3xl">{active.title}</h2>
+            <h2 className="mt-1 text-2xl font-extrabold leading-tight text-mint sm:text-3xl">{active.title}</h2>
             <p className="mt-1 hidden text-sm text-chalk-muted sm:block">{active.text}</p>
             {active.external ? (
               <SteamButton href={active.href} variant="green" size="sm" className="mt-3">

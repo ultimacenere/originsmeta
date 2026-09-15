@@ -63,7 +63,7 @@ export default async function CardPage({ params }: { params: Params }) {
           <p className="kicker text-pale-muted">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">
+          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-mint sm:text-5xl">
             {card.legendary ? <span className="text-gold">★ </span> : null}
             {card.name}
           </h1>
@@ -89,7 +89,7 @@ export default async function CardPage({ params }: { params: Params }) {
           {card.keywords?.length ? (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {card.keywords.map((k) => (
-                <span key={k} className="rounded border border-sky/60 px-2 py-0.5 text-[11px] text-pale-muted">
+                <span key={k} className="rounded border border-sky px-2 py-0.5 text-[11px] text-pale-muted">
                   {k}
                 </span>
               ))}
@@ -97,7 +97,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {card.origin ? (
             <>
-              <h2 className="mt-8 text-xl font-extrabold text-sky">{d.cards.sagaTitle}</h2>
+              <h2 className="mt-8 text-xl font-extrabold text-mint">{d.cards.sagaTitle}</h2>
               <p className="mt-2 text-pale-muted">{card.origin[locale]}</p>
             </>
           ) : null}
@@ -115,11 +115,11 @@ export default async function CardPage({ params }: { params: Params }) {
               </div>
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.power}</dt>
-                <dd className="font-display text-3xl font-extrabold text-sky tabular">{card.power ?? "–"}</dd>
+                <dd className="font-display text-3xl font-extrabold text-mint tabular">{card.power ?? "–"}</dd>
               </div>
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.health}</dt>
-                <dd className="font-display text-3xl font-extrabold text-sky tabular">{card.health ?? "–"}</dd>
+                <dd className="font-display text-3xl font-extrabold text-mint tabular">{card.health ?? "–"}</dd>
               </div>
             </dl>
           )}
@@ -132,7 +132,7 @@ export default async function CardPage({ params }: { params: Params }) {
         <section className="mt-10 grid gap-6 md:grid-cols-2">
           {linked.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-sky">{d.common.related}</h2>
+              <h2 className="text-2xl font-extrabold text-mint">{d.common.related}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linked} locale={locale} />
               </div>
@@ -140,7 +140,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {linkedFrom.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedFrom}</h2>
+              <h2 className="text-2xl font-extrabold text-mint">{d.common.relatedFrom}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linkedFrom.map((c) => c.slug)} locale={locale} />
               </div>
@@ -151,7 +151,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {card.history.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.cards.changesTitle}</h2>
+          <h2 className="text-2xl font-extrabold text-mint">{d.cards.changesTitle}</h2>
           <ol className="mt-4 space-y-3">
             {[...card.history].reverse().map((ch, i) => (
               <li key={i} className="card-night p-5">
@@ -176,7 +176,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {inDecks.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.decksWithCard}</h2>
+          <h2 className="text-2xl font-extrabold text-mint">{d.common.decksWithCard}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {inDecks.map((deck) => (
               <li key={deck.slug}>
@@ -191,7 +191,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
+          <h2 className="text-2xl font-extrabold text-mint">{d.common.relatedGuides}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {guides.map((g) => (
               <li key={g.slug}>
@@ -206,7 +206,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {related.length ? (
         <section className="mt-12">
-          <h2 className="text-2xl font-extrabold text-sky">
+          <h2 className="text-2xl font-extrabold text-mint">
             {d.cards.relatedTitle}: {sagas[card.saga][locale]}
           </h2>
           <ul className="mt-4 flex flex-wrap gap-2">

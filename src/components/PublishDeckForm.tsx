@@ -29,7 +29,7 @@ type Props = {
   publishPath: string;
 };
 
-const inputCls = "mt-1 w-full rounded-lg border border-sky/60 bg-night px-3 py-2 text-pale focus:border-mint";
+const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
 
 /** Mazzo da pubblicare: hash del link (#OM1…), poi mazzo in attesa (salvato prima dell'accesso), poi mazzo attivo del builder. */
 function detectCode(): string | null {
@@ -195,7 +195,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           <button type="submit" disabled={pending} className="btn btn-mint disabled:opacity-60">
             {pending ? busyLabel : submitLabel}
           </button>
-          <Link href={builderHref} className="text-sm text-pale-muted underline underline-offset-2 hover:text-sky">
+          <Link href={builderHref} className="text-sm text-pale-muted underline underline-offset-2 hover:text-mint">
             {labels.backToBuilder}
           </Link>
         </div>
@@ -240,7 +240,7 @@ function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nam
   return (
     <aside className="card-night h-fit p-5">
       <p className="kicker text-pale-muted">{labels.deckPreview}</p>
-      <p className="mt-1 font-display text-xl font-extrabold text-sky">{deck.name || "—"}</p>
+      <p className="mt-1 font-display text-xl font-extrabold text-mint">{deck.name || "—"}</p>
       <ul className="mt-3 space-y-1 text-sm text-pale">
         {deck.legendary ? (
           <li className="rounded-lg bg-gold/40 px-2 py-1 font-display text-xs font-bold">
