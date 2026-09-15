@@ -9,6 +9,9 @@ import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { CardChip, CardChipList } from "@/components/CardChip";
 import { DiscordLogo, isDiscordUrl } from "@/components/DiscordButton";
+import { DeckCharts } from "@/components/DeckCharts";
+import { deckStats } from "@/lib/deckstats";
+import { RULES } from "@/lib/deckrules";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -91,6 +94,8 @@ export default async function DeckPage({ params }: { params: Params }) {
         <div className="mt-3">
           <CardChipList slugs={deck.cards} locale={locale} />
         </div>
+
+        <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale, { expectedTotal: RULES.deckSize })} labels={d.stats} partial />
 
         {deck.changes?.length ? (
           <>

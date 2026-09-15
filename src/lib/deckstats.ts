@@ -12,9 +12,14 @@ export type DeckStats = {
   total: number;
   known: number;
   unknown: number;
-  /** copie per costo di mana: indice 0..7, 8 = "8+" */
+  /** copie per costo di mana: indice 0..7, 8 = "8+" (totale, unità, magie) */
   curve: number[];
+  curveUnits: number[];
+  curveSpells: number[];
+  legendaryCost: number | null;
   avgCost: number | null;
+  /** copie giocabili entro il turno 3 (costo ≤3) */
+  byTurn3: number;
   /** copie con costo ≤2, 3–4, ≥5 */
   bands: { early: number; mid: number; late: number };
   units: number;
@@ -28,7 +33,8 @@ export type DeckStats = {
   bySaga: { saga: SagaId; label: string; count: number }[];
   /** parole chiave presenti (copie), dalla più frequente */
   keywords: { keyword: string; count: number }[];
-  /** carta più costosa e più economica note */
+  /** carte base (distinte) della stessa saga della Leggendaria */
+  sameSagaAsLegendary: number;
   topEnd: { name: string; mana: number } | null;
   cheapest: { name: string; mana: number } | null;
   legendary: Card | null;
@@ -36,24 +42,30 @@ export type DeckStats = {
 
 export type DeckInput = { legendary?: string | null; cards: string[] };
 
-export function deckStats(deck: DeckInput, locale: Locale): DeckStats {
-  const copies: { card: Card; n: number }[] = [];
+export function deckStats(deck: DeckInput, locale: Locale, opts: { expectedTotal?: number } = {}): DeckStats {
+  const copies: { card: Card; n: number; legendary: boolean }[] = [];
   let unknown = 0;
   let total = 0;
+  const legendary = deck.legendary ? (getCard(deck.legendary) ?? null) : null;
   if (deck.legendary) {
     total += RULES.legendarySlots;
-    const c = getCard(deck.legendary);
-    if (c) copies.push({ card: c, n: RULES.legendarySlots });
+    if (legendary) copies.push({ card: legendary, n: RULES.legendarySlots, legendary: true });
     else unknown += RULES.legendarySlots;
   }
+  let sameSaga = 0;
   for (const s of deck.cards) {
     total += RULES.copiesPerCard;
     const c = getCard(s);
-    if (c) copies.push({ card: c, n: RULES.copiesPerCard });
-    else unknown += RULES.copiesPerCard;
+    if (c) {
+      copies.push({ card: c, n: RULES.copiesPerCard, legendary: false });
+      if (legendary && c.saga === legendary.saga) sameSaga += 1;
+    } else unknown += RULES.copiesPerCard;
   }
 
   const curve = new Array(9).fill(0) as number[];
+  const curveUnits = new Array(9).fill(0) as number[];
+  const curveSpells = new Array(9).fill(0) as number[];
+  let legendaryCost: number | null = null;
   let costSum = 0;
   let costN = 0;
   let units = 0;
@@ -66,12 +78,18 @@ export function deckStats(deck: DeckInput, locale: Locale): DeckStats {
   let topEnd: DeckStats["topEnd"] = null;
   let cheapest: DeckStats["cheapest"] = null;
   const bands = { early: 0, mid: 0, late: 0 };
+  let byTurn3 = 0;
 
-  for (const { card, n } of copies) {
+  for (const { card, n, legendary: isLeg } of copies) {
     if (card.mana !== undefined) {
-      curve[Math.min(8, Math.max(0, card.mana))] += n;
+      const slot = Math.min(8, Math.max(0, card.mana));
+      curve[slot] += n;
+      if (card.type === "spell") curveSpells[slot] += n;
+      else curveUnits[slot] += n;
+      if (isLeg) legendaryCost = slot;
       costSum += card.mana * n;
       costN += n;
+      if (card.mana <= 3) byTurn3 += n;
       if (card.mana <= 2) bands.early += n;
       else if (card.mana <= 4) bands.mid += n;
       else bands.late += n;
@@ -90,13 +108,18 @@ export function deckStats(deck: DeckInput, locale: Locale): DeckStats {
     for (const k of card.keywords ?? []) kw.set(k, (kw.get(k) ?? 0) + n);
   }
 
-  const legendary = deck.legendary ? (getCard(deck.legendary) ?? null) : null;
+  const known = total - unknown;
+  const grand = Math.max(total, opts.expectedTotal ?? 0);
   return {
-    total,
-    known: total - unknown,
-    unknown,
+    total: grand,
+    known,
+    unknown: grand - known,
     curve,
+    curveUnits,
+    curveSpells,
+    legendaryCost,
     avgCost: costN ? Math.round((costSum / costN) * 10) / 10 : null,
+    byTurn3,
     bands,
     units,
     spells,
@@ -110,6 +133,7 @@ export function deckStats(deck: DeckInput, locale: Locale): DeckStats {
     keywords: [...kw.entries()]
       .map(([keyword, count]) => ({ keyword, count }))
       .sort((a, b) => b.count - a.count || a.keyword.localeCompare(b.keyword)),
+    sameSagaAsLegendary: sameSaga,
     topEnd,
     cheapest,
     legendary,

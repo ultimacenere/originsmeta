@@ -21,11 +21,13 @@ Sito fan non ufficiale su Origins TCG (Koin Games), due lingue (en/it; il france
 - Colore dominante degli accenti: menta del logo (i competitor usano viola/rosa). Font: Unbounded (display), Manrope (testo).
 - Analytics: Vercel Web Analytics + Speed Insights; niente GA4 per ora.
 - Deck builder (`/deck-builder`, `src/lib/deckrules.ts`, `src/lib/deckcode.ts`, `src/components/DeckBuilder.tsx`): regole 1 Leggendaria + 12 carte base ×2 = 25 (fonte AMA Koin); formato codice del gioco KGBLDC decifrato (vedi README); campo `key` delle carte da popolare con gli ID ufficiali man mano che vengono appresi; la regola Conquest sul conteggio delle carte diverse va confermata con il regolamento.
+- Tasti verso Steam e Discord: sempre `SteamButton`/`DiscordButton` (colori e font ufficiali, richiesta esplicita di Pierluigi). Bianchi: avorio crema (`ivory` #f4ead5), anche per il testo chiaro (`chalk`) e il logo.
+- Grafici dei mazzi: `deckStats` + `DeckCharts` (SVG inline, niente librerie); il win rate arriverà dalle API ufficiali.
 - Community (15/09/2026): accesso senza password (Discord OAuth + magic link via Supabase Auth), pubblicazione dei mazzi dal deck builder con guida obbligatoria (piano di gioco) e sezioni facoltative, voto 1–5 stelle (uno per utente, mai sul proprio mazzo), profilo `/account` con modifica/nascondi/elimina. I testi delle guide sono testo semplice (niente Markdown/HTML) per evitare XSS. Provider Discord e SMTP di produzione vanno configurati nella dashboard Supabase (vedi README).
 
 ## Struttura
 
-- `src/app/[locale]/…` pagine; il layout radice sta sotto `[locale]` (html lang per lingua). `src/app/global-not-found.tsx` gestisce i 404 fuori dalle lingue.
+- `src/app/[locale]/…` pagine; il layout radice sta sotto `[locale]` (html lang per lingua). Gruppi di rotte: `(site)` (tutte le pagine, layout con striscia calendario + main) e `(home)` (home con slider prima della striscia). `src/app/global-not-found.tsx` gestisce i 404 fuori dalle lingue.
 - `next.config.ts` reindirizza `/` alla lingua del browser.
 - `src/lib/i18n.ts` locali, `href()`, `alternatesFor()`; `src/lib/page.ts` helper `resolveLocale` e `pageMeta`.
 - Dati in `src/lib/data/*.ts`, guide in `src/lib/content/guides.ts`, media in `public/media/`.

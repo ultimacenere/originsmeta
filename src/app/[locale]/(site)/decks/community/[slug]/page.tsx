@@ -15,6 +15,8 @@ import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
 import { Avatar } from "@/components/AccountMenu";
 import { contactEmail } from "@/components/Footer";
+import { DeckCharts } from "@/components/DeckCharts";
+import { deckStats } from "@/lib/deckstats";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -168,6 +170,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </ul>
           </div>
         ) : null}
+
+        <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale)} labels={d.stats} />
 
         <div className="mt-6 flex flex-wrap gap-2">
           <Link href={builderHref} className="btn btn-ink text-xs">
