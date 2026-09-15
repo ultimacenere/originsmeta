@@ -15,6 +15,7 @@ import { officialLinks } from "@/components/Footer";
 import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
+import { EventTicker } from "@/components/EventTicker";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -42,6 +43,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
     <>
       {/* Slider a tutta larghezza con le immagini ufficiali del media kit */}
       <HeroSlider slides={slides} labels={d.home.slider} />
+      <EventTicker locale={locale} dict={d} />
+      <main id="main" className="flex-1">
 
       {/* Above the fold: titolo compatto + news del giorno + MetaShift + tier list */}
       <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
@@ -244,6 +247,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
           </Link>
         </div>
       </section>
+      </main>
     </>
   );
 }

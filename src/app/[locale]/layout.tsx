@@ -7,7 +7,6 @@ import "../globals.css";
 import { alternatesFor, getDictionary, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { EventTicker } from "@/components/EventTicker";
 
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
@@ -62,10 +61,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           {d.nav.menu}
         </a>
         <Header locale={l} dict={d} />
-        <EventTicker locale={l} dict={d} />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
+        {children}
         <Footer locale={l} dict={d} />
         <Analytics />
         <SpeedInsights />
