@@ -105,7 +105,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
             <svg viewBox="0 0 80 80" className="h-20 w-20 shrink-0" role="img" aria-label={`${labels.units} ${stats.units} · ${labels.spells} ${stats.spells}`}>
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.spells} strokeWidth={10} />
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.units} strokeWidth={10} strokeDasharray={`${(unitsPct / 100) * circ} ${circ}`} transform="rotate(-90 40 40)" strokeLinecap="butt" />
-              <circle cx={40} cy={40} r={r - 6} fill="#f4ead5" />
+              <circle cx={40} cy={40} r={r - 6} fill="#f9f4ea" />
               <text x={40} y={44} textAnchor="middle" fontSize={16} fontWeight={800} fontFamily="var(--font-display)" fill={C.spells}>
                 {stats.units + stats.spells}
               </text>
