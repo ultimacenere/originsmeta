@@ -4,6 +4,8 @@
 
 Sito fan non ufficiale su Origins TCG (Koin Games), due lingue (en/it; il francese è stato ritirato il 15/09/2026, i testi FR restano nei dati), Next.js 16 + Tailwind 4, deploy su Vercel da GitHub `ultimacenere/originsmeta`. Proprietario: Pierluigi Cella. Contatto pubblico: staff@originsmeta.com.
 
+KB di progetto (stato, decisioni, contatti, log delle sessioni): `G:\Il mio Drive\OriginsMeta\00_KB\_kb_master_originsmeta.md` (documento unico da leggere a inizio sessione; dettaglio storico in `_kb_log_storico.md` nella stessa cartella). A fine sessione aggiornare §1 (Stato) e §10 (Log). Questo file resta la guida tecnica del repo.
+
 ## Regole del progetto
 
 - Rispondere e commentare in italiano; i contenuti del sito sono in inglese e italiano e vanno sempre aggiornati insieme (`en` è il tipo di riferimento per i dizionari).
