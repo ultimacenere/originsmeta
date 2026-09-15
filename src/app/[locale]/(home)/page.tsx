@@ -34,7 +34,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const slides: Slide[] = [
     { src: "/media/hero-1920.webp", alt: "Origins TCG key art", ...sl.keyArt, href: officialLinks.demo, external: true },
     { src: "/media/banner-rapunzel.webp", alt: "Origins TCG official banner with Rapunzel", ...sl.rapunzel, href: href(locale, "/cards") },
-    { src: "/media/ls-zero-pay-to-win.webp", alt: "Official loading screen: zero pay to win", ...sl.zeroPay, href: href(locale, "/guides/origins-tcg-explained") },
+    { src: "/media/ls-zero-pay-to-win.webp", alt: "Official loading screen: zero pay to win", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
     { src: "/media/ls-real-collecting.webp", alt: "Official loading screen: real collecting", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
     { src: "/media/ls-collect-them-all.webp", alt: "Official loading screen: collect them all", ...sl.collectAll, href: href(locale, "/cards") },
   ];
