@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 /*
-  OriginsMeta — "ink & mint"
-  Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte (avorio) con cornice
-  celeste piena da 3 px (sky, il cristallo del mana delle carte del gioco; niente righette sottili).
-  Menta del logo come colore dominante degli accenti (i competitor usano tutti viola/rosa),
+  OriginsMeta — "ink & mint", versione notte (15/09/2026)
+  Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte come pannelli blu notte
+  (night), con cornici celesti piene da 3 px (sky, il cristallo del mana; niente righette sottili), titoli celesti
+  e testi grigio chiaro (pale / chalk).
+  Niente elementi bianchi né neri pieni: richiesta esplicita di Pierluigi. Menta del logo per bottoni e accenti,
   giallo citrino solo per le leggendarie e l'evento evidenziato, magenta per ciò che scotta.
-  I nomi dei token restano "felt / chalk / crimson / gold" per ruolo, non per tinta.
+  "ink" resta il testo scuro sui fondi menta/oro. I nomi dei token sono per ruolo, non per tinta.
 */
 @theme {
   --color-felt: #150c2c;
   --color-felt-deep: #0e071f;
   --color-felt-soft: #21143c;
   --color-felt-line: #3a2a60;
-  --color-ivory: #f7f1e4;
-  --color-ivory-2: #f1ead8;
-  --color-ivory-3: #e8e0cb;
+  --color-night: #182238;
+  --color-night-2: #121a2c;
+  --color-night-3: #22304b;
   --color-ink: #16102a;
   --color-ink-muted: #5e5672;
-  --color-chalk: #f3eee0;
-  --color-chalk-muted: #b3a8cf;
+  --color-pale: #c8d1dd;
+  --color-pale-muted: #8e9bb1;
+  --color-chalk: #d9dfe8;
+  --color-chalk-muted: #96a3b9;
   --color-crimson: #c81e7a;
   --color-crimson-deep: #971359;
   --color-gold: #f2d23c;
@@ -78,19 +81,19 @@
 }
 
 @layer components {
-  /* Una carta appoggiata sul tavolo: avorio con cornice celeste piena */
-  .card-ivory {
-    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
-    color: var(--color-ink);
+  /* Una carta appoggiata sul tavolo: pannello blu notte con cornice celeste, come il blocco MetaShift */
+  .card-night {
+    background: linear-gradient(180deg, rgba(49, 227, 189, 0.07) 0%, rgba(49, 227, 189, 0) 40%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+    color: var(--color-pale);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
     border: 3px solid var(--color-sky);
     position: relative;
   }
-  .card-ivory-hover {
+  .card-night-hover {
     transition: transform 160ms ease, box-shadow 160ms ease;
   }
-  .card-ivory-hover:hover {
+  .card-night-hover:hover {
     transform: translateY(-3px) rotate(-0.4deg);
     box-shadow: var(--shadow-mint);
   }
@@ -121,7 +124,7 @@
     border: 6px solid var(--color-sky);
     box-shadow: var(--shadow-lift);
     overflow: hidden;
-    background: var(--color-ivory);
+    background: var(--color-night);
   }
   .btn {
     display: inline-flex;
@@ -161,11 +164,13 @@
     color: var(--color-mint);
   }
   .btn-ink {
-    background: var(--color-ink);
-    color: var(--color-ivory);
+    background: var(--color-night-3);
+    color: var(--color-chalk);
+    border: 1px solid var(--color-sky);
   }
   .btn-ink:hover {
-    background: #2a2044;
+    background: #2c3d5e;
+    color: var(--color-sky);
   }
   .stat-pill {
     font-family: var(--font-mono);
@@ -189,8 +194,8 @@
     grid-template-columns: 44px 1fr;
     gap: 0.55rem;
     align-items: center;
-    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
-    color: var(--color-ink);
+    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+    color: var(--color-pale);
     border: 2px solid var(--color-sky);
     border-radius: 10px;
     padding: 0.35rem 0.55rem 0.35rem 0.35rem;
@@ -212,7 +217,7 @@
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 0.9rem;
-    color: var(--color-ivory);
+    color: var(--color-chalk);
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
     position: relative;
   }
@@ -280,8 +285,8 @@
     width: 44px;
     height: 44px;
     border-radius: 8px;
-    background: var(--color-ivory);
-    color: var(--color-ink);
+    background: var(--color-night-3);
+    color: var(--color-sky);
     border: 2px solid var(--color-sky);
     font-family: var(--font-display);
     font-weight: 800;
@@ -293,67 +298,74 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 400;
-    color: var(--color-ink-muted);
+    color: var(--color-pale-muted);
   }
   .date-cube.is-next {
     background: var(--color-gold);
     border-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .date-cube.is-next small {
+    color: var(--color-ink-muted);
   }
 
-  .prose-ivory {
-    color: var(--color-ink);
+  .prose-night {
+    color: var(--color-pale);
     line-height: 1.7;
   }
-  .prose-ivory h2 {
+  .prose-night h2, .prose-night h3 {
+    color: var(--color-sky);
+  }
+  .prose-night h2 {
     font-size: 1.5rem;
     margin: 1.8em 0 0.6em;
   }
-  .prose-ivory h3 {
+  .prose-night h3 {
     font-size: 1.15rem;
     margin: 1.5em 0 0.5em;
   }
-  .prose-ivory p {
+  .prose-night p {
     margin: 0 0 1em;
   }
-  .prose-ivory ul, .prose-ivory ol {
+  .prose-night ul, .prose-night ol {
     margin: 0 0 1.1em;
     padding-left: 1.4em;
   }
-  .prose-ivory li {
+  .prose-night li {
     margin-bottom: 0.35em;
   }
-  .prose-ivory a {
-    color: var(--color-crimson-deep);
+  .prose-night a {
+    color: var(--color-mint);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
-  .prose-ivory strong {
+  .prose-night strong {
     font-weight: 700;
   }
-  .prose-ivory blockquote {
-    border-left: 3px solid var(--color-mint-deep);
+  .prose-night blockquote {
+    border-left: 3px solid var(--color-mint);
     margin: 1em 0;
     padding: 0.2em 1em;
-    color: var(--color-ink-muted);
+    color: var(--color-pale-muted);
   }
-  .prose-ivory table {
+  .prose-night table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
     margin: 1em 0;
   }
-  .prose-ivory th, .prose-ivory td {
-    border-bottom: 1px solid rgba(22, 16, 42, 0.15);
+  .prose-night th, .prose-night td {
+    border-bottom: 1px solid rgba(63, 196, 232, 0.5);
     padding: 0.5em 0.6em;
     text-align: left;
     vertical-align: top;
   }
-  .prose-ivory th {
+  .prose-night th {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-ink-muted);
+    color: var(--color-pale-muted);
   }
 }
 

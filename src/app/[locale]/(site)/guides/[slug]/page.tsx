@@ -64,7 +64,7 @@ export default async function GuidePage({ params }: { params: Params }) {
         <p className="kicker text-mint">
           {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {d.common.updated} {formatDate(locale, g.updated)}
         </p>
-        <h1 className="mt-3 text-4xl font-extrabold leading-tight text-chalk sm:text-5xl">{g.title}</h1>
+        <h1 className="mt-3 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{g.title}</h1>
         <p className="mt-4 text-lg text-chalk-muted">{g.excerpt}</p>
       </header>
       {g.image ? (
@@ -72,29 +72,29 @@ export default async function GuidePage({ params }: { params: Params }) {
           <Image src={g.image} alt="" width={1600} height={900} sizes="(max-width: 768px) 92vw, 720px" className="w-full" priority />
         </div>
       ) : null}
-      <article className="card-ivory mt-8 p-6 sm:p-10">
+      <article className="card-night mt-8 p-6 sm:p-10">
         <Markdown source={g.body} />
         {g.faq?.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="guide-faq">
-            <h2 id="guide-faq" className="text-2xl font-extrabold text-ink">
+            <h2 id="guide-faq" className="text-2xl font-extrabold text-sky">
               {d.guides.faqTitle}
             </h2>
             <dl className="mt-4 space-y-4">
               {g.faq.map((f) => (
                 <div key={f.q}>
-                  <dt className="font-display text-base font-bold text-ink">{f.q}</dt>
-                  <dd className="mt-1 text-ink-muted">{f.a}</dd>
+                  <dt className="font-display text-base font-bold text-sky">{f.q}</dt>
+                  <dd className="mt-1 text-pale-muted">{f.a}</dd>
                 </div>
               ))}
             </dl>
           </section>
         ) : null}
-        <p className="mt-8 border-t border-sky pt-4 text-xs text-ink-muted">{d.common.notAffiliated}</p>
+        <p className="mt-8 border-t border-sky pt-4 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
 
       {relatedDecks.length || relatedCards.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-chalk">{d.guides.related}</h2>
+          <h2 className="text-2xl font-extrabold text-sky">{d.guides.related}</h2>
           {relatedDecks.length ? (
             <ul className="mt-4 flex flex-wrap gap-2">
               {relatedDecks.map((deck) => (

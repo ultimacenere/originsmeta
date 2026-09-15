@@ -15,7 +15,7 @@ export default async function LoginPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.account}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{a.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{a.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{a.intro}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         <LoginPanel

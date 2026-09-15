@@ -50,10 +50,10 @@ type Labels = {
 type Option = { id: string; label: string };
 
 const kindStyle: Record<string, string> = {
-  buff: "bg-mint-deep text-ivory",
-  nerf: "bg-crimson text-ivory",
+  buff: "bg-mint-deep text-chalk",
+  nerf: "bg-crimson text-chalk",
   rework: "bg-gold text-ink",
-  deck: "bg-ivory-3 text-ink",
+  deck: "bg-night-3 text-pale",
 };
 
 const MAX_KEYWORDS = 4;
@@ -197,12 +197,12 @@ export function CardExplorer({
       </p>
 
       {list.length === 0 ? (
-        <p className="card-ivory p-6 text-ink-muted">{labels.noResults}</p>
+        <p className="card-night p-6 text-pale-muted">{labels.noResults}</p>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((c) => (
             <li key={c.slug}>
-              <Link href={c.href} className={`card-ivory card-ivory-hover flex h-full gap-4 p-4 ${c.removed ? "opacity-75" : ""}`}>
+              <Link href={c.href} className={`card-night card-night-hover flex h-full gap-4 p-4 ${c.removed ? "opacity-75" : ""}`}>
                 <span className="card-chip-art !h-[88px] !w-[64px] shrink-0 text-base" style={c.image ? undefined : { background: sagaHue[c.sagaId] ?? sagaHue.other }}>
                   {c.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -213,33 +213,33 @@ export function CardExplorer({
                   {c.mana !== undefined ? <span className="mana">{c.mana}</span> : null}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="kicker block text-ink-muted">{c.sagaLabel}</span>
-                  <span className="mt-1 block truncate font-display text-lg font-bold leading-tight text-ink">
+                  <span className="kicker block text-pale-muted">{c.sagaLabel}</span>
+                  <span className="mt-1 block truncate font-display text-lg font-bold leading-tight text-sky">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>
                   <span className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                     {c.power !== undefined ? (
-                      <span className="font-mono tabular text-ink">{`${c.power} / ${c.health}`}</span>
+                      <span className="font-mono tabular text-pale">{`${c.power} / ${c.health}`}</span>
                     ) : c.type === "unit" ? (
-                      <em className="font-mono text-ink-muted">{labels.unknownStats}</em>
+                      <em className="font-mono text-pale-muted">{labels.unknownStats}</em>
                     ) : null}
-                    {c.type !== "unit" ? <span className="text-ink-muted">{c.typeLabel}</span> : null}
+                    {c.type !== "unit" ? <span className="text-pale-muted">{c.typeLabel}</span> : null}
                     {c.alignmentLabel && c.alignment ? <span className={`stat-pill text-[11px] ${alignStyle[c.alignment]}`}>{c.alignmentLabel}</span> : null}
                     {c.legendary ? (
-                      <span className="stat-pill bg-gold/40 text-ink">{labels.legendary}</span>
+                      <span className="stat-pill bg-gold/40 text-pale">{labels.legendary}</span>
                     ) : c.rarityLabel ? (
-                      <span className="text-[11px] uppercase tracking-wide text-ink-muted">{c.rarityLabel}</span>
+                      <span className="text-[11px] uppercase tracking-wide text-pale-muted">{c.rarityLabel}</span>
                     ) : null}
-                    {c.removed ? <span className="stat-pill bg-crimson/15 text-crimson-deep">{c.removedLabel}</span> : null}
+                    {c.removed ? <span className="stat-pill bg-crimson/15 text-crimson">{c.removedLabel}</span> : null}
                   </span>
                   <span className="mt-2 flex flex-wrap gap-1.5">
                     {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
-                      <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[11px] text-ink-muted">
+                      <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[11px] text-pale-muted">
                         {k}
                       </span>
                     ))}
-                    {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 py-0.5 text-[11px] text-ink-muted">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
+                    {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 py-0.5 text-[11px] text-pale-muted">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
                     {c.lastKind && c.lastKindLabel ? (
                       <span className={`stat-pill ml-auto text-[11px] font-semibold uppercase ${kindStyle[c.lastKind]}`}>{c.lastKindLabel}</span>
                     ) : null}

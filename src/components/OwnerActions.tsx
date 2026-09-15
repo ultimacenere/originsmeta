@@ -45,7 +45,7 @@ export function OwnerActions({
         <input type="hidden" name="id" value={deckId} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="status" value={status === "hidden" ? "published" : "hidden"} />
-        <button type="submit" className="btn border border-sky text-xs text-ink">
+        <button type="submit" className="btn border border-sky text-xs text-pale">
           {status === "hidden" ? labels.unhide : labels.hide}
         </button>
       </form>
@@ -57,7 +57,7 @@ export function OwnerActions({
       >
         <input type="hidden" name="id" value={deckId} />
         <input type="hidden" name="locale" value={locale} />
-        <button type="submit" className="btn border border-crimson/40 text-xs text-crimson-deep hover:bg-crimson hover:text-ivory">
+        <button type="submit" className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk">
           {labels.delete}
         </button>
       </form>

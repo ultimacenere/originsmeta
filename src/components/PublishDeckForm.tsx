@@ -29,7 +29,7 @@ type Props = {
   publishPath: string;
 };
 
-const inputCls = "mt-1 w-full rounded-lg border border-sky bg-ivory px-3 py-2 text-ink focus:border-mint-deep";
+const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
 
 /** Mazzo da pubblicare: hash del link (#OM1…), poi mazzo in attesa (salvato prima dell'accesso), poi mazzo attivo del builder. */
 function detectCode(): string | null {
@@ -107,12 +107,12 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const nameOf = (slug: string) => pool.find((c) => c.slug === slug)?.name ?? deck?.customCards.find((c) => c.slug === slug)?.name ?? slug;
   const hasCustom = Boolean(deck && [deck.legendary, ...deck.cards].some((s) => s?.startsWith("custom:")));
 
-  if (!supabaseEnabled) return <p className="card-ivory p-6 text-ink-muted">{labels.errors.disabled}</p>;
-  if (!ready || user === undefined) return <p className="card-ivory p-6 text-ink-muted" aria-busy="true">…</p>;
+  if (!supabaseEnabled) return <p className="card-night p-6 text-pale-muted">{labels.errors.disabled}</p>;
+  if (!ready || user === undefined) return <p className="card-night p-6 text-pale-muted" aria-busy="true">…</p>;
   if (!deck || errors.length) {
     return (
-      <div className="card-ivory p-6 sm:p-8">
-        <p className="text-ink">{deck ? labels.incomplete : labels.noDeck}</p>
+      <div className="card-night p-6 sm:p-8">
+        <p className="text-pale">{deck ? labels.incomplete : labels.noDeck}</p>
         <p className="mt-4">
           <Link href={builderHref} className="btn btn-ink">
             {labels.backToBuilder}
@@ -146,14 +146,14 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
 
       <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} />
 
-      <section className="card-ivory p-5 sm:p-6">
+      <section className="card-night p-5 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block sm:col-span-2">
-            <span className="kicker text-ink-muted">{labels.name}</span>
+            <span className="kicker text-pale-muted">{labels.name}</span>
             <input id="pub-name" name="name" required minLength={3} maxLength={60} defaultValue={initial?.name ?? deck.name} className={inputCls} />
           </label>
           <label className="block">
-            <span className="kicker text-ink-muted">{labels.archetype}</span>
+            <span className="kicker text-pale-muted">{labels.archetype}</span>
             <select id="pub-archetype" name="archetype" required defaultValue={initial?.archetype ?? "midrange"} className={inputCls}>
               {archetypes.map(([id, label]) => (
                 <option key={id} value={id}>
@@ -163,7 +163,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
             </select>
           </label>
           <label className="block">
-            <span className="kicker text-ink-muted">{labels.guideLang}</span>
+            <span className="kicker text-pale-muted">{labels.guideLang}</span>
             <select id="pub-lang" name="lang" defaultValue={g?.lang ?? locale} className={inputCls}>
               <option value="en">English</option>
               <option value="it">Italiano</option>
@@ -180,14 +180,14 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
         <Field id="notes" label={labels.notes} rows={2} defaultValue={g?.notes} />
 
         <label className="mt-4 block">
-          <span className="kicker text-ink-muted">{labels.video}</span>
+          <span className="kicker text-pale-muted">{labels.video}</span>
           <input id="pub-video" name="video" type="url" maxLength={300} placeholder="https://www.youtube.com/watch?v=…" defaultValue={initial?.video} className={inputCls} />
-          <span className="mt-1 block text-xs text-ink-muted">{labels.videoHint}</span>
+          <span className="mt-1 block text-xs text-pale-muted">{labels.videoHint}</span>
         </label>
 
-        <p className="mt-5 text-xs text-ink-muted">{labels.consent}</p>
+        <p className="mt-5 text-xs text-pale-muted">{labels.consent}</p>
         {errorText ? (
-          <p className="mt-3 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson-deep" role="alert">
+          <p className="mt-3 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson" role="alert">
             {errorText}
           </p>
         ) : null}
@@ -195,7 +195,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           <button type="submit" disabled={pending} className="btn btn-mint disabled:opacity-60">
             {pending ? busyLabel : submitLabel}
           </button>
-          <Link href={builderHref} className="text-sm text-ink-muted underline underline-offset-2 hover:text-ink">
+          <Link href={builderHref} className="text-sm text-pale-muted underline underline-offset-2 hover:text-sky">
             {labels.backToBuilder}
           </Link>
         </div>
@@ -225,12 +225,12 @@ function Field({
 }) {
   return (
     <label className="mt-4 block">
-      <span className="kicker text-ink-muted">
+      <span className="kicker text-pale-muted">
         {label}
         {required ? " *" : ""}
       </span>
       <textarea id={`pub-${id}`} name={id} rows={rows} required={required} minLength={minLength} maxLength={maxLength} defaultValue={defaultValue} className={inputCls} />
-      {hint ? <span className="mt-1 block text-xs text-ink-muted">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-xs text-pale-muted">{hint}</span> : null}
     </label>
   );
 }
@@ -238,10 +238,10 @@ function Field({
 function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nameOf: (s: string) => string; hasCustom: boolean; labels: Dictionary["community"] }) {
   const isCustom = (s: string) => s.startsWith("custom:");
   return (
-    <aside className="card-ivory h-fit p-5">
-      <p className="kicker text-ink-muted">{labels.deckPreview}</p>
-      <p className="mt-1 font-display text-xl font-extrabold text-ink">{deck.name || "—"}</p>
-      <ul className="mt-3 space-y-1 text-sm text-ink">
+    <aside className="card-night h-fit p-5">
+      <p className="kicker text-pale-muted">{labels.deckPreview}</p>
+      <p className="mt-1 font-display text-xl font-extrabold text-sky">{deck.name || "—"}</p>
+      <ul className="mt-3 space-y-1 text-sm text-pale">
         {deck.legendary ? (
           <li className="rounded-lg bg-gold/40 px-2 py-1 font-display text-xs font-bold">
             ★ {nameOf(deck.legendary)}
@@ -249,8 +249,8 @@ function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nam
           </li>
         ) : null}
         {deck.cards.map((s) => (
-          <li key={s} className="flex items-center gap-2 rounded-lg bg-ivory-2/70 px-2 py-1">
-            <span className="font-mono text-xs text-ink-muted">{RULES.copiesPerCard}×</span>
+          <li key={s} className="flex items-center gap-2 rounded-lg bg-night-2/70 px-2 py-1">
+            <span className="font-mono text-xs text-pale-muted">{RULES.copiesPerCard}×</span>
             <span className="font-display text-xs font-bold">
               {nameOf(s)}
               {isCustom(s) ? " *" : ""}
@@ -258,7 +258,7 @@ function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nam
           </li>
         ))}
       </ul>
-      {hasCustom ? <p className="mt-3 text-xs text-ink-muted">{labels.customMark}</p> : null}
+      {hasCustom ? <p className="mt-3 text-xs text-pale-muted">{labels.customMark}</p> : null}
     </aside>
   );
 }
