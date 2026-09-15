@@ -83,7 +83,7 @@ export function StarRating({
 
   const shown = hover || mine || Math.round(stats.avg);
   const status = !supabaseEnabled ? null : userId === undefined ? null : !userId ? (
-    <Link href={loginHref} className="underline decoration-mint-deep underline-offset-2 hover:text-mint-deep">
+    <Link href={loginHref} className="underline decoration-mint-deep underline-offset-2 hover:text-mint">
       {labels.loginToVote}
     </Link>
   ) : isOwner ? (
@@ -95,14 +95,14 @@ export function StarRating({
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky/50 bg-ivory-2/60 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky/50 bg-night-2/60 px-4 py-3">
       <div>
-        <p className="kicker text-ink-muted">{labels.rating}</p>
-        <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-ink">
+        <p className="kicker text-pale-muted">{labels.rating}</p>
+        <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-sky">
           {stats.votes ? stats.avg.toFixed(1) : "–"}
-          <span className="ml-1 text-sm font-medium text-ink-muted">/ 5</span>
+          <span className="ml-1 text-sm font-medium text-pale-muted">/ 5</span>
         </p>
-        <p className="mt-1 font-mono text-xs text-ink-muted">{stats.votes ? `${stats.votes} ${stats.votes === 1 ? labels.vote : labels.votes}` : labels.noVotes}</p>
+        <p className="mt-1 font-mono text-xs text-pale-muted">{stats.votes ? `${stats.votes} ${stats.votes === 1 ? labels.vote : labels.votes}` : labels.noVotes}</p>
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex gap-0.5" role="group" aria-label={labels.rate} onMouseLeave={() => setHover(0)}>
@@ -117,13 +117,13 @@ export function StarRating({
               disabled={!canVote}
               aria-label={`${n}/5`}
               aria-pressed={mine === n}
-              className={`text-2xl leading-none transition ${n <= shown ? "text-mint-deep" : "text-ink/25"} ${canVote ? "cursor-pointer hover:scale-110" : "cursor-default"}`}
+              className={`text-2xl leading-none transition ${n <= shown ? "text-mint" : "text-pale/25"} ${canVote ? "cursor-pointer hover:scale-110" : "cursor-default"}`}
             >
               {n <= shown ? "★" : "☆"}
             </button>
           ))}
         </div>
-        <p className={`text-xs ${msg?.kind === "err" ? "text-crimson-deep" : "text-ink-muted"}`} aria-live="polite">
+        <p className={`text-xs ${msg?.kind === "err" ? "text-crimson" : "text-pale-muted"}`} aria-live="polite">
           {msg ? msg.text : status}
         </p>
       </div>

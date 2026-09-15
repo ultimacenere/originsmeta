@@ -50,7 +50,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.cards}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.cards.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.cards.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
       <p className="mt-6 font-display text-3xl font-extrabold text-mint">

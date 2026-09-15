@@ -31,20 +31,20 @@ export function CookieBanner({ labels, privacyHref }: { labels: CookieLabels; pr
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-4" role="dialog" aria-labelledby="cookie-title" aria-live="polite">
-      <div className="card-ivory mx-auto flex max-w-4xl flex-wrap items-center gap-3 p-4 sm:gap-4 sm:p-5">
+      <div className="card-night mx-auto flex max-w-4xl flex-wrap items-center gap-3 p-4 sm:gap-4 sm:p-5">
         <div className="min-w-0 flex-1 basis-72">
-          <p id="cookie-title" className="kicker text-ink-muted">
+          <p id="cookie-title" className="kicker text-pale-muted">
             {labels.title}
           </p>
-          <p className="mt-1 text-sm text-ink">
+          <p className="mt-1 text-sm text-pale">
             {labels.text}{" "}
-            <Link href={privacyHref} className="underline underline-offset-2 hover:text-crimson-deep">
+            <Link href={privacyHref} className="underline underline-offset-2 hover:text-crimson">
               {labels.privacy}
             </Link>
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => decide("necessary")} className="btn border border-sky/80 text-xs text-ink">
+          <button type="button" onClick={() => decide("necessary")} className="btn border border-sky/80 text-xs text-pale">
             {labels.necessary}
           </button>
           <button type="button" onClick={() => decide("all")} className="btn btn-mint text-xs">

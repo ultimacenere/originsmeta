@@ -54,42 +54,42 @@ export default async function CardPage({ params }: { params: Params }) {
         </Link>
       </p>
 
-      <article className="card-ivory mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[150px_1fr_240px]">
+      <article className="card-night mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[150px_1fr_240px]">
         <div>
           <CardArt card={card} className="!h-[210px] !w-[150px] text-3xl" />
-          {!card.image ? <p className="mt-2 text-center text-[11px] text-ink-muted">{d.common.noImage}</p> : <p className="mt-2 text-center text-[11px] text-ink-muted">{d.common.imageCredit}</p>}
+          {!card.image ? <p className="mt-2 text-center text-[11px] text-pale-muted">{d.common.noImage}</p> : <p className="mt-2 text-center text-[11px] text-pale-muted">{d.common.imageCredit}</p>}
         </div>
         <div>
-          <p className="kicker text-ink-muted">
+          <p className="kicker text-pale-muted">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
-            {card.legendary ? <span className="text-gold-deep">★ </span> : null}
+          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">
+            {card.legendary ? <span className="text-gold">★ </span> : null}
             {card.name}
           </h1>
           {card.formerName ? (
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 text-sm text-pale-muted">
               {d.common.formerName}: {card.formerName}
             </p>
           ) : null}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="stat-pill bg-ink text-ivory">{typeLabel[card.type]}</span>
+            <span className="stat-pill bg-night-3 text-chalk">{typeLabel[card.type]}</span>
             {card.legendary ? <span className="stat-pill bg-gold text-ink font-bold">★ {d.common.legendary}</span> : null}
-            {card.rarity && card.rarity !== "legendary" ? <span className="stat-pill bg-ivory-3 text-ink">{rarityLabel[card.rarity]}</span> : null}
+            {card.rarity && card.rarity !== "legendary" ? <span className="stat-pill bg-night-3 text-pale">{rarityLabel[card.rarity]}</span> : null}
             {card.alignment ? <span className={`stat-pill ${alignStyle[card.alignment]}`}>{alignLabel[card.alignment]}</span> : null}
-            {card.status === "removed" ? <span className="stat-pill bg-crimson text-ivory">{d.common.removed}</span> : null}
+            {card.status === "removed" ? <span className="stat-pill bg-crimson text-chalk">{d.common.removed}</span> : null}
             {tier ? (
-              <span className="stat-pill bg-ivory-3 text-ink">
+              <span className="stat-pill bg-night-3 text-pale">
                 {d.common.tierPosition}: {tier === "unranked" ? d.common.unranked : tier}
               </span>
             ) : null}
           </div>
-          {card.ability ? <p className="mt-6 whitespace-pre-line text-lg text-ink">{card.ability[locale]}</p> : null}
-          {card.ability && locale !== "en" ? <p className="mt-2 whitespace-pre-line text-sm text-ink-muted">{card.ability.en}</p> : null}
+          {card.ability ? <p className="mt-6 whitespace-pre-line text-lg text-pale">{card.ability[locale]}</p> : null}
+          {card.ability && locale !== "en" ? <p className="mt-2 whitespace-pre-line text-sm text-pale-muted">{card.ability.en}</p> : null}
           {card.keywords?.length ? (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {card.keywords.map((k) => (
-                <span key={k} className="rounded border border-sky/60 px-2 py-0.5 text-[11px] text-ink-muted">
+                <span key={k} className="rounded border border-sky/60 px-2 py-0.5 text-[11px] text-pale-muted">
                   {k}
                 </span>
               ))}
@@ -97,8 +97,8 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {card.origin ? (
             <>
-              <h2 className="mt-8 text-xl font-extrabold text-ink">{d.cards.sagaTitle}</h2>
-              <p className="mt-2 text-ink-muted">{card.origin[locale]}</p>
+              <h2 className="mt-8 text-xl font-extrabold text-sky">{d.cards.sagaTitle}</h2>
+              <p className="mt-2 text-pale-muted">{card.origin[locale]}</p>
             </>
           ) : null}
         </div>
@@ -115,11 +115,11 @@ export default async function CardPage({ params }: { params: Params }) {
               </div>
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.power}</dt>
-                <dd className="font-display text-3xl font-extrabold text-chalk tabular">{card.power ?? "–"}</dd>
+                <dd className="font-display text-3xl font-extrabold text-sky tabular">{card.power ?? "–"}</dd>
               </div>
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.health}</dt>
-                <dd className="font-display text-3xl font-extrabold text-chalk tabular">{card.health ?? "–"}</dd>
+                <dd className="font-display text-3xl font-extrabold text-sky tabular">{card.health ?? "–"}</dd>
               </div>
             </dl>
           )}
@@ -132,7 +132,7 @@ export default async function CardPage({ params }: { params: Params }) {
         <section className="mt-10 grid gap-6 md:grid-cols-2">
           {linked.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-chalk">{d.common.related}</h2>
+              <h2 className="text-2xl font-extrabold text-sky">{d.common.related}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linked} locale={locale} />
               </div>
@@ -140,7 +140,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {linkedFrom.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-chalk">{d.common.relatedFrom}</h2>
+              <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedFrom}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linkedFrom.map((c) => c.slug)} locale={locale} />
               </div>
@@ -151,13 +151,13 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {card.history.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-chalk">{d.cards.changesTitle}</h2>
+          <h2 className="text-2xl font-extrabold text-sky">{d.cards.changesTitle}</h2>
           <ol className="mt-4 space-y-3">
             {[...card.history].reverse().map((ch, i) => (
-              <li key={i} className="card-ivory p-5">
+              <li key={i} className="card-night p-5">
                 <div className="flex flex-wrap items-center gap-3">
                   <ChangeChip kind={ch.kind} label={d.common[ch.kind === "deck" ? "rework" : ch.kind]} />
-                  <span className="font-mono text-sm text-ink-muted">
+                  <span className="font-mono text-sm text-pale-muted">
                     {d.common.patch} {ch.patch} · {formatDate(locale, patches[ch.patch].date)}
                   </span>
                   <SteamButton href={patches[ch.patch].url} variant="dark" size="sm" className="ml-auto">
@@ -167,7 +167,7 @@ export default async function CardPage({ params }: { params: Params }) {
                 <div className="mt-3">
                   <StatDelta from={ch.from} to={ch.to} />
                 </div>
-                <p className="mt-2 text-ink">{ch.note[locale]}</p>
+                <p className="mt-2 text-pale">{ch.note[locale]}</p>
               </li>
             ))}
           </ol>
@@ -176,7 +176,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {inDecks.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-chalk">{d.common.decksWithCard}</h2>
+          <h2 className="text-2xl font-extrabold text-sky">{d.common.decksWithCard}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {inDecks.map((deck) => (
               <li key={deck.slug}>
@@ -191,7 +191,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-chalk">{d.common.relatedGuides}</h2>
+          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {guides.map((g) => (
               <li key={g.slug}>
@@ -206,7 +206,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {related.length ? (
         <section className="mt-12">
-          <h2 className="text-2xl font-extrabold text-chalk">
+          <h2 className="text-2xl font-extrabold text-sky">
             {d.cards.relatedTitle}: {sagas[card.saga][locale]}
           </h2>
           <ul className="mt-4 flex flex-wrap gap-2">

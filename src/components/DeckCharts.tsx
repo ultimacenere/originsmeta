@@ -6,7 +6,7 @@ type Labels = Dictionary["stats"];
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
 
 /* Colori dei grafici: unità menta scura, magie inchiostro, Leggendaria oro (sempre con etichetta, mai solo colore) */
-const C = { units: "#17a689", spells: "#16102a", legendary: "#f2d23c", muted: "#5e5672", grid: "rgba(22,16,42,0.12)" };
+const C = { units: "#31e3bd", spells: "#3fc4e8", legendary: "#f2d23c", muted: "#8e9bb1", grid: "rgba(216,222,231,0.14)" };
 
 /**
  * Composizione del mazzo in SVG inline, senza librerie: curva di mana impilata, ciambella unità/magie,
@@ -32,20 +32,20 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
   return (
     <section className="mt-8" aria-labelledby="deck-stats-title">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h2 id="deck-stats-title" className="text-xl font-extrabold text-ink">
+        <h2 id="deck-stats-title" className="text-xl font-extrabold text-sky">
           {labels.title}
         </h2>
-        <p className="font-mono text-[11px] text-ink-muted">
+        <p className="font-mono text-[11px] text-pale-muted">
           {partial || stats.unknown ? fmt(labels.partial, { known: stats.known, total: stats.total }) : fmt(labels.full, { total: stats.total })}
         </p>
       </div>
 
       <div className="mt-3 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
         {/* Curva di mana impilata */}
-        <figure className="rounded-xl border border-sky/50 bg-ivory-2/60 p-4">
+        <figure className="rounded-xl border border-sky/50 bg-night-2/60 p-4">
           <figcaption className="flex flex-wrap items-center justify-between gap-2">
-            <span className="kicker text-ink-muted">{labels.curve}</span>
-            <span className="flex flex-wrap gap-3 font-mono text-[11px] text-ink-muted">
+            <span className="kicker text-pale-muted">{labels.curve}</span>
+            <span className="flex flex-wrap gap-3 font-mono text-[11px] text-pale-muted">
               <span className="inline-flex items-center gap-1">
                 <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: C.units }} /> {labels.units}
               </span>
@@ -101,21 +101,21 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
           <Tile label={labels.byTurn3} value={String(stats.byTurn3)} hint={labels.copies} />
           <Tile label={labels.power} value={String(stats.power)} hint={stats.avgPower !== null ? `${labels.perUnit} ${stats.avgPower}` : undefined} />
           <Tile label={labels.health} value={String(stats.health)} hint={stats.avgHealth !== null ? `${labels.perUnit} ${stats.avgHealth}` : undefined} />
-          <figure className="col-span-2 flex items-center gap-4 rounded-xl border border-sky/50 bg-ivory-2/60 p-4">
+          <figure className="col-span-2 flex items-center gap-4 rounded-xl border border-sky/50 bg-night-2/60 p-4">
             <svg viewBox="0 0 80 80" className="h-20 w-20 shrink-0" role="img" aria-label={`${labels.units} ${stats.units} · ${labels.spells} ${stats.spells}`}>
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.spells} strokeWidth={10} />
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.units} strokeWidth={10} strokeDasharray={`${(unitsPct / 100) * circ} ${circ}`} transform="rotate(-90 40 40)" strokeLinecap="butt" />
-              <circle cx={40} cy={40} r={r - 6} fill="var(--color-ivory)" />
+              <circle cx={40} cy={40} r={r - 6} fill="var(--color-night)" />
               <text x={40} y={44} textAnchor="middle" fontSize={16} fontWeight={800} fontFamily="var(--font-display)" fill={C.spells}>
                 {stats.units + stats.spells}
               </text>
             </svg>
-            <figcaption className="text-sm text-ink">
-              <p className="kicker text-ink-muted">{labels.types}</p>
+            <figcaption className="text-sm text-pale">
+              <p className="kicker text-pale-muted">{labels.types}</p>
               <p className="mt-1">
                 <strong>{stats.units}</strong> {labels.units.toLowerCase()} · <strong>{stats.spells}</strong> {labels.spells.toLowerCase()}
               </p>
-              <p className="font-mono text-[11px] text-ink-muted">
+              <p className="font-mono text-[11px] text-pale-muted">
                 {labels.early} {stats.bands.early} · {labels.mid} {stats.bands.mid} · {labels.late} {stats.bands.late}
               </p>
             </figcaption>
@@ -125,43 +125,43 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {/* Saghe */}
-        <figure className="rounded-xl border border-sky/50 bg-ivory-2/60 p-4">
-          <figcaption className="kicker text-ink-muted">{labels.sagas}</figcaption>
+        <figure className="rounded-xl border border-sky/50 bg-night-2/60 p-4">
+          <figcaption className="kicker text-pale-muted">{labels.sagas}</figcaption>
           <ul className="mt-2 space-y-1.5">
             {stats.bySaga.map((s) => (
-              <li key={s.saga} className="grid grid-cols-[1fr_auto] items-center gap-2 text-sm text-ink">
+              <li key={s.saga} className="grid grid-cols-[1fr_auto] items-center gap-2 text-sm text-pale">
                 <span className="flex items-center gap-2">
                   <span className="w-36 shrink-0 truncate sm:w-44">{s.label}</span>
-                  <span className="h-2.5 flex-1 rounded-full bg-ink/10">
+                  <span className="h-2.5 flex-1 rounded-full bg-chalk/10">
                     <span className="block h-2.5 rounded-full" style={{ width: `${(s.count / maxSaga) * 100}%`, background: C.units }} />
                   </span>
                 </span>
-                <span className="font-mono text-xs text-ink-muted">{s.count}</span>
+                <span className="font-mono text-xs text-pale-muted">{s.count}</span>
               </li>
             ))}
           </ul>
           {stats.legendary ? (
-            <p className="mt-3 text-xs text-ink-muted">{fmt(labels.synergy, { n: stats.sameSagaAsLegendary, legendary: stats.legendary.name })}</p>
+            <p className="mt-3 text-xs text-pale-muted">{fmt(labels.synergy, { n: stats.sameSagaAsLegendary, legendary: stats.legendary.name })}</p>
           ) : null}
         </figure>
 
         {/* Parole chiave + estremi + win rate (in arrivo) */}
         <div className="grid gap-4">
-          <figure className="rounded-xl border border-sky/50 bg-ivory-2/60 p-4">
-            <figcaption className="kicker text-ink-muted">{labels.keywords}</figcaption>
+          <figure className="rounded-xl border border-sky/50 bg-night-2/60 p-4">
+            <figcaption className="kicker text-pale-muted">{labels.keywords}</figcaption>
             {stats.keywords.length ? (
               <ul className="mt-2 flex flex-wrap gap-1.5">
                 {stats.keywords.map((k) => (
-                  <li key={k.keyword} className="stat-pill bg-ivory-3 text-ink">
-                    {k.keyword} <span className="text-ink-muted">×{k.count}</span>
+                  <li key={k.keyword} className="stat-pill bg-night-3 text-pale">
+                    {k.keyword} <span className="text-pale-muted">×{k.count}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-ink-muted">{labels.noKeywords}</p>
+              <p className="mt-2 text-sm text-pale-muted">{labels.noKeywords}</p>
             )}
             {stats.topEnd || stats.cheapest ? (
-              <p className="mt-3 font-mono text-[11px] text-ink-muted">
+              <p className="mt-3 font-mono text-[11px] text-pale-muted">
                 {stats.topEnd ? `${labels.topEnd}: ${stats.topEnd.name} (${stats.topEnd.mana})` : ""}
                 {stats.topEnd && stats.cheapest ? " · " : ""}
                 {stats.cheapest ? `${labels.cheapest}: ${stats.cheapest.name} (${stats.cheapest.mana})` : ""}
@@ -170,10 +170,10 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
           </figure>
           <div className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-sky/70 p-4">
             <div>
-              <p className="kicker text-ink-muted">{labels.winrate}</p>
-              <p className="mt-1 font-display text-2xl font-extrabold text-ink/40">–</p>
+              <p className="kicker text-pale-muted">{labels.winrate}</p>
+              <p className="mt-1 font-display text-2xl font-extrabold text-sky/40">–</p>
             </div>
-            <p className="max-w-[16rem] text-right text-xs text-ink-muted">{labels.winrateSoon}</p>
+            <p className="max-w-[16rem] text-right text-xs text-pale-muted">{labels.winrateSoon}</p>
           </div>
         </div>
       </div>
@@ -183,10 +183,10 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-sky/50 bg-ivory-2/60 p-4">
-      <p className="kicker text-ink-muted">{label}</p>
-      <p className="mt-1 font-display text-2xl font-extrabold leading-none text-ink tabular-nums">{value}</p>
-      {hint ? <p className="mt-1 font-mono text-[11px] text-ink-muted">{hint}</p> : null}
+    <div className="rounded-xl border border-sky/50 bg-night-2/60 p-4">
+      <p className="kicker text-pale-muted">{label}</p>
+      <p className="mt-1 font-display text-2xl font-extrabold leading-none text-sky tabular-nums">{value}</p>
+      {hint ? <p className="mt-1 font-mono text-[11px] text-pale-muted">{hint}</p> : null}
     </div>
   );
 }

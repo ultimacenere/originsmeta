@@ -18,7 +18,7 @@ export default async function PublishPage({ params }: { params: LocaleParams }) 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.decks}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.community.publishTitle}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.community.publishTitle}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{d.community.publishIntro}</p>
       <div className="mt-8">
         <PublishDeckForm

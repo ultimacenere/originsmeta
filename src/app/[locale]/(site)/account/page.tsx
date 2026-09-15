@@ -25,7 +25,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   if (!supabase) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-ivory p-6 text-ink-muted">{c.account.disabled}</p>
+        <p className="card-night p-6 text-pale-muted">{c.account.disabled}</p>
       </div>
     );
   }
@@ -39,15 +39,15 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.account}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{c.account.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{c.account.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{c.account.intro}</p>
 
-      <section className="card-ivory mt-8 flex flex-wrap items-center gap-4 p-6">
+      <section className="card-night mt-8 flex flex-wrap items-center gap-4 p-6">
         <Avatar profile={profile} name={name} size={56} />
         <div className="min-w-0 flex-1">
-          <p className="kicker text-ink-muted">{c.account.signedInAs}</p>
-          <p className="font-display text-2xl font-extrabold text-ink">{name}</p>
-          <p className="font-mono text-xs text-ink-muted">
+          <p className="kicker text-pale-muted">{c.account.signedInAs}</p>
+          <p className="font-display text-2xl font-extrabold text-sky">{name}</p>
+          <p className="font-mono text-xs text-pale-muted">
             {profile?.username ? `@${profile.username} · ` : ""}
             {user.email}
             {profile?.role === "admin" ? ` · ${c.account.role}: admin` : ""}
@@ -58,14 +58,14 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-2xl font-extrabold text-chalk">{c.account.myDecks}</h2>
+          <h2 className="text-2xl font-extrabold text-sky">{c.account.myDecks}</h2>
           <Link href={href(locale, "/deck-builder")} className="btn btn-mint text-xs">
             {d.nav.builder} →
           </Link>
         </div>
         {decks.length === 0 ? (
-          <div className="card-ivory mt-4 p-6">
-            <p className="text-ink-muted">{c.account.noDecks}</p>
+          <div className="card-night mt-4 p-6">
+            <p className="text-pale-muted">{c.account.noDecks}</p>
             <p className="mt-3">
               <Link href={href(locale, "/deck-builder")} className="btn btn-ink text-xs">
                 {c.account.noDecksCta}
@@ -79,14 +79,14 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
               const legName = leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? deck.legendary ?? "—";
               const viewHref = href(locale, `/decks/community/${deck.slug}`);
               return (
-                <li key={deck.id} className="card-ivory flex flex-col p-5">
+                <li key={deck.id} className="card-night flex flex-col p-5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={`stat-pill text-[11px] font-semibold uppercase ${deck.status === "published" ? "bg-mint-deep text-ivory" : "bg-ink/10 text-ink"}`}>{c.status[deck.status]}</span>
-                    <span className="stat-pill border border-sky/60 text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
-                    <span className="stat-pill bg-gold/50 text-ink">★ {legName}</span>
+                    <span className={`stat-pill text-[11px] font-semibold uppercase ${deck.status === "published" ? "bg-mint-deep text-chalk" : "bg-chalk/10 text-pale"}`}>{c.status[deck.status]}</span>
+                    <span className="stat-pill border border-sky/60 text-pale">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
+                    <span className="stat-pill bg-gold/50 text-pale">★ {legName}</span>
                   </div>
-                  <p className="mt-3 font-display text-xl font-extrabold leading-tight text-ink">{deck.name}</p>
-                  <p className="mt-1 font-mono text-xs text-ink-muted">
+                  <p className="mt-3 font-display text-xl font-extrabold leading-tight text-sky">{deck.name}</p>
+                  <p className="mt-1 font-mono text-xs text-pale-muted">
                     {deck.rating?.votes ? `★ ${deck.rating.avg.toFixed(1)} · ${deck.rating.votes} ${deck.rating.votes === 1 ? c.vote : c.votes}` : c.noVotes} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
                   </p>
                   <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-sky/40 pt-3">
@@ -95,21 +95,21 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
                         {c.account.view}
                       </Link>
                     ) : null}
-                    <Link href={`${viewHref}/edit`} className="btn border border-sky/80 text-xs text-ink">
+                    <Link href={`${viewHref}/edit`} className="btn border border-sky/80 text-xs text-pale">
                       {c.edit}
                     </Link>
                     <form action={setDeckStatus}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />
                       <input type="hidden" name="status" value={deck.status === "published" ? "hidden" : "published"} />
-                      <button type="submit" className="btn border border-sky/80 text-xs text-ink">
+                      <button type="submit" className="btn border border-sky/80 text-xs text-pale">
                         {deck.status === "published" ? c.hide : c.unhide}
                       </button>
                     </form>
                     <form action={deleteDeck}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />
-                      <button type="submit" className="btn border border-crimson/40 text-xs text-crimson-deep hover:bg-crimson hover:text-ivory">
+                      <button type="submit" className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk">
                         {c.delete}
                       </button>
                     </form>

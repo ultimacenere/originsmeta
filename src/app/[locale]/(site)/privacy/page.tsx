@@ -11,8 +11,8 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.footer.legal}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-chalk">{d.privacy.title}</h1>
-      <article className="card-ivory mt-8 p-6 text-lg leading-relaxed text-ink sm:p-10">
+      <h1 className="mt-2 text-4xl font-extrabold text-sky">{d.privacy.title}</h1>
+      <article className="card-night mt-8 p-6 text-lg leading-relaxed text-pale sm:p-10">
         <p>{d.privacy.body}</p>
         <p className="mt-6">{d.privacy.accounts}</p>
         <p className="mt-6">{d.privacy.cookies}</p>

@@ -48,7 +48,7 @@ export default async function EditDeckPage({ params }: { params: Params }) {
           ← {d.community.account.title}
         </Link>
       </p>
-      <h1 className="mt-4 text-4xl font-extrabold text-chalk sm:text-5xl">{d.community.editTitle}</h1>
+      <h1 className="mt-4 text-4xl font-extrabold text-sky sm:text-5xl">{d.community.editTitle}</h1>
       <p className="mt-3 text-chalk-muted">{deck.name}</p>
       <div className="mt-8">
         <PublishDeckForm

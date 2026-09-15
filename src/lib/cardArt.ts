@@ -31,6 +31,6 @@ export function initials(name: string): string {
 /** Pill di allineamento (Good / Evil / Neutral) sugli elementi avorio. */
 export const alignStyle: Record<string, string> = {
   good: "bg-mint-soft text-ink",
-  evil: "bg-crimson/15 text-crimson-deep",
-  neutral: "bg-ivory-3 text-ink-muted",
+  evil: "bg-crimson/15 text-crimson",
+  neutral: "bg-night-3 text-pale-muted",
 };
