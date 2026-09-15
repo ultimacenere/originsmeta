@@ -32,76 +32,13 @@ export type Deck = {
   changes?: { patch: string; removed?: string; added?: string; why: L10n }[];
 };
 
-const koin = { name: "Koin Games · playtest", url: "https://discord.gg/originstcg" };
 
-export const decks: Deck[] = [
-  {
-    slug: "swarm",
-    name: "Swarm",
-    archetype: "swarm",
-    creator: koin,
-    source: "playtest",
-    updated: "2026-08-14",
-    tagline: n("Go wide, buff the board", "Vai largo, potenzia il campo"),
-    text: n(
-      "Cheap bodies on every lane and effects that pump the whole board. Mowgli replaced a cheap spell in 0.6.1 because the deck ran out of gas in the mid-to-late game.",
-      "Corpi economici su ogni corsia ed effetti che pompano tutto il campo. Mowgli ha sostituito una magia economica nella 0.6.1 perché il mazzo restava a secco a metà e fine partita.",
-    ),
-    cards: ["mowgli", "piglet", "little-lamb", "card-soldier"],
-    changes: [
-      {
-        patch: "0.6.1",
-        removed: "First Aid",
-        added: "Mowgli",
-        why: n("Swarm felt thin in the mid-to-late game; a body instead of a cheap spell builds toward a stronger late-game hand.", "Swarm sembrava povero a metà e fine partita; un corpo al posto di una magia economica costruisce una mano finale più forte."),
-      },
-    ],
-  },
-  {
-    slug: "evil",
-    name: "Evil",
-    archetype: "evil",
-    creator: koin,
-    source: "playtest",
-    updated: "2026-08-27",
-    tagline: n("Villains and big bodies", "Cattivi e grossi corpi"),
-    text: n(
-      "The villains' deck. Count Orlok was pulled from the game in 0.6.1 while his ability is fixed, and Bandersnatch took his slot; the beast has since been nerfed twice.",
-      "Il mazzo dei cattivi. Il Conte Orlok è stato tolto dal gioco nella 0.6.1 mentre viene sistemata la sua abilità, e Bandersnatch ha preso il suo posto; da allora la bestia è stata indebolita due volte.",
-    ),
-    cards: ["bandersnatch", "count-orlok", "brides-of-dracula", "wicked-witch-of-the-west", "flying-monkey"],
-    changes: [
-      {
-        patch: "0.6.1",
-        removed: "Count Orlok",
-        added: "Bandersnatch",
-        why: n("Count Orlok temporarily swapped out while an issue with his ability is addressed.", "Il Conte Orlok è stato sostituito temporaneamente mentre si risolve un problema alla sua abilità."),
-      },
-    ],
-  },
-  {
-    slug: "discard",
-    name: "Discard",
-    archetype: "discard",
-    creator: koin,
-    source: "playtest",
-    updated: "2026-08-14",
-    tagline: n("Throw away, get paid", "Scarta e incassa"),
-    text: n(
-      "Built around discarding Koschei on purpose. Genie got in the way, so 0.6.1 swapped him for Mind Palace, a cheaper draw spell. The team noted the deck was underperforming.",
-      "Costruito per scartare Koschei di proposito. Genie intralciava, così la 0.6.1 lo ha sostituito con Mind Palace, una pescata più economica. Il team ha notato che il mazzo rendeva meno degli altri.",
-    ),
-    cards: ["koschei", "mind-palace", "genie"],
-    changes: [
-      {
-        patch: "0.6.1",
-        removed: "Genie",
-        added: "Mind Palace",
-        why: n("Discard was underperforming; Genie prevented reliably discarding Koschei.", "Discard rendeva meno; Genie impediva di scartare Koschei in modo affidabile."),
-      },
-    ],
-  },
-];
+/**
+ * Mazzi curati dalla redazione. I tre mazzi di esempio del playtest (Swarm, Evil, Discard, ricostruiti dalle
+ * patch notes) sono stati rimossi il 15/09/2026 su richiesta di Pierluigi: i mazzi del sito vengono dalla
+ * community (`community_decks`). L'array resta per eventuali liste ufficiali future.
+ */
+export const decks: Deck[] = [];
 
 export function getDeck(slug: string): Deck | undefined {
   return decks.find((d) => d.slug === slug);

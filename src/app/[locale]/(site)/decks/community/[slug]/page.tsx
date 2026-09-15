@@ -100,7 +100,11 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span className="stat-pill border border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
-          <span className="stat-pill bg-night-3 text-pale">{c.deckTypes[deck.deck_type as keyof typeof c.deckTypes] ?? deck.deck_type}</span>
+          {deck.deck_types.map((t) => (
+            <span key={t} className="stat-pill bg-night-3 text-pale">
+              {c.deckTypes[t as keyof typeof c.deckTypes] ?? t}
+            </span>
+          ))}
           {legendary || customLegendary ? <span className="stat-pill bg-gold/50 text-pale">★ {legendary?.name ?? customLegendary?.name}</span> : null}
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>

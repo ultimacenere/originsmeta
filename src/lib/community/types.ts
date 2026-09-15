@@ -30,7 +30,8 @@ export type CommunityDeck = {
   cards: string[];
   custom_cards: BuilderCard[];
   archetype: string;
-  deck_type: string;
+  /** uno o più tipi: ladder, competitive, fun, tournament */
+  deck_types: string[];
   video_url: string | null;
   guide: Guide;
   code_om: string | null;

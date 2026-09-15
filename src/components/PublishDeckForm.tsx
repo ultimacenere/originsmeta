@@ -15,7 +15,7 @@ import { useMounted } from "@/lib/useMounted";
 import { LoginPanel, type LoginLabels } from "./LoginPanel";
 
 export type PoolCard = { slug: string; name: string; legendary: boolean };
-export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckType: string; video: string; guide: Guide };
+export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; video: string; guide: Guide };
 
 type Props = {
   locale: string;
@@ -168,16 +168,18 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
             </select>
             {mode === "create" && suggested && !archetypeChoice ? <span className="mt-1 block text-xs text-pale-muted">{labels.archetypeSuggested}</span> : null}
           </label>
-          <label className="block">
-            <span className="kicker text-pale-muted">{labels.deckType}</span>
-            <select id="pub-deck-type" name="deck_type" defaultValue={initial?.deckType ?? "ladder"} className={inputCls}>
+          <fieldset className="block sm:col-span-2">
+            <legend className="kicker text-pale-muted">{labels.deckType}</legend>
+            <div className="mt-1 flex flex-wrap gap-2">
               {deckTypes.map((t) => (
-                <option key={t} value={t}>
+                <label key={t} className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-sky bg-night px-2.5 py-1.5 text-sm text-pale">
+                  <input id={`pub-deck-type-${t}`} type="checkbox" name="deck_types" value={t} defaultChecked={(initial?.deckTypes ?? ["ladder"]).includes(t)} className="accent-mint" />
                   {labels.deckTypes[t]}
-                </option>
+                </label>
               ))}
-            </select>
-          </label>
+            </div>
+            <span className="mt-1 block text-xs text-pale-muted">{labels.deckTypeHint}</span>
+          </fieldset>
           <label className="block">
             <span className="kicker text-pale-muted">{labels.guideLang}</span>
             <select id="pub-lang" name="lang" defaultValue={g?.lang ?? locale} className={inputCls}>

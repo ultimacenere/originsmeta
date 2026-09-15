@@ -19,7 +19,7 @@ export type ExplorerDeck = {
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
   /** tipo di mazzo e tag autore (solo mazzi della community) */
-  deckTypeLabel?: string;
+  deckTypeLabels?: string[];
   creatorBadge?: string;
 };
 
@@ -115,7 +115,11 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="flex flex-wrap items-center gap-2">
                   <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-chalk" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
                   <span className="stat-pill border border-sky text-pale">{d.archetypeLabel}</span>
-                  {d.deckTypeLabel ? <span className="stat-pill bg-night-3 text-pale text-[11px]">{d.deckTypeLabel}</span> : null}
+                  {d.deckTypeLabels?.map((t) => (
+                    <span key={t} className="stat-pill bg-night-3 text-pale text-[11px]">
+                      {t}
+                    </span>
+                  ))}
                   {d.legendary ? <span className="stat-pill bg-gold/50 text-pale">★ {d.legendary.name}</span> : null}
                   {d.rating && d.rating.votes > 0 ? (
                     <span className="stat-pill border border-mint-deep/40 font-mono text-[11px] text-mint">

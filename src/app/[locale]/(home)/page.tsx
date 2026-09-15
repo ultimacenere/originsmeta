@@ -4,7 +4,9 @@ import Link from "next/link";
 import { href, formatDate, formatDateShort } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { movers, sagas } from "@/lib/data/cards";
-import { decks, archetypeLabels } from "@/lib/data/decks";
+import { archetypeLabels } from "@/lib/data/decks";
+import { listPublishedDecks } from "@/lib/community/queries";
+import { authorName } from "@/lib/community/util";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { sortedNews, type NewsItem } from "@/lib/data/news";
@@ -31,6 +33,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const top = movers().slice(0, 5);
   const guides = getGuides(locale);
+  const communityDecks = (await listPublishedDecks(3)).slice(0, 3);
   const featured = sortedNews.slice(0, 2);
   const patchNotes = sortedNews.filter((n) => isPatchNote(n) && !featured.includes(n)).slice(0, 3);
   const board = sortedNews.filter((n) => !featured.includes(n) && !patchNotes.includes(n)).slice(0, 6);
@@ -198,24 +201,42 @@ export default async function Home({ params }: { params: LocaleParams }) {
           </ul>
         </section>
 
-        {/* Mazzi */}
+        {/* Mazzi: solo quelli pubblicati dalla community (i tre mazzi di esempio del playtest sono stati rimossi il 15/09/2026) */}
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
           <SectionHead title={d.home.decksTitle} sub={d.home.decksSub} link={{ href: href(locale, "/decks"), label: d.common.viewAll }} />
-          <ul className="grid gap-5 md:grid-cols-3">
-            {decks.map((deck) => (
-              <li key={deck.slug}>
-                <Link href={href(locale, `/decks/${deck.slug}`)} className="card-night card-night-hover flex h-full flex-col p-5">
-                  <span className="flex flex-wrap gap-2">
-                    <span className="stat-pill bg-night-3 text-chalk text-[11px] font-semibold uppercase">{d.common[deck.source]}</span>
-                    <span className="stat-pill border border-sky text-pale">{archetypeLabels[deck.archetype][locale]}</span>
-                  </span>
-                  <span className="mt-3 font-display text-2xl font-extrabold text-sky">{deck.name}</span>
-                  <span className="mt-1 text-sm text-pale-muted">{deck.tagline[locale]}</span>
-                  <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {communityDecks.length ? (
+            <ul className="grid gap-5 md:grid-cols-3">
+              {communityDecks.map((deck) => (
+                <li key={deck.slug}>
+                  <Link href={href(locale, `/decks/community/${deck.slug}`)} className="card-night card-night-hover flex h-full flex-col p-5">
+                    <span className="flex flex-wrap gap-2">
+                      <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>
+                      <span className="stat-pill border border-sky text-pale">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
+                      {deck.deck_types.map((t) => (
+                        <span key={t} className="stat-pill bg-night-3 text-pale">
+                          {d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t}
+                        </span>
+                      ))}
+                    </span>
+                    <span className="mt-3 font-display text-2xl font-extrabold text-sky">{deck.name}</span>
+                    <span className="mt-1 text-sm text-pale-muted">{deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary}</span>
+                    <span className="mt-3 text-xs text-pale-muted">
+                      {d.common.creator}: <strong className="text-pale">{authorName(deck.profile)}</strong>
+                      {deck.rating?.votes ? <span className="ml-2 font-mono text-mint">★ {deck.rating.avg.toFixed(1)}</span> : null}
+                    </span>
+                    <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="card-night flex flex-wrap items-center justify-between gap-4 p-6">
+              <p className="max-w-2xl text-pale">{d.home.decksEmpty}</p>
+              <Link href={href(locale, "/deck-builder")} className="btn btn-mint">
+                {d.home.decksCta}
+              </Link>
+            </div>
+          )}
         </section>
 
         {/* Guide */}

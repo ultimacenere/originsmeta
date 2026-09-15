@@ -20,7 +20,7 @@ const empty = (): Record<TierId, string[]> => ({ S: [], A: [], B: [], C: [], D: 
 export const tierList: { updated: string; sections: TierSection[] } = {
   updated: "2026-09-15",
   sections: [
-    { id: "decks", tiers: empty(), unranked: ["swarm", "evil", "discard"] },
+    { id: "decks", tiers: empty(), unranked: [] },
     { id: "legendaries", tiers: empty(), unranked: ["mulan", "queen-of-hearts"] },
     { id: "cards", tiers: empty(), unranked: [] },
   ],

@@ -24,7 +24,7 @@ const en: Record<GuideSlug, Guide> = {
   "origins-tcg-explained": {
     slug: "origins-tcg-explained",
     category: "game",
-    tags: { cards: ["mulan", "queen-of-hearts"], decks: ["swarm", "evil", "discard"] },
+    tags: { cards: ["mulan", "queen-of-hearts"] },
     title: "Origins TCG explained in five minutes",
     excerpt: "What the game is, how a match works, what free-to-compete means and how to play the demo today.",
     readTime: 6,
@@ -146,7 +146,6 @@ Because collector cards are cosmetic, a tier list only has to care about the car
   "steam-next-fest-2026": {
     slug: "steam-next-fest-2026",
     category: "events",
-    tags: { decks: ["swarm", "evil", "discard"] },
     title: "Origins TCG at Steam Next Fest 2026: Demo 2.0, dates and the tournament",
     excerpt: "Everything confirmed about Origins TCG at Steam Next Fest (19–26 October 2026): the Demo 2.0 update, the 20–25 October tournament with qualifiers, playoffs and finals, prizes, how to sign up and how to prepare.",
     readTime: 6,
@@ -246,7 +245,6 @@ Because collector versions are cosmetic, a tier list only has to judge the card,
   "play-the-demo": {
     slug: "play-the-demo",
     category: "game",
-    tags: { decks: ["swarm", "evil", "discard"] },
     title: "How to download and play the Origins TCG demo on Steam",
     excerpt: "The free demo in five steps: requirements, download, language, first matches, what demo players unlock, and what changes with Demo 2.0 at Steam Next Fest.",
     readTime: 5,
@@ -359,7 +357,7 @@ const it: Record<GuideSlug, Guide> = {
   "origins-tcg-explained": {
     slug: "origins-tcg-explained",
     category: "game",
-    tags: { cards: ["mulan", "queen-of-hearts"], decks: ["swarm", "evil", "discard"] },
+    tags: { cards: ["mulan", "queen-of-hearts"] },
     title: "Origins TCG spiegato in cinque minuti",
     excerpt: "Cos'è il gioco, come funziona una partita, cosa vuol dire free-to-compete e come provare la demo oggi.",
     readTime: 6,
@@ -481,7 +479,6 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
   "steam-next-fest-2026": {
     slug: "steam-next-fest-2026",
     category: "events",
-    tags: { decks: ["swarm", "evil", "discard"] },
     title: "Origins TCG allo Steam Next Fest 2026: Demo 2.0, date e torneo",
     excerpt: "Tutto ciò che è confermato su Origins TCG allo Steam Next Fest (19–26 ottobre 2026): l'aggiornamento Demo 2.0, il torneo dal 20 al 25 ottobre con qualificazioni, playoff e finali, i premi, come iscriversi e come prepararsi.",
     readTime: 6,
@@ -581,7 +578,6 @@ Siccome le versioni da collezione sono cosmetiche, una tier list deve giudicare 
   "play-the-demo": {
     slug: "play-the-demo",
     category: "game",
-    tags: { decks: ["swarm", "evil", "discard"] },
     title: "Come scaricare e provare la demo di Origins TCG su Steam",
     excerpt: "La demo gratuita in cinque passi: requisiti, download, lingua italiana, prime partite, cosa sbloccano i giocatori della demo e cosa cambia con la Demo 2.0 allo Steam Next Fest.",
     readTime: 5,

@@ -42,8 +42,8 @@ async function parseSubmission(formData: FormData) {
   if (name.length < 3) return { error: "invalidName" } as const;
   const archetype = String(formData.get("archetype") ?? "");
   if (!Object.prototype.hasOwnProperty.call(archetypeLabels, archetype)) return { error: "archetype" } as const;
-  const deckType = String(formData.get("deck_type") ?? "ladder");
-  if (!(deckTypes as readonly string[]).includes(deckType)) return { error: "deckType" } as const;
+  const chosenTypes = Array.from(new Set(formData.getAll("deck_types").map(String))).filter((t) => (deckTypes as readonly string[]).includes(t));
+  if (!chosenTypes.length) return { error: "deckType" } as const;
   const guide = parseGuide(formData, locale);
   if (!guide.ok) return { error: guide.code } as const;
   const video = cleanVideo(String(formData.get("video") ?? ""));
@@ -59,7 +59,7 @@ async function parseSubmission(formData: FormData) {
       cards: checked.deck.cards,
       custom_cards: checked.deck.customCards,
       archetype,
-      deck_type: deckType,
+      deck_types: chosenTypes,
       video_url: video.value,
       guide: guide.guide,
       code_om: encodeOmCode(state),

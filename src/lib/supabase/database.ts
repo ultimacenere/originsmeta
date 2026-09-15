@@ -25,7 +25,7 @@ export type CommunityDeckRow = {
   cards: string[];
   custom_cards: BuilderCard[];
   archetype: string;
-  deck_type: string;
+  deck_types: string[];
   video_url: string | null;
   guide: Guide;
   code_om: string | null;
@@ -34,9 +34,9 @@ export type CommunityDeckRow = {
   updated_at: string;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_type"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types"> & {
   id?: string;
-  deck_type?: string;
+  deck_types?: string[];
   status?: DeckStatus;
   video_url?: string | null;
   code_om?: string | null;

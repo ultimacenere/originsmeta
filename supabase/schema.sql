@@ -173,3 +173,9 @@ end $$;
 drop trigger if exists profiles_protect_badge on public.profiles;
 create trigger profiles_protect_badge before update on public.profiles
   for each row execute function public.protect_profile_badge();
+
+-- 15/09/2026 sera: un mazzo può avere più tipi (richiesta di Davdas); la vecchia colonna deck_type resta con il default
+alter table public.community_decks add column if not exists deck_types text[] not null default '{ladder}';
+update public.community_decks set deck_types = array[deck_type] where deck_type is not null and deck_type <> 'ladder' and deck_types = '{ladder}'::text[];
+alter table public.community_decks drop constraint if exists community_decks_deck_types_check;
+alter table public.community_decks add constraint community_decks_deck_types_check check (cardinality(deck_types) >= 1 and deck_types <@ array['ladder','competitive','fun','tournament']::text[]);

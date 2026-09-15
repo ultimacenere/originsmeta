@@ -56,7 +56,7 @@ export default async function EditDeckPage({ params }: { params: Params }) {
           mode="edit"
           pool={pool}
           archetypes={archetypes}
-          initial={{ id: deck.id, code, name: deck.name, archetype: deck.archetype, deckType: deck.deck_type, video: deck.video_url ?? "", guide: deck.guide }}
+          initial={{ id: deck.id, code, name: deck.name, archetype: deck.archetype, deckTypes: deck.deck_types, video: deck.video_url ?? "", guide: deck.guide }}
           labels={d.community}
           builderHref={`${href(locale, "/deck-builder")}#${code}`}
           publishPath={path}
