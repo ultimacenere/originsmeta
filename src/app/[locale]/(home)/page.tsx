@@ -19,8 +19,8 @@ import { EventTicker } from "@/components/EventTicker";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  const m = pageMeta(locale, "", `${dict.meta.siteName} · ${dict.meta.tagline}`, dict.meta.description, "/media/og.jpg");
-  return { ...m, title: { absolute: `${dict.meta.siteName} · ${dict.meta.tagline}` } };
+  const m = pageMeta(locale, "", dict.meta.homeTitle, dict.meta.description, "/media/og.jpg");
+  return { ...m, title: { absolute: dict.meta.homeTitle } };
 }
 
 export default async function Home({ params }: { params: LocaleParams }) {

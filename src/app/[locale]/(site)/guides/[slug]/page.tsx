@@ -8,6 +8,8 @@ import { getGuide, guideSlugs } from "@/lib/content/guides";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { siteUrl } from "@/lib/i18n";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -20,7 +22,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const g = getGuide(locale, slug);
   if (!g) return {};
-  return pageMeta(locale, `/guides/${g.slug}`, `${g.title} · ${dict.guides.title}`, g.excerpt, g.image);
+  return pageMeta(locale, `/guides/${g.slug}`, `${g.title} · ${dict.guides.title}`, g.excerpt, g.image, { type: "article", published: g.updated, modified: g.updated });
 }
 
 export default async function GuidePage({ params }: { params: Params }) {
@@ -30,8 +32,23 @@ export default async function GuidePage({ params }: { params: Params }) {
   if (!g) notFound();
   const relatedDecks = (g.tags?.decks ?? []).map((s) => getDeck(s)).filter((x) => x !== undefined);
   const relatedCards = g.tags?.cards ?? [];
+  const article = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: g.title,
+    description: g.excerpt,
+    inLanguage: locale,
+    datePublished: g.updated,
+    dateModified: g.updated,
+    image: g.image ? `${siteUrl}${g.image}` : `${siteUrl}/media/og.jpg`,
+    author: { "@type": "Organization", name: "OriginsMeta", url: siteUrl },
+    publisher: { "@id": `${siteUrl}/#organization` },
+    mainEntityOfPage: `${siteUrl}${href(locale, `/guides/${g.slug}`)}`,
+    about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
+  };
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.guides.title, path: href(locale, "/guides") }, { name: g.title, path: href(locale, `/guides/${g.slug}`) }])]} />
       <p className="text-sm">
         <Link href={href(locale, "/guides")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.guides.title}

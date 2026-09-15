@@ -8,6 +8,11 @@ import { alternatesFor, getDictionary, href, isLocale, locales, ogLocale, siteUr
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { JsonLd, organization, website } from "@/components/JsonLd";
+
+/** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
@@ -30,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const d = getDictionary(locale);
   return {
     metadataBase: new URL(siteUrl),
-    title: { default: `${d.meta.siteName} · ${d.meta.tagline}`, template: `%s · ${d.meta.siteName}` },
+    title: { default: d.meta.homeTitle, template: `%s · ${d.meta.siteName}` },
     description: d.meta.description,
     alternates: { canonical: `${siteUrl}/${locale}`, ...alternatesFor("") },
     openGraph: {
@@ -38,11 +43,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       siteName: d.meta.siteName,
       locale: ogLocale[locale],
       url: `${siteUrl}/${locale}`,
-      title: `${d.meta.siteName} · ${d.meta.tagline}`,
+      title: d.meta.homeTitle,
       description: d.meta.description,
       images: [{ url: "/media/og.jpg", width: 1200, height: 630, alt: "Origins TCG" }],
     },
-    twitter: { card: "summary_large_image", title: `${d.meta.siteName} · ${d.meta.tagline}`, description: d.meta.description, images: ["/media/og.jpg"] },
+    twitter: { card: "summary_large_image", title: d.meta.homeTitle, description: d.meta.description, images: ["/media/og.jpg"] },
     robots: { index: true, follow: true },
   };
 }
@@ -65,6 +70,8 @@ export default async function LocaleLayout({ children, params }: Props) {
         {children}
         <Footer locale={l} dict={d} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
+        <JsonLd data={[website(l, d.meta.description), organization]} />
+        <GoogleAnalytics id={GA_ID} />
         <Analytics />
         <SpeedInsights />
       </body>

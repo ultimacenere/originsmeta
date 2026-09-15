@@ -4,6 +4,7 @@ export const it: Dictionary = {
   meta: {
     siteName: "OriginsMeta",
     tagline: "Il meta, sul tavolo.",
+    homeTitle: "Origins TCG: tier list, mazzi, carte e news in italiano · OriginsMeta",
     description:
       "Sito non ufficiale su Origins TCG: news, tier list, guide, database carte, mazzi e calendario tornei. In italiano e inglese.",
   },
@@ -143,7 +144,7 @@ export const it: Dictionary = {
     },
   },
   cards: {
-    title: "Database carte",
+    title: "Database carte di Origins TCG",
     intro: "Tutte le carte citate nelle patch notes ufficiali del playtest, con statistiche attuali e cosa è cambiato. Il set completo arriva con l'early access; fino ad allora questa è la lista pubblica più completa.",
     countLabel: "carte tracciate",
     legendNote: "Le carte Leggendarie guidano il mazzo. Mulan e la Regina di Cuori sono confermate dalle patch notes; le altre verranno aggiunte man mano che vengono rivelate.",
@@ -153,7 +154,7 @@ export const it: Dictionary = {
     relatedTitle: "Stessa saga",
   },
   decks: {
-    title: "Database mazzi",
+    title: "Database mazzi di Origins TCG",
     intro: "Ogni mazzo ha i tag Leggendaria, archetipo e creator ed è cercabile per carta. Oggi: i dieci mazzi del playtest documentati dalle patch notes. Dopo lo Steam Next Fest: le liste della community con i video dei creator.",
     conquestTitle: "Il formato Conquest, spiegato",
     conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026) e di nuovo al torneo del Next Fest: si registrano più mazzi con Leggendarie diverse e almeno nove carte di differenza tra loro, e prima della partita si banna un mazzo dell'avversario.",
@@ -167,7 +168,7 @@ export const it: Dictionary = {
     otherDecks: "Altri mazzi",
   },
   tier: {
-    title: "Tier list",
+    title: "Tier list di Origins TCG",
     intro: "Tre liste, un metodo: prima i mazzi, poi le Leggendarie, poi le carte base. Costruite sui risultati dei tornei e sulle liste in cima alla ladder, mai sulle sensazioni.",
     statusKicker: "Stato",
     statusText: "Prime liste classificate dopo lo Steam Next Fest (19–26 ottobre 2026), dal torneo e dalle liste della community. Fino ad allora ogni voce sta in “non ancora classificato” e il tracker delle patch qui sotto mostra cosa hanno fatto i bilanciamenti.",
@@ -194,7 +195,7 @@ export const it: Dictionary = {
     ctaText: "Vuoi aiutare a costruire la prima lista? Vieni nel Discord ufficiale o scrivici.",
   },
   guides: {
-    title: "Guide",
+    title: "Guide a Origins TCG",
     intro: "Brevi, precise, datate. Guide ai mazzi, scalate in classificata, archetipi, interviste e resoconti degli eventi. Pubblichiamo solo ciò che possiamo verificare sui canali ufficiali o al tavolo.",
     readTime: "min di lettura",
     categories: {
@@ -209,7 +210,7 @@ export const it: Dictionary = {
     related: "Correlati",
   },
   events: {
-    title: "Tornei ed Eventi",
+    title: "Tornei ed eventi di Origins TCG",
     intro: "Eventi ufficiali e della community, con formati, premi e link per iscriversi. Organizzatori: mandateci il vostro evento e lo aggiungiamo.",
     submitCta: "Segnala un evento",
     officialBadge: "Ufficiale",
@@ -217,7 +218,7 @@ export const it: Dictionary = {
     calendarTitle: "Calendario",
   },
   news: {
-    title: "News",
+    title: "News e patch notes di Origins TCG",
     intro: "Ogni annuncio ufficiale, riassunto e datato, con il link alla fonte e le carte che tocca.",
   },
   about: {
@@ -237,11 +238,11 @@ export const it: Dictionary = {
     accounts:
       "Se crei un account (accesso con Discord o link via email), conserviamo su Supabase (server in Irlanda, UE) email, nome utente, avatar e ID Discord, oltre ai mazzi che pubblichi e ai voti che dai. Mazzi e voti sono pubblici con il tuo nome utente; l'email no. Un cookie di sessione ti tiene connesso. Scrivi a staff@originsmeta.com per cancellare l'account e tutto ciò che vi è collegato.",
     cookies:
-      "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Vercel Web Analytics misura le visite senza cookie e senza identificarti. I video nelle pagine dei mazzi della community sono incorporati tramite youtube-nocookie.com, la modalità a privacy potenziata di YouTube, che non imposta nulla finché non premi play. Nessun cookie pubblicitario o di profilazione, nessun tracciante di terze parti. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
+      "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Vercel Web Analytics misura le visite senza cookie e senza identificarti. I video nelle pagine dei mazzi della community sono incorporati tramite youtube-nocookie.com, la modalità a privacy potenziata di YouTube, che non imposta nulla finché non premi play. Se scegli “Accetta tutto” parte anche Google Analytics 4 (Google Ireland Ltd): imposta cookie che iniziano con _ga per un massimo di 2 anni per contare visite e pagine, con anonimizzazione dell'IP e senza funzioni pubblicitarie; Google può trattare questi dati negli Stati Uniti in base alle clausole contrattuali standard. Con “Solo necessari” non viene caricato nulla di Google. Nessun cookie pubblicitario o di profilazione, nessun altro tracciante di terze parti. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
   },
   cookies: {
     title: "Cookie",
-    text: "OriginsMeta usa solo cookie tecnici (la sessione del tuo account) e statistiche aggregate senza cookie. Niente pubblicità, niente profilazione. Se un giorno aggiungeremo strumenti facoltativi, partiranno solo con il tuo consenso.",
+    text: "OriginsMeta usa cookie tecnici (la sessione del tuo account) e, solo se accetti, Google Analytics per statistiche anonime sulle visite. Niente pubblicità, niente profilazione.",
     accept: "Accetta tutto",
     necessary: "Solo necessari",
     privacy: "Informativa privacy",
@@ -256,7 +257,7 @@ export const it: Dictionary = {
     privacy: "Privacy",
   },
   builder: {
-    title: "Deck builder",
+    title: "Deck builder di Origins TCG",
     intro: "Costruisci un mazzo legale di Origins: una Leggendaria più dodici carte diverse, ognuna giocata in due copie (25 carte). Salvalo nel browser, condividilo con un link, esportalo come testo o come codice del gioco e controlla tre mazzi insieme per il formato Conquest dei tornei.",
     rulesTitle: "Regole del mazzo",
     rules: ["1 carta Leggendaria guida il mazzo.", "12 carte base diverse; la seconda copia di ciascuna la aggiunge il gioco.", "25 carte in gioco: 1 + 12 × 2."],

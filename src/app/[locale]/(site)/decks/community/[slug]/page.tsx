@@ -17,6 +17,7 @@ import { Avatar } from "@/components/AccountMenu";
 import { contactEmail } from "@/components/Footer";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -58,8 +59,23 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? ""}`;
   const sections = guideSections.filter((k) => deck.guide[k]);
 
+  const article: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: deck.name,
+    description: deck.guide.summary.slice(0, 200),
+    inLanguage: deck.guide.lang,
+    datePublished: deck.created_at,
+    dateModified: deck.updated_at,
+    author: { "@type": "Person", name: author },
+    publisher: { "@id": `${siteUrl}/#organization` },
+    mainEntityOfPage: pageUrl,
+    about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
+  };
+  if (deck.rating?.votes) article.aggregateRating = { "@type": "AggregateRating", ratingValue: deck.rating.avg, ratingCount: deck.rating.votes, bestRating: 5, worstRating: 1 };
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.decks.title, path: href(locale, "/decks") }, { name: deck.name, path }])]} />
       <p className="text-sm">
         <Link href={href(locale, "/decks")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.decks.title}

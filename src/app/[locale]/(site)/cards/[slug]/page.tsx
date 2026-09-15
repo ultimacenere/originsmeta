@@ -10,6 +10,7 @@ import { getGuides } from "@/lib/content/guides";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardArt } from "@/components/CardChip";
 import { SteamButton } from "@/components/SteamButton";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -40,6 +41,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <JsonLd data={breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.cards.title, path: href(locale, "/cards") }, { name: card.name, path: href(locale, `/cards/${card.slug}`) }])} />
       <p className="text-sm">
         <Link href={href(locale, "/cards")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.cards.title}

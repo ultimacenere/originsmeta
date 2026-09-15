@@ -2,6 +2,7 @@ export const en = {
   meta: {
     siteName: "OriginsMeta",
     tagline: "The meta, on the table.",
+    homeTitle: "Origins TCG tier list, decks, cards and news · OriginsMeta",
     description:
       "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English and Italian.",
   },
@@ -141,7 +142,7 @@ export const en = {
     },
   },
   cards: {
-    title: "Card database",
+    title: "Origins TCG card database",
     intro: "Every card named in the official playtest patch notes, with current stats and what changed. The full set arrives with early access; until then this is the most complete public list.",
     countLabel: "cards tracked",
     legendNote: "Legendary cards lead a deck. Mulan and the Queen of Hearts are confirmed by the patch notes; more will be added as they are revealed.",
@@ -151,7 +152,7 @@ export const en = {
     relatedTitle: "Same saga",
   },
   decks: {
-    title: "Deck database",
+    title: "Origins TCG deck database",
     intro: "Every deck is tagged by Legendary, archetype and creator, and searchable by card. Today: the ten playtest decks documented by the patch notes. After Steam Next Fest: community lists with creator videos.",
     conquestTitle: "Conquest format, explained",
     conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026) and again at the Next Fest tournament: you submit several decks with different Legendary cards and at least nine cards of difference between them, and you ban one of your opponent's decks before the match.",
@@ -165,7 +166,7 @@ export const en = {
     otherDecks: "Other decks",
   },
   tier: {
-    title: "Tier list",
+    title: "Origins TCG tier list",
     intro: "Three lists, one method: decks first, then Legendaries, then base cards. Built on tournament results and top-ladder lists, never on vibes.",
     statusKicker: "Status",
     statusText: "First ranked lists after Steam Next Fest (19–26 October 2026), from the tournament and the community decklists. Until then every entry sits in “not ranked yet” and the patch tracker below shows what the balance changes did.",
@@ -192,7 +193,7 @@ export const en = {
     ctaText: "Want to help build the first list? Come to the official Discord or write to us.",
   },
   guides: {
-    title: "Guides",
+    title: "Origins TCG guides",
     intro: "Short, accurate, dated. Deck guides, rank climbs, archetypes, interviews and event reports. We only publish what we can verify on the official channels or at the table.",
     readTime: "min read",
     categories: {
@@ -207,7 +208,7 @@ export const en = {
     related: "Related",
   },
   events: {
-    title: "Tournaments & Events",
+    title: "Origins TCG tournaments & events",
     intro: "Official and community events, with formats, prizes and sign-up links. Organizers: send us your event and we add it.",
     submitCta: "Submit an event",
     officialBadge: "Official",
@@ -215,7 +216,7 @@ export const en = {
     calendarTitle: "Calendar",
   },
   news: {
-    title: "News",
+    title: "Origins TCG news and patch notes",
     intro: "Every official announcement, summarized and dated, with a link to the source and the cards it touches.",
   },
   about: {
@@ -235,11 +236,11 @@ export const en = {
     accounts:
       "If you create an account (Discord sign-in or email link), we store on Supabase (servers in Ireland, EU) your email, username, avatar and Discord ID, plus the decks you publish and the ratings you give. Decks and ratings are public under your username; your email is not. A session cookie keeps you signed in. Write to staff@originsmeta.com to delete your account and everything attached to it.",
     cookies:
-      "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. Vercel Web Analytics measures visits without cookies and without identifying you. Videos on community deck pages are embedded through youtube-nocookie.com, YouTube's privacy-enhanced mode, which sets nothing until you press play. No advertising or profiling cookies, no third-party trackers. You can change your choice at any time from “Cookie preferences” in the footer.",
+      "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. Vercel Web Analytics measures visits without cookies and without identifying you. Videos on community deck pages are embedded through youtube-nocookie.com, YouTube's privacy-enhanced mode, which sets nothing until you press play. If you choose “Accept all”, Google Analytics 4 (Google Ireland Ltd) also runs: it sets cookies starting with _ga for up to 2 years to count visits and pages, with IP anonymization and no advertising features; Google may process this data in the United States under its standard contractual clauses. With “Only necessary” nothing from Google loads. No advertising or profiling cookies, no other third-party trackers. You can change your choice at any time from “Cookie preferences” in the footer.",
   },
   cookies: {
     title: "Cookies",
-    text: "OriginsMeta uses only technical cookies (your sign-in session) and cookieless, aggregated statistics. No advertising, no profiling. If we ever add optional tools, they will load only with your consent.",
+    text: "OriginsMeta uses technical cookies (your sign-in session) and, only if you accept, Google Analytics for anonymous visit statistics. No advertising, no profiling.",
     accept: "Accept all",
     necessary: "Only necessary",
     privacy: "Privacy policy",
@@ -254,7 +255,7 @@ export const en = {
     privacy: "Privacy",
   },
   builder: {
-    title: "Deck builder",
+    title: "Origins TCG deck builder",
     intro: "Build a legal Origins deck: one Legendary plus twelve different cards, each played as two copies (25 cards). Save it in your browser, share it with a link, export it as text or as a game code, and check three decks at once for the Conquest tournament format.",
     rulesTitle: "Deck rules",
     rules: ["1 Legendary card leads the deck.", "12 different base cards; the game adds the second copy of each automatically.", "25 cards in play: 1 + 12 × 2."],

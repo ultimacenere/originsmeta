@@ -12,6 +12,7 @@ import { DiscordLogo, isDiscordUrl } from "@/components/DiscordButton";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
 import { RULES } from "@/lib/deckrules";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -39,6 +40,7 @@ export default async function DeckPage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <JsonLd data={breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.decks.title, path: href(locale, "/decks") }, { name: deck.name, path: href(locale, `/decks/${deck.slug}`) }])} />
       <p className="text-sm">
         <Link href={href(locale, "/decks")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.decks.title}
