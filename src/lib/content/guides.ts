@@ -17,7 +17,7 @@ export type Guide = {
   body: string; // markdown
 };
 
-export const guideSlugs = ["steam-next-fest-2026", "is-origins-tcg-pay-to-win", "play-the-demo", "origins-tcg-explained", "roadmap-and-dates", "collector-economy"] as const;
+export const guideSlugs = ["steam-next-fest-2026", "is-origins-tcg-pay-to-win", "play-the-demo", "origins-tcg-kickstarter", "origins-tcg-explained", "roadmap-and-dates", "collector-economy"] as const;
 export type GuideSlug = (typeof guideSlugs)[number];
 
 const en: Record<GuideSlug, Guide> = {
@@ -293,6 +293,66 @@ At Steam Next Fest (19–26 October 2026) the demo gets its big update, tested i
 Sources: the Origins TCG and Origins TCG Demo pages on Steam and the official Steam posts of 16 July and 4 August 2026.
 `,
   },
+  "origins-tcg-kickstarter": {
+    slug: "origins-tcg-kickstarter",
+    category: "economy",
+    title: "Origins TCG Kickstarter: pre-registration, Alpha Edition and what we know",
+    excerpt: "The campaign date is not out yet, but the official pre-registration is open: 15% off at launch for a refundable 1 dollar deposit, and Alpha Edition boxes and cases sold only in preorder. Everything confirmed so far, and what to do now.",
+    readTime: 4,
+    updated: "2026-09-15",
+    image: "/media/ls-collector-pack.webp",
+    faq: [
+      { q: "When does the Origins TCG Kickstarter start?", a: "Koin Games has not announced the date. A Kickstarter AMA was held on the official Discord on 10 September 2026 and the pre-registration page is live; we update this guide as soon as a date is published." },
+      { q: "What does the 1 dollar deposit give you?", a: "VIP status with 15% off at launch. The official page states the deposit is fully refundable before launch." },
+      { q: "What is the Alpha Edition?", a: "Origins Myths & Legends Alpha Edition: collector packs of 5 cards with at least one Rare or better guaranteed, booster boxes of 24 packs and cases of 6 boxes. Boxes and cases are preorder-only and the print run will not be repeated." },
+      { q: "Do I need to back the Kickstarter to compete?", a: "No. Origins is free-to-compete: ranked play needs no purchase, and the Steam demo is free. The Kickstarter is about collecting, not power." },
+      { q: "Where are the cards traded?", a: "On the Steam Community Market and its connected marketplaces, according to the official page. Mobile pack opening is planned for 2027." },
+    ],
+    body: `## What has been announced
+
+Koin Games runs an official **Kickstarter Early Access** page at founder.origins-tcg.com. On **10 September 2026** the team answered questions about the campaign in an AMA on the official Discord. The campaign date itself has not been published: the page only collects pre-registrations.
+
+## Pre-registration: 15% off for 1 dollar
+
+- Becoming a **VIP** with a **1 dollar deposit** unlocks **15% off at launch**.
+- The deposit is **fully refundable before launch**, as stated twice on the official page.
+- Pre-registration does not commit you to a pledge: it only reserves the early-bird price.
+
+## The Alpha Edition
+
+The product line is called **Origins Myths & Legends Alpha Edition**:
+
+| Product | Contents |
+| --- | --- |
+| Collector booster pack | 5 collectible cards, at least one Rare or better guaranteed |
+| Booster box | 24 collector packs |
+| Booster case | 6 booster boxes |
+
+For the Alpha Edition, **boxes and cases are preorder only**: once that print run is finished, no additional Alpha boxes or cases will be produced. That is the same logic as a first-edition print run in physical card games, applied to a digital collection.
+
+## Trading and ownership
+
+Cards can be bought, sold and traded on the **Steam Community Market** and its connected marketplaces. Koin moved to the Steam marketplace earlier this year instead of an independent on-chain system. Mobile pack opening is planned for **2027**.
+
+## Free-to-compete stays free
+
+Backing the Kickstarter buys collectibles, not strength: ranked play in Origins needs no purchase and the demo on Steam is free. See [Is Origins TCG pay to win?](/guides/is-origins-tcg-pay-to-win) for how the competitive side and the collector side stay separate.
+
+## Timeline
+
+- 15 July 2026: free demo on Steam.
+- 19–26 October 2026: Demo 2.0 at Steam Next Fest, with the Crimson Cup tournament.
+- Q4 2026: full release on Steam.
+- 2027: mobile.
+
+## What to do now
+
+1. Wishlist the game on Steam and play the demo.
+2. If you want the launch discount, pre-register with the refundable deposit.
+3. Follow the official Discord for the campaign date: we will publish it here and in the news the same day.
+
+Sources: official pre-registration page (founder.origins-tcg.com), Steam page, Kickstarter AMA on the official Discord (10 September 2026, reported by World of Origins).`,
+  },
 };
 
 const it: Record<GuideSlug, Guide> = {
@@ -567,6 +627,66 @@ Allo Steam Next Fest (19–26 ottobre 2026) la demo riceve il grande aggiornamen
 
 Fonti: le pagine Steam di Origins TCG e della demo e i post ufficiali su Steam del 16 luglio e del 4 agosto 2026.
 `,
+  },
+  "origins-tcg-kickstarter": {
+    slug: "origins-tcg-kickstarter",
+    category: "economy",
+    title: "Kickstarter di Origins TCG: pre-registrazione, Alpha Edition e cosa sappiamo",
+    excerpt: "La data della campagna non c'è ancora, ma la pre-registrazione ufficiale è aperta: 15% di sconto al lancio con un deposito rimborsabile di 1 dollaro, box e case Alpha Edition solo in preordine. Tutto quello che è confermato e cosa fare adesso.",
+    readTime: 4,
+    updated: "2026-09-15",
+    image: "/media/ls-collector-pack.webp",
+    faq: [
+      { q: "Quando parte il Kickstarter di Origins TCG?", a: "Koin Games non ha annunciato la data. Il 10 settembre 2026 si è tenuta un'AMA sul Kickstarter nel Discord ufficiale e la pagina di pre-registrazione è attiva; aggiorniamo questa guida appena esce una data." },
+      { q: "Cosa dà il deposito da 1 dollaro?", a: "Lo stato VIP con il 15% di sconto al lancio. La pagina ufficiale dichiara che il deposito è interamente rimborsabile prima del lancio." },
+      { q: "Cos'è l'Alpha Edition?", a: "Origins Myths & Legends Alpha Edition: pacchetti collector da 5 carte con almeno una Rara o superiore garantita, box da 24 pacchetti e case da 6 box. Box e case sono solo in preordine e la tiratura non verrà ripetuta." },
+      { q: "Devo sostenere il Kickstarter per competere?", a: "No. Origins è free-to-compete: la classificata non richiede acquisti e la demo su Steam è gratuita. Il Kickstarter riguarda il collezionismo, non la forza in partita." },
+      { q: "Dove si scambiano le carte?", a: "Sul Mercato della Comunità di Steam e sui marketplace collegati, secondo la pagina ufficiale. L'apertura dei pacchetti su mobile è prevista per il 2027." },
+    ],
+    body: `## Cosa è stato annunciato
+
+Koin Games ha una pagina ufficiale di **Kickstarter Early Access** su founder.origins-tcg.com. Il **10 settembre 2026** il team ha risposto alle domande sulla campagna in un'AMA nel Discord ufficiale. La data della campagna non è stata pubblicata: la pagina raccoglie solo le pre-registrazioni.
+
+## Pre-registrazione: 15% di sconto per 1 dollaro
+
+- Diventare **VIP** con un **deposito di 1 dollaro** sblocca il **15% di sconto al lancio**.
+- Il deposito è **interamente rimborsabile prima del lancio**, come dichiara due volte la pagina ufficiale.
+- La pre-registrazione non impegna a sostenere la campagna: riserva solo il prezzo early-bird.
+
+## L'Alpha Edition
+
+La linea si chiama **Origins Myths & Legends Alpha Edition**:
+
+| Prodotto | Contenuto |
+| --- | --- |
+| Pacchetto collector | 5 carte collezionabili, almeno una Rara o superiore garantita |
+| Booster box | 24 pacchetti collector |
+| Case | 6 booster box |
+
+Per l'Alpha Edition **box e case sono solo in preordine**: finita quella tiratura, non verranno prodotti altri box o case Alpha. È la logica della prima edizione dei giochi di carte fisici, applicata a una collezione digitale.
+
+## Scambi e proprietà
+
+Le carte si comprano, vendono e scambiano sul **Mercato della Comunità di Steam** e sui marketplace collegati. Koin è passata al marketplace di Steam a inizio anno al posto di un sistema on-chain indipendente. L'apertura dei pacchetti su mobile è prevista per il **2027**.
+
+## Il free-to-compete resta gratuito
+
+Sostenere il Kickstarter compra collezionabili, non forza in partita: la classificata di Origins non richiede acquisti e la demo su Steam è gratuita. Vedi [Origins TCG è pay to win?](/guides/is-origins-tcg-pay-to-win) per come il lato competitivo e quello collezionistico restano separati.
+
+## Le date
+
+- 15 luglio 2026: demo gratuita su Steam.
+- 19–26 ottobre 2026: Demo 2.0 allo Steam Next Fest, con il torneo Crimson Cup.
+- Q4 2026: uscita completa su Steam.
+- 2027: mobile.
+
+## Cosa fare adesso
+
+1. Metti il gioco in lista dei desideri su Steam e prova la demo.
+2. Se vuoi lo sconto al lancio, pre-registrati con il deposito rimborsabile.
+3. Segui il Discord ufficiale per la data della campagna: la pubblicheremo qui e nelle news lo stesso giorno.
+
+Fonti: pagina ufficiale di pre-registrazione (founder.origins-tcg.com), pagina Steam, AMA sul Kickstarter nel Discord ufficiale (10 settembre 2026, riportata da World of Origins).`,
   },
 };
 
