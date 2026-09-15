@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { cards, lastChange, sagas, type SagaId } from "@/lib/data/cards";
@@ -23,6 +24,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       legendary: Boolean(c.legendary),
       sagaId: c.saga,
       sagaLabel: sagas[c.saga][locale],
+      image: c.image,
       mana: c.mana,
       power: c.power,
       health: c.health,
@@ -42,10 +44,11 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.cards.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
-      <p className="mt-6 font-display text-3xl font-extrabold text-gold">
+      <p className="mt-6 font-display text-3xl font-extrabold text-mint">
         {cards.length} <span className="text-base font-bold text-chalk-muted">{d.cards.countLabel}</span>
       </p>
       <div className="mt-8">
+        <Suspense fallback={null}>
         <CardExplorer
           cards={list}
           sagas={sagaOptions}
@@ -65,8 +68,10 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             unknownStats: d.common.unknownStats,
           }}
         />
+        </Suspense>
       </div>
       <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
+      <p className="mt-2 text-xs text-chalk-muted/70">{d.common.imageCredit}</p>
     </div>
   );
 }

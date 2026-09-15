@@ -1,6 +1,6 @@
 import type { Locale } from "../i18n";
 
-type L10n = Record<Locale, string>;
+type L10n = Record<Locale, string> & { fr?: string };
 
 export type Event = {
   slug: string;

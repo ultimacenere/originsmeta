@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
 import { locales, siteUrl, href } from "@/lib/i18n";
 import { cards } from "@/lib/data/cards";
+import { decks } from "@/lib/data/decks";
 import { guideSlugs } from "@/lib/content/guides";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = ["", "/cards", "/decks", "/tier-list", "/guides", "/tournaments", "/news", "/about", "/privacy"];
+  const staticPaths = ["", "/news", "/tier-list", "/guides", "/cards", "/decks", "/tournaments", "/about", "/privacy"];
   const paths = [
     ...staticPaths,
     ...cards.map((c) => `/cards/${c.slug}`),
+    ...decks.map((d) => `/decks/${d.slug}`),
     ...guideSlugs.map((s) => `/guides/${s}`),
   ];
   const now = new Date();

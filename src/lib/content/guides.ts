@@ -1,7 +1,12 @@
 import type { Locale } from "../i18n";
 
+export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
+
 export type Guide = {
   slug: string;
+  category: GuideCategory;
+  /** collegamenti incrociati: slug di mazzi e carte trattati nella guida */
+  tags?: { decks?: string[]; cards?: string[] };
   title: string;
   excerpt: string;
   readTime: number;
@@ -16,6 +21,8 @@ export type GuideSlug = (typeof guideSlugs)[number];
 const en: Record<GuideSlug, Guide> = {
   "origins-tcg-explained": {
     slug: "origins-tcg-explained",
+    category: "game",
+    tags: { cards: ["mulan", "queen-of-hearts"], decks: ["swarm", "evil", "discard"] },
     title: "Origins TCG explained in five minutes",
     excerpt: "What the game is, how a match works, what free-to-compete means and how to play the demo today.",
     readTime: 6,
@@ -53,6 +60,7 @@ Early access on Steam is listed for Q4 2026, with a much larger demo shown at St
   },
   "roadmap-and-dates": {
     slug: "roadmap-and-dates",
+    category: "events",
     title: "Roadmap and dates: from the demo to early access",
     excerpt: "Every confirmed date, from the first Steam post to the Next Fest tournament, plus what is announced for 2027.",
     readTime: 4,
@@ -98,6 +106,7 @@ Dates come from the official Steam posts and the studio's Discord. We update thi
   },
   "collector-economy": {
     slug: "collector-economy",
+    category: "economy",
     title: "Two ways to collect: how the Origins economy works",
     excerpt: "Competitive cards are free. Collector cards are limited, graded and tradeable on Steam. Here is what is confirmed and what is not.",
     readTime: 5,
@@ -137,6 +146,8 @@ Because collector cards are cosmetic, a tier list only has to care about the car
 const it: Record<GuideSlug, Guide> = {
   "origins-tcg-explained": {
     slug: "origins-tcg-explained",
+    category: "game",
+    tags: { cards: ["mulan", "queen-of-hearts"], decks: ["swarm", "evil", "discard"] },
     title: "Origins TCG spiegato in cinque minuti",
     excerpt: "Cos'è il gioco, come funziona una partita, cosa vuol dire free-to-compete e come provare la demo oggi.",
     readTime: 6,
@@ -174,6 +185,7 @@ L'early access su Steam è indicato per il quarto trimestre 2026, con una demo m
   },
   "roadmap-and-dates": {
     slug: "roadmap-and-dates",
+    category: "events",
     title: "Roadmap e date: dalla demo all'early access",
     excerpt: "Tutte le date confermate, dal primo post su Steam al torneo del Next Fest, più ciò che è annunciato per il 2027.",
     readTime: 4,
@@ -219,6 +231,7 @@ Le date vengono dai post ufficiali su Steam e dal Discord dello studio. Aggiorni
   },
   "collector-economy": {
     slug: "collector-economy",
+    category: "economy",
     title: "Due modi di collezionare: come funziona l'economia di Origins",
     excerpt: "Le carte competitive sono gratis. Quelle da collezione sono limitate, valutate e scambiabili su Steam. Ecco cosa è confermato e cosa no.",
     readTime: 5,
@@ -255,128 +268,7 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
   },
 };
 
-const fr: Record<GuideSlug, Guide> = {
-  "origins-tcg-explained": {
-    slug: "origins-tcg-explained",
-    title: "Origins TCG expliqué en cinq minutes",
-    excerpt: "Ce qu'est le jeu, comment se déroule une partie, ce que veut dire free-to-compete et comment jouer à la démo dès aujourd'hui.",
-    readTime: 6,
-    updated: "2026-09-15",
-    image: "/media/capsule-main.webp",
-    body: `
-## Ce que c'est
-
-Origins TCG est un jeu de cartes à collectionner numérique de **Koin Games**, un studio de Tampa (Floride) fondé en 2021 par des vétérans du secteur. Ses personnages sont des légendes du domaine public réinventées dans un monde original : Robin des Bois, Mulan, la Reine de Cœur, Winnie l'ourson, le roi Arthur, Dracula et bien d'autres.
-
-La promesse est le **free-to-compete** : chaque carte nécessaire pour jouer en compétition se gagne en jouant. L'argent n'achète que des versions de collection des cartes, qui peuvent être gradées, échangées et vendues. Les développeurs parlent de « zéro pay-to-win ».
-
-## Comment se déroule une partie
-
-- **Trois voies.** Vous et votre adversaire combattez sur trois plateaux à la fois. Chaque voie a son propre lieu, tiré d'un ensemble de plus de cent lieux qui tournent et changent les règles de ce plateau.
-- **Tours simultanés.** Les deux joueurs agissent en même temps, donc personne n'attend. Une partie dure environ sept minutes.
-- **Les cartes se battent.** Contrairement aux jeux qui ne comptent que les points par voie, les unités s'attaquent : la Puissance est ce que vous infligez, la Vie ce que vous encaissez.
-- **Mots-clés.** Le playtest utilise On Reveal (se déclenche quand la carte est jouée), On Death, First Strike, Double Attack et Deathtouch.
-- **Une Légendaire mène le deck.** Dans le playtest actuel, les decks font 25 cartes et chacun est construit autour d'une Légendaire à la capacité signature : Mulan répète les capacités On Reveal de vos alliés, la Reine de Cœur répète leurs On Death.
-
-## Modes
-
-La démo propose un tutoriel, des missions contre des boss dotés de leur propre IA et le jeu en ligne. Le patch 0.6.1 a ajouté le **ladder classé** avec des divisions jusqu'à Grandmaster, un classement mondial et des Points de Victoire.
-
-## Comment jouer aujourd'hui
-
-1. Installez la démo gratuite depuis la [page Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/). Les joueurs de la démo gagnent des objets de collection exclusifs, échangeables au lancement du jeu complet.
-2. Rejoignez le [Discord officiel](https://discord.gg/originstcg) pour les playtests de la build « Démo 2.0 », les tournois et les AMA avec l'équipe.
-3. Le jeu est en anglais, français, italien et allemand. Le mobile est prévu pour 2027.
-
-## Où va le jeu
-
-L'accès anticipé sur Steam est annoncé pour le quatrième trimestre 2026, avec une démo bien plus grande au Steam Next Fest (19–26 octobre 2026) et le plus grand tournoi du studio du 20 au 25 octobre. Voir la [feuille de route](/fr/guides/roadmap-and-dates).
-`,
-  },
-  "roadmap-and-dates": {
-    slug: "roadmap-and-dates",
-    title: "Feuille de route et dates : de la démo à l'accès anticipé",
-    excerpt: "Toutes les dates confirmées, du premier message Steam au tournoi du Next Fest, plus ce qui est annoncé pour 2027.",
-    readTime: 4,
-    updated: "2026-09-15",
-    image: "/media/hero-1200.webp",
-    body: `
-## Avant la démo
-
-- **Août 2025.** Koin Games et Immutable annoncent « Project O », un TCG compétitif pensé pour le mobile avec une vraie propriété des cartes.
-- **Novembre 2025.** Soft launch sur l'App Store dans certaines régions (version 0.1.0).
-- **Début 2026.** Le studio déplace l'échange des cartes vers le marketplace Steam et abandonne le modèle on-chain autonome.
-- **Mars 2026.** Le CEO est filmé avec des cartes physiques en métal. Ni produit ni date annoncés.
-
-## 2026, mois par mois
-
-| Date | Ce qui s'est passé |
-| --- | --- |
-| 6 mai | Page Steam en ligne, wishlist ouverte |
-| 3 juin | Le Discord officiel s'ouvre à tous |
-| 15–16 juillet | Démo gratuite sur Steam avec objets de collection exclusifs |
-| 21 juillet | Premiers chiffres : 1 000+ joueurs, 13 000+ parties, temps de jeu médian 1 h 51 |
-| 22 juillet | AMA avec le CEO Tim Jooste et le responsable du design Kevin Lambert |
-| 24 juillet | Premier tournoi de la démo |
-| 24–26 juillet | Origins au Card Party de Fort Lauderdale |
-| 7 août | Premier playtest « Démo 2.0 » : 5 nouveaux decks, 70+ cartes, deckbuilding |
-| 14 août | Patch 0.6.1 : ladder classé |
-| 19 août | AMA sur le Creator Program |
-| 21 août | Patch 0.6.2 : 23 cartes rééquilibrées |
-| 27 août | Patch 0.6.3 |
-| 28 août | Big Bob's Playtest Battle, premier tournoi Conquest, 130+ inscrits |
-| 9 septembre | Annonce du tournoi du Next Fest |
-| 10 septembre | AMA Kickstarter : vente finale des packs Alpha |
-
-## La suite
-
-- **19–26 octobre 2026.** Steam Next Fest avec la mise à jour Démo 2.0 : deckbuilding et beaucoup plus de cartes pour tout le monde.
-- **20–25 octobre 2026.** Le tournoi du Steam Next Fest : qualifications régionales les 20, 21 et 22, puis playoffs et finales. Une dotation de 10 000 $ et une carte promo 1/1 exclusive.
-- **T4 2026.** Accès anticipé sur Steam, selon la page du magasin.
-- **2027.** Version mobile et ouverture de packs sur téléphone. Lors des AMA, l'équipe a décrit un lancement complet avec toutes les Légendaires, dont le roi Arthur, Dracula, Winnie l'ourson, Alice, Beowulf, Cendrillon, Sweeney Todd, Frankenstein et Sherlock Holmes.
-
-Les dates viennent des messages officiels sur Steam et du Discord du studio. Nous mettons cette page à jour quand elles changent.
-`,
-  },
-  "collector-economy": {
-    slug: "collector-economy",
-    title: "Deux façons de collectionner : comment fonctionne l'économie d'Origins",
-    excerpt: "Les cartes compétitives sont gratuites. Les cartes de collection sont limitées, gradées et échangeables sur Steam. Voici ce qui est confirmé et ce qui ne l'est pas.",
-    readTime: 5,
-    updated: "2026-09-15",
-    image: "/media/ls-two-ways.webp",
-    body: `
-## La séparation
-
-Origins sépare deux choses que presque tous les jeux de cartes mélangent :
-
-1. **Jouer.** Chaque carte compétitive se gagne en jeu. Rien de ce que vous achetez ne rend votre deck plus fort.
-2. **Collectionner.** Des versions en édition limitée des cartes existent en tirages numérotés, arrivent **gradées numériquement** et peuvent être achetées, vendues et échangées avec d'autres joueurs.
-
-Les écrans de chargement du studio parlent de « real collecting in digital » et de « two ways to collect ».
-
-## Ce qui est confirmé
-
-- **Cartes gradées.** Les versions de collection portent une note ; au Card Party de juillet, l'équipe offrait un Slab à qui tirait une **Alternate Art 10/10**. Des notes plus basses et des séries différentes existent, avec des valeurs différentes.
-- **God packs.** Des packs rares où chaque carte est Légendaire ou mieux.
-- **Alpha Edition.** La première édition de collection, « Myths & Legends: Alpha Edition », se vend uniquement en précommande : boosters de cinq cartes, boîtes de 24 boosters et cases de six boîtes, avec dix niveaux de rareté du commun au storybook. Une fois le tirage terminé, plus aucune boîte Alpha n'est produite. La vente finale a été annoncée lors de l'AMA Kickstarter du 10 septembre 2026.
-- **Échange sur Steam.** Cartes et produits scellés s'échangeront sur le Steam Community Market et les marketplaces connectés au lancement du jeu complet. Les objets de la démo gagnés aujourd'hui deviendront échangeables à ce moment-là.
-- **Mobile plus tard.** L'ouverture de packs sur téléphone est prévue pour 2027.
-
-## Ce qui n'est pas encore confirmé
-
-- Les prix en euros des boosters et boîtes hors précommande Alpha.
-- Les frais de marketplace au-delà des frais standard de Steam.
-- Si les cartes physiques en métal, montrées par le CEO en mars 2026, seront un jour vendues.
-
-## Pourquoi c'est important pour le méta
-
-Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucier que de la carte, jamais de la version. OriginsMeta suivra les prix du Steam Market dès le premier jour où des objets seront listés, pour que la collection ait les mêmes données que le jeu.
-`,
-  },
-};
-
-const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, fr };
+const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it };
 
 export function getGuides(locale: Locale): Guide[] {
   return guideSlugs.map((s) => all[locale][s]);

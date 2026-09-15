@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { formatDate } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { sortedNews } from "@/lib/data/news";
+import { CardChipList } from "@/components/CardChip";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -26,6 +27,12 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
             </p>
             <h2 className="mt-2 text-2xl font-extrabold leading-tight text-ink">{n.title[locale]}</h2>
             <p className="mt-3 text-ink">{n.summary[locale]}</p>
+            {n.cards?.length ? (
+              <div className="mt-4">
+                <p className="kicker mb-2 text-ink-muted">{d.common.cardsMentioned}</p>
+                <CardChipList slugs={n.cards} locale={locale} />
+              </div>
+            ) : null}
             <a href={n.url} rel="noopener" className="mt-3 inline-block text-sm text-crimson-deep underline">
               {n.source === "steam" ? d.common.steamNews : d.common.source} →
             </a>

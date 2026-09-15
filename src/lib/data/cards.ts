@@ -1,6 +1,6 @@
 import type { Locale } from "../i18n";
 
-export type L10n = Record<Locale, string>;
+export type L10n = Record<Locale, string> & { fr?: string };
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 export type PatchId = "0.6.1" | "0.6.2" | "0.6.3";
@@ -69,6 +69,8 @@ export type Change = {
 export type Card = {
   slug: string;
   name: string;
+  /** percorso immagine in /public (es. /cards/mulan.webp); assente finché non abbiamo le illustrazioni */
+  image?: string;
   type: CardType;
   legendary?: boolean;
   saga: SagaId;

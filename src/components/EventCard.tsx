@@ -10,7 +10,7 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
       <div className="flex items-center justify-between gap-3">
         <p className="font-mono text-sm tabular text-crimson-deep">{range}</p>
         <span className={`stat-pill text-[11px] font-semibold uppercase ${event.official ? "bg-ink text-ivory" : "bg-ivory-3 text-ink"}`}>
-          {event.official ? dict.tournaments.officialBadge : dict.tournaments.communityBadge}
+          {event.official ? dict.events.officialBadge : dict.events.communityBadge}
         </span>
       </div>
       <h3 className="mt-2 text-xl font-extrabold leading-tight text-ink">{event.title[locale]}</h3>

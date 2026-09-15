@@ -1,6 +1,6 @@
 import type { Locale } from "../i18n";
 
-type L10n = Record<Locale, string>;
+type L10n = Record<Locale, string> & { fr?: string };
 const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
 
 export type NewsItem = {
@@ -10,6 +10,8 @@ export type NewsItem = {
   summary: L10n;
   url: string;
   source: "steam" | "press";
+  /** slug delle carte toccate dall'annuncio */
+  cards?: string[];
 };
 
 export const news: NewsItem[] = [
@@ -27,6 +29,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-3",
+    cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
     date: "2026-08-27",
     title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, Re Artù a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
     summary: n(
@@ -51,6 +54,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-2",
+    cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
     summary: n(
@@ -63,6 +67,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-1-ranked",
+    cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
     summary: n(

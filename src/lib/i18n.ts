@@ -1,21 +1,18 @@
 import { en } from "./dictionaries/en";
 import { it } from "./dictionaries/it";
-import { fr } from "./dictionaries/fr";
 
-export const locales = ["en", "it", "fr"] as const;
+export const locales = ["en", "it"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
 export const localeNames: Record<Locale, string> = {
   en: "English",
   it: "Italiano",
-  fr: "Français",
 };
 
 export const ogLocale: Record<Locale, string> = {
   en: "en_US",
   it: "it_IT",
-  fr: "fr_FR",
 };
 
 export function isLocale(value: string): value is Locale {
@@ -24,7 +21,7 @@ export function isLocale(value: string): value is Locale {
 
 export type Dictionary = typeof en;
 
-const dictionaries: Record<Locale, Dictionary> = { en, it, fr };
+const dictionaries: Record<Locale, Dictionary> = { en, it };
 
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];
@@ -56,4 +53,13 @@ export function formatDate(locale: Locale, iso: string): string {
 export function formatDateShort(locale: Locale, iso: string): string {
   const d = new Date(iso + (iso.length === 10 ? "T12:00:00Z" : ""));
   return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(d);
+}
+
+export function monthShort(locale: Locale, iso: string): string {
+  const d = new Date(iso + (iso.length === 10 ? "T12:00:00Z" : ""));
+  return new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(d).replace(".", "");
+}
+
+export function dayNumber(iso: string): string {
+  return String(Number(iso.slice(8, 10)));
 }

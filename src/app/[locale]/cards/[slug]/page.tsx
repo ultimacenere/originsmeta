@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { cards, getCard, patches, sagas, statLine } from "@/lib/data/cards";
+import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
+import { tierOf } from "@/lib/data/tierlist";
+import { getGuides } from "@/lib/content/guides";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
+import { CardArt } from "@/components/CardChip";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -19,7 +23,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!card) return {};
   const stats = statLine(card);
   const desc = `${card.name}${stats ? ` (${stats})` : ""} · ${sagas[card.saga][locale]} · ${card.ability?.[locale] ?? card.origin[locale]}`;
-  return pageMeta(locale, `/cards/${card.slug}`, `${card.name} · ${dict.cards.title}`, desc);
+  return pageMeta(locale, `/cards/${card.slug}`, `${card.name} · ${dict.cards.title}`, desc, card.image);
 }
 
 export default async function CardPage({ params }: { params: Params }) {
@@ -29,6 +33,9 @@ export default async function CardPage({ params }: { params: Params }) {
   if (!card) notFound();
   const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
   const related = cards.filter((c) => c.saga === card.saga && c.slug !== card.slug);
+  const inDecks = decksWithCard(card.slug);
+  const guides = getGuides(locale).filter((g) => g.tags?.cards?.includes(card.slug));
+  const tier = tierOf(card.legendary ? "legendaries" : "cards", card.slug);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -38,7 +45,11 @@ export default async function CardPage({ params }: { params: Params }) {
         </Link>
       </p>
 
-      <article className="card-ivory mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[1fr_260px]">
+      <article className="card-ivory mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[150px_1fr_240px]">
+        <div>
+          <CardArt card={card} className="!h-[210px] !w-[150px] text-3xl" />
+          {!card.image ? <p className="mt-2 text-center text-[11px] text-ink-muted">{d.common.noImage}</p> : <p className="mt-2 text-center text-[11px] text-ink-muted">{d.common.imageCredit}</p>}
+        </div>
         <div>
           <p className="kicker text-ink-muted">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
@@ -46,13 +57,18 @@ export default async function CardPage({ params }: { params: Params }) {
           <h1 className="mt-2 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">{card.name}</h1>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="stat-pill bg-ink text-ivory">{typeLabel[card.type]}</span>
-            {card.legendary ? <span className="stat-pill bg-gold text-ink font-bold">{d.common.legendary}</span> : null}
+            {card.legendary ? <span className="stat-pill bg-gold text-ink font-bold">★ {d.common.legendary}</span> : null}
             {card.status === "removed" ? <span className="stat-pill bg-crimson text-ivory">{d.common.removed}</span> : null}
             {(card.keywords ?? []).map((k) => (
               <span key={k} className="stat-pill border border-ink/20 text-ink">
                 {k}
               </span>
             ))}
+            {tier ? (
+              <span className="stat-pill bg-ivory-3 text-ink">
+                {d.common.tierPosition}: {tier === "unranked" ? d.common.unranked : tier}
+              </span>
+            ) : null}
           </div>
           {card.ability ? <p className="mt-6 text-lg text-ink">{card.ability[locale]}</p> : null}
           <h2 className="mt-8 text-xl font-extrabold text-ink">{d.cards.sagaTitle}</h2>
@@ -67,7 +83,7 @@ export default async function CardPage({ params }: { params: Params }) {
             <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.mana}</dt>
-                <dd className="font-display text-3xl font-extrabold text-gold tabular">{card.mana ?? "–"}</dd>
+                <dd className="font-display text-3xl font-extrabold text-mint tabular">{card.mana ?? "–"}</dd>
               </div>
               <div>
                 <dt className="kicker text-chalk-muted">{d.common.power}</dt>
@@ -105,6 +121,36 @@ export default async function CardPage({ params }: { params: Params }) {
           ))}
         </ol>
       </section>
+
+      {inDecks.length ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold text-chalk">{d.common.decksWithCard}</h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {inDecks.map((deck) => (
+              <li key={deck.slug}>
+                <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-mint text-xs">
+                  {deck.name} <span className="font-mono font-normal opacity-70">{archetypeLabels[deck.archetype][locale]}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {guides.length ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold text-chalk">{d.common.relatedGuides}</h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {guides.map((g) => (
+              <li key={g.slug}>
+                <Link href={href(locale, `/guides/${g.slug}`)} className="btn btn-ghost text-xs">
+                  {g.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {related.length ? (
         <section className="mt-12">

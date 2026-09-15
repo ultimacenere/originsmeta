@@ -1,0 +1,26 @@
+/** Fondali per le mini carte senza illustrazione, uno per saga. */
+export const sagaHue: Record<string, string> = {
+  arthurian: "linear-gradient(160deg,#2b3a8f,#0e071f)",
+  wonderland: "linear-gradient(160deg,#c81e7a,#0e071f)",
+  "hundred-acre-wood": "linear-gradient(160deg,#c4a516,#0e071f)",
+  oz: "linear-gradient(160deg,#17a689,#0e071f)",
+  sherwood: "linear-gradient(160deg,#2f7d32,#0e071f)",
+  gothic: "linear-gradient(160deg,#7a1330,#0e071f)",
+  "jungle-book": "linear-gradient(160deg,#4f7d1e,#0e071f)",
+  "fairy-tale": "linear-gradient(160deg,#8a5cc9,#0e071f)",
+  "nursery-rhyme": "linear-gradient(160deg,#d98a2b,#0e071f)",
+  "myth-folklore": "linear-gradient(160deg,#3e6ea8,#0e071f)",
+  "ballad-of-mulan": "linear-gradient(160deg,#c8281e,#0e071f)",
+  "arabian-nights": "linear-gradient(160deg,#2a9d8f,#0e071f)",
+  "baker-street": "linear-gradient(160deg,#5b5b5b,#0e071f)",
+  other: "linear-gradient(160deg,#3a2a60,#0e071f)",
+};
+
+export function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter((w) => /^[A-Za-z]/.test(w))
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+}

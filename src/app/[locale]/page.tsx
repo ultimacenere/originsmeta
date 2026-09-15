@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { href, formatDateShort } from "@/lib/i18n";
+import { href, formatDate, formatDateShort } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { movers, sagas } from "@/lib/data/cards";
-import { upcomingEvents } from "@/lib/data/events";
+import { decks, archetypeLabels } from "@/lib/data/decks";
+import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { sortedNews } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { EventCard } from "@/components/EventCard";
+import { CardChipList } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -20,103 +21,154 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const top = movers().slice(0, 6);
-  const events = upcomingEvents().slice(0, 3);
+  const top = movers().slice(0, 5);
   const guides = getGuides(locale);
-  const latest = sortedNews.slice(0, 3);
-
-  const lanes = [
-    { ...d.home.lanes.cards, href: href(locale, "/cards"), tone: "bg-ink text-ivory" },
-    { ...d.home.lanes.tier, href: href(locale, "/tier-list"), tone: "bg-gold text-ink" },
-    { ...d.home.lanes.event, href: href(locale, "/tournaments"), tone: "bg-crimson text-ivory" },
-  ];
+  const [today, ...rest] = sortedNews;
+  const latest = rest.slice(0, 4);
+  const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-10 pt-12 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
+      {/* Above the fold: titolo compatto + news del giorno + MetaShift + tier list */}
+      <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="kicker text-mint">{d.home.kicker}</p>
-            <h1 className="mt-4 text-5xl font-extrabold leading-[0.95] text-chalk sm:text-6xl lg:text-7xl">{d.home.title}</h1>
-            <p className="mt-6 max-w-xl text-lg text-chalk-muted">{d.home.sub}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={href(locale, "/cards")} className="btn btn-gold">
-                {d.home.ctaCards}
+            <h1 className="mt-2 text-3xl font-extrabold leading-tight text-chalk sm:text-4xl">{d.home.title}</h1>
+            <p className="mt-2 max-w-2xl text-chalk-muted">{d.home.sub}</p>
+          </div>
+          <a href={officialLinks.discord} rel="noopener" className="btn btn-ghost">
+            {d.home.ctaDiscord}
+          </a>
+        </div>
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1.25fr_1fr_0.9fr]">
+          {/* News del giorno */}
+          <article className="card-ivory flex flex-col p-6">
+            <p className="kicker text-crimson-deep">
+              {d.home.newsOfDay} · {formatDate(locale, today.date)}
+            </p>
+            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-ink">
+              <Link href={href(locale, "/news")} className="hover:underline">
+                {today.title[locale]}
               </Link>
-              <a href={officialLinks.discord} rel="noopener" className="btn btn-ghost">
-                {d.home.ctaDiscord}
+            </h2>
+            <p className="mt-3 text-sm text-ink">{today.summary[locale]}</p>
+            {today.cards?.length ? (
+              <div className="mt-4">
+                <p className="kicker mb-2 text-ink-muted">{d.common.cardsMentioned}</p>
+                <CardChipList slugs={today.cards} locale={locale} max={6} />
+              </div>
+            ) : null}
+            <p className="mt-auto flex flex-wrap gap-3 pt-4 text-sm">
+              <a href={today.url} rel="noopener" className="text-crimson-deep underline">
+                {d.common.source} →
               </a>
+              <Link href={href(locale, "/news")} className="text-ink-muted hover:text-ink">
+                {d.common.viewAll} →
+              </Link>
+            </p>
+          </article>
+
+          {/* MetaShift */}
+          <section className="felt-panel-mint flex flex-col p-5">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="text-2xl font-extrabold text-mint">{d.common.metashift}</h2>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">0.6.1 → 0.6.3</span>
             </div>
-            <p className="mt-6 text-xs text-chalk-muted/80">{d.common.notAffiliated}</p>
-          </div>
-          <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-            <div className="hero-art">
-              <Image
-                src="/media/capsule-main.webp"
-                alt="Origins TCG key art: a grinning heroine with a pile of cards and the Origins logo"
-                width={1232}
-                height={706}
-                priority
-                sizes="(max-width: 1024px) 90vw, 45vw"
-                className="h-auto w-full"
-              />
-            </div>
-            <p className="mt-3 text-right font-mono text-[11px] uppercase tracking-wider text-chalk-muted/70">Key art © Koin Games</p>
-          </div>
+            <p className="mt-1 text-sm text-chalk-muted">{d.home.metashiftSub}</p>
+            <ol className="mt-4 space-y-2">
+              {top.map(({ card, change }) => (
+                <li key={`${card.slug}-${change.patch}`}>
+                  <Link href={href(locale, `/cards/${card.slug}`)} className="card-ivory flex items-center gap-3 px-3 py-2 hover:shadow-mint">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-display text-sm font-bold text-ink">{card.name}</span>
+                      <span className="block text-[11px] text-ink-muted">{sagas[card.saga][locale]}</span>
+                    </span>
+                    <StatDelta from={change.from} to={change.to} />
+                    <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                  </Link>
+                </li>
+              ))}
+            </ol>
+            <Link href={href(locale, "/tier-list")} className="mt-4 font-display text-sm font-bold text-mint hover:underline">
+              {d.tier.trackerTitle} →
+            </Link>
+          </section>
+
+          {/* Tier list */}
+          <section className="card-ivory flex flex-col p-5">
+            <h2 className="text-2xl font-extrabold text-ink">{d.home.tierTitle}</h2>
+            <p className="mt-1 text-sm text-ink-muted">{d.home.tierSub}</p>
+            <ul className="mt-4 space-y-2">
+              {tierList.sections.map((s) => {
+                const ranked = tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
+                return (
+                  <li key={s.id}>
+                    <Link href={href(locale, `/tier-list#${s.id}`)} className="flex items-center justify-between rounded-lg border border-ink/15 px-3 py-2 hover:bg-ink hover:text-ivory">
+                      <span className="font-display text-sm font-bold">{sectionTitle[s.id]}</span>
+                      <span className="font-mono text-[11px] uppercase tracking-wider opacity-70">
+                        {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked.toLowerCase()}`}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-3 text-xs text-ink-muted">{d.home.tierStatus}</p>
+            <Link href={href(locale, "/tier-list")} className="mt-auto pt-3 font-display text-sm font-bold text-crimson-deep hover:underline">
+              {d.common.viewAll} →
+            </Link>
+          </section>
         </div>
       </section>
 
-      {/* Tre corsie */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="lane-rule mb-8" />
-        <ul className="grid gap-5 md:grid-cols-3">
-          {lanes.map((lane, i) => (
-            <li key={lane.href}>
-              <Link href={lane.href} className="card-ivory card-ivory-hover flex h-full flex-col p-6">
-                <span className={`stat-pill w-fit font-bold uppercase tracking-wider ${lane.tone}`}>{["I", "II", "III"][i]}</span>
-                <h2 className="mt-4 text-2xl font-extrabold leading-tight text-ink">{lane.title}</h2>
-                <p className="mt-2 flex-1 text-sm text-ink-muted">{lane.text}</p>
-                <span className="mt-5 font-display text-sm font-bold text-crimson-deep">{lane.cta} →</span>
-              </Link>
+      {/* Patch notes & news */}
+      <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+        <SectionHead title={d.home.patchTitle} sub={d.home.patchSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
+        <ul className="felt-panel divide-y divide-felt-line">
+          {latest.map((nItem) => (
+            <li key={nItem.slug} className="grid gap-3 p-5 sm:grid-cols-[110px_1fr]">
+              <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
+              <div>
+                <h3 className="font-display text-lg font-bold text-chalk">{nItem.title[locale]}</h3>
+                <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
+                {nItem.cards?.length ? (
+                  <div className="mt-3">
+                    <CardChipList slugs={nItem.cards} locale={locale} max={8} />
+                  </div>
+                ) : null}
+                <a href={nItem.url} rel="noopener" className="mt-2 inline-block text-xs text-mint hover:underline">
+                  {d.common.source} →
+                </a>
+              </div>
             </li>
           ))}
         </ul>
       </section>
 
-      {/* Meta movers */}
-      <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
-        <SectionHead kicker="0.6.1 → 0.6.3" title={d.home.moversTitle} sub={d.home.moversSub} link={{ href: href(locale, "/tier-list"), label: d.common.viewAll }} />
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {top.map(({ card, change }) => (
-            <li key={`${card.slug}-${change.patch}`}>
-              <Link href={href(locale, `/cards/${card.slug}`)} className="card-ivory card-ivory-hover flex items-center gap-4 p-4">
-                <div className="min-w-0 flex-1">
-                  <p className="kicker text-ink-muted">{sagas[card.saga][locale]}</p>
-                  <h3 className="truncate text-lg font-extrabold text-ink">{card.name}</h3>
-                  <StatDelta from={change.from} to={change.to} />
-                </div>
-                <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Calendario */}
-      <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
-        <SectionHead kicker={formatDateShort(locale, new Date().toISOString().slice(0, 10))} title={d.home.calendarTitle} link={{ href: href(locale, "/tournaments"), label: d.common.viewAll }} />
+      {/* Mazzi */}
+      <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+        <SectionHead title={d.home.decksTitle} sub={d.home.decksSub} link={{ href: href(locale, "/decks"), label: d.common.viewAll }} />
         <ul className="grid gap-5 md:grid-cols-3">
-          {events.map((e) => (
-            <li key={e.slug}>
-              <EventCard event={e} locale={locale} dict={d} compact />
+          {decks.map((deck) => (
+            <li key={deck.slug}>
+              <Link href={href(locale, `/decks/${deck.slug}`)} className="card-ivory card-ivory-hover flex h-full flex-col p-5">
+                <span className="flex flex-wrap gap-2">
+                  <span className="stat-pill bg-ink text-ivory text-[11px] font-semibold uppercase">{d.common[deck.source]}</span>
+                  <span className="stat-pill border border-ink/20 text-ink">{archetypeLabels[deck.archetype][locale]}</span>
+                </span>
+                <span className="mt-3 font-display text-2xl font-extrabold text-ink">{deck.name}</span>
+                <span className="mt-1 text-sm text-ink-muted">{deck.tagline[locale]}</span>
+                <span className="mt-4 font-display text-sm font-bold text-crimson-deep">{d.common.readMore} →</span>
+              </Link>
             </li>
           ))}
         </ul>
       </section>
 
       {/* Guide */}
-      <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
         <SectionHead title={d.home.guidesTitle} sub={d.home.guidesSub} link={{ href: href(locale, "/guides"), label: d.common.viewAll }} />
         <ul className="grid gap-5 md:grid-cols-3">
           {guides.map((g) => (
@@ -127,7 +179,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 ) : null}
                 <div className="flex flex-1 flex-col p-5">
                   <p className="kicker text-ink-muted">
-                    {g.readTime} {d.guides.readTime}
+                    {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime}
                   </p>
                   <h3 className="mt-1 text-xl font-extrabold leading-tight text-ink">{g.title}</h3>
                   <p className="mt-2 flex-1 text-sm text-ink-muted">{g.excerpt}</p>
@@ -140,7 +192,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
       </section>
 
       {/* Stato del gioco + collezionismo */}
-      <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
         <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <SectionHead title={d.home.statusTitle} />
@@ -172,25 +224,6 @@ export default async function Home({ params }: { params: LocaleParams }) {
             </div>
           </Link>
         </div>
-      </section>
-
-      {/* Ultime news */}
-      <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
-        <SectionHead title={d.news.title} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
-        <ul className="divide-y divide-felt-line felt-panel">
-          {latest.map((nItem) => (
-            <li key={nItem.slug} className="grid gap-2 p-5 sm:grid-cols-[120px_1fr]">
-              <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
-              <div>
-                <h3 className="font-display text-lg font-bold text-chalk">{nItem.title[locale]}</h3>
-                <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
-                <a href={nItem.url} rel="noopener" className="mt-2 inline-block text-xs text-gold hover:underline">
-                  {d.common.source} →
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
       </section>
     </>
   );

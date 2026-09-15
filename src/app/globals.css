@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 /*
-  OriginsMeta — "ink & ivory"
+  OriginsMeta — "ink & mint"
   Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte (avorio).
-  Menta del logo per gli accenti, giallo citrino per le leggendarie, magenta per ciò che scotta.
+  Menta del logo come colore dominante degli accenti (i competitor usano tutti viola/rosa),
+  giallo citrino solo per le leggendarie e l'evento evidenziato, magenta per ciò che scotta.
   I nomi dei token restano "felt / chalk / crimson / gold" per ruolo, non per tinta.
 */
 @theme {
-  --color-felt: #170d30;
-  --color-felt-deep: #0f0822;
-  --color-felt-soft: #23153f;
-  --color-felt-line: #3b2a62;
+  --color-felt: #150c2c;
+  --color-felt-deep: #0e071f;
+  --color-felt-soft: #21143c;
+  --color-felt-line: #3a2a60;
   --color-ivory: #f6f1e6;
   --color-ivory-2: #ebe3d3;
   --color-ivory-3: #dbd0bb;
@@ -24,14 +25,16 @@
   --color-gold-deep: #c4a516;
   --color-mint: #31e3bd;
   --color-mint-deep: #17a689;
+  --color-mint-soft: #bff5e8;
   --color-sky: #6fb7c9;
 
-  --font-display: var(--font-syne), "Arial Black", Impact, sans-serif;
+  --font-display: var(--font-unbounded), "Arial Black", Impact, sans-serif;
   --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;
   --font-mono: var(--font-jet), Consolas, "Courier New", monospace;
 
-  --shadow-card: 0 1px 0 rgba(20, 17, 12, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
-  --shadow-lift: 0 2px 0 rgba(20, 17, 12, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 1px 0 rgba(22, 16, 42, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+  --shadow-lift: 0 2px 0 rgba(22, 16, 42, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-mint: 0 0 0 1px rgba(49, 227, 189, 0.45), 0 12px 32px -14px rgba(49, 227, 189, 0.45);
 }
 
 @layer base {
@@ -50,19 +53,19 @@
   body {
     background-color: var(--color-felt);
     background-image:
-      radial-gradient(1200px 600px at 15% -10%, rgba(200, 30, 122, 0.28), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(49, 227, 189, 0.10), transparent 55%),
+      radial-gradient(1100px 520px at 12% -10%, rgba(49, 227, 189, 0.16), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(200, 30, 122, 0.16), transparent 55%),
       repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px);
     color: var(--color-chalk);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--color-gold);
+    background: var(--color-mint);
     color: var(--color-ink);
   }
   :focus-visible {
-    outline: 2px solid var(--color-gold);
+    outline: 2px solid var(--color-mint);
     outline-offset: 3px;
   }
   h1, h2, h3, h4 {
@@ -79,7 +82,7 @@
     color: var(--color-ink);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
-    border: 1px solid rgba(20, 17, 12, 0.18);
+    border: 1px solid rgba(22, 16, 42, 0.18);
     position: relative;
   }
   .card-ivory::after {
@@ -87,7 +90,7 @@
     position: absolute;
     inset: 6px;
     border-radius: 9px;
-    border: 1px solid rgba(20, 17, 12, 0.12);
+    border: 1px solid rgba(22, 16, 42, 0.12);
     pointer-events: none;
   }
   .card-ivory-hover {
@@ -95,17 +98,22 @@
   }
   .card-ivory-hover:hover {
     transform: translateY(-3px) rotate(-0.4deg);
-    box-shadow: var(--shadow-lift);
+    box-shadow: var(--shadow-mint);
   }
   /* Riquadro "sul feltro": bordo gessato */
   .felt-panel {
     border: 1px solid var(--color-felt-line);
-    background: rgba(7, 32, 25, 0.55);
+    background: rgba(14, 7, 31, 0.6);
+    border-radius: 14px;
+  }
+  .felt-panel-mint {
+    border: 1px solid rgba(49, 227, 189, 0.45);
+    background: linear-gradient(180deg, rgba(49, 227, 189, 0.10), rgba(14, 7, 31, 0.6));
     border-radius: 14px;
   }
   .kicker {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
@@ -118,7 +126,6 @@
     border-radius: 18px;
     border: 6px solid var(--color-ivory);
     box-shadow: var(--shadow-lift);
-    transform: rotate(1.5deg);
     overflow: hidden;
     background: var(--color-ivory);
   }
@@ -128,8 +135,8 @@
     gap: 0.5rem;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: 0.02em;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
     border-radius: 999px;
     padding: 0.7rem 1.15rem;
     transition: transform 120ms ease, background-color 120ms ease, color 120ms ease;
@@ -137,27 +144,34 @@
   .btn:active {
     transform: translateY(1px);
   }
+  .btn-mint {
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .btn-mint:hover {
+    background: #5cf0d0;
+  }
   .btn-gold {
     background: var(--color-gold);
     color: var(--color-ink);
   }
   .btn-gold:hover {
-    background: #f0c65a;
+    background: #f7de63;
   }
   .btn-ghost {
     border: 1px solid var(--color-chalk-muted);
     color: var(--color-chalk);
   }
   .btn-ghost:hover {
-    border-color: var(--color-gold);
-    color: var(--color-gold);
+    border-color: var(--color-mint);
+    color: var(--color-mint);
   }
   .btn-ink {
     background: var(--color-ink);
     color: var(--color-ivory);
   }
   .btn-ink:hover {
-    background: #2a251d;
+    background: #2a2044;
   }
   .stat-pill {
     font-family: var(--font-mono);
@@ -166,6 +180,130 @@
     border-radius: 6px;
     padding: 0.15rem 0.45rem;
   }
+  .link-mint {
+    color: var(--color-mint);
+    text-decoration: none;
+  }
+  .link-mint:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Mini carta (chip) con cornice; senza illustrazione mostra un fondale a gradiente */
+  .card-chip {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 0.55rem;
+    align-items: center;
+    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
+    color: var(--color-ink);
+    border: 1px solid rgba(22, 16, 42, 0.2);
+    border-radius: 10px;
+    padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+    box-shadow: var(--shadow-card);
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  .card-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-mint);
+  }
+  .card-chip-art {
+    width: 44px;
+    height: 60px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(22, 16, 42, 0.25);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--color-ivory);
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+    position: relative;
+  }
+  .card-chip-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-chip-art .mana {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  /* Striscia scorrevole del calendario */
+  .ticker {
+    overflow: hidden;
+    border-top: 1px solid var(--color-felt-line);
+    border-bottom: 1px solid var(--color-felt-line);
+    background: rgba(14, 7, 31, 0.7);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    animation: ticker 48s linear infinite;
+  }
+  .ticker:hover .ticker-track {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker {
+      overflow-x: auto;
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+    .ticker-track {
+      animation: none;
+    }
+  }
+  @keyframes ticker {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .date-cube {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1;
+  }
+  .date-cube small {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--color-ink-muted);
+  }
+  .date-cube.is-next {
+    background: var(--color-gold);
+  }
+
   .prose-ivory {
     color: var(--color-ink);
     line-height: 1.7;
@@ -197,7 +335,7 @@
     font-weight: 700;
   }
   .prose-ivory blockquote {
-    border-left: 3px solid var(--color-gold);
+    border-left: 3px solid var(--color-mint-deep);
     margin: 1em 0;
     padding: 0.2em 1em;
     color: var(--color-ink-muted);
@@ -209,7 +347,7 @@
     margin: 1em 0;
   }
   .prose-ivory th, .prose-ivory td {
-    border-bottom: 1px solid rgba(20, 17, 12, 0.15);
+    border-bottom: 1px solid rgba(22, 16, 42, 0.15);
     padding: 0.5em 0.6em;
     text-align: left;
     vertical-align: top;

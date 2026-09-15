@@ -17,7 +17,6 @@ export default function GlobalNotFound() {
           <p className="mt-6 flex flex-wrap justify-center gap-3">
             <a className="btn btn-ink" href="/en">English</a>
             <a className="btn btn-ink" href="/it">Italiano</a>
-            <a className="btn btn-ink" href="/fr">Français</a>
           </p>
         </div>
       </body>

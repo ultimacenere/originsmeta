@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { getGuide, guideSlugs } from "@/lib/content/guides";
+import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { Markdown } from "@/components/Markdown";
+import { CardChipList } from "@/components/CardChip";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -18,8 +20,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const g = getGuide(locale, slug);
   if (!g) return {};
-  const m = pageMeta(locale, `/guides/${g.slug}`, `${g.title} · ${dict.guides.title}`, g.excerpt, g.image);
-  return m;
+  return pageMeta(locale, `/guides/${g.slug}`, `${g.title} · ${dict.guides.title}`, g.excerpt, g.image);
 }
 
 export default async function GuidePage({ params }: { params: Params }) {
@@ -27,6 +28,8 @@ export default async function GuidePage({ params }: { params: Params }) {
   const { locale, dict: d } = await resolveLocale(params);
   const g = getGuide(locale, slug);
   if (!g) notFound();
+  const relatedDecks = (g.tags?.decks ?? []).map((s) => getDeck(s)).filter((x) => x !== undefined);
+  const relatedCards = g.tags?.cards ?? [];
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="text-sm">
@@ -36,13 +39,13 @@ export default async function GuidePage({ params }: { params: Params }) {
       </p>
       <header className="mt-6">
         <p className="kicker text-mint">
-          {g.readTime} {d.guides.readTime} · {d.common.updated} {formatDate(locale, g.updated)}
+          {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {d.common.updated} {formatDate(locale, g.updated)}
         </p>
         <h1 className="mt-3 text-4xl font-extrabold leading-tight text-chalk sm:text-5xl">{g.title}</h1>
         <p className="mt-4 text-lg text-chalk-muted">{g.excerpt}</p>
       </header>
       {g.image ? (
-        <div className="hero-art mt-8" style={{ transform: "none" }}>
+        <div className="hero-art mt-8">
           <Image src={g.image} alt="" width={1600} height={900} sizes="(max-width: 768px) 92vw, 720px" className="w-full" priority />
         </div>
       ) : null}
@@ -50,6 +53,28 @@ export default async function GuidePage({ params }: { params: Params }) {
         <Markdown source={g.body} />
         <p className="mt-8 border-t border-ink/15 pt-4 text-xs text-ink-muted">{d.common.notAffiliated}</p>
       </article>
+
+      {relatedDecks.length || relatedCards.length ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold text-chalk">{d.guides.related}</h2>
+          {relatedDecks.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {relatedDecks.map((deck) => (
+                <li key={deck.slug}>
+                  <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-mint text-xs">
+                    {deck.name} <span className="font-mono font-normal opacity-70">{archetypeLabels[deck.archetype][locale]}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {relatedCards.length ? (
+            <div className="mt-4">
+              <CardChipList slugs={relatedCards} locale={locale} />
+            </div>
+          ) : null}
+        </section>
+      ) : null}
     </div>
   );
 }
