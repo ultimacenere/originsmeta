@@ -49,6 +49,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     twitter: { card: "summary_large_image", title: d.meta.homeTitle, description: d.meta.description, images: ["/media/og.jpg"] },
     robots: { index: true, follow: true },
+    // Verifica della proprietà su Google Search Console (account ultimacenere@gmail.com).
+    verification: { google: "ck0gbXaqDgigihYXiyoKywmrKP2LOC2YOOYFu6c8SZs" },
   };
 }
 
