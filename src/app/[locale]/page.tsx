@@ -80,13 +80,15 @@ export default async function Home({ params }: { params: LocaleParams }) {
             <ol className="mt-4 space-y-2">
               {top.map(({ card, change }) => (
                 <li key={`${card.slug}-${change.patch}`}>
-                  <Link href={href(locale, `/cards/${card.slug}`)} className="card-ivory flex items-center gap-3 px-3 py-2 hover:shadow-mint">
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-display text-sm font-bold text-ink">{card.name}</span>
-                      <span className="block text-[11px] text-ink-muted">{sagas[card.saga][locale]}</span>
+                  <Link href={href(locale, `/cards/${card.slug}`)} className="card-ivory block px-3 py-2 hover:shadow-mint">
+                    <span className="flex items-baseline justify-between gap-2">
+                      <span className="truncate font-display text-sm font-bold text-ink">{card.name}</span>
+                      <span className="shrink-0 text-[11px] text-ink-muted">{sagas[card.saga][locale]}</span>
                     </span>
-                    <StatDelta from={change.from} to={change.to} />
-                    <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                    <span className="mt-1 flex items-center justify-between gap-2">
+                      <StatDelta from={change.from} to={change.to} />
+                      <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -105,10 +107,10 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 const ranked = tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
                 return (
                   <li key={s.id}>
-                    <Link href={href(locale, `/tier-list#${s.id}`)} className="flex items-center justify-between rounded-lg border border-ink/15 px-3 py-2 hover:bg-ink hover:text-ivory">
-                      <span className="font-display text-sm font-bold">{sectionTitle[s.id]}</span>
-                      <span className="font-mono text-[11px] uppercase tracking-wider opacity-70">
-                        {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked.toLowerCase()}`}
+                    <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border border-ink/15 px-3 py-2 hover:bg-ink hover:text-ivory">
+                      <span className="block font-display text-sm font-bold">{sectionTitle[s.id]}</span>
+                      <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
+                        {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked}`}
                       </span>
                     </Link>
                   </li>
