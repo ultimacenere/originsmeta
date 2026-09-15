@@ -1,4 +1,5 @@
-import { formatDateShort, formatDate, type Dictionary, type Locale } from "@/lib/i18n";
+import Link from "next/link";
+import { formatDateShort, formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Event } from "@/lib/data/events";
 import { SteamButton, isSteamUrl } from "./SteamButton";
 import { DiscordButton, isDiscordUrl } from "./DiscordButton";
@@ -33,6 +34,11 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
         </p>
       ) : null}
       <div className="mt-auto flex flex-wrap gap-2 pt-4">
+        {event.guide ? (
+          <Link href={href(locale, `/guides/${event.guide}`)} className="btn btn-mint text-xs">
+            {dict.events.guideCta}
+          </Link>
+        ) : null}
         {event.signup ? (
           isSteamUrl(event.signup.url) ? (
             <SteamButton href={event.signup.url} size="sm">

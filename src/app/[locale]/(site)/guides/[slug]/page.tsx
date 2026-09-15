@@ -46,8 +46,12 @@ export default async function GuidePage({ params }: { params: Params }) {
     mainEntityOfPage: `${siteUrl}${href(locale, `/guides/${g.slug}`)}`,
     about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
   };
+  const faqLd = g.faq?.length
+    ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: g.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }
+    : null;
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      {faqLd ? <JsonLd data={faqLd} /> : null}
       <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.guides.title, path: href(locale, "/guides") }, { name: g.title, path: href(locale, `/guides/${g.slug}`) }])]} />
       <p className="text-sm">
         <Link href={href(locale, "/guides")} className="text-chalk-muted hover:text-chalk">
@@ -68,6 +72,21 @@ export default async function GuidePage({ params }: { params: Params }) {
       ) : null}
       <article className="card-ivory mt-8 p-6 sm:p-10">
         <Markdown source={g.body} />
+        {g.faq?.length ? (
+          <section className="mt-8 border-t border-ink/15 pt-6" aria-labelledby="guide-faq">
+            <h2 id="guide-faq" className="text-2xl font-extrabold text-ink">
+              {d.guides.faqTitle}
+            </h2>
+            <dl className="mt-4 space-y-4">
+              {g.faq.map((f) => (
+                <div key={f.q}>
+                  <dt className="font-display text-base font-bold text-ink">{f.q}</dt>
+                  <dd className="mt-1 text-ink-muted">{f.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
         <p className="mt-8 border-t border-ink/15 pt-4 text-xs text-ink-muted">{d.common.notAffiliated}</p>
       </article>
 

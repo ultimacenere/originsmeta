@@ -14,6 +14,8 @@ export type Event = {
   text: L10n;
   signup?: { label: L10n; url: string };
   source?: string;
+  /** slug della guida dedicata all'evento */
+  guide?: string;
 };
 
 const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
@@ -22,6 +24,7 @@ export const events: Event[] = [
   {
     slug: "next-fest-tournament",
     official: true,
+    guide: "steam-next-fest-2026",
     start: "2026-10-20",
     end: "2026-10-25",
     title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
@@ -47,6 +50,7 @@ export const events: Event[] = [
   {
     slug: "steam-next-fest",
     official: true,
+    guide: "steam-next-fest-2026",
     start: "2026-10-19",
     end: "2026-10-26",
     title: n("Steam Next Fest: Demo 2.0", "Steam Next Fest: Demo 2.0", "Steam Next Fest : Démo 2.0"),

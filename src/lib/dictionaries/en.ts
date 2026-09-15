@@ -206,11 +206,13 @@ export const en = {
       economy: "Economy",
     },
     related: "Related",
+    faqTitle: "Frequently asked questions",
   },
   events: {
     title: "Origins TCG tournaments & events",
     intro: "Official and community events, with formats, prizes and sign-up links. Organizers: send us your event and we add it.",
     submitCta: "Submit an event",
+    guideCta: "Event guide",
     officialBadge: "Official",
     communityBadge: "Community",
     calendarTitle: "Calendar",

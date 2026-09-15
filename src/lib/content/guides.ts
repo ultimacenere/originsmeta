@@ -12,10 +12,12 @@ export type Guide = {
   readTime: number;
   updated: string;
   image?: string;
+  /** domande e risposte in fondo alla guida (anche come dati strutturati FAQPage) */
+  faq?: { q: string; a: string }[];
   body: string; // markdown
 };
 
-export const guideSlugs = ["origins-tcg-explained", "roadmap-and-dates", "collector-economy"] as const;
+export const guideSlugs = ["steam-next-fest-2026", "origins-tcg-explained", "roadmap-and-dates", "collector-economy"] as const;
 export type GuideSlug = (typeof guideSlugs)[number];
 
 const en: Record<GuideSlug, Guide> = {
@@ -141,6 +143,60 @@ The studio's own loading screens call it "real collecting in digital" and "two w
 Because collector cards are cosmetic, a tier list only has to care about the card itself, never about the version. OriginsMeta will track Steam Market prices from the first day items are listed, so that collecting has the same data as playing.
 `,
   },
+  "steam-next-fest-2026": {
+    slug: "steam-next-fest-2026",
+    category: "events",
+    tags: { decks: ["swarm", "evil", "discard"] },
+    title: "Origins TCG at Steam Next Fest 2026: Demo 2.0, dates and the tournament",
+    excerpt: "Everything confirmed about Origins TCG at Steam Next Fest (19–26 October 2026): the Demo 2.0 update, the 20–25 October tournament with qualifiers, playoffs and finals, prizes, how to sign up and how to prepare.",
+    readTime: 6,
+    updated: "2026-09-15",
+    image: "/media/hero-1200.webp",
+    faq: [
+      { q: "When is Steam Next Fest October 2026?", a: "From Monday 19 October at 10:00 Pacific time (19:00 in Italy) to Monday 26 October 2026. Origins TCG takes part with the Demo 2.0 build." },
+      { q: "When is the Origins TCG tournament?", a: "From 20 to 25 October 2026: three qualifiers on the 20th, 21st and 22nd (one per major region), then playoffs and finals." },
+      { q: "Can I join a qualifier from Europe?", a: "Yes. Koin Games says you can join any of the qualifiers no matter where you live, but asks you to sign up only for the ones you can actually attend." },
+      { q: "Does it cost anything?", a: "No. The demo is free on Steam and the tournament sign-up is on the official Discord. Origins TCG is free-to-compete: every competitive card is earned by playing." },
+      { q: "What is the Conquest format?", a: "You submit several decks before the tournament, each led by a different Legendary and with at least nine different cards between any two decks, and you ban one of your opponent's decks before the match. Koin Games tested it at Big Bob's Playtest Battle on 28 August." },
+    ],
+    body: `
+## The two dates to remember
+
+- **Steam Next Fest, October 2026 edition: 19–26 October.** Valve's festival of playable demos runs from Monday 19 October at 10:00 Pacific time (19:00 in Italy) to Monday 26 October. Origins TCG is in it with the big **Demo 2.0** update.
+- **Origins TCG tournament: 20–25 October.** Koin Games calls it "our biggest tournament ever": a multi-day event that goes Qualification → Playoffs → Finals, entirely online and in-game.
+
+## What Demo 2.0 brings
+
+The build was tested in three closed playtests in August (patches 0.6.1, 0.6.2 and 0.6.3, all tracked in our [MetaShift](/en/tier-list)). Koin Games announced three things for it:
+
+- **five new decks**, on top of the ones in the July demo;
+- **more than 70 new cards**;
+- **deckbuilding**: for the first time everyone can build their own 25-card deck (one Legendary plus twelve cards, each played as two copies) instead of choosing a preset list.
+
+The playtests also introduced a ranked ladder with divisions up to Grandmaster and a world leaderboard. We will publish every change on the day it lands.
+
+## The tournament, step by step
+
+1. **Qualifiers, 20–22 October.** Three of them, one per major region, on the 20th, 21st and 22nd. In Koin's words, "you can join ANY of the qualifiers, no matter where you live": pick the one whose time suits you, and sign up only for the ones you will really play.
+2. **Playoffs and finals, up to 25 October.** The best players from the qualifiers meet in the playoff stage; content creators get wildcard invites straight into the playoffs (ask on Discord).
+3. **Format.** The Steam announcement does not state it. At Big Bob's Playtest Battle on 28 August Koin trialed **Conquest**: best-of-3, single elimination, several decks with a different Legendary in each, at least nine cards of difference between decks, one ban. Expect something close to that and read the official rules when they are published.
+4. **Prizes.** An exclusive 1/1 tournament promo card, digital packs, booster boxes and cases, and cash prizes. In the community the tournament goes by the name Crimson Cup with a 10,000-dollar pool; we will confirm the figures against the official rulebook.
+
+Sign-ups are on the [official Discord](https://discord.gg/originstcg).
+
+## How to prepare in five moves
+
+1. [Install the free demo on Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) and play the missions: they teach the three lanes and the simultaneous turns.
+2. Read [Origins TCG explained in five minutes](/en/guides/origins-tcg-explained) and the [card database](/en/cards): the current stats are those of patch 0.6.3.
+3. Build your three Conquest decks in our [deck builder](/en/deck-builder): it checks the different-Legendary rule and counts the cards that differ between decks.
+4. Study the [playtest decks](/en/decks) and the lists the community publishes; publish yours with a guide so others can rate it.
+5. Follow the [news](/en/news): every announcement is summarized within a day, with a link to the source.
+
+## How OriginsMeta covers the week
+
+A news item every day during the festival, tournament decks published with their composition charts the same day, and the first OriginsMeta tier list on 27 October, built on the tournament results and the top of the ladder. Sources: the official Steam posts of 4 August, 25 August and 9 September 2026, and the Steam Next Fest schedule.
+`,
+  },
 };
 
 const it: Record<GuideSlug, Guide> = {
@@ -264,6 +320,60 @@ Le schermate di caricamento dello studio lo chiamano "real collecting in digital
 ## Perché conta per il meta
 
 Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi solo della carta, mai della versione. OriginsMeta seguirà i prezzi dello Steam Market dal primo giorno in cui ci saranno oggetti in vendita, perché il collezionismo abbia gli stessi dati del gioco.
+`,
+  },
+  "steam-next-fest-2026": {
+    slug: "steam-next-fest-2026",
+    category: "events",
+    tags: { decks: ["swarm", "evil", "discard"] },
+    title: "Origins TCG allo Steam Next Fest 2026: Demo 2.0, date e torneo",
+    excerpt: "Tutto ciò che è confermato su Origins TCG allo Steam Next Fest (19–26 ottobre 2026): l'aggiornamento Demo 2.0, il torneo dal 20 al 25 ottobre con qualificazioni, playoff e finali, i premi, come iscriversi e come prepararsi.",
+    readTime: 6,
+    updated: "2026-09-15",
+    image: "/media/hero-1200.webp",
+    faq: [
+      { q: "Quando si svolge lo Steam Next Fest di ottobre 2026?", a: "Da lunedì 19 ottobre alle 10:00 ora del Pacifico (le 19:00 in Italia) a lunedì 26 ottobre 2026. Origins TCG partecipa con la build Demo 2.0." },
+      { q: "Quando c'è il torneo di Origins TCG?", a: "Dal 20 al 25 ottobre 2026: tre qualificazioni il 20, 21 e 22 (una per macro-regione), poi playoff e finali." },
+      { q: "Posso partecipare a una qualificazione dall'Italia?", a: "Sì. Koin Games dice che ci si può iscrivere a qualsiasi qualificazione a prescindere da dove si vive, ma chiede di iscriversi solo a quelle a cui si può davvero partecipare." },
+      { q: "Costa qualcosa?", a: "No. La demo è gratuita su Steam e l'iscrizione al torneo si fa sul Discord ufficiale. Origins TCG è free-to-compete: ogni carta competitiva si guadagna giocando." },
+      { q: "Cos'è il formato Conquest?", a: "Si registrano più mazzi prima del torneo, ognuno guidato da una Leggendaria diversa e con almeno nove carte di differenza tra due mazzi qualsiasi, e prima della partita si banna un mazzo dell'avversario. Koin Games lo ha provato a Big Bob's Playtest Battle il 28 agosto." },
+    ],
+    body: `
+## Le due date da segnare
+
+- **Steam Next Fest, edizione di ottobre 2026: 19–26 ottobre.** Il festival delle demo giocabili di Valve va da lunedì 19 ottobre alle 10:00 ora del Pacifico (le 19:00 in Italia) a lunedì 26 ottobre. Origins TCG c'è con il grande aggiornamento **Demo 2.0**.
+- **Torneo di Origins TCG: 20–25 ottobre.** Koin Games lo chiama "il nostro torneo più grande di sempre": un evento su più giorni, Qualificazioni → Playoff → Finali, tutto online e in gioco.
+
+## Cosa porta la Demo 2.0
+
+La build è stata provata in tre playtest chiusi ad agosto (patch 0.6.1, 0.6.2 e 0.6.3, tutte tracciate nel nostro [MetaShift](/it/tier-list)). Koin Games ha annunciato tre cose:
+
+- **cinque nuovi mazzi**, oltre a quelli della demo di luglio;
+- **più di 70 nuove carte**;
+- **il deckbuilding**: per la prima volta tutti possono costruire il proprio mazzo da 25 carte (una Leggendaria più dodici carte, ognuna giocata in due copie) invece di scegliere una lista preimpostata.
+
+I playtest hanno introdotto anche una classificata con divisioni fino a Grandmaster e una classifica mondiale. Pubblicheremo ogni cambiamento il giorno stesso in cui arriva.
+
+## Il torneo, passo per passo
+
+1. **Qualificazioni, 20–22 ottobre.** Tre, una per macro-regione, il 20, 21 e 22. Nelle parole di Koin, "puoi partecipare a QUALSIASI qualificazione, ovunque tu viva": scegli quella con l'orario che ti conviene e iscriviti solo a quelle che giocherai davvero.
+2. **Playoff e finali, fino al 25 ottobre.** I migliori delle qualificazioni si incontrano nei playoff; i content creator hanno inviti wildcard direttamente ai playoff (basta chiedere su Discord).
+3. **Formato.** L'annuncio su Steam non lo indica. A Big Bob's Playtest Battle, il 28 agosto, Koin ha provato il **Conquest**: best-of-3, eliminazione diretta, più mazzi con una Leggendaria diversa in ciascuno, almeno nove carte di differenza tra i mazzi, un ban. Aspettati qualcosa di simile e leggi il regolamento ufficiale quando uscirà.
+4. **Premi.** Una carta promo 1/1 esclusiva del torneo, pacchetti digitali, booster box e case, premi in denaro. Nella community il torneo circola con il nome Crimson Cup e un montepremi da 10.000 dollari: confermeremo le cifre sul regolamento ufficiale.
+
+Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg).
+
+## Come prepararsi in cinque mosse
+
+1. [Installa la demo gratuita su Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) e gioca le missioni: insegnano le tre corsie e i turni simultanei.
+2. Leggi [Origins TCG spiegato in cinque minuti](/it/guides/origins-tcg-explained) e il [database carte](/it/cards): le statistiche attuali sono quelle della patch 0.6.3.
+3. Costruisci i tuoi tre mazzi Conquest nel nostro [deck builder](/it/deck-builder): controlla la regola delle Leggendarie diverse e conta le carte che cambiano tra un mazzo e l'altro.
+4. Studia i [mazzi del playtest](/it/decks) e le liste pubblicate dalla community; pubblica la tua con una guida, così gli altri possono votarla.
+5. Segui le [news](/it/news): ogni annuncio è riassunto entro un giorno, con il link alla fonte.
+
+## Come OriginsMeta seguirà la settimana
+
+Una news al giorno durante il festival, i mazzi del torneo pubblicati il giorno stesso con i grafici di composizione, e la prima tier list di OriginsMeta il 27 ottobre, costruita sui risultati del torneo e sulla cima della classificata. Fonti: i post ufficiali su Steam del 4 agosto, 25 agosto e 9 settembre 2026 e il calendario dello Steam Next Fest.
 `,
   },
 };

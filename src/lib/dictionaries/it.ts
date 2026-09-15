@@ -208,11 +208,13 @@ export const it: Dictionary = {
       economy: "Economia",
     },
     related: "Correlati",
+    faqTitle: "Domande frequenti",
   },
   events: {
     title: "Tornei ed eventi di Origins TCG",
     intro: "Eventi ufficiali e della community, con formati, premi e link per iscriversi. Organizzatori: mandateci il vostro evento e lo aggiungiamo.",
     submitCta: "Segnala un evento",
+    guideCta: "Guida all'evento",
     officialBadge: "Ufficiale",
     communityBadge: "Community",
     calendarTitle: "Calendario",
