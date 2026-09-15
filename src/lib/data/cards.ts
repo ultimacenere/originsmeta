@@ -71,6 +71,8 @@ export type Card = {
   name: string;
   /** percorso immagine in /public (es. /cards/mulan.webp); assente finché non abbiamo le illustrazioni */
   image?: string;
+  /** chiave ufficiale della carta nei codici-mazzo del gioco (es. C0042_MB), quando nota */
+  key?: string;
   type: CardType;
   legendary?: boolean;
   saga: SagaId;

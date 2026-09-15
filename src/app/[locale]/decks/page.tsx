@@ -38,6 +38,11 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
+      <p className="mt-5">
+        <Link href={href(locale, "/deck-builder")} className="btn btn-mint">
+          {d.nav.builder} →
+        </Link>
+      </p>
 
       <div className="mt-8">
         <DeckExplorer

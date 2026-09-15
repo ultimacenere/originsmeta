@@ -37,6 +37,11 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link className="text-mint hover:text-chalk" href={href(locale, "/deck-builder")}>
+                {dict.nav.builder}
+              </Link>
+            </li>
           </ul>
         </div>
         <div>

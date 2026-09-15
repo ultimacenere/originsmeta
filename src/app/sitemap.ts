@@ -5,7 +5,7 @@ import { decks } from "@/lib/data/decks";
 import { guideSlugs } from "@/lib/content/guides";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = ["", "/news", "/tier-list", "/guides", "/cards", "/decks", "/tournaments", "/about", "/privacy"];
+  const staticPaths = ["", "/news", "/tier-list", "/guides", "/cards", "/decks", "/deck-builder", "/tournaments", "/about", "/privacy"];
   const paths = [
     ...staticPaths,
     ...cards.map((c) => `/cards/${c.slug}`),

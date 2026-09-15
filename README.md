@@ -57,6 +57,13 @@ In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle m
 - Dominio principale `originsmeta.com` (Register.it): record **A `@` → 216.150.1.1** (Vercel; il legacy 76.76.21.21 funziona ancora). `www.originsmeta.com` è un redirect verso l'apex configurato su Vercel: record **CNAME `www` → 4cb33c26b92bb944.vercel-dns-016.com** (valore indicato da Vercel per questo progetto; il legacy cname.vercel-dns.com funziona ancora).
 - Push da questa cartella: il repo ha un credential helper locale che legge il token GitHub dal file usato da transferbeat; il token deve avere `Contents: Read and write` sul repo.
 
+## Deck builder e codici-mazzo
+
+- Pagina `/deck-builder` (client, senza backend): regole del gioco integrate (1 Leggendaria + 12 carte base diverse, seconda copia automatica = 25 carte), mazzo singolo o **modalità torneo** con tre mazzi e controllo Conquest (Leggendarie diverse, almeno N carte fisiche diverse tra due mazzi, N modificabile, default 9), curva di mana, salvataggio nel browser, link di condivisione, export testuale, invio via email.
+- Regole e validazioni in `src/lib/deckrules.ts`; codec in `src/lib/deckcode.ts`.
+- **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. L'export in questo formato richiede il campo `key` sulle carte in `cards.ts`: per ora sconosciuto; l'import di un codice del gioco mostra le chiavi non abbinate e permette di inviarci l'abbinamento ("Insegnaci gli ID ufficiali").
+- **Formato OriginsMeta** (`OM1.`): base64url di JSON con nome, leggendaria, carte e carte personalizzate; usato per i link di condivisione (`/deck-builder#OM1.…`).
+
 ## Analytics
 
 Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie, nessun banner). Vanno abilitati una volta nel progetto Vercel (tab Analytics e Speed Insights). GA4 non è attivo: richiederebbe il consenso cookie.

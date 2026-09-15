@@ -1,0 +1,659 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { initials } from "@/lib/cardArt";
+import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, validateConquest, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";
+import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
+
+type Issues = {
+  missingLegendary: string;
+  tooFewCards: string;
+  tooManyCards: string;
+  duplicateCard: string;
+  hasCustom: string;
+  duplicateLegendary: string;
+  tooSimilar: string;
+};
+
+export type BuilderLabels = {
+  modeSingle: string;
+  modeTournament: string;
+  deckName: string;
+  deckNamePlaceholder: string;
+  legendarySlot: string;
+  pickLegendary: string;
+  slots: string;
+  slotsHint: string;
+  pool: string;
+  poolHint: string;
+  searchPool: string;
+  all: string;
+  cost: string;
+  add: string;
+  remove: string;
+  inDeck: string;
+  full: string;
+  curve: string;
+  valid: string;
+  invalid: string;
+  issues: Issues;
+  customTitle: string;
+  customHint: string;
+  customName: string;
+  customCost: string;
+  customLegendary: string;
+  customAdd: string;
+  actions: string;
+  copyLink: string;
+  copied: string;
+  exportText: string;
+  exportGame: string;
+  exportGameMissing: string;
+  importTitle: string;
+  importHint: string;
+  importButton: string;
+  importOk: string;
+  importUnknown: string;
+  importError: string;
+  teachTitle: string;
+  teachHint: string;
+  teachSend: string;
+  save: string;
+  saved: string;
+  clear: string;
+  submit: string;
+  submitHint: string;
+  tournamentTitle: string;
+  tournamentHint: string;
+  minDifferent: string;
+  diffTable: string;
+  shared: string;
+  deckLabel: string;
+  ok: string;
+  restored: string;
+  typeUnit: string;
+  typeSpell: string;
+  legendary: string;
+  unit: string;
+  spell: string;
+};
+
+type Persisted = { mode: "single" | "tournament"; active: number; decks: DeckState[]; keyMap: Record<string, string> };
+
+const STORAGE = "originsmeta.deckbuilder.v1";
+const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+
+export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: BuilderCard[]; labels: BuilderLabels; contactEmail: string; shareBase: string }) {
+  const [mode, setMode] = useState<"single" | "tournament">("single");
+  const [active, setActive] = useState(0);
+  const [decks, setDecks] = useState<DeckState[]>([emptyDeck(), emptyDeck(), emptyDeck()]);
+  const [keyMap, setKeyMap] = useState<Record<string, string>>({});
+  const [minDifferent, setMinDifferent] = useState<number>(RULES.conquestMinDifferent);
+  const [q, setQ] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "unit" | "spell">("all");
+  const [costFilter, setCostFilter] = useState<"all" | string>("all");
+  const [importText, setImportText] = useState("");
+  const [notice, setNotice] = useState<string>("");
+  const [unknownKeys, setUnknownKeys] = useState<string[]>([]);
+  const [teach, setTeach] = useState<Record<string, string>>({});
+  const [customName, setCustomName] = useState("");
+  const [customCost, setCustomCost] = useState("");
+  const [customLegendary, setCustomLegendary] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  const deck = decks[active];
+
+  const lookup = useCallback(
+    (slug: string): BuilderCard | undefined => pool.find((c) => c.slug === slug) ?? decks.flatMap((d) => d.customCards).find((c) => c.slug === slug),
+    [pool, decks],
+  );
+
+  /* --- ripristino da link o da browser --- */
+  useEffect(() => {
+    try {
+      const hash = window.location.hash.slice(1);
+      if (hash.startsWith(OM_PREFIX)) {
+        const d = decodeOmCode(hash);
+        if (d) {
+          setDecks([d, emptyDeck(), emptyDeck()]);
+          setNotice(labels.restored);
+          setHydrated(true);
+          return;
+        }
+      }
+      const raw = localStorage.getItem(STORAGE);
+      if (raw) {
+        const p = JSON.parse(raw) as Persisted;
+        if (Array.isArray(p.decks) && p.decks.length === 3) setDecks(p.decks.map((d) => ({ ...emptyDeck(), ...d })));
+        if (p.mode === "single" || p.mode === "tournament") setMode(p.mode);
+        if (typeof p.active === "number") setActive(Math.min(2, Math.max(0, p.active)));
+        if (p.keyMap && typeof p.keyMap === "object") setKeyMap(p.keyMap);
+      }
+    } catch {
+      /* storage non disponibile */
+    }
+    setHydrated(true);
+  }, [labels.restored]);
+
+  const persist = useCallback(
+    (next: Partial<Persisted>) => {
+      try {
+        const cur: Persisted = { mode, active, decks, keyMap, ...next };
+        localStorage.setItem(STORAGE, JSON.stringify(cur));
+      } catch {
+        /* ignore */
+      }
+    },
+    [mode, active, decks, keyMap],
+  );
+
+  const updateDeck = (fn: (d: DeckState) => DeckState) => {
+    setDecks((prev) => prev.map((d, i) => (i === active ? fn(d) : d)));
+  };
+
+  /* --- pool filtrato --- */
+  const visiblePool = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return pool
+      .filter((c) => c.type !== "token")
+      .filter((c) => (typeFilter === "all" ? true : c.type === typeFilter))
+      .filter((c) => (costFilter === "all" ? true : costFilter === "8" ? (c.mana ?? 0) >= 8 : String(c.mana ?? "?") === costFilter))
+      .filter((c) => !needle || c.name.toLowerCase().includes(needle) || c.sagaLabel.toLowerCase().includes(needle))
+      .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
+  }, [pool, q, typeFilter, costFilter]);
+
+  const addCard = (c: BuilderCard) => {
+    updateDeck((d) => {
+      if (c.legendary) return { ...d, legendary: c.slug };
+      if (d.cards.includes(c.slug) || d.cards.length >= RULES.distinctCards) return d;
+      return { ...d, cards: [...d.cards, c.slug] };
+    });
+  };
+  const removeCard = (slug: string) => {
+    updateDeck((d) => ({ ...d, legendary: d.legendary === slug ? null : d.legendary, cards: d.cards.filter((s) => s !== slug) }));
+  };
+
+  const addCustom = () => {
+    const name = customName.trim();
+    if (!name) return;
+    const slug = `custom:${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const card: BuilderCard = { slug, name, type: "unit", legendary: customLegendary, mana: customCost ? Number(customCost) : undefined, sagaLabel: "custom", custom: true };
+    updateDeck((d) => {
+      const customCards = d.customCards.some((c) => c.slug === slug) ? d.customCards : [...d.customCards, card];
+      if (card.legendary) return { ...d, customCards, legendary: slug };
+      if (d.cards.includes(slug) || d.cards.length >= RULES.distinctCards) return { ...d, customCards };
+      return { ...d, customCards, cards: [...d.cards, slug] };
+    });
+    setCustomName("");
+    setCustomCost("");
+    setCustomLegendary(false);
+  };
+
+  /* --- import --- */
+  const doImport = async () => {
+    const text = importText.trim();
+    setUnknownKeys([]);
+    if (!text) return;
+    if (text.includes(GAME_PREFIX)) {
+      const res = await decodeGameCode(text);
+      if ("error" in res) {
+        setNotice(labels.importError);
+        return;
+      }
+      const byKey = new Map<string, BuilderCard>();
+      for (const c of pool) if (c.key) byKey.set(baseKey(c.key), c);
+      for (const [k, slug] of Object.entries(keyMap)) {
+        const c = pool.find((x) => x.slug === slug);
+        if (c) byKey.set(baseKey(k), c);
+      }
+      const matched: BuilderCard[] = [];
+      const unknown: string[] = [];
+      for (const k of res.keys) {
+        const c = byKey.get(baseKey(k));
+        if (c) matched.push(c);
+        else unknown.push(baseKey(k));
+      }
+      applyCards(matched);
+      setUnknownKeys(unknown);
+      setNotice(unknown.length ? `${fmt(labels.importOk, { n: matched.length })} ${fmt(labels.importUnknown, { list: unknown.join(", ") })}` : fmt(labels.importOk, { n: matched.length }));
+      return;
+    }
+    if (text.includes(OM_PREFIX)) {
+      const d = decodeOmCode(text);
+      if (!d) {
+        setNotice(labels.importError);
+        return;
+      }
+      updateDeck(() => d);
+      setNotice(fmt(labels.importOk, { n: d.cards.length + (d.legendary ? 1 : 0) }));
+      return;
+    }
+    const entries = parseTextList(text);
+    const matched: BuilderCard[] = [];
+    const unknown: string[] = [];
+    for (const e of entries) {
+      const c = pool.find((x) => x.name.toLowerCase() === e.name.toLowerCase());
+      if (c) matched.push(c);
+      else unknown.push(e.name);
+    }
+    applyCards(matched);
+    setNotice(unknown.length ? `${fmt(labels.importOk, { n: matched.length })} ${fmt(labels.importUnknown, { list: unknown.join(", ") })}` : fmt(labels.importOk, { n: matched.length }));
+  };
+
+  const applyCards = (cards: BuilderCard[]) => {
+    if (cards.length === 0) return; // niente di riconosciuto: il mazzo resta com'è
+    updateDeck((d) => {
+      const legendary = cards.find((c) => c.legendary)?.slug ?? d.legendary;
+      const base = Array.from(new Set(cards.filter((c) => !c.legendary).map((c) => c.slug))).slice(0, RULES.distinctCards);
+      return { ...d, legendary, cards: base };
+    });
+  };
+
+  /* --- export --- */
+  const copy = async (text: string, okLabel = labels.copied) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setNotice(okLabel);
+    } catch {
+      setNotice(text);
+    }
+  };
+  const missingKeys = useMemo(() => {
+    const slugs = [deck.legendary, ...deck.cards].filter(Boolean) as string[];
+    return slugs.filter((s) => {
+      const c = lookup(s);
+      if (!c) return true;
+      if (c.key) return false;
+      return !Object.entries(keyMap).some(([, v]) => v === s);
+    });
+  }, [deck, lookup, keyMap]);
+
+  const exportGame = async () => {
+    const slugs = [deck.legendary, ...deck.cards].filter(Boolean) as string[];
+    const keys = slugs.map((s) => lookup(s)?.key ?? Object.entries(keyMap).find(([, v]) => v === s)?.[0]).filter(Boolean) as string[];
+    if (keys.length !== slugs.length) {
+      setNotice(fmt(labels.exportGameMissing, { n: missingKeys.length }));
+      return;
+    }
+    copy(await encodeGameCode(keys));
+  };
+
+  const shareLink = `${shareBase}#${encodeOmCode(deck)}`;
+  const textList = toTextList(deck, lookup);
+  const issues = validateDeck(deck);
+  const complete = isComplete(deck);
+  const curve = manaCurve(deck, lookup);
+  const maxCurve = Math.max(1, ...curve);
+  const conquestIssues = mode === "tournament" ? validateConquest(decks, minDifferent) : [];
+
+  const sendTeach = () => {
+    const lines = Object.entries(teach)
+      .filter(([, v]) => v)
+      .map(([k, v]) => `${k} = ${v}`);
+    if (!lines.length) return;
+    setKeyMap((m) => {
+      const next = { ...m, ...Object.fromEntries(Object.entries(teach).filter(([, v]) => v)) };
+      persist({ keyMap: next });
+      return next;
+    });
+    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent("Origins TCG card keys")}&body=${encodeURIComponent(lines.join("\n"))}`;
+  };
+
+  const issueText = (code: string) => (labels.issues as Record<string, string>)[code] ?? code;
+
+  const slotCard = (slug: string) => lookup(slug);
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
+      {/* ---------- mazzo ---------- */}
+      <section className="card-ivory p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-1 rounded-full border border-ink/20 p-0.5">
+            {(["single", "tournament"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  setMode(m);
+                  persist({ mode: m });
+                }}
+                className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-ink text-ivory" : "text-ink-muted hover:text-ink"}`}
+              >
+                {m === "single" ? labels.modeSingle : labels.modeTournament}
+              </button>
+            ))}
+          </div>
+          {mode === "tournament" ? (
+            <div className="flex gap-1">
+              {[0, 1, 2].map((i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    setActive(i);
+                    persist({ active: i });
+                  }}
+                  className={`rounded-lg px-3 py-1 font-display text-xs font-bold ${active === i ? "bg-mint text-ink" : "border border-ink/20 text-ink-muted"}`}
+                >
+                  {labels.deckLabel} {String.fromCharCode(65 + i)} {isComplete(decks[i]) ? "✓" : ""}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <label className="mt-4 block">
+          <span className="kicker text-ink-muted">{labels.deckName}</span>
+          <input
+            id={`deck-name-${active}`}
+            value={deck.name}
+            onChange={(e) => updateDeck((d) => ({ ...d, name: e.target.value.slice(0, 60) }))}
+            placeholder={labels.deckNamePlaceholder}
+            className="mt-1 w-full rounded-lg border border-ink/20 bg-ivory px-3 py-2 text-ink"
+          />
+        </label>
+
+        <div className="mt-4 flex items-center justify-between">
+          <span className={`stat-pill font-bold ${complete ? "bg-mint-deep text-ivory" : "bg-crimson/15 text-crimson-deep"}`}>{complete ? labels.valid : labels.invalid}</span>
+          <span className="font-mono text-sm text-ink-muted">
+            {(deck.legendary ? 1 : 0) + deck.cards.length * RULES.copiesPerCard} / {RULES.deckSize}
+          </span>
+        </div>
+        {issues.length ? (
+          <ul className="mt-2 space-y-1 text-sm">
+            {issues.map((i) => (
+              <li key={i.code} className={i.level === "error" ? "text-crimson-deep" : "text-ink-muted"}>
+                • {issueText(i.code)}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        {/* Leggendaria */}
+        <h3 className="mt-5 text-lg font-extrabold text-ink">{labels.legendarySlot}</h3>
+        {deck.legendary && slotCard(deck.legendary) ? (
+          <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} removeLabel={labels.remove} />
+        ) : (
+          <p className="mt-1 rounded-lg border border-dashed border-ink/30 px-3 py-3 text-sm text-ink-muted">{labels.pickLegendary}</p>
+        )}
+
+        {/* Carte base */}
+        <h3 className="mt-5 text-lg font-extrabold text-ink">
+          {labels.slots} <span className="font-mono text-sm font-normal text-ink-muted">{deck.cards.length}/{RULES.distinctCards} · {labels.slotsHint}</span>
+        </h3>
+        <ul className="mt-2 space-y-1.5">
+          {deck.cards.map((s) => {
+            const c = slotCard(s);
+            return c ? (
+              <li key={s}>
+                <DeckRow card={c} copies={RULES.copiesPerCard} onRemove={() => removeCard(s)} removeLabel={labels.remove} />
+              </li>
+            ) : null;
+          })}
+          {Array.from({ length: Math.max(0, RULES.distinctCards - deck.cards.length) }).map((_, i) => (
+            <li key={`empty-${i}`} className="h-9 rounded-lg border border-dashed border-ink/20" aria-hidden="true" />
+          ))}
+        </ul>
+
+        {/* Curva */}
+        <h3 className="mt-5 text-lg font-extrabold text-ink">{labels.curve}</h3>
+        <div className="mt-2 flex h-24 items-end gap-1">
+          {curve.map((n, i) => (
+            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+              <span className="font-mono text-[10px] text-ink-muted">{n || ""}</span>
+              <div className="w-full rounded-t bg-mint-deep" style={{ height: `${(n / maxCurve) * 64}px` }} />
+              <span className="font-mono text-[10px] text-ink-muted">{i === 8 ? "8+" : i}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Azioni */}
+        <h3 className="mt-5 text-lg font-extrabold text-ink">{labels.actions}</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button type="button" className="btn btn-ink text-xs" onClick={() => copy(shareLink)}>
+            {labels.copyLink}
+          </button>
+          <button type="button" className="btn btn-ink text-xs" onClick={() => copy(textList)}>
+            {labels.exportText}
+          </button>
+          <button type="button" className="btn btn-ink text-xs" onClick={exportGame} title={missingKeys.length ? fmt(labels.exportGameMissing, { n: missingKeys.length }) : undefined}>
+            {labels.exportGame}
+            {missingKeys.length ? ` (${missingKeys.length}?)` : ""}
+          </button>
+          <button
+            type="button"
+            className="btn btn-mint text-xs"
+            onClick={() => {
+              persist({ decks });
+              setNotice(labels.saved);
+            }}
+          >
+            {labels.save}
+          </button>
+          <a
+            className="btn btn-gold text-xs"
+            href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Deck OriginsMeta: ${deck.name || "senza nome"}`)}&body=${encodeURIComponent(`${textList}\n\n${shareLink}\n\n`)}`}
+            title={labels.submitHint}
+          >
+            {labels.submit}
+          </a>
+          <button
+            type="button"
+            className="btn border border-ink/30 text-xs text-ink hover:text-crimson-deep"
+            onClick={() => updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }))}
+          >
+            {labels.clear}
+          </button>
+        </div>
+        {notice ? (
+          <p className="mt-3 break-all rounded-lg bg-ink/5 px-3 py-2 font-mono text-xs text-ink" aria-live="polite">
+            {notice}
+          </p>
+        ) : null}
+
+        {/* Import */}
+        <h3 className="mt-5 text-lg font-extrabold text-ink">{labels.importTitle}</h3>
+        <p className="mt-1 text-xs text-ink-muted">{labels.importHint}</p>
+        <textarea
+          id="deck-import"
+          value={importText}
+          onChange={(e) => setImportText(e.target.value)}
+          rows={3}
+          className="mt-2 w-full rounded-lg border border-ink/20 bg-ivory px-3 py-2 font-mono text-xs text-ink"
+        />
+        <button type="button" className="btn btn-ink mt-2 text-xs" onClick={doImport}>
+          {labels.importButton}
+        </button>
+
+        {unknownKeys.length ? (
+          <div className="mt-4 rounded-lg border border-gold bg-gold/15 p-3">
+            <h4 className="font-display text-sm font-bold text-ink">{labels.teachTitle}</h4>
+            <p className="mt-1 text-xs text-ink-muted">{labels.teachHint}</p>
+            <ul className="mt-2 space-y-1">
+              {unknownKeys.map((k) => (
+                <li key={k} className="flex items-center gap-2">
+                  <code className="font-mono text-xs">{k}</code>
+                  <select
+                    value={teach[k] ?? ""}
+                    onChange={(e) => setTeach((t) => ({ ...t, [k]: e.target.value }))}
+                    className="flex-1 rounded border border-ink/20 bg-ivory px-2 py-1 text-xs"
+                  >
+                    <option value="">—</option>
+                    {pool.map((c) => (
+                      <option key={c.slug} value={c.slug}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </li>
+              ))}
+            </ul>
+            <button type="button" className="btn btn-ink mt-2 text-xs" onClick={sendTeach}>
+              {labels.teachSend}
+            </button>
+          </div>
+        ) : null}
+
+        {/* Conquest */}
+        {mode === "tournament" ? (
+          <div className="mt-6 rounded-lg border border-ink/20 p-4">
+            <h3 className="text-lg font-extrabold text-ink">{labels.tournamentTitle}</h3>
+            <p className="mt-1 text-xs text-ink-muted">{fmt(labels.tournamentHint, { min: minDifferent })}</p>
+            <label className="mt-2 flex items-center gap-2 text-xs text-ink-muted">
+              {labels.minDifferent}
+              <input
+                id="conquest-min"
+                type="number"
+                min={1}
+                max={25}
+                value={minDifferent}
+                onChange={(e) => setMinDifferent(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
+                className="w-16 rounded border border-ink/20 bg-ivory px-2 py-1 font-mono text-ink"
+              />
+            </label>
+            <table className="mt-3 w-full text-xs">
+              <thead>
+                <tr className="text-left text-ink-muted">
+                  <th className="py-1">{labels.diffTable}</th>
+                  <th className="py-1">A</th>
+                  <th className="py-1">B</th>
+                  <th className="py-1">C</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[0, 1, 2].map((i) => (
+                  <tr key={i} className="border-t border-ink/10">
+                    <td className="py-1 font-bold">
+                      {labels.deckLabel} {String.fromCharCode(65 + i)}
+                    </td>
+                    {[0, 1, 2].map((j) => {
+                      if (i === j) return <td key={j} className="py-1 font-mono text-ink-muted">—</td>;
+                      const diff = differentCards(decks[i], decks[j]);
+                      const ok = diff >= minDifferent;
+                      return (
+                        <td key={j} className={`py-1 font-mono ${ok ? "text-mint-deep" : "text-crimson-deep"}`} title={`${labels.shared}: ${sharedCards(decks[i], decks[j]).map((s) => lookup(s)?.name ?? s).join(", ") || "—"}`}>
+                          {diff} {ok ? "✓" : "✗"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {conquestIssues.length ? (
+              <ul className="mt-2 space-y-1 text-sm text-crimson-deep">
+                {conquestIssues.map((c, i) => (
+                  <li key={i}>
+                    • {c.code === "tooSimilar" && c.decks ? fmt(labels.issues.tooSimilar, { a: String.fromCharCode(65 + c.decks[0]), b: String.fromCharCode(65 + c.decks[1]), n: c.value ?? 0, min: minDifferent }) : issueText(c.code)}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-sm font-bold text-mint-deep">{labels.ok} ✓</p>
+            )}
+          </div>
+        ) : null}
+      </section>
+
+      {/* ---------- pool ---------- */}
+      <section className="felt-panel p-5">
+        <h3 className="text-lg font-extrabold text-chalk">{labels.pool}</h3>
+        <p className="mt-1 text-xs text-chalk-muted">{labels.poolHint}</p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-[1.5fr_1fr_1fr]">
+          <input
+            id="pool-search"
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={labels.searchPool}
+            className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk"
+          />
+          <select id="pool-type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)} className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk">
+            <option value="all">{labels.all}</option>
+            <option value="unit">{labels.typeUnit}</option>
+            <option value="spell">{labels.typeSpell}</option>
+          </select>
+          <select id="pool-cost" value={costFilter} onChange={(e) => setCostFilter(e.target.value)} className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk">
+            <option value="all">
+              {labels.cost}: {labels.all}
+            </option>
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((c) => (
+              <option key={c} value={String(c)}>
+                {c}
+              </option>
+            ))}
+            <option value="8">8+</option>
+          </select>
+        </div>
+        <ul className="mt-3 max-h-[640px] space-y-1 overflow-y-auto pr-1">
+          {visiblePool.map((c) => {
+            const inDeck = deck.legendary === c.slug || deck.cards.includes(c.slug);
+            const full = !c.legendary && deck.cards.length >= RULES.distinctCards;
+            return (
+              <li key={c.slug} className="flex items-center gap-2 rounded-lg bg-ivory px-2 py-1.5 text-ink">
+                <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(c.name)}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-display text-xs font-bold">
+                    {c.legendary ? "★ " : ""}
+                    {c.name}
+                  </span>
+                  <span className="block font-mono text-[10px] text-ink-muted">
+                    {c.mana ?? "?"} · {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
+                  </span>
+                </span>
+                {inDeck ? (
+                  <button type="button" onClick={() => removeCard(c.slug)} className="stat-pill bg-ink text-ivory text-[10px]">
+                    {labels.inDeck} ✕
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => addCard(c)} disabled={full} className={`stat-pill text-[10px] font-bold ${full ? "bg-ink/10 text-ink-muted" : "bg-mint text-ink"}`}>
+                    {full ? labels.full : `+ ${labels.add}`}
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-4 rounded-lg border border-felt-line p-3">
+          <h4 className="font-display text-sm font-bold text-chalk">{labels.customTitle}</h4>
+          <p className="mt-1 text-xs text-chalk-muted">{labels.customHint}</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-[1.6fr_0.6fr_auto]">
+            <input id="custom-name" value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder={labels.customName} className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk" />
+            <input id="custom-cost" type="number" min={0} max={12} value={customCost} onChange={(e) => setCustomCost(e.target.value)} placeholder={labels.customCost} className="rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk" />
+            <label className="flex items-center gap-2 text-xs text-chalk-muted">
+              <input id="custom-legendary" type="checkbox" checked={customLegendary} onChange={(e) => setCustomLegendary(e.target.checked)} />
+              {labels.customLegendary}
+            </label>
+          </div>
+          <button type="button" className="btn btn-ghost mt-2 text-xs" onClick={addCustom}>
+            {labels.customAdd}
+          </button>
+        </div>
+        {!hydrated ? <span className="sr-only">…</span> : null}
+      </section>
+    </div>
+  );
+}
+
+function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-ink/15 bg-ivory-2/60 px-2 py-1.5">
+      <span className="font-mono text-xs text-ink-muted">{copies}×</span>
+      <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(card.name)}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-display text-xs font-bold text-ink">
+          {card.legendary ? "★ " : ""}
+          {card.name}
+          {card.custom ? " *" : ""}
+        </span>
+        <span className="block font-mono text-[10px] text-ink-muted">
+          {card.mana ?? "?"} · {card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : "spell"}
+        </span>
+      </span>
+      <button type="button" onClick={onRemove} className="stat-pill border border-ink/20 text-[10px] text-ink hover:bg-crimson hover:text-ivory" aria-label={`${removeLabel} ${card.name}`}>
+        ✕
+      </button>
+    </div>
+  );
+}

@@ -19,7 +19,7 @@ Sito fan non ufficiale su Origins TCG (Koin Games), due lingue (en/it; il france
 - Tier list in tre sezioni (mazzi, leggendarie, carte base); mazzi con tag obbligatori (leggendaria, archetipo, creator); collegamenti incrociati tier list → mazzo → carta → guida.
 - Colore dominante degli accenti: menta del logo (i competitor usano viola/rosa). Font: Unbounded (display), Manrope (testo).
 - Analytics: Vercel Web Analytics + Speed Insights; niente GA4 per ora.
-- Prossimo grande cantiere: deck builder (regole del gioco, import/export codice mazzo, modalità 3 mazzi da torneo).
+- Deck builder (`/deck-builder`, `src/lib/deckrules.ts`, `src/lib/deckcode.ts`, `src/components/DeckBuilder.tsx`): regole 1 Leggendaria + 12 carte base ×2 = 25 (fonte AMA Koin); formato codice del gioco KGBLDC decifrato (vedi README); campo `key` delle carte da popolare con gli ID ufficiali man mano che vengono appresi; la regola Conquest sul conteggio delle carte diverse va confermata con il regolamento.
 
 ## Struttura
 
