@@ -44,7 +44,7 @@ export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[
 
   return (
     <section
-      className="group relative h-[calc(36vh+100px)] max-h-[560px] min-h-[350px] w-full overflow-hidden bg-felt-deep"
+      className="group relative h-[calc(36vh+200px)] max-h-[660px] min-h-[450px] w-full overflow-hidden bg-felt-deep"
       aria-roledescription="carousel"
       aria-label="Origins TCG"
       onMouseEnter={() => setPaused(true)}
