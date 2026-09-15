@@ -12,7 +12,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { JsonLd, organization, website } from "@/components/JsonLd";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-RCGV4S861S";
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
 
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });

@@ -87,9 +87,12 @@ In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle m
 
 - Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
 
-## Analytics
+## Analytics, Search Console e SEO
 
-Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie, nessun banner). Vanno abilitati una volta nel progetto Vercel (tab Analytics e Speed Insights). GA4 non è attivo: richiederebbe il consenso cookie.
+- Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie).
+- **Google Analytics 4**: proprietà "OriginsMeta" (account Google ultimacenere@gmail.com, account GA 396971166, proprietà 554263065, stream web 15780517209, ID misurazione `G-9J5Q803XJS`). Il tag (`src/components/GoogleAnalytics.tsx`) parte solo con "Accetta tutto" nel banner cookie, con Consent Mode v2 (pubblicità sempre negata) e IP anonimizzato. L'ID ha un default nel layout e si può sovrascrivere con `NEXT_PUBLIC_GA_ID`. Esiste anche una proprietà "OriginsMeta" creata per errore sull'account pierluigicella85@gmail.com (dentro l'account GA "Frameplays", ID G-RCGV4S861S): non è usata dal sito e si può cestinare.
+- **Search Console**: proprietà URL-prefix `https://originsmeta.com` sull'account ultimacenere@gmail.com, verificata con il meta tag `google-site-verification` nel layout (più il file `public/google10672860791f4a82.html`): non rimuoverli. Sitemap inviata il 15/09/2026.
+- **SEO on-page**: `pageMeta` aggiunge "Origins TCG" ai title che non lo contengono e un'immagine social di default; i dati strutturati stanno in `src/components/JsonLd.tsx` (WebSite + Organization nel layout, Article per guide e mazzi community, Event per i tornei, BreadcrumbList per carte e mazzi). La sitemap usa le date reali di news, patch, mazzi e guide. Strategia e calendario editoriale: artifact "OriginsMeta SEO Playbook" (15/09/2026).
 
 ## Convenzioni
 
