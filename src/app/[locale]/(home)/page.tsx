@@ -16,6 +16,7 @@ import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
+import { NewsCover } from "@/components/NewsCover";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -69,6 +70,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
           <div className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_1.15fr_0.85fr]">
             {featured.map((item, i) => (
               <article key={item.slug} className="card-night flex flex-col p-6">
+                <NewsCover src={item.image} className="mb-4" />
                 <p className={`kicker ${i === 0 ? "text-crimson" : "text-mint"}`}>
                   {i === 0 ? d.home.newsOfDay : d.home.featured} · {formatDate(locale, item.date)}
                 </p>
@@ -155,8 +157,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
 
             <ul className="felt-panel divide-y divide-felt-line self-start">
               {patchNotes.map((nItem) => (
-                <li key={nItem.slug} className="grid gap-3 p-5 sm:grid-cols-[110px_1fr]">
+                <li key={nItem.slug} className="grid gap-3 p-5 sm:grid-cols-[110px_180px_1fr]">
                   <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
+                  <NewsCover src={nItem.image} />
                   <div>
                     <h3 className="font-display text-lg font-bold text-sky">{nItem.title[locale]}</h3>
                     <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
@@ -180,8 +183,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
           <SectionHead title={d.home.newsBoardTitle} sub={d.home.newsBoardSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
           <ul className="felt-panel divide-y divide-felt-line">
             {board.map((nItem) => (
-              <li key={nItem.slug} className="grid gap-2 p-4 sm:grid-cols-[110px_1fr]">
+              <li key={nItem.slug} className="grid gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
                 <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
+                <NewsCover src={nItem.image} />
                 <div>
                   <h3 className="font-display text-base font-bold text-sky">{nItem.title[locale]}</h3>
                   <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>

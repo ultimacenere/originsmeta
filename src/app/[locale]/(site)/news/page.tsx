@@ -4,6 +4,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
 import { SteamButton } from "@/components/SteamButton";
+import { NewsCover } from "@/components/NewsCover";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -20,6 +21,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
       <ol className="mt-10 space-y-4">
         {sortedNews.map((n) => (
           <li key={n.slug} className="card-night p-6">
+            <NewsCover src={n.image} className="mb-4" />
             <p className="flex flex-wrap items-center gap-3 font-mono text-sm text-pale-muted">
               <span className="tabular">{formatDate(locale, n.date)}</span>
               <span className={`stat-pill text-[11px] font-semibold uppercase ${n.source === "steam" ? "pill-steam" : "bg-night-3 text-pale"}`}>

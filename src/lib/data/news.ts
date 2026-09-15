@@ -10,6 +10,8 @@ export type NewsItem = {
   summary: L10n;
   url: string;
   source: "steam" | "press";
+  /** copertina, sempre presente: media kit ufficiale in /public/media o miniatura ufficiale YouTube */
+  image: string;
   /** slug delle carte toccate dall'annuncio */
   cards?: string[];
 };
@@ -17,6 +19,7 @@ export type NewsItem = {
 export const news: NewsItem[] = [
   {
     slug: "playtest-feedback-deck-unlock",
+    image: "/media/capsule-library.webp",
     cards: ["humpty", "spellbook", "asanbosam"],
     date: "2026-09-14",
     title: n(
@@ -34,6 +37,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "kickstarter-ama-pre-registration",
+    image: "/media/ls-collector-pack.webp",
     date: "2026-09-10",
     title: n(
       "Kickstarter AMA held: pre-registration open, Alpha Edition boxes preorder-only",
@@ -50,6 +54,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "gameplay-trailer",
+    image: "https://i.ytimg.com/vi/7EFg0DN9MnI/hqdefault.jpg",
     date: "2026-09-03",
     title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Bande-annonce de gameplay officielle sur YouTube"),
     summary: n(
@@ -62,6 +67,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "itzbolt-wins-conquest",
+    image: "/media/hero-1200.webp",
     date: "2026-08-28",
     title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt remporte le Big Bob's Playtest Battle, premier tournoi Conquest"),
     summary: n(
@@ -74,6 +80,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "biggest-tournament-ever",
+    image: "/media/hero-1920.webp",
     date: "2026-09-09",
     title: n("Biggest tournament ever announced for Steam Next Fest", "Annunciato il torneo più grande di sempre per lo Steam Next Fest", "Le plus grand tournoi jamais organisé annoncé pour le Steam Next Fest"),
     summary: n(
@@ -86,6 +93,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-3",
+    image: "/media/ls-collect-them-all.webp",
     cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
     date: "2026-08-27",
     title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, Re Artù a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
@@ -99,6 +107,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "big-bobs-playtest-battle",
+    image: "/media/capsule-header.webp",
     date: "2026-08-25",
     title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle inaugure le format Conquest"),
     summary: n(
@@ -111,6 +120,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-2",
+    image: "/media/banner-rapunzel.webp",
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
@@ -124,6 +134,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-1-ranked",
+    image: "/media/ls-zero-pay-to-win.webp",
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
@@ -137,6 +148,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "demo-2-playtest",
+    image: "/media/capsule-main.webp",
     date: "2026-08-05",
     title: n("Demo 2.0 playtest: 5 new decks, 70+ new cards, deckbuilding", "Playtest della Demo 2.0: 5 nuovi mazzi, oltre 70 carte nuove, deckbuilding", "Playtest de la Démo 2.0 : 5 nouveaux decks, plus de 70 cartes, deckbuilding"),
     summary: n(
@@ -149,6 +161,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "demo-stats-ama",
+    image: "/media/ls-two-ways.webp",
     date: "2026-07-21",
     title: n("First demo numbers: 1,000+ players, 13,000+ matches, 1h51m median", "Primi numeri della demo: oltre 1.000 giocatori, 13.000 partite, mediana 1h51m", "Premiers chiffres de la démo : 1 000+ joueurs, 13 000+ parties, médiane 1 h 51"),
     summary: n(
@@ -161,6 +174,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "demo-live",
+    image: "/media/capsule-main.webp",
     date: "2026-07-16",
     title: n("The Origins TCG demo is live on Steam", "La demo di Origins TCG è disponibile su Steam", "La démo d'Origins TCG est disponible sur Steam"),
     summary: n(
@@ -173,6 +187,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "creator-program",
+    image: "/media/boxart-rapunzel.webp",
     date: "2026-08-19",
     title: n("Creator Program announced, details in a Discord AMA", "Annunciato il Creator Program, dettagli in un AMA su Discord", "Creator Program annoncé, détails lors d'un AMA sur Discord"),
     summary: n(
@@ -185,6 +200,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "community-open",
+    image: "/media/ls-real-collecting.webp",
     date: "2026-06-03",
     title: n("Official Discord opens to everyone", "Il Discord ufficiale apre a tutti", "Le Discord officiel s'ouvre à tous"),
     summary: n(
@@ -197,6 +213,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "metal-cards-tease",
+    image: "/media/ls-collector-pack.webp",
     date: "2026-03-13",
     title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "Le CEO dévoile des cartes physiques en métal"),
     summary: n(
@@ -209,6 +226,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "steam-page-live",
+    image: "/media/capsule-header.webp",
     date: "2026-05-06",
     title: n("Steam page live: wishlist open, demo on the way", "Pagina Steam online: wishlist aperta, demo in arrivo", "Page Steam en ligne : wishlist ouverte, démo en route"),
     summary: n(
