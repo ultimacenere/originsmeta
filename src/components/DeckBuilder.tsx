@@ -63,6 +63,8 @@ export type BuilderLabels = {
   clear: string;
   submit: string;
   submitHint: string;
+  publish: string;
+  publishHint: string;
   tournamentTitle: string;
   tournamentHint: string;
   minDifferent: string;
@@ -83,7 +85,20 @@ type Persisted = { mode: "single" | "tournament"; active: number; decks: DeckSta
 const STORAGE = "originsmeta.deckbuilder.v1";
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
 
-export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: BuilderCard[]; labels: BuilderLabels; contactEmail: string; shareBase: string }) {
+export function DeckBuilder({
+  pool,
+  labels,
+  contactEmail,
+  shareBase,
+  publishHref,
+}: {
+  pool: BuilderCard[];
+  labels: BuilderLabels;
+  contactEmail: string;
+  shareBase: string;
+  /** pagina "Pubblica sul sito": riceve il mazzo nell'hash (#OM1…) */
+  publishHref: string;
+}) {
   const [mode, setMode] = useState<"single" | "tournament">("single");
   const [active, setActive] = useState(0);
   const [decks, setDecks] = useState<DeckState[]>([emptyDeck(), emptyDeck(), emptyDeck()]);
@@ -108,7 +123,8 @@ export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: B
     [pool, decks],
   );
 
-  /* --- ripristino da link o da browser --- */
+  /* --- ripristino da link o da browser (una volta, dopo l'idratazione: sul server non c'è storage) --- */
+  /* eslint-disable react-hooks/set-state-in-effect -- lettura una tantum di hash e localStorage al montaggio */
   useEffect(() => {
     try {
       const hash = window.location.hash.slice(1);
@@ -134,6 +150,7 @@ export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: B
     }
     setHydrated(true);
   }, [labels.restored]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const persist = useCallback(
     (next: Partial<Persisted>) => {
@@ -410,6 +427,15 @@ export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: B
         {/* Azioni */}
         <h3 className="mt-5 text-lg font-extrabold text-ink">{labels.actions}</h3>
         <div className="mt-2 flex flex-wrap gap-2">
+          {complete ? (
+            <a className="btn btn-mint text-xs" href={`${publishHref}#${encodeOmCode(deck)}`} title={labels.publishHint}>
+              {labels.publish}
+            </a>
+          ) : (
+            <span className="btn cursor-not-allowed border border-ink/20 text-xs text-ink-muted" title={labels.publishHint} aria-disabled="true">
+              {labels.publish}
+            </span>
+          )}
           <button type="button" className="btn btn-ink text-xs" onClick={() => copy(shareLink)}>
             {labels.copyLink}
           </button>
@@ -431,7 +457,7 @@ export function DeckBuilder({ pool, labels, contactEmail, shareBase }: { pool: B
             {labels.save}
           </button>
           <a
-            className="btn btn-gold text-xs"
+            className="btn border border-ink/30 text-xs text-ink"
             href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Deck OriginsMeta: ${deck.name || "senza nome"}`)}&body=${encodeURIComponent(`${textList}\n\n${shareLink}\n\n`)}`}
             title={labels.submitHint}
           >

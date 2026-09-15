@@ -55,7 +55,10 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           pool={pool}
           contactEmail={contactEmail}
           shareBase={`${siteUrl}${href(locale, "/deck-builder")}`}
+          publishHref={href(locale, "/decks/publish")}
           labels={{
+            publish: b.publish,
+            publishHint: b.publishHint,
             modeSingle: b.modeSingle,
             modeTournament: b.modeTournament,
             deckName: b.deckName,

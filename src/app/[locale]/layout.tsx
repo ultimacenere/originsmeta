@@ -13,7 +13,8 @@ const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"],
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
 const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jet", display: "swap" });
 
-export const dynamicParams = false;
+// dynamicParams resta al default (true): le lingue sconosciute finiscono in notFound() qui sotto, e le pagine
+// generate su richiesta (mazzi della community) restano possibili.
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

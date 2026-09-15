@@ -2,6 +2,7 @@ import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { Wordmark } from "./Wordmark";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { AccountMenu } from "./AccountMenu";
 
 export function navItems(dict: Dictionary): { label: string; path: string }[] {
   return [
@@ -48,7 +49,8 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             {dict.nav.searchButton}
           </button>
         </form>
-        <div className="ml-auto md:ml-2">
+        <div className="ml-auto flex items-center gap-2 md:ml-2">
+          <AccountMenu locale={locale} labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout }} />
           <LocaleSwitcher locale={locale} label={dict.nav.language} />
         </div>
         <details className="relative xl:hidden">

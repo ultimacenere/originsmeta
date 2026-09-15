@@ -16,6 +16,8 @@ export type ExplorerDeck = {
   sourceLabel: string;
   cardNames: string[];
   updated: string;
+  /** media e numero dei voti (solo mazzi della community) */
+  rating?: { avg: number; votes: number };
 };
 
 type Labels = {
@@ -27,6 +29,8 @@ type Labels = {
   results: string;
   noResults: string;
   cardsInDeck: string;
+  votes: string;
+  vote: string;
 };
 
 export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels: Labels }) {
@@ -109,6 +113,11 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                   <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-ivory" : "bg-ink text-ivory"}`}>{d.sourceLabel}</span>
                   <span className="stat-pill border border-ink/20 text-ink">{d.archetypeLabel}</span>
                   {d.legendary ? <span className="stat-pill bg-gold/50 text-ink">★ {d.legendary.name}</span> : null}
+                  {d.rating && d.rating.votes > 0 ? (
+                    <span className="stat-pill border border-mint-deep/40 font-mono text-[11px] text-mint-deep">
+                      ★ {d.rating.avg.toFixed(1)} · {d.rating.votes} {d.rating.votes === 1 ? labels.vote : labels.votes}
+                    </span>
+                  ) : null}
                 </span>
                 <span className="mt-3 block font-display text-2xl font-extrabold leading-tight text-ink">{d.name}</span>
                 <span className="mt-1 block text-sm text-ink-muted">{d.tagline}</span>

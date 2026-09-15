@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,8 @@ export default function GlobalNotFound() {
           <h1 className="mt-2 text-3xl font-extrabold">This card does not exist.</h1>
           <p className="mt-3 text-ink-muted">The page you asked for is not on the table.</p>
           <p className="mt-6 flex flex-wrap justify-center gap-3">
-            <a className="btn btn-ink" href="/en">English</a>
-            <a className="btn btn-ink" href="/it">Italiano</a>
+            <Link className="btn btn-ink" href="/en">English</Link>
+            <Link className="btn btn-ink" href="/it">Italiano</Link>
           </p>
         </div>
       </body>

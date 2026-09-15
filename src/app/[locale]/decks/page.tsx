@@ -5,7 +5,11 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels, decks } from "@/lib/data/decks";
 import { cards, getCard, statLine } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
-import { contactEmail } from "@/components/Footer";
+import { listPublishedDecks } from "@/lib/community/queries";
+import { authorName } from "@/lib/community/util";
+
+/** I mazzi della community arrivano da Supabase: la pagina si rigenera al massimo ogni 5 minuti (e subito dopo ogni pubblicazione). */
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -15,6 +19,29 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 export default async function DecksPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const legendaries = cards.filter((c) => c.legendary);
+  const community = await listPublishedDecks();
+  const communityList: ExplorerDeck[] = community
+    .slice()
+    .sort((a, b) => (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || b.created_at.localeCompare(a.created_at))
+    .map((deck) => {
+      const leg = deck.legendary ? getCard(deck.legendary) : undefined;
+      const legCustom = !leg ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
+      return {
+        slug: `community-${deck.slug}`,
+        name: deck.name,
+        href: href(locale, `/decks/community/${deck.slug}`),
+        tagline: deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary,
+        legendary: leg ? { slug: leg.slug, name: leg.name } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
+        archetype: deck.archetype,
+        archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
+        creator: authorName(deck.profile),
+        source: "community",
+        sourceLabel: d.common.community,
+        cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
+        updated: deck.updated_at.slice(0, 10),
+        rating: deck.rating,
+      };
+    });
   const list: ExplorerDeck[] = decks.map((deck) => {
     const leg = deck.legendary ? getCard(deck.legendary) : undefined;
     return {
@@ -46,7 +73,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
 
       <div className="mt-8">
         <DeckExplorer
-          decks={list}
+          decks={[...list, ...communityList]}
           labels={{
             legendary: d.common.filterLegendary,
             archetype: d.common.filterArchetype,
@@ -56,6 +83,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             results: d.common.results,
             noResults: d.common.noDecks,
             cardsInDeck: d.common.cardsInDeck,
+            votes: d.community.votes,
+            vote: d.community.vote,
           }}
         />
       </div>
@@ -85,9 +114,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           <h2 className="text-2xl font-extrabold text-ink">{d.decks.submitTitle}</h2>
           <p className="mt-1 text-ink-muted">{d.decks.submitText}</p>
         </div>
-        <a className="btn btn-ink" href={`mailto:${contactEmail}?subject=Deck%20OriginsMeta`}>
+        <Link className="btn btn-ink" href={href(locale, "/deck-builder")}>
           {d.decks.submitCta}
-        </a>
+        </Link>
       </section>
     </div>
   );
