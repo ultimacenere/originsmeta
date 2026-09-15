@@ -12,9 +12,9 @@
   --color-felt-deep: #0e071f;
   --color-felt-soft: #21143c;
   --color-felt-line: #3a2a60;
-  --color-ivory: #f6f1e6;
-  --color-ivory-2: #ebe3d3;
-  --color-ivory-3: #dbd0bb;
+  --color-ivory: #fbf8f1;
+  --color-ivory-2: #f4efe4;
+  --color-ivory-3: #e8e1d1;
   --color-ink: #16102a;
   --color-ink-muted: #5e5672;
   --color-chalk: #efeaf8;
@@ -367,5 +367,61 @@
   }
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/*
+  Tasti che portano su Steam: colori e tipografia del negozio Steam (bottoni "Installa/Gioca" blu,
+  "Aggiungi al carrello" verde, superfici scure #171a21/#2a475e, testo #c7d5e0, azzurro #66c0f4).
+  Il carattere di Steam è Motiva Sans (proprietario, non distribuibile): si usa se installato,
+  altrimenti Segoe UI/Arial come fa lo stesso negozio Steam nel fallback.
+*/
+@layer components {
+  .btn-steam {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Motiva Sans", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0;
+    color: #fff;
+    background: linear-gradient(to right, #47bfff 5%, #1a44c2 60%);
+    border-radius: 2px;
+    padding: 0.62rem 1rem;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    text-decoration: none;
+    transition: background 120ms ease, color 120ms ease;
+  }
+  .btn-steam:hover {
+    background: linear-gradient(to right, #66cfff 5%, #2c5cd8 60%);
+    color: #fff;
+  }
+  .btn-steam-green {
+    background: linear-gradient(to right, #75b022 5%, #588a1b 95%);
+    color: #d2efa9;
+  }
+  .btn-steam-green:hover {
+    background: linear-gradient(to right, #8ed629 5%, #6aa621 95%);
+    color: #fff;
+  }
+  .btn-steam-dark {
+    background: #171a21;
+    color: #c7d5e0;
+    text-shadow: none;
+  }
+  .btn-steam-dark:hover {
+    background: #2a475e;
+    color: #fff;
+  }
+  .btn-steam-sm {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.7rem;
+  }
+  .pill-steam {
+    background: #171a21;
+    color: #66c0f4;
   }
 }

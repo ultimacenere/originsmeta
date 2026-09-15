@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { contactEmail, officialLinks } from "@/components/Footer";
+import { SteamButton, isSteamUrl } from "@/components/SteamButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -36,12 +37,18 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
           </a>
         </p>
         <h2 className="pt-4 text-2xl font-extrabold">{d.about.sourcesTitle}</h2>
-        <ul className="list-disc space-y-1 pl-6 text-base">
+        <ul className="flex flex-wrap gap-2 text-base">
           {sources.map(([label, url]) => (
             <li key={url}>
-              <a className="text-crimson-deep underline" href={url} rel="noopener">
-                {label}
-              </a>
+              {isSteamUrl(url) ? (
+                <SteamButton href={url} variant={url === officialLinks.news ? "dark" : "blue"}>
+                  {label}
+                </SteamButton>
+              ) : (
+                <a className="btn btn-ink text-xs" href={url} rel="noopener">
+                  {label}
+                </a>
+              )}
             </li>
           ))}
         </ul>

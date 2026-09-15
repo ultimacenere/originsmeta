@@ -1,5 +1,6 @@
 import { formatDateShort, formatDate, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Event } from "@/lib/data/events";
+import { SteamButton, isSteamUrl } from "./SteamButton";
 
 export function EventCard({ event, locale, dict, compact = false }: { event: Event; locale: Locale; dict: Dictionary; compact?: boolean }) {
   const range = event.end
@@ -32,14 +33,26 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
       ) : null}
       <div className="mt-auto flex flex-wrap gap-2 pt-4">
         {event.signup ? (
-          <a className="btn btn-ink text-xs" href={event.signup.url} rel="noopener">
-            {event.signup.label[locale]}
-          </a>
+          isSteamUrl(event.signup.url) ? (
+            <SteamButton href={event.signup.url} size="sm">
+              {event.signup.label[locale]}
+            </SteamButton>
+          ) : (
+            <a className="btn btn-ink text-xs" href={event.signup.url} rel="noopener">
+              {event.signup.label[locale]}
+            </a>
+          )
         ) : null}
         {event.source ? (
-          <a className="btn border border-ink/30 text-ink text-xs hover:text-crimson-deep" href={event.source} rel="noopener">
-            {dict.common.source}
-          </a>
+          isSteamUrl(event.source) ? (
+            <SteamButton href={event.source} variant="dark" size="sm">
+              {dict.common.source}
+            </SteamButton>
+          ) : (
+            <a className="btn border border-ink/30 text-ink text-xs hover:text-crimson-deep" href={event.source} rel="noopener">
+              {dict.common.source}
+            </a>
+          )
         ) : null}
       </div>
     </article>

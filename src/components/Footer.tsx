@@ -2,6 +2,7 @@ import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
+import { SteamLogo } from "./SteamButton";
 
 export const officialLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
@@ -47,7 +48,18 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         <div>
           <h2 className="kicker mb-3 text-mint">{dict.footer.official}</h2>
           <ul className="space-y-1.5 text-sm">
-            <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.steam} rel="noopener">Steam</a></li>
+            <li>
+              <a className="inline-flex items-center gap-1.5 text-chalk-muted hover:text-[#66c0f4]" href={officialLinks.steam} rel="noopener">
+                <SteamLogo className="h-3.5 w-3.5" />
+                Steam
+              </a>
+            </li>
+            <li>
+              <a className="inline-flex items-center gap-1.5 text-chalk-muted hover:text-[#66c0f4]" href={officialLinks.demo} rel="noopener">
+                <SteamLogo className="h-3.5 w-3.5" />
+                Demo
+              </a>
+            </li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.discord} rel="noopener">Discord</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.site} rel="noopener">origins-tcg.com</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.x} rel="noopener">X / Twitter</a></li>

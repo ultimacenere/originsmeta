@@ -9,6 +9,7 @@ import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardArt } from "@/components/CardChip";
+import { SteamButton } from "@/components/SteamButton";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -109,9 +110,9 @@ export default async function CardPage({ params }: { params: Params }) {
                 <span className="font-mono text-sm text-ink-muted">
                   {d.common.patch} {ch.patch} · {formatDate(locale, patches[ch.patch].date)}
                 </span>
-                <a href={patches[ch.patch].url} rel="noopener" className="ml-auto text-xs text-crimson-deep hover:underline">
-                  {d.common.steamNews} →
-                </a>
+                <SteamButton href={patches[ch.patch].url} variant="dark" size="sm" className="ml-auto">
+                  {d.common.steamNews}
+                </SteamButton>
               </div>
               <div className="mt-3">
                 <StatDelta from={ch.from} to={ch.to} />

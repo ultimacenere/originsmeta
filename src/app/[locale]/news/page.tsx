@@ -3,6 +3,7 @@ import { formatDate } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
+import { SteamButton } from "@/components/SteamButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -21,7 +22,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
           <li key={n.slug} className="card-ivory p-6">
             <p className="flex flex-wrap items-center gap-3 font-mono text-sm text-ink-muted">
               <span className="tabular">{formatDate(locale, n.date)}</span>
-              <span className={`stat-pill text-[11px] font-semibold uppercase ${n.source === "steam" ? "bg-ink text-ivory" : "bg-ivory-3 text-ink"}`}>
+              <span className={`stat-pill text-[11px] font-semibold uppercase ${n.source === "steam" ? "pill-steam" : "bg-ivory-3 text-ink"}`}>
                 {n.source === "steam" ? "Steam" : d.common.source}
               </span>
             </p>
@@ -33,9 +34,17 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
                 <CardChipList slugs={n.cards} locale={locale} />
               </div>
             ) : null}
-            <a href={n.url} rel="noopener" className="mt-3 inline-block text-sm text-crimson-deep underline">
-              {n.source === "steam" ? d.common.steamNews : d.common.source} →
-            </a>
+            {n.source === "steam" ? (
+              <p className="mt-4">
+                <SteamButton href={n.url} variant="dark" size="sm">
+                  {d.common.steamNews}
+                </SteamButton>
+              </p>
+            ) : (
+              <a href={n.url} rel="noopener" className="mt-3 inline-block text-sm text-crimson-deep underline">
+                {d.common.source} →
+              </a>
+            )}
           </li>
         ))}
       </ol>
