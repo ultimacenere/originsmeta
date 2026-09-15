@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
-import { alternatesFor, getDictionary, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
+import { alternatesFor, getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CookieBanner } from "@/components/CookieBanner";
 
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
@@ -63,6 +64,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <Header locale={l} dict={d} />
         {children}
         <Footer locale={l} dict={d} />
+        <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         <Analytics />
         <SpeedInsights />
       </body>

@@ -4,6 +4,7 @@ import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { SteamLogo } from "./SteamButton";
 import { DiscordLogo } from "./DiscordButton";
+import { CookiePreferencesButton } from "./CookieBanner";
 
 export const officialLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
@@ -77,6 +78,9 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <ul className="space-y-1.5 text-sm">
             <li><Link className="text-chalk-muted hover:text-chalk" href={href(locale, "/about")}>{dict.nav.about}</Link></li>
             <li><Link className="text-chalk-muted hover:text-chalk" href={href(locale, "/privacy")}>{dict.footer.privacy}</Link></li>
+            <li>
+              <CookiePreferencesButton label={dict.cookies.manage} className="text-chalk-muted hover:text-chalk" />
+            </li>
           </ul>
           <p className="mt-6 font-mono text-[11px] uppercase tracking-wider text-chalk-muted/70">{dict.footer.built}</p>
         </div>

@@ -234,6 +234,16 @@ export const en = {
     body: "OriginsMeta does not use advertising cookies. The site is hosted on Vercel, which keeps standard server logs (IP address, user agent, requested page) for security and performance, and uses Vercel Web Analytics, a cookieless, aggregated measurement that does not identify you. If you write to us by email, we keep your message only to answer you. Data controller: OriginsMeta, staff@originsmeta.com. You can ask at any time what we hold about you and have it deleted.",
     accounts:
       "If you create an account (Discord sign-in or email link), we store on Supabase (servers in Ireland, EU) your email, username, avatar and Discord ID, plus the decks you publish and the ratings you give. Decks and ratings are public under your username; your email is not. A session cookie keeps you signed in. Write to staff@originsmeta.com to delete your account and everything attached to it.",
+    cookies:
+      "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. Vercel Web Analytics measures visits without cookies and without identifying you. Videos on community deck pages are embedded through youtube-nocookie.com, YouTube's privacy-enhanced mode, which sets nothing until you press play. No advertising or profiling cookies, no third-party trackers. You can change your choice at any time from “Cookie preferences” in the footer.",
+  },
+  cookies: {
+    title: "Cookies",
+    text: "OriginsMeta uses only technical cookies (your sign-in session) and cookieless, aggregated statistics. No advertising, no profiling. If we ever add optional tools, they will load only with your consent.",
+    accept: "Accept all",
+    necessary: "Only necessary",
+    privacy: "Privacy policy",
+    manage: "Cookie preferences",
   },
   footer: {
     disclaimer: "OriginsMeta is an independent, unofficial project and is not affiliated with Koin Games. Origins TCG and all related names and artwork belong to their owners.",

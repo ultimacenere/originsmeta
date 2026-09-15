@@ -83,6 +83,10 @@ In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle m
 - **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. L'export in questo formato richiede il campo `key` sulle carte in `cards.ts`: per ora sconosciuto; l'import di un codice del gioco mostra le chiavi non abbinate e permette di inviarci l'abbinamento ("Insegnaci gli ID ufficiali").
 - **Formato OriginsMeta** (`OM1.`): base64url di JSON con nome, leggendaria, carte e carte personalizzate; usato per i link di condivisione (`/deck-builder#OM1.…`).
 
+## Cookie e GDPR
+
+- Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
+
 ## Analytics
 
 Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie, nessun banner). Vanno abilitati una volta nel progetto Vercel (tab Analytics e Speed Insights). GA4 non è attivo: richiederebbe il consenso cookie.

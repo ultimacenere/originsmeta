@@ -15,6 +15,7 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
       <article className="card-ivory mt-8 p-6 text-lg leading-relaxed text-ink sm:p-10">
         <p>{d.privacy.body}</p>
         <p className="mt-6">{d.privacy.accounts}</p>
+        <p className="mt-6">{d.privacy.cookies}</p>
       </article>
     </div>
   );

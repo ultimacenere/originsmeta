@@ -236,6 +236,16 @@ export const it: Dictionary = {
     body: "OriginsMeta non usa cookie pubblicitari. Il sito è ospitato su Vercel, che conserva i normali log del server (indirizzo IP, user agent, pagina richiesta) per sicurezza e prestazioni, e usa Vercel Web Analytics, una misurazione aggregata senza cookie che non ti identifica. Se ci scrivi via email, conserviamo il messaggio solo per risponderti. Titolare del trattamento: OriginsMeta, staff@originsmeta.com. Puoi chiedere in qualsiasi momento quali dati abbiamo su di te e farli cancellare.",
     accounts:
       "Se crei un account (accesso con Discord o link via email), conserviamo su Supabase (server in Irlanda, UE) email, nome utente, avatar e ID Discord, oltre ai mazzi che pubblichi e ai voti che dai. Mazzi e voti sono pubblici con il tuo nome utente; l'email no. Un cookie di sessione ti tiene connesso. Scrivi a staff@originsmeta.com per cancellare l'account e tutto ciò che vi è collegato.",
+    cookies:
+      "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Vercel Web Analytics misura le visite senza cookie e senza identificarti. I video nelle pagine dei mazzi della community sono incorporati tramite youtube-nocookie.com, la modalità a privacy potenziata di YouTube, che non imposta nulla finché non premi play. Nessun cookie pubblicitario o di profilazione, nessun tracciante di terze parti. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
+  },
+  cookies: {
+    title: "Cookie",
+    text: "OriginsMeta usa solo cookie tecnici (la sessione del tuo account) e statistiche aggregate senza cookie. Niente pubblicità, niente profilazione. Se un giorno aggiungeremo strumenti facoltativi, partiranno solo con il tuo consenso.",
+    accept: "Accetta tutto",
+    necessary: "Solo necessari",
+    privacy: "Informativa privacy",
+    manage: "Preferenze cookie",
   },
   footer: {
     disclaimer: "OriginsMeta è un progetto indipendente e non ufficiale, non affiliato a Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
