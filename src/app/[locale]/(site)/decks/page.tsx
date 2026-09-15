@@ -63,7 +63,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.decks}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.decks.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
       <p className="mt-5">
         <Link href={href(locale, "/deck-builder")} className="btn btn-mint">
@@ -91,7 +91,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         <section className="felt-panel p-6">
-          <h2 className="text-2xl font-extrabold text-mint">{d.decks.legendariesTitle}</h2>
+          <h2 className="text-2xl font-extrabold text-chalk">{d.decks.legendariesTitle}</h2>
           <p className="mt-3 text-chalk-muted">{d.decks.legendariesText}</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {legendaries.map((c) => (
@@ -104,15 +104,15 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           </ul>
         </section>
         <section className="felt-panel p-6">
-          <h2 className="text-2xl font-extrabold text-mint">{d.decks.conquestTitle}</h2>
+          <h2 className="text-2xl font-extrabold text-chalk">{d.decks.conquestTitle}</h2>
           <p className="mt-3 text-chalk-muted">{d.decks.conquestText}</p>
         </section>
       </div>
 
-      <section className="card-night mt-12 flex flex-wrap items-center justify-between gap-4 p-6">
+      <section className="card-ivory mt-12 flex flex-wrap items-center justify-between gap-4 p-6">
         <div>
-          <h2 className="text-2xl font-extrabold text-mint">{d.decks.submitTitle}</h2>
-          <p className="mt-1 text-pale-muted">{d.decks.submitText}</p>
+          <h2 className="text-2xl font-extrabold text-ink">{d.decks.submitTitle}</h2>
+          <p className="mt-1 text-ink-muted">{d.decks.submitText}</p>
         </div>
         <Link className="btn btn-ink" href={href(locale, "/deck-builder")}>
           {d.decks.submitCta}

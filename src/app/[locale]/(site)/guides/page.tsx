@@ -17,7 +17,7 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.guides}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.guides.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
@@ -32,15 +32,15 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
       <ul className="mt-8 grid gap-6 md:grid-cols-3">
         {guides.map((g) => (
           <li key={g.slug}>
-            <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover flex h-full flex-col overflow-hidden">
+            <Link href={href(locale, `/guides/${g.slug}`)} className="card-ivory card-ivory-hover flex h-full flex-col overflow-hidden">
               {g.image ? <Image src={g.image} alt="" width={1200} height={675} sizes="(max-width: 768px) 90vw, 30vw" className="aspect-[16/9] w-full object-cover" /> : null}
               <div className="flex flex-1 flex-col p-5">
-                <p className="kicker text-pale-muted">
+                <p className="kicker text-ink-muted">
                   {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {formatDate(locale, g.updated)}
                 </p>
-                <h2 className="mt-1 text-xl font-extrabold leading-tight text-mint">{g.title}</h2>
-                <p className="mt-2 flex-1 text-sm text-pale-muted">{g.excerpt}</p>
-                <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
+                <h2 className="mt-1 text-xl font-extrabold leading-tight text-ink">{g.title}</h2>
+                <p className="mt-2 flex-1 text-sm text-ink-muted">{g.excerpt}</p>
+                <span className="mt-4 font-display text-sm font-bold text-crimson-deep">{d.common.readMore} →</span>
               </div>
             </Link>
           </li>

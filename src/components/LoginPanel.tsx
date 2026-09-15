@@ -72,20 +72,20 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
     setStatus(!error ? "sent" : error.status === 429 || error.code === "over_email_send_rate_limit" ? "rateLimited" : "error");
   };
 
-  if (!supabaseEnabled) return <p className="card-night p-6 text-pale-muted">{labels.disabled}</p>;
+  if (!supabaseEnabled) return <p className="card-ivory p-6 text-ink-muted">{labels.disabled}</p>;
 
   const busy = status === "sending";
   return (
-    <div className="card-night p-6 sm:p-8">
+    <div className="card-ivory p-6 sm:p-8">
       <button type="button" onClick={discord} disabled={busy} className="btn-discord w-full justify-center py-3.5 text-base disabled:opacity-60">
         <DiscordLogo className="h-5 w-5" />
         <span>{labels.discord}</span>
       </button>
 
-      <p className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-pale-muted">
-        <span className="h-px flex-1 bg-chalk/15" />
+      <p className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-ink-muted">
+        <span className="h-px flex-1 bg-ink/15" />
         {labels.or}
-        <span className="h-px flex-1 bg-chalk/15" />
+        <span className="h-px flex-1 bg-ink/15" />
       </p>
 
       <form onSubmit={magic} className="flex flex-col gap-2 sm:flex-row">
@@ -100,7 +100,7 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={labels.emailPlaceholder}
-          className="flex-1 rounded-lg border border-sky bg-night px-3 py-2.5 text-pale"
+          className="flex-1 rounded-lg border border-sky bg-ivory px-3 py-2.5 text-ink"
         />
         <button type="submit" disabled={busy || status === "sent"} className="btn btn-mint justify-center disabled:opacity-60">
           {busy ? labels.sending : labels.magicLink}
@@ -108,10 +108,10 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
       </form>
 
       {status === "sent" ? <p className="mt-4 rounded-lg bg-mint-soft px-3 py-2 text-sm text-ink" aria-live="polite">{labels.sent}</p> : null}
-      {status === "error" || urlError ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson" aria-live="polite">{labels.error}</p> : null}
-      {status === "providerError" ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson" aria-live="polite">{labels.providerError}</p> : null}
-      {status === "rateLimited" ? <p className="mt-4 rounded-lg bg-gold/30 px-3 py-2 text-sm text-pale" aria-live="polite">{labels.rateLimited}</p> : null}
-      <p className="mt-4 text-xs text-pale-muted">{labels.backHint}</p>
+      {status === "error" || urlError ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson-deep" aria-live="polite">{labels.error}</p> : null}
+      {status === "providerError" ? <p className="mt-4 rounded-lg bg-crimson/10 px-3 py-2 text-sm text-crimson-deep" aria-live="polite">{labels.providerError}</p> : null}
+      {status === "rateLimited" ? <p className="mt-4 rounded-lg bg-gold/30 px-3 py-2 text-sm text-ink" aria-live="polite">{labels.rateLimited}</p> : null}
+      <p className="mt-4 text-xs text-ink-muted">{labels.backHint}</p>
     </div>
   );
 }

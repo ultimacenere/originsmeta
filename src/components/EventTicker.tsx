@@ -25,7 +25,7 @@ export function EventTicker({ locale, dict }: { locale: Locale; dict: Dictionary
               <small>{monthShort(locale, e.start)}</small>
             </span>
             <span className="min-w-0">
-              <span className={`block font-display text-sm font-bold ${isNext ? "text-gold" : "text-mint"}`}>{e.title[locale]}</span>
+              <span className={`block font-display text-sm font-bold ${isNext ? "text-gold" : "text-chalk"}`}>{e.title[locale]}</span>
               <span className="block font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
                 {isNext ? `${dict.common.next} · ` : ""}
                 {e.where[locale]}

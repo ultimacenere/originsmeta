@@ -37,7 +37,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="kicker text-mint">{d.nav.events}</p>
-          <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.events.title}</h1>
+          <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.events.title}</h1>
           <p className="mt-4 max-w-2xl text-chalk-muted">{d.events.intro}</p>
         </div>
         <a className="btn btn-mint" href={`mailto:${contactEmail}?subject=Evento%20Origins%20TCG`}>
@@ -56,7 +56,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
                 <small>{monthShort(locale, e.start)}</small>
               </span>
               <span className="max-w-[220px]">
-                <span className="block font-display text-sm font-bold text-mint">{e.title[locale]}</span>
+                <span className="block font-display text-sm font-bold text-chalk">{e.title[locale]}</span>
                 <span className="block text-xs text-chalk-muted">{e.where[locale]}</span>
               </span>
             </li>
@@ -64,7 +64,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         </ol>
       </section>
 
-      <h2 className="mt-12 text-2xl font-extrabold text-mint">{d.common.upcoming}</h2>
+      <h2 className="mt-12 text-2xl font-extrabold text-chalk">{d.common.upcoming}</h2>
       <ul className="mt-5 grid gap-5 md:grid-cols-2">
         {up.map((e) => (
           <li key={e.slug} id={e.slug}>
@@ -73,7 +73,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         ))}
       </ul>
 
-      <h2 className="mt-14 text-2xl font-extrabold text-mint">{d.common.past}</h2>
+      <h2 className="mt-14 text-2xl font-extrabold text-chalk">{d.common.past}</h2>
       <ul className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {past.map((e) => (
           <li key={e.slug}>

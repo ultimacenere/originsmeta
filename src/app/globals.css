@@ -1,28 +1,25 @@
 @import "tailwindcss";
 
 /*
-  OriginsMeta — "ink & mint", versione notte (15/09/2026)
-  Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte come pannelli blu notte
-  (night), con cornici celesti piene (sky, il cristallo del mana), titoli in menta come il blocco MetaShift
-  e testi grigio chiaro (pale / chalk).
-  Niente elementi bianchi né neri pieni: richiesta esplicita di Pierluigi. Menta del logo per bottoni e accenti,
+  OriginsMeta — "ink & mint"
+  Il tavolo (viola inchiostro, come lo sfondo della key art ufficiale) e le carte (avorio) con cornice
+  celeste piena da 3 px (sky, il cristallo del mana delle carte del gioco; niente righette sottili).
+  Menta del logo come colore dominante degli accenti (i competitor usano tutti viola/rosa),
   giallo citrino solo per le leggendarie e l'evento evidenziato, magenta per ciò che scotta.
-  "ink" resta il testo scuro sui fondi menta/oro. I nomi dei token sono per ruolo, non per tinta.
+  I nomi dei token restano "felt / chalk / crimson / gold" per ruolo, non per tinta.
 */
 @theme {
   --color-felt: #150c2c;
   --color-felt-deep: #0e071f;
   --color-felt-soft: #21143c;
   --color-felt-line: #3a2a60;
-  --color-night: #182238;
-  --color-night-2: #121a2c;
-  --color-night-3: #22304b;
+  --color-ivory: #f7f1e4;
+  --color-ivory-2: #f1ead8;
+  --color-ivory-3: #e8e0cb;
   --color-ink: #16102a;
   --color-ink-muted: #5e5672;
-  --color-pale: #c8d1dd;
-  --color-pale-muted: #8e9bb1;
-  --color-chalk: #d9dfe8;
-  --color-chalk-muted: #96a3b9;
+  --color-chalk: #f3eee0;
+  --color-chalk-muted: #b3a8cf;
   --color-crimson: #c81e7a;
   --color-crimson-deep: #971359;
   --color-gold: #f2d23c;
@@ -81,19 +78,19 @@
 }
 
 @layer components {
-  /* Una carta appoggiata sul tavolo: pannello blu notte con cornice celeste, come il blocco MetaShift */
-  .card-night {
-    background: linear-gradient(180deg, rgba(49, 227, 189, 0.07) 0%, rgba(49, 227, 189, 0) 40%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
-    color: var(--color-pale);
+  /* Una carta appoggiata sul tavolo: avorio con cornice celeste piena */
+  .card-ivory {
+    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
+    color: var(--color-ink);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
     border: 3px solid var(--color-sky);
     position: relative;
   }
-  .card-night-hover {
+  .card-ivory-hover {
     transition: transform 160ms ease, box-shadow 160ms ease;
   }
-  .card-night-hover:hover {
+  .card-ivory-hover:hover {
     transform: translateY(-3px) rotate(-0.4deg);
     box-shadow: var(--shadow-mint);
   }
@@ -124,7 +121,7 @@
     border: 6px solid var(--color-sky);
     box-shadow: var(--shadow-lift);
     overflow: hidden;
-    background: var(--color-night);
+    background: var(--color-ivory);
   }
   .btn {
     display: inline-flex;
@@ -164,13 +161,11 @@
     color: var(--color-mint);
   }
   .btn-ink {
-    background: var(--color-night-3);
-    color: var(--color-chalk);
-    border: 1px solid var(--color-sky);
+    background: var(--color-ink);
+    color: var(--color-ivory);
   }
   .btn-ink:hover {
-    background: #2c3d5e;
-    color: var(--color-mint);
+    background: #2a2044;
   }
   .stat-pill {
     font-family: var(--font-mono);
@@ -194,8 +189,8 @@
     grid-template-columns: 44px 1fr;
     gap: 0.55rem;
     align-items: center;
-    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
-    color: var(--color-pale);
+    background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
+    color: var(--color-ink);
     border: 2px solid var(--color-sky);
     border-radius: 10px;
     padding: 0.35rem 0.55rem 0.35rem 0.35rem;
@@ -217,7 +212,7 @@
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 0.9rem;
-    color: var(--color-chalk);
+    color: var(--color-ivory);
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
     position: relative;
   }
@@ -285,8 +280,8 @@
     width: 44px;
     height: 44px;
     border-radius: 8px;
-    background: var(--color-night-3);
-    color: var(--color-mint);
+    background: var(--color-ivory);
+    color: var(--color-ink);
     border: 2px solid var(--color-sky);
     font-family: var(--font-display);
     font-weight: 800;
@@ -298,74 +293,67 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 400;
-    color: var(--color-pale-muted);
+    color: var(--color-ink-muted);
   }
   .date-cube.is-next {
     background: var(--color-gold);
     border-color: var(--color-gold);
-    color: var(--color-ink);
-  }
-  .date-cube.is-next small {
-    color: var(--color-ink-muted);
   }
 
-  .prose-night {
-    color: var(--color-pale);
+  .prose-ivory {
+    color: var(--color-ink);
     line-height: 1.7;
   }
-  .prose-night h2, .prose-night h3 {
-    color: var(--color-mint);
-  }
-  .prose-night h2 {
+  .prose-ivory h2 {
     font-size: 1.5rem;
     margin: 1.8em 0 0.6em;
   }
-  .prose-night h3 {
+  .prose-ivory h3 {
     font-size: 1.15rem;
     margin: 1.5em 0 0.5em;
   }
-  .prose-night p {
+  .prose-ivory p {
     margin: 0 0 1em;
   }
-  .prose-night ul, .prose-night ol {
+  .prose-ivory ul, .prose-ivory ol {
     margin: 0 0 1.1em;
     padding-left: 1.4em;
   }
-  .prose-night li {
+  .prose-ivory li {
     margin-bottom: 0.35em;
   }
-  .prose-night a {
-    color: var(--color-mint);
+  .prose-ivory a {
+    color: var(--color-crimson-deep);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
-  .prose-night strong {
+  .prose-ivory strong {
     font-weight: 700;
   }
-  .prose-night blockquote {
-    border-left: 3px solid var(--color-mint);
+  .prose-ivory blockquote {
+    border-left: 3px solid var(--color-mint-deep);
     margin: 1em 0;
     padding: 0.2em 1em;
-    color: var(--color-pale-muted);
+    color: var(--color-ink-muted);
   }
-  .prose-night table {
+  .prose-ivory table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
     margin: 1em 0;
   }
-  .prose-night th, .prose-night td {
-    border-bottom: 1px solid rgba(63, 196, 232, 0.5);
+  .prose-ivory th, .prose-ivory td {
+    border-bottom: 1px solid rgba(22, 16, 42, 0.15);
     padding: 0.5em 0.6em;
     text-align: left;
     vertical-align: top;
   }
-  .prose-night th {
+  .prose-ivory th {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-pale-muted);
+    color: var(--color-ink-muted);
   }
 }
 

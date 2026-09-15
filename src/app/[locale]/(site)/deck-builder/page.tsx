@@ -32,7 +32,7 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.decks}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{b.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{b.title}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{b.intro}</p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">

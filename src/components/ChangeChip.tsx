@@ -2,9 +2,9 @@ import type { ChangeKind } from "@/lib/data/cards";
 
 const styles: Record<ChangeKind, string> = {
   buff: "bg-felt text-chalk",
-  nerf: "bg-crimson text-chalk",
+  nerf: "bg-crimson text-ivory",
   rework: "bg-gold text-ink",
-  deck: "bg-night-3 text-pale",
+  deck: "bg-ivory-3 text-ink",
 };
 
 export function ChangeChip({ kind, label }: { kind: ChangeKind; label: string }) {
@@ -17,8 +17,8 @@ export function StatDelta({ from, to }: { from?: { mana?: number; power?: number
     s.power === undefined ? `${s.mana ?? "?"}` : `${s.mana ?? "?"} · ${s.power}/${s.health}`;
   return (
     <span className="font-mono text-sm tabular">
-      <span className="text-pale-muted line-through decoration-crimson/70">{fmt(from)}</span>
-      <span className="mx-1.5 text-pale-muted">→</span>
+      <span className="text-ink-muted line-through decoration-crimson/70">{fmt(from)}</span>
+      <span className="mx-1.5 text-ink-muted">→</span>
       <span className="font-semibold">{fmt(to)}</span>
     </span>
   );

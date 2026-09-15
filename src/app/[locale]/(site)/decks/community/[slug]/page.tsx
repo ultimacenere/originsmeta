@@ -82,28 +82,28 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </Link>
       </p>
 
-      <article className="card-night mt-6 p-6 sm:p-8">
-        <p className="kicker text-pale-muted">
+      <article className="card-ivory mt-6 p-6 sm:p-8">
+        <p className="kicker text-ink-muted">
           {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
         </p>
-        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-mint sm:text-5xl">{deck.name}</h1>
-        <p className="mt-3 flex items-center gap-2 text-pale-muted">
+        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">{deck.name}</h1>
+        <p className="mt-3 flex items-center gap-2 text-ink-muted">
           <Avatar profile={deck.profile} name={author} size={32} />
           <span>
-            {c.by} <strong className="text-pale">{author}</strong>
+            {c.by} <strong className="text-ink">{author}</strong>
             {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
           </span>
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>
-          <span className="stat-pill border border-sky text-pale">
+          <span className="stat-pill bg-mint-deep text-ivory text-[11px] font-semibold uppercase">{d.common.community}</span>
+          <span className="stat-pill border border-sky text-ink">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
-          {legendary || customLegendary ? <span className="stat-pill bg-gold/50 text-pale">★ {legendary?.name ?? customLegendary?.name}</span> : null}
-          <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
+          {legendary || customLegendary ? <span className="stat-pill bg-gold/50 text-ink">★ {legendary?.name ?? customLegendary?.name}</span> : null}
+          <span className="stat-pill bg-ivory-3 text-ink font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>
 
-        <p className="mt-6 whitespace-pre-line text-lg text-pale">{deck.guide.summary}</p>
+        <p className="mt-6 whitespace-pre-line text-lg text-ink">{deck.guide.summary}</p>
 
         <div className="mt-6">
           <StarRating
@@ -138,7 +138,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         />
 
         {yt ? (
-          <div className="mt-8 overflow-hidden rounded-xl border border-sky bg-felt-deep" style={{ aspectRatio: "16 / 9" }}>
+          <div className="mt-8 overflow-hidden rounded-xl border border-sky bg-ink" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${yt}`}
               title={deck.name}
@@ -157,17 +157,17 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </p>
         ) : null}
 
-        <h2 className="mt-8 text-xl font-extrabold text-mint">{d.common.legendary}</h2>
+        <h2 className="mt-8 text-xl font-extrabold text-ink">{d.common.legendary}</h2>
         {legendary ? (
           <div className="mt-2">
             <CardChip slug={legendary.slug} locale={locale} />
           </div>
         ) : (
-          <p className="mt-2 text-sm text-pale">★ {customLegendary?.name ?? deck.legendary} *</p>
+          <p className="mt-2 text-sm text-ink">★ {customLegendary?.name ?? deck.legendary} *</p>
         )}
 
-        <h2 className="mt-8 text-xl font-extrabold text-mint">
-          {d.builder.slots} <span className="font-mono text-sm font-normal text-pale-muted">{RULES.distinctCards} × {RULES.copiesPerCard}</span>
+        <h2 className="mt-8 text-xl font-extrabold text-ink">
+          {d.builder.slots} <span className="font-mono text-sm font-normal text-ink-muted">{RULES.distinctCards} × {RULES.copiesPerCard}</span>
         </h2>
         {knownCards.length ? (
           <div className="mt-3">
@@ -176,8 +176,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         ) : null}
         {customCards.length ? (
           <div className="mt-3">
-            <p className="kicker text-pale-muted">{c.customCards}</p>
-            <ul className="mt-1 flex flex-wrap gap-2 text-sm text-pale">
+            <p className="kicker text-ink-muted">{c.customCards}</p>
+            <ul className="mt-1 flex flex-wrap gap-2 text-sm text-ink">
               {customCards.map((n) => (
                 <li key={n} className="stat-pill border border-dashed border-sky">
                   {RULES.copiesPerCard}× {n} *
@@ -193,20 +193,20 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <Link href={builderHref} className="btn btn-ink text-xs">
             {c.openInBuilder}
           </Link>
-          {deck.code_om ? <CopyButton text={deck.code_om} label={c.copyCode} copied={c.copied} className="btn border border-sky text-xs text-pale" /> : null}
-          <a className="btn border border-sky text-xs text-pale-muted hover:text-crimson" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Report deck ${deck.slug}`)}&body=${encodeURIComponent(pageUrl)}`}>
+          {deck.code_om ? <CopyButton text={deck.code_om} label={c.copyCode} copied={c.copied} className="btn border border-sky text-xs text-ink" /> : null}
+          <a className="btn border border-sky text-xs text-ink-muted hover:text-crimson-deep" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Report deck ${deck.slug}`)}&body=${encodeURIComponent(pageUrl)}`}>
             {c.report}
           </a>
         </div>
 
         {sections.length ? (
           <>
-            <h2 className="mt-10 text-2xl font-extrabold text-mint">{c.guide}</h2>
+            <h2 className="mt-10 text-2xl font-extrabold text-ink">{c.guide}</h2>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               {sections.map((k) => (
                 <section key={k} className={`rounded-lg border border-sky p-4 ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
-                  <h3 className="kicker text-mint">{c[k]}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm text-pale">{deck.guide[k]}</p>
+                  <h3 className="kicker text-mint-deep">{c[k]}</h3>
+                  <p className="mt-2 whitespace-pre-line text-sm text-ink">{deck.guide[k]}</p>
                 </section>
               ))}
             </div>
@@ -216,7 +216,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
       {others.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-mint">{c.others}</h2>
+          <h2 className="text-2xl font-extrabold text-chalk">{c.others}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {others.map((x) => (
               <li key={x.slug}>

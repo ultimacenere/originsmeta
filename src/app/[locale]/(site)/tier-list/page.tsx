@@ -18,9 +18,9 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 const tierTone: Record<TierId, string> = {
   S: "bg-gold text-ink",
   A: "bg-mint text-ink",
-  B: "bg-night text-pale",
-  C: "bg-night-3 text-pale",
-  D: "bg-crimson text-chalk",
+  B: "bg-ivory text-ink",
+  C: "bg-ivory-3 text-ink",
+  D: "bg-crimson text-ivory",
 };
 
 export default async function TierListPage({ params }: { params: LocaleParams }) {
@@ -35,7 +35,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         <Link key={slug} href={href(locale, `/decks/${deck.slug}`)} className="card-chip !grid-cols-1">
           <span className="min-w-0">
             <span className="block font-display text-[0.85rem] font-bold leading-tight">{deck.name}</span>
-            <span className="block font-mono text-[11px] text-pale-muted">{archetypeLabels[deck.archetype][locale]}</span>
+            <span className="block font-mono text-[11px] text-ink-muted">{archetypeLabels[deck.archetype][locale]}</span>
           </span>
         </Link>
       );
@@ -46,28 +46,28 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.tierList}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-mint sm:text-5xl">{d.tier.title}</h1>
+      <h1 className="mt-2 text-4xl font-extrabold text-chalk sm:text-5xl">{d.tier.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <section className="card-night p-6">
-          <p className="kicker text-crimson">
+        <section className="card-ivory p-6">
+          <p className="kicker text-crimson-deep">
             {d.tier.statusKicker} · {d.common.updated} {formatDate(locale, tierList.updated)}
           </p>
-          <p className="mt-2 text-lg font-bold text-pale">{d.tier.statusText}</p>
-          <h2 className="mt-6 text-xl font-extrabold text-mint">{d.tier.methodTitle}</h2>
-          <ol className="mt-2 list-decimal space-y-1 pl-5 text-pale">
+          <p className="mt-2 text-lg font-bold text-ink">{d.tier.statusText}</p>
+          <h2 className="mt-6 text-xl font-extrabold text-ink">{d.tier.methodTitle}</h2>
+          <ol className="mt-2 list-decimal space-y-1 pl-5 text-ink">
             {d.tier.method.map((m) => (
               <li key={m}>{m}</li>
             ))}
           </ol>
-          <p className="mt-6 text-sm text-pale-muted">
+          <p className="mt-6 text-sm text-ink-muted">
             {d.tier.ctaText}{" "}
             <a className="link-discord inline-flex items-center gap-1 align-middle" href={officialLinks.discord} rel="noopener">
               <DiscordLogo className="h-3.5 w-3.5" />
               Discord
             </a>{" "}
-            · <a className="text-crimson underline" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+            · <a className="text-crimson-deep underline" href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </p>
         </section>
         <section className="felt-panel p-6">
@@ -86,7 +86,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         const meta = d.tier.sections[section.id];
         return (
           <section key={section.id} id={section.id} className="mt-14 scroll-mt-24">
-            <h2 className="text-2xl font-extrabold text-mint sm:text-3xl">{meta.title}</h2>
+            <h2 className="text-2xl font-extrabold text-chalk sm:text-3xl">{meta.title}</h2>
             <p className="mt-1 max-w-2xl text-chalk-muted">{meta.text}</p>
             <div className="mt-5 overflow-hidden rounded-xl border border-felt-line">
               {tierIds.map((t) => (
@@ -116,7 +116,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
       })}
 
       <section id="tracker" className="mt-14 scroll-mt-24">
-        <h2 className="text-2xl font-extrabold text-mint sm:text-3xl">{d.tier.trackerTitle}</h2>
+        <h2 className="text-2xl font-extrabold text-chalk sm:text-3xl">{d.tier.trackerTitle}</h2>
         <p className="mt-2 max-w-2xl text-chalk-muted">{d.tier.trackerSub}</p>
         <div className="mt-6 overflow-x-auto rounded-xl border border-felt-line">
           <table className="w-full min-w-[640px] text-sm">
@@ -131,14 +131,14 @@ export default async function TierListPage({ params }: { params: LocaleParams })
             </thead>
             <tbody>
               {all.map(({ card, change }) => (
-                <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-night text-pale">
+                <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-ivory text-ink">
                   <td className="px-4 py-3 font-bold">
                     <Link href={href(locale, `/cards/${card.slug}`)} className="hover:underline">
                       {card.name}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-pale-muted">{sagas[card.saga][locale]}</td>
-                  <td className="px-4 py-3 font-mono text-pale-muted">
+                  <td className="px-4 py-3 text-ink-muted">{sagas[card.saga][locale]}</td>
+                  <td className="px-4 py-3 font-mono text-ink-muted">
                     {change.patch}
                     <span className="block text-[11px]">{formatDate(locale, patches[change.patch].date)}</span>
                   </td>
@@ -147,7 +147,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                   </td>
                   <td className="px-4 py-3">
                     <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
-                    <span className="mt-1 block text-xs text-pale-muted">{change.note[locale]}</span>
+                    <span className="mt-1 block text-xs text-ink-muted">{change.note[locale]}</span>
                   </td>
                 </tr>
               ))}

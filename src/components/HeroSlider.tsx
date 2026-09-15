@@ -40,7 +40,7 @@ export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[
   }, [paused, n, interval]);
 
   const active = slides[index];
-  const arrow = "absolute top-1/2 z-20 hidden sm:block -translate-y-1/2 rounded-full border border-chalk/40 bg-felt-deep/70 p-2 text-chalk backdrop-blur transition hover:border-mint hover:text-mint";
+  const arrow = "absolute top-1/2 z-20 hidden sm:block -translate-y-1/2 rounded-full border border-ivory/40 bg-felt-deep/70 p-2 text-ivory backdrop-blur transition hover:border-mint hover:text-mint";
 
   return (
     <section
@@ -76,7 +76,7 @@ export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 pb-6 sm:px-6">
           <div className="max-w-2xl" aria-live="polite">
             <p className="kicker text-mint">{active.kicker}</p>
-            <h2 className="mt-1 text-2xl font-extrabold leading-tight text-mint sm:text-3xl">{active.title}</h2>
+            <h2 className="mt-1 text-2xl font-extrabold leading-tight text-ivory sm:text-3xl">{active.title}</h2>
             <p className="mt-1 hidden text-sm text-chalk-muted sm:block">{active.text}</p>
             {active.external ? (
               <SteamButton href={active.href} variant="green" size="sm" className="mt-3">
@@ -98,7 +98,7 @@ export function HeroSlider({ slides, labels, interval = 6500 }: { slides: Slide[
                   aria-selected={k === index}
                   aria-label={fmt(labels.goTo, { n: k + 1 })}
                   onClick={() => go(k)}
-                  className={`h-2 rounded-full transition-all ${k === index ? "w-6 bg-mint" : "w-2 bg-chalk/50 hover:bg-chalk"}`}
+                  className={`h-2 rounded-full transition-all ${k === index ? "w-6 bg-mint" : "w-2 bg-ivory/50 hover:bg-ivory"}`}
                 />
               ))}
             </div>
