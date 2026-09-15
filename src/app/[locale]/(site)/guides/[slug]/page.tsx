@@ -22,7 +22,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const g = getGuide(locale, slug);
   if (!g) return {};
-  return pageMeta(locale, `/guides/${g.slug}`, `${g.title} · ${dict.guides.title}`, g.excerpt, g.image, { type: "article", published: g.updated, modified: g.updated });
+  // Titolo breve se la guida contiene già "Origins TCG", altrimenti con il nome della sezione.
+  const title = /origins/i.test(g.title) ? g.title : `${g.title} · ${dict.guides.title}`;
+  return pageMeta(locale, `/guides/${g.slug}`, title, g.excerpt, g.image, { type: "article", published: g.updated, modified: g.updated });
 }
 
 export default async function GuidePage({ params }: { params: Params }) {
