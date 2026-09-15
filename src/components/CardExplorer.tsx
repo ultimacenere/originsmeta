@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { alignStyle, initials, sagaHue } from "@/lib/cardArt";
 
 export type ExplorerCard = {
@@ -59,6 +58,12 @@ const kindStyle: Record<string, string> = {
 
 const MAX_KEYWORDS = 4;
 
+/* La ricerca dell'header arriva come ?q=…: letta dal browser dopo l'idratazione (sul server vale ""),
+   così la pagina resta statica e le schede stanno nell'HTML iniziale, senza useSearchParams. */
+const noSubscribe = () => () => {};
+const readQueryQ = () => (new URLSearchParams(window.location.search).get("q") ?? "").slice(0, 60);
+const emptyQ = () => "";
+
 export function CardExplorer({
   cards,
   labels,
@@ -72,8 +77,9 @@ export function CardExplorer({
   alignments: Option[];
   rarities: Option[];
 }) {
-  const searchParams = useSearchParams();
-  const [q, setQ] = useState((searchParams.get("q") ?? "").slice(0, 60));
+  const initialQ = useSyncExternalStore(noSubscribe, readQueryQ, emptyQ);
+  const [qEdit, setQEdit] = useState<string | null>(null);
+  const q = qEdit ?? initialQ;
   const [type, setType] = useState("all");
   const [saga, setSaga] = useState("all");
   const [alignment, setAlignment] = useState("all");
@@ -115,7 +121,7 @@ export function CardExplorer({
               id="card-search"
               type="search"
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => setQEdit(e.target.value)}
               placeholder="Merlin, On Reveal…"
               className={selectCls}
             />

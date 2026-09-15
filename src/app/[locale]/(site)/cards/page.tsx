@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { cards, cardSource, lastChange, sagas, type SagaId } from "@/lib/data/cards";
@@ -60,8 +59,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
         +{created} {d.cards.countCreated} · {removed} {d.cards.countRemoved}
       </p>
       <div className="mt-8">
-        <Suspense fallback={null}>
-          <CardExplorer
+        <CardExplorer
             cards={list}
             sagas={sagaOptions}
             alignments={(["good", "evil", "neutral"] as const).map((id) => ({ id, label: alignLabel[id] }))}
@@ -85,7 +83,6 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
               showRemoved: d.common.showRemoved,
             }}
           />
-        </Suspense>
       </div>
       <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
       <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">
