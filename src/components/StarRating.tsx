@@ -95,7 +95,7 @@ export function StarRating({
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-ink/15 bg-ivory-2/60 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky/50 bg-ivory-2/60 px-4 py-3">
       <div>
         <p className="kicker text-ink-muted">{labels.rating}</p>
         <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-ink">

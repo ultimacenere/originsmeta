@@ -29,7 +29,7 @@ type Props = {
   publishPath: string;
 };
 
-const inputCls = "mt-1 w-full rounded-lg border border-ink/20 bg-ivory px-3 py-2 text-ink focus:border-mint-deep";
+const inputCls = "mt-1 w-full rounded-lg border border-sky/60 bg-ivory px-3 py-2 text-ink focus:border-mint-deep";
 
 /** Mazzo da pubblicare: hash del link (#OM1…), poi mazzo in attesa (salvato prima dell'accesso), poi mazzo attivo del builder. */
 function detectCode(): string | null {

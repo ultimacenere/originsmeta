@@ -127,7 +127,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 const ranked = tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
                 return (
                   <li key={s.id}>
-                    <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border border-ink/15 px-3 py-2 hover:bg-ink hover:text-ivory">
+                    <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border border-sky/50 px-3 py-2 hover:bg-ink hover:text-ivory">
                       <span className="block font-display text-sm font-bold">{sectionTitle[s.id]}</span>
                       <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
                         {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked}`}
@@ -178,7 +178,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <Link href={href(locale, `/decks/${deck.slug}`)} className="card-ivory card-ivory-hover flex h-full flex-col p-5">
                 <span className="flex flex-wrap gap-2">
                   <span className="stat-pill bg-ink text-ivory text-[11px] font-semibold uppercase">{d.common[deck.source]}</span>
-                  <span className="stat-pill border border-ink/20 text-ink">{archetypeLabels[deck.archetype][locale]}</span>
+                  <span className="stat-pill border border-sky/60 text-ink">{archetypeLabels[deck.archetype][locale]}</span>
                 </span>
                 <span className="mt-3 font-display text-2xl font-extrabold text-ink">{deck.name}</span>
                 <span className="mt-1 text-sm text-ink-muted">{deck.tagline[locale]}</span>

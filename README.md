@@ -23,7 +23,10 @@ npm run lint
 | Cosa | File |
 | --- | --- |
 | Testi dell'interfaccia (EN/IT) | `src/lib/dictionaries/{en,it}.ts` |
-| Carte, statistiche, storico patch, saghe | `src/lib/data/cards.ts` |
+| Carte: dati di gioco importati da World of Origins | `src/lib/data/woo-cards.json` (generato da `npm run import:woo`) |
+| Carte: saghe, origini e traduzioni italiane | `src/lib/data/card-lore.ts` |
+| Carte: storico bilanciamenti (patch notes ufficiali) | `src/lib/data/card-history.ts` |
+| Carte: tipi, saghe, patch e unione dei tre file | `src/lib/data/cards.ts` |
 | Eventi e tornei | `src/lib/data/events.ts` |
 | Mazzi (tag: leggendaria, archetipo, creator) | `src/lib/data/decks.ts` |
 | Tier list (mazzi, leggendarie, carte base) | `src/lib/data/tierlist.ts` |
@@ -38,7 +41,7 @@ npm run lint
 
 ### Aggiungere una carta
 
-In `src/lib/data/cards.ts` aggiungi un oggetto all'array `cards` con `slug`, `name`, `type` (`unit` / `spell` / `token`), `saga`, statistiche e `history` (una voce per patch, con `from`/`to` e nota in tre lingue). Le pagine `/cards` e `/cards/[slug]` e il tracker delle patch si aggiornano da soli; la sitemap pure.
+I dati di gioco (nome, costo, statistiche, testo inglese, tag, rarità, allineamento, ID ufficiale, carte collegate) arrivano dal database community [World of Origins](https://worldoforigins.fun): `npm run import:woo` scarica i chunk del sito, prende la patch più recente e riscrive `src/lib/data/woo-cards.json` (122 carte della Demo 2.0, 86 rimosse nelle build precedenti, 22 carte create), stampando le differenze rispetto all'import precedente e controllando che lo storico scritto a mano coincida con le statistiche per patch. Per ogni carta nuova o con testo cambiato va aggiornato `src/lib/data/card-lore.ts` (saga, una riga sull'origine in EN e IT, traduzione italiana del testo; le parole chiave restano in inglese). I bilanciamenti trascritti dalle patch notes stanno in `src/lib/data/card-history.ts`, per slug. Le pagine `/cards` (filtri per tipo, saga, allineamento, rarità, carte rimosse) e `/cards/[slug]` (testo EN/IT, carte collegate, storico) e la sitemap si aggiornano da sole. Nessuna immagine viene importata.
 
 ### Aggiungere un mazzo
 
@@ -80,7 +83,7 @@ In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle m
 
 - Pagina `/deck-builder` (client, senza backend): regole del gioco integrate (1 Leggendaria + 12 carte base diverse, seconda copia automatica = 25 carte), mazzo singolo o **modalità torneo** con tre mazzi e controllo Conquest (Leggendarie diverse, almeno N carte fisiche diverse tra due mazzi, N modificabile, default 9), curva di mana, salvataggio nel browser, link di condivisione, export testuale, invio via email e **"Pubblica sul sito"** (vedi sopra).
 - Regole e validazioni in `src/lib/deckrules.ts`; codec in `src/lib/deckcode.ts`.
-- **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. L'export in questo formato richiede il campo `key` sulle carte in `cards.ts`: per ora sconosciuto; l'import di un codice del gioco mostra le chiavi non abbinate e permette di inviarci l'abbinamento ("Insegnaci gli ID ufficiali").
+- **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. Il campo `key` delle carte arriva dall'import di World of Origins (tutte le carte tranne Merry Man), quindi export e import dei codici del gioco funzionano; verificato su due codici reali del 03/09/2026 (decodifica corretta e ricodifica identica). Se un codice contiene chiavi non abbinate, restano visibili per poterle segnalare.
 - **Formato OriginsMeta** (`OM1.`): base64url di JSON con nome, leggendaria, carte e carte personalizzate; usato per i link di condivisione (`/deck-builder#OM1.…`).
 
 ## Cookie e GDPR

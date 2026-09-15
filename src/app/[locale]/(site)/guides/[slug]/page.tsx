@@ -75,7 +75,7 @@ export default async function GuidePage({ params }: { params: Params }) {
       <article className="card-ivory mt-8 p-6 sm:p-10">
         <Markdown source={g.body} />
         {g.faq?.length ? (
-          <section className="mt-8 border-t border-ink/15 pt-6" aria-labelledby="guide-faq">
+          <section className="mt-8 border-t border-sky/50 pt-6" aria-labelledby="guide-faq">
             <h2 id="guide-faq" className="text-2xl font-extrabold text-ink">
               {d.guides.faqTitle}
             </h2>
@@ -89,7 +89,7 @@ export default async function GuidePage({ params }: { params: Params }) {
             </dl>
           </section>
         ) : null}
-        <p className="mt-8 border-t border-ink/15 pt-4 text-xs text-ink-muted">{d.common.notAffiliated}</p>
+        <p className="mt-8 border-t border-sky/50 pt-4 text-xs text-ink-muted">{d.common.notAffiliated}</p>
       </article>
 
       {relatedDecks.length || relatedCards.length ? (

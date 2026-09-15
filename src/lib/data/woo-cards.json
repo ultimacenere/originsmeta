@@ -1,0 +1,4576 @@
+{
+  "source": "https://worldoforigins.fun",
+  "license": "Dati della community World of Origins, usati con il consenso implicito del sito pubblico; nessuna immagine importata.",
+  "patch": "demo-v2-2026:v0.6.3",
+  "fetched": "2026-09-15",
+  "cards": [
+    {
+      "id": "aladdin",
+      "slug": "aladdin",
+      "key": "C00064_MB",
+      "name": "Aladdin",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Discard",
+        "Summon"
+      ],
+      "ability": "When I’m discarded, summon me on a random space."
+    },
+    {
+      "id": "ali_baba",
+      "slug": "ali-baba",
+      "key": "C00143_MB",
+      "name": "Ali Baba",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [],
+      "ability": "When I damage an opponent's barrier, draw a card."
+    },
+    {
+      "id": "alice",
+      "slug": "alice",
+      "key": "C00316_MC",
+      "name": "Alice",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 5,
+      "power": 1,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 4,
+      "keywords": [
+        "Mana"
+      ],
+      "ability": "After combat, reduce the cost of cards in your hand by my ⚔️. If you have no cards, I get +2⚔️/+2❤️ instead."
+    },
+    {
+      "id": "anansi",
+      "slug": "anansi",
+      "key": "C00137_MB",
+      "name": "Anansi",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 6,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Draw"
+      ],
+      "ability": "When another card enters your hand while I'm in it, reduce my cost by 1."
+    },
+    {
+      "id": "animate_object",
+      "slug": "animate-object",
+      "key": "C00215_SB",
+      "name": "Animate Object",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Summon",
+        "Spell"
+      ],
+      "ability": "Choose a space. Summon a Broomstick there.",
+      "related": [
+        "broomstick"
+      ]
+    },
+    {
+      "id": "asanbosam",
+      "slug": "asanbosam",
+      "key": "C00122_MB",
+      "name": "Asanbosam",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 5,
+      "health": 5,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Discard"
+      ],
+      "ability": "On Reveal: Discard a random even-cost card."
+    },
+    {
+      "id": "axe_throw",
+      "slug": "axe-throw",
+      "key": "C00015_SB",
+      "name": "Axe Throw",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 4 damage to ANY character."
+    },
+    {
+      "id": "baba_yaga",
+      "slug": "baba-yaga",
+      "key": "C00138_MB",
+      "name": "Baba Yaga",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Deal Damage",
+        "Buff"
+      ],
+      "ability": "On Reveal: Deal 1 damage to ANY other character and give it +3⚔️."
+    },
+    {
+      "id": "babe",
+      "slug": "babe",
+      "key": "C00203_MB",
+      "name": "Babe",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 7,
+      "power": 6,
+      "health": 6,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Trample",
+        "Buff"
+      ],
+      "ability": "Before combat, give allies Trample this round."
+    },
+    {
+      "id": "baby_bear",
+      "slug": "baby-bear",
+      "key": "C00147_MB",
+      "name": "Baby Bear",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "Deal Damage",
+        "On Death",
+        "Add"
+      ],
+      "ability": "When an enemy damages your barrier here, deal 1 damage to that enemy.\nOn Death: Add Papa Bear [4⚔️/4❤️] to your hand.",
+      "related": [
+        "papa-bear",
+        "mama-bear"
+      ]
+    },
+    {
+      "id": "bagheera",
+      "slug": "bagheera",
+      "key": "C00245_MB",
+      "name": "Bagheera",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Self Buff"
+      ],
+      "ability": "On Reveal: If I'm on a middle space, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "baker",
+      "slug": "baker",
+      "key": "C00259_MB",
+      "name": "Baker",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 2,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Food"
+      ],
+      "ability": "On Reveal: Put a Food on a random space."
+    },
+    {
+      "id": "baloo",
+      "slug": "baloo",
+      "key": "C00125_MB",
+      "name": "Baloo",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 6,
+      "health": 6,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "balor",
+      "slug": "balor",
+      "key": "C00240_MB",
+      "name": "Balor",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 3,
+      "health": 6,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Move",
+        "Deal Damage"
+      ],
+      "ability": "When an enemy moves, deal damage to it equal to my ⚔️."
+    },
+    {
+      "id": "bandersnatch",
+      "slug": "bandersnatch",
+      "key": "C00009_MB",
+      "name": "Bandersnatch",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 8,
+      "power": 7,
+      "health": 7,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Trample"
+      ],
+      "ability": "Trample"
+    },
+    {
+      "id": "banshee",
+      "slug": "banshee",
+      "key": "C00029_MB",
+      "name": "Banshee",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "On Death",
+        "Buff"
+      ],
+      "ability": "On Death: Allies get +1⚔️/+1❤️."
+    },
+    {
+      "id": "barry",
+      "slug": "barry",
+      "key": "C00344_MB",
+      "name": "Barry",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "Deal Damage",
+        "Return"
+      ],
+      "ability": "When ANY other character survives damage here, return it to its owner's hand."
+    },
+    {
+      "id": "basilisk",
+      "slug": "basilisk",
+      "key": "C00202_MB",
+      "name": "Basilisk",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Deathtouch"
+      ],
+      "ability": "Deathtouch"
+    },
+    {
+      "id": "bass_reeves",
+      "slug": "bass-reeves",
+      "key": "C00354_MB",
+      "name": "Bass Reeves",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Spell",
+        "Debuff"
+      ],
+      "ability": "Your opponent's spells cost 2 more to play."
+    },
+    {
+      "id": "beast",
+      "slug": "beast",
+      "key": "C00109_MB",
+      "name": "Beast",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 2,
+      "keywords": [
+        "Self Buff"
+      ],
+      "ability": "When you play an ally, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "beautiful_swan",
+      "slug": "beautiful-swan",
+      "key": "C00039_MB",
+      "name": "Beautiful Swan",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 4,
+      "health": 4,
+      "alignment": "neutral",
+      "keywords": [
+        "Move"
+      ],
+      "ability": "Move"
+    },
+    {
+      "id": "beauty",
+      "slug": "beauty",
+      "key": "C00173_MB",
+      "name": "Beauty",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 2,
+      "keywords": [
+        "Draw"
+      ],
+      "ability": "When you play an ally, draw a card."
+    },
+    {
+      "id": "behind_the_curtain",
+      "slug": "behind-the-curtain",
+      "key": "C00307_SB",
+      "name": "Behind the Curtain",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [],
+      "ability": "Flip a character face down."
+    },
+    {
+      "id": "bell_witch",
+      "slug": "bell-witch",
+      "key": "C00345_MB",
+      "name": "Bell Witch",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 1,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Buff",
+        "Deal Damage"
+      ],
+      "ability": "Double all your damage here."
+    },
+    {
+      "id": "beowulf",
+      "slug": "beowulf",
+      "key": "C00318_MC",
+      "name": "Beowulf",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 4,
+      "power": 2,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 3,
+      "keywords": [
+        "Self Buff",
+        "Deal Damage"
+      ],
+      "ability": "When I survive damage, I get +2⚔️ and deal 2 damage to the opponent's barrier here.",
+      "related": [
+        "dragons-breath"
+      ]
+    },
+    {
+      "id": "big_bad_wolf",
+      "slug": "big-bad-wolf",
+      "key": "C00021_MB",
+      "name": "Big Bad Wolf",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Self Buff"
+      ],
+      "ability": "After combat, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "bigfoot",
+      "slug": "bigfoot",
+      "key": "C00258_MB",
+      "name": "Bigfoot",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 6,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Trample"
+      ],
+      "ability": "Trample"
+    },
+    {
+      "id": "billy",
+      "slug": "billy",
+      "key": "C00032_MB",
+      "name": "Billy",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Death",
+        "Deal Damage"
+      ],
+      "ability": "On Death: Deal 2 damage to a random enemy here."
+    },
+    {
+      "id": "black_knight",
+      "slug": "black-knight",
+      "key": "C00006_MB",
+      "name": "Black Knight",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Deal Damage"
+      ],
+      "ability": "On Reveal: Deal 2 damage to the enemy across from me."
+    },
+    {
+      "id": "blow_the_house_down",
+      "slug": "blow-the-house-down",
+      "key": "C00162_SB",
+      "name": "Blow the House Down",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Choose",
+        "Deal Damage"
+      ],
+      "ability": "Choose an ally. It deals damage equal to its ⚔️ to ALL enemies there."
+    },
+    {
+      "id": "boitata",
+      "slug": "boitata",
+      "key": "C00180_MB",
+      "name": "Boitata",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "If a spell or ability would damage any of your barriers, deal that damage to the opponent's barrier there instead."
+    },
+    {
+      "id": "boogeyman",
+      "slug": "boogeyman",
+      "key": "C00267_MB",
+      "name": "Boogeyman",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 7,
+      "health": 7,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Destroy"
+      ],
+      "ability": "On Reveal: Destroy the ally here with the lowest ⚔️, even if it's me."
+    },
+    {
+      "id": "puss_in_boots",
+      "slug": "boots",
+      "key": "C00315_MB",
+      "name": "Boots",
+      "formerName": "Puss in Boots",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 4,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Mana"
+      ],
+      "ability": "On Reveal: Shuffle the costs of all cards in your hand."
+    },
+    {
+      "id": "brides_of_dracula",
+      "slug": "brides-of-dracula",
+      "key": "C00186_MB",
+      "name": "Brides of Dracula",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "keywords": [
+        "Discard",
+        "Deal Damage",
+        "Self Buff"
+      ],
+      "ability": "When you discard a card, I deal 1 damage to the opponent's barrier here and get +1❤️."
+    },
+    {
+      "id": "bridge_troll",
+      "slug": "bridge-troll",
+      "key": "C00160_MB",
+      "name": "Bridge Troll",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 5,
+      "health": 6,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Defender"
+      ],
+      "ability": "Defender"
+    },
+    {
+      "id": "broomstick",
+      "slug": "broomstick",
+      "key": "C00308_MB",
+      "name": "Broomstick",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Self Buff",
+        "Spell"
+      ],
+      "ability": "When you play a spell, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "buffalo_bill",
+      "slug": "buffalo-bill",
+      "key": "C00360_MB",
+      "name": "Buffalo Bill",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 4,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "Snipe",
+        "Deal Damage"
+      ],
+      "ability": "Snipe 1\nWhen you play an ally, I deal 1 damage to the enemy barrier there."
+    },
+    {
+      "id": "bullseye",
+      "slug": "bullseye",
+      "key": "C00013_SB",
+      "name": "Bullseye",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 3 damage to ANY character."
+    },
+    {
+      "id": "burning_oil",
+      "slug": "burning-oil",
+      "key": "C00145_SB",
+      "name": "Burning Oil",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 1 damage to ALL characters."
+    },
+    {
+      "id": "butch_cassidy",
+      "slug": "butch-cassidy",
+      "key": "C00351_MB",
+      "name": "Butch Cassidy",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 4,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Return"
+      ],
+      "ability": "When you play an ally here, return me to your hand."
+    },
+    {
+      "id": "butcher",
+      "slug": "butcher",
+      "key": "C00229_MB",
+      "name": "Butcher",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Food",
+        "On Kill"
+      ],
+      "ability": "On Kill: Put a Food on a random space."
+    },
+    {
+      "id": "candlestick_maker",
+      "slug": "candlestick-maker",
+      "key": "C00260_MB",
+      "name": "Candlestick Maker",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Food",
+        "Add"
+      ],
+      "ability": "When an ally eats a Food (including me), add a random card to your hand."
+    },
+    {
+      "id": "captain_ahab",
+      "slug": "captain-ahab",
+      "key": "C00261_MB",
+      "name": "Captain Ahab",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 4,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Discard",
+        "Deal Damage"
+      ],
+      "ability": "On Reveal: Discard your highest-cost card to deal its cost as damage to an enemy."
+    },
+    {
+      "id": "card_soldier",
+      "slug": "card-soldier",
+      "key": "C00054_MB",
+      "name": "Card Soldier",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 3,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Summon"
+      ],
+      "ability": "After I move, summon a copy of me on my previous space."
+    },
+    {
+      "id": "caterpillar",
+      "slug": "caterpillar",
+      "key": "C00098_MB",
+      "name": "Caterpillar",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Transform",
+        "Buff",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Transform another ally into a random character that costs 1 more OR transform an enemy into a random character that costs 1 less."
+    },
+    {
+      "id": "cheshire",
+      "slug": "cheshire",
+      "key": "C00004_MB",
+      "name": "Cheshire",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 4,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Move"
+      ],
+      "ability": "On Reveal: I swap spaces with another ally."
+    },
+    {
+      "id": "christopher",
+      "slug": "christopher-robin",
+      "key": "C00193_MB",
+      "name": "Christopher Robin",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "cinderella",
+      "slug": "cinderella",
+      "key": "C00116_MC",
+      "name": "Cinderella",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Add",
+        "Debuff",
+        "Return",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: Add a Glass Slipper to your hand.\nI have +1⚔️/+1❤️ for each character returned from play to a hand this game.",
+      "related": [
+        "glass-slipper"
+      ]
+    },
+    {
+      "id": "cockatrice",
+      "slug": "cockatrice",
+      "key": "C00274_MB",
+      "name": "Cockatrice",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 6,
+      "health": 6,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Deathtouch",
+        "On Death",
+        "Destroy"
+      ],
+      "ability": "Deathtouch\nOn Death: Destroy a random enemy."
+    },
+    {
+      "id": "count_orlok",
+      "slug": "count-orlok",
+      "key": "C00262_MB",
+      "name": "Count Orlok",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 3,
+      "health": 7,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Deathtouch",
+        "Destroy",
+        "Discard",
+        "Debuff"
+      ],
+      "ability": "Deathtouch\nAbilities don't happen when characters die or are discarded."
+    },
+    {
+      "id": "cowardly_lion",
+      "slug": "cowardly-lion",
+      "key": "C00095_MB",
+      "name": "Cowardly Lion",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Defender"
+      ],
+      "ability": "Defender"
+    },
+    {
+      "id": "dark_omen",
+      "slug": "dark-omen",
+      "key": "C00028_SB",
+      "name": "Dark Omen",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "Destroy ANY character."
+    },
+    {
+      "id": "davy_crockett",
+      "slug": "davy-crockett",
+      "key": "C00361_MB",
+      "name": "Davy Crockett",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "Defender",
+        "On Death",
+        "Buff"
+      ],
+      "ability": "Defender\nOn Death: The top character of your deck gets +2⚔️/+2❤️."
+    },
+    {
+      "id": "death",
+      "slug": "death",
+      "key": "C00059_MC",
+      "name": "Death",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 5,
+      "power": 1,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "legendary",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Destroy",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: Destroy another ally to destroy an enemy.\nI have the total ⚔️ and ❤️ of all allies you've killed this game.",
+      "related": [
+        "soul-surge"
+      ]
+    },
+    {
+      "id": "defense_matrix",
+      "slug": "defense-matrix",
+      "key": "C00062_SB",
+      "name": "Defense Matrix",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Shield",
+        "Buff"
+      ],
+      "ability": "Give ANY character Shield."
+    },
+    {
+      "id": "don_quixote",
+      "slug": "don-quixote",
+      "key": "C00142_MB",
+      "name": "Don Quixote",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Defender",
+        "Debuff"
+      ],
+      "ability": "Enemies here have Defender."
+    },
+    {
+      "id": "doppelganger",
+      "slug": "doppelganger",
+      "key": "C00209_MB",
+      "name": "Doppelganger",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 3,
+      "keywords": [
+        "Discard",
+        "Transform"
+      ],
+      "ability": "When you discard a character, I transform into a copy of that character."
+    },
+    {
+      "id": "dorothy",
+      "slug": "dorothy",
+      "key": "C00063_MC",
+      "name": "Dorothy",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 5,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Self Buff"
+      ],
+      "ability": "I can Move each round.\nI have +1⚔️/+1❤️ for each time an ally moved this game.",
+      "related": [
+        "twister-toss"
+      ]
+    },
+    {
+      "id": "dr_frank",
+      "slug": "dr-frank",
+      "key": "C00313_MC",
+      "name": "Dr. Frank",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 6,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "legendary",
+      "series": 3,
+      "keywords": [
+        "Summon",
+        "Graveyard"
+      ],
+      "ability": "Before combat, summon a random character from your graveyard on a random space.",
+      "related": [
+        "its-alive"
+      ]
+    },
+    {
+      "id": "dracula",
+      "slug": "dracula",
+      "key": "C00118_MC",
+      "name": "Dracula",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "legendary",
+      "series": 4,
+      "keywords": [
+        "Discard",
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "When you discard, return me from your graveyard to hand.\nOn Reveal: Summon Brides of Dracula [2⚔️/2❤️] on a random space here.",
+      "related": [
+        "brides-of-dracula"
+      ]
+    },
+    {
+      "id": "dragons_breath",
+      "slug": "dragons-breath",
+      "key": "C00309_SB",
+      "name": "Dragon's Breath",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [],
+      "ability": "Deal 1 damage to an ally, then that ally deals damage equal to its ⚔️ to the enemy across from it."
+    },
+    {
+      "id": "dumpling",
+      "slug": "dumpling",
+      "key": "C00129_SB",
+      "name": "Dumpling",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Food",
+        "Discard"
+      ],
+      "ability": "Put a Food on a random space at each location. Discard a random card."
+    },
+    {
+      "id": "eeyore",
+      "slug": "eeyore",
+      "key": "C00201_MB",
+      "name": "Eeyore",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 3,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "Self Buff",
+        "Trample"
+      ],
+      "ability": "Trample\nWhen I'm damaged, I get +3⚔️."
+    },
+    {
+      "id": "eeyores_tail",
+      "slug": "eeyores-tail",
+      "key": "C00225_SB",
+      "name": "Eeyore's Tail",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Deal Damage",
+        "Return"
+      ],
+      "ability": "Deal 1 damage to a character. If this doesn't kill it, return this to your hand."
+    },
+    {
+      "id": "el_charro_negro",
+      "slug": "el-charro-negro",
+      "key": "C00035_MB",
+      "name": "El Charro Negro",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 5,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Mana",
+        "On Death"
+      ],
+      "ability": "On Reveal: You get +2 mana permanently.\nOn Death: You get -2 mana permanently."
+    },
+    {
+      "id": "ellen_trechend",
+      "slug": "ellen-trechend",
+      "key": "C00341_MB",
+      "name": "Ellen Trechend",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 8,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Trample",
+        "On Reveal",
+        "Self Buff"
+      ],
+      "ability": "Trample\nOn Reveal: I get +2⚔️/+2❤️ for each enemy card here."
+    },
+    {
+      "id": "en_passant",
+      "slug": "en-passant",
+      "key": "C00102_SB",
+      "name": "En Passant",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Deal Damage"
+      ],
+      "ability": "Move an ally. Deal damage equal to its ⚔️ to the character across from it."
+    },
+    {
+      "id": "esmeralda",
+      "slug": "esmeralda",
+      "key": "C00133_MB",
+      "name": "Esmeralda",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "Discard",
+        "Shield"
+      ],
+      "ability": "When I'm discarded, give a random ally Shield."
+    },
+    {
+      "id": "fairy_godmother",
+      "slug": "fairy-godmother",
+      "key": "C00023_MB",
+      "name": "Fairy Godmother",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 3,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Buff"
+      ],
+      "ability": "On Reveal: Give another ally +3⚔️/+3❤️."
+    },
+    {
+      "id": "the_firebird",
+      "slug": "firebird",
+      "key": "C00278_MB",
+      "name": "Firebird",
+      "formerName": "The Firebird",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Ongoing"
+      ],
+      "ability": "Ongoing: I deal +3 damage to barriers."
+    },
+    {
+      "id": "first_aid",
+      "slug": "first-aid",
+      "key": "C00232_SB",
+      "name": "First Aid",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Heal"
+      ],
+      "ability": "Heal 6 damage from ANY character or barrier."
+    },
+    {
+      "id": "flying_monkey",
+      "slug": "flying-monkey",
+      "key": "C00033_MB",
+      "name": "Flying Monkey",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 4,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Move"
+      ],
+      "ability": "On Reveal: Move ANY other character to a random space here."
+    },
+    {
+      "id": "forbidden_knowledge",
+      "slug": "forbidden-knowledge",
+      "key": "C00234_SB",
+      "name": "Forbidden Knowledge",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 8,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "Destroy ALL characters."
+    },
+    {
+      "id": "franks_monster",
+      "slug": "franks-monster",
+      "key": "C00024_MB",
+      "name": "Frank's Monster",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 6,
+      "power": 5,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Rebirth",
+        "Self Buff"
+      ],
+      "ability": "Rebirth\nWhen I enter play from the graveyard, double my ⚔️."
+    },
+    {
+      "id": "franken_bride",
+      "slug": "franken-bride",
+      "key": "C00181_MB",
+      "name": "Franken Bride",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 4,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Rebirth",
+        "Heal",
+        "Summon",
+        "Graveyard"
+      ],
+      "ability": "Rebirth\nWhen I return to play from the graveyard, heal 4 damage from your barrier here."
+    },
+    {
+      "id": "freeze",
+      "slug": "freeze",
+      "key": "C00124_SB",
+      "name": "Freeze!",
+      "formerName": "Freeze",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Stun",
+        "Debuff"
+      ],
+      "ability": "Stun ANY character."
+    },
+    {
+      "id": "frog_prince",
+      "slug": "frog-prince",
+      "key": "C00264_MB",
+      "name": "Frog Prince",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Choose",
+        "On Reveal",
+        "Self Buff"
+      ],
+      "ability": "Choose One: On Reveal: I get +3 ⚔️ OR On Reveal: I get +3❤️."
+    },
+    {
+      "id": "galahad",
+      "slug": "galahad",
+      "key": "C00019_MB",
+      "name": "Galahad",
+      "formerName": "Sir Galahad",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 4,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Buff"
+      ],
+      "ability": "On Reveal: Give other allies +1⚔️/+1❤️."
+    },
+    {
+      "id": "gargoyle",
+      "slug": "gargoyle",
+      "key": "C00207_MB",
+      "name": "Gargoyle",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Move",
+        "Deal Damage"
+      ],
+      "ability": "Move\nWhen another character enters here, deal 1 damage to it."
+    },
+    {
+      "id": "garlic",
+      "slug": "garlic",
+      "key": "C00080_SB",
+      "name": "Garlic",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Stun",
+        "Debuff"
+      ],
+      "ability": "Stun ANY character."
+    },
+    {
+      "id": "genie",
+      "slug": "genie",
+      "key": "C00120_MB",
+      "name": "Genie",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 4,
+      "health": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Discard",
+        "Add",
+        "Spell"
+      ],
+      "ability": "On Reveal: Discard your hand. Add 3 random spells to your hand."
+    },
+    {
+      "id": "gingerbread_man",
+      "slug": "gingerbread-man",
+      "key": "C00212_MB",
+      "name": "Gingerbread Man",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Food"
+      ],
+      "ability": "Move\nWhen I move, put a Food on my previous space."
+    },
+    {
+      "id": "glass_slipper",
+      "slug": "glass-slipper",
+      "key": "C00185_SB",
+      "name": "Glass Slipper",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [],
+      "ability": "Return an ally and the enemy across from it to their owners' hands."
+    },
+    {
+      "id": "glinda",
+      "slug": "glinda",
+      "key": "C00022_MB",
+      "name": "Glinda",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 2,
+      "keywords": [
+        "Spell",
+        "Buff",
+        "Self Buff"
+      ],
+      "ability": "When you play a spell, give allies get +1⚔️."
+    },
+    {
+      "id": "golden_egg",
+      "slug": "golden-egg",
+      "key": "C00048_MB",
+      "name": "Golden Egg",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 0,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Death",
+        "Summon"
+      ],
+      "ability": "On Death: Summon a Golden Goose [5⚔️/5❤️] on this space.",
+      "related": [
+        "golden-goose"
+      ]
+    },
+    {
+      "id": "golden_goose",
+      "slug": "golden-goose",
+      "key": "C00050_MB",
+      "name": "Golden Goose",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 5,
+      "health": 5,
+      "alignment": "neutral",
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "goldilocks",
+      "slug": "goldi",
+      "key": "C00312_MB",
+      "name": "Goldi",
+      "formerName": "Goldilocks",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 1,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Draw"
+      ],
+      "ability": "Double Attack\nWhen I damage an opponent's barrier, draw a card from their deck."
+    },
+    {
+      "id": "grendel",
+      "slug": "grendel",
+      "key": "C00139_MB",
+      "name": "Grendel",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "When I attack, deal 1 damage to ALL other characters and barriers here."
+    },
+    {
+      "id": "guy_of_gisborne",
+      "slug": "guy-of-gisborne",
+      "key": "C00003_MB",
+      "name": "Guy of Gisborne",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 2,
+      "keywords": [
+        "Double Attack",
+        "Snipe"
+      ],
+      "ability": "Double Attack, Snipe 1"
+    },
+    {
+      "id": "hansel_gretel",
+      "slug": "hansel-and-gretel",
+      "key": "C00152_MB",
+      "name": "Hansel and Gretel",
+      "formerName": "Hansel & Gretel",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [],
+      "ability": "Double Attack"
+    },
+    {
+      "id": "hare",
+      "slug": "hare",
+      "key": "C00184_MB",
+      "name": "Hare",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 4,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "First Strike",
+        "Move"
+      ],
+      "ability": "First Strike, Move"
+    },
+    {
+      "id": "headless_horseman",
+      "slug": "headless-horseman",
+      "key": "C00091_MB",
+      "name": "Headless Horseman",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Rebirth",
+        "On Death",
+        "Shuffle"
+      ],
+      "ability": "Rebirth\nOn Death: Shuffle a Pumpkin into the opponent's deck.",
+      "related": [
+        "pumpkin"
+      ]
+    },
+    {
+      "id": "heroic_charge",
+      "slug": "heroic-charge",
+      "key": "C00108_SB",
+      "name": "Heroic Charge",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Buff",
+        "Trample"
+      ],
+      "ability": "Allies have +2⚔️ and Trample this round."
+    },
+    {
+      "id": "holy_water",
+      "slug": "holy-water",
+      "key": "C00081_SB",
+      "name": "Holy Water",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Debuff"
+      ],
+      "ability": "Remove all abilities from ANY character."
+    },
+    {
+      "id": "honey_pot",
+      "slug": "honey-pot",
+      "key": "C00085_SB",
+      "name": "Honey Pot",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Buff"
+      ],
+      "ability": "Give ANY character +4⚔️/+4❤️."
+    },
+    {
+      "id": "huck_finn",
+      "slug": "huck-finn",
+      "key": "C00191_MB",
+      "name": "Huck Finn",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 3,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "humpty",
+      "slug": "humpty",
+      "key": "C00093_MB",
+      "name": "Humpty",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 4,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Death",
+        "Draw",
+        "Add"
+      ],
+      "ability": "On Death: Add a random card to your hand."
+    },
+    {
+      "id": "huntsman",
+      "slug": "huntsman",
+      "key": "C00017_MB",
+      "name": "Huntsman",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Self Buff",
+        "On Kill"
+      ],
+      "ability": "On Kill: I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "hyde",
+      "slug": "hyde",
+      "key": "C00071_MB",
+      "name": "Hyde",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 5,
+      "health": 3,
+      "alignment": "evil",
+      "keywords": [
+        "Trample"
+      ],
+      "ability": "Trample\nIf I’m in your hand after combat, I transform into Jekyll [3⚔️/5❤️]."
+    },
+    {
+      "id": "imhotep",
+      "slug": "imhotep",
+      "key": "C00036_MB",
+      "name": "Imhotep",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 2,
+      "keywords": [
+        "On Death",
+        "Deal Damage"
+      ],
+      "ability": "On Death: Deal 2 damage to all enemies here."
+    },
+    {
+      "id": "impundulu",
+      "slug": "impundulu",
+      "key": "C00230_MB",
+      "name": "Impundulu",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 3,
+      "health": 6,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Add",
+        "Discard"
+      ],
+      "ability": "When I attack, add a Lightning Strike to your hand. Discard it before combat next round.",
+      "related": [
+        "lightning-strike"
+      ]
+    },
+    {
+      "id": "its_alive",
+      "slug": "its-alive",
+      "key": "C00027_SB",
+      "name": "It's Alive",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [],
+      "ability": "Summon a random character from your graveyard on a random space."
+    },
+    {
+      "id": "itsy_bitsy_spider",
+      "slug": "itsy-bitsy-spider",
+      "key": "C00310_MB",
+      "name": "Itsy Bitsy Spider",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 0,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "jabberwock",
+      "slug": "jabberwock",
+      "key": "C00104_MB",
+      "name": "Jabberwock",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 6,
+      "power": 8,
+      "health": 8,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Move"
+      ],
+      "ability": "On Reveal: Enemies played this round move here."
+    },
+    {
+      "id": "jack",
+      "slug": "jack",
+      "key": "C00110_MB",
+      "name": "Jack",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 4,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Destroy"
+      ],
+      "ability": "On Reveal: Destroy a random enemy that has 7 or more ⚔️."
+    },
+    {
+      "id": "jack_in_the_box",
+      "slug": "jack-in-the-box",
+      "key": "C00159_MB",
+      "name": "Jack-in-the-Box",
+      "formerName": "Jack in the Box",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Death",
+        "Deal Damage"
+      ],
+      "ability": "On Death: Deal 2 damage to the opponent's barrier here."
+    },
+    {
+      "id": "jacks_giant",
+      "slug": "jacks-giant",
+      "key": "C00007_MB",
+      "name": "Jack's Giant",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 7,
+      "power": 8,
+      "health": 8,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Defender"
+      ],
+      "ability": "Defender"
+    },
+    {
+      "id": "jekyll",
+      "slug": "jekyll",
+      "key": "C00070_MB",
+      "name": "Jekyll",
+      "formerName": "Dr. Jekyll",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Heal"
+      ],
+      "ability": "On Reveal: Heal 3 damage from ANY other character or barrier here.\nIf I'm in hand after combat, I transform into Hyde [5⚔️/3❤️].",
+      "related": [
+        "hyde"
+      ]
+    },
+    {
+      "id": "jill",
+      "slug": "jill",
+      "key": "C00271_MB",
+      "name": "Jill",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Deal Damage",
+        "Heal"
+      ],
+      "ability": "When I take damage, heal 2 damage from your barrier here."
+    },
+    {
+      "id": "john_henry",
+      "slug": "john-henry",
+      "key": "C00277_MB",
+      "name": "John Henry",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 10,
+      "power": 12,
+      "health": 12,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Trample",
+        "Shield",
+        "Defender"
+      ],
+      "ability": "Trample, Shield, Defender"
+    },
+    {
+      "id": "kanga",
+      "slug": "kanga",
+      "key": "C00101_MB",
+      "name": "Kanga",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Buff"
+      ],
+      "ability": "Before combat, give allies that moved this round +1⚔️/+1❤️."
+    },
+    {
+      "id": "king_arthur",
+      "slug": "king-arthur",
+      "key": "C00012_MC",
+      "name": "King Arthur",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 7,
+      "power": 7,
+      "health": 7,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 3,
+      "keywords": [
+        "Shield",
+        "On Reveal",
+        "Buff",
+        "Good"
+      ],
+      "ability": "Shield\nOn Reveal: Give your Good characters Shield.",
+      "related": [
+        "defense-matrix"
+      ]
+    },
+    {
+      "id": "king_shahryar",
+      "slug": "king-shahryar",
+      "key": "C00121_MB",
+      "name": "King Shahryar",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 1,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Draw",
+        "Discard"
+      ],
+      "ability": "At the start of the round, draw a card. Discard it before combat."
+    },
+    {
+      "id": "koschei",
+      "slug": "koschei",
+      "key": "C00132_MB",
+      "name": "Koschei",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Death",
+        "Discard",
+        "Return",
+        "Self Buff"
+      ],
+      "ability": "On Death OR when I'm discarded: I return to your hand and get +2⚔️/+2❤️."
+    },
+    {
+      "id": "lady_of_the_lake",
+      "slug": "lady-of-the-lake",
+      "key": "C00168_MB",
+      "name": "Lady of the Lake",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Defender",
+        "Buff",
+        "Good"
+      ],
+      "ability": "When you play a Good character, give it Defender."
+    },
+    {
+      "id": "lancelot",
+      "slug": "lancelot",
+      "key": "C00047_MB",
+      "name": "Lancelot",
+      "formerName": "Sir Lancelot",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 3,
+      "keywords": [
+        "Buff"
+      ],
+      "ability": "When you play another Good character here, it gets +2/+2."
+    },
+    {
+      "id": "legion_of_the_dead",
+      "slug": "legion-of-the-dead",
+      "key": "C00042_SC",
+      "name": "Legion of the Dead",
+      "type": "spell",
+      "legendary": true,
+      "status": "active",
+      "mana": 7,
+      "alignment": "neutral",
+      "rarity": "legendary",
+      "series": 1,
+      "keywords": [
+        "Summon"
+      ],
+      "ability": "Fill your board with Zombies [2⚔️/2❤️].",
+      "related": [
+        "zombie"
+      ]
+    },
+    {
+      "id": "lil_billy_goat_gruff",
+      "slug": "lil-billy-goat-gruff",
+      "key": "C00170_MB",
+      "name": "Li'l Billy Goat Gruff",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 4,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Defender",
+        "On Reveal",
+        "Add"
+      ],
+      "ability": "I can't be damaged by enemies with Defender.\nOn Reveal: Add Billy Goat Gruff [6⚔️/2❤️] to your hand."
+    },
+    {
+      "id": "lightning_strike",
+      "slug": "lightning-strike",
+      "key": "C00060_SB",
+      "name": "Lightning Strike",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 3 damage to ANY character or barrier."
+    },
+    {
+      "id": "little_john",
+      "slug": "little-john",
+      "key": "C00074_MB",
+      "name": "Little John",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: If an enemy was played here this round, I get +2⚔️/+2❤️."
+    },
+    {
+      "id": "little_lamb",
+      "slug": "little-lamb",
+      "key": "C00223_MB",
+      "name": "Little Lamb",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Vanilla"
+      ],
+      "ability": "Trample"
+    },
+    {
+      "id": "little_miss_muffet",
+      "slug": "little-miss-muffet",
+      "key": "C00342_MB",
+      "name": "Little Miss Muffet",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "Return",
+        "Summon"
+      ],
+      "ability": "When an ally is returned to your hand, summon an Itsy Bitsy Spider [1⚔️/1❤️] on its space."
+    },
+    {
+      "id": "little_pig",
+      "slug": "little-pig",
+      "key": "C00304_MB",
+      "name": "Little Pig",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "mad_hatter",
+      "slug": "mad-hatter",
+      "key": "C00005_MB",
+      "name": "Mad Hatter",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Deal Damage"
+      ],
+      "ability": "On Reveal: Deal 3 damage divided randomly between enemies and the opponent's barrier here."
+    },
+    {
+      "id": "magic_carpet",
+      "slug": "magic-carpet",
+      "key": "C00269_MB",
+      "name": "Magic Carpet",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Choose",
+        "On Reveal",
+        "Move"
+      ],
+      "ability": "Choose One: On Reveal: Move other allies one space left OR On Reveal: Move other friendly characters one space right."
+    },
+    {
+      "id": "magic_lamp",
+      "slug": "magic-lamp",
+      "key": "C00216_MB",
+      "name": "Magic Lamp",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 0,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Deal Damage",
+        "Spell",
+        "Add"
+      ],
+      "ability": "When I take damage, add a random spell to your hand."
+    },
+    {
+      "id": "mama_bear",
+      "slug": "mama-bear",
+      "key": "C00211_MB",
+      "name": "Mama Bear",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 6,
+      "health": 6,
+      "alignment": "neutral",
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "When an enemy damages your barrier here, destroy that enemy."
+    },
+    {
+      "id": "marian",
+      "slug": "marian",
+      "key": "C00068_MB",
+      "name": "Marian",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Snipe"
+      ],
+      "ability": "Snipe 2"
+    },
+    {
+      "id": "mary",
+      "slug": "mary",
+      "key": "C00208_MB",
+      "name": "Mary",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "On Death",
+        "Add"
+      ],
+      "ability": "On Reveal: Add Little Lamb [1⚔️/1❤️] to your hand.\nOn Death: Your Little Lambs everywhere get +3⚔️/+3❤️.",
+      "related": [
+        "little-lamb"
+      ]
+    },
+    {
+      "id": "merlin",
+      "slug": "merlin",
+      "key": "C00075_MC",
+      "name": "Merlin",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "legendary",
+      "series": 4,
+      "keywords": [
+        "Spell"
+      ],
+      "ability": "Repeat the first spell you play each round.",
+      "related": [
+        "merlins-prophecy"
+      ]
+    },
+    {
+      "id": "merlins_prophecy",
+      "slug": "merlins-prophecy",
+      "key": "C00306_SB",
+      "name": "Merlin's Prophecy",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [],
+      "ability": "Repeat the next spell you play this round."
+    },
+    {
+      "id": "merry_man",
+      "slug": "merry-man",
+      "name": "Merry Man",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "mind_palace",
+      "slug": "mind-palace",
+      "key": "C00163_SB",
+      "name": "Mind Palace",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Draw"
+      ],
+      "ability": "Draw 2 cards."
+    },
+    {
+      "id": "mirror_mirror",
+      "slug": "mirror-mirror",
+      "key": "C00319_SC",
+      "name": "Mirror Mirror",
+      "type": "spell",
+      "legendary": true,
+      "status": "removed",
+      "mana": 4,
+      "alignment": "neutral",
+      "rarity": "legendary",
+      "series": 5,
+      "keywords": [
+        "Summon"
+      ],
+      "ability": "Summon copies of ALL characters played this round, but on your side."
+    },
+    {
+      "id": "moby",
+      "slug": "moby",
+      "key": "C00049_MB",
+      "name": "Moby",
+      "formerName": "Moby Dick",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Destroy",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: Destroy other allies here. I get their ⚔️ and ❤️."
+    },
+    {
+      "id": "morgan_le_fay",
+      "slug": "morgan-le-fay",
+      "key": "C00056_MB",
+      "name": "Morgan le Fay",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 1,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Discard",
+        "Add",
+        "Spell"
+      ],
+      "ability": "On Reveal: Discard your right-most card. Add a random spell to your hand and reduce its cost by 2."
+    },
+    {
+      "id": "morgiana",
+      "slug": "morgiana",
+      "key": "C00144_MB",
+      "name": "Morgiana",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "On Reveal"
+      ],
+      "ability": "Prevent ALL On Reveal abilities from happening here."
+    },
+    {
+      "id": "moriarty",
+      "slug": "moriarty",
+      "key": "C00055_MB",
+      "name": "Moriarty",
+      "formerName": "Professor Moriarty",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Self Buff",
+        "Move"
+      ],
+      "ability": "Before combat, if ANY card moved this round, I get +2⚔️/+2❤️."
+    },
+    {
+      "id": "mothman",
+      "slug": "mothman",
+      "key": "C00263_MB",
+      "name": "Mothman",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Location"
+      ],
+      "ability": "On Reveal: Ruin this location."
+    },
+    {
+      "id": "mouse",
+      "slug": "mouse",
+      "key": "C00113_MB",
+      "name": "Mouse",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "mowgli",
+      "slug": "mowgli",
+      "key": "C00126_MB",
+      "name": "Mowgli",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "On Reveal: Summon Baloo [6⚔️/6❤️] at another random location.",
+      "related": [
+        "baloo"
+      ]
+    },
+    {
+      "id": "mrs_lovett",
+      "slug": "mrs-lovett",
+      "key": "C00279_MB",
+      "name": "Mrs. Lovett",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "Destroy",
+        "Food"
+      ],
+      "ability": "When you destroy an ally, put a Food on its space."
+    },
+    {
+      "id": "muffin_man",
+      "slug": "muffin-man",
+      "key": "C00268_MB",
+      "name": "Muffin Man",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 4,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "On Death",
+        "Food"
+      ],
+      "ability": "On Death: Put a Food on a random space here."
+    },
+    {
+      "id": "mulan",
+      "slug": "mulan",
+      "key": "C00115_MC",
+      "name": "Mulan",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Double Attack"
+      ],
+      "ability": "When an ally On Reveal ability happens, repeat it.",
+      "related": [
+        "reflection"
+      ]
+    },
+    {
+      "id": "mummy",
+      "slug": "mummy",
+      "key": "C00031_MB",
+      "name": "Mummy",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Rebirth"
+      ],
+      "ability": "Rebirth"
+    },
+    {
+      "id": "musketeer",
+      "slug": "musketeer",
+      "key": "C00073_MB",
+      "name": "Musketeer",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "First Strike"
+      ],
+      "ability": "First Strike"
+    },
+    {
+      "id": "necromancer",
+      "slug": "necromancer",
+      "key": "C00239_MB",
+      "name": "Necromancer",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Discard",
+        "Add",
+        "Evil",
+        "Summon"
+      ],
+      "ability": "On Reveal: Discard a random card to add 2 Zombies [2⚔️/2❤️] to your hand. If you discard an Evil character this way, summon those zombies instead.",
+      "related": [
+        "zombie"
+      ]
+    },
+    {
+      "id": "not_so_little_pig",
+      "slug": "not-so-little-pig",
+      "key": "C00045_MB",
+      "name": "Not So Little Pig",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "keywords": [
+        "Trample"
+      ],
+      "ability": "Trample"
+    },
+    {
+      "id": "obliterate",
+      "slug": "obliterate",
+      "key": "C00190_SB",
+      "name": "Obliterate",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 9,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 10 damage to ANY character or barrier."
+    },
+    {
+      "id": "off_with_your_head",
+      "slug": "off-with-your-head",
+      "key": "C00273_SB",
+      "name": "Off With Your Head!",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "alignment": "neutral",
+      "keywords": [
+        "Destroy",
+        "Summon"
+      ],
+      "ability": "Destroy an ally. Summon a base copy of it at each other location."
+    },
+    {
+      "id": "old_macdonald",
+      "slug": "old-macdonald",
+      "key": "C00357_MB",
+      "name": "Old MacDonald",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "Discard",
+        "Shuffle"
+      ],
+      "ability": "The first time ANY player discards each round, shuffle three Pumpkins into your opponent's deck."
+    },
+    {
+      "id": "papa_bear",
+      "slug": "papa-bear",
+      "key": "C00210_MB",
+      "name": "Papa Bear",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 4,
+      "health": 4,
+      "alignment": "neutral",
+      "keywords": [
+        "Deal Damage",
+        "On Death"
+      ],
+      "ability": "When an enemy damages your barrier here, deal 3 damage to that enemy.\nOn Death: Add Mama Bear [6⚔️/6❤️] to your hand."
+    },
+    {
+      "id": "paul_bunyan",
+      "slug": "paul-bunyan",
+      "key": "C00194_MB",
+      "name": "Paul Bunyan",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 7,
+      "power": 10,
+      "health": 10,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "pegasus",
+      "slug": "pegasus",
+      "key": "C00052_MB",
+      "name": "Pegasus",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "Move",
+        "Self Buff"
+      ],
+      "ability": "After I move, double my ⚔️."
+    },
+    {
+      "id": "phantom_coachman",
+      "slug": "phantom-coachman",
+      "key": "C00038_MB",
+      "name": "Phantom Coachman",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 10,
+      "power": 8,
+      "health": 8,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Deathtouch",
+        "Destroy"
+      ],
+      "ability": "Deathtouch\nI cost 2 less for each ally you've killed this game."
+    },
+    {
+      "id": "phuong_hoang",
+      "slug": "phuong-hoang",
+      "key": "C00135_MB",
+      "name": "Phuong Hoang",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Rebirth",
+        "Move",
+        "Heal",
+        "Self Buff"
+      ],
+      "ability": "Rebirth, Move\nWhen an ally or barrier is healed, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "pied_piper",
+      "slug": "pied-piper",
+      "key": "C00281_MB",
+      "name": "Pied Piper",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "On Reveal: Summon a random character from the opponent's deck here, but on your side."
+    },
+    {
+      "id": "piggy_bank",
+      "slug": "piggy-bank",
+      "key": "C00161_SB",
+      "name": "Piggy Bank",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Mana"
+      ],
+      "ability": "You get +1 mana permanently."
+    },
+    {
+      "id": "piglet",
+      "slug": "piglet",
+      "key": "C00199_MB",
+      "name": "Piglet",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Buff"
+      ],
+      "ability": "On Reveal: Give other allies here +1⚔️/+1❤️."
+    },
+    {
+      "id": "poison_apple",
+      "slug": "poison-apple",
+      "key": "C00236_SB",
+      "name": "Poison Apple",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Deathtouch",
+        "Buff"
+      ],
+      "ability": "Give ANY character Deathtouch."
+    },
+    {
+      "id": "prince_charming",
+      "slug": "prince-charming",
+      "key": "C00158_MB",
+      "name": "Prince Charming",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Remove abilities from ANY other character."
+    },
+    {
+      "id": "puck",
+      "slug": "puck",
+      "key": "C00231_MB",
+      "name": "Puck",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "Heal",
+        "Deal Damage"
+      ],
+      "ability": "When an enemy or an opponent's barrier is healed, deal that much damage to it instead."
+    },
+    {
+      "id": "pumpkin",
+      "slug": "pumpkin",
+      "key": "C00092_SB",
+      "name": "Pumpkin",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 0,
+      "alignment": "neutral",
+      "keywords": [
+        "Deal Damage",
+        "Draw"
+      ],
+      "ability": "If this would be drawn, burn it to deal 5 damage to a random ally barrier, then draw a card."
+    },
+    {
+      "id": "pumpkin_patch",
+      "slug": "pumpkin-patch",
+      "key": "C00295_SB",
+      "name": "Pumpkin Patch",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Shuffle",
+        "Evil"
+      ],
+      "ability": "Shuffle 2 Pumpkins into the opponent's deck, and an additional 2 for each Evil character you have in play.",
+      "related": [
+        "pumpkin"
+      ]
+    },
+    {
+      "id": "quasimodo",
+      "slug": "quasimodo",
+      "key": "C00119_MB",
+      "name": "Quasimodo",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Discard",
+        "Draw"
+      ],
+      "ability": "On Reveal: Discard your lowest-cost card. Draw a card."
+    },
+    {
+      "id": "queen_guinevere",
+      "slug": "queen-guinevere",
+      "key": "C00156_MB",
+      "name": "Queen Guinevere",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Shield"
+      ],
+      "ability": "On Reveal: Give all your barriers Shield."
+    },
+    {
+      "id": "queen_of_hearts",
+      "slug": "queen-of-hearts",
+      "key": "C00176_MC",
+      "name": "Queen of Hearts",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "legendary",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "First Strike"
+      ],
+      "ability": "When an ally On Death ability happens, repeat it.",
+      "related": [
+        "off-with-your-head"
+      ]
+    },
+    {
+      "id": "queen_of_the_night",
+      "slug": "queen-of-the-night",
+      "key": "C00270_MB",
+      "name": "Queen of the Night",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 2,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Deal Damage",
+        "Spell"
+      ],
+      "ability": "When you play a spell, deal 2 damage to the opponent's barrier here."
+    },
+    {
+      "id": "rain_of_arrows",
+      "slug": "rain-of-arrows",
+      "key": "C00096_SB",
+      "name": "Rain of Arrows",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 2 damage to all enemies."
+    },
+    {
+      "id": "rapunzel",
+      "slug": "rapunzel",
+      "key": "C00174_MB",
+      "name": "Rapunzel",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Self Buff",
+        "Mana"
+      ],
+      "ability": "Before combat, I get +1⚔️/+1❤️ for each unspent mana you have."
+    },
+    {
+      "id": "red",
+      "slug": "red",
+      "key": "C00069_MC",
+      "name": "Red",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 5,
+      "power": 5,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Deal Damage",
+        "Add",
+        "On Kill"
+      ],
+      "ability": "On Reveal: Deal 5 damage to an enemy character. On Kill: Add a base copy of the character to your hand."
+    },
+    {
+      "id": "red_knight",
+      "slug": "red-knight",
+      "key": "C00165_MB",
+      "name": "Red Knight",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 4,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Trample"
+      ],
+      "ability": "Trample\nThe character across from me has Trample."
+    },
+    {
+      "id": "reflection",
+      "slug": "reflection",
+      "key": "C00285_SB",
+      "name": "Reflection",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "On Reveal"
+      ],
+      "ability": "Repeat the On Reveal abilities of allies that already revealed this round."
+    },
+    {
+      "id": "reinforcements",
+      "slug": "reinforcements",
+      "key": "C00014_SB",
+      "name": "Reinforcements",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Summon"
+      ],
+      "ability": "Summon a Merry Man [1⚔️/1❤️] on two random spaces.",
+      "related": [
+        "merry-man"
+      ]
+    },
+    {
+      "id": "reynard",
+      "slug": "reynard",
+      "key": "C00149_MB",
+      "name": "Reynard",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Debuff",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: Swap stats with the character across from me."
+    },
+    {
+      "id": "robinhood",
+      "slug": "robin-hood",
+      "key": "C00065_MC",
+      "name": "Robin Hood",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 8,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 1,
+      "keywords": [
+        "Snipe",
+        "On Reveal",
+        "Deal Damage"
+      ],
+      "ability": "Snipe 3\nOn Reveal: Deal 2 damage to all enemies.",
+      "related": [
+        "bullseye"
+      ]
+    },
+    {
+      "id": "roc",
+      "slug": "roc",
+      "key": "C00340_MB",
+      "name": "Roc",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 8,
+      "power": 5,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Return",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: Return the enemy card across from me to the opponent's hand. If there isn't one, I get +5⚔️/+5❤️ instead."
+    },
+    {
+      "id": "romeo",
+      "slug": "romeo",
+      "key": "C00352_MB",
+      "name": "Romeo",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 1,
+      "keywords": [
+        "On Death",
+        "Summon"
+      ],
+      "ability": "On Death: Summon a character from your hand to this space."
+    },
+    {
+      "id": "roo",
+      "slug": "roo",
+      "key": "C00103_MB",
+      "name": "Roo",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Move"
+      ],
+      "ability": "Move"
+    },
+    {
+      "id": "rumple",
+      "slug": "rumple",
+      "key": "C00016_MB",
+      "name": "Rumple",
+      "formerName": "Rumpelstiltskin",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Mana"
+      ],
+      "ability": "On Reveal: You get +1 mana next round."
+    },
+    {
+      "id": "run_over",
+      "slug": "run-over",
+      "key": "C00228_SB",
+      "name": "Run Over",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Trample",
+        "Buff"
+      ],
+      "ability": "Give ANY character +1⚔️/+1❤️ and Trample."
+    },
+    {
+      "id": "sandman",
+      "slug": "sandman",
+      "key": "C00275_MB",
+      "name": "Sandman",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Spell"
+      ],
+      "ability": "Your spells cost 1 less to play."
+    },
+    {
+      "id": "scarecrow",
+      "slug": "scarecrow",
+      "key": "C00155_MB",
+      "name": "Scarecrow",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Draw"
+      ],
+      "ability": "On Reveal: Draw a card."
+    },
+    {
+      "id": "searing_light",
+      "slug": "searing-light",
+      "key": "C00026_SB",
+      "name": "Searing Light",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Deal Damage",
+        "Heal"
+      ],
+      "ability": "Deal 4 damage to an enemy. Heal 4 damage from your barrier there."
+    },
+    {
+      "id": "shahrazad",
+      "slug": "shahrazad",
+      "key": "C00127_MB",
+      "name": "Shahrazad",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 3,
+      "keywords": [
+        "Heal"
+      ],
+      "ability": "When a card enters your hand, heal 1 damage from your barrier here."
+    },
+    {
+      "id": "shere_khan",
+      "slug": "shere-khan",
+      "key": "C00276_MB",
+      "name": "Shere Khan",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Destroy",
+        "Self Buff"
+      ],
+      "ability": "When you kill an ally, I get Double Attack this round."
+    },
+    {
+      "id": "sheriff_of_nottingham",
+      "slug": "sheriff-of-nottingham",
+      "key": "C00083_MB",
+      "name": "Sheriff of Nottingham",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Stun",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Stun the enemy across from me."
+    },
+    {
+      "id": "sherlock",
+      "slug": "sherlock",
+      "key": "C00311_MB",
+      "name": "Sherlock",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "On Reveal",
+        "Draw",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: If an enemy was played here this round, draw 2 cards.\nWhen a card enters your hand, I get +1⚔️/+1❤️."
+    },
+    {
+      "id": "shield_maiden",
+      "slug": "shield-maiden",
+      "key": "C00018_MB",
+      "name": "Shield Maiden",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 3,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Shield"
+      ],
+      "ability": "Shield"
+    },
+    {
+      "id": "silver_bullet",
+      "slug": "silver-bullet",
+      "key": "C00079_SB",
+      "name": "Silver Bullet",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Deal Damage"
+      ],
+      "ability": "Deal 3 damage to ANY character."
+    },
+    {
+      "id": "sinbad",
+      "slug": "sinbad",
+      "key": "C00214_MB",
+      "name": "Sinbad",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 3,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 4,
+      "keywords": [
+        "Mana"
+      ],
+      "ability": "When I take damage, you get +1 mana next round."
+    },
+    {
+      "id": "six_gun_gorilla",
+      "slug": "six-gun-gorilla",
+      "key": "C00346_MB",
+      "name": "Six-Gun Gorilla",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Self Buff"
+      ],
+      "ability": "On Reveal: I get +2/+2 for each other card you played this round."
+    },
+    {
+      "id": "sleeping_beauty",
+      "slug": "sleeping-beauty",
+      "key": "C00157_MB",
+      "name": "Sleeping Beauty",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 6,
+      "health": 6,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Stun",
+        "Spell"
+      ],
+      "ability": "I’m stunned until I am targeted by ANY spell."
+    },
+    {
+      "id": "slime",
+      "slug": "slime",
+      "key": "C00224_MB",
+      "name": "Slime",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Summon"
+      ],
+      "ability": "When I survive damage, summon a Slime [2⚔️/2❤️] on a random space."
+    },
+    {
+      "id": "snow_queen",
+      "slug": "snow-queen",
+      "key": "C00150_MB",
+      "name": "Snow Queen",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 3,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Spell",
+        "Stun",
+        "Add",
+        "Self Buff",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Add Freeze! to your hand for each enemy here. When a character becomes stunned, I get +1/+1.",
+      "related": [
+        "freeze"
+      ]
+    },
+    {
+      "id": "snow_white",
+      "slug": "snow-white",
+      "key": "C00317_MB",
+      "name": "Snow White",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 6,
+      "power": 4,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Stun",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Stun all enemies here."
+    },
+    {
+      "id": "sorcerers_apprentice",
+      "slug": "sorcerers-apprentice",
+      "key": "C00197_MB",
+      "name": "Sorcerer's Apprentice",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 2,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Spell",
+        "Summon"
+      ],
+      "ability": "When you play a spell, summon a Broomstick [1⚔️/1❤️] on a random space.",
+      "related": [
+        "broomstick"
+      ]
+    },
+    {
+      "id": "soul_surge",
+      "slug": "soul-surge",
+      "key": "C00044_SB",
+      "name": "Soul Surge",
+      "type": "spell",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "Destroy an ally to destroy the enemy across from it."
+    },
+    {
+      "id": "spellbook",
+      "slug": "spellbook",
+      "key": "C00167_SB",
+      "name": "Spellbook",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 4,
+      "keywords": [
+        "Add",
+        "Spell",
+        "Discard"
+      ],
+      "ability": "For the rest of the game, add a random spell to your hand at the start of the round. Discard it before combat."
+    },
+    {
+      "id": "stroke_of_midnight",
+      "slug": "stroke-of-midnight",
+      "key": "C00205_SB",
+      "name": "Stroke of Midnight",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Debuff",
+        "Return"
+      ],
+      "ability": "Return ANY character to its owner's hand."
+    },
+    {
+      "id": "sweeney_todd",
+      "slug": "sweeney-todd",
+      "key": "C00280_MB",
+      "name": "Sweeney Todd",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 6,
+      "power": 5,
+      "health": 5,
+      "alignment": "evil",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "When I attack, destroy a random ally or enemy here with less ⚔️ than me."
+    },
+    {
+      "id": "the_green_knight",
+      "slug": "the-green-knight",
+      "key": "C00136_MB",
+      "name": "The Green Knight",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Heal"
+      ],
+      "ability": "After combat, I heal all damage from myself."
+    },
+    {
+      "id": "three_blind_mice",
+      "slug": "three-blind-mice",
+      "key": "C00002_MB",
+      "name": "Three Blind Mice",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 1,
+      "health": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Death",
+        "Summon"
+      ],
+      "ability": "On Death: Summon a Mouse [1⚔️/1❤️] on two random spaces.",
+      "related": [
+        "mouse"
+      ]
+    },
+    {
+      "id": "three_musketeers",
+      "slug": "three-musketeers",
+      "key": "C00072_MB",
+      "name": "Three Musketeers",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 5,
+      "power": 2,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 3,
+      "keywords": [
+        "First Strike",
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "First Strike\nOn Reveal: Summon a Musketeer 2⚔️/1❤️ with First Strike on each space here.",
+      "related": [
+        "musketeer"
+      ]
+    },
+    {
+      "id": "three_not_so_little_pigs",
+      "slug": "three-not-so-little-pigs",
+      "key": "C00046_MC",
+      "name": "Three Not So Little Pigs",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 7,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "legendary",
+      "series": 2,
+      "keywords": [
+        "Trample",
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "Trample\nOn Reveal: Summon a Not So Little Pig [4⚔️/4❤️] with Trample on a random space at each other location.",
+      "related": [
+        "not-so-little-pig",
+        "little-pig"
+      ]
+    },
+    {
+      "id": "thumbelina",
+      "slug": "thumbelina",
+      "key": "C00198_MB",
+      "name": "Thumbelina",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 2,
+      "health": 2,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "tigger",
+      "slug": "tigger",
+      "key": "C00200_MB",
+      "name": "Tigger",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 1,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Return",
+        "Self Buff"
+      ],
+      "ability": "After combat, I return to your hand and double my ⚔️."
+    },
+    {
+      "id": "tin_woodman",
+      "slug": "tin-woodman",
+      "key": "C00094_MB",
+      "name": "Tin Woodman",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 6,
+      "power": 3,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "On Reveal",
+        "Heal"
+      ],
+      "ability": "On Reveal: Heal 8 damage from ANY other character or barrier here."
+    },
+    {
+      "id": "tortoise",
+      "slug": "tortoise",
+      "key": "C00183_MB",
+      "name": "Tortoise",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 5,
+      "power": 0,
+      "health": 7,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Shield"
+      ],
+      "ability": "Shield\nAllies have ⚔️ equal to their ❤️."
+    },
+    {
+      "id": "toto",
+      "slug": "toto",
+      "key": "C00066_MB",
+      "name": "Toto",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "power": 1,
+      "health": 1,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "Move",
+        "Self Buff"
+      ],
+      "ability": "After an enemy is played here, I move to another location and get +1⚔️."
+    },
+    {
+      "id": "trash_for_treasure",
+      "slug": "trash-for-treasure",
+      "key": "C00169_SB",
+      "name": "Trash for Treasure",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "Destroy",
+        "Draw"
+      ],
+      "ability": "Destroy an ally to draw 2 cards."
+    },
+    {
+      "id": "tuck",
+      "slug": "tuck",
+      "key": "C00001_MB",
+      "name": "Tuck",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Draw"
+      ],
+      "ability": "On Reveal: If an enemy was played here this round, draw a card."
+    },
+    {
+      "id": "tweedledee",
+      "slug": "tweedledee",
+      "key": "C00305_MB",
+      "name": "Tweedledee",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "tweedledum",
+      "slug": "tweedledum",
+      "key": "C00106_MB",
+      "name": "Tweedledum",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 2,
+      "keywords": [
+        "On Reveal",
+        "Summon"
+      ],
+      "ability": "On Reveal: Summon Tweedledee, who is a copy of me, at another random location.",
+      "related": [
+        "tweedledee"
+      ]
+    },
+    {
+      "id": "twister_toss",
+      "slug": "twister-toss",
+      "key": "C00061_SB",
+      "name": "Twister Toss",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "Move"
+      ],
+      "ability": "Move an ally."
+    },
+    {
+      "id": "ugly_duckling",
+      "slug": "ugly-duckling",
+      "key": "C00030_MB",
+      "name": "Ugly Duckling",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 0,
+      "health": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Discard",
+        "Transform"
+      ],
+      "ability": "When you discard a card, I transform into Beautiful Swan [4⚔️/4❤️].",
+      "related": [
+        "beautiful-swan"
+      ]
+    },
+    {
+      "id": "underworld_flare",
+      "slug": "underworld-flare",
+      "key": "C00043_SB",
+      "name": "Underworld Flare",
+      "type": "spell",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "alignment": "neutral",
+      "rarity": "rare",
+      "series": 5,
+      "keywords": [
+        "Deal Damage",
+        "Discard"
+      ],
+      "ability": "Deal 6 damage to an enemy. When this is discarded, deal 6 damage to a random enemy."
+    },
+    {
+      "id": "van_helsing",
+      "slug": "van-helsing",
+      "key": "C00314_MC",
+      "name": "Van Helsing",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 4,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 5,
+      "keywords": [
+        "Add",
+        "Spell",
+        "Choose"
+      ],
+      "ability": "Before combat, add Van Helsing's Tools to your hand if you don't have it.",
+      "related": [
+        "van-helsings-tools",
+        "holy-water",
+        "silver-bullet",
+        "garlic",
+        "wooden-stake"
+      ]
+    },
+    {
+      "id": "van_helsings_tools",
+      "slug": "van-helsings-tools",
+      "key": "C00265_SB",
+      "name": "Van Helsing's Tools",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 0,
+      "alignment": "neutral",
+      "keywords": [
+        "Choose",
+        "Spell"
+      ],
+      "ability": "Choose One: Play Holy Water OR Silver Bolt OR Garlic OR Wooden Stake."
+    },
+    {
+      "id": "watson",
+      "slug": "watson",
+      "key": "C00010_MB",
+      "name": "Watson",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 3,
+      "power": 3,
+      "health": 3,
+      "alignment": "good",
+      "rarity": "common",
+      "series": 4,
+      "keywords": [
+        "Draw"
+      ],
+      "ability": "After combat, if an enemy wasn't played here this round, draw a card."
+    },
+    {
+      "id": "the_white_queen",
+      "slug": "white-queen",
+      "key": "C00107_MB",
+      "name": "White Queen",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "common",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Debuff",
+        "Return"
+      ],
+      "ability": "On Reveal: Return ANY character to its owner's hand."
+    },
+    {
+      "id": "white_rabbit",
+      "slug": "white-rabbit",
+      "key": "C00051_MB",
+      "name": "White Rabbit",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "neutral",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Location"
+      ],
+      "ability": "On Reveal: Replace this location with Wonderland."
+    },
+    {
+      "id": "wicked_stepmother",
+      "slug": "wicked-stepmother",
+      "key": "C00175_MC",
+      "name": "Wicked Stepmother",
+      "type": "unit",
+      "legendary": true,
+      "status": "active",
+      "mana": 4,
+      "power": 3,
+      "health": 6,
+      "alignment": "evil",
+      "rarity": "legendary",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Deathtouch",
+        "Buff"
+      ],
+      "ability": "Deathtouch\nOn Reveal: Give your Evil characters Deathtouch.",
+      "related": [
+        "poison-apple"
+      ]
+    },
+    {
+      "id": "wicked_stepsisters",
+      "slug": "wicked-stepsisters",
+      "key": "C00131_MB",
+      "name": "Wicked Stepsisters",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 3,
+      "health": 4,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 1,
+      "keywords": [
+        "Vanilla"
+      ]
+    },
+    {
+      "id": "wicked_witch_of_the_west",
+      "slug": "wicked-witch-of-the-west",
+      "key": "C00100_MB",
+      "name": "Wicked Witch of the West",
+      "type": "unit",
+      "legendary": false,
+      "status": "active",
+      "mana": 3,
+      "power": 1,
+      "health": 5,
+      "alignment": "evil",
+      "rarity": "epic",
+      "series": 5,
+      "keywords": [
+        "Move",
+        "Add"
+      ],
+      "ability": "When I survive damage, add a Flying Monkey [2⚔️/3❤️] to your hand, and I move one space to the left.",
+      "related": [
+        "flying-monkey"
+      ]
+    },
+    {
+      "id": "winnie_the_pooh",
+      "slug": "winnie-the-pooh",
+      "key": "C00084_MC",
+      "name": "Winnie-the-Pooh",
+      "formerName": "Winnie the Pooh",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 5,
+      "power": 5,
+      "health": 5,
+      "alignment": "good",
+      "rarity": "legendary",
+      "series": 3,
+      "keywords": [
+        "Self Buff"
+      ],
+      "ability": "Double all buffs to my ⚔️ and ❤️."
+    },
+    {
+      "id": "wizard_of_oz",
+      "slug": "wizard-of-oz",
+      "key": "C00325_MC",
+      "name": "Wizard of Oz",
+      "type": "unit",
+      "legendary": true,
+      "status": "removed",
+      "mana": 4,
+      "power": 3,
+      "health": 3,
+      "alignment": "neutral",
+      "rarity": "legendary",
+      "series": 5,
+      "keywords": [
+        "On Reveal",
+        "Choose",
+        "Good",
+        "Evil"
+      ],
+      "ability": "On Reveal: Choose One: Turn your Good characters face down or Turn your Evil characters face down.",
+      "related": [
+        "behind-the-curtain"
+      ]
+    },
+    {
+      "id": "wooden_stake",
+      "slug": "wooden-stake",
+      "key": "C00082_SB",
+      "name": "Wooden Stake",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 1,
+      "alignment": "neutral",
+      "keywords": [
+        "Destroy"
+      ],
+      "ability": "Destroy ANY damaged character."
+    },
+    {
+      "id": "yuki_onna",
+      "slug": "yuki-onna",
+      "key": "C00179_MB",
+      "name": "Yuki-Onna",
+      "type": "unit",
+      "legendary": false,
+      "status": "removed",
+      "mana": 2,
+      "power": 2,
+      "health": 1,
+      "alignment": "evil",
+      "rarity": "common",
+      "series": 3,
+      "keywords": [
+        "On Reveal",
+        "Add",
+        "Spell",
+        "Stun",
+        "Debuff"
+      ],
+      "ability": "On Reveal: Add a Freeze! to your hand.",
+      "related": [
+        "freeze"
+      ]
+    },
+    {
+      "id": "zombie",
+      "slug": "zombie",
+      "key": "C00041_MB",
+      "name": "Zombie",
+      "type": "token",
+      "tokenOnly": true,
+      "legendary": false,
+      "status": "active",
+      "mana": 2,
+      "power": 2,
+      "health": 2,
+      "alignment": "evil",
+      "keywords": [
+        "Vanilla"
+      ]
+    }
+  ]
+}

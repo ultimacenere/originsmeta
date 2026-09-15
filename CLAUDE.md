@@ -7,7 +7,7 @@ Sito fan non ufficiale su Origins TCG (Koin Games), due lingue (en/it; il france
 ## Regole del progetto
 
 - Rispondere e commentare in italiano; i contenuti del sito sono in inglese e italiano e vanno sempre aggiornati insieme (`en` è il tipo di riferimento per i dizionari).
-- Niente dati inventati: carte, statistiche, date ed eventi vengono solo dalle fonti ufficiali (pagina Steam, patch notes su Steam, Discord, comunicati). Le stat attuali sono quelle della patch 0.6.3 del playtest (27/08/2026).
+- Niente dati inventati: statistiche, date ed eventi vengono solo dalle fonti ufficiali (pagina Steam, patch notes su Steam, Discord, comunicati). Le stat attuali sono quelle della patch 0.6.3 del playtest (27/08/2026). Eccezione autorizzata da Pierluigi il 15/09/2026: i dati delle carte (testi, statistiche, tag, ID ufficiali) vengono importati dal database community World of Origins (worldoforigins.fun) con `npm run import:woo`, perché la Demo 2.0 non mostra la collezione. Mai importare immagini da altri siti.
 - La dicitura "non affiliato a Koin Games" non si toglie mai.
 - Nessuna dipendenza nuova senza motivo. Le pagine editoriali restano statiche; la parte community (account, mazzi pubblicati, voti) usa Supabase (`src/lib/supabase/`, `src/lib/community/`, schema in `supabase/schema.sql`) e solo `/account` e le pagine di modifica sono renderizzate sul server; `/decks` e le pagine `/decks/community/[slug]` sono ISR. Le funzioni future (tier list votata, tracker prezzi Steam Market) seguono lo stesso schema: tabella + policy RLS + Server Action, senza rompere la generazione statica.
 - Segreti: `.env.local` (non committato) contiene la password del database per `scripts/db-migrate.mjs`; URL e chiave publishable di Supabase sono pubblici e hanno un default in `src/lib/supabase/env.ts`. Mai inserire il Client Secret di Discord o altri segreti nel codice: vanno solo nella dashboard Supabase.
@@ -31,6 +31,7 @@ Sito fan non ufficiale su Origins TCG (Koin Games), due lingue (en/it; il france
 - `next.config.ts` reindirizza `/` alla lingua del browser.
 - `src/lib/i18n.ts` locali, `href()`, `alternatesFor()`; `src/lib/page.ts` helper `resolveLocale` e `pageMeta`.
 - Dati in `src/lib/data/*.ts`, guide in `src/lib/content/guides.ts`, media in `public/media/`.
+- Database carte in tre file: `woo-cards.json` (generato, non modificare a mano), `card-lore.ts` (saga, origine EN/IT e traduzione IT del testo, scritte a mano) e `card-history.ts` (storico dalle patch notes ufficiali); `cards.ts` li unisce. Le saghe sono una classificazione nostra.
 - Community: `src/app/auth/callback/route.ts` (ritorno OAuth/magic link), `src/proxy.ts` (refresh sessione solo su `/account` e modifica mazzo), `src/app/[locale]/{login,account,decks/publish,decks/community/[slug]}`; componenti `LoginPanel`, `AccountMenu`, `PublishDeckForm`, `StarRating`, `OwnerActions`. Tipi delle tabelle in `src/lib/supabase/database.ts` (da aggiornare con lo schema).
 
 ## Palette ("ink & mint")

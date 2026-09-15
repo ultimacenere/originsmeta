@@ -10,6 +10,9 @@ export const sagaHue: Record<string, string> = {
   "fairy-tale": "linear-gradient(160deg,#8a5cc9,#0e071f)",
   "nursery-rhyme": "linear-gradient(160deg,#d98a2b,#0e071f)",
   "myth-folklore": "linear-gradient(160deg,#3e6ea8,#0e071f)",
+  "african-folklore": "linear-gradient(160deg,#b8641c,#0e071f)",
+  "american-tales": "linear-gradient(160deg,#9c4a2a,#0e071f)",
+  "classic-literature": "linear-gradient(160deg,#6b4f9e,#0e071f)",
   "ballad-of-mulan": "linear-gradient(160deg,#c8281e,#0e071f)",
   "arabian-nights": "linear-gradient(160deg,#2a9d8f,#0e071f)",
   "baker-street": "linear-gradient(160deg,#5b5b5b,#0e071f)",
@@ -24,3 +27,10 @@ export function initials(name: string): string {
     .map((w) => w[0].toUpperCase())
     .join("");
 }
+
+/** Pill di allineamento (Good / Evil / Neutral) sugli elementi avorio. */
+export const alignStyle: Record<string, string> = {
+  good: "bg-mint-soft text-ink",
+  evil: "bg-crimson/15 text-crimson-deep",
+  neutral: "bg-ivory-3 text-ink-muted",
+};

@@ -111,7 +111,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
               <Link href={d.href} className="card-ivory card-ivory-hover flex h-full flex-col p-5">
                 <span className="flex flex-wrap items-center gap-2">
                   <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint-deep text-ivory" : "bg-ink text-ivory"}`}>{d.sourceLabel}</span>
-                  <span className="stat-pill border border-ink/20 text-ink">{d.archetypeLabel}</span>
+                  <span className="stat-pill border border-sky/60 text-ink">{d.archetypeLabel}</span>
                   {d.legendary ? <span className="stat-pill bg-gold/50 text-ink">★ {d.legendary.name}</span> : null}
                   {d.rating && d.rating.votes > 0 ? (
                     <span className="stat-pill border border-mint-deep/40 font-mono text-[11px] text-mint-deep">
@@ -124,7 +124,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="mt-3 block text-xs text-ink-muted">
                   {labels.creator}: <strong className="text-ink">{d.creator}</strong>
                 </span>
-                <span className="mt-3 block border-t border-ink/10 pt-3 text-xs text-ink-muted">
+                <span className="mt-3 block border-t border-sky/40 pt-3 text-xs text-ink-muted">
                   <span className="kicker">{labels.cardsInDeck}</span>
                   <span className="mt-1 block text-ink">{d.cardNames.join(" · ")}</span>
                 </span>

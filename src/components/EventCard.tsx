@@ -60,7 +60,7 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
               {dict.common.source}
             </SteamButton>
           ) : (
-            <a className="btn border border-ink/30 text-ink text-xs hover:text-crimson-deep" href={event.source} rel="noopener">
+            <a className="btn border border-sky/80 text-ink text-xs hover:text-crimson-deep" href={event.source} rel="noopener">
               {dict.common.source}
             </a>
           )

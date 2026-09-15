@@ -55,10 +55,10 @@ export default async function DeckPage({ params }: { params: Params }) {
         <p className="mt-2 text-lg text-ink-muted">{deck.tagline[locale]}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="stat-pill bg-ink text-ivory text-[11px] font-semibold uppercase">{d.common[deck.source]}</span>
-          <span className="stat-pill border border-ink/20 text-ink">
+          <span className="stat-pill border border-sky/60 text-ink">
             {d.common.archetype}: {archetypeLabels[deck.archetype][locale]}
           </span>
-          <span className="stat-pill border border-ink/20 text-ink">
+          <span className="stat-pill border border-sky/60 text-ink">
             {d.common.creator}:{" "}
             {deck.creator.url ? (
               <a className={isDiscordUrl(deck.creator.url) ? "link-discord inline-flex items-center gap-1 align-middle" : "underline"} href={deck.creator.url} rel="noopener">
@@ -104,7 +104,7 @@ export default async function DeckPage({ params }: { params: Params }) {
             <h2 className="mt-8 text-xl font-extrabold text-ink">{d.decks.changes}</h2>
             <ul className="mt-3 space-y-3">
               {deck.changes.map((c, i) => (
-                <li key={i} className="rounded-lg border border-ink/15 p-4 text-sm">
+                <li key={i} className="rounded-lg border border-sky/50 p-4 text-sm">
                   <p className="font-mono">
                     <span className="text-ink-muted">{d.common.patch} {c.patch}</span> · <span className="text-crimson-deep">− {c.removed}</span> · <span className="text-mint-deep">+ {c.added}</span>
                   </p>

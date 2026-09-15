@@ -100,7 +100,7 @@ export function LoginPanel({ next, labels }: { next: string; labels: LoginLabels
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={labels.emailPlaceholder}
-          className="flex-1 rounded-lg border border-ink/20 bg-ivory px-3 py-2.5 text-ink"
+          className="flex-1 rounded-lg border border-sky/60 bg-ivory px-3 py-2.5 text-ink"
         />
         <button type="submit" disabled={busy || status === "sent"} className="btn btn-mint justify-center disabled:opacity-60">
           {busy ? labels.sending : labels.magicLink}

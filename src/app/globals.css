@@ -12,12 +12,12 @@
   --color-felt-deep: #0e071f;
   --color-felt-soft: #21143c;
   --color-felt-line: #3a2a60;
-  --color-ivory: #f9f4ea;
-  --color-ivory-2: #f4efe1;
-  --color-ivory-3: #ede7d7;
+  --color-ivory: #f7f1e4;
+  --color-ivory-2: #f1ead8;
+  --color-ivory-3: #e8e0cb;
   --color-ink: #16102a;
   --color-ink-muted: #5e5672;
-  --color-chalk: #f6f2e7;
+  --color-chalk: #f3eee0;
   --color-chalk-muted: #b3a8cf;
   --color-crimson: #c81e7a;
   --color-crimson-deep: #971359;
@@ -26,7 +26,8 @@
   --color-mint: #31e3bd;
   --color-mint-deep: #17a689;
   --color-mint-soft: #bff5e8;
-  --color-sky: #6fb7c9;
+  --color-sky: #3fc4e8;
+  --color-sky-deep: #1a9ec4;
 
   --font-display: var(--font-unbounded), "Arial Black", Impact, sans-serif;
   --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;
@@ -82,7 +83,7 @@
     color: var(--color-ink);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
-    border: 1px solid rgba(22, 16, 42, 0.18);
+    border: 1px solid rgba(63, 196, 232, 0.65);
     position: relative;
   }
   .card-ivory::after {
@@ -90,7 +91,7 @@
     position: absolute;
     inset: 6px;
     border-radius: 9px;
-    border: 1px solid rgba(22, 16, 42, 0.12);
+    border: 1px solid rgba(63, 196, 232, 0.4);
     pointer-events: none;
   }
   .card-ivory-hover {
@@ -197,7 +198,7 @@
     align-items: center;
     background: linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-2) 100%);
     color: var(--color-ink);
-    border: 1px solid rgba(22, 16, 42, 0.2);
+    border: 1px solid rgba(63, 196, 232, 0.7);
     border-radius: 10px;
     padding: 0.35rem 0.55rem 0.35rem 0.35rem;
     box-shadow: var(--shadow-card);
@@ -212,7 +213,7 @@
     height: 60px;
     border-radius: 6px;
     overflow: hidden;
-    border: 1px solid rgba(22, 16, 42, 0.25);
+    border: 1px solid rgba(63, 196, 232, 0.65);
     display: grid;
     place-items: center;
     font-family: var(--font-display);

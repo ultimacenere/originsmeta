@@ -325,7 +325,7 @@ export function DeckBuilder({
       {/* ---------- mazzo ---------- */}
       <section className="card-ivory p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex gap-1 rounded-full border border-ink/20 p-0.5">
+          <div className="flex gap-1 rounded-full border border-sky/60 p-0.5">
             {(["single", "tournament"] as const).map((m) => (
               <button
                 key={m}
@@ -350,7 +350,7 @@ export function DeckBuilder({
                     setActive(i);
                     persist({ active: i });
                   }}
-                  className={`rounded-lg px-3 py-1 font-display text-xs font-bold ${active === i ? "bg-mint text-ink" : "border border-ink/20 text-ink-muted"}`}
+                  className={`rounded-lg px-3 py-1 font-display text-xs font-bold ${active === i ? "bg-mint text-ink" : "border border-sky/60 text-ink-muted"}`}
                 >
                   {labels.deckLabel} {String.fromCharCode(65 + i)} {isComplete(decks[i]) ? "✓" : ""}
                 </button>
@@ -366,7 +366,7 @@ export function DeckBuilder({
             value={deck.name}
             onChange={(e) => updateDeck((d) => ({ ...d, name: e.target.value.slice(0, 60) }))}
             placeholder={labels.deckNamePlaceholder}
-            className="mt-1 w-full rounded-lg border border-ink/20 bg-ivory px-3 py-2 text-ink"
+            className="mt-1 w-full rounded-lg border border-sky/60 bg-ivory px-3 py-2 text-ink"
           />
         </label>
 
@@ -391,7 +391,7 @@ export function DeckBuilder({
         {deck.legendary && slotCard(deck.legendary) ? (
           <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} removeLabel={labels.remove} />
         ) : (
-          <p className="mt-1 rounded-lg border border-dashed border-ink/30 px-3 py-3 text-sm text-ink-muted">{labels.pickLegendary}</p>
+          <p className="mt-1 rounded-lg border border-dashed border-sky/80 px-3 py-3 text-sm text-ink-muted">{labels.pickLegendary}</p>
         )}
 
         {/* Carte base */}
@@ -408,7 +408,7 @@ export function DeckBuilder({
             ) : null;
           })}
           {Array.from({ length: Math.max(0, RULES.distinctCards - deck.cards.length) }).map((_, i) => (
-            <li key={`empty-${i}`} className="h-9 rounded-lg border border-dashed border-ink/20" aria-hidden="true" />
+            <li key={`empty-${i}`} className="h-9 rounded-lg border border-dashed border-sky/60" aria-hidden="true" />
           ))}
         </ul>
 
@@ -432,7 +432,7 @@ export function DeckBuilder({
               {labels.publish}
             </a>
           ) : (
-            <span className="btn cursor-not-allowed border border-ink/20 text-xs text-ink-muted" title={labels.publishHint} aria-disabled="true">
+            <span className="btn cursor-not-allowed border border-sky/60 text-xs text-ink-muted" title={labels.publishHint} aria-disabled="true">
               {labels.publish}
             </span>
           )}
@@ -457,7 +457,7 @@ export function DeckBuilder({
             {labels.save}
           </button>
           <a
-            className="btn border border-ink/30 text-xs text-ink"
+            className="btn border border-sky/80 text-xs text-ink"
             href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Deck OriginsMeta: ${deck.name || "senza nome"}`)}&body=${encodeURIComponent(`${textList}\n\n${shareLink}\n\n`)}`}
             title={labels.submitHint}
           >
@@ -465,7 +465,7 @@ export function DeckBuilder({
           </a>
           <button
             type="button"
-            className="btn border border-ink/30 text-xs text-ink hover:text-crimson-deep"
+            className="btn border border-sky/80 text-xs text-ink hover:text-crimson-deep"
             onClick={() => updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }))}
           >
             {labels.clear}
@@ -485,7 +485,7 @@ export function DeckBuilder({
           value={importText}
           onChange={(e) => setImportText(e.target.value)}
           rows={3}
-          className="mt-2 w-full rounded-lg border border-ink/20 bg-ivory px-3 py-2 font-mono text-xs text-ink"
+          className="mt-2 w-full rounded-lg border border-sky/60 bg-ivory px-3 py-2 font-mono text-xs text-ink"
         />
         <button type="button" className="btn btn-ink mt-2 text-xs" onClick={doImport}>
           {labels.importButton}
@@ -502,7 +502,7 @@ export function DeckBuilder({
                   <select
                     value={teach[k] ?? ""}
                     onChange={(e) => setTeach((t) => ({ ...t, [k]: e.target.value }))}
-                    className="flex-1 rounded border border-ink/20 bg-ivory px-2 py-1 text-xs"
+                    className="flex-1 rounded border border-sky/60 bg-ivory px-2 py-1 text-xs"
                   >
                     <option value="">—</option>
                     {pool.map((c) => (
@@ -522,7 +522,7 @@ export function DeckBuilder({
 
         {/* Conquest */}
         {mode === "tournament" ? (
-          <div className="mt-6 rounded-lg border border-ink/20 p-4">
+          <div className="mt-6 rounded-lg border border-sky/60 p-4">
             <h3 className="text-lg font-extrabold text-ink">{labels.tournamentTitle}</h3>
             <p className="mt-1 text-xs text-ink-muted">{fmt(labels.tournamentHint, { min: minDifferent })}</p>
             <label className="mt-2 flex items-center gap-2 text-xs text-ink-muted">
@@ -534,7 +534,7 @@ export function DeckBuilder({
                 max={25}
                 value={minDifferent}
                 onChange={(e) => setMinDifferent(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
-                className="w-16 rounded border border-ink/20 bg-ivory px-2 py-1 font-mono text-ink"
+                className="w-16 rounded border border-sky/60 bg-ivory px-2 py-1 font-mono text-ink"
               />
             </label>
             <table className="mt-3 w-full text-xs">
@@ -548,7 +548,7 @@ export function DeckBuilder({
               </thead>
               <tbody>
                 {[0, 1, 2].map((i) => (
-                  <tr key={i} className="border-t border-ink/10">
+                  <tr key={i} className="border-t border-sky/40">
                     <td className="py-1 font-bold">
                       {labels.deckLabel} {String.fromCharCode(65 + i)}
                     </td>
@@ -664,7 +664,7 @@ export function DeckBuilder({
 
 function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-ink/15 bg-ivory-2/60 px-2 py-1.5">
+    <div className="flex items-center gap-2 rounded-lg border border-sky/50 bg-ivory-2/60 px-2 py-1.5">
       <span className="font-mono text-xs text-ink-muted">{copies}×</span>
       <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(card.name)}</span>
       <span className="min-w-0 flex-1">
@@ -677,7 +677,7 @@ function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; c
           {card.mana ?? "?"} · {card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : "spell"}
         </span>
       </span>
-      <button type="button" onClick={onRemove} className="stat-pill border border-ink/20 text-[10px] text-ink hover:bg-crimson hover:text-ivory" aria-label={`${removeLabel} ${card.name}`}>
+      <button type="button" onClick={onRemove} className="stat-pill border border-sky/60 text-[10px] text-ink hover:bg-crimson hover:text-ivory" aria-label={`${removeLabel} ${card.name}`}>
         ✕
       </button>
     </div>

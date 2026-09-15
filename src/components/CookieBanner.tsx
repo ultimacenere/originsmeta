@@ -44,7 +44,7 @@ export function CookieBanner({ labels, privacyHref }: { labels: CookieLabels; pr
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => decide("necessary")} className="btn border border-ink/30 text-xs text-ink">
+          <button type="button" onClick={() => decide("necessary")} className="btn border border-sky/80 text-xs text-ink">
             {labels.necessary}
           </button>
           <button type="button" onClick={() => decide("all")} className="btn btn-mint text-xs">

@@ -82,27 +82,27 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
                 <li key={deck.id} className="card-ivory flex flex-col p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`stat-pill text-[11px] font-semibold uppercase ${deck.status === "published" ? "bg-mint-deep text-ivory" : "bg-ink/10 text-ink"}`}>{c.status[deck.status]}</span>
-                    <span className="stat-pill border border-ink/20 text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
+                    <span className="stat-pill border border-sky/60 text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
                     <span className="stat-pill bg-gold/50 text-ink">★ {legName}</span>
                   </div>
                   <p className="mt-3 font-display text-xl font-extrabold leading-tight text-ink">{deck.name}</p>
                   <p className="mt-1 font-mono text-xs text-ink-muted">
                     {deck.rating?.votes ? `★ ${deck.rating.avg.toFixed(1)} · ${deck.rating.votes} ${deck.rating.votes === 1 ? c.vote : c.votes}` : c.noVotes} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink/10 pt-3">
+                  <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-sky/40 pt-3">
                     {deck.status === "published" ? (
                       <Link href={viewHref} className="btn btn-ink text-xs">
                         {c.account.view}
                       </Link>
                     ) : null}
-                    <Link href={`${viewHref}/edit`} className="btn border border-ink/30 text-xs text-ink">
+                    <Link href={`${viewHref}/edit`} className="btn border border-sky/80 text-xs text-ink">
                       {c.edit}
                     </Link>
                     <form action={setDeckStatus}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />
                       <input type="hidden" name="status" value={deck.status === "published" ? "hidden" : "published"} />
-                      <button type="submit" className="btn border border-ink/30 text-xs text-ink">
+                      <button type="submit" className="btn border border-sky/80 text-xs text-ink">
                         {deck.status === "published" ? c.hide : c.unhide}
                       </button>
                     </form>
