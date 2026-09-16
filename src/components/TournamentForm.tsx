@@ -157,24 +157,39 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           ))}
         </div>
         {canList ? (
-          <label className="mt-3 block text-sm text-pale">
-            <span>{c.coverUpload}</span>
-            <input type="file" accept="image/jpeg,image/png,image/webp" className="mt-1 block text-xs text-pale-muted" onChange={(e) => onFile(e.target.files?.[0])} disabled={uploading} />
-            {uploading ? <span className="mt-1 block text-xs text-pale-muted">{c.coverUploading}</span> : null}
-            {uploaded && !uploading ? <span className="mt-1 block text-xs text-good">{c.coverUploaded}</span> : null}
-            {uploadError ? (
-              <span role="alert" className="mt-1 block text-xs text-bad">
-                {x.errors.uploadFailed}
-              </span>
+          <div className="mt-4 rounded-lg border border-sky bg-night-2/70 p-3">
+            <p className="text-sm font-semibold text-pale">{c.coverUpload}</p>
+            <p className="mt-1 text-xs text-pale-muted">{c.coverSpecs}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              {/* input file nascosto: il bottone è l'etichetta, così si vede anche sul fondo notte */}
+              <label className={`btn btn-mint text-xs ${uploading ? "opacity-60" : "cursor-pointer"}`}>
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} disabled={uploading} />
+                {uploading ? c.coverUploading : c.coverUploadButton}
+              </label>
+              {uploaded && !uploading ? (
+                <>
+                  <span className="text-xs text-good">{c.coverUploaded}</span>
+                  <button type="button" onClick={() => setCover(DEFAULT_COVER)} className="btn btn-ghost !px-2 !py-1 text-[11px]">
+                    {c.coverRemove}
+                  </button>
+                </>
+              ) : null}
+              {uploadError ? (
+                <span role="alert" className="text-xs text-bad">
+                  {x.errors.uploadFailed}
+                </span>
+              ) : null}
+            </div>
+            {uploaded ? (
+              <div className="mt-3 aspect-[16/7] max-w-sm overflow-hidden rounded-lg border-2 border-mint">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={cover} alt="" className="h-full w-full object-cover" />
+              </div>
             ) : null}
-          </label>
-        ) : null}
-        {uploaded ? (
-          <div className="mt-3 aspect-[16/7] max-w-sm overflow-hidden rounded-lg border-2 border-mint">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt="" className="h-full w-full object-cover" />
           </div>
-        ) : null}
+        ) : (
+          <p className="mt-2 text-xs text-pale-muted">{c.coverLocked}</p>
+        )}
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
