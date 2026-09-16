@@ -30,7 +30,7 @@ npm run lint
 | Eventi e tornei | `src/lib/data/events.ts` |
 | Mazzi (tag: leggendaria, archetipo, creator) | `src/lib/data/decks.ts` |
 | Tier list (mazzi, leggendarie, carte base) | `src/lib/data/tierlist.ts` |
-| News (riassunti + link alla fonte) | `src/lib/data/news.ts` |
+| News (riassunti + link alla fonte; per i mazzi della community `source: "community"`, url interno e guide collegate) | `src/lib/data/news.ts` |
 | Guide (Markdown, EN/IT, con categoria e tag di collegamento) | `src/lib/content/guides.ts` |
 | Immagini ufficiali ottimizzate | `public/media/` |
 | Palette e componenti CSS | `src/app/globals.css` |
@@ -57,7 +57,11 @@ Quando disponibili, salvale in `public/cards/<slug>.webp` e imposta `image` sull
 
 ### Aggiungere una guida
 
-In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati). Il corpo è Markdown.
+In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati). Il corpo è Markdown; i link interni vanno scritti con il prefisso lingua (`/en/…`, `/it/…`). Per una guida a un mazzo della community usa `tags.communityDecks` (slug della scheda `/decks/community/[slug]` e nome del mazzo): la guida mostra il mazzo tra i correlati e la scheda del mazzo mostra la guida in "Guide correlate", senza leggere Supabase (la guida resta statica). Prime guide di questo tipo: le quattro sui mazzi di Davdas (16/09/2026).
+
+### Aggiungere una news
+
+In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary` in EN/IT (l'helper `n` richiede anche il FR), `image` obbligatoria (media kit in `public/media/` o miniatura YouTube ufficiale), `url` e `source`: `steam` per i post ufficiali, `press` per stampa e siti community esterni, `community` per i mazzi della community. In quest'ultimo caso `url` è il percorso interno senza lingua (es. `/decks/community/<slug>`) e il link diventa "Apri il mazzo" (`src/components/NewsLinks.tsx`). Campi facoltativi: `cards` (chip delle carte) e `guides` (slug delle guide del sito, elencate sotto la news in home e in /news). Le due news più recenti vanno in evidenza in home.
 
 ## Deploy e dominio
 

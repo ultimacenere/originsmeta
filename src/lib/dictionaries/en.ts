@@ -90,6 +90,8 @@ export const en = {
     imageCredit: "Card art © Koin Games",
     cardPreview: "Card preview",
     deck: "Deck",
+    openDeck: "Open the deck",
+    deckCards: "Cards in the deck",
     decks: "Decks",
     creator: "Creator",
     archetype: "Archetype",

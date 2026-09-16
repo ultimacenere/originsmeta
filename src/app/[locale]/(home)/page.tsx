@@ -19,6 +19,7 @@ import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
+import { NewsGuideLinks, NewsSourceLink, newsCardsLabel } from "@/components/NewsLinks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -34,6 +35,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const top = movers().slice(0, 5);
   const guides = getGuides(locale);
+  const economyGuide = guides.find((g) => g.slug === "collector-economy") ?? guides[0];
   const communityDecks = (await listPublishedDecks(3)).slice(0, 3);
   const featured = sortedNews.slice(0, 2);
   const patchNotes = sortedNews.filter((n) => isPatchNote(n) && !featured.includes(n)).slice(0, 3);
@@ -86,14 +88,13 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 <p className="mt-3 text-sm text-pale">{item.summary[locale]}</p>
                 {item.cards?.length ? (
                   <div className="mt-4">
-                    <p className="kicker mb-2 text-pale-muted">{d.common.cardsMentioned}</p>
+                    <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
                     <CardChipList slugs={item.cards} locale={locale} max={6} />
                   </div>
                 ) : null}
+                <NewsGuideLinks item={item} locale={locale} dict={d} />
                 <p className="mt-auto flex flex-wrap gap-3 pt-4 text-sm">
-                  <a href={item.url} rel="noopener" className="text-crimson underline">
-                    {d.common.source} →
-                  </a>
+                  <NewsSourceLink item={item} locale={locale} dict={d} className="text-crimson underline" />
                   <Link href={href(locale, "/news")} className="text-pale-muted hover:text-sky">
                     {d.common.viewAll} →
                   </Link>
@@ -172,9 +173,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                         <CardChipList slugs={nItem.cards} locale={locale} max={8} />
                       </div>
                     ) : null}
-                    <a href={nItem.url} rel="noopener" className="mt-2 inline-block text-xs text-mint hover:underline">
-                      {d.common.source} →
-                    </a>
+                    <NewsSourceLink item={nItem} locale={locale} dict={d} className="mt-2 inline-block text-xs text-mint hover:underline" />
                   </div>
                 </li>
               ))}
@@ -193,9 +192,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 <div>
                   <h3 className="font-display text-base font-bold text-sky">{nItem.title[locale]}</h3>
                   <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
-                  <a href={nItem.url} rel="noopener" className="mt-1 inline-block text-xs text-mint hover:underline">
-                    {d.common.source} →
-                  </a>
+                  <NewsSourceLink item={nItem} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
                 </div>
               </li>
             ))}
@@ -295,8 +292,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <Image src="/media/ls-two-ways.webp" alt="Two ways to collect: collector packs and prestige packs (official loading screen)" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
               <div className="p-5">
                 <p className="kicker text-pale-muted">{d.guides.title}</p>
-                <h3 className="mt-1 text-xl font-extrabold text-sky">{guides[2].title}</h3>
-                <p className="mt-2 text-sm text-pale-muted">{guides[2].excerpt}</p>
+                <h3 className="mt-1 text-xl font-extrabold text-sky">{economyGuide.title}</h3>
+                <p className="mt-2 text-sm text-pale-muted">{economyGuide.excerpt}</p>
               </div>
             </Link>
           </div>

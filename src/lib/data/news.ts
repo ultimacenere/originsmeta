@@ -8,15 +8,56 @@ export type NewsItem = {
   date: string;
   title: L10n;
   summary: L10n;
+  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo della community (url interno senza prefisso lingua) */
   url: string;
-  source: "steam" | "press";
+  source: "steam" | "press" | "community";
   /** copertina, sempre presente: media kit ufficiale in /public/media o miniatura ufficiale YouTube */
   image: string;
-  /** slug delle carte toccate dall'annuncio */
+  /** slug delle carte toccate dall'annuncio (o, per i mazzi della community, le carte del mazzo) */
   cards?: string[];
+  /** slug delle guide del sito collegate alla news */
+  guides?: string[];
 };
 
 export const news: NewsItem[] = [
+  {
+    slug: "davdas-3-pigs-mid-range",
+    image: "/media/hero-1200.webp",
+    cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
+    guides: ["three-pigs-midrange-guide", "three-pigs-midrange-matchups"],
+    date: "2026-09-15",
+    title: n(
+      "Davdas publishes 3 Pigs Mid Range: a Three Not So Little Pigs deck for ladder and tournaments",
+      "Davdas pubblica 3 Pigs Mid Range: un mazzo dei Three Not So Little Pigs per ladder e tornei",
+      "Davdas publie 3 Pigs Mid Range : un deck Three Not So Little Pigs pour le ladder et les tournois",
+    ),
+    summary: n(
+      "The second deck by Davdas, OriginsMeta staff, is a midrange list led by Three Not So Little Pigs, tagged for ladder and competitive play. The plan: take the board in the first rounds, win at least one location, then close with En Passant, Ellen Trechend's Trample and the Lightning Strikes that Impundulu generates. The deck page has the full list with composition charts, Davdas's mulligan notes, the OM code to open it in the deck builder and two guides on how to play it.",
+      "Il secondo mazzo di Davdas, staff di OriginsMeta, è una lista midrange guidata dai Three Not So Little Pigs, segnata per la ladder e il gioco competitivo. Il piano: prendere il tabellone nei primi round, vincere almeno un luogo e chiudere con En Passant, il Trample di Ellen Trechend e i Lightning Strike generati da Impundulu. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan di Davdas, il codice OM per aprirla nel deck builder e due guide su come giocarla.",
+      "Le deuxième deck de Davdas, membre du staff d'OriginsMeta, est une liste midrange menée par Three Not So Little Pigs, prévue pour le ladder et le jeu compétitif. Le plan : prendre le plateau dans les premiers tours, gagner au moins un lieu, puis conclure avec En Passant, le Trample d'Ellen Trechend et les Lightning Strike générés par Impundulu. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de Davdas, le code OM pour l'ouvrir dans le deck builder et deux guides pour le jouer.",
+    ),
+    url: "/decks/community/3-pigs-mid-range-6311",
+    source: "community",
+  },
+  {
+    slug: "davdas-healing-healsing",
+    image: "/media/capsule-library.webp",
+    cards: ["van-helsing", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "phuong-hoang", "jekyll", "boitata", "tin-woodman", "spellbook", "searing-light", "forbidden-knowledge"],
+    guides: ["healing-healsing-guide", "healing-healsing-matchups"],
+    date: "2026-09-15",
+    title: n(
+      "Healing Healsing, the first community deck: Davdas's Van Helsing control list",
+      "Healing Healsing, il primo mazzo della community: la lista controllo di Van Helsing di Davdas",
+      "Healing Healsing, le premier deck de la communauté : la liste contrôle Van Helsing de Davdas",
+    ),
+    summary: n(
+      "The first deck published on OriginsMeta is by Davdas, OriginsMeta staff: a control list led by Van Helsing for the ranked ladder. The plan: take early value with Spellbook and Ali Baba, heal through the damage while Phuong Hoang grows with every heal, then reach round 8 or 9 and reset the board with Forbidden Knowledge. The deck page has the full list with composition charts, Davdas's mulligan notes, the OM code for the deck builder and two guides on how to play it.",
+      "Il primo mazzo pubblicato su OriginsMeta è di Davdas, staff del sito: una lista controllo guidata da Van Helsing per la ladder classificata. Il piano: prendere valore presto con Spellbook e Ali Baba, curare i danni mentre Phuong Hoang cresce a ogni cura, poi arrivare al round 8 o 9 e azzerare il tabellone con Forbidden Knowledge. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan di Davdas, il codice OM per il deck builder e due guide su come giocarla.",
+      "Le premier deck publié sur OriginsMeta est signé Davdas, membre du staff : une liste contrôle menée par Van Helsing pour le ladder classé. Le plan : prendre de la valeur tôt avec Spellbook et Ali Baba, soigner les dégâts pendant que Phuong Hoang grandit à chaque soin, puis atteindre le tour 8 ou 9 et remettre le plateau à zéro avec Forbidden Knowledge. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de Davdas, le code OM pour le deck builder et deux guides pour le jouer.",
+    ),
+    url: "/decks/community/healing-healsing-9411",
+    source: "community",
+  },
   {
     slug: "playtest-feedback-deck-unlock",
     image: "/media/capsule-library.webp",

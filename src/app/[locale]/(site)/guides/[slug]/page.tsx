@@ -33,6 +33,7 @@ export default async function GuidePage({ params }: { params: Params }) {
   const g = getGuide(locale, slug);
   if (!g) notFound();
   const relatedDecks = (g.tags?.decks ?? []).map((s) => getDeck(s)).filter((x) => x !== undefined);
+  const relatedCommunity = g.tags?.communityDecks ?? [];
   const relatedCards = g.tags?.cards ?? [];
   const article = {
     "@context": "https://schema.org",
@@ -92,7 +93,7 @@ export default async function GuidePage({ params }: { params: Params }) {
         <p className="mt-8 border-t border-sky pt-4 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
 
-      {relatedDecks.length || relatedCards.length ? (
+      {relatedDecks.length || relatedCommunity.length || relatedCards.length ? (
         <section className="mt-10">
           <h2 className="text-2xl font-extrabold text-sky">{d.guides.related}</h2>
           {relatedDecks.length ? (
@@ -101,6 +102,17 @@ export default async function GuidePage({ params }: { params: Params }) {
                 <li key={deck.slug}>
                   <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-mint text-xs">
                     {deck.name} <span className="font-mono font-normal opacity-70">{archetypeLabels[deck.archetype][locale]}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {relatedCommunity.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {relatedCommunity.map((deck) => (
+                <li key={deck.slug}>
+                  <Link href={href(locale, `/decks/community/${deck.slug}`)} className="btn btn-mint text-xs">
+                    {deck.name} <span className="font-mono font-normal opacity-70">{d.community.kicker}</span>
                   </Link>
                 </li>
               ))}

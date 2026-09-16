@@ -92,6 +92,8 @@ export const it: Dictionary = {
     imageCredit: "Illustrazioni © Koin Games",
     cardPreview: "Anteprima della carta",
     deck: "Mazzo",
+    openDeck: "Apri il mazzo",
+    deckCards: "Le carte del mazzo",
     decks: "Mazzi",
     creator: "Creator",
     archetype: "Archetipo",

@@ -9,6 +9,7 @@ import { getCard } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections } from "@/lib/community/types";
+import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
 import { CardArt, CardChip, CardChipList } from "@/components/CardChip";
 import { CardMentions } from "@/components/CardMentions";
@@ -67,6 +68,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const others = (await listPublishedDecks(40)).filter((x) => x.slug !== deck.slug).slice(0, 8);
   const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? ""}`;
   const sections = guideSections.filter((k) => deck.guide[k]);
+  // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
+  const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
 
   const article: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -248,6 +251,23 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         ) : null}
         <CardMentionEdges />
       </article>
+
+      {guides.length ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
+          <ul className="mt-4 grid gap-4 md:grid-cols-2">
+            {guides.map((g) => (
+              <li key={g.slug}>
+                <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover block p-5">
+                  <p className="kicker text-pale-muted">{d.guides.categories[g.category]}</p>
+                  <h3 className="mt-1 text-lg font-extrabold text-sky">{g.title}</h3>
+                  <p className="mt-1 text-sm text-pale-muted">{g.excerpt}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {others.length ? (
         <section className="mt-10">

@@ -5,6 +5,7 @@ import { sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
 import { SteamButton } from "@/components/SteamButton";
 import { NewsCover } from "@/components/NewsCover";
+import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, newsSourceLabel } from "@/components/NewsLinks";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -25,17 +26,18 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
             <p className="flex flex-wrap items-center gap-3 font-mono text-sm text-pale-muted">
               <span className="tabular">{formatDate(locale, n.date)}</span>
               <span className={`stat-pill text-[11px] font-semibold uppercase ${n.source === "steam" ? "pill-steam" : "bg-night-3 text-pale"}`}>
-                {n.source === "steam" ? "Steam" : d.common.source}
+                {newsSourceLabel(n, d)}
               </span>
             </p>
             <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">{n.title[locale]}</h2>
             <p className="mt-3 text-pale">{n.summary[locale]}</p>
             {n.cards?.length ? (
               <div className="mt-4">
-                <p className="kicker mb-2 text-pale-muted">{d.common.cardsMentioned}</p>
+                <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(n, d)}</p>
                 <CardChipList slugs={n.cards} locale={locale} />
               </div>
             ) : null}
+            <NewsGuideLinks item={n} locale={locale} dict={d} />
             {n.source === "steam" ? (
               <p className="mt-4">
                 <SteamButton href={n.url} variant="dark" size="sm">
@@ -43,9 +45,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
                 </SteamButton>
               </p>
             ) : (
-              <a href={n.url} rel="noopener" className="mt-3 inline-block text-sm text-crimson underline">
-                {d.common.source} →
-              </a>
+              <NewsSourceLink item={n} locale={locale} dict={d} className="mt-3 inline-block text-sm text-crimson underline" />
             )}
           </li>
         ))}
