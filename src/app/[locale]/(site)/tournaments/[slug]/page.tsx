@@ -57,7 +57,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
-  const { supabase: client } = await currentUser();
+  const { supabase: client, user } = await currentUser();
   if (!client) notFound();
   const t = await getTournament(slug, client);
   if (!t) notFound();
@@ -225,7 +225,8 @@ export default async function TournamentPage({ params }: { params: Params }) {
               <p className="mt-2 text-sm text-pale-muted">{x.bracketSoon}</p>
             ) : (
               <div className="mt-3">
-                <Bracket matches={matches} names={nameOf} dict={d} />
+                {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
+                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer: user?.id ?? null, all: Boolean(inviteCode) }} />
               </div>
             )}
           </section>

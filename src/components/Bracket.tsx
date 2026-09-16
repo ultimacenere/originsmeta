@@ -1,15 +1,18 @@
+import Link from "next/link";
 import type { Dictionary } from "@/lib/i18n";
 import { roundLabel, roundsOf } from "@/lib/tournament/bracket";
 import { fill, type TournamentMatch } from "@/lib/tournament/types";
 
 type Names = Map<string, string>;
+type Open = { linkBase: string; viewer?: string | null; all?: boolean };
 
 /**
  * Tabellone a eliminazione diretta: una colonna per turno, partite distribuite in altezza, vincitore in oro.
  * Server component senza librerie; la griglia scorre in orizzontale dentro il proprio contenitore.
- * `highlight` evidenzia le partite di un giocatore (per esempio chi guarda).
+ * `highlight` evidenzia le partite di un giocatore (per esempio chi guarda); con `open` le partite diventano
+ * link alla stanza della partita: le proprie per il giocatore (`viewer`), tutte per organizzatore e admin (`all`).
  */
-export function Bracket({ matches, names, dict, highlight }: { matches: TournamentMatch[]; names: Names; dict: Dictionary; highlight?: string | null }) {
+export function Bracket({ matches, names, dict, highlight, open }: { matches: TournamentMatch[]; names: Names; dict: Dictionary; highlight?: string | null; open?: Open }) {
   const x = dict.tournaments;
   if (!matches.length) return null;
   const size = matches.filter((m) => m.round === 1).length * 2;
@@ -31,7 +34,7 @@ export function Bracket({ matches, names, dict, highlight }: { matches: Tourname
             <h3 className="kicker mb-3 text-pale-muted">{label(i + 1)}</h3>
             <ol className="flex flex-1 flex-col justify-around gap-3">
               {list.map((m) => (
-                <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={highlight} />
+                <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={highlight ?? open?.viewer} open={open} />
               ))}
             </ol>
           </section>
@@ -60,17 +63,31 @@ function Row({ id, score, winner, bye, names, dict, me }: { id: string | null; s
   );
 }
 
-export function MatchBox({ m, names, dict, highlight }: { m: TournamentMatch; names: Names; dict: Dictionary; highlight?: string | null }) {
+export function MatchBox({ m, names, dict, highlight, open }: { m: TournamentMatch; names: Names; dict: Dictionary; highlight?: string | null; open?: Open }) {
   const x = dict.tournaments;
   const mine = Boolean(highlight && (m.player_a === highlight || m.player_b === highlight));
   const border = m.status === "disputed" ? "border-bad" : m.status === "reported" ? "border-gold" : mine ? "border-mint" : "border-sky";
-  return (
-    <li className={`overflow-hidden rounded-lg border-2 bg-night-2/70 ${border}`}>
+  const playable = m.status !== "bye" && Boolean(m.player_a || m.player_b);
+  const canOpen = Boolean(open) && playable && (Boolean(open?.all) || (Boolean(open?.viewer) && (m.player_a === open?.viewer || m.player_b === open?.viewer)));
+  const body = (
+    <>
       <Row id={m.player_a} score={m.score_a} winner={Boolean(m.winner) && m.winner === m.player_a} bye={false} names={names} dict={dict} me={highlight === m.player_a && Boolean(highlight)} />
       <div className="mx-3 border-t border-sky/40" />
       <Row id={m.player_b} score={m.score_b} winner={Boolean(m.winner) && m.winner === m.player_b} bye={m.status === "bye"} names={names} dict={dict} me={highlight === m.player_b && Boolean(highlight)} />
       {m.status === "reported" || m.status === "disputed" ? <p className={`px-3 pb-1.5 font-mono text-[10px] uppercase ${m.status === "disputed" ? "text-bad" : "text-gold"}`}>{x.manage.statuses[m.status]}</p> : null}
       {m.forfeit ? <p className="px-3 pb-1.5 font-mono text-[10px] uppercase text-pale-muted">{x.manage.forfeit}</p> : null}
+      {canOpen ? <p className="px-3 pb-1.5 font-mono text-[10px] uppercase text-mint">{x.openMatch} →</p> : null}
+    </>
+  );
+  return (
+    <li className={`overflow-hidden rounded-lg border-2 bg-night-2/70 ${border} ${canOpen ? "transition hover:border-mint hover:shadow-mint" : ""}`}>
+      {canOpen && open ? (
+        <Link href={`${open.linkBase}${m.id}`} className="block" title={x.openMatch}>
+          {body}
+        </Link>
+      ) : (
+        body
+      )}
     </li>
   );
 }

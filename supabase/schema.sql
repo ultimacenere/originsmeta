@@ -992,3 +992,142 @@ begin
 end $$;
 revoke all on function public.rotate_invite_code(uuid) from public, anon;
 grant execute on function public.rotate_invite_code(uuid) to authenticated;
+
+-- ---------- 16/09/2026 — Avvio automatico: il tabellone nasce appena il torneo è al completo e tutti hanno consegnato i mazzi ----------
+-- (richiesta di Pierluigi: non aspettare la data di inizio né l'organizzatore, che può comunque avviare prima a mano)
+
+-- Generazione del tabellone senza controlli di permesso: la chiamano start_tournament (organizzatore/admin) e tm_autostart.
+create or replace function public.tm_start(tid uuid, seeded uuid[])
+returns void language plpgsql as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+  size int := 2;
+  rounds int := 0;
+  cnt int;
+  r int;
+  pos int;
+  ord int[];
+  a uuid;
+  b uuid;
+begin
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  n := coalesce(array_length(seeded, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  if n > t.size then raise exception 'too_many_players'; end if;
+  if (select count(distinct x) from unnest(seeded) x) <> n then raise exception 'bad_seeding'; end if;
+  if exists (
+    select 1 from unnest(seeded) x
+    where not exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = x and p.status = 'registered' and p.decks_submitted)
+  ) then raise exception 'bad_seeding'; end if;
+  if exists (select 1 from public.tournament_matches where tournament_id = tid) then raise exception 'already_started'; end if;
+
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and status = 'registered' and not (user_id = any(seeded));
+
+  while size < n loop size := size * 2; end loop;
+  cnt := size;
+  while cnt > 1 loop cnt := cnt / 2; rounds := rounds + 1; end loop;
+  ord := public.bracket_order(size);
+
+  cnt := size;
+  for r in 1..rounds loop
+    cnt := cnt / 2;
+    for pos in 0..cnt - 1 loop
+      insert into public.tournament_matches (tournament_id, round, position) values (tid, r, pos);
+    end loop;
+  end loop;
+
+  for pos in 0..size / 2 - 1 loop
+    a := case when ord[2 * pos + 1] <= n then seeded[ord[2 * pos + 1]] else null end;
+    b := case when ord[2 * pos + 2] <= n then seeded[ord[2 * pos + 2]] else null end;
+    if a is null then raise exception 'bad_seeding'; end if;
+    if b is null then
+      update public.tournament_matches set player_a = a, winner = a, status = 'bye' where tournament_id = tid and round = 1 and position = pos;
+      perform public.tm_propagate((select id from public.tournament_matches where tournament_id = tid and round = 1 and position = pos));
+    else
+      update public.tournament_matches set player_a = a, player_b = b where tournament_id = tid and round = 1 and position = pos;
+    end if;
+  end loop;
+
+  update public.tournaments set status = 'running' where id = tid;
+end $$;
+revoke all on function public.tm_start(uuid, uuid[]) from public, anon, authenticated;
+
+-- Avvio manuale dell'organizzatore (ordine casuale o scelto da lui).
+create or replace function public.start_tournament(tid uuid, seeded uuid[])
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  perform public.tm_start(tid, seeded);
+end $$;
+revoke all on function public.start_tournament(uuid, uuid[]) from public, anon;
+grant execute on function public.start_tournament(uuid, uuid[]) to authenticated;
+
+-- Avvio automatico: torneo aperto, posti tutti occupati, mazzi di tutti consegnati → ordine casuale.
+-- Va chiamata con la riga del torneo già bloccata (join_tournament e submit_tournament_decks lo fanno).
+create or replace function public.tm_autostart(tid uuid)
+returns void language plpgsql as $$
+declare
+  t public.tournaments%rowtype;
+  total int;
+  ready int;
+  seeded uuid[];
+begin
+  select * into t from public.tournaments where id = tid;
+  if not found or t.status <> 'open' then return; end if;
+  select count(*), count(*) filter (where decks_submitted) into total, ready from public.tournament_players where tournament_id = tid and status = 'registered';
+  if total < t.size or ready < total then return; end if;
+  select array_agg(user_id order by random()) into seeded from public.tournament_players where tournament_id = tid and status = 'registered';
+  perform public.tm_start(tid, seeded);
+end $$;
+revoke all on function public.tm_autostart(uuid) from public, anon, authenticated;
+
+create or replace function public.join_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if t.visibility = 'private' and t.organizer <> auth.uid() and not public.is_admin()
+     and not exists (select 1 from public.tournament_invites i where i.tournament_id = tid and i.user_id = auth.uid()) then
+    raise exception 'invite_required';
+  end if;
+  if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
+  select count(*) into n from public.tournament_players where tournament_id = tid;
+  if n >= t.size then raise exception 'full'; end if;
+  insert into public.tournament_players (tournament_id, user_id) values (tid, auth.uid());
+  perform public.tm_autostart(tid);
+end $$;
+revoke all on function public.join_tournament(uuid) from public, anon;
+grant execute on function public.join_tournament(uuid) to authenticated;
+
+create or replace function public.submit_tournament_decks(tid uuid, codes jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  expected int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if not exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'not_registered'; end if;
+  expected := case when t.deck_mode = 'conquest' then t.conquest_decks else 1 end;
+  if jsonb_typeof(codes) <> 'array' or jsonb_array_length(codes) <> expected then raise exception 'decks_count'; end if;
+  insert into public.tournament_decks (tournament_id, user_id, codes) values (tid, auth.uid(), codes)
+    on conflict (tournament_id, user_id) do update set codes = excluded.codes;
+  update public.tournament_players set decks_submitted = true where tournament_id = tid and user_id = auth.uid();
+  perform public.tm_autostart(tid);
+end $$;
+revoke all on function public.submit_tournament_decks(uuid, jsonb) from public, anon;
+grant execute on function public.submit_tournament_decks(uuid, jsonb) to authenticated;

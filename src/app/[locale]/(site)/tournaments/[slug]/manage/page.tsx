@@ -73,7 +73,7 @@ export default async function ManageTournamentPage({ params }: { params: Params 
         <section className="card-night mt-6 p-5">
           <h2 className="text-xl font-extrabold text-sky">{x.bracket}</h2>
           <div className="mt-3">
-            <Bracket matches={matches} names={names} dict={d} />
+            <Bracket matches={matches} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
           </div>
         </section>
       ) : null}
