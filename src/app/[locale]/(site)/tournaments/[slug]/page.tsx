@@ -3,8 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
-import { getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { fill, tournamentShortLink, type TournamentPlayer } from "@/lib/tournament/types";
+import { currentUser, supabaseServer } from "@/lib/supabase/server";
+import { getInviteCode, getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { fill, tournamentInviteLink, tournamentShortLink, type TournamentPlayer } from "@/lib/tournament/types";
 import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
@@ -24,21 +25,19 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 type Params = Promise<{ locale: string; slug: string }>;
 
 /**
- * Scheda pubblica del torneo: generata alla prima richiesta, rigenerata al massimo ogni minuto e dopo ogni
- * Server Action (iscrizioni, mazzi, avvio). Chi è loggato lo scopre il browser (JoinTournament).
+ * Scheda del torneo, renderizzata sul server a ogni richiesta con la sessione di chi guarda: le policy RLS
+ * mostrano i tornei privati solo a organizzatore, admin, iscritti e invitati (per gli altri: 404). I tornei
+ * pubblici restano indicizzabili; quelli privati sono noindex.
  */
-export const revalidate = 60;
-export const dynamicParams = true;
-export function generateStaticParams() {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale, dict } = await resolveLocale(params);
-  const t = await getTournament(slug);
+  const t = await getTournament(slug, await supabaseServer());
   if (!t) return {};
-  return pageMeta(locale, `/tournaments/${t.slug}`, `${t.name} · ${dict.tournaments.kicker}`, (t.description || dict.tournaments.sectionIntro).slice(0, 160), t.cover_url ?? undefined);
+  const meta = pageMeta(locale, `/tournaments/${t.slug}`, `${t.name} · ${dict.tournaments.kicker}`, (t.description || dict.tournaments.sectionIntro).slice(0, 160), t.cover_url ?? undefined);
+  return t.visibility === "private" ? { ...meta, robots: { index: false, follow: false } } : meta;
 }
 
 function PlayerRow({ p, dict }: { p: TournamentPlayer; dict: Awaited<ReturnType<typeof resolveLocale>>["dict"] }) {
@@ -58,10 +57,20 @@ export default async function TournamentPage({ params }: { params: Params }) {
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
-  const t = await getTournament(slug);
+  const { supabase: client } = await currentUser();
+  if (!client) notFound();
+  const t = await getTournament(slug, client);
   if (!t) notFound();
 
-  const [players, matches, others, decks] = await Promise.all([listPlayers(t.id), listMatches(t.id), listListedTournaments(30), t.status === "finished" ? listVisibleDecks(t.id) : Promise.resolve([])]);
+  const [players, matches, others, decks, inviteCode] = await Promise.all([
+    listPlayers(t.id, client),
+    listMatches(t.id, client),
+    listListedTournaments(30),
+    t.status === "finished" ? listVisibleDecks(t.id, client) : Promise.resolve([]),
+    // il codice del link d'invito lo leggono solo organizzatore e admin (policy): per gli altri è null
+    getInviteCode(client, t.id),
+  ]);
+  const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
   const active = players.filter((p) => p.status === "registered");
   const registeredIds = active.map((p) => p.user_id);
   const submittedIds = active.filter((p) => p.decks_submitted).map((p) => p.user_id);
@@ -105,7 +114,10 @@ export default async function TournamentPage({ params }: { params: Params }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={t.cover_url} alt="" className="h-full w-full object-cover" />
           ) : null}
-          <span className="stat-pill absolute left-4 top-4 bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.statuses[t.status]}</span>
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+            <span className="stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.statuses[t.status]}</span>
+            {t.visibility === "private" ? <span className="stat-pill bg-gold text-[11px] font-bold uppercase text-ink">{x.privatePill}</span> : null}
+          </div>
           <span className="stat-pill absolute right-4 top-4 bg-mint text-sm font-bold text-ink">{t.tag}</span>
         </div>
 
@@ -143,6 +155,18 @@ export default async function TournamentPage({ params }: { params: Params }) {
               </DiscordButton>
             ) : null}
           </div>
+          {t.visibility === "private" ? (
+            <div className="mt-3 rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">
+              <p className="font-semibold text-gold">{x.privatePill}</p>
+              <p className="mt-1 text-xs text-pale-muted">{x.privateHint}</p>
+              {inviteLink ? (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <code className="rounded bg-night px-2 py-1 font-mono text-xs text-pale">{inviteLink}</code>
+                  <CopyButton text={inviteLink} label={x.manage.copyInvite} copied={x.copied} className="btn btn-gold text-xs" />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
             <JoinTournament

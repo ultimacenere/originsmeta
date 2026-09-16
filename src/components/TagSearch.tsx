@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { normalizeTag } from "@/lib/tournament/types";
 import { useMounted } from "@/lib/useMounted";
 
-export type TagSearchLabels = { title: string; placeholder: string; button: string; notFound: string };
+export type TagSearchLabels = { title: string; placeholder: string; button: string; notFound: string; inviteInvalid: string };
 
-function missingFromUrl(): boolean {
+/** Motivo del ritorno dalle route /t/…: "missing" (tag sconosciuto o torneo privato) oppure "invite" (link d'invito non valido). */
+function reasonFromUrl(): "missing" | "invite" | null {
   try {
-    return new URLSearchParams(window.location.search).get("tag") === "missing";
+    const r = new URLSearchParams(window.location.search).get("tag");
+    return r === "missing" || r === "invite" ? r : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -26,7 +28,9 @@ export function TagSearch({ labels }: { labels: TagSearchLabels }) {
   const [value, setValue] = useState("");
   const [invalid, setInvalid] = useState(false);
   const [touched, setTouched] = useState(false);
-  const error = invalid || (mounted && !touched && missingFromUrl());
+  const reason = mounted && !touched ? reasonFromUrl() : null;
+  const error = invalid || reason !== null;
+  const message = reason === "invite" ? labels.inviteInvalid : labels.notFound;
 
   return (
     <form
@@ -65,7 +69,7 @@ export function TagSearch({ labels }: { labels: TagSearchLabels }) {
       </button>
       {error ? (
         <p role="alert" className="basis-full text-sm text-bad">
-          {labels.notFound}
+          {message}
         </p>
       ) : null}
     </form>

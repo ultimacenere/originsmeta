@@ -59,6 +59,10 @@ const RPC_ERRORS = [
   "final_not_played",
   "empty_message",
   "too_many_messages",
+  "invite_required",
+  "bad_invite",
+  "user_not_found",
+  "private_not_listed",
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
@@ -228,6 +232,36 @@ export async function sendMessage(matchId: string, body: string): Promise<Simple
   return { ok: true };
 }
 
+/* ---------- tornei privati a invito ---------- */
+
+/** Invito per nome utente (organizzatore o admin): l'invitato vede il torneo privato e può iscriversi. */
+export async function invitePlayer(id: string, slug: string, username: string): Promise<Simple> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const uname = String(username ?? "")
+    .trim()
+    .replace(/^@/, "")
+    .slice(0, 60);
+  if (!uname) return { error: "user_not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("invite_player", { tid: id, uname }));
+}
+
+export async function revokeInvite(id: string, slug: string, uid: string): Promise<Simple> {
+  if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("revoke_invite", { tid: id, uid }));
+}
+
+/** Nuovo link d'invito: il precedente smette di funzionare. */
+export async function rotateInviteCode(id: string, slug: string): Promise<Simple & { code?: string }> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { data, error } = await supabase.rpc("rotate_invite_code", { tid: id });
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(slug);
+  return { ok: true, code: typeof data === "string" ? data : undefined };
+}
+
 export async function dropPlayer(id: string, slug: string, uid: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
   return organizerRpc(slug, (sb) => sb.rpc("drop_player", { tid: id, uid }));
@@ -263,17 +297,17 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
   const current = cur as { slug: string; status: string; organizer: string; players: { count: number }[] | null } | null;
   if (!current) return { error: "not_found" };
   const registered = Number(current.players?.[0]?.count ?? 0);
-  const { name, cover_url, description, rules, discord_url, listed, lang } = parsed.row;
+  const { name, cover_url, description, rules, discord_url, listed, lang, visibility } = parsed.row;
   const patch =
     current.status === "open"
       ? (() => {
           if (parsed.row.size < registered) return null;
           return { ...parsed.row, lang };
         })()
-      : { name, cover_url, description, rules, discord_url, listed, lang };
+      : { name, cover_url, description, rules, discord_url, listed, lang, visibility };
   if (!patch) return { error: "sizeTooSmall" };
   const { data, error } = await ctx.supabase.from("tournaments").update(patch).eq("id", id).select("slug").maybeSingle();
-  if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : "db" };
+  if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : error.message.includes("private_not_listed") ? "private_not_listed" : "db" };
   if (!data) return { error: "forbidden" };
   const s = (data as { slug: string }).slug;
   revalidateTournamentPaths(s);

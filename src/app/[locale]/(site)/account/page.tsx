@@ -134,7 +134,19 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {x.account.newCta} →
           </Link>
         </div>
-        {tournaments.organized.length === 0 && tournaments.playing.length === 0 ? (
+        {tournaments.invited.length ? (
+          <>
+            <h3 className="mt-5 kicker text-gold">{x.account.invited}</h3>
+            <ul className="mt-3 grid gap-4 md:grid-cols-2">
+              {tournaments.invited.map((t) => (
+                <li key={t.id}>
+                  <TournamentCard t={t} locale={locale} dict={d} compact />
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+        {tournaments.organized.length === 0 && tournaments.playing.length === 0 && tournaments.invited.length === 0 ? (
           <div className="card-night mt-4 p-6">
             <p className="text-pale-muted">{x.account.none}</p>
           </div>

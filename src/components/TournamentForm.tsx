@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, type DeckMode } from "@/lib/tournament/types";
+import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, type DeckMode, type Visibility } from "@/lib/tournament/types";
 import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
 import { useMounted } from "@/lib/useMounted";
 import { shrinkImage } from "@/lib/shrinkImage";
@@ -27,6 +27,7 @@ export type TournamentInitial = {
   rules: string;
   discord_url: string | null;
   listed: boolean;
+  visibility: Visibility;
 };
 
 type Props = {
@@ -82,6 +83,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
   const [deckMode, setDeckMode] = useState<DeckMode>(initial?.deck_mode ?? "free");
   const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
   const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
+  const [visibility, setVisibility] = useState<Visibility>(initial?.visibility ?? "public");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(false);
 
@@ -270,7 +272,22 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
         <span className="mt-1 block text-xs text-pale-muted">{c.discordHint}</span>
       </label>
 
-      {canList ? (
+      <fieldset>
+        <legend className="kicker text-mint">{c.visibility}</legend>
+        <div className="mt-2 flex flex-wrap gap-3 text-sm text-pale">
+          {VISIBILITIES.map((v) => (
+            <label key={v} className={`btn text-xs ${visibility === v ? "btn-mint" : "btn-ink"}`}>
+              <input type="radio" name="visibility" value={v} checked={visibility === v} onChange={() => setVisibility(v)} className="sr-only" />
+              {x.visibilities[v]}
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-pale-muted">{c.visibilityHint}</p>
+      </fieldset>
+
+      {visibility === "private" ? (
+        <p className="rounded-lg border border-sky bg-night-2/70 p-3 text-xs text-pale-muted">{c.listedPrivate}</p>
+      ) : canList ? (
         <label className="flex items-start gap-3 text-sm text-pale">
           <input type="checkbox" name="listed" defaultChecked={initial?.listed ?? false} className="mt-1 h-4 w-4 accent-mint" />
           <span>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { href } from "@/lib/i18n";
+import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getTournament, listMatches, listPlayers } from "@/lib/tournament/queries";
-import { canListTournaments, fill } from "@/lib/tournament/types";
+import { getInviteCode, getTournament, listInvites, listMatches, listPlayers } from "@/lib/tournament/queries";
+import { canListTournaments, fill, tournamentInviteLink } from "@/lib/tournament/types";
 import { authorName } from "@/lib/community/util";
 import { ManagePanel, type ManagedPlayer } from "@/components/ManagePanel";
 import { TournamentForm } from "@/components/TournamentForm";
@@ -39,9 +39,11 @@ export default async function ManageTournamentPage({ params }: { params: Params 
   const profile = (prof as { badge: string; role: string } | null) ?? null;
   if (t.organizer !== user.id && profile?.role !== "admin") redirect(back);
 
-  const [players, matches] = await Promise.all([listPlayers(t.id, supabase), listMatches(t.id, supabase)]);
+  const [players, matches, invites, inviteCode] = await Promise.all([listPlayers(t.id, supabase), listMatches(t.id, supabase), listInvites(supabase, t.id), getInviteCode(supabase, t.id)]);
   const managed: ManagedPlayer[] = players.map((p) => ({ user_id: p.user_id, name: authorName(p.profile), status: p.status, decks: p.decks_submitted }));
   const names = new Map(managed.map((p) => [p.user_id, p.name]));
+  const invitedList = invites.map((i) => ({ user_id: i.user_id, name: authorName(i.profile), registered: players.some((p) => p.user_id === i.user_id) }));
+  const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -64,7 +66,7 @@ export default async function ManageTournamentPage({ params }: { params: Params 
       </p>
 
       <div className="mt-8">
-        <ManagePanel id={t.id} slug={t.slug} status={t.status} size={t.size} bestOf={t.best_of} players={managed} matches={matches} tournamentHref={back} labels={x} />
+        <ManagePanel id={t.id} slug={t.slug} status={t.status} size={t.size} bestOf={t.best_of} players={managed} matches={matches} tournamentHref={back} labels={x} visibility={t.visibility} inviteLink={inviteLink} invites={invitedList} />
       </div>
 
       {matches.length ? (
@@ -104,6 +106,7 @@ export default async function ManageTournamentPage({ params }: { params: Params 
                 rules: t.rules,
                 discord_url: t.discord_url,
                 listed: t.listed,
+                visibility: t.visibility,
               }}
             />
           </div>

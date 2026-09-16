@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { bracketSize, roundsOf } from "@/lib/tournament/bracket";
 import { fill, type TournamentMatch, type TournamentStatus } from "@/lib/tournament/types";
-import { cancelTournament, dropPlayer, finishTournament, setMatchResult, startTournament, swapPlayers } from "@/lib/tournament/actions";
+import { cancelTournament, dropPlayer, finishTournament, invitePlayer, revokeInvite, rotateInviteCode, setMatchResult, startTournament, swapPlayers } from "@/lib/tournament/actions";
+import { CopyButton } from "./CopyButton";
 
 export type ManagedPlayer = { user_id: string; name: string; status: string; decks: boolean };
+export type ManagedInvite = { user_id: string; name: string; registered: boolean };
 
 type Props = {
   id: string;
@@ -19,6 +21,10 @@ type Props = {
   matches: TournamentMatch[];
   tournamentHref: string;
   labels: Dictionary["tournaments"];
+  /** tornei privati a invito: link segreto (solo organizzatore/admin) e invitati per nome utente */
+  visibility: string;
+  inviteLink: string | null;
+  invites: ManagedInvite[];
 };
 
 type Result = { error?: string; ok?: boolean };
@@ -37,13 +43,14 @@ function shuffle<T>(list: T[]): T[] {
  * risultati imposti e scambi a torneo in corso, chiusura con referto, annullamento. Ogni azione chiama una
  * Server Action → RPC con lock; poi la pagina (dinamica) si ricarica.
  */
-export function ManagePanel({ id, slug, status, size, bestOf, players, matches, tournamentHref, labels }: Props) {
+export function ManagePanel({ id, slug, status, size, bestOf, players, matches, tournamentHref, labels, visibility, inviteLink, invites }: Props) {
   const x = labels;
   const m = x.manage;
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [inviteName, setInviteName] = useState("");
 
   const eligible = useMemo(() => players.filter((p) => p.status === "registered" && p.decks), [players]);
   const excluded = players.filter((p) => p.status === "registered" && !p.decks).length;
@@ -130,6 +137,70 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
           <p className="mt-2 text-sm text-pale-muted">{x.noPlayers}</p>
         )}
       </section>
+
+      {/* Inviti (tornei privati; per i pubblici il link è solo comodo da condividere) */}
+      {status === "open" || status === "running" ? (
+        <section className="card-night p-5">
+          <h2 className="text-xl font-extrabold text-sky">
+            {m.inviteTitle} <span className="ml-2 stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.visibilities[visibility as keyof typeof x.visibilities] ?? visibility}</span>
+          </h2>
+          <p className="mt-1 text-sm text-pale-muted">{visibility === "private" ? m.inviteHint : m.publicNote}</p>
+          {inviteLink ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <code className="max-w-full truncate rounded bg-night px-2 py-1 font-mono text-xs text-pale">{inviteLink}</code>
+              <CopyButton text={inviteLink} label={m.copyInvite} copied={x.copied} className="btn btn-gold text-xs" />
+              <button
+                type="button"
+                disabled={pending}
+                title={m.rotateInviteHint}
+                onClick={() => {
+                  if (window.confirm(m.rotateInviteHint)) run(() => rotateInviteCode(id, slug));
+                }}
+                className="btn btn-ghost text-xs"
+              >
+                {m.rotateInvite}
+              </button>
+            </div>
+          ) : null}
+          <form
+            className="mt-4 flex flex-wrap items-end gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const name = inviteName.trim();
+              if (!name) return;
+              run(async () => {
+                const r = await invitePlayer(id, slug, name);
+                if (!r.error) setInviteName("");
+                return r;
+              });
+            }}
+          >
+            <label className="block text-sm">
+              <span className="kicker text-mint">{m.inviteByName}</span>
+              <input value={inviteName} onChange={(e) => setInviteName(e.target.value)} placeholder={m.invitePlaceholder} maxLength={60} autoComplete="off" className="mt-1 block w-56 rounded-lg border border-sky bg-night px-3 py-2 text-sm text-pale focus:border-mint" />
+            </label>
+            <button type="submit" disabled={pending || !inviteName.trim()} className="btn btn-mint text-xs">
+              {m.invite}
+            </button>
+          </form>
+          <p className="mt-4 kicker text-pale-muted">{m.invited}</p>
+          {invites.length ? (
+            <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+              {invites.map((i) => (
+                <li key={i.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
+                  <span className="truncate text-pale">{i.name}</span>
+                  {i.registered ? <span className="font-mono text-[11px] text-good">✓</span> : null}
+                  <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id))} className="ml-auto btn border border-crimson/40 !px-2 !py-0.5 text-[11px] text-crimson hover:bg-crimson hover:text-chalk">
+                    {m.revoke}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1 text-sm text-pale-muted">{m.noInvites}</p>
+          )}
+        </section>
+      ) : null}
 
       {/* Avvio */}
       {status === "open" ? (

@@ -68,10 +68,12 @@ export type TournamentRow = {
   status: "open" | "running" | "finished" | "cancelled";
   listed: boolean;
   report: string | null;
+  /** pubblico per tutti; privato solo per organizzatore, admin, iscritti e invitati */
+  visibility: "public" | "private";
   created_at: string;
   updated_at: string;
 };
-export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "report" | "created_at" | "updated_at" | "listed" | "cover_url" | "discord_url" | "format"> & {
+export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "report" | "created_at" | "updated_at" | "listed" | "cover_url" | "discord_url" | "format" | "visibility"> & {
   id?: string;
   tag?: string;
   status?: TournamentRow["status"];
@@ -80,7 +82,10 @@ export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "re
   cover_url?: string | null;
   discord_url?: string | null;
   format?: "single_elim";
+  visibility?: TournamentRow["visibility"];
 };
+export type TournamentInviteRow = { tournament_id: string; user_id: string; invited_by: string | null; created_at: string };
+export type TournamentSecretRow = { tournament_id: string; invite_code: string; updated_at: string };
 export type TournamentPlayerRow = {
   tournament_id: string;
   user_id: string;
@@ -229,6 +234,33 @@ export type Database = {
           },
         ];
       };
+      tournament_invites: {
+        Row: TournamentInviteRow;
+        Insert: { tournament_id: string; user_id: string; invited_by?: string | null };
+        Update: Partial<TournamentInviteRow>;
+        Relationships: [
+          {
+            foreignKeyName: "tournament_invites_tournament_id_fkey";
+            columns: ["tournament_id"];
+            isOneToOne: false;
+            referencedRelation: "tournaments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tournament_invites_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tournament_secrets: {
+        Row: TournamentSecretRow;
+        Insert: { tournament_id: string; invite_code?: string };
+        Update: Partial<TournamentSecretRow>;
+        Relationships: [];
+      };
       tournament_messages: {
         Row: TournamentMessageRow;
         Insert: { match_id: string; user_id: string; body: string };
@@ -270,6 +302,10 @@ export type Database = {
       finish_tournament: { Args: { tid: string; report?: string | null }; Returns: undefined };
       cancel_tournament: { Args: { tid: string }; Returns: undefined };
       send_message: { Args: { mid: string; body: string }; Returns: undefined };
+      redeem_invite: { Args: { tag: string; code: string }; Returns: string };
+      invite_player: { Args: { tid: string; uname: string }; Returns: undefined };
+      revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
+      rotate_invite_code: { Args: { tid: string }; Returns: string };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

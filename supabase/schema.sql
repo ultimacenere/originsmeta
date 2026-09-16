@@ -790,3 +790,205 @@ begin
 exception when others then
   raise notice 'Storage tournament-screenshots non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README.', sqlerrm;
 end $$;
+
+-- ---------- 16/09/2026 — Tournament Organizer: tornei pubblici e privati a invito (richiesta di Pierluigi) ----------
+-- Privato = non compare in liste, calendario, sitemap e ricerca per tag; lo vedono e vi si iscrivono solo
+-- l'organizzatore, gli admin, gli iscritti e gli invitati (link segreto o invito per nome utente).
+
+alter table public.tournaments add column if not exists visibility text not null default 'public';
+alter table public.tournaments drop constraint if exists tournaments_visibility_check;
+alter table public.tournaments add constraint tournaments_visibility_check check (visibility in ('public','private'));
+create index if not exists tournaments_visibility_idx on public.tournaments (visibility, status, starts_at);
+
+-- Codice del link d'invito: in una tabella a parte, leggibile solo da organizzatore e admin (le policy sono per riga, non per colonna).
+create or replace function public.gen_invite_code()
+returns text language plpgsql volatile as $$
+declare
+  alphabet constant text := '23456789abcdefghjkmnpqrstuvwxyz';
+  out text := '';
+  i int;
+begin
+  for i in 1..10 loop
+    out := out || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+  end loop;
+  return out;
+end $$;
+
+create table if not exists public.tournament_secrets (
+  tournament_id uuid primary key references public.tournaments(id) on delete cascade,
+  invite_code text not null default public.gen_invite_code(),
+  updated_at timestamptz not null default now()
+);
+-- ogni torneo ha il suo codice fin dalla creazione
+create or replace function public.tournament_secret_row()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  insert into public.tournament_secrets (tournament_id) values (new.id) on conflict (tournament_id) do nothing;
+  return new;
+end $$;
+drop trigger if exists tournaments_secret_row on public.tournaments;
+create trigger tournaments_secret_row after insert on public.tournaments
+  for each row execute function public.tournament_secret_row();
+insert into public.tournament_secrets (tournament_id) select id from public.tournaments on conflict (tournament_id) do nothing;
+
+create table if not exists public.tournament_invites (
+  tournament_id uuid not null references public.tournaments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  invited_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  primary key (tournament_id, user_id)
+);
+create index if not exists tournament_invites_user_idx on public.tournament_invites (user_id);
+
+-- Chi può vedere il torneo: pubblico per tutti; privato per organizzatore, admin, iscritti e invitati.
+create or replace function public.can_view_tournament(tid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from public.tournaments t
+    where t.id = tid and (
+      t.visibility = 'public'
+      or (auth.uid() is not null and (
+        t.organizer = auth.uid()
+        or public.is_admin()
+        or exists (select 1 from public.tournament_players p where p.tournament_id = t.id and p.user_id = auth.uid())
+        or exists (select 1 from public.tournament_invites i where i.tournament_id = t.id and i.user_id = auth.uid())
+      ))
+    )
+  );
+$$;
+
+-- Un torneo privato non va mai in calendario.
+create or replace function public.protect_tournament_listing()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.listed and new.visibility = 'private' then
+    raise exception 'private_not_listed';
+  end if;
+  if new.listed and not exists (
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('influencer','pro','staff') or p.role = 'admin')
+  ) then
+    raise exception 'listing_not_allowed';
+  end if;
+  return new;
+end $$;
+drop trigger if exists tournaments_protect_listing on public.tournaments;
+create trigger tournaments_protect_listing before insert or update of listed, organizer, visibility on public.tournaments
+  for each row execute function public.protect_tournament_listing();
+
+-- ---------- policy: la visibilità vale per tutte le tabelle del torneo ----------
+drop policy if exists "tournaments are public" on public.tournaments;
+create policy "tournaments are public" on public.tournaments for select using (public.can_view_tournament(id));
+drop policy if exists "tournament players are public" on public.tournament_players;
+create policy "tournament players are public" on public.tournament_players for select using (public.can_view_tournament(tournament_id));
+drop policy if exists "tournament matches are public" on public.tournament_matches;
+create policy "tournament matches are public" on public.tournament_matches for select using (public.can_view_tournament(tournament_id));
+drop policy if exists "tournament decks visibility" on public.tournament_decks;
+create policy "tournament decks visibility" on public.tournament_decks for select using (
+  public.can_view_tournament(tournament_id) and (
+    user_id = auth.uid()
+    or public.is_tournament_organizer(tournament_id)
+    or public.is_admin()
+    or public.is_opponent_of(tournament_id, user_id)
+    or exists (select 1 from public.tournaments t where t.id = tournament_id and t.status = 'finished')
+  )
+);
+alter table public.tournament_secrets enable row level security;
+drop policy if exists "organizers read invite code" on public.tournament_secrets;
+create policy "organizers read invite code" on public.tournament_secrets for select using (public.is_tournament_organizer(tournament_id) or public.is_admin());
+alter table public.tournament_invites enable row level security;
+drop policy if exists "invites visibility" on public.tournament_invites;
+create policy "invites visibility" on public.tournament_invites for select using (user_id = auth.uid() or public.is_tournament_organizer(tournament_id) or public.is_admin());
+grant select on public.tournament_secrets, public.tournament_invites to authenticated;
+
+-- ---------- RPC ----------
+-- Iscrizione: a un torneo privato serve un invito (o essere l'organizzatore).
+create or replace function public.join_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if t.visibility = 'private' and t.organizer <> auth.uid() and not public.is_admin()
+     and not exists (select 1 from public.tournament_invites i where i.tournament_id = tid and i.user_id = auth.uid()) then
+    raise exception 'invite_required';
+  end if;
+  if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
+  select count(*) into n from public.tournament_players where tournament_id = tid;
+  if n >= t.size then raise exception 'full'; end if;
+  insert into public.tournament_players (tournament_id, user_id) values (tid, auth.uid());
+end $$;
+revoke all on function public.join_tournament(uuid) from public, anon;
+grant execute on function public.join_tournament(uuid) to authenticated;
+
+-- Link d'invito: chi lo apre da loggato riceve l'invito e può vedere il torneo. Restituisce lo slug. Per i tornei pubblici basta il tag.
+create or replace function public.redeem_invite(tag text, code text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  s public.tournament_secrets%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where tournaments.tag = redeem_invite.tag;
+  if not found then raise exception 'not_found'; end if;
+  if t.visibility = 'public' then return t.slug; end if;
+  select * into s from public.tournament_secrets where tournament_id = t.id;
+  if not found or s.invite_code <> code then raise exception 'bad_invite'; end if;
+  insert into public.tournament_invites (tournament_id, user_id, invited_by) values (t.id, auth.uid(), null) on conflict (tournament_id, user_id) do nothing;
+  return t.slug;
+end $$;
+revoke all on function public.redeem_invite(text, text) from public, anon;
+grant execute on function public.redeem_invite(text, text) to authenticated;
+
+-- Invito per nome utente (organizzatore o admin).
+create or replace function public.invite_player(tid uuid, uname text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  target uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status not in ('open', 'running') then raise exception 'not_open'; end if;
+  select id into target from public.profiles where lower(username) = lower(btrim(replace(uname, '@', ''))) limit 1;
+  if target is null then raise exception 'user_not_found'; end if;
+  insert into public.tournament_invites (tournament_id, user_id, invited_by) values (tid, target, auth.uid()) on conflict (tournament_id, user_id) do nothing;
+end $$;
+revoke all on function public.invite_player(uuid, text) from public, anon;
+grant execute on function public.invite_player(uuid, text) to authenticated;
+
+create or replace function public.revoke_invite(tid uuid, uid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  delete from public.tournament_invites where tournament_id = tid and user_id = uid;
+end $$;
+revoke all on function public.revoke_invite(uuid, uuid) from public, anon;
+grant execute on function public.revoke_invite(uuid, uuid) to authenticated;
+
+-- Nuovo link d'invito: il vecchio smette di funzionare (gli inviti già ricevuti restano).
+create or replace function public.rotate_invite_code(tid uuid)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  fresh text := public.gen_invite_code();
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  insert into public.tournament_secrets (tournament_id, invite_code, updated_at) values (tid, fresh, now())
+    on conflict (tournament_id) do update set invite_code = excluded.invite_code, updated_at = now();
+  return fresh;
+end $$;
+revoke all on function public.rotate_invite_code(uuid) from public, anon;
+grant execute on function public.rotate_invite_code(uuid) to authenticated;

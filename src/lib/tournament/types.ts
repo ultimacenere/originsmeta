@@ -1,5 +1,5 @@
 import type { Profile } from "@/lib/community/types";
-import type { TournamentDecksRow, TournamentMatchRow, TournamentMessageRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
+import type { TournamentDecksRow, TournamentInviteRow, TournamentMatchRow, TournamentMessageRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
 
 /**
  * Tournament Organizer (16/09/2026, richiesta del coach e di Davdas): tipi e costanti condivisi tra
@@ -19,6 +19,16 @@ export type DeckMode = (typeof DECK_MODES)[number];
 export const CONQUEST_DECKS_RANGE = { min: 2, max: 4, default: 3 } as const;
 
 export type TournamentStatus = TournamentRow["status"];
+
+/** Pubblico: lo trovano e vi si iscrivono tutti. Privato: solo organizzatore, admin, iscritti e invitati (link segreto o nome utente). */
+export const VISIBILITIES = ["public", "private"] as const;
+export type Visibility = (typeof VISIBILITIES)[number];
+export type TournamentInvite = TournamentInviteRow & { profile?: Profile | null };
+
+/** Link d'invito di un torneo privato: /t/<tag>/<codice>. Per i tornei pubblici il codice è ignorato. */
+export function tournamentInviteLink(siteUrl: string, tag: string, code: string): string {
+  return `${siteUrl}/t/${tag}/${code}`;
+}
 export type PlayerStatus = TournamentPlayerRow["status"];
 export type MatchStatus = TournamentMatchRow["status"];
 

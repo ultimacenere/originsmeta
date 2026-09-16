@@ -1,11 +1,11 @@
 import { supabaseUrl } from "@/lib/supabase/env";
 import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
-import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, canListTournaments, type DeckMode } from "./types";
+import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
 
 /** Validazione lato server del modulo "Organizza un torneo" (creazione e modifica). Solo testo semplice, niente HTML. */
 
-export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "lang" | "discord" | "cover" | "listing";
+export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "lang" | "discord" | "cover" | "listing" | "visibility";
 
 const LIMITS = { nameMin: 3, nameMax: 60, textMax: 2000 };
 const DISCORD_HOSTS = ["discord.gg", "discord.com", "discordapp.com"];
@@ -90,8 +90,12 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
   const canList = canListTournaments(ctx.profile);
   const cover = checkCover(String(fd.get("cover_url") ?? ""), ctx.userId, canList);
   if (!cover) return { ok: false, error: "cover" };
+  const visibilityRaw = String(fd.get("visibility") ?? "public");
+  if (!(VISIBILITIES as readonly string[]).includes(visibilityRaw)) return { ok: false, error: "visibility" };
+  const visibility = visibilityRaw as Visibility;
   const listedRaw = fd.get("listed");
-  const listed = listedRaw === "on" || listedRaw === "true";
+  // un torneo privato non va mai in calendario
+  const listed = visibility === "public" && (listedRaw === "on" || listedRaw === "true");
   if (listed && !canList) return { ok: false, error: "listing" };
 
   return {
@@ -110,6 +114,7 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
       best_of: bestOf,
       discord_url: discord.value,
       listed,
+      visibility,
     },
   };
 }

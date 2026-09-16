@@ -1,5 +1,5 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { LISTING_BADGES, type Tournament, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
+import { LISTING_BADGES, type Tournament, type TournamentInvite, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
 
 /**
  * Letture dei tornei. Con il client anonimo (`supabasePublic`, pagine ISR) si vede quello che le policy
@@ -8,7 +8,7 @@ import { LISTING_BADGES, type Tournament, type TournamentMatch, type TournamentM
  */
 
 const ORGANIZER = "profile:profiles!tournaments_organizer_fkey(username, display_name, avatar_url, badge, role)";
-const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, discord_url, status, listed, report, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
+const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
 const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
 const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, created_at, updated_at";
 
@@ -28,7 +28,7 @@ function listable(t: Tournament): boolean {
 export async function listListedTournaments(limit = 60): Promise<Tournament[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tournaments").select(TOURNAMENT_SELECT).eq("listed", true).neq("status", "cancelled").order("starts_at", { ascending: true }).limit(limit);
+  const { data, error } = await client.from("tournaments").select(TOURNAMENT_SELECT).eq("listed", true).eq("visibility", "public").neq("status", "cancelled").order("starts_at", { ascending: true }).limit(limit);
   if (error) {
     console.error("[tournaments] listListedTournaments:", error.message);
     return [];
@@ -94,27 +94,43 @@ export async function getMyDecks(client: Db, tid: string, userId: string): Promi
   return Array.isArray(codes) ? codes.filter((c): c is string => typeof c === "string") : null;
 }
 
-/** Tornei dell'utente: organizzati e giocati (client con la sua sessione). */
-export async function listUserTournaments(client: Db, userId: string): Promise<{ organized: Tournament[]; playing: Tournament[] }> {
-  const [org, mine] = await Promise.all([
+/** Tornei dell'utente: organizzati, giocati e quelli privati a cui è stato invitato (client con la sua sessione). */
+export async function listUserTournaments(client: Db, userId: string): Promise<{ organized: Tournament[]; playing: Tournament[]; invited: Tournament[] }> {
+  const [org, mine, inv] = await Promise.all([
     client.from("tournaments").select(TOURNAMENT_SELECT).eq("organizer", userId).order("starts_at", { ascending: false }).limit(50),
     client.from("tournament_players").select("tournament_id").eq("user_id", userId).limit(100),
+    client.from("tournament_invites").select("tournament_id").eq("user_id", userId).limit(100),
   ]);
   const organized = ((org.data ?? []) as unknown as RawTournament[]).map(shape);
-  const ids = ((mine.data ?? []) as { tournament_id: string }[]).map((r) => r.tournament_id).filter((id) => !organized.some((t) => t.id === id));
-  let playing: Tournament[] = [];
-  if (ids.length) {
+  const playingIds = ((mine.data ?? []) as { tournament_id: string }[]).map((r) => r.tournament_id).filter((id) => !organized.some((t) => t.id === id));
+  const invitedIds = ((inv.data ?? []) as { tournament_id: string }[]).map((r) => r.tournament_id).filter((id) => !organized.some((t) => t.id === id) && !playingIds.includes(id));
+  const fetchByIds = async (ids: string[]): Promise<Tournament[]> => {
+    if (!ids.length) return [];
     const { data } = await client.from("tournaments").select(TOURNAMENT_SELECT).in("id", ids).order("starts_at", { ascending: false });
-    playing = ((data ?? []) as unknown as RawTournament[]).map(shape);
-  }
-  return { organized, playing };
+    return ((data ?? []) as unknown as RawTournament[]).map(shape);
+  };
+  const [playing, invited] = await Promise.all([fetchByIds(playingIds), fetchByIds(invitedIds)]);
+  return { organized, playing, invited: invited.filter((t) => t.status === "open" || t.status === "running") };
 }
 
-/** Slug dei tornei non annullati (sitemap). */
+/** Slug dei tornei pubblici non annullati (sitemap). */
 export async function listTournamentSlugs(): Promise<{ slug: string; updated_at: string }[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tournaments").select("slug, updated_at").neq("status", "cancelled").order("created_at", { ascending: false }).limit(1000);
+  const { data, error } = await client.from("tournaments").select("slug, updated_at").eq("visibility", "public").neq("status", "cancelled").order("created_at", { ascending: false }).limit(1000);
   if (error) console.error("[tournaments] listTournamentSlugs:", error.message);
   return (data ?? []) as { slug: string; updated_at: string }[];
+}
+
+/** Codice del link d'invito (solo organizzatore e admin, per policy), oppure null. */
+export async function getInviteCode(client: Db, tid: string): Promise<string | null> {
+  const { data } = await client.from("tournament_secrets").select("invite_code").eq("tournament_id", tid).maybeSingle();
+  return (data as { invite_code: string } | null)?.invite_code ?? null;
+}
+
+/** Invitati a un torneo privato con il profilo (organizzatore e admin). */
+export async function listInvites(client: Db, tid: string): Promise<TournamentInvite[]> {
+  const { data, error } = await client.from("tournament_invites").select("tournament_id, user_id, invited_by, created_at, profile:profiles!tournament_invites_user_id_fkey(username, display_name, avatar_url, badge)").eq("tournament_id", tid).order("created_at", { ascending: true });
+  if (error) console.error("[tournaments] listInvites:", error.message);
+  return ((data ?? []) as unknown as TournamentInvite[]) ?? [];
 }

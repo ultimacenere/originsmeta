@@ -87,7 +87,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
           </Link>
         </div>
         <div className="felt-panel mt-5 p-4">
-          <TagSearch labels={{ title: x.findTitle, placeholder: x.tagPlaceholder, button: x.find, notFound: x.tagNotFound }} />
+          <TagSearch labels={{ title: x.findTitle, placeholder: x.tagPlaceholder, button: x.find, notFound: x.tagNotFound, inviteInvalid: x.inviteInvalid }} />
         </div>
         {groups.length ? (
           groups.map((g) => (
