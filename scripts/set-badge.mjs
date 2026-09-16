@@ -35,4 +35,9 @@ if (r.rows.length > 1) console.log("Più profili corrispondono, uso il primo:", 
 const target = r.rows[0];
 await db.query("update public.profiles set badge = $1 where id = $2", [badge, target.id]);
 console.log(`${target.display_name ?? target.username} (@${target.username}, ${target.email}): tag ${target.badge} → ${badge}`);
+// Tournament Organizer: sul calendario restano solo i tornei di Influencer/Pro/Staff. Chi torna community esce dal calendario.
+if (badge === "community") {
+  const t = await db.query("update public.tournaments set listed = false where organizer = $1 and listed and not exists (select 1 from public.profiles p where p.id = $1 and p.role = 'admin')", [target.id]);
+  if (t.rowCount) console.log(`Tornei tolti dal calendario: ${t.rowCount}`);
+}
 await db.end();

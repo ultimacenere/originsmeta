@@ -9,7 +9,11 @@ import { currentUser } from "@/lib/supabase/server";
 import { listUserDecks } from "@/lib/community/queries";
 import { deleteDeck, setDeckStatus } from "@/lib/community/actions";
 import type { Profile } from "@/lib/community/types";
+import { listUserTournaments } from "@/lib/tournament/queries";
+import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
+import { TournamentCard } from "@/components/TournamentCard";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +38,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, created_at").eq("id", user.id).maybeSingle();
   const profile = (profileRow as (Profile & { role: string; created_at: string }) | null) ?? null;
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
-  const decks = await listUserDecks(supabase, user.id);
+  const [decks, tournaments] = await Promise.all([listUserDecks(supabase, user.id), listUserTournaments(supabase, user.id)]);
+  const x = d.tournaments;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -118,6 +123,55 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
               );
             })}
           </ul>
+        )}
+      </section>
+
+      {/* Tournament Organizer: tornei organizzati e giocati */}
+      <section className="mt-12">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="text-2xl font-extrabold text-sky">{x.account.title}</h2>
+          <Link href={href(locale, "/tournaments/new")} className="btn btn-mint text-xs">
+            {x.account.newCta} →
+          </Link>
+        </div>
+        {tournaments.organized.length === 0 && tournaments.playing.length === 0 ? (
+          <div className="card-night mt-4 p-6">
+            <p className="text-pale-muted">{x.account.none}</p>
+          </div>
+        ) : (
+          <>
+            {tournaments.organized.length ? (
+              <>
+                <h3 className="mt-5 kicker text-pale-muted">{x.account.organized}</h3>
+                <ul className="mt-3 grid gap-4 md:grid-cols-2">
+                  {tournaments.organized.map((t) => (
+                    <li key={t.id} className="flex flex-col gap-2">
+                      <TournamentCard t={t} locale={locale} dict={d} compact />
+                      {t.status === "open" ? (
+                        <form action={deleteTournament} className="self-end">
+                          <input type="hidden" name="id" value={t.id} />
+                          <input type="hidden" name="locale" value={locale} />
+                          <ConfirmButton label={x.account.delete} confirm={x.account.confirmDelete} className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk" />
+                        </form>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {tournaments.playing.length ? (
+              <>
+                <h3 className="mt-6 kicker text-pale-muted">{x.account.playing}</h3>
+                <ul className="mt-3 grid gap-4 md:grid-cols-2">
+                  {tournaments.playing.map((t) => (
+                    <li key={t.id}>
+                      <TournamentCard t={t} locale={locale} dict={d} compact />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+          </>
         )}
       </section>
     </div>

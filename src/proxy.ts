@@ -25,5 +25,13 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/:locale(en|it)/account", "/:locale(en|it)/decks/community/:slug/edit"],
+  matcher: [
+    "/:locale(en|it)/account",
+    "/:locale(en|it)/decks/community/:slug/edit",
+    // Tournament Organizer: solo le pagine renderizzate sul server (la scheda /tournaments/:slug è ISR e non passa di qui)
+    "/:locale(en|it)/tournaments/new",
+    "/:locale(en|it)/tournaments/:slug/manage",
+    "/:locale(en|it)/tournaments/:slug/deck",
+    "/:locale(en|it)/tournaments/:slug/match/:id",
+  ],
 };

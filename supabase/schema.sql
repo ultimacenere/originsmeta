@@ -179,3 +179,260 @@ alter table public.community_decks add column if not exists deck_types text[] no
 update public.community_decks set deck_types = array[deck_type] where deck_type is not null and deck_type <> 'ladder' and deck_types = '{ladder}'::text[];
 alter table public.community_decks drop constraint if exists community_decks_deck_types_check;
 alter table public.community_decks add constraint community_decks_deck_types_check check (cardinality(deck_types) >= 1 and deck_types <@ array['ladder','competitive','fun','tournament']::text[]);
+
+-- =====================================================================================================
+-- 16/09/2026 — TOURNAMENT ORGANIZER (richiesta del coach e di Davdas): tornei creati dagli utenti,
+-- iscrizioni con l'account del sito, mazzi consegnati prima dell'avvio, tabellone a eliminazione diretta.
+-- Regole: le scritture di stato passano SOLO dalle funzioni RPC (security definer, lock sulla riga del
+-- torneo); le policy RLS coprono le letture e i pochi campi descrittivi. Vedi README "Tournament Organizer".
+-- =====================================================================================================
+
+-- Tag corto e unico del torneo (es. OM-7KQ2), alfabeto senza caratteri ambigui (niente 0/O, 1/I).
+create or replace function public.gen_tournament_tag()
+returns text language plpgsql volatile as $$
+declare
+  alphabet constant text := '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  out text := '';
+  i int;
+begin
+  for i in 1..4 loop
+    out := out || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+  end loop;
+  return 'OM-' || out;
+end $$;
+
+create table if not exists public.tournaments (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  tag text unique not null default public.gen_tournament_tag(),
+  organizer uuid not null references public.profiles(id) on delete cascade,
+  name text not null check (char_length(name) between 3 and 60),
+  cover_url text,
+  description text not null default '' check (char_length(description) <= 2000),
+  rules text not null default '' check (char_length(rules) <= 2000),
+  lang text not null default 'en' check (lang in ('en','it')),
+  starts_at timestamptz not null,
+  size int not null check (size in (4,8,16,32,64,128)),
+  format text not null default 'single_elim' check (format in ('single_elim')),
+  deck_mode text not null default 'free' check (deck_mode in ('free','conquest')),
+  conquest_decks int not null default 3 check (conquest_decks between 2 and 4),
+  conquest_min_different int not null default 9 check (conquest_min_different between 0 and 25),
+  best_of int not null default 1 check (best_of in (1,3,5)),
+  discord_url text,
+  status text not null default 'open' check (status in ('open','running','finished','cancelled')),
+  listed boolean not null default false,
+  report text check (report is null or char_length(report) <= 2000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists tournaments_status_idx on public.tournaments (status, starts_at);
+create index if not exists tournaments_organizer_idx on public.tournaments (organizer);
+create index if not exists tournaments_listed_idx on public.tournaments (listed, starts_at);
+drop trigger if exists tournaments_touch on public.tournaments;
+create trigger tournaments_touch before update on public.tournaments
+  for each row execute function public.touch_updated_at();
+
+-- Sul calendario del sito finiscono solo i tornei di Influencer, Pro e Staff (o di un admin).
+create or replace function public.protect_tournament_listing()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.listed and not exists (
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('influencer','pro','staff') or p.role = 'admin')
+  ) then
+    raise exception 'listing_not_allowed';
+  end if;
+  return new;
+end $$;
+drop trigger if exists tournaments_protect_listing on public.tournaments;
+create trigger tournaments_protect_listing before insert or update of listed, organizer on public.tournaments
+  for each row execute function public.protect_tournament_listing();
+
+create table if not exists public.tournament_players (
+  tournament_id uuid not null references public.tournaments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  status text not null default 'registered' check (status in ('registered','dropped','disqualified')),
+  decks_submitted boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (tournament_id, user_id)
+);
+create index if not exists tournament_players_user_idx on public.tournament_players (user_id);
+drop trigger if exists tournament_players_touch on public.tournament_players;
+create trigger tournament_players_touch before update on public.tournament_players
+  for each row execute function public.touch_updated_at();
+
+-- Liste consegnate (codici OriginsMeta OM1...): 1 per il formato libero, conquest_decks per il Conquest.
+create table if not exists public.tournament_decks (
+  tournament_id uuid not null references public.tournaments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  codes jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (tournament_id, user_id)
+);
+drop trigger if exists tournament_decks_touch on public.tournament_decks;
+create trigger tournament_decks_touch before update on public.tournament_decks
+  for each row execute function public.touch_updated_at();
+
+-- Tabellone: tutte le partite vengono create all'avvio (giocatori null dove non ancora noti).
+-- La partita successiva è (round + 1, position / 2); il lato è position % 2 (0 = player_a, 1 = player_b).
+create table if not exists public.tournament_matches (
+  id uuid primary key default gen_random_uuid(),
+  tournament_id uuid not null references public.tournaments(id) on delete cascade,
+  round int not null check (round >= 1),
+  position int not null check (position >= 0),
+  player_a uuid references public.profiles(id) on delete set null,
+  player_b uuid references public.profiles(id) on delete set null,
+  winner uuid references public.profiles(id) on delete set null,
+  score_a int check (score_a is null or score_a between 0 and 3),
+  score_b int check (score_b is null or score_b between 0 and 3),
+  status text not null default 'pending' check (status in ('pending','reported','confirmed','disputed','bye')),
+  reported_by uuid references public.profiles(id) on delete set null,
+  forfeit boolean not null default false,
+  note text check (note is null or char_length(note) <= 300),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (tournament_id, round, position),
+  check (score_a is null or score_b is null or score_a <> score_b)
+);
+create index if not exists tournament_matches_players_idx on public.tournament_matches (player_a, player_b);
+drop trigger if exists tournament_matches_touch on public.tournament_matches;
+create trigger tournament_matches_touch before update on public.tournament_matches
+  for each row execute function public.touch_updated_at();
+
+-- ---------- funzioni di appartenenza (usate dalle policy: restano eseguibili da tutti) ----------
+create or replace function public.is_tournament_organizer(tid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (select 1 from public.tournaments t where t.id = tid and t.organizer = auth.uid());
+$$;
+
+-- Chi chiama è uno dei due giocatori della partita, l'organizzatore del torneo o un admin.
+create or replace function public.is_match_party(mid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.tournament_matches m join public.tournaments t on t.id = m.tournament_id
+    where m.id = mid and (m.player_a = auth.uid() or m.player_b = auth.uid() or t.organizer = auth.uid() or public.is_admin())
+  );
+$$;
+
+-- Chi chiama è (o è stato) avversario di uid in una partita del torneo tid.
+create or replace function public.is_opponent_of(tid uuid, uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.tournament_matches m
+    where m.tournament_id = tid and ((m.player_a = uid and m.player_b = auth.uid()) or (m.player_b = uid and m.player_a = auth.uid()))
+  );
+$$;
+
+-- ---------- RPC: iscrizione, ritiro, consegna dei mazzi ----------
+create or replace function public.join_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
+  select count(*) into n from public.tournament_players where tournament_id = tid;
+  if n >= t.size then raise exception 'full'; end if;
+  insert into public.tournament_players (tournament_id, user_id) values (tid, auth.uid());
+end $$;
+revoke all on function public.join_tournament(uuid) from public, anon;
+grant execute on function public.join_tournament(uuid) to authenticated;
+
+create or replace function public.leave_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  delete from public.tournament_decks where tournament_id = tid and user_id = auth.uid();
+  delete from public.tournament_players where tournament_id = tid and user_id = auth.uid();
+end $$;
+revoke all on function public.leave_tournament(uuid) from public, anon;
+grant execute on function public.leave_tournament(uuid) to authenticated;
+
+-- La legalità dei mazzi (checkDeck, validateConquest) è verificata prima dalla Server Action; qui si controlla solo il numero.
+create or replace function public.submit_tournament_decks(tid uuid, codes jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  expected int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if not exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'not_registered'; end if;
+  expected := case when t.deck_mode = 'conquest' then t.conquest_decks else 1 end;
+  if jsonb_typeof(codes) <> 'array' or jsonb_array_length(codes) <> expected then raise exception 'decks_count'; end if;
+  insert into public.tournament_decks (tournament_id, user_id, codes) values (tid, auth.uid(), codes)
+    on conflict (tournament_id, user_id) do update set codes = excluded.codes;
+  update public.tournament_players set decks_submitted = true where tournament_id = tid and user_id = auth.uid();
+end $$;
+revoke all on function public.submit_tournament_decks(uuid, jsonb) from public, anon;
+grant execute on function public.submit_tournament_decks(uuid, jsonb) to authenticated;
+
+-- ---------- RLS ----------
+alter table public.tournaments enable row level security;
+alter table public.tournament_players enable row level security;
+alter table public.tournament_decks enable row level security;
+alter table public.tournament_matches enable row level security;
+
+drop policy if exists "tournaments are public" on public.tournaments;
+create policy "tournaments are public" on public.tournaments for select using (true);
+drop policy if exists "users create tournaments" on public.tournaments;
+create policy "users create tournaments" on public.tournaments for insert with check (organizer = auth.uid());
+drop policy if exists "organizers edit tournaments" on public.tournaments;
+create policy "organizers edit tournaments" on public.tournaments for update
+  using (organizer = auth.uid() or public.is_admin()) with check (organizer = auth.uid() or public.is_admin());
+drop policy if exists "organizers delete open tournaments" on public.tournaments;
+create policy "organizers delete open tournaments" on public.tournaments for delete
+  using ((organizer = auth.uid() and status = 'open') or public.is_admin());
+
+drop policy if exists "tournament players are public" on public.tournament_players;
+create policy "tournament players are public" on public.tournament_players for select using (true);
+
+drop policy if exists "tournament decks visibility" on public.tournament_decks;
+create policy "tournament decks visibility" on public.tournament_decks for select using (
+  user_id = auth.uid()
+  or public.is_tournament_organizer(tournament_id)
+  or public.is_admin()
+  or public.is_opponent_of(tournament_id, user_id)
+  or exists (select 1 from public.tournaments t where t.id = tournament_id and t.status = 'finished')
+);
+
+drop policy if exists "tournament matches are public" on public.tournament_matches;
+create policy "tournament matches are public" on public.tournament_matches for select using (true);
+
+grant select on public.tournaments, public.tournament_players, public.tournament_decks, public.tournament_matches to anon, authenticated;
+grant insert, update, delete on public.tournaments to authenticated;
+-- tournament_players, tournament_decks e tournament_matches si scrivono solo tramite le RPC (security definer).
+
+-- ---------- Storage: copertine dei tornei (upload dal browser, solo Influencer/Pro/Staff o admin, nella propria cartella) ----------
+do $$
+begin
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('tournament-covers', 'tournament-covers', true, 1048576, array['image/jpeg','image/png','image/webp'])
+  on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+  drop policy if exists "tournament covers are public" on storage.objects;
+  create policy "tournament covers are public" on storage.objects for select using (bucket_id = 'tournament-covers');
+  drop policy if exists "badged users upload tournament covers" on storage.objects;
+  create policy "badged users upload tournament covers" on storage.objects for insert to authenticated with check (
+    bucket_id = 'tournament-covers'
+    and (storage.foldername(name))[1] = auth.uid()::text
+    and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('influencer','pro','staff') or p.role = 'admin'))
+  );
+  drop policy if exists "users manage own tournament covers" on storage.objects;
+  create policy "users manage own tournament covers" on storage.objects for delete to authenticated using (
+    bucket_id = 'tournament-covers' and (storage.foldername(name))[1] = auth.uid()::text
+  );
+exception when others then
+  raise notice 'Storage tournament-covers non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README.', sqlerrm;
+end $$;

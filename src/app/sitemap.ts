@@ -6,6 +6,7 @@ import { sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { listPublishedSlugs } from "@/lib/community/queries";
+import { listTournamentSlugs } from "@/lib/tournament/queries";
 
 /** Data dell'ultima revisione editoriale delle pagine fisse (aggiornare quando cambiano testi o struttura). */
 const SITE_UPDATED = "2026-09-15";
@@ -18,8 +19,9 @@ type Entry = { path: string; lastModified: string; changeFrequency: "daily" | "w
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestNews = sortedNews[0]?.date ?? SITE_UPDATED;
   const latestDeck = decks.map((d) => d.updated).sort().at(-1) ?? SITE_UPDATED;
-  const community = await listPublishedSlugs();
+  const [community, tournaments] = await Promise.all([listPublishedSlugs(), listTournamentSlugs()]);
   const latestCommunity = community.map((c) => c.updated_at.slice(0, 10)).sort().at(-1);
+  const latestTournament = tournaments.map((t) => t.updated_at.slice(0, 10)).sort().at(-1);
   const guides = getGuides("en");
 
   const entries: Entry[] = [
@@ -30,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/decks", lastModified: [latestDeck, latestCommunity ?? ""].sort().at(-1) || latestDeck, changeFrequency: "daily", priority: 0.9 },
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },
     { path: "/guides", lastModified: guides.map((g) => g.updated).sort().at(-1) ?? SITE_UPDATED, changeFrequency: "weekly", priority: 0.8 },
-    { path: "/tournaments", lastModified: SITE_UPDATED, changeFrequency: "weekly", priority: 0.8 },
+    { path: "/tournaments", lastModified: [SITE_UPDATED, latestTournament ?? ""].sort().at(-1) || SITE_UPDATED, changeFrequency: "daily", priority: 0.8 },
     { path: "/about", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.4 },
     { path: "/privacy", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.2 },
     ...cards.map((c) => ({
@@ -42,6 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...decks.map((d) => ({ path: `/decks/${d.slug}`, lastModified: d.updated, changeFrequency: "weekly" as const, priority: 0.7 })),
     ...guides.map((g) => ({ path: `/guides/${g.slug}`, lastModified: g.updated, changeFrequency: "weekly" as const, priority: 0.8 })),
     ...community.map((c) => ({ path: `/decks/community/${c.slug}`, lastModified: c.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.6 })),
+    ...tournaments.map((t) => ({ path: `/tournaments/${t.slug}`, lastModified: t.updated_at.slice(0, 10), changeFrequency: "daily" as const, priority: 0.6 })),
   ];
 
   const out: MetadataRoute.Sitemap = [];
