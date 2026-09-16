@@ -101,7 +101,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               <CardArt card={legendary} className="!h-[168px] !w-[120px] text-2xl" />
             </Link>
           ) : null}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 basis-64">
             <p className="kicker text-pale-muted">
               {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
             </p>

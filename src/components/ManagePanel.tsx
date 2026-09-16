@@ -109,10 +109,10 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
           {m.players} <span className="font-mono text-sm font-normal text-pale-muted">{players.filter((p) => p.status === "registered").length}/{size}</span>
         </h2>
         {players.length ? (
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {players.map((p) => (
               <li key={p.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
-                <span className={`truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{p.name}</span>
+                <span className={`min-w-0 truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{p.name}</span>
                 <span className={`font-mono text-[11px] ${p.status !== "registered" ? "text-pale-muted" : p.decks ? "text-good" : "text-gold"}`}>{p.status !== "registered" ? m.dropped : p.decks ? m.decksOk : m.decksMissing}</span>
                 {p.status === "registered" && status !== "finished" && status !== "cancelled" ? (
                   <button
@@ -181,10 +181,10 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
           </form>
           <p className="mt-4 kicker text-pale-muted">{m.invited}</p>
           {invites.length ? (
-            <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+            <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {invites.map((i) => (
                 <li key={i.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
-                  <span className="truncate text-pale">{i.name}</span>
+                  <span className="min-w-0 truncate text-pale">{i.name}</span>
                   {i.registered ? <span className="font-mono text-[11px] text-good">✓</span> : null}
                   <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id))} className="ml-auto btn border border-crimson/40 !px-2 !py-0.5 text-[11px] text-crimson hover:bg-crimson hover:text-chalk">
                     {m.revoke}
@@ -209,11 +209,11 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
           ) : (
             <>
               <p className="mt-3 font-mono text-xs text-pale">{byes ? fill(m.byesPreview, { n: seeding.length, size: bracket, byes }) : fill(m.noByes, { n: seeding.length, size: bracket })}</p>
-              <ol className="mt-3 grid gap-1 sm:grid-cols-2">
+              <ol className="mt-3 grid grid-cols-1 gap-1 sm:grid-cols-2">
                 {seeding.map((uid, i) => (
                   <li key={uid} className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${i < byes ? "border-gold bg-gold/10" : "border-sky bg-night-2/60"}`}>
                     <span className="w-6 font-mono text-xs text-pale-muted">{i + 1}.</span>
-                    <span className="flex-1 truncate text-pale">{nameOf.get(uid) ?? "?"}</span>
+                    <span className="min-w-0 flex-1 truncate text-pale">{nameOf.get(uid) ?? "?"}</span>
                     <button type="button" onClick={() => move(i, -1)} className="btn btn-ink !px-2 !py-0.5 text-[11px]" aria-label={m.moveUp} disabled={i === 0}>
                       ↑
                     </button>

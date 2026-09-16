@@ -199,7 +199,7 @@ export function CardExplorer({
       {list.length === 0 ? (
         <p className="card-night p-6 text-pale-muted">{labels.noResults}</p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((c) => (
             <li key={c.slug}>
               <Link href={c.href} className={`card-night card-night-hover flex h-full gap-4 p-4 ${c.removed ? "opacity-75" : ""}`}>
@@ -214,7 +214,7 @@ export function CardExplorer({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="kicker block text-pale-muted">{c.sagaLabel}</span>
-                  <span className="mt-1 block truncate font-display text-lg font-bold leading-tight text-sky">
+                  <span className="mt-1 block font-display text-lg font-bold leading-tight text-sky sm:truncate">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>

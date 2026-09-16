@@ -46,7 +46,7 @@ function PlayerRow({ p, dict }: { p: TournamentPlayer; dict: Awaited<ReturnType<
   return (
     <li className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
       <Avatar profile={p.profile} name={name} size={24} />
-      <span className={`truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{name}</span>
+      <span className={`min-w-0 truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{name}</span>
       {badge ? <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community} !px-2 !py-0.5 !text-[10px]`}>{dict.community.badges[badge as keyof typeof dict.community.badges] ?? badge}</span> : null}
       {p.decks_submitted ? <span className="ml-auto font-mono text-[11px] text-good">✓</span> : null}
     </li>
@@ -209,7 +209,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
               {x.registered} <span className="font-mono text-sm font-normal text-pale-muted">{active.length}/{t.size}</span>
             </h2>
             {players.length ? (
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {players.map((p) => (
                   <PlayerRow key={p.user_id} p={p} dict={d} />
                 ))}
@@ -234,7 +234,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
           <section className="mt-8">
             <h2 className="text-xl font-extrabold text-sky">{x.decklists}</h2>
             {decks.length ? (
-              <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+              <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {decks.map((row) => (
                   <li key={row.user_id} className="rounded-lg border-2 border-sky bg-night-2/70 p-3">
                     <p className="font-display text-sm font-bold text-sky">{nameOf.get(row.user_id) ?? "?"}</p>

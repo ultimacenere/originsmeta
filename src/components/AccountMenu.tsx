@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import type { Profile } from "@/lib/community/types";
+import { AutoCloseDetails } from "./AutoCloseDetails";
 
 export type AccountLabels = { login: string; account: string; builder: string; logout: string };
 
@@ -54,11 +55,17 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
   }
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   return (
-    <details className="relative">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-felt-line py-0.5 pl-0.5 pr-3 text-xs text-chalk hover:border-mint [&::-webkit-details-marker]:hidden" aria-label={labels.account}>
-        <Avatar profile={profile} name={name} />
-        <span className="hidden max-w-[9rem] truncate font-display font-medium sm:inline">{name}</span>
-      </summary>
+    <AutoCloseDetails
+      className="relative"
+      summaryClassName="flex cursor-pointer list-none items-center gap-2 rounded-full border border-felt-line py-0.5 pl-0.5 pr-3 text-xs text-chalk hover:border-mint [&::-webkit-details-marker]:hidden"
+      summaryLabel={labels.account}
+      summary={
+        <>
+          <Avatar profile={profile} name={name} />
+          <span className="hidden max-w-[9rem] truncate font-display font-medium sm:inline">{name}</span>
+        </>
+      }
+    >
       <nav className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={labels.account}>
         <p className="truncate px-3 py-1 font-mono text-[11px] text-chalk-muted">{profile?.username ? `@${profile.username}` : user.email}</p>
         <Link href={`/${locale}/account`} className="block rounded-lg px-3 py-2 text-sm text-chalk hover:bg-felt-soft hover:text-mint">
@@ -69,7 +76,7 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
         </Link>
         <SignOutButton locale={locale} label={labels.logout} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-chalk-muted hover:bg-felt-soft hover:text-crimson" />
       </nav>
-    </details>
+    </AutoCloseDetails>
   );
 }
 
