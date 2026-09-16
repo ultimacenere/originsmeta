@@ -10,6 +10,7 @@ import { authorName } from "@/lib/community/util";
 import { ManagePanel, type ManagedPlayer } from "@/components/ManagePanel";
 import { TournamentForm } from "@/components/TournamentForm";
 import { Bracket } from "@/components/Bracket";
+import { BracketEditor } from "@/components/BracketEditor";
 import { LocalTime } from "@/components/LocalTime";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -71,10 +72,18 @@ export default async function ManageTournamentPage({ params }: { params: Params 
 
       {matches.length ? (
         <section className="card-night mt-6 p-5">
-          <h2 className="text-xl font-extrabold text-sky">{x.bracket}</h2>
-          <div className="mt-3">
-            <Bracket matches={matches} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
-          </div>
+          <h2 className="text-xl font-extrabold text-sky">
+            {x.bracket}
+            {t.status === "running" ? <span className="ml-2 text-sm font-normal text-pale-muted">· {x.manage.swapTitle}</span> : null}
+          </h2>
+          {t.status === "running" ? (
+            /* a torneo in corso il tabellone è interattivo: due clic scambiano i giocatori di partite dello stesso turno ancora da giocare */
+            <BracketEditor id={t.id} slug={t.slug} matches={matches} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} />
+          ) : (
+            <div className="mt-3">
+              <Bracket matches={matches} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
+            </div>
+          )}
         </section>
       ) : null}
 

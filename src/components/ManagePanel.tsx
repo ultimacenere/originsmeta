@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { bracketSize, roundsOf } from "@/lib/tournament/bracket";
 import { fill, type TournamentMatch, type TournamentStatus } from "@/lib/tournament/types";
-import { cancelTournament, dropPlayer, finishTournament, invitePlayer, revokeInvite, rotateInviteCode, setMatchResult, startTournament, swapPlayers } from "@/lib/tournament/actions";
+import { cancelTournament, dropPlayer, finishTournament, invitePlayer, revokeInvite, rotateInviteCode, setMatchResult, startTournament } from "@/lib/tournament/actions";
 import { CopyButton } from "./CopyButton";
 
 export type ManagedPlayer = { user_id: string; name: string; status: string; decks: boolean };
@@ -88,10 +88,6 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
   const total = matches.length ? roundsOf(matches.filter((mt) => mt.round === 1).length * 2) : 0;
   const final = total ? matches.find((mt) => mt.round === total && mt.position === 0) : undefined;
   const finalDone = Boolean(final && final.winner && (final.status === "confirmed" || final.status === "bye"));
-  const swappable = matches.filter((mt) => mt.status === "pending" && mt.player_a && mt.player_b);
-  const swapOptions = swappable.flatMap((mt) => [mt.player_a as string, mt.player_b as string]);
-  const [swapA, setSwapA] = useState("");
-  const [swapB, setSwapB] = useState("");
   const [report, setReport] = useState("");
 
   return (
@@ -255,31 +251,6 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
               </ul>
             </section>
           ))}
-
-          {swappable.length >= 1 ? (
-            <section className="card-night p-5">
-              <h2 className="text-xl font-extrabold text-sky">{m.swapTitle}</h2>
-              <p className="mt-1 text-sm text-pale-muted">{m.swapHint}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {[
-                  [swapA, setSwapA],
-                  [swapB, setSwapB],
-                ].map(([val, set], i) => (
-                  <select key={i} value={val as string} onChange={(e) => (set as (v: string) => void)(e.target.value)} className="rounded-lg border border-sky bg-night px-3 py-2 text-sm text-pale">
-                    <option value="">—</option>
-                    {swapOptions.map((uid) => (
-                      <option key={uid} value={uid}>
-                        {nameOf.get(uid) ?? uid}
-                      </option>
-                    ))}
-                  </select>
-                ))}
-                <button type="button" disabled={pending || !swapA || !swapB || swapA === swapB} onClick={() => run(() => swapPlayers(id, slug, swapA, swapB))} className="btn btn-ink text-xs">
-                  {m.swap}
-                </button>
-              </div>
-            </section>
-          ) : null}
 
           <section className="card-night p-5">
             <h2 className="text-xl font-extrabold text-sky">{m.finishTitle}</h2>
