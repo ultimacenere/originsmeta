@@ -11,6 +11,8 @@ import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections } from "@/lib/community/types";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
 import { CardArt, CardChip, CardChipList } from "@/components/CardChip";
+import { CardMentions } from "@/components/CardMentions";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
@@ -127,9 +129,12 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>
 
+        {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas) */}
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
           <p className="kicker text-mint">{c.summary}</p>
-          <p className="mt-2 whitespace-pre-line text-lg text-pale">{deck.guide.summary}</p>
+          <p className="mt-2 whitespace-pre-line text-lg text-pale">
+            <CardMentions text={deck.guide.summary} locale={locale} dict={d} id="cm-summary" />
+          </p>
         </div>
 
         <div className="mt-6">
@@ -233,12 +238,15 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {sections.map((k) => (
                 <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
                   <h3 className={`kicker ${sectionStyle[k]?.title ?? "text-mint"}`}>{c[k]}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm text-pale">{deck.guide[k]}</p>
+                  <p className="mt-2 whitespace-pre-line text-sm text-pale">
+                    <CardMentions text={deck.guide[k] ?? ""} locale={locale} dict={d} id={`cm-${k}`} />
+                  </p>
                 </section>
               ))}
             </div>
           </>
         ) : null}
+        <CardMentionEdges />
       </article>
 
       {others.length ? (

@@ -90,6 +90,7 @@ export const it: Dictionary = {
     cardsMentioned: "Carte toccate da questo aggiornamento",
     noImage: "Illustrazione in arrivo",
     imageCredit: "Illustrazioni © Koin Games",
+    cardPreview: "Anteprima della carta",
     deck: "Mazzo",
     decks: "Mazzi",
     creator: "Creator",

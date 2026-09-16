@@ -245,6 +245,98 @@
     text-align: center;
   }
 
+  /* Nomi di carta nei testi della community (CardMentions): link menta con sottolineatura punteggiata e pannello di
+     anteprima blu notte con cornice celeste da 2 px, aperto dal CSS al passaggio del mouse o al focus da tastiera.
+     Su touch (hover: none) il pannello non esiste e il tocco porta alla scheda della carta. */
+  .card-mention {
+    position: relative;
+    display: inline;
+  }
+  .card-mention-link {
+    color: var(--color-mint);
+    font-weight: 600;
+    text-decoration: underline dotted;
+    text-decoration-color: rgba(49, 227, 189, 0.65);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .card-mention-link:hover,
+  .card-mention:focus-within .card-mention-link {
+    color: #5cf0d0;
+    text-decoration-style: solid;
+    text-decoration-color: currentColor;
+  }
+  .card-mention-preview {
+    display: none;
+    position: absolute;
+    z-index: 30;
+    top: 100%;
+    left: 0;
+    padding-top: 6px; /* ponte trasparente: si può scendere col mouse sul pannello senza chiuderlo */
+    width: max-content;
+    max-width: min(280px, calc(100vw - 2rem));
+    white-space: normal;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  .card-mention:hover > .card-mention-preview,
+  .card-mention:focus-within > .card-mention-preview {
+    display: block;
+  }
+  /* Classi aggiunte da CardMentionEdges quando il pannello sfonderebbe il bordo destro o inferiore della finestra */
+  .card-mention.is-flip > .card-mention-preview {
+    left: auto;
+    right: 0;
+  }
+  .card-mention.is-up > .card-mention-preview {
+    top: auto;
+    bottom: 100%;
+    padding-top: 0;
+    padding-bottom: 6px;
+  }
+  @media (hover: none) {
+    .card-mention-preview {
+      display: none !important;
+    }
+  }
+  .card-mention-panel {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.6rem 0.7rem 0.7rem;
+    border: 2px solid var(--color-sky);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+    color: var(--color-pale);
+    box-shadow: var(--shadow-lift);
+  }
+  /* Leggendaria: sfumatura oro in alto, la stella sta nel testo */
+  .card-mention-panel.is-legendary {
+    background: linear-gradient(180deg, rgba(242, 210, 60, 0.18) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+  }
+  .card-mention-head {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 0.55rem;
+    align-items: start;
+  }
+  .card-mention-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .card-mention-stats small {
+    font-size: 0.65rem;
+    text-transform: lowercase;
+    color: var(--color-pale-muted);
+  }
+  .card-mention-text {
+    display: block;
+    color: var(--color-pale);
+  }
+
   /* Striscia del calendario: scorre da sola (JS), si ferma al passaggio del mouse, frecce ai lati, navigabile a mano */
   .ticker {
     position: relative;

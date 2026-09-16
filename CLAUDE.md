@@ -36,6 +36,7 @@ KB di progetto (stato, decisioni, contatti, log delle sessioni): `G:\Il mio Driv
 - Dati in `src/lib/data/*.ts`, guide in `src/lib/content/guides.ts`, media in `public/media/`.
 - Database carte in tre file: `woo-cards.json` (generato, non modificare a mano), `card-lore.ts` (saga, origine EN/IT e traduzione IT del testo, scritte a mano) e `card-history.ts` (storico dalle patch notes ufficiali); `cards.ts` li unisce. Le saghe sono una classificazione nostra.
 - Community: `src/app/auth/callback/route.ts` (ritorno OAuth/magic link), `src/proxy.ts` (refresh sessione solo su `/account` e modifica mazzo), `src/app/[locale]/{login,account,decks/publish,decks/community/[slug]}`; componenti `LoginPanel`, `AccountMenu`, `PublishDeckForm`, `StarRating`, `OwnerActions`. Tipi delle tabelle in `src/lib/supabase/database.ts` (da aggiornare con lo schema).
+- Nomi di carta nei testi della community: `src/lib/cardlinks.ts` (riconoscimento dei nomi ufficiali, funzione pura `linkCardNames`, solo server: importa il database carte) + `src/components/CardMentions.tsx` (link menta con anteprima CSS della carta, stili `.card-mention*` in `globals.css`) + `CardMentionEdges` (client component minuscolo che sposta il pannello ai bordi della finestra). Usati nella scheda mazzo community (`/decks/community/[slug]`), pronti per i commenti.
 
 ## Palette ("ink & mint")
 

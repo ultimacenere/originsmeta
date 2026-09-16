@@ -88,6 +88,7 @@ export const en = {
     cardsMentioned: "Cards in this update",
     noImage: "Card art coming soon",
     imageCredit: "Card art © Koin Games",
+    cardPreview: "Card preview",
     deck: "Deck",
     decks: "Decks",
     creator: "Creator",
