@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test src/lib/tournament/bracket.test.ts",
     "import:woo": "node scripts/import-woo.mjs"
   },
   "dependencies": {
