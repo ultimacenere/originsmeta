@@ -47,3 +47,28 @@ Oggetto: OriginsMeta.com — request for card art authorization and API access
 - Immagini: salvarle in `public/cards/<slug>.webp` e impostare `image` sulla carta (vedi README).
 - API: il riquadro "win rate" nelle schede mazzo è già predisposto (`DeckCharts`); campi minimi attesi:
   games, wins, avg_duration, period, rank_bucket, opponent_legendary; per carta: drawn e mulligan.
+
+## Chi contattare per le API (ricerca del 16/09/2026)
+
+Dall'organigramma ufficiale su koingames.io/team (unico indirizzo pubblico: social@koingames.io; il sito avverte che
+le comunicazioni vere arrivano solo da indirizzi @koingames.io). Sul sito e su origins-tcg.com non esistono
+email press/partner/developer né un programma API per terzi: la richiesta va fatta alle persone giuste.
+
+Ordine consigliato:
+
+1. **Alex Horvath**, Director of Marketing & Partnerships (business development e partnership): il primo
+   destinatario "politico" della richiesta, insieme a Monique Higgins. LinkedIn: cercare "Alex Horvath Koin Games"
+   (il profilo linkedin.com/in/alexanderhorvath appartiene a un omonimo di Centric Consulting: verificare).
+2. **Brian Goble**, co-fondatore e CTO: decide sulle API. LinkedIn: https://www.linkedin.com/in/briangoble/
+3. **Marco Williams**, Technical Director (full stack, 20+ anni): https://www.linkedin.com/in/marco-williams-4082b919/
+4. **John Malan**, Backend Engineer (architetta i sistemi backend ed economie di gioco): https://koingames.io/team/john-malan
+5. **Kevin Lukic**, Architect Engineer: https://www.linkedin.com/in/klukic/
+6. **Geoff Harrison**, Principal Product Manager: https://www.linkedin.com/in/harrisongeoff
+7. **Janne "Apix"**, Head of Community: sul Discord ufficiale discord.gg/originstcg (DM o canale creator).
+8. **Kevin Lambert**, co-fondatore e Chief Product Officer: https://www.linkedin.com/in/klambert/
+9. **Tim Jooste**, fondatore e CEO (molto attivo su X @TimothyJooste): https://www.linkedin.com/in/timothy-jooste-8594a491/
+
+Altri riferimenti: pagina LinkedIn dell'azienda https://www.linkedin.com/company/koin-games/ ; X @koingamesio e
+@origins_tcg ; forum Steam dove risponde lo sviluppatore "Fenchurch" (identità non pubblica). Il Discord
+"Koin Games Dev Squad" (discord.gg/KGDS) è la vecchia community NFT del 2022, non un canale per sviluppatori: non usarlo.
+Nessuna persona di nome "Carol" compare nell'organigramma pubblico.
