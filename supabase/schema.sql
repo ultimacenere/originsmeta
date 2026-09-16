@@ -436,3 +436,277 @@ begin
 exception when others then
   raise notice 'Storage tournament-covers non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README.', sqlerrm;
 end $$;
+
+-- ---------- 16/09/2026 — Tournament Organizer, fase 2: tabellone e gestione (RPC security definer) ----------
+-- Convenzioni: lock sempre nell'ordine torneo → partita; errori con raise exception 'codice' (chiavi del
+-- dizionario tournaments.errors); solo `authenticated` può eseguire le RPC; tm_propagate è interna.
+
+-- Ordine standard dei seed sui posti del primo turno (stessa definizione di seedOrder in src/lib/tournament/bracket.ts):
+-- si parte da {1}; a ogni raddoppio fino a m posti ogni seed s diventa la coppia (s, m + 1 - s). Per 8: 1,8,4,5,2,7,3,6.
+create or replace function public.bracket_order(size int)
+returns int[] language plpgsql immutable as $$
+declare
+  ord int[] := array[1];
+  nxt int[];
+  m int := 1;
+  s int;
+begin
+  if size < 2 or (size & (size - 1)) <> 0 then raise exception 'bad_size'; end if;
+  while m < size loop
+    m := m * 2;
+    nxt := '{}';
+    foreach s in array ord loop
+      nxt := nxt || s || (m + 1 - s);
+    end loop;
+    ord := nxt;
+  end loop;
+  return ord;
+end $$;
+
+-- Scrive il vincitore di una partita nello slot della partita successiva (round + 1, position / 2; lato = position % 2).
+create or replace function public.tm_propagate(mid uuid)
+returns void language plpgsql as $$
+declare m public.tournament_matches%rowtype;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.winner is null then return; end if;
+  if m.position % 2 = 0 then
+    update public.tournament_matches set player_a = m.winner where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2;
+  else
+    update public.tournament_matches set player_b = m.winner where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2;
+  end if;
+end $$;
+revoke all on function public.tm_propagate(uuid) from public, anon, authenticated;
+
+-- Avvio: `seeded` è l'elenco ordinato dei giocatori (seed 1 per primo; casuale o manuale, deciso dal client).
+-- Devono essere iscritti con i mazzi consegnati; gli altri iscritti escono dal tabellone (dropped).
+-- Dimensione = minima potenza di 2 >= giocatori; tutte le partite di tutti i turni vengono create subito;
+-- i bye (seed mancanti) cadono sempre in player_b e passano il turno all'istante.
+create or replace function public.start_tournament(tid uuid, seeded uuid[])
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+  size int := 2;
+  rounds int := 0;
+  cnt int;
+  r int;
+  pos int;
+  ord int[];
+  a uuid;
+  b uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  n := coalesce(array_length(seeded, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  if n > t.size then raise exception 'too_many_players'; end if;
+  if (select count(distinct x) from unnest(seeded) x) <> n then raise exception 'bad_seeding'; end if;
+  if exists (
+    select 1 from unnest(seeded) x
+    where not exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = x and p.status = 'registered' and p.decks_submitted)
+  ) then raise exception 'bad_seeding'; end if;
+  if exists (select 1 from public.tournament_matches where tournament_id = tid) then raise exception 'already_started'; end if;
+
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and status = 'registered' and not (user_id = any(seeded));
+
+  while size < n loop size := size * 2; end loop;
+  cnt := size;
+  while cnt > 1 loop cnt := cnt / 2; rounds := rounds + 1; end loop;
+  ord := public.bracket_order(size);
+
+  cnt := size;
+  for r in 1..rounds loop
+    cnt := cnt / 2;
+    for pos in 0..cnt - 1 loop
+      insert into public.tournament_matches (tournament_id, round, position) values (tid, r, pos);
+    end loop;
+  end loop;
+
+  for pos in 0..size / 2 - 1 loop
+    a := case when ord[2 * pos + 1] <= n then seeded[ord[2 * pos + 1]] else null end;
+    b := case when ord[2 * pos + 2] <= n then seeded[ord[2 * pos + 2]] else null end;
+    if a is null then raise exception 'bad_seeding'; end if;
+    if b is null then
+      update public.tournament_matches set player_a = a, winner = a, status = 'bye' where tournament_id = tid and round = 1 and position = pos;
+      perform public.tm_propagate((select id from public.tournament_matches where tournament_id = tid and round = 1 and position = pos));
+    else
+      update public.tournament_matches set player_a = a, player_b = b where tournament_id = tid and round = 1 and position = pos;
+    end if;
+  end loop;
+
+  update public.tournaments set status = 'running' where id = tid;
+end $$;
+revoke all on function public.start_tournament(uuid, uuid[]) from public, anon;
+grant execute on function public.start_tournament(uuid, uuid[]) to authenticated;
+
+-- Scambio di due giocatori tra le loro partite ancora da giocare (stesso turno), a torneo in corso.
+create or replace function public.swap_players(tid uuid, u1 uuid, u2 uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  m1 public.tournament_matches%rowtype;
+  m2 public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if u1 = u2 then raise exception 'bad_swap'; end if;
+  select * into m1 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u1 or player_b = u1) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  select * into m2 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u2 or player_b = u2) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  if m1.round <> m2.round then raise exception 'bad_swap'; end if;
+  if m1.id = m2.id then
+    update public.tournament_matches set player_a = player_b, player_b = player_a where id = m1.id;
+    return;
+  end if;
+  if m1.player_a = u1 then update public.tournament_matches set player_a = u2 where id = m1.id; else update public.tournament_matches set player_b = u2 where id = m1.id; end if;
+  if m2.player_a = u2 then update public.tournament_matches set player_a = u1 where id = m2.id; else update public.tournament_matches set player_b = u1 where id = m2.id; end if;
+end $$;
+revoke all on function public.swap_players(uuid, uuid, uuid) from public, anon;
+grant execute on function public.swap_players(uuid, uuid, uuid) to authenticated;
+
+-- Referto di un giocatore. Il primo referto mette la partita in 'reported'; il secondo, dell'avversario, la conferma
+-- se il punteggio coincide (e il vincitore passa il turno) oppure la mette in 'disputed'. Chi ha refertato può correggersi.
+create or replace function public.report_match_result(mid uuid, a int, b int)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  me uuid := auth.uid();
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if me <> m.player_a and me <> m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if m.status not in ('pending', 'reported') then raise exception 'already_confirmed'; end if;
+  need := (t.best_of + 1) / 2;
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  if m.status = 'pending' then
+    update public.tournament_matches set score_a = a, score_b = b, status = 'reported', reported_by = me where id = mid;
+  elsif m.reported_by = me then
+    update public.tournament_matches set score_a = a, score_b = b where id = mid;
+  elsif m.score_a = a and m.score_b = b then
+    update public.tournament_matches set status = 'confirmed', winner = case when a > b then m.player_a else m.player_b end where id = mid;
+    perform public.tm_propagate(mid);
+  else
+    update public.tournament_matches set status = 'disputed', note = format('%s-%s vs %s-%s', m.score_a, m.score_b, a, b) where id = mid;
+  end if;
+end $$;
+revoke all on function public.report_match_result(uuid, int, int) from public, anon;
+grant execute on function public.report_match_result(uuid, int, int) to authenticated;
+
+-- Risultato imposto dall'organizzatore (anche forfait / no-show). Ripropaga solo se la partita successiva è ancora
+-- da giocare, altrimenti 'next_match_started'.
+create or replace function public.set_match_result(mid uuid, a int, b int, forfeit boolean default false)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  w uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  need := (t.best_of + 1) / 2;
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  if forfeit and least(a, b) <> 0 then raise exception 'bad_score'; end if;
+  w := case when a > b then m.player_a else m.player_b end;
+  select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2;
+  if found and nm.status <> 'pending' then raise exception 'next_match_started'; end if;
+  if found and m.winner is not null and m.winner <> w then
+    -- lo slot deve contenere ancora il vecchio vincitore, altrimenti qualcuno l'ha già spostato
+    if (m.position % 2 = 0 and nm.player_a is distinct from m.winner) or (m.position % 2 = 1 and nm.player_b is distinct from m.winner) then raise exception 'next_match_started'; end if;
+  end if;
+  update public.tournament_matches set score_a = a, score_b = b, winner = w, status = 'confirmed', forfeit = set_match_result.forfeit, reported_by = null where id = mid;
+  perform public.tm_propagate(mid);
+end $$;
+revoke all on function public.set_match_result(uuid, int, int, boolean) from public, anon;
+grant execute on function public.set_match_result(uuid, int, int, boolean) to authenticated;
+
+-- Abbandono: prima dell'avvio toglie l'iscrizione; a torneo in corso dà la partita all'avversario (forfait) e propaga.
+create or replace function public.drop_player(tid uuid, uid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  m public.tournament_matches%rowtype;
+  need int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status = 'open' then
+    delete from public.tournament_decks where tournament_id = tid and user_id = uid;
+    delete from public.tournament_players where tournament_id = tid and user_id = uid;
+    return;
+  end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  need := (t.best_of + 1) / 2;
+  select * into m from public.tournament_matches where tournament_id = tid and status in ('pending', 'reported', 'disputed') and (player_a = uid or player_b = uid) order by round limit 1 for update;
+  if found then
+    if m.player_a is null or m.player_b is null then raise exception 'no_opponent_yet'; end if;
+    if m.player_a = uid then
+      update public.tournament_matches set score_a = 0, score_b = need, winner = m.player_b, status = 'confirmed', forfeit = true, reported_by = null where id = m.id;
+    else
+      update public.tournament_matches set score_a = need, score_b = 0, winner = m.player_a, status = 'confirmed', forfeit = true, reported_by = null where id = m.id;
+    end if;
+    perform public.tm_propagate(m.id);
+  end if;
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and user_id = uid;
+end $$;
+revoke all on function public.drop_player(uuid, uuid) from public, anon;
+grant execute on function public.drop_player(uuid, uuid) to authenticated;
+
+-- Chiusura: la finale deve avere un vincitore. Il referto (testo semplice) è facoltativo.
+create or replace function public.finish_tournament(tid uuid, report text default null)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  last_round int;
+  f public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  select max(round) into last_round from public.tournament_matches where tournament_id = tid;
+  select * into f from public.tournament_matches where tournament_id = tid and round = last_round and position = 0;
+  if not found or f.winner is null or f.status not in ('confirmed', 'bye') then raise exception 'final_not_played'; end if;
+  update public.tournaments set status = 'finished', report = left(coalesce(finish_tournament.report, ''), 2000) where id = tid;
+end $$;
+revoke all on function public.finish_tournament(uuid, text) from public, anon;
+grant execute on function public.finish_tournament(uuid, text) to authenticated;
+
+create or replace function public.cancel_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status not in ('open', 'running') then raise exception 'not_running'; end if;
+  update public.tournaments set status = 'cancelled', listed = false where id = tid;
+end $$;
+revoke all on function public.cancel_tournament(uuid) from public, anon;
+grant execute on function public.cancel_tournament(uuid) to authenticated;

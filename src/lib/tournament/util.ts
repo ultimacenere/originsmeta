@@ -53,7 +53,7 @@ export function checkCover(raw: string, userId: string, canUpload: boolean): str
 export type ParsedTournament = { ok: true; row: Omit<TournamentInsert, "organizer" | "slug"> } | { ok: false; error: TournamentFormError };
 
 /** Legge e valida i campi del modulo; `starts_at` arriva già in ISO (il browser converte l'ora locale). */
-export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile: { badge?: string | null; role?: string | null } | null }): ParsedTournament {
+export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile: { badge?: string | null; role?: string | null } | null; allowPast?: boolean }): ParsedTournament {
   const name = String(fd.get("name") ?? "")
     .replace(/\s+/g, " ")
     .trim()
@@ -62,7 +62,8 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
 
   const startsAt = new Date(String(fd.get("starts_at") ?? ""));
   const now = Date.now();
-  if (Number.isNaN(startsAt.getTime()) || startsAt.getTime() < now - 3_600_000 || startsAt.getTime() > now + 366 * 86_400_000) return { ok: false, error: "startsAt" };
+  const tooEarly = !ctx.allowPast && startsAt.getTime() < now - 3_600_000;
+  if (Number.isNaN(startsAt.getTime()) || tooEarly || startsAt.getTime() > now + 366 * 86_400_000) return { ok: false, error: "startsAt" };
 
   const size = Number(fd.get("size"));
   if (!(TOURNAMENT_SIZES as readonly number[]).includes(size)) return { ok: false, error: "size" };

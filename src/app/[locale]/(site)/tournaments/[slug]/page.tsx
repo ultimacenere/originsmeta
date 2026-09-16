@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { fill, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
+import { fill, tournamentShortLink, type TournamentPlayer } from "@/lib/tournament/types";
+import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { decodeOmCode } from "@/lib/deckcode";
@@ -71,8 +72,6 @@ export default async function TournamentPage({ params }: { params: Params }) {
   const path = href(locale, `/tournaments/${t.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const shortLink = tournamentShortLink(siteUrl, t.tag);
-  const rounds = new Map<number, TournamentMatch[]>();
-  for (const m of matches) rounds.set(m.round, [...(rounds.get(m.round) ?? []), m]);
 
   const event: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -157,6 +156,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
               organizerId={t.organizer}
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               deckHref={`${path}/deck`}
+              manageHref={`${path}/manage`}
               labels={x}
             />
           </div>
@@ -198,27 +198,8 @@ export default async function TournamentPage({ params }: { params: Params }) {
             {t.status === "open" || !matches.length ? (
               <p className="mt-2 text-sm text-pale-muted">{x.bracketSoon}</p>
             ) : (
-              <div className="mt-3 overflow-x-auto">
-                <div className="flex min-w-max gap-4">
-                  {[...rounds.entries()].map(([round, list]) => (
-                    <ol key={round} className="flex w-56 flex-col justify-around gap-2">
-                      {list.map((m) => {
-                        const a = m.player_a ? nameOf.get(m.player_a) ?? "?" : "—";
-                        const b = m.player_b ? nameOf.get(m.player_b) ?? "?" : "—";
-                        return (
-                          <li key={m.id} className="rounded-lg border-2 border-sky bg-night-2/70 p-2 text-sm">
-                            <p className={m.winner && m.winner === m.player_a ? "font-bold text-good" : "text-pale"}>
-                              {a} {m.score_a !== null ? <span className="float-right font-mono">{m.score_a}</span> : null}
-                            </p>
-                            <p className={m.winner && m.winner === m.player_b ? "font-bold text-good" : m.status === "bye" ? "text-pale-muted" : "text-pale"}>
-                              {m.status === "bye" ? "bye" : b} {m.score_b !== null ? <span className="float-right font-mono">{m.score_b}</span> : null}
-                            </p>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  ))}
-                </div>
+              <div className="mt-3">
+                <Bracket matches={matches} names={nameOf} dict={d} />
               </div>
             )}
           </section>

@@ -95,7 +95,7 @@ export function JoinTournament(p: Props) {
         ) : null}
         {isOrganizer && p.manageHref ? (
           <Link href={p.manageHref} className="btn btn-ink text-xs">
-            {x.manage}
+            {x.manageCta}
           </Link>
         ) : null}
       </div>

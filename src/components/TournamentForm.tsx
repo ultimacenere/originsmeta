@@ -6,8 +6,27 @@ import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, type DeckMode } from "@/lib/tournament/types";
-import { createTournament, type TournamentActionState } from "@/lib/tournament/actions";
+import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
 import { useMounted } from "@/lib/useMounted";
+
+/** Valori attuali per la modifica (pagina di gestione). */
+export type TournamentInitial = {
+  id: string;
+  status: string;
+  name: string;
+  cover_url: string | null;
+  starts_at: string;
+  size: number;
+  deck_mode: DeckMode;
+  conquest_decks: number;
+  conquest_min_different: number;
+  best_of: number;
+  lang: "en" | "it";
+  description: string;
+  rules: string;
+  discord_url: string | null;
+  listed: boolean;
+};
 
 type Props = {
   locale: "en" | "it";
@@ -16,6 +35,9 @@ type Props = {
   canList: boolean;
   labels: Dictionary["tournaments"];
   loginHref: string;
+  /** "edit" con `initial`: stesso modulo nella pagina di gestione; data, posti e regole bloccati se il torneo non è più aperto */
+  mode?: "create" | "edit";
+  initial?: TournamentInitial;
 };
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
@@ -69,20 +91,24 @@ export function TournamentForm(props: Props) {
   return <TournamentFormInner {...props} />;
 }
 
-function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Props) {
+function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial }: Props) {
   const x = labels;
   const c = x.create;
+  const edit = mode === "edit" && Boolean(initial);
+  const lockRules = edit && initial?.status !== "open";
   const router = useRouter();
-  const [state, formAction, pending] = useActionState<TournamentActionState, FormData>(createTournament, {});
-  const [deckMode, setDeckMode] = useState<DeckMode>("free");
-  const [startLocal, setStartLocal] = useState<string>(defaultStart);
-  const [cover, setCover] = useState<string>(DEFAULT_COVER);
+  const [state, formAction, pending] = useActionState<TournamentActionState, FormData>(edit ? updateTournament : createTournament, {});
+  const [deckMode, setDeckMode] = useState<DeckMode>(initial?.deck_mode ?? "free");
+  const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
+  const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(false);
 
   useEffect(() => {
-    if (state.ok && state.href) router.push(state.href);
-  }, [state, router]);
+    if (!state.ok || !state.href) return;
+    if (edit) router.refresh();
+    else router.push(state.href);
+  }, [state, router, edit]);
 
   const startDate = new Date(startLocal);
   const startIso = Number.isNaN(startDate.getTime()) ? "" : startDate.toISOString();
@@ -115,10 +141,21 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="cover_url" value={cover} />
       <input type="hidden" name="starts_at" value={startIso} />
+      {edit && initial ? <input type="hidden" name="id" value={initial.id} /> : null}
+      {lockRules && initial ? (
+        <>
+          {/* a torneo avviato posti e regole non cambiano: i controlli sono disabilitati e i valori viaggiano qui */}
+          <input type="hidden" name="size" value={initial.size} />
+          <input type="hidden" name="deck_mode" value={initial.deck_mode} />
+          <input type="hidden" name="conquest_decks" value={initial.conquest_decks} />
+          <input type="hidden" name="conquest_min_different" value={initial.conquest_min_different} />
+          <input type="hidden" name="best_of" value={initial.best_of} />
+        </>
+      ) : null}
 
       <label className="block text-sm">
         <span className="kicker text-mint">{c.name}</span>
-        <input name="name" required minLength={3} maxLength={60} className={inputCls} autoComplete="off" />
+        <input name="name" required minLength={3} maxLength={60} defaultValue={initial?.name ?? ""} className={inputCls} autoComplete="off" />
       </label>
 
       <fieldset>
@@ -162,11 +199,11 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
           <span className="kicker text-mint">{c.startsAt}</span>
-          <input type="datetime-local" value={startLocal} onChange={(e) => setStartLocal(e.target.value)} required className={inputCls} />
+          <input type="datetime-local" value={startLocal} onChange={(e) => setStartLocal(e.target.value)} required readOnly={lockRules} className={inputCls} />
         </label>
         <label className="block text-sm">
           <span className="kicker text-mint">{c.size}</span>
-          <select name="size" defaultValue={8} className={inputCls}>
+          <select name="size" defaultValue={initial?.size ?? 8} disabled={lockRules} className={inputCls}>
             {TOURNAMENT_SIZES.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -182,7 +219,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
         <div className="mt-2 flex flex-wrap gap-3 text-sm text-pale">
           {(["free", "conquest"] as const).map((m) => (
             <label key={m} className={`btn text-xs ${deckMode === m ? "btn-mint" : "btn-ink"}`}>
-              <input type="radio" name="deck_mode" value={m} checked={deckMode === m} onChange={() => setDeckMode(m)} className="sr-only" />
+              <input type="radio" name="deck_mode" value={m} checked={deckMode === m} onChange={() => setDeckMode(m)} disabled={lockRules} className="sr-only" />
               {x.deckModes[m]}
             </label>
           ))}
@@ -191,11 +228,11 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               <span className="text-pale-muted">{c.conquestDecks}</span>
-              <input type="number" name="conquest_decks" min={CONQUEST_DECKS_RANGE.min} max={CONQUEST_DECKS_RANGE.max} defaultValue={CONQUEST_DECKS_RANGE.default} className={inputCls} />
+              <input type="number" name="conquest_decks" min={CONQUEST_DECKS_RANGE.min} max={CONQUEST_DECKS_RANGE.max} defaultValue={initial?.conquest_decks ?? CONQUEST_DECKS_RANGE.default} disabled={lockRules} className={inputCls} />
             </label>
             <label className="block text-sm">
               <span className="text-pale-muted">{c.conquestMin}</span>
-              <input type="number" name="conquest_min_different" min={0} max={25} defaultValue={9} className={inputCls} />
+              <input type="number" name="conquest_min_different" min={0} max={25} defaultValue={initial?.conquest_min_different ?? 9} disabled={lockRules} className={inputCls} />
             </label>
           </div>
         ) : null}
@@ -204,7 +241,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
           <span className="kicker text-mint">{c.bestOf}</span>
-          <select name="best_of" defaultValue={1} className={inputCls}>
+          <select name="best_of" defaultValue={initial?.best_of ?? 1} disabled={lockRules} className={inputCls}>
             {BEST_OF_OPTIONS.map((b) => (
               <option key={b} value={b}>
                 {x.bestOf.replace("{n}", String(b))}
@@ -214,7 +251,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
         </label>
         <label className="block text-sm">
           <span className="kicker text-mint">{c.lang}</span>
-          <select name="lang" defaultValue={locale} className={inputCls}>
+          <select name="lang" defaultValue={initial?.lang ?? locale} className={inputCls}>
             <option value="en">English</option>
             <option value="it">Italiano</option>
           </select>
@@ -223,23 +260,23 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
 
       <label className="block text-sm">
         <span className="kicker text-mint">{c.description}</span>
-        <textarea name="description" rows={5} maxLength={2000} className={inputCls} />
+        <textarea name="description" rows={5} maxLength={2000} defaultValue={initial?.description ?? ""} className={inputCls} />
         <span className="mt-1 block text-xs text-pale-muted">{c.descriptionHint}</span>
       </label>
       <label className="block text-sm">
         <span className="kicker text-mint">{c.rules}</span>
-        <textarea name="rules" rows={5} maxLength={2000} className={inputCls} />
+        <textarea name="rules" rows={5} maxLength={2000} defaultValue={initial?.rules ?? ""} className={inputCls} />
         <span className="mt-1 block text-xs text-pale-muted">{c.rulesHint}</span>
       </label>
       <label className="block text-sm">
         <span className="kicker text-mint">{c.discord}</span>
-        <input name="discord_url" type="url" placeholder="https://discord.gg/…" maxLength={200} className={inputCls} />
+        <input name="discord_url" type="url" placeholder="https://discord.gg/…" maxLength={200} defaultValue={initial?.discord_url ?? ""} className={inputCls} />
         <span className="mt-1 block text-xs text-pale-muted">{c.discordHint}</span>
       </label>
 
       {canList ? (
         <label className="flex items-start gap-3 text-sm text-pale">
-          <input type="checkbox" name="listed" className="mt-1 h-4 w-4 accent-mint" />
+          <input type="checkbox" name="listed" defaultChecked={initial?.listed ?? false} className="mt-1 h-4 w-4 accent-mint" />
           <span>
             <span className="font-semibold">{c.listed}</span>
             <span className="block text-xs text-pale-muted">{c.listedHint}</span>
@@ -249,7 +286,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
         <p className="rounded-lg border border-sky bg-night-2/70 p-3 text-xs text-pale-muted">{c.listedLocked}</p>
       )}
 
-      <p className="text-xs text-pale-muted">{c.consent}</p>
+      {!edit ? <p className="text-xs text-pale-muted">{c.consent}</p> : null}
       {errorText ? (
         <p role="alert" className="text-sm text-bad">
           {errorText}{" "}
@@ -262,8 +299,9 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref }: Pro
       ) : null}
       <div>
         <button type="submit" disabled={pending || uploading || !startIso} className="btn btn-mint">
-          {pending ? c.submitting : c.submit}
+          {pending ? c.submitting : edit ? x.manage.saveDetails : c.submit}
         </button>
+        {edit && state.ok && !pending ? <span className="ml-3 text-sm text-good">{x.manage.saved}</span> : null}
       </div>
     </form>
   );

@@ -240,6 +240,13 @@ export type Database = {
       join_tournament: { Args: { tid: string }; Returns: undefined };
       leave_tournament: { Args: { tid: string }; Returns: undefined };
       submit_tournament_decks: { Args: { tid: string; codes: string[] }; Returns: undefined };
+      start_tournament: { Args: { tid: string; seeded: string[] }; Returns: undefined };
+      swap_players: { Args: { tid: string; u1: string; u2: string }; Returns: undefined };
+      report_match_result: { Args: { mid: string; a: number; b: number }; Returns: undefined };
+      set_match_result: { Args: { mid: string; a: number; b: number; forfeit?: boolean }; Returns: undefined };
+      drop_player: { Args: { tid: string; uid: string }; Returns: undefined };
+      finish_tournament: { Args: { tid: string; report?: string | null }; Returns: undefined };
+      cancel_tournament: { Args: { tid: string }; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

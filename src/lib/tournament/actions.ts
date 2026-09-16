@@ -34,7 +34,30 @@ function localeOf(fd: FormData): Locale {
 }
 
 /** Le RPC segnalano gli errori con `raise exception 'codice'`: qui il codice diventa una chiave del dizionario. */
-const RPC_ERRORS = ["not_logged_in", "not_found", "not_open", "already_joined", "full", "not_registered", "decks_count", "listing_not_allowed"];
+const RPC_ERRORS = [
+  "not_logged_in",
+  "not_found",
+  "not_open",
+  "already_joined",
+  "full",
+  "not_registered",
+  "decks_count",
+  "listing_not_allowed",
+  "forbidden",
+  "not_running",
+  "too_few_players",
+  "too_many_players",
+  "bad_seeding",
+  "already_started",
+  "not_pending",
+  "bad_swap",
+  "not_ready",
+  "already_confirmed",
+  "bad_score",
+  "next_match_started",
+  "no_opponent_yet",
+  "final_not_played",
+];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
   return RPC_ERRORS.find((k) => m.includes(k)) ?? "db";
@@ -136,6 +159,95 @@ export async function submitDecks(_prev: TournamentActionState, formData: FormDa
   if (error) return { error: rpcError(error) };
   revalidateTournamentPaths(tournament.slug);
   return { ok: true, href: `/${locale}/tournaments/${tournament.slug}` };
+}
+
+/* ---------- fase 2: gestione del torneo (organizzatore o admin; controlli e lock dentro le RPC) ---------- */
+
+type Simple = { error?: string; ok?: boolean };
+type Client = NonNullable<Awaited<ReturnType<typeof currentUser>>["supabase"]>;
+
+async function organizerRpc(slug: string, call: (sb: Client) => PromiseLike<{ error: { message?: string } | null }>): Promise<Simple> {
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { error } = await call(supabase);
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(slug);
+  return { ok: true };
+}
+
+/** Avvio con l'ordine dei seed deciso dall'organizzatore (casuale o manuale): la RPC crea il tabellone con i bye. */
+export async function startTournament(id: string, slug: string, seeded: string[]): Promise<Simple> {
+  if (!UUID.test(id) || !Array.isArray(seeded) || seeded.some((s) => !UUID.test(s))) return { error: "bad_seeding" };
+  return organizerRpc(slug, (sb) => sb.rpc("start_tournament", { tid: id, seeded }));
+}
+
+export async function swapPlayers(id: string, slug: string, u1: string, u2: string): Promise<Simple> {
+  if (!UUID.test(id) || !UUID.test(u1) || !UUID.test(u2)) return { error: "bad_swap" };
+  return organizerRpc(slug, (sb) => sb.rpc("swap_players", { tid: id, u1, u2 }));
+}
+
+export async function setMatchResult(matchId: string, slug: string, a: number, b: number, forfeit: boolean): Promise<Simple> {
+  if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
+  return organizerRpc(slug, (sb) => sb.rpc("set_match_result", { mid: matchId, a, b, forfeit: Boolean(forfeit) }));
+}
+
+/** Referto di un giocatore (fase 3): il secondo referto uguale conferma, diverso contesta. */
+export async function reportMatchResult(matchId: string, slug: string, a: number, b: number): Promise<Simple> {
+  if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
+  return organizerRpc(slug, (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
+}
+
+export async function dropPlayer(id: string, slug: string, uid: string): Promise<Simple> {
+  if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("drop_player", { tid: id, uid }));
+}
+
+export async function finishTournament(id: string, slug: string, report: string): Promise<Simple> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const clean = String(report ?? "")
+    .replace(/\r\n/g, "\n")
+    .trim()
+    .slice(0, 2000);
+  return organizerRpc(slug, (sb) => sb.rpc("finish_tournament", { tid: id, report: clean || null }));
+}
+
+export async function cancelTournament(id: string, slug: string): Promise<Simple> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("cancel_tournament", { tid: id }));
+}
+
+/**
+ * Modifica dei dettagli (stesso modulo della creazione). Finché le iscrizioni sono aperte si cambia tutto
+ * (i posti non possono scendere sotto gli iscritti); dopo, solo nome, copertina, testi, Discord e calendario.
+ */
+export async function updateTournament(_prev: TournamentActionState, formData: FormData): Promise<TournamentActionState> {
+  const ctx = await organizerContext();
+  if ("error" in ctx) return { error: ctx.error };
+  const locale = localeOf(formData);
+  const id = String(formData.get("id") ?? "");
+  if (!UUID.test(id)) return { error: "not_found" };
+  const parsed = parseTournamentForm(formData, { userId: ctx.user.id, profile: ctx.profile, allowPast: true });
+  if (!parsed.ok) return { error: parsed.error };
+  const { data: cur } = await ctx.supabase.from("tournaments").select("slug, status, organizer, players:tournament_players(count)").eq("id", id).maybeSingle();
+  const current = cur as { slug: string; status: string; organizer: string; players: { count: number }[] | null } | null;
+  if (!current) return { error: "not_found" };
+  const registered = Number(current.players?.[0]?.count ?? 0);
+  const { name, cover_url, description, rules, discord_url, listed, lang } = parsed.row;
+  const patch =
+    current.status === "open"
+      ? (() => {
+          if (parsed.row.size < registered) return null;
+          return { ...parsed.row, lang };
+        })()
+      : { name, cover_url, description, rules, discord_url, listed, lang };
+  if (!patch) return { error: "sizeTooSmall" };
+  const { data, error } = await ctx.supabase.from("tournaments").update(patch).eq("id", id).select("slug").maybeSingle();
+  if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : "db" };
+  if (!data) return { error: "forbidden" };
+  const s = (data as { slug: string }).slug;
+  revalidateTournamentPaths(s);
+  return { ok: true, href: `/${locale}/tournaments/${s}/manage` };
 }
 
 /** Cancella un torneo ancora aperto (form nel profilo): le policy RLS bloccano i tornei altrui o già avviati. */
