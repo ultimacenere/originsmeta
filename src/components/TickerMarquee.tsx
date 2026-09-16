@@ -6,6 +6,8 @@ import Link from "next/link";
 export type TickerItem = {
   key: string;
   href: string;
+  /** data ISO (aaaa-mm-gg) per ordinare eventi ufficiali e tornei della community */
+  date: string;
   day: string | number;
   month: string;
   title: string;
@@ -21,7 +23,17 @@ type Props = {
   nextBtnLabel: string;
   /** velocità in pixel al secondo */
   speed?: number;
+  /** JSON con i tornei della community per lingua (/api/calendar): caricato nel browser, così il layout resta statico */
+  extraUrl?: string;
+  locale?: string;
 };
+
+/** Unisce eventi ufficiali e tornei, in ordine di data; il primo è "il prossimo" (evidenziato in giallo). */
+function merge(base: TickerItem[], extra: TickerItem[]): TickerItem[] {
+  const seen = new Set(base.map((i) => i.key));
+  const all = [...base, ...extra.filter((i) => !seen.has(i.key))].sort((a, b) => a.date.localeCompare(b.date));
+  return all.map((it, i) => ({ ...it, isNext: i === 0 }));
+}
 
 const PAUSE_AFTER_INTERACTION = 6000;
 
@@ -32,10 +44,30 @@ const PAUSE_AFTER_INTERACTION = 6000;
  * Tra la fine e l'inizio del ciclo c'è un blocco con il logo del gioco. Con "riduci il movimento" attivo
  * non scorre da sola ma resta navigabile.
  */
-export function TickerMarquee({ items, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 22 }: Props) {
+export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 22, extraUrl, locale }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const pausedUntil = useRef(0);
   const [hover, setHover] = useState(false);
+  const [extra, setExtra] = useState<TickerItem[]>([]);
+  const items = extra.length ? merge(base, extra) : base;
+
+  /* tornei della community: arrivano dopo il primo render, dal JSON in cache (nessuna lettura di Supabase nel layout) */
+  useEffect(() => {
+    if (!extraUrl || !locale) return;
+    let alive = true;
+    fetch(extraUrl)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Record<string, TickerItem[]> | null) => {
+        const list = data?.[locale];
+        if (alive && Array.isArray(list) && list.length) setExtra(list);
+      })
+      .catch(() => {
+        /* la striscia resta con i soli eventi ufficiali */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [extraUrl, locale]);
 
   useEffect(() => {
     const el = ref.current;
