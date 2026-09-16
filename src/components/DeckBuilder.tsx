@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { initials } from "@/lib/cardArt";
 import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, validateConquest, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
@@ -86,8 +86,12 @@ export type BuilderLabels = {
 
 type Persisted = { mode: "single" | "tournament"; active: number; decks: DeckState[]; keyMap: Record<string, string> };
 
-const STORAGE = "originsmeta.deckbuilder.v1";
+const STORAGE_DEFAULT = "originsmeta.deckbuilder.v1";
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+
+/** Regole imposte da un torneo (Tournament Organizer): modalità, numero di mazzi e carte diverse non modificabili, memoria separata. */
+export type BuilderPreset = { mode: "single" | "tournament"; deckCount: number; minDifferent: number; storageKey: string };
+export type SubmitLabels = { submit: string; submitting: string; saved: string; incomplete: string; errors: Record<string, string> };
 
 export function DeckBuilder({
   pool,
@@ -95,6 +99,9 @@ export function DeckBuilder({
   contactEmail,
   shareBase,
   publishHref,
+  preset,
+  onSubmit,
+  submitLabels,
 }: {
   pool: BuilderCard[];
   labels: BuilderLabels;
@@ -102,12 +109,22 @@ export function DeckBuilder({
   shareBase: string;
   /** pagina "Pubblica sul sito": riceve il mazzo nell'hash (#OM1…) */
   publishHref: string;
+  preset?: BuilderPreset;
+  /** consegna dei codici al torneo (Server Action): sostituisce il bottone "Pubblica" */
+  onSubmit?: (codes: string[]) => Promise<{ error?: string; ok?: boolean }>;
+  submitLabels?: SubmitLabels;
 }) {
-  const [mode, setMode] = useState<"single" | "tournament">("single");
+  const count = preset?.deckCount ?? 3;
+  const locked = Boolean(preset);
+  const storageKey = preset?.storageKey ?? STORAGE_DEFAULT;
+  const indices = useMemo(() => Array.from({ length: count }, (_, i) => i), [count]);
+  const [mode, setMode] = useState<"single" | "tournament">(preset?.mode ?? "single");
   const [active, setActive] = useState(0);
-  const [decks, setDecks] = useState<DeckState[]>([emptyDeck(), emptyDeck(), emptyDeck()]);
+  const [decks, setDecks] = useState<DeckState[]>(() => Array.from({ length: count }, () => emptyDeck()));
   const [keyMap, setKeyMap] = useState<Record<string, string>>({});
-  const [minDifferent, setMinDifferent] = useState<number>(RULES.conquestMinDifferent);
+  const [minDifferent, setMinDifferent] = useState<number>(preset?.minDifferent ?? RULES.conquestMinDifferent);
+  const [submitState, setSubmitState] = useState<"idle" | "saved" | string>("idle");
+  const [submitting, startSubmit] = useTransition();
   const [q, setQ] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "unit" | "spell">("all");
   const [costFilter, setCostFilter] = useState<"all" | string>("all");
@@ -155,37 +172,37 @@ export function DeckBuilder({
       if (hash.startsWith(OM_PREFIX)) {
         const d = decodeOmCode(hash);
         if (d) {
-          setDecks([d, emptyDeck(), emptyDeck()]);
+          setDecks([d, ...Array.from({ length: Math.max(0, count - 1) }, () => emptyDeck())]);
           setNotice(labels.restored);
           setHydrated(true);
           return;
         }
       }
-      const raw = localStorage.getItem(STORAGE);
+      const raw = localStorage.getItem(storageKey);
       if (raw) {
         const p = JSON.parse(raw) as Persisted;
-        if (Array.isArray(p.decks) && p.decks.length === 3) setDecks(p.decks.map((d) => ({ ...emptyDeck(), ...d })));
-        if (p.mode === "single" || p.mode === "tournament") setMode(p.mode);
-        if (typeof p.active === "number") setActive(Math.min(2, Math.max(0, p.active)));
+        if (Array.isArray(p.decks) && p.decks.length) setDecks(Array.from({ length: count }, (_, i) => ({ ...emptyDeck(), ...(p.decks[i] ?? {}) })));
+        if (!locked && (p.mode === "single" || p.mode === "tournament")) setMode(p.mode);
+        if (typeof p.active === "number") setActive(Math.min(count - 1, Math.max(0, p.active)));
         if (p.keyMap && typeof p.keyMap === "object") setKeyMap(p.keyMap);
       }
     } catch {
       /* storage non disponibile */
     }
     setHydrated(true);
-  }, [labels.restored]);
+  }, [labels.restored, storageKey, count, locked]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const persist = useCallback(
     (next: Partial<Persisted>) => {
       try {
         const cur: Persisted = { mode, active, decks, keyMap, ...next };
-        localStorage.setItem(STORAGE, JSON.stringify(cur));
+        localStorage.setItem(storageKey, JSON.stringify(cur));
       } catch {
         /* ignore */
       }
     },
-    [mode, active, decks, keyMap],
+    [mode, active, decks, keyMap, storageKey],
   );
 
   const updateDeck = (fn: (d: DeckState) => DeckState) => {
@@ -328,6 +345,8 @@ export function DeckBuilder({
   const curve = manaCurve(deck, lookup);
   const maxCurve = Math.max(1, ...curve);
   const conquestIssues = mode === "tournament" ? validateConquest(decks, minDifferent) : [];
+  /* consegna al torneo: tutti i mazzi richiesti completi e regole Conquest rispettate */
+  const submittable = mode === "tournament" ? decks.slice(0, count).every((d) => isComplete(d)) && conquestIssues.length === 0 : complete;
 
   const sendTeach = () => {
     const lines = Object.entries(teach)
@@ -351,24 +370,28 @@ export function DeckBuilder({
       {/* ---------- mazzo ---------- */}
       <section className="card-night p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex gap-1 rounded-full border border-sky p-0.5">
-            {(["single", "tournament"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => {
-                  setMode(m);
-                  persist({ mode: m });
-                }}
-                className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
-              >
-                {m === "single" ? labels.modeSingle : labels.modeTournament}
-              </button>
-            ))}
-          </div>
+          {locked ? (
+            <span className="rounded-full border border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
+          ) : (
+            <div className="flex gap-1 rounded-full border border-sky p-0.5">
+              {(["single", "tournament"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => {
+                    setMode(m);
+                    persist({ mode: m });
+                  }}
+                  className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
+                >
+                  {m === "single" ? labels.modeSingle : labels.modeTournament}
+                </button>
+              ))}
+            </div>
+          )}
           {mode === "tournament" ? (
             <div className="flex gap-1">
-              {[0, 1, 2].map((i) => (
+              {indices.map((i) => (
                 <button
                   key={i}
                   type="button"
@@ -452,9 +475,32 @@ export function DeckBuilder({
 
         {/* Azioni */}
         <h3 className="mt-5 text-lg font-extrabold text-sky">{labels.actions}</h3>
-        {loggedIn === false ? <p className="mt-1 text-xs text-pale-muted">{labels.lockedHint}</p> : null}
+        {loggedIn === false && !onSubmit ? <p className="mt-1 text-xs text-pale-muted">{labels.lockedHint}</p> : null}
+        {submitLabels && submitState !== "idle" ? (
+          <p role="status" className={`mt-1 text-sm ${submitState === "saved" ? "font-semibold text-good" : "text-bad"}`}>
+            {submitState === "saved" ? submitLabels.saved : submitState}
+          </p>
+        ) : null}
         <div className="mt-2 flex flex-wrap gap-2">
-          {complete ? (
+          {onSubmit && submitLabels ? (
+            /* Tournament Organizer: consegna dei mazzi al torneo al posto di "Pubblica" */
+            <button
+              type="button"
+              className="btn btn-mint text-xs"
+              disabled={submitting || !submittable}
+              title={submittable ? undefined : submitLabels.incomplete}
+              onClick={() =>
+                startSubmit(async () => {
+                  setSubmitState("idle");
+                  const codes = decks.slice(0, mode === "tournament" ? count : 1).map((d) => encodeOmCode(d));
+                  const r = await onSubmit(codes);
+                  setSubmitState(r.error ? (submitLabels.errors[r.error] ?? submitLabels.errors.db ?? r.error) : "saved");
+                })
+              }
+            >
+              {submitting ? submitLabels.submitting : submitLabels.submit}
+            </button>
+          ) : complete ? (
             <a className="btn btn-mint text-xs" href={`${publishHref}#${encodeOmCode(deck)}`} title={loggedIn === false ? labels.publishLocked : labels.publishHint}>
               {loggedIn === false ? <LockIcon /> : null}
               {labels.publish}
@@ -562,6 +608,7 @@ export function DeckBuilder({
                 min={1}
                 max={25}
                 value={minDifferent}
+                readOnly={locked}
                 onChange={(e) => setMinDifferent(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
                 className="w-16 rounded border border-sky bg-night px-2 py-1 font-mono text-pale"
               />
@@ -570,18 +617,20 @@ export function DeckBuilder({
               <thead>
                 <tr className="text-left text-pale-muted">
                   <th className="py-1">{labels.diffTable}</th>
-                  <th className="py-1">A</th>
-                  <th className="py-1">B</th>
-                  <th className="py-1">C</th>
+                  {indices.map((i) => (
+                    <th key={i} className="py-1">
+                      {String.fromCharCode(65 + i)}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {[0, 1, 2].map((i) => (
+                {indices.map((i) => (
                   <tr key={i} className="border-t border-sky">
                     <td className="py-1 font-bold">
                       {labels.deckLabel} {String.fromCharCode(65 + i)}
                     </td>
-                    {[0, 1, 2].map((j) => {
+                    {indices.map((j) => {
                       if (i === j) return <td key={j} className="py-1 font-mono text-pale-muted">—</td>;
                       const diff = differentCards(decks[i], decks[j]);
                       const ok = diff >= minDifferent;

@@ -129,12 +129,10 @@ export async function leaveTournament(id: string, slug: string): Promise<{ error
  * Consegna dei mazzi: codici OriginsMeta (OM1…), uno per mazzo. Ogni mazzo è rivalidato contro il database
  * carte (`checkDeck`); nel Conquest si controllano anche Leggendarie diverse e carte diverse tra i mazzi.
  */
-export async function submitDecks(_prev: TournamentActionState, formData: FormData): Promise<TournamentActionState> {
+async function storeDecks(id: string, raw: string[]): Promise<{ error?: string; slug?: string }> {
   const { supabase, user } = await currentUser();
   if (!supabase) return { error: "disabled" };
   if (!user) return { error: "notLoggedIn" };
-  const locale = localeOf(formData);
-  const id = String(formData.get("tournament_id") ?? "");
   if (!UUID.test(id)) return { error: "not_found" };
   const { data: t } = await supabase.from("tournaments").select("slug, status, deck_mode, conquest_decks, conquest_min_different").eq("id", id).maybeSingle();
   const tournament = t as { slug: string; status: string; deck_mode: "free" | "conquest"; conquest_decks: number; conquest_min_different: number } | null;
@@ -142,7 +140,6 @@ export async function submitDecks(_prev: TournamentActionState, formData: FormDa
   if (tournament.status !== "open") return { error: "not_open" };
 
   const required = decksRequired(tournament);
-  const raw = splitCodes(String(formData.get("codes") ?? ""));
   if (raw.length !== required) return { error: "decks_count" };
   const decks: DeckState[] = [];
   const codes: string[] = [];
@@ -160,7 +157,22 @@ export async function submitDecks(_prev: TournamentActionState, formData: FormDa
   const { error } = await supabase.rpc("submit_tournament_decks", { tid: id, codes });
   if (error) return { error: rpcError(error) };
   revalidateTournamentPaths(tournament.slug);
-  return { ok: true, href: `/${locale}/tournaments/${tournament.slug}` };
+  return { slug: tournament.slug };
+}
+
+/** Consegna dal modulo con i codici incollati (fase 1). */
+export async function submitDecks(_prev: TournamentActionState, formData: FormData): Promise<TournamentActionState> {
+  const locale = localeOf(formData);
+  const r = await storeDecks(String(formData.get("tournament_id") ?? ""), splitCodes(String(formData.get("codes") ?? "")));
+  if (r.error) return { error: r.error };
+  return { ok: true, href: `/${locale}/tournaments/${r.slug}` };
+}
+
+/** Consegna dal deck builder dedicato al torneo (fase 4): riceve i codici già pronti. */
+export async function submitDeckCodes(tournamentId: string, codes: string[]): Promise<Simple> {
+  if (!Array.isArray(codes) || codes.some((c) => typeof c !== "string" || c.length > 4000)) return { error: "decks_invalid" };
+  const r = await storeDecks(tournamentId, codes.map((c) => c.trim()).filter(Boolean));
+  return r.error ? { error: r.error } : { ok: true };
 }
 
 /* ---------- fase 2: gestione del torneo (organizzatore o admin; controlli e lock dentro le RPC) ---------- */

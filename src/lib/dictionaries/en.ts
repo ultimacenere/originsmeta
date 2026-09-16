@@ -554,6 +554,12 @@ export const en = {
       builder: "Open the deck builder",
       notRegistered: "Sign up for the tournament first.",
       back: "Back to the tournament",
+      builderIntro: "Build your decks here with the tournament rules already set (they are saved in this browser, separately from the free builder), then press “Submit decks to the tournament”.",
+      builderSubmit: "Submit decks to the tournament",
+      builderSubmitting: "Submitting…",
+      builderSaved: "Decks submitted. You can change them until the tournament starts.",
+      builderIncomplete: "Complete every required deck (and the Conquest rules) first.",
+      codesAdvanced: "Or paste OriginsMeta codes",
     },
     account: {
       title: "My tournaments",

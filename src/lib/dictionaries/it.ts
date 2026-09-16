@@ -556,6 +556,12 @@ export const it: Dictionary = {
       builder: "Apri il deck builder",
       notRegistered: "Prima iscriviti al torneo.",
       back: "Torna al torneo",
+      builderIntro: "Costruisci qui i mazzi con le regole del torneo già impostate (restano salvati in questo browser, separati dal builder libero), poi premi “Consegna i mazzi al torneo”.",
+      builderSubmit: "Consegna i mazzi al torneo",
+      builderSubmitting: "Invio…",
+      builderSaved: "Mazzi consegnati. Puoi cambiarli finché il torneo non inizia.",
+      builderIncomplete: "Completa prima tutti i mazzi richiesti (e le regole Conquest).",
+      codesAdvanced: "Oppure incolla i codici OriginsMeta",
     },
     account: {
       title: "I miei tornei",
