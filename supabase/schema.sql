@@ -710,3 +710,83 @@ begin
 end $$;
 revoke all on function public.cancel_tournament(uuid) from public, anon;
 grant execute on function public.cancel_tournament(uuid) to authenticated;
+
+-- ---------- 16/09/2026 — Tournament Organizer, fase 3: stanza partita (chat tra le parti, screenshot privati) ----------
+
+create table if not exists public.tournament_messages (
+  id bigserial primary key,
+  match_id uuid not null references public.tournament_matches(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  body text not null check (char_length(body) between 1 and 500),
+  created_at timestamptz not null default now()
+);
+create index if not exists tournament_messages_match_idx on public.tournament_messages (match_id, id);
+alter table public.tournament_messages enable row level security;
+drop policy if exists "match parties read messages" on public.tournament_messages;
+create policy "match parties read messages" on public.tournament_messages for select using (public.is_match_party(match_id));
+grant select on public.tournament_messages to authenticated;
+-- si scrive solo con send_message (limite di 20 messaggi al minuto per utente e partita)
+
+create or replace function public.send_message(mid uuid, body text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  recent int;
+  clean text;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  clean := left(btrim(coalesce(send_message.body, '')), 500);
+  if char_length(clean) < 1 then raise exception 'empty_message'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_match_party(mid) then raise exception 'forbidden'; end if;
+  select * into t from public.tournaments where id = m.tournament_id;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  perform 1 from public.tournament_matches where id = mid for update;
+  select count(*) into recent from public.tournament_messages where match_id = mid and user_id = auth.uid() and created_at > now() - interval '1 minute';
+  if recent >= 20 then raise exception 'too_many_messages'; end if;
+  insert into public.tournament_messages (match_id, user_id, body) values (mid, auth.uid(), clean);
+end $$;
+revoke all on function public.send_message(uuid, text) from public, anon;
+grant execute on function public.send_message(uuid, text) to authenticated;
+
+-- Le policy dello Storage ricevono la prima cartella del percorso come testo: qui si controlla che sia un uuid
+-- prima di chiedere a is_match_party (l'ordine di valutazione degli AND in una policy non è garantito).
+create or replace function public.is_match_party_path(folder text)
+returns boolean language plpgsql stable security definer set search_path = public, pg_temp as $$
+begin
+  if folder is null or folder !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then return false; end if;
+  return public.is_match_party(folder::uuid);
+end $$;
+
+-- Bucket privato: percorso <match_id>/<user_id>/<1|2|3>.(jpg|png|webp) → massimo 3 immagini per giocatore per partita.
+-- Leggono solo le parti (i due giocatori, l'organizzatore, gli admin) tramite URL firmati generati sul server.
+do $$
+begin
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('tournament-screenshots', 'tournament-screenshots', false, 2097152, array['image/jpeg','image/png','image/webp'])
+  on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+  drop policy if exists "match parties read screenshots" on storage.objects;
+  create policy "match parties read screenshots" on storage.objects for select to authenticated using (
+    bucket_id = 'tournament-screenshots' and public.is_match_party_path((storage.foldername(name))[1])
+  );
+  drop policy if exists "players upload screenshots" on storage.objects;
+  create policy "players upload screenshots" on storage.objects for insert to authenticated with check (
+    bucket_id = 'tournament-screenshots'
+    and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}/[123]\.(jpg|png|webp)$'
+    and (storage.foldername(name))[2] = auth.uid()::text
+    and public.is_match_party_path((storage.foldername(name))[1])
+  );
+  drop policy if exists "players replace own screenshots" on storage.objects;
+  create policy "players replace own screenshots" on storage.objects for update to authenticated
+    using (bucket_id = 'tournament-screenshots' and (storage.foldername(name))[2] = auth.uid()::text)
+    with check (bucket_id = 'tournament-screenshots' and (storage.foldername(name))[2] = auth.uid()::text);
+  drop policy if exists "players delete own screenshots" on storage.objects;
+  create policy "players delete own screenshots" on storage.objects for delete to authenticated using (
+    bucket_id = 'tournament-screenshots' and (storage.foldername(name))[2] = auth.uid()::text
+  );
+exception when others then
+  raise notice 'Storage tournament-screenshots non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README.', sqlerrm;
+end $$;

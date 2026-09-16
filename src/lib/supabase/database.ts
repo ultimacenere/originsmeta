@@ -90,6 +90,7 @@ export type TournamentPlayerRow = {
   updated_at: string;
 };
 export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; created_at: string; updated_at: string };
+export type TournamentMessageRow = { id: number; match_id: string; user_id: string; body: string; created_at: string };
 export type TournamentMatchRow = {
   id: string;
   tournament_id: string;
@@ -228,6 +229,27 @@ export type Database = {
           },
         ];
       };
+      tournament_messages: {
+        Row: TournamentMessageRow;
+        Insert: { match_id: string; user_id: string; body: string };
+        Update: Partial<TournamentMessageRow>;
+        Relationships: [
+          {
+            foreignKeyName: "tournament_messages_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "tournament_matches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tournament_messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       deck_ratings: {
@@ -247,6 +269,7 @@ export type Database = {
       drop_player: { Args: { tid: string; uid: string }; Returns: undefined };
       finish_tournament: { Args: { tid: string; report?: string | null }; Returns: undefined };
       cancel_tournament: { Args: { tid: string }; Returns: undefined };
+      send_message: { Args: { mid: string; body: string }; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

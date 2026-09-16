@@ -22,6 +22,9 @@ type Props = {
   deckHref: string;
   /** pagina di gestione (dalla fase 2): mostrata solo all'organizzatore */
   manageHref?: string;
+  /** partite del tabellone (fase 3): chi gioca trova il link alla propria stanza partita */
+  matches?: { id: string; round: number; a: string | null; b: string | null }[];
+  matchHrefBase?: string;
   labels: Dictionary["tournaments"];
 };
 
@@ -56,6 +59,8 @@ export function JoinTournament(p: Props) {
   const submitted = userId ? p.submittedIds.includes(userId) : false;
   const isOrganizer = userId !== null && userId === p.organizerId;
   const open = p.status === "open";
+  // la partita "attuale" di chi guarda: quella del turno più alto in cui compare
+  const myMatch = userId && p.matches?.length ? [...p.matches].filter((m) => m.a === userId || m.b === userId).sort((m1, m2) => m2.round - m1.round)[0] : undefined;
 
   const run = (fn: () => Promise<{ error?: string; ok?: boolean }>, next: boolean) =>
     start(async () => {
@@ -92,6 +97,11 @@ export function JoinTournament(p: Props) {
           <button type="button" disabled={pending} onClick={() => run(() => leaveTournament(p.id, p.slug), false)} className="btn btn-ghost text-xs">
             {pending ? x.working : x.leave}
           </button>
+        ) : null}
+        {myMatch && p.matchHrefBase && (p.status === "running" || p.status === "finished") ? (
+          <Link href={`${p.matchHrefBase}${myMatch.id}`} className="btn btn-mint text-xs">
+            {x.myMatch}
+          </Link>
         ) : null}
         {isOrganizer && p.manageHref ? (
           <Link href={p.manageHref} className="btn btn-ink text-xs">

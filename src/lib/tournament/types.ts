@@ -1,5 +1,5 @@
 import type { Profile } from "@/lib/community/types";
-import type { TournamentDecksRow, TournamentMatchRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
+import type { TournamentDecksRow, TournamentMatchRow, TournamentMessageRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
 
 /**
  * Tournament Organizer (16/09/2026, richiesta del coach e di Davdas): tipi e costanti condivisi tra
@@ -30,6 +30,11 @@ export type Tournament = TournamentRow & { profile?: OrganizerProfile | null; pl
 export type TournamentPlayer = TournamentPlayerRow & { profile?: Profile | null };
 export type TournamentDecks = TournamentDecksRow;
 export type TournamentMatch = TournamentMatchRow;
+export type TournamentMessage = TournamentMessageRow;
+
+/** Bucket Storage privato degli screenshot dei referti: percorso `<match_id>/<user_id>/<1|2|3>.webp`, letto solo dalle parti. */
+export const SCREENSHOT_BUCKET = "tournament-screenshots";
+export const SCREENSHOTS_PER_PLAYER = 3;
 
 /** Copertine del media kit ufficiale (public/media): tutti possono sceglierle. */
 export const COVER_PRESETS = [

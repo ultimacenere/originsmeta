@@ -157,6 +157,8 @@ export default async function TournamentPage({ params }: { params: Params }) {
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               deckHref={`${path}/deck`}
               manageHref={`${path}/manage`}
+              matches={matches.map((m) => ({ id: m.id, round: m.round, a: m.player_a, b: m.player_b }))}
+              matchHrefBase={`${path}/match/`}
               labels={x}
             />
           </div>

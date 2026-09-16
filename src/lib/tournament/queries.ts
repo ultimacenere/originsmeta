@@ -1,5 +1,5 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { LISTING_BADGES, type Tournament, type TournamentMatch, type TournamentPlayer } from "./types";
+import { LISTING_BADGES, type Tournament, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
 
 /**
  * Letture dei tornei. Con il client anonimo (`supabasePublic`, pagine ISR) si vede quello che le policy
@@ -70,6 +70,21 @@ export async function listMatches(tid: string, client: Db | null = supabasePubli
   const { data, error } = await client.from("tournament_matches").select(MATCH_SELECT).eq("tournament_id", tid).order("round", { ascending: true }).order("position", { ascending: true });
   if (error) console.error("[tournaments] listMatches:", error.message);
   return ((data ?? []) as unknown as TournamentMatch[]) ?? [];
+}
+
+/** Una partita (client con la sessione: la stanza partita è riservata alle parti). */
+export async function getMatch(matchId: string, client: Db | null): Promise<TournamentMatch | null> {
+  if (!client) return null;
+  const { data } = await client.from("tournament_matches").select(MATCH_SELECT).eq("id", matchId).maybeSingle();
+  return (data as unknown as TournamentMatch | null) ?? null;
+}
+
+/** Messaggi della chat di una partita, dal più vecchio; la policy li mostra solo alle parti. */
+export async function listMessages(matchId: string, client: Db | null, afterId = 0, limit = 200): Promise<TournamentMessage[]> {
+  if (!client) return [];
+  const { data, error } = await client.from("tournament_messages").select("id, match_id, user_id, body, created_at").eq("match_id", matchId).gt("id", afterId).order("id", { ascending: true }).limit(limit);
+  if (error) console.error("[tournaments] listMessages:", error.message);
+  return ((data ?? []) as unknown as TournamentMessage[]) ?? [];
 }
 
 /** Codici consegnati dall'utente per un torneo (client con la sua sessione), oppure null. */

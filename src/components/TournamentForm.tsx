@@ -8,6 +8,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, type DeckMode } from "@/lib/tournament/types";
 import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
 import { useMounted } from "@/lib/useMounted";
+import { shrinkImage } from "@/lib/shrinkImage";
 
 /** Valori attuali per la modifica (pagina di gestione). */
 export type TournamentInitial = {
@@ -59,26 +60,6 @@ function defaultStart(): string {
   return toLocalInput(d);
 }
 
-/** Riduce l'immagine (lato massimo 1600 px) e la converte in WebP: le copertine restano leggere nello Storage. */
-async function shrink(file: File, max = 1600, quality = 0.85): Promise<Blob> {
-  try {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
-    const w = Math.max(1, Math.round(bitmap.width * scale));
-    const h = Math.max(1, Math.round(bitmap.height * scale));
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return file;
-    ctx.drawImage(bitmap, 0, 0, w, h);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", quality));
-    return blob ?? file;
-  } catch {
-    return file;
-  }
-}
-
 /**
  * Modulo "Organizza un torneo". L'ora di inizio è scelta nell'ora locale e inviata in ISO (campo nascosto);
  * la copertina è un'immagine del media kit oppure, per chi ha il tag giusto, un file caricato dal browser
@@ -120,7 +101,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     try {
       const sb = supabaseBrowser();
       if (!sb) throw new Error("disabled");
-      const blob = await shrink(file);
+      const blob = await shrinkImage(file);
       if (blob.size > MAX_UPLOAD) throw new Error("too_big");
       const path = `${userId}/${crypto.randomUUID()}.webp`;
       const { error } = await sb.storage.from(COVER_BUCKET).upload(path, blob, { contentType: "image/webp", upsert: false });

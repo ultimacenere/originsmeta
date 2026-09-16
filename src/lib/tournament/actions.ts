@@ -57,6 +57,8 @@ const RPC_ERRORS = [
   "next_match_started",
   "no_opponent_yet",
   "final_not_played",
+  "empty_message",
+  "too_many_messages",
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
@@ -196,6 +198,22 @@ export async function setMatchResult(matchId: string, slug: string, a: number, b
 export async function reportMatchResult(matchId: string, slug: string, a: number, b: number): Promise<Simple> {
   if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
   return organizerRpc(slug, (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
+}
+
+/** Messaggio nella chat della partita (fase 3): solo le parti, 500 caratteri, 20 al minuto (controlli nella RPC). Non rigenera pagine. */
+export async function sendMessage(matchId: string, body: string): Promise<Simple> {
+  if (!UUID.test(matchId)) return { error: "not_found" };
+  const clean = String(body ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 500);
+  if (!clean) return { error: "empty_message" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { error } = await supabase.rpc("send_message", { mid: matchId, body: clean });
+  if (error) return { error: rpcError(error) };
+  return { ok: true };
 }
 
 export async function dropPlayer(id: string, slug: string, uid: string): Promise<Simple> {
