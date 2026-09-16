@@ -43,14 +43,14 @@ const en: Record<GuideSlug, Guide> = {
       communityDecks: [{ slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" }],
       cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
     },
-    title: "3 Pigs Mid Range: how to play Davdas's Three Not So Little Pigs deck",
-    excerpt: "Game plan, mulligan and round-by-round play for 3 Pigs Mid Range, the midrange deck led by Three Not So Little Pigs that Davdas published for ladder and competitive play.",
+    title: "3 Pigs Mid Range: how to play the Three Not So Little Pigs midrange deck",
+    excerpt: "Game plan, mulligan and round-by-round play for 3 Pigs Mid Range, the midrange deck led by Three Not So Little Pigs, published on OriginsMeta for ladder and competitive play.",
     readTime: 6,
     updated: "2026-09-16",
     image: "/media/hero-1200.webp",
     faq: [
       { q: "Which Legendary leads 3 Pigs Mid Range?", a: "Three Not So Little Pigs, a 7-mana 3/3 with Trample: its On Reveal summons a Not So Little Pig with Trample at each other location, so one card puts a body in every lane." },
-      { q: "What do you keep in the mulligan?", a: "Davdas always looks for Bagheera, Ali Baba, Big Bad Wolf and Rumple. Against decks with dangerous 4-Health cards such as Van Helsing or Glinda he also keeps Axe Throw." },
+      { q: "What do you keep in the mulligan?", a: "Always look for Bagheera, Ali Baba, Big Bad Wolf and Rumple. Against decks with dangerous 4-Health cards such as Van Helsing or Glinda, keep Axe Throw too." },
       { q: "How does the deck close a game?", a: "With En Passant, which moves an ally and hits the character across from it; with Ellen Trechend, whose Trample pushes damage through into the barrier; and with the Lightning Strikes that Impundulu adds to your hand every time it attacks." },
       { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press Open in the deck builder, or copy the OM code and import it. The builder checks the 1 Legendary + 12 cards × 2 rule." },
     ],
@@ -79,21 +79,21 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [Impundulu](/en/cards/impundulu) | 5 | 3/6: every time it attacks it adds a Lightning Strike to your hand |
 | [Ellen Trechend](/en/cards/ellen-trechend) | 8 | Trample; On Reveal it grows for every enemy card in its location |
 
-Nine units and three spells. Everything except Impundulu, the Pigs and Ellen Trechend costs three mana or less, which is why Davdas calls the curve "very solid": there is always something to play in rounds one to four.
+Nine units and three spells. Everything except Impundulu, the Pigs and Ellen Trechend costs three mana or less, which is why the author calls the curve "very solid": there is always something to play in rounds one to four.
 
 ## How the deck wins
 
-Davdas's plan, from the deck page: take control of the board in the first rounds, get ahead in at least one location, then close with three cards.
+The plan, from the deck page: take control of the board in the first rounds, get ahead in at least one location, then close with three cards.
 
 - **En Passant** moves an ally and deals damage equal to its Power to the character across from it: it clears the way for one of your big bodies, or turns a grown Big Bad Wolf into removal.
-- **Ellen Trechend** has Trample and grows on reveal for every enemy card in her location: the more the opponent has committed to a lane, the harder she hits, and Trample sends the excess damage through the blocker into the barrier. Davdas calls her "a closer on the edge of illegal".
+- **Ellen Trechend** has Trample and grows on reveal for every enemy card in her location: the more the opponent has committed to a lane, the harder she hits, and Trample sends the excess damage through the blocker into the barrier. The deck page calls her "a closer on the edge of illegal".
 - **Impundulu**, if you have played the early rounds well, rewards you with a Lightning Strike every time it attacks. Each Strike must be used before the next combat or it is discarded, so budget two mana each round for it.
 
 The Legendary is the bridge between the two phases. At seven mana Three Not So Little Pigs puts a pig with Trample in each of the other two locations with a single card, on top of its own 3/3 Trample body. Played on curve it refills the whole board the round before Ellen Trechend comes online.
 
 ## Mulligan
 
-Davdas always looks for **Bagheera, Ali Baba, Big Bad Wolf and Rumple**: they give a good start on curve and support the pigs already in play. Against decks with dangerous 4-Health cards, such as Van Helsing or Glinda, he also keeps **Axe Throw**, which deals exactly four damage to any character. Ellen Trechend and Impundulu are not what you want in the opening hand: the deck finds them later with Mind Palace and Ali Baba.
+Always look for **Bagheera, Ali Baba, Big Bad Wolf and Rumple**: they give a good start on curve and support the pigs already in play. Against decks with dangerous 4-Health cards, such as Van Helsing or Glinda, keep **Axe Throw** too: it deals exactly four damage to any character. Ellen Trechend and Impundulu are not what you want in the opening hand: the deck finds them later with Mind Palace and Ali Baba.
 
 ## Round by round
 
@@ -103,11 +103,11 @@ Davdas always looks for **Bagheera, Ali Baba, Big Bad Wolf and Rumple**: they gi
 
 ## Keeping the curve
 
-Davdas is clear about the deck's main weakness: "falling off curve lowers its potential a lot". The list has no board wipe and nothing that heals your barriers, so every round you skip is a round the opponent gets for free. Two habits help. Do not hold Rumple for a "perfect" turn: the extra mana is worth more early. And do not keep Lightning Strikes in hand hoping for a better target: a Strike used on a barrier is still three damage that you would otherwise lose.
+The deck page is clear about the main weakness: "falling off curve lowers its potential a lot". The list has no board wipe and nothing that heals your barriers, so every round you skip is a round the opponent gets for free. Two habits help. Do not hold Rumple for a "perfect" turn: the extra mana is worth more early. And do not keep Lightning Strikes in hand hoping for a better target: a Strike used on a barrier is still three damage that you would otherwise lose.
 
 ## Where to go next
 
-- The [deck page](/en/decks/community/3-pigs-mid-range-6311) has the list with mana curve, saga and keyword charts, Davdas's notes and the OM code to open it in the [deck builder](/en/deck-builder).
+- The [deck page](/en/decks/community/3-pigs-mid-range-6311) has the list with mana curve, saga and keyword charts, the author's notes and the OM code to open it in the [deck builder](/en/deck-builder).
 - [Matchups, key interactions and Conquest](/en/guides/three-pigs-midrange-matchups) is the second part of this guide.
 - Card stats are those of playtest patch 0.6.3. Several cards in this list were touched in 0.6.2 and 0.6.3: check the balance history on each card page.
 `,
@@ -123,7 +123,7 @@ Davdas is clear about the deck's main weakness: "falling off curve lowers its po
       cards: ["three-not-so-little-pigs", "rumple", "wicked-witch-of-the-west", "flying-monkey", "en-passant", "big-bad-wolf", "impundulu", "lightning-strike", "piglet", "ellen-trechend", "axe-throw", "frog-prince", "van-helsing", "boitata", "mulan", "robin-hood", "king-arthur"],
     },
     title: "3 Pigs Mid Range: matchups, key interactions and Conquest",
-    excerpt: "The second part of the guide to Davdas's Three Not So Little Pigs deck: the interactions that win games, how to play the main matchups, the mistakes to avoid and how to pair it in Conquest.",
+    excerpt: "The second part of the guide to the Three Not So Little Pigs midrange deck: the interactions that win games, how to play the main matchups, the mistakes to avoid and how to pair it in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
     image: "/media/capsule-header.webp",
@@ -135,7 +135,7 @@ Davdas is clear about the deck's main weakness: "falling off curve lowers its po
     body: `
 ## Before you start
 
-This is the second part of the guide to **3 Pigs Mid Range**, the midrange deck led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs) that Davdas, OriginsMeta staff, published on 15 September 2026. The [first part](/en/guides/three-pigs-midrange-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the format the deck is tagged for. Davdas's own notes are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3.
+This is the second part of the guide to **3 Pigs Mid Range**, the midrange deck led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs) that Davdas, OriginsMeta staff, published on 15 September 2026. The [first part](/en/guides/three-pigs-midrange-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the format the deck is tagged for. The author's notes are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3.
 
 ## Five interactions to know
 
@@ -143,13 +143,13 @@ This is the second part of the guide to **3 Pigs Mid Range**, the midrange deck 
 2. **The Wicked Witch and her Flying Monkey.** The Witch is a 1/5: she rarely dies to a single hit, and each time she survives damage you get a [Flying Monkey](/en/cards/flying-monkey) in hand and she moves one space to the left. The Monkey's On Reveal moves any other character, yours or theirs, to a random space in its location: use it to drag an enemy blocker out of the lane you are trampling through, or to bring a Wolf where the fight is.
 3. **En Passant on a grown body.** The spell moves an ally and deals damage equal to its Power to the character across from it. On a Big Bad Wolf that has fought twice it is five damage plus a repositioning; on Ellen Trechend it is removal that also moves her Trample to where the barrier is weakest. It is also the answer to a blocker parked in front of one of your pigs.
 4. **Impundulu's Lightning Strikes.** Every attack adds a [Lightning Strike](/en/cards/lightning-strike), two mana for three damage to any character or barrier, which must be used before the next combat. That is a repeatable, targeted three damage: enough for most early drops in the current card pool, or a direct hit on a barrier when the board is already yours.
-5. **Piglet on the pigs.** Piglet's On Reveal buffs the other allies in its location. The round after the Pigs, a Piglet next to a Not So Little Pig makes a Trample body that hits harder: Davdas notes that the mulligan cards "support the pigs already on the board".
+5. **Piglet on the pigs.** Piglet's On Reveal buffs the other allies in its location. The round after the Pigs, a Piglet next to a Not So Little Pig makes a Trample body that hits harder: the deck page notes that the mulligan cards "support the pigs already on the board".
 
 ## Matchups
 
 Ranked data is not public yet, so what follows is a reading of the lists, not a win rate.
 
-**Against Van Helsing control, for example Davdas's own [Healing Healsing](/en/decks/community/healing-healsing-9411).** This is the matchup Davdas has in mind when he says to keep Axe Throw: Van Helsing is a 3/4, and four damage removes him before his Tools start coming every combat. Push damage early, because the control deck wants to reach eight mana for Forbidden Knowledge, which destroys every character on the board, yours and theirs. Do not put the Pigs and Ellen Trechend down in the same window: hold one finisher for the round after the wipe. While Boitata is in play, spell damage to their barriers is dealt to yours instead, so aim Lightning Strikes at characters until it is gone.
+**Against Van Helsing control, for example [Healing Healsing](/en/decks/community/healing-healsing-9411), by the same author.** This is the matchup the mulligan note has in mind when it says to keep Axe Throw: Van Helsing is a 3/4, and four damage removes him before his Tools start coming every combat. Push damage early, because the control deck wants to reach eight mana for Forbidden Knowledge, which destroys every character on the board, yours and theirs. Do not put the Pigs and Ellen Trechend down in the same window: hold one finisher for the round after the wipe. While Boitata is in play, spell damage to their barriers is dealt to yours instead, so aim Lightning Strikes at characters until it is gone.
 
 **Against go-wide boards (Swarm-style lists, Mulan).** The wider they go, the bigger Ellen Trechend gets: she grows for every enemy card in her location. Keep the Witch as the wall on the lane they are flooding, play Frog Prince as a 2/5 rather than a 5/2, and save Axe Throw for the card that buffs the others. [Mulan](/en/cards/mulan) repeats the On Reveal abilities of her allies, so she is the priority target.
 
@@ -160,11 +160,11 @@ Ranked data is not public yet, so what follows is a reading of the lists, not a 
 - **Playing the Pigs as a rescue.** The Legendary summons pigs on random spaces of the other locations: it is at its best when those lanes already have a Wolf or a Witch to fight alongside, not when everything is already lost.
 - **Holding Rumple.** It is a 2/2 body with a bonus, and the bonus is worth the most in rounds two to six.
 - **Wasting Lightning Strikes.** They are discarded before the next combat: a Strike into a barrier is better than a Strike lost.
-- **Forgetting the weaknesses.** Davdas lists them himself: no mass removal and no healing for your barriers. Do not race a deck that heals unless you are already ahead on the board.
+- **Forgetting the weaknesses.** The deck page lists them: no mass removal and no healing for your barriers. Do not race a deck that heals unless you are already ahead on the board.
 
 ## Conquest and the "competitive" tag
 
-Davdas tagged the deck for both ladder and competitive play. In the Conquest format used at Big Bob's Playtest Battle, and expected for the Steam Next Fest tournament, you register several decks with different Legendaries and at least nine different cards between any two of them. 3 Pigs Mid Range pairs naturally with Davdas's other list, [Healing Healsing](/en/decks/community/healing-healsing-9411): different Legendaries, and the only card they share is Ali Baba, so they are eleven cards apart. The [deck builder](/en/deck-builder) counts the difference for you in tournament mode.
+The deck is tagged for both ladder and competitive play. In the Conquest format used at Big Bob's Playtest Battle, and expected for the Steam Next Fest tournament, you register several decks with different Legendaries and at least nine different cards between any two of them. 3 Pigs Mid Range pairs naturally with the same author's other list, [Healing Healsing](/en/decks/community/healing-healsing-9411): different Legendaries, and the only card they share is Ali Baba, so they are eleven cards apart. The [deck builder](/en/deck-builder) counts the difference for you in tournament mode.
 `,
   },
   "healing-healsing-guide": {
@@ -174,14 +174,14 @@ Davdas tagged the deck for both ladder and competitive play. In the Conquest for
       communityDecks: [{ slug: "healing-healsing-9411", name: "Healing Healsing" }],
       cards: ["van-helsing", "van-helsings-tools", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "spellbook", "phuong-hoang", "jekyll", "searing-light", "boitata", "tin-woodman", "forbidden-knowledge"],
     },
-    title: "Healing Healsing: how to play Davdas's Van Helsing control deck",
+    title: "Healing Healsing: how to play the Van Helsing control deck",
     excerpt: "Game plan, mulligan and round-by-round play for Healing Healsing, the first deck published on OriginsMeta: a Van Helsing control list that heals, draws and resets the board with Forbidden Knowledge.",
     readTime: 6,
     updated: "2026-09-16",
     image: "/media/capsule-library.webp",
     faq: [
       { q: "Which Legendary leads Healing Healsing?", a: "Van Helsing, a 4-mana 3/4: before every combat he adds Van Helsing's Tools to your hand if you do not have it, a Choose One card that plays Holy Water, Silver Bullet, Garlic or Wooden Stake." },
-      { q: "What do you keep in the mulligan?", a: "Davdas keeps Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook; against aggro he also keeps Jill. Shahrazad and Phuong Hoang are not what you want in the first rounds." },
+      { q: "What do you keep in the mulligan?", a: "Keep Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook; against aggro keep Jill too. Shahrazad and Phuong Hoang are not what you want in the first rounds." },
       { q: "When do you cast Forbidden Knowledge?", a: "At eight mana, so from round eight or nine, ideally in a round where the opponent reveals first: they commit their cards, then the spell destroys every character on the board." },
       { q: "How does the deck win if it destroys its own board too?", a: "On card advantage: Spellbook, Scarecrow and Ali Baba keep the hand full, Baby Bear leaves Papa Bear behind when it dies, Jekyll turns into Hyde in hand, and the heals make Phuong Hoang grow until the opponent runs out of answers." },
     ],
@@ -214,7 +214,7 @@ Nine units and three spells; almost everything costs between two and four, with 
 
 ## How the deck wins
 
-Davdas's plan from the deck page, in four steps:
+The plan from the deck page, in four steps:
 
 1. **Control the first rounds** while taking value quickly with Spellbook and Ali Baba.
 2. **Reach round eight or nine** and cast Forbidden Knowledge to take the initiative. Try to cast it in a round where the opponent is the first to reveal, so their cards are on the board when the spell resolves.
@@ -232,11 +232,11 @@ The Legendary himself is a 3/4 for four mana. What matters is the card he adds b
 - [Garlic](/en/cards/garlic): Stun any character.
 - [Wooden Stake](/en/cards/wooden-stake): destroy any damaged character.
 
-"If you do not have it" is the clause to remember: use the Tools every round, or Van Helsing stops adding them. Wooden Stake is the single-target removal Davdas says the deck otherwise lacks: damage a character with Baby Bear's ping, Searing Light or the Silver Bullet, then stake it.
+"If you do not have it" is the clause to remember: use the Tools every round, or Van Helsing stops adding them. Wooden Stake is the single-target removal the deck page says the list otherwise lacks: damage a character with Baby Bear's ping, Searing Light or the Silver Bullet, then stake it.
 
 ## Mulligan
 
-Davdas keeps **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggressive decks he also keeps **Jill**, who heals 2 from your barrier every time she takes damage. Shahrazad and Phuong Hoang are not useful in the first rounds: they are the payoff, not the setup, so send them back.
+Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggressive decks keep **Jill** too: she heals 2 from your barrier every time she takes damage. Shahrazad and Phuong Hoang are not useful in the first rounds: they are the payoff, not the setup, so send them back.
 
 ## Round by round
 
@@ -247,7 +247,7 @@ Davdas keeps **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Agai
 
 ## Where to go next
 
-- The [deck page](/en/decks/community/healing-healsing-9411) has the list with mana curve and keyword charts, Davdas's notes and the OM code to open it in the [deck builder](/en/deck-builder).
+- The [deck page](/en/decks/community/healing-healsing-9411) has the list with mana curve and keyword charts, the author's notes and the OM code to open it in the [deck builder](/en/deck-builder).
 - [Matchups, key interactions and mistakes to avoid](/en/guides/healing-healsing-matchups) is the second part of this guide.
 - Card stats are those of playtest patch 0.6.3. Scarecrow, Van Helsing's Tools and other cards in this list were changed in 0.6.2 and 0.6.3: see the balance history on each card page.
 `,
@@ -263,7 +263,7 @@ Davdas keeps **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Agai
       cards: ["van-helsing", "shahrazad", "spellbook", "phuong-hoang", "jekyll", "hyde", "boitata", "baby-bear", "papa-bear", "mama-bear", "jill", "tin-woodman", "forbidden-knowledge", "holy-water", "ellen-trechend", "axe-throw", "mulan", "queen-of-hearts"],
     },
     title: "Healing Healsing: matchups, key interactions and mistakes to avoid",
-    excerpt: "The second part of the guide to Davdas's Van Helsing control deck: the healing and card-draw interactions that win games, how to play the main matchups, the mistakes that lose to aggro and how the list fits in Conquest.",
+    excerpt: "The second part of the guide to the Van Helsing control deck: the healing and card-draw interactions that win games, how to play the main matchups, the mistakes that lose to aggro and how the list fits in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
     image: "/media/ls-real-collecting.webp",
@@ -275,7 +275,7 @@ Davdas keeps **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Agai
     body: `
 ## Before you start
 
-This is the second part of the guide to **Healing Healsing**, the Van Helsing control deck that Davdas, OriginsMeta staff, published on 15 September 2026 as the first community deck of the site. The [first part](/en/guides/healing-healsing-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the mistakes that cost the most. Davdas's notes are on the [deck page](/en/decks/community/healing-healsing-9411); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3.
+This is the second part of the guide to **Healing Healsing**, the Van Helsing control deck that Davdas, OriginsMeta staff, published on 15 September 2026 as the first community deck of the site. The [first part](/en/guides/healing-healsing-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the mistakes that cost the most. The author's notes are on the [deck page](/en/decks/community/healing-healsing-9411); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3.
 
 ## Five interactions to know
 
@@ -289,22 +289,22 @@ This is the second part of the guide to **Healing Healsing**, the Van Helsing co
 
 Ranked data is not public yet, so what follows is a reading of the lists, not a win rate.
 
-**Against 3 Pigs Mid Range (Davdas's [other deck](/en/decks/community/3-pigs-mid-range-6311)) and other midrange lists.** Their finisher, Ellen Trechend, grows for every enemy card in her location: spread your units rather than stacking one lane. Impundulu's Lightning Strikes are exactly what Boitata is for. Axe Throw deals four damage, which is exactly Van Helsing's Health: expect him to be answered, and do not rely on him alone for removal. The Pigs come down at seven mana and fill every lane with Trample: that is the round to hold Forbidden Knowledge for, one round later.
+**Against 3 Pigs Mid Range (the same author's [other deck](/en/decks/community/3-pigs-mid-range-6311)) and other midrange lists.** Their finisher, Ellen Trechend, grows for every enemy card in her location: spread your units rather than stacking one lane. Impundulu's Lightning Strikes are exactly what Boitata is for. Axe Throw deals four damage, which is exactly Van Helsing's Health: expect him to be answered, and do not rely on him alone for removal. The Pigs come down at seven mana and fill every lane with Trample: that is the round to hold Forbidden Knowledge for, one round later.
 
-**Against aggro and go-wide decks.** This is the matchup Davdas has in mind when he says to keep Jill: every time she takes damage she heals 2 from your barrier. Baby Bear punishes each attacker that gets through, Jekyll heals what matters, Tin Woodman's eight points reset a barrier. Do not chase their units with the Tools one by one; stabilise the barrier, reach eight mana and let Forbidden Knowledge take the whole board.
+**Against aggro and go-wide decks.** This is the matchup the mulligan note has in mind when it says to keep Jill: every time she takes damage she heals 2 from your barrier. Baby Bear punishes each attacker that gets through, Jekyll heals what matters, Tin Woodman's eight points reset a barrier. Do not chase their units with the Tools one by one; stabilise the barrier, reach eight mana and let Forbidden Knowledge take the whole board.
 
 **Against other control decks.** Card advantage decides, and this deck has more draw than most: Spellbook is the card to protect and to play first. Keep Hyde for a lane that has been left empty, and save Holy Water for a Legendary whose ability carries the opposing deck, such as [Mulan](/en/cards/mulan), who repeats her allies' On Reveal abilities, or the [Queen of Hearts](/en/cards/queen-of-hearts), who repeats their On Death abilities.
 
 ## Mistakes to avoid
 
-- **Casting Forbidden Knowledge too early.** Davdas's advice is to wait for a round where the opponent reveals first, so their cards are on the board when it resolves. A wipe into an empty lane is a wasted eight mana.
+- **Casting Forbidden Knowledge too early.** The advice on the deck page is to wait for a round where the opponent reveals first, so their cards are on the board when it resolves. A wipe into an empty lane is a wasted eight mana.
 - **Letting the Tools sit in hand.** Van Helsing only adds them if you do not have them. Use them every combat, even on a small target.
-- **Phuong Hoang before the heals.** A 2/3 for four mana with nothing to grow from is a weak card; the same card after Shahrazad and Spellbook are set up is the win condition. Davdas puts her, with Shahrazad, among the cards not to keep in the opening hand.
-- **Treating draw as a luxury.** Davdas warns that "not finding Forbidden Knowledge when you need it can be very painful": Scarecrow, Ali Baba and Spellbook are how you find it, so play them early even when the board does not require them.
+- **Phuong Hoang before the heals.** A 2/3 for four mana with nothing to grow from is a weak card; the same card after Shahrazad and Spellbook are set up is the win condition. The mulligan note puts her, with Shahrazad, among the cards not to keep in the opening hand.
+- **Treating draw as a luxury.** The deck page warns that "not finding Forbidden Knowledge when you need it can be very painful": Scarecrow, Ali Baba and Spellbook are how you find it, so play them early even when the board does not require them.
 
 ## Conquest
 
-Davdas tagged the deck for the ladder only, but it fits a Conquest line-up: a different Legendary from 3 Pigs Mid Range and a single card in common, Ali Baba, so the two lists are eleven cards apart, more than the nine required at Big Bob's Playtest Battle. The [deck builder](/en/deck-builder) counts the difference in tournament mode.
+The deck is tagged for the ladder only, but it fits a Conquest line-up: a different Legendary from 3 Pigs Mid Range and a single card in common, Ali Baba, so the two lists are eleven cards apart, more than the nine required at Big Bob's Playtest Battle. The [deck builder](/en/deck-builder) counts the difference in tournament mode.
 `,
   },
   "origins-tcg-explained": {
@@ -647,14 +647,14 @@ const it: Record<GuideSlug, Guide> = {
       communityDecks: [{ slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" }],
       cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
     },
-    title: "3 Pigs Mid Range: come si gioca il mazzo dei Three Not So Little Pigs di Davdas",
-    excerpt: "Piano di gioco, mulligan e round per round di 3 Pigs Mid Range, il mazzo midrange guidato dai Three Not So Little Pigs che Davdas ha pubblicato per la ladder e il gioco competitivo.",
+    title: "3 Pigs Mid Range: come si gioca il mazzo midrange dei Three Not So Little Pigs",
+    excerpt: "Piano di gioco, mulligan e round per round di 3 Pigs Mid Range, il mazzo midrange guidato dai Three Not So Little Pigs, pubblicato su OriginsMeta per la ladder e il gioco competitivo.",
     readTime: 6,
     updated: "2026-09-16",
     image: "/media/hero-1200.webp",
     faq: [
       { q: "Quale Leggendaria guida 3 Pigs Mid Range?", a: "Three Not So Little Pigs, un 3/3 da 7 mana con Trample: la sua On Reveal evoca un Not So Little Pig con Trample in ogni altro luogo, quindi una sola carta mette un corpo in ogni corsia." },
-      { q: "Cosa si tiene nel mulligan?", a: "Davdas cerca sempre Bagheera, Ali Baba, Big Bad Wolf e Rumple. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tiene anche Axe Throw." },
+      { q: "Cosa si tiene nel mulligan?", a: "Cerca sempre Bagheera, Ali Baba, Big Bad Wolf e Rumple. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tieni anche Axe Throw." },
       { q: "Come chiude la partita il mazzo?", a: "Con En Passant, che muove un alleato e colpisce il personaggio di fronte; con Ellen Trechend, il cui Trample spinge i danni fino alla barriera; e con i Lightning Strike che Impundulu aggiunge alla mano ogni volta che attacca." },
       { q: "Come provo il mazzo?", a: "Apri la scheda del mazzo su OriginsMeta e premi «Apri nel deck builder», oppure copia il codice OM e importalo. Il builder controlla la regola 1 Leggendaria + 12 carte × 2." },
     ],
@@ -683,21 +683,21 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 | [Impundulu](/it/cards/impundulu) | 5 | 3/6: ogni volta che attacca aggiunge un Lightning Strike alla tua mano |
 | [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Trample; con l'On Reveal cresce per ogni carta nemica nel suo luogo |
 
-Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa tre mana o meno: per questo Davdas definisce la curva "molto solida", c'è sempre qualcosa da giocare dal round uno al quattro.
+Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa tre mana o meno: per questo l'autore definisce la curva "molto solida", c'è sempre qualcosa da giocare dal round uno al quattro.
 
 ## Come vince il mazzo
 
-Il piano di Davdas, dalla scheda del mazzo: prendere il controllo del tabellone nei primi round, acquisire vantaggio su almeno un luogo e poi chiudere con tre carte.
+Il piano, dalla scheda del mazzo: prendere il controllo del tabellone nei primi round, acquisire vantaggio su almeno un luogo e poi chiudere con tre carte.
 
 - **En Passant** muove un alleato e infligge danni pari alla sua Potenza al personaggio di fronte: apre la strada a un tuo pezzo grosso, oppure trasforma un Big Bad Wolf cresciuto in una rimozione.
-- **Ellen Trechend** ha Trample e quando viene rivelata cresce per ogni carta nemica nel suo luogo: più l'avversario ha investito in una corsia, più forte colpisce, e il Trample manda i danni in eccesso oltre il bloccante fino alla barriera. Davdas la chiama "una chiusura al limite dell'illegale".
+- **Ellen Trechend** ha Trample e quando viene rivelata cresce per ogni carta nemica nel suo luogo: più l'avversario ha investito in una corsia, più forte colpisce, e il Trample manda i danni in eccesso oltre il bloccante fino alla barriera. La scheda del mazzo la chiama "una chiusura al limite dell'illegale".
 - **Impundulu**, se hai lavorato bene i primi round, ti ricompensa con un Lightning Strike a ogni attacco. Ogni Strike va usato prima del combattimento successivo o viene scartato: metti in conto due mana a round per lui.
 
 La Leggendaria è il ponte tra le due fasi. A sette mana i Three Not So Little Pigs mettono un maialino con Trample in ciascuno degli altri due luoghi con una sola carta, oltre al proprio corpo 3/3 con Trample. Giocata in curva, riempie tutto il tabellone il round prima che Ellen Trechend entri in gioco.
 
 ## Mulligan
 
-Davdas cerca sempre **Bagheera, Ali Baba, Big Bad Wolf e Rumple**: regalano una buona partenza in curva e supportano i maialini già sul tabellone. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tiene anche **Axe Throw**, che infligge esattamente quattro danni a qualsiasi personaggio. Ellen Trechend e Impundulu non sono ciò che vuoi nella mano iniziale: il mazzo li trova più tardi con Mind Palace e Ali Baba.
+Cerca sempre **Bagheera, Ali Baba, Big Bad Wolf e Rumple**: regalano una buona partenza in curva e supportano i maialini già sul tabellone. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tieni anche **Axe Throw**, che infligge esattamente quattro danni a qualsiasi personaggio. Ellen Trechend e Impundulu non sono ciò che vuoi nella mano iniziale: il mazzo li trova più tardi con Mind Palace e Ali Baba.
 
 ## Round per round
 
@@ -707,11 +707,11 @@ Davdas cerca sempre **Bagheera, Ali Baba, Big Bad Wolf e Rumple**: regalano una 
 
 ## Restare in curva
 
-Davdas è chiaro sul principale punto debole del mazzo: "uscire fuori curva abbassa di molto il potenziale". La lista non ha rimozioni di massa e non cura le barriere, quindi ogni round saltato è un round regalato all'avversario. Due abitudini aiutano. Non tenere Rumple in attesa del turno "perfetto": il mana extra vale di più presto. E non tenere i Lightning Strike in mano sperando in un bersaglio migliore: uno Strike usato su una barriera resta tre danni che altrimenti perderesti.
+La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva abbassa di molto il potenziale". La lista non ha rimozioni di massa e non cura le barriere, quindi ogni round saltato è un round regalato all'avversario. Due abitudini aiutano. Non tenere Rumple in attesa del turno "perfetto": il mana extra vale di più presto. E non tenere i Lightning Strike in mano sperando in un bersaglio migliore: uno Strike usato su una barriera resta tre danni che altrimenti perderesti.
 
 ## Dove andare adesso
 
-- La [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311) ha la lista con i grafici di curva di mana, saghe e parole chiave, le note di Davdas e il codice OM per aprirla nel [deck builder](/it/deck-builder).
+- La [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311) ha la lista con i grafici di curva di mana, saghe e parole chiave, le note dell'autore e il codice OM per aprirla nel [deck builder](/it/deck-builder).
 - [Matchup, interazioni chiave e Conquest](/it/guides/three-pigs-midrange-matchups) è la seconda parte di questa guida.
 - Le statistiche delle carte sono quelle della patch 0.6.3 del playtest. Diverse carte di questa lista sono state ritoccate nelle patch 0.6.2 e 0.6.3: controlla lo storico dei bilanciamenti nella scheda di ogni carta.
 `,
@@ -727,7 +727,7 @@ Davdas è chiaro sul principale punto debole del mazzo: "uscire fuori curva abba
       cards: ["three-not-so-little-pigs", "rumple", "wicked-witch-of-the-west", "flying-monkey", "en-passant", "big-bad-wolf", "impundulu", "lightning-strike", "piglet", "ellen-trechend", "axe-throw", "frog-prince", "van-helsing", "boitata", "mulan", "robin-hood", "king-arthur"],
     },
     title: "3 Pigs Mid Range: matchup, interazioni chiave e Conquest",
-    excerpt: "La seconda parte della guida al mazzo dei Three Not So Little Pigs di Davdas: le interazioni che vincono le partite, come giocare i matchup principali, gli errori da evitare e come abbinarlo in Conquest.",
+    excerpt: "La seconda parte della guida al mazzo midrange dei Three Not So Little Pigs: le interazioni che vincono le partite, come giocare i matchup principali, gli errori da evitare e come abbinarlo in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
     image: "/media/capsule-header.webp",
@@ -739,7 +739,7 @@ Davdas è chiaro sul principale punto debole del mazzo: "uscire fuori curva abba
     body: `
 ## Prima di iniziare
 
-Questa è la seconda parte della guida a **3 Pigs Mid Range**, il mazzo midrange guidato dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) che Davdas, staff di OriginsMeta, ha pubblicato il 15 settembre 2026. La [prima parte](/it/guides/three-pigs-midrange-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e al formato per cui il mazzo è stato pensato. Le note di Davdas sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3.
+Questa è la seconda parte della guida a **3 Pigs Mid Range**, il mazzo midrange guidato dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) che Davdas, staff di OriginsMeta, ha pubblicato il 15 settembre 2026. La [prima parte](/it/guides/three-pigs-midrange-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e al formato per cui il mazzo è stato pensato. Le note dell'autore sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3.
 
 ## Cinque interazioni da conoscere
 
@@ -747,13 +747,13 @@ Questa è la seconda parte della guida a **3 Pigs Mid Range**, il mazzo midrange
 2. **La Wicked Witch e la sua Flying Monkey.** La Witch è un 1/5: raramente muore per un solo colpo, e ogni volta che sopravvive a un danno ricevi una [Flying Monkey](/it/cards/flying-monkey) in mano e lei si sposta di una casella a sinistra. L'On Reveal della Monkey sposta qualsiasi altro personaggio, tuo o avversario, su una casella casuale nel suo luogo: usala per trascinare un bloccante nemico fuori dalla corsia in cui stai travolgendo, o per portare un Wolf dove si combatte.
 3. **En Passant su un corpo cresciuto.** La magia muove un alleato e infligge danni pari alla sua Potenza al personaggio di fronte. Su un Big Bad Wolf che ha combattuto due volte sono cinque danni più uno spostamento; su Ellen Trechend è una rimozione che sposta anche il suo Trample dove la barriera è più debole. È anche la risposta a un bloccante parcheggiato davanti a uno dei tuoi maialini.
 4. **I Lightning Strike di Impundulu.** Ogni attacco aggiunge un [Lightning Strike](/it/cards/lightning-strike), due mana per tre danni a qualsiasi personaggio o barriera, da usare prima del combattimento successivo. Sono tre danni mirati e ripetibili: bastano per la maggior parte delle carte iniziali del pool attuale, oppure vanno dritti in barriera quando il tabellone è già tuo.
-5. **Piglet sui maialini.** L'On Reveal di Piglet potenzia gli altri alleati nel suo luogo. Il round dopo i Pigs, un Piglet accanto a un Not So Little Pig crea un corpo con Trample che colpisce più forte: Davdas nota che le carte del mulligan "supportano i porcellini già in board".
+5. **Piglet sui maialini.** L'On Reveal di Piglet potenzia gli altri alleati nel suo luogo. Il round dopo i Pigs, un Piglet accanto a un Not So Little Pig crea un corpo con Trample che colpisce più forte: la scheda del mazzo nota che le carte del mulligan "supportano i porcellini già in board".
 
 ## Matchup
 
 I dati della classificata non sono ancora pubblici, quindi quella che segue è una lettura delle liste, non un win rate.
 
-**Contro il controllo di Van Helsing, per esempio [Healing Healsing](/it/decks/community/healing-healsing-9411) dello stesso Davdas.** È il matchup che Davdas ha in mente quando dice di tenere Axe Throw: Van Helsing è un 3/4 e quattro danni lo tolgono di mezzo prima che i suoi Tools inizino ad arrivare a ogni combattimento. Spingi i danni presto, perché il mazzo controllo vuole arrivare a otto mana per Forbidden Knowledge, che distrugge ogni personaggio sul tabellone, tuoi e suoi. Non calare i Pigs ed Ellen Trechend nella stessa finestra: tieni una chiusura per il round dopo la pulizia. Finché Boitata è in gioco, i danni delle magie alle sue barriere vengono inflitti alle tue, quindi indirizza i Lightning Strike sui personaggi finché non sparisce.
+**Contro il controllo di Van Helsing, per esempio [Healing Healsing](/it/decks/community/healing-healsing-9411), dello stesso autore.** È il matchup che la nota sul mulligan ha in mente quando dice di tenere Axe Throw: Van Helsing è un 3/4 e quattro danni lo tolgono di mezzo prima che i suoi Tools inizino ad arrivare a ogni combattimento. Spingi i danni presto, perché il mazzo controllo vuole arrivare a otto mana per Forbidden Knowledge, che distrugge ogni personaggio sul tabellone, tuoi e suoi. Non calare i Pigs ed Ellen Trechend nella stessa finestra: tieni una chiusura per il round dopo la pulizia. Finché Boitata è in gioco, i danni delle magie alle sue barriere vengono inflitti alle tue, quindi indirizza i Lightning Strike sui personaggi finché non sparisce.
 
 **Contro i tabelloni larghi (liste in stile Swarm, Mulan).** Più vanno larghi, più Ellen Trechend diventa grande: cresce per ogni carta nemica nel suo luogo. Tieni la Witch come muro nella corsia che stanno inondando, gioca Frog Prince come 2/5 invece che come 5/2 e conserva Axe Throw per la carta che potenzia le altre. [Mulan](/it/cards/mulan) ripete le abilità On Reveal dei suoi alleati: è lei il bersaglio prioritario.
 
@@ -764,11 +764,11 @@ I dati della classificata non sono ancora pubblici, quindi quella che segue è u
 - **Giocare i Pigs come salvataggio.** La Leggendaria evoca i maialini su caselle casuali degli altri luoghi: rende al massimo quando in quelle corsie ci sono già un Wolf o una Witch con cui combattere, non quando è già tutto perso.
 - **Tenere Rumple.** È un corpo 2/2 con un bonus, e il bonus vale di più tra il round due e il sei.
 - **Sprecare i Lightning Strike.** Vengono scartati prima del combattimento successivo: uno Strike in barriera è meglio di uno Strike perso.
-- **Dimenticare i punti deboli.** Li elenca Davdas stesso: nessuna rimozione di massa e nessuna cura per le barriere. Non correre contro un mazzo che cura se non sei già avanti sul tabellone.
+- **Dimenticare i punti deboli.** Li elenca la scheda del mazzo: nessuna rimozione di massa e nessuna cura per le barriere. Non correre contro un mazzo che cura se non sei già avanti sul tabellone.
 
 ## Conquest e il tag "competitivo"
 
-Davdas ha segnato il mazzo sia per la ladder sia per il gioco competitivo. Nel formato Conquest usato al Big Bob's Playtest Battle, e atteso per il torneo dello Steam Next Fest, si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti tra due mazzi qualsiasi. 3 Pigs Mid Range si abbina in modo naturale all'altra lista di Davdas, [Healing Healsing](/it/decks/community/healing-healsing-9411): Leggendarie diverse, e l'unica carta in comune è Ali Baba, quindi differiscono per undici carte. Il [deck builder](/it/deck-builder) conta la differenza per te nella modalità torneo.
+Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Nel formato Conquest usato al Big Bob's Playtest Battle, e atteso per il torneo dello Steam Next Fest, si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti tra due mazzi qualsiasi. 3 Pigs Mid Range si abbina in modo naturale all'altra lista dello stesso autore, [Healing Healsing](/it/decks/community/healing-healsing-9411): Leggendarie diverse, e l'unica carta in comune è Ali Baba, quindi differiscono per undici carte. Il [deck builder](/it/deck-builder) conta la differenza per te nella modalità torneo.
 `,
   },
   "healing-healsing-guide": {
@@ -778,14 +778,14 @@ Davdas ha segnato il mazzo sia per la ladder sia per il gioco competitivo. Nel f
       communityDecks: [{ slug: "healing-healsing-9411", name: "Healing Healsing" }],
       cards: ["van-helsing", "van-helsings-tools", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "spellbook", "phuong-hoang", "jekyll", "searing-light", "boitata", "tin-woodman", "forbidden-knowledge"],
     },
-    title: "Healing Healsing: come si gioca il mazzo controllo di Van Helsing di Davdas",
+    title: "Healing Healsing: come si gioca il mazzo controllo di Van Helsing",
     excerpt: "Piano di gioco, mulligan e round per round di Healing Healsing, il primo mazzo pubblicato su OriginsMeta: una lista controllo di Van Helsing che cura, pesca e azzera il tabellone con Forbidden Knowledge.",
     readTime: 6,
     updated: "2026-09-16",
     image: "/media/capsule-library.webp",
     faq: [
       { q: "Quale Leggendaria guida Healing Healsing?", a: "Van Helsing, un 3/4 da 4 mana: prima di ogni combattimento aggiunge Van Helsing's Tools alla tua mano se non ce l'hai, una carta Scegli uno che gioca Holy Water, Silver Bullet, Garlic o Wooden Stake." },
-      { q: "Cosa si tiene nel mulligan?", a: "Davdas tiene Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook; contro l'aggro tiene anche Jill. Shahrazad e Phuong Hoang non sono ciò che vuoi nei primi round." },
+      { q: "Cosa si tiene nel mulligan?", a: "Tieni Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook; contro l'aggro anche Jill. Shahrazad e Phuong Hoang non sono ciò che vuoi nei primi round." },
       { q: "Quando si lancia Forbidden Knowledge?", a: "A otto mana, quindi dal round otto o nove, idealmente in un round in cui l'avversario rivela per primo: lui cala le sue carte, poi la magia distrugge ogni personaggio sul tabellone." },
       { q: "Come vince il mazzo se distrugge anche il proprio tabellone?", a: "Con il vantaggio carte: Spellbook, Scarecrow e Ali Baba tengono la mano piena, Baby Bear lascia Papa Bear quando muore, Jekyll si trasforma in Hyde in mano, e le cure fanno crescere Phuong Hoang finché l'avversario resta senza risposte." },
     ],
@@ -818,7 +818,7 @@ Nove unità e tre magie; quasi tutto costa tra due e quattro mana, con Boitata, 
 
 ## Come vince il mazzo
 
-Il piano di Davdas dalla scheda del mazzo, in quattro passi:
+Il piano dalla scheda del mazzo, in quattro passi:
 
 1. **Controllare i primi round** prendendo rapidamente valore con Spellbook e Ali Baba.
 2. **Arrivare al round otto o nove** e lanciare Forbidden Knowledge per prendere l'iniziativa. Cerca di usarla in un round in cui l'avversario è il primo a rivelare, così le sue carte sono sul tabellone quando la magia si risolve.
@@ -836,11 +836,11 @@ La Leggendaria in sé è un 3/4 da quattro mana. Quello che conta è la carta ch
 - [Garlic](/it/cards/garlic): Stun a qualsiasi personaggio.
 - [Wooden Stake](/it/cards/wooden-stake): distruggi qualsiasi personaggio danneggiato.
 
-"Se non ce l'hai" è la clausola da ricordare: usa i Tools ogni round, altrimenti Van Helsing smette di aggiungerli. Wooden Stake è la rimozione su singolo bersaglio che, secondo Davdas, altrimenti manca al mazzo: danneggia un personaggio con il colpo di Baby Bear, con Searing Light o con il Silver Bullet, poi impalalo.
+"Se non ce l'hai" è la clausola da ricordare: usa i Tools ogni round, altrimenti Van Helsing smette di aggiungerli. Wooden Stake è la rimozione su singolo bersaglio che, secondo la scheda del mazzo, altrimenti manca alla lista: danneggia un personaggio con il colpo di Baby Bear, con Searing Light o con il Silver Bullet, poi impalalo.
 
 ## Mulligan
 
-Davdas tiene **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazzi aggressivi tiene anche **Jill**, che cura 2 alla tua barriera ogni volta che subisce danni. Shahrazad e Phuong Hoang non sono utili nei primi round: sono il premio, non la preparazione, quindi rimandale nel mazzo.
+Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazzi aggressivi tieni anche **Jill**, che cura 2 alla tua barriera ogni volta che subisce danni. Shahrazad e Phuong Hoang non sono utili nei primi round: sono il premio, non la preparazione, quindi rimandale nel mazzo.
 
 ## Round per round
 
@@ -851,7 +851,7 @@ Davdas tiene **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro
 
 ## Dove andare adesso
 
-- La [scheda del mazzo](/it/decks/community/healing-healsing-9411) ha la lista con i grafici di curva di mana e parole chiave, le note di Davdas e il codice OM per aprirla nel [deck builder](/it/deck-builder).
+- La [scheda del mazzo](/it/decks/community/healing-healsing-9411) ha la lista con i grafici di curva di mana e parole chiave, le note dell'autore e il codice OM per aprirla nel [deck builder](/it/deck-builder).
 - [Matchup, interazioni chiave ed errori da evitare](/it/guides/healing-healsing-matchups) è la seconda parte di questa guida.
 - Le statistiche delle carte sono quelle della patch 0.6.3 del playtest. Scarecrow, Van Helsing's Tools e altre carte di questa lista sono cambiate nelle patch 0.6.2 e 0.6.3: vedi lo storico dei bilanciamenti nella scheda di ogni carta.
 `,
@@ -867,7 +867,7 @@ Davdas tiene **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro
       cards: ["van-helsing", "shahrazad", "spellbook", "phuong-hoang", "jekyll", "hyde", "boitata", "baby-bear", "papa-bear", "mama-bear", "jill", "tin-woodman", "forbidden-knowledge", "holy-water", "ellen-trechend", "axe-throw", "mulan", "queen-of-hearts"],
     },
     title: "Healing Healsing: matchup, interazioni chiave ed errori da evitare",
-    excerpt: "La seconda parte della guida al mazzo controllo di Van Helsing di Davdas: le interazioni di cura e pesca che vincono le partite, come giocare i matchup principali, gli errori che fanno perdere contro l'aggro e come la lista si inserisce in Conquest.",
+    excerpt: "La seconda parte della guida al mazzo controllo di Van Helsing: le interazioni di cura e pesca che vincono le partite, come giocare i matchup principali, gli errori che fanno perdere contro l'aggro e come la lista si inserisce in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
     image: "/media/ls-real-collecting.webp",
@@ -879,7 +879,7 @@ Davdas tiene **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro
     body: `
 ## Prima di iniziare
 
-Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controllo di Van Helsing che Davdas, staff di OriginsMeta, ha pubblicato il 15 settembre 2026 come primo mazzo della community del sito. La [prima parte](/it/guides/healing-healsing-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e agli errori che costano di più. Le note di Davdas sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3.
+Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controllo di Van Helsing che Davdas, staff di OriginsMeta, ha pubblicato il 15 settembre 2026 come primo mazzo della community del sito. La [prima parte](/it/guides/healing-healsing-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e agli errori che costano di più. Le note dell'autore sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3.
 
 ## Cinque interazioni da conoscere
 
@@ -893,22 +893,22 @@ Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controll
 
 I dati della classificata non sono ancora pubblici, quindi quella che segue è una lettura delle liste, non un win rate.
 
-**Contro 3 Pigs Mid Range ([l'altro mazzo](/it/decks/community/3-pigs-mid-range-6311) di Davdas) e le altre liste midrange.** La loro chiusura, Ellen Trechend, cresce per ogni carta nemica nel suo luogo: distribuisci le unità invece di ammassarle in una corsia. I Lightning Strike di Impundulu sono esattamente ciò per cui esiste Boitata. Axe Throw infligge quattro danni, che sono esattamente la Salute di Van Helsing: aspettati che venga risposto, e non affidarti solo a lui per le rimozioni. I Pigs scendono a sette mana e riempiono ogni corsia di Trample: è il round per cui conservare Forbidden Knowledge, un round dopo.
+**Contro 3 Pigs Mid Range ([l'altro mazzo](/it/decks/community/3-pigs-mid-range-6311) dello stesso autore) e le altre liste midrange.** La loro chiusura, Ellen Trechend, cresce per ogni carta nemica nel suo luogo: distribuisci le unità invece di ammassarle in una corsia. I Lightning Strike di Impundulu sono esattamente ciò per cui esiste Boitata. Axe Throw infligge quattro danni, che sono esattamente la Salute di Van Helsing: aspettati che venga risposto, e non affidarti solo a lui per le rimozioni. I Pigs scendono a sette mana e riempiono ogni corsia di Trample: è il round per cui conservare Forbidden Knowledge, un round dopo.
 
-**Contro i mazzi aggro e i tabelloni larghi.** È il matchup che Davdas ha in mente quando dice di tenere Jill: ogni volta che subisce danni cura 2 alla tua barriera. Baby Bear punisce ogni attaccante che passa, Jekyll cura ciò che conta, gli otto punti di Tin Woodman rimettono in piedi una barriera. Non inseguire le loro unità con i Tools una per una: stabilizza la barriera, arriva a otto mana e lascia che Forbidden Knowledge si prenda tutto il tabellone.
+**Contro i mazzi aggro e i tabelloni larghi.** È il matchup che la nota sul mulligan ha in mente quando dice di tenere Jill: ogni volta che subisce danni cura 2 alla tua barriera. Baby Bear punisce ogni attaccante che passa, Jekyll cura ciò che conta, gli otto punti di Tin Woodman rimettono in piedi una barriera. Non inseguire le loro unità con i Tools una per una: stabilizza la barriera, arriva a otto mana e lascia che Forbidden Knowledge si prenda tutto il tabellone.
 
 **Contro gli altri mazzi controllo.** Decide il vantaggio carte, e questo mazzo pesca più di quasi tutti: Spellbook è la carta da proteggere e da giocare per prima. Tieni Hyde per una corsia rimasta vuota, e conserva Holy Water per una Leggendaria la cui abilità regge il mazzo avversario, come [Mulan](/it/cards/mulan), che ripete le On Reveal dei suoi alleati, o la [Queen of Hearts](/it/cards/queen-of-hearts), che ne ripete le On Death.
 
 ## Errori da evitare
 
-- **Lanciare Forbidden Knowledge troppo presto.** Il consiglio di Davdas è aspettare un round in cui l'avversario rivela per primo, così le sue carte sono sul tabellone quando si risolve. Una pulizia su una corsia vuota sono otto mana buttati.
+- **Lanciare Forbidden Knowledge troppo presto.** Il consiglio della scheda del mazzo è aspettare un round in cui l'avversario rivela per primo, così le sue carte sono sul tabellone quando si risolve. Una pulizia su una corsia vuota sono otto mana buttati.
 - **Lasciare i Tools in mano.** Van Helsing li aggiunge solo se non ce li hai. Usali a ogni combattimento, anche su un bersaglio piccolo.
-- **Phuong Hoang prima delle cure.** Un 2/3 da quattro mana senza nulla da cui crescere è una carta debole; la stessa carta dopo che Shahrazad e Spellbook sono in gioco è la condizione di vittoria. Davdas la mette, insieme a Shahrazad, tra le carte da non tenere nella mano iniziale.
-- **Trattare la pesca come un lusso.** Davdas avverte che "non trovare Forbidden Knowledge quando serve può essere molto doloroso": Scarecrow, Ali Baba e Spellbook sono il modo per trovarla, quindi giocali presto anche quando il tabellone non lo richiede.
+- **Phuong Hoang prima delle cure.** Un 2/3 da quattro mana senza nulla da cui crescere è una carta debole; la stessa carta dopo che Shahrazad e Spellbook sono in gioco è la condizione di vittoria. La nota sul mulligan la mette, insieme a Shahrazad, tra le carte da non tenere nella mano iniziale.
+- **Trattare la pesca come un lusso.** La scheda del mazzo avverte che "non trovare Forbidden Knowledge quando serve può essere molto doloroso": Scarecrow, Ali Baba e Spellbook sono il modo per trovarla, quindi giocali presto anche quando il tabellone non lo richiede.
 
 ## Conquest
 
-Davdas ha segnato il mazzo solo per la ladder, ma si inserisce bene in una formazione Conquest: Leggendaria diversa da 3 Pigs Mid Range e una sola carta in comune, Ali Baba, quindi le due liste differiscono per undici carte, più delle nove richieste al Big Bob's Playtest Battle. Il [deck builder](/it/deck-builder) conta la differenza nella modalità torneo.
+Il mazzo è segnato solo per la ladder, ma si inserisce bene in una formazione Conquest: Leggendaria diversa da 3 Pigs Mid Range e una sola carta in comune, Ali Baba, quindi le due liste differiscono per undici carte, più delle nove richieste al Big Bob's Playtest Battle. Il [deck builder](/it/deck-builder) conta la differenza nella modalità torneo.
 `,
   },
   "origins-tcg-explained": {
