@@ -426,6 +426,8 @@ export const it: Dictionary = {
       forbidden: "Puoi modificare solo i tuoi mazzi.",
     },
     kicker: "Mazzo della community",
+    guideLangNote: "Questa guida è stata scritta dall'autore in {lang} e viene mostrata così com'è: il sito non traduce i testi della community.",
+    langNames: { en: "inglese", it: "italiano" },
     by: "di",
     rating: "Valutazione",
     votes: "voti",

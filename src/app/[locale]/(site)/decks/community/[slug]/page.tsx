@@ -133,6 +133,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </div>
 
         {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas) */}
+        {deck.guide.lang !== locale ? (
+          /* la guida è nella lingua dell'autore: il sito non traduce i testi della community (nota per chi cambia lingua) */
+          <p className="mt-6 rounded-lg border-2 border-gold bg-gold/10 p-3 text-xs text-pale">{c.guideLangNote.replace("{lang}", c.langNames[deck.guide.lang] ?? deck.guide.lang)}</p>
+        ) : null}
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
           <p className="kicker text-mint">{c.summary}</p>
           <p className="mt-2 whitespace-pre-line text-lg text-pale">

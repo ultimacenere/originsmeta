@@ -74,7 +74,7 @@ export default async function GuidePage({ params }: { params: Params }) {
         </div>
       ) : null}
       <article className="card-night mt-8 p-6 sm:p-10">
-        <Markdown source={g.body} />
+        <Markdown source={g.body} linkCards={locale} />
         {g.faq?.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="guide-faq">
             <h2 id="guide-faq" className="text-2xl font-extrabold text-sky">

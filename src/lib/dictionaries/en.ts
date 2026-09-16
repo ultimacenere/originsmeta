@@ -424,6 +424,8 @@ export const en = {
       forbidden: "You can only edit your own decks.",
     },
     kicker: "Community deck",
+    guideLangNote: "This guide was written by its author in {lang} and is shown as written: the site does not translate community texts.",
+    langNames: { en: "English", it: "Italian" },
     by: "by",
     rating: "Rating",
     votes: "votes",
