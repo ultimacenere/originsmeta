@@ -3,13 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { href, formatDate, formatDateShort } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { movers, sagas } from "@/lib/data/cards";
-import { archetypeLabels } from "@/lib/data/decks";
-import { listPublishedDecks } from "@/lib/community/queries";
-import { authorName } from "@/lib/community/util";
+import { movers } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
-import { sortedNews, type NewsItem } from "@/lib/data/news";
+import { sortedNews } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList } from "@/components/CardChip";
@@ -20,7 +17,6 @@ import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
 import { NewsGuideLinks, NewsSourceLink, newsCardsLabel } from "@/components/NewsLinks";
-import { badgePill, badgeStyle } from "@/lib/cardArt";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -28,18 +24,18 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   return { ...m, title: { absolute: dict.meta.homeTitle } };
 }
 
-/** Le patch note sono le news con slug `patch-…`: finiscono nel blocco MetaShifting, le altre nella bacheca. */
-const isPatchNote = (n: NewsItem) => n.slug.startsWith("patch-");
-
+/**
+ * Ordine della home (note 7.0 del 16/09/2026): slider, calendario, titolo, le prime tre news "aperte", la tier list
+ * a striscia sotto di esse, MetaShifting a striscia della stessa misura, poi la bacheca con le altre news (patch
+ * note comprese), guide e stato del gioco. La sezione con i mazzi della community è stata tolta (ridondante).
+ */
 export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const top = movers().slice(0, 5);
+  const top = movers().slice(0, 3);
   const guides = getGuides(locale);
   const economyGuide = guides.find((g) => g.slug === "collector-economy") ?? guides[0];
-  const communityDecks = (await listPublishedDecks(3)).slice(0, 3);
-  const featured = sortedNews.slice(0, 2);
-  const patchNotes = sortedNews.filter((n) => isPatchNote(n) && !featured.includes(n)).slice(0, 3);
-  const board = sortedNews.filter((n) => !featured.includes(n) && !patchNotes.includes(n)).slice(0, 6);
+  const featured = sortedNews.slice(0, 3);
+  const board = sortedNews.filter((n) => !featured.includes(n)).slice(0, 6);
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
   const sl = d.home.slides;
   const slides: Slide[] = [
@@ -72,8 +68,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
             </div>
           </div>
 
-          {/* Due news in evidenza + tier list (ordine delle note 5.0) */}
-          <div className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_1.15fr_0.85fr]">
+          {/* Le prime tre news "aperte" in cima (note 7.0) */}
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
             {featured.map((item, i) => (
               <article key={item.slug} className="card-night flex flex-col p-6">
                 <NewsCover src={item.image} className="mb-4" />
@@ -102,86 +98,62 @@ export default async function Home({ params }: { params: LocaleParams }) {
               </article>
             ))}
 
-            {/* Tier list */}
-            <section className="card-night flex flex-col p-5">
+          </div>
+
+          {/* Tier list: striscia a tutta larghezza sotto le news (note 7.0), compatta finché le sezioni restano "non classificato" */}
+          <section className="card-night mt-5 flex flex-wrap items-center gap-4 p-5">
+            <div className="min-w-[220px] flex-1">
               <h2 className="text-2xl font-extrabold text-sky">{d.home.tierTitle}</h2>
               <p className="mt-1 text-sm text-pale-muted">{d.home.tierSub}</p>
-              <ul className="mt-4 space-y-2">
-                {tierList.sections.map((s) => {
-                  const ranked = tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
-                  return (
-                    <li key={s.id}>
-                      <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border border-sky px-3 py-2 hover:bg-night-3 hover:text-chalk">
-                        <span className="block font-display text-sm font-bold">{sectionTitle[s.id]}</span>
-                        <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
-                          {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked}`}
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-              <p className="mt-3 text-xs text-pale-muted">{d.home.tierStatus}</p>
-              <Link href={href(locale, "/tier-list")} className="mt-auto pt-3 font-display text-sm font-bold text-crimson hover:underline">
-                {d.common.viewAll} →
-              </Link>
-            </section>
-          </div>
-        </section>
+              <p className="mt-1 text-xs text-pale-muted">{d.home.tierStatus}</p>
+            </div>
+            <ul className="flex flex-wrap gap-2">
+              {tierList.sections.map((s) => {
+                const ranked = tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
+                return (
+                  <li key={s.id}>
+                    <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border-2 border-sky px-3 py-2 text-pale hover:bg-night-3 hover:text-chalk">
+                      <span className="block font-display text-sm font-bold text-sky">{sectionTitle[s.id]}</span>
+                      <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
+                        {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked}`}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <Link href={href(locale, "/tier-list")} className="btn btn-mint text-xs">
+              {d.common.viewAll} →
+            </Link>
+          </section>
 
-        {/* MetaShifting + patch note */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
-          <SectionHead title={d.home.patchTitle} sub={d.home.patchSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
-          <div className="grid gap-5 lg:grid-cols-[0.9fr_1.6fr]">
-            <section className="felt-panel-mint flex flex-col p-5">
-              <div className="flex items-baseline justify-between gap-3">
+          {/* MetaShifting: striscia della stessa misura sotto la tier list (note 7.0); le patch note stanno nella bacheca */}
+          <section className="felt-panel-mint mt-5 flex flex-wrap items-center gap-4 p-5">
+            <div className="min-w-[220px] max-w-xs flex-1">
+              <div className="flex flex-wrap items-baseline gap-3">
                 <h2 className="text-2xl font-extrabold text-mint">{d.common.metashift}</h2>
                 <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">0.6.1 → 0.6.3</span>
               </div>
               <p className="mt-1 text-sm text-chalk-muted">{d.home.metashiftSub}</p>
-              <ol className="mt-4 space-y-2">
-                {top.map(({ card, change }) => (
-                  <li key={`${card.slug}-${change.patch}`}>
-                    <Link href={href(locale, `/cards/${card.slug}`)} className="card-night block px-3 py-2 hover:shadow-mint">
-                      <span className="flex items-baseline justify-between gap-2">
-                        <span className="truncate font-display text-sm font-bold text-sky">{card.name}</span>
-                        <span className="shrink-0 text-[11px] text-pale-muted">{sagas[card.saga][locale]}</span>
-                      </span>
-                      <span className="mt-1 flex items-center justify-between gap-2">
-                        <StatDelta from={change.from} to={change.to} />
-                        <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-              <Link href={href(locale, "/tier-list")} className="mt-4 font-display text-sm font-bold text-mint hover:underline">
-                {d.tier.trackerTitle} →
-              </Link>
-            </section>
-
-            <ul className="felt-panel divide-y divide-felt-line self-start">
-              {patchNotes.map((nItem) => (
-                <li key={nItem.slug} className="grid gap-3 p-5 sm:grid-cols-[110px_180px_1fr]">
-                  <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
-                  <NewsCover src={nItem.image} />
-                  <div>
-                    <h3 className="font-display text-lg font-bold text-sky">{nItem.title[locale]}</h3>
-                    <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
-                    {nItem.cards?.length ? (
-                      <div className="mt-3">
-                        <CardChipList slugs={nItem.cards} locale={locale} max={8} />
-                      </div>
-                    ) : null}
-                    <NewsSourceLink item={nItem} locale={locale} dict={d} className="mt-2 inline-block text-xs text-mint hover:underline" />
-                  </div>
+            </div>
+            <ol className="flex flex-1 flex-wrap gap-2">
+              {top.map(({ card, change }) => (
+                <li key={`${card.slug}-${change.patch}`}>
+                  <Link href={href(locale, `/cards/${card.slug}`)} className="card-night flex items-center gap-2 px-2.5 py-1.5 text-xs hover:shadow-mint">
+                    <span className="font-display text-xs font-bold text-sky">{card.name}</span>
+                    <StatDelta from={change.from} to={change.to} />
+                    <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                  </Link>
                 </li>
               ))}
-            </ul>
-          </div>
+            </ol>
+            <Link href={href(locale, "/tier-list")} className="btn btn-mint text-xs">
+              {d.tier.trackerTitle} →
+            </Link>
+          </section>
         </section>
 
-        {/* Bacheca news */}
+        {/* Bacheca news (patch note comprese) */}
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
           <SectionHead title={d.home.newsBoardTitle} sub={d.home.newsBoardSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
           <ul className="felt-panel divide-y divide-felt-line">
@@ -200,46 +172,6 @@ export default async function Home({ params }: { params: LocaleParams }) {
         </section>
 
         {/* Mazzi: solo quelli pubblicati dalla community (i tre mazzi di esempio del playtest sono stati rimossi il 15/09/2026) */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
-          <SectionHead title={d.home.decksTitle} sub={d.home.decksSub} link={{ href: href(locale, "/decks"), label: d.common.viewAll }} />
-          {communityDecks.length ? (
-            <ul className="grid gap-5 md:grid-cols-3">
-              {communityDecks.map((deck) => (
-                <li key={deck.slug}>
-                  <Link href={href(locale, `/decks/community/${deck.slug}`)} className="card-night card-night-hover flex h-full flex-col p-5">
-                    <span className="flex flex-wrap gap-2">
-                      {deck.profile?.badge && deck.profile.badge !== "community" ? (
-                        <span className={`${badgePill} ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{d.community.badges[deck.profile.badge as keyof typeof d.community.badges] ?? deck.profile.badge}</span>
-                      ) : null}
-                      {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>}
-                      <span className="stat-pill border border-sky text-pale">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
-                      {deck.deck_types.map((t) => (
-                        <span key={t} className="stat-pill bg-night-3 text-pale">
-                          {d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t}
-                        </span>
-                      ))}
-                    </span>
-                    <span className="mt-3 font-display text-2xl font-extrabold text-sky">{deck.name}</span>
-                    <span className="mt-1 text-sm text-pale-muted">{deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary}</span>
-                    <span className="mt-3 text-xs text-pale-muted">
-                      {d.common.creator}: <strong className="text-pale">{authorName(deck.profile)}</strong>
-                      {deck.rating?.votes ? <span className="ml-2 font-mono text-mint">★ {deck.rating.avg.toFixed(1)}</span> : null}
-                    </span>
-                    <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="card-night flex flex-wrap items-center justify-between gap-4 p-6">
-              <p className="max-w-2xl text-pale">{d.home.decksEmpty}</p>
-              <Link href={href(locale, "/deck-builder")} className="btn btn-mint">
-                {d.home.decksCta}
-              </Link>
-            </div>
-          )}
-        </section>
-
         {/* Guide */}
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
           <SectionHead title={d.home.guidesTitle} sub={d.home.guidesSub} link={{ href: href(locale, "/guides"), label: d.common.viewAll }} />
