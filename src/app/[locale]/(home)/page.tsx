@@ -39,11 +39,11 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
   const sl = d.home.slides;
   const slides: Slide[] = [
-    { src: "/media/hero-1920.webp", alt: "Origins TCG key art", ...sl.keyArt, href: officialLinks.demo, external: true },
-    { src: "/media/banner-rapunzel.webp", alt: "Origins TCG official banner with Rapunzel", ...sl.rapunzel, href: href(locale, "/cards") },
-    { src: "/media/ls-zero-pay-to-win.webp", alt: "Official loading screen: zero pay to win", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
-    { src: "/media/ls-real-collecting.webp", alt: "Official loading screen: real collecting", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
-    { src: "/media/ls-collect-them-all.webp", alt: "Official loading screen: collect them all", ...sl.collectAll, href: href(locale, "/cards") },
+    { src: "/media/hero-1920.webp", ...sl.keyArt, href: officialLinks.demo, external: true },
+    { src: "/media/banner-rapunzel.webp", ...sl.rapunzel, href: href(locale, "/cards") },
+    { src: "/media/ls-zero-pay-to-win.webp", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
+    { src: "/media/ls-real-collecting.webp", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
+    { src: "/media/ls-collect-them-all.webp", ...sl.collectAll, href: href(locale, "/cards") },
   ];
 
   return (
@@ -221,7 +221,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <p className="mt-3 text-xs text-chalk-muted/80">{d.home.statusNote}</p>
             </div>
             <Link href={href(locale, "/guides/collector-economy")} className="card-night card-night-hover block overflow-hidden">
-              <Image src="/media/ls-two-ways.webp" alt="Two ways to collect: collector packs and prestige packs (official loading screen)" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
+              <Image src="/media/ls-two-ways.webp" alt={d.home.economyAlt} width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
               <div className="p-5">
                 <p className="kicker text-pale-muted">{d.guides.title}</p>
                 <h3 className="mt-1 text-xl font-extrabold text-sky">{economyGuide.title}</h3>

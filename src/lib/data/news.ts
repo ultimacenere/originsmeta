@@ -1,7 +1,8 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string> & { fr?: string };
-const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
+/** il francese è stato ritirato il 15/09/2026: i testi già scritti restano, i nuovi si fermano a en/it */
+const n = (en: string, it: string, fr?: string): L10n => ({ en, it, fr });
 
 export type NewsItem = {
   slug: string;
@@ -20,6 +21,52 @@ export type NewsItem = {
 };
 
 export const news: NewsItem[] = [
+  {
+    slug: "demo-2-progress-carryover",
+    image: "/media/ls-two-ways.webp",
+    date: "2026-09-16",
+    title: n(
+      "Demo 2.0 keeps your Demo 1 deck and boss unlocks",
+      "La Demo 2.0 mantiene gli sblocchi di mazzi e boss della Demo 1",
+    ),
+    summary: n(
+      "On 16 September a member of the Koin Games staff wrote on the official Discord that Demo V2 will carry over the deck-unlock and boss progress earned in Demo V1. It is the answer to the question players have been asking since the unlock system showed up in the playtest feedback: three ranked wins plus an AI boss for every deck. Until that message the answer circulating in the community was the opposite one, that everyone would start over. What the staff confirmed is the Demo 1 to Demo 2 carry-over; whether the closed playtest branch is included has not been spelled out in an official post yet, so we are keeping the two apart. The demo collectibles earned in Demo 1 stay yours either way.",
+      "Il 16 settembre un membro dello staff di Koin Games ha scritto sul Discord ufficiale che la Demo V2 manterrà gli sblocchi dei mazzi e i progressi contro i boss ottenuti nella Demo V1. È la risposta alla domanda che i giocatori si fanno da quando il sistema di sblocco è finito nel feedback del playtest: tre vittorie in classificata più un boss IA per ogni mazzo. Fino a quel messaggio nella community circolava la risposta opposta, cioè che si sarebbe ricominciato da zero. Quello che lo staff ha confermato è il passaggio dalla Demo 1 alla Demo 2; se il ramo chiuso del playtest sia compreso non è ancora scritto in un post ufficiale, quindi teniamo le due cose separate. I collezionabili ottenuti nella Demo 1 restano comunque acquisiti.",
+    ),
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
+    slug: "demo-2-boss-ai-rework",
+    image: "/media/banner-rapunzel.webp",
+    date: "2026-09-16",
+    title: n(
+      "Koin will rework the boss fight AI in Demo 2.0",
+      "Koin rifarà l'IA delle boss fight nella Demo 2.0",
+    ),
+    summary: n(
+      "A player described four games against the Dracula mission boss in which every \"random\" effect landed perfectly: pumpkins always hitting the barrier with the least health, discards always taking the most dangerous card in hand, summons always in the right space. Developer Fenchurch answered on the Steam forum on 16 September that the boss fight AI is getting a re-work in Demo v2 and that the team will keep changing how boss fights and card unlocking work. It is the second time in a week that the unlock path comes back from the feedback threads, after the reply about moving those matches to PvE only.",
+      "Un giocatore ha raccontato quattro partite contro il boss Dracula delle missioni in cui ogni effetto \"casuale\" cadeva al posto giusto: le zucche sempre sulla barriera con meno vita, gli scarti sempre sulla carta più pericolosa in mano, le evocazioni sempre nello spazio migliore. Lo sviluppatore Fenchurch ha risposto sul forum Steam il 16 settembre che l'IA delle boss fight verrà rifatta nella Demo v2 e che il team continuerà a cambiare il funzionamento dei boss e dello sblocco delle carte. È la seconda volta in una settimana che il percorso di sblocco torna dai thread di feedback, dopo la risposta sullo spostamento di quelle partite nel solo PvE.",
+    ),
+    url: "https://steamcommunity.com/app/4429430/discussions/0/617711086156930951/",
+    source: "steam",
+  },
+  {
+    slug: "demo-2-animations-and-fixes",
+    image: "/media/capsule-main.webp",
+    cards: ["off-with-your-head", "christopher-robin"],
+    date: "2026-09-16",
+    title: n(
+      "Before Demo 2.0: faster animations confirmed, Off With Your Head! bug on the fix list",
+      "Prima della Demo 2.0: animazioni più rapide confermate, il bug di Off With Your Head! da correggere",
+    ),
+    summary: n(
+      "Three things the team said on the Steam forum on 16 September. Animations: the request to speed them up has been acknowledged and will be amended in an upcoming update. Off With Your Head!: the copies it creates can appear with no artwork, only Power and Health visible, a known bug that will be fixed when Demo v2 ships, which the team calls \"really soon\". Audio reports from the playtest have been passed on to the audio team. A line about a \"Demo Season 2\" next week, with new decks, new rewards and a first taste of collecting, is going around on social media: it is a rumour, it does not appear in any official post on Steam, on Discord or on origins-tcg.com, and we are not treating it as a date until Koin confirms it. The dates we have are still Steam Next Fest, 19 to 26 October.",
+      "Tre cose dette dal team sul forum Steam il 16 settembre. Animazioni: la richiesta di velocizzarle è stata recepita e verrà sistemata in un aggiornamento in arrivo. Off With Your Head!: le copie che genera possono comparire senza illustrazione, con visibili solo attacco e vita, un bug noto che verrà corretto con l'uscita della Demo v2, che il team definisce \"molto presto\". Le segnalazioni sull'audio raccolte nel playtest sono state passate al team audio. Sui social gira una frase su una \"Demo Season 2\" la settimana prossima, con nuovi mazzi, nuove ricompense e un primo assaggio del collezionare: è un rumor, non compare in nessun post ufficiale su Steam, su Discord o su origins-tcg.com, e non la trattiamo come una data finché Koin non la conferma. Le date che abbiamo restano quelle dello Steam Next Fest, dal 19 al 26 ottobre.",
+    ),
+    url: "https://steamcommunity.com/app/4429430/discussions/0/617710833111225236/",
+    source: "steam",
+  },
   {
     slug: "davdas-3-pigs-mid-range",
     image: "/media/hero-1200.webp",

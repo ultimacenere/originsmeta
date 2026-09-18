@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "404 · OriginsMeta",
-  description: "This page does not exist.",
+  description: "This page does not exist. · Questa pagina non esiste.",
 };
 
 export default function GlobalNotFound() {
@@ -15,6 +15,11 @@ export default function GlobalNotFound() {
           <p className="kicker text-crimson">404</p>
           <h1 className="mt-2 text-3xl font-extrabold">This card does not exist.</h1>
           <p className="mt-3 text-pale-muted">The page you asked for is not on the table.</p>
+          {/* fuori dalle lingue non c'è un locale: il messaggio sta in entrambe */}
+          <p className="mt-4 text-pale-muted" lang="it">
+            <span className="block font-display font-bold text-sky">Questa carta non esiste.</span>
+            La pagina che hai chiesto non è sul tavolo.
+          </p>
           <p className="mt-6 flex flex-wrap justify-center gap-3">
             <Link className="btn btn-ink" href="/en">English</Link>
             <Link className="btn btn-ink" href="/it">Italiano</Link>
