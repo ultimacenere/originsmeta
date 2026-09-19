@@ -47,7 +47,7 @@ const en: Record<GuideSlug, Guide> = {
     excerpt: "Game plan, mulligan and round-by-round play for 3 Pigs Mid Range, the midrange deck led by Three Not So Little Pigs, published on OriginsMeta for ladder and competitive play.",
     readTime: 6,
     updated: "2026-09-16",
-    image: "/media/hero-1200.webp",
+    image: "/cards/cover/three-not-so-little-pigs.webp",
     faq: [
       { q: "Which Legendary leads 3 Pigs Mid Range?", a: "Three Not So Little Pigs, a 7-mana 3/3 with Trample: its On Reveal summons a Not So Little Pig with Trample at each other location, so one card puts a body in every lane." },
       { q: "What do you keep in the mulligan?", a: "Always look for Bagheera, Ali Baba, Big Bad Wolf and Rumple. Against decks with dangerous 4-Health cards such as Van Helsing or Glinda, keep Axe Throw too." },
@@ -126,7 +126,7 @@ The deck page is clear about the main weakness: "falling off curve lowers its po
     excerpt: "The second part of the guide to the Three Not So Little Pigs midrange deck: the interactions that win games, how to play the main matchups, the mistakes to avoid and how to pair it in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
-    image: "/media/capsule-header.webp",
+    image: "/media/ss-board-clash.webp",
     faq: [
       { q: "What does Ellen Trechend do against a wide board?", a: "She grows on reveal for every enemy card in her location and has Trample, so a lane the opponent has filled becomes her best target: the damage that exceeds the blocker's Health goes into the barrier." },
       { q: "How do you play against Van Helsing decks?", a: "Keep Axe Throw for Van Helsing, who has four Health, pressure early before Forbidden Knowledge comes online at eight mana, and aim Lightning Strikes at characters rather than barriers while Boitata is on the board." },
@@ -178,7 +178,7 @@ The deck is tagged for both ladder and competitive play. In the Conquest format 
     excerpt: "Game plan, mulligan and round-by-round play for Healing Healsing, the first deck published on OriginsMeta: a Van Helsing control list that heals, draws and resets the board with Forbidden Knowledge.",
     readTime: 6,
     updated: "2026-09-16",
-    image: "/media/capsule-library.webp",
+    image: "/cards/cover/van-helsing.webp",
     faq: [
       { q: "Which Legendary leads Healing Healsing?", a: "Van Helsing, a 4-mana 3/4: before every combat he adds Van Helsing's Tools to your hand if you do not have it, a Choose One card that plays Holy Water, Silver Bullet, Garlic or Wooden Stake." },
       { q: "What do you keep in the mulligan?", a: "Keep Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook; against aggro keep Jill too. Shahrazad and Phuong Hoang are not what you want in the first rounds." },
@@ -266,7 +266,7 @@ Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggr
     excerpt: "The second part of the guide to the Van Helsing control deck: the healing and card-draw interactions that win games, how to play the main matchups, the mistakes that lose to aggro and how the list fits in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
-    image: "/media/ls-real-collecting.webp",
+    image: "/media/ss-board-combat.webp",
     faq: [
       { q: "What is the strongest interaction in Healing Healsing?", a: "Shahrazad with Van Helsing and Spellbook: the Tools before every combat and the spell at the start of every round each heal 1 through Shahrazad, and every heal gives Phuong Hoang +1/+1." },
       { q: "How do you play against 3 Pigs Mid Range?", a: "Do not fill a lane: Ellen Trechend grows for every enemy card in her location. Keep Boitata for the Lightning Strikes, heal through the pigs' Trample damage and save Forbidden Knowledge for the round after the Pigs come down." },
@@ -315,7 +315,7 @@ The deck is tagged for the ladder only, but it fits a Conquest line-up: a differ
     excerpt: "What the game is, how a match works, what free-to-compete means and how to play the demo today.",
     readTime: 6,
     updated: "2026-09-15",
-    image: "/media/capsule-main.webp",
+    image: "/media/ss-board-locations.webp",
     body: `
 ## What it is
 
@@ -353,7 +353,7 @@ Early access on Steam is listed for Q4 2026, with a much larger demo shown at St
     excerpt: "Every confirmed date, from the first Steam post to the Next Fest tournament, plus what is announced for 2027.",
     readTime: 4,
     updated: "2026-09-15",
-    image: "/media/hero-1200.webp",
+    image: "/media/art-the-club.webp",
     body: `
 ## Before the demo
 
@@ -399,7 +399,7 @@ Dates come from the official Steam posts and the studio's Discord. We update thi
     excerpt: "Competitive cards are free. Collector cards are limited, graded and tradeable on Steam. Here is what is confirmed and what is not.",
     readTime: 5,
     updated: "2026-09-15",
-    image: "/media/ls-two-ways.webp",
+    image: "/media/ss-pack-opening.webp",
     body: `
 ## The split
 
@@ -436,7 +436,7 @@ Because collector cards are cosmetic, a tier list only has to care about the car
     excerpt: "Everything confirmed about Origins TCG at Steam Next Fest (19–26 October 2026): the Demo 2.0 update, the 20–25 October tournament with qualifiers, playoffs and finals, prizes, how to sign up and how to prepare.",
     readTime: 6,
     updated: "2026-09-15",
-    image: "/media/hero-1200.webp",
+    image: "/media/keyart-queen-of-hearts.webp",
     faq: [
       { q: "When is Steam Next Fest October 2026?", a: "From Monday 19 October at 10:00 Pacific time (19:00 in Italy) to Monday 26 October 2026. Origins TCG takes part with the Demo 2.0 build." },
       { q: "When is the Origins TCG tournament?", a: "From 20 to 25 October 2026: three qualifiers on the 20th, 21st and 22nd (one per major region), then playoffs and finals." },
@@ -535,7 +535,7 @@ Because collector versions are cosmetic, a tier list only has to judge the card,
     excerpt: "The free demo in five steps: requirements, download, language, first matches, what demo players unlock, and what changes with Demo 2.0 at Steam Next Fest.",
     readTime: 5,
     updated: "2026-09-15",
-    image: "/media/capsule-main.webp",
+    image: "/media/ss-legendary-mulan.webp",
     faq: [
       { q: "Is the Origins TCG demo free?", a: "Yes. It has been free on Steam since 15 July 2026, for Windows and macOS." },
       { q: "Is the demo in Italian?", a: "Yes. Interface and full audio are available in English, French, Italian and German; subtitles are in English." },
@@ -651,7 +651,7 @@ const it: Record<GuideSlug, Guide> = {
     excerpt: "Piano di gioco, mulligan e round per round di 3 Pigs Mid Range, il mazzo midrange guidato dai Three Not So Little Pigs, pubblicato su OriginsMeta per la ladder e il gioco competitivo.",
     readTime: 6,
     updated: "2026-09-16",
-    image: "/media/hero-1200.webp",
+    image: "/cards/cover/three-not-so-little-pigs.webp",
     faq: [
       { q: "Quale Leggendaria guida 3 Pigs Mid Range?", a: "Three Not So Little Pigs, un 3/3 da 7 mana con Trample: la sua On Reveal evoca un Not So Little Pig con Trample in ogni altro luogo, quindi una sola carta mette un corpo in ogni corsia." },
       { q: "Cosa si tiene nel mulligan?", a: "Cerca sempre Bagheera, Ali Baba, Big Bad Wolf e Rumple. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tieni anche Axe Throw." },
@@ -730,7 +730,7 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
     excerpt: "La seconda parte della guida al mazzo midrange dei Three Not So Little Pigs: le interazioni che vincono le partite, come giocare i matchup principali, gli errori da evitare e come abbinarlo in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
-    image: "/media/capsule-header.webp",
+    image: "/media/ss-board-clash.webp",
     faq: [
       { q: "Cosa fa Ellen Trechend contro un tabellone largo?", a: "Quando viene rivelata cresce per ogni carta nemica nel suo luogo e ha Trample: una corsia che l'avversario ha riempito diventa il suo bersaglio migliore, e i danni oltre la Salute del bloccante finiscono nella barriera." },
       { q: "Come si gioca contro i mazzi di Van Helsing?", a: "Tieni Axe Throw per Van Helsing, che ha quattro Salute, fai pressione presto prima che Forbidden Knowledge arrivi a otto mana, e indirizza i Lightning Strike sui personaggi invece che sulle barriere finché Boitata è sul tabellone." },
@@ -782,7 +782,7 @@ Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Nel formato 
     excerpt: "Piano di gioco, mulligan e round per round di Healing Healsing, il primo mazzo pubblicato su OriginsMeta: una lista controllo di Van Helsing che cura, pesca e azzera il tabellone con Forbidden Knowledge.",
     readTime: 6,
     updated: "2026-09-16",
-    image: "/media/capsule-library.webp",
+    image: "/cards/cover/van-helsing.webp",
     faq: [
       { q: "Quale Leggendaria guida Healing Healsing?", a: "Van Helsing, un 3/4 da 4 mana: prima di ogni combattimento aggiunge Van Helsing's Tools alla tua mano se non ce l'hai, una carta Scegli uno che gioca Holy Water, Silver Bullet, Garlic o Wooden Stake." },
       { q: "Cosa si tiene nel mulligan?", a: "Tieni Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook; contro l'aggro anche Jill. Shahrazad e Phuong Hoang non sono ciò che vuoi nei primi round." },
@@ -870,7 +870,7 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
     excerpt: "La seconda parte della guida al mazzo controllo di Van Helsing: le interazioni di cura e pesca che vincono le partite, come giocare i matchup principali, gli errori che fanno perdere contro l'aggro e come la lista si inserisce in Conquest.",
     readTime: 5,
     updated: "2026-09-16",
-    image: "/media/ls-real-collecting.webp",
+    image: "/media/ss-board-combat.webp",
     faq: [
       { q: "Qual è l'interazione più forte di Healing Healsing?", a: "Shahrazad con Van Helsing e Spellbook: i Tools prima di ogni combattimento e la magia all'inizio di ogni round curano 1 ciascuno attraverso Shahrazad, e ogni cura dà +1/+1 a Phuong Hoang." },
       { q: "Come si gioca contro 3 Pigs Mid Range?", a: "Non riempire una corsia: Ellen Trechend cresce per ogni carta nemica nel suo luogo. Tieni Boitata per i Lightning Strike, cura i danni del Trample dei maialini e conserva Forbidden Knowledge per il round dopo la calata dei Pigs." },
@@ -919,7 +919,7 @@ Il mazzo è segnato solo per la ladder, ma si inserisce bene in una formazione C
     excerpt: "Cos'è il gioco, come funziona una partita, cosa vuol dire free-to-compete e come provare la demo oggi.",
     readTime: 6,
     updated: "2026-09-15",
-    image: "/media/capsule-main.webp",
+    image: "/media/ss-board-locations.webp",
     body: `
 ## Cos'è
 
@@ -957,7 +957,7 @@ L'early access su Steam è indicato per il quarto trimestre 2026, con una demo m
     excerpt: "Tutte le date confermate, dal primo post su Steam al torneo del Next Fest, più ciò che è annunciato per il 2027.",
     readTime: 4,
     updated: "2026-09-15",
-    image: "/media/hero-1200.webp",
+    image: "/media/art-the-club.webp",
     body: `
 ## Prima della demo
 
@@ -1003,7 +1003,7 @@ Le date vengono dai post ufficiali su Steam e dal Discord dello studio. Aggiorni
     excerpt: "Le carte competitive sono gratis. Quelle da collezione sono limitate, valutate e scambiabili su Steam. Ecco cosa è confermato e cosa no.",
     readTime: 5,
     updated: "2026-09-15",
-    image: "/media/ls-two-ways.webp",
+    image: "/media/ss-pack-opening.webp",
     body: `
 ## La separazione
 
@@ -1040,7 +1040,7 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
     excerpt: "Tutto ciò che è confermato su Origins TCG allo Steam Next Fest (19–26 ottobre 2026): l'aggiornamento Demo 2.0, il torneo dal 20 al 25 ottobre con qualificazioni, playoff e finali, i premi, come iscriversi e come prepararsi.",
     readTime: 6,
     updated: "2026-09-15",
-    image: "/media/hero-1200.webp",
+    image: "/media/keyart-queen-of-hearts.webp",
     faq: [
       { q: "Quando si svolge lo Steam Next Fest di ottobre 2026?", a: "Da lunedì 19 ottobre alle 10:00 ora del Pacifico (le 19:00 in Italia) a lunedì 26 ottobre 2026. Origins TCG partecipa con la build Demo 2.0." },
       { q: "Quando c'è il torneo di Origins TCG?", a: "Dal 20 al 25 ottobre 2026: tre qualificazioni il 20, 21 e 22 (una per macro-regione), poi playoff e finali." },
@@ -1139,7 +1139,7 @@ Siccome le versioni da collezione sono cosmetiche, una tier list deve giudicare 
     excerpt: "La demo gratuita in cinque passi: requisiti, download, lingua italiana, prime partite, cosa sbloccano i giocatori della demo e cosa cambia con la Demo 2.0 allo Steam Next Fest.",
     readTime: 5,
     updated: "2026-09-15",
-    image: "/media/capsule-main.webp",
+    image: "/media/ss-legendary-mulan.webp",
     faq: [
       { q: "La demo di Origins TCG è gratuita?", a: "Sì. È gratuita su Steam dal 15 luglio 2026, per Windows e macOS." },
       { q: "La demo è in italiano?", a: "Sì. Interfaccia e audio completo sono disponibili in inglese, francese, italiano e tedesco; i sottotitoli sono in inglese." },

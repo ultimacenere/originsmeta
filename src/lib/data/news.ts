@@ -78,7 +78,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "kickstarter-ama-pre-registration",
-    image: "/media/ss-pack-opening.webp",
+    image: "/media/ls-two-ways.webp",
     date: "2026-09-10",
     title: n(
       "Kickstarter AMA held: pre-registration open, Alpha Edition boxes preorder-only",
@@ -108,7 +108,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "itzbolt-wins-conquest",
-    image: "/media/ss-board-clash.webp",
+    image: "/media/ss-board-hand-full.webp",
     date: "2026-08-28",
     title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt remporte le Big Bob's Playtest Battle, premier tournoi Conquest"),
     summary: n(
@@ -134,7 +134,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-3",
-    image: "/media/ss-board-locations.webp",
+    image: "/media/ss-board-ley-line.webp",
     cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
     date: "2026-08-27",
     title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, Re Artù a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
@@ -161,7 +161,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "patch-0-6-2",
-    image: "/media/ss-board-combat.webp",
+    image: "/media/ss-board-reveals.webp",
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
@@ -254,7 +254,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "metal-cards-tease",
-    image: "/media/ls-collector-pack.webp",
+    image: "/media/ls-real-collecting.webp",
     date: "2026-03-13",
     title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "Le CEO dévoile des cartes physiques en métal"),
     summary: n(

@@ -709,7 +709,7 @@ export function DeckBuilder({
                 }}
                 className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-pale transition hover:bg-night-3 ${inDeck ? "bg-night-3 ring-1 ring-sky" : "bg-night"}`}
               >
-                <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(c.name)}</span>
+                <BuilderArt card={c} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-display text-xs font-bold">
                     {c.legendary ? "★ " : ""}
@@ -776,11 +776,26 @@ function LockIcon() {
   );
 }
 
+/** Riquadro della carta nel builder: illustrazione ufficiale dove c'è, iniziali sulle carte che il materiale
+ *  non copre e su quelle inserite a mano dall'utente. Lazy: nel pool se ne vedono decine insieme. */
+function BuilderArt({ card }: { card: BuilderCard }) {
+  return (
+    <span className="card-chip-art !h-9 !w-7 shrink-0 text-[10px]">
+      {card.thumb ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={card.thumb} alt="" loading="lazy" decoding="async" />
+      ) : (
+        initials(card.name)
+      )}
+    </span>
+  );
+}
+
 function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string }) {
   return (
     <div className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-2 py-1.5">
       <span className="font-mono text-xs text-pale-muted">{copies}×</span>
-      <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(card.name)}</span>
+      <BuilderArt card={card} />
       <span className="min-w-0 flex-1">
         <span className="block truncate font-display text-xs font-bold text-sky">
           {card.legendary ? "★ " : ""}

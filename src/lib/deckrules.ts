@@ -27,6 +27,8 @@ export type BuilderCard = {
   health?: number;
   sagaLabel: string;
   key?: string;
+  /** miniatura della carta ufficiale (160 px), assente sulle carte che il materiale non copre */
+  thumb?: string;
   /** carta inserita a mano dall'utente, non presente nel database */
   custom?: boolean;
 };
