@@ -104,7 +104,7 @@ export const en = {
     decksWithCard: "Decks with this card",
     relatedGuides: "Related guides",
     tierPosition: "Tier list",
-    cardsInDeck: "Known cards",
+    cardsInDeck: "Known cards",
     viewBlocks: "Blocks",
     viewList: "List",
     copyCode: "Copy code",

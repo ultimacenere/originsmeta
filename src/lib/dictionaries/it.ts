@@ -106,7 +106,7 @@ export const it: Dictionary = {
     decksWithCard: "Mazzi con questa carta",
     relatedGuides: "Guide correlate",
     tierPosition: "Tier list",
-    cardsInDeck: "Carte note",
+    cardsInDeck: "Carte note",
     viewBlocks: "Blocchi",
     viewList: "Lista",
     copyCode: "Copia codice",
