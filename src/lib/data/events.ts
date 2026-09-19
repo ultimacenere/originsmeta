@@ -28,16 +28,16 @@ export const events: Event[] = [
     start: "2026-10-20",
     end: "2026-10-25",
     title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
-    where: n("Online, in game; brackets on the official Discord", "Online, in gioco; tabelloni sul Discord ufficiale", "En ligne, en jeu ; tableaux sur le Discord officiel"),
+    where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "En ligne, en jeu ; inscriptions sur le Discord officiel"),
     format: n(
-      "Qualifiers on 20, 21 and 22 October (one per major region, open to everyone), then playoffs and finals. Conquest format, test-run at Big Bob's Playtest Battle: several decks with different Legendary cards, one ban.",
-      "Qualificazioni il 20, 21 e 22 ottobre (una per macro-regione, aperte a tutti), poi playoff e finali. Formato Conquest, provato a Big Bob's Playtest Battle: più mazzi con Leggendarie diverse, un ban.",
-      "Qualifications les 20, 21 et 22 octobre (une par grande région, ouvertes à tous), puis playoffs et finales. Format Conquest, testé à Big Bob's Playtest Battle : plusieurs decks avec des Légendaires différentes, un ban.",
+      "Three qualifiers of 512 spots each, open to everyone: EMEA on 20 October (32 advance), AMER on the 21st (64), APAC on the 22nd (32), plus 128 wild cards. Playoffs on the 24th with 256 spots, four of whom reach the finals on the 25th. Best-of-3 matches, Conquest format, best-of-5 grand final; you may enter more than one qualifier.",
+      "Tre qualificazioni da 512 posti ciascuna, aperte a tutti: EMEA il 20 ottobre (32 passano), AMER il 21 (64), APAC il 22 (32), più 128 wild card. Playoff il 24 con 256 posti, quattro dei quali arrivano alle finali del 25. Partite al meglio delle tre, formato Conquest, gran finale al meglio delle cinque; ci si può iscrivere a più di una qualificazione.",
+      "Trois qualifications de 512 places chacune, ouvertes à tous : EMEA le 20 octobre (32 qualifiés), AMER le 21 (64), APAC le 22 (32), plus 128 wild cards. Playoffs le 24 avec 256 places, dont quatre atteignent la finale du 25. Matches au meilleur des trois, format Conquest, grande finale au meilleur des cinq ; on peut s'inscrire à plusieurs qualifications.",
     ),
     prizes: n(
-      "$10,000 prize pool: an exclusive 1/1 tournament promo card, digital packs, booster boxes and cases, cash prizes.",
-      "Montepremi di 10.000 $: una carta promo 1/1 esclusiva del torneo, pacchetti digitali, booster box e case, premi in denaro.",
-      "10 000 $ de dotation : une carte promo 1/1 exclusive, des packs numériques, des boîtes et des cases de boosters, des prix en argent.",
+      "Prizes worth $10,000: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes.",
+      "Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro.",
+      "Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive du tournoi, d'autres cartes promo, des packs numériques, des boîtes et des cases de boosters Alpha, et des prix en argent.",
     ),
     text: n(
       "Koin Games' biggest event so far, run during Steam Next Fest. You can join any qualifier regardless of where you live, but the team asks you to sign up only for the ones you can actually attend. Content creators get wildcard invites straight into the playoffs.",

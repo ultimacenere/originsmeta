@@ -385,7 +385,7 @@ Early access on Steam is listed for Q4 2026, with a much larger demo shown at St
 ## What comes next
 
 - **19–26 October 2026.** Steam Next Fest with the Demo 2.0 update: deckbuilding and many more cards for everyone.
-- **20–25 October 2026.** The Steam Next Fest tournament: regional qualifiers on the 20th, 21st and 22nd, then playoffs and finals. A $10,000 prize pool and an exclusive 1/1 promo card.
+- **20–25 October 2026.** The Crimson Cup, the Steam Next Fest tournament: regional qualifiers on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000, including an exclusive 1/1 promo card.
 - **Q4 2026.** Early access on Steam, according to the store page.
 - **2027.** Mobile version and pack opening on phone. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie the Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
 
@@ -462,10 +462,10 @@ The playtests also introduced a ranked ladder with divisions up to Grandmaster a
 
 ## The tournament, step by step
 
-1. **Qualifiers, 20–22 October.** Three of them, one per major region, on the 20th, 21st and 22nd. In Koin's words, "you can join ANY of the qualifiers, no matter where you live": pick the one whose time suits you, and sign up only for the ones you will really play.
-2. **Playoffs and finals, up to 25 October.** The best players from the qualifiers meet in the playoff stage; content creators get wildcard invites straight into the playoffs (ask on Discord).
-3. **Format.** The Steam announcement does not state it. At Big Bob's Playtest Battle on 28 August Koin trialed **Conquest**: best-of-3, single elimination, several decks with a different Legendary in each, at least nine cards of difference between decks, one ban. Expect something close to that and read the official rules when they are published.
-4. **Prizes.** An exclusive 1/1 tournament promo card, digital packs, booster boxes and cases, and cash prizes. In the community the tournament goes by the name Crimson Cup with a 10,000-dollar pool; we will confirm the figures against the official rulebook.
+1. **Qualifiers, 20–22 October.** Three of them, 512 spots each: EMEA on the 20th at 7pm CEST (32 advance), AMER on the 21st at 7pm EST (64), APAC on the 22nd at 7pm SGT (32), plus 128 wild cards. In Koin's words, "you can join ANY of the qualifiers, no matter where you live": pick the one whose time suits you, and sign up only for the ones you will really play — you may enter more than one.
+2. **Playoffs and finals, 24–25 October.** The playoff stage has 256 spots on the 24th (10am EST / 4pm CEST / 10pm SGT) and four players come out of it for the finals on the 25th at 10am EST. Content creators get wildcard invites straight into the playoffs (ask on Discord).
+3. **Format.** Official, from the announcement: **best-of-3 matches, Conquest format, best-of-5 grand final**. The details of Conquest are not spelled out for this tournament: at Big Bob's Playtest Battle on 28 August Koin ran it with several decks, a different Legendary in each, at least nine cards of difference between decks, and the ban of one of your opponent's decks. Expect something close to that, and read the official rules when they are published.
+4. **Prizes.** **Prizes worth $10,000**, in Koin's own words: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. It is not a cash pool: money is one of the four categories, and how it is split has not been announced. The tournament is called the **Crimson Cup** — the name is on Koin's own artwork, not a community nickname.
 
 Sign-ups are on the [official Discord](https://discord.gg/originstcg).
 
@@ -989,7 +989,7 @@ L'early access su Steam è indicato per il quarto trimestre 2026, con una demo m
 ## Cosa viene dopo
 
 - **19–26 ottobre 2026.** Steam Next Fest con l'aggiornamento Demo 2.0: deckbuilding e molte più carte per tutti.
-- **20–25 ottobre 2026.** Il torneo dello Steam Next Fest: qualificazioni regionali il 20, 21 e 22, poi playoff e finali. Montepremi di 10.000 $ e una carta promo 1/1 esclusiva.
+- **20–25 ottobre 2026.** La Crimson Cup, il torneo dello Steam Next Fest: qualificazioni regionali il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $, fra cui una carta promo 1/1 esclusiva.
 - **Q4 2026.** Early access su Steam, secondo la pagina dello store.
 - **2027.** Versione mobile e apertura dei pacchetti da telefono. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui Re Artù, Dracula, Winnie the Pooh, Alice, Beowulf, Cenerentola, Sweeney Todd, Frankenstein e Sherlock Holmes.
 
@@ -1066,10 +1066,10 @@ I playtest hanno introdotto anche una classificata con divisioni fino a Grandmas
 
 ## Il torneo, passo per passo
 
-1. **Qualificazioni, 20–22 ottobre.** Tre, una per macro-regione, il 20, 21 e 22. Nelle parole di Koin, "puoi partecipare a QUALSIASI qualificazione, ovunque tu viva": scegli quella con l'orario che ti conviene e iscriviti solo a quelle che giocherai davvero.
-2. **Playoff e finali, fino al 25 ottobre.** I migliori delle qualificazioni si incontrano nei playoff; i content creator hanno inviti wildcard direttamente ai playoff (basta chiedere su Discord).
-3. **Formato.** L'annuncio su Steam non lo indica. A Big Bob's Playtest Battle, il 28 agosto, Koin ha provato il **Conquest**: best-of-3, eliminazione diretta, più mazzi con una Leggendaria diversa in ciascuno, almeno nove carte di differenza tra i mazzi, un ban. Aspettati qualcosa di simile e leggi il regolamento ufficiale quando uscirà.
-4. **Premi.** Una carta promo 1/1 esclusiva del torneo, pacchetti digitali, booster box e case, premi in denaro. Nella community il torneo circola con il nome Crimson Cup e un montepremi da 10.000 dollari: confermeremo le cifre sul regolamento ufficiale.
+1. **Qualificazioni, 20–22 ottobre.** Tre, da 512 posti ciascuna: EMEA il 20 alle 19 CEST (32 passano), AMER il 21 alle 19 EST (64), APAC il 22 alle 19 SGT (32), più 128 wild card. Nelle parole di Koin, "puoi partecipare a QUALSIASI qualificazione, ovunque tu viva": scegli quella con l'orario che ti conviene e iscriviti solo a quelle che giocherai davvero — se ne può giocare più di una.
+2. **Playoff e finali, 24–25 ottobre.** I playoff hanno 256 posti il 24 (16 in Italia) e ne escono quattro giocatori per le finali del 25 alle 16. I content creator hanno inviti wildcard direttamente ai playoff (basta chiedere su Discord).
+3. **Formato.** Ufficiale, dall'annuncio: **partite al meglio delle tre, formato Conquest, gran finale al meglio delle cinque**. I dettagli del Conquest per questo torneo non sono stati precisati: a Big Bob's Playtest Battle, il 28 agosto, Koin lo ha giocato con più mazzi, una Leggendaria diversa in ciascuno, almeno nove carte di differenza tra i mazzi e il ban di un mazzo dell'avversario. Aspettati qualcosa di simile e leggi il regolamento ufficiale quando uscirà.
+4. **Premi.** **Premi per un valore complessivo di 10.000 $**, come li chiama Koin: una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro. Non è un montepremi in contanti: il denaro è una delle quattro categorie, e come venga ripartito non è stato annunciato. Il torneo si chiama **Crimson Cup**: il nome è sulla grafica ufficiale di Koin, non un soprannome della community.
 
 Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg).
 
