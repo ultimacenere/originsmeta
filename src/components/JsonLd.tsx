@@ -21,7 +21,8 @@ export const organization: Json = {
   "@id": `${siteUrl}/#organization`,
   name: "OriginsMeta",
   url: siteUrl,
-  logo: `${siteUrl}/media/origins-icon.png`,
+  // Logo di OriginsMeta, non di Koin: i dati strutturati dichiarano l'identità del sito.
+  logo: `${siteUrl}/media/originsmeta-icon.png`,
   email: "staff@originsmeta.com",
 };
 

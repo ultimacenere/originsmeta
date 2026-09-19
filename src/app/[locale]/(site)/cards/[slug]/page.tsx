@@ -9,6 +9,7 @@ import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardArt, CardChipList } from "@/components/CardChip";
+import { GameCard } from "@/components/GameCard";
 import { alignStyle } from "@/lib/cardArt";
 import { SteamButton } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
@@ -54,10 +55,29 @@ export default async function CardPage({ params }: { params: Params }) {
         </Link>
       </p>
 
-      <article className="card-night mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[150px_1fr_240px]">
-        <div>
-          <CardArt card={card} className="!h-[210px] !w-[150px] text-3xl" />
-          {!card.image ? <p className="mt-2 text-center text-[11px] text-pale-muted">{d.common.noImage}</p> : <p className="mt-2 text-center text-[11px] text-pale-muted">{d.common.imageCredit}</p>}
+      <article className="card-night mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[230px_1fr_240px]">
+        <div className="flex flex-col items-center gap-4">
+          {/* A sinistra la carta come si legge in partita (disegnata da noi, dati nostri), sotto l'oggetto
+              da collezione ufficiale con i crediti impressi: il gioco è anche collezionismo. */}
+          <GameCard card={card} locale={locale} priority className="w-full max-w-[230px]" />
+          {card.image ? (
+            <div className="flex items-start gap-3">
+              <CardArt card={card} full className="!h-[112px] !w-[80px] shrink-0 text-base" />
+              <div className="text-[11px] leading-relaxed text-pale-muted">
+                <p className="text-chalk-muted">{d.cards.collectible}</p>
+                {/* Il nome dell'illustratore è stampato sulla carta: va reso, non solo il copyright. */}
+                {card.credit ? (
+                  <p>
+                    {d.common.illustratedBy} <span className="text-pale">{card.credit.illus}</span>
+                  </p>
+                ) : null}
+                {card.credit?.num ? <p className="font-mono">M&amp;L #{card.credit.num}</p> : null}
+                <p>{d.common.imageCredit}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-[11px] text-pale-muted">{d.common.noImage}</p>
+          )}
         </div>
         <div>
           <p className="kicker text-pale-muted">

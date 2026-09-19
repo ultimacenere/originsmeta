@@ -25,7 +25,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       legendary: Boolean(c.legendary),
       sagaId: c.saga,
       sagaLabel: sagas[c.saga][locale],
-      image: c.image,
+      image: c.thumb ?? c.image,
       mana: c.mana,
       power: c.power,
       health: c.health,

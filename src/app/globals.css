@@ -229,6 +229,11 @@
     height: 100%;
     object-fit: cover;
   }
+  /* Riquadro grande: la carta si vede intera, senza tagliare la fascia con i crediti dell'illustratore.
+     Unità e magie hanno proporzioni diverse (1425 e 1490 px su 2048), quindi niente box fisso. */
+  .card-chip-art-full img {
+    object-fit: contain;
+  }
   .card-chip-art .mana {
     position: absolute;
     top: 2px;
@@ -243,6 +248,133 @@
     font-size: 0.65rem;
     line-height: 16px;
     text-align: center;
+  }
+
+  /* Carta come si legge in partita, disegnata da noi (GameCard): cornice celeste (oro per le Leggendarie),
+     finestra d'arte ufficiale in alto, dati dal nostro database. La larghezza la decide chi la usa. */
+  .game-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 12px;
+    border: 3px solid var(--color-sky);
+    border-radius: 14px;
+    background: linear-gradient(170deg, var(--color-night), var(--color-night-2));
+  }
+  .game-card.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .gc-window {
+    position: relative;
+    display: grid;
+    aspect-ratio: 1.14 / 1;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 2px solid var(--color-night-3);
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .gc-window img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gc-initials {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .gc-mana {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: grid;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .gc-star {
+    position: absolute;
+    top: 6px;
+    right: 9px;
+    color: var(--color-gold);
+    font-size: 1.25rem;
+  }
+  .gc-name {
+    margin: 10px 12px 0;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-sky);
+    text-wrap: balance;
+  }
+  .gc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 12px 0;
+  }
+  .gc-type,
+  .gc-align {
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+  .gc-type {
+    background: var(--color-night-3);
+    color: var(--color-pale);
+  }
+  .gc-align {
+    border: 1px solid var(--gc-al);
+    background: color-mix(in srgb, var(--gc-al) 16%, transparent);
+    color: var(--gc-al);
+  }
+  .gc-text {
+    flex: 1;
+    margin: 10px 12px 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-pale);
+    white-space: pre-line;
+  }
+  .gc-kw {
+    color: var(--color-mint);
+    font-weight: 700;
+  }
+  .gc-atk {
+    color: #b98cff;
+  }
+  .gc-hp {
+    color: var(--color-crimson);
+  }
+  .gc-dmg {
+    color: #ff6a5e;
+    font-weight: 700;
+  }
+  .gc-any {
+    color: var(--color-gold);
+    font-weight: 700;
+  }
+  .gc-stats {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 12px 12px 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
   }
 
   /* Nomi di carta nei testi della community (CardMentions): link menta con sottolineatura punteggiata e pannello di

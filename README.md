@@ -53,7 +53,28 @@ In `src/lib/data/tierlist.ts` sposta gli slug tra i tier S–D delle tre sezioni
 
 ### Immagini delle carte
 
-Quando disponibili, salvale in `public/cards/<slug>.webp` e imposta `image` sulla carta in `cards.ts`; senza immagine le schede mostrano una cornice con le iniziali.
+Le illustrazioni ufficiali arrivano dal materiale Koin (archivio in `G:\Il mio Drive\OriginsMeta\10_Materiale_Koin`, con le condizioni d'uso). Non si copiano a mano: le genera
+
+```
+npm run import:art -- --src "<cartella dei PNG delle carte>"
+```
+
+che scrive quattro derivati per carta in `public/` e il manifest generato `src/lib/data/card-art.json`, indicizzato per chiave ufficiale (`C00064_MB`, la stessa dei codici mazzo). `cards.ts` legge il manifest e popola da solo i campi della carta:
+
+| File | Campo | Dove si vede |
+| --- | --- | --- |
+| `public/cards/<slug>.webp` (480 px) | `image` | carta da collezione nella scheda carta, anteprima social |
+| `public/cards/sm/<slug>.webp` (160 px) | `thumb` | chip (`CardArt`), griglia di `/cards`, tier list |
+| `public/cards/art/<slug>.webp` (560 px) | `art` | finestra d'arte della carta di gioco (`GameCard`) |
+| `public/cards/cover/<slug>.webp` (1200×675) | `cover` | solo Leggendarie: copertina dei mazzi della community |
+
+I PNG originali non entrano nel repo (610 MB). Lo script importa solo la variante base `V00000`, elenca le varianti alternative nel manifest senza convertirle, e salta le carte che il database non conosce. Le carte senza illustrazione mostrano da sole la cornice con le iniziali.
+
+I crediti stampati sulle carte (illustratore e numero di collezione) stanno in `src/lib/data/card-credits.ts`, scritto a mano: vanno sempre mostrati accanto all'illustrazione.
+
+**La carta di gioco** (`src/components/GameCard.tsx`, stili `.game-card` in `globals.css`) è disegnata da noi con i dati del database — quindi anche in italiano — e usa solo la finestra d'arte: la cornice, la palette e il testo sono del sito. La carta ufficiale dentro lo slab resta `CardArt`.
+
+**Copertina dei mazzi della community**: è automatica, l'illustrazione della Leggendaria del mazzo (`cover`). Nessuno la sceglie, né in `/decks` né nell'anteprima social della scheda mazzo.
 
 ### Aggiungere una guida
 

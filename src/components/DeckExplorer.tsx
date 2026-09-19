@@ -9,7 +9,7 @@ export type ExplorerDeck = {
   name: string;
   href: string;
   tagline: string;
-  legendary?: { slug: string; name: string };
+  legendary?: { slug: string; name: string; cover?: string };
   archetype: string;
   archetypeLabel: string;
   creator: string;
@@ -114,7 +114,13 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
         <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {list.map((d) => (
             <li key={d.slug}>
-              <Link href={d.href} className="card-night card-night-hover flex h-full flex-col p-5">
+              <Link href={d.href} className="card-night card-night-hover flex h-full flex-col overflow-hidden">
+                {/* Copertina del mazzo: l'illustrazione della sua Leggendaria, senza che l'autore ne scelga una. */}
+                {d.legendary?.cover ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={d.legendary.cover} alt="" loading="lazy" decoding="async" className="h-28 w-full border-b-2 border-night-3 object-cover" />
+                ) : null}
+                <span className="flex flex-1 flex-col p-5">
                 <span className="flex flex-wrap items-center gap-2">
                   {d.creatorBadgeId && d.creatorBadgeId !== "community" && d.creatorBadge ? (
                     <span className={`${badgePill} ${badgeStyle[d.creatorBadgeId] ?? badgeStyle.community}`}>{d.creatorBadge}</span>
@@ -143,6 +149,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="mt-3 block border-t border-sky pt-3 text-xs text-pale-muted">
                   <span className="kicker">{labels.cardsInDeck}</span>
                   <span className="mt-1 block text-pale">{d.cardNames.join(" · ")}</span>
+                </span>
                 </span>
               </Link>
             </li>

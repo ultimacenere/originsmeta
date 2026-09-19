@@ -46,7 +46,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const deck = await getCommunityDeck(slug);
   if (!deck) return {};
-  return pageMeta(locale, `/decks/community/${deck.slug}`, `${deck.name} · ${dict.community.kicker}`, deck.guide.summary.slice(0, 160));
+  // Copertina del mazzo: l'illustrazione della sua Leggendaria, senza che l'autore debba sceglierne una.
+  const cover = deck.legendary ? getCard(deck.legendary)?.cover : undefined;
+  return pageMeta(locale, `/decks/community/${deck.slug}`, `${deck.name} · ${dict.community.kicker}`, deck.guide.summary.slice(0, 160), cover);
 }
 
 export default async function CommunityDeckPage({ params }: { params: Params }) {
@@ -98,7 +100,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         <div className="flex flex-wrap items-start gap-5">
           {legendary ? (
             <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
-              <CardArt card={legendary} className="!h-[168px] !w-[120px] text-2xl" />
+              <CardArt card={legendary} full className="!h-[168px] !w-[120px] text-2xl" />
             </Link>
           ) : null}
           <div className="min-w-0 flex-1 basis-64">
