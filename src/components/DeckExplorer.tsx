@@ -4,7 +4,19 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 
-type DeckCard = { name: string; thumb?: string; mana?: number };
+type DeckCard = {
+  name: string;
+  thumb?: string;
+  art?: string;
+  mana?: number;
+  power?: number;
+  health?: number;
+  legendary?: boolean;
+  typeLabel?: string;
+  alignment?: "good" | "evil" | "neutral";
+  alignmentLabel?: string;
+  ability?: string;
+};
 
 export type ExplorerDeck = {
   slug: string;
@@ -49,19 +61,52 @@ type Labels = {
   copied: string;
 };
 
-/** Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo. */
+/**
+ * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
+ * Al passaggio del mouse si apre la carta in grande con nome, statistiche e testo dell'abilità, così si legge
+ * il mazzo senza aprirlo. Su touch il pannello non esiste (`hover: none`) e resta il nome nel `title`.
+ */
 function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean }) {
+  const isLeg = legendary || card.legendary;
   return (
-    <span className={`deck-card deck-card-${size} ${legendary ? "is-legendary" : ""}`} title={card.name}>
-      {card.thumb ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={card.thumb} alt="" loading="lazy" decoding="async" />
-      ) : (
-        <span className="deck-card-initials" aria-hidden="true">
-          {card.name.slice(0, 2).toUpperCase()}
+    <span className={`deck-card-wrap ${card.ability || card.power !== undefined ? "has-peek" : ""}`}>
+      <span className={`deck-card deck-card-${size} ${isLeg ? "is-legendary" : ""}`} title={card.name}>
+        {card.thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={card.thumb} alt="" loading="lazy" decoding="async" />
+        ) : (
+          <span className="deck-card-initials" aria-hidden="true">
+            {card.name.slice(0, 2).toUpperCase()}
+          </span>
+        )}
+        {card.mana !== undefined ? <span className="deck-card-mana">{card.mana}</span> : null}
+      </span>
+
+      <span className="deck-peek" aria-hidden="true">
+        <span className={`deck-peek-panel ${isLeg ? "is-legendary" : ""}`}>
+          {card.thumb ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="deck-peek-art" src={card.thumb} alt="" loading="lazy" decoding="async" />
+          ) : null}
+          <span className="deck-peek-body">
+            <span className="deck-peek-name">
+              {isLeg ? "★ " : ""}
+              {card.name}
+            </span>
+            <span className="deck-peek-tags">
+              {card.mana !== undefined ? <span className="deck-peek-mana">{card.mana}</span> : null}
+              {card.power !== undefined ? (
+                <span className="deck-peek-stats">
+                  {card.power} / {card.health}
+                </span>
+              ) : null}
+              {card.typeLabel ? <span className="deck-peek-type">{card.typeLabel}</span> : null}
+              {card.alignmentLabel ? <span className={`deck-peek-align is-${card.alignment}`}>{card.alignmentLabel}</span> : null}
+            </span>
+            {card.ability ? <span className="deck-peek-text">{card.ability}</span> : null}
+          </span>
         </span>
-      )}
-      {card.mana !== undefined ? <span className="deck-card-mana">{card.mana}</span> : null}
+      </span>
     </span>
   );
 }
@@ -247,8 +292,9 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 </Link>
                 <span className="mt-1 flex flex-wrap items-center gap-1.5">{tags(d)}</span>
               </span>
-              {/* Le tredici carte in una sola fila: se non ci stanno, scorre questa striscia, non la pagina. */}
-              <Link href={d.href} className="flex min-w-0 flex-1 gap-1 overflow-x-auto pb-1">
+              {/* Le tredici carte in fila; a schermo stretto vanno a capo. Niente overflow: taglierebbe
+                  l'anteprima che si apre sopra la carta. */}
+              <Link href={d.href} className="flex min-w-0 flex-1 flex-wrap gap-1">
                 {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, mana: d.legendary.mana }} size="xs" legendary /> : null}
                 {d.cardArt.map((c, k) => (
                   <DeckCardArt key={`${c.name}-${k}`} card={c} size="xs" />

@@ -1,19 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { href } from "@/lib/i18n";
+import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import type { Dictionary } from "@/lib/i18n";
 import { archetypeLabels, decks } from "@/lib/data/decks";
+import type { Card } from "@/lib/data/cards";
 import { cards, getCard, statLine } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 
 /** Carte del mazzo per l'elenco: nome, miniatura e costo, ordinate per costo come nel gioco. */
-function deckArt(slugs: string[], lookup: (slug: string) => { name: string; thumb?: string; mana?: number } | undefined) {
+function deckArt(slugs: string[], lookup: (slug: string) => Partial<Card> | undefined, locale: Locale, d: Dictionary) {
+  const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
+  const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   return slugs
     .map((s) => {
       const c = lookup(s);
-      return { name: c?.name ?? s, thumb: c?.thumb, mana: c?.mana };
+      return {
+        name: c?.name ?? s,
+        thumb: c?.thumb,
+        art: c?.art,
+        mana: c?.mana,
+        power: c?.power,
+        health: c?.health,
+        legendary: Boolean(c?.legendary),
+        typeLabel: c?.type ? typeLabel[c.type] : undefined,
+        alignment: c?.alignment,
+        alignmentLabel: c?.alignment ? alignLabel[c.alignment] : undefined,
+        ability: c?.ability?.[locale],
+      };
     })
     .sort((a, b) => (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
 }
@@ -49,7 +66,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         source: "community",
         sourceLabel: d.common.community,
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
-        cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s)),
+        cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s), locale, d),
         code: deck.code_om ?? undefined,
         updated: deck.updated_at.slice(0, 10),
         rating: deck.rating,
@@ -72,7 +89,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       source: deck.source,
       sourceLabel: d.common[deck.source],
       cardNames: deck.cards.map((s) => getCard(s)?.name ?? s),
-      cardArt: deckArt(deck.cards, getCard),
+      cardArt: deckArt(deck.cards, getCard, locale, d),
       updated: deck.updated,
     };
   });
@@ -89,6 +106,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       </p>
 
       <div className="mt-8">
+        {/* sposta l'anteprima della carta quando uscirebbe dai bordi della finestra */}
+        <CardMentionEdges />
         <DeckExplorer
           decks={[...list, ...communityList]}
           labels={{

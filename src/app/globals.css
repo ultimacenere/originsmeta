@@ -312,6 +312,126 @@
     font-size: 0.85rem;
   }
 
+  /* Anteprima della carta al passaggio del mouse: si legge il mazzo senza aprirlo.
+     Stesso principio di `.card-mention`: solo dove il mouse esiste, e su touch resta il `title`. */
+  .deck-card-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .deck-peek {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    z-index: 40;
+    display: none;
+    width: 300px;
+    max-width: 78vw;
+    padding-bottom: 8px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .deck-card-wrap.has-peek:hover > .deck-peek {
+      display: block;
+    }
+  }
+  /* Classi aggiunte da CardMentionEdges quando il pannello uscirebbe dai bordi della finestra */
+  .deck-card-wrap.is-left > .deck-peek {
+    left: 0;
+    transform: none;
+  }
+  .deck-card-wrap.is-right > .deck-peek {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+  .deck-card-wrap.is-down > .deck-peek {
+    top: 100%;
+    bottom: auto;
+    padding-top: 8px;
+    padding-bottom: 0;
+  }
+  .deck-peek-panel {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 0.6rem;
+    padding: 0.65rem;
+    border: 2px solid var(--color-sky);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+    box-shadow: var(--shadow-lift);
+  }
+  .deck-peek-panel.is-legendary {
+    border-color: var(--color-gold);
+    background: linear-gradient(180deg, rgba(242, 210, 60, 0.16) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+  }
+  .deck-peek-art {
+    width: 84px;
+    border-radius: 6px;
+  }
+  .deck-peek-body {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    min-width: 0;
+  }
+  .deck-peek-name {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-sky);
+  }
+  .deck-peek-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+  }
+  .deck-peek-mana,
+  .deck-peek-stats,
+  .deck-peek-type,
+  .deck-peek-align {
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .deck-peek-mana {
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+  }
+  .deck-peek-stats {
+    background: var(--color-night-3);
+    color: var(--color-chalk);
+    font-family: var(--font-mono);
+  }
+  .deck-peek-type {
+    background: var(--color-night-3);
+    color: var(--color-pale);
+  }
+  .deck-peek-align.is-good {
+    border: 1px solid var(--color-mint);
+    color: var(--color-mint);
+  }
+  .deck-peek-align.is-evil {
+    border: 1px solid var(--color-crimson);
+    color: var(--color-crimson);
+  }
+  .deck-peek-align.is-neutral {
+    border: 1px solid var(--color-pale-muted);
+    color: var(--color-pale-muted);
+  }
+  .deck-peek-text {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-pale);
+    white-space: pre-line;
+  }
+
   /* Griglia del database carte: l'illustrazione è il contenuto, i dettagli si scoprono al passaggio del mouse.
      Sotto la carta restano sempre nome e statistiche, così su touch — dove l'hover non esiste — non si perde
      nulla e la scheda completa è a un tocco. */
