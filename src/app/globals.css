@@ -224,6 +224,9 @@
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
     position: relative;
   }
+  .card-chip-art.is-legendary {
+    border-color: var(--color-gold);
+  }
   .card-chip-art img {
     width: 100%;
     height: 100%;
@@ -310,6 +313,97 @@
     min-width: 24px;
     height: 24px;
     font-size: 0.85rem;
+  }
+
+  /* Riga di una carta nel deck builder (pool e mazzo). L'illustrazione sfuma da destra come nei costruttori
+     di mazzi dei giochi di carte: si riconosce la carta di sguardo, il testo resta leggibile perché il velo
+     scuro copre la metà sinistra. `--row-art` è l'URL della miniatura, passato inline dal componente. */
+  .builder-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--color-sky);
+    border-radius: 8px;
+    background: var(--color-night);
+    color: var(--color-chalk);
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .builder-row.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .builder-row.is-in-deck {
+    background: var(--color-night-3);
+  }
+  .builder-row:hover {
+    border-color: var(--color-mint);
+  }
+  /* metà destra: l'illustrazione, sfumata verso sinistra */
+  .builder-row::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 42%;
+    z-index: 0;
+    background-image: var(--row-art);
+    background-position: center 28%;
+    background-size: cover;
+    opacity: 0.55;
+    mask-image: linear-gradient(to right, transparent, #000 55%);
+    pointer-events: none;
+  }
+  .builder-row > * {
+    position: relative;
+    z-index: 1;
+  }
+  .builder-row-text {
+    min-width: 0;
+    flex: 1;
+  }
+  .builder-row-name {
+    display: block;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-chalk);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px var(--color-felt-deep);
+  }
+  .builder-row.is-legendary .builder-row-name {
+    color: var(--color-gold);
+  }
+  .builder-row-stats {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-pale);
+    text-shadow: 0 1px 3px var(--color-felt-deep);
+  }
+  .builder-row-copies {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-mint);
+  }
+  .builder-row-x {
+    flex-shrink: 0;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid var(--color-sky);
+    border-radius: 6px;
+    background: var(--color-night-2);
+    font-size: 0.7rem;
+    color: var(--color-pale);
+  }
+  .builder-row-x:hover {
+    background: var(--color-crimson);
+    color: var(--color-chalk);
   }
 
   /* Anteprima della carta al passaggio del mouse: si legge il mazzo senza aprirlo.
@@ -449,6 +543,9 @@
     transform: translateY(-3px);
     border-color: var(--color-mint);
     box-shadow: var(--shadow-mint);
+  }
+  .card-tile.is-legendary {
+    border-color: var(--color-gold);
   }
   .card-tile.is-removed {
     border-color: var(--color-night-3);

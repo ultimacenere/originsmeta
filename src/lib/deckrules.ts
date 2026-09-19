@@ -31,6 +31,11 @@ export type BuilderCard = {
   thumb?: string;
   /** sola finestra d illustrazione: nei riquadri piccoli si legge molto meglio della carta intera */
   art?: string;
+  /** testo dell abilità nella lingua della pagina e allineamento: servono all anteprima al passaggio del mouse */
+  ability?: string;
+  alignment?: "good" | "evil" | "neutral";
+  alignmentLabel?: string;
+  typeLabel?: string;
   /** carta inserita a mano dall'utente, non presente nel database */
   custom?: boolean;
 };

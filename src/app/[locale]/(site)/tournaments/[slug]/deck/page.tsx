@@ -85,7 +85,7 @@ export default async function TournamentDeckPage({ params }: { params: Params })
             <p className={`mb-4 text-sm font-semibold ${codes.length ? "text-good" : "text-gold"}`}>{codes.length ? x.decksSubmitted : x.decksMissing}</p>
             <p className="mb-4 max-w-3xl text-sm text-pale-muted">{x.deckPage.builderIntro}</p>
             <DeckBuilder
-              pool={builderPool(locale)}
+              pool={builderPool(locale, d)}
               contactEmail={contactEmail}
               shareBase={`${siteUrl}${href(locale, "/deck-builder")}`}
               publishHref={href(locale, "/decks/publish")}

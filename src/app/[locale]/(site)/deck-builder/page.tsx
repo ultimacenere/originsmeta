@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function DeckBuilderPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const pool = builderPool(locale);
+  const pool = builderPool(locale, d);
   const b = d.builder;
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">

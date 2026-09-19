@@ -10,7 +10,7 @@ import { initials, sagaHue } from "@/lib/cardArt";
 export function CardArt({ card, className = "", full = false }: { card: Card; className?: string; full?: boolean }) {
   const src = full ? card.image : card.thumb ?? card.image;
   return (
-    <span className={`card-chip-art ${full ? "card-chip-art-full" : ""} ${className}`} style={src ? undefined : { background: sagaHue[card.saga] ?? sagaHue.other }}>
+    <span className={`card-chip-art ${card.legendary ? "is-legendary" : ""} ${full ? "card-chip-art-full" : ""} ${className}`} style={src ? undefined : { background: sagaHue[card.saga] ?? sagaHue.other }}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={full ? card.name : ""} loading={full ? "eager" : "lazy"} fetchPriority={full ? "high" : undefined} decoding="async" />

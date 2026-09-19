@@ -208,7 +208,7 @@ export function CardExplorer({
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {list.map((c) => (
             <li key={c.slug}>
-              <Link href={c.href} className={`card-tile ${c.removed ? "is-removed" : ""}`}>
+              <Link href={c.href} className={`card-tile ${c.legendary ? "is-legendary" : ""} ${c.removed ? "is-removed" : ""}`}>
                 <span className="card-tile-art" style={c.image ? undefined : { background: sagaHue[c.sagaId] ?? sagaHue.other }}>
                   {c.image ? (
                     // eslint-disable-next-line @next/next/no-img-element

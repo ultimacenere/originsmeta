@@ -11,8 +11,22 @@ import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 
-/** Carte del mazzo per l'elenco: nome, miniatura e costo, ordinate per costo come nel gioco. */
-function deckArt(slugs: string[], lookup: (slug: string) => Partial<Card> | undefined, locale: Locale, d: Dictionary) {
+/** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
+type CardLike = {
+  name: string;
+  type?: Card["type"];
+  thumb?: string;
+  art?: string;
+  mana?: number;
+  power?: number;
+  health?: number;
+  legendary?: boolean;
+  alignment?: Card["alignment"];
+  ability?: Card["ability"] | string;
+};
+
+/** Carte del mazzo per l'elenco: nome, miniatura, costo e testo dell'abilità, ordinate per costo come nel gioco. */
+function deckArt(slugs: string[], lookup: (slug: string) => CardLike | undefined, locale: Locale, d: Dictionary) {
   const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
   const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   return slugs
@@ -29,7 +43,8 @@ function deckArt(slugs: string[], lookup: (slug: string) => Partial<Card> | unde
         typeLabel: c?.type ? typeLabel[c.type] : undefined,
         alignment: c?.alignment,
         alignmentLabel: c?.alignment ? alignLabel[c.alignment] : undefined,
-        ability: c?.ability?.[locale],
+        // le carte del database hanno il testo nelle due lingue, quelle inserite a mano non ce l'hanno affatto
+        ability: typeof c?.ability === "string" ? c.ability : c?.ability?.[locale],
       };
     })
     .sort((a, b) => (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
