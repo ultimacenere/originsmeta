@@ -14,6 +14,10 @@ export type ExplorerCard = {
   sagaId: string;
   sagaLabel: string;
   image?: string;
+  /** carta ufficiale a 480 px, per gli schermi ad alta densità */
+  imageLarge?: string;
+  /** testo dell abilità nella lingua della pagina, mostrato nel pannello al passaggio del mouse */
+  ability?: string;
   mana?: number;
   power?: number;
   health?: number;
@@ -199,51 +203,58 @@ export function CardExplorer({
       {list.length === 0 ? (
         <p className="card-night p-6 text-pale-muted">{labels.noResults}</p>
       ) : (
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        /* Griglia di illustrazioni: l'immagine è il contenuto, i dettagli si scoprono al passaggio del mouse
+           (su touch restano nome e statistiche sotto la carta, e la scheda è a un tocco). */
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {list.map((c) => (
             <li key={c.slug}>
-              <Link href={c.href} className={`card-night card-night-hover flex h-full gap-4 p-4 ${c.removed ? "opacity-75" : ""}`}>
-                <span className="card-chip-art !h-[88px] !w-[64px] shrink-0 text-base" style={c.image ? undefined : { background: sagaHue[c.sagaId] ?? sagaHue.other }}>
+              <Link href={c.href} className={`card-tile ${c.removed ? "is-removed" : ""}`}>
+                <span className="card-tile-art" style={c.image ? undefined : { background: sagaHue[c.sagaId] ?? sagaHue.other }}>
                   {c.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={c.image} alt="" loading="lazy" />
+                    <img src={c.image} srcSet={c.imageLarge ? `${c.image} 160w, ${c.imageLarge} 480w` : undefined} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" alt="" loading="lazy" decoding="async" />
                   ) : (
-                    <span aria-hidden="true">{initials(c.name)}</span>
+                    <span className="card-tile-initials" aria-hidden="true">
+                      {initials(c.name)}
+                    </span>
                   )}
-                  {c.mana !== undefined ? <span className="mana">{c.mana}</span> : null}
+                  {c.mana !== undefined ? <span className="card-tile-mana">{c.mana}</span> : null}
+                  {c.legendary ? <span className="card-tile-star" aria-hidden="true">★</span> : null}
+
+                  <span className="card-tile-info">
+                    <span className="kicker block text-mint">{c.sagaLabel}</span>
+                    <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                      <span className="stat-pill bg-night-3 text-[11px] text-pale">{c.typeLabel}</span>
+                      {c.alignmentLabel && c.alignment ? <span className={`stat-pill text-[11px] ${alignStyle[c.alignment]}`}>{c.alignmentLabel}</span> : null}
+                      {c.legendary ? (
+                        <span className="stat-pill bg-gold/40 text-[11px] text-pale">{labels.legendary}</span>
+                      ) : c.rarityLabel ? (
+                        <span className="stat-pill bg-night-3 text-[11px] text-pale-muted">{c.rarityLabel}</span>
+                      ) : null}
+                      {c.removed ? <span className="stat-pill bg-crimson/20 text-[11px] text-crimson">{c.removedLabel}</span> : null}
+                      {c.lastKind && c.lastKindLabel ? <span className={`stat-pill text-[11px] font-semibold uppercase ${kindStyle[c.lastKind]}`}>{c.lastKindLabel}</span> : null}
+                    </span>
+                    {c.ability ? <span className="card-tile-text">{c.ability}</span> : null}
+                    {c.keywords.length ? (
+                      <span className="mt-2 flex flex-wrap gap-1">
+                        {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
+                          <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[10px] text-pale-muted">
+                            {k}
+                          </span>
+                        ))}
+                        {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 text-[10px] text-pale-muted">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
+                      </span>
+                    ) : null}
+                  </span>
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="kicker block text-pale-muted">{c.sagaLabel}</span>
-                  <span className="mt-1 block font-display text-lg font-bold leading-tight text-sky sm:truncate">
+
+                <span className="card-tile-foot">
+                  <span className="min-w-0 flex-1 truncate font-display text-sm font-bold leading-tight text-sky">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>
-                  <span className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                    {c.power !== undefined ? (
-                      <span className="font-mono tabular text-pale">{`${c.power} / ${c.health}`}</span>
-                    ) : c.type === "unit" ? (
-                      <em className="font-mono text-pale-muted">{labels.unknownStats}</em>
-                    ) : null}
-                    {c.type !== "unit" ? <span className="text-pale-muted">{c.typeLabel}</span> : null}
-                    {c.alignmentLabel && c.alignment ? <span className={`stat-pill text-[11px] ${alignStyle[c.alignment]}`}>{c.alignmentLabel}</span> : null}
-                    {c.legendary ? (
-                      <span className="stat-pill bg-gold/40 text-pale">{labels.legendary}</span>
-                    ) : c.rarityLabel ? (
-                      <span className="text-[11px] uppercase tracking-wide text-pale-muted">{c.rarityLabel}</span>
-                    ) : null}
-                    {c.removed ? <span className="stat-pill bg-crimson/15 text-crimson">{c.removedLabel}</span> : null}
-                  </span>
-                  <span className="mt-2 flex flex-wrap gap-1.5">
-                    {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
-                      <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[11px] text-pale-muted">
-                        {k}
-                      </span>
-                    ))}
-                    {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 py-0.5 text-[11px] text-pale-muted">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
-                    {c.lastKind && c.lastKindLabel ? (
-                      <span className={`stat-pill ml-auto text-[11px] font-semibold uppercase ${kindStyle[c.lastKind]}`}>{c.lastKindLabel}</span>
-                    ) : null}
-                  </span>
+                  {/* Solo le statistiche: il tipo della carta si legge nel pannello e sulla carta stessa. */}
+                  {c.power !== undefined ? <span className="shrink-0 font-mono text-xs tabular text-pale">{`${c.power}/${c.health}`}</span> : null}
                 </span>
               </Link>
             </li>

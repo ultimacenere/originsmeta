@@ -776,14 +776,16 @@ function LockIcon() {
   );
 }
 
-/** Riquadro della carta nel builder: illustrazione ufficiale dove c'è, iniziali sulle carte che il materiale
- *  non copre e su quelle inserite a mano dall'utente. Lazy: nel pool se ne vedono decine insieme. */
+/** Riquadro della carta nel builder: si usa la finestra d'illustrazione, non la carta intera, perché in un
+ *  riquadro così piccolo la carta rimpicciolita è illeggibile mentre il volto del personaggio si riconosce.
+ *  Iniziali sulle carte che il materiale non copre e su quelle inserite a mano. Lazy: nel pool sono decine. */
 function BuilderArt({ card }: { card: BuilderCard }) {
+  const src = card.art ?? card.thumb;
   return (
-    <span className="card-chip-art !h-9 !w-7 shrink-0 text-[10px]">
-      {card.thumb ? (
+    <span className="card-chip-art !h-11 !w-9 shrink-0 text-[10px]">
+      {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={card.thumb} alt="" loading="lazy" decoding="async" />
+        <img src={src} alt="" loading="lazy" decoding="async" />
       ) : (
         initials(card.name)
       )}

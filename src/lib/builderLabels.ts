@@ -89,5 +89,6 @@ export function builderPool(locale: Locale): BuilderCard[] {
       sagaLabel: sagas[c.saga][locale],
       key: c.key,
       thumb: c.thumb,
+      art: c.art,
     }));
 }

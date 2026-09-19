@@ -250,6 +250,128 @@
     text-align: center;
   }
 
+  /* Miniature delle carte nella scheda di un mazzo: dodici carte in fila, riconoscibili a colpo d'occhio. */
+  .deck-mini {
+    display: grid;
+    width: 34px;
+    height: 46px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--color-sky);
+    border-radius: 4px;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .deck-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Griglia del database carte: l'illustrazione è il contenuto, i dettagli si scoprono al passaggio del mouse.
+     Sotto la carta restano sempre nome e statistiche, così su touch — dove l'hover non esiste — non si perde
+     nulla e la scheda completa è a un tocco. */
+  .card-tile {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 3px solid var(--color-sky);
+    border-radius: 14px;
+    background: var(--color-night);
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  }
+  .card-tile:hover,
+  .card-tile:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--color-mint);
+    box-shadow: var(--shadow-mint);
+  }
+  .card-tile.is-removed {
+    border-color: var(--color-night-3);
+    opacity: 0.8;
+  }
+  .card-tile-art {
+    position: relative;
+    display: grid;
+    aspect-ratio: 1425 / 2048;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .card-tile-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .card-tile-initials {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .card-tile-mana {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: grid;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .card-tile-star {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    color: var(--color-gold);
+    font-size: 1.1rem;
+  }
+  /* Pannello dei dettagli: chiuso di suo, si apre sopra l'illustrazione al passaggio del mouse o col focus
+     da tastiera. Su touch non esiste (hover: none) e i dettagli si leggono nella scheda della carta. */
+  .card-tile-info {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    background: linear-gradient(to top, var(--color-felt-deep) 45%, color-mix(in srgb, var(--color-felt-deep) 80%, transparent));
+  }
+  @media (hover: hover) {
+    .card-tile:hover .card-tile-info,
+    .card-tile:focus-visible .card-tile-info {
+      display: flex;
+    }
+  }
+  .card-tile-text {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--color-pale);
+    white-space: pre-line;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+  .card-tile-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-top: 2px solid var(--color-night-3);
+    background: var(--color-night-2);
+  }
+
   /* Carta come si legge in partita, disegnata da noi (GameCard): cornice celeste (oro per le Leggendarie),
      finestra d'arte ufficiale in alto, dati dal nostro database. La larghezza la decide chi la usa. */
   .game-card {

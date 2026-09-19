@@ -15,7 +15,9 @@ export type ExplorerDeck = {
   creator: string;
   source: string;
   sourceLabel: string;
+  /** carte del mazzo: nome per la ricerca, miniatura della carta ufficiale per l anteprima */
   cardNames: string[];
+  cardArt: { name: string; thumb?: string }[];
   updated: string;
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
@@ -34,7 +36,6 @@ type Labels = {
   all: string;
   results: string;
   noResults: string;
-  cardsInDeck: string;
   votes: string;
   vote: string;
 };
@@ -146,9 +147,21 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
                 <span className="mt-3 block text-xs text-pale-muted">
                   {labels.creator}: <strong className="text-pale">{d.creator}</strong>
                 </span>
-                <span className="mt-3 block border-t border-sky pt-3 text-xs text-pale-muted">
-                  <span className="kicker">{labels.cardsInDeck}</span>
-                  <span className="mt-1 block text-pale">{d.cardNames.join(" · ")}</span>
+                {/* Le carte del mazzo si guardano, non si leggono: miniature della carta ufficiale al posto
+                    dell'elenco dei nomi. Il nome resta nel title, e nella scheda del mazzo ci sono i render. */}
+                <span className="mt-auto block border-t border-sky pt-3">
+                  <span className="flex flex-wrap gap-1">
+                    {d.cardArt.map((c, i) => (
+                      <span key={`${c.name}-${i}`} className="deck-mini" title={c.name}>
+                        {c.thumb ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={c.thumb} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <span aria-hidden="true">{c.name.slice(0, 2).toUpperCase()}</span>
+                        )}
+                      </span>
+                    ))}
+                  </span>
                 </span>
                 </span>
               </Link>

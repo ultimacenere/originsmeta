@@ -29,6 +29,8 @@ export type BuilderCard = {
   key?: string;
   /** miniatura della carta ufficiale (160 px), assente sulle carte che il materiale non copre */
   thumb?: string;
+  /** sola finestra d illustrazione: nei riquadri piccoli si legge molto meglio della carta intera */
+  art?: string;
   /** carta inserita a mano dall'utente, non presente nel database */
   custom?: boolean;
 };

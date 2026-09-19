@@ -38,6 +38,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         source: "community",
         sourceLabel: d.common.community,
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
+        cardArt: deck.cards.map((s) => ({ name: getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s, thumb: getCard(s)?.thumb })),
         updated: deck.updated_at.slice(0, 10),
         rating: deck.rating,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
@@ -59,6 +60,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       source: deck.source,
       sourceLabel: d.common[deck.source],
       cardNames: deck.cards.map((s) => getCard(s)?.name ?? s),
+      cardArt: deck.cards.map((s) => ({ name: getCard(s)?.name ?? s, thumb: getCard(s)?.thumb })),
       updated: deck.updated,
     };
   });
@@ -85,7 +87,6 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             all: d.common.all,
             results: d.common.results,
             noResults: d.common.noDecks,
-            cardsInDeck: d.common.cardsInDeck,
             votes: d.community.votes,
             vote: d.community.vote,
           }}
