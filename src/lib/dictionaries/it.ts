@@ -379,6 +379,7 @@ export const it: Dictionary = {
     error: "Accesso non riuscito. Riprova o usa l'altro metodo.",
     providerError: "L'accesso con Discord non è disponibile in questo momento. Usa il link via email.",
     rateLimited: "Un link è già partito verso questo indirizzo da poco: controlla la posta (anche lo spam) oppure aspetta un minuto e riprova.",
+    captchaError: "La verifica di sicurezza non è andata a buon fine. Rifalla, oppure ricarica la pagina e riprova.",
     disabled: "Gli account non sono ancora attivi su questo sito.",
     whyTitle: "Cosa puoi fare con un account",
     why: ["Pubblicare i mazzi dal deck builder, con la tua guida.", "Votare i mazzi della community da 1 a 5 stelle.", "Modificare, nascondere o eliminare i tuoi mazzi quando vuoi."],

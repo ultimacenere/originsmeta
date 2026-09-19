@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/supabase/server";
 import { canListTournaments } from "@/lib/tournament/types";
 import { TournamentForm } from "@/components/TournamentForm";
 import { LoginPanel } from "@/components/LoginPanel";
+import { loginLabels } from "@/lib/loginLabels";
 
 /** Pagina "Organizza un torneo": renderizzata sul server (legge la sessione), quindi passa dal proxy per il refresh dei cookie. */
 export const dynamic = "force-dynamic";
@@ -17,7 +18,6 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 export default async function NewTournamentPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
-  const a = d.auth;
   const path = href(locale, "/tournaments/new");
   const { supabase, user } = await currentUser();
 
@@ -28,23 +28,7 @@ export default async function NewTournamentPage({ params }: { params: LocalePara
     body = (
       <div className="card-night p-6 sm:p-8">
         <p className="mb-4 text-pale">{x.create.loginFirst}</p>
-        <LoginPanel
-          next={path}
-          labels={{
-            discord: a.discord,
-            or: a.or,
-            email: a.email,
-            emailPlaceholder: a.emailPlaceholder,
-            magicLink: a.magicLink,
-            sending: a.sending,
-            sent: a.sent,
-            error: a.error,
-            providerError: a.providerError,
-            rateLimited: a.rateLimited,
-            disabled: a.disabled,
-            backHint: a.backHint,
-          }}
-        />
+        <LoginPanel next={path} labels={loginLabels(d)} locale={locale} />
       </div>
     );
   } else {
