@@ -8,6 +8,17 @@ import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 
+/** Carte del mazzo per l'elenco: nome, miniatura e costo, ordinate per costo come nel gioco. */
+function deckArt(slugs: string[], lookup: (slug: string) => { name: string; thumb?: string; mana?: number } | undefined) {
+  return slugs
+    .map((s) => {
+      const c = lookup(s);
+      return { name: c?.name ?? s, thumb: c?.thumb, mana: c?.mana };
+    })
+    .sort((a, b) => (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
+}
+
+
 /** I mazzi della community arrivano da Supabase: la pagina si rigenera al massimo ogni 5 minuti (e subito dopo ogni pubblicazione). */
 export const revalidate = 300;
 
@@ -31,14 +42,15 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
         tagline: deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary,
-        legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
+        legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, mana: leg.mana } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
         creator: authorName(deck.profile),
         source: "community",
         sourceLabel: d.common.community,
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
-        cardArt: deck.cards.map((s) => ({ name: getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s, thumb: getCard(s)?.thumb })),
+        cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s)),
+        code: deck.code_om ?? undefined,
         updated: deck.updated_at.slice(0, 10),
         rating: deck.rating,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
@@ -53,14 +65,14 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       name: deck.name,
       href: href(locale, `/decks/${deck.slug}`),
       tagline: deck.tagline[locale],
-      legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover } : undefined,
+      legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, mana: leg.mana } : undefined,
       archetype: deck.archetype,
       archetypeLabel: archetypeLabels[deck.archetype][locale],
       creator: deck.creator.name,
       source: deck.source,
       sourceLabel: d.common[deck.source],
       cardNames: deck.cards.map((s) => getCard(s)?.name ?? s),
-      cardArt: deck.cards.map((s) => ({ name: getCard(s)?.name ?? s, thumb: getCard(s)?.thumb })),
+      cardArt: deckArt(deck.cards, getCard),
       updated: deck.updated,
     };
   });
@@ -89,6 +101,10 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             noResults: d.common.noDecks,
             votes: d.community.votes,
             vote: d.community.vote,
+            viewBlocks: d.common.viewBlocks,
+            viewList: d.common.viewList,
+            copyCode: d.common.copyCode,
+            copied: d.common.copied,
           }}
         />
       </div>
