@@ -709,7 +709,7 @@ export function DeckBuilder({
                 }}
                 className={`builder-row deck-card-wrap has-peek ${c.legendary ? "is-legendary" : ""} ${inDeck ? "is-in-deck" : ""} ${full && !inDeck ? "is-full" : ""}`}
                 title={c.name}
-                style={c.art ?? c.thumb ? ({ ["--row-art" as string]: `url(${c.art ?? c.thumb})` } as React.CSSProperties) : undefined}
+                style={c.thumb ?? c.art ? ({ ["--row-art" as string]: `url(${c.thumb ?? c.art})` } as React.CSSProperties) : undefined}
               >
                 <BuilderArt card={c} />
                 <span className="builder-row-text">
@@ -815,7 +815,7 @@ function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; c
     <div
       className={`builder-row is-in-deck deck-card-wrap has-peek ${card.legendary ? "is-legendary" : ""}`}
       title={card.name}
-      style={card.art ?? card.thumb ? ({ ["--row-art" as string]: `url(${card.art ?? card.thumb})` } as React.CSSProperties) : undefined}
+      style={card.thumb ?? card.art ? ({ ["--row-art" as string]: `url(${card.thumb ?? card.art})` } as React.CSSProperties) : undefined}
     >
       <span className="builder-row-copies">{copies}×</span>
       <BuilderArt card={card} />
