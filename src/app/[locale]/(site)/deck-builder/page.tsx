@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { RULES } from "@/lib/deckrules";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { contactEmail } from "@/components/Footer";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -38,6 +39,8 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
       </div>
 
       <div className="mt-8">
+        {/* posiziona l anteprima della carta, che nel pool sta in una lista con scorrimento */}
+        <CardMentionEdges />
         <DeckBuilder
           pool={pool}
           contactEmail={contactEmail}

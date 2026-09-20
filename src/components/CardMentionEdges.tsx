@@ -37,6 +37,16 @@ export function CardMentionEdges() {
       const r = peek.getBoundingClientRect();
       const w = panel.offsetWidth || 300;
       const h = panel.offsetHeight || 200;
+
+      // Nel deck builder la riga sta dentro una lista che scorre: un pannello in `absolute` verrebbe tagliato
+      // dal contenitore, quindi lì si posiziona rispetto alla finestra.
+      if (peek.classList.contains("builder-row")) {
+        const sopra = r.top - h - 6 >= margin;
+        panel.style.left = `${Math.min(Math.max(margin, r.left + r.width / 2 - w / 2), window.innerWidth - w - margin)}px`;
+        panel.style.top = sopra ? `${r.top - h - 6}px` : `${Math.min(r.bottom + 6, window.innerHeight - h - margin)}px`;
+        return;
+      }
+
       const centro = r.left + r.width / 2;
       peek.classList.toggle("is-left", centro - w / 2 < margin);
       peek.classList.toggle("is-right", centro + w / 2 > window.innerWidth - margin);

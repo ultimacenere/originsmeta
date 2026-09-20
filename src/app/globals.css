@@ -318,45 +318,69 @@
   /* Riga di una carta nel deck builder (pool e mazzo). L'illustrazione sfuma da destra come nei costruttori
      di mazzi dei giochi di carte: si riconosce la carta di sguardo, il testo resta leggibile perché il velo
      scuro copre la metà sinistra. `--row-art` è l'URL della miniatura, passato inline dal componente. */
-  .builder-row {
+  /* Lo sfondo sta sull'elemento, non su uno pseudo-elemento: così il bordo arrotondato lo ritaglia da solo
+     e la riga NON ha bisogno di `overflow: hidden`, che taglierebbe l'anteprima aperta al passaggio del mouse.
+     Due strati: il velo (sopra) che tiene leggibile il testo a sinistra, l'illustrazione (sotto) a destra. */
+  /* `.deck-card-wrap` porta `inline-flex` (serve alle carte in fila); qui la riga deve restare a piena
+     larghezza, una per riga, quindi il display va riaffermato con la specificità giusta. */
+  .builder-row,
+  .deck-card-wrap.builder-row {
     position: relative;
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 0.5rem;
-    overflow: hidden;
+    min-height: 54px;
     padding: 0.35rem 0.5rem;
     border: 1px solid var(--color-sky);
     border-radius: 8px;
-    background: var(--color-night);
+    background-color: var(--color-night);
+    background-image: linear-gradient(90deg, var(--color-night) 34%, rgba(24, 34, 56, 0.72) 62%, rgba(24, 34, 56, 0.45) 100%), var(--row-art, none);
+    background-position:
+      0 0,
+      right 28%;
+    background-size:
+      auto,
+      auto 150%;
+    background-repeat: no-repeat;
     color: var(--color-chalk);
     cursor: pointer;
-    transition: border-color 120ms ease, background 120ms ease;
+    transition: border-color 120ms ease, background-color 120ms ease;
   }
   .builder-row.is-legendary {
     border-color: var(--color-gold);
   }
   .builder-row.is-in-deck {
-    background: var(--color-night-3);
+    background-color: var(--color-night-3);
+    background-image: linear-gradient(90deg, var(--color-night-3) 34%, rgba(34, 48, 75, 0.72) 62%, rgba(34, 48, 75, 0.45) 100%), var(--row-art, none);
+  }
+  .builder-row.is-full {
+    cursor: default;
+    opacity: 0.45;
   }
   .builder-row:hover {
     border-color: var(--color-mint);
   }
-  /* metà destra: l'illustrazione, sfumata verso sinistra */
-  .builder-row::after {
-    content: "";
-    position: absolute;
-    inset: 0 0 0 42%;
-    z-index: 0;
-    background-image: var(--row-art);
-    background-position: center 28%;
-    background-size: cover;
-    opacity: 0.55;
-    mask-image: linear-gradient(to right, transparent, #000 55%);
-    pointer-events: none;
+  /* Segno dello stato al posto dei tasti: la riga intera è cliccabile, quindi resta solo l'indicazione. */
+  .builder-row-state {
+    display: grid;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(14, 7, 31, 0.65);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-mint);
   }
-  .builder-row > * {
-    position: relative;
-    z-index: 1;
+  .builder-row.is-in-deck .builder-row-state {
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .builder-row.is-full .builder-row-state {
+    color: var(--color-pale-muted);
   }
   .builder-row-text {
     min-width: 0;
@@ -429,6 +453,16 @@
       display: block;
     }
   }
+  /* Nel builder la riga sta in una lista che scorre: il pannello si posiziona rispetto alla finestra
+     (coordinate scritte da CardMentionEdges), altrimenti il contenitore lo taglierebbe. */
+  .builder-row > .deck-peek {
+    position: fixed;
+    bottom: auto;
+    left: 0;
+    padding-bottom: 0;
+    transform: none;
+  }
+
   /* Classi aggiunte da CardMentionEdges quando il pannello uscirebbe dai bordi della finestra */
   .deck-card-wrap.is-left > .deck-peek {
     left: 0;

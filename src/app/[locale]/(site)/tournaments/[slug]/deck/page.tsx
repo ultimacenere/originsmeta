@@ -9,6 +9,7 @@ import { decksRequired, fill, tournamentBuilderKey } from "@/lib/tournament/type
 import { submitDeckCodes } from "@/lib/tournament/actions";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { TournamentDecksForm } from "@/components/TournamentDecksForm";
 import { contactEmail } from "@/components/Footer";
 
@@ -84,6 +85,8 @@ export default async function TournamentDeckPage({ params }: { params: Params })
           <>
             <p className={`mb-4 text-sm font-semibold ${codes.length ? "text-good" : "text-gold"}`}>{codes.length ? x.decksSubmitted : x.decksMissing}</p>
             <p className="mb-4 max-w-3xl text-sm text-pale-muted">{x.deckPage.builderIntro}</p>
+            {/* posiziona l anteprima della carta, che nel pool sta in una lista con scorrimento */}
+            <CardMentionEdges />
             <DeckBuilder
               pool={builderPool(locale, d)}
               contactEmail={contactEmail}

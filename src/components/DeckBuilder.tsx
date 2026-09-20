@@ -707,9 +707,9 @@ export function DeckBuilder({
                     else if (!full) addCard(c);
                   }
                 }}
-                className={`builder-row deck-card-wrap has-peek ${c.legendary ? "is-legendary" : ""} ${inDeck ? "is-in-deck" : ""}`}
+                className={`builder-row deck-card-wrap has-peek ${c.legendary ? "is-legendary" : ""} ${inDeck ? "is-in-deck" : ""} ${full && !inDeck ? "is-full" : ""}`}
                 title={c.name}
-                style={c.thumb ? ({ ["--row-art" as string]: `url(${c.thumb})` } as React.CSSProperties) : undefined}
+                style={c.art ?? c.thumb ? ({ ["--row-art" as string]: `url(${c.art ?? c.thumb})` } as React.CSSProperties) : undefined}
               >
                 <BuilderArt card={c} />
                 <span className="builder-row-text">
@@ -721,30 +721,11 @@ export function DeckBuilder({
                     {c.mana ?? "?"} · {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
                   </span>
                 </span>
+                {/* Niente tasti: si clicca la riga intera. Resta un segno dello stato, uguale su ogni riga. */}
+                <span className="builder-row-state" aria-hidden="true">
+                  {inDeck ? "✓" : full ? "–" : "+"}
+                </span>
                 <BuilderPeek card={c} />
-                {inDeck ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeCard(c.slug);
-                    }}
-                    className="stat-pill bg-night-3 text-chalk text-[10px]"
-                  >
-                    {labels.inDeck} ✕
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addCard(c);
-                    }}
-                    disabled={full}
-                    className={`stat-pill text-[10px] font-bold ${full ? "bg-chalk/10 text-pale-muted" : "bg-mint text-ink"}`}>
-                    {full ? labels.full : `+ ${labels.add}`}
-                  </button>
-                )}
               </li>
             );
           })}
@@ -834,7 +815,7 @@ function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; c
     <div
       className={`builder-row is-in-deck deck-card-wrap has-peek ${card.legendary ? "is-legendary" : ""}`}
       title={card.name}
-      style={card.thumb ? ({ ["--row-art" as string]: `url(${card.thumb})` } as React.CSSProperties) : undefined}
+      style={card.art ?? card.thumb ? ({ ["--row-art" as string]: `url(${card.art ?? card.thumb})` } as React.CSSProperties) : undefined}
     >
       <span className="builder-row-copies">{copies}×</span>
       <BuilderArt card={card} />
