@@ -14,8 +14,10 @@ import { cards, type Card } from "./data/cards";
  * - vince la corrispondenza più lunga: i nomi stanno nell'alternanza ordinati per lunghezza decrescente, così
  *   "Merlin's Prophecy" batte "Merlin", "Jack-in-the-Box" batte "Jack" e "Not So Little Pig" batte "Little Pig";
  * - confini di parola Unicode: subito prima e subito dopo il nome non ci deve essere una lettera o una cifra
- *   (`\p{L}`, `\p{N}`), quindi "Dracula's" collega "Dracula", "d'Aladdin" collega "Aladdin" e "Little Pigs" non
- *   collega "Little Pig";
+ *   (`\p{L}`, `\p{N}`), quindi "Dracula's" collega "Dracula" e "d'Aladdin" collega "Aladdin";
+ * - plurale inglese: la "s" (o "es") finale entra nel link e si cerca il singolare, così "Lightning Strikes" porta a
+ *   Lightning Strike e "Little Pigs" al token Little Pig; i nomi già plurali vincono comunque perché più lunghi
+ *   ("Three Musketeers", "Queen of Hearts", "Van Helsing's Tools");
  * - nomi di più parole: maiuscole libere ("first aid" → First Aid); nomi di una sola parola: l'iniziale deve essere
  *   maiuscola come nel nome ufficiale, per non collegare parole comuni (beast, mouse, garlic, pumpkin…);
  * - l'apostrofo del nome vale sia dritto (') sia tipografico (’); uno spazio nel nome vale una sequenza di spazi bianchi;
@@ -74,14 +76,16 @@ const alternatives = [...candidates]
   .sort((a, b) => [...b.name].length - [...a.name].length)
   .map((c) => namePattern(c.name))
   .join("|");
-const pattern = new RegExp(`(?<![${WORD}])(?:${alternatives})(?![${WORD}])`, "gu");
+/** Il plurale sta in un gruppo a parte (l'unico dell'espressione): serve a risalire al nome ufficiale. */
+const pattern = new RegExp(`(?<![${WORD}])(?:${alternatives})(e?s)?(?![${WORD}])`, "gu");
 
 /** Spezza il testo in tratti semplici e menzioni di carte; senza carte restituisce il testo intero in un solo tratto. */
 export function linkCardNames(text: string): CardTextSegment[] {
   const out: CardTextSegment[] = [];
   let last = 0;
   for (const m of text.matchAll(pattern)) {
-    const card = byKey.get(nameKey(m[0]));
+    const plural = m[1]?.length ?? 0;
+    const card = byKey.get(nameKey(m[0])) ?? (plural ? byKey.get(nameKey(m[0].slice(0, -plural))) : undefined);
     if (!card) continue;
     const start = m.index ?? 0;
     if (start > last) out.push(text.slice(last, start));
