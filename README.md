@@ -144,6 +144,20 @@ Dal 17/09/2026 dei bot chiedevano link di accesso in continuazione: 54 account f
 - **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. Il campo `key` delle carte arriva dall'import di World of Origins (tutte le carte tranne Merry Man), quindi export e import dei codici del gioco funzionano; verificato su due codici reali del 03/09/2026 (decodifica corretta e ricodifica identica). Se un codice contiene chiavi non abbinate, restano visibili per poterle segnalare.
 - **Formato OriginsMeta** (`OM1.`): base64url di JSON con nome, leggendaria, carte e carte personalizzate; usato per i link di condivisione (`/deck-builder#OM1.…`).
 
+## Pagina FAQ e assistente (dal 20/09/2026)
+
+`/faq` (EN e IT) ha due metà: in alto si può chiedere qualunque cosa, sotto stanno le risposte approvate.
+
+- **Le risposte approvate** (`src/lib/content/faq.ts`) sono testo scritto da noi, in HTML statico e nei dati strutturati FAQPage: le legge anche Google e non costano nulla. Quando una domanda torna spesso, si scrive lì in EN e IT e smette di passare dal modello.
+- **La domanda libera** passa da `/api/ask`. La risposta non viene dalla memoria del modello: `src/lib/faq/retrieve.ts` pesca dal nostro database le carte, le guide e gli eventi pertinenti e ne fa schede compatte; `src/lib/faq/ask.ts` le passa a `claude-opus-5` con l istruzione di usare solo quelle e di dire che non lo sa quando non bastano. Sotto la risposta compaiono le fonti come link alle nostre pagine. Vale anche qui la regola del progetto: nulla si inventa.
+- **Difese**: domanda di 300 caratteri al massimo, CAPTCHA Turnstile verificato qui con `TURNSTILE_SECRET_KEY` (a differenza dell accesso, dove lo verifica Supabase), cinque domande al minuto per indirizzo IP.
+
+**Per accendere l assistente** serve un passo manuale: Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY` (tipo **Secret**, tutti gli ambienti), presa da console.anthropic.com, poi un nuovo deploy. La chiave non va mai nel codice né in `.env.local` committato.
+
+Senza chiave la pagina non si rompe: `/api/ask` risponde 503 e la pagina mostra solo le FAQ approvate con la riga "l assistente è spento". Stessa cosa se la chiave è sbagliata (un `AuthenticationError` viene trattato come assenza di chiave).
+
+Per provare il recupero senza spendere: si aggiunge una rotta temporanea che chiama `contestoPer(domanda, "it")` e ne stampa fonti e testo. Attenzione, in App Router una cartella che inizia con `_` è privata e **non** diventa una rotta.
+
 ## Cookie e GDPR
 
 - Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
