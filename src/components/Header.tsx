@@ -14,6 +14,7 @@ export function navItems(dict: Dictionary): { label: string; path: string }[] {
     { label: dict.nav.decks, path: "/decks" },
     { label: dict.nav.builder, path: "/deck-builder" },
     { label: dict.nav.events, path: "/tournaments" },
+    { label: dict.nav.faq, path: "/faq" },
   ];
 }
 
