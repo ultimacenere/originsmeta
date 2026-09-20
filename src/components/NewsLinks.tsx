@@ -11,9 +11,19 @@ export function isDeckNews(item: NewsItem): boolean {
   return item.source === "community" || item.source === "staff";
 }
 
+/** Dominio leggibile di un link esterno (senza "www."): serve a dire dove porta il link prima del clic. */
+function linkDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
 /**
  * Link alla fonte di una news: esterno (post Steam, stampa) oppure interno al sito per le news sui mazzi
- * pubblicati qui (es. /decks/community/…).
+ * pubblicati qui (es. /decks/community/…). Sul link esterno l'etichetta porta anche il dominio
+ * ("Fonte · steamcommunity.com →") così si sa dove si sta andando.
  */
 export function NewsSourceLink({ item, locale, dict, className = "" }: Props & { className?: string }) {
   if (isDeckNews(item)) {
@@ -23,9 +33,10 @@ export function NewsSourceLink({ item, locale, dict, className = "" }: Props & {
       </Link>
     );
   }
+  const domain = linkDomain(item.url);
   return (
     <a href={item.url} rel="noopener" className={className}>
-      {dict.common.source} →
+      {domain ? `${dict.common.source} · ${domain}` : dict.common.source} →
     </a>
   );
 }

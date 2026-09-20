@@ -1,4 +1,4 @@
-import { cards, sagas, statLine, type Card } from "@/lib/data/cards";
+import { cards, sagas, type Card } from "@/lib/data/cards";
 import { getGuides } from "@/lib/content/guides";
 import { events } from "@/lib/data/events";
 import { RULES } from "@/lib/deckrules";

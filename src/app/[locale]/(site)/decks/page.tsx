@@ -10,6 +10,7 @@ import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
 type CardLike = {
@@ -58,7 +59,7 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/decks", dict.decks.title, dict.decks.intro);
+  return pageMeta(locale, "/decks", dict.decks.title, dict.decks.description);
 }
 
 export default async function DecksPage({ params }: { params: LocaleParams }) {
@@ -111,8 +112,29 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
     };
   });
 
+  // Lista per i dati strutturati: solo i mazzi editoriali statici (oggi `decks` è vuoto, quindi l'ItemList
+  // resta senza voci). I mazzi della community non ci vanno: arrivano da Supabase e cambiano a ogni
+  // pubblicazione, e ognuno ha già la sua scheda indicizzabile in /decks/community/[slug].
+  const listed = decks.map((deck) => ({ name: deck.name, path: href(locale, `/decks/${deck.slug}`) }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.decks.title, path: href(locale, "/decks") },
+          ]),
+          collectionPage({
+            locale,
+            path: href(locale, "/decks"),
+            name: d.decks.title,
+            description: d.decks.description,
+            items: listed,
+            about: videoGameId,
+          }),
+        ]}
+      />
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>

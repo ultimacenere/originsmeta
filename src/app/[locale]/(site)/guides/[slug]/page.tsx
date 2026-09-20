@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
-import { pageMeta, resolveLocale } from "@/lib/page";
-import { getGuide, guideSlugs } from "@/lib/content/guides";
+import { defaultOgImage, pageMeta, resolveLocale } from "@/lib/page";
+import { imageSizeOf } from "@/lib/imageSize";
+import { getGuide, guideSlugs, type Guide } from "@/lib/content/guides";
+import { authorOfGuide } from "@/lib/data/authors";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
-import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 import { siteUrl } from "@/lib/i18n";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -17,14 +19,31 @@ export function generateStaticParams() {
   return locales.flatMap((locale) => guideSlugs.map((slug) => ({ locale, slug })));
 }
 
+/**
+ * Data di prima pubblicazione: `updated` cambia a ogni revisione, quindi da solo riscriverebbe anche
+ * datePublished. Il campo `published` non esiste ancora nel tipo Guide: appena verrà aggiunto questa
+ * lettura lo userà, senza altre modifiche.
+ */
+function guidePublished(g: Guide): string {
+  return (g as Guide & { published?: string }).published ?? g.updated;
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const { locale, dict } = await resolveLocale(params);
+  const { locale } = await resolveLocale(params);
   const g = getGuide(locale, slug);
   if (!g) return {};
-  // Titolo breve se la guida contiene già "Origins TCG", altrimenti con il nome della sezione.
-  const title = /origins/i.test(g.title) ? g.title : `${g.title} · ${dict.guides.title}`;
-  return pageMeta(locale, `/guides/${g.slug}`, title, g.excerpt, g.image, { type: "article", published: g.updated, modified: g.updated });
+  // Titolo per i motori di ricerca: `metaTitle` quando c'è, altrimenti il titolo della guida. Il
+  // marchio non si scrive qui: lo aggiunge `pageMeta`, che è l'unico posto dove il titolo si compone.
+  const title = g.metaTitle ?? g.title;
+  return pageMeta(locale, `/guides/${g.slug}`, title, g.excerpt, g.image, {
+    type: "article",
+    published: guidePublished(g),
+    modified: g.updated,
+    imageAlt: g.title,
+    // Le copertine non hanno tutte la stessa misura (1600×900, 1600×1042, 1200×675): si legge dal file.
+    imageSize: imageSizeOf(g.image),
+  });
 }
 
 export default async function GuidePage({ params }: { params: Params }) {
@@ -35,19 +54,27 @@ export default async function GuidePage({ params }: { params: Params }) {
   const relatedDecks = (g.tags?.decks ?? []).map((s) => getDeck(s)).filter((x) => x !== undefined);
   const relatedCommunity = g.tags?.communityDecks ?? [];
   const relatedCards = g.tags?.cards ?? [];
+  // Chi firma la guida lo decide `authorOfGuide` (src/lib/data/authors.ts) e nessun altro: la firma
+  // in fondo alla pagina, il nodo Article qui sotto e le pagine autore devono dire la stessa cosa.
+  const author = authorOfGuide(g);
+  const authorPath = href(locale, `/authors/${author.slug}`);
+  const authorUrl = `${siteUrl}${authorPath}`;
   const article = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: g.title,
     description: g.excerpt,
     inLanguage: locale,
-    datePublished: g.updated,
+    datePublished: guidePublished(g),
     dateModified: g.updated,
-    image: g.image ? `${siteUrl}${g.image}` : `${siteUrl}/media/og.jpg`,
-    author: { "@type": "Organization", name: "OriginsMeta", url: siteUrl },
-    publisher: { "@id": `${siteUrl}/#organization` },
+    image: g.image ? `${siteUrl}${g.image}` : `${siteUrl}${defaultOgImage}`,
+    // Un articolo lo firma una persona, non l'organizzazione: è il segnale E-E-A-T che Google cerca.
+    // L'`@id` è lo stesso nodo Person che scrive la pagina autore (`person()` in JsonLd.tsx): così i
+    // dati strutturati parlano di una persona sola, non di due omonime.
+    author: { "@type": "Person", "@id": `${authorUrl}#person`, name: author.name, url: authorUrl },
+    publisher: { "@id": organizationId },
     mainEntityOfPage: `${siteUrl}${href(locale, `/guides/${g.slug}`)}`,
-    about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
+    about: { "@id": videoGameId },
   };
   const faqLd = g.faq?.length
     ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: g.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }
@@ -90,7 +117,13 @@ export default async function GuidePage({ params }: { params: Params }) {
             </dl>
           </section>
         ) : null}
-        <p className="mt-8 border-t border-sky pt-4 text-xs text-pale-muted">{d.common.notAffiliated}</p>
+        <p className="mt-8 border-t border-sky pt-4 text-sm text-pale-muted">
+          {d.authors.writtenBy}{" "}
+          <Link href={authorPath} className="font-bold text-mint hover:underline">
+            {author.name}
+          </Link>
+        </p>
+        <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
 
       {relatedDecks.length || relatedCommunity.length || relatedCards.length ? (

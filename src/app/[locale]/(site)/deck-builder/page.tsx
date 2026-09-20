@@ -10,7 +10,7 @@ import { contactEmail } from "@/components/Footer";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/deck-builder", dict.builder.title, dict.builder.intro);
+  return pageMeta(locale, "/deck-builder", dict.builder.title, dict.builder.description);
 }
 
 export default async function DeckBuilderPage({ params }: { params: LocaleParams }) {

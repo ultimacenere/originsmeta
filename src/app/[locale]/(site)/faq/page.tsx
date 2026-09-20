@@ -21,7 +21,7 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/faq", dict.faq.title, dict.faq.intro);
+  return pageMeta(locale, "/faq", dict.faq.title, dict.faq.description);
 }
 
 export default async function FaqPage({ params }: { params: LocaleParams }) {

@@ -9,7 +9,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { JsonLd, organization, website } from "@/components/JsonLd";
+import { JsonLd, organization, videoGame, website } from "@/components/JsonLd";
+import { defaultOgAlt } from "@/lib/page";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       url: `${siteUrl}/${locale}`,
       title: d.meta.homeTitle,
       description: d.meta.description,
-      images: [{ url: "/media/og.jpg", width: 1200, height: 630, alt: "Origins TCG" }],
+      images: [{ url: "/media/og.jpg", width: 1200, height: 630, alt: defaultOgAlt[locale] }],
     },
     twitter: { card: "summary_large_image", title: d.meta.homeTitle, description: d.meta.description, images: ["/media/og.jpg"] },
     robots: { index: true, follow: true },
@@ -62,17 +63,18 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} h-full`}>
       <body className="min-h-full flex flex-col">
+        {/* Salta al contenuto: il <main> ha id="main" sia nella home sia nel gruppo (site). */}
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-mint focus:px-3 focus:py-2 focus:text-ink"
         >
-          {d.nav.menu}
+          {d.nav.skipToContent}
         </a>
         <Header locale={l} dict={d} />
         {children}
         <Footer locale={l} dict={d} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
-        <JsonLd data={[website(l, d.meta.description), organization]} />
+        <JsonLd data={[website(l, d.meta.description), organization, videoGame]} />
         <GoogleAnalytics id={GA_ID} />
         <Analytics />
         <SpeedInsights />

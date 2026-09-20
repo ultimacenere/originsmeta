@@ -18,7 +18,7 @@ export type Event = {
   guide?: string;
 };
 
-const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
+const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
 
 export const events: Event[] = [
   {
@@ -45,7 +45,7 @@ export const events: Event[] = [
       "Le plus grand événement de Koin Games à ce jour, pendant le Steam Next Fest. On peut s'inscrire à n'importe quelle qualification, mais l'équipe demande de ne s'inscrire qu'à celles auxquelles on peut vraiment participer. Les créateurs reçoivent des invitations wildcard directement pour les playoffs.",
     ),
     signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "S'inscrire sur Discord"), url: "https://discord.gg/originstcg" },
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
   },
   {
     slug: "steam-next-fest",
@@ -80,7 +80,7 @@ export const events: Event[] = [
       "Oltre 130 iscritti. Giocato sulla patch 0.6.3, uscita due giorni prima.",
       "Plus de 130 inscrits. Joué sur le patch 0.6.3, sorti deux jours plus tôt.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
   },
   {
     slug: "first-demo-tournament",
@@ -95,7 +95,7 @@ export const events: Event[] = [
       "Annunciato insieme ai primi numeri della demo: oltre 1.000 giocatori e 13.000 partite nella prima settimana, con un tempo di gioco mediano di 1h51m.",
       "Annoncé avec les premiers chiffres de la démo : plus de 1 000 joueurs et 13 000 parties la première semaine, pour un temps de jeu médian de 1 h 51.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },
   {
     slug: "card-party-fort-lauderdale",
@@ -109,7 +109,7 @@ export const events: Event[] = [
       "Parte del team ha portato Origins ai collezionisti, con le prime aperture pubbliche di pacchetti e uno Slab in regalo a chi pescava un'Alternate Art 10/10.",
       "Une partie de l'équipe a présenté Origins aux collectionneurs, avec les premières ouvertures publiques de packs et un Slab offert à qui tirait une Alternate Art 10/10.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },
 ];
 

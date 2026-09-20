@@ -6,7 +6,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { movers } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
-import { sortedNews } from "@/lib/data/news";
+import { sortedNews, type NewsItem } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList } from "@/components/CardChip";
@@ -16,12 +16,13 @@ import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
-import { NewsGuideLinks, NewsSourceLink, newsCardsLabel } from "@/components/NewsLinks";
+import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, isDeckNews } from "@/components/NewsLinks";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  const m = pageMeta(locale, "", dict.meta.homeTitle, dict.meta.description, "/media/og.jpg");
-  return { ...m, title: { absolute: dict.meta.homeTitle } };
+  // Nessun `title` da sovrascrivere: `pageMeta` restituisce già il titolo finale come `absolute`
+  // (homeTitle contiene sia "Origins TCG" sia "OriginsMeta", quindi resta esattamente com'è nel dizionario).
+  return pageMeta(locale, "", dict.meta.homeTitle, dict.meta.description, "/media/og.jpg");
 }
 
 /**
@@ -38,13 +39,20 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const board = sortedNews.filter((n) => !featured.includes(n)).slice(0, 6);
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
   const sl = d.home.slides;
+  // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
   const slides: Slide[] = [
-    { src: "/media/hero-1920.webp", alt: "Origins TCG key art", ...sl.keyArt, href: officialLinks.demo, external: true },
-    { src: "/media/banner-rapunzel.webp", alt: "Origins TCG official banner with Rapunzel", ...sl.rapunzel, href: href(locale, "/cards") },
-    { src: "/media/ls-zero-pay-to-win.webp", alt: "Official loading screen: zero pay to win", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
-    { src: "/media/ls-real-collecting.webp", alt: "Official loading screen: real collecting", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
-    { src: "/media/ls-collect-them-all.webp", alt: "Official loading screen: collect them all", ...sl.collectAll, href: href(locale, "/cards") },
+    { src: "/media/hero-1920.webp", ...sl.keyArt, href: officialLinks.demo, external: true },
+    { src: "/media/banner-rapunzel.webp", ...sl.rapunzel, href: href(locale, "/cards") },
+    { src: "/media/ls-zero-pay-to-win.webp", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
+    { src: "/media/ls-real-collecting.webp", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },
+    { src: "/media/ls-collect-them-all.webp", ...sl.collectAll, href: href(locale, "/cards") },
   ];
+
+  /**
+   * Indirizzo di una news dalla home: le news sui mazzi pubblicati qui portano alla scheda del mazzo,
+   * tutte le altre all'ancora della voce dentro /news (ogni <li> della lista ha id={slug}).
+   */
+  const newsHref = (item: NewsItem) => href(locale, isDeckNews(item) ? item.url : `/news#${item.slug}`);
 
   return (
     <>
@@ -77,7 +85,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   {i === 0 ? d.home.newsOfDay : d.home.featured} · {formatDate(locale, item.date)}
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">
-                  <Link href={href(locale, "/news")} className="hover:underline">
+                  <Link href={newsHref(item)} className="hover:underline">
                     {item.title[locale]}
                   </Link>
                 </h2>
@@ -115,7 +123,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                     <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border-2 border-sky px-3 py-2 text-pale hover:bg-night-3 hover:text-chalk">
                       <span className="block font-display text-sm font-bold text-sky">{sectionTitle[s.id]}</span>
                       <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
-                        {ranked > 0 ? `${ranked} ranked` : `${s.unranked.length} · ${d.common.unranked}`}
+                        {ranked > 0 ? `${ranked} ${d.common.ranked}` : `${s.unranked.length} · ${d.common.unranked}`}
                       </span>
                     </Link>
                   </li>
@@ -147,7 +155,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 </li>
               ))}
             </ol>
-            <Link href={href(locale, "/tier-list")} className="btn btn-mint text-xs">
+            {/* Il tasto promette il tracker delle patch: porta direttamente a quella sezione, non in cima alla tier list */}
+            <Link href={href(locale, "/tier-list#tracker")} className="btn btn-mint text-xs">
               {d.tier.trackerTitle} →
             </Link>
           </section>
@@ -162,7 +171,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
                 <NewsCover src={nItem.image} />
                 <div>
-                  <h3 className="font-display text-base font-bold text-sky">{nItem.title[locale]}</h3>
+                  {/* Il titolo porta alla voce dentro /news (o alla scheda del mazzo); la fonte resta il link piccolo sotto il riassunto */}
+                  <h3 className="font-display text-base font-bold text-sky">
+                    <Link href={newsHref(nItem)} className="hover:underline">
+                      {nItem.title[locale]}
+                    </Link>
+                  </h3>
                   <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
                   <NewsSourceLink item={nItem} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
                 </div>
@@ -221,7 +235,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <p className="mt-3 text-xs text-chalk-muted/80">{d.home.statusNote}</p>
             </div>
             <Link href={href(locale, "/guides/collector-economy")} className="card-night card-night-hover block overflow-hidden">
-              <Image src="/media/ls-two-ways.webp" alt="Two ways to collect: collector packs and prestige packs (official loading screen)" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
+              {/* Copertina della scheda guida: decorativa, il titolo e il riassunto accanto dicono già tutto (come nella griglia delle guide) */}
+              <Image src="/media/ls-two-ways.webp" alt="" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
               <div className="p-5">
                 <p className="kicker text-pale-muted">{d.guides.title}</p>
                 <h3 className="mt-1 text-xl font-extrabold text-sky">{economyGuide.title}</h3>

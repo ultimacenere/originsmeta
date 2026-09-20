@@ -1,0 +1,126 @@
+import type { Locale } from "../i18n";
+import { getGuides, type Guide } from "../content/guides";
+
+type L10n = Record<Locale, string> & { fr?: string };
+const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
+
+export type Author = {
+  slug: string;
+  /** nome completo, usato nell'H1 e nei dati strutturati */
+  name: string;
+  /** nome breve o nickname: firme, titoli delle sezioni ("Guide di {name}") */
+  displayName: string;
+  /** ruolo sul sito, una riga */
+  role: L10n;
+  /** una riga sola: scheda dell'indice e meta description del profilo (120-158 caratteri: oltre, Google taglia) */
+  tagline: L10n;
+  /** titolo per la SERP: `pageMeta` ci aggiunge il marchio quando manca, quindi il risultato finale deve stare in 60 caratteri */
+  metaTitle: L10n;
+  /** biografia completa, 3-5 frasi: deve spiegare la competenza, non raccontare la vita */
+  bio: L10n;
+  /**
+   * Mese di ingresso nel progetto (ISO 8601 YYYY-MM: il giorno esatto non è documentato, quindi non
+   * lo inventiamo). Non viene mostrato: serve solo a ordinare l'elenco degli autori.
+   */
+  joined: string;
+  /** argomenti di competenza, in inglese: finiscono in `knowsAbout` del nodo Person */
+  knowsAbout: string[];
+  /**
+   * Mazzi della community pubblicati da questa persona (slug e nome come sulla scheda del mazzo).
+   * Sono dichiarati qui e non ricavati dalle guide: le guide le firma chi le ha scritte, il mazzo è
+   * di chi lo ha pubblicato, e le due cose non coincidono. Fatto verificabile sul sito, perché la
+   * scheda del mazzo porta il nome di chi lo ha pubblicato.
+   */
+  communityDecks?: { slug: string; name: string }[];
+  /** contatti pubblici verificati; `mailto:` diventa `email`, i link http(s) diventano `sameAs` */
+  links: { label: string; url: string }[];
+};
+
+/**
+ * Chi firma i contenuti del sito. Solo fatti verificabili sul sito o nel repo: niente mestiere,
+ * niente città, niente studi, niente aneddoti, niente date che non risultino da una fonte.
+ * I requisiti editoriali di Google chiedono che si capisca chi scrive e perché sa di cosa parla:
+ * la biografia spiega la competenza, non racconta la vita. Prima di aggiungere una frase su una
+ * persona reale serve un riscontro pubblico; nel dubbio la frase non si scrive.
+ */
+export const authors: Author[] = [
+  {
+    slug: "pierluigi-cella",
+    name: "Pierluigi Cella",
+    displayName: "Pierluigi",
+    role: n("Owner and founder", "Proprietario e fondatore"),
+    tagline: n(
+      "Owner and founder of OriginsMeta: he opened the site in September 2026 and signs the news, the guides, the roadmap and the card economy pieces.",
+      "Proprietario e fondatore di OriginsMeta: ha aperto il sito a settembre 2026 e firma le news, le guide, la roadmap e i testi sull'economia delle carte.",
+    ),
+    metaTitle: n("Pierluigi Cella, Origins TCG guides · OriginsMeta", "Pierluigi Cella, guide Origins TCG · OriginsMeta"),
+    bio: n(
+      "Pierluigi Cella is the owner and founder of OriginsMeta: he opened the site in September 2026 to gather in one place what the sources of Origins TCG publish in scattered pieces. The rule the site works by is his: every date, every statistic and every rule comes from an official source — the Steam page, the patch notes, the official Discord — and every page carries the date it was last updated, so that any reader can check it. On OriginsMeta he signs the news, the guides, the roadmap and the pieces on the card economy. The rest of the editorial line is his too: no invented data, no card art taken from other sites, and the reminder that OriginsMeta is not affiliated with Koin Games on every page. You can write to him at staff@originsmeta.com.",
+      "Pierluigi Cella è il proprietario e fondatore di OriginsMeta: ha aperto il sito a settembre 2026 per raccogliere in un posto solo quello che le fonti di Origins TCG pubblicano sparso. È sua la regola con cui lavora il sito: ogni data, ogni statistica e ogni regola arrivano da una fonte ufficiale — la pagina Steam, le patch notes, il Discord ufficiale — e ogni pagina porta la data dell'ultimo aggiornamento, così chi legge può verificare. Su OriginsMeta firma le news, le guide, la roadmap e i testi sull'economia delle carte. È suo anche il resto della linea editoriale: nessun dato inventato, nessuna illustrazione presa da altri siti e, su ogni pagina, la precisazione che OriginsMeta non è affiliato a Koin Games. Gli si può scrivere a staff@originsmeta.com.",
+    ),
+    joined: "2026-09",
+    knowsAbout: ["Origins TCG", "Koin Games", "Trading card games", "Digital card game economy", "Game release roadmaps"],
+    links: [{ label: "staff@originsmeta.com", url: "mailto:staff@originsmeta.com" }],
+  },
+  {
+    // Lo slug è il nickname pubblico, non il nome anagrafico: finisce nell'URL indicizzato.
+    slug: "davdas",
+    // Finché Luigi non conferma per iscritto, sul sito compare solo il nickname già pubblico.
+    name: "Davdas",
+    displayName: "Davdas",
+    role: n("Administrator · community decks and tournaments", "Amministratore · mazzi della community e tornei"),
+    tagline: n(
+      "Second administrator of OriginsMeta: he published the first two community decks on the site, and his game notes are what the deck guides are built on.",
+      "Secondo amministratore di OriginsMeta: ha pubblicato i primi due mazzi della community del sito e le sue note di gioco sono la base delle guide ai mazzi.",
+    ),
+    metaTitle: n("Davdas, Origins TCG community decks · OriginsMeta", "Davdas, mazzi della community di Origins TCG"),
+    bio: n(
+      "Davdas is the second administrator of OriginsMeta and carries the Staff tag on the site. He published the first two community decks here, on 15 September 2026: Healing Healsing, a Van Helsing control list, and 3 Pigs Mid Range, a midrange list led by Three Not So Little Pigs. The notes on both deck pages are his. Those notes are what the deck guides on OriginsMeta are built on — the game plan, the mulligan and the round-by-round play come from there, while the reading of the matchups is written by OriginsMeta on the card texts of patch 0.6.3.",
+      "Davdas è il secondo amministratore di OriginsMeta e sul sito porta il tag Staff. Ha pubblicato qui i primi due mazzi della community, il 15 settembre 2026: Healing Healsing, una lista controllo di Van Helsing, e 3 Pigs Mid Range, una lista midrange guidata dai Three Not So Little Pigs. Le note sulle schede dei due mazzi sono sue. Su quelle note sono costruite le guide ai mazzi di OriginsMeta — il piano di gioco, il mulligan e il round per round vengono da lì, mentre la lettura dei matchup la scrive OriginsMeta sui testi delle carte della patch 0.6.3.",
+    ),
+    joined: "2026-09",
+    knowsAbout: ["Origins TCG", "Deck building", "Community deck lists", "Card game tournaments"],
+    communityDecks: [
+      { slug: "healing-healsing-9411", name: "Healing Healsing" },
+      { slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" },
+    ],
+    links: [],
+  },
+];
+
+export function getAuthor(slug: string): Author | undefined {
+  return authors.find((a) => a.slug === slug);
+}
+
+/**
+ * Chi firma una guida. Unico punto di verità: la pagina della guida (firma in fondo e nodo Article
+ * dei dati strutturati) e le pagine autore devono dire la stessa cosa, quindi chiamano tutte questa.
+ *
+ * Oggi la risposta è sempre Pierluigi Cella: i testi delle guide li scrive OriginsMeta, anche quelli
+ * ai mazzi della community, che partono dalle note di chi ha pubblicato il mazzo ma non sono firmati
+ * da lui (le guide stesse lo dicono: le note dell'autore stanno sulla scheda del mazzo, la lettura
+ * dei matchup è di OriginsMeta). Attribuire un testo a chi non l'ha scritto è un errore, non una
+ * sfumatura: finché non c'è una firma dichiarata, si firma chi risponde dei contenuti.
+ *
+ * Quando il tipo Guide (src/lib/content/guides.ts) avrà un campo autore, qui si legge quello e si
+ * usa questo valore come riserva: `return getAuthor(guide.author ?? "pierluigi-cella") ?? authors[0]`.
+ * Il parametro resta apposta, così le chiamate non cambiano il giorno che succede.
+ */
+export function authorOfGuide(guide?: Guide): Author {
+  // Il campo non esiste ancora nel tipo: quando ci sarà, questa riga lo legge senza altre modifiche.
+  const slug = (guide as (Guide & { author?: string }) | undefined)?.author ?? "pierluigi-cella";
+  return getAuthor(slug) ?? authors[0];
+}
+
+/** Le guide firmate da un autore, nell'ordine di `guideSlugs`. */
+export function guidesByAuthor(locale: Locale, slug: string): Guide[] {
+  return getGuides(locale).filter((g) => authorOfGuide(g).slug === slug);
+}
+
+/**
+ * I mazzi della community pubblicati da un autore, dichiarati in `communityDecks`: le pagine autore
+ * restano statiche e non leggono Supabase. Nomi e slug sono quelli delle schede dei mazzi.
+ */
+export function decksByAuthor(slug: string): { slug: string; name: string }[] {
+  return getAuthor(slug)?.communityDecks ?? [];
+}

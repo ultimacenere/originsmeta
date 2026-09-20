@@ -4,18 +4,39 @@ import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getGuides } from "@/lib/content/guides";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/guides", dict.guides.title, dict.guides.intro);
+  return pageMeta(locale, "/guides", dict.guides.title, dict.guides.description);
 }
 
 export default async function GuidesPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const guides = getGuides(locale);
   const categories = Object.entries(d.guides.categories) as [keyof typeof d.guides.categories, string][];
+
+  // Lista per i dati strutturati: le guide già caricate qui sopra, ognuna con la sua pagina.
+  const listed = guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.guides.title, path: href(locale, "/guides") },
+          ]),
+          collectionPage({
+            locale,
+            path: href(locale, "/guides"),
+            name: d.guides.title,
+            description: d.guides.description,
+            items: listed,
+            about: videoGameId,
+          }),
+        ]}
+      />
       <p className="kicker text-mint">{d.nav.guides}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>

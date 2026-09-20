@@ -14,6 +14,8 @@ export const officialLinks = {
   x: "https://x.com/origins_tcg",
   youtube: "https://www.youtube.com/@origins_tcg",
   news: "https://steamcommunity.com/app/4429430/allnews/",
+  // Sito dello studio: solo link testuale, nessun logo o icona Koin (stessa URL dei dati strutturati in JsonLd.tsx).
+  koin: "https://koingames.io",
 };
 
 export const contactEmail = "staff@originsmeta.com";
@@ -40,11 +42,6 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link className="text-mint hover:text-chalk" href={href(locale, "/deck-builder")}>
-                {dict.nav.builder}
-              </Link>
-            </li>
           </ul>
         </div>
         <div>
@@ -71,6 +68,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.site} rel="noopener">origins-tcg.com</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.x} rel="noopener">X / Twitter</a></li>
             <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.youtube} rel="noopener">YouTube</a></li>
+            <li><a className="text-chalk-muted hover:text-chalk" href={officialLinks.koin} rel="noopener">Koin Games</a></li>
           </ul>
         </div>
         <div>

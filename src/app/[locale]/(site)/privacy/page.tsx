@@ -3,7 +3,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return { ...pageMeta(locale, "/privacy", dict.privacy.title, dict.privacy.body.slice(0, 150)), robots: { index: false, follow: true } };
+  return { ...pageMeta(locale, "/privacy", dict.privacy.title, dict.privacy.body), robots: { index: false, follow: true } };
 }
 
 export default async function PrivacyPage({ params }: { params: LocaleParams }) {

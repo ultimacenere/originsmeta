@@ -1,7 +1,7 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string> & { fr?: string };
-const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
+const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
 
 export type NewsItem = {
   slug: string;
@@ -130,7 +130,7 @@ export const news: NewsItem[] = [
       "Un evento su più giorni dal 20 al 25 ottobre: qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha, premi in denaro. Iscrizioni su Discord; i creator possono chiedere inviti wildcard diretti ai playoff.",
       "Un événement sur plusieurs jours du 20 au 25 octobre : qualifications pour les trois grandes régions les 20, 21 et 22, puis playoffs et finales. Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive, d'autres cartes promo, des packs numériques, des boîtes et cases Alpha, et des prix en argent. Inscriptions sur Discord ; les créateurs peuvent demander une invitation wildcard directe pour les playoffs.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
     source: "steam",
   },
   {
@@ -144,7 +144,7 @@ export const news: NewsItem[] = [
       "Una patch di tuning e correzioni, usata per il torneo di Big Bob due giorni dopo. Buff a Re Artù, Merlino, Lancillotto, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll e Blow the House Down; nerf a Bandersnatch, Bigfoot, Scarecrow e Merlin's Prophecy; Bagheera, Christopher Robin e Sandman rivisti. I boss hanno un'IA più intelligente.",
       "Un patch d'ajustements et de correctifs, utilisé pour le tournoi de Big Bob deux jours plus tard. Buffs pour le roi Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll et Blow the House Down ; nerfs pour Bandersnatch, Bigfoot, Scarecrow et Merlin's Prophecy ; Bagheera, Christopher Robin et Sandman retravaillés. Les boss ont une IA plus maligne.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1842212951301184",
     source: "steam",
   },
   {
@@ -157,7 +157,7 @@ export const news: NewsItem[] = [
       "Torneo il 28 agosto sulla build del playtest con deckbuilding completo. Best-of-3, eliminazione diretta e primo uso del Conquest: si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti, si banna un mazzo avversario. Premi: wildcard per il torneo del Next Fest e Collector Pack.",
       "Tournoi le 28 août sur la build du playtest avec deckbuilding complet. Best-of-3, élimination directe et première utilisation du Conquest : plusieurs decks avec des Légendaires différentes et au moins neuf cartes différentes, un ban chez l'adversaire. Récompenses : wildcards pour le tournoi du Next Fest et Collector Packs.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
     source: "steam",
   },
   {
@@ -171,7 +171,7 @@ export const news: NewsItem[] = [
       "Otto carte hanno cambiato abilità. Mulan ottiene Doppio Attacco, la Regina di Cuori scende a 4 Mana 3/3 con Primo Colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma il Proiettile d'Argento fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
       "Huit cartes ont changé de capacité. Mulan gagne Double Attaque, la Reine de Cœur passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Balle d'argent inflige 1. La collection est désormais limitée aux dix decks du playtest.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",
     source: "steam",
   },
   {
@@ -185,7 +185,7 @@ export const news: NewsItem[] = [
       "Arriva la modalità classificata con una classifica mondiale per la divisione Grandmaster, più comodità: salta il tutorial, anteprima della Leggendaria avversaria durante il mulligan, silenzia le emote. Huntsman passa a 6 Mana 6/6; Swarm, Evil e Discard cambiano una carta ciascuno.",
       "Le mode classé arrive avec un classement mondial pour la division Grandmaster, plus du confort : passer le tutoriel, aperçu de la Légendaire adverse pendant le mulligan, couper les émotes. Huntsman passe à 6 Mana 6/6 ; Swarm, Evil et Discard échangent une carte chacun.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
     source: "steam",
   },
   {
@@ -198,7 +198,7 @@ export const news: NewsItem[] = [
       "L'aggiornamento che uscirà per lo Steam Next Fest di ottobre va nei playtest della community, da venerdì 7 agosto alle 21 UTC con una game night. Aperto a tutti tramite Discord.",
       "La mise à jour prévue pour le Steam Next Fest d'octobre part en playtests communautaires, dès le vendredi 7 août à 21 h UTC avec une game night. Ouvert à tous via Discord.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1840310314338383",
     source: "steam",
   },
   {
@@ -211,7 +211,7 @@ export const news: NewsItem[] = [
       "Sei giorni dopo il lancio il team condivide i numeri della demo e annuncia un AMA con il CEO Tim Jooste e il capo del game design Kevin Lambert (22 luglio), il primo torneo della demo (24 luglio) e uno stand al Card Party di Fort Lauderdale (24–26 luglio).",
       "Six jours après le lancement, l'équipe partage les chiffres de la démo et annonce un AMA avec le CEO Tim Jooste et le responsable du game design Kevin Lambert (22 juillet), le premier tournoi de la démo (24 juillet) et un stand au Card Party de Fort Lauderdale (24–26 juillet).",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
     source: "steam",
   },
   {
@@ -224,7 +224,7 @@ export const news: NewsItem[] = [
       "Demo gratuita con collezionabili esclusivi che non saranno più disponibili in seguito e saranno scambiabili sul marketplace Steam al lancio del gioco completo. Festa di lancio su Discord lo stesso giorno.",
       "Démo gratuite avec des objets de collection exclusifs, indisponibles plus tard et échangeables sur le marketplace Steam au lancement du jeu complet. Soirée de lancement sur Discord le jour même.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1838407329257018",
     source: "steam",
   },
   {
@@ -250,7 +250,7 @@ export const news: NewsItem[] = [
       "Il server che ospitava i tester dell'alpha si apre a tutti, con una demo annunciata in arrivo e un primo sguardo ai collezionabili.",
       "Le serveur qui accueillait les testeurs de l'alpha s'ouvre à tous, avec une démo annoncée et un premier aperçu des objets de collection.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1834602721185275",
     source: "steam",
   },
   {
@@ -276,7 +276,7 @@ export const news: NewsItem[] = [
       "Primo post su Steam del team: un gioco di carte costruito su partite tattiche veloci e un sistema da collezione modellato sui TCG fisici.",
       "Premier message Steam de l'équipe : un jeu de cartes construit autour de parties tactiques rapides et d'un système de collection inspiré des TCG physiques.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1832065502808213",
     source: "steam",
   },
 ];
