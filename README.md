@@ -30,7 +30,7 @@ npm run lint
 | Eventi e tornei | `src/lib/data/events.ts` |
 | Mazzi (tag: leggendaria, archetipo, creator) | `src/lib/data/decks.ts` |
 | Tier list (mazzi, leggendarie, carte base) | `src/lib/data/tierlist.ts` |
-| News (riassunti + link alla fonte; per i mazzi della community `source: "community"`, url interno e guide collegate) | `src/lib/data/news.ts` |
+| News (riassunti + link alla fonte; per i mazzi pubblicati qui `source: "community"` o `"staff"`, url interno e guide collegate) | `src/lib/data/news.ts` |
 | Guide (Markdown, EN/IT, con categoria e tag di collegamento) | `src/lib/content/guides.ts` |
 | Immagini ufficiali ottimizzate | `public/media/` |
 | Palette e componenti CSS | `src/app/globals.css` |

@@ -8,9 +8,10 @@ export type NewsItem = {
   date: string;
   title: L10n;
   summary: L10n;
-  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo della community (url interno senza prefisso lingua) */
+  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo pubblicato sul sito (url interno senza prefisso lingua) */
   url: string;
-  source: "steam" | "press" | "community";
+  /** "staff" per i mazzi pubblicati dallo staff di OriginsMeta: mostra il tag Staff e basta, mai anche "Community". */
+  source: "steam" | "press" | "community" | "staff";
   /** copertina, sempre presente: media kit ufficiale in /public/media o miniatura ufficiale YouTube */
   image: string;
   /** slug delle carte toccate dall'annuncio (o, per i mazzi della community, le carte del mazzo) */
@@ -37,7 +38,7 @@ export const news: NewsItem[] = [
       "Le deuxième deck de Davdas, membre du staff d'OriginsMeta, est une liste midrange menée par Three Not So Little Pigs, prévue pour le ladder et le jeu compétitif. Le plan : prendre le plateau dans les premiers tours, gagner au moins un lieu, puis conclure avec En Passant, le Trample d'Ellen Trechend et les Lightning Strike générés par Impundulu. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code OM pour l'ouvrir dans le deck builder et deux guides pour le jouer.",
     ),
     url: "/decks/community/3-pigs-mid-range-6311",
-    source: "community",
+    source: "staff",
   },
   {
     slug: "davdas-healing-healsing",
@@ -56,7 +57,7 @@ export const news: NewsItem[] = [
       "Le premier deck publié sur OriginsMeta est signé Davdas, membre du staff : une liste contrôle menée par Van Helsing pour le ladder classé. Le plan : prendre de la valeur tôt avec Spellbook et Ali Baba, soigner les dégâts pendant que Phuong Hoang grandit à chaque soin, puis atteindre le tour 8 ou 9 et remettre le plateau à zéro avec Forbidden Knowledge. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code OM pour le deck builder et deux guides pour le jouer.",
     ),
     url: "/decks/community/healing-healsing-9411",
-    source: "community",
+    source: "staff",
   },
   {
     slug: "playtest-feedback-deck-unlock",

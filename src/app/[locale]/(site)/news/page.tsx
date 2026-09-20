@@ -5,7 +5,7 @@ import { sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
 import { SteamButton } from "@/components/SteamButton";
 import { NewsCover } from "@/components/NewsCover";
-import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, newsSourceLabel } from "@/components/NewsLinks";
+import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -25,9 +25,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
             <NewsCover src={n.image} className="mb-4" />
             <p className="flex flex-wrap items-center gap-3 font-mono text-sm text-pale-muted">
               <span className="tabular">{formatDate(locale, n.date)}</span>
-              <span className={`stat-pill text-[11px] font-semibold uppercase ${n.source === "steam" ? "pill-steam" : "bg-night-3 text-pale"}`}>
-                {newsSourceLabel(n, d)}
-              </span>
+              <span className={newsSourceClass(n)}>{newsSourceLabel(n, d)}</span>
             </p>
             <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">{n.title[locale]}</h2>
             <p className="mt-3 text-pale">{n.summary[locale]}</p>
