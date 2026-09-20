@@ -91,6 +91,7 @@ export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
       sagaLabel: sagas[c.saga][locale],
       key: c.key,
       thumb: c.thumb,
+      image: c.image,
       art: c.art,
       // per l'anteprima al passaggio del mouse: testo già nella lingua della pagina, niente database nel bundle
       ability: c.ability?.[locale],

@@ -784,9 +784,9 @@ function BuilderPeek({ card }: { card: BuilderCard }) {
   return (
     <span className="deck-peek" aria-hidden="true">
       <span className={`deck-peek-panel ${card.legendary ? "is-legendary" : ""}`}>
-        {card.thumb ? (
+        {card.image ?? card.thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="deck-peek-art" src={card.thumb} alt="" loading="lazy" decoding="async" />
+          <img className="deck-peek-art" src={card.image ?? card.thumb} alt="" loading="lazy" decoding="async" />
         ) : null}
         <span className="deck-peek-body">
           <span className="deck-peek-name">

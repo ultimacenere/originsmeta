@@ -267,17 +267,17 @@
     aspect-ratio: 1425 / 2048;
   }
   .deck-card-xs {
-    width: 44px;
+    width: 56px;
     border-radius: 4px;
   }
   .deck-card-sm {
-    width: 56px;
+    width: 80px;
   }
   .deck-card.is-legendary {
     border-color: var(--color-gold);
   }
   .deck-card-md {
-    width: 104px;
+    width: 140px;
     border-width: 2px;
     border-color: var(--color-gold);
     border-radius: 8px;
@@ -449,7 +449,7 @@
     left: 50%;
     z-index: 40;
     display: none;
-    width: 300px;
+    width: 330px;
     max-width: 78vw;
     padding-bottom: 8px;
     transform: translateX(-50%);
@@ -486,9 +486,11 @@
     padding-top: 8px;
     padding-bottom: 0;
   }
+  /* Metà pannello alla carta (con le sue proporzioni), metà al testo: richiesta di Pierluigi del 20/09/2026,
+     la miniatura era troppo piccola e il riquadro restava mezzo vuoto. */
   .deck-peek-panel {
     display: grid;
-    grid-template-columns: 84px 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.6rem;
     padding: 0.65rem;
     border: 2px solid var(--color-sky);
@@ -501,7 +503,10 @@
     background: linear-gradient(180deg, rgba(242, 210, 60, 0.16) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
   }
   .deck-peek-art {
-    width: 84px;
+    display: block;
+    width: 100%;
+    height: auto;
+    align-self: start;
     border-radius: 6px;
   }
   .deck-peek-body {
@@ -826,8 +831,8 @@
     top: 100%;
     left: 0;
     padding-top: 6px; /* ponte trasparente: si può scendere col mouse sul pannello senza chiuderlo */
-    width: max-content;
-    max-width: min(280px, calc(100vw - 2rem));
+    width: 330px;
+    max-width: calc(100vw - 2rem);
     white-space: normal;
     text-align: left;
     font-family: var(--font-body);
@@ -855,9 +860,12 @@
       display: none !important;
     }
   }
+  /* Come `.deck-peek-panel`: metà carta, metà testo. */
   .card-mention-panel {
     display: grid;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
     padding: 0.6rem 0.7rem 0.7rem;
     border: 2px solid var(--color-sky);
     border-radius: 10px;
@@ -869,11 +877,36 @@
   .card-mention-panel.is-legendary {
     background: linear-gradient(180deg, rgba(242, 210, 60, 0.18) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
   }
-  .card-mention-head {
+  .card-mention-art {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--color-sky);
+    border-radius: 6px;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .card-mention-art.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .card-mention-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Senza illustrazione ufficiale: riquadro con le iniziali, stesse proporzioni di una carta */
+  .card-mention-art-empty {
     display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 0.55rem;
-    align-items: start;
+    place-items: center;
+    aspect-ratio: 1425 / 2048;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-chalk);
+  }
+  .card-mention-body {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    min-width: 0;
   }
   .card-mention-stats {
     display: flex;

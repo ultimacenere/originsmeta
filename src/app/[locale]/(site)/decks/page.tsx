@@ -16,6 +16,7 @@ type CardLike = {
   name: string;
   type?: Card["type"];
   thumb?: string;
+  image?: string;
   art?: string;
   mana?: number;
   power?: number;
@@ -35,6 +36,7 @@ function deckArt(slugs: string[], lookup: (slug: string) => CardLike | undefined
       return {
         name: c?.name ?? s,
         thumb: c?.thumb,
+        image: c?.image,
         art: c?.art,
         mana: c?.mana,
         power: c?.power,
@@ -74,7 +76,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
         tagline: deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary,
-        legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, mana: leg.mana } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
+        legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
         creator: authorName(deck.profile),
@@ -97,7 +99,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       name: deck.name,
       href: href(locale, `/decks/${deck.slug}`),
       tagline: deck.tagline[locale],
-      legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, mana: leg.mana } : undefined,
+      legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : undefined,
       archetype: deck.archetype,
       archetypeLabel: archetypeLabels[deck.archetype][locale],
       creator: deck.creator.name,

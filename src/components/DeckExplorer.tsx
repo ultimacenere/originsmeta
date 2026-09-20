@@ -7,6 +7,8 @@ import { badgePill, badgeStyle } from "@/lib/cardArt";
 type DeckCard = {
   name: string;
   thumb?: string;
+  /** carta intera (480 px): serve al riquadro della Leggendaria e all anteprima al passaggio del mouse */
+  image?: string;
   art?: string;
   mana?: number;
   power?: number;
@@ -23,7 +25,7 @@ export type ExplorerDeck = {
   name: string;
   href: string;
   tagline: string;
-  legendary?: { slug: string; name: string; cover?: string; thumb?: string; mana?: number };
+  legendary?: { slug: string; name: string; cover?: string; thumb?: string; image?: string; mana?: number };
   archetype: string;
   archetypeLabel: string;
   creator: string;
@@ -71,9 +73,10 @@ function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: 
   return (
     <span className={`deck-card-wrap ${card.ability || card.power !== undefined ? "has-peek" : ""}`}>
       <span className={`deck-card deck-card-${size} ${isLeg ? "is-legendary" : ""}`} title={card.name}>
-        {card.thumb ? (
+        {/* oltre gli 80 px la miniatura da 160 px si vede sgranata sugli schermi densi: lì va la carta intera */}
+        {card.thumb || card.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={card.thumb} alt="" loading="lazy" decoding="async" />
+          <img src={(size === "md" ? card.image : undefined) ?? card.thumb ?? card.image} alt="" loading="lazy" decoding="async" />
         ) : (
           <span className="deck-card-initials" aria-hidden="true">
             {card.name.slice(0, 2).toUpperCase()}
@@ -84,9 +87,9 @@ function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: 
 
       <span className="deck-peek" aria-hidden="true">
         <span className={`deck-peek-panel ${isLeg ? "is-legendary" : ""}`}>
-          {card.thumb ? (
+          {card.image ?? card.thumb ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="deck-peek-art" src={card.thumb} alt="" loading="lazy" decoding="async" />
+            <img className="deck-peek-art" src={card.image ?? card.thumb} alt="" loading="lazy" decoding="async" />
           ) : null}
           <span className="deck-peek-body">
             <span className="deck-peek-name">
@@ -244,10 +247,10 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
           {list.map((d) => (
             <li key={d.slug} className="card-night p-4 sm:p-5">
               <div className="flex gap-4">
-                <div className="w-[104px] shrink-0">
+                <div className="w-[140px] shrink-0">
                   <Link href={d.href} className="block">
                     {d.legendary?.thumb ? (
-                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, mana: d.legendary.mana }} size="md" />
+                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" />
                     ) : (
                       <span className="deck-card deck-card-md">
                         <span className="deck-card-initials" aria-hidden="true">
@@ -295,7 +298,7 @@ export function DeckExplorer({ decks, labels }: { decks: ExplorerDeck[]; labels:
               {/* Le tredici carte in fila; a schermo stretto vanno a capo. Niente overflow: taglierebbe
                   l'anteprima che si apre sopra la carta. */}
               <Link href={d.href} className="flex min-w-0 flex-1 flex-wrap gap-1">
-                {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, mana: d.legendary.mana }} size="xs" legendary /> : null}
+                {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="xs" legendary /> : null}
                 {d.cardArt.map((c, k) => (
                   <DeckCardArt key={`${c.name}-${k}`} card={c} size="xs" />
                 ))}
