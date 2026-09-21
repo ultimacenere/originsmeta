@@ -52,8 +52,17 @@ function addHeadingIds(html: string): string {
   });
 }
 
+/**
+ * Ogni tabella sta in un contenitore che scorre di lato: su telefono una tabella a quattro colonne può
+ * essere più larga dello schermo, e senza contenitore allargherebbe tutta la pagina (regola responsive
+ * del sito: la pagina non scorre mai di lato, le tabelle sì, dentro il proprio riquadro).
+ */
+function wrapTables(html: string): string {
+  return html.replace(/<table>/g, '<div class="table-scroll"><table>').replace(/<\/table>/g, "</table></div>");
+}
+
 export function Markdown({ source, className = "", linkCards }: { source: string; className?: string; linkCards?: string }) {
   const src = linkCards ? linkCardsInMarkdown(source, linkCards) : source;
-  const html = addHeadingIds(marked.parse(src, { async: false }) as string);
+  const html = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
   return <div className={`prose-night ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }

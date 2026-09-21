@@ -17,7 +17,13 @@ import { cardCredits, type CardCredit } from "./card-credits";
 export type L10n = Record<Locale, string> & { fr?: string };
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
-export type PatchId = "0.6.1" | "0.6.2" | "0.6.3";
+/**
+ * Patch del gioco in ordine di uscita. Le versioni del playtest hanno un numero; la patch della demo
+ * del 21/09/2026 non ce l'ha (il team la chiama "Demo patch notes - Sep 21 2026"), quindi ha un id nostro
+ * e un'etichetta leggibile in `patches`.
+ */
+export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921"] as const;
+export type PatchId = (typeof patchOrder)[number];
 export type Alignment = "good" | "evil" | "neutral";
 export type Rarity = "common" | "rare" | "epic" | "legendary";
 
@@ -60,23 +66,41 @@ export const sagas: Record<SagaId, L10n> = {
   other: { en: "Other", it: "Altro", fr: "Autre" },
 };
 
-export const patches: Record<PatchId, { date: string; url: string; title: string }> = {
+/** `url` è il post Steam della patch (gid verificati con l'API ufficiale Valve `ISteamNews/GetNewsForApp`, appid 4429430). */
+export const patches: Record<PatchId, { date: string; url: string; title: string; label?: L10n }> = {
   "0.6.1": {
     date: "2026-08-14",
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
     title: "Closed Playtest Patch Notes - Update 0.6.1",
   },
   "0.6.2": {
     date: "2026-08-21",
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",
     title: "Closed Playtest Patch Notes - Update 0.6.2",
   },
   "0.6.3": {
     date: "2026-08-27",
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1842212951301184",
     title: "Closed Playtest Patch Notes - Update 0.6.3",
   },
+  // Primo grande aggiornamento della demo: il bilanciamento è "rispetto all'ultima build del playtest" (0.6.3).
+  // Il post Steam ne riporta una parte; la versione del Discord ufficiale aggiunge Christopher Robin, due
+  // regole di gioco e The Gallows (vedi la news `demo-patch-notes-0921`).
+  "demo-0921": {
+    date: "2026-09-21",
+    url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
+    title: "The first big update to the Origins demo just landed!",
+    label: { en: "Demo · 21 Sep", it: "Demo · 21 set" },
+  },
 };
+
+/** Nome della patch da mostrare: l'etichetta quando c'è (patch senza numero), altrimenti il numero di versione. */
+export function patchLabel(id: PatchId, locale: Locale): string {
+  return patches[id].label?.[locale] ?? id;
+}
+
+/** L'ultima patch uscita. */
+export const latestPatch: PatchId = patchOrder[patchOrder.length - 1];
 
 export type Stats = { mana?: number; power?: number; health?: number };
 
@@ -85,6 +109,8 @@ export type Change = {
   kind: ChangeKind;
   from?: Stats;
   to?: Stats;
+  /** cambio di allineamento, quando la patch lo tocca (es. Itsy Bitsy Spider da Neutrale a Malvagia) */
+  alignment?: { from: Alignment; to: Alignment };
   note: L10n;
 };
 
@@ -157,6 +183,17 @@ export const cardSource = {
   fetched: data.fetched,
 };
 
+/**
+ * Patch uscite dopo i dati importati da World of Origins: le loro modifiche, trascritte dalle patch notes
+ * ufficiali in `card-history.ts`, si applicano sopra, così costo, statistiche e allineamento restano quelli
+ * del gioco anche prima del prossimo import. Quando World of Origins importa la patch, `cardSource.patch` la
+ * raggiunge (o porta un nome che non conosciamo) e qui non si applica più nulla: vincono i suoi dati.
+ */
+const importedIndex = (patchOrder as readonly string[]).indexOf(cardSource.patch);
+function isAfterImport(patch: PatchId): boolean {
+  return importedIndex >= 0 && patchOrder.indexOf(patch) > importedIndex;
+}
+
 export const cards: Card[] = data.cards.map((w) => {
   const lore = cardLore[w.slug];
   const card: Card = {
@@ -184,6 +221,13 @@ export const cards: Card[] = data.cards.map((w) => {
   if (w.power !== undefined) card.power = w.power;
   if (w.health !== undefined) card.health = w.health;
   if (w.alignment) card.alignment = w.alignment;
+  for (const ch of card.history) {
+    if (!isAfterImport(ch.patch)) continue;
+    if (ch.to?.mana !== undefined) card.mana = ch.to.mana;
+    if (ch.to?.power !== undefined) card.power = ch.to.power;
+    if (ch.to?.health !== undefined) card.health = ch.to.health;
+    if (ch.alignment) card.alignment = ch.alignment.to;
+  }
   if (w.rarity && !w.tokenOnly) card.rarity = w.rarity;
   if (w.keywords.length) card.keywords = w.keywords;
   if (w.ability) card.ability = { en: w.ability, it: lore?.it ?? w.ability };

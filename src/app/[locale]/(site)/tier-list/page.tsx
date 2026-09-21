@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { movers, patches, sagas } from "@/lib/data/cards";
+import { movers, patchLabel, patches, sagas } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tierlist";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
@@ -162,7 +162,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                   </td>
                   <td className="px-4 py-3 text-pale-muted">{sagas[card.saga][locale]}</td>
                   <td className="px-4 py-3 font-mono text-pale-muted">
-                    {change.patch}
+                    {patchLabel(change.patch, locale)}
                     <span className="block text-[11px]">{formatDate(locale, patches[change.patch].date)}</span>
                   </td>
                   <td className="px-4 py-3">

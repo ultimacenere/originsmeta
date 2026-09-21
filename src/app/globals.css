@@ -1057,11 +1057,19 @@
     padding: 0.2em 1em;
     color: var(--color-pale-muted);
   }
+  /* contenitore aggiunto da Markdown.tsx: la tabella scorre di lato dentro il riquadro, la pagina no */
+  .prose-night .table-scroll {
+    overflow-x: auto;
+    margin: 1em 0;
+  }
   .prose-night table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
     margin: 1em 0;
+  }
+  .prose-night .table-scroll table {
+    margin: 0;
   }
   .prose-night th, .prose-night td {
     border-bottom: 1px solid rgba(63, 196, 232, 0.5);

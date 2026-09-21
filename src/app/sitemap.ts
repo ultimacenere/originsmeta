@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales, siteUrl, href } from "@/lib/i18n";
-import { cards, patches } from "@/lib/data/cards";
+import { cards, latestPatch, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
 import { newsPath, sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", lastModified: latestNews, changeFrequency: "daily", priority: 1 },
     { path: "/news", lastModified: latestNews, changeFrequency: "daily", priority: 0.9 },
     { path: "/tier-list", lastModified: tierList.updated, changeFrequency: "weekly", priority: 0.9 },
-    { path: "/cards", lastModified: patches["0.6.3"].date, changeFrequency: "weekly", priority: 0.9 },
+    { path: "/cards", lastModified: patches[latestPatch].date, changeFrequency: "weekly", priority: 0.9 },
     { path: "/decks", lastModified: [latestDeck, latestCommunity ?? ""].sort().at(-1) || latestDeck, changeFrequency: "daily", priority: 0.9 },
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },
     { path: "/guides", lastModified: guides.map((g) => g.updated).sort().at(-1) ?? SITE_UPDATED, changeFrequency: "weekly", priority: 0.8 },

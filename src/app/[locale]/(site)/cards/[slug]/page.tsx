@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { cards, cardSource, getCard, lastChange, patches, relatedFrom, sagas, statLine, type Card } from "@/lib/data/cards";
+import { cards, cardSource, getCard, lastChange, patchLabel, patches, relatedFrom, sagas, statLine, type Card } from "@/lib/data/cards";
 import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
@@ -68,7 +68,7 @@ function cardDescription(card: Card, locale: Locale, d: Dictionary): string {
   const extras = [
     card.ability?.[locale],
     card.origin?.[locale],
-    last ? `${d.common[last.kind === "deck" ? "rework" : last.kind]} ${d.common.patch.toLowerCase()} ${last.patch}` : undefined,
+    last ? `${d.common[last.kind === "deck" ? "rework" : last.kind]} ${d.common.patch.toLowerCase()} ${patchLabel(last.patch, locale)}` : undefined,
     card.keywords?.length ? card.keywords.join(", ") : undefined,
     // Riserva sempre vera per le carte senza testo: porta comunque la descrizione oltre i 120 caratteri.
     d.common.asOf,
@@ -272,7 +272,7 @@ export default async function CardPage({ params }: { params: Params }) {
                 <div className="flex flex-wrap items-center gap-3">
                   <ChangeChip kind={ch.kind} label={d.common[ch.kind === "deck" ? "rework" : ch.kind]} />
                   <span className="font-mono text-sm text-pale-muted">
-                    {d.common.patch} {ch.patch} · {formatDate(locale, patches[ch.patch].date)}
+                    {d.common.patch} {patchLabel(ch.patch, locale)} · {formatDate(locale, patches[ch.patch].date)}
                   </span>
                   <SteamButton href={patches[ch.patch].url} variant="dark" size="sm" className="ml-auto">
                     {d.common.steamNews}

@@ -123,6 +123,16 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 4, power: 4, health: 5 },
       note: { en: "Stats swapped: sturdier, hits softer.", it: "Statistiche invertite: più resistente, colpisce meno.", fr: "Statistiques inversées : plus solide, frappe moins fort." },
     },
+    {
+      patch: "demo-0921",
+      kind: "rework",
+      from: { mana: 4, power: 4, health: 5 },
+      to: { mana: 4, power: 5, health: 4 },
+      note: {
+        en: "Back to 5/4, as before patch 0.6.3. Listed in the patch notes on the official Discord, not in the Steam post.",
+        it: "Torna 5/4, com'era prima della patch 0.6.3. È nelle patch notes del Discord ufficiale, non nel post su Steam.",
+      },
+    },
   ],
   piglet: [
     {
@@ -184,6 +194,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 6, power: 3, health: 3 },
       note: { en: "Costs 1 less, -2 Health.", it: "Costa 1 in meno, -2 Salute.", fr: "Coûte 1 de moins, -2 Vie." },
     },
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 6, power: 3, health: 3 },
+      to: { mana: 6, power: 4, health: 4 },
+      note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute." },
+    },
   ],
   "brides-of-dracula": [
     {
@@ -208,6 +225,11 @@ export const cardHistory: Record<string, Change[]> = {
       patch: "0.6.2",
       kind: "nerf",
       note: { en: "Damage reduced from 3 to 1.", it: "Danno ridotto da 3 a 1.", fr: "Dégâts réduits de 3 à 1." },
+    },
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      note: { en: "Can now target barriers as well as characters.", it: "Ora può colpire anche le barriere, oltre ai personaggi." },
     },
   ],
   "count-orlok": [
@@ -401,6 +423,107 @@ export const cardHistory: Record<string, Change[]> = {
       patch: "0.6.1",
       kind: "deck",
       note: { en: "Removed from the Swarm deck in favour of Mowgli.", it: "Rimosso dal mazzo Swarm a favore di Mowgli.", fr: "Retiré du deck Swarm au profit de Mowgli." },
+    },
+  ],
+
+  // ---------- Patch della demo del 21/09/2026 (rispetto all'ultima build del playtest, la 0.6.3) ----------
+  quasimodo: [
+    {
+      patch: "demo-0921",
+      kind: "rework",
+      from: { mana: 3, power: 2, health: 5 },
+      to: { mana: 3, power: 3, health: 4 },
+      note: { en: "+1 Power, -1 Health.", it: "+1 Potenza, -1 Salute." },
+    },
+  ],
+  beauty: [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 4, power: 1, health: 1 },
+      to: { mana: 4, power: 2, health: 1 },
+      note: { en: "+1 Power.", it: "+1 Potenza." },
+    },
+  ],
+  "wicked-stepmother": [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 4, power: 3, health: 6 },
+      to: { mana: 4, power: 4, health: 6 },
+      note: { en: "+1 Power.", it: "+1 Potenza." },
+    },
+  ],
+  "magic-carpet": [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 4, power: 3, health: 4 },
+      to: { mana: 4, power: 4, health: 4 },
+      note: {
+        en: "+1 Power. Buffs it already had are no longer cleared when it is played; if it returns to hand, it can choose again.",
+        it: "+1 Potenza. Quando viene giocato non perde più i potenziamenti che aveva già; se torna in mano, può scegliere di nuovo.",
+      },
+    },
+  ],
+  roo: [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 2, power: 2, health: 3 },
+      to: { mana: 2, power: 2, health: 4 },
+      note: { en: "+1 Health.", it: "+1 Salute." },
+    },
+  ],
+  dorothy: [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      from: { mana: 5, power: 1, health: 1 },
+      to: { mana: 4, power: 1, health: 1 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno." },
+    },
+  ],
+  "itsy-bitsy-spider": [
+    {
+      patch: "demo-0921",
+      kind: "rework",
+      alignment: { from: "neutral", to: "evil" },
+      note: { en: "Now Evil instead of Neutral.", it: "Ora è Malvagia invece che Neutrale." },
+    },
+  ],
+  "don-quixote": [
+    {
+      patch: "demo-0921",
+      kind: "rework",
+      note: { en: "Gained Defender.", it: "Ha ottenuto Defender." },
+    },
+  ],
+  "heroic-charge": [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      note: { en: "Its +2 Power buff now applies again when the spell is repeated.", it: "Il bonus di +2 Potenza ora si applica di nuovo quando la magia viene ripetuta." },
+    },
+  ],
+  "frog-prince": [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      note: {
+        en: "Buffs it already had are no longer cleared when it is played; if it returns to hand, it can choose again.",
+        it: "Quando viene giocato non perde più i potenziamenti che aveva già; se torna in mano, può scegliere di nuovo.",
+      },
+    },
+  ],
+  "wooden-stake": [
+    {
+      patch: "demo-0921",
+      kind: "buff",
+      note: {
+        en: "Can target characters at full Health; it still fails if the target is not damaged by the time it reveals.",
+        it: "Può bersagliare personaggi con la Salute piena; fallisce comunque se il bersaglio non è danneggiato quando si rivela.",
+      },
     },
   ],
 };

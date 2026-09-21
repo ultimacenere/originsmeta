@@ -54,10 +54,239 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    slug: "demo-patch-notes-0921",
+    image: "/cards/cover/dorothy.webp",
+    cards: ["dorothy", "wicked-stepmother", "christopher-robin", "guy-of-gisborne", "quasimodo", "beauty", "magic-carpet", "roo", "itsy-bitsy-spider", "silver-bullet", "don-quixote", "heroic-charge", "frog-prince", "wooden-stake"],
+    guides: ["steam-next-fest-2026"],
+    date: "2026-09-21",
+    title: n(
+      "Origins TCG demo patch notes, 21 September: Dorothy costs 4, 14 cards change and The Gallows is fixed",
+      "Patch notes della demo del 21 settembre: Dorothy costa 4, cambiano 14 carte e The Gallows è corretto",
+    ),
+    metaTitle: n("Origins TCG demo patch notes, 21 September", "Patch notes della demo di Origins TCG del 21/9"),
+    description: n(
+      "The Origins TCG demo patch of 21 September: Dorothy down to 4 mana, stat and text changes for 14 cards, two game rules and The Gallows location.",
+      "La patch della demo di Origins TCG del 21 settembre: Dorothy a 4 mana, statistiche e testi di 14 carte, due regole di gioco e il luogo The Gallows.",
+    ),
+    summary: n(
+      "The balance changes of the 21 September demo update, compared to the last playtest build: Dorothy drops to 4 mana, eight cards change stats, Itsy Bitsy Spider turns Evil, six cards change what they do, and two game rules and The Gallows are fixed.",
+      "Le modifiche di bilanciamento dell'aggiornamento della demo del 21 settembre, rispetto all'ultima build del playtest: Dorothy scende a 4 mana, otto carte cambiano statistiche, Itsy Bitsy Spider diventa Malvagia, sei carte cambiano effetto, e si correggono due regole di gioco e The Gallows.",
+    ),
+    highlights: {
+      en: [
+        { label: "Dorothy costs 4", text: "one mana less for the Legendary that grows every time an ally moves", anchor: "dorothy" },
+        { label: "Wicked Stepmother up to 4 Power", text: "the Deathtouch Legendary goes from 3/6 to 4/6", anchor: "wicked-stepmother" },
+        { label: "Christopher Robin back to 5/4", text: "the stats he had before patch 0.6.3", anchor: "christopher-robin" },
+        { label: "Five more stat changes", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet and Roo", anchor: "stats" },
+        { label: "Itsy Bitsy Spider turns Evil", text: "from Neutral, with every Evil synergy that follows", anchor: "itsy-bitsy-spider" },
+        { label: "Six cards change what they do", text: "Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet, Wooden Stake", anchor: "text-changes" },
+        { label: "Two game rules", text: "stats kept in the graveyard, Before combat ahead of Temporary discards", anchor: "rules" },
+        { label: "The Gallows fixed", text: "no more destroying at the location a character is moved to", anchor: "the-gallows" },
+      ],
+      it: [
+        { label: "Dorothy costa 4", text: "un mana in meno per la Leggendaria che cresce ogni volta che un alleato si muove", anchor: "dorothy" },
+        { label: "Wicked Stepmother sale a 4 di Potenza", text: "la Leggendaria col Deathtouch passa da 3/6 a 4/6", anchor: "wicked-stepmother" },
+        { label: "Christopher Robin torna 5/4", text: "le statistiche che aveva prima della patch 0.6.3", anchor: "christopher-robin" },
+        { label: "Altre cinque carte cambiano statistiche", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet e Roo", anchor: "statistiche" },
+        { label: "Itsy Bitsy Spider diventa Malvagia", text: "da Neutrale, con tutte le sinergie Malvagie che ne seguono", anchor: "itsy-bitsy-spider" },
+        { label: "Sei carte cambiano effetto", text: "Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet, Wooden Stake", anchor: "effetti" },
+        { label: "Due regole di gioco", text: "statistiche conservate nel cimitero, Before combat prima degli scarti Temporary", anchor: "regole" },
+        { label: "The Gallows corretto", text: "non distrugge più nel luogo in cui il personaggio viene spostato", anchor: "the-gallows" },
+      ],
+    },
+    body: n(
+      `## All the stat changes {#stats}
+
+The numbers are compared to the last playtest build, 0.6.3: the same stats the card database on this site used until this patch. Format: mana · Power/Health; ★ marks the Legendaries.
+
+| Card | Before | After | What changes |
+| --- | --- | --- | --- |
+| Dorothy ★ | 5 · 1/1 | 4 · 1/1 | costs 1 less |
+| Wicked Stepmother ★ | 4 · 3/6 | 4 · 4/6 | +1 Power |
+| Christopher Robin | 4 · 4/5 | 4 · 5/4 | back to the stats before 0.6.3 |
+| Guy of Gisborne | 6 · 3/3 | 6 · 4/4 | +1 Power, +1 Health |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | +1 Power, −1 Health |
+| Beauty | 4 · 1/1 | 4 · 2/1 | +1 Power |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | +1 Power, and a new rule on its buffs |
+| Roo | 2 · 2/3 | 2 · 2/4 | +1 Health |
+| Itsy Bitsy Spider | 0 · 1/1, Neutral | 0 · 1/1, Evil | changes alignment |
+
+## The two Legendaries {#legendaries}
+
+### Dorothy costs 4 {#dorothy}
+
+Dorothy can Move each round and has +1/+1 for each time an ally moved this game. At 4 mana she comes down one round earlier, with one more round to grow. In the same patch Roo, a 2-mana character with Move, gains 1 Health.
+
+### Wicked Stepmother up to 4 Power {#wicked-stepmother}
+
+The Legendary with Deathtouch, whose On Reveal gives Deathtouch to your Evil characters, goes from 3/6 to 4/6.
+
+## Christopher Robin back to 5/4 {#christopher-robin}
+
+Patch 0.6.3 had turned him from 5/4 into 4/5, sturdier but hitting softer. The demo patch puts the old stats back. This line is in the patch notes posted on the official Discord, not in the Steam post.
+
+## Itsy Bitsy Spider turns Evil {#itsy-bitsy-spider}
+
+The 0-mana 1/1 goes from Neutral to Evil. It matters for every card that counts Evil characters: Wicked Stepmother's On Reveal, for one, now gives it Deathtouch too.
+
+## Six cards change what they do {#text-changes}
+
+### Silver Bullet {#silver-bullet}
+
+It can now target barriers as well as characters.
+
+### Don Quixote {#don-quixote}
+
+He gained Defender: that is all the patch notes say about him.
+
+### Heroic Charge {#heroic-charge}
+
+The spell gives allies +2 Power and Trample this round. When it is repeated, the +2 Power buff now applies again.
+
+### Frog Prince and Magic Carpet {#frog-prince-magic-carpet}
+
+Both have a "Choose One" On Reveal. Buffs they already had are no longer cleared when they are played, and if they go back to hand they can choose again. Magic Carpet also gains 1 Power.
+
+### Wooden Stake {#wooden-stake}
+
+It can now target characters at full Health, but it still fails if the target is not damaged by the time it reveals.
+
+## Two game rules {#rules}
+
+### Stats stay in the graveyard {#graveyard}
+
+A character's stats are no longer reset in the graveyard. A buffed character with Rebirth comes back to the board still buffed, though at 1 Health.
+
+### Before combat, then Temporary discards {#before-combat}
+
+"Before combat" abilities now trigger before Temporary cards are discarded.
+
+## The Gallows {#the-gallows}
+
+The location always destroys the enemy across from the space a character entered. If an On Reveal ability moves that character to a different location, The Gallows no longer destroys the opposing character at the new location.
+
+## Where these notes come from {#sources}
+
+- The official Steam post of 21 September, the one announcing the update, lists the stat changes and the six cards that change what they do, "compared to the latest playtest build". The team's Reddit post says the same.
+- The version posted on the official Discord adds Christopher Robin, the two game rules and The Gallows. We report it in full.
+
+The patch has no version number: the team calls it the demo patch notes of 21 September. On this site it appears as "Demo · 21 Sep".
+
+## What changes on OriginsMeta {#on-the-site}
+
+- Every card page shows the new stats and the change in its balance history, with a link to the Steam post.
+- [MetaShifting](/en/tier-list#tracker) lists the patch next to the playtest ones.
+- The [deck builder](/en/deck-builder) uses the new costs: Dorothy now counts as a 4-drop in the mana curve.
+- The official text of the six cards that change what they do will be updated when the community card database imports the patch. Until then, the balance history on each card page explains the change.
+
+Everything else in the update, from the new interface to ranked mode at Steam Next Fest, is in [the article on the first big demo update](/en/news/demo-first-big-update).`,
+      `## Tutte le modifiche alle statistiche {#statistiche}
+
+I numeri sono confrontati con l'ultima build del playtest, la 0.6.3: le stesse statistiche che il database carte del sito usava fino a questa patch. Formato: mana · Potenza/Salute; ★ indica le Leggendarie.
+
+| Carta | Prima | Dopo | Cosa cambia |
+| --- | --- | --- | --- |
+| Dorothy ★ | 5 · 1/1 | 4 · 1/1 | costa 1 in meno |
+| Wicked Stepmother ★ | 4 · 3/6 | 4 · 4/6 | +1 Potenza |
+| Christopher Robin | 4 · 4/5 | 4 · 5/4 | torna alle statistiche prima della 0.6.3 |
+| Guy of Gisborne | 6 · 3/3 | 6 · 4/4 | +1 Potenza, +1 Salute |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | +1 Potenza, −1 Salute |
+| Beauty | 4 · 1/1 | 4 · 2/1 | +1 Potenza |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | +1 Potenza, e una regola nuova sui potenziamenti |
+| Roo | 2 · 2/3 | 2 · 2/4 | +1 Salute |
+| Itsy Bitsy Spider | 0 · 1/1, Neutrale | 0 · 1/1, Malvagia | cambia allineamento |
+
+## Le due Leggendarie {#leggendarie}
+
+### Dorothy costa 4 {#dorothy}
+
+Dorothy può muoversi a ogni round e ha +1/+1 per ogni volta che un alleato si è mosso nella partita. A 4 mana scende un round prima, con un round in più per crescere. Nella stessa patch Roo, un personaggio da 2 mana con Move, guadagna 1 di Salute.
+
+### Wicked Stepmother sale a 4 di Potenza {#wicked-stepmother}
+
+La Leggendaria con Deathtouch, il cui On Reveal dà Deathtouch ai tuoi personaggi Malvagi, passa da 3/6 a 4/6.
+
+## Christopher Robin torna 5/4 {#christopher-robin}
+
+La patch 0.6.3 lo aveva portato da 5/4 a 4/5, più resistente ma meno incisivo. La patch della demo rimette le vecchie statistiche. Questa riga è nelle patch notes pubblicate sul Discord ufficiale, non nel post su Steam.
+
+## Itsy Bitsy Spider diventa Malvagia {#itsy-bitsy-spider}
+
+La 1/1 da 0 mana passa da Neutrale a Malvagia. Conta per tutte le carte che guardano ai personaggi Malvagi: l'On Reveal di Wicked Stepmother, per esempio, ora dà Deathtouch anche a lei.
+
+## Sei carte cambiano effetto {#effetti}
+
+### Silver Bullet {#silver-bullet}
+
+Ora può colpire anche le barriere, oltre ai personaggi.
+
+### Don Quixote {#don-quixote}
+
+Ha ottenuto Defender: è tutto quello che le patch notes dicono di lui.
+
+### Heroic Charge {#heroic-charge}
+
+La magia dà agli alleati +2 Potenza e Trample per il round. Quando viene ripetuta, il bonus di +2 Potenza ora si applica di nuovo.
+
+### Frog Prince e Magic Carpet {#frog-prince-magic-carpet}
+
+Hanno entrambi un On Reveal a scelta ("Choose One"). Quando vengono giocati non perdono più i potenziamenti che avevano già, e se tornano in mano possono scegliere di nuovo. Magic Carpet guadagna anche 1 di Potenza.
+
+### Wooden Stake {#wooden-stake}
+
+Ora può bersagliare personaggi con la Salute piena, ma fallisce comunque se il bersaglio non è danneggiato quando si rivela.
+
+## Due regole di gioco {#regole}
+
+### Le statistiche restano nel cimitero {#cimitero}
+
+Le statistiche di un personaggio non si azzerano più nel cimitero. Un personaggio potenziato con Rebirth torna sul tabellone ancora potenziato, anche se con 1 di Salute.
+
+### Prima il Before combat, poi gli scarti Temporary {#before-combat}
+
+Le abilità "Before combat" ora si attivano prima che le carte Temporary vengano scartate.
+
+## The Gallows {#the-gallows}
+
+Il luogo distrugge sempre il nemico di fronte alla casella in cui è entrato il personaggio. Se un'abilità On Reveal sposta quel personaggio in un altro luogo, The Gallows non distrugge più il personaggio avversario nel nuovo luogo.
+
+## Da dove arrivano queste note {#fonti}
+
+- Il post ufficiale su Steam del 21 settembre, quello che annuncia l'aggiornamento, elenca le modifiche alle statistiche e le sei carte che cambiano effetto, "rispetto all'ultima build del playtest". Il post del team su Reddit dice lo stesso.
+- La versione pubblicata sul Discord ufficiale aggiunge Christopher Robin, le due regole di gioco e The Gallows. La riportiamo per intero.
+
+La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Sul sito compare come "Demo · 21 set".
+
+## Cosa cambia su OriginsMeta {#sul-sito}
+
+- Ogni scheda carta mostra le statistiche nuove e la modifica nello storico dei bilanciamenti, con il link al post su Steam.
+- Il [MetaShifting](/it/tier-list#tracker) elenca la patch accanto a quelle del playtest.
+- Il [deck builder](/it/deck-builder) usa i costi nuovi: Dorothy ora conta come carta da 4 nella curva di mana.
+- Il testo ufficiale delle sei carte che cambiano effetto sarà aggiornato quando il database carte della community importerà la patch. Fino ad allora lo storico dei bilanciamenti di ogni scheda spiega la modifica.
+
+Tutto il resto dell'aggiornamento, dall'interfaccia nuova alla classificata allo Steam Next Fest, è nell'[articolo sul primo grande aggiornamento della demo](/it/news/demo-first-big-update).`,
+    ),
+    faq: {
+      en: [
+        { q: "What changed in the Origins TCG demo patch of 21 September?", a: "Dorothy costs 4 instead of 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet and Roo change stats; Itsy Bitsy Spider becomes Evil; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet and Wooden Stake change what they do; two game rules and The Gallows location are fixed." },
+        { q: "Does this patch have a version number?", a: "No. The team calls it the demo patch notes of 21 September 2026, and the changes are compared to the last playtest build, 0.6.3." },
+        { q: "Should I build my Crimson Cup decks on these stats?", a: "Yes: the tentative card list of the tournament arrived with the same update. The team warns that further balance patches can still come before the Crimson Cup, from 20 to 25 October 2026." },
+      ],
+      it: [
+        { q: "Cosa cambia con la patch della demo di Origins TCG del 21 settembre?", a: "Dorothy costa 4 invece di 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet e Roo cambiano statistiche; Itsy Bitsy Spider diventa Malvagia; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet e Wooden Stake cambiano effetto; si correggono due regole di gioco e il luogo The Gallows." },
+        { q: "Questa patch ha un numero di versione?", a: "No. Il team la chiama patch notes della demo del 21 settembre 2026, e le modifiche sono confrontate con l'ultima build del playtest, la 0.6.3." },
+        { q: "Devo costruire i mazzi per la Crimson Cup su queste statistiche?", a: "Sì: la lista carte provvisoria del torneo è arrivata con lo stesso aggiornamento. Il team avverte che prima della Crimson Cup, dal 20 al 25 ottobre 2026, possono arrivare altre patch di bilanciamento." },
+      ],
+    },
+    url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
+    source: "steam",
+  },
+  {
     slug: "demo-first-big-update",
     image: "/media/news-play-collect-trade.webp",
     guides: ["play-the-demo", "steam-next-fest-2026", "collector-economy"],
     date: "2026-09-21",
+    updated: "2026-09-22",
     title: n(
       "Origins TCG's first big demo update: new UI, test packs, ranked at Next Fest and the Crimson Cup card list",
       "Il primo grande aggiornamento della demo di Origins TCG: pacchetti di prova, classificata e Crimson Cup",
@@ -77,7 +306,7 @@ export const news: NewsItem[] = [
         { label: "Collectors tutorial", text: "how collecting works, explained in the game", anchor: "collectors-tutorial" },
         { label: "Test packs", text: "packs to open inside the demo", anchor: "test-packs" },
         { label: "New voice lines", anchor: "voice-lines" },
-        { label: "Balance changes", text: "details coming on Discord and Reddit", anchor: "balance" },
+        { label: "Balance changes", text: "Dorothy costs 4 and 14 cards change: full patch notes", anchor: "balance" },
         { label: "Ranked at Steam Next Fest", text: "from 19 October, with exclusive rewards", anchor: "ranked" },
         { label: "Crimson Cup card list", text: "tentative, tournament decks can be built now", anchor: "crimson-cup" },
         { label: "Progress kept", text: "whichever is further ahead between demo and playtest", anchor: "progress" },
@@ -88,7 +317,7 @@ export const news: NewsItem[] = [
         { label: "Tutorial per collezionisti", text: "come funziona il collezionare, spiegato nel gioco", anchor: "tutorial-collezionisti" },
         { label: "Pacchetti di prova", text: "da aprire dentro la demo", anchor: "pacchetti-di-prova" },
         { label: "Nuove voci", anchor: "nuove-voci" },
-        { label: "Modifiche di bilanciamento", text: "dettagli in arrivo su Discord e Reddit", anchor: "bilanciamento" },
+        { label: "Modifiche di bilanciamento", text: "Dorothy costa 4 e cambiano 14 carte: le patch notes complete", anchor: "bilanciamento" },
         { label: "Classificata allo Steam Next Fest", text: "dal 19 ottobre, con ricompense esclusive", anchor: "classificata" },
         { label: "Lista carte della Crimson Cup", text: "provvisoria, i mazzi per il torneo si preparano già", anchor: "crimson-cup" },
         { label: "Progressi salvi", text: "vale il percorso più avanzato tra demo e playtest", anchor: "progressi" },
@@ -118,7 +347,7 @@ The update adds new voice lines; the announcement says nothing more about them.
 
 ### Balance changes {#balance}
 
-The details have not been published yet: the team will post them on Discord and Reddit. As soon as they are out they go into [MetaShifting](/en/tier-list#tracker) and into the balance history of every card they touch.
+The details came out the same evening, in the Steam post and on Discord: Dorothy drops to 4 mana, eight cards change stats, Itsy Bitsy Spider turns Evil, six cards change what they do, and two game rules and The Gallows location are fixed. Everything is in [the patch notes article](/en/news/demo-patch-notes-0921), and already in [MetaShifting](/en/tier-list#tracker) and in the balance history of every card it touches.
 
 ## Ranked mode opens with Steam Next Fest {#ranked}
 
@@ -145,12 +374,10 @@ Whoever plays the closed playtest gets no new decks, cards or bosses with this u
 
 ## What we don't know yet {#open-questions}
 
-- The details of the balance changes.
 - What the exclusive ranked rewards are.
 - Whether deckbuilding is already open to everyone in the public demo: the announcement does not say.
-- The post on Steam: for now the announcement is on Reddit and Discord only.
 
-We will update this article as the answers arrive.
+**Update, 22 September:** two questions are answered. The balance details are out ([patch notes](/en/news/demo-patch-notes-0921)), and the announcement is now on Steam too, where it was published at 21:59 UTC on 21 September.
 
 ## The rumour that got it right {#rumour}
 
@@ -177,7 +404,7 @@ L'aggiornamento aggiunge nuove voci al gioco; l'annuncio non dice altro.
 
 ### Modifiche di bilanciamento {#bilanciamento}
 
-I dettagli non sono ancora pubblici: il team li pubblicherà su Discord e Reddit. Appena escono finiscono nel [MetaShifting](/it/tier-list#tracker) e nello storico di ogni carta che toccano.
+Il dettaglio è uscito la sera stessa, nel post su Steam e sul Discord: Dorothy scende a 4 mana, otto carte cambiano statistiche, Itsy Bitsy Spider diventa Malvagia, sei carte cambiano effetto, e si correggono due regole di gioco e il luogo The Gallows. È tutto nell'[articolo sulle patch notes](/it/news/demo-patch-notes-0921), e già nel [MetaShifting](/it/tier-list#tracker) e nello storico di ogni carta toccata.
 
 ## La classificata parte con lo Steam Next Fest {#classificata}
 
@@ -204,12 +431,10 @@ Chi gioca il playtest chiuso non riceve nuovi mazzi, carte o boss con questo agg
 
 ## Cosa non sappiamo ancora {#domande-aperte}
 
-- Il dettaglio delle modifiche di bilanciamento.
 - In cosa consistono le ricompense esclusive della classificata.
 - Se il deck builder è già aperto a tutti nella demo pubblica: l'annuncio non lo dice.
-- Il post su Steam: per ora l'annuncio c'è solo su Reddit e su Discord.
 
-Aggiorneremo questo articolo man mano che arrivano le risposte.
+**Aggiornamento del 22 settembre:** due risposte sono arrivate. Il dettaglio del bilanciamento è pubblico (le [patch notes](/it/news/demo-patch-notes-0921)) e l'annuncio ora c'è anche su Steam, dove è uscito alle 23:59 italiane del 21 settembre.
 
 ## Il rumor che ci aveva preso {#rumor}
 
@@ -229,8 +454,8 @@ La settimana scorsa girava sui social una frase su una "Demo Season 2" in arrivo
         { q: "Cosa cambia per chi gioca il playtest?", a: "Per ora nessun nuovo mazzo, carta o boss: l'aggiornamento di rifinitura arriva sul playtest più avanti nella settimana del 21 settembre, insieme ad altre novità da provare." },
       ],
     },
-    url: "https://www.reddit.com/r/OriginsTCG/comments/1wmobte/the_first_big_update_to_the_origins_demo_just/",
-    source: "press",
+    url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
+    source: "steam",
   },
   {
     slug: "forum-bugs-before-demo-2",
