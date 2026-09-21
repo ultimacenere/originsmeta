@@ -75,7 +75,9 @@ export function builderLabels(d: Dictionary): BuilderLabels {
 }
 
 /** Carte giocabili nel deck builder (attive, non create da altre carte) con l'etichetta della saga nella lingua. */
-export function builderPool(locale: Locale): BuilderCard[] {
+export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
+  const typeLabel = d ? ({ unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const) : undefined;
+  const alignLabel = d ? ({ good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const) : undefined;
   return cards
     .filter((c) => c.status === "active" && c.type !== "token")
     .map((c) => ({
@@ -88,5 +90,13 @@ export function builderPool(locale: Locale): BuilderCard[] {
       health: c.health,
       sagaLabel: sagas[c.saga][locale],
       key: c.key,
+      thumb: c.thumb,
+      image: c.image,
+      art: c.art,
+      // per l'anteprima al passaggio del mouse: testo già nella lingua della pagina, niente database nel bundle
+      ability: c.ability?.[locale],
+      alignment: c.alignment,
+      alignmentLabel: c.alignment && alignLabel ? alignLabel[c.alignment] : undefined,
+      typeLabel: typeLabel ? typeLabel[c.type] : undefined,
     }));
 }

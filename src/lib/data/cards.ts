@@ -1,14 +1,17 @@
 import type { Locale } from "../i18n";
 import woo from "./woo-cards.json";
+import cardArt from "./card-art.json";
 import { cardLore } from "./card-lore";
 import { cardHistory } from "./card-history";
+import { cardCredits, type CardCredit } from "./card-credits";
 
 /**
- * Database carte. Tre sorgenti unite qui:
+ * Database carte. Quattro sorgenti unite qui:
  * - `woo-cards.json`: dati di gioco (nome, costo, statistiche, testo inglese, tag, rarità, allineamento, chiave
  *   ufficiale, carte collegate) importati dal database community World of Origins con `npm run import:woo`;
  * - `card-lore.ts`: saga, origine della leggenda e traduzione italiana del testo, scritte a mano;
- * - `card-history.ts`: storico dei bilanciamenti trascritto dalle patch notes ufficiali su Steam.
+ * - `card-history.ts`: storico dei bilanciamenti trascritto dalle patch notes ufficiali su Steam;
+ * - `card-art.json`: illustrazioni ufficiali Koin convertite da `npm run import:art`, indicizzate per chiave.
  */
 
 export type L10n = Record<Locale, string> & { fr?: string };
@@ -90,8 +93,16 @@ export type Card = {
   name: string;
   /** nome con cui la carta era conosciuta in una patch precedente */
   formerName?: string;
-  /** percorso immagine in /public (es. /cards/mulan.webp); assente finché non abbiamo le illustrazioni */
+  /** carta da collezione ufficiale intera, 480 px (es. /cards/mulan.webp); assente per le carte che il materiale Koin non copre */
   image?: string;
+  /** stessa carta a 160 px, per i chip e la griglia (es. /cards/sm/mulan.webp) */
+  thumb?: string;
+  /** sola finestra d'arte, per la carta di gioco che disegniamo noi (es. /cards/art/mulan.webp) */
+  art?: string;
+  /** ritaglio 16:9 dell'arte, solo per le Leggendarie: copertina dei mazzi della community */
+  cover?: string;
+  /** illustratore e numero di collezione stampati sulla carta ufficiale */
+  credit?: CardCredit;
   /** chiave ufficiale della carta nei codici-mazzo del gioco (es. C00012_MC), quando nota */
   key?: string;
   type: CardType;
@@ -157,7 +168,17 @@ export const cards: Card[] = data.cards.map((w) => {
     history: cardHistory[w.slug] ?? [],
   };
   if (w.formerName) card.formerName = w.formerName;
-  if (w.key) card.key = w.key;
+  // La chiave di una carta creata può mancare in World of Origins: in quel caso la dà `card-lore.ts`, letta dal materiale ufficiale.
+  const key = w.key ?? lore?.key;
+  if (key) card.key = key;
+  const art = key ? (cardArt.art as Record<string, { slug: string; cover?: boolean }>)[key] : undefined;
+  if (art) {
+    card.image = `/cards/${art.slug}.webp`;
+    card.thumb = `/cards/sm/${art.slug}.webp`;
+    card.art = `/cards/art/${art.slug}.webp`;
+    if (art.cover) card.cover = `/cards/cover/${art.slug}.webp`;
+    if (cardCredits[art.slug]) card.credit = cardCredits[art.slug];
+  }
   if (w.legendary) card.legendary = true;
   if (w.mana !== undefined) card.mana = w.mana;
   if (w.power !== undefined) card.power = w.power;

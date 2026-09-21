@@ -1,17 +1,17 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string> & { fr?: string };
-/** il francese è stato ritirato il 15/09/2026: i testi già scritti restano, i nuovi si fermano a en/it */
-const n = (en: string, it: string, fr?: string): L10n => ({ en, it, fr });
+const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
 
 export type NewsItem = {
   slug: string;
   date: string;
   title: L10n;
   summary: L10n;
-  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo della community (url interno senza prefisso lingua) */
+  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo pubblicato sul sito (url interno senza prefisso lingua) */
   url: string;
-  source: "steam" | "press" | "community";
+  /** "staff" per i mazzi pubblicati dallo staff di OriginsMeta: mostra il tag Staff e basta, mai anche "Community". */
+  source: "steam" | "press" | "community" | "staff";
   /** copertina, sempre presente: media kit ufficiale in /public/media o miniatura ufficiale YouTube */
   image: string;
   /** slug delle carte toccate dall'annuncio (o, per i mazzi della community, le carte del mazzo) */
@@ -101,7 +101,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "davdas-3-pigs-mid-range",
-    image: "/media/hero-1200.webp",
+    image: "/cards/cover/three-not-so-little-pigs.webp",
     cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
     guides: ["three-pigs-midrange-guide", "three-pigs-midrange-matchups"],
     date: "2026-09-15",
@@ -116,11 +116,11 @@ export const news: NewsItem[] = [
       "Le deuxième deck de Davdas, membre du staff d'OriginsMeta, est une liste midrange menée par Three Not So Little Pigs, prévue pour le ladder et le jeu compétitif. Le plan : prendre le plateau dans les premiers tours, gagner au moins un lieu, puis conclure avec En Passant, le Trample d'Ellen Trechend et les Lightning Strike générés par Impundulu. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code OM pour l'ouvrir dans le deck builder et deux guides pour le jouer.",
     ),
     url: "/decks/community/3-pigs-mid-range-6311",
-    source: "community",
+    source: "staff",
   },
   {
     slug: "davdas-healing-healsing",
-    image: "/media/capsule-library.webp",
+    image: "/cards/cover/van-helsing.webp",
     cards: ["van-helsing", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "phuong-hoang", "jekyll", "boitata", "tin-woodman", "spellbook", "searing-light", "forbidden-knowledge"],
     guides: ["healing-healsing-guide", "healing-healsing-matchups"],
     date: "2026-09-15",
@@ -135,11 +135,11 @@ export const news: NewsItem[] = [
       "Le premier deck publié sur OriginsMeta est signé Davdas, membre du staff : une liste contrôle menée par Van Helsing pour le ladder classé. Le plan : prendre de la valeur tôt avec Spellbook et Ali Baba, soigner les dégâts pendant que Phuong Hoang grandit à chaque soin, puis atteindre le tour 8 ou 9 et remettre le plateau à zéro avec Forbidden Knowledge. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code OM pour le deck builder et deux guides pour le jouer.",
     ),
     url: "/decks/community/healing-healsing-9411",
-    source: "community",
+    source: "staff",
   },
   {
     slug: "playtest-feedback-deck-unlock",
-    image: "/media/capsule-library.webp",
+    image: "/media/ss-collection.webp",
     cards: ["humpty", "spellbook", "asanbosam"],
     date: "2026-09-14",
     title: n(
@@ -157,7 +157,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "kickstarter-ama-pre-registration",
-    image: "/media/ls-collector-pack.webp",
+    image: "/media/ls-two-ways.webp",
     date: "2026-09-10",
     title: n(
       "Kickstarter AMA held: pre-registration open, Alpha Edition boxes preorder-only",
@@ -174,7 +174,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "gameplay-trailer",
-    image: "https://i.ytimg.com/vi/7EFg0DN9MnI/hqdefault.jpg",
+    image: "/media/news-trailer.webp",
     date: "2026-09-03",
     title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Bande-annonce de gameplay officielle sur YouTube"),
     summary: n(
@@ -187,7 +187,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "itzbolt-wins-conquest",
-    image: "/media/hero-1200.webp",
+    image: "/media/ss-board-hand-full.webp",
     date: "2026-08-28",
     title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt remporte le Big Bob's Playtest Battle, premier tournoi Conquest"),
     summary: n(
@@ -200,20 +200,20 @@ export const news: NewsItem[] = [
   },
   {
     slug: "biggest-tournament-ever",
-    image: "/media/hero-1920.webp",
+    image: "/media/news-crimson-cup.webp",
     date: "2026-09-09",
-    title: n("Biggest tournament ever announced for Steam Next Fest", "Annunciato il torneo più grande di sempre per lo Steam Next Fest", "Le plus grand tournoi jamais organisé annoncé pour le Steam Next Fest"),
+    title: n("Crimson Cup announced: the biggest tournament ever for Steam Next Fest", "Annunciata la Crimson Cup: il torneo più grande di sempre per lo Steam Next Fest", "La Crimson Cup annoncée : le plus grand tournoi jamais organisé pour le Steam Next Fest"),
     summary: n(
-      "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. First online tournament with an exclusive 1/1 promo card, plus packs, boxes, cases and cash. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
-      "Un evento su più giorni dal 20 al 25 ottobre: qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali. Primo torneo online con una carta promo 1/1 esclusiva, più pacchetti, box, case e denaro. Iscrizioni su Discord; i creator possono chiedere inviti wildcard diretti ai playoff.",
-      "Un événement sur plusieurs jours du 20 au 25 octobre : qualifications pour les trois grandes régions les 20, 21 et 22, puis playoffs et finales. Premier tournoi en ligne avec une carte promo 1/1 exclusive, plus des packs, boîtes, cases et de l'argent. Inscriptions sur Discord ; les créateurs peuvent demander une invitation wildcard directe pour les playoffs.",
+      "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
+      "Un evento su più giorni dal 20 al 25 ottobre: qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha, premi in denaro. Iscrizioni su Discord; i creator possono chiedere inviti wildcard diretti ai playoff.",
+      "Un événement sur plusieurs jours du 20 au 25 octobre : qualifications pour les trois grandes régions les 20, 21 et 22, puis playoffs et finales. Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive, d'autres cartes promo, des packs numériques, des boîtes et cases Alpha, et des prix en argent. Inscriptions sur Discord ; les créateurs peuvent demander une invitation wildcard directe pour les playoffs.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
     source: "steam",
   },
   {
     slug: "patch-0-6-3",
-    image: "/media/ls-collect-them-all.webp",
+    image: "/media/ss-board-ley-line.webp",
     cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
     date: "2026-08-27",
     title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, Re Artù a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
@@ -222,12 +222,12 @@ export const news: NewsItem[] = [
       "Una patch di tuning e correzioni, usata per il torneo di Big Bob due giorni dopo. Buff a Re Artù, Merlino, Lancillotto, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll e Blow the House Down; nerf a Bandersnatch, Bigfoot, Scarecrow e Merlin's Prophecy; Bagheera, Christopher Robin e Sandman rivisti. I boss hanno un'IA più intelligente.",
       "Un patch d'ajustements et de correctifs, utilisé pour le tournoi de Big Bob deux jours plus tard. Buffs pour le roi Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll et Blow the House Down ; nerfs pour Bandersnatch, Bigfoot, Scarecrow et Merlin's Prophecy ; Bagheera, Christopher Robin et Sandman retravaillés. Les boss ont une IA plus maligne.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1842212951301184",
     source: "steam",
   },
   {
     slug: "big-bobs-playtest-battle",
-    image: "/media/capsule-header.webp",
+    image: "/media/ss-versus.webp",
     date: "2026-08-25",
     title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle inaugure le format Conquest"),
     summary: n(
@@ -235,12 +235,12 @@ export const news: NewsItem[] = [
       "Torneo il 28 agosto sulla build del playtest con deckbuilding completo. Best-of-3, eliminazione diretta e primo uso del Conquest: si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti, si banna un mazzo avversario. Premi: wildcard per il torneo del Next Fest e Collector Pack.",
       "Tournoi le 28 août sur la build du playtest avec deckbuilding complet. Best-of-3, élimination directe et première utilisation du Conquest : plusieurs decks avec des Légendaires différentes et au moins neuf cartes différentes, un ban chez l'adversaire. Récompenses : wildcards pour le tournoi du Next Fest et Collector Packs.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
     source: "steam",
   },
   {
     slug: "patch-0-6-2",
-    image: "/media/banner-rapunzel.webp",
+    image: "/media/ss-board-reveals.webp",
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
@@ -249,12 +249,12 @@ export const news: NewsItem[] = [
       "Otto carte hanno cambiato abilità. Mulan ottiene Doppio Attacco, la Regina di Cuori scende a 4 Mana 3/3 con Primo Colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma il Proiettile d'Argento fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
       "Huit cartes ont changé de capacité. Mulan gagne Double Attaque, la Reine de Cœur passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Balle d'argent inflige 1. La collection est désormais limitée aux dix decks du playtest.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",
     source: "steam",
   },
   {
     slug: "patch-0-6-1-ranked",
-    image: "/media/ls-zero-pay-to-win.webp",
+    image: "/media/news-patch-061.webp",
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
@@ -263,12 +263,12 @@ export const news: NewsItem[] = [
       "Arriva la modalità classificata con una classifica mondiale per la divisione Grandmaster, più comodità: salta il tutorial, anteprima della Leggendaria avversaria durante il mulligan, silenzia le emote. Huntsman passa a 6 Mana 6/6; Swarm, Evil e Discard cambiano una carta ciascuno.",
       "Le mode classé arrive avec un classement mondial pour la division Grandmaster, plus du confort : passer le tutoriel, aperçu de la Légendaire adverse pendant le mulligan, couper les émotes. Huntsman passe à 6 Mana 6/6 ; Swarm, Evil et Discard échangent une carte chacun.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
     source: "steam",
   },
   {
     slug: "demo-2-playtest",
-    image: "/media/capsule-main.webp",
+    image: "/media/news-demo2-playtest.webp",
     date: "2026-08-05",
     title: n("Demo 2.0 playtest: 5 new decks, 70+ new cards, deckbuilding", "Playtest della Demo 2.0: 5 nuovi mazzi, oltre 70 carte nuove, deckbuilding", "Playtest de la Démo 2.0 : 5 nouveaux decks, plus de 70 cartes, deckbuilding"),
     summary: n(
@@ -276,12 +276,12 @@ export const news: NewsItem[] = [
       "L'aggiornamento che uscirà per lo Steam Next Fest di ottobre va nei playtest della community, da venerdì 7 agosto alle 21 UTC con una game night. Aperto a tutti tramite Discord.",
       "La mise à jour prévue pour le Steam Next Fest d'octobre part en playtests communautaires, dès le vendredi 7 août à 21 h UTC avec une game night. Ouvert à tous via Discord.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1840310314338383",
     source: "steam",
   },
   {
     slug: "demo-stats-ama",
-    image: "/media/ls-two-ways.webp",
+    image: "/media/news-card-party.webp",
     date: "2026-07-21",
     title: n("First demo numbers: 1,000+ players, 13,000+ matches, 1h51m median", "Primi numeri della demo: oltre 1.000 giocatori, 13.000 partite, mediana 1h51m", "Premiers chiffres de la démo : 1 000+ joueurs, 13 000+ parties, médiane 1 h 51"),
     summary: n(
@@ -289,12 +289,12 @@ export const news: NewsItem[] = [
       "Sei giorni dopo il lancio il team condivide i numeri della demo e annuncia un AMA con il CEO Tim Jooste e il capo del game design Kevin Lambert (22 luglio), il primo torneo della demo (24 luglio) e uno stand al Card Party di Fort Lauderdale (24–26 luglio).",
       "Six jours après le lancement, l'équipe partage les chiffres de la démo et annonce un AMA avec le CEO Tim Jooste et le responsable du game design Kevin Lambert (22 juillet), le premier tournoi de la démo (24 juillet) et un stand au Card Party de Fort Lauderdale (24–26 juillet).",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
     source: "steam",
   },
   {
     slug: "demo-live",
-    image: "/media/capsule-main.webp",
+    image: "/media/news-demo-live.webp",
     date: "2026-07-16",
     title: n("The Origins TCG demo is live on Steam", "La demo di Origins TCG è disponibile su Steam", "La démo d'Origins TCG est disponible sur Steam"),
     summary: n(
@@ -302,12 +302,12 @@ export const news: NewsItem[] = [
       "Demo gratuita con collezionabili esclusivi che non saranno più disponibili in seguito e saranno scambiabili sul marketplace Steam al lancio del gioco completo. Festa di lancio su Discord lo stesso giorno.",
       "Démo gratuite avec des objets de collection exclusifs, indisponibles plus tard et échangeables sur le marketplace Steam au lancement du jeu complet. Soirée de lancement sur Discord le jour même.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1838407329257018",
     source: "steam",
   },
   {
     slug: "creator-program",
-    image: "/media/boxart-rapunzel.webp",
+    image: "/media/keyart-robin-hood.webp",
     date: "2026-08-19",
     title: n("Creator Program announced, details in a Discord AMA", "Annunciato il Creator Program, dettagli in un AMA su Discord", "Creator Program annoncé, détails lors d'un AMA sur Discord"),
     summary: n(
@@ -320,7 +320,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "community-open",
-    image: "/media/ls-real-collecting.webp",
+    image: "/media/news-community-open.webp",
     date: "2026-06-03",
     title: n("Official Discord opens to everyone", "Il Discord ufficiale apre a tutti", "Le Discord officiel s'ouvre à tous"),
     summary: n(
@@ -328,12 +328,12 @@ export const news: NewsItem[] = [
       "Il server che ospitava i tester dell'alpha si apre a tutti, con una demo annunciata in arrivo e un primo sguardo ai collezionabili.",
       "Le serveur qui accueillait les testeurs de l'alpha s'ouvre à tous, avec une démo annoncée et un premier aperçu des objets de collection.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1834602721185275",
     source: "steam",
   },
   {
     slug: "metal-cards-tease",
-    image: "/media/ls-collector-pack.webp",
+    image: "/media/ls-real-collecting.webp",
     date: "2026-03-13",
     title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "Le CEO dévoile des cartes physiques en métal"),
     summary: n(
@@ -346,7 +346,7 @@ export const news: NewsItem[] = [
   },
   {
     slug: "steam-page-live",
-    image: "/media/capsule-header.webp",
+    image: "/media/news-steam-page.webp",
     date: "2026-05-06",
     title: n("Steam page live: wishlist open, demo on the way", "Pagina Steam online: wishlist aperta, demo in arrivo", "Page Steam en ligne : wishlist ouverte, démo en route"),
     summary: n(
@@ -354,7 +354,7 @@ export const news: NewsItem[] = [
       "Primo post su Steam del team: un gioco di carte costruito su partite tattiche veloci e un sistema da collezione modellato sui TCG fisici.",
       "Premier message Steam de l'équipe : un jeu de cartes construit autour de parties tactiques rapides et d'un système de collection inspiré des TCG physiques.",
     ),
-    url: "https://steamcommunity.com/app/4429430/allnews/",
+    url: "https://store.steampowered.com/news/app/4429430/view/1832065502808213",
     source: "steam",
   },
 ];

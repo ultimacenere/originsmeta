@@ -27,6 +27,17 @@ export type BuilderCard = {
   health?: number;
   sagaLabel: string;
   key?: string;
+  /** miniatura della carta ufficiale (160 px), assente sulle carte che il materiale non copre */
+  thumb?: string;
+  /** carta ufficiale intera (480 px): l anteprima al passaggio del mouse la mostra a metà pannello */
+  image?: string;
+  /** sola finestra d illustrazione: nei riquadri piccoli si legge molto meglio della carta intera */
+  art?: string;
+  /** testo dell abilità nella lingua della pagina e allineamento: servono all anteprima al passaggio del mouse */
+  ability?: string;
+  alignment?: "good" | "evil" | "neutral";
+  alignmentLabel?: string;
+  typeLabel?: string;
   /** carta inserita a mano dall'utente, non presente nel database */
   custom?: boolean;
 };

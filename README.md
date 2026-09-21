@@ -30,7 +30,7 @@ npm run lint
 | Eventi e tornei | `src/lib/data/events.ts` |
 | Mazzi (tag: leggendaria, archetipo, creator) | `src/lib/data/decks.ts` |
 | Tier list (mazzi, leggendarie, carte base) | `src/lib/data/tierlist.ts` |
-| News (riassunti + link alla fonte; per i mazzi della community `source: "community"`, url interno e guide collegate) | `src/lib/data/news.ts` |
+| News (riassunti + link alla fonte; per i mazzi pubblicati qui `source: "community"` o `"staff"`, url interno e guide collegate) | `src/lib/data/news.ts` |
 | Guide (Markdown, EN/IT, con categoria e tag di collegamento) | `src/lib/content/guides.ts` |
 | Immagini ufficiali ottimizzate | `public/media/` |
 | Palette e componenti CSS | `src/app/globals.css` |
@@ -53,7 +53,28 @@ In `src/lib/data/tierlist.ts` sposta gli slug tra i tier S–D delle tre sezioni
 
 ### Immagini delle carte
 
-Quando disponibili, salvale in `public/cards/<slug>.webp` e imposta `image` sulla carta in `cards.ts`; senza immagine le schede mostrano una cornice con le iniziali.
+Le illustrazioni ufficiali arrivano dal materiale Koin (archivio in `G:\Il mio Drive\OriginsMeta\10_Materiale_Koin`, con le condizioni d'uso). Non si copiano a mano: le genera
+
+```
+npm run import:art -- --src "<cartella dei PNG delle carte>"
+```
+
+che scrive quattro derivati per carta in `public/` e il manifest generato `src/lib/data/card-art.json`, indicizzato per chiave ufficiale (`C00064_MB`, la stessa dei codici mazzo). `cards.ts` legge il manifest e popola da solo i campi della carta:
+
+| File | Campo | Dove si vede |
+| --- | --- | --- |
+| `public/cards/<slug>.webp` (480 px) | `image` | carta da collezione nella scheda carta, anteprima social |
+| `public/cards/sm/<slug>.webp` (160 px) | `thumb` | chip (`CardArt`), griglia di `/cards`, tier list |
+| `public/cards/art/<slug>.webp` (560 px) | `art` | finestra d'arte della carta di gioco (`GameCard`) |
+| `public/cards/cover/<slug>.webp` (1200×675) | `cover` | solo Leggendarie: copertina dei mazzi della community |
+
+I PNG originali non entrano nel repo (610 MB). Lo script importa solo la variante base `V00000`, elenca le varianti alternative nel manifest senza convertirle, e salta le carte che il database non conosce. Le carte senza illustrazione mostrano da sole la cornice con le iniziali.
+
+I crediti stampati sulle carte (illustratore e numero di collezione) stanno in `src/lib/data/card-credits.ts`, scritto a mano: vanno sempre mostrati accanto all'illustrazione.
+
+**La carta di gioco** (`src/components/GameCard.tsx`, stili `.game-card` in `globals.css`) è disegnata da noi con i dati del database — quindi anche in italiano — e usa solo la finestra d'arte: la cornice, la palette e il testo sono del sito. La carta ufficiale dentro lo slab resta `CardArt`.
+
+**Copertina dei mazzi della community**: è automatica, l'illustrazione della Leggendaria del mazzo (`cover`). Nessuno la sceglie, né in `/decks` né nell'anteprima social della scheda mazzo.
 
 ### Aggiungere una guida
 
@@ -78,6 +99,23 @@ In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary
 - **Pubblicazione** (`/decks/publish`, `src/components/PublishDeckForm.tsx`): dal deck builder il bottone "Pubblica sul sito" passa il mazzo nell'hash (`#OM1…`); la pagina chiede l'accesso se serve (il mazzo resta in `localStorage` nel frattempo), poi nome, archetipo, lingua della guida, piano di gioco (obbligatorio), punti di forza/deboli, mulligan, combo, matchup, note e video. La Server Action `publishDeck` (`src/lib/community/actions.ts`) rivalida il mazzo contro il database carte (`checkDeck`), genera lo slug e inserisce la riga. Pagina pubblica `/decks/community/[slug]` (ISR, 60 s) con voto a stelle (`StarRating`), video YouTube incorporato, "Apri nel deck builder", comandi del proprietario (`OwnerActions`: modifica, nascondi, elimina). `/account` elenca i mazzi dell'utente con stato e valutazione. I mazzi pubblicati compaiono anche in `/decks` (ISR, 5 min) con la media voti e nella sitemap.
 - **Nomi di carta nelle guide** (richiesta di Davdas, sviluppato il 16/09/2026): nella scheda `/decks/community/[slug]` i nomi ufficiali delle carte citati nel piano di gioco e nelle sezioni della guida diventano link alla scheda carta con anteprima al passaggio del mouse o al focus da tastiera (costo, potenza/salute, tipo, Leggendaria, saga, testo nella lingua della pagina, segnaposto illustrazione `CardArt`). Il riconoscimento sta in `src/lib/cardlinks.ts` (funzione pura `linkCardNames`: carte attive token compresi, corrispondenza più lunga, confini di parola Unicode, apostrofi dritti e tipografici, nomi di una sola parola solo con l'iniziale maiuscola; solo lato server, il database carte non va nel bundle client), il rendering in `src/components/CardMentions.tsx` (nodi React, mai HTML; pannello CSS `.card-mention*` in `globals.css`, nascosto su touch dove il tocco apre la scheda carta) più il client component minuscolo `CardMentionEdges`, che sposta il pannello quando sfonderebbe i bordi della finestra. Gli estratti in `/decks` e in home e le guide editoriali in Markdown non sono toccati; il modulo è pronto per i commenti.
 - Le pagine `/login`, `/decks/publish`, `/account` e le pagine di modifica sono `noindex`.
+
+### CAPTCHA sull'accesso (Turnstile, dal 20/09/2026)
+
+Dal 17/09/2026 dei bot chiedevano link di accesso in continuazione: 54 account finti in due giorni, nessuno con un accesso, e altrettante email non richieste partite dal nostro SMTP. Il modulo email di `LoginPanel` è ora protetto da **Cloudflare Turnstile**. La verifica del token la fa **Supabase**, non il sito: nel codice servono solo il widget (`src/components/Turnstile.tsx`) e il `captchaToken` passato a `signInWithOtp` (`src/lib/turnstile.ts` per la configurazione). Discord non ne ha bisogno: l'autenticazione avviene sul loro dominio.
+
+**Interruttore**: senza `NEXT_PUBLIC_TURNSTILE_SITE_KEY` il widget non compare e l'accesso si comporta esattamente come prima. È voluto: permette di pubblicare il codice prima di accendere il CAPTCHA.
+
+**Come si accende, in quest'ordine** (invertirlo blocca l'accesso a tutti):
+
+1. **Cloudflare** (serve un account gratuito): dash.cloudflare.com → Turnstile → Add widget. Nome `originsmeta-login`, modalità **Managed**, domini `originsmeta.com`, `www.originsmeta.com`, `originsmeta.vercel.app`, `localhost`, `127.0.0.1`. Si ottengono una **Site Key** (pubblica) e una **Secret Key** (privata).
+2. **Vercel**: Settings → Environment Variables → `NEXT_PUBLIC_TURNSTILE_SITE_KEY` = la Site Key, su tutti gli ambienti; poi un nuovo deploy (la variabile finisce nel bundle, serve ricostruire). Da qui il widget compare e manda il token, che Supabase per ora ignora.
+3. **Supabase**: Authentication → Attack protection → Enable CAPTCHA protection, provider **Turnstile**, incollare la **Secret Key**. Da questo momento le richieste senza token vengono rifiutate.
+4. Nella stessa dashboard, Authentication → Rate Limits: abbassare le email l'ora (era 30) per limitare i danni di un eventuale aggiro.
+
+**Verifica**: aprire `/it/login` in finestra anonima, controllare che il widget compaia e che il bottone del link via email si attivi solo dopo la spunta; poi chiedere un link a un proprio indirizzo. In locale si può usare la chiave di prova `1x00000000000000000000AA` in `.env.local`.
+
+**Pulizia degli account già creati dai bot**: nessuno di loro ha mai fatto un accesso, quindi si riconoscono con `last_sign_in_at is null` e nessun mazzo, voto o torneo. La cancellazione va fatta con una query su `auth.users` (cancella a cascata profilo e contenuti collegati), salvando prima un backup.
 
 ## Tournament Organizer (dal 16/09/2026)
 
@@ -105,6 +143,20 @@ In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary
 - Regole e validazioni in `src/lib/deckrules.ts`; codec in `src/lib/deckcode.ts`.
 - **Formato del gioco** (`KGBLDC`): `KGBLDC` + base64("v1|CHIAVE|CHIAVE…") + ":" + checksum (primi 4 byte di SHA-256 del payload, esadecimale). Le chiavi sono ID interni delle carte (es. `C00042_MB`, variante cosmetica `_V00002`), ordinate per numero. Il campo `key` delle carte arriva dall'import di World of Origins (tutte le carte tranne Merry Man), quindi export e import dei codici del gioco funzionano; verificato su due codici reali del 03/09/2026 (decodifica corretta e ricodifica identica). Se un codice contiene chiavi non abbinate, restano visibili per poterle segnalare.
 - **Formato OriginsMeta** (`OM1.`): base64url di JSON con nome, leggendaria, carte e carte personalizzate; usato per i link di condivisione (`/deck-builder#OM1.…`).
+
+## Pagina FAQ e assistente (dal 20/09/2026)
+
+`/faq` (EN e IT) ha due metà: in alto si può chiedere qualunque cosa, sotto stanno le risposte approvate.
+
+- **Le risposte approvate** (`src/lib/content/faq.ts`) sono testo scritto da noi, in HTML statico e nei dati strutturati FAQPage: le legge anche Google e non costano nulla. Quando una domanda torna spesso, si scrive lì in EN e IT e smette di passare dal modello.
+- **La domanda libera** passa da `/api/ask`. La risposta non viene dalla memoria del modello: `src/lib/faq/retrieve.ts` pesca dal nostro database le carte, le guide e gli eventi pertinenti e ne fa schede compatte; `src/lib/faq/ask.ts` le passa a `claude-opus-5` con l istruzione di usare solo quelle e di dire che non lo sa quando non bastano. Sotto la risposta compaiono le fonti come link alle nostre pagine. Vale anche qui la regola del progetto: nulla si inventa.
+- **Difese**: domanda di 300 caratteri al massimo, CAPTCHA Turnstile verificato qui con `TURNSTILE_SECRET_KEY` (a differenza dell accesso, dove lo verifica Supabase), cinque domande al minuto per indirizzo IP.
+
+**Per accendere l assistente** serve un passo manuale: Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY` (tipo **Secret**, tutti gli ambienti), presa da console.anthropic.com, poi un nuovo deploy. La chiave non va mai nel codice né in `.env.local` committato.
+
+Senza chiave la pagina non si rompe: `/api/ask` risponde 503 e la pagina mostra solo le FAQ approvate con la riga "l assistente è spento". Stessa cosa se la chiave è sbagliata (un `AuthenticationError` viene trattato come assenza di chiave).
+
+Per provare il recupero senza spendere: si aggiunge una rotta temporanea che chiama `contestoPer(domanda, "it")` e ne stampa fonti e testo. Attenzione, in App Router una cartella che inizia con `_` è privata e **non** diventa una rotta.
 
 ## Cookie e GDPR
 

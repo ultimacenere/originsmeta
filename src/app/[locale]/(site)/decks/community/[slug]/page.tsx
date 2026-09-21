@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, href, siteUrl } from "@/lib/i18n";
-import { pageMeta, resolveLocale } from "@/lib/page";
+import { formatDate, href, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
+import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
-import { guideSections } from "@/lib/community/types";
+import { guideSections, type CommunityDeck } from "@/lib/community/types";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
 import { CardArt, CardChip, CardChipList } from "@/components/CardChip";
@@ -21,7 +21,7 @@ import { Avatar } from "@/components/AccountMenu";
 import { contactEmail } from "@/components/Footer";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
-import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -41,12 +41,45 @@ export function generateStaticParams() {
   return [];
 }
 
+/** Nome della Leggendaria del mazzo, anche quando è una carta fuori dal nostro database. */
+function legendaryName(deck: CommunityDeck): string | undefined {
+  return (deck.legendary ? getCard(deck.legendary)?.name : undefined) ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name;
+}
+
+/**
+ * Descrizione del mazzo nella lingua della pagina. Prima era un taglio grezzo del testo dell'autore: su /en
+ * usciva in italiano, spezzata a metà parola e a volte con un trattino di elenco in testa. Qui la costruiamo
+ * con le etichette del dizionario e i dati del mazzo; il testo dell'autore si aggiunge in coda solo quando è
+ * scritto nella lingua della pagina, perché il sito non traduce i testi della community.
+ * La usano sia i metadati sia il JSON-LD, così dicono la stessa cosa.
+ */
+function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, max: number = DESCRIPTION_MAX): string {
+  const star = legendaryName(deck);
+  const facts = [
+    `${deck.name} · ${dict.community.kicker} ${dict.community.by} ${authorName(deck.profile)}`,
+    star ? `${dict.common.legendary}: ${star}` : "",
+    `${dict.common.archetype}: ${archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}`,
+  ]
+    .filter(Boolean)
+    .join(". ");
+  const own = deck.guide.lang === locale ? cleanDescription(deck.guide.summary, max) : "";
+  const text = cleanDescription(own ? `${facts}. ${own}` : `${facts}.`, max);
+  // Senza il testo dell'autore (guida scritta nell'altra lingua) restano i soli fatti, una novantina
+  // di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina.
+  return text.length < 120 ? cleanDescription(`${text} ${dict.community.metaTail}`, max) : text;
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale, dict } = await resolveLocale(params);
   const deck = await getCommunityDeck(slug);
   if (!deck) return {};
-  return pageMeta(locale, `/decks/community/${deck.slug}`, `${deck.name} · ${dict.community.kicker}`, deck.guide.summary.slice(0, 160));
+  // Copertina del mazzo: l'illustrazione della sua Leggendaria, senza che l'autore debba sceglierne una.
+  const cover = deck.legendary ? getCard(deck.legendary)?.cover : undefined;
+  const star = legendaryName(deck);
+  // Le copertine in public/cards/cover sono 1200×675: lo dichiariamo perché l'anteprima social non venga ritagliata a caso.
+  const art: PageMetaOptions = cover ? { imageSize: { width: 1200, height: 675 }, imageAlt: star ? `${star} · ${deck.name}` : deck.name } : {};
+  return pageMeta(locale, `/decks/community/${deck.slug}`, pageTitleWith(deck.name, dict.community.kicker), deckDescription(deck, locale, dict), cover, art);
 }
 
 export default async function CommunityDeckPage({ params }: { params: Params }) {
@@ -75,19 +108,27 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
     "@context": "https://schema.org",
     "@type": "Article",
     headline: deck.name,
-    description: deck.guide.summary.slice(0, 200),
-    inLanguage: deck.guide.lang,
+    description: deckDescription(deck, locale, d, 200),
+    // Lingua del documento, non del testo dell'autore: la pagina /en resta una pagina inglese.
+    inLanguage: locale,
     datePublished: deck.created_at,
     dateModified: deck.updated_at,
+    // `image` è obbligatoria per i rich result: la copertina della Leggendaria, altrimenti l'immagine social del sito.
+    image: legendary?.cover ? `${siteUrl}${legendary.cover}` : `${siteUrl}${defaultOgImage}`,
     author: { "@type": "Person", name: author },
-    publisher: { "@id": `${siteUrl}/#organization` },
+    publisher: { "@id": organizationId },
     mainEntityOfPage: pageUrl,
-    about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
+    // Rimando all'entità unica del gioco, che il layout radice emette su ogni pagina: una copia
+    // in linea creerebbe un secondo "Origins TCG" e dividerebbe il segnale fra due entità.
+    about: { "@id": videoGameId },
   };
-  if (deck.rating?.votes) article.aggregateRating = { "@type": "AggregateRating", ratingValue: deck.rating.avg, ratingCount: deck.rating.votes, bestRating: 5, worstRating: 1 };
+  // Sotto i 3 voti la media non dice niente (un 5/5 su un voto solo) e Google non genera comunque lo snippet per un Article.
+  if ((deck.rating?.votes ?? 0) >= 3) article.aggregateRating = { "@type": "AggregateRating", ratingValue: deck.rating?.avg, ratingCount: deck.rating?.votes, bestRating: 5, worstRating: 1 };
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.decks.title, path: href(locale, "/decks") }, { name: deck.name, path }])]} />
+      <JsonLd
+        data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.decks.title, path: href(locale, "/decks") }, { name: deck.name, path }])]}
+      />
       <p className="text-sm">
         <Link href={href(locale, "/decks")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.decks.title}
@@ -98,7 +139,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         <div className="flex flex-wrap items-start gap-5">
           {legendary ? (
             <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
-              <CardArt card={legendary} className="!h-[168px] !w-[120px] text-2xl" />
+              <CardArt card={legendary} full className="!h-[168px] !w-[120px] text-2xl" />
             </Link>
           ) : null}
           <div className="min-w-0 flex-1 basis-64">

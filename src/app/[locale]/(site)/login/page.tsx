@@ -3,6 +3,7 @@ import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { LoginPanel } from "@/components/LoginPanel";
+import { loginLabels } from "@/lib/loginLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -18,23 +19,7 @@ export default async function LoginPage({ params }: { params: LocaleParams }) {
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{a.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{a.intro}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <LoginPanel
-          next={href(locale, "/account")}
-          labels={{
-            discord: a.discord,
-            or: a.or,
-            email: a.email,
-            emailPlaceholder: a.emailPlaceholder,
-            magicLink: a.magicLink,
-            sending: a.sending,
-            sent: a.sent,
-            error: a.error,
-            providerError: a.providerError,
-            rateLimited: a.rateLimited,
-            disabled: a.disabled,
-            backHint: a.backHint,
-          }}
-        />
+        <LoginPanel next={href(locale, "/account")} labels={loginLabels(d)} locale={locale} />
         <section className="felt-panel p-6">
           <h2 className="kicker text-mint">{a.whyTitle}</h2>
           <ul className="mt-3 space-y-2 text-sm text-chalk">

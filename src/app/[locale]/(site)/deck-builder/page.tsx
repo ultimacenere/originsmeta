@@ -5,16 +5,17 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { RULES } from "@/lib/deckrules";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { contactEmail } from "@/components/Footer";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/deck-builder", dict.builder.title, dict.builder.intro);
+  return pageMeta(locale, "/deck-builder", dict.builder.title, dict.builder.description);
 }
 
 export default async function DeckBuilderPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const pool = builderPool(locale);
+  const pool = builderPool(locale, d);
   const b = d.builder;
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -38,6 +39,8 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
       </div>
 
       <div className="mt-8">
+        {/* posiziona l anteprima della carta, che nel pool sta in una lista con scorrimento */}
+        <CardMentionEdges />
         <DeckBuilder
           pool={pool}
           contactEmail={contactEmail}

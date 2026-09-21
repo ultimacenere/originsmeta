@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { cards, cardSource, lastChange, sagas, type SagaId } from "@/lib/data/cards";
+import { activeCards, cards, cardSource, lastChange, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/cards", dict.cards.title, dict.cards.intro);
+  return pageMeta(locale, "/cards", dict.cards.title, dict.cards.description);
 }
 
 export default async function CardsPage({ params }: { params: LocaleParams }) {
@@ -25,7 +26,9 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       legendary: Boolean(c.legendary),
       sagaId: c.saga,
       sagaLabel: sagas[c.saga][locale],
-      image: c.image,
+      image: c.thumb ?? c.image,
+      imageLarge: c.image,
+      ability: c.ability?.[locale],
       mana: c.mana,
       power: c.power,
       health: c.health,
@@ -46,8 +49,26 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
   const created = cards.filter((c) => c.type === "token").length;
   const removed = cards.filter((c) => c.status === "removed").length;
 
+  // Lista per i dati strutturati: le carte giocabili nella demo, già in memoria, così la pagina resta statica.
+  const listed = activeCards.map((c) => ({ name: c.name, path: href(locale, `/cards/${c.slug}`) }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.cards.title, path: href(locale, "/cards") },
+          ]),
+          collectionPage({
+            locale,
+            path: href(locale, "/cards"),
+            name: d.cards.title,
+            description: d.cards.intro,
+            items: listed,
+            about: videoGameId,
+          })]}
+      />
       <p className="kicker text-mint">{d.nav.cards}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.cards.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>

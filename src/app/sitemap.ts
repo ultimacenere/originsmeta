@@ -1,15 +1,16 @@
 import type { MetadataRoute } from "next";
-import { locales, siteUrl, href } from "@/lib/i18n";
+import { defaultLocale, locales, siteUrl, href } from "@/lib/i18n";
 import { cards, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
 import { sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
+import { authors } from "@/lib/data/authors";
 import { listPublishedSlugs } from "@/lib/community/queries";
 import { listTournamentSlugs } from "@/lib/tournament/queries";
 
 /** Data dell'ultima revisione editoriale delle pagine fisse (aggiornare quando cambiano testi o struttura). */
-const SITE_UPDATED = "2026-09-15";
+const SITE_UPDATED = "2026-09-21";
 
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
@@ -33,8 +34,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },
     { path: "/guides", lastModified: guides.map((g) => g.updated).sort().at(-1) ?? SITE_UPDATED, changeFrequency: "weekly", priority: 0.8 },
     { path: "/tournaments", lastModified: [SITE_UPDATED, latestTournament ?? ""].sort().at(-1) || SITE_UPDATED, changeFrequency: "daily", priority: 0.8 },
+    // /faq è l'unica pagina con dati strutturati FAQPage: vale la pena segnalarla.
+    { path: "/faq", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.6 },
     { path: "/about", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.4 },
-    { path: "/privacy", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.2 },
+    { path: "/authors", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.3 },
+    // Pagine autore: l'elenco arriva da `src/lib/data/authors.ts` (file puro, non legge Supabase),
+    // così un autore nuovo entra in sitemap senza che nessuno debba ricopiarne lo slug qui.
+    ...authors.map((a) => ({ path: `/authors/${a.slug}`, lastModified: SITE_UPDATED, changeFrequency: "monthly" as const, priority: 0.3 })),
+    // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
     ...cards.map((c) => ({
       path: `/cards/${c.slug}`,
       lastModified: c.history.length ? patches[c.history[c.history.length - 1].patch].date : SITE_UPDATED,
@@ -52,6 +59,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const l of locales) {
       const languages: Record<string, string> = {};
       for (const ll of locales) languages[ll] = `${siteUrl}${href(ll, e.path)}`;
+      // x-default: la stessa riga che l'HTML dichiara in alternatesFor(), così i due segnali coincidono.
+      languages["x-default"] = `${siteUrl}${href(defaultLocale, e.path)}`;
       out.push({
         url: `${siteUrl}${href(l, e.path)}`,
         lastModified: new Date(`${e.lastModified}T12:00:00Z`),

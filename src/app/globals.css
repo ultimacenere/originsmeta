@@ -224,10 +224,18 @@
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
     position: relative;
   }
+  .card-chip-art.is-legendary {
+    border-color: var(--color-gold);
+  }
   .card-chip-art img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  /* Riquadro grande: la carta si vede intera, senza tagliare la fascia con i crediti dell'illustratore.
+     Unità e magie hanno proporzioni diverse (1425 e 1490 px su 2048), quindi niente box fisso. */
+  .card-chip-art-full img {
+    object-fit: contain;
   }
   .card-chip-art .mana {
     position: absolute;
@@ -243,6 +251,556 @@
     font-size: 0.65rem;
     line-height: 16px;
     text-align: center;
+  }
+
+  /* Carte di un mazzo nell'elenco: `sm` per la fila delle dodici carte, `md` per la Leggendaria in evidenza.
+     Il costo in mana sta sulla carta, come in partita. */
+  .deck-card {
+    position: relative;
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--color-sky);
+    border-radius: 6px;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+    aspect-ratio: 1425 / 2048;
+  }
+  .deck-card-xs {
+    width: 56px;
+    border-radius: 4px;
+  }
+  .deck-card-sm {
+    width: 80px;
+  }
+  .deck-card.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .deck-card-md {
+    width: 140px;
+    border-width: 2px;
+    border-color: var(--color-gold);
+    border-radius: 8px;
+  }
+  .deck-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .deck-card-initials {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .deck-card-mana {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    display: grid;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+  }
+  .deck-card-md .deck-card-mana {
+    min-width: 24px;
+    height: 24px;
+    font-size: 0.85rem;
+  }
+
+  /* Riga di una carta nel deck builder (pool e mazzo). L'illustrazione sfuma da destra come nei costruttori
+     di mazzi dei giochi di carte: si riconosce la carta di sguardo, il testo resta leggibile perché il velo
+     scuro copre la metà sinistra. `--row-art` è l'URL della miniatura, passato inline dal componente. */
+  /* `.deck-card-wrap` porta `inline-flex` (serve alle carte in fila); qui la riga deve restare a piena
+     larghezza, una per riga, quindi il display va riaffermato con la specificità giusta. */
+  .builder-row,
+  .deck-card-wrap.builder-row {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 54px;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--color-sky);
+    border-radius: 8px;
+    background: var(--color-night);
+    color: var(--color-chalk);
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .builder-row.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .builder-row.is-in-deck {
+    background: var(--color-night-3);
+  }
+  /* Metà destra: l'illustrazione sfumata verso sinistra. Sta su uno pseudo-elemento con il proprio raggio
+     d'angolo, così la riga NON ha bisogno di `overflow: hidden`, che taglierebbe l'anteprima al passaggio. */
+  .builder-row::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0 0 0 50%;
+    border-radius: 0 7px 7px 0;
+    background-image: var(--row-art, none);
+    background-position: center 28%;
+    background-size: cover;
+    opacity: 0.55;
+    mask-image: linear-gradient(to right, transparent, #000 55%);
+    pointer-events: none;
+  }
+  .builder-row > * {
+    position: relative;
+    z-index: 1;
+  }
+  .builder-row.is-full {
+    cursor: default;
+    opacity: 0.45;
+  }
+  .builder-row:hover {
+    border-color: var(--color-mint);
+  }
+  /* Segno dello stato al posto dei tasti: la riga intera è cliccabile, quindi resta solo l'indicazione. */
+  .builder-row-state {
+    display: grid;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(14, 7, 31, 0.65);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-mint);
+  }
+  .builder-row.is-in-deck .builder-row-state {
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .builder-row.is-full .builder-row-state {
+    color: var(--color-pale-muted);
+  }
+  .builder-row-text {
+    min-width: 0;
+    flex: 1;
+  }
+  .builder-row-name {
+    display: block;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-chalk);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px var(--color-felt-deep);
+  }
+  .builder-row.is-legendary .builder-row-name {
+    color: var(--color-gold);
+  }
+  .builder-row-stats {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-pale);
+    text-shadow: 0 1px 3px var(--color-felt-deep);
+  }
+  .builder-row-copies {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-mint);
+  }
+  .builder-row-x {
+    flex-shrink: 0;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid var(--color-sky);
+    border-radius: 6px;
+    background: var(--color-night-2);
+    font-size: 0.7rem;
+    color: var(--color-pale);
+  }
+  .builder-row-x:hover {
+    background: var(--color-crimson);
+    color: var(--color-chalk);
+  }
+
+  /* Anteprima della carta al passaggio del mouse: si legge il mazzo senza aprirlo.
+     Stesso principio di `.card-mention`: solo dove il mouse esiste, e su touch resta il `title`. */
+  .deck-card-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .deck-peek {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    z-index: 40;
+    display: none;
+    width: 330px;
+    max-width: 78vw;
+    padding-bottom: 8px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .deck-card-wrap.has-peek:hover > .deck-peek {
+      display: block;
+    }
+  }
+  /* Nel builder la riga sta in una lista che scorre: il pannello si posiziona rispetto alla finestra
+     (coordinate scritte da CardMentionEdges), altrimenti il contenitore lo taglierebbe. */
+  .builder-row > .deck-peek {
+    position: fixed;
+    bottom: auto;
+    left: 0;
+    padding-bottom: 0;
+    transform: none;
+  }
+
+  /* Classi aggiunte da CardMentionEdges quando il pannello uscirebbe dai bordi della finestra */
+  .deck-card-wrap.is-left > .deck-peek {
+    left: 0;
+    transform: none;
+  }
+  .deck-card-wrap.is-right > .deck-peek {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+  .deck-card-wrap.is-down > .deck-peek {
+    top: 100%;
+    bottom: auto;
+    padding-top: 8px;
+    padding-bottom: 0;
+  }
+  /* Metà pannello alla carta (con le sue proporzioni), metà al testo: richiesta di Pierluigi del 20/09/2026,
+     la miniatura era troppo piccola e il riquadro restava mezzo vuoto. */
+  .deck-peek-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.6rem;
+    padding: 0.65rem;
+    border: 2px solid var(--color-sky);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+    box-shadow: var(--shadow-lift);
+  }
+  .deck-peek-panel.is-legendary {
+    border-color: var(--color-gold);
+    background: linear-gradient(180deg, rgba(242, 210, 60, 0.16) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+  }
+  .deck-peek-art {
+    display: block;
+    width: 100%;
+    height: auto;
+    align-self: start;
+    border-radius: 6px;
+  }
+  .deck-peek-body {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    min-width: 0;
+  }
+  .deck-peek-name {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-sky);
+  }
+  .deck-peek-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+  }
+  .deck-peek-mana,
+  .deck-peek-stats,
+  .deck-peek-type,
+  .deck-peek-align {
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .deck-peek-mana {
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+  }
+  .deck-peek-stats {
+    background: var(--color-night-3);
+    color: var(--color-chalk);
+    font-family: var(--font-mono);
+  }
+  .deck-peek-type {
+    background: var(--color-night-3);
+    color: var(--color-pale);
+  }
+  .deck-peek-align.is-good {
+    border: 1px solid var(--color-mint);
+    color: var(--color-mint);
+  }
+  .deck-peek-align.is-evil {
+    border: 1px solid var(--color-crimson);
+    color: var(--color-crimson);
+  }
+  .deck-peek-align.is-neutral {
+    border: 1px solid var(--color-pale-muted);
+    color: var(--color-pale-muted);
+  }
+  .deck-peek-text {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-pale);
+    white-space: pre-line;
+  }
+
+  /* Griglia del database carte: l'illustrazione è il contenuto, i dettagli si scoprono al passaggio del mouse.
+     Sotto la carta restano sempre nome e statistiche, così su touch — dove l'hover non esiste — non si perde
+     nulla e la scheda completa è a un tocco. */
+  .card-tile {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 3px solid var(--color-sky);
+    border-radius: 14px;
+    background: var(--color-night);
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  }
+  .card-tile:hover,
+  .card-tile:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--color-mint);
+    box-shadow: var(--shadow-mint);
+  }
+  .card-tile.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .card-tile.is-removed {
+    border-color: var(--color-night-3);
+    opacity: 0.8;
+  }
+  .card-tile-art {
+    position: relative;
+    display: grid;
+    aspect-ratio: 1425 / 2048;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .card-tile-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .card-tile-initials {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .card-tile-mana {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: grid;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .card-tile-star {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    color: var(--color-gold);
+    font-size: 1.1rem;
+  }
+  /* Pannello dei dettagli: chiuso di suo, si apre sopra l'illustrazione al passaggio del mouse o col focus
+     da tastiera. Su touch non esiste (hover: none) e i dettagli si leggono nella scheda della carta. */
+  .card-tile-info {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    background: linear-gradient(to top, var(--color-felt-deep) 45%, color-mix(in srgb, var(--color-felt-deep) 80%, transparent));
+  }
+  @media (hover: hover) {
+    .card-tile:hover .card-tile-info,
+    .card-tile:focus-visible .card-tile-info {
+      display: flex;
+    }
+  }
+  .card-tile-text {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--color-pale);
+    white-space: pre-line;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+  .card-tile-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-top: 2px solid var(--color-night-3);
+    background: var(--color-night-2);
+  }
+
+  /* Carta come si legge in partita, disegnata da noi (GameCard): cornice celeste (oro per le Leggendarie),
+     finestra d'arte ufficiale in alto, dati dal nostro database. La larghezza la decide chi la usa. */
+  .game-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 12px;
+    border: 3px solid var(--color-sky);
+    border-radius: 14px;
+    background: linear-gradient(170deg, var(--color-night), var(--color-night-2));
+  }
+  .game-card.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .gc-window {
+    position: relative;
+    display: grid;
+    aspect-ratio: 1.14 / 1;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 2px solid var(--color-night-3);
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .gc-window img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gc-initials {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-night-3);
+  }
+  .gc-mana {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: grid;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .gc-star {
+    position: absolute;
+    top: 6px;
+    right: 9px;
+    color: var(--color-gold);
+    font-size: 1.25rem;
+  }
+  .gc-name {
+    margin: 10px 12px 0;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-sky);
+    text-wrap: balance;
+  }
+  .gc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 12px 0;
+  }
+  .gc-type,
+  .gc-align {
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+  .gc-type {
+    background: var(--color-night-3);
+    color: var(--color-pale);
+  }
+  .gc-align {
+    border: 1px solid var(--gc-al);
+    background: color-mix(in srgb, var(--gc-al) 16%, transparent);
+    color: var(--gc-al);
+  }
+  .gc-text {
+    flex: 1;
+    margin: 10px 12px 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-pale);
+    white-space: pre-line;
+  }
+  .gc-kw {
+    color: var(--color-mint);
+    font-weight: 700;
+  }
+  .gc-atk {
+    color: #b98cff;
+  }
+  .gc-hp {
+    color: var(--color-crimson);
+  }
+  .gc-dmg {
+    color: #ff6a5e;
+    font-weight: 700;
+  }
+  .gc-any {
+    color: var(--color-gold);
+    font-weight: 700;
+  }
+  .gc-stats {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 12px 12px 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
   }
 
   /* Nomi di carta nei testi della community (CardMentions): link menta con sottolineatura punteggiata e pannello di
@@ -273,8 +831,8 @@
     top: 100%;
     left: 0;
     padding-top: 6px; /* ponte trasparente: si può scendere col mouse sul pannello senza chiuderlo */
-    width: max-content;
-    max-width: min(280px, calc(100vw - 2rem));
+    width: 330px;
+    max-width: calc(100vw - 2rem);
     white-space: normal;
     text-align: left;
     font-family: var(--font-body);
@@ -302,9 +860,12 @@
       display: none !important;
     }
   }
+  /* Come `.deck-peek-panel`: metà carta, metà testo. */
   .card-mention-panel {
     display: grid;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
     padding: 0.6rem 0.7rem 0.7rem;
     border: 2px solid var(--color-sky);
     border-radius: 10px;
@@ -316,11 +877,36 @@
   .card-mention-panel.is-legendary {
     background: linear-gradient(180deg, rgba(242, 210, 60, 0.18) 0%, rgba(242, 210, 60, 0) 45%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
   }
-  .card-mention-head {
+  .card-mention-art {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--color-sky);
+    border-radius: 6px;
+    background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+  }
+  .card-mention-art.is-legendary {
+    border-color: var(--color-gold);
+  }
+  .card-mention-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Senza illustrazione ufficiale: riquadro con le iniziali, stesse proporzioni di una carta */
+  .card-mention-art-empty {
     display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 0.55rem;
-    align-items: start;
+    place-items: center;
+    aspect-ratio: 1425 / 2048;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-chalk);
+  }
+  .card-mention-body {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    min-width: 0;
   }
   .card-mention-stats {
     display: flex;

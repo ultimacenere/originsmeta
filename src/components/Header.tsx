@@ -14,6 +14,7 @@ export function navItems(dict: Dictionary): { label: string; path: string }[] {
     { label: dict.nav.decks, path: "/decks" },
     { label: dict.nav.builder, path: "/deck-builder" },
     { label: dict.nav.events, path: "/tournaments" },
+    { label: dict.nav.faq, path: "/faq" },
   ];
 }
 
@@ -30,7 +31,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
           <Wordmark />
         </Link>
-        <nav className="ml-3 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label="Main">
+        <nav className="ml-3 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label={dict.nav.mainNav}>
           {items.map((it) => (
             <Link
               key={it.path}
@@ -66,7 +67,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           summaryLabel={dict.nav.menu}
           summary={dict.nav.menu}
         >
-          <nav className="absolute right-0 mt-2 w-60 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label="Mobile">
+          <nav className="absolute right-0 mt-2 w-60 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={dict.nav.menu}>
             <form action={href(locale, "/cards")} method="get" role="search" className="mb-2 md:hidden">
               <input name="q" type="search" placeholder={dict.nav.search} className="w-full rounded-lg border border-felt-line bg-felt px-3 py-2 text-sm text-chalk" />
             </form>

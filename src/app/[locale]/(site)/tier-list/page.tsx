@@ -9,10 +9,11 @@ import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChip } from "@/components/CardChip";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { DiscordLogo } from "@/components/DiscordButton";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/tier-list", dict.tier.title, dict.tier.intro);
+  return pageMeta(locale, "/tier-list", dict.tier.title, dict.tier.description);
 }
 
 const tierTone: Record<TierId, string> = {
@@ -43,8 +44,30 @@ export default async function TierListPage({ params }: { params: LocaleParams })
     return <CardChip key={slug} slug={slug} locale={locale} />;
   };
 
+  // Lista per i dati strutturati: le tre sezioni della tier list con le loro ancore, non le singole voci.
+  // Finché ladder e tornei non danno risultati, i tier sono vuoti e in classifica ci sono solo due
+  // Leggendarie "non ancora valutate": un ItemList di due carte descriverebbe male la pagina, mentre le
+  // tre sezioni (mazzi, Leggendarie, carte base) sono la struttura stabile che la pagina promette.
+  const listed = tierList.sections.map((s) => ({ name: d.tier.sections[s.id].title, path: `${href(locale, "/tier-list")}#${s.id}` }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.tier.title, path: href(locale, "/tier-list") },
+          ]),
+          collectionPage({
+            locale,
+            path: href(locale, "/tier-list"),
+            name: d.tier.title,
+            description: d.tier.description,
+            items: listed,
+            about: videoGameId,
+          }),
+        ]}
+      />
       <p className="kicker text-mint">{d.nav.tierList}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.tier.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>

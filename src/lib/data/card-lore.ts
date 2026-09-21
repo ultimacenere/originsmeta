@@ -12,6 +12,8 @@ export type Lore = {
   saga: SagaId;
   origin?: { en: string; it: string };
   it?: string;
+  /** chiave ufficiale della carta quando World of Origins non la espone (letta dal materiale ufficiale Koin) */
+  key?: string;
 };
 
 export const cardLore: Record<string, Lore> = {
@@ -75,7 +77,8 @@ export const cardLore: Record<string, Lore> = {
   tuck: { saga: "sherwood", origin: { en: "Friar Tuck, the jovial, hard-drinking monk of the Merry Men.", it: "Frate Tuck, il monaco gioviale e bevitore degli Allegri Compari." }, it: "On Reveal: Se un nemico è stato giocato qui in questo round, pesca una carta." },
   "guy-of-gisborne": { saga: "sherwood", origin: { en: "The bounty hunter in a horse-hide who duels Robin in one of the oldest ballads.", it: "Il cacciatore di taglie vestito di pelle di cavallo che duella con Robin in una delle ballate più antiche." }, it: "Double Attack, Snipe 1" },
   "sheriff-of-nottingham": { saga: "sherwood", origin: { en: "Robin Hood's sworn enemy, the corrupt lawman of Nottingham.", it: "Il nemico giurato di Robin Hood, il corrotto tutore della legge di Nottingham." }, it: "On Reveal: Stun il nemico di fronte a me." },
-  "merry-man": { saga: "sherwood", origin: { en: "One of the Merry Men, Robin Hood's band of outlaws in Lincoln green.", it: "Uno degli Allegri Compari, la banda di fuorilegge di Robin Hood vestita di verde Lincoln." } },
+  // `key` dal nome del file ufficiale "C00011_MB_V00000 - Merry Man.png": World of Origins non espone la chiave delle carte create.
+  "merry-man": { saga: "sherwood", key: "C00011_MB", origin: { en: "One of the Merry Men, Robin Hood's band of outlaws in Lincoln green.", it: "Uno degli Allegri Compari, la banda di fuorilegge di Robin Hood vestita di verde Lincoln." } },
   reinforcements: { saga: "sherwood", origin: { en: "The horn call that brings the Merry Men out of the trees.", it: "Il richiamo del corno che fa uscire gli Allegri Compari dagli alberi." }, it: "Evoca un Merry Man [1⚔️/1❤️] su due caselle casuali." },
   bullseye: { saga: "sherwood", origin: { en: "The arrow that splits the other arrow: Robin's winning shot at the Sheriff's tournament.", it: "La freccia che spacca l'altra freccia: il tiro vincente di Robin al torneo dello Sceriffo." }, it: "Infliggi 3 danni a QUALSIASI personaggio." },
   "rain-of-arrows": { saga: "other", origin: { en: "A volley from an unseen line of archers.", it: "Una raffica da una fila di arcieri invisibile." }, it: "Infliggi 2 danni a tutti i nemici." },

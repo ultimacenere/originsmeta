@@ -12,7 +12,8 @@ import { suggestArchetype } from "@/lib/archetype";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
-import { LoginPanel, type LoginLabels } from "./LoginPanel";
+import { LoginPanel } from "./LoginPanel";
+import type { LoginLabels } from "@/lib/loginLabels";
 
 export type PoolCard = { slug: string; name: string; legendary: boolean };
 export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; video: string; guide: Guide };
@@ -132,7 +133,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
         <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} />
         <div>
           <p className="mb-4 text-chalk">{labels.loginFirst}</p>
-          <LoginPanel next={publishPath} labels={loginLabels} />
+          <LoginPanel next={publishPath} labels={loginLabels} locale={locale} />
         </div>
       </div>
     );

@@ -46,8 +46,21 @@ export type TournamentMessage = TournamentMessageRow;
 export const SCREENSHOT_BUCKET = "tournament-screenshots";
 export const SCREENSHOTS_PER_PLAYER = 3;
 
-/** Copertine del media kit ufficiale (public/media): tutti possono sceglierle. */
+/** Copertine dal materiale ufficiale Koin (public/media): tutti possono sceglierle. Le keyart delle Leggendarie
+ *  stanno in cima perché sono quelle che distinguono di più un torneo dall'altro. */
 export const COVER_PRESETS = [
+  "/media/keyart-king-arthur.webp",
+  "/media/keyart-mulan.webp",
+  "/media/keyart-queen-of-hearts.webp",
+  "/media/keyart-robin-hood.webp",
+  "/media/keyart-winnie-the-pooh.webp",
+  "/media/keyart-puss-in-boots.webp",
+  "/media/keyart-goldi.webp",
+  "/media/keyart-queen-of-hearts-cyber.webp",
+  "/media/keyart-red-wide.webp",
+  "/media/ss-versus.webp",
+  "/media/ss-board-locations.webp",
+  "/media/ss-board-clash.webp",
   "/media/hero-1920.webp",
   "/media/capsule-header.webp",
   "/media/banner-rapunzel.webp",

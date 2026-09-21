@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
-import { pageMeta, resolveLocale } from "@/lib/page";
+import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
 import { getInviteCode, getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
 import { fill, tournamentInviteLink, tournamentShortLink, type TournamentPlayer } from "@/lib/tournament/types";
@@ -20,7 +20,7 @@ import { TournamentCard } from "@/components/TournamentCard";
 import { CardMentions } from "@/components/CardMentions";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { CardChip } from "@/components/CardChip";
-import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const t = await getTournament(slug, await supabaseServer());
   if (!t) return {};
-  const meta = pageMeta(locale, `/tournaments/${t.slug}`, `${t.name} · ${dict.tournaments.kicker}`, (t.description || dict.tournaments.sectionIntro).slice(0, 160), t.cover_url ?? undefined);
+  const meta = pageMeta(locale, `/tournaments/${t.slug}`, pageTitleWith(t.name, dict.tournaments.kicker), t.description || dict.tournaments.sectionIntro, t.cover_url ?? undefined);
   return t.visibility === "private" ? { ...meta, robots: { index: false, follow: false } } : meta;
 }
 
@@ -96,7 +96,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
     image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
     isAccessibleForFree: true,
     maximumAttendeeCapacity: t.size,
-    about: { "@type": "VideoGame", name: "Origins TCG", url: "https://origins-tcg.com/" },
+    about: { "@id": videoGameId },
   };
 
   return (

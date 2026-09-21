@@ -5,7 +5,7 @@ import { pastEvents, upcomingEvents } from "@/lib/data/events";
 import { dayNumber, monthShort } from "@/lib/i18n";
 import { EventCard } from "@/components/EventCard";
 import { contactEmail } from "@/components/Footer";
-import { JsonLd } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { siteUrl, href } from "@/lib/i18n";
 import { listListedTournaments } from "@/lib/tournament/queries";
 import { TournamentCard } from "@/components/TournamentCard";
@@ -16,7 +16,7 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/tournaments", dict.events.title, dict.events.intro);
+  return pageMeta(locale, "/tournaments", dict.events.title, dict.events.description);
 }
 
 export default async function EventsPage({ params }: { params: LocaleParams }) {
@@ -41,8 +41,29 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
     image: `${siteUrl}/media/og.jpg`,
     isAccessibleForFree: true,
   }));
+
+  // Lista per i dati strutturati: gli eventi statici del calendario (futuri e passati), ognuno con la sua
+  // ancora sulla pagina. I tornei della community non ci vanno: arrivano da Supabase e cambiano da soli.
+  const listed = [...up, ...past].map((e) => ({ name: e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}` }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.events.title, path: href(locale, "/tournaments") },
+          ]),
+          collectionPage({
+            locale,
+            path: href(locale, "/tournaments"),
+            name: d.events.title,
+            description: d.events.description,
+            items: listed,
+            about: videoGameId,
+          }),
+        ]}
+      />
       <JsonLd data={events} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -118,8 +139,9 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
 
       <h2 className="mt-14 text-2xl font-extrabold text-sky">{d.common.past}</h2>
       <ul className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/* anche gli eventi passati hanno la loro ancora: l'ItemList dei dati strutturati la usa */}
         {past.map((e) => (
-          <li key={e.slug}>
+          <li key={e.slug} id={e.slug}>
             <EventCard event={e} locale={locale} dict={d} />
           </li>
         ))}

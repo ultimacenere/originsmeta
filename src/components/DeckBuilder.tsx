@@ -707,41 +707,25 @@ export function DeckBuilder({
                     else if (!full) addCard(c);
                   }
                 }}
-                className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-pale transition hover:bg-night-3 ${inDeck ? "bg-night-3 ring-1 ring-sky" : "bg-night"}`}
+                className={`builder-row deck-card-wrap has-peek ${c.legendary ? "is-legendary" : ""} ${inDeck ? "is-in-deck" : ""} ${full && !inDeck ? "is-full" : ""}`}
+                title={c.name}
+                style={c.thumb ?? c.art ? ({ ["--row-art" as string]: `url(${c.thumb ?? c.art})` } as React.CSSProperties) : undefined}
               >
-                <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(c.name)}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-display text-xs font-bold">
+                <BuilderArt card={c} />
+                <span className="builder-row-text">
+                  <span className="builder-row-name">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>
-                  <span className="block font-mono text-[10px] text-pale-muted">
+                  <span className="builder-row-stats">
                     {c.mana ?? "?"} · {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
                   </span>
                 </span>
-                {inDeck ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeCard(c.slug);
-                    }}
-                    className="stat-pill bg-night-3 text-chalk text-[10px]"
-                  >
-                    {labels.inDeck} ✕
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addCard(c);
-                    }}
-                    disabled={full}
-                    className={`stat-pill text-[10px] font-bold ${full ? "bg-chalk/10 text-pale-muted" : "bg-mint text-ink"}`}>
-                    {full ? labels.full : `+ ${labels.add}`}
-                  </button>
-                )}
+                {/* Niente tasti: si clicca la riga intera. Resta un segno dello stato, uguale su ogni riga. */}
+                <span className="builder-row-state" aria-hidden="true">
+                  {inDeck ? "✓" : full ? "–" : "+"}
+                </span>
+                <BuilderPeek card={c} />
               </li>
             );
           })}
@@ -776,24 +760,79 @@ function LockIcon() {
   );
 }
 
+/** Riquadro della carta nel builder: si usa la finestra d'illustrazione, non la carta intera, perché in un
+ *  riquadro così piccolo la carta rimpicciolita è illeggibile mentre il volto del personaggio si riconosce.
+ *  Iniziali sulle carte che il materiale non copre e su quelle inserite a mano. Lazy: nel pool sono decine. */
+function BuilderArt({ card }: { card: BuilderCard }) {
+  const src = card.art ?? card.thumb;
+  return (
+    <span className={`card-chip-art !h-11 !w-9 shrink-0 text-[10px] ${card.legendary ? "is-legendary" : ""}`}>
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="" loading="lazy" decoding="async" />
+      ) : (
+        initials(card.name)
+      )}
+    </span>
+  );
+}
+
+/** Anteprima al passaggio del mouse, come nell'elenco dei mazzi: nome, costo, statistiche e testo dell'abilità.
+ *  Su touch non esiste (`hover: none`) e resta il nome nel `title`. */
+function BuilderPeek({ card }: { card: BuilderCard }) {
+  if (!card.ability && card.power === undefined) return null;
+  return (
+    <span className="deck-peek" aria-hidden="true">
+      <span className={`deck-peek-panel ${card.legendary ? "is-legendary" : ""}`}>
+        {card.image ?? card.thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="deck-peek-art" src={card.image ?? card.thumb} alt="" loading="lazy" decoding="async" />
+        ) : null}
+        <span className="deck-peek-body">
+          <span className="deck-peek-name">
+            {card.legendary ? "★ " : ""}
+            {card.name}
+          </span>
+          <span className="deck-peek-tags">
+            {card.mana !== undefined ? <span className="deck-peek-mana">{card.mana}</span> : null}
+            {card.power !== undefined ? (
+              <span className="deck-peek-stats">
+                {card.power} / {card.health}
+              </span>
+            ) : null}
+            {card.typeLabel ? <span className="deck-peek-type">{card.typeLabel}</span> : null}
+            {card.alignmentLabel ? <span className={`deck-peek-align is-${card.alignment}`}>{card.alignmentLabel}</span> : null}
+          </span>
+          {card.ability ? <span className="deck-peek-text">{card.ability}</span> : null}
+        </span>
+      </span>
+    </span>
+  );
+}
+
 function DeckRow({ card, copies, onRemove, removeLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-2 py-1.5">
-      <span className="font-mono text-xs text-pale-muted">{copies}×</span>
-      <span className="card-chip-art !h-9 !w-7 text-[10px]">{initials(card.name)}</span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-display text-xs font-bold text-sky">
+    <div
+      className={`builder-row is-in-deck deck-card-wrap has-peek ${card.legendary ? "is-legendary" : ""}`}
+      title={card.name}
+      style={card.thumb ?? card.art ? ({ ["--row-art" as string]: `url(${card.thumb ?? card.art})` } as React.CSSProperties) : undefined}
+    >
+      <span className="builder-row-copies">{copies}×</span>
+      <BuilderArt card={card} />
+      <span className="builder-row-text">
+        <span className="builder-row-name">
           {card.legendary ? "★ " : ""}
           {card.name}
           {card.custom ? " *" : ""}
         </span>
-        <span className="block font-mono text-[10px] text-pale-muted">
+        <span className="builder-row-stats">
           {card.mana ?? "?"} · {card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : "spell"}
         </span>
       </span>
-      <button type="button" onClick={onRemove} className="stat-pill border border-sky text-[10px] text-pale hover:bg-crimson hover:text-chalk" aria-label={`${removeLabel} ${card.name}`}>
+      <button type="button" onClick={onRemove} className="builder-row-x" aria-label={`${removeLabel} ${card.name}`}>
         ✕
       </button>
+      <BuilderPeek card={card} />
     </div>
   );
 }

@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test src/lib/tournament/bracket.test.ts",
-    "import:woo": "node scripts/import-woo.mjs"
+    "import:woo": "node scripts/import-woo.mjs",
+    "import:art": "node scripts/import-card-art.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.127.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "@vercel/analytics": "^2.0.1",

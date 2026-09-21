@@ -1,0 +1,1658 @@
+{
+ "source": "Materiale ufficiale Koin Games (canale creator, 19/09/2026). Uso autorizzato per i contenuti, non per il design del sito.",
+ "generated": "2026-09-19",
+ "sizes": {
+  "sm": 160,
+  "full": 480,
+  "art": 560,
+  "cover": 1200
+ },
+ "art": {
+  "C00001_MB": {
+   "slug": "tuck",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00002_MB": {
+   "slug": "three-blind-mice",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00003_MB": {
+   "slug": "guy-of-gisborne",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00004_MB": {
+   "slug": "cheshire",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00005_MB": {
+   "slug": "mad-hatter",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00006_MB": {
+   "slug": "black-knight",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00007_MB": {
+   "slug": "jacks-giant",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00009_MB": {
+   "slug": "bandersnatch",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00010_MB": {
+   "slug": "watson",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00011_MB": {
+   "slug": "merry-man",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00012_MC": {
+   "slug": "king-arthur",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00001"
+   ],
+   "cover": true
+  },
+  "C00013_SB": {
+   "slug": "bullseye",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00014_SB": {
+   "slug": "reinforcements",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00015_SB": {
+   "slug": "axe-throw",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00016_MB": {
+   "slug": "rumple",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00017_MB": {
+   "slug": "huntsman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00018_MB": {
+   "slug": "shield-maiden",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00019_MB": {
+   "slug": "galahad",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00021_MB": {
+   "slug": "big-bad-wolf",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00022_MB": {
+   "slug": "glinda",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00023_MB": {
+   "slug": "fairy-godmother",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00024_MB": {
+   "slug": "franks-monster",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00026_SB": {
+   "slug": "searing-light",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00027_SB": {
+   "slug": "its-alive",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00028_SB": {
+   "slug": "dark-omen",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00029_MB": {
+   "slug": "banshee",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00030_MB": {
+   "slug": "ugly-duckling",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00031_MB": {
+   "slug": "mummy",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00032_MB": {
+   "slug": "billy",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00033_MB": {
+   "slug": "flying-monkey",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00035_MB": {
+   "slug": "el-charro-negro",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00036_MB": {
+   "slug": "imhotep",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00038_MB": {
+   "slug": "phantom-coachman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00039_MB": {
+   "slug": "beautiful-swan",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00041_MB": {
+   "slug": "zombie",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00042_SC": {
+   "slug": "legion-of-the-dead",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404,
+   "cover": true
+  },
+  "C00043_SB": {
+   "slug": "underworld-flare",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00044_SB": {
+   "slug": "soul-surge",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00045_MB": {
+   "slug": "not-so-little-pig",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00046_MC": {
+   "slug": "three-not-so-little-pigs",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00047_MB": {
+   "slug": "lancelot",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00048_MB": {
+   "slug": "golden-egg",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00049_MB": {
+   "slug": "moby",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00050_MB": {
+   "slug": "golden-goose",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00051_MB": {
+   "slug": "white-rabbit",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00052_MB": {
+   "slug": "pegasus",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00054_MB": {
+   "slug": "card-soldier",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00055_MB": {
+   "slug": "moriarty",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00056_MB": {
+   "slug": "morgan-le-fay",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00059_MC": {
+   "slug": "death",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ],
+   "cover": true
+  },
+  "C00060_SB": {
+   "slug": "lightning-strike",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00061_SB": {
+   "slug": "twister-toss",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00062_SB": {
+   "slug": "defense-matrix",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00063_MC": {
+   "slug": "dorothy",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ],
+   "cover": true
+  },
+  "C00064_MB": {
+   "slug": "aladdin",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00065_MC": {
+   "slug": "robin-hood",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ],
+   "cover": true
+  },
+  "C00066_MB": {
+   "slug": "toto",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00068_MB": {
+   "slug": "marian",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00069_MC": {
+   "slug": "red",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00013"
+   ],
+   "cover": true
+  },
+  "C00070_MB": {
+   "slug": "jekyll",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00071_MB": {
+   "slug": "hyde",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00072_MB": {
+   "slug": "three-musketeers",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00073_MB": {
+   "slug": "musketeer",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00074_MB": {
+   "slug": "little-john",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00075_MC": {
+   "slug": "merlin",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00079_SB": {
+   "slug": "silver-bullet",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00080_SB": {
+   "slug": "garlic",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00081_SB": {
+   "slug": "holy-water",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00082_SB": {
+   "slug": "wooden-stake",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00083_MB": {
+   "slug": "sheriff-of-nottingham",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00084_MC": {
+   "slug": "winnie-the-pooh",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ],
+   "cover": true
+  },
+  "C00085_SB": {
+   "slug": "honey-pot",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00091_MB": {
+   "slug": "headless-horseman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00092_SB": {
+   "slug": "pumpkin",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00093_MB": {
+   "slug": "humpty",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00094_MB": {
+   "slug": "tin-woodman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00095_MB": {
+   "slug": "cowardly-lion",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00096_SB": {
+   "slug": "rain-of-arrows",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00098_MB": {
+   "slug": "caterpillar",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00100_MB": {
+   "slug": "wicked-witch-of-the-west",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00101_MB": {
+   "slug": "kanga",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00102_SB": {
+   "slug": "en-passant",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00103_MB": {
+   "slug": "roo",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00104_MB": {
+   "slug": "jabberwock",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00106_MB": {
+   "slug": "tweedledum",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00107_MB": {
+   "slug": "white-queen",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00108_SB": {
+   "slug": "heroic-charge",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00109_MB": {
+   "slug": "beast",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00110_MB": {
+   "slug": "jack",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00113_MB": {
+   "slug": "mouse",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00115_MC": {
+   "slug": "mulan",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ],
+   "cover": true
+  },
+  "C00116_MC": {
+   "slug": "cinderella",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ],
+   "cover": true
+  },
+  "C00118_MC": {
+   "slug": "dracula",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00119_MB": {
+   "slug": "quasimodo",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00120_MB": {
+   "slug": "genie",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00121_MB": {
+   "slug": "king-shahryar",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00122_MB": {
+   "slug": "asanbosam",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00124_SB": {
+   "slug": "freeze",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00125_MB": {
+   "slug": "baloo",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00126_MB": {
+   "slug": "mowgli",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00127_MB": {
+   "slug": "shahrazad",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00129_SB": {
+   "slug": "dumpling",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00131_MB": {
+   "slug": "wicked-stepsisters",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00132_MB": {
+   "slug": "koschei",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00133_MB": {
+   "slug": "esmeralda",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00135_MB": {
+   "slug": "phuong-hoang",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00136_MB": {
+   "slug": "the-green-knight",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00137_MB": {
+   "slug": "anansi",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00138_MB": {
+   "slug": "baba-yaga",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00139_MB": {
+   "slug": "grendel",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00142_MB": {
+   "slug": "don-quixote",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00143_MB": {
+   "slug": "ali-baba",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00144_MB": {
+   "slug": "morgiana",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00145_SB": {
+   "slug": "burning-oil",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00147_MB": {
+   "slug": "baby-bear",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00149_MB": {
+   "slug": "reynard",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00150_MB": {
+   "slug": "snow-queen",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00152_MB": {
+   "slug": "hansel-and-gretel",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00155_MB": {
+   "slug": "scarecrow",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00156_MB": {
+   "slug": "queen-guinevere",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00157_MB": {
+   "slug": "sleeping-beauty",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ]
+  },
+  "C00158_MB": {
+   "slug": "prince-charming",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00159_MB": {
+   "slug": "jack-in-the-box",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00160_MB": {
+   "slug": "bridge-troll",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00161_SB": {
+   "slug": "piggy-bank",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00162_SB": {
+   "slug": "blow-the-house-down",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00163_SB": {
+   "slug": "mind-palace",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00165_MB": {
+   "slug": "red-knight",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00167_SB": {
+   "slug": "spellbook",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00168_MB": {
+   "slug": "lady-of-the-lake",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00169_SB": {
+   "slug": "trash-for-treasure",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00170_MB": {
+   "slug": "lil-billy-goat-gruff",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00173_MB": {
+   "slug": "beauty",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ]
+  },
+  "C00174_MB": {
+   "slug": "rapunzel",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00012",
+    "V00013"
+   ]
+  },
+  "C00175_MC": {
+   "slug": "wicked-stepmother",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00176_MC": {
+   "slug": "queen-of-hearts",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012",
+    "V00013"
+   ],
+   "cover": true
+  },
+  "C00179_MB": {
+   "slug": "yuki-onna",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00180_MB": {
+   "slug": "boitata",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00181_MB": {
+   "slug": "franken-bride",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00183_MB": {
+   "slug": "tortoise",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00184_MB": {
+   "slug": "hare",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00185_SB": {
+   "slug": "glass-slipper",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00186_MB": {
+   "slug": "brides-of-dracula",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00190_SB": {
+   "slug": "obliterate",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00191_MB": {
+   "slug": "huck-finn",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00193_MB": {
+   "slug": "christopher-robin",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00194_MB": {
+   "slug": "paul-bunyan",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00197_MB": {
+   "slug": "sorcerers-apprentice",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00198_MB": {
+   "slug": "thumbelina",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00199_MB": {
+   "slug": "piglet",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00200_MB": {
+   "slug": "tigger",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00201_MB": {
+   "slug": "eeyore",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00202_MB": {
+   "slug": "basilisk",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00203_MB": {
+   "slug": "babe",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00205_SB": {
+   "slug": "stroke-of-midnight",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00207_MB": {
+   "slug": "gargoyle",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00208_MB": {
+   "slug": "mary",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00209_MB": {
+   "slug": "doppelganger",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00210_MB": {
+   "slug": "papa-bear",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00211_MB": {
+   "slug": "mama-bear",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00212_MB": {
+   "slug": "gingerbread-man",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00214_MB": {
+   "slug": "sinbad",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00215_SB": {
+   "slug": "animate-object",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00216_MB": {
+   "slug": "magic-lamp",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00223_MB": {
+   "slug": "little-lamb",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00224_MB": {
+   "slug": "slime",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00228_SB": {
+   "slug": "run-over",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00229_MB": {
+   "slug": "butcher",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00230_MB": {
+   "slug": "impundulu",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00231_MB": {
+   "slug": "puck",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00232_SB": {
+   "slug": "first-aid",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00234_SB": {
+   "slug": "forbidden-knowledge",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00236_SB": {
+   "slug": "poison-apple",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00239_MB": {
+   "slug": "necromancer",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00240_MB": {
+   "slug": "balor",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00245_MB": {
+   "slug": "bagheera",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00258_MB": {
+   "slug": "bigfoot",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00259_MB": {
+   "slug": "baker",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00260_MB": {
+   "slug": "candlestick-maker",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00261_MB": {
+   "slug": "captain-ahab",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00262_MB": {
+   "slug": "count-orlok",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00263_MB": {
+   "slug": "mothman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00264_MB": {
+   "slug": "frog-prince",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00265_SB": {
+   "slug": "van-helsings-tools",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00267_MB": {
+   "slug": "boogeyman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00268_MB": {
+   "slug": "muffin-man",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00269_MB": {
+   "slug": "magic-carpet",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00270_MB": {
+   "slug": "queen-of-the-night",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00271_MB": {
+   "slug": "jill",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00273_SB": {
+   "slug": "off-with-your-head",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00274_MB": {
+   "slug": "cockatrice",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00275_MB": {
+   "slug": "sandman",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00276_MB": {
+   "slug": "shere-khan",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00277_MB": {
+   "slug": "john-henry",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00278_MB": {
+   "slug": "firebird",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00279_MB": {
+   "slug": "mrs-lovett",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00280_MB": {
+   "slug": "sweeney-todd",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00281_MB": {
+   "slug": "pied-piper",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00285_SB": {
+   "slug": "reflection",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 418
+  },
+  "C00304_MB": {
+   "slug": "little-pig",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00305_MB": {
+   "slug": "tweedledee",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00306_SB": {
+   "slug": "merlins-prophecy",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00307_SB": {
+   "slug": "behind-the-curtain",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00308_MB": {
+   "slug": "broomstick",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00309_SB": {
+   "slug": "dragons-breath",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404
+  },
+  "C00310_MB": {
+   "slug": "itsy-bitsy-spider",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00311_MB": {
+   "slug": "sherlock",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00312_MB": {
+   "slug": "goldi",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00313_MC": {
+   "slug": "dr-frank",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00314_MC": {
+   "slug": "van-helsing",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00315_MB": {
+   "slug": "boots",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011"
+   ]
+  },
+  "C00316_MC": {
+   "slug": "alice",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012",
+    "V00014",
+    "V00015"
+   ],
+   "cover": true
+  },
+  "C00317_MB": {
+   "slug": "snow-white",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "variants": [
+    "V00011",
+    "V00012"
+   ]
+  },
+  "C00318_MC": {
+   "slug": "beowulf",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437,
+   "cover": true
+  },
+  "C00319_SC": {
+   "slug": "mirror-mirror",
+   "w": 480,
+   "h": 660,
+   "aw": 560,
+   "ah": 404,
+   "cover": true
+  },
+  "C00325_MC": {
+   "slug": "wizard-of-oz",
+   "w": 480,
+   "h": 650,
+   "aw": 560,
+   "ah": 412,
+   "cover": true
+  },
+  "C00341_MB": {
+   "slug": "ellen-trechend",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00351_MB": {
+   "slug": "butch-cassidy",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00357_MB": {
+   "slug": "old-macdonald",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  },
+  "C00361_MB": {
+   "slug": "davy-crockett",
+   "w": 480,
+   "h": 690,
+   "aw": 560,
+   "ah": 437
+  }
+ }
+}

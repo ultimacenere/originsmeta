@@ -18,8 +18,7 @@ export type Event = {
   guide?: string;
 };
 
-/** il francese è stato ritirato il 15/09/2026: i testi già scritti restano, quelli riscritti si fermano a en/it */
-const n = (en: string, it: string, fr?: string): L10n => ({ en, it, fr });
+const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
 
 export const events: Event[] = [
   {
@@ -29,16 +28,16 @@ export const events: Event[] = [
     start: "2026-10-20",
     end: "2026-10-25",
     title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
-    where: n("Online, in game; brackets on the official Discord", "Online, in gioco; tabelloni sul Discord ufficiale", "En ligne, en jeu ; tableaux sur le Discord officiel"),
+    where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "En ligne, en jeu ; inscriptions sur le Discord officiel"),
     format: n(
-      "Qualifiers on 20, 21 and 22 October (one per major region, open to everyone), then playoffs and finals. Conquest format, test-run at Big Bob's Playtest Battle: several decks with different Legendary cards, one ban.",
-      "Qualificazioni il 20, 21 e 22 ottobre (una per macro-regione, aperte a tutti), poi playoff e finali. Formato Conquest, provato a Big Bob's Playtest Battle: più mazzi con Leggendarie diverse, un ban.",
-      "Qualifications les 20, 21 et 22 octobre (une par grande région, ouvertes à tous), puis playoffs et finales. Format Conquest, testé à Big Bob's Playtest Battle : plusieurs decks avec des Légendaires différentes, un ban.",
+      "Three qualifiers of 512 spots each, open to everyone: EMEA on 20 October (32 advance), AMER on the 21st (64), APAC on the 22nd (32), plus 128 wild cards. Playoffs on the 24th with 256 spots, four of whom reach the finals on the 25th. Best-of-3 matches, Conquest format, best-of-5 grand final; you may enter more than one qualifier.",
+      "Tre qualificazioni da 512 posti ciascuna, aperte a tutti: EMEA il 20 ottobre (32 passano), AMER il 21 (64), APAC il 22 (32), più 128 wild card. Playoff il 24 con 256 posti, quattro dei quali arrivano alle finali del 25. Partite al meglio delle tre, formato Conquest, gran finale al meglio delle cinque; ci si può iscrivere a più di una qualificazione.",
+      "Trois qualifications de 512 places chacune, ouvertes à tous : EMEA le 20 octobre (32 qualifiés), AMER le 21 (64), APAC le 22 (32), plus 128 wild cards. Playoffs le 24 avec 256 places, dont quatre atteignent la finale du 25. Matches au meilleur des trois, format Conquest, grande finale au meilleur des cinq ; on peut s'inscrire à plusieurs qualifications.",
     ),
     prizes: n(
-      "$10,000 prize pool: an exclusive 1/1 tournament promo card, digital packs, booster boxes and cases, cash prizes.",
-      "Montepremi di 10.000 $: una carta promo 1/1 esclusiva del torneo, pacchetti digitali, booster box e case, premi in denaro.",
-      "10 000 $ de dotation : une carte promo 1/1 exclusive, des packs numériques, des boîtes et des cases de boosters, des prix en argent.",
+      "Prizes worth $10,000: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes.",
+      "Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro.",
+      "Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive du tournoi, d'autres cartes promo, des packs numériques, des boîtes et des cases de boosters Alpha, et des prix en argent.",
     ),
     text: n(
       "Koin Games' biggest event so far, run during Steam Next Fest. You can join any qualifier regardless of where you live, but the team asks you to sign up only for the ones you can actually attend. Content creators get wildcard invites straight into the playoffs. The tentative card list for the tournament arrived with the demo update of 21 September: barring balance patches, decks can be prepared now.",
@@ -46,7 +45,7 @@ export const events: Event[] = [
       "Le plus grand événement de Koin Games à ce jour, pendant le Steam Next Fest. On peut s'inscrire à n'importe quelle qualification, mais l'équipe demande de ne s'inscrire qu'à celles auxquelles on peut vraiment participer. Les créateurs reçoivent des invitations wildcard directement pour les playoffs.",
     ),
     signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "S'inscrire sur Discord"), url: "https://discord.gg/originstcg" },
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
   },
   {
     slug: "steam-next-fest",
@@ -80,7 +79,7 @@ export const events: Event[] = [
       "Oltre 130 iscritti. Giocato sulla patch 0.6.3, uscita due giorni prima.",
       "Plus de 130 inscrits. Joué sur le patch 0.6.3, sorti deux jours plus tôt.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
   },
   {
     slug: "first-demo-tournament",
@@ -95,7 +94,7 @@ export const events: Event[] = [
       "Annunciato insieme ai primi numeri della demo: oltre 1.000 giocatori e 13.000 partite nella prima settimana, con un tempo di gioco mediano di 1h51m.",
       "Annoncé avec les premiers chiffres de la démo : plus de 1 000 joueurs et 13 000 parties la première semaine, pour un temps de jeu médian de 1 h 51.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },
   {
     slug: "card-party-fort-lauderdale",
@@ -109,7 +108,7 @@ export const events: Event[] = [
       "Parte del team ha portato Origins ai collezionisti, con le prime aperture pubbliche di pacchetti e uno Slab in regalo a chi pescava un'Alternate Art 10/10.",
       "Une partie de l'équipe a présenté Origins aux collectionneurs, avec les premières ouvertures publiques de packs et un Slab offert à qui tirait une Alternate Art 10/10.",
     ),
-    source: "https://steamcommunity.com/app/4429430/allnews/",
+    source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },
 ];
 
