@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { sortedNews } from "@/lib/data/news";
+import { newsPath, sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
 import { SteamButton } from "@/components/SteamButton";
 import { NewsCover } from "@/components/NewsCover";
@@ -16,8 +17,9 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 export default async function NewsPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
 
-  // Lista per i dati strutturati: le news non hanno una pagina propria, ognuna è un'ancora di /news.
-  const listed = sortedNews.map((n) => ({ name: n.title[locale], path: `${href(locale, "/news")}#${n.slug}` }));
+  // Lista per i dati strutturati: ogni news ha la sua pagina (/news/<slug>). Le ancore restano sulle
+  // voci qui sotto, così i vecchi link /news#slug continuano a funzionare.
+  const listed = sortedNews.map((n) => ({ name: n.title[locale], path: href(locale, newsPath(n)) }));
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
@@ -48,8 +50,17 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
               <span className="tabular">{formatDate(locale, n.date)}</span>
               <span className={newsSourceClass(n)}>{newsSourceLabel(n, d)}</span>
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">{n.title[locale]}</h2>
+            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">
+              <Link href={href(locale, newsPath(n))} className="hover:underline">
+                {n.title[locale]}
+              </Link>
+            </h2>
             <p className="mt-3 text-pale">{n.summary[locale]}</p>
+            <p className="mt-3">
+              <Link href={href(locale, newsPath(n))} className="text-sm font-bold text-mint hover:underline">
+                {d.news.readArticle} →
+              </Link>
+            </p>
             {n.cards?.length ? (
               <div className="mt-4">
                 <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(n, d)}</p>

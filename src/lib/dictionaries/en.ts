@@ -290,6 +290,11 @@ export const en = {
     title: "Origins TCG news and patch notes",
     intro: "Every official announcement, summarized and dated, with a link to the source and the cards it touches.",
     description: "Origins TCG news and patch notes, summarized and dated, with a link to the official source and the cards each balance change touches.",
+    readArticle: "Read the article",
+    inBrief: "In brief",
+    moreNews: "More news",
+    published: "Published",
+    sourceTitle: "Source",
   },
   about: {
     title: "About OriginsMeta, the unofficial Origins TCG site",
@@ -322,6 +327,7 @@ export const en = {
     writtenBy: "Written by",
     profileCta: "Read their profile",
     guidesBy: "Guides by {name}",
+    newsBy: "News by {name}",
     backTo: "All authors",
   },
   privacy: {

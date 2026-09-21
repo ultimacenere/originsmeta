@@ -18,7 +18,7 @@ Card data on this site follows the latest published patch — at the time of wri
 - [Deck builder](https://originsmeta.com/en/deck-builder): build a legal deck in the browser — one Legendary plus twelve different base cards in two copies each, 25 cards — then export the game code or publish the list. Free, no account needed to build.
 - [Guides](https://originsmeta.com/en/guides): how the game works, the roadmap, the collector economy, how to play the demo, deck guides and matchups.
 - [Tournaments and events](https://originsmeta.com/en/tournaments): official and community events, plus the community tournament organizer.
-- [News](https://originsmeta.com/en/news): patch notes, official announcements and the decks published on the site.
+- [News](https://originsmeta.com/en/news): patch notes, official announcements and the decks published on the site; every item has its own signed article page, with the date, the official source and the cards it touches.
 - [Who writes here](https://originsmeta.com/en/authors): the people who sign the guides, the decks and the news, and what each of them covers.
 - [About](https://originsmeta.com/en/about): who we are, how we work and which sources we use.
 
@@ -32,7 +32,7 @@ Card data on this site follows the latest published patch — at the time of wri
 - [Deck builder](https://originsmeta.com/it/deck-builder): si costruisce un mazzo legale nel browser — una Leggendaria più dodici carte base diverse in due copie ciascuna, 25 carte — poi si esporta il codice del gioco o si pubblica la lista. È gratuito e per costruire non serve un account.
 - [Guide](https://originsmeta.com/it/guides): come funziona il gioco, la roadmap, l'economia da collezione, come provare la demo, guide ai mazzi e matchup.
 - [Tornei ed eventi](https://originsmeta.com/it/tournaments): eventi ufficiali e della community, più il gestore dei tornei della community.
-- [News](https://originsmeta.com/it/news): patch notes, annunci ufficiali e i mazzi pubblicati sul sito.
+- [News](https://originsmeta.com/it/news): patch notes, annunci ufficiali e i mazzi pubblicati sul sito; ogni notizia ha la sua pagina firmata, con la data, la fonte ufficiale e le carte che tocca.
 - [Chi scrive qui](https://originsmeta.com/it/authors): le persone che firmano le guide, i mazzi e le news, e di che cosa si occupa ciascuna.
 - [Chi siamo](https://originsmeta.com/it/about): chi siamo, come lavoriamo e quali fonti usiamo.
 

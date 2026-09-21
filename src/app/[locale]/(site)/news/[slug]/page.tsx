@@ -1,0 +1,233 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
+import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
+import { imageSizeOf } from "@/lib/imageSize";
+import { getNews, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
+import { authorOfNews } from "@/lib/data/authors";
+import { Markdown } from "@/components/Markdown";
+import { CardChipList } from "@/components/CardChip";
+import { NewsCover } from "@/components/NewsCover";
+import { SteamButton } from "@/components/SteamButton";
+import { NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
+import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
+
+type Params = Promise<{ locale: string; slug: string }>;
+
+/** Oltre i 110 caratteri Google ignora `headline`: se il titolo è più lungo, nei dati strutturati va il titolo per la SERP. */
+const HEADLINE_MAX = 110;
+
+export function generateStaticParams() {
+  return locales.flatMap((locale) => news.map((item) => ({ locale, slug: item.slug })));
+}
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { slug } = await params;
+  const { locale, dict: d } = await resolveLocale(params);
+  const item = getNews(slug);
+  if (!item) return {};
+  // Titolo per la SERP: `metaTitle` quando c'è; altrimenti il titolo dell'articolo, che `pageTitleWith`
+  // accorcia all'ultima parola intera se non sta nei 60 caratteri. Il marchio lo aggiunge `pageMeta`.
+  const title = item.metaTitle?.[locale] ?? pageTitleWith(item.title[locale], d.nav.news);
+  return pageMeta(locale, newsPath(item), title, item.description?.[locale] ?? item.summary[locale], item.image, {
+    type: "article",
+    published: item.date,
+    modified: item.updated ?? item.date,
+    imageAlt: item.title[locale],
+    // Le copertine hanno misure diverse (1600×900, 1200×675…): si leggono dal file; le miniature remote no.
+    imageSize: imageSizeOf(item.image),
+  });
+}
+
+/**
+ * Pagina di un articolo: ogni news ha la sua (regola del 21/09/2026), firmata come le guide.
+ * Struttura di lettura: titolo, riassunto d'attacco, firma con le date, copertina, testo a sezioni,
+ * fonte, carte e guide collegate, domande frequenti, altre news.
+ */
+export default async function NewsArticlePage({ params }: { params: Params }) {
+  const { slug } = await params;
+  const { locale, dict: d } = await resolveLocale(params);
+  const item = getNews(slug);
+  if (!item) notFound();
+
+  const title = item.title[locale];
+  const path = href(locale, newsPath(item));
+  const updated = item.updated ?? item.date;
+  const body = item.body?.[locale];
+  const faq = item.faq?.[locale] ?? [];
+  const highlights = item.highlights?.[locale] ?? [];
+  const more = sortedNews.filter((other) => other.slug !== item.slug).slice(0, 3);
+  // Chi firma lo decide `authorOfNews` e nessun altro: firma in pagina, nodo NewsArticle e pagina autore dicono la stessa cosa.
+  const author = authorOfNews(item);
+  const authorPath = href(locale, `/authors/${author.slug}`);
+  const authorUrl = `${siteUrl}${authorPath}`;
+  // La fonte da cui nasce l'articolo: il post ufficiale, oppure la scheda del mazzo pubblicato qui.
+  const sourceUrl = isDeckNews(item) ? `${siteUrl}${href(locale, item.url)}` : item.url;
+
+  const article = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: title.length <= HEADLINE_MAX ? title : (item.metaTitle?.[locale] ?? title.slice(0, HEADLINE_MAX)),
+    description: item.description?.[locale] ?? item.summary[locale],
+    inLanguage: locale,
+    datePublished: item.date,
+    dateModified: updated,
+    image: item.image.startsWith("http") ? item.image : `${siteUrl}${item.image}`,
+    // Lo stesso nodo Person della pagina autore (`person()` in JsonLd.tsx): nel grafo la persona resta una sola.
+    author: { "@type": "Person", "@id": `${authorUrl}#person`, name: author.name, url: authorUrl },
+    publisher: { "@id": organizationId },
+    mainEntityOfPage: `${siteUrl}${path}`,
+    about: { "@id": videoGameId },
+    articleSection: d.nav.news,
+    isBasedOn: sourceUrl,
+  };
+  const faqLd = faq.length
+    ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }
+    : null;
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      {faqLd ? <JsonLd data={faqLd} /> : null}
+      <JsonLd
+        data={[
+          article,
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.nav.news, path: href(locale, "/news") },
+            { name: title, path },
+          ]),
+        ]}
+      />
+      <p className="text-sm">
+        <Link href={href(locale, "/news")} className="text-chalk-muted hover:text-chalk">
+          ← {d.common.backTo} {d.nav.news}
+        </Link>
+      </p>
+
+      <header className="mt-6">
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="kicker text-mint">{d.nav.news}</span>
+          <span className={newsSourceClass(item)}>{newsSourceLabel(item, d)}</span>
+          <span className="font-mono text-xs text-pale-muted">
+            {newsReadTime(item, locale)} {d.guides.readTime}
+          </span>
+        </p>
+        <h1 className="mt-3 text-3xl font-extrabold leading-tight text-sky sm:text-5xl">{title}</h1>
+        <p className="mt-5 text-lg leading-relaxed text-chalk">{item.summary[locale]}</p>
+        {/* Firma editoriale sotto il titolo, con le date: chi scrive e quando, prima ancora di leggere */}
+        <p className="mt-5 text-sm text-pale-muted">
+          {d.authors.writtenBy}{" "}
+          <Link href={authorPath} rel="author" className="font-bold text-mint hover:underline">
+            {author.name}
+          </Link>
+          {" · "}
+          {d.news.published} <time dateTime={item.date}>{formatDate(locale, item.date)}</time>
+          {updated !== item.date ? (
+            <>
+              {" · "}
+              {d.common.updated} <time dateTime={updated}>{formatDate(locale, updated)}</time>
+            </>
+          ) : null}
+        </p>
+      </header>
+
+      {highlights.length ? (
+        // Le novità in sintesi, prima di tutto il resto: ogni punto salta alla sezione che ne parla.
+        <nav className="card-night mt-8 p-6 sm:p-8" aria-labelledby="news-highlights">
+          <h2 id="news-highlights" className="kicker text-mint">
+            {d.news.inBrief}
+          </h2>
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-pale marker:text-mint">
+            {highlights.map((h) => (
+              <li key={h.anchor}>
+                <a href={`#${h.anchor}`} className="font-bold text-sky underline-offset-2 hover:underline">
+                  {h.label}
+                </a>
+                {h.text ? `: ${h.text}` : null}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
+
+      <div className="hero-art mt-8">
+        <NewsCover src={item.image} priority className="rounded-none border-0" />
+      </div>
+
+      <article className="card-night mt-8 p-6 sm:p-10">
+        {body ? <Markdown source={body} linkCards={locale} /> : null}
+
+        <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby="news-source">
+          <h2 id="news-source" className="kicker text-pale-muted">
+            {d.news.sourceTitle}
+          </h2>
+          <div className="mt-3">
+            {item.source === "steam" ? (
+              <SteamButton href={item.url} variant="dark" size="sm">
+                {d.common.steamNews}
+              </SteamButton>
+            ) : (
+              <NewsSourceLink item={item} locale={locale} dict={d} className="text-sm font-bold text-mint underline" />
+            )}
+          </div>
+          {item.cards?.length ? (
+            <div className="mt-6">
+              <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
+              <CardChipList slugs={item.cards} locale={locale} />
+            </div>
+          ) : null}
+          <NewsGuideLinks item={item} locale={locale} dict={d} />
+        </section>
+
+        {faq.length ? (
+          <section className="mt-8 border-t border-sky pt-6" aria-labelledby="news-faq">
+            <h2 id="news-faq" className="text-2xl font-extrabold text-sky">
+              {d.guides.faqTitle}
+            </h2>
+            <dl className="mt-4 space-y-4">
+              {faq.map((f) => (
+                <div key={f.q}>
+                  <dt className="font-display text-base font-bold text-sky">{f.q}</dt>
+                  <dd className="mt-1 text-pale-muted">{f.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
+
+        <p className="mt-8 border-t border-sky pt-4 text-sm text-pale-muted">
+          {d.authors.writtenBy}{" "}
+          <Link href={authorPath} rel="author" className="font-bold text-mint hover:underline">
+            {author.name}
+          </Link>
+        </p>
+        <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>
+      </article>
+
+      <section className="mt-12" aria-labelledby="more-news">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 id="more-news" className="text-2xl font-extrabold text-sky">
+            {d.news.moreNews}
+          </h2>
+          <Link href={href(locale, "/news")} className="text-sm text-mint hover:underline">
+            {d.common.viewAll} →
+          </Link>
+        </div>
+        <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {more.map((other) => (
+            <li key={other.slug}>
+              <Link href={href(locale, newsPath(other))} className="card-night card-night-hover block h-full p-4">
+                <NewsCover src={other.image} className="mb-3" />
+                <p className="font-mono text-xs text-pale-muted">
+                  <time dateTime={other.date}>{formatDate(locale, other.date)}</time>
+                </p>
+                <h3 className="mt-1 text-base font-extrabold leading-snug text-sky">{other.title[locale]}</h3>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}

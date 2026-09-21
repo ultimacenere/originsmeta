@@ -6,7 +6,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { movers } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
-import { sortedNews, type NewsItem } from "@/lib/data/news";
+import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList } from "@/components/CardChip";
@@ -16,7 +16,7 @@ import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
-import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, isDeckNews } from "@/components/NewsLinks";
+import { NewsGuideLinks, NewsSourceLink, newsCardsLabel } from "@/components/NewsLinks";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -49,10 +49,10 @@ export default async function Home({ params }: { params: LocaleParams }) {
   ];
 
   /**
-   * Indirizzo di una news dalla home: le news sui mazzi pubblicati qui portano alla scheda del mazzo,
-   * tutte le altre all'ancora della voce dentro /news (ogni <li> della lista ha id={slug}).
+   * Indirizzo di una news dalla home: la pagina dell'articolo (regola del 21/09/2026, ogni news ha la sua).
+   * Per le news sui mazzi pubblicati qui, la scheda del mazzo resta raggiungibile dal link "Apri il mazzo".
    */
-  const newsHref = (item: NewsItem) => href(locale, isDeckNews(item) ? item.url : `/news#${item.slug}`);
+  const newsHref = (item: NewsItem) => href(locale, newsPath(item));
 
   return (
     <>
@@ -90,6 +90,11 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   </Link>
                 </h2>
                 <p className="mt-3 text-sm text-pale">{item.summary[locale]}</p>
+                <p className="mt-3">
+                  <Link href={newsHref(item)} className="text-sm font-bold text-mint hover:underline">
+                    {d.news.readArticle} →
+                  </Link>
+                </p>
                 {item.cards?.length ? (
                   <div className="mt-4">
                     <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>

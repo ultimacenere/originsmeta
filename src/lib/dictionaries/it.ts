@@ -292,6 +292,11 @@ export const it: Dictionary = {
     title: "News e patch notes di Origins TCG",
     intro: "Ogni annuncio ufficiale, riassunto e datato, con il link alla fonte e le carte che tocca.",
     description: "News e patch notes di Origins TCG, riassunte e datate, con il link alla fonte ufficiale e le carte toccate da ogni modifica ai bilanciamenti.",
+    readArticle: "Leggi l'articolo",
+    inBrief: "In breve",
+    moreNews: "Altre news",
+    published: "Pubblicato il",
+    sourceTitle: "Fonte",
   },
   about: {
     title: "Chi siamo: OriginsMeta, sito non ufficiale su Origins TCG",
@@ -324,6 +329,7 @@ export const it: Dictionary = {
     writtenBy: "Scritto da",
     profileCta: "Leggi il profilo",
     guidesBy: "Guide di {name}",
+    newsBy: "News di {name}",
     backTo: "Tutti gli autori",
   },
   privacy: {

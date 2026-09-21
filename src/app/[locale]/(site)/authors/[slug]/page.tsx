@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
-import { authors, decksByAuthor, getAuthor, guidesByAuthor } from "@/lib/data/authors";
+import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor } from "@/lib/data/authors";
+import { newsPath } from "@/lib/data/news";
 import { fill } from "@/lib/tournament/types";
 import { JsonLd, breadcrumbs, person } from "@/components/JsonLd";
 
@@ -29,6 +30,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
   const a = getAuthor(slug);
   if (!a) notFound();
   const guides = guidesByAuthor(locale, a.slug);
+  const signedNews = newsByAuthor(a.slug);
   const decks = decksByAuthor(a.slug);
   const path = href(locale, `/authors/${a.slug}`);
   const email = a.links.find((l) => l.url.startsWith("mailto:"))?.url.slice("mailto:".length);
@@ -98,6 +100,24 @@ export default async function AuthorPage({ params }: { params: Params }) {
                   </p>
                   <h3 className="mt-1 text-lg font-extrabold leading-tight text-sky">{g.title}</h3>
                   <p className="mt-2 text-sm text-pale-muted">{g.excerpt}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {signedNews.length ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold text-sky">{fill(d.authors.newsBy, { name: a.displayName })}</h2>
+          <ul className="mt-4 grid grid-cols-1 gap-3">
+            {signedNews.map((item) => (
+              <li key={item.slug}>
+                <Link href={href(locale, newsPath(item))} className="card-night card-night-hover block p-4">
+                  <p className="font-mono text-xs text-pale-muted">
+                    <time dateTime={item.date}>{formatDate(locale, item.date)}</time>
+                  </p>
+                  <h3 className="mt-1 text-base font-extrabold leading-snug text-sky">{item.title[locale]}</h3>
                 </Link>
               </li>
             ))}

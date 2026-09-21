@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { defaultLocale, locales, siteUrl, href } from "@/lib/i18n";
 import { cards, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
-import { sortedNews } from "@/lib/data/news";
+import { newsPath, sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { authors } from "@/lib/data/authors";
@@ -50,6 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...decks.map((d) => ({ path: `/decks/${d.slug}`, lastModified: d.updated, changeFrequency: "weekly" as const, priority: 0.7 })),
     ...guides.map((g) => ({ path: `/guides/${g.slug}`, lastModified: g.updated, changeFrequency: "weekly" as const, priority: 0.8 })),
+    // Ogni news ha la sua pagina dal 21/09/2026: data dell'ultima revisione, altrimenti quella di pubblicazione.
+    ...sortedNews.map((n) => ({ path: newsPath(n), lastModified: n.updated ?? n.date, changeFrequency: "monthly" as const, priority: 0.7 })),
     ...community.map((c) => ({ path: `/decks/community/${c.slug}`, lastModified: c.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.6 })),
     ...tournaments.map((t) => ({ path: `/tournaments/${t.slug}`, lastModified: t.updated_at.slice(0, 10), changeFrequency: "daily" as const, priority: 0.6 })),
   ];

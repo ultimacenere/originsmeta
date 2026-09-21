@@ -1022,6 +1022,8 @@
   }
   .prose-night h2, .prose-night h3 {
     color: var(--color-sky);
+    /* i titoli hanno un'ancora (Markdown.tsx): arrivandoci da un link non devono finire sotto l'header fisso */
+    scroll-margin-top: 6rem;
   }
   .prose-night h2 {
     font-size: 1.5rem;

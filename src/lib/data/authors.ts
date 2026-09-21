@@ -1,5 +1,6 @@
 import type { Locale } from "../i18n";
 import { getGuides, type Guide } from "../content/guides";
+import { sortedNews, type NewsItem } from "./news";
 
 type L10n = Record<Locale, string> & { fr?: string };
 const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : { en, it });
@@ -110,6 +111,21 @@ export function authorOfGuide(guide?: Guide): Author {
   // Il campo non esiste ancora nel tipo: quando ci sarà, questa riga lo legge senza altre modifiche.
   const slug = (guide as (Guide & { author?: string }) | undefined)?.author ?? "pierluigi-cella";
   return getAuthor(slug) ?? authors[0];
+}
+
+/**
+ * Chi firma una news: come per le guide, unico punto di verità per la firma in fondo all'articolo,
+ * il nodo NewsArticle dei dati strutturati e la pagina autore. Le news le firma chi risponde dei
+ * contenuti (Pierluigi Cella, regola del 21/09/2026), anche quelle sui mazzi della community: il
+ * mazzo è di chi lo ha pubblicato e il testo lo cita, ma l'articolo lo scrive OriginsMeta.
+ */
+export function authorOfNews(item: NewsItem): Author {
+  return getAuthor(item.author ?? "pierluigi-cella") ?? authors[0];
+}
+
+/** Le news firmate da un autore, dalla più recente. */
+export function newsByAuthor(slug: string): NewsItem[] {
+  return sortedNews.filter((item) => authorOfNews(item).slug === slug);
 }
 
 /** Le guide firmate da un autore, nell'ordine di `guideSlugs`. */
