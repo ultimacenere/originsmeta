@@ -22,6 +22,38 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    slug: "demo-first-big-update",
+    image: "/media/hero-1920.webp",
+    guides: ["play-the-demo", "steam-next-fest-2026"],
+    date: "2026-09-21",
+    title: n(
+      "The first big demo update is out: new UI, test packs, the Crimson Cup card list and your progress kept",
+      "È uscito il primo grande aggiornamento della demo: nuova interfaccia, pacchetti di prova, lista carte della Crimson Cup e progressi salvi",
+    ),
+    summary: n(
+      "On 21 September the Origins team announced the first big update to the demo, live the same day: an upgraded UI, a new look for the game board, a collectors tutorial that explains how collecting works, test packs to rip, new voice lines and balance changes, with the details promised soon on Discord and Reddit. Ranked mode switches on with the start of Steam Next Fest and comes with exclusive ranked rewards. The update also carries the tentative card list for the Crimson Cup in October: barring further balance patches, tournament decks can be built from now. On progress, the team settles the question left open on 16 September: whoever played the demo, the playtest or both keeps whichever progress is further ahead, so nobody has to unlock cards again. The playtest gets no new decks, cards or bosses; its polish update arrives later this week, together with more changes to test. The \"Demo Season 2\" line that went around on social media last week, which we reported as a rumour, turned out to be right about the timing and the collecting.",
+      "Il 21 settembre il team di Origins ha annunciato il primo grande aggiornamento della demo, disponibile lo stesso giorno: interfaccia rinnovata, nuovo aspetto del tabellone, un tutorial per collezionisti che spiega come funziona il collezionare, pacchetti di prova da aprire, nuove voci e modifiche di bilanciamento, i cui dettagli arriveranno a breve su Discord e Reddit. La modalità classificata si accende con l'inizio dello Steam Next Fest e porta ricompense esclusive. L'aggiornamento contiene anche la lista carte provvisoria della Crimson Cup di ottobre: salvo nuove patch di bilanciamento, i mazzi per il torneo si possono preparare da subito. Sui progressi il team chiude la questione rimasta aperta il 16 settembre: chi ha giocato la demo, il playtest o entrambi conserva i progressi più avanzati dei due, quindi nessuno dovrà sbloccare di nuovo le carte. Il playtest non riceve nuovi mazzi, carte o boss; il suo aggiornamento di rifinitura arriva più avanti in settimana, insieme ad altre novità da provare. La frase sulla \"Demo Season 2\" girata sui social la settimana scorsa, che avevamo riportato come rumor, ci aveva preso sui tempi e sul collezionismo.",
+    ),
+    url: "https://www.reddit.com/r/OriginsTCG/comments/1wmobte/the_first_big_update_to_the_origins_demo_just/",
+    source: "press",
+  },
+  {
+    slug: "forum-bugs-before-demo-2",
+    image: "/media/ls-real-collecting.webp",
+    cards: ["spellbook", "golden-egg", "golden-goose", "black-knight"],
+    date: "2026-09-20",
+    title: n(
+      "Stuck matches, the egg at the Colosseum and a rematch button: the weekend's reports",
+      "Partite bloccate, l'uovo al Colosseum e il tasto rivincita: le segnalazioni del fine settimana",
+    ),
+    summary: n(
+      "Three new threads on the Steam forum between 19 and 20 September, all still without an answer from the team. A match froze on \"waiting\" after the combat phase, with everything else still clickable; another player replied that it is a known bug tied to Spellbook and that it should be fixed in \"demo season 2 next week\" — a player's answer, not an announcement, and Koin has confirmed no date: the official ones are still Steam Next Fest from 19 to 26 October and the Crimson Cup. Second report: at the Colosseum location a Golden Egg broken by Black Knight's On Reveal summoned the Golden Goose, which then dealt no damage in combat and was left at 5/3. It looks like the interaction developer Fenchurch described on 15 September, when he wrote that a character summoned halfway through combat does not attack until the next round — being summoned does not protect it from damage either — but what the location adds is not clear yet. Third thread: a request for a rematch button and a deck change in private matches.",
+      "Tre nuovi thread sul forum Steam tra il 19 e il 20 settembre, tutti ancora senza risposta del team. Una partita si è bloccata su \"waiting\" dopo la fase di combattimento, con tutto il resto ancora cliccabile; un altro giocatore ha risposto che è un bug noto legato a Spellbook e che dovrebbe essere corretto nella \"demo season 2 la settimana prossima\": è la risposta di un giocatore, non un annuncio, e Koin non ha confermato nessuna data, quelle ufficiali restano lo Steam Next Fest dal 19 al 26 ottobre e la Crimson Cup. Seconda segnalazione: al luogo Colosseum un Golden Egg rotto dall'On Reveal del Black Knight ha evocato la Golden Goose, che poi non ha inflitto danni in combattimento ed è rimasta 5/3. Somiglia all'interazione descritta dallo sviluppatore Fenchurch il 15 settembre, quando ha scritto che un personaggio evocato a metà combattimento non attacca fino al round successivo — e l'evocazione non lo mette al riparo dai danni — ma cosa aggiunga il luogo non è ancora chiaro. Terzo thread: la richiesta di un tasto rivincita e del cambio mazzo nelle partite private.",
+    ),
+    url: "https://steamcommunity.com/app/4429430/discussions/0/570423638738992342/",
+    source: "steam",
+  },
+  {
     slug: "demo-2-progress-carryover",
     image: "/media/ls-two-ways.webp",
     date: "2026-09-16",

@@ -18,7 +18,8 @@ export type Event = {
   guide?: string;
 };
 
-const n = (en: string, it: string, fr: string): L10n => ({ en, it, fr });
+/** il francese è stato ritirato il 15/09/2026: i testi già scritti restano, quelli riscritti si fermano a en/it */
+const n = (en: string, it: string, fr?: string): L10n => ({ en, it, fr });
 
 export const events: Event[] = [
   {
@@ -40,8 +41,8 @@ export const events: Event[] = [
       "10 000 $ de dotation : une carte promo 1/1 exclusive, des packs numériques, des boîtes et des cases de boosters, des prix en argent.",
     ),
     text: n(
-      "Koin Games' biggest event so far, run during Steam Next Fest. You can join any qualifier regardless of where you live, but the team asks you to sign up only for the ones you can actually attend. Content creators get wildcard invites straight into the playoffs.",
-      "L'evento più grande di Koin Games finora, durante lo Steam Next Fest. Ci si può iscrivere a qualsiasi qualificazione a prescindere da dove si vive, ma il team chiede di iscriversi solo a quelle a cui si può davvero partecipare. I creator hanno inviti wildcard direttamente ai playoff.",
+      "Koin Games' biggest event so far, run during Steam Next Fest. You can join any qualifier regardless of where you live, but the team asks you to sign up only for the ones you can actually attend. Content creators get wildcard invites straight into the playoffs. The tentative card list for the tournament arrived with the demo update of 21 September: barring balance patches, decks can be prepared now.",
+      "L'evento più grande di Koin Games finora, durante lo Steam Next Fest. Ci si può iscrivere a qualsiasi qualificazione a prescindere da dove si vive, ma il team chiede di iscriversi solo a quelle a cui si può davvero partecipare. I creator hanno inviti wildcard direttamente ai playoff. La lista carte provvisoria del torneo è arrivata con l'aggiornamento della demo del 21 settembre: salvo patch di bilanciamento, i mazzi si possono preparare già adesso.",
       "Le plus grand événement de Koin Games à ce jour, pendant le Steam Next Fest. On peut s'inscrire à n'importe quelle qualification, mais l'équipe demande de ne s'inscrire qu'à celles auxquelles on peut vraiment participer. Les créateurs reçoivent des invitations wildcard directement pour les playoffs.",
     ),
     signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "S'inscrire sur Discord"), url: "https://discord.gg/originstcg" },
@@ -53,12 +54,11 @@ export const events: Event[] = [
     guide: "steam-next-fest-2026",
     start: "2026-10-19",
     end: "2026-10-26",
-    title: n("Steam Next Fest: Demo 2.0", "Steam Next Fest: Demo 2.0", "Steam Next Fest : Démo 2.0"),
+    title: n("Steam Next Fest: ranked opens in the demo", "Steam Next Fest: nella demo parte la classificata"),
     where: n("Steam", "Steam", "Steam"),
     text: n(
-      "The big demo update tested in the August playtests goes public: five new decks, over 70 new cards and deckbuilding. The moment the ladder and the deckbuilder open to everyone is also the moment OriginsMeta's first tier list starts.",
-      "Il grande aggiornamento della demo testato nei playtest di agosto diventa pubblico: cinque nuovi mazzi, oltre 70 nuove carte e il deckbuilding. Quando ladder e deckbuilder si aprono a tutti parte anche la prima tier list di OriginsMeta.",
-      "La grande mise à jour de la démo testée en août devient publique : cinq nouveaux decks, plus de 70 nouvelles cartes et le deckbuilding. Quand le ladder et le deckbuilder s'ouvrent à tous, la première tier list d'OriginsMeta démarre.",
+      "Ranked mode switches on in the demo with the start of the festival, with exclusive ranked rewards. The team announced it on 21 September, the day the first big demo update landed (new UI, test packs, the tentative Crimson Cup card list, progress kept from demo and playtest). When the ladder opens to everyone, OriginsMeta's first tier list starts.",
+      "Con l'inizio del festival nella demo si accende la classificata, con ricompense esclusive. Lo ha annunciato il team il 21 settembre, il giorno in cui è uscito il primo grande aggiornamento della demo (nuova interfaccia, pacchetti di prova, lista carte provvisoria della Crimson Cup, progressi salvi da demo e playtest). Quando la ladder si apre a tutti parte anche la prima tier list di OriginsMeta.",
     ),
     signup: { label: n("Steam page", "Pagina Steam", "Page Steam"), url: "https://store.steampowered.com/app/4429430/Origins_TCG/" },
     source: "https://store.steampowered.com/sale/nextfest",
