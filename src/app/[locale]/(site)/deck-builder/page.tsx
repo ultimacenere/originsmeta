@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { href, siteUrl } from "@/lib/i18n";
+import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { RULES } from "@/lib/deckrules";
+import { cardsVerified, latestPatch, patches } from "@/lib/data/cards";
+import { fill } from "@/lib/tournament/types";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
@@ -22,6 +24,23 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{b.title}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{b.intro}</p>
+
+      {/* Disclaimer sui dati (richiesta di Pierluigi del 22/09/2026): a che versione del gioco sono aggiornate le carte */}
+      <p className="felt-panel-mint mt-5 flex max-w-4xl flex-wrap items-baseline gap-x-3 gap-y-1 p-4 text-sm text-chalk">
+        <span className="kicker text-mint">{b.dataKicker}</span>
+        <span>
+          {fill(b.dataNotice, {
+            date: formatDate(locale, cardsVerified.date),
+            count: String(cardsVerified.count),
+            patchDate: formatDate(locale, patches[latestPatch].date),
+          })}
+        </span>
+        {patches[latestPatch].news ? (
+          <Link href={href(locale, `/news/${patches[latestPatch].news}`)} className="font-bold text-mint hover:underline">
+            {d.tier.readPatchNotes} →
+          </Link>
+        ) : null}
+      </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
         <section className="felt-panel p-4">

@@ -107,6 +107,12 @@ export function patchLabel(id: PatchId, locale: Locale): string {
 /** L'ultima patch uscita. */
 export const latestPatch: PatchId = patchOrder[patchOrder.length - 1];
 
+/**
+ * Ultima verifica carta per carta sul gioco (collezione della demo, My Decks → Cards): data e numero di
+ * carte confrontate. Il deck builder la mostra nel disclaimer sui dati; va aggiornata a ogni nuova verifica.
+ */
+export const cardsVerified = { date: "2026-09-22", count: 122 };
+
 export type Stats = { mana?: number; power?: number; health?: number };
 
 export type Change = {
