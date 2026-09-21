@@ -67,21 +67,25 @@ export const sagas: Record<SagaId, L10n> = {
 };
 
 /** `url` è il post Steam della patch (gid verificati con l'API ufficiale Valve `ISteamNews/GetNewsForApp`, appid 4429430). */
-export const patches: Record<PatchId, { date: string; url: string; title: string; label?: L10n }> = {
+/** `news` è lo slug dell'articolo del sito che racconta la patch (MetaShifting ci rimanda). */
+export const patches: Record<PatchId, { date: string; url: string; title: string; label?: L10n; news?: string }> = {
   "0.6.1": {
     date: "2026-08-14",
     url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
     title: "Closed Playtest Patch Notes - Update 0.6.1",
+    news: "patch-0-6-1-ranked",
   },
   "0.6.2": {
     date: "2026-08-21",
     url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",
     title: "Closed Playtest Patch Notes - Update 0.6.2",
+    news: "patch-0-6-2",
   },
   "0.6.3": {
     date: "2026-08-27",
     url: "https://store.steampowered.com/news/app/4429430/view/1842212951301184",
     title: "Closed Playtest Patch Notes - Update 0.6.3",
+    news: "patch-0-6-3",
   },
   // Primo grande aggiornamento della demo: il bilanciamento è "rispetto all'ultima build del playtest" (0.6.3).
   // Il post Steam ne riporta una parte; la versione del Discord ufficiale aggiunge Christopher Robin, due
@@ -91,6 +95,7 @@ export const patches: Record<PatchId, { date: string; url: string; title: string
     url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
     title: "The first big update to the Origins demo just landed!",
     label: { en: "Demo · 21 Sep", it: "Demo · 21 set" },
+    news: "demo-patch-notes-0921",
   },
 };
 
@@ -263,18 +268,58 @@ export function lastChange(card: Card): Change | undefined {
 
 const kindOrder: Record<ChangeKind, number> = { buff: 0, nerf: 1, rework: 2, deck: 3 };
 
-/** Movers: carte con variazioni di statistiche, ordinate per impatto. */
-export function movers(): { card: Card; change: Change; delta: number }[] {
-  const out: { card: Card; change: Change; delta: number }[] = [];
+export type Moved = { card: Card; change: Change; delta: number };
+
+/** Impatto di una modifica sulle statistiche: +Potenza +Salute −costo. Zero per le modifiche solo di testo o allineamento. */
+function deltaOf(ch: Change): number {
+  if (!ch.from || !ch.to) return 0;
+  const dp = (ch.to.power ?? 0) - (ch.from.power ?? 0);
+  const dh = (ch.to.health ?? 0) - (ch.from.health ?? 0);
+  const dm = (ch.to.mana ?? 0) - (ch.from.mana ?? 0);
+  return dp + dh - dm;
+}
+
+/**
+ * Ordine per importanza: prima chi cambia statistiche, poi le Leggendarie (guidano i mazzi), poi l'entità
+ * della variazione, poi chi cambia costo, poi il tipo di modifica e il nome.
+ */
+function byImpact(a: Moved, b: Moved): number {
+  const stats = (m: Moved) => (m.change.from && m.change.to ? 1 : 0);
+  const mana = (m: Moved) => (m.change.from?.mana !== undefined && m.change.to?.mana !== undefined && m.change.from.mana !== m.change.to.mana ? 1 : 0);
+  return (
+    stats(b) - stats(a) ||
+    Number(!!b.card.legendary) - Number(!!a.card.legendary) ||
+    Math.abs(b.delta) - Math.abs(a.delta) ||
+    mana(b) - mana(a) ||
+    kindOrder[a.change.kind] - kindOrder[b.change.kind] ||
+    a.card.name.localeCompare(b.card.name)
+  );
+}
+
+/** Movers: carte con variazioni di statistiche, ordinate per importanza; con `patch`, solo quelle di quella patch. */
+export function movers(patch?: PatchId): Moved[] {
+  const out: Moved[] = [];
   for (const card of cards) {
     for (const ch of card.history) {
       if (!ch.from || !ch.to) continue;
-      const dp = (ch.to.power ?? 0) - (ch.from.power ?? 0);
-      const dh = (ch.to.health ?? 0) - (ch.from.health ?? 0);
-      const dm = (ch.to.mana ?? 0) - (ch.from.mana ?? 0);
-      const delta = dp + dh - dm;
-      out.push({ card, change: ch, delta });
+      if (patch && ch.patch !== patch) continue;
+      out.push({ card, change: ch, delta: deltaOf(ch) });
     }
   }
-  return out.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta) || kindOrder[a.change.kind] - kindOrder[b.change.kind]);
+  return out.sort(byImpact);
+}
+
+/**
+ * Tutte le modifiche raggruppate per patch, dalla più recente (MetaShifting): statistiche, effetti e
+ * allineamenti. Così l'ultima patch sta in cima e le modifiche solo di testo non spariscono.
+ */
+export function patchChanges(): { patch: PatchId; items: Moved[] }[] {
+  return [...patchOrder]
+    .reverse()
+    .map((patch) => {
+      const items: Moved[] = [];
+      for (const card of cards) for (const ch of card.history) if (ch.patch === patch) items.push({ card, change: ch, delta: deltaOf(ch) });
+      return { patch, items: items.sort(byImpact) };
+    })
+    .filter((group) => group.items.length > 0);
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { movers, patchLabel, patches, sagas } from "@/lib/data/cards";
+import { patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tierlist";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
@@ -26,7 +27,9 @@ const tierTone: Record<TierId, string> = {
 
 export default async function TierListPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const all = movers();
+  // MetaShifting: tutte le modifiche raggruppate per patch, dalla più recente (anche quelle solo di testo)
+  const groups = patchChanges();
+  const alignmentLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
 
   const renderEntry = (section: TierSection, slug: string) => {
     if (section.id === "decks") {
@@ -147,32 +150,63 @@ export default async function TierListPage({ params }: { params: LocaleParams })
               <tr>
                 <th className="kicker px-4 py-3 text-chalk-muted">{d.nav.cards}</th>
                 <th className="kicker px-4 py-3 text-chalk-muted">{d.common.saga}</th>
-                <th className="kicker px-4 py-3 text-chalk-muted">{d.common.patch}</th>
                 <th className="kicker px-4 py-3 text-chalk-muted">{d.common.stats}</th>
                 <th className="kicker px-4 py-3 text-chalk-muted">{d.common.lastChange}</th>
               </tr>
             </thead>
             <tbody>
-              {all.map(({ card, change }) => (
-                <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-night text-pale">
-                  <td className="px-4 py-3 font-bold">
-                    <Link href={href(locale, `/cards/${card.slug}`)} className="hover:underline">
-                      {card.name}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-pale-muted">{sagas[card.saga][locale]}</td>
-                  <td className="px-4 py-3 font-mono text-pale-muted">
-                    {patchLabel(change.patch, locale)}
-                    <span className="block text-[11px]">{formatDate(locale, patches[change.patch].date)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatDelta from={change.from} to={change.to} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
-                    <span className="mt-1 block text-xs text-pale-muted">{change.note[locale]}</span>
-                  </td>
-                </tr>
+              {groups.map(({ patch, items }) => (
+                <Fragment key={patch}>
+                  {/* Intestazione della patch: nome, data, numero di modifiche, post ufficiale e articolo del sito */}
+                  <tr id={`patch-${patch}`} className="border-t-2 border-sky bg-night-2">
+                    <th colSpan={4} scope="colgroup" className="px-4 py-3 text-left">
+                      <span className="font-display text-base font-bold text-sky">
+                        {d.common.patch} {patchLabel(patch, locale)}
+                      </span>
+                      <span className="ml-3 font-mono text-xs font-normal text-pale-muted">
+                        {formatDate(locale, patches[patch].date)} · {items.length} {d.tier.changesCount}
+                      </span>
+                      <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs font-normal">
+                        {patches[patch].news ? (
+                          <Link href={href(locale, `/news/${patches[patch].news}`)} className="font-bold text-mint hover:underline">
+                            {d.tier.readPatchNotes} →
+                          </Link>
+                        ) : null}
+                        <a href={patches[patch].url} rel="noopener" className="text-pale-muted underline hover:text-pale">
+                          {d.common.steamNews}
+                        </a>
+                      </span>
+                    </th>
+                  </tr>
+                  {items.map(({ card, change }) => (
+                    <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-night text-pale">
+                      <td className="px-4 py-3 font-bold">
+                        <Link href={href(locale, `/cards/${card.slug}`)} className="hover:underline">
+                          {card.name}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-pale-muted">{sagas[card.saga][locale]}</td>
+                      {/* la patch non si ripete in ogni riga: la dice l'intestazione del gruppo */}
+                      <td className="whitespace-nowrap px-4 py-3">
+                        {change.from && change.to ? (
+                          <StatDelta from={change.from} to={change.to} />
+                        ) : change.alignment ? (
+                          <span className="font-mono text-sm">
+                            <span className="text-pale-muted line-through decoration-crimson/70">{alignmentLabel[change.alignment.from]}</span>
+                            <span className="mx-1.5 text-pale-muted">→</span>
+                            <span className="font-semibold">{alignmentLabel[change.alignment.to]}</span>
+                          </span>
+                        ) : (
+                          <span className="font-mono text-sm text-pale-muted">{d.tier.textChange}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                        <span className="mt-1 block text-xs text-pale-muted">{change.note[locale]}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
               ))}
             </tbody>
           </table>

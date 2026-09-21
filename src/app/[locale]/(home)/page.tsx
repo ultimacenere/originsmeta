@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { href, formatDate, formatDateShort } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { latestPatch, movers, patchLabel, patchOrder } from "@/lib/data/cards";
+import { latestPatch, movers, patchLabel } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
@@ -32,7 +32,8 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
  */
 export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const top = movers().slice(0, 3);
+  // MetaShifting in home: le tre modifiche più importanti dell'ultima patch (non di sempre, che erano sempre quelle della 0.6.3)
+  const top = movers(latestPatch).slice(0, 3);
   const guides = getGuides(locale);
   const economyGuide = guides.find((g) => g.slug === "collector-economy") ?? guides[0];
   const featured = sortedNews.slice(0, 3);
@@ -146,7 +147,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <div className="flex flex-wrap items-baseline gap-3">
                 <h2 className="text-2xl font-extrabold text-mint">{d.common.metashift}</h2>
                 <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
-                  {patchLabel(patchOrder[0], locale)} → {patchLabel(latestPatch, locale)}
+                  {d.common.patch} {patchLabel(latestPatch, locale)}
                 </span>
               </div>
               <p className="mt-1 text-sm text-chalk-muted">{d.home.metashiftSub}</p>
