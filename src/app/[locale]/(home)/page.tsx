@@ -250,9 +250,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
             penna sono decorative (aria-hidden) e il nome intero della sezione resta per i lettori di schermo.
           */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier">
-            <h2 id="home-tier" className="strip-postit strip-postit-tape" style={{ "--tilt": "-3deg" } as CSSProperties}>
-              <span className="strip-postit-big" aria-hidden="true">{d.home.tierPostitBig}</span>
-              <span className="strip-postit-small" aria-hidden="true">{d.home.tierPostitSmall}</span>
+            <h2 id="home-tier" className="strip-postit strip-postit-pink strip-postit-tape" style={{ "--tilt": "-3deg" } as CSSProperties}>
+              <span className="strip-postit-line" aria-hidden="true">{d.home.tierPostit1}</span>
+              <span className="strip-postit-line" aria-hidden="true">{d.home.tierPostit2}</span>
               <span className="sr-only">{d.home.tierTitle}</span>
             </h2>
             <div className="min-w-[220px] flex-1">
@@ -295,9 +295,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
-            <h2 id="home-metashift" className="strip-postit" style={{ "--tilt": "2.5deg" } as CSSProperties}>
-              <span className="strip-postit-big" aria-hidden="true">{d.home.metaPostitBig}</span>
-              <span className="strip-postit-small" aria-hidden="true">{d.home.metaPostitSmall}</span>
+            <h2 id="home-metashift" className="strip-postit strip-postit-mint" style={{ "--tilt": "2.5deg" } as CSSProperties}>
+              <span className="strip-postit-line" aria-hidden="true">{d.home.metaPostit1}</span>
+              <span className="strip-postit-line" aria-hidden="true">{d.home.metaPostit2}</span>
               <span className="sr-only">{d.common.metashift}</span>
             </h2>
             <div className="min-w-[220px] max-w-xs flex-1">

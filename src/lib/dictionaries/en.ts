@@ -158,11 +158,11 @@ export const en = {
     h1: "Origins TCG: news, tier list, decks, cards and tournaments",
     metashiftSub: "The biggest changes in the latest patch",
     tierTitle: "Tier list",
-    /** Post-it grande della striscia: parola a penna grande e resto del nome sotto (disegno del 22/09/2026). */
-    tierPostitBig: "Tier",
-    tierPostitSmall: "list",
-    metaPostitBig: "Meta",
-    metaPostitSmall: "shifting",
+    /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
+    tierPostit1: "Tier",
+    tierPostit2: "list",
+    metaPostit1: "Meta",
+    metaPostit2: "shifting",
     tierSub: "Decks, Legendaries, base cards",
     tierStatus: "First ranked list after Steam Next Fest (19–26 Oct).",
     tierSoon: "After Next Fest",

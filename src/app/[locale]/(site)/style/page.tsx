@@ -135,7 +135,6 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
   const samples = peekSamples();
   const marks = markSamples();
   const covers = latestCovers();
-  const labelHex = postits.find((t) => t.name === "postit-label")?.value ?? "—";
   /** Nome di carta nel formato deciso il 22/09/2026: stella gialla davanti alle Leggendarie, per i lettori di schermo "Leggendaria". */
   const cardName = (c: Card) => (
     <>
@@ -603,18 +602,27 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
               </li>
             </ul>
           </div>
-          {/* Etichetta di sezione a penna: prima versione, da rifinire sul disegno di Pierluigi */}
-          <div className="card-night p-5">
+          {/* Etichette di sezione della home: i foglietti grandi TIER e META del disegno di Pierluigi (22/09/2026),
+              rosa e menta, scritti a penna (Kalam), lettere tutte della stessa misura. Sono le classi vere della home. */}
+          <div className="grid gap-6">
             <p className="t-item text-base">{s.postits.label}</p>
-            <p className="mt-1 text-sm text-pale">{s.postits.labelNote}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-6 pl-2">
-              <p className="postit-label">{d.nav.tierList}</p>
-              <p className="postit-label" style={{ ["--tilt" as string]: "-3deg", ["--delay" as string]: "-1s" } as React.CSSProperties}>
-                {d.common.metashift}
+            <p className="-mt-4 text-sm text-pale">{s.postits.labelNote}</p>
+            <div className="strip-labeled card-night flex flex-wrap items-center gap-4">
+              <p className="strip-postit strip-postit-pink strip-postit-tape" style={{ ["--tilt" as string]: "-3deg" } as React.CSSProperties}>
+                <span className="strip-postit-line">{d.home.tierPostit1}</span>
+                <span className="strip-postit-line">{d.home.tierPostit2}</span>
               </p>
+              <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
             </div>
-            <p className="mt-4">
-              <Code>.postit-label · var(--font-hand) · {labelHex}</Code>
+            <div className="strip-labeled card-night flex flex-wrap items-center gap-4">
+              <p className="strip-postit strip-postit-mint" style={{ ["--tilt" as string]: "2.5deg" } as React.CSSProperties}>
+                <span className="strip-postit-line">{d.home.metaPostit1}</span>
+                <span className="strip-postit-line">{d.home.metaPostit2}</span>
+              </p>
+              <p className="text-sm text-pale-muted">{d.home.metashiftSub}</p>
+            </div>
+            <p>
+              <Code>.strip-labeled · .strip-postit · .strip-postit-pink / -mint · .strip-postit-line · var(--font-pen)</Code>
             </p>
           </div>
         </div>

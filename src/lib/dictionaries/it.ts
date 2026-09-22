@@ -160,11 +160,11 @@ export const it: Dictionary = {
     h1: "Origins TCG: news, tier list, mazzi, carte e tornei",
     metashiftSub: "Le variazioni più grandi dell'ultima patch",
     tierTitle: "Tier list",
-    /** Post-it grande della striscia: parola a penna grande e resto del nome sotto (disegno del 22/09/2026). */
-    tierPostitBig: "Tier",
-    tierPostitSmall: "list",
-    metaPostitBig: "Meta",
-    metaPostitSmall: "shifting",
+    /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
+    tierPostit1: "Tier",
+    tierPostit2: "list",
+    metaPostit1: "Meta",
+    metaPostit2: "shifting",
     tierSub: "Mazzi, Leggendarie, carte base",
     tierStatus: "Prima lista classificata dopo lo Steam Next Fest (19–26 ott).",
     tierSoon: "Dopo il Next Fest",

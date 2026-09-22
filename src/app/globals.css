@@ -750,10 +750,10 @@
   /*
     Post-it GRANDE attaccato al bordo sinistro di una striscia della home (disegno di Pierluigi del 22/09/2026):
     un foglietto storto largo circa un quarto della striscia, che la invade sbordando sopra, sotto e a sinistra,
-    con la parola a penna grande ("TIER", "META") e il resto del nome piccolo sotto. Il contenuto della striscia sta
-    a destra. Sul telefono il foglietto si attacca al bordo in alto e il contenuto scende sotto.
-    Markup: <section class="strip-labeled card-night …"><h2 class="strip-postit [strip-postit-tape]" style="--tilt:…">
-    <span class="strip-postit-big">Tier</span><span class="strip-postit-small">list</span></h2>…</section>.
+    con il nome scritto a penna su due righe (TIER / LIST, META / SHIFTING), lettere tutte della stessa misura. Il
+    contenuto della striscia sta a destra. Sul telefono il foglietto si attacca al bordo in alto e il contenuto scende.
+    Markup: <section class="strip-labeled card-night …"><h2 class="strip-postit strip-postit-pink [strip-postit-tape]"
+    style="--tilt:…"><span class="strip-postit-line">Tier</span><span class="strip-postit-line">list</span></h2>…</section>.
   */
   /* Il padding lo decide solo questa classe: sulla striscia non va messa un'utility p-* di Tailwind, che vincerebbe
      (le utility stanno in un layer successivo ai components) e farebbe finire il contenuto sotto il foglietto. */
@@ -764,16 +764,17 @@
   .strip-postit {
     --tilt: -3deg;
     --sway: 0.55deg; /* foglio grande: si muove meno dei post-it piccoli, ma si muove */
-    --postit-bg: var(--postit-label);
+    --postit-bg: var(--postit-patch);
     position: absolute;
     top: -1.15rem;
     left: -0.35rem;
     z-index: 2;
     width: min(64%, 15rem);
     margin: 0;
-    padding: 0.35rem 1rem 0.5rem;
-    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
-    font-weight: 700;
+    padding: 0.45rem 1rem 0.55rem;
+    /* grafia di penna a sfera (Kalam, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
+    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-weight: 400;
     color: var(--color-ink);
     text-align: left;
     /* la carta si solleva in basso a destra: velo d'ombra e angolo piegato (::after) */
@@ -784,18 +785,23 @@
     transform-origin: 30% 10%;
     animation: postit-sway 9.5s ease-in-out -2s infinite;
   }
-  .strip-postit-big {
+  /* Il nome su due righe (TIER / LIST, META / SHIFTING), lettere tutte della stessa misura, anche fra i due
+     foglietti: la misura è tarata sulla parola più lunga ("SHIFTING") perché stia nel foglietto senza uscirne. */
+  .strip-postit-line {
     display: block;
-    font-size: 3rem;
-    line-height: 0.9;
-    letter-spacing: 0.04em;
+    font-size: 2.05rem;
+    line-height: 1.05;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
-  .strip-postit-small {
-    display: block;
-    margin-top: 0.1rem;
-    font-size: 1.45rem;
-    line-height: 1;
+  /* Colori dei due foglietti (via il giallo, Pierluigi 22/09/2026): rosa per la tier list, menta per MetaShifting,
+     i colori del sito (rosa dei bottoni, menta del logo). Testo ink: 8,7:1 sul rosa, 11,3:1 sul menta. */
+  .strip-postit-pink {
+    --postit-bg: var(--postit-patch);
+  }
+  .strip-postit-mint {
+    --postit-bg: var(--postit-guide);
   }
   /* angolo in basso a destra che si solleva, come nel disegno (il bordo destro "curva") */
   .strip-postit::after {
@@ -840,11 +846,8 @@
       justify-content: center;
       padding: 0.6rem 1.25rem 0.8rem 1.4rem;
     }
-    .strip-postit-big {
-      font-size: clamp(3.4rem, 5.2vw, 4.6rem);
-    }
-    .strip-postit-small {
-      font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+    .strip-postit-line {
+      font-size: clamp(1.9rem, 2.6vw, 2.5rem);
     }
   }
   /* Ridondante con la regola globale di @layer base, di proposito: il requisito sta scritto accanto ai post-it. */
