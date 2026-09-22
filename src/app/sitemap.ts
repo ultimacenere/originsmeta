@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales, siteUrl, href } from "@/lib/i18n";
-import { cards, latestPatch, patches } from "@/lib/data/cards";
+import { cards, cardsVerified, latestPatch, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
 import { newsPath, sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
@@ -11,6 +11,8 @@ import { listTournamentSlugs } from "@/lib/tournament/queries";
 
 /** Data dell'ultima revisione editoriale delle pagine fisse (aggiornare quando cambiano testi o struttura). */
 const SITE_UPDATED = "2026-09-21";
+/** Giorno in cui è nata la tier list personalizzabile (/tier-list/create). */
+const TIER_MAKER_ADDED = "2026-09-22";
 
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
@@ -29,6 +31,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", lastModified: latestNews, changeFrequency: "daily", priority: 1 },
     { path: "/news", lastModified: latestNews, changeFrequency: "daily", priority: 0.9 },
     { path: "/tier-list", lastModified: tierList.updated, changeFrequency: "weekly", priority: 0.9 },
+    // Tier list personalizzabile (22/09/2026): la pagina cambia quando cambiano le carte attive, cioè con una patch
+    // o con una nuova verifica delle carte sul gioco.
+    { path: "/tier-list/create", lastModified: [TIER_MAKER_ADDED, patches[latestPatch].date, cardsVerified.date].sort().at(-1) ?? TIER_MAKER_ADDED, changeFrequency: "weekly", priority: 0.8 },
     { path: "/cards", lastModified: patches[latestPatch].date, changeFrequency: "weekly", priority: 0.9 },
     { path: "/decks", lastModified: [latestDeck, latestCommunity ?? ""].sort().at(-1) || latestDeck, changeFrequency: "daily", priority: 0.9 },
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },

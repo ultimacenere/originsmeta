@@ -5,11 +5,12 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import type { Dictionary } from "@/lib/i18n";
 import { archetypeLabels, decks } from "@/lib/data/decks";
 import type { Card } from "@/lib/data/cards";
-import { cards, getCard, statLine } from "@/lib/data/cards";
+import { activeCards, getCard, statLine } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
+import { deckGameCode } from "@/lib/deckGameCode";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
@@ -64,8 +65,12 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function DecksPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const legendaries = cards.filter((c) => c.legendary);
+  // Solo le Leggendarie giocabili nella demo (le rimosse del playtest restano nel database carte)
+  const legendaries = activeCards.filter((c) => c.legendary);
   const community = await listPublishedDecks();
+  // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
+  // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
+  const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
   const communityList: ExplorerDeck[] = community
     .slice()
     .sort((a, b) => (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || b.created_at.localeCompare(a.created_at))
@@ -77,7 +82,11 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
         tagline: deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary,
-        legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : legCustom ? { slug: legCustom.slug, name: legCustom.name } : undefined,
+        legendary: leg
+          ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana }
+          : legCustom
+            ? { slug: legCustom.slug, name: legCustom.name }
+            : undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
         creator: authorName(deck.profile),
@@ -85,7 +94,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         sourceLabel: d.common.community,
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
         cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s), locale, d),
-        code: deck.code_om ?? undefined,
+        code: gameCodes.get(deck.slug) ?? undefined,
         updated: deck.updated_at.slice(0, 10),
         rating: deck.rating,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
@@ -100,7 +109,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       name: deck.name,
       href: href(locale, `/decks/${deck.slug}`),
       tagline: deck.tagline[locale],
-      legendary: leg ? { slug: leg.slug, name: leg.name, cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : undefined,
+      legendary: leg ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : undefined,
       archetype: deck.archetype,
       archetypeLabel: archetypeLabels[deck.archetype][locale],
       creator: deck.creator.name,
@@ -178,7 +187,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="felt-panel p-6">
           <h2 className="t-section">{d.decks.legendariesTitle}</h2>
-          <p className="mt-3 text-chalk-muted">{d.decks.legendariesText}</p>
+          <p className="mt-3 text-chalk-muted">{d.decks.legendariesText.replace("{n}", String(legendaries.length))}</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {legendaries.map((c) => (
               <li key={c.slug}>

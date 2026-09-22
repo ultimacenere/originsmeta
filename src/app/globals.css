@@ -14,6 +14,13 @@
   ruolo (.t-page, .t-section, .t-item); post-it per dire che cos'è un contenuto; avvisi d'errore leggibili.
   Spessori delle cornici, regola unica: 3 px i contenitori, 2 px chip, pastiglie con cornice e mini carte,
   1 px solo i controlli dei moduli. Tutto il sistema, disegnato con queste stesse classi, sta nella pagina /style.
+
+  Correzioni del 22/09/2026 (note di Pierluigi e Davdas sulla demo): post-it più grandi, storti e "disordinati",
+  con due velocità di movimento (lenti di norma, isterici sulle news delle ultime 72 ore) e un font a penna
+  (--font-hand, dichiarato nel layout con next/font); etichette di sezione a penna (.postit-label); la Leggendaria
+  si riconosce da una stella gialla davanti al nome (.legendary-star), mai dal colore o dalla misura del nome;
+  magie del deck builder su fondo rosa tenue (.row-spell); costo in mana sempre visibile nelle anteprime e nelle
+  carte che si girano al passaggio del mouse (.card-tile).
 */
 @theme {
   --color-felt: #150c2c;
@@ -68,15 +75,22 @@
     --postit-guide: #31e3bd; /* Guida, menta (11,3:1) */
     --postit-tournament: #3fc4e8; /* Torneo, celeste (9,0:1) */
     --postit-event: #ffb454; /* Evento, arancio (10,4:1) */
+    --postit-label: #ffe98a; /* Etichetta di sezione a penna, giallo canarino dei foglietti veri (15,1:1) */
   }
   html {
     scroll-behavior: smooth;
+    /* Il focus da tastiera e le ancore si fermano sopra il tasto fisso "Dicci la tua" in basso a destra (WCAG 2.4.11) */
+    scroll-padding-bottom: 4.5rem;
   }
+  /* "Riduci animazioni": niente animazioni né transizioni, pseudo-elementi compresi (il semplice `*` non li prende,
+     e il bollino "Nuovo" dei post-it freschi è un ::after animato). */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
-    * {
+    *,
+    *::before,
+    *::after {
       animation: none !important;
       transition: none !important;
     }
@@ -406,44 +420,62 @@
   }
 
   /*
-    Post-it: un foglietto che dice che cos'è un contenuto prima che lo si legga (prova del 21/09/2026, solo sulle
-    tre news in evidenza della home). Carta piena con testo ink (contrasti misurati in :root), leggermente ruotata,
+    Post-it: un foglietto che dice che cos'è un contenuto prima che lo si legga. Prova del 21/09/2026, corretta con
+    le note del 22/09/2026 di Pierluigi e Davdas: "ingrandirli, renderli leggermente storti e un po' invasivi
+    sull'immagine; devono sembrare disordinati, non allineati; due velocità di movimento: post-it normali lenti,
+    post-it delle news recenti più isterici e visibili; nuove news evidenziate per circa 72 ore".
+    Carta piena con testo ink (contrasti misurati in :root), scritta a penna (--font-hand, dichiarato nel layout),
     un pezzo di nastro adesivo in cima e l'angolo in basso a destra piegato. Deve sembrare una scrivania, non un badge.
 
-    Markup atteso:
+    Markup atteso (il componente <Postit> di src/components/Postit.tsx scrive queste classi):
       <article class="card-night relative …">                      contenitore con position: relative
         <span class="postit postit-news postit-corner">News</span>  figlio DIRETTO del contenitore, non dentro
         …                                                            un riquadro con overflow: hidden (la copertina)
       </article>
-    Varianti: postit-deck (Nuovo mazzo), postit-news, postit-patch, postit-guide, postit-tournament, postit-event.
+    Colore: postit-deck (Nuovo mazzo), postit-news, postit-patch, postit-guide, postit-tournament, postit-event.
+    Misura: `postit-lg`, il post-it grande che sta sopra l'angolo dell'immagine (vedi sotto).
+    Stato: `is-fresh`, news delle ultime 72 ore. La mette <Postit> nel browser dopo il montaggio: le pagine sono
+    statiche e un calcolo fatto alla build sbaglierebbe il giorno della visita.
     `postit-corner` lo appoggia a cavallo del bordo superiore sinistro; senza, il post-it resta in linea nel testo.
-    Rotazione: ogni variante ha la sua; per variare tra carte uguali si mette `postit-row` sul contenitore della
-    griglia (ruota il 2°, 3°… elemento) oppure `style="--tilt: 2deg"` sul post-it.
-    Al passaggio sul contenuto il foglietto si raddrizza appena; con "riduci animazioni" niente transizione.
+
+    Disordine: ogni variante ha la sua rotazione (--tilt) e la sua fase di movimento (--delay); `postit-row` sul
+    contenitore della griglia sposta (--nudge-x/-y), ruota e sfasa il 2° e il 3° elemento di ogni terna;
+    `style="--tilt: 2deg"` sul post-it vince su tutto.
+    Movimento: di norma lento, un ondeggiare di un paio di gradi e di un paio di pixel in 6-9 secondi; "isterico"
+    con is-fresh. L'animazione muove le proprietà `rotate` e `translate`, separate da `transform`: così la rotazione
+    di base (--tilt) e il raddrizzarsi al passaggio del mouse restano e si sommano al movimento.
+    Con "riduci animazioni" nessun movimento: restano solo la rotazione e l'ombra.
   */
   .postit {
     --tilt: -2deg;
     --postit-bg: var(--postit-news);
-    --postit-fold: 9px;
+    --postit-fold: 10px;
+    --sway: 1deg;
+    --sway-dur: 7.5s;
+    --delay: 0s;
     position: relative;
     z-index: 2;
     display: inline-block;
-    padding: 0.5rem 0.85rem 0.45rem 0.8rem;
-    font-family: var(--font-display);
-    font-size: 0.66rem;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    padding: 0.3rem 0.9rem 0.25rem 0.8rem;
+    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     color: var(--color-ink);
-    /* L'angolo piegato è un taglio nello sfondo stesso: lì traspare quello che sta sotto, come un foglio vero. */
-    background: linear-gradient(315deg, transparent var(--postit-fold), var(--postit-bg) var(--postit-fold));
+    background:
+      /* il lembo piegato: triangolo in una tinta più scura della carta, sopra il taglio dell'angolo */
+      linear-gradient(315deg, transparent 50%, color-mix(in srgb, var(--postit-bg) 72%, var(--color-ink)) 50%) right bottom / calc(var(--postit-fold) * 1.42) calc(var(--postit-fold) * 1.42) no-repeat,
+      /* la carta con l'angolo in basso a destra tagliato: lì traspare quello che sta sotto, come un foglio vero */
+      linear-gradient(315deg, transparent var(--postit-fold), var(--postit-bg) var(--postit-fold));
     border-radius: 2px 2px 2px 3px;
     box-shadow: 0 1px 1px rgba(14, 7, 31, 0.35), 2px 8px 14px -6px rgba(14, 7, 31, 0.8);
     transform: rotate(var(--tilt));
-    transform-origin: 30% 20%;
+    /* il foglietto è attaccato col nastro in cima: ondeggia da lì */
+    transform-origin: 50% 0;
     transition: transform 180ms ease;
+    animation: postit-sway var(--sway-dur) ease-in-out var(--delay) infinite;
   }
   /* Nastro adesivo: striscia semitrasparente di gesso, storta al contrario del foglietto */
   .postit::before {
@@ -457,55 +489,392 @@
     background: color-mix(in srgb, var(--color-chalk) 42%, transparent);
     box-shadow: 0 1px 2px rgba(14, 7, 31, 0.25);
   }
-  /* Il lembo piegato: triangolo in una tinta più scura della carta, sopra il taglio dello sfondo */
-  .postit::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: calc(var(--postit-fold) * 1.42);
-    height: calc(var(--postit-fold) * 1.42);
-    background: linear-gradient(315deg, transparent 50%, color-mix(in srgb, var(--postit-bg) 72%, var(--color-ink)) 50%);
-    border-radius: 0 0 0 2px;
-  }
+  /* Il lembo piegato ora sta nello sfondo (primo strato del background): ::after resta libero per il bollino
+     "Nuovo" dei post-it freschi. */
   .postit-deck {
     --postit-bg: var(--postit-deck);
-    --tilt: -2.5deg;
+    --tilt: -3deg;
+    --delay: -1.2s;
   }
   .postit-news {
     --postit-bg: var(--postit-news);
-    --tilt: 1.8deg;
+    --tilt: 2.4deg;
+    --delay: -3.7s;
   }
   .postit-patch {
     --postit-bg: var(--postit-patch);
-    --tilt: -1.4deg;
+    --tilt: -1.8deg;
+    --delay: -5.4s;
   }
   .postit-guide {
     --postit-bg: var(--postit-guide);
-    --tilt: 2.2deg;
+    --tilt: 2.8deg;
+    --delay: -2.3s;
   }
   .postit-tournament {
     --postit-bg: var(--postit-tournament);
-    --tilt: -1.8deg;
+    --tilt: -2.4deg;
+    --delay: -6.1s;
   }
   .postit-event {
     --postit-bg: var(--postit-event);
-    --tilt: 1.4deg;
+    --tilt: 1.9deg;
+    --delay: -4.4s;
   }
   .postit-corner {
     position: absolute;
-    top: -12px;
-    left: 16px;
+    top: calc(-12px + var(--nudge-y, 0px));
+    left: calc(16px + var(--nudge-x, 0px));
+  }
+  /* Nessun post-it allineato al vicino: nella terna il 1° scende e rientra appena, il 2° sale, si sposta a destra
+     e si storce di più, il 3° scende; durate diverse, così col tempo i movimenti non si risincronizzano. */
+  .postit-row > :nth-child(3n + 1) .postit {
+    --nudge-x: -6px;
+    --nudge-y: 3px;
   }
   .postit-row > :nth-child(3n + 2) .postit {
-    --tilt: 2.4deg;
+    --tilt: 3.2deg;
+    --nudge-x: 14px;
+    --nudge-y: -5px;
+    --delay: -4.6s;
+    --sway-dur: 8.8s;
   }
   .postit-row > :nth-child(3n) .postit {
-    --tilt: -1deg;
+    --tilt: -1.4deg;
+    --nudge-x: 4px;
+    --nudge-y: 6px;
+    --delay: -2.1s;
+    --sway-dur: 6.4s;
   }
   :where(a, article, li):hover > .postit,
   :where(a, article, li):focus-within > .postit {
     transform: rotate(calc(var(--tilt) * 0.3)) translateY(-1px);
+  }
+  @keyframes postit-sway {
+    0%,
+    100% {
+      rotate: calc(var(--sway) * -0.4);
+      translate: 0 0;
+    }
+    35% {
+      rotate: var(--sway);
+      translate: 1px -2px;
+    }
+    70% {
+      rotate: calc(var(--sway) * -1);
+      translate: -1px 0;
+    }
+  }
+
+  /*
+    Post-it grande ("ingrandirli, un po' invasivi sull'immagine"): scritta e foglio più grandi, pensato per stare
+    sopra l'angolo in alto a sinistra dell'immagine sbordando fuori di qualche pixel. È un'etichetta, non una
+    fascia: una parola o due, mai sopra il soggetto dell'immagine. Markup: l'immagine sta in un contenitore
+    `relative` SENZA overflow: hidden e il post-it ne è figlio diretto, accanto all'immagine:
+      <div class="relative"><NewsCover …/><span class="postit postit-news postit-lg postit-corner">News</span></div>
+    Va bene anche come figlio diretto della scheda: sborda dal bordo della scheda e scende sulla copertina.
+  */
+  .postit-lg {
+    --postit-fold: 14px;
+    --sway: 1.3deg;
+    padding: 0.45rem 1.3rem 0.4rem 1.15rem;
+    font-size: 2rem;
+    line-height: 1;
+    box-shadow: 0 1px 1px rgba(14, 7, 31, 0.4), 3px 12px 18px -6px rgba(14, 7, 31, 0.85);
+  }
+  .postit-lg::before {
+    top: -9px;
+    width: 3.6rem;
+    height: 1.05rem;
+  }
+  .postit-lg.postit-corner {
+    top: calc(-14px + var(--nudge-y, 0px));
+    left: calc(-10px + var(--nudge-x, 0px));
+  }
+
+  /*
+    News fresca (ultime 72 ore): movimento "isterico", scatti rapidi e irregolari per poco più di un secondo e poi
+    una pausa, come un foglietto che sbatte al vento; ombra più forte; un bollino rosa "NEW" / "NUOVO" nell'angolo
+    in alto a destra che pulsa. Bollino: testo ink su pink (5,6:1) con cornice ink da 2 px, così si stacca anche dal
+    post-it rosa delle patch. La parola segue la lingua della pagina (:lang, l'html ha lang="en" o "it") ed è
+    nascosta ai lettori di schermo (testo alternativo vuoto dopo la barra): la novità la dice già la data della
+    news. La durata e la fase cambiano con la posizione in `postit-row` (o con le variabili messe dalla pagina),
+    così due news fresche non sbattono insieme.
+    Durata (WCAG 2.2.2, revisione del 22/09/2026): lo sbattere dura quattro cicli, una decina di secondi dal
+    caricamento, poi il post-it torna all'ondeggiare lento degli altri; il bollino pulsa sei volte e resta fermo.
+    Il ritardo dello sbattere è 0 (con un numero finito di cicli un --delay negativo lo farebbe trovare già finito).
+  */
+  .postit.is-fresh {
+    --flap-dur: 2.6s;
+    box-shadow: 0 2px 2px rgba(14, 7, 31, 0.45), 3px 14px 22px -6px rgba(14, 7, 31, 0.95);
+    animation:
+      postit-flap var(--flap-dur) cubic-bezier(0.2, 0.7, 0.3, 1) 0s 4,
+      postit-sway var(--sway-dur) ease-in-out calc(var(--flap-dur) * 4) infinite;
+  }
+  .postit-row > :nth-child(3n + 2) .postit.is-fresh {
+    --flap-dur: 2.9s;
+  }
+  .postit-row > :nth-child(3n) .postit.is-fresh {
+    --flap-dur: 2.3s;
+  }
+  .postit.is-fresh::after {
+    content: "NEW";
+    content: "NEW" / "";
+    position: absolute;
+    top: -0.65rem;
+    right: -0.9rem;
+    padding: 0.22rem 0.42rem 0.2rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-pink);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(14, 7, 31, 0.45);
+    rotate: 14deg;
+    animation: postit-new-pulse 1.1s ease-in-out 6;
+  }
+  :lang(it) .postit.is-fresh::after {
+    content: "NUOVO";
+    content: "NUOVO" / "";
+  }
+  .postit-lg.is-fresh::after {
+    top: -0.8rem;
+    right: -1.1rem;
+    font-size: 0.75rem;
+  }
+  @keyframes postit-flap {
+    0%,
+    46%,
+    100% {
+      rotate: 0deg;
+      translate: 0 0;
+    }
+    5% {
+      rotate: 3.5deg;
+      translate: 0 -2px;
+    }
+    10% {
+      rotate: -3deg;
+      translate: 1px -1px;
+    }
+    14% {
+      rotate: 2.6deg;
+      translate: -1px -3px;
+    }
+    20% {
+      rotate: -1.6deg;
+      translate: 0 -1px;
+    }
+    25% {
+      rotate: 2.2deg;
+      translate: 1px -2px;
+    }
+    32% {
+      rotate: -1deg;
+      translate: 0 0;
+    }
+    39% {
+      rotate: 0.5deg;
+      translate: 0 -1px;
+    }
+  }
+  @keyframes postit-new-pulse {
+    0%,
+    100% {
+      scale: 1;
+    }
+    50% {
+      scale: 1.15;
+    }
+  }
+
+  /*
+    Etichetta di SEZIONE scritta a penna (note del 22/09/2026): per i titoli "Tier list" e "MetaShifting" della home
+    e per le altre etichette che finora erano scritte "anonime". Foglietto giallo canarino (--postit-label, testo ink
+    15,1:1) messo storto, scritta grande nel font a penna, nastro adesivo in cima; ondeggia piano come gli altri.
+    Si usa da sola (<h2 class="postit-label">Tier list</h2>) o insieme a .postit: queste regole vincono comunque.
+    PRIMA VERSIONE: forma, nastro e colore vanno rifiniti sul disegno di riferimento che manderà Pierluigi.
+  */
+  .postit-label {
+    --tilt: -2.5deg;
+    --postit-bg: var(--postit-label);
+    --sway: 0.7deg;
+    --sway-dur: 9s;
+    --delay: -3s;
+    position: relative;
+    display: inline-block;
+    padding: 0.4rem 1.25rem 0.3rem 1.1rem;
+    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    white-space: normal;
+    color: var(--color-ink);
+    /* la carta si solleva appena in basso a destra: un velo d'ombra sul giallo */
+    background: linear-gradient(170deg, transparent 55%, rgba(22, 16, 42, 0.08)), var(--postit-bg);
+    border-radius: 2px 2px 4px 2px;
+    box-shadow: 0 1px 1px rgba(14, 7, 31, 0.35), 4px 10px 16px -8px rgba(14, 7, 31, 0.85);
+    transform: rotate(var(--tilt));
+    transform-origin: 50% 0;
+    animation: postit-sway var(--sway-dur) ease-in-out var(--delay) infinite;
+  }
+  /* Due etichette una sotto l'altra (in home Tier list e MetaShifting) non devono sembrare fotocopie: nelle sezioni
+     pari la rotazione va dall'altra parte e il passo cambia. Uno style="--tilt: …" sull'etichetta vince comunque. */
+  section:nth-of-type(even) .postit-label {
+    --tilt: 1.8deg;
+    --delay: -5.5s;
+    --sway-dur: 10.5s;
+  }
+  .postit-label::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 4.2rem;
+    height: 1.1rem;
+    transform: translateX(-50%) rotate(4deg);
+    background: color-mix(in srgb, var(--color-chalk) 42%, transparent);
+    box-shadow: 0 1px 2px rgba(14, 7, 31, 0.25);
+  }
+  @media (min-width: 640px) {
+    .postit-label {
+      font-size: 2.4rem;
+    }
+  }
+  /*
+    Post-it GRANDE attaccato al bordo sinistro di una striscia della home (disegno di Pierluigi del 22/09/2026):
+    un foglietto storto largo circa un quarto della striscia, che la invade sbordando sopra, sotto e a sinistra,
+    con la parola a penna grande ("TIER", "META") e il resto del nome piccolo sotto. Il contenuto della striscia sta
+    a destra. Sul telefono il foglietto si attacca al bordo in alto e il contenuto scende sotto.
+    Markup: <section class="strip-labeled card-night …"><h2 class="strip-postit [strip-postit-tape]" style="--tilt:…">
+    <span class="strip-postit-big">Tier</span><span class="strip-postit-small">list</span></h2>…</section>.
+  */
+  /* Il padding lo decide solo questa classe: sulla striscia non va messa un'utility p-* di Tailwind, che vincerebbe
+     (le utility stanno in un layer successivo ai components) e farebbe finire il contenuto sotto il foglietto. */
+  .strip-labeled {
+    /* sul telefono il foglietto sta in alto: il contenuto parte sotto il suo bordo inferiore, rotazione compresa */
+    padding: 5.75rem 1.25rem 1.25rem;
+  }
+  .strip-postit {
+    --tilt: -3deg;
+    --sway: 0.55deg; /* foglio grande: si muove meno dei post-it piccoli, ma si muove */
+    --postit-bg: var(--postit-label);
+    position: absolute;
+    top: -1.15rem;
+    left: -0.35rem;
+    z-index: 2;
+    width: min(64%, 15rem);
+    margin: 0;
+    padding: 0.35rem 1rem 0.5rem;
+    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-align: left;
+    /* la carta si solleva in basso a destra: velo d'ombra e angolo piegato (::after) */
+    background: linear-gradient(165deg, transparent 58%, rgba(22, 16, 42, 0.1)), var(--postit-bg);
+    border-radius: 2px 3px 6px 2px;
+    box-shadow: 0 1px 1px rgba(14, 7, 31, 0.4), 6px 14px 22px -10px rgba(14, 7, 31, 0.9);
+    transform: rotate(var(--tilt));
+    transform-origin: 30% 10%;
+    animation: postit-sway 9.5s ease-in-out -2s infinite;
+  }
+  .strip-postit-big {
+    display: block;
+    font-size: 3rem;
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .strip-postit-small {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 1.45rem;
+    line-height: 1;
+  }
+  /* angolo in basso a destra che si solleva, come nel disegno (il bordo destro "curva") */
+  .strip-postit::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    background: linear-gradient(135deg, rgba(22, 16, 42, 0.18) 0 45%, color-mix(in srgb, var(--postit-bg) 78%, white) 50% 100%);
+    border-radius: 0 0 6px 0;
+    box-shadow: -2px -2px 4px rgba(14, 7, 31, 0.18);
+  }
+  /* nastro adesivo in cima, solo sul primo foglietto (nel disegno ce l'ha "TIER") */
+  .strip-postit-tape::before {
+    content: "";
+    position: absolute;
+    top: -0.8rem;
+    left: 32%;
+    width: 4.6rem;
+    height: 1.25rem;
+    transform: rotate(-5deg);
+    background: color-mix(in srgb, var(--color-chalk) 45%, transparent);
+    box-shadow: 0 1px 2px rgba(14, 7, 31, 0.28);
+  }
+  @media (min-width: 768px) {
+    /* Il foglietto occupa il bordo sinistro per tutta l'altezza e sborda: il contenuto parte dopo di lui */
+    .strip-labeled {
+      min-height: 9rem;
+      padding: 1.25rem 1.25rem 1.25rem calc(clamp(11rem, 24%, 16rem) + 1.75rem);
+    }
+    .strip-postit {
+      top: -1.25rem;
+      left: -0.9rem;
+      width: clamp(11rem, 24%, 16rem);
+      /* sborda sopra e sotto una striscia di altezza normale; se la striscia si allunga (testo a capo su tablet)
+         il foglietto non diventa una colonna: resta un foglietto in alto */
+      height: calc(100% + 2.5rem);
+      max-height: 13.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.6rem 1.25rem 0.8rem 1.4rem;
+    }
+    .strip-postit-big {
+      font-size: clamp(3.4rem, 5.2vw, 4.6rem);
+    }
+    .strip-postit-small {
+      font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+    }
+  }
+  /* Ridondante con la regola globale di @layer base, di proposito: il requisito sta scritto accanto ai post-it. */
+  @media (prefers-reduced-motion: reduce) {
+    .postit,
+    .postit.is-fresh,
+    .postit-label,
+    .strip-postit,
+    .postit.is-fresh::after {
+      animation: none;
+    }
+  }
+
+  /*
+    Stella delle Leggendarie (note del 22/09/2026: "stella gialla accanto al nome invece di dimensione o colore
+    diverso; formato: ★ Dorothy, ★ Wicked Stepmother, poi carte normali senza stella; H2 dello stesso colore per
+    tutte le carte"). Il nome di una Leggendaria ha lo stesso colore e la stessa misura degli altri (celeste,
+    .t-item): la riconosce solo la stella. Oro #f2d23c: 10,6:1 su night, 8,8:1 su night-3, 12,5:1 sul feltro.
+    Markup: <span class="legendary-star" aria-hidden="true">★</span>Nome<span class="sr-only"> (Leggendaria)</span>
+    La cornice oro intorno all'illustrazione della Leggendaria resta: è una decisione precedente e non tocca il nome.
+  */
+  .legendary-star {
+    display: inline-block;
+    margin-right: 0.25em;
+    color: var(--color-gold);
+    font-size: 1.15em;
+    font-weight: 400;
+    line-height: 1;
+    vertical-align: -0.05em;
+    text-shadow: 0 1px 2px rgba(14, 7, 31, 0.6);
   }
 
   /*
@@ -715,6 +1084,21 @@
   .builder-row.is-in-deck {
     background: var(--color-night-3);
   }
+  /*
+    Magie nel deck builder (note del 22/09/2026): fondo rosa tenue (pink al 14%) e un filo rosa da 4 px sul bordo
+    sinistro, per distinguerle a colpo d'occhio dalle unità. SOLO nelle righe del builder: non va usata altrove.
+    Contrasti misurati sul fondo risultante: gesso 10,2:1, pale 8,9:1, menta 8,4:1 (sulla riga già nel mazzo, base
+    night-3 con pink al 16%: gesso 8,5:1, pale 7,4:1, menta 7,0:1). Il filo è un'ombra interna: la cornice celeste
+    da 2 px e l'altezza della riga non cambiano.
+  */
+  .row-spell,
+  .builder-row.row-spell {
+    background: linear-gradient(rgba(255, 61, 154, 0.14), rgba(255, 61, 154, 0.14)), var(--color-night);
+    box-shadow: inset 4px 0 0 var(--color-pink);
+  }
+  .builder-row.row-spell.is-in-deck {
+    background: linear-gradient(rgba(255, 61, 154, 0.16), rgba(255, 61, 154, 0.16)), var(--color-night-3);
+  }
   /* Metà destra: l'illustrazione sfumata verso sinistra. Sta su uno pseudo-elemento con il proprio raggio
      d'angolo, così la riga NON ha bisogno di `overflow: hidden`, che taglierebbe l'anteprima al passaggio. */
   .builder-row::after {
@@ -778,9 +1162,8 @@
     white-space: nowrap;
     text-shadow: 0 1px 3px var(--color-felt-deep);
   }
-  .builder-row.is-legendary .builder-row-name {
-    color: var(--color-gold);
-  }
+  /* Niente più nome oro per la Leggendaria (note del 22/09/2026): stesso colore delle altre carte, la segna la
+     stella (.legendary-star) davanti al nome. La cornice oro della riga e della miniatura restano. */
   .builder-row-stats {
     display: block;
     font-family: var(--font-mono);
@@ -919,10 +1302,24 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  /* Costo in mana IN EVIDENZA (note del 22/09/2026: "mostrare statistiche ma mantenere sempre visibile il costo
+     mana"): non più una pastiglia come le altre ma la gemma tonda della carta, grande il doppio, con un anello menta
+     staccato dal fondo. Ink su mint 11,3:1. Il pannello si apre sopra (o sotto) la carta o la riga, mai sopra: il
+     costo scritto sulla carta resta visibile anche mentre si legge l'anteprima. */
   .deck-peek-mana {
+    display: inline-grid;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 3px;
+    padding: 0 0.4rem;
+    place-items: center;
+    border-radius: 999px;
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0;
+    box-shadow: 0 0 0 2px var(--color-night), 0 0 0 4px color-mix(in srgb, var(--color-mint) 45%, transparent);
   }
   .deck-peek-stats {
     background: var(--color-night-3);
@@ -988,6 +1385,8 @@
     place-items: center;
     overflow: hidden;
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
+    /* il retro si adatta alla larghezza della carta (vedi @container card-tile più sotto) */
+    container: card-tile / inline-size;
   }
   .card-tile-art img {
     width: 100%;
@@ -1001,10 +1400,32 @@
     color: var(--color-chalk-muted);
     text-shadow: 0 1px 3px rgba(14, 7, 31, 0.7);
   }
-  .card-tile-mana {
+  /* Gemma del mana (con le copie ×2 accanto, nella scheda di un mazzo) e stella stanno SOPRA il retro della carta
+     (z-index 3) e non girano mai: il costo si legge anche mentre la carta è girata (note del 22/09/2026: "sempre
+     facendo vedere il mana"). */
+  .card-tile-pills {
     position: absolute;
+    z-index: 3;
     top: 8px;
     left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-tile-copies {
+    display: grid;
+    height: 22px;
+    padding: 0 6px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-night);
+    color: var(--color-pale);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(14, 7, 31, 0.6);
+  }
+  .card-tile-mana {
     display: grid;
     min-width: 26px;
     height: 26px;
@@ -1016,29 +1437,83 @@
     font-family: var(--font-mono);
     font-size: 0.9rem;
     font-weight: 700;
+    box-shadow: 0 1px 3px rgba(14, 7, 31, 0.6);
   }
   .card-tile-star {
     position: absolute;
+    z-index: 3;
     top: 6px;
     right: 8px;
     color: var(--color-gold);
     font-size: 1.1rem;
   }
-  /* Pannello dei dettagli: chiuso di suo, si apre sopra l'illustrazione al passaggio del mouse o col focus
-     da tastiera. Su touch non esiste (hover: none) e i dettagli si leggono nella scheda della carta. */
+  /*
+    Retro della carta. Al passaggio del mouse, o col focus da tastiera, la carta si gira e mostra saga, tipo,
+    allineamento, testo e parole chiave (richiesta di Pierluigi del 22/09/2026: carte intere "che al mouse over si
+    flippano e fanno vedere i testi sempre facendo vedere il mana"). Il giro è in due tempi: il fronte
+    (l'illustrazione) ruota di taglio fino a 90° e sparisce, poi entra il retro da -90° a 0°; all'uscita il contrario.
+    Il markup lo scrive SOLO il componente FlipCard (src/components/FlipCard.tsx), usato dal database /cards, dalla
+    scheda di un mazzo e da /style: una carta sola, stesso giro, stessa gemma, stessa stella ovunque. La larghezza la
+    decide la griglia che la contiene.
+    Su touch (hover: none) il retro non esiste: sotto la carta restano nome e statistiche e la scheda è a un tocco
+    (anche nella scheda di un mazzo, dove il piede col mouse è nascosto: `.card-tile-foot.is-touch-only`).
+    `.has-head`: nome e statistiche stanno sul retro (scheda di un mazzo col mouse); il testo prende lo spazio che
+    resta e le statistiche restano in fondo.
+    Con "riduci animazioni" niente giro: il retro compare e basta, sopra l'illustrazione.
+  */
   .card-tile-info {
     position: absolute;
+    z-index: 2;
     inset: 0;
     display: none;
     flex-direction: column;
-    justify-content: flex-end;
-    padding: 12px;
-    background: linear-gradient(to top, var(--color-felt-deep) 45%, color-mix(in srgb, var(--color-felt-deep) 80%, transparent));
+    /* `safe`: se il retro è più lungo della carta si taglia in fondo, mai in cima */
+    justify-content: safe center;
+    padding: 42px 12px 12px; /* in alto resta lo spazio della gemma del mana */
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgba(63, 196, 232, 0.14), transparent 70%),
+      linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep));
+    backface-visibility: hidden;
+  }
+  .card-tile.is-legendary .card-tile-info {
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgba(242, 210, 60, 0.16), transparent 70%),
+      linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep));
   }
   @media (hover: hover) {
+    .card-tile-art {
+      perspective: 900px;
+    }
+    .card-tile-art > img,
+    .card-tile-art > .card-tile-initials {
+      backface-visibility: hidden;
+      transition: transform 160ms ease-out 160ms;
+    }
+    .card-tile-info {
+      display: flex;
+      visibility: hidden;
+      transform: rotateY(-90deg);
+      transition: transform 160ms ease-in, visibility 0s linear 160ms;
+    }
+    .card-tile:hover .card-tile-art > img,
+    .card-tile:focus-visible .card-tile-art > img,
+    .card-tile:hover .card-tile-art > .card-tile-initials,
+    .card-tile:focus-visible .card-tile-art > .card-tile-initials {
+      transform: rotateY(90deg);
+      transition: transform 160ms ease-in;
+    }
     .card-tile:hover .card-tile-info,
     .card-tile:focus-visible .card-tile-info {
-      display: flex;
+      visibility: visible;
+      transform: rotateY(0deg);
+      transition: transform 160ms ease-out 160ms, visibility 0s linear 160ms;
+    }
+  }
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .card-tile-art > img,
+    .card-tile-art > .card-tile-initials,
+    .card-tile-info {
+      transform: none !important;
     }
   }
   .card-tile-text {
@@ -1051,7 +1526,63 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 7;
+  }
+  .card-tile-info.has-head {
+    justify-content: flex-start;
+    gap: 2px;
+  }
+  .card-tile-info.has-head .card-tile-text {
+    flex: 1 1 auto;
+    /* almeno due righe di testo: è il motivo per cui la carta si gira */
+    min-height: 2.9em;
+    -webkit-line-clamp: 9;
+  }
+  .card-tile-kicker {
+    display: block;
+  }
+  .card-tile-kw {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  /* Carta stretta (griglia a 2-3 colonne con il mouse, per esempio un tablet con il trackpad): il retro tiene
+     l'essenziale, cioè nome, pastiglie, testo e statistiche; saga e parole chiave si leggono nella scheda.
+     Il display di saga e parole chiave sta qui e non in utility Tailwind, che vincerebbero su questa regola. */
+  @container card-tile (max-width: 190px) {
+    .card-tile-kw,
+    .card-tile-info.has-head .card-tile-kicker,
+    .card-tile-info.has-head .card-tile-rarity.stat-pill {
+      display: none;
+    }
+    .card-tile-info {
+      padding: 40px 9px 9px;
+    }
+  }
+  .card-tile-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--color-sky);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .card-tile-stats {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  /* Vita in rosa: la .gc-hp globale (crimson) sul fondo del retro fa circa 3:1, il pink 5,3:1 su night-2.
+     Attacco nel viola di .gc-atk (6,8:1). */
+  .card-tile-stats .gc-hp {
+    color: var(--color-pink);
   }
   .card-tile-foot {
     display: flex;
@@ -1060,6 +1591,11 @@
     padding: 8px 10px;
     border-top: 2px solid var(--color-night-3);
     background: var(--color-night-2);
+  }
+  @media (hover: hover) {
+    .card-tile-foot.is-touch-only {
+      display: none;
+    }
   }
 
   /* Carta come si legge in partita, disegnata da noi (GameCard): cornice celeste (oro per le Leggendarie),

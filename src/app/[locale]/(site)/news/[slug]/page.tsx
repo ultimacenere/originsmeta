@@ -8,6 +8,7 @@ import { getNews, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/ne
 import { authorOfNews } from "@/lib/data/authors";
 import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { NewsCover } from "@/components/NewsCover";
 import { SteamButton } from "@/components/SteamButton";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
@@ -100,6 +101,9 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
           ]),
         ]}
       />
+      {/* Una volta per pagina: tiene dentro la finestra le anteprime delle carte (nomi di carta nel testo e nelle
+          tabelle delle patch notes, carte toccate dalla news in fondo). */}
+      <CardMentionEdges />
       <p className="text-sm">
         <Link href={href(locale, "/news")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.nav.news}
@@ -160,6 +164,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
       <NewsDeckButton item={item} locale={locale} dict={d} className="mt-6" />
 
       <article className="card-night mt-8 p-6 sm:p-10">
+        {/* I nomi delle carte nel testo diventano link alla scheda con l'anteprima della carta al passaggio del mouse */}
         {body ? <Markdown source={body} linkCards={locale} /> : null}
 
         {deckNews && !item.cards?.length && !item.guides?.length ? null : (

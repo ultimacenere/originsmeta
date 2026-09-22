@@ -30,8 +30,9 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const items = navItems(dict);
   return (
     <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt-deep/85 backdrop-blur supports-[backdrop-filter]:bg-felt-deep/70">
-      {/* tra 1280 e 1535 px la riga ospita menu completo, ricerca, Accedi e lingua: spazi e ricerca un po' più stretti */}
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 xl:gap-2 2xl:gap-3">
+      {/* tra 1280 e 1535 px la riga ospita menu completo, ricerca, Accedi e lingua: spazi e ricerca un po' più stretti;
+          sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px */}
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2 2xl:gap-3">
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
           <Wordmark />
         </Link>
@@ -67,7 +68,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         </div>
         <AutoCloseDetails
           className="relative xl:hidden"
-          summaryClassName="btn btn-ghost cursor-pointer list-none px-3 py-1.5 text-xs [&::-webkit-details-marker]:hidden"
+          summaryClassName="btn btn-ghost cursor-pointer list-none px-3 py-1.5 text-xs max-[359px]:px-2 [&::-webkit-details-marker]:hidden"
           summaryLabel={dict.nav.menu}
           summary={dict.nav.menu}
         >

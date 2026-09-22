@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { activeCards, cards, cardSource, lastChange, sagas, type SagaId } from "@/lib/data/cards";
+import { activeCards, cards, cardSource, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
+import { flipOf } from "@/components/CardChip";
 import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
@@ -13,37 +14,19 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function CardsPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
   const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   const rarityLabel = { common: d.common.common, rare: d.common.rare, epic: d.common.epic, legendary: d.common.legendary } as const;
-  const list: ExplorerCard[] = cards.map((c) => {
-    const lc = lastChange(c);
-    return {
-      slug: c.slug,
-      name: c.name,
-      href: href(locale, `/cards/${c.slug}`),
-      type: c.type,
-      typeLabel: typeLabel[c.type],
-      legendary: Boolean(c.legendary),
-      sagaId: c.saga,
-      sagaLabel: sagas[c.saga][locale],
-      image: c.thumb ?? c.image,
-      imageLarge: c.image,
-      ability: c.ability?.[locale],
-      mana: c.mana,
-      power: c.power,
-      health: c.health,
-      alignment: c.alignment,
-      alignmentLabel: c.alignment ? alignLabel[c.alignment] : undefined,
-      rarity: c.rarity,
-      rarityLabel: c.rarity ? rarityLabel[c.rarity] : undefined,
-      keywords: c.keywords ?? [],
-      lastKind: lc?.kind,
-      lastKindLabel: lc ? d.common[lc.kind === "deck" ? "rework" : lc.kind] : undefined,
-      removed: c.status === "removed",
-      removedLabel: d.common.removed,
-    };
-  });
+  // Dati della carta che si gira dallo stesso `flipOf` della scheda dei mazzi (stesso retro), più i campi dei filtri
+  const list: ExplorerCard[] = cards.map((c) => ({
+    ...flipOf(c, locale),
+    type: c.type,
+    legendary: Boolean(c.legendary),
+    sagaId: c.saga,
+    sagaLabel: sagas[c.saga][locale],
+    rarity: c.rarity,
+    keywords: c.keywords ?? [],
+    removed: c.status === "removed",
+  }));
   const usedSagas = Array.from(new Set(cards.map((c) => c.saga))) as SagaId[];
   const sagaOptions = usedSagas.map((id) => ({ id, label: sagas[id][locale] })).sort((a, b) => a.label.localeCompare(b.label));
   const inDemo = cards.filter((c) => c.status === "active" && c.type !== "token").length;
@@ -103,6 +86,9 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
               legendary: d.common.legendary,
               unknownStats: d.common.unknownStats,
               showRemoved: d.common.showRemoved,
+              mana: d.common.mana,
+              power: d.common.power,
+              health: d.common.health,
             }}
           />
       </div>

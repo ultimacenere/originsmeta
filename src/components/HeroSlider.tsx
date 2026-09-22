@@ -169,11 +169,19 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
 
       <div className="relative z-10 sm:absolute sm:inset-x-0 sm:bottom-0">
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 pb-4 sm:px-6 sm:pb-6">
-          {/* Altezza fissa sul telefono: il contenuto sotto lo slider non si sposta a ogni cambio automatico */}
-          <div className="flex h-[168px] w-full max-w-2xl flex-col sm:h-auto sm:w-auto" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+          {/*
+            Altezza ferma sul telefono: il contenuto sotto lo slider non si sposta a ogni cambio automatico.
+            140 px e non più 168 (22/09/2026, dopo la rimozione del blocco titolo): misurato a 375 px, il contenuto
+            più alto (kicker 18 + titolo su una riga 25 + testo su due righe 40 + tasto 46 + spazi 8) fa 137 px, e i
+            31 px in più restavano un vuoto fra il testo e il tasto, prima delle news. Per questo sul telefono il
+            titolo sta su una riga sola (a 320 px il più lungo prende i puntini; il testo intero resta nel DOM).
+            `min-h` e non `h`: con il testo ingrandito (zoom del solo testo, caratteri grandi di Android, WCAG 1.4.4)
+            il riquadro cresce invece di far uscire il contenuto sopra la striscia del calendario.
+          */}
+          <div className="flex min-h-[140px] w-full max-w-2xl flex-col sm:min-h-0 sm:w-auto" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
             <p className="kicker truncate text-mint">{active.kicker}</p>
-            {/* Non è un titolo di sezione: il primo titolo della pagina resta l'H1 sotto lo slider */}
-            <p className="mt-1 line-clamp-2 font-display text-xl font-extrabold leading-tight text-sky sm:text-3xl">{active.title}</p>
+            {/* Non è un titolo di sezione: l'unico H1 della pagina è quello (nascosto alla vista) in cima al main della home */}
+            <p className="mt-1 line-clamp-1 font-display text-xl font-extrabold leading-tight text-sky sm:line-clamp-2 sm:text-3xl">{active.title}</p>
             <p className="mt-1 line-clamp-2 text-sm text-chalk-muted sm:line-clamp-none">{active.text}</p>
             <div className="mt-auto pt-2 sm:mt-0 sm:pt-3">
               {active.external ? (

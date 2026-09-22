@@ -7,11 +7,13 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
+import { encodeOmCode } from "@/lib/deckcode";
+import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
-import { CardArt, CardChip, CardChipList } from "@/components/CardChip";
+import { CardArt, DeckCardGrid } from "@/components/CardChip";
 import { CardMentions } from "@/components/CardMentions";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { StarRating } from "@/components/StarRating";
@@ -100,8 +102,11 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const author = authorName(deck.profile);
   const handle = authorHandle(deck.profile);
   const others = (await listPublishedDecks(40)).filter((x) => x.slug !== deck.slug).slice(0, 8);
-  // senza codice OM il builder si aprirebbe vuoto: il tasto compare solo quando il codice c'è
-  const builderHref = deck.code_om ? `${href(locale, "/deck-builder")}#${deck.code_om}` : null;
+  // Il builder si apre già caricato dal link (`#OM1.…`, formato interno che l'utente non vede più): se il codice
+  // salvato manca lo si ricava dal mazzo, così il tasto c'è sempre.
+  const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
+  // Codice del gioco (KGBLDC…), l'unico da copiare (note del 22/09/2026): null se una carta non ha l'ID ufficiale.
+  const gameCode = await deckGameCode(deck);
   const sections = guideSections.filter((k) => deck.guide[k]);
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
@@ -180,7 +185,14 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {c.deckTypes[t as keyof typeof c.deckTypes] ?? t}
             </span>
           ))}
-          {legendary || customLegendary ? <span className="stat-pill bg-gold text-ink">★ {legendary?.name ?? customLegendary?.name}</span> : null}
+          {/* Tag della Leggendaria: porta alla scheda della carta quando è nel nostro database */}
+          {legendary ? (
+            <Link href={href(locale, `/cards/${legendary.slug}`)} className="stat-pill bg-gold text-ink hover:underline">
+              ★ {legendary.name}
+            </Link>
+          ) : customLegendary ? (
+            <span className="stat-pill bg-gold text-ink">★ {customLegendary.name}</span>
+          ) : null}
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>
 
@@ -248,13 +260,20 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </p>
         ) : null}
 
+        {/* Carte intere che si girano al passaggio del mouse, come nel database /cards (FlipCard, richiesta di
+            Pierluigi del 22/09/2026): la Leggendaria per prima, poi le 12 carte per costo, con il mana sempre in vista. */}
         <h2 className="t-section mt-8">{d.common.legendary}</h2>
         {legendary ? (
-          <div className="mt-2">
-            <CardChip slug={legendary.slug} locale={locale} />
+          <div className="mt-3">
+            <DeckCardGrid slugs={[legendary.slug]} locale={locale} />
           </div>
         ) : (
-          <p className="mt-2 text-sm text-pale">★ {customLegendary?.name ?? deck.legendary} *</p>
+          <p className="mt-2 text-sm text-pale">
+            <span className="legendary-star" aria-hidden="true">
+              ★
+            </span>
+            {customLegendary?.name ?? deck.legendary} *<span className="sr-only"> ({d.common.legendary})</span>
+          </p>
         )}
 
         <h2 className="t-section mt-8">
@@ -262,7 +281,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </h2>
         {knownCards.length ? (
           <div className="mt-3">
-            <CardChipList slugs={knownCards} locale={locale} />
+            <DeckCardGrid slugs={knownCards} locale={locale} copies={RULES.copiesPerCard} />
           </div>
         ) : null}
         {customCards.length ? (
@@ -280,14 +299,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
         <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale)} labels={d.stats} />
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {builderHref ? (
-            <Link href={builderHref} className="btn btn-ink text-xs">
-              {c.openInBuilder}
-            </Link>
-          ) : null}
-          {deck.code_om ? <CopyButton text={deck.code_om} label={c.copyCode} copied={c.copied} className="btn btn-ink text-xs" /> : null}
-          <CopyButton text={pageUrl} label={c.copyLink} copied={c.copied} className="btn btn-ink text-xs" />
+        {/* Due tasti soli (note del 22/09/2026): il builder e il codice del gioco, quello che si incolla in Origins.
+            Il codice OriginsMeta e "Copia link" non ci sono più. Senza gli ID ufficiali di tutte le carte, al posto
+            del secondo tasto c'è una frase (un tasto disabilitato non riceve il focus e da tastiera non si trova). */}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <Link href={builderHref} className="btn btn-ink text-xs">
+            {c.openInBuilder}
+          </Link>
+          {gameCode.code ? (
+            <CopyButton text={gameCode.code} label={c.copyGameCode} copied={c.copied} className="btn btn-ink text-xs" />
+          ) : (
+            <p className="text-xs text-pale-muted">{c.gameCodeMissing}</p>
+          )}
         </div>
 
         {sections.length ? (
@@ -343,7 +366,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </section>
       ) : null}
 
-      {/* La segnalazione resta, ma in fondo e in piccolo: non è un'azione da mettere accanto a "Copia link" */}
+      {/* La segnalazione resta, ma in fondo e in piccolo: non è un'azione da mettere accanto ai due tasti del mazzo */}
       <p className="mt-12 text-right text-xs text-pale-muted">
         <a className="underline underline-offset-2 hover:text-pale" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Report deck ${deck.slug}`)}&body=${encodeURIComponent(pageUrl)}`}>
           {c.report}

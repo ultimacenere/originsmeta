@@ -5,10 +5,13 @@ import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { alignStyle, badgePill, badgeStyle, sagaHue } from "@/lib/cardArt";
-import { cards, type Card, type ChangeKind } from "@/lib/data/cards";
+import { activeCards, cards, sagas, type Card, type ChangeKind } from "@/lib/data/cards";
+import { news } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
+import { NewsCover } from "@/components/NewsCover";
 import { ChangeChip } from "@/components/ChangeChip";
-import { CardChipList } from "@/components/CardChip";
+import { CardChipList, flipLabels, flipOf } from "@/components/CardChip";
+import { FlipCard } from "@/components/FlipCard";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
@@ -74,7 +77,7 @@ function contrast(a: string, b: string): number {
 
 const ratio = (locale: Locale, n: number) => `${n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}:1`;
 
-const SECTIONS = ["palette", "fonts", "titles", "buttons", "pills", "previews", "postits", "alerts", "links", "frames"] as const;
+const SECTIONS = ["palette", "fonts", "titles", "buttons", "pills", "previews", "marks", "postits", "alerts", "links", "frames"] as const;
 const POSTITS = ["deck", "news", "patch", "guide", "tournament", "event"] as const;
 const CHANGES: ChangeKind[] = ["buff", "nerf", "rework", "deck"];
 
@@ -87,6 +90,31 @@ function peekSamples(): Card[] {
   return [cards.find((c) => ready(c) && c.legendary), cards.find((c) => ready(c) && !c.legendary && c.power !== undefined)].filter(
     (c): c is Card => Boolean(c),
   );
+}
+
+/**
+ * Carte VERE per la stella delle Leggendarie e per le righe del deck builder (note del 22/09/2026): due Leggendarie e
+ * due carte base per l'elenco "★ Nome, ★ Nome, poi carte normali", e per le righe una Leggendaria, un'unità e una
+ * magia con illustrazione.
+ */
+function markSamples() {
+  const legendaries = activeCards.filter((c) => c.legendary).slice(0, 2);
+  const base = activeCards.filter((c) => !c.legendary && c.type === "unit").slice(0, 2);
+  const withArt = (c: Card) => Boolean(c.thumb ?? c.art);
+  const rows = [
+    activeCards.find((c) => c.legendary && withArt(c)),
+    activeCards.find((c) => !c.legendary && c.type === "unit" && c.power !== undefined && withArt(c)),
+    activeCards.find((c) => c.type === "spell" && withArt(c)),
+  ].filter((c): c is Card => Boolean(c));
+  return { names: [...legendaries, ...base], rows };
+}
+
+/** Copertine delle tre news più recenti, per provare il post-it grande sopra un'immagine vera. */
+function latestCovers(): string[] {
+  return [...news]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 3)
+    .map((n) => n.image);
 }
 
 /** Etichetta della classe CSS accanto a ogni esempio */
@@ -105,6 +133,21 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
   const roles = s.roles as Record<string, string>;
   const changeLabel = (k: ChangeKind) => d.common[k === "deck" ? "rework" : k];
   const samples = peekSamples();
+  const marks = markSamples();
+  const covers = latestCovers();
+  const labelHex = postits.find((t) => t.name === "postit-label")?.value ?? "—";
+  /** Nome di carta nel formato deciso il 22/09/2026: stella gialla davanti alle Leggendarie, per i lettori di schermo "Leggendaria". */
+  const cardName = (c: Card) => (
+    <>
+      {c.legendary ? (
+        <span className="legendary-star" aria-hidden="true">
+          ★
+        </span>
+      ) : null}
+      {c.name}
+      {c.legendary ? <span className="sr-only"> ({d.common.legendary})</span> : null}
+    </>
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -200,6 +243,17 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
               <p className={`${cls} break-words text-3xl text-chalk`}>Aa Bb Cc · 0123456789</p>
             </li>
           ))}
+          {/* Il font a penna non ha un'utility di Tailwind: è la variabile --font-hand che il layout mette sull'html */}
+          <li className="grid grid-cols-1 gap-3 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center">
+            <div>
+              <p className="t-item">Caveat</p>
+              <p className="mt-1 text-sm text-pale">{s.fonts.hand}</p>
+              <Code>var(--font-hand) · .postit · .postit-label</Code>
+            </div>
+            <p className="break-words text-4xl font-bold text-chalk" style={{ fontFamily: "var(--font-hand), cursive" }}>
+              Aa Bb Cc · àèéìòù · 0123456789
+            </p>
+          </li>
         </ul>
       </section>
 
@@ -429,7 +483,7 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
               </div>
             ) : null}
             <p className="mt-3">
-              <Code>.deck-peek-panel · .deck-peek-name · .deck-peek-text · .card-mention-panel</Code>
+              <Code>.deck-peek-panel · .deck-peek-mana · .deck-peek-name · .deck-peek-text · .card-mention-panel</Code>
             </p>
           </div>
           <div className="card-night p-5">
@@ -445,6 +499,75 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
             </ul>
             <p className="mt-3">
               <Code>.deck-card-initials · .card-tile-initials</Code>
+            </p>
+          </div>
+
+          {/* Carte intere che si girano: lo stesso componente (FlipCard) del database /cards e della scheda dei mazzi */}
+          {samples.length ? (
+            <div className="card-night p-5 md:col-span-2">
+              <p className="t-item text-base">{s.previews.flip}</p>
+              <p className="mt-1 max-w-3xl text-sm text-pale">{s.previews.flipNote}</p>
+              <ul className="mt-4 grid max-w-xl grid-cols-2 gap-4">
+                {samples.map((c) => (
+                  <li key={c.slug} className="min-w-0">
+                    <FlipCard card={flipOf(c, locale)} labels={flipLabels(locale)} sizes="(min-width: 640px) 280px, 46vw" />
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3">
+                <Code>FlipCard · .card-tile · .card-tile-pills · .card-tile-info · .card-tile-foot</Code>
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {/* Segni sulle carte (note del 22/09/2026): stella delle Leggendarie e righe delle magie nel deck builder */}
+      <section id="marks" className="mt-16 scroll-mt-24">
+        <SectionHead kicker={s.marks.kicker} title={s.marks.title} sub={s.marks.sub} />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="card-night p-5">
+            <p className="t-item text-base">{s.marks.star}</p>
+            <p className="mt-1 text-sm text-pale">{s.marks.starNote}</p>
+            <ul className="mt-4 space-y-2">
+              {marks.names.map((c) => (
+                <li key={c.slug} className="t-item">
+                  {cardName(c)}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3">
+              <Code>.legendary-star · .t-item</Code>
+            </p>
+          </div>
+          <div className="card-night p-5">
+            <p className="t-item text-base">{s.marks.spell}</p>
+            <p className="mt-1 text-sm text-pale">{s.marks.spellNote}</p>
+            {/* Righe disegnate come nel deck builder (pool), ma ferme: qui non si aggiunge nulla */}
+            <ul className="mt-4 space-y-1" aria-hidden="true">
+              {marks.rows.map((c) => (
+                <li key={c.slug}>
+                  <div
+                    className={`builder-row cursor-default ${c.legendary ? "is-legendary" : ""} ${c.type === "spell" ? "row-spell" : ""}`}
+                    style={{ ["--row-art" as string]: `url(${c.thumb ?? c.art})` } as React.CSSProperties}
+                  >
+                    <span className={`card-chip-art !h-11 !w-9 shrink-0 text-[10px] ${c.legendary ? "is-legendary" : ""}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={c.art ?? c.thumb} alt="" loading="lazy" decoding="async" />
+                    </span>
+                    <span className="builder-row-text">
+                      <span className="builder-row-name">{cardName(c)}</span>
+                      <span className="builder-row-stats">
+                        {c.mana ?? "?"} · {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : d.common.spell} · {sagas[c.saga][locale]}
+                      </span>
+                    </span>
+                    <span className="builder-row-state">+</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3">
+              <Code>.builder-row .row-spell · .builder-row.is-legendary</Code>
             </p>
           </div>
         </div>
@@ -464,13 +587,53 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
           ))}
         </ul>
 
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Le due velocità: lento di norma, "isterico" sulle news delle ultime 72 ore */}
+          <div className="card-night p-5">
+            <p className="t-item text-base">{s.postits.speeds}</p>
+            <p className="mt-1 text-sm text-pale">{s.postits.speedsNote}</p>
+            <ul className="mt-7 flex flex-wrap items-start gap-x-12 gap-y-8 pl-2">
+              <li className="flex flex-col items-start gap-3">
+                <span className="postit postit-news">{s.postits.news}</span>
+                <Code>.postit · {s.postits.slow}</Code>
+              </li>
+              <li className="flex flex-col items-start gap-3">
+                <span className="postit postit-news is-fresh">{s.postits.news}</span>
+                <Code>.postit.is-fresh · {s.postits.fresh}</Code>
+              </li>
+            </ul>
+          </div>
+          {/* Etichetta di sezione a penna: prima versione, da rifinire sul disegno di Pierluigi */}
+          <div className="card-night p-5">
+            <p className="t-item text-base">{s.postits.label}</p>
+            <p className="mt-1 text-sm text-pale">{s.postits.labelNote}</p>
+            <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-6 pl-2">
+              <p className="postit-label">{d.nav.tierList}</p>
+              <p className="postit-label" style={{ ["--tilt" as string]: "-3deg", ["--delay" as string]: "-1s" } as React.CSSProperties}>
+                {d.common.metashift}
+              </p>
+            </div>
+            <p className="mt-4">
+              <Code>.postit-label · var(--font-hand) · {labelHex}</Code>
+            </p>
+          </div>
+        </div>
+
+        {/* Post-it grande sopra l'angolo di una copertina vera: contenitore relative senza overflow, post-it figlio diretto */}
         <p className="mt-8 text-sm text-pale">
-          {s.postits.demo} <Code>.postit .postit-* .postit-corner</Code>
+          {s.postits.large} <Code>.postit .postit-lg .postit-corner</Code>
         </p>
         <div className="postit-row mt-6 grid grid-cols-1 gap-x-5 gap-y-10 md:grid-cols-3">
-          {(["deck", "news", "patch"] as const).map((k) => (
-            <article key={k} className="card-night card-night-hover relative p-6 pt-8">
-              <span className={`postit postit-${k} postit-corner`}>{s.postits[k]}</span>
+          {(["deck", "news", "patch"] as const).map((k, i) => (
+            <article key={k} className="card-night card-night-hover relative p-6">
+              {covers[i] ? (
+                <div className="relative mb-4">
+                  <NewsCover src={covers[i]} />
+                  <span className={`postit postit-${k} postit-lg postit-corner ${i === 0 ? "is-fresh" : ""}`}>{s.postits[k]}</span>
+                </div>
+              ) : (
+                <span className={`postit postit-${k} postit-corner`}>{s.postits[k]}</span>
+              )}
               <p className="kicker text-mint">{s.titles.sampleKicker}</p>
               <p className="t-item mt-2">{s.postits.demoTitle}</p>
               <p className="mt-2 text-sm text-pale">{s.postits.demoText}</p>

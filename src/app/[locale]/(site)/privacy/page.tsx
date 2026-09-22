@@ -16,6 +16,11 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p>{d.privacy.body}</p>
         <p className="mt-6">{d.privacy.accounts}</p>
         <p className="mt-6">{d.privacy.cookies}</p>
+        {/* Pop-up dei feedback (22/09/2026): l'ancora #feedback è il link "Privacy" del pannello. Resta anche a
+            widget spento, perché i messaggi già ricevuti stanno nel canale Discord dello staff. */}
+        <p id="feedback" className="mt-6 scroll-mt-24">
+          {d.privacy.feedback}
+        </p>
       </article>
     </div>
   );

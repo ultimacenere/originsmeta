@@ -34,10 +34,20 @@ function troppeRichieste(ip: string): boolean {
   return false;
 }
 
+/** Il CAPTCHA si vede ma non si verifica: lo diciamo nei log, una volta per istanza. */
+let avvisoCaptcha = false;
+
 /** Verifica del token Turnstile con la chiave segreta (solo se configurata su Vercel). */
 async function captchaValido(token: string | undefined, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true; // CAPTCHA non ancora acceso: la rotta resta usabile
+  if (!secret) {
+    // Senza chiave segreta il widget (acceso da NEXT_PUBLIC_TURNSTILE_SITE_KEY) resta di facciata: va impostata su Vercel
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !avvisoCaptcha) {
+      avvisoCaptcha = true;
+      console.error("[ask] TURNSTILE_SECRET_KEY mancante: il CAPTCHA dell'assistente non viene verificato");
+    }
+    return true; // CAPTCHA non ancora acceso: la rotta resta usabile
+  }
   if (!token) return false;
   try {
     const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {

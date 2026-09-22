@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/tournament/bracket.test.ts",
+    "test": "node --test src/lib/tournament/bracket.test.ts src/lib/tiercode.test.ts",
     "import:woo": "node scripts/import-woo.mjs",
     "import:art": "node scripts/import-card-art.mjs"
   },

@@ -2,11 +2,17 @@
  * Anteprima della carta al passaggio del mouse: metà pannello alla carta ufficiale, metà a nome, costo,
  * statistiche, tipo, allineamento e testo dell'abilità. Stesse classi `.deck-peek*` di globals.css.
  *
- * Componente condiviso (niente "use client", niente hook): lo usano il deck builder (componente client) e
- * `CardChip` (componente server), così l'anteprima c'è ovunque ci sia una carta, anche dentro la scheda di
- * un mazzo. Va messo come figlio diretto di un elemento `.deck-card-wrap.has-peek`: apertura e chiusura
- * sono solo CSS (`:hover`), e solo dove il mouse esiste (`hover: hover`). Su touch il pannello non compare
- * e resta il tocco che porta alla scheda della carta. `CardMentionEdges` lo sposta ai bordi della finestra.
+ * Componente condiviso (niente "use client", niente hook): lo usano il deck builder (componente client),
+ * l'elenco dei mazzi (`DeckExplorer`) e `CardChip` (componente server), così l'anteprima c'è ovunque ci sia una
+ * carta. Va messo come figlio diretto di un elemento `.deck-card-wrap.has-peek`: apertura e chiusura sono solo
+ * CSS (`:hover`), e solo dove il mouse esiste (`hover: hover`). Su touch il pannello non compare e resta il tocco
+ * che porta alla scheda della carta. `CardMentionEdges` lo sposta ai bordi della finestra.
+ *
+ * Costo in mana sempre in vista (note del 22/09/2026, "mostrare le statistiche ma mantenere sempre visibile il
+ * costo"): la gemma menta con anello di `.deck-peek-mana` (globals.css, documentata in /style) in testa al pannello,
+ * accanto al nome, invece che in mezzo alle altre pastiglie.
+ * Il pannello si apre sopra o sotto la chip o la riga, mai sopra di essa (vedi `CardMentionEdges`), quindi anche il
+ * costo della riga resta scoperto. Leggendaria: stella gialla davanti al nome (`.legendary-star`), stesso colore.
  */
 
 /** Il minimo che serve all'anteprima: `BuilderCard` lo soddisfa già, `CardChip` lo ricava dalla carta. */
@@ -43,12 +49,18 @@ export function CardPeek({ card }: { card: PeekCard }) {
           <img className="deck-peek-art" src={art} alt="" loading="lazy" decoding="async" />
         ) : null}
         <span className="deck-peek-body">
-          <span className="deck-peek-name">
-            {card.legendary ? "★ " : ""}
-            {card.name}
+          <span className="flex items-start gap-2">
+            {card.mana !== undefined ? <span className="deck-peek-mana shrink-0">{card.mana}</span> : null}
+            <span className="deck-peek-name min-w-0 self-center">
+              {card.legendary ? (
+                <span className="legendary-star" aria-hidden="true">
+                  ★
+                </span>
+              ) : null}
+              {card.name}
+            </span>
           </span>
           <span className="deck-peek-tags">
-            {card.mana !== undefined ? <span className="deck-peek-mana">{card.mana}</span> : null}
             {card.power !== undefined ? (
               <span className="deck-peek-stats">
                 {card.power} / {card.health ?? "?"}

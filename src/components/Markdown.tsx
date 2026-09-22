@@ -1,5 +1,8 @@
 import { marked } from "marked";
 import { linkCardNames } from "@/lib/cardlinks";
+import { getCard } from "@/lib/data/cards";
+import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
+import { cardMentionHtml } from "./CardMentions";
 
 marked.setOptions({ gfm: true, breaks: false });
 
@@ -17,6 +20,35 @@ function linkCardsInMarkdown(source: string, locale: string): string {
       return linkCardNames(part)
         .map((seg) => (typeof seg === "string" ? seg : `[${seg.text}](/${locale}/cards/${seg.slug})`))
         .join("");
+    })
+    .join("");
+}
+
+/**
+ * Ogni link a una scheda carta (quelli appena creati e quelli scritti a mano nel testo, tabelle delle patch notes
+ * comprese) diventa una menzione con l'anteprima della carta al passaggio del mouse: illustrazione, costo,
+ * statistiche e testo, come nei testi della community (note del 22/09/2026: "carte linkate negli articoli, il
+ * mouseover deve mostrare la carta"). Su touch il pannello non c'è e il tocco porta alla scheda.
+ *
+ * Nelle liste le Leggendarie sono segnate con una stella scritta DOPO il nome ("Dorothy ★"): la stella passa
+ * davanti, gialla (`.legendary-star`), con il nome dello stesso colore degli altri e un testo per i lettori di
+ * schermo (regola del 22/09/2026). Le intestazioni restano come sono: niente pannelli dentro un titolo.
+ * `idPrefix` distingue i pannelli (`aria-describedby`) se una pagina avesse più blocchi Markdown.
+ */
+function cardPreviews(html: string, locale: Locale, idPrefix: string): string {
+  const legendaryLabel = getDictionary(locale).common.legendary;
+  let n = 0;
+  return html
+    .split(/(<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)/)
+    .map((part, i) => {
+      if (i % 2 === 1) return part;
+      return part.replace(/<a href="\/(?:en|it)\/cards\/([a-z0-9-]+)">([^<]*)<\/a>(\s*★)?/g, (match, slug: string, text: string, star?: string) => {
+        const card = getCard(slug);
+        if (!card) return match;
+        const mention = cardMentionHtml(card, text, locale, `${idPrefix}-cm-${++n}`);
+        if (star && card.legendary) return `<span class="legendary-star" aria-hidden="true">★</span>${mention}<span class="sr-only"> (${legendaryLabel})</span>`;
+        return `${mention}${star ?? ""}`;
+      });
     })
     .join("");
 }
@@ -55,14 +87,21 @@ function addHeadingIds(html: string): string {
 /**
  * Ogni tabella sta in un contenitore che scorre di lato: su telefono una tabella a quattro colonne può
  * essere più larga dello schermo, e senza contenitore allargherebbe tutta la pagina (regola responsive
- * del sito: la pagina non scorre mai di lato, le tabelle sì, dentro il proprio riquadro).
+ * del sito: la pagina non scorre mai di lato, le tabelle sì, dentro il proprio riquadro). Le anteprime delle
+ * carte dentro una tabella le posiziona `CardMentionEdges` rispetto alla finestra, così il contenitore non le taglia.
  */
 function wrapTables(html: string): string {
   return html.replace(/<table>/g, '<div class="table-scroll"><table>').replace(/<\/table>/g, "</table></div>");
 }
 
-export function Markdown({ source, className = "", linkCards }: { source: string; className?: string; linkCards?: string }) {
+/**
+ * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). La pagina che lo
+ * usa deve montare `CardMentionEdges` una volta, per tenere i pannelli dentro la finestra.
+ */
+export function Markdown({ source, className = "", linkCards, idPrefix = "md" }: { source: string; className?: string; linkCards?: string; idPrefix?: string }) {
+  const locale = linkCards && isLocale(linkCards) ? linkCards : undefined;
   const src = linkCards ? linkCardsInMarkdown(source, linkCards) : source;
-  const html = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
+  let html = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
+  if (locale) html = cardPreviews(html, locale, idPrefix);
   return <div className={`prose-night ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }

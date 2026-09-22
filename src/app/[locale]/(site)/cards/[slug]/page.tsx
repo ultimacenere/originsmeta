@@ -9,7 +9,8 @@ import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { CardArt, CardChipList } from "@/components/CardChip";
+import { CardArt, CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GameCard } from "@/components/GameCard";
 import { alignStyle } from "@/lib/cardArt";
 import { SteamButton, newTabProps } from "@/components/SteamButton";
@@ -107,7 +108,11 @@ export default async function CardPage({ params }: { params: Params }) {
   const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
   const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   const rarityLabel = { common: d.common.common, rare: d.common.rare, epic: d.common.epic, legendary: d.common.legendary } as const;
-  const related = cards.filter((c) => c.saga === card.saga && c.slug !== card.slug && c.status === "active");
+  // Stessa saga: Leggendarie per prime, con la stella davanti al nome (regola del 22/09/2026)
+  const related = legendaryFirst(
+    cards.filter((c) => c.saga === card.saga && c.slug !== card.slug && c.status === "active"),
+    (c) => Boolean(c.legendary),
+  );
   const linked = (card.related ?? []).filter((s) => getCard(s));
   const linkedFrom = relatedFrom(card.slug);
   const inDecks = decksWithCard(card.slug);
@@ -143,6 +148,8 @@ export default async function CardPage({ params }: { params: Params }) {
           breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.cards.title, path: href(locale, "/cards") }, { name: card.name, path }]),
           cardLd]}
       />
+      {/* Una volta per pagina: tiene dentro la finestra le anteprime delle carte collegate (CardChip) */}
+      <CardMentionEdges />
       <p className="text-sm">
         <Link href={href(locale, "/cards")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.cards.title}
@@ -177,8 +184,14 @@ export default async function CardPage({ params }: { params: Params }) {
           <p className="kicker text-mint">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
           </p>
+          {/* Nell'H1 solo la stella (nascosta ai lettori di schermo) e il nome: "Leggendaria" lo dice già la pastiglia
+              oro accanto alle statistiche, e il titolo letto dai motori resta il nome della carta */}
           <h1 className="t-page mt-2 leading-tight">
-            {card.legendary ? <span className="text-gold">★ </span> : null}
+            {card.legendary ? (
+              <span className="legendary-star" aria-hidden="true">
+                ★
+              </span>
+            ) : null}
             {card.name}
           </h1>
           {card.formerName ? (
@@ -338,7 +351,9 @@ export default async function CardPage({ params }: { params: Params }) {
             {related.map((c) => (
               <li key={c.slug}>
                 <Link href={href(locale, `/cards/${c.slug}`)} className="btn btn-ghost text-xs">
-                  {c.name}
+                  <span>
+                    <CardName name={c.name} legendary={c.legendary} legendaryLabel={d.common.legendary} />
+                  </span>
                   {statLine(c) ? <span className="font-mono text-chalk-muted">{statLine(c)}</span> : null}
                 </Link>
               </li>

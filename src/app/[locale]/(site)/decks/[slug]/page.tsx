@@ -7,7 +7,7 @@ import { archetypeLabels, decks, getDeck } from "@/lib/data/decks";
 import { getCard } from "@/lib/data/cards";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
-import { CardChip, CardChipList } from "@/components/CardChip";
+import { DeckCardGrid } from "@/components/CardChip";
 import { DiscordButton, isDiscordUrl } from "@/components/DiscordButton";
 import { newTabProps } from "@/components/SteamButton";
 import { DeckCharts } from "@/components/DeckCharts";
@@ -90,10 +90,11 @@ export default async function DeckPage({ params }: { params: Params }) {
           </p>
         ) : null}
 
+        {/* Stessa griglia di carte che si girano della scheda dei mazzi di Origins (FlipCard, 22/09/2026) */}
         <h2 className="t-section mt-8">{d.common.legendary}</h2>
         {legendary ? (
-          <div className="mt-2">
-            <CardChip slug={legendary.slug} locale={locale} />
+          <div className="mt-3">
+            <DeckCardGrid slugs={[legendary.slug]} locale={locale} />
           </div>
         ) : (
           <p className="mt-2 text-sm text-pale-muted">{d.common.unknownStats}</p>
@@ -101,7 +102,7 @@ export default async function DeckPage({ params }: { params: Params }) {
 
         <h2 className="t-section mt-8">{d.common.cardsInDeck}</h2>
         <div className="mt-3">
-          <CardChipList slugs={deck.cards} locale={locale} />
+          <DeckCardGrid slugs={deck.cards} locale={locale} />
         </div>
 
         <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale, { expectedTotal: RULES.deckSize })} labels={d.stats} partial />

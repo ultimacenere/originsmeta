@@ -38,7 +38,7 @@ export function TournamentDecksForm({ locale, tournamentId, required, initialCod
           defaultValue={initialCodes.join("\n")}
           spellCheck={false}
           className="mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 font-mono text-xs text-pale focus:border-mint"
-          placeholder="OM1.…"
+          placeholder="https://originsmeta.com/…/deck-builder#…"
         />
         <span className="mt-1 block text-xs text-pale-muted">{fill(d.required, { n: required })}</span>
       </label>

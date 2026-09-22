@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans } from "next/font/google";
+import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -9,6 +9,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
+import { feedbackLabels } from "@/lib/feedbackLabels";
 import { JsonLd, organization, videoGame, website } from "@/components/JsonLd";
 import { defaultOgAlt } from "@/lib/page";
 
@@ -20,6 +22,10 @@ const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], var
 const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jet", display: "swap" });
 // Solo per i tasti Discord: è il fallback dichiarato da Discord al posto del loro "gg sans" (proprietario).
 const noto = Noto_Sans({ subsets: ["latin"], weight: ["600"], variable: "--font-noto", display: "swap" });
+// Solo per i post-it (note del 22/09/2026: "scritto a penna"): Caveat, una grafia a penna leggibile anche piccola,
+// con le lettere accentate dell'italiano. Variabile (400-700, un solo file). Niente preload: serve a pochi
+// foglietti per pagina e non deve contendere la banda ai font del testo; con display swap si vede subito il ripiego.
+const hand = Caveat({ subsets: ["latin"], variable: "--font-hand", display: "swap", preload: false });
 
 // dynamicParams resta al default (true): le lingue sconosciute finiscono in notFound() qui sotto, e le pagine
 // generate su richiesta (mazzi della community) restano possibili.
@@ -61,7 +67,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const l: Locale = locale;
   const d = getDictionary(l);
   return (
-    <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} h-full`}>
+    <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} h-full`}>
       <body className="min-h-full flex flex-col">
         {/* Salta al contenuto: il <main> ha id="main" sia nella home sia nel gruppo (site). */}
         <a
@@ -73,6 +79,8 @@ export default async function LocaleLayout({ children, params }: Props) {
         <Header locale={l} dict={d} />
         {children}
         <Footer locale={l} dict={d} />
+        {/* Segnalazioni e suggerimenti dei visitatori: su ogni pagina, fuori dal <main>, prima del banner dei cookie */}
+        <FeedbackWidget locale={l} labels={feedbackLabels(d)} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         <JsonLd data={[website(l, d.meta.description), organization, videoGame]} />
         <GoogleAnalytics id={GA_ID} />

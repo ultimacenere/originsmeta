@@ -76,12 +76,12 @@ const en: Record<GuideSlug, Guide> = {
       { q: "Which Legendary leads 3 Pigs Mid Range?", a: "Three Not So Little Pigs, a 7-mana 3/3 with Trample: its On Reveal summons a Not So Little Pig with Trample at each other location, so one card puts a body in every lane." },
       { q: "What do you keep in the mulligan?", a: "Always look for Bagheera, Ali Baba, Big Bad Wolf and Rumple. Against decks with dangerous 4-Health cards such as Van Helsing or Glinda, keep Axe Throw too." },
       { q: "How does the deck close a game?", a: "With En Passant, which moves an ally and hits the character across from it; with Ellen Trechend, whose Trample pushes damage through into the barrier; and with the Lightning Strikes that Impundulu adds to your hand every time it attacks." },
-      { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press “Open in the deck builder”, or copy the OM code and import it. The builder checks the 1 Legendary + 12 cards × 2 rule." },
+      { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press “Open in the deck builder”, or “Copy game code” to paste the game code (KGBLDC…) into Origins. The builder checks the 1 Legendary + 12 cards × 2 rule." },
     ],
     body: `
 ## The deck in one paragraph
 
-**3 Pigs Mid Range** is the second deck published on OriginsMeta by Davdas, a member of the site's staff, on 15 September 2026. It is a **midrange** list led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs), tagged for **ladder** and **competitive** play. The idea is simple: win the board in the first rounds, get ahead in at least one location and then close with cards that punish an opponent who thinks they are safe behind a barrier. The full list, the composition charts and the OM code are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); this guide explains how to pilot it. A second guide covers [matchups, key interactions and Conquest](/en/guides/three-pigs-midrange-matchups).
+**3 Pigs Mid Range** is the second deck published on OriginsMeta by Davdas, a member of the site's staff, on 15 September 2026. It is a **midrange** list led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs), tagged for **ladder** and **competitive** play. The idea is simple: win the board in the first rounds, get ahead in at least one location and then close with cards that punish an opponent who thinks they are safe behind a barrier. The full list, the composition charts and the game code are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); this guide explains how to pilot it. A second guide covers [matchups, key interactions and Conquest](/en/guides/three-pigs-midrange-matchups).
 
 ## The list
 
@@ -131,7 +131,7 @@ The deck page is clear about the main weakness: "falling off curve lowers its po
 
 ## Where to go next
 
-- The [deck page](/en/decks/community/3-pigs-mid-range-6311) has the list with mana curve, saga and keyword charts, the author's notes and the OM code to open it in the [deck builder](/en/deck-builder).
+- The [deck page](/en/decks/community/3-pigs-mid-range-6311) has the list with mana curve, saga and keyword charts, the author's notes, the “Open in the deck builder” button for the [deck builder](/en/deck-builder) and the game code (KGBLDC…) to paste into Origins.
 - [Matchups, key interactions and Conquest](/en/guides/three-pigs-midrange-matchups) is the second part of this guide.
 - Card stats are those of playtest patch 0.6.3. Several cards in this list were touched in 0.6.2 and 0.6.3: check the balance history on each card page.
 `,
@@ -216,7 +216,7 @@ The deck is tagged for both ladder and competitive play. In the Conquest format 
     body: `
 ## The deck in one paragraph
 
-**Healing Healsing** was the first deck published on OriginsMeta, on 15 September 2026, by Davdas, a member of the site's staff. It is a **control** list led by [Van Helsing](/en/cards/van-helsing), tagged for the **ladder**. The plan is to survive the early rounds while taking value, to heal through the damage while [Phuong Hoang](/en/cards/phuong-hoang) grows with every heal, and to reset the board with [Forbidden Knowledge](/en/cards/forbidden-knowledge) once you have eight mana. The full list, the composition charts and the OM code are on the [deck page](/en/decks/community/healing-healsing-9411); this guide explains how to pilot it. A second guide covers [matchups, key interactions and the mistakes to avoid](/en/guides/healing-healsing-matchups).
+**Healing Healsing** was the first deck published on OriginsMeta, on 15 September 2026, by Davdas, a member of the site's staff. It is a **control** list led by [Van Helsing](/en/cards/van-helsing), tagged for the **ladder**. The plan is to survive the early rounds while taking value, to heal through the damage while [Phuong Hoang](/en/cards/phuong-hoang) grows with every heal, and to reset the board with [Forbidden Knowledge](/en/cards/forbidden-knowledge) once you have eight mana. The full list, the composition charts and the game code are on the [deck page](/en/decks/community/healing-healsing-9411); this guide explains how to pilot it. A second guide covers [matchups, key interactions and the mistakes to avoid](/en/guides/healing-healsing-matchups).
 
 ## The list
 
@@ -275,7 +275,7 @@ Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggr
 
 ## Where to go next
 
-- The [deck page](/en/decks/community/healing-healsing-9411) has the list with mana curve and keyword charts, the author's notes and the OM code to open it in the [deck builder](/en/deck-builder).
+- The [deck page](/en/decks/community/healing-healsing-9411) has the list with mana curve and keyword charts, the author's notes, the “Open in the deck builder” button for the [deck builder](/en/deck-builder) and the game code (KGBLDC…) to paste into Origins.
 - [Matchups, key interactions and mistakes to avoid](/en/guides/healing-healsing-matchups) is the second part of this guide.
 - Card stats are those of playtest patch 0.6.3. Scarecrow, Van Helsing's Tools and other cards in this list were changed in 0.6.2 and 0.6.3: see the balance history on each card page.
 `,
@@ -525,7 +525,7 @@ Sign-ups are on the [official Discord](https://discord.gg/originstcg).
 1. [Install the free demo on Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) and play the missions: they teach the three lanes and the simultaneous turns.
 2. Read [Origins TCG explained in five minutes](/en/guides/origins-tcg-explained) and the [card database](/en/cards): the current stats are those of patch 0.6.3.
 3. Build your three Conquest decks in our [deck builder](/en/deck-builder): it checks the different-Legendary rule and counts the cards that differ between decks.
-4. Study the [decks published by the community](/en/decks): every list comes with its composition charts, the author's notes and an OM code you can open in the builder. Publish yours with a guide so other players can rate it.
+4. Study the [decks published by the community](/en/decks): every list comes with its composition charts, the author's notes, a button that opens it in the builder and the game code to paste into Origins. Publish yours with a guide so other players can rate it.
 5. Follow the [news](/en/news): every announcement is summarized within a day, with a link to the source.
 
 ## How OriginsMeta covers the week
@@ -712,12 +712,12 @@ const it: Record<GuideSlug, Guide> = {
       { q: "Quale Leggendaria guida 3 Pigs Mid Range?", a: "Three Not So Little Pigs, un 3/3 da 7 mana con Trample: la sua On Reveal evoca un Not So Little Pig con Trample in ogni altro luogo, quindi una sola carta mette un corpo in ogni corsia." },
       { q: "Cosa si tiene nel mulligan?", a: "Cerca sempre Bagheera, Ali Baba, Big Bad Wolf e Rumple. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tieni anche Axe Throw." },
       { q: "Come chiude la partita il mazzo?", a: "Con En Passant, che muove un alleato e colpisce il personaggio di fronte; con Ellen Trechend, il cui Trample spinge i danni fino alla barriera; e con i Lightning Strike che Impundulu aggiunge alla mano ogni volta che attacca." },
-      { q: "Come provo il mazzo?", a: "Apri la scheda del mazzo su OriginsMeta e premi “Apri nel deck builder”, oppure copia il codice OM e importalo. Il builder controlla la regola 1 Leggendaria + 12 carte × 2." },
+      { q: "Come provo il mazzo?", a: "Apri la scheda del mazzo su OriginsMeta e premi “Apri nel deck builder”, oppure “Copia codice del gioco” per incollare il codice del gioco (KGBLDC…) in Origins. Il builder controlla la regola 1 Leggendaria + 12 carte × 2." },
     ],
     body: `
 ## Il mazzo in un paragrafo
 
-**3 Pigs Mid Range** è il secondo mazzo pubblicato su OriginsMeta da Davdas, membro dello staff del sito, il 15 settembre 2026. È una lista **midrange** guidata dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs), pensata per la **ladder** e per il gioco **competitivo**. L'idea è semplice: vincere il tabellone nei primi round, prendere vantaggio in almeno un luogo e poi chiudere con carte che puniscono l'avversario convinto di essere al sicuro dietro una barriera. La lista completa, i grafici di composizione e il codice OM sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave e Conquest](/it/guides/three-pigs-midrange-matchups).
+**3 Pigs Mid Range** è il secondo mazzo pubblicato su OriginsMeta da Davdas, membro dello staff del sito, il 15 settembre 2026. È una lista **midrange** guidata dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs), pensata per la **ladder** e per il gioco **competitivo**. L'idea è semplice: vincere il tabellone nei primi round, prendere vantaggio in almeno un luogo e poi chiudere con carte che puniscono l'avversario convinto di essere al sicuro dietro una barriera. La lista completa, i grafici di composizione e il codice del gioco sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave e Conquest](/it/guides/three-pigs-midrange-matchups).
 
 ## La lista
 
@@ -767,7 +767,7 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
 
 ## Dove andare adesso
 
-- La [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311) ha la lista con i grafici di curva di mana, saghe e parole chiave, le note dell'autore e il codice OM per aprirla nel [deck builder](/it/deck-builder).
+- La [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311) ha la lista con i grafici di curva di mana, saghe e parole chiave, le note dell'autore, il tasto “Apri nel deck builder” per il [deck builder](/it/deck-builder) e il codice del gioco (KGBLDC…) da incollare in Origins.
 - [Matchup, interazioni chiave e Conquest](/it/guides/three-pigs-midrange-matchups) è la seconda parte di questa guida.
 - Le statistiche delle carte sono quelle della patch 0.6.3 del playtest. Diverse carte di questa lista sono state ritoccate nelle patch 0.6.2 e 0.6.3: controlla lo storico dei bilanciamenti nella scheda di ogni carta.
 `,
@@ -852,7 +852,7 @@ Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Nel formato 
     body: `
 ## Il mazzo in un paragrafo
 
-**Healing Healsing** è stato il primo mazzo pubblicato su OriginsMeta, il 15 settembre 2026, da Davdas, membro dello staff del sito. È una lista **controllo** guidata da [Van Helsing](/it/cards/van-helsing), pensata per la **ladder**. Il piano è sopravvivere ai primi round prendendo valore, curare i danni mentre [Phuong Hoang](/it/cards/phuong-hoang) cresce a ogni cura, e azzerare il tabellone con [Forbidden Knowledge](/it/cards/forbidden-knowledge) una volta arrivati a otto mana. La lista completa, i grafici di composizione e il codice OM sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave ed errori da evitare](/it/guides/healing-healsing-matchups).
+**Healing Healsing** è stato il primo mazzo pubblicato su OriginsMeta, il 15 settembre 2026, da Davdas, membro dello staff del sito. È una lista **controllo** guidata da [Van Helsing](/it/cards/van-helsing), pensata per la **ladder**. Il piano è sopravvivere ai primi round prendendo valore, curare i danni mentre [Phuong Hoang](/it/cards/phuong-hoang) cresce a ogni cura, e azzerare il tabellone con [Forbidden Knowledge](/it/cards/forbidden-knowledge) una volta arrivati a otto mana. La lista completa, i grafici di composizione e il codice del gioco sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave ed errori da evitare](/it/guides/healing-healsing-matchups).
 
 ## La lista
 
@@ -911,7 +911,7 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
 
 ## Dove andare adesso
 
-- La [scheda del mazzo](/it/decks/community/healing-healsing-9411) ha la lista con i grafici di curva di mana e parole chiave, le note dell'autore e il codice OM per aprirla nel [deck builder](/it/deck-builder).
+- La [scheda del mazzo](/it/decks/community/healing-healsing-9411) ha la lista con i grafici di curva di mana e parole chiave, le note dell'autore, il tasto “Apri nel deck builder” per il [deck builder](/it/deck-builder) e il codice del gioco (KGBLDC…) da incollare in Origins.
 - [Matchup, interazioni chiave ed errori da evitare](/it/guides/healing-healsing-matchups) è la seconda parte di questa guida.
 - Le statistiche delle carte sono quelle della patch 0.6.3 del playtest. Scarecrow, Van Helsing's Tools e altre carte di questa lista sono cambiate nelle patch 0.6.2 e 0.6.3: vedi lo storico dei bilanciamenti nella scheda di ogni carta.
 `,
@@ -1161,7 +1161,7 @@ Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg).
 1. [Installa la demo gratuita su Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) e gioca le missioni: insegnano le tre corsie e i turni simultanei.
 2. Leggi [Origins TCG spiegato in cinque minuti](/it/guides/origins-tcg-explained) e il [database carte](/it/cards): le statistiche attuali sono quelle della patch 0.6.3.
 3. Costruisci i tuoi tre mazzi Conquest nel nostro [deck builder](/it/deck-builder): controlla la regola delle Leggendarie diverse e conta le carte che cambiano tra un mazzo e l'altro.
-4. Studia i [mazzi pubblicati dalla community](/it/decks): ogni lista ha i grafici di composizione, le note dell'autore e un codice OM da aprire nel builder. Pubblica la tua con una guida, così gli altri possono votarla.
+4. Studia i [mazzi pubblicati dalla community](/it/decks): ogni lista ha i grafici di composizione, le note dell'autore, un tasto per aprirla nel builder e il codice del gioco da incollare in Origins. Pubblica la tua con una guida, così gli altri possono votarla.
 5. Segui le [news](/it/news): ogni annuncio è riassunto entro un giorno, con il link alla fonte.
 
 ## Come OriginsMeta seguirà la settimana

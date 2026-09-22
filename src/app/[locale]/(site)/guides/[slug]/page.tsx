@@ -159,7 +159,13 @@ export default async function GuidePage({ params }: { params: Params }) {
           <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]">
             {/* `[&>*]:w-full`: CardChip è avvolto in un contenitore inline (serve all'anteprima), qui deve riempire la colonna. */}
             <div className="min-w-0 [&>*]:w-full">
-              <p className="kicker mb-2 text-gold">★ {d.common.legendary}</p>
+              {/* Stella gialla davanti, stesso colore dell'altra etichetta (regola del 22/09/2026) */}
+              <p className="kicker mb-2 text-pale-muted">
+                <span className="legendary-star" aria-hidden="true">
+                  ★
+                </span>
+                {d.common.legendary}
+              </p>
               <CardChip slug={deckLegendary.slug} locale={locale} />
             </div>
             <div className="min-w-0">

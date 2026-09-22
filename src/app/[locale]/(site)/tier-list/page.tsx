@@ -5,7 +5,8 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getCard, patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
-import { communityDeckOf, tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tierlist";
+import { communityDeckOf, tierIds, tierList, type TierSection } from "@/lib/data/tierlist";
+import { tierTone } from "@/lib/tiercode";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardArt, CardChip } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
@@ -20,20 +21,9 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 }
 
 /*
-  Rampa delle fasce, dal più al meno: oro, menta, menta scura, blu notte con cornice celeste, magenta.
-  Prima B e C erano due blu notte quasi uguali (1,20:1 fra loro): adesso ogni fascia si distingue dalla vicina.
-  Testo scuro (ink) sui tre fondi chiari (menta scura 6,0:1), gesso sui due fondi scuri; il magenta resta solo
-  alla D ("da rifare"), nella versione scura delle pastiglie nerf: il gesso sul crimson pieno fa 3,99:1, che non
-  basta per la legenda e per la riga delle fasce vuote, sul crimson-deep 6,14:1. La cornice della C è un anello
-  interno, così la casella non cambia misura.
+  Colori delle fasce (`tierTone`): stanno in tiercode.ts, perché la tier list personalizzata (/tier-list/create) deve
+  avere esattamente gli stessi. Lì c'è anche la spiegazione della rampa e dei contrasti.
 */
-const tierTone: Record<TierId, string> = {
-  S: "bg-gold text-ink",
-  A: "bg-mint text-ink",
-  B: "bg-mint-deep text-ink",
-  C: "bg-night-3 text-chalk ring-2 ring-inset ring-sky",
-  D: "bg-crimson-deep text-chalk",
-};
 
 export default async function TierListPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
@@ -52,7 +42,13 @@ export default async function TierListPage({ params }: { params: LocaleParams })
             {legendary ? <CardArt card={legendary} /> : <span aria-hidden="true" />}
             <span className="min-w-0">
               <span className="block truncate font-display text-[0.85rem] font-bold leading-tight text-sky">{community.name}</span>
-              <span className="block truncate font-mono text-[11px] text-pale-muted">★ {legendary?.name ?? community.legendary}</span>
+              <span className="block truncate font-mono text-[11px] text-pale-muted">
+                <span className="legendary-star" aria-hidden="true">
+                  ★
+                </span>
+                {legendary?.name ?? community.legendary}
+                <span className="sr-only"> ({d.common.legendary})</span>
+              </span>
             </span>
           </Link>
         );
@@ -101,6 +97,15 @@ export default async function TierListPage({ params }: { params: LocaleParams })
       <p className="kicker text-mint">{d.nav.tierList}</p>
       <h1 className="t-page mt-2">{d.tier.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>
+
+      {/* Invito alla tier list personalizzata (note del 22/09/2026): la propria classifica, senza account e con un link da
+          condividere. In cima, prima della lista ufficiale, perché mentre le fasce sono vuote è l'azione che vale di più. */}
+      <div className="felt-panel-mint mt-6 flex max-w-4xl flex-wrap items-center gap-4 p-5">
+        <p className="min-w-0 flex-1 basis-64 text-pale">{d.tier.makerText}</p>
+        <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
+          {d.tier.makerCta} →
+        </Link>
+      </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_1fr]">
         <section className="card-night p-6">
@@ -182,12 +187,12 @@ export default async function TierListPage({ params }: { params: LocaleParams })
               </div>
             </div>
             {section.id === "decks" ? (
-              // Invito al voto: i mazzi pubblicati sul sito si votano da 1 a 5 stelle, un voto per account.
+              // Rimando neutro ai mazzi del sito (note del 22/09/2026: "non spingere sul voto"). Tasto secondario: il
+              // primario della pagina è l'invito alla tier list personalizzata, in cima.
               <div className="card-night mt-4 flex flex-wrap items-center gap-4 p-5">
-                <p className="min-w-0 flex-1 basis-64 text-pale">{d.tier.voteText}</p>
-                {/* sul telefono a tutta larghezza e in text-xs: a 0,85rem il testo andava su due righe */}
-                <Link href={href(locale, "/decks")} className="btn btn-primary max-sm:w-full max-sm:text-xs">
-                  {d.tier.voteCta} →
+                <p className="min-w-0 flex-1 basis-64 text-pale">{d.tier.decksText}</p>
+                <Link href={href(locale, "/decks")} className="btn btn-ghost max-sm:w-full max-sm:justify-center">
+                  {d.tier.decksCta} →
                 </Link>
               </div>
             ) : null}
@@ -235,9 +240,15 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                   {items.map(({ card, change }) => (
                     <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-night text-pale">
                       <td className="px-4 py-3 font-bold">
-                        {/* Nome di carta: è il titolo dell'elemento, quindi celeste come negli altri elenchi */}
+                        {/* Nome di carta: link alla sua scheda, celeste come negli altri elenchi; le Leggendarie con la stella */}
                         <Link href={href(locale, `/cards/${card.slug}`)} className="text-sky hover:underline">
+                          {card.legendary ? (
+                            <span className="legendary-star" aria-hidden="true">
+                              ★
+                            </span>
+                          ) : null}
                           {card.name}
+                          {card.legendary ? <span className="sr-only"> ({d.common.legendary})</span> : null}
                         </Link>
                       </td>
                       <td className="px-4 py-3 text-pale-muted">{sagas[card.saga][locale]}</td>

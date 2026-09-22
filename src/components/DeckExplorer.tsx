@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { CardPeek, hasPeek } from "./CardPeek";
 
 type DeckCard = {
   name: string;
@@ -25,7 +26,8 @@ export type ExplorerDeck = {
   name: string;
   href: string;
   tagline: string;
-  legendary?: { slug: string; name: string; cover?: string; thumb?: string; image?: string; mana?: number };
+  /** `href` = scheda della carta, quando la Leggendaria è nel nostro database */
+  legendary?: { slug: string; name: string; href?: string; cover?: string; thumb?: string; image?: string; mana?: number };
   archetype: string;
   archetypeLabel: string;
   creator: string;
@@ -35,7 +37,7 @@ export type ExplorerDeck = {
   cardNames: string[];
   /** carte del mazzo con miniatura e costo, già ordinate per costo */
   cardArt: DeckCard[];
-  /** codice OriginsMeta del mazzo, da copiare senza aprire la scheda */
+  /** codice del gioco (KGBLDC…) del mazzo, da copiare senza aprire la scheda; assente se una carta non ha l'ID ufficiale */
   code?: string;
   updated: string;
   /** media e numero dei voti (solo mazzi della community) */
@@ -76,13 +78,15 @@ const FEW_DECKS = 12;
 
 /**
  * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
- * Al passaggio del mouse si apre la carta in grande con nome, statistiche e testo dell'abilità, così si legge
- * il mazzo senza aprirlo. Su touch il pannello non esiste (`hover: none`) e resta il nome nel `title`.
+ * Al passaggio del mouse si apre la carta in grande con nome, costo, statistiche e testo dell'abilità (`CardPeek`,
+ * la stessa anteprima di chip e deck builder), così si legge il mazzo senza aprirlo. Su touch il pannello non
+ * esiste (`hover: none`) e resta il nome nel `title`.
  */
 function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean }) {
   const isLeg = legendary || card.legendary;
+  const peek = { ...card, legendary: isLeg };
   return (
-    <span className={`deck-card-wrap ${card.ability || card.power !== undefined ? "has-peek" : ""}`}>
+    <span className={`deck-card-wrap ${hasPeek(peek) ? "has-peek" : ""}`}>
       <span className={`deck-card deck-card-${size} ${isLeg ? "is-legendary" : ""}`} title={card.name}>
         {/* oltre gli 80 px la miniatura da 160 px si vede sgranata sugli schermi densi: lì va la carta intera */}
         {card.thumb || card.image ? (
@@ -95,32 +99,7 @@ function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: 
         )}
         {card.mana !== undefined ? <span className="deck-card-mana">{card.mana}</span> : null}
       </span>
-
-      <span className="deck-peek" aria-hidden="true">
-        <span className={`deck-peek-panel ${isLeg ? "is-legendary" : ""}`}>
-          {card.image ?? card.thumb ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="deck-peek-art" src={card.image ?? card.thumb} alt="" loading="lazy" decoding="async" />
-          ) : null}
-          <span className="deck-peek-body">
-            <span className="deck-peek-name">
-              {isLeg ? "★ " : ""}
-              {card.name}
-            </span>
-            <span className="deck-peek-tags">
-              {card.mana !== undefined ? <span className="deck-peek-mana">{card.mana}</span> : null}
-              {card.power !== undefined ? (
-                <span className="deck-peek-stats">
-                  {card.power} / {card.health}
-                </span>
-              ) : null}
-              {card.typeLabel ? <span className="deck-peek-type">{card.typeLabel}</span> : null}
-              {card.alignmentLabel ? <span className={`deck-peek-align is-${card.alignment}`}>{card.alignmentLabel}</span> : null}
-            </span>
-            {card.ability ? <span className="deck-peek-text">{card.ability}</span> : null}
-          </span>
-        </span>
-      </span>
+      <CardPeek card={peek} />
     </span>
   );
 }
@@ -303,7 +282,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                 <div className="w-[140px] shrink-0">
                   <Link href={d.href} className="block">
                     {d.legendary?.thumb ? (
-                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" />
+                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" legendary />
                     ) : (
                       <span className="deck-card deck-card-md">
                         <span className="deck-card-initials" aria-hidden="true">
@@ -312,7 +291,22 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                       </span>
                     )}
                   </Link>
-                  {d.legendary ? <p className="mt-1 text-center text-[11px] leading-tight text-gold">★ {d.legendary.name}</p> : null}
+                  {/* Nome della Leggendaria: stella gialla davanti, stesso colore degli altri testi, link alla scheda carta */}
+                  {d.legendary ? (
+                    <p className="mt-1 text-center text-[11px] leading-tight text-pale">
+                      <span className="legendary-star" aria-hidden="true">
+                        ★
+                      </span>
+                      {d.legendary.href ? (
+                        <Link href={d.legendary.href} className="hover:text-mint hover:underline">
+                          {d.legendary.name}
+                        </Link>
+                      ) : (
+                        d.legendary.name
+                      )}
+                      <span className="sr-only"> ({labels.legendary})</span>
+                    </p>
+                  ) : null}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">{tags(d)}</div>

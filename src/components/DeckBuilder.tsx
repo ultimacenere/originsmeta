@@ -29,6 +29,8 @@ export type BuilderLabels = {
   deckName: string;
   deckNamePlaceholder: string;
   legendarySlot: string;
+  /** testo per i lettori di schermo dopo il nome di una Leggendaria (la stella è aria-hidden) */
+  legendary: string;
   pickLegendary: string;
   slots: string;
   slotsHint: string;
@@ -77,14 +79,16 @@ export type BuilderLabels = {
   saved: string;
   viewProfile: string;
   savePrivateErrors: Record<string, string>;
+  /* pannello "Condividi" a tre voci (note del 22/09/2026): link, codice del gioco, lista in testo */
   share: string;
   shareTitle: string;
   shareLink: string;
   shareGame: string;
-  shareOm: string;
   shareText: string;
   shareNative: string;
-  copy: string;
+  copyLink: string;
+  copyGame: string;
+  copyText: string;
   copied: string;
   close: string;
   exportGameMissing: string;
@@ -860,7 +864,7 @@ export function DeckBuilder({
           <h3 className={h3}>{labels.legendarySlot}</h3>
           {deck.legendary && slotCard(deck.legendary) ? (
             <div className="mt-2">
-              <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} removeLabel={labels.remove} spellLabel={labels.spell} />
+              <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} labels={labels} />
             </div>
           ) : (
             <a href="#builder-pool" className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-dashed border-sky px-3 py-3 text-sm text-pale-muted hover:text-pale">
@@ -883,7 +887,7 @@ export function DeckBuilder({
               const c = slotCard(s);
               return c ? (
                 <li key={s}>
-                  <DeckRow card={c} copies={RULES.copiesPerCard} onRemove={() => removeCard(s)} removeLabel={labels.remove} spellLabel={labels.spell} />
+                  <DeckRow card={c} copies={RULES.copiesPerCard} onRemove={() => removeCard(s)} labels={labels} />
                 </li>
               ) : null;
             })}
@@ -974,7 +978,9 @@ export function DeckBuilder({
               ) : null}
             </div>
 
-            {/* Pannello "Condividi": tutte le copie del mazzo in un posto solo */}
+            {/* Pannello "Condividi" a tre voci (note del 22/09/2026): link, codice del gioco, lista in testo, più
+                "Condividi con…" dove il browser lo offre. Il codice OriginsMeta (OM1) non si mostra più ("nessuna
+                utilità identificata"): resta solo dentro il link (#OM1…), che il builder e la pubblicazione leggono. */}
             <div
               id="builder-share"
               ref={sharePanelRef}
@@ -1005,17 +1011,16 @@ export function DeckBuilder({
                     {labels.shareNative}
                   </button>
                 ) : null}
-                <ShareField id="share-link" label={labels.shareLink} value={shareLink} copy={labels.copy} copied={labels.copied} />
+                <ShareField id="share-link" label={labels.shareLink} value={shareLink} copy={labels.copyLink} copied={labels.copied} />
                 <ShareField
                   id="share-game"
                   label={labels.shareGame}
                   value={gameCodeNow}
-                  copy={labels.copy}
+                  copy={labels.copyGame}
                   copied={labels.copied}
                   note={missingKeys ? fmt(labels.exportGameMissing, { n: missingKeys }) : undefined}
                 />
-                <ShareField id="share-om" label={labels.shareOm} value={omCode} copy={labels.copy} copied={labels.copied} />
-                <ShareField id="share-text" label={labels.shareText} value={textList} copy={labels.copy} copied={labels.copied} multiline />
+                <ShareField id="share-text" label={labels.shareText} value={textList} copy={labels.copyText} copied={labels.copied} multiline />
               </div>
             </div>
 
@@ -1161,18 +1166,16 @@ export function DeckBuilder({
                     aria-pressed={inDeck}
                     aria-disabled={blocked || undefined}
                     onClick={() => (inDeck ? removeCard(c.slug) : blocked ? undefined : addCard(c))}
-                    className={`builder-row deck-card-wrap text-left ${peek ? "has-peek" : ""} ${c.legendary ? "is-legendary" : ""} ${inDeck ? "is-in-deck" : ""} ${blocked ? "is-full" : ""}`}
+                    className={`builder-row deck-card-wrap text-left ${rowClasses(c, peek)} ${inDeck ? "is-in-deck" : ""} ${blocked ? "is-full" : ""}`}
                     title={peek ? undefined : c.name}
                     style={c.thumb ?? c.art ? ({ ["--row-art" as string]: `url(${c.thumb ?? c.art})` } as React.CSSProperties) : undefined}
                   >
+                    <ManaGem mana={c.mana} label={labels.cost} />
                     <BuilderArt card={c} />
                     <span className="builder-row-text">
-                      <span className="builder-row-name">
-                        {c.legendary ? "★ " : ""}
-                        {c.name}
-                      </span>
+                      <RowName card={c} legendaryLabel={labels.legendary} />
                       <span className="builder-row-stats">
-                        {c.mana ?? "?"} · {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
+                        {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
                       </span>
                     </span>
                     {/* Resta un segno dello stato, uguale su ogni riga. */}
@@ -1235,7 +1238,9 @@ export function DeckBuilder({
   );
 }
 
-/** Una copia del pannello "Condividi": campo in sola lettura (si seleziona al tocco, se gli appunti non vanno) e "Copia". */
+/** Una voce del pannello "Condividi": campo in sola lettura (si seleziona al tocco, se gli appunti non vanno) e il tasto
+ *  che dice che cosa copia ("Copia link", "Copia codice del gioco", "Copia lista in testo"). Sul telefono il tasto va
+ *  sotto il campo quando non c'è posto per entrambi. */
 function ShareField({ id, label, value, copy, copied, note, multiline = false }: { id: string; label: string; value: string | null; copy: string; copied: string; note?: string; multiline?: boolean }) {
   const [done, setDone] = useState(false);
   const doCopy = async () => {
@@ -1251,14 +1256,14 @@ function ShareField({ id, label, value, copy, copied, note, multiline = false }:
       el?.select();
     }
   };
-  const fieldCls = "min-w-0 flex-1 rounded-lg border border-felt-line bg-felt-deep px-3 py-2 font-mono text-xs text-pale";
+  const fieldCls = "min-w-48 flex-1 rounded-lg border border-felt-line bg-felt-deep px-3 py-2 font-mono text-xs text-pale";
   return (
     <div>
       <label htmlFor={id} className="text-xs font-bold text-pale">
         {label}
       </label>
       {value !== null || !note ? (
-        <div className={`mt-1 flex gap-2 ${multiline ? "items-start" : "items-center"}`}>
+        <div className={`mt-1 flex flex-wrap gap-2 ${multiline ? "items-start" : "items-center"}`}>
           {multiline ? (
             <textarea id={id} readOnly value={value ?? ""} rows={Math.min(8, Math.max(2, (value ?? "").split("\n").length))} onFocus={(e) => e.currentTarget.select()} className={`${fieldCls} resize-none`} />
           ) : (
@@ -1294,29 +1299,62 @@ function BuilderArt({ card }: { card: BuilderCard }) {
   );
 }
 
+/** Classi comuni alle righe del pool e del mazzo. `row-spell` (note del 22/09/2026): le magie su fondo rosa tenue,
+ *  per distinguerle a colpo d'occhio, solo nel deck builder (le schede dei mazzi non lo usano). */
+function rowClasses(card: BuilderCard, peek: boolean): string {
+  return [peek ? "has-peek" : "", card.legendary ? "is-legendary" : "", card.type === "spell" ? "row-spell" : ""].filter(Boolean).join(" ");
+}
+
+/** Costo in mana, in pastiglia menta come sulle carte (note del 22/09/2026: "costo mana sempre visibile"). È il primo
+ *  elemento della riga, all'estremo sinistro: l'anteprima al passaggio del mouse (330 px) si apre centrata sulla riga e
+ *  ne lascia libero il bordo sinistro, quindi anche quando finisce sopra la riga il costo resta scoperto. Prima il costo
+ *  era un numero nella riga delle statistiche, dopo l'illustrazione, dove il pannello poteva coprirlo. Il nome del
+ *  costo lo sente solo il lettore di schermo. */
+function ManaGem({ mana, label }: { mana?: number; label: string }) {
+  return (
+    <span className="builder-row-mana grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-mint px-1 font-mono text-sm leading-none font-bold text-ink">
+      <span className="sr-only">{label} </span>
+      {mana ?? "?"}
+    </span>
+  );
+}
+
+/** Nome nella riga: la Leggendaria ha lo stesso colore e la stessa misura delle altre carte, con la stella gialla
+ *  davanti (`.legendary-star`, nascosta ai lettori di schermo) e la parola "Leggendaria" solo per loro. */
+function RowName({ card, legendaryLabel }: { card: BuilderCard; legendaryLabel: string }) {
+  return (
+    <span className="builder-row-name">
+      {card.legendary ? (
+        <span className="legendary-star" aria-hidden="true">
+          ★
+        </span>
+      ) : null}
+      {card.name}
+      {card.custom ? " *" : ""}
+      {card.legendary ? <span className="sr-only">, {legendaryLabel}</span> : null}
+    </span>
+  );
+}
+
 /** Riga di una carta nel mazzo. L'anteprima al passaggio (`CardPeek`) è in `position: fixed` (vedi `.builder-row > .deck-peek`
- *  in globals.css, coordinate da `CardMentionEdges`): nessun contenitore con overflow la taglia. */
-function DeckRow({ card, copies, onRemove, removeLabel, spellLabel }: { card: BuilderCard; copies: number; onRemove: () => void; removeLabel: string; spellLabel: string }) {
+ *  in globals.css, coordinate da `CardMentionEdges`): nessun contenitore con overflow la taglia. Costo in mana per primo,
+ *  poi le copie: così il costo sta all'estremo sinistro, come nelle righe del pool. */
+function DeckRow({ card, copies, onRemove, labels }: { card: BuilderCard; copies: number; onRemove: () => void; labels: BuilderLabels }) {
   const peek = hasPeek(card);
   return (
     <div
-      className={`builder-row is-in-deck deck-card-wrap ${peek ? "has-peek" : ""} ${card.legendary ? "is-legendary" : ""}`}
+      className={`builder-row is-in-deck deck-card-wrap ${rowClasses(card, peek)}`}
       title={peek ? undefined : card.name}
       style={card.thumb ?? card.art ? ({ ["--row-art" as string]: `url(${card.thumb ?? card.art})` } as React.CSSProperties) : undefined}
     >
+      <ManaGem mana={card.mana} label={labels.cost} />
       <span className="builder-row-copies">{copies}×</span>
       <BuilderArt card={card} />
       <span className="builder-row-text">
-        <span className="builder-row-name">
-          {card.legendary ? "★ " : ""}
-          {card.name}
-          {card.custom ? " *" : ""}
-        </span>
-        <span className="builder-row-stats">
-          {card.mana ?? "?"} · {card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : spellLabel}
-        </span>
+        <RowName card={card} legendaryLabel={labels.legendary} />
+        <span className="builder-row-stats">{card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : labels.spell}</span>
       </span>
-      <button type="button" onClick={onRemove} className="builder-row-x" aria-label={`${removeLabel} ${card.name}`}>
+      <button type="button" onClick={onRemove} className="builder-row-x" aria-label={`${labels.remove} ${card.name}`}>
         ✕
       </button>
       <CardPeek card={card} />

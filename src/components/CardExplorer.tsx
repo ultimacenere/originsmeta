@@ -1,35 +1,20 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
-import { alignStyle, changeStyle, initials, sagaHue } from "@/lib/cardArt";
+import { FlipCard, type FlipCardData } from "./FlipCard";
 
-export type ExplorerCard = {
-  slug: string;
-  name: string;
-  href: string;
+/**
+ * Carta del database: i dati della carta che si gira (`FlipCard`, la stessa della scheda di un mazzo, costruiti
+ * da `flipOf` in CardChip.tsx) più i campi che servono ai filtri e alla ricerca.
+ */
+export type ExplorerCard = FlipCardData & {
   type: "unit" | "spell" | "token";
-  typeLabel: string;
   legendary: boolean;
   sagaId: string;
   sagaLabel: string;
-  image?: string;
-  /** carta ufficiale a 480 px, per gli schermi ad alta densità */
-  imageLarge?: string;
-  /** testo dell abilità nella lingua della pagina, mostrato nel pannello al passaggio del mouse */
-  ability?: string;
-  mana?: number;
-  power?: number;
-  health?: number;
-  alignment?: "good" | "evil" | "neutral";
-  alignmentLabel?: string;
   rarity?: string;
-  rarityLabel?: string;
   keywords: string[];
-  lastKind?: "buff" | "nerf" | "rework" | "deck";
-  lastKindLabel?: string;
   removed: boolean;
-  removedLabel: string;
 };
 
 type Labels = {
@@ -49,12 +34,13 @@ type Labels = {
   legendary: string;
   unknownStats: string;
   showRemoved: string;
+  /** per il nome del link di ogni carta letto dai lettori di schermo */
+  mana: string;
+  power: string;
+  health: string;
 };
 
 type Option = { id: string; label: string };
-
-// I colori delle pastiglie dei cambi stanno in `changeStyle` (cardArt.ts): gli stessi di ChangeChip nelle altre pagine.
-const MAX_KEYWORDS = 4;
 
 /* La ricerca dell'header arriva come ?q=…: letta dal browser dopo l'idratazione (sul server vale ""),
    così la pagina resta statica e le schede stanno nell'HTML iniziale, senza useSearchParams. */
@@ -108,6 +94,7 @@ export function CardExplorer({
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const removedCount = cards.filter((c) => c.removed).length;
+  const flipLabels = { legendary: labels.legendary, mana: labels.mana, power: labels.power, health: labels.health };
 
   return (
     <div>
@@ -198,62 +185,12 @@ export function CardExplorer({
         <p className="card-night p-6 text-pale-muted">{labels.noResults}</p>
       ) : (
         /* Griglia di illustrazioni: l'immagine è il contenuto, i dettagli si scoprono al passaggio del mouse
-           (su touch restano nome e statistiche sotto la carta, e la scheda è a un tocco). */
+           (su touch restano nome e statistiche sotto la carta, e la scheda è a un tocco). Stessa carta della
+           scheda di un mazzo (`FlipCard`); qui il piede con nome e statistiche c'è sempre. */
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {list.map((c) => (
-            <li key={c.slug}>
-              <Link href={c.href} className={`card-tile ${c.legendary ? "is-legendary" : ""} ${c.removed ? "is-removed" : ""}`}>
-                <span className="card-tile-art" style={c.image ? undefined : { background: sagaHue[c.sagaId] ?? sagaHue.other }}>
-                  {c.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={c.image} srcSet={c.imageLarge ? `${c.image} 160w, ${c.imageLarge} 480w` : undefined} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" alt="" loading="lazy" decoding="async" />
-                  ) : (
-                    <span className="card-tile-initials" aria-hidden="true">
-                      {initials(c.name)}
-                    </span>
-                  )}
-                  {c.mana !== undefined ? <span className="card-tile-mana">{c.mana}</span> : null}
-                  {c.legendary ? <span className="card-tile-star" aria-hidden="true">★</span> : null}
-
-                  <span className="card-tile-info">
-                    <span className="kicker block text-mint">{c.sagaLabel}</span>
-                    {/* Pastiglie sempre a fondo pieno e testo sopra i 4,5:1 (prima Leggendaria pale su oro al 40% e
-                        Rimossa magenta su magenta tenue restavano sotto soglia). */}
-                    <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <span className="stat-pill bg-night-3 text-[11px] text-pale">{c.typeLabel}</span>
-                      {c.alignmentLabel && c.alignment ? <span className={`stat-pill text-[11px] ${alignStyle[c.alignment]}`}>{c.alignmentLabel}</span> : null}
-                      {c.legendary ? (
-                        <span className="stat-pill bg-gold text-[11px] font-bold text-ink">{labels.legendary}</span>
-                      ) : c.rarityLabel ? (
-                        <span className="stat-pill bg-night-3 text-[11px] text-pale">{c.rarityLabel}</span>
-                      ) : null}
-                      {c.removed ? <span className="stat-pill bg-bad text-[11px] font-bold text-ink">{c.removedLabel}</span> : null}
-                      {c.lastKind && c.lastKindLabel ? <span className={`stat-pill text-[11px] font-bold uppercase ${changeStyle[c.lastKind]}`}>{c.lastKindLabel}</span> : null}
-                    </span>
-                    {c.ability ? <span className="card-tile-text">{c.ability}</span> : null}
-                    {c.keywords.length ? (
-                      <span className="mt-2 flex flex-wrap gap-1">
-                        {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
-                          <span key={k} className="rounded bg-night-3 px-1.5 py-0.5 text-[10px] font-semibold text-pale">
-                            {k}
-                          </span>
-                        ))}
-                        {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 text-[10px] font-semibold text-pale">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
-                      </span>
-                    ) : null}
-                  </span>
-                </span>
-
-                <span className="card-tile-foot">
-                  {/* Nome della carta: ruolo .t-item (celeste, bold), misura ridotta per la griglia fitta */}
-                  <span className="t-item min-w-0 flex-1 truncate text-sm leading-tight">
-                    {c.legendary ? "★ " : ""}
-                    {c.name}
-                  </span>
-                  {/* Solo le statistiche: il tipo della carta si legge nel pannello e sulla carta stessa. */}
-                  {c.power !== undefined ? <span className="shrink-0 font-mono text-xs tabular text-pale">{`${c.power}/${c.health}`}</span> : null}
-                </span>
-              </Link>
+            <li key={c.slug} className="min-w-0">
+              <FlipCard card={c} labels={flipLabels} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" />
             </li>
           ))}
         </ul>

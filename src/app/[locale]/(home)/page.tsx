@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,13 +10,12 @@ import { getGuide, type Guide } from "@/lib/content/guides";
 import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { CardChipList } from "@/components/CardChip";
+import { CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
-import { SteamButton } from "@/components/SteamButton";
-import { DiscordButton } from "@/components/DiscordButton";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
+import { Postit, type PostitKind } from "@/components/Postit";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -27,21 +26,38 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 }
 
 /**
- * Post-it delle news (prova del 21/09/2026, decisione C di Pierluigi, per ora SOLO sulle tre news in evidenza):
- * un foglietto colorato, leggermente ruotato, che dice che cos'è il contenuto prima di leggerlo. La categoria si
- * ricava dai dati, mai a mano:
+ * Post-it delle news (prova del 21/09/2026, decisione C di Pierluigi, SOLO sulle tre news in evidenza): un
+ * foglietto colorato e storto che dice che cos'è il contenuto prima di leggerlo. La categoria si ricava dai dati,
+ * mai a mano:
  * - mazzo pubblicato sul sito (source "staff" o "community") → "Nuovo mazzo" (giallo);
  * - patch notes → "Patch" (rosa): slug che inizia per "patch" (le patch del playtest) oppure news collegata a una
  *   patch in `patches` di cards.ts (campo `news`: le patch senza numero, come `demo-patch-notes-0921`);
  * - tutto il resto → "News" (viola).
- * Colori, forma e rotazioni stanno nelle classi .postit di globals.css (testo ink su carta piena, contrasti misurati).
+ * Colori, forma e animazioni stanno nelle classi .postit di globals.css (testo ink su carta piena, contrasti
+ * misurati); il componente `Postit` sceglie misura, rotazione e, dalla data, se la news è fresca (72 ore).
  */
-type PostitKind = "deck" | "patch" | "news";
+type NewsPostit = Extract<PostitKind, "deck" | "patch" | "news">;
 const PATCH_NEWS = new Set(Object.values(patches).flatMap((p) => (p.news ? [p.news] : [])));
-function postitOf(item: NewsItem): PostitKind {
+function postitOf(item: NewsItem): NewsPostit {
   if (isDeckNews(item)) return "deck";
   return item.slug.startsWith("patch") || PATCH_NEWS.has(item.slug) ? "patch" : "news";
 }
+
+/**
+ * Post-it grandi delle tre news in evidenza (note del 22/09/2026: "più grandi, storti, un po' invasivi
+ * sull'immagine, disordinati"): rotazioni diverse e non allineate, e ognuno appoggiato in un punto un po' diverso
+ * dell'angolo della copertina (uno sull'angolo destro), così sembrano attaccati a mano. La copertina comincia 24 px
+ * sotto il bordo interno della scheda (p-6): con top fra -6 e 0 px il post-it sborda appena dalla scheda e copre
+ * 20-30 px dell'angolo in alto della copertina, lontano dal soggetto e dai crediti (che stanno in basso).
+ * Ogni posizione ha anche fase e durate sue (--delay, --flap-dur, --sway-dur): due post-it dello stesso tipo
+ * affiancati non si muovono all'unisono. Le classi sono utility Tailwind, che vincono su `.postit-corner` e sulle
+ * varianti (layer components); scritte per intero perché Tailwind le trovi nel sorgente.
+ */
+const FEATURED_POSTITS = [
+  { tilt: -6, place: "postit-corner -top-1 left-3 [--delay:-0.4s] [--flap-dur:2.6s] [--sway-dur:7.5s]" },
+  { tilt: 4, place: "postit-corner top-0 left-auto right-4 [--delay:-1.3s] [--flap-dur:2.9s] [--sway-dur:8.8s]" },
+  { tilt: -3, place: "postit-corner -top-1.5 left-7 [--delay:-2.1s] [--flap-dur:2.3s] [--sway-dur:6.4s]" },
+] as const;
 
 /** Guide per chi arriva adesso: che cos'è il gioco, come si prova la demo, che cosa succede al Next Fest. */
 const START_GUIDES = ["origins-tcg-explained", "play-the-demo", "steam-next-fest-2026"] as const;
@@ -72,14 +88,20 @@ const MOVE_ICONS: Record<"build" | "publish" | "host", ReactNode> = {
 };
 
 /**
- * Ordine della home (note 7.0 del 16/09/2026, rivisto il 21/09/2026): slider, calendario, titolo con le tre azioni
- * (deck builder per primo, poi Steam e Discord in misura ridotta), le prime tre news "aperte" con i post-it, il
- * blocco "Fai la tua mossa" (costruisci, pubblica, organizza), la tier list a striscia, MetaShifting a striscia
- * della stessa misura, poi la bacheca con le altre news (patch note comprese), tre guide per chi inizia e lo stato
- * del gioco. La sezione con i mazzi della community è stata tolta (ridondante).
+ * Ordine della home (note 7.0 del 16/09/2026, rivisto il 21 e il 22/09/2026): slider, calendario, subito le prime
+ * tre news "aperte" con i post-it grandi, il blocco "Fai la tua mossa" (costruisci, pubblica, organizza), la tier
+ * list a striscia, MetaShifting a striscia della stessa misura, poi la bacheca con le altre news (patch note
+ * comprese), tre guide per chi inizia e lo stato del gioco. La sezione con i mazzi della community è stata tolta
+ * (ridondante).
  *
- * Scala dei titoli (21/09/2026): .t-page per l'H1, .t-section per i titoli di sezione (gesso, non più celesti),
- * .t-item per i nomi degli elementi (news, guide, carte), così sezione ed elemento non hanno più lo stesso colore.
+ * Blocco titolo tolto il 22/09/2026 (note sulla demo, decisione di Pierluigi): titolo visibile, sottotitolo,
+ * "Costruisci il tuo mazzo" (ridondante con "Fai la tua mossa") e i tasti Steam e Discord (Steam resta nello
+ * slider, Discord nel footer). Così le news salgono attaccate al calendario. L'H1 resta per i motori e per i
+ * lettori di schermo, nascosto alla vista (`sr-only`), con la parola chiave "Origins TCG": uno solo per pagina.
+ *
+ * Scala dei titoli (21/09/2026): .t-section per i titoli di sezione (gesso, non più celesti), .t-item per i nomi
+ * degli elementi (news, guide, carte), così sezione ed elemento non hanno più lo stesso colore. Tier list e
+ * MetaShifting hanno invece l'etichetta a penna su post-it (`.postit-label`, 22/09/2026).
  */
 export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
@@ -122,52 +144,31 @@ export default async function Home({ params }: { params: LocaleParams }) {
       <HeroSlider slides={slides} labels={d.home.slider} interval={4500} />
       <EventTicker locale={locale} dict={d} />
       <main id="main" className="flex-1">
+        {/* Unico H1 della pagina: invisibile, ma letto dai motori e dagli screen reader (il blocco titolo visibile è stato tolto il 22/09/2026) */}
+        <h1 className="sr-only">{d.home.h1}</h1>
         {/*
-          Titolo + tre azioni con gerarchia (21/09/2026): prima l'azione interna (deck builder, senza account), poi i
-          tasti ufficiali di Steam e Discord in misura ridotta, con i loro colori (decisione di Pierluigi: non si tolgono).
+          pt-7 e non meno: i post-it grandi sporgono appena sopra le schede (pochi px, più il nastro adesivo, la
+          rotazione e il bollino "Nuovo") e non devono toccare la striscia del calendario.
+          `div` e non `section`: il contenitore raggruppa quattro sezioni con i loro titoli, non ne ha uno suo.
         */}
-        <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
-            <div className="max-w-3xl">
-              <p className="kicker text-mint">{d.home.kicker}</p>
-              <h1 className="t-page mt-2">{d.home.title}</h1>
-              <p className="mt-2 max-w-2xl text-chalk-muted">{d.home.sub}</p>
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <Link href={href(locale, "/deck-builder")} className="btn btn-primary">
-                  {d.home.ctaBuild} →
-                </Link>
-                <SteamButton href={officialLinks.demo} variant="green" size="sm">
-                  {d.home.ctaDemo}
-                </SteamButton>
-                <DiscordButton href={officialLinks.discord} size="sm">
-                  {d.home.ctaDiscord}
-                </DiscordButton>
-              </div>
-              <p className="flex items-center gap-1.5 pl-3 text-xs text-pale-muted">
-                <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-none stroke-mint stroke-2" aria-hidden="true">
-                  <path d="M3 8.5 6.5 12 13 4.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {d.home.ctaBuildNote}
-              </p>
-            </div>
-          </div>
-
-          {/* Le prime tre news "aperte" in cima (note 7.0), ciascuna con il suo post-it (prova del 21/09/2026) */}
-          <section className="mt-8" aria-labelledby="home-featured">
+        <div className="mx-auto max-w-7xl px-4 pt-7 sm:px-6">
+          {/* Le prime tre news "aperte" subito sotto il calendario (note 7.0 e 22/09/2026), ciascuna con il suo post-it grande */}
+          <section aria-labelledby="home-featured">
             <h2 id="home-featured" className="sr-only">
               {d.home.featured}
             </h2>
-            {/* `postit-row` dà a ogni riquadro una rotazione diversa, anche quando due post-it sono della stessa categoria */}
-            <div className="postit-row grid grid-cols-1 gap-x-5 gap-y-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-10 md:grid-cols-3">
               {featured.map((item, i) => {
                 const kind = postitOf(item);
                 const deck = isDeckNews(item);
+                const note = FEATURED_POSTITS[i % FEATURED_POSTITS.length];
                 return (
                   <article key={item.slug} className="card-night relative flex flex-col p-6">
-                    {/* figlio diretto della scheda (contratto di .postit in globals.css): a cavallo del bordo in alto a sinistra */}
-                    <span className={`postit postit-${kind} postit-corner`}>{d.home.postit[kind]}</span>
+                    {/*
+                      Figlio diretto della scheda (contratto di .postit in globals.css), a cavallo del bordo e sopra
+                      l'angolo della copertina. Con la data della news: nelle prime 72 ore il post-it diventa "isterico".
+                    */}
+                    <Postit kind={kind} label={d.home.postit[kind]} date={item.date} size="lg" tilt={note.tilt} className={note.place} />
                     <NewsCover src={item.image} className="mb-4" />
                     {/* UX-2: il mazzo si apre subito, sotto la copertina, non dopo tutte le carte (per le altre news non rende nulla) */}
                     <NewsDeckButton item={item} locale={locale} dict={d} className="mb-4 self-start text-xs" />
@@ -244,11 +245,18 @@ export default async function Home({ params }: { params: LocaleParams }) {
           {/*
             Tier list: striscia a tutta larghezza sotto le news (note 7.0). Finché nessuna sezione ha una fascia, al
             posto di "0 · Non ancora classificato" c'è la promessa datata (Steam Next Fest, 19–26 ottobre).
+            Il titolo è un post-it grande attaccato al bordo sinistro della striscia, che la invade sopra e sotto
+            (disegno di Pierluigi del 22/09/2026: "TIER" a penna, nastro adesivo in cima). È l'H2 stesso: le parole a
+            penna sono decorative (aria-hidden) e il nome intero della sezione resta per i lettori di schermo.
           */}
-          <section className="card-night mt-5 flex flex-wrap items-center gap-4 p-5">
+          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier">
+            <h2 id="home-tier" className="strip-postit strip-postit-tape" style={{ "--tilt": "-3deg" } as CSSProperties}>
+              <span className="strip-postit-big" aria-hidden="true">{d.home.tierPostitBig}</span>
+              <span className="strip-postit-small" aria-hidden="true">{d.home.tierPostitSmall}</span>
+              <span className="sr-only">{d.home.tierTitle}</span>
+            </h2>
             <div className="min-w-[220px] flex-1">
-              <h2 className="t-section">{d.home.tierTitle}</h2>
-              <p className="mt-1 text-sm text-pale-muted">{d.home.tierSub}</p>
+              <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
               {nothingRanked ? (
                 <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-chalk">
                   <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 fill-none stroke-mint stroke-[1.6]" aria-hidden="true">
@@ -272,27 +280,40 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 );
               })}
             </ul>
-            <Link href={href(locale, "/tier-list")} className="btn btn-ghost text-xs">
-              {d.common.viewAll} →
-            </Link>
+            {/* Tasti delle due strisce col gradiente come il resto del sito (note del 22/09/2026), non più "ghost";
+                accanto, la tier list personalizzabile, che finché le fasce sono vuote è l'unica cosa da fare qui */}
+            <p className="flex flex-wrap gap-2">
+              <Link href={href(locale, "/tier-list")} className="btn btn-primary text-xs">
+                {d.common.viewAll} →
+              </Link>
+              <Link href={href(locale, "/tier-list/create")} className="btn btn-ghost text-xs">
+                {d.tier.makerCta} →
+              </Link>
+            </p>
           </section>
 
-          {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0); titolo di sezione come gli altri, non più menta */}
-          <section className="card-night mt-5 flex flex-wrap items-center gap-4 p-5">
+          {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
+              grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
+          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
+            <h2 id="home-metashift" className="strip-postit" style={{ "--tilt": "2.5deg" } as CSSProperties}>
+              <span className="strip-postit-big" aria-hidden="true">{d.home.metaPostitBig}</span>
+              <span className="strip-postit-small" aria-hidden="true">{d.home.metaPostitSmall}</span>
+              <span className="sr-only">{d.common.metashift}</span>
+            </h2>
             <div className="min-w-[220px] max-w-xs flex-1">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h2 className="t-section">{d.common.metashift}</h2>
-                <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
-                  {d.common.patch} {patchLabel(latestPatch, locale)}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-pale-muted">{d.home.metashiftSub}</p>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
+                {d.common.patch} {patchLabel(latestPatch, locale)}
+              </span>
+              <p className="mt-2 text-sm text-pale-muted">{d.home.metashiftSub}</p>
             </div>
+            {/* Leggendarie per prime con la stella gialla, poi le altre (note del 22/09/2026: "★ Dorothy, ★ Wicked Stepmother, poi carte normali") */}
             <ol className="flex flex-1 flex-wrap gap-2">
-              {top.map(({ card, change }) => (
+              {legendaryFirst(top, (x) => Boolean(x.card.legendary)).map(({ card, change }) => (
                 <li key={`${card.slug}-${change.patch}`}>
                   <Link href={href(locale, `/cards/${card.slug}`)} className="flex items-center gap-2 rounded-lg border-2 border-sky px-2.5 py-1.5 text-xs hover:bg-night-3">
-                    <span className="t-item text-xs">{card.name}</span>
+                    <span className="t-item text-xs">
+                      <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
+                    </span>
                     <StatDelta from={change.from} to={change.to} />
                     <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
                   </Link>
@@ -300,11 +321,11 @@ export default async function Home({ params }: { params: LocaleParams }) {
               ))}
             </ol>
             {/* Il tasto promette il tracker delle patch: porta direttamente a quella sezione, non in cima alla tier list */}
-            <Link href={href(locale, "/tier-list#tracker")} className="btn btn-ghost text-xs">
+            <Link href={href(locale, "/tier-list#tracker")} className="btn btn-primary text-xs">
               {d.tier.trackerTitle} →
             </Link>
           </section>
-        </section>
+        </div>
 
         {/* Bacheca news (patch note comprese) */}
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">

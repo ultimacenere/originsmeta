@@ -488,7 +488,7 @@ function PasteCode({ labels, onImport }: { labels: Labels; onImport: (text: stri
           onChange={(e) => setText(e.target.value)}
           spellCheck={false}
           autoComplete="off"
-          placeholder="KGBLDC… · OM1.…"
+          placeholder="KGBLDC… · https://originsmeta.com/…/deck-builder#…"
           className={`${inputCls} font-mono text-xs`}
         />
         <span className="mt-1 block text-xs text-pale-muted">{labels.pasteHint}</span>
