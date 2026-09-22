@@ -1532,7 +1532,10 @@
     di taglio e sparisce: sotto il retro non resta nessuna illustrazione, solo il fondale del riquadro. Quindi il
     retro se la ridisegna da sé: questo ::before porta la stessa carta (--card-art, passata da FlipCard), sfocata e
     scurita da un velo semitrasparente steso sopra di lei nello stesso background. Si riconosce la carta, e il testo
-    resta leggibile: gesso su questo velo 8,6:1 sulla carta più chiara del database (misurato).
+    resta leggibile. Il velo è stato alleggerito il 23/09/2026 (Pierluigi: "le carte devono essere un po' più
+    trasparenti"): da 0,82-0,88 a 0,74-0,70, cioè dal 15% al 30% di illustrazione che passa. Contrasto misurato sul
+    caso peggiore, un'illustrazione bianca sotto il velo: gesso 5,8-6,3:1, sopra la soglia; i testi hanno anche
+    un'ombra scura (vedi .card-tile-name e compagne più sotto).
     z-index -1: dentro lo stacking context del retro il ::before sta sopra il fondo del genitore e sotto il testo.
     Senza illustrazione (carta senza immagine) restano i soli veli, come prima.
     La gemma del mana sta a z-index 3, sopra tutto: resta sempre visibile, com'è stato chiesto.
@@ -1543,25 +1546,37 @@
     z-index: -1;
     inset: 0;
     background:
-      radial-gradient(120% 70% at 50% 0%, rgba(63, 196, 232, 0.16), transparent 70%),
-      linear-gradient(170deg, rgba(18, 26, 44, 0.82), rgba(10, 6, 24, 0.88)),
+      radial-gradient(120% 70% at 50% 0%, rgba(63, 196, 232, 0.14), transparent 70%),
+      linear-gradient(170deg, rgba(10, 6, 24, 0.74), rgba(10, 6, 24, 0.7)),
       var(--card-art, linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep)));
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     /* l'illustrazione sfocata resta un fondo, non un secondo soggetto da guardare */
-    filter: blur(2.5px) saturate(0.85);
+    filter: blur(2px) saturate(0.9);
     /* la sfocatura sfrangia i bordi: l'immagine si allarga appena, così non si vede la cornice del riquadro */
     transform: scale(1.06);
   }
   .card-tile.is-legendary .card-tile-info::before {
     background:
-      radial-gradient(120% 70% at 50% 0%, rgba(242, 210, 60, 0.18), transparent 70%),
-      linear-gradient(170deg, rgba(18, 26, 44, 0.82), rgba(10, 6, 24, 0.88)),
+      radial-gradient(120% 70% at 50% 0%, rgba(242, 210, 60, 0.16), transparent 70%),
+      linear-gradient(170deg, rgba(10, 6, 24, 0.74), rgba(10, 6, 24, 0.7)),
       var(--card-art, linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep)));
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+  }
+  /*
+    Con il velo più leggero (23/09/2026, Pierluigi: "le carte devono essere un po' più trasparenti") il testo del
+    retro può capitare sopra una zona chiara dell'illustrazione: un'ombra scura sotto ogni scritta le ridà il
+    contorno. Contrasti misurati sul caso peggiore, cioè illustrazione bianca sotto il velo: gesso 5,8-6,3:1,
+    grigio chiaro 5,1-5,4:1. Le pastiglie hanno già il loro fondo pieno e non servono ombre.
+  */
+  .card-tile-name,
+  .card-tile-text,
+  .card-tile-kicker,
+  .card-tile-stats {
+    text-shadow: 0 1px 3px rgba(6, 3, 16, 0.95);
   }
   @media (hover: hover) {
     .card-tile-art {
