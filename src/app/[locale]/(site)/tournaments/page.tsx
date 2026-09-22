@@ -26,6 +26,8 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
   const past = pastEvents();
   const community = await listListedTournaments();
   const groups = (["open", "running", "finished"] as const).map((s) => ({ status: s, list: community.filter((t) => t.status === s) })).filter((g) => g.list.length);
+  const newHref = href(locale, "/tournaments/new");
+  const steps = [x.howTo.step1, x.howTo.step2, x.howTo.step3, x.howTo.step4];
   const events = up.map((e) => ({
     "@context": "https://schema.org",
     "@type": "Event",
@@ -65,21 +67,23 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         ]}
       />
       <JsonLd data={events} />
+      {/* Gerarchia (UX-13, 21/09/2026): il primario in testa è "Organizza un torneo"; la segnalazione via email
+          allo staff, che prima gli rubava il posto, è un link testuale in fondo agli eventi ufficiali. */}
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+        <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <p className="kicker text-mint">{d.nav.events}</p>
-          <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.events.title}</h1>
-          <p className="mt-4 max-w-2xl text-chalk-muted">{d.events.intro}</p>
+          <h1 className="t-page mt-2">{d.events.title}</h1>
+          <p className="mt-4 max-w-2xl text-chalk-muted">{d.events.lead}</p>
         </div>
-        <a className="btn btn-mint" href={`mailto:${contactEmail}?subject=Evento%20Origins%20TCG`}>
-          {d.events.submitCta}
-        </a>
+        <Link href={newHref} className="btn btn-primary">
+          {x.organizeCta}
+        </Link>
       </div>
 
       {/* Calendario compatto: cubetti-data di tutti gli eventi futuri */}
       <section className="felt-panel mt-10 p-5">
-        <h2 className="kicker text-chalk-muted">{d.events.calendarTitle}</h2>
-        <ol className="mt-3 flex flex-wrap gap-4">
+        <h2 className="t-section">{d.events.calendarTitle}</h2>
+        <ol className="mt-4 flex flex-wrap gap-4">
           {up.map((e, i) => (
             <li key={e.slug} className="flex items-center gap-3">
               <span className={`date-cube ${i === 0 ? "is-next" : ""}`}>
@@ -87,7 +91,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
                 <small>{monthShort(locale, e.start)}</small>
               </span>
               <span className="max-w-[220px]">
-                <span className="block font-display text-sm font-bold text-sky">{e.title[locale]}</span>
+                <span className="t-item block text-sm">{e.title[locale]}</span>
                 <span className="block text-xs text-chalk-muted">{e.where[locale]}</span>
               </span>
             </li>
@@ -98,14 +102,16 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
       {/* Tournament Organizer: tornei creati dagli utenti e pubblicati sul calendario (solo Influencer/Pro/Staff) */}
       <section className="mt-12" id="community">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="kicker text-mint">{x.kicker}</p>
-            <h2 className="mt-1 text-2xl font-extrabold text-sky">{x.sectionTitle}</h2>
+            <h2 className="t-section mt-1">{x.sectionTitle}</h2>
             <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{x.sectionIntro}</p>
           </div>
-          <Link href={href(locale, "/tournaments/new")} className="btn btn-mint">
-            {x.organizeCta}
-          </Link>
+          {groups.length ? (
+            <Link href={newHref} className="btn btn-ink">
+              {x.organizeCta}
+            </Link>
+          ) : null}
         </div>
         <div className="felt-panel mt-5 p-4">
           <TagSearch labels={{ title: x.findTitle, placeholder: x.tagPlaceholder, button: x.find, notFound: x.tagNotFound, inviteInvalid: x.inviteInvalid }} />
@@ -114,7 +120,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
           groups.map((g) => (
             <div key={g.status} className="mt-6">
               <h3 className="kicker text-pale-muted">{x.groups[g.status]}</h3>
-              <ul className="mt-3 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <ul className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {g.list.map((t) => (
                   <li key={t.id}>
                     <TournamentCard t={t} locale={locale} dict={d} />
@@ -124,21 +130,44 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
             </div>
           ))
         ) : (
-          <p className="mt-5 text-sm text-pale-muted">{x.none}</p>
+          /* Stato vuoto (UX-13): non più una riga grigia ma i quattro passi del torneo, che sono una sequenza vera */
+          <div className="card-night mt-6 p-6 sm:p-8">
+            <h3 className="font-display text-xl font-extrabold text-chalk">{x.howTo.title}</h3>
+            <p className="mt-1 text-sm text-pale-muted">{x.none}</p>
+            <ol className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {steps.map((s, i) => (
+                <li key={i} className="flex gap-3 rounded-lg border-2 border-sky bg-night-2/70 p-4">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint font-mono text-sm font-bold text-ink" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm text-pale">{s}</span>
+                </li>
+              ))}
+            </ol>
+            <Link href={newHref} className="btn btn-primary mt-6">
+              {x.organizeCta}
+            </Link>
+          </div>
         )}
       </section>
 
-      <h2 className="mt-12 text-2xl font-extrabold text-sky">{d.common.upcoming}</h2>
-      <ul className="mt-5 grid gap-5 md:grid-cols-2">
+      <h2 className="t-section mt-12">{d.common.upcoming}</h2>
+      <ul className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
         {up.map((e) => (
           <li key={e.slug} id={e.slug}>
             <EventCard event={e} locale={locale} dict={d} />
           </li>
         ))}
       </ul>
+      <p className="mt-5 text-sm text-chalk-muted">
+        {d.events.submitLead}{" "}
+        <a className="link-mint font-semibold" href={`mailto:${contactEmail}?subject=Evento%20Origins%20TCG`}>
+          {d.events.submitCta} →
+        </a>
+      </p>
 
-      <h2 className="mt-14 text-2xl font-extrabold text-sky">{d.common.past}</h2>
-      <ul className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <h2 className="t-section mt-14">{d.common.past}</h2>
+      <ul className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {/* anche gli eventi passati hanno la loro ancora: l'ItemList dei dati strutturati la usa */}
         {past.map((e) => (
           <li key={e.slug} id={e.slug}>

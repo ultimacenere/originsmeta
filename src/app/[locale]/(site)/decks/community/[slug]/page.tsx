@@ -18,7 +18,8 @@ import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
 import { Avatar } from "@/components/AccountMenu";
-import { contactEmail } from "@/components/Footer";
+import { contactEmail, officialLinks } from "@/components/Footer";
+import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
@@ -99,7 +100,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const author = authorName(deck.profile);
   const handle = authorHandle(deck.profile);
   const others = (await listPublishedDecks(40)).filter((x) => x.slug !== deck.slug).slice(0, 8);
-  const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? ""}`;
+  // senza codice OM il builder si aprirebbe vuoto: il tasto compare solo quando il codice c'è
+  const builderHref = deck.code_om ? `${href(locale, "/deck-builder")}#${deck.code_om}` : null;
   const sections = guideSections.filter((k) => deck.guide[k]);
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
@@ -135,6 +137,14 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </Link>
       </p>
 
+      {/* Subito dopo la pubblicazione (?new=1, solo per il proprietario): link da copiare e tasto Discord */}
+      <NewDeckBanner
+        ownerId={deck.owner}
+        url={pageUrl}
+        discordHref={officialLinks.discord}
+        labels={{ title: c.newDeckTitle, text: c.newDeckText, copyLink: c.copyLink, copied: c.copied, discord: d.common.discord, close: c.newDeckClose }}
+      />
+
       <article className="card-night mt-6 p-6 sm:p-8">
         <div className="flex flex-wrap items-start gap-5">
           {legendary ? (
@@ -143,10 +153,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </Link>
           ) : null}
           <div className="min-w-0 flex-1 basis-64">
-            <p className="kicker text-pale-muted">
+            <p className="kicker text-mint">
               {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
             </p>
-            <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{deck.name}</h1>
+            <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
             <p className="mt-3 flex items-center gap-2 text-pale-muted">
               <Avatar profile={deck.profile} name={author} size={32} />
               <span>
@@ -160,8 +170,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           {deck.profile?.badge && deck.profile.badge !== "community" ? (
             <span className={`${badgePill} ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{c.badges[deck.profile.badge as keyof typeof c.badges] ?? deck.profile.badge}</span>
           ) : null}
-          {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint-deep text-chalk text-[11px] font-semibold uppercase">{d.common.community}</span>}
-          <span className="stat-pill border border-sky text-pale">
+          {/* pastiglie a fondo pieno con testo ink scuro (prima menta scuro con testo chiaro, 2,3:1) */}
+          {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{d.common.community}</span>}
+          <span className="stat-pill bg-sky text-ink">
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
           {deck.deck_types.map((t) => (
@@ -169,7 +180,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {c.deckTypes[t as keyof typeof c.deckTypes] ?? t}
             </span>
           ))}
-          {legendary || customLegendary ? <span className="stat-pill bg-gold/50 text-pale">★ {legendary?.name ?? customLegendary?.name}</span> : null}
+          {legendary || customLegendary ? <span className="stat-pill bg-gold text-ink">★ {legendary?.name ?? customLegendary?.name}</span> : null}
           <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
         </div>
 
@@ -237,7 +248,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </p>
         ) : null}
 
-        <h2 className="mt-8 text-xl font-extrabold text-sky">{d.common.legendary}</h2>
+        <h2 className="t-section mt-8">{d.common.legendary}</h2>
         {legendary ? (
           <div className="mt-2">
             <CardChip slug={legendary.slug} locale={locale} />
@@ -246,7 +257,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <p className="mt-2 text-sm text-pale">★ {customLegendary?.name ?? deck.legendary} *</p>
         )}
 
-        <h2 className="mt-8 text-xl font-extrabold text-sky">
+        <h2 className="t-section mt-8">
           {d.builder.slots} <span className="font-mono text-sm font-normal text-pale-muted">{RULES.distinctCards} × {RULES.copiesPerCard}</span>
         </h2>
         {knownCards.length ? (
@@ -270,18 +281,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale)} labels={d.stats} />
 
         <div className="mt-6 flex flex-wrap gap-2">
-          <Link href={builderHref} className="btn btn-ink text-xs">
-            {c.openInBuilder}
-          </Link>
-          {deck.code_om ? <CopyButton text={deck.code_om} label={c.copyCode} copied={c.copied} className="btn border border-sky text-xs text-pale" /> : null}
-          <a className="btn border border-sky text-xs text-pale-muted hover:text-crimson" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Report deck ${deck.slug}`)}&body=${encodeURIComponent(pageUrl)}`}>
-            {c.report}
-          </a>
+          {builderHref ? (
+            <Link href={builderHref} className="btn btn-ink text-xs">
+              {c.openInBuilder}
+            </Link>
+          ) : null}
+          {deck.code_om ? <CopyButton text={deck.code_om} label={c.copyCode} copied={c.copied} className="btn btn-ink text-xs" /> : null}
+          <CopyButton text={pageUrl} label={c.copyLink} copied={c.copied} className="btn btn-ink text-xs" />
         </div>
 
         {sections.length ? (
           <>
-            <h2 className="mt-10 text-2xl font-extrabold text-sky">{c.guide}</h2>
+            <h2 className="t-section mt-10">{c.guide}</h2>
             <div className="mt-3 grid gap-4 md:grid-cols-2">
               {sections.map((k) => (
                 <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
@@ -299,13 +310,13 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
-          <ul className="mt-4 grid gap-4 md:grid-cols-2">
+          <h2 className="t-section">{d.common.relatedGuides}</h2>
+          <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {guides.map((g) => (
               <li key={g.slug}>
                 <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover block p-5">
                   <p className="kicker text-pale-muted">{d.guides.categories[g.category]}</p>
-                  <h3 className="mt-1 text-lg font-extrabold text-sky">{g.title}</h3>
+                  <h3 className="t-item mt-1">{g.title}</h3>
                   <p className="mt-1 text-sm text-pale-muted">{g.excerpt}</p>
                 </Link>
               </li>
@@ -316,7 +327,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
       {others.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{c.others}</h2>
+          <h2 className="t-section">{c.others}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {others.map((x) => (
               <li key={x.slug}>
@@ -331,6 +342,13 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </ul>
         </section>
       ) : null}
+
+      {/* La segnalazione resta, ma in fondo e in piccolo: non è un'azione da mettere accanto a "Copia link" */}
+      <p className="mt-12 text-right text-xs text-pale-muted">
+        <a className="underline underline-offset-2 hover:text-pale" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Report deck ${deck.slug}`)}&body=${encodeURIComponent(pageUrl)}`}>
+          {c.report}
+        </a>
+      </p>
     </div>
   );
 }

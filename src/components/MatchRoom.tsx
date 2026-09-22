@@ -143,7 +143,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
       {/* Stato e referto */}
       <section className="card-night p-5">
-        <h2 className="text-xl font-extrabold text-sky">{l.reportTitle}</h2>
+        <h2 className="t-section">{l.reportTitle}</h2>
         {scoreLine ? <p className="mt-2 font-mono text-sm text-pale">{scoreLine}</p> : null}
         <p className={`mt-2 text-sm ${match.status === "confirmed" ? "text-good" : match.status === "disputed" ? "text-bad" : "text-pale-muted"}`}>
           {match.status === "confirmed"
@@ -174,7 +174,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
                 <span className="mt-1 block text-xs text-pale-muted">{theirName}</span>
                 <input type="number" min={0} max={need} value={theirs} onChange={(e) => setTheirs(Number(e.target.value))} className="mt-1 w-20 rounded-lg border border-sky bg-night px-3 py-2 font-mono text-pale" />
               </label>
-              <button type="button" disabled={pending || !validScore} onClick={report} className="btn btn-mint text-xs">
+              <button type="button" disabled={pending || !validScore} onClick={report} className="btn btn-primary text-xs">
                 {l.submitReport}
               </button>
             </div>
@@ -182,7 +182,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
         ) : null}
         {side === null ? <p className="mt-3 text-xs text-pale-muted">{l.organizerView}</p> : null}
 
-        <h3 className="mt-6 text-lg font-extrabold text-sky">{l.screenshotsTitle}</h3>
+        <h3 className="mt-6 font-display text-lg font-bold text-chalk">{l.screenshotsTitle}</h3>
         <p className="mt-1 text-xs text-pale-muted">{l.screenshotsHint}</p>
         {side !== null ? (
           <div className="mt-3">
@@ -210,7 +210,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
           </div>
         )}
         {error ? (
-          <p role="alert" className="mt-3 text-sm text-bad">
+          <p role="alert" className="alert-bad mt-3">
             {error}
           </p>
         ) : null}
@@ -218,7 +218,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
 
       {/* Chat */}
       <section className="card-night flex flex-col p-5">
-        <h2 className="text-xl font-extrabold text-sky">{l.chatTitle}</h2>
+        <h2 className="t-section">{l.chatTitle}</h2>
         <p className="mt-1 text-xs text-pale-muted">{l.chatHint}</p>
         <ol ref={listRef} className="mt-3 flex max-h-96 min-h-48 flex-1 flex-col gap-2 overflow-y-auto rounded-lg border border-sky bg-night-2/60 p-3" aria-live="polite">
           {messages.length ? (
@@ -247,7 +247,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
             }}
           >
             <input value={text} onChange={(e) => setText(e.target.value)} maxLength={500} placeholder={l.chatPlaceholder} className="min-w-0 flex-1 rounded-lg border border-sky bg-night px-3 py-2 text-sm text-pale focus:border-mint" />
-            <button type="submit" disabled={pending || !text.trim()} className="btn btn-mint text-xs">
+            <button type="submit" disabled={pending || !text.trim()} className="btn btn-primary text-xs">
               {l.send}
             </button>
           </form>

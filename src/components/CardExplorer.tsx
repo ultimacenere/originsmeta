@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { alignStyle, initials, sagaHue } from "@/lib/cardArt";
+import { alignStyle, changeStyle, initials, sagaHue } from "@/lib/cardArt";
 
 export type ExplorerCard = {
   slug: string;
@@ -53,13 +53,7 @@ type Labels = {
 
 type Option = { id: string; label: string };
 
-const kindStyle: Record<string, string> = {
-  buff: "bg-mint-deep text-chalk",
-  nerf: "bg-crimson text-chalk",
-  rework: "bg-gold text-ink",
-  deck: "bg-night-3 text-pale",
-};
-
+// I colori delle pastiglie dei cambi stanno in `changeStyle` (cardArt.ts): gli stessi di ChangeChip nelle altre pagine.
 const MAX_KEYWORDS = 4;
 
 /* La ricerca dell'header arriva come ?q=…: letta dal browser dopo l'idratazione (sul server vale ""),
@@ -223,33 +217,36 @@ export function CardExplorer({
 
                   <span className="card-tile-info">
                     <span className="kicker block text-mint">{c.sagaLabel}</span>
+                    {/* Pastiglie sempre a fondo pieno e testo sopra i 4,5:1 (prima Leggendaria pale su oro al 40% e
+                        Rimossa magenta su magenta tenue restavano sotto soglia). */}
                     <span className="mt-1 flex flex-wrap items-center gap-1.5">
                       <span className="stat-pill bg-night-3 text-[11px] text-pale">{c.typeLabel}</span>
                       {c.alignmentLabel && c.alignment ? <span className={`stat-pill text-[11px] ${alignStyle[c.alignment]}`}>{c.alignmentLabel}</span> : null}
                       {c.legendary ? (
-                        <span className="stat-pill bg-gold/40 text-[11px] text-pale">{labels.legendary}</span>
+                        <span className="stat-pill bg-gold text-[11px] font-bold text-ink">{labels.legendary}</span>
                       ) : c.rarityLabel ? (
-                        <span className="stat-pill bg-night-3 text-[11px] text-pale-muted">{c.rarityLabel}</span>
+                        <span className="stat-pill bg-night-3 text-[11px] text-pale">{c.rarityLabel}</span>
                       ) : null}
-                      {c.removed ? <span className="stat-pill bg-crimson/20 text-[11px] text-crimson">{c.removedLabel}</span> : null}
-                      {c.lastKind && c.lastKindLabel ? <span className={`stat-pill text-[11px] font-semibold uppercase ${kindStyle[c.lastKind]}`}>{c.lastKindLabel}</span> : null}
+                      {c.removed ? <span className="stat-pill bg-bad text-[11px] font-bold text-ink">{c.removedLabel}</span> : null}
+                      {c.lastKind && c.lastKindLabel ? <span className={`stat-pill text-[11px] font-bold uppercase ${changeStyle[c.lastKind]}`}>{c.lastKindLabel}</span> : null}
                     </span>
                     {c.ability ? <span className="card-tile-text">{c.ability}</span> : null}
                     {c.keywords.length ? (
                       <span className="mt-2 flex flex-wrap gap-1">
                         {c.keywords.slice(0, MAX_KEYWORDS).map((k) => (
-                          <span key={k} className="rounded border border-sky px-1.5 py-0.5 text-[10px] text-pale-muted">
+                          <span key={k} className="rounded bg-night-3 px-1.5 py-0.5 text-[10px] font-semibold text-pale">
                             {k}
                           </span>
                         ))}
-                        {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 text-[10px] text-pale-muted">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
+                        {c.keywords.length > MAX_KEYWORDS ? <span className="px-1 text-[10px] font-semibold text-pale">+{c.keywords.length - MAX_KEYWORDS}</span> : null}
                       </span>
                     ) : null}
                   </span>
                 </span>
 
                 <span className="card-tile-foot">
-                  <span className="min-w-0 flex-1 truncate font-display text-sm font-bold leading-tight text-sky">
+                  {/* Nome della carta: ruolo .t-item (celeste, bold), misura ridotta per la griglia fitta */}
+                  <span className="t-item min-w-0 flex-1 truncate text-sm leading-tight">
                     {c.legendary ? "★ " : ""}
                     {c.name}
                   </span>

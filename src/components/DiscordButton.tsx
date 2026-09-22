@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { isExternalHref, newTabProps } from "./SteamButton";
 
 /** Logo Discord "Clyde" (tracciato Simple Icons), colorato con il colore del testo corrente. */
 export function DiscordLogo({ className = "h-4 w-4" }: { className?: string }) {
@@ -14,6 +15,8 @@ export const isDiscordUrl = (url?: string | null): boolean => /discord\.(gg|com)
 /**
  * Tasto che porta su Discord, con i colori e la tipografia di Discord (classi in globals.css):
  * "blurple" = azione principale (#5865F2), "grey" = secondaria (#4E5058), come nell'app Discord.
+ * Con un indirizzo esterno (il caso normale: invito o canale) si apre in una nuova scheda, con l'avviso per i
+ * lettori di schermo (vedi `newTabProps` in SteamButton.tsx).
  */
 export function DiscordButton({
   href,
@@ -29,8 +32,9 @@ export function DiscordButton({
   className?: string;
 }) {
   const cls = ["btn-discord", variant === "grey" ? "btn-discord-grey" : "", size === "sm" ? "btn-discord-sm" : "", className].filter(Boolean).join(" ");
+  const external = isExternalHref(href);
   return (
-    <a href={href} rel="noopener" className={cls}>
+    <a href={href} {...(external ? newTabProps : {})} className={cls}>
       <DiscordLogo className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
       <span>{children}</span>
     </a>

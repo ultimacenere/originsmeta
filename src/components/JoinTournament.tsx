@@ -14,10 +14,15 @@ type Props = {
   status: string;
   players: number;
   size: number;
-  /** id degli iscritti e di chi ha già consegnato i mazzi (dalla pagina ISR) */
+  /** id degli iscritti e di chi ha già consegnato i mazzi */
   registeredIds: string[];
   submittedIds: string[];
   organizerId: string;
+  /**
+   * Chi guarda, se la pagina lo sa già (la scheda torneo è dinamica e legge la sessione): id oppure null se
+   * non è loggato. Con un valore il riquadro è già pieno nell'HTML; senza (undefined) lo si chiede al browser.
+   */
+  viewerId?: string | null;
   loginHref: string;
   deckHref: string;
   /** pagina di gestione (dalla fase 2): mostrata solo all'organizzatore */
@@ -29,19 +34,21 @@ type Props = {
 };
 
 /**
- * Riquadro iscrizione della scheda torneo. La pagina è statica (ISR): chi è loggato lo scopriamo nel browser,
- * come fa StarRating; iscrizione e ritiro passano dalle Server Action (RPC con lock e controllo di capienza)
- * e poi si ricarica la pagina, che le action hanno già rigenerato.
+ * Riquadro iscrizione della scheda torneo. La pagina passa chi guarda (`viewerId`), così il riquadro esce già
+ * completo dal server; solo se manca lo scopriamo nel browser, come fa StarRating. Iscrizione e ritiro passano
+ * dalle Server Action (RPC con lock e controllo di capienza) e poi si ricarica la pagina.
  */
 export function JoinTournament(p: Props) {
   const x = p.labels;
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null | undefined>(supabaseEnabled ? undefined : null);
+  const known = p.viewerId !== undefined;
+  const [userId, setUserId] = useState<string | null | undefined>(known ? p.viewerId : supabaseEnabled ? undefined : null);
   const [registered, setRegistered] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   useEffect(() => {
+    if (known) return;
     const sb = supabaseBrowser();
     if (!sb) return;
     let alive = true;
@@ -51,7 +58,7 @@ export function JoinTournament(p: Props) {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [known]);
 
   if (userId === undefined) return <div className="min-h-10" aria-busy="true" />;
 
@@ -79,7 +86,7 @@ export function JoinTournament(p: Props) {
       <div className="flex flex-wrap items-center gap-2">
         {!open ? <span className="stat-pill bg-night-3 text-pale">{x.statuses[p.status as keyof typeof x.statuses] ?? p.status}</span> : null}
         {open && !userId ? (
-          <Link href={p.loginHref} className="btn btn-mint text-xs">
+          <Link href={p.loginHref} className="btn btn-primary text-xs">
             {x.loginToJoin}
           </Link>
         ) : null}
@@ -87,19 +94,19 @@ export function JoinTournament(p: Props) {
           p.players >= p.size ? (
             <span className="stat-pill bg-night-3 text-pale">{x.full}</span>
           ) : (
-            <button type="button" disabled={pending} onClick={() => run(() => joinTournament(p.id, p.slug), true)} className="btn btn-mint text-xs">
+            <button type="button" disabled={pending} onClick={() => run(() => joinTournament(p.id, p.slug), true)} className="btn btn-primary text-xs">
               {pending ? x.working : x.join}
             </button>
           )
         ) : null}
-        {isRegistered ? <span className="stat-pill bg-mint font-bold text-ink">{x.joined}</span> : null}
+        {isRegistered ? <span className="stat-pill bg-mint font-bold text-ink">✓ {x.joined}</span> : null}
         {open && isRegistered ? (
-          <button type="button" disabled={pending} onClick={() => run(() => leaveTournament(p.id, p.slug), false)} className="btn btn-ghost text-xs">
+          <button type="button" disabled={pending} onClick={() => run(() => leaveTournament(p.id, p.slug), false)} className="btn btn-danger text-xs">
             {pending ? x.working : x.leave}
           </button>
         ) : null}
         {myMatch && p.matchHrefBase && (p.status === "running" || p.status === "finished") ? (
-          <Link href={`${p.matchHrefBase}${myMatch.id}`} className="btn btn-mint text-xs">
+          <Link href={`${p.matchHrefBase}${myMatch.id}`} className="btn btn-primary text-xs">
             {x.myMatch}
           </Link>
         ) : null}
@@ -111,15 +118,15 @@ export function JoinTournament(p: Props) {
       </div>
       {open && isRegistered ? (
         <div className="rounded-lg border-2 border-sky bg-night-2/70 p-3 text-sm">
-          <p className={`font-semibold ${submitted ? "text-good" : "text-gold"}`}>{submitted ? x.decksSubmitted : x.decksMissing}</p>
+          <p className={`font-semibold ${submitted ? "text-good" : "text-gold"}`}>{submitted ? `✓ ${x.decksSubmitted}` : x.decksMissing}</p>
           <p className="mt-1 text-pale-muted">{x.decksDeadline}</p>
-          <Link href={p.deckHref} className={`btn mt-2 text-xs ${submitted ? "btn-ink" : "btn-mint"}`}>
+          <Link href={p.deckHref} className={`btn mt-2 text-xs ${submitted ? "btn-ink" : "btn-primary"}`}>
             {submitted ? x.editDecks : x.submitDecks}
           </Link>
         </div>
       ) : null}
       {error ? (
-        <p role="alert" className="text-sm text-bad">
+        <p role="alert" className="alert-bad">
           {error}
         </p>
       ) : null}

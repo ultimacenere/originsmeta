@@ -12,7 +12,7 @@ import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardArt, CardChipList } from "@/components/CardChip";
 import { GameCard } from "@/components/GameCard";
 import { alignStyle } from "@/lib/cardArt";
-import { SteamButton } from "@/components/SteamButton";
+import { SteamButton, newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -149,7 +149,7 @@ export default async function CardPage({ params }: { params: Params }) {
         </Link>
       </p>
 
-      <article className="card-night mt-6 grid gap-8 p-6 sm:p-8 md:grid-cols-[230px_1fr_240px]">
+      <article className="card-night mt-6 grid grid-cols-1 gap-8 p-6 sm:p-8 md:grid-cols-[230px_minmax(0,1fr)_240px]">
         <div className="flex flex-col items-center gap-4">
           {/* A sinistra la carta come si legge in partita (disegnata da noi, dati nostri), sotto l'oggetto
               da collezione ufficiale con i crediti impressi: il gioco è anche collezionismo. */}
@@ -174,10 +174,10 @@ export default async function CardPage({ params }: { params: Params }) {
           )}
         </div>
         <div>
-          <p className="kicker text-pale-muted">
+          <p className="kicker text-mint">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">
+          <h1 className="t-page mt-2 leading-tight">
             {card.legendary ? <span className="text-gold">★ </span> : null}
             {card.name}
           </h1>
@@ -188,10 +188,12 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="stat-pill bg-night-3 text-chalk">{typeLabel[card.type]}</span>
-            {card.legendary ? <span className="stat-pill bg-gold text-ink font-bold">★ {d.common.legendary}</span> : null}
+            {card.legendary ? <span className="stat-pill bg-gold font-bold text-ink">★ {d.common.legendary}</span> : null}
             {card.rarity && card.rarity !== "legendary" ? <span className="stat-pill bg-night-3 text-pale">{rarityLabel[card.rarity]}</span> : null}
-            {card.alignment ? <span className={`stat-pill ${alignStyle[card.alignment]}`}>{alignLabel[card.alignment]}</span> : null}
-            {card.status === "removed" ? <span className="stat-pill bg-crimson text-chalk">{d.common.removed}</span> : null}
+            {/* Pastiglie leggibili: allineamento dalla mappa condivisa (tinte tenui, testo scuro, come nel database
+                carte); "Rimossa" chalk sul magenta scuro 6,1:1 (sul magenta pieno faceva 3,99:1). */}
+            {card.alignment ? <span className={`stat-pill font-bold ${alignStyle[card.alignment]}`}>{alignLabel[card.alignment]}</span> : null}
+            {card.status === "removed" ? <span className="stat-pill bg-crimson-deep font-bold text-chalk">{d.common.removed}</span> : null}
             {tier ? (
               <span className="stat-pill bg-night-3 text-pale">
                 {d.common.tierPosition}: {tier === "unranked" ? d.common.unranked : tier}
@@ -203,7 +205,7 @@ export default async function CardPage({ params }: { params: Params }) {
           {card.keywords?.length ? (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {card.keywords.map((k) => (
-                <span key={k} className="rounded border border-sky px-2 py-0.5 text-[11px] text-pale-muted">
+                <span key={k} className="rounded border-2 border-sky px-2 py-0.5 text-[11px] text-pale-muted">
                   {k}
                 </span>
               ))}
@@ -211,7 +213,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {card.origin ? (
             <>
-              <h2 className="mt-8 text-xl font-extrabold text-sky">{d.cards.sagaTitle}</h2>
+              <h2 className="t-section mt-8">{d.cards.sagaTitle}</h2>
               <p className="mt-2 text-pale-muted">{card.origin[locale]}</p>
             </>
           ) : null}
@@ -243,10 +245,10 @@ export default async function CardPage({ params }: { params: Params }) {
       </article>
 
       {linked.length || linkedFrom.length ? (
-        <section className="mt-10 grid gap-6 md:grid-cols-2">
+        <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
           {linked.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-sky">{d.common.related}</h2>
+              <h2 className="t-section">{d.common.related}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linked} locale={locale} />
               </div>
@@ -254,7 +256,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {linkedFrom.length ? (
             <div>
-              <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedFrom}</h2>
+              <h2 className="t-section">{d.common.relatedFrom}</h2>
               <div className="mt-4">
                 <CardChipList slugs={linkedFrom.map((c) => c.slug)} locale={locale} />
               </div>
@@ -265,7 +267,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {card.history.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.cards.changesTitle}</h2>
+          <h2 className="t-section">{d.cards.changesTitle}</h2>
           <ol className="mt-4 space-y-3">
             {[...card.history].reverse().map((ch, i) => (
               <li key={i} className="card-night p-5">
@@ -290,12 +292,12 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {inDecks.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.decksWithCard}</h2>
+          <h2 className="t-section">{d.common.decksWithCard}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {inDecks.map((deck) => (
               <li key={deck.slug}>
-                <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-mint text-xs">
-                  {deck.name} <span className="font-mono font-normal opacity-70">{archetypeLabels[deck.archetype][locale]}</span>
+                <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-ink text-xs">
+                  {deck.name} <span className="font-mono font-normal text-pale-muted">{archetypeLabels[deck.archetype][locale]}</span>
                 </Link>
               </li>
             ))}
@@ -305,16 +307,16 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {/* Invito sempre presente: senza i mazzi ufficiali la scheda carta finirebbe in un vicolo cieco. */}
       <section className="card-night mt-10 p-6 sm:p-8">
-        <h2 className="text-2xl font-extrabold text-sky">{d.cards.buildTitle}</h2>
+        <h2 className="t-section">{d.cards.buildTitle}</h2>
         <p className="mt-2 max-w-2xl text-pale">{d.cards.buildText}</p>
-        <Link href={href(locale, "/deck-builder")} className="btn btn-mint mt-5 inline-flex">
+        <Link href={href(locale, "/deck-builder")} className="btn btn-primary mt-5 inline-flex">
           {d.nav.builder}
         </Link>
       </section>
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.relatedGuides}</h2>
+          <h2 className="t-section">{d.common.relatedGuides}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {guides.map((g) => (
               <li key={g.slug}>
@@ -329,7 +331,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {related.length ? (
         <section className="mt-12">
-          <h2 className="text-2xl font-extrabold text-sky">
+          <h2 className="t-section">
             {d.cards.relatedTitle}: {sagas[card.saga][locale]}
           </h2>
           <ul className="mt-4 flex flex-wrap gap-2">
@@ -347,7 +349,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       <p className="mt-10 text-xs text-chalk-muted/70">
         {d.cards.sourceBefore}{" "}
-        <a href={cardSource.url} rel="noopener" className="link-mint">
+        <a href={cardSource.url} {...newTabProps} className="link-mint">
           {cardSource.name}
         </a>{" "}
         ({d.common.patch} {cardSource.patch}){d.cards.sourceAfter}

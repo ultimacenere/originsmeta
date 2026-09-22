@@ -10,6 +10,12 @@ export type Guide = {
    * /decks/community/[slug] con il nome, così la guida resta statica) e carte trattati nella guida.
    */
   tags?: { decks?: string[]; communityDecks?: { slug: string; name: string }[]; cards?: string[] };
+  /**
+   * Lista del mazzo di cui parla la guida (solo guide ai mazzi): slug della Leggendaria per primo, poi le
+   * 12 carte base. La pagina la mostra come fila di carte prima del testo, così il mazzo si vede a colpo
+   * d'occhio. Resta un dato statico: la guida non legge Supabase.
+   */
+  deckList?: string[];
   title: string;
   /**
    * Titolo breve per la SERP: sostituisce `title` nei metadati della pagina quando il titolo esteso
@@ -42,10 +48,20 @@ export const guideSlugs = [
 ] as const;
 export type GuideSlug = (typeof guideSlugs)[number];
 
+/*
+  Liste dei due mazzi pubblicati dallo staff, copiate identiche dal campo `cards` delle loro news in
+  src/lib/data/news.ts ("davdas-3-pigs-mid-range" e "davdas-healing-healsing"), che a sua volta riporta la
+  scheda /decks/community/[slug]: Leggendaria per prima, poi le 12 carte base. Se il mazzo cambia, vanno
+  aggiornate insieme alla news.
+*/
+const threePigsMidRange = ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"];
+const healingHealsing = ["van-helsing", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "phuong-hoang", "jekyll", "boitata", "tin-woodman", "spellbook", "searing-light", "forbidden-knowledge"];
+
 const en: Record<GuideSlug, Guide> = {
   "three-pigs-midrange-guide": {
     slug: "three-pigs-midrange-guide",
     category: "decks",
+    deckList: threePigsMidRange,
     tags: {
       communityDecks: [{ slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" }],
       cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
@@ -123,6 +139,7 @@ The deck page is clear about the main weakness: "falling off curve lowers its po
   "three-pigs-midrange-matchups": {
     slug: "three-pigs-midrange-matchups",
     category: "decks",
+    deckList: threePigsMidRange,
     tags: {
       communityDecks: [
         { slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" },
@@ -179,6 +196,7 @@ The deck is tagged for both ladder and competitive play. In the Conquest format 
   "healing-healsing-guide": {
     slug: "healing-healsing-guide",
     category: "decks",
+    deckList: healingHealsing,
     tags: {
       communityDecks: [{ slug: "healing-healsing-9411", name: "Healing Healsing" }],
       cards: ["van-helsing", "van-helsings-tools", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "spellbook", "phuong-hoang", "jekyll", "searing-light", "boitata", "tin-woodman", "forbidden-knowledge"],
@@ -265,6 +283,7 @@ Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggr
   "healing-healsing-matchups": {
     slug: "healing-healsing-matchups",
     category: "decks",
+    deckList: healingHealsing,
     tags: {
       communityDecks: [
         { slug: "healing-healsing-9411", name: "Healing Healsing" },
@@ -678,6 +697,7 @@ const it: Record<GuideSlug, Guide> = {
   "three-pigs-midrange-guide": {
     slug: "three-pigs-midrange-guide",
     category: "decks",
+    deckList: threePigsMidRange,
     tags: {
       communityDecks: [{ slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" }],
       cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
@@ -755,6 +775,7 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
   "three-pigs-midrange-matchups": {
     slug: "three-pigs-midrange-matchups",
     category: "decks",
+    deckList: threePigsMidRange,
     tags: {
       communityDecks: [
         { slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" },
@@ -811,6 +832,7 @@ Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Nel formato 
   "healing-healsing-guide": {
     slug: "healing-healsing-guide",
     category: "decks",
+    deckList: healingHealsing,
     tags: {
       communityDecks: [{ slug: "healing-healsing-9411", name: "Healing Healsing" }],
       cards: ["van-helsing", "van-helsings-tools", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "spellbook", "phuong-hoang", "jekyll", "searing-light", "boitata", "tin-woodman", "forbidden-knowledge"],
@@ -897,6 +919,7 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
   "healing-healsing-matchups": {
     slug: "healing-healsing-matchups",
     category: "decks",
+    deckList: healingHealsing,
     tags: {
       communityDecks: [
         { slug: "healing-healsing-9411", name: "Healing Healsing" },

@@ -10,7 +10,7 @@ import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
 import { NewsCover } from "@/components/NewsCover";
 import { SteamButton } from "@/components/SteamButton";
-import { NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
+import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -63,7 +63,8 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const authorPath = href(locale, `/authors/${author.slug}`);
   const authorUrl = `${siteUrl}${authorPath}`;
   // La fonte da cui nasce l'articolo: il post ufficiale, oppure la scheda del mazzo pubblicato qui.
-  const sourceUrl = isDeckNews(item) ? `${siteUrl}${href(locale, item.url)}` : item.url;
+  const deckNews = isDeckNews(item);
+  const sourceUrl = deckNews ? `${siteUrl}${href(locale, item.url)}` : item.url;
 
   const article = {
     "@context": "https://schema.org",
@@ -113,7 +114,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
             {newsReadTime(item, locale)} {d.guides.readTime}
           </span>
         </p>
-        <h1 className="mt-3 text-3xl font-extrabold leading-tight text-sky sm:text-5xl">{title}</h1>
+        <h1 className="t-page mt-3 leading-tight">{title}</h1>
         <p className="mt-5 text-lg leading-relaxed text-chalk">{item.summary[locale]}</p>
         {/* Firma editoriale sotto il titolo, con le date: chi scrive e quando, prima ancora di leggere */}
         <p className="mt-5 text-sm text-pale-muted">
@@ -154,41 +155,51 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
       <div className="hero-art mt-8">
         <NewsCover src={item.image} priority className="rounded-none border-0" />
       </div>
+      {/* News su un mazzo pubblicato qui: "Apri il mazzo" subito sotto la copertina, come in /news e in home
+          (riunione del 21/09/2026). Sulle altre news non rende nulla. */}
+      <NewsDeckButton item={item} locale={locale} dict={d} className="mt-6" />
 
       <article className="card-night mt-8 p-6 sm:p-10">
         {body ? <Markdown source={body} linkCards={locale} /> : null}
 
-        <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby="news-source">
-          <h2 id="news-source" className="kicker text-pale-muted">
-            {d.news.sourceTitle}
-          </h2>
-          <div className="mt-3">
-            {item.source === "steam" ? (
-              <SteamButton href={item.url} variant="dark" size="sm">
-                {d.common.steamNews}
-              </SteamButton>
-            ) : (
-              <NewsSourceLink item={item} locale={locale} dict={d} className="text-sm font-bold text-mint underline" />
+        {deckNews && !item.cards?.length && !item.guides?.length ? null : (
+          <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby={deckNews ? undefined : "news-source"}>
+            {/* per le news sui mazzi la "fonte" è la scheda del mazzo, già aperta dal tasto sotto la copertina */}
+            {deckNews ? null : (
+              <>
+                <h2 id="news-source" className="kicker text-pale-muted">
+                  {d.news.sourceTitle}
+                </h2>
+                <div className="mt-3">
+                  {item.source === "steam" ? (
+                    <SteamButton href={item.url} variant="dark" size="sm">
+                      {d.common.steamNews}
+                    </SteamButton>
+                  ) : (
+                    <NewsSourceLink item={item} locale={locale} dict={d} className="text-sm font-bold text-mint underline" />
+                  )}
+                </div>
+              </>
             )}
-          </div>
-          {item.cards?.length ? (
-            <div className="mt-6">
-              <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
-              <CardChipList slugs={item.cards} locale={locale} />
-            </div>
-          ) : null}
-          <NewsGuideLinks item={item} locale={locale} dict={d} />
-        </section>
+            {item.cards?.length ? (
+              <div className={deckNews ? "" : "mt-6"}>
+                <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
+                <CardChipList slugs={item.cards} locale={locale} />
+              </div>
+            ) : null}
+            <NewsGuideLinks item={item} locale={locale} dict={d} />
+          </section>
+        )}
 
         {faq.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="news-faq">
-            <h2 id="news-faq" className="text-2xl font-extrabold text-sky">
+            <h2 id="news-faq" className="t-section">
               {d.guides.faqTitle}
             </h2>
             <dl className="mt-4 space-y-4">
               {faq.map((f) => (
                 <div key={f.q}>
-                  <dt className="font-display text-base font-bold text-sky">{f.q}</dt>
+                  <dt className="t-item text-base">{f.q}</dt>
                   <dd className="mt-1 text-pale-muted">{f.a}</dd>
                 </div>
               ))}
@@ -207,7 +218,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
 
       <section className="mt-12" aria-labelledby="more-news">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 id="more-news" className="text-2xl font-extrabold text-sky">
+          <h2 id="more-news" className="t-section">
             {d.news.moreNews}
           </h2>
           <Link href={href(locale, "/news")} className="text-sm text-mint hover:underline">
@@ -222,7 +233,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
                 <p className="font-mono text-xs text-pale-muted">
                   <time dateTime={other.date}>{formatDate(locale, other.date)}</time>
                 </p>
-                <h3 className="mt-1 text-base font-extrabold leading-snug text-sky">{other.title[locale]}</h3>
+                <h3 className="t-item mt-1 text-base leading-snug">{other.title[locale]}</h3>
               </Link>
             </li>
           ))}

@@ -1,22 +1,32 @@
 import Link from "next/link";
 import { formatDateShort, formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Event } from "@/lib/data/events";
-import { SteamButton, isSteamUrl } from "./SteamButton";
+import { NEW_TAB_REL, NewTabIcon, SteamButton, isSteamUrl } from "./SteamButton";
 import { DiscordButton, isDiscordUrl } from "./DiscordButton";
 
 export function EventCard({ event, locale, dict, compact = false }: { event: Event; locale: Locale; dict: Dictionary; compact?: boolean }) {
   const range = event.end
     ? `${formatDateShort(locale, event.start)} – ${formatDateShort(locale, event.end)} ${event.end.slice(0, 4)}`
     : formatDate(locale, event.start);
+  // Iscrizioni e fonti portano fuori dal sito: nuova scheda, con l'avviso per i lettori di schermo nel nome del link
+  // (Steam e Discord lo fanno da soli, vedi SteamButton.tsx).
+  const newTab = (
+    <>
+      <NewTabIcon className="h-3 w-3" />
+      <span className="sr-only"> {dict.footer.newTab}</span>
+    </>
+  );
   return (
     <article className="card-night flex h-full flex-col p-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-sm tabular text-crimson">{range}</p>
+        {/* rosa tenue: il crimson sul blu notte fa 3:1 e il rosa pieno, sotto il velo menta in cima alla scheda, 4,1:1;
+            crimson-soft fa 8,9:1 lì e 10,4:1 sul night */}
+        <p className="font-mono text-sm tabular text-crimson-soft">{range}</p>
         <span className={`stat-pill text-[11px] font-semibold uppercase ${event.official ? "bg-night-3 text-chalk" : "bg-night-3 text-pale"}`}>
           {event.official ? dict.events.officialBadge : dict.events.communityBadge}
         </span>
       </div>
-      <h3 className="mt-2 text-xl font-extrabold leading-tight text-sky">{event.title[locale]}</h3>
+      <h3 className="t-item mt-2">{event.title[locale]}</h3>
       <p className="mt-1 text-sm text-pale-muted">{event.where[locale]}</p>
       <p className="mt-3 text-sm text-pale">{event.text[locale]}</p>
       {!compact && event.format ? (
@@ -35,7 +45,7 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
       ) : null}
       <div className="mt-auto flex flex-wrap gap-2 pt-4">
         {event.guide ? (
-          <Link href={href(locale, `/guides/${event.guide}`)} className="btn btn-mint text-xs">
+          <Link href={href(locale, `/guides/${event.guide}`)} className="btn btn-primary text-xs">
             {dict.events.guideCta}
           </Link>
         ) : null}
@@ -49,8 +59,9 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
               {event.signup.label[locale]}
             </DiscordButton>
           ) : (
-            <a className="btn btn-ink text-xs" href={event.signup.url} rel="noopener">
+            <a className="btn btn-ink text-xs" href={event.signup.url} target="_blank" rel={NEW_TAB_REL}>
               {event.signup.label[locale]}
+              {newTab}
             </a>
           )
         ) : null}
@@ -60,8 +71,9 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
               {dict.common.source}
             </SteamButton>
           ) : (
-            <a className="btn border border-sky text-pale text-xs hover:text-crimson" href={event.source} rel="noopener">
+            <a className="btn btn-ink text-xs" href={event.source} target="_blank" rel={NEW_TAB_REL}>
               {dict.common.source}
+              {newTab}
             </a>
           )
         ) : null}

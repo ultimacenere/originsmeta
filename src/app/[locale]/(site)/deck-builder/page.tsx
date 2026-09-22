@@ -22,7 +22,7 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.decks}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{b.title}</h1>
+      <h1 className="t-page mt-2">{b.title}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{b.intro}</p>
 
       {/* Disclaimer sui dati (richiesta di Pierluigi del 22/09/2026): a che versione del gioco sono aggiornate le carte */}
@@ -42,33 +42,38 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
         ) : null}
       </p>
 
+      {/* Gerarchia dei titoli: H1 della pagina, H2 per le regole e per le due colonne del builder (Il tuo mazzo,
+          Carte), H3 dentro il mazzo. Prima le regole erano un occhiello da 11,8 px sotto H3 da 18 px. */}
       <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
-        <section className="felt-panel p-4">
-          <h2 className="kicker text-chalk-muted">{b.rulesTitle}</h2>
-          <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-chalk">
+        <section aria-labelledby="deck-rules-title" className="felt-panel p-4 sm:p-5">
+          <h2 id="deck-rules-title" className="t-section">
+            {b.rulesTitle}
+          </h2>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-chalk">
             {b.rules.map((r) => (
               <li key={r}>• {r}</li>
             ))}
           </ul>
-          <p className="mt-2 text-xs text-chalk-muted/80">{b.rulesSource}</p>
+          <p className="mt-2 text-xs text-chalk-muted">{b.rulesSource}</p>
         </section>
-        <Link href={href(locale, "/decks")} className="btn btn-ghost self-center">
+        <Link href={href(locale, "/decks")} className="btn btn-ghost self-center justify-self-start md:justify-self-auto">
           {d.decks.title} →
         </Link>
       </div>
 
       <div className="mt-8">
-        {/* posiziona l anteprima della carta, che nel pool sta in una lista con scorrimento */}
+        {/* posiziona l'anteprima della carta, anche sulle righe del mazzo e del pool (pannello in position: fixed) */}
         <CardMentionEdges />
         <DeckBuilder
           pool={pool}
+          locale={locale}
           contactEmail={contactEmail}
           shareBase={`${siteUrl}${href(locale, "/deck-builder")}`}
           publishHref={href(locale, "/decks/publish")}
           labels={builderLabels(d)}
         />
       </div>
-      <p className="mt-6 text-xs text-chalk-muted/70">
+      <p className="mt-6 text-xs text-chalk-muted">
         {RULES.deckSize} = {RULES.legendarySlots} + {RULES.distinctCards} × {RULES.copiesPerCard} · {d.common.notAffiliated}
       </p>
     </div>

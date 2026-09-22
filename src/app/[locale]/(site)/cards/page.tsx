@@ -3,6 +3,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { activeCards, cards, cardSource, lastChange, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
+import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -70,7 +71,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
           })]}
       />
       <p className="kicker text-mint">{d.nav.cards}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.cards.title}</h1>
+      <h1 className="t-page mt-2">{d.cards.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
       <p className="mt-6 font-display text-3xl font-extrabold text-mint">
@@ -108,7 +109,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
       <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">
         {d.cards.sourceBefore}{" "}
-        <a href={cardSource.url} rel="noopener" className="link-mint">
+        <a href={cardSource.url} {...newTabProps} className="link-mint">
           {cardSource.name}
         </a>{" "}
         ({d.common.patch} {cardSource.patch}){d.cards.sourceAfter}

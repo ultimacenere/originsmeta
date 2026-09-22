@@ -8,6 +8,12 @@
   Niente elementi bianchi né neri pieni: richiesta esplicita di Pierluigi. Menta del logo per bottoni e accenti,
   giallo citrino solo per le leggendarie e l'evento evidenziato, magenta per ciò che scotta.
   "ink" resta il testo scuro sui fondi menta/oro. I nomi dei token sono per ruolo, non per tinta.
+
+  Aggiornamento del 21/09/2026 (decisioni di Pierluigi): i bottoni primari hanno il gradiente stile Instagram
+  (--grad-ig) con testo bianco, unica eccezione motivata alla regola "niente bianco pieno"; scala dei titoli per
+  ruolo (.t-page, .t-section, .t-item); post-it per dire che cos'è un contenuto; avvisi d'errore leggibili.
+  Spessori delle cornici, regola unica: 3 px i contenitori, 2 px chip, pastiglie con cornice e mini carte,
+  1 px solo i controlli dei moduli. Tutto il sistema, disegnato con queste stesse classi, sta nella pagina /style.
 */
 @theme {
   --color-felt: #150c2c;
@@ -25,6 +31,8 @@
   --color-chalk-muted: #96a3b9;
   --color-crimson: #c81e7a;
   --color-crimson-deep: #971359;
+  /* tinta tenue del magenta, per la pastiglia "Evil" con testo ink (12,1:1): fa coppia con mint-soft di "Good" */
+  --color-crimson-soft: #f6c3dd;
   --color-gold: #f2d23c;
   --color-gold-deep: #c4a516;
   --color-mint: #31e3bd;
@@ -46,6 +54,21 @@
 }
 
 @layer base {
+  /* Token che non sono colori pieni, quindi non stanno in @theme (Tailwind non ne ricava utility):
+     restano variabili CSS sempre presenti, lette dalle classi qui sotto e mostrate nella pagina /style. */
+  :root {
+    /* Gradiente stile Instagram dei bottoni primari (decisione di Pierluigi del 21/09/2026). Contrasto del testo
+       bianco misurato sui colori del gradiente: 4,76:1 sul rosso (40%), 5,25:1 sul magenta (60%), 5,79 e 6,50 sul
+       viola; sull'arancio degli angoli scende a 2,3:1, quindi il testo non deve mai starci sopra (vedi .btn-primary). */
+    --grad-ig: linear-gradient(45deg, #f09433 0%, #e6683c 18%, #dc2743 40%, #cc2366 60%, #bc1888 80%, #833ab4 100%);
+    /* Colori dei post-it, tutti con testo ink #16102a: rapporti misurati tra parentesi. */
+    --postit-deck: #f2d23c; /* Nuovo mazzo, giallo (12,3:1) */
+    --postit-news: #c4b0ff; /* News, viola (9,6:1) */
+    --postit-patch: #ff8fc4; /* Patch, rosa (8,7:1) */
+    --postit-guide: #31e3bd; /* Guida, menta (11,3:1) */
+    --postit-tournament: #3fc4e8; /* Torneo, celeste (9,0:1) */
+    --postit-event: #ffb454; /* Evento, arancio (10,4:1) */
+  }
   html {
     scroll-behavior: smooth;
   }
@@ -100,9 +123,10 @@
     transform: translateY(-3px) rotate(-0.4deg);
     box-shadow: var(--shadow-mint);
   }
-  /* Riquadro "sul feltro": bordo gessato */
+  /* Riquadro "sul feltro": bordo gessato. 3 px come ogni contenitore (regola unica degli spessori); resta
+     discreto perché il colore è felt-line, poco distante dal fondo. */
   .felt-panel {
-    border: 1px solid var(--color-felt-line);
+    border: 3px solid var(--color-felt-line);
     background: rgba(14, 7, 31, 0.6);
     border-radius: 14px;
   }
@@ -117,6 +141,54 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
+
+  /*
+    Scala dei titoli per RUOLO (21/09/2026). Perché: prima titolo di sezione, nome di mazzo e nome di carta erano
+    tutti celesti e di peso simile (rilievo di Davdas), e l'occhio non capiva che cosa fosse un contenitore e che
+    cosa un contenuto. Ora il colore alterna per livello: pagina celeste, sezione gesso, elemento di nuovo celeste
+    ma più piccolo. Il kicker sopra un titolo di sezione è sempre `kicker text-mint`.
+      .t-page     H1 della pagina (uno per pagina)
+      .t-section  H2 di sezione (anche SectionHead)
+      .t-item     titolo di un elemento: mazzo, carta, guida, news, torneo, in una lista o in una scheda
+    Le utility di Tailwind vincono sulle classi di componente: dove serve una misura diversa (una griglia fitta)
+    si scrive `t-item text-sm` e si tiene il ruolo cambiando solo la dimensione.
+  */
+  .t-page,
+  .t-section,
+  .t-item {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .t-page {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--color-sky);
+  }
+  .t-section {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-chalk);
+  }
+  .t-item {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-sky);
+  }
+  @media (min-width: 640px) {
+    .t-page {
+      font-size: 3rem;
+    }
+    .t-section {
+      font-size: 1.875rem;
+    }
+    .t-item {
+      font-size: 1.25rem;
+    }
+  }
   .lane-rule {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--color-mint) 20%, var(--color-mint) 80%, transparent);
@@ -129,6 +201,11 @@
     overflow: hidden;
     background: var(--color-night);
   }
+  /*
+    Bottoni. Ogni variante ha una cornice da 2 px (trasparente dove non si vede): così un bottone col gradiente e
+    uno "ghost" messi in fila hanno la stessa altezza. Le regole di passaggio e pressione valgono solo sui bottoni
+    attivi (`:not(:disabled, [aria-disabled="true"])`): un bottone disabilitato non deve reagire.
+  */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -137,42 +214,118 @@
     font-weight: 700;
     font-size: 0.85rem;
     letter-spacing: 0.01em;
+    border: 2px solid transparent;
     border-radius: 999px;
-    padding: 0.7rem 1.15rem;
-    transition: transform 120ms ease, background-color 120ms ease, color 120ms ease;
+    padding: calc(0.7rem - 2px) calc(1.15rem - 2px);
+    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, color 120ms ease;
   }
-  .btn:active {
+  .btn:active:not(:disabled, [aria-disabled="true"]) {
     transform: translateY(1px);
   }
-  .btn-mint {
-    background: var(--color-mint);
-    color: var(--color-ink);
+  .btn:focus-visible {
+    outline: 3px solid var(--color-mint);
+    outline-offset: 3px;
   }
-  .btn-mint:hover {
-    background: #5cf0d0;
+  /* Disabilitato: si vede che non si può premere (prima era identico a uno attivo). */
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.45;
+    filter: saturate(0.35);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /*
+    Bottone primario col gradiente stile Instagram (decisione di Pierluigi del 21/09/2026: "tutti rosa").
+    Testo bianco con un'ombra leggera: è l'unica eccezione alla regola "niente bianco pieno", perché il gesso
+    (chalk) sul gradiente non passa (3,55:1) e il bianco sì. Il testo deve stare sulla fascia rosso-magenta-viola:
+      - lo sfondo è largo il doppio del bottone (200%) e a riposo sta al 75%: sotto il testo cade la fascia 41-82%
+        del gradiente (bianco da 4,78 a 5,8:1, misurato con Unbounded sui bottoni reali; caso peggiore "Vota i mazzi
+        della community →"), l'arancio resta solo nell'angolo in basso a sinistra. Centrato (50%) il testo cadeva
+        tra il 29% e il 71% e le prime lettere scendevano a 4,06:1;
+      - il testo è centrato e il padding orizzontale è generoso, anche quando il bottone è a tutta larghezza;
+      - al passaggio lo sfondo scorre verso il viola (100%), dove il contrasto sale (5,3-6,5:1). Mai verso 0%.
+    Con "riduci animazioni" il cambio avviene senza transizione.
+  */
+  .btn-primary,
+  .btn-mint {
+    justify-content: center;
+    text-align: center;
+    padding-inline: calc(1.45rem - 2px);
+    background-image: var(--grad-ig);
+    background-origin: border-box;
+    background-size: 200% 100%;
+    background-position: 75% 50%;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 24px -14px rgba(204, 35, 102, 0.9);
+    transition: transform 120ms ease, background-position 420ms ease, box-shadow 200ms ease;
+  }
+  /* .btn-mint: nome storico. Dal 21/09/2026 è il bottone primario col gradiente, identico a .btn-primary
+     (resta per le ~50 chiamate esistenti; nel codice nuovo si scrive .btn-primary). */
+  .btn-primary:hover:not(:disabled, [aria-disabled="true"]),
+  .btn-mint:hover:not(:disabled, [aria-disabled="true"]) {
+    background-position: 100% 50%;
+    color: #fff;
+    box-shadow: 0 12px 28px -12px rgba(188, 24, 136, 0.95);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary,
+    .btn-mint {
+      transition: none;
+    }
   }
   .btn-gold {
     background: var(--color-gold);
     color: var(--color-ink);
   }
-  .btn-gold:hover {
+  .btn-gold:hover:not(:disabled, [aria-disabled="true"]) {
     background: #f7de63;
   }
+  /* Secondario sul feltro: solo cornice. Accanto al gradiente resta un passo indietro. */
   .btn-ghost {
-    border: 1px solid var(--color-chalk-muted);
+    border-color: var(--color-chalk-muted);
     color: var(--color-chalk);
   }
-  .btn-ghost:hover {
+  .btn-ghost:hover:not(:disabled, [aria-disabled="true"]) {
     border-color: var(--color-mint);
     color: var(--color-mint);
   }
+  /* Secondario pieno, blu notte con cornice celeste: per le azioni affiancate a un primario sui pannelli. */
   .btn-ink {
     background: var(--color-night-3);
     color: var(--color-chalk);
-    border: 1px solid var(--color-sky);
+    border-color: var(--color-sky);
   }
-  .btn-ink:hover {
+  .btn-ink:hover:not(:disabled, [aria-disabled="true"]) {
     background: #2c3d5e;
+    color: var(--color-sky);
+  }
+  /* Azioni distruttive (elimina, ritira, rimuovi): il rosso `bad` passa su night e felt (5,2-6,5:1), il crimson
+     che si usava prima no (2,96:1). Al passaggio si riempie di crimson-deep con testo gesso (6,1:1). */
+  .btn-danger {
+    border-color: color-mix(in srgb, var(--color-bad) 70%, transparent);
+    color: var(--color-bad);
+  }
+  .btn-danger:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--color-crimson-deep);
+    border-color: var(--color-crimson-deep);
+    color: var(--color-chalk);
+  }
+  /* Opzioni di un gruppo (pubblico/privato, formato): la scelta attiva si marca con aria-pressed="true" (o .is-on),
+     così non si confonde con un'azione primaria col gradiente. */
+  .btn-choice {
+    border-color: var(--color-felt-line);
+    color: var(--color-chalk-muted);
+  }
+  .btn-choice:hover:not(:disabled, [aria-disabled="true"]) {
+    border-color: var(--color-chalk-muted);
+    color: var(--color-chalk);
+  }
+  .btn-choice[aria-pressed="true"],
+  .btn-choice.is-on {
+    background: var(--color-night-3);
+    border-color: var(--color-sky);
     color: var(--color-sky);
   }
   .stat-pill {
@@ -182,13 +335,231 @@
     border-radius: 6px;
     padding: 0.15rem 0.45rem;
   }
+  /* Link nel testo: riconoscibile anche senza distinguere il colore, quindi la sottolineatura c'è sempre (tenue)
+     e diventa piena al passaggio o col focus, come `.card-mention-link` (che la ha punteggiata). */
   .link-mint {
     color: var(--color-mint);
-    text-decoration: none;
-  }
-  .link-mint:hover {
-    text-decoration: underline;
+    text-decoration-line: underline;
+    text-decoration-color: rgba(49, 227, 189, 0.45);
+    text-decoration-thickness: 1px;
     text-underline-offset: 3px;
+    transition: text-decoration-color 120ms ease, color 120ms ease;
+  }
+  .link-mint:hover,
+  .link-mint:focus-visible {
+    color: #5cf0d0;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+  }
+
+  /*
+    Voci del menu dell'header (le usa Header.tsx). A riposo gesso pieno (prima chalk-muted: il menu "si perdeva"),
+    al passaggio menta; la pagina corrente (aria-current="page") ha fondo night-3, testo celeste (6,5:1) e una
+    sottolineatura spessa celeste. Niente bianco pieno. `.nav-link-block` è la versione a righe del menu a tendina:
+    lì il segno della pagina corrente è una barra verticale a sinistra.
+  */
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    padding: 0.5rem 0.65rem;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--color-chalk);
+    transition: color 120ms ease, background-color 120ms ease;
+  }
+  .nav-link:hover {
+    background: var(--color-felt-soft);
+    color: var(--color-mint);
+  }
+  .nav-link[aria-current="page"] {
+    background: var(--color-night-3);
+    color: var(--color-sky);
+    font-weight: 700;
+  }
+  .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    right: 0.65rem;
+    bottom: 3px;
+    left: 0.65rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--color-sky);
+  }
+  .nav-link-block {
+    display: flex;
+    width: 100%;
+    padding: 0.55rem 0.75rem 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+  .nav-link-block[aria-current="page"]::after {
+    top: 0.45rem;
+    right: auto;
+    bottom: 0.45rem;
+    left: 0;
+    width: 3px;
+    height: auto;
+  }
+
+  /*
+    Post-it: un foglietto che dice che cos'è un contenuto prima che lo si legga (prova del 21/09/2026, solo sulle
+    tre news in evidenza della home). Carta piena con testo ink (contrasti misurati in :root), leggermente ruotata,
+    un pezzo di nastro adesivo in cima e l'angolo in basso a destra piegato. Deve sembrare una scrivania, non un badge.
+
+    Markup atteso:
+      <article class="card-night relative …">                      contenitore con position: relative
+        <span class="postit postit-news postit-corner">News</span>  figlio DIRETTO del contenitore, non dentro
+        …                                                            un riquadro con overflow: hidden (la copertina)
+      </article>
+    Varianti: postit-deck (Nuovo mazzo), postit-news, postit-patch, postit-guide, postit-tournament, postit-event.
+    `postit-corner` lo appoggia a cavallo del bordo superiore sinistro; senza, il post-it resta in linea nel testo.
+    Rotazione: ogni variante ha la sua; per variare tra carte uguali si mette `postit-row` sul contenitore della
+    griglia (ruota il 2°, 3°… elemento) oppure `style="--tilt: 2deg"` sul post-it.
+    Al passaggio sul contenuto il foglietto si raddrizza appena; con "riduci animazioni" niente transizione.
+  */
+  .postit {
+    --tilt: -2deg;
+    --postit-bg: var(--postit-news);
+    --postit-fold: 9px;
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    padding: 0.5rem 0.85rem 0.45rem 0.8rem;
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-ink);
+    /* L'angolo piegato è un taglio nello sfondo stesso: lì traspare quello che sta sotto, come un foglio vero. */
+    background: linear-gradient(315deg, transparent var(--postit-fold), var(--postit-bg) var(--postit-fold));
+    border-radius: 2px 2px 2px 3px;
+    box-shadow: 0 1px 1px rgba(14, 7, 31, 0.35), 2px 8px 14px -6px rgba(14, 7, 31, 0.8);
+    transform: rotate(var(--tilt));
+    transform-origin: 30% 20%;
+    transition: transform 180ms ease;
+  }
+  /* Nastro adesivo: striscia semitrasparente di gesso, storta al contrario del foglietto */
+  .postit::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 2.6rem;
+    height: 0.8rem;
+    transform: translateX(-50%) rotate(calc(var(--tilt) * -1.8));
+    background: color-mix(in srgb, var(--color-chalk) 42%, transparent);
+    box-shadow: 0 1px 2px rgba(14, 7, 31, 0.25);
+  }
+  /* Il lembo piegato: triangolo in una tinta più scura della carta, sopra il taglio dello sfondo */
+  .postit::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: calc(var(--postit-fold) * 1.42);
+    height: calc(var(--postit-fold) * 1.42);
+    background: linear-gradient(315deg, transparent 50%, color-mix(in srgb, var(--postit-bg) 72%, var(--color-ink)) 50%);
+    border-radius: 0 0 0 2px;
+  }
+  .postit-deck {
+    --postit-bg: var(--postit-deck);
+    --tilt: -2.5deg;
+  }
+  .postit-news {
+    --postit-bg: var(--postit-news);
+    --tilt: 1.8deg;
+  }
+  .postit-patch {
+    --postit-bg: var(--postit-patch);
+    --tilt: -1.4deg;
+  }
+  .postit-guide {
+    --postit-bg: var(--postit-guide);
+    --tilt: 2.2deg;
+  }
+  .postit-tournament {
+    --postit-bg: var(--postit-tournament);
+    --tilt: -1.8deg;
+  }
+  .postit-event {
+    --postit-bg: var(--postit-event);
+    --tilt: 1.4deg;
+  }
+  .postit-corner {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+  }
+  .postit-row > :nth-child(3n + 2) .postit {
+    --tilt: 2.4deg;
+  }
+  .postit-row > :nth-child(3n) .postit {
+    --tilt: -1deg;
+  }
+  :where(a, article, li):hover > .postit,
+  :where(a, article, li):focus-within > .postit {
+    transform: rotate(calc(var(--tilt) * 0.3)) translateY(-1px);
+  }
+
+  /*
+    Messaggi d'errore leggibili. Prima erano in crimson a 2,7-3:1, il testo meno leggibile del sito proprio quando
+    l'utente è bloccato. `.alert-bad`: riquadro con fondo e cornice tenui del rosso `bad` e testo gesso (10:1 su
+    night), con un "!" in un cerchio pieno (ink su bad, 6,1:1). `.text-error`: una riga sotto un campo, rosso `bad`
+    (5,2:1 su night, 6,2:1 su felt). `.alert-good` è il gemello per le conferme ("mazzo salvato").
+    La cornice è da 2 px come le chip: è un'etichetta di stato, non un contenitore.
+  */
+  .alert-bad,
+  .alert-good {
+    position: relative;
+    display: block;
+    padding: 0.65rem 0.9rem 0.65rem 2.45rem;
+    border: 2px solid color-mix(in srgb, var(--alert-c) 60%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--alert-c) 14%, transparent);
+    color: var(--color-chalk);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .alert-bad::before,
+  .alert-good::before {
+    position: absolute;
+    top: 0.68rem;
+    left: 0.75rem;
+    display: grid;
+    width: 1.2rem;
+    height: 1.2rem;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--alert-c);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .alert-bad {
+    --alert-c: var(--color-bad);
+  }
+  .alert-bad::before {
+    content: "!";
+  }
+  .alert-good {
+    --alert-c: var(--color-good);
+  }
+  .alert-good::before {
+    content: "\2713"; /* segno di spunta */
+  }
+  .text-error {
+    color: var(--color-bad);
+    font-weight: 600;
   }
 
   /* Mini carta (chip) con cornice; senza illustrazione mostra un fondale a gradiente */
@@ -214,7 +585,7 @@
     height: 60px;
     border-radius: 6px;
     overflow: hidden;
-    border: 1px solid var(--color-sky);
+    border: 2px solid var(--color-sky);
     display: grid;
     place-items: center;
     font-family: var(--font-display);
@@ -261,7 +632,7 @@
     flex-shrink: 0;
     place-items: center;
     overflow: hidden;
-    border: 1px solid var(--color-sky);
+    border: 2px solid var(--color-sky);
     border-radius: 6px;
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
     aspect-ratio: 1425 / 2048;
@@ -278,7 +649,6 @@
   }
   .deck-card-md {
     width: 140px;
-    border-width: 2px;
     border-color: var(--color-gold);
     border-radius: 8px;
   }
@@ -287,11 +657,14 @@
     height: 100%;
     object-fit: cover;
   }
+  /* Iniziali di ripiego (carta senza illustrazione): chalk-muted con un'ombra, leggibili anche sui fondali chiari
+     delle saghe (prima night-3, 1,3:1: di fatto invisibili). */
   .deck-card-initials {
     font-family: var(--font-display);
     font-size: 0.75rem;
     font-weight: 800;
-    color: var(--color-night-3);
+    color: var(--color-chalk-muted);
+    text-shadow: 0 1px 2px rgba(14, 7, 31, 0.7);
   }
   .deck-card-mana {
     position: absolute;
@@ -329,7 +702,7 @@
     gap: 0.5rem;
     min-height: 54px;
     padding: 0.35rem 0.5rem;
-    border: 1px solid var(--color-sky);
+    border: 2px solid var(--color-sky);
     border-radius: 8px;
     background: var(--color-night);
     color: var(--color-chalk);
@@ -349,7 +722,7 @@
     position: absolute;
     z-index: 0;
     inset: 0 0 0 50%;
-    border-radius: 0 7px 7px 0;
+    border-radius: 0 6px 6px 0; /* raggio interno: 8 px della riga meno i 2 px della cornice */
     background-image: var(--row-art, none);
     background-position: center 28%;
     background-size: cover;
@@ -423,17 +796,21 @@
     font-weight: 700;
     color: var(--color-mint);
   }
+  /* Tasto "togli" della riga: è un chip, quindi cornice da 2 px (regola degli spessori). Al passaggio si riempie di
+     crimson-deep con testo gesso (6,1:1); sul crimson pieno il gesso faceva 3,99:1. */
   .builder-row-x {
     flex-shrink: 0;
-    padding: 0.1rem 0.4rem;
-    border: 1px solid var(--color-sky);
+    padding: calc(0.1rem - 1px) calc(0.4rem - 1px);
+    border: 2px solid var(--color-sky);
     border-radius: 6px;
     background: var(--color-night-2);
     font-size: 0.7rem;
-    color: var(--color-pale);
+    font-weight: 700;
+    color: var(--color-chalk);
   }
   .builder-row-x:hover {
-    background: var(--color-crimson);
+    background: var(--color-crimson-deep);
+    border-color: var(--color-crimson-deep);
     color: var(--color-chalk);
   }
 
@@ -487,13 +864,14 @@
     padding-bottom: 0;
   }
   /* Metà pannello alla carta (con le sue proporzioni), metà al testo: richiesta di Pierluigi del 20/09/2026,
-     la miniatura era troppo piccola e il riquadro restava mezzo vuoto. */
+     la miniatura era troppo piccola e il riquadro restava mezzo vuoto. Il pannello è un contenitore: cornice da
+     3 px come .card-night (regola unica degli spessori, 21/09/2026). */
   .deck-peek-panel {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.6rem;
     padding: 0.65rem;
-    border: 2px solid var(--color-sky);
+    border: 3px solid var(--color-sky);
     border-radius: 10px;
     background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
     box-shadow: var(--shadow-lift);
@@ -515,10 +893,12 @@
     align-content: start;
     min-width: 0;
   }
+  /* Testi dell'anteprima più pieni (riunione del 21/09/2026: "testi nei pop-up troppo light"): nome a 700,
+     testo a 600 in gesso invece di pale a 400. */
   .deck-peek-name {
     font-family: var(--font-display);
     font-size: 0.9rem;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.15;
     color: var(--color-sky);
   }
@@ -551,24 +931,28 @@
   }
   .deck-peek-type {
     background: var(--color-night-3);
-    color: var(--color-pale);
+    color: var(--color-chalk);
   }
+  /* Cornice da 2 px disegnata con un'ombra interna: non cambia l'altezza, quindi la pastiglia resta allineata
+     alle altre della riga. Il testo dell'Evil è il magenta schiarito col gesso (5,6:1): il crimson pieno su night
+     fa 2,96:1. */
   .deck-peek-align.is-good {
-    border: 1px solid var(--color-mint);
+    box-shadow: inset 0 0 0 2px var(--color-mint);
     color: var(--color-mint);
   }
   .deck-peek-align.is-evil {
-    border: 1px solid var(--color-crimson);
-    color: var(--color-crimson);
+    box-shadow: inset 0 0 0 2px var(--color-crimson);
+    color: color-mix(in srgb, var(--color-crimson) 50%, var(--color-chalk));
   }
   .deck-peek-align.is-neutral {
-    border: 1px solid var(--color-pale-muted);
-    color: var(--color-pale-muted);
+    box-shadow: inset 0 0 0 2px var(--color-pale-muted);
+    color: var(--color-chalk-muted);
   }
   .deck-peek-text {
     font-size: 0.78rem;
+    font-weight: 600;
     line-height: 1.4;
-    color: var(--color-pale);
+    color: var(--color-chalk);
     white-space: pre-line;
   }
 
@@ -614,7 +998,8 @@
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 800;
-    color: var(--color-night-3);
+    color: var(--color-chalk-muted);
+    text-shadow: 0 1px 3px rgba(14, 7, 31, 0.7);
   }
   .card-tile-mana {
     position: absolute;
@@ -659,8 +1044,9 @@
   .card-tile-text {
     margin-top: 8px;
     font-size: 0.75rem;
+    font-weight: 600;
     line-height: 1.45;
-    color: var(--color-pale);
+    color: var(--color-chalk);
     white-space: pre-line;
     overflow: hidden;
     display: -webkit-box;
@@ -708,7 +1094,8 @@
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 800;
-    color: var(--color-night-3);
+    color: var(--color-chalk-muted);
+    text-shadow: 0 1px 3px rgba(14, 7, 31, 0.7);
   }
   .gc-mana {
     position: absolute;
@@ -762,10 +1149,13 @@
     background: var(--color-night-3);
     color: var(--color-pale);
   }
+  /* Versione "tinta" per chi passa --gc-al: cornice da 2 px come ombra interna (stessa altezza di .gc-type) e testo
+     schiarito col gesso (il colore pieno sul suo fondo tenue non bastava: Evil 2,7:1, così 5,1:1). GameCard dal
+     21/09/2026 passa invece fondo pieno e testo ink inline, che vincono su queste regole. */
   .gc-align {
-    border: 1px solid var(--gc-al);
-    background: color-mix(in srgb, var(--gc-al) 16%, transparent);
-    color: var(--gc-al);
+    box-shadow: inset 0 0 0 2px var(--gc-al, transparent);
+    background: color-mix(in srgb, var(--gc-al, transparent) 16%, transparent);
+    color: color-mix(in srgb, var(--gc-al, var(--color-chalk)) 50%, var(--color-chalk));
   }
   .gc-text {
     flex: 1;
@@ -804,7 +1194,8 @@
   }
 
   /* Nomi di carta nei testi della community (CardMentions): link menta con sottolineatura punteggiata e pannello di
-     anteprima blu notte con cornice celeste da 2 px, aperto dal CSS al passaggio del mouse o al focus da tastiera.
+     anteprima blu notte con cornice celeste da 3 px (è un contenitore, come .deck-peek-panel), aperto dal CSS al
+     passaggio del mouse o al focus da tastiera.
      Su touch (hover: none) il pannello non esiste e il tocco porta alla scheda della carta. */
   .card-mention {
     position: relative;
@@ -837,7 +1228,7 @@
     text-align: left;
     font-family: var(--font-body);
     font-size: 0.8rem;
-    font-weight: 400;
+    font-weight: 600; /* come .deck-peek-text: i testi delle anteprime erano troppo leggeri */
     line-height: 1.4;
   }
   .card-mention:hover > .card-mention-preview,
@@ -867,10 +1258,10 @@
     gap: 0.6rem;
     align-items: start;
     padding: 0.6rem 0.7rem 0.7rem;
-    border: 2px solid var(--color-sky);
+    border: 3px solid var(--color-sky);
     border-radius: 10px;
     background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
-    color: var(--color-pale);
+    color: var(--color-chalk);
     box-shadow: var(--shadow-lift);
   }
   /* Leggendaria: sfumatura oro in alto, la stella sta nel testo */
@@ -880,7 +1271,7 @@
   .card-mention-art {
     display: block;
     overflow: hidden;
-    border: 1px solid var(--color-sky);
+    border: 2px solid var(--color-sky);
     border-radius: 6px;
     background: linear-gradient(160deg, var(--color-felt-soft), var(--color-felt-deep));
   }
@@ -916,18 +1307,30 @@
   .card-mention-stats small {
     font-size: 0.65rem;
     text-transform: lowercase;
-    color: var(--color-pale-muted);
+    color: var(--color-chalk-muted);
   }
   .card-mention-text {
     display: block;
-    color: var(--color-pale);
+    font-weight: 600;
+    color: var(--color-chalk);
+  }
+  /* Nome della carta nell'anteprima (per CardMentions.tsx, oggi scritto con utility equivalenti) */
+  .card-mention-name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-sky);
   }
 
-  /* Striscia del calendario: scorre da sola (JS), si ferma al passaggio del mouse, frecce ai lati, navigabile a mano */
+  /* Striscia del calendario: scorre da sola (JS), si ferma al passaggio del mouse, frecce ai lati, navigabile a mano.
+     Le due righe che la chiudono sono da 2 px come i cubi data e le frecce che contiene (niente righette da 1 px:
+     quelle restano ai soli controlli dei moduli); il colore felt-line le tiene discrete. */
   .ticker {
     position: relative;
-    border-top: 1px solid var(--color-felt-line);
-    border-bottom: 1px solid var(--color-felt-line);
+    border-top: 2px solid var(--color-felt-line);
+    border-bottom: 2px solid var(--color-felt-line);
     background: rgba(14, 7, 31, 0.7);
   }
   .ticker-scroll {
@@ -956,7 +1359,7 @@
     height: 32px;
     transform: translateY(-50%);
     border-radius: 999px;
-    border: 1px solid var(--color-sky);
+    border: 2px solid var(--color-sky);
     background: rgba(14, 7, 31, 0.9);
     color: var(--color-sky);
     font-size: 1.25rem;
@@ -1020,7 +1423,12 @@
     color: var(--color-pale);
     line-height: 1.7;
   }
-  .prose-night h2, .prose-night h3 {
+  /* Stessa alternanza della scala dei titoli: il titolo di sezione di un articolo (h2) è gesso come .t-section,
+     il sottotitolo (h3) celeste e più piccolo come .t-item. */
+  .prose-night h2 {
+    color: var(--color-chalk);
+  }
+  .prose-night h3 {
     color: var(--color-sky);
     /* i titoli hanno un'ancora (Markdown.tsx): arrivandoci da un link non devono finire sotto l'header fisso */
     scroll-margin-top: 6rem;
@@ -1046,7 +1454,12 @@
   .prose-night a {
     color: var(--color-mint);
     text-decoration: underline;
+    text-decoration-color: rgba(49, 227, 189, 0.55);
     text-underline-offset: 2px;
+  }
+  .prose-night a:hover {
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
   }
   .prose-night strong {
     font-weight: 700;
@@ -1187,12 +1600,20 @@
     font-size: 0.78rem;
     padding: 0.45rem 0.7rem;
   }
-  .link-discord {
-    color: #5865f2;
-    font-weight: 600;
-  }
-  .link-discord:hover {
-    color: #4752c4;
-    text-decoration: underline;
+  /* Niente più .link-discord: il blurple come colore del testo faceva 3,44:1 sul blu notte e 4,07:1 sul feltro.
+     Un link verso Discord è sempre DiscordButton (anche size="sm" in mezzo a un testo). */
+}
+
+/*
+  Campi dei moduli a 16 px sul telefono. Sotto i 16 px iOS ingrandisce la pagina a ogni tocco su un campo (e non
+  torna indietro da solo); i campi del sito erano a 12-14 px. La regola sta FUORI dai @layer di proposito: così
+  vince sulle utility di Tailwind come `text-sm` scritte sui singoli campi, senza bisogno di !important.
+  Caselle, radio, cursori e selettori di file non hanno testo e restano esclusi.
+*/
+@media (max-width: 767px) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"]),
+  select,
+  textarea {
+    font-size: 16px;
   }
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { deleteDeck, setDeckStatus } from "@/lib/community/actions";
+import { ConfirmButton } from "./ConfirmButton";
 
 export type OwnerLabels = { edit: string; hide: string; unhide: string; delete: string; confirmDelete: string };
 
@@ -37,7 +38,7 @@ export function OwnerActions({
   }, [ownerId]);
   if (!isOwner) return null;
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-sky p-3">
+    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg bg-night-2/80 p-3">
       <Link href={editHref} className="btn btn-ink text-xs">
         {labels.edit}
       </Link>
@@ -45,21 +46,15 @@ export function OwnerActions({
         <input type="hidden" name="id" value={deckId} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="status" value={status === "hidden" ? "published" : "hidden"} />
-        <button type="submit" className="btn border border-sky text-xs text-pale">
+        <button type="submit" className="btn btn-ink text-xs">
           {status === "hidden" ? labels.unhide : labels.hide}
         </button>
       </form>
-      <form
-        action={deleteDeck}
-        onSubmit={(e) => {
-          if (!window.confirm(labels.confirmDelete)) e.preventDefault();
-        }}
-      >
+      {/* conferma prima di eliminare, come nel profilo (ConfirmButton); rosso "bad" leggibile sul blu notte (5,2:1) */}
+      <form action={deleteDeck}>
         <input type="hidden" name="id" value={deckId} />
         <input type="hidden" name="locale" value={locale} />
-        <button type="submit" className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk">
-          {labels.delete}
-        </button>
+        <ConfirmButton label={labels.delete} confirm={labels.confirmDelete} className="btn btn-danger text-xs" />
       </form>
     </div>
   );

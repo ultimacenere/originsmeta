@@ -27,10 +27,17 @@ const KEYWORDS = [
   "Heal",
 ];
 
-const ALIGN: Record<string, { label: string; color: string }> = {
-  good: { label: "Good", color: "var(--color-mint)" },
-  evil: { label: "Evil", color: "var(--color-crimson)" },
-  neutral: { label: "Neutral", color: "var(--color-pale-muted)" },
+/*
+  Allineamento come pastiglia piena: prima era testo colorato su un velo del suo colore, e l'Evil in magenta sul
+  blu notte restava sotto la soglia di leggibilità. Stesse tinte di `alignStyle` (src/lib/cardArt.ts), così la
+  carta e le pastiglie della scheda e del database dicono la stessa cosa: ink su menta tenue 15,3:1, ink su
+  magenta tenue 12,1:1, pale su night-3 8,6:1.
+*/
+const ALIGN: Record<string, { label: string; bg: string; fg: string; ring: string }> = {
+  good: { label: "Good", bg: "var(--color-mint-soft)", fg: "var(--color-ink)", ring: "var(--color-mint-soft)" },
+  evil: { label: "Evil", bg: "var(--color-crimson-soft)", fg: "var(--color-ink)", ring: "var(--color-crimson-soft)" },
+  // Stesso fondo della pastiglia del tipo accanto: l'anello grigio la distingue.
+  neutral: { label: "Neutral", bg: "var(--color-night-3)", fg: "var(--color-pale)", ring: "var(--color-pale-muted)" },
 };
 
 /**
@@ -69,11 +76,14 @@ export function GameCard({ card, locale, className = "", priority = false }: { c
         {card.mana !== undefined ? <span className="gc-mana">{card.mana}</span> : null}
         {card.legendary ? <span className="gc-star" aria-hidden="true">★</span> : null}
       </div>
-      <h3 className="gc-name">{card.name}</h3>
+      {/* Paragrafo, non titolo: sulla scheda carta il nome è già l'H1, un h3 qui spezzava la gerarchia. */}
+      <p className="gc-name">{card.name}</p>
       <p className="gc-tags">
         <span className="gc-type">{type}</span>
         {align ? (
-          <span className="gc-align" style={{ ["--gc-al" as string]: align.color }}>
+          // `.gc-align` disegna l'anello da 2 px con un'ombra interna del colore `--gc-al` (non ha un bordo vero):
+          // fondo e testo pieni inline vincono sulle tinte della classe.
+          <span className="gc-align" style={{ background: align.bg, color: align.fg, ["--gc-al" as string]: align.ring }}>
             {align.label}
           </span>
         ) : null}

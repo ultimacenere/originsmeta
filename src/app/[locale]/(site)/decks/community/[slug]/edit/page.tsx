@@ -40,6 +40,8 @@ export default async function EditDeckPage({ params }: { params: Params }) {
   const pool: PoolCard[] = cards.filter((c) => c.status === "active" && c.type !== "token").map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary) }));
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   const code = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
+  // Un mazzo privato non ha ancora la guida: "modificarlo" significa pubblicarlo, dal modulo apposito.
+  if (deck.status === "draft") redirect(`${href(locale, "/decks/publish")}?deck=${encodeURIComponent(code)}&draft=${deck.id}`);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -48,7 +50,7 @@ export default async function EditDeckPage({ params }: { params: Params }) {
           ← {d.community.account.title}
         </Link>
       </p>
-      <h1 className="mt-4 text-4xl font-extrabold text-sky sm:text-5xl">{d.community.editTitle}</h1>
+      <h1 className="t-page mt-4">{d.community.editTitle}</h1>
       <p className="mt-3 text-chalk-muted">{deck.name}</p>
       <div className="mt-8">
         <PublishDeckForm

@@ -3,6 +3,7 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getGuide } from "@/lib/content/guides";
 import type { NewsItem } from "@/lib/data/news";
+import { newTabProps } from "./SteamButton";
 
 type Props = { item: NewsItem; locale: Locale; dict: Dictionary };
 
@@ -23,7 +24,9 @@ function linkDomain(url: string): string {
 /**
  * Link alla fonte di una news: esterno (post Steam, stampa) oppure interno al sito per le news sui mazzi
  * pubblicati qui (es. /decks/community/…). Sul link esterno l'etichetta porta anche il dominio
- * ("Fonte · steamcommunity.com →") così si sa dove si sta andando.
+ * ("Fonte · steamcommunity.com →") così si sa dove si sta andando, e si apre in una nuova scheda: prima
+ * ogni clic su una fonte chiudeva la visita al sito. `newTabProps` è la regola unica dei link esterni del sito
+ * (SteamButton.tsx): nuova scheda, `noopener` e l'avviso per i lettori di schermo.
  */
 export function NewsSourceLink({ item, locale, dict, className = "" }: Props & { className?: string }) {
   if (isDeckNews(item)) {
@@ -35,9 +38,23 @@ export function NewsSourceLink({ item, locale, dict, className = "" }: Props & {
   }
   const domain = linkDomain(item.url);
   return (
-    <a href={item.url} rel="noopener" className={className}>
+    <a href={item.url} {...newTabProps} className={className}>
       {domain ? `${dict.common.source} · ${domain}` : dict.common.source} →
     </a>
+  );
+}
+
+/**
+ * Tasto "Apri il mazzo" delle news sui mazzi pubblicati sul sito, da mettere subito sotto la copertina
+ * (richiesta della riunione del 21/09/2026: in fondo alla news il link non lo trovava nessuno).
+ * Per le altre news non rende nulla, quindi si può mettere in ogni scheda senza controlli.
+ */
+export function NewsDeckButton({ item, locale, dict, className = "" }: Props & { className?: string }) {
+  if (!isDeckNews(item)) return null;
+  return (
+    <Link href={href(locale, item.url)} className={`btn btn-primary ${className}`}>
+      {dict.common.openDeck} →
+    </Link>
   );
 }
 
@@ -73,7 +90,7 @@ export function NewsGuideLinks({ item, locale, dict }: Props) {
       <ul className="space-y-1 text-sm">
         {guides.map((g) => (
           <li key={g.slug}>
-            <Link href={href(locale, `/guides/${g.slug}`)} className="text-mint hover:underline">
+            <Link href={href(locale, `/guides/${g.slug}`)} className="link-mint">
               {g.title} →
             </Link>
           </li>

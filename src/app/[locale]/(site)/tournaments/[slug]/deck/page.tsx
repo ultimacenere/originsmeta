@@ -60,7 +60,7 @@ export default async function TournamentDeckPage({ params }: { params: Params })
       <p className="mt-6 kicker text-mint">
         {x.kicker} · {t.tag}
       </p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{x.deckPage.title}</h1>
+      <h1 className="t-page mt-2">{x.deckPage.title}</h1>
       <p className="mt-3 text-pale-muted">
         {x.deckModes[t.deck_mode]}
         {t.deck_mode === "conquest" ? ` · ${fill(x.conquestRule, { n: t.conquest_decks, min: t.conquest_min_different })}` : ""} · {fill(x.deckPage.required, { n: required })}
@@ -92,6 +92,7 @@ export default async function TournamentDeckPage({ params }: { params: Params })
               contactEmail={contactEmail}
               shareBase={`${siteUrl}${href(locale, "/deck-builder")}`}
               publishHref={href(locale, "/decks/publish")}
+              locale={locale}
               labels={builderLabels(d)}
               preset={{ mode: t.deck_mode === "conquest" ? "tournament" : "single", deckCount: required, minDifferent: t.conquest_min_different, storageKey: tournamentBuilderKey(t.tag) }}
               onSubmit={submit}

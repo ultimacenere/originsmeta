@@ -1,3 +1,5 @@
+import type { ChangeKind } from "@/lib/data/cards";
+
 /** Fondali per le mini carte senza illustrazione, uno per saga. */
 export const sagaHue: Record<string, string> = {
   arthurian: "linear-gradient(160deg,#2b3a8f,#0e071f)",
@@ -38,9 +40,27 @@ export const badgeStyle: Record<string, string> = {
 /** Tag autore più grandi e marcati (richiesta di Davdas). */
 export const badgePill = "stat-pill px-3 py-1 text-xs font-extrabold uppercase tracking-wider";
 
-/** Pill di allineamento (Good / Evil / Neutral) sugli elementi avorio. */
+/**
+ * Pastiglie di allineamento (Good / Evil / Neutral): tinte tenui con testo scuro, così non si confondono con le
+ * pastiglie dei cambi (fondi saturi, `changeStyle`). Contrasti misurati: Good ink su mint-soft 15,3:1,
+ * Evil ink su crimson-soft 12,1:1 (prima magenta su magenta al 15%, 2,7:1), Neutral pale su night-3 8,6:1.
+ */
 export const alignStyle: Record<string, string> = {
   good: "bg-mint-soft text-ink",
-  evil: "bg-crimson/15 text-crimson",
-  neutral: "bg-night-3 text-pale-muted",
+  evil: "bg-crimson-soft text-ink",
+  neutral: "bg-night-3 text-pale",
+};
+
+/**
+ * Pastiglie dei cambi di bilanciamento: UNA sola mappa per tutto il sito, usata da ChangeChip (home, tier list,
+ * scheda carta) e da CardExplorer (database carte). Prima erano due mappe diverse e lo stesso "buff" aveva due
+ * colori su due pagine (in ChangeChip era `bg-felt`, di fatto invisibile: 1,2:1 sul pannello).
+ * Fondi pieni, contrasti misurati: buff ink su menta 11,3:1, nerf gesso su crimson-deep 6,1:1, rework ink su oro
+ * 12,3:1, deck (cambio alle regole di costruzione) neutro, gesso su night-3 9,8:1.
+ */
+export const changeStyle: Record<ChangeKind, string> = {
+  buff: "bg-mint text-ink",
+  nerf: "bg-crimson-deep text-chalk",
+  rework: "bg-gold text-ink",
+  deck: "bg-night-3 text-chalk",
 };

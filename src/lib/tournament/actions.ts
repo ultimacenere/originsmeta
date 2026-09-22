@@ -9,12 +9,17 @@ import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
 import { newSlug, parseTournamentForm, splitCodes } from "./util";
 import { decksRequired } from "./types";
+import { notifyIfStarted, notifyMatchResult, notifyTournamentFinished } from "./notify";
 
 /**
  * Server Action del Tournament Organizer. Creazione e cancellazione passano dalle policy RLS della
  * tabella `tournaments`; iscrizione, ritiro e consegna dei mazzi passano dalle RPC `security definer`
  * (lock sulla riga del torneo, controllo di stato e capienza): il codice qui valida l'input e traduce
  * gli errori in chiavi del dizionario (`tournaments.errors`).
+ *
+ * Notifiche (UX-8): dopo iscrizione, consegna dei mazzi e avvio, dopo un risultato confermato e dopo la
+ * chiusura, `./notify` manda un messaggio al canale Discord del sito se DISCORD_WEBHOOK_URL è impostata.
+ * Le chiamate non aspettano Discord (lavoro rimandato con after()) e non lanciano mai eccezioni.
  */
 
 export type TournamentActionState = { error?: string; ok?: boolean; href?: string };
@@ -96,7 +101,8 @@ export async function createTournament(_prev: TournamentActionState, formData: F
     if (!error && data) {
       const s = (data as { slug: string }).slug;
       revalidateTournamentPaths(s);
-      return { ok: true, href: `/${locale}/tournaments/${s}` };
+      // ?new=1: la scheda apre in cima il pannello "Torneo creato" con il link da incollare su Discord (UX-9)
+      return { ok: true, href: `/${locale}/tournaments/${s}?new=1` };
     }
     // 23505 = slug o tag già usati: si riprova con valori nuovi (il tag ha un default casuale nel database)
     if (error?.code === "23505") continue;
@@ -114,6 +120,8 @@ export async function joinTournament(id: string, slug: string): Promise<{ error?
   const { error } = await supabase.rpc("join_tournament", { tid: id });
   if (error) return { error: rpcError(error) };
   revalidateTournamentPaths(slug);
+  // la RPC riesce solo su un torneo "open": se ora è "running", l'ultima iscrizione ha fatto partire il tabellone
+  notifyIfStarted(id, "open");
   return { ok: true };
 }
 
@@ -161,6 +169,8 @@ async function storeDecks(id: string, raw: string[]): Promise<{ error?: string; 
   const { error } = await supabase.rpc("submit_tournament_decks", { tid: id, codes });
   if (error) return { error: rpcError(error) };
   revalidateTournamentPaths(tournament.slug);
+  // stato di prima letto sopra ("open"): se dopo la consegna il torneo è "running", è scattato tm_autostart
+  notifyIfStarted(id, tournament.status);
   return { slug: tournament.slug };
 }
 
@@ -197,7 +207,10 @@ async function organizerRpc(slug: string, call: (sb: Client) => PromiseLike<{ er
 /** Avvio con l'ordine dei seed deciso dall'organizzatore (casuale o manuale): la RPC crea il tabellone con i bye. */
 export async function startTournament(id: string, slug: string, seeded: string[]): Promise<Simple> {
   if (!UUID.test(id) || !Array.isArray(seeded) || seeded.some((s) => !UUID.test(s))) return { error: "bad_seeding" };
-  return organizerRpc(slug, (sb) => sb.rpc("start_tournament", { tid: id, seeded }));
+  const r = await organizerRpc(slug, (sb) => sb.rpc("start_tournament", { tid: id, seeded }));
+  // start_tournament accetta solo tornei "open": se è riuscita, il tabellone è appena partito
+  if (r.ok) notifyIfStarted(id, "open");
+  return r;
 }
 
 export async function swapPlayers(id: string, slug: string, u1: string, u2: string): Promise<Simple> {
@@ -207,13 +220,18 @@ export async function swapPlayers(id: string, slug: string, u1: string, u2: stri
 
 export async function setMatchResult(matchId: string, slug: string, a: number, b: number, forfeit: boolean): Promise<Simple> {
   if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
-  return organizerRpc(slug, (sb) => sb.rpc("set_match_result", { mid: matchId, a, b, forfeit: Boolean(forfeit) }));
+  const r = await organizerRpc(slug, (sb) => sb.rpc("set_match_result", { mid: matchId, a, b, forfeit: Boolean(forfeit) }));
+  if (r.ok) notifyMatchResult(matchId);
+  return r;
 }
 
 /** Referto di un giocatore (fase 3): il secondo referto uguale conferma, diverso contesta. */
 export async function reportMatchResult(matchId: string, slug: string, a: number, b: number): Promise<Simple> {
   if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
-  return organizerRpc(slug, (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
+  const r = await organizerRpc(slug, (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
+  // notify rilegge la partita e annuncia solo se è "confirmed" (il primo referto la lascia "reported")
+  if (r.ok) notifyMatchResult(matchId);
+  return r;
 }
 
 /** Messaggio nella chat della partita (fase 3): solo le parti, 500 caratteri, 20 al minuto (controlli nella RPC). Non rigenera pagine. */
@@ -273,7 +291,9 @@ export async function finishTournament(id: string, slug: string, report: string)
     .replace(/\r\n/g, "\n")
     .trim()
     .slice(0, 2000);
-  return organizerRpc(slug, (sb) => sb.rpc("finish_tournament", { tid: id, report: clean || null }));
+  const r = await organizerRpc(slug, (sb) => sb.rpc("finish_tournament", { tid: id, report: clean || null }));
+  if (r.ok) notifyTournamentFinished(id);
+  return r;
 }
 
 export async function cancelTournament(id: string, slug: string): Promise<Simple> {

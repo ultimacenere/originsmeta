@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { href, siteUrl } from "@/lib/i18n";
+import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
 import { getInviteCode, getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { fill, tournamentInviteLink, tournamentShortLink, type TournamentPlayer } from "@/lib/tournament/types";
+import { roundLabel } from "@/lib/tournament/bracket";
+import { bestOfLabel, fill, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
 import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
@@ -23,11 +24,17 @@ import { CardChip } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
+type Search = Promise<Record<string, string | string[] | undefined>>;
 
 /**
  * Scheda del torneo, renderizzata sul server a ogni richiesta con la sessione di chi guarda: le policy RLS
  * mostrano i tornei privati solo a organizzatore, admin, iscritti e invitati (per gli altri: 404). I tornei
  * pubblici restano indicizzabili; quelli privati sono noindex.
+ *
+ * In cima (21/09/2026): dopo la creazione (?new=1, solo per l'organizzatore) il pannello "Torneo creato" con il
+ * link da incollare su Discord e un messaggio pronto (UX-9); a torneo in corso, per chi gioca ed è ancora in
+ * gara, il banner "Il tabellone è partito" con il link alla sua partita (UX-8). Il link breve /t/<tag> è sempre
+ * visibile in chiaro con il tasto Copia.
  */
 export const dynamic = "force-dynamic";
 
@@ -53,8 +60,20 @@ function PlayerRow({ p, dict }: { p: TournamentPlayer; dict: Awaited<ReturnType<
   );
 }
 
-export default async function TournamentPage({ params }: { params: Params }) {
+/** Nome del turno ("Semifinali", "Turno dei 16"…) dalla dimensione del tabellone; se i dati sono strani, "Turno N". */
+function roundName(x: Dictionary["tournaments"], round: number, matches: TournamentMatch[]): string {
+  const size = matches.filter((m) => m.round === 1).length * 2;
+  try {
+    const l = roundLabel(round, size);
+    return typeof l === "string" ? x.rounds[l] : fill(x.rounds.of, { n: l.of });
+  } catch {
+    return fill(x.match.round, { n: round });
+  }
+}
+
+export default async function TournamentPage({ params, searchParams }: { params: Params; searchParams: Search }) {
   const { slug } = await params;
+  const sp = await searchParams;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
   const { supabase: client, user } = await currentUser();
@@ -81,6 +100,32 @@ export default async function TournamentPage({ params }: { params: Params }) {
   const path = href(locale, `/tournaments/${t.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const shortLink = tournamentShortLink(siteUrl, t.tag);
+  const viewer = user?.id ?? null;
+
+  // Banner "il tabellone è partito" (UX-8): la partita del turno più alto di chi guarda, se è ancora da giocare.
+  // Chi ha perso (ultima partita confermata) o ha vinto la finale non vede il banner.
+  const myMatch = viewer && t.status === "running" && registeredIds.includes(viewer) ? [...matches].filter((m) => m.player_a === viewer || m.player_b === viewer).sort((a, b) => b.round - a.round)[0] : undefined;
+  const liveMatch = myMatch && (myMatch.status === "pending" || myMatch.status === "reported" || myMatch.status === "disputed") ? myMatch : undefined;
+  const liveOpponent = liveMatch ? (liveMatch.player_a === viewer ? liveMatch.player_b : liveMatch.player_a) : null;
+
+  // Pannello "Torneo creato" (UX-9): solo per l'organizzatore appena arrivato dalla creazione. Per un torneo
+  // privato il link da condividere è quello d'invito (il link breve porterebbe a un 404 chi non è invitato).
+  const cp = x.createdPanel;
+  const shareLink = t.visibility === "private" ? inviteLink : shortLink;
+  const justCreated = sp.new === "1" && viewer !== null && viewer === t.organizer && Boolean(shareLink);
+  let readyMessage = "";
+  if (justCreated && shareLink) {
+    // messaggio nella lingua dei testi del torneo; la data nel formato <t:…:F> di Discord, che ogni lettore vede nel suo fuso
+    const td = getDictionary(t.lang).tournaments;
+    const unix = Math.floor(new Date(t.starts_at).getTime() / 1000);
+    readyMessage = fill(td.createdPanel.message, {
+      name: t.name,
+      format: `${td.formats[t.format]} · ${td.deckModes[t.deck_mode]} · ${bestOfLabel(td, t.best_of)}`,
+      slots: t.size,
+      date: `<t:${unix}:F>`,
+      link: shareLink,
+    });
+  }
 
   const event: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -108,6 +153,50 @@ export default async function TournamentPage({ params }: { params: Params }) {
         </Link>
       </p>
 
+      {justCreated && shareLink ? (
+        <section className="card-night mt-6 p-5 sm:p-6" aria-label={cp.kicker}>
+          <p className="kicker text-mint">✓ {cp.kicker}</p>
+          {/* titolo come paragrafo: l'H1 della pagina è il nome del torneo, più sotto */}
+          <p className="t-section mt-1">{cp.title}</p>
+          <p className="mt-2 max-w-3xl text-sm text-pale-muted">{t.visibility === "private" ? cp.introPrivate : cp.intro}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <code className="max-w-full break-all rounded-lg border-2 border-sky bg-night px-3 py-2 font-mono text-sm text-chalk">{shareLink}</code>
+            <CopyButton text={shareLink} label={cp.copyLink} copied={x.copied} className="btn btn-primary text-xs" />
+          </div>
+          <label className="mt-5 block">
+            <span className="kicker text-mint">{cp.messageLabel}</span>
+            <textarea readOnly defaultValue={readyMessage} rows={5} className="mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 font-mono text-xs text-pale" />
+          </label>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <CopyButton text={readyMessage} label={cp.copyMessage} copied={x.copied} className="btn btn-ink text-xs" />
+            <span className="text-xs text-pale-muted">{cp.dateHint}</span>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-sky/40 pt-4 text-sm">
+            <Link href={`${path}/manage`} className="link-mint font-semibold">
+              {x.manageCta} →
+            </Link>
+            <Link href={path} className="text-chalk-muted hover:text-chalk">
+              {cp.close}
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {liveMatch ? (
+        <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5" aria-label={x.statuses.running}>
+          <div className="min-w-0">
+            <p className="kicker text-mint">
+              {x.statuses.running} · {roundName(x, liveMatch.round, matches)}
+            </p>
+            <p className="mt-1 font-display text-lg font-extrabold text-chalk">{liveOpponent ? x.liveBanner.title : x.liveBanner.titleWaiting}</p>
+            {liveOpponent ? <p className="mt-1 text-sm text-pale">{fill(x.liveBanner.detail, { name: nameOf.get(liveOpponent) ?? "?" })}</p> : null}
+          </div>
+          <Link href={`${path}/match/${liveMatch.id}`} className="btn btn-primary">
+            {x.liveBanner.cta}
+          </Link>
+        </section>
+      ) : null}
+
       <article className="card-night mt-6 overflow-hidden">
         <div className="relative aspect-[16/6] w-full bg-night-2">
           {t.cover_url ? (
@@ -122,8 +211,8 @@ export default async function TournamentPage({ params }: { params: Params }) {
         </div>
 
         <div className="p-6 sm:p-8">
-          <p className="kicker text-pale-muted">{x.kicker}</p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{t.name}</h1>
+          <p className="kicker text-mint">{x.kicker}</p>
+          <h1 className="t-page mt-2">{t.name}</h1>
           <p className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
             <Avatar profile={t.profile} name={organizer} size={32} />
             <span>
@@ -134,34 +223,42 @@ export default async function TournamentPage({ params }: { params: Params }) {
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2 text-sm">
-            <span className="stat-pill border border-sky text-crimson">
+            <span className="stat-pill border-2 border-sky text-pale">
               {x.startsAt}: <LocalTime iso={t.starts_at} locale={locale} utcLabel={x.utc} />
             </span>
             <span className="stat-pill bg-night-3 text-pale">{x.formats[t.format]}</span>
             <span className="stat-pill bg-night-3 text-pale">{x.deckModes[t.deck_mode]}</span>
-            <span className="stat-pill bg-night-3 text-pale">{fill(x.bestOf, { n: t.best_of })}</span>
-            <span className="stat-pill border border-sky font-mono text-pale">
+            <span className="stat-pill bg-night-3 text-pale">{bestOfLabel(x, t.best_of)}</span>
+            <span className="stat-pill border-2 border-sky font-mono text-pale">
               {active.length} {x.of} {t.size} {x.players}
             </span>
           </div>
           {t.deck_mode === "conquest" ? <p className="mt-2 text-sm text-pale-muted">{fill(x.conquestRule, { n: t.conquest_decks, min: t.conquest_min_different })}</p> : null}
 
-          <div className="mt-5 flex flex-wrap gap-2">
-            <CopyButton text={t.tag} label={`${x.copyTag} ${t.tag}`} copied={x.copied} className="btn btn-ink text-xs" />
-            <CopyButton text={shortLink} label={x.copyLink} copied={x.copied} className="btn border border-sky text-xs text-pale" />
-            {t.discord_url ? (
+          {/* Link breve sempre in chiaro (UX-9): è quello da incollare su Discord */}
+          <div className="mt-5 rounded-lg border-2 border-sky bg-night-2/70 p-3">
+            <p className="kicker text-mint">{x.shortLinkLabel}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <code className="max-w-full break-all rounded bg-night px-2 py-1 font-mono text-sm text-chalk">{shortLink}</code>
+              <CopyButton text={shortLink} label={x.copyLink} copied={x.copied} className="btn btn-ink text-xs" />
+              <CopyButton text={t.tag} label={`${x.copyTag} ${t.tag}`} copied={x.copied} className="btn btn-ghost text-xs" />
+            </div>
+            <p className="mt-2 text-xs text-pale-muted">{x.shortLinkHint}</p>
+          </div>
+          {t.discord_url ? (
+            <div className="mt-3">
               <DiscordButton href={t.discord_url} size="sm">
                 {x.discord}
               </DiscordButton>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
           {t.visibility === "private" ? (
             <div className="mt-3 rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">
               <p className="font-semibold text-gold">{x.privatePill}</p>
               <p className="mt-1 text-xs text-pale-muted">{x.privateHint}</p>
               {inviteLink ? (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <code className="rounded bg-night px-2 py-1 font-mono text-xs text-pale">{inviteLink}</code>
+                  <code className="max-w-full break-all rounded bg-night px-2 py-1 font-mono text-xs text-pale">{inviteLink}</code>
                   <CopyButton text={inviteLink} label={x.manage.copyInvite} copied={x.copied} className="btn btn-gold text-xs" />
                 </div>
               ) : null}
@@ -178,6 +275,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
               registeredIds={registeredIds}
               submittedIds={submittedIds}
               organizerId={t.organizer}
+              viewerId={viewer}
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               deckHref={`${path}/deck`}
               manageHref={`${path}/manage`}
@@ -205,7 +303,7 @@ export default async function TournamentPage({ params }: { params: Params }) {
           ) : null}
 
           <section className="mt-8">
-            <h2 className="text-xl font-extrabold text-sky">
+            <h2 className="t-section">
               {x.registered} <span className="font-mono text-sm font-normal text-pale-muted">{active.length}/{t.size}</span>
             </h2>
             {players.length ? (
@@ -219,25 +317,26 @@ export default async function TournamentPage({ params }: { params: Params }) {
             )}
           </section>
 
-          <section className="mt-8">
-            <h2 className="text-xl font-extrabold text-sky">{x.bracket}</h2>
+          {/* ancora #bracket: la usano i messaggi Discord del tabellone (src/lib/tournament/notify.ts) */}
+          <section id="bracket" className="mt-8 scroll-mt-24">
+            <h2 className="t-section">{x.bracket}</h2>
             {t.status === "open" || !matches.length ? (
               <p className="mt-2 text-sm text-pale-muted">{x.bracketSoon}</p>
             ) : (
               <div className="mt-3">
                 {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
-                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer: user?.id ?? null, all: Boolean(inviteCode) }} />
+                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: Boolean(inviteCode) }} />
               </div>
             )}
           </section>
 
           <section className="mt-8">
-            <h2 className="text-xl font-extrabold text-sky">{x.decklists}</h2>
+            <h2 className="t-section">{x.decklists}</h2>
             {decks.length ? (
               <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {decks.map((row) => (
                   <li key={row.user_id} className="rounded-lg border-2 border-sky bg-night-2/70 p-3">
-                    <p className="font-display text-sm font-bold text-sky">{nameOf.get(row.user_id) ?? "?"}</p>
+                    <p className="t-item text-base">{nameOf.get(row.user_id) ?? "?"}</p>
                     <ul className="mt-2 flex flex-col gap-2">
                       {row.codes.map((code, i) => {
                         const deck = decodeOmCode(code);
@@ -274,8 +373,8 @@ export default async function TournamentPage({ params }: { params: Params }) {
 
       {others.filter((o) => o.id !== t.id).length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{x.others}</h2>
-          <ul className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <h2 className="t-section">{x.others}</h2>
+          <ul className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {others
               .filter((o) => o.id !== t.id)
               .slice(0, 6)

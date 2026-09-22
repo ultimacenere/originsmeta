@@ -9,6 +9,8 @@ import { copertura } from "@/lib/faq/retrieve";
 import { aiAttiva } from "@/lib/faq/ask";
 import { AskBox } from "@/components/AskBox";
 import { CardChipList } from "@/components/CardChip";
+import { DiscordButton } from "@/components/DiscordButton";
+import { officialLinks } from "@/components/Footer";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 /**
@@ -43,7 +45,7 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
       />
 
       <p className="kicker text-mint">{d.faq.kicker}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.faq.title}</h1>
+      <h1 className="t-page mt-2">{d.faq.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.faq.intro}</p>
 
       <section className="mt-8">
@@ -62,9 +64,19 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
               disclaimer: d.faq.disclaimer,
               errors: d.faq.errors,
             }}
+            exits={{ cardsLabel: d.faq.offlineCards, cardsHref: href(locale, "/cards"), discordLabel: d.faq.offlineDiscord, discordHref: officialLinks.discord }}
           />
         ) : (
-          <p className="card-night p-5 text-pale-muted">{d.faq.offline}</p>
+          // Assistente spento: niente vicolo cieco, due strade che rispondono comunque (il database carte e il Discord).
+          <div className="card-night p-5 sm:p-6">
+            <p className="text-pale">{d.faq.offline}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <Link href={href(locale, "/cards")} className="btn btn-primary">
+                {d.faq.offlineCards} →
+              </Link>
+              <DiscordButton href={officialLinks.discord}>{d.faq.offlineDiscord}</DiscordButton>
+            </div>
+          </div>
         )}
         <p className="mt-3 text-xs text-chalk-muted">
           {d.faq.coverage.replace("{cards}", String(stat.carte)).replace("{guides}", String(stat.guide)).replace("{patch}", stat.patch)}
@@ -72,7 +84,7 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-extrabold text-sky">{d.faq.approvedTitle}</h2>
+        <h2 className="t-section">{d.faq.approvedTitle}</h2>
         <p className="mt-2 text-chalk-muted">{d.faq.approvedIntro}</p>
         <div className="mt-6 space-y-4">
           {lista.map((f) => {
@@ -80,7 +92,7 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
             const guide = (f.guides ?? []).map((s) => getGuide(locale, s)).filter((g) => g !== undefined);
             return (
               <article key={f.id} id={f.id} className="card-night p-5 sm:p-6">
-                <h3 className="font-display text-lg font-extrabold leading-tight text-sky">{f.q}</h3>
+                <h3 className="t-item leading-tight">{f.q}</h3>
                 <p className="mt-3 text-pale">{f.a}</p>
                 {carte.length ? <div className="mt-4">{<CardChipList slugs={carte} locale={locale} max={6} />}</div> : null}
                 {guide.length ? (

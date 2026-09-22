@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { authorName } from "@/lib/community/util";
-import { fill, type Tournament } from "@/lib/tournament/types";
+import { bestOfLabel, type Tournament } from "@/lib/tournament/types";
 import { LocalTime } from "./LocalTime";
 
 /** Scheda di un torneo della community nelle liste (/tournaments, profilo): copertina, stato, tag, data, regole in pillole. */
@@ -14,17 +14,18 @@ export function TournamentCard({ t, locale, dict, compact = false }: { t: Tourna
         <Link href={link} className="relative block aspect-[16/7] w-full overflow-hidden bg-night-2" tabIndex={-1} aria-hidden="true">
           {t.cover_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={t.cover_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+            <img src={t.cover_url} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
           ) : null}
           <span className="stat-pill absolute left-3 top-3 bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.statuses[t.status]}</span>
           <span className="stat-pill absolute right-3 top-3 bg-mint text-[11px] font-bold text-ink">{t.tag}</span>
         </Link>
       ) : null}
       <div className="flex flex-1 flex-col p-5">
-        <p className="font-mono text-sm text-crimson">
+        {/* data in pale: il crimson di prima su night non era leggibile (2,96:1) */}
+        <p className="font-mono text-sm text-pale">
           <LocalTime iso={t.starts_at} locale={locale} utcLabel={x.utc} />
         </p>
-        <h3 className="mt-2 text-xl font-extrabold leading-tight text-sky">
+        <h3 className="t-item mt-2">
           <Link href={link} className="hover:text-mint">
             {t.name}
           </Link>
@@ -36,7 +37,7 @@ export function TournamentCard({ t, locale, dict, compact = false }: { t: Tourna
         <p className="mt-3 flex flex-wrap gap-2 text-xs">
           {compact ? <span className="stat-pill bg-night-3 text-pale">{x.statuses[t.status]}</span> : null}
           <span className="stat-pill bg-night-3 text-pale">{x.deckModes[t.deck_mode]}</span>
-          <span className="stat-pill bg-night-3 text-pale">{fill(x.bestOf, { n: t.best_of })}</span>
+          <span className="stat-pill bg-night-3 text-pale">{bestOfLabel(x, t.best_of)}</span>
           <span className="stat-pill border border-sky font-mono text-pale">
             {t.players ?? 0} {x.of} {t.size} {x.players}
           </span>

@@ -136,13 +136,19 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         ]}
       />
       <p className="kicker text-mint">{d.nav.decks}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.decks.title}</h1>
+      <h1 className="t-page mt-2">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
-      <p className="mt-5">
-        <Link href={href(locale, "/deck-builder")} className="btn btn-mint">
-          {d.nav.builder} →
+
+      {/* UX-13: l'invito a pubblicare sta subito sotto l'intro (prima era in fondo alla pagina, dopo tutto il resto) */}
+      <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+        <div className="min-w-0 flex-1 basis-72">
+          <h2 className="t-item">{d.decks.submitTitle}</h2>
+          <p className="mt-1 text-pale-muted">{d.decks.submitText}</p>
+        </div>
+        <Link className="btn btn-primary shrink-0" href={href(locale, "/deck-builder")}>
+          {d.decks.submitCta} →
         </Link>
-      </p>
+      </section>
 
       <div className="mt-8">
         {/* sposta l'anteprima della carta quando uscirebbe dai bordi della finestra */}
@@ -163,13 +169,15 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             viewList: d.common.viewList,
             copyCode: d.common.copyCode,
             copied: d.common.copied,
+            firstDecks: d.decks.firstDecks,
           }}
+          invite={{ href: href(locale, "/deck-builder"), title: d.decks.inviteTitle, text: d.decks.inviteText, cta: d.decks.inviteCta }}
         />
       </div>
 
-      <div className="mt-12 grid gap-6 lg:grid-cols-2">
+      <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="felt-panel p-6">
-          <h2 className="text-2xl font-extrabold text-sky">{d.decks.legendariesTitle}</h2>
+          <h2 className="t-section">{d.decks.legendariesTitle}</h2>
           <p className="mt-3 text-chalk-muted">{d.decks.legendariesText}</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {legendaries.map((c) => (
@@ -182,20 +190,10 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           </ul>
         </section>
         <section className="felt-panel p-6">
-          <h2 className="text-2xl font-extrabold text-sky">{d.decks.conquestTitle}</h2>
+          <h2 className="t-section">{d.decks.conquestTitle}</h2>
           <p className="mt-3 text-chalk-muted">{d.decks.conquestText}</p>
         </section>
       </div>
-
-      <section className="card-night mt-12 flex flex-wrap items-center justify-between gap-4 p-6">
-        <div>
-          <h2 className="text-2xl font-extrabold text-sky">{d.decks.submitTitle}</h2>
-          <p className="mt-1 text-pale-muted">{d.decks.submitText}</p>
-        </div>
-        <Link className="btn btn-ink" href={href(locale, "/deck-builder")}>
-          {d.decks.submitCta}
-        </Link>
-      </section>
     </div>
   );
 }

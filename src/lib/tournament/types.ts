@@ -113,3 +113,12 @@ export function fill(template: string, vars: Record<string, string | number>): s
 export function tournamentShortLink(siteUrl: string, tag: string): string {
   return `${siteUrl}/t/${tag}`;
 }
+
+/**
+ * Durata degli incontri da mostrare: per n = 1 una chiave dedicata ("Partita secca" / "Single game"),
+ * perché "Al meglio delle 1" è sgrammaticato; altrimenti "Al meglio delle {n}". Usarla in ogni punto
+ * in cui si rende `best_of` (schede, pillole, menu del modulo).
+ */
+export function bestOfLabel(labels: { bestOf: string; singleGame: string }, n: number): string {
+  return n === 1 ? labels.singleGame : fill(labels.bestOf, { n });
+}

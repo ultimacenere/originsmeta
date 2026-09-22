@@ -64,11 +64,12 @@ export function TagSearch({ labels }: { labels: TagSearchLabels }) {
           aria-invalid={error}
         />
       </label>
-      <button type="submit" className="btn btn-mint text-xs">
+      {/* secondario: nella pagina dei tornei il primario è "Organizza un torneo" */}
+      <button type="submit" className="btn btn-ink text-xs">
         {labels.button}
       </button>
       {error ? (
-        <p role="alert" className="basis-full text-sm text-bad">
+        <p role="alert" className="basis-full text-sm text-error">
           {message}
         </p>
       ) : null}

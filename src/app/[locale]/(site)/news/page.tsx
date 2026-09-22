@@ -4,9 +4,10 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { newsPath, sortedNews } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { SteamButton } from "@/components/SteamButton";
 import { NewsCover } from "@/components/NewsCover";
-import { NewsGuideLinks, NewsSourceLink, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
+import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -39,18 +40,23 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
           }),
         ]}
       />
+      {/* Anteprima delle carte al passaggio del mouse (CardChip): la tiene dentro la finestra ai bordi. */}
+      <CardMentionEdges />
       <p className="kicker text-mint">{d.nav.news}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.news.title}</h1>
+      <h1 className="t-page mt-2">{d.news.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.news.intro}</p>
       <ol className="mt-10 space-y-4">
         {sortedNews.map((n) => (
           <li key={n.slug} id={n.slug} className="card-night scroll-mt-24 p-6">
             <NewsCover src={n.image} className="mb-4" />
+            {/* News su un mazzo pubblicato qui: il tasto per aprirlo sta subito sotto la copertina, non in fondo
+                (riunione del 21/09/2026). Sulle altre news non rende nulla. */}
+            <NewsDeckButton item={n} locale={locale} dict={d} className="mb-4" />
             <p className="flex flex-wrap items-center gap-3 font-mono text-sm text-pale-muted">
               <span className="tabular">{formatDate(locale, n.date)}</span>
               <span className={newsSourceClass(n)}>{newsSourceLabel(n, d)}</span>
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold leading-tight text-sky">
+            <h2 className="t-item mt-2 leading-tight">
               <Link href={href(locale, newsPath(n))} className="hover:underline">
                 {n.title[locale]}
               </Link>
@@ -74,8 +80,10 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
                   {d.common.steamNews}
                 </SteamButton>
               </p>
-            ) : (
-              <NewsSourceLink item={n} locale={locale} dict={d} className="mt-3 inline-block text-sm text-crimson underline" />
+            ) : isDeckNews(n) ? null : (
+              // Fonte esterna in menta (il magenta faceva 2,96:1 sul blu notte), in una nuova scheda. Sulle news dei
+              // mazzi non serve: il link al mazzo è già il tasto sotto la copertina.
+              <NewsSourceLink item={n} locale={locale} dict={d} className="link-mint mt-3 inline-block text-sm" />
             )}
           </li>
         ))}

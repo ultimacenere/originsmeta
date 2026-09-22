@@ -5,10 +5,11 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { getCard } from "@/lib/data/cards";
+import { encodeOmCode } from "@/lib/deckcode";
 import { currentUser } from "@/lib/supabase/server";
 import { listUserDecks } from "@/lib/community/queries";
 import { deleteDeck, setDeckStatus } from "@/lib/community/actions";
-import type { Profile } from "@/lib/community/types";
+import type { CommunityDeck, Profile } from "@/lib/community/types";
 import { listUserTournaments } from "@/lib/tournament/queries";
 import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
@@ -17,9 +18,18 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 
 export const dynamic = "force-dynamic";
 
+/** Bottone "Elimina": .btn-danger del design system (rosso "bad", 5,2:1 sul blu notte; cornice da 2 px come gli altri). */
+const deleteBtn = "btn btn-danger text-xs";
+
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
   return { ...pageMeta(locale, "/account", dict.community.account.title, dict.community.account.intro), robots: { index: false, follow: false } };
+}
+
+/** Nome della Leggendaria del mazzo, anche quando è una carta fuori dal nostro database. */
+function legendaryName(deck: CommunityDeck): string {
+  const leg = deck.legendary ? getCard(deck.legendary) : undefined;
+  return leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? deck.legendary ?? "—";
 }
 
 export default async function AccountPage({ params }: { params: LocaleParams }) {
@@ -38,21 +48,24 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, created_at").eq("id", user.id).maybeSingle();
   const profile = (profileRow as (Profile & { role: string; created_at: string }) | null) ?? null;
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
-  const [decks, tournaments] = await Promise.all([listUserDecks(supabase, user.id), listUserTournaments(supabase, user.id)]);
+  const [allDecks, tournaments] = await Promise.all([listUserDecks(supabase, user.id), listUserTournaments(supabase, user.id)]);
+  // I mazzi privati ("Salva privato" del deck builder, stato 'draft') hanno la loro sezione: niente voti né scheda pubblica.
+  const decks = allDecks.filter((deck) => deck.status !== "draft");
+  const drafts = allDecks.filter((deck) => deck.status === "draft");
   const x = d.tournaments;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.account}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{c.account.title}</h1>
+      <h1 className="t-page mt-2">{c.account.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{c.account.intro}</p>
 
       <section className="card-night mt-8 flex flex-wrap items-center gap-4 p-6">
         <Avatar profile={profile} name={name} size={56} />
         <div className="min-w-0 flex-1">
           <p className="kicker text-pale-muted">{c.account.signedInAs}</p>
-          <p className="font-display text-2xl font-extrabold text-sky">{name}</p>
-          <p className="font-mono text-xs text-pale-muted">
+          <p className="t-item">{name}</p>
+          <p className="break-all font-mono text-xs text-pale-muted">
             {profile?.username ? `@${profile.username} · ` : ""}
             {user.email}
             {profile?.role === "admin" ? ` · ${c.account.role}: admin` : ""}
@@ -63,8 +76,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-2xl font-extrabold text-sky">{c.account.myDecks}</h2>
-          <Link href={href(locale, "/deck-builder")} className="btn btn-mint text-xs">
+          <h2 className="t-section">{c.account.myDecks}</h2>
+          <Link href={href(locale, "/deck-builder")} className="btn btn-primary text-xs">
             {d.nav.builder} →
           </Link>
         </div>
@@ -78,45 +91,87 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             </p>
           </div>
         ) : (
-          <ul className="mt-4 grid gap-4 md:grid-cols-2">
+          <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {decks.map((deck) => {
-              const leg = deck.legendary ? getCard(deck.legendary) : undefined;
-              const legName = leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? deck.legendary ?? "—";
               const viewHref = href(locale, `/decks/community/${deck.slug}`);
               return (
                 <li key={deck.id} className="card-night flex flex-col p-5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={`stat-pill text-[11px] font-semibold uppercase ${deck.status === "published" ? "bg-mint-deep text-chalk" : "bg-chalk/10 text-pale"}`}>{c.status[deck.status]}</span>
-                    <span className="stat-pill border border-sky text-pale">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
-                    <span className="stat-pill bg-gold/50 text-pale">★ {legName}</span>
+                    <span className={`stat-pill text-[11px] font-semibold uppercase ${deck.status === "published" ? "bg-mint text-ink" : "bg-night-3 text-pale"}`}>{c.status[deck.status]}</span>
+                    <span className="stat-pill bg-sky text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
+                    <span className="stat-pill bg-gold text-ink">★ {legendaryName(deck)}</span>
                   </div>
-                  <p className="mt-3 font-display text-xl font-extrabold leading-tight text-sky">{deck.name}</p>
+                  <p className="t-item mt-3 leading-tight">{deck.name}</p>
                   <p className="mt-1 font-mono text-xs text-pale-muted">
                     {deck.rating?.votes ? `★ ${deck.rating.avg.toFixed(1)} · ${deck.rating.votes} ${deck.rating.votes === 1 ? c.vote : c.votes}` : c.noVotes} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-sky pt-3">
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     {deck.status === "published" ? (
                       <Link href={viewHref} className="btn btn-ink text-xs">
                         {c.account.view}
                       </Link>
                     ) : null}
-                    <Link href={`${viewHref}/edit`} className="btn border border-sky text-xs text-pale">
+                    <Link href={`${viewHref}/edit`} className="btn btn-ink text-xs">
                       {c.edit}
                     </Link>
                     <form action={setDeckStatus}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />
                       <input type="hidden" name="status" value={deck.status === "published" ? "hidden" : "published"} />
-                      <button type="submit" className="btn border border-sky text-xs text-pale">
+                      <button type="submit" className="btn btn-ink text-xs">
                         {deck.status === "published" ? c.hide : c.unhide}
                       </button>
                     </form>
+                    {/* prima era un clic secco: ora chiede conferma, come i tornei */}
                     <form action={deleteDeck}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />
-                      <button type="submit" className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk">
-                        {c.delete}
-                      </button>
+                      <ConfirmButton label={c.delete} confirm={c.confirmDelete} className={deleteBtn} />
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
+      <section id="private" className="mt-12 scroll-mt-24">
+        <h2 className="t-section">{c.account.privateTitle}</h2>
+        <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{c.account.privateIntro}</p>
+        {drafts.length === 0 ? (
+          <div className="card-night mt-4 p-6">
+            <p className="text-pale-muted">{c.account.noPrivate}</p>
+          </div>
+        ) : (
+          <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {drafts.map((deck) => {
+              const code = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
+              return (
+                <li key={deck.id} className="card-night flex flex-col p-5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{c.account.privateBadge}</span>
+                    <span className="stat-pill bg-gold text-ink">★ {legendaryName(deck)}</span>
+                  </div>
+                  <p className="t-item mt-3 leading-tight">{deck.name}</p>
+                  <p className="mt-1 font-mono text-xs text-pale-muted">
+                    {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {/* navigazione completa: il modulo di pubblicazione e il builder leggono il mazzo dall'indirizzo */}
+                    <a href={`${href(locale, "/decks/publish")}?deck=${encodeURIComponent(code)}&draft=${deck.id}`} className="btn btn-primary text-xs">
+                      {c.account.publish}
+                    </a>
+                    {/* ?draft: "Salva privato" nel builder aggiorna questo mazzo invece di crearne un altro */}
+                    <a href={`${href(locale, "/deck-builder")}?draft=${deck.id}#${code}`} className="btn btn-ink text-xs">
+                      {c.openInBuilder}
+                    </a>
+                    <form action={deleteDeck}>
+                      <input type="hidden" name="id" value={deck.id} />
+                      <input type="hidden" name="locale" value={locale} />
+                      <input type="hidden" name="back" value="private" />
+                      <ConfirmButton label={c.delete} confirm={c.account.confirmDeletePrivate} className={deleteBtn} />
                     </form>
                   </div>
                 </li>
@@ -129,15 +184,15 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       {/* Tournament Organizer: tornei organizzati e giocati */}
       <section className="mt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-2xl font-extrabold text-sky">{x.account.title}</h2>
-          <Link href={href(locale, "/tournaments/new")} className="btn btn-mint text-xs">
+          <h2 className="t-section">{x.account.title}</h2>
+          <Link href={href(locale, "/tournaments/new")} className="btn btn-primary text-xs">
             {x.account.newCta} →
           </Link>
         </div>
         {tournaments.invited.length ? (
           <>
             <h3 className="mt-5 kicker text-gold">{x.account.invited}</h3>
-            <ul className="mt-3 grid gap-4 md:grid-cols-2">
+            <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
               {tournaments.invited.map((t) => (
                 <li key={t.id}>
                   <TournamentCard t={t} locale={locale} dict={d} compact />
@@ -155,7 +210,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {tournaments.organized.length ? (
               <>
                 <h3 className="mt-5 kicker text-pale-muted">{x.account.organized}</h3>
-                <ul className="mt-3 grid gap-4 md:grid-cols-2">
+                <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                   {tournaments.organized.map((t) => (
                     <li key={t.id} className="flex flex-col gap-2">
                       <TournamentCard t={t} locale={locale} dict={d} compact />
@@ -163,7 +218,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
                         <form action={deleteTournament} className="self-end">
                           <input type="hidden" name="id" value={t.id} />
                           <input type="hidden" name="locale" value={locale} />
-                          <ConfirmButton label={x.account.delete} confirm={x.account.confirmDelete} className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk" />
+                          <ConfirmButton label={x.account.delete} confirm={x.account.confirmDelete} className={deleteBtn} />
                         </form>
                       ) : null}
                     </li>
@@ -174,7 +229,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {tournaments.playing.length ? (
               <>
                 <h3 className="mt-6 kicker text-pale-muted">{x.account.playing}</h3>
-                <ul className="mt-3 grid gap-4 md:grid-cols-2">
+                <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                   {tournaments.playing.map((t) => (
                     <li key={t.id}>
                       <TournamentCard t={t} locale={locale} dict={d} compact />

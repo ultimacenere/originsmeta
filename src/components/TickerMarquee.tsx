@@ -69,9 +69,30 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
     };
   }, [extraUrl, locale]);
 
+  /*
+   * Il ciclo di animazione gira solo quando serve (21/09/2026): striscia dentro lo schermo e scheda visibile.
+   * Fuori schermo o a scheda nascosta si ferma del tutto, invece di chiedere un fotogramma a vuoto 60 volte al
+   * secondo. I due segnali arrivano da IntersectionObserver e visibilitychange, mai letti durante il render.
+   */
+  const [inView, setInView] = useState(true);
+  const [pageVisible, setPageVisible] = useState(true);
   useEffect(() => {
     const el = ref.current;
-    if (!el || hover) return;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    // più notifiche nello stesso giro (dentro e fuori in fretta): conta l'ultima
+    const io = new IntersectionObserver((entries) => setInView(entries[entries.length - 1].isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    const onVisibility = () => setPageVisible(document.visibilityState !== "hidden");
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || hover || !inView || !pageVisible) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
     let last = performance.now();
@@ -87,7 +108,7 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [hover, speed]);
+  }, [hover, speed, inView, pageVisible]);
 
   const pause = () => {
     pausedUntil.current = performance.now() + PAUSE_AFTER_INTERACTION;

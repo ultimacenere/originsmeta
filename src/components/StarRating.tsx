@@ -83,7 +83,7 @@ export function StarRating({
 
   const shown = hover || mine || Math.round(stats.avg);
   const status = !supabaseEnabled ? null : userId === undefined ? null : !userId ? (
-    <Link href={loginHref} className="underline decoration-mint-deep underline-offset-2 hover:text-mint">
+    <Link href={loginHref} className="font-semibold text-mint underline underline-offset-2 hover:text-sky">
       {labels.loginToVote}
     </Link>
   ) : isOwner ? (
@@ -95,7 +95,7 @@ export function StarRating({
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-sky bg-night-2/60 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border-2 border-sky bg-night-2/60 px-4 py-3">
       <div>
         <p className="kicker text-pale-muted">{labels.rating}</p>
         <p className="mt-0.5 font-display text-3xl font-extrabold leading-none text-sky">
@@ -105,6 +105,7 @@ export function StarRating({
         <p className="mt-1 font-mono text-xs text-pale-muted">{stats.votes ? `${stats.votes} ${stats.votes === 1 ? labels.vote : labels.votes}` : labels.noVotes}</p>
       </div>
       <div className="flex flex-col gap-1">
+        {/* stelle vuote in pale-muted: prima erano pale/25 (1,89:1) e il comando per votare quasi non si vedeva */}
         <div className="flex gap-0.5" role="group" aria-label={labels.rate} onMouseLeave={() => setHover(0)}>
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -117,13 +118,13 @@ export function StarRating({
               disabled={!canVote}
               aria-label={`${n}/5`}
               aria-pressed={mine === n}
-              className={`text-2xl leading-none transition ${n <= shown ? "text-mint" : "text-pale/25"} ${canVote ? "cursor-pointer hover:scale-110" : "cursor-default"}`}
+              className={`text-3xl leading-none transition ${n <= shown ? "text-mint" : "text-pale-muted"} ${canVote ? "cursor-pointer hover:scale-110" : "cursor-default"}`}
             >
               {n <= shown ? "★" : "☆"}
             </button>
           ))}
         </div>
-        <p className={`text-xs ${msg?.kind === "err" ? "text-crimson" : "text-pale-muted"}`} aria-live="polite">
+        <p className={`text-xs ${msg?.kind === "err" ? "text-error" : canVote && !mine ? "font-semibold text-pale" : "text-pale-muted"}`} aria-live="polite">
           {msg ? msg.text : status}
         </p>
       </div>

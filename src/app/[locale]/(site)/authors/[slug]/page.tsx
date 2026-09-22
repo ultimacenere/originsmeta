@@ -6,6 +6,7 @@ import { pageMeta, resolveLocale } from "@/lib/page";
 import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor } from "@/lib/data/authors";
 import { newsPath } from "@/lib/data/news";
 import { fill } from "@/lib/tournament/types";
+import { isExternalHref, newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, person } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -67,7 +68,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
       </p>
       <header className="mt-6">
         <p className="kicker text-mint">{d.authors.title}</p>
-        <h1 className="mt-3 text-4xl font-extrabold leading-tight text-sky sm:text-5xl">{a.name}</h1>
+        <h1 className="t-page mt-3 leading-tight">{a.name}</h1>
         <p className="mt-4 text-lg text-chalk-muted">
           <span className="font-display font-bold text-sky">{d.authors.role}:</span> {a.role[locale]}
         </p>
@@ -78,7 +79,8 @@ export default async function AuthorPage({ params }: { params: Params }) {
           <ul className="flex flex-wrap gap-2 text-base">
             {a.links.map((l) => (
               <li key={l.url}>
-                <a className="btn btn-ink text-xs" href={l.url} rel="noopener">
+                {/* I profili esterni si aprono in una nuova scheda (regola unica `newTabProps`); l'indirizzo email no, apre il programma di posta. */}
+                <a className="btn btn-ink text-xs" href={l.url} {...(isExternalHref(l.url) ? newTabProps : {})}>
                   {l.label}
                 </a>
               </li>
@@ -90,7 +92,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
 
       {guides.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{fill(d.authors.guidesBy, { name: a.displayName })}</h2>
+          <h2 className="t-section">{fill(d.authors.guidesBy, { name: a.displayName })}</h2>
           <ul className="mt-4 grid grid-cols-1 gap-4">
             {guides.map((g) => (
               <li key={g.slug}>
@@ -98,7 +100,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
                   <p className="kicker text-pale-muted">
                     {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {formatDate(locale, g.updated)}
                   </p>
-                  <h3 className="mt-1 text-lg font-extrabold leading-tight text-sky">{g.title}</h3>
+                  <h3 className="t-item mt-1 leading-tight">{g.title}</h3>
                   <p className="mt-2 text-sm text-pale-muted">{g.excerpt}</p>
                 </Link>
               </li>
@@ -109,7 +111,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
 
       {signedNews.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{fill(d.authors.newsBy, { name: a.displayName })}</h2>
+          <h2 className="t-section">{fill(d.authors.newsBy, { name: a.displayName })}</h2>
           <ul className="mt-4 grid grid-cols-1 gap-3">
             {signedNews.map((item) => (
               <li key={item.slug}>
@@ -117,7 +119,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
                   <p className="font-mono text-xs text-pale-muted">
                     <time dateTime={item.date}>{formatDate(locale, item.date)}</time>
                   </p>
-                  <h3 className="mt-1 text-base font-extrabold leading-snug text-sky">{item.title[locale]}</h3>
+                  <h3 className="t-item mt-1 text-base leading-snug">{item.title[locale]}</h3>
                 </Link>
               </li>
             ))}
@@ -127,12 +129,12 @@ export default async function AuthorPage({ params }: { params: Params }) {
 
       {decks.length ? (
         <section className="mt-10">
-          <h2 className="text-2xl font-extrabold text-sky">{d.common.decks}</h2>
+          <h2 className="t-section">{d.common.decks}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {decks.map((deck) => (
               <li key={deck.slug}>
-                <Link href={href(locale, `/decks/community/${deck.slug}`)} className="btn btn-mint text-xs">
-                  {deck.name} <span className="font-mono font-normal opacity-70">{d.community.kicker}</span>
+                <Link href={href(locale, `/decks/community/${deck.slug}`)} className="btn btn-ink text-xs">
+                  {deck.name} <span className="font-mono font-normal text-pale-muted">{d.community.kicker}</span>
                 </Link>
               </li>
             ))}

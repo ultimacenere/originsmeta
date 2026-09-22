@@ -44,3 +44,11 @@ export type CommunityDeck = {
 
 export const PENDING_PUBLISH_KEY = "originsmeta.publish.pending";
 export const BUILDER_STORAGE_KEY = "originsmeta.deckbuilder.v1";
+/** Bozza della guida nel modulo di pubblicazione: salvata a ogni modifica, così un'interruzione non cancella il testo. */
+export const GUIDE_DRAFT_KEY = "originsmeta.publish.guide.v1";
+
+/**
+ * Tetto ai mazzi privati (stato 'draft', "Salva privato" del deck builder) di un utente: largo per l'uso
+ * normale, ferma chi riempirebbe la tabella. Sta qui perché actions.ts ("use server") esporta solo funzioni.
+ */
+export const MAX_PRIVATE_DECKS = 50;

@@ -18,6 +18,16 @@ export function newSlug(name: string): string {
   return `${base}-${rand}`;
 }
 
+/** Nome del mazzo ripulito: spazi compattati, al massimo 60 caratteri (il vincolo del database è 3–60). */
+export function cleanDeckName(raw: string): string {
+  return raw.replace(/\s+/g, " ").trim().slice(0, 60);
+}
+
+/** Id di una riga (uuid): controllo di forma prima di passarlo a una query. */
+export function isUuid(raw: unknown): raw is string {
+  return typeof raw === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw);
+}
+
 export type CheckedDeck = { legendary: string; cards: string[]; customCards: BuilderCard[] };
 
 /**

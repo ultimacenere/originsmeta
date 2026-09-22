@@ -32,7 +32,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
   return (
     <section className="mt-8" aria-labelledby="deck-stats-title">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h2 id="deck-stats-title" className="text-xl font-extrabold text-sky">
+        <h2 id="deck-stats-title" className="t-section">
           {labels.title}
         </h2>
         <p className="font-mono text-[11px] text-pale-muted">
@@ -42,7 +42,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
       <div className="mt-3 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
         {/* Curva di mana impilata */}
-        <figure className="rounded-xl border border-sky bg-night-2/60 p-4">
+        <figure className="rounded-xl border-2 border-sky bg-night-2/60 p-4">
           <figcaption className="flex flex-wrap items-center justify-between gap-2">
             <span className="kicker text-pale-muted">{labels.curve}</span>
             <span className="flex flex-wrap gap-3 font-mono text-[11px] text-pale-muted">
@@ -101,7 +101,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
           <Tile label={labels.byTurn3} value={String(stats.byTurn3)} hint={labels.copies} />
           <Tile label={labels.power} value={String(stats.power)} hint={stats.avgPower !== null ? `${labels.perUnit} ${stats.avgPower}` : undefined} />
           <Tile label={labels.health} value={String(stats.health)} hint={stats.avgHealth !== null ? `${labels.perUnit} ${stats.avgHealth}` : undefined} />
-          <figure className="col-span-2 flex items-center gap-4 rounded-xl border border-sky bg-night-2/60 p-4">
+          <figure className="col-span-2 flex items-center gap-4 rounded-xl border-2 border-sky bg-night-2/60 p-4">
             <svg viewBox="0 0 80 80" className="h-20 w-20 shrink-0" role="img" aria-label={`${labels.units} ${stats.units} · ${labels.spells} ${stats.spells}`}>
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.spells} strokeWidth={10} />
               <circle cx={40} cy={40} r={r} fill="none" stroke={C.units} strokeWidth={10} strokeDasharray={`${(unitsPct / 100) * circ} ${circ}`} transform="rotate(-90 40 40)" strokeLinecap="butt" />
@@ -125,7 +125,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {/* Saghe */}
-        <figure className="rounded-xl border border-sky bg-night-2/60 p-4">
+        <figure className="rounded-xl border-2 border-sky bg-night-2/60 p-4">
           <figcaption className="kicker text-pale-muted">{labels.sagas}</figcaption>
           <ul className="mt-2 space-y-1.5">
             {stats.bySaga.map((s) => (
@@ -147,7 +147,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
         {/* Parole chiave + estremi + win rate (in arrivo) */}
         <div className="grid gap-4">
-          <figure className="rounded-xl border border-sky bg-night-2/60 p-4">
+          <figure className="rounded-xl border-2 border-sky bg-night-2/60 p-4">
             <figcaption className="kicker text-pale-muted">{labels.keywords}</figcaption>
             {stats.keywords.length ? (
               <ul className="mt-2 flex flex-wrap gap-1.5">
@@ -183,7 +183,7 @@ export function DeckCharts({ stats, labels, partial = false }: { stats: DeckStat
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-sky bg-night-2/60 p-4">
+    <div className="rounded-xl border-2 border-sky bg-night-2/60 p-4">
       <p className="kicker text-pale-muted">{label}</p>
       <p className="mt-1 font-display text-2xl font-extrabold leading-none text-sky tabular-nums">{value}</p>
       {hint ? <p className="mt-1 font-mono text-[11px] text-pale-muted">{hint}</p> : null}

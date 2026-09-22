@@ -3,13 +3,15 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
+import { getCard, patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
-import { tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tierlist";
+import { communityDeckOf, tierIds, tierList, type TierId, type TierSection } from "@/lib/data/tierlist";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { CardChip } from "@/components/CardChip";
+import { CardArt, CardChip } from "@/components/CardChip";
+import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { contactEmail, officialLinks } from "@/components/Footer";
-import { DiscordLogo } from "@/components/DiscordButton";
+import { DiscordButton } from "@/components/DiscordButton";
+import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -17,12 +19,20 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   return pageMeta(locale, "/tier-list", dict.tier.title, dict.tier.description);
 }
 
+/*
+  Rampa delle fasce, dal più al meno: oro, menta, menta scura, blu notte con cornice celeste, magenta.
+  Prima B e C erano due blu notte quasi uguali (1,20:1 fra loro): adesso ogni fascia si distingue dalla vicina.
+  Testo scuro (ink) sui tre fondi chiari (menta scura 6,0:1), gesso sui due fondi scuri; il magenta resta solo
+  alla D ("da rifare"), nella versione scura delle pastiglie nerf: il gesso sul crimson pieno fa 3,99:1, che non
+  basta per la legenda e per la riga delle fasce vuote, sul crimson-deep 6,14:1. La cornice della C è un anello
+  interno, così la casella non cambia misura.
+*/
 const tierTone: Record<TierId, string> = {
   S: "bg-gold text-ink",
   A: "bg-mint text-ink",
-  B: "bg-night text-pale",
-  C: "bg-night-3 text-pale",
-  D: "bg-crimson text-chalk",
+  B: "bg-mint-deep text-ink",
+  C: "bg-night-3 text-chalk ring-2 ring-inset ring-sky",
+  D: "bg-crimson-deep text-chalk",
 };
 
 export default async function TierListPage({ params }: { params: LocaleParams }) {
@@ -33,24 +43,39 @@ export default async function TierListPage({ params }: { params: LocaleParams })
 
   const renderEntry = (section: TierSection, slug: string) => {
     if (section.id === "decks") {
+      // Mazzo della community: nome e Leggendaria scritti in tierlist.ts, perché la pagina è statica e non legge Supabase.
+      const community = communityDeckOf(slug);
+      if (community) {
+        const legendary = getCard(community.legendary);
+        return (
+          <Link key={slug} href={href(locale, `/decks/community/${community.slug}`)} className="card-chip max-w-full" title={community.name}>
+            {legendary ? <CardArt card={legendary} /> : <span aria-hidden="true" />}
+            <span className="min-w-0">
+              <span className="block truncate font-display text-[0.85rem] font-bold leading-tight text-sky">{community.name}</span>
+              <span className="block truncate font-mono text-[11px] text-pale-muted">★ {legendary?.name ?? community.legendary}</span>
+            </span>
+          </Link>
+        );
+      }
       const deck = getDeck(slug);
       if (!deck) return null;
       return (
         <Link key={slug} href={href(locale, `/decks/${deck.slug}`)} className="card-chip !grid-cols-1">
           <span className="min-w-0">
-            <span className="block font-display text-[0.85rem] font-bold leading-tight">{deck.name}</span>
+            <span className="block font-display text-[0.85rem] font-bold leading-tight text-sky">{deck.name}</span>
             <span className="block font-mono text-[11px] text-pale-muted">{archetypeLabels[deck.archetype][locale]}</span>
           </span>
         </Link>
       );
     }
+    // CardChip porta già `max-w-full`: su telefono i nomi lunghi (Three Not So Little Pigs) si troncano invece di uscire dalla riga.
     return <CardChip key={slug} slug={slug} locale={locale} />;
   };
 
   // Lista per i dati strutturati: le tre sezioni della tier list con le loro ancore, non le singole voci.
-  // Finché ladder e tornei non danno risultati, i tier sono vuoti e in classifica ci sono solo due
-  // Leggendarie "non ancora valutate": un ItemList di due carte descriverebbe male la pagina, mentre le
-  // tre sezioni (mazzi, Leggendarie, carte base) sono la struttura stabile che la pagina promette.
+  // Finché ladder e tornei non danno risultati le fasce sono vuote e tutte le voci stanno in "non ancora
+  // classificato": un ItemList di voci senza posizione descriverebbe male la pagina, mentre le tre sezioni
+  // (mazzi, Leggendarie, carte base) sono la struttura stabile che la pagina promette.
   const listed = tierList.sections.map((s) => ({ name: d.tier.sections[s.id].title, path: `${href(locale, "/tier-list")}#${s.id}` }));
 
   return (
@@ -71,17 +96,19 @@ export default async function TierListPage({ params }: { params: LocaleParams })
           }),
         ]}
       />
+      {/* Anteprima delle carte al passaggio del mouse (CardChip): la tiene dentro la finestra ai bordi. */}
+      <CardMentionEdges />
       <p className="kicker text-mint">{d.nav.tierList}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.tier.title}</h1>
+      <h1 className="t-page mt-2">{d.tier.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_1fr]">
         <section className="card-night p-6">
-          <p className="kicker text-crimson">
+          <p className="kicker text-mint">
             {d.tier.statusKicker} · {d.common.updated} {formatDate(locale, tierList.updated)}
           </p>
           <p className="mt-2 text-lg font-bold text-pale">{d.tier.statusText}</p>
-          <h2 className="mt-6 text-xl font-extrabold text-sky">{d.tier.methodTitle}</h2>
+          <h2 className="t-section mt-6">{d.tier.methodTitle}</h2>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-pale">
             {d.tier.method.map((m) => (
               <li key={m}>{m}</li>
@@ -89,11 +116,10 @@ export default async function TierListPage({ params }: { params: LocaleParams })
           </ol>
           <p className="mt-6 text-sm text-pale-muted">
             {d.tier.ctaText}{" "}
-            <a className="link-discord inline-flex items-center gap-1 align-middle" href={officialLinks.discord} rel="noopener">
-              <DiscordLogo className="h-3.5 w-3.5" />
+            <DiscordButton href={officialLinks.discord} size="sm" className="align-middle">
               Discord
-            </a>{" "}
-            · <a className="text-crimson underline" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+            </DiscordButton>{" "}
+            · <a className="link-mint" href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </p>
         </section>
         <section className="felt-panel p-6">
@@ -110,23 +136,41 @@ export default async function TierListPage({ params }: { params: LocaleParams })
 
       {tierList.sections.map((section) => {
         const meta = d.tier.sections[section.id];
+        const ranked = tierIds.reduce((n, t) => n + section.tiers[t].length, 0);
         return (
           <section key={section.id} id={section.id} className="mt-14 scroll-mt-24">
-            <h2 className="text-2xl font-extrabold text-sky sm:text-3xl">{meta.title}</h2>
+            <h2 className="t-section">{meta.title}</h2>
             <p className="mt-1 max-w-2xl text-chalk-muted">{meta.text}</p>
-            <div className="mt-5 overflow-hidden rounded-xl border border-felt-line">
-              {tierIds.map((t) => (
-                <div key={t} className="grid grid-cols-[64px_1fr] border-b border-felt-line/70 last:border-b-0">
-                  <div className={`flex items-center justify-center font-display text-2xl font-extrabold ${tierTone[t]}`}>{t}</div>
-                  <div className="flex min-h-16 flex-wrap items-center gap-2 bg-felt-deep/60 p-3">
-                    {section.tiers[t].length ? section.tiers[t].map((slug) => renderEntry(section, slug)) : <span className="font-mono text-xs text-chalk-muted/60">—</span>}
+            {/* Niente overflow-hidden sul riquadro: taglierebbe l'anteprima delle carte che si apre sopra la riga.
+                Gli angoli arrotondati li portano le celle ai bordi (11 px = 12 px del riquadro meno il bordo). */}
+            <div className="mt-5 rounded-xl border border-felt-line">
+              {ranked ? (
+                tierIds.map((t, i) => (
+                  <div key={t} className="grid grid-cols-[64px_minmax(0,1fr)] border-b border-felt-line/70">
+                    <div className={`flex items-center justify-center font-display text-2xl font-extrabold ${tierTone[t]} ${i === 0 ? "rounded-tl-[11px]" : ""}`}>{t}</div>
+                    <div className={`flex min-h-16 min-w-0 flex-wrap items-center gap-2 bg-felt-deep/60 p-3 ${i === 0 ? "rounded-tr-[11px]" : ""}`}>
+                      {section.tiers[t].length ? section.tiers[t].map((slug) => renderEntry(section, slug)) : <span className="font-mono text-xs text-chalk-muted/60">—</span>}
+                    </div>
                   </div>
+                ))
+              ) : (
+                // Fasce ancora tutte vuote: niente cinque righe con un trattino, una riga sola che dice quando arrivano.
+                // Le lettere restano, come promemoria della scala spiegata nel riquadro qui sopra.
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-t-[11px] border-b border-felt-line/70 bg-felt-deep/60 p-4">
+                  <span className="flex shrink-0 gap-1.5" aria-hidden="true">
+                    {tierIds.map((t) => (
+                      <span key={t} className={`flex h-9 w-9 items-center justify-center rounded-md font-display text-base font-extrabold ${tierTone[t]}`}>
+                        {t}
+                      </span>
+                    ))}
+                  </span>
+                  <p className="min-w-0 flex-1 basis-60 text-pale">{d.tier.emptyTiers}</p>
                 </div>
-              ))}
-              <div className="grid grid-cols-[64px_1fr] border-t border-felt-line">
-                <div className="flex items-center justify-center bg-felt-soft font-mono text-[10px] uppercase tracking-wider text-chalk-muted">n/d</div>
-                <div className="flex min-h-16 flex-wrap items-center gap-2 bg-felt-deep/40 p-3">
-                  <span className="kicker mr-2 text-chalk-muted">{d.common.unranked}</span>
+              )}
+              <div className="grid grid-cols-[64px_minmax(0,1fr)]">
+                <div className="flex items-center justify-center rounded-bl-[11px] bg-felt-soft px-1 text-center font-mono text-[10px] uppercase tracking-wider text-chalk-muted">n/d</div>
+                <div className="flex min-h-16 min-w-0 flex-wrap items-center gap-2 rounded-br-[11px] bg-felt-deep/40 p-3">
+                  <span className="kicker mr-2 w-full text-chalk-muted sm:w-auto">{d.common.unranked}</span>
                   {section.unranked.length ? (
                     section.unranked.map((slug) => renderEntry(section, slug))
                   ) : (
@@ -137,12 +181,22 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                 </div>
               </div>
             </div>
+            {section.id === "decks" ? (
+              // Invito al voto: i mazzi pubblicati sul sito si votano da 1 a 5 stelle, un voto per account.
+              <div className="card-night mt-4 flex flex-wrap items-center gap-4 p-5">
+                <p className="min-w-0 flex-1 basis-64 text-pale">{d.tier.voteText}</p>
+                {/* sul telefono a tutta larghezza e in text-xs: a 0,85rem il testo andava su due righe */}
+                <Link href={href(locale, "/decks")} className="btn btn-primary max-sm:w-full max-sm:text-xs">
+                  {d.tier.voteCta} →
+                </Link>
+              </div>
+            ) : null}
           </section>
         );
       })}
 
       <section id="tracker" className="mt-14 scroll-mt-24">
-        <h2 className="text-2xl font-extrabold text-sky sm:text-3xl">{d.tier.trackerTitle}</h2>
+        <h2 className="t-section">{d.tier.trackerTitle}</h2>
         <p className="mt-2 max-w-2xl text-chalk-muted">{d.tier.trackerSub}</p>
         <div className="mt-6 overflow-x-auto rounded-xl border border-felt-line">
           <table className="w-full min-w-[640px] text-sm">
@@ -172,7 +226,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                             {d.tier.readPatchNotes} →
                           </Link>
                         ) : null}
-                        <a href={patches[patch].url} rel="noopener" className="text-pale-muted underline hover:text-pale">
+                        <a href={patches[patch].url} {...newTabProps} className="text-pale-muted underline hover:text-pale">
                           {d.common.steamNews}
                         </a>
                       </span>
@@ -181,7 +235,8 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                   {items.map(({ card, change }) => (
                     <tr key={`${card.slug}-${change.patch}`} className="border-t border-felt-line/70 bg-night text-pale">
                       <td className="px-4 py-3 font-bold">
-                        <Link href={href(locale, `/cards/${card.slug}`)} className="hover:underline">
+                        {/* Nome di carta: è il titolo dell'elemento, quindi celeste come negli altri elenchi */}
+                        <Link href={href(locale, `/cards/${card.slug}`)} className="text-sky hover:underline">
                           {card.name}
                         </Link>
                       </td>

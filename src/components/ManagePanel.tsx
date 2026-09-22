@@ -93,19 +93,19 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
   return (
     <div className="grid gap-6">
       {error ? (
-        <p role="alert" className="rounded-lg border-2 border-bad bg-bad/10 p-3 text-sm text-bad">
+        <p role="alert" className="alert-bad">
           {error}
         </p>
       ) : null}
       {notice && !error ? (
-        <p role="status" className="text-sm text-good">
+        <p role="status" className="alert-good">
           {notice}
         </p>
       ) : null}
 
       {/* Iscritti */}
       <section className="card-night p-5">
-        <h2 className="text-xl font-extrabold text-sky">
+        <h2 className="t-section">
           {m.players} <span className="font-mono text-sm font-normal text-pale-muted">{players.filter((p) => p.status === "registered").length}/{size}</span>
         </h2>
         {players.length ? (
@@ -121,7 +121,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
                     onClick={() => {
                       if (window.confirm(m.dropConfirm)) run(() => dropPlayer(id, slug, p.user_id));
                     }}
-                    className="ml-auto btn border border-crimson/40 !px-2 !py-0.5 text-[11px] text-crimson hover:bg-crimson hover:text-chalk"
+                    className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]"
                   >
                     {m.drop}
                   </button>
@@ -137,7 +137,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
       {/* Inviti (tornei privati; per i pubblici il link è solo comodo da condividere) */}
       {status === "open" || status === "running" ? (
         <section className="card-night p-5">
-          <h2 className="text-xl font-extrabold text-sky">
+          <h2 className="t-section">
             {m.inviteTitle} <span className="ml-2 stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.visibilities[visibility as keyof typeof x.visibilities] ?? visibility}</span>
           </h2>
           <p className="mt-1 text-sm text-pale-muted">{visibility === "private" ? m.inviteHint : m.publicNote}</p>
@@ -175,7 +175,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
               <span className="kicker text-mint">{m.inviteByName}</span>
               <input value={inviteName} onChange={(e) => setInviteName(e.target.value)} placeholder={m.invitePlaceholder} maxLength={60} autoComplete="off" className="mt-1 block w-56 rounded-lg border border-sky bg-night px-3 py-2 text-sm text-pale focus:border-mint" />
             </label>
-            <button type="submit" disabled={pending || !inviteName.trim()} className="btn btn-mint text-xs">
+            <button type="submit" disabled={pending || !inviteName.trim()} className="btn btn-primary text-xs">
               {m.invite}
             </button>
           </form>
@@ -186,7 +186,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
                 <li key={i.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
                   <span className="min-w-0 truncate text-pale">{i.name}</span>
                   {i.registered ? <span className="font-mono text-[11px] text-good">✓</span> : null}
-                  <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id))} className="ml-auto btn border border-crimson/40 !px-2 !py-0.5 text-[11px] text-crimson hover:bg-crimson hover:text-chalk">
+                  <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id))} className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]">
                     {m.revoke}
                   </button>
                 </li>
@@ -201,11 +201,11 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
       {/* Avvio */}
       {status === "open" ? (
         <section className="card-night p-5">
-          <h2 className="text-xl font-extrabold text-sky">{m.startTitle}</h2>
+          <h2 className="t-section">{m.startTitle}</h2>
           <p className="mt-1 text-sm text-pale-muted">{m.startIntro}</p>
           {excluded ? <p className="mt-2 text-sm text-gold">{fill(m.excluded, { n: excluded })}</p> : null}
           {seeding.length < 2 ? (
-            <p className="mt-3 text-sm text-bad">{m.tooFew}</p>
+            <p className="mt-3 text-sm text-error">{m.tooFew}</p>
           ) : (
             <>
               <p className="mt-3 font-mono text-xs text-pale">{byes ? fill(m.byesPreview, { n: seeding.length, size: bracket, byes }) : fill(m.noByes, { n: seeding.length, size: bracket })}</p>
@@ -227,7 +227,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
                 <button type="button" onClick={() => setOrder(shuffle(seeding))} className="btn btn-ink text-xs" disabled={pending}>
                   {m.shuffle}
                 </button>
-                <button type="button" onClick={() => run(() => startTournament(id, slug, seeding))} className="btn btn-mint text-xs" disabled={pending}>
+                <button type="button" onClick={() => run(() => startTournament(id, slug, seeding))} className="btn btn-primary text-xs" disabled={pending}>
                   {pending ? m.starting : m.start}
                 </button>
               </div>
@@ -241,7 +241,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
         <>
           {[...rounds.entries()].map(([round, list]) => (
             <section key={round} className="card-night p-5">
-              <h2 className="text-xl font-extrabold text-sky">{fill(m.roundTitle, { n: round })}</h2>
+              <h2 className="t-section">{fill(m.roundTitle, { n: round })}</h2>
               <ul className="mt-3 grid gap-3 md:grid-cols-2">
                 {list
                   .sort((a, b) => a.position - b.position)
@@ -253,7 +253,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
           ))}
 
           <section className="card-night p-5">
-            <h2 className="text-xl font-extrabold text-sky">{m.finishTitle}</h2>
+            <h2 className="t-section">{m.finishTitle}</h2>
             <p className="mt-1 text-sm text-pale-muted">{m.finishHint}</p>
             <label className="mt-3 block text-sm">
               <span className="kicker text-mint">{m.report}</span>
@@ -274,7 +274,7 @@ export function ManagePanel({ id, slug, status, size, bestOf, players, matches, 
             onClick={() => {
               if (window.confirm(m.cancelConfirm)) run(() => cancelTournament(id, slug), tournamentHref);
             }}
-            className="btn border border-crimson/40 text-xs text-crimson hover:bg-crimson hover:text-chalk"
+            className="btn btn-danger text-xs"
           >
             {m.cancel}
           </button>

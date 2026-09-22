@@ -5,7 +5,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { authors } from "@/lib/data/authors";
 import { contactEmail, officialLinks } from "@/components/Footer";
-import { SteamButton, isSteamUrl } from "@/components/SteamButton";
+import { SteamButton, isSteamUrl, newTabProps } from "@/components/SteamButton";
 import { DiscordButton, isDiscordUrl } from "@/components/DiscordButton";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -37,7 +37,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.about}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.about.title}</h1>
+      <h1 className="t-page mt-2">{d.about.title}</h1>
       <div className="hero-art mt-8" style={{ transform: "none" }}>
         {/* Stessa immagine dello slider in home: riusiamo il suo testo alternativo, già tradotto, invece di scriverne uno in inglese su tutte e due le lingue. */}
         <Image src="/media/banner-rapunzel.webp" alt={d.home.slides.rapunzel.alt} width={1500} height={500} sizes="(max-width: 896px) 92vw, 860px" className="w-full" />
@@ -46,7 +46,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
         <p>{d.about.p1}</p>
         <p>{d.about.p2}</p>
         <p>{d.about.p3}</p>
-        <h2 className="pt-4 text-2xl font-extrabold text-sky">{d.about.authorsTitle}</h2>
+        <h2 className="t-section pt-4">{d.about.authorsTitle}</h2>
         <p>{d.about.authorsText}</p>
         <ul className="flex flex-wrap gap-2 text-base">
           {authorPages.map((a) => (
@@ -57,14 +57,14 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
             </li>
           ))}
         </ul>
-        <h2 className="pt-4 text-2xl font-extrabold text-sky">{d.about.contactTitle}</h2>
+        <h2 className="t-section pt-4">{d.about.contactTitle}</h2>
         <p>
           {d.about.contactText}{" "}
-          <a className="text-crimson underline" href={`mailto:${contactEmail}`}>
+          <a className="link-mint" href={`mailto:${contactEmail}`}>
             {contactEmail}
           </a>
         </p>
-        <h2 className="pt-4 text-2xl font-extrabold text-sky">{d.about.sourcesTitle}</h2>
+        <h2 className="t-section pt-4">{d.about.sourcesTitle}</h2>
         <ul className="flex flex-wrap gap-2 text-base">
           {sources.map(([label, url]) => (
             <li key={url}>
@@ -75,14 +75,15 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
               ) : isDiscordUrl(url) ? (
                 <DiscordButton href={url}>{label}</DiscordButton>
               ) : (
-                <a className="btn btn-ink text-xs" href={url} rel="noopener">
+                // Nuova scheda con la regola unica dei link esterni (`newTabProps`, come i tasti Steam e Discord accanto).
+                <a className="btn btn-ink text-xs" href={url} {...newTabProps}>
                   {label}
                 </a>
               )}
             </li>
           ))}
         </ul>
-        <h2 className="pt-4 text-2xl font-extrabold text-sky">{d.about.disclaimerTitle}</h2>
+        <h2 className="t-section pt-4">{d.about.disclaimerTitle}</h2>
         <p className="text-base text-pale-muted">{d.about.disclaimer}</p>
       </article>
     </div>

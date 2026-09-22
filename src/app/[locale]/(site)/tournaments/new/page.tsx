@@ -6,6 +6,7 @@ import { canListTournaments } from "@/lib/tournament/types";
 import { TournamentForm } from "@/components/TournamentForm";
 import { LoginPanel } from "@/components/LoginPanel";
 import { loginLabels } from "@/lib/loginLabels";
+import { contactEmail } from "@/components/Footer";
 
 /** Pagina "Organizza un torneo": renderizzata sul server (legge la sessione), quindi passa dal proxy per il refresh dei cookie. */
 export const dynamic = "force-dynamic";
@@ -34,13 +35,13 @@ export default async function NewTournamentPage({ params }: { params: LocalePara
   } else {
     const { data } = await supabase.from("profiles").select("badge, role").eq("id", user.id).maybeSingle();
     const profile = (data as { badge: string; role: string } | null) ?? null;
-    body = <TournamentForm locale={locale} userId={user.id} canList={canListTournaments(profile)} labels={x} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} />;
+    body = <TournamentForm locale={locale} userId={user.id} canList={canListTournaments(profile)} labels={x} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} contactEmail={contactEmail} />;
   }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.nav.events}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{x.create.title}</h1>
+      <h1 className="t-page mt-2">{x.create.title}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{x.create.intro}</p>
       <div className="mt-8">{body}</div>
     </div>

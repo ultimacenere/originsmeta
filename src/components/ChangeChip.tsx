@@ -1,14 +1,9 @@
 import type { ChangeKind } from "@/lib/data/cards";
+import { changeStyle } from "@/lib/cardArt";
 
-const styles: Record<ChangeKind, string> = {
-  buff: "bg-felt text-chalk",
-  nerf: "bg-crimson text-chalk",
-  rework: "bg-gold text-ink",
-  deck: "bg-night-3 text-pale",
-};
-
+/** Pastiglia di un cambio di bilanciamento. I colori stanno in `changeStyle` (cardArt.ts), gli stessi del database carte. */
 export function ChangeChip({ kind, label }: { kind: ChangeKind; label: string }) {
-  return <span className={`stat-pill font-semibold uppercase tracking-wider ${styles[kind]}`}>{label}</span>;
+  return <span className={`stat-pill font-bold uppercase tracking-wider ${changeStyle[kind]}`}>{label}</span>;
 }
 
 export function StatDelta({ from, to }: { from?: { mana?: number; power?: number; health?: number }; to?: { mana?: number; power?: number; health?: number } }) {

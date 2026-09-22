@@ -32,14 +32,14 @@ export default async function AuthorsPage({ params }: { params: LocaleParams }) 
         ]}
       />
       <p className="kicker text-mint">{d.about.authorsTitle}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.authors.title}</h1>
+      <h1 className="t-page mt-2">{d.authors.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.authors.intro}</p>
       <ul className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
         {authors.map((a) => (
           <li key={a.slug}>
             <Link href={href(locale, `/authors/${a.slug}`)} className="card-night card-night-hover flex h-full flex-col p-6">
               <p className="kicker text-pale-muted">{a.role[locale]}</p>
-              <h2 className="mt-1 text-xl font-extrabold leading-tight text-sky">{a.name}</h2>
+              <h2 className="t-item mt-1 leading-tight">{a.name}</h2>
               <p className="mt-2 flex-1 text-sm text-pale-muted">{a.tagline[locale]}</p>
               <span className="mt-4 font-display text-sm font-bold text-mint">{d.authors.profileCta} →</span>
             </Link>

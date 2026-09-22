@@ -11,6 +11,10 @@ type Open = { linkBase: string; viewer?: string | null; all?: boolean };
  * Server component senza librerie; la griglia scorre in orizzontale dentro il proprio contenitore.
  * `highlight` evidenzia le partite di un giocatore (per esempio chi guarda); con `open` le partite diventano
  * link alla stanza della partita: le proprie per il giocatore (`viewer`), tutte per organizzatore e admin (`all`).
+ *
+ * Accessibilità (21/09/2026): la propria partita non è segnalata solo dal colore (tinta menta al 10%, 1,24:1)
+ * ma anche dall'etichetta "Tu"; sul telefono, dove il tabellone scorre di lato, una sfumatura sul bordo destro
+ * e la scritta "scorri" dicono che c'è altro da vedere.
  */
 export function Bracket({ matches, names, dict, highlight, open }: { matches: TournamentMatch[]; names: Names; dict: Dictionary; highlight?: string | null; open?: Open }) {
   const x = dict.tournaments;
@@ -25,28 +29,42 @@ export function Bracket({ matches, names, dict, highlight, open }: { matches: To
   };
   const final = rounds[total - 1]?.[0];
   const champion = final && final.winner && (final.status === "confirmed" || final.status === "bye") ? final.winner : null;
+  // colonne da 240 px più 24 di spazio: fino a 3 colonne il tabellone entra nella scheda da desktop,
+  // oltre scorre anche lì; sotto i 1024 px scorre sempre
+  const columns = total + (champion ? 1 : 0);
+  const overflowCls = columns > 3 ? "" : "lg:hidden";
 
   return (
-    <div className="overflow-x-auto pb-2">
-      <div className="flex min-w-max gap-6">
-        {rounds.map((list, i) => (
-          <section key={i} className="flex w-60 flex-col">
-            <h3 className="kicker mb-3 text-pale-muted">{label(i + 1)}</h3>
-            <ol className="flex flex-1 flex-col justify-around gap-3">
-              {list.map((m) => (
-                <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={highlight ?? open?.viewer} open={open} />
-              ))}
-            </ol>
-          </section>
-        ))}
-        {champion ? (
-          <section className="flex w-60 flex-col">
-            <h3 className="kicker mb-3 text-gold">{x.winner}</h3>
-            <div className="flex flex-1 items-center">
-              <p className="w-full rounded-lg border-2 border-gold bg-gold/15 p-3 text-center font-display text-lg font-extrabold text-gold">★ {names.get(champion) ?? "?"}</p>
-            </div>
-          </section>
-        ) : null}
+    <div>
+      <p className={`mb-2 font-mono text-[11px] uppercase tracking-wider text-pale-muted ${overflowCls}`} aria-hidden="true">
+        {x.scrollHint}
+      </p>
+      <div className="relative">
+        <div className="overflow-x-auto pb-2">
+          <div className="flex min-w-max gap-6">
+            {rounds.map((list, i) => (
+              <section key={i} className="flex w-60 flex-col">
+                <h3 className="kicker mb-3 text-pale-muted">{label(i + 1)}</h3>
+                <ol className="flex flex-1 flex-col justify-around gap-3">
+                  {list.map((m) => (
+                    <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={highlight ?? open?.viewer} open={open} />
+                  ))}
+                </ol>
+              </section>
+            ))}
+            {champion ? (
+              <section className="flex w-60 flex-col">
+                <h3 className="kicker mb-3 text-gold">{x.winner}</h3>
+                <div className="flex flex-1 items-center">
+                  <p className="w-full rounded-lg border-2 border-gold bg-gold/15 p-3 text-center font-display text-lg font-extrabold text-gold">★ {names.get(champion) ?? "?"}</p>
+                </div>
+              </section>
+            ) : null}
+            {/* spazio in coda: a fine scorrimento la sfumatura copre questo margine, non l'ultima colonna */}
+            <div className={`w-6 shrink-0 ${overflowCls}`} aria-hidden="true" />
+          </div>
+        </div>
+        <div className={`pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-night-2 to-transparent ${overflowCls}`} aria-hidden="true" />
       </div>
     </div>
   );
@@ -57,7 +75,11 @@ function Row({ id, score, winner, bye, names, dict, me }: { id: string | null; s
   const name = bye ? "bye" : id ? names.get(id) ?? "?" : x.tbd;
   return (
     <p className={`flex items-center justify-between gap-2 px-3 py-1.5 text-sm ${winner ? "font-bold text-good" : bye || !id ? "text-pale-muted" : "text-pale"} ${me ? "bg-mint/10" : ""}`}>
-      <span className="truncate">{name}</span>
+      <span className="flex min-w-0 items-center gap-1.5">
+        {/* segno non cromatico: l'etichetta "Tu" accanto al proprio nome */}
+        {me ? <span className="shrink-0 rounded bg-mint px-1.5 py-px font-mono text-[10px] font-bold uppercase text-ink">{x.match.you}</span> : null}
+        <span className="truncate">{name}</span>
+      </span>
       {score !== null ? <span className="font-mono text-xs">{score}</span> : null}
     </p>
   );

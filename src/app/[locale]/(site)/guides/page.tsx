@@ -38,19 +38,19 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
         ]}
       />
       <p className="kicker text-mint">{d.nav.guides}</p>
-      <h1 className="mt-2 text-4xl font-extrabold text-sky sm:text-5xl">{d.guides.title}</h1>
+      <h1 className="t-page mt-2">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
           const count = guides.filter((g) => g.category === id).length;
           return (
-            <li key={id} className={`stat-pill border ${count ? "border-mint text-mint" : "border-felt-line text-chalk-muted/60"}`}>
+            <li key={id} className={`stat-pill border-2 ${count ? "border-mint text-mint" : "border-felt-line text-chalk-muted"}`}>
               {label} · {count}
             </li>
           );
         })}
       </ul>
-      <ul className="mt-8 grid gap-6 md:grid-cols-3">
+      <ul className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
         {guides.map((g) => (
           <li key={g.slug}>
             <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover flex h-full flex-col overflow-hidden">
@@ -59,9 +59,10 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
                 <p className="kicker text-pale-muted">
                   {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime} · {formatDate(locale, g.updated)}
                 </p>
-                <h2 className="mt-1 text-xl font-extrabold leading-tight text-sky">{g.title}</h2>
+                <h2 className="t-item mt-1 leading-tight">{g.title}</h2>
                 <p className="mt-2 flex-1 text-sm text-pale-muted">{g.excerpt}</p>
-                <span className="mt-4 font-display text-sm font-bold text-crimson">{d.common.readMore} →</span>
+                {/* CTA in menta: il magenta resta ai nerf e agli errori (sul blu notte faceva 2,96:1). */}
+                <span className="mt-4 font-display text-sm font-bold text-mint">{d.common.readMore} →</span>
               </div>
             </Link>
           </li>

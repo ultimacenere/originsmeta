@@ -5,7 +5,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { getMatch, getTournament, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { SCREENSHOT_BUCKET, fill } from "@/lib/tournament/types";
+import { SCREENSHOT_BUCKET, bestOfLabel, fill } from "@/lib/tournament/types";
 import { authorName } from "@/lib/community/util";
 import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
@@ -103,11 +103,11 @@ export default async function MatchPage({ params }: { params: Params }) {
       <p className="mt-6 kicker text-mint">
         {x.kicker} · {t.tag} · {fill(l.round, { n: match.round })}
       </p>
-      <h1 className="mt-2 text-3xl font-extrabold leading-tight text-sky sm:text-4xl">
+      <h1 className="t-page mt-2">
         {names.a} <span className="text-pale-muted">{l.vs}</span> {names.b}
       </h1>
       <p className="mt-2 text-sm text-pale-muted">
-        {x.deckModes[t.deck_mode]} · {fill(x.bestOf, { n: t.best_of })}
+        {x.deckModes[t.deck_mode]} · {bestOfLabel(x, t.best_of)}
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
