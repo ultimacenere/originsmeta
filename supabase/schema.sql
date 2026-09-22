@@ -1131,3 +1131,98 @@ begin
 end $$;
 revoke all on function public.submit_tournament_decks(uuid, jsonb) from public, anon;
 grant execute on function public.submit_tournament_decks(uuid, jsonb) to authenticated;
+
+-- =====================================================================================================
+-- 23/09/2026 — PROFILO CON UNA SUA UTILITÀ (richieste di Pierluigi, §1 punto 27.5 della KB):
+--   1) le tier list create dagli utenti si salvano sul server, una per utente e per tipo, e alimentano la
+--      tier list della community (/tier-list/community);
+--   2) i mazzi pubblicati hanno un tetto: 5 per un utente normale, nessun tetto per Influencer, Pro, Staff
+--      e admin. I mazzi privati ('draft') hanno già il loro tetto nel codice (MAX_PRIVATE_DECKS).
+-- =====================================================================================================
+
+create table if not exists public.tier_lists (
+  id uuid primary key default gen_random_uuid(),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  -- le due schede del tool: Leggendarie e carte base (TierKind in src/lib/tiercode.ts)
+  kind text not null check (kind in ('legendaries','cards')),
+  title text not null default '' check (char_length(title) <= 60),
+  -- codice TL1 (la fonte di verità, lo stesso del link e del salvataggio nel browser)
+  code text not null check (char_length(code) between 3 and 4000),
+  -- le fasce già aperte: {"S":["dorothy"],"A":[...]}. Serve all'aggregazione della community, che in SQL non
+  -- può decifrare il codice TL1. La scrive il sito, dallo stesso codice.
+  entries jsonb not null default '{}'::jsonb,
+  status text not null default 'published' check (status in ('published','hidden')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+-- una sola tier list per utente e per tipo (Pierluigi: "tierlist una sola per utente"): salvarne un'altra
+-- sostituisce la propria, non ne aggiunge una seconda
+create unique index if not exists tier_lists_owner_kind_idx on public.tier_lists (owner, kind);
+create index if not exists tier_lists_status_idx on public.tier_lists (status, updated_at desc);
+
+drop trigger if exists tier_lists_touch on public.tier_lists;
+create trigger tier_lists_touch before update on public.tier_lists
+  for each row execute function public.touch_updated_at();
+
+alter table public.tier_lists enable row level security;
+drop policy if exists "published tier lists are public" on public.tier_lists;
+create policy "published tier lists are public" on public.tier_lists for select
+  using (status = 'published' or owner = auth.uid() or public.is_admin());
+drop policy if exists "users insert own tier lists" on public.tier_lists;
+create policy "users insert own tier lists" on public.tier_lists for insert
+  with check (owner = auth.uid());
+drop policy if exists "owners update tier lists" on public.tier_lists;
+create policy "owners update tier lists" on public.tier_lists for update
+  using (owner = auth.uid() or public.is_admin()) with check (owner = auth.uid() or public.is_admin());
+drop policy if exists "owners delete tier lists" on public.tier_lists;
+create policy "owners delete tier lists" on public.tier_lists for delete
+  using (owner = auth.uid() or public.is_admin());
+
+grant select on public.tier_lists to anon, authenticated;
+grant insert, update, delete on public.tier_lists to authenticated;
+
+-- Tier list della community: la media delle fasce date dagli utenti a ogni carta (S=5 … D=1) e quante persone
+-- l'hanno classificata. La fascia risultante la calcola il sito (src/lib/community/tierlists.ts), così la soglia
+-- si cambia senza migrazione. Contano solo le tier list pubblicate.
+create or replace view public.tier_card_scores as
+  select l.kind,
+         s.slug,
+         round(avg(case t.key when 'S' then 5 when 'A' then 4 when 'B' then 3 when 'C' then 2 else 1 end)::numeric, 2) as avg_score,
+         count(*)::int as votes
+    from public.tier_lists l
+    cross join lateral jsonb_each(l.entries) as t(key, value)
+    cross join lateral jsonb_array_elements_text(t.value) as s(slug)
+   where l.status = 'published'
+     and t.key in ('S','A','B','C','D')
+   group by l.kind, s.slug;
+grant select on public.tier_card_scores to anon, authenticated;
+
+-- ---------- tetto ai mazzi pubblicati (Pierluigi, 23/09/2026) ----------
+-- "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti". Il conto tiene insieme
+-- pubblicati e nascosti (un mazzo nascosto è comunque un mazzo pubblicato dall'utente, che può rimettere online
+-- quando vuole); i mazzi privati 'draft' non c'entrano e hanno il loro tetto nel sito.
+-- Sta in un trigger e non solo nella Server Action perché il limite è una regola dei dati, non dell'interfaccia.
+create or replace function public.max_published_decks(uid uuid)
+returns int language sql stable security definer set search_path = public, pg_temp as $$
+  select case when p.role = 'admin' or p.badge in ('influencer','pro','staff') then 2147483647 else 5 end
+    from public.profiles p where p.id = uid;
+$$;
+
+create or replace function public.enforce_deck_limit()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  used int;
+  cap int;
+begin
+  if new.status = 'draft' then return new; end if;
+  -- una modifica che non cambia né proprietario né stato non va contata di nuovo
+  if tg_op = 'UPDATE' and old.status <> 'draft' and old.owner = new.owner then return new; end if;
+  cap := coalesce(public.max_published_decks(new.owner), 5);
+  select count(*) into used from public.community_decks
+   where owner = new.owner and status <> 'draft' and id <> new.id;
+  if used >= cap then raise exception 'deck_limit' using errcode = 'check_violation'; end if;
+  return new;
+end $$;
+drop trigger if exists community_decks_limit on public.community_decks;
+create trigger community_decks_limit before insert or update of status, owner on public.community_decks
+  for each row execute function public.enforce_deck_limit();

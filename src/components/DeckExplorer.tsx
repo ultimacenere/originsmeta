@@ -40,6 +40,16 @@ export type ExplorerDeck = {
   /** codice del gioco (KGBLDC…) del mazzo, da copiare senza aprire la scheda; assente se una carta non ha l'ID ufficiale */
   code?: string;
   updated: string;
+  /**
+   * Data di creazione (aaaa-mm-gg) e versione del gioco di quel giorno (Pierluigi, 23/09/2026: "sui mazzi del
+   * sito deve essere specificato la data di creazione e la versione del gioco o patch"). La patch non la sceglie
+   * chi pubblica: si ricava dalla data con `patchAt` (src/lib/data/cards.ts), cioè dal calendario ufficiale.
+   */
+  created?: string;
+  /** data già scritta nella lingua della pagina, per non portare l'intera formattazione nel browser */
+  createdLabel?: string;
+  patchId?: string;
+  patchLabel?: string;
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
   /** tipo di mazzo e tag autore (solo mazzi della community) */
@@ -65,6 +75,13 @@ type Labels = {
   copied: string;
   /** riga che sostituisce "N risultati" quando i mazzi sono pochi (es. "I primi mazzi della community") */
   firstDecks: string;
+  /* filtro per versione del gioco e ordinamento (23/09/2026) */
+  patch: string;
+  patchFilter: string;
+  sortBy: string;
+  sortNewest: string;
+  sortRated: string;
+  createdOn: string;
 };
 
 /** Tessera "il tuo mazzo qui": primo elemento della griglia finché i mazzi sono pochi. */
@@ -131,23 +148,43 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   const [legendary, setLegendary] = useState("all");
   const [archetype, setArchetype] = useState("all");
   const [creator, setCreator] = useState("all");
+  const [patch, setPatch] = useState("all");
   const [card, setCard] = useState("");
   const [view, setView] = useState<"blocks" | "list">("blocks");
+  /* Ordine di partenza: dal più recente al più vecchio (Pierluigi, 23/09/2026). Prima i mazzi erano ordinati per
+     voto medio, e con due soli voti la classifica diceva poco; chi arriva vuole vedere l'ultimo mazzo uscito. */
+  const [sort, setSort] = useState<"new" | "rated">("new");
 
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);
   const archetypes = useMemo(() => Array.from(new Map(decks.map((d) => [d.archetype, d.archetypeLabel])).entries()), [decks]);
   const creators = useMemo(() => Array.from(new Set(decks.map((d) => d.creator))), [decks]);
+  /* versioni presenti nei mazzi, dalla più recente: l'ordine è quello delle date, non quello alfabetico degli id */
+  const patchesInUse = useMemo(
+    () =>
+      Array.from(new Map(decks.filter((d) => d.patchId && d.patchLabel).map((d) => [d.patchId!, { label: d.patchLabel!, date: d.created ?? "" }])).entries()).sort((a, b) =>
+        b[1].date.localeCompare(a[1].date),
+      ),
+    [decks],
+  );
 
   const list = useMemo(() => {
     const needle = card.trim().toLowerCase();
-    return decks.filter((d) => {
+    const filtered = decks.filter((d) => {
       if (legendary !== "all" && d.legendary?.slug !== legendary) return false;
       if (archetype !== "all" && d.archetype !== archetype) return false;
       if (creator !== "all" && d.creator !== creator) return false;
+      if (patch !== "all" && d.patchId !== patch) return false;
       if (needle && !d.cardNames.some((c) => c.toLowerCase().includes(needle)) && !d.name.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [decks, legendary, archetype, creator, card]);
+    // "più recenti": la data di creazione, con quella di aggiornamento come ripiego per i mazzi editoriali
+    const when = (d: ExplorerDeck) => d.created ?? d.updated;
+    return filtered.sort((a, b) =>
+      sort === "new"
+        ? when(b).localeCompare(when(a))
+        : (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || when(b).localeCompare(when(a)),
+    );
+  }, [decks, legendary, archetype, creator, patch, card, sort]);
 
   const few = decks.length < FEW_DECKS;
   const showInvite = Boolean(invite) && few;
@@ -260,6 +297,30 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         {/* con pochi mazzi niente "2 risultati": una riga che li presenta come i primi della community */}
         <p className="kicker text-chalk-muted">{few ? (decks.length ? labels.firstDecks : null) : `${list.length} ${labels.results}`}</p>
+        {/* Ordinamento e versione del gioco stanno qui e non nel pannello dei filtri, che con pochi mazzi non
+            viene disegnato: l'ordine di visibilità è una scelta che deve esserci da subito. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-2 text-xs text-chalk-muted">
+            {labels.sortBy}
+            <select value={sort} onChange={(e) => setSort(e.target.value === "rated" ? "rated" : "new")} className={selectCls}>
+              <option value="new">{labels.sortNewest}</option>
+              <option value="rated">{labels.sortRated}</option>
+            </select>
+          </label>
+          {patchesInUse.length > 1 ? (
+            <label className="flex items-center gap-2 text-xs text-chalk-muted">
+              {labels.patchFilter}
+              <select value={patch} onChange={(e) => setPatch(e.target.value)} className={selectCls}>
+                <option value="all">{labels.all}</option>
+                {patchesInUse.map(([id, { label }]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+        </div>
         <div className="flex gap-1 rounded-lg border border-felt-line bg-felt-deep p-1">
           <button type="button" onClick={() => setView("blocks")} className={viewBtn(view === "blocks")} aria-pressed={view === "blocks"}>
             {labels.viewBlocks}
@@ -318,6 +379,18 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                     <span>
                       {labels.creator}: <strong className="text-pale">{d.creator}</strong>
                     </span>
+                    {/* Quando è stato costruito e con quale versione del gioco: un mazzo di tre patch fa vale
+                        un'altra cosa, e chi legge deve poterlo capire senza aprire la scheda. */}
+                    {d.createdLabel ? (
+                      <span>
+                        {labels.createdOn} <time dateTime={d.created}>{d.createdLabel}</time>
+                      </span>
+                    ) : null}
+                    {d.patchLabel ? (
+                      <span className="stat-pill bg-night-3 text-[11px] text-pale">
+                        {labels.patch} {d.patchLabel}
+                      </span>
+                    ) : null}
                     {d.code ? <CopyCode code={d.code} labels={labels} /> : null}
                   </p>
                 </div>
@@ -353,6 +426,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               </Link>
               <span className="flex shrink-0 items-center gap-2 text-xs text-pale-muted">
                 <span className="truncate">{d.creator}</span>
+                {d.createdLabel ? <time dateTime={d.created}>{d.createdLabel}</time> : null}
+                {d.patchLabel ? <span className="stat-pill bg-night-3 text-[11px] text-pale">{d.patchLabel}</span> : null}
                 {d.code ? <CopyCode code={d.code} labels={labels} /> : null}
               </span>
             </li>

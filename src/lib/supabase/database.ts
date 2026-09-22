@@ -43,6 +43,27 @@ export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "
   legendary?: string | null;
 };
 
+/* ---------- tier list salvate nel profilo (23/09/2026, §1 punto 27.5 della KB) ---------- */
+export type TierListRow = {
+  id: string;
+  owner: string;
+  /** le due schede del tool: Leggendarie o carte base */
+  kind: "legendaries" | "cards";
+  title: string;
+  /** codice TL1: la fonte di verità, lo stesso del link e del salvataggio nel browser */
+  code: string;
+  /** le fasce già aperte ({"S":["dorothy"],…}): servono all'aggregazione SQL della tier list della community */
+  entries: Record<string, string[]>;
+  status: "published" | "hidden";
+  created_at: string;
+  updated_at: string;
+};
+export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at" | "status" | "title"> & {
+  id?: string;
+  title?: string;
+  status?: TierListRow["status"];
+};
+
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; created_at: string; updated_at: string };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
 
@@ -152,6 +173,20 @@ export type Database = {
           {
             foreignKeyName: "deck_votes_user_id_fkey";
             columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tier_lists: {
+        Row: TierListRow;
+        Insert: TierListInsert;
+        Update: Partial<TierListInsert>;
+        Relationships: [
+          {
+            foreignKeyName: "tier_lists_owner_fkey";
+            columns: ["owner"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -288,9 +323,17 @@ export type Database = {
         Row: { deck_id: string; avg_stars: number; votes: number };
         Relationships: [];
       };
+      /** Media delle fasce date dagli utenti a ogni carta (S=5 … D=1) e quanti l'hanno classificata: è la tier
+          list della community. La fascia risultante la calcola il sito (src/lib/community/tierlists.ts). */
+      tier_card_scores: {
+        Row: { kind: "legendaries" | "cards"; slug: string; avg_score: number; votes: number };
+        Relationships: [];
+      };
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      /** tetto ai mazzi pubblicati: 5 per un utente normale, nessuno per Influencer, Pro, Staff e admin */
+      max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };
       leave_tournament: { Args: { tid: string }; Returns: undefined };
       submit_tournament_decks: { Args: { tid: string; codes: string[] }; Returns: undefined };

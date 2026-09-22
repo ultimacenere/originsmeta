@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { alignStyle, changeStyle } from "@/lib/cardArt";
 
@@ -109,7 +110,13 @@ export function FlipCard({
           <span className="card-tile-initials">{c.initials}</span>
         )}
 
-        <span className={`card-tile-info${headOnBack ? " has-head" : ""}`}>
+        {/* La carta del fronte torna come fondo del retro (--card-art, vedi `.card-tile-info::before` in globals.css):
+            girando, l'illustrazione vera ruota via, e senza questa il retro sarebbe un rettangolo scuro. Si passa la
+            versione a 480 px quando c'è: sfocata, la miniatura da 160 basterebbe, ma è già in cache dal fronte. */}
+        <span
+          className={`card-tile-info${headOnBack ? " has-head" : ""}`}
+          style={src ? ({ "--card-art": `url("${(c.image ?? src).replace(/"/g, "%22")}")` } as CSSProperties) : undefined}
+        >
           {/* display di saga e parole chiave in globals.css (non con utility): il retro stretto le nasconde */}
           {c.kicker ? <span className="card-tile-kicker kicker text-mint">{c.kicker}</span> : null}
           {headOnBack ? (

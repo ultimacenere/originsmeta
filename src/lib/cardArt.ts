@@ -30,11 +30,18 @@ export function initials(name: string): string {
     .join("");
 }
 
-/** Tag autore dei mazzi community, colori forti da memorizzare (mappa di Davdas, approvata da Pierluigi il 15/09/2026): Staff verde acqua, Pro rosa, Influencer giallo, sempre con scritta nera. Chi è Staff non è "Community". */
+/**
+ * Tag autore dei mazzi community, colori forti da memorizzare. Mappa nuova, dettata da Pierluigi il 23/09/2026
+ * (supera quella di Davdas del 15/09: Staff menta, Pro rosa, Influencer oro):
+ * Staff scritta nera su giallo (12,3:1), Community com'era (gesso su night-3, 8,6:1), Pro rosso su azzurro
+ * (`.badge-pro`, 5,2:1), Influencer gradiente stile Instagram con scritta bianca (`.badge-ig`, come i bottoni
+ * primari). Le due varianti con gradiente e con colori fuori palette stanno in globals.css, non in utility.
+ * Chi è Staff non mostra anche "Community"; il tag community di default non si mostra affatto.
+ */
 export const badgeStyle: Record<string, string> = {
-  staff: "bg-mint text-ink",
-  pro: "bg-pink text-ink",
-  influencer: "bg-gold text-ink",
+  staff: "bg-gold text-ink",
+  pro: "badge-pro",
+  influencer: "badge-ig",
   community: "bg-night-3 text-pale",
 };
 /** Tag autore più grandi e marcati (richiesta di Davdas). */

@@ -38,18 +38,29 @@ function merge(base: TickerItem[], extra: TickerItem[]): TickerItem[] {
 const PAUSE_AFTER_INTERACTION = 6000;
 
 /**
+ * Quante volte ripetere la lista dentro una copia perché la copia sia più larga della striscia (23/09/2026).
+ * Il ciclo di scorrimento si regge su due copie identiche: se una copia non riempie la striscia non c'è niente
+ * da far scorrere e il nastro resta fermo — era il motivo per cui con pochi eventi su uno schermo largo la
+ * striscia non si muoveva (§1 punto 27.4 della KB). Tetto a 8 per non moltiplicare i nodi all'infinito.
+ */
+const MAX_REPEATS = 8;
+
+/**
  * Striscia del calendario: scorre da sola (requestAnimationFrame, non CSS) così si può anche navigare
  * a mano con le frecce, la rotella o il dito; si ferma al passaggio del mouse. La lista è duplicata e,
  * superata la prima copia, la posizione torna indietro di una copia: il ciclo non ha mai un salto visibile.
  * Tra la fine e l'inizio del ciclo c'è un blocco con il logo del gioco. Con "riduci il movimento" attivo
  * non scorre da sola ma resta navigabile.
  */
-export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 22, extraUrl, locale }: Props) {
+export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 16, extraUrl, locale }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const pausedUntil = useRef(0);
   const [hover, setHover] = useState(false);
   const [extra, setExtra] = useState<TickerItem[]>([]);
   const items = extra.length ? merge(base, extra) : base;
+  /** ripetizioni della lista dentro ogni copia: si misurano nel browser (vedi MAX_REPEATS) */
+  const [repeats, setRepeats] = useState(1);
 
   /* tornei della community: arrivano dopo il primo render, dal JSON in cache (nessuna lettura di Supabase nel layout) */
   useEffect(() => {
@@ -89,6 +100,32 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
+
+  /*
+   * Quante ripetizioni servono perché una copia superi la larghezza della striscia (23/09/2026). Si misura la
+   * lista vera disegnata (una copia = `repeats` ripetizioni più il blocco col logo) e si ricalcola quando la
+   * finestra cambia misura o arrivano i tornei del calendario. Il valore si alza solo di quanto serve, con il
+   * tetto di MAX_REPEATS, e non scende mai sotto 1: nessun ciclo fra misura e render.
+   */
+  useEffect(() => {
+    const el = ref.current;
+    const track = trackRef.current;
+    if (!el || !track) return;
+    const measure = () => {
+      const copy = track.scrollWidth / 2;
+      if (copy <= 0) return;
+      const unit = copy / repeats;
+      if (unit <= 0) return;
+      // una copia deve superare la striscia: mezzo elemento in più evita di restare a filo
+      const needed = Math.min(MAX_REPEATS, Math.max(1, Math.ceil((el.clientWidth + unit / 2) / unit)));
+      if (needed !== repeats) setRepeats(needed);
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [repeats, items]);
 
   useEffect(() => {
     const el = ref.current;
@@ -132,15 +169,18 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
         ‹
       </button>
       <div ref={ref} className="ticker-scroll" onWheel={pause} onTouchStart={pause} onPointerDown={pause}>
-        <div className="ticker-track">
+        <div ref={trackRef} className="ticker-track">
+          {/* Due copie identiche per il ciclo; dentro ognuna la lista si ripete quanto basta a superare la
+              larghezza della striscia, altrimenti non ci sarebbe niente da scorrere (vedi MAX_REPEATS). */}
           {[0, 1].map((copy) => (
             <Fragment key={copy}>
-              {items.map((it) => (
+              {Array.from({ length: repeats }).flatMap((_, rep) =>
+              items.map((it) => (
                 <Link
-                  key={`${it.key}-${copy}`}
+                  key={`${it.key}-${copy}-${rep}`}
                   href={it.href}
-                  aria-hidden={copy === 1 ? true : undefined}
-                  tabIndex={copy === 1 ? -1 : undefined}
+                  aria-hidden={copy === 1 || rep > 0 ? true : undefined}
+                  tabIndex={copy === 1 || rep > 0 ? -1 : undefined}
                   className="flex shrink-0 items-center gap-3 rounded-xl px-2 py-1 hover:bg-felt-soft"
                 >
                   <span className={`date-cube ${it.isNext ? "is-next" : ""}`}>
@@ -155,7 +195,8 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
                     </span>
                   </span>
                 </Link>
-              ))}
+              )),
+              )}
               <span className="ticker-spacer" aria-hidden="true">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/media/origins-tcg-logo.webp" alt="" loading="lazy" />

@@ -9,6 +9,7 @@ import { MAX_PRIVATE_DECKS, deckTypes } from "@/lib/community/types";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
+import { publishedDeckLimit } from "./queries";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
@@ -75,6 +76,11 @@ async function parseSubmission(formData: FormData) {
 export async function publishDeck(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const p = await parseSubmission(formData);
   if ("error" in p) return { error: p.error };
+  // Tetto ai mazzi pubblicati (Pierluigi, 23/09/2026): 5 per un utente normale, nessuno per Influencer, Pro,
+  // Staff e admin. Il controllo vero sta nel trigger `enforce_deck_limit` dello schema; qui si guarda prima,
+  // per dire di no con un messaggio chiaro invece di un errore del database.
+  const limit = await publishedDeckLimit(p.supabase, p.user.id);
+  if (limit.used >= limit.cap) return { error: "deckLimit" };
   const draftId = formData.get("draft");
   let slug = newSlug(p.row.name);
   for (let attempt = 0; attempt < 3; attempt++) {

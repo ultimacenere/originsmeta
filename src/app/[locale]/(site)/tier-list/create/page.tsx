@@ -6,6 +6,7 @@ import { cardsVerified } from "@/lib/data/cards";
 import { builderPool } from "@/lib/builderLabels";
 import { TierListMaker, type TierCard, type TierMakerLabels } from "@/components/TierListMaker";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
+import { TierListNav } from "@/components/TierListNav";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 /*
@@ -96,6 +97,13 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
     restored: m.restored,
     textHeading: m.textHeading,
     textFooter: m.textFooter,
+    save: m.save,
+    saving: m.saving,
+    savedToProfile: m.savedToProfile,
+    viewProfile: m.viewProfile,
+    saveHint: m.saveHint,
+    loginRequired: m.loginRequired,
+    saveErrors: m.saveErrors,
   };
 
   // Dati strutturati: uno strumento gratuito nel browser, dentro il sito, sul gioco (entità uniche per @id).
@@ -134,14 +142,19 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
       <p className="kicker text-mint">{d.nav.tierList}</p>
       <h1 className="t-page mt-2">{m.h1}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{m.intro}</p>
-      <p className="mt-3 text-sm">
+      {/* la tendina della sezione: da qui si passa alla tier list ufficiale e a quella della community */}
+      <TierListNav locale={locale} dict={d} current="create" />
+      <p className="mt-3 flex flex-wrap gap-4 text-sm">
         <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
           {m.officialLink} →
+        </Link>
+        <Link href={href(locale, "/tier-list/community")} className="link-mint font-bold">
+          {m.communityLink} →
         </Link>
       </p>
 
       <div className="mt-8">
-        <TierListMaker legendaries={legendaries} cards={cards} shareBase={url} labels={labels} />
+        <TierListMaker legendaries={legendaries} cards={cards} shareBase={url} labels={labels} locale={locale} />
       </div>
 
       <p className="mt-8 text-xs text-chalk-muted">

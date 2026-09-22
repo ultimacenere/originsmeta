@@ -328,6 +328,20 @@
   }
   /* Opzioni di un gruppo (pubblico/privato, formato): la scelta attiva si marca con aria-pressed="true" (o .is-on),
      così non si confonde con un'azione primaria col gradiente. */
+  /* Azione distruttiva col fondo pieno: "Svuota il tuo mazzo" in cima al deck builder (Pierluigi, 23/09/2026:
+     "tasto sfondo rosso con scritta bianca nello stesso stile degli altri tasti"). Il bianco su questo rosso fa
+     8,2:1; è la seconda eccezione dichiarata alla regola "niente bianco pieno", dopo il bottone primario. */
+  .btn-danger-solid {
+    background: var(--color-crimson-deep);
+    border-color: var(--color-crimson-deep);
+    color: #fff;
+    box-shadow: 0 10px 24px -14px rgba(151, 19, 89, 0.9);
+  }
+  .btn-danger-solid:hover:not(:disabled, [aria-disabled="true"]) {
+    background: #b3186a;
+    border-color: #b3186a;
+    color: #fff;
+  }
   .btn-choice {
     border-color: var(--color-felt-line);
     color: var(--color-chalk-muted);
@@ -348,6 +362,25 @@
     font-size: 0.8rem;
     border-radius: 6px;
     padding: 0.15rem 0.45rem;
+  }
+  /*
+    Tag autore Pro e Influencer (mappa di Pierluigi del 23/09/2026, vedi `badgeStyle` in src/lib/cardArt.ts).
+    Stanno qui e non in utility Tailwind perché uno è un gradiente e l'altro usa due tinte fuori dalla palette,
+    scelte per il contrasto: il rosso #b3003c sull'azzurro chiaro #a9e6f7 fa 5,2:1 (il crimson della palette sul
+    celeste pieno si fermava a 2,6:1 e non era leggibile).
+  */
+  .badge-pro {
+    background: #a9e6f7;
+    color: #b3003c;
+  }
+  /* Influencer: lo stesso gradiente dei bottoni primari, fermo sulla fascia rosso-magenta-viola dove il bianco
+     passa (4,8-6,5:1); sull'arancio degli angoli non ci finisce mai, come in `.btn-primary`. */
+  .badge-ig {
+    background-image: var(--grad-ig);
+    background-size: 200% 100%;
+    background-position: 75% 50%;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
   /* Link nel testo: riconoscibile anche senza distinguere il colore, quindi la sottolineatura c'è sempre (tenue)
      e diventa piena al passaggio o col focus, come `.card-mention-link` (che la ha punteggiata). */
@@ -795,7 +828,12 @@
     line-height: 0.82;
     letter-spacing: 0.02em;
     text-transform: uppercase;
-    -webkit-text-stroke: 0.7px currentColor;
+    /* 23/09/2026 (Pierluigi: "scritte dei post-it più piene"): Reenie Beanie ha un solo peso, quindi la biro si
+       calca con un contorno più spesso, 1,6 px invece di 0,7. Il contorno non cambia le metriche del testo,
+       quindi TIER LIST resta su una riga. `paint-order` disegna prima il contorno e poi il pieno, così il tratto
+       cresce verso l'esterno e le pance di A, R e O non si chiudono. */
+    -webkit-text-stroke: 1.6px currentColor;
+    paint-order: stroke fill;
     transform: rotate(var(--scrawl, -2deg)) skewX(-8deg);
     transform-origin: 0 50%;
     overflow-wrap: normal;
@@ -1480,15 +1518,44 @@
     /* `safe`: se il retro è più lungo della carta si taglia in fondo, mai in cima */
     justify-content: safe center;
     padding: 42px 12px 12px; /* in alto resta lo spazio della gemma del mana */
-    background:
-      radial-gradient(120% 70% at 50% 0%, rgba(63, 196, 232, 0.14), transparent 70%),
-      linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep));
     backface-visibility: hidden;
   }
-  .card-tile.is-legendary .card-tile-info {
+  /*
+    Fondo del retro (23/09/2026, richiesta di Pierluigi: "quando si girano non mostrano più in background la grafica
+    della carta ma solo uno sfondo nero opaco, bisogna rendere trasparente quello sfondo"). Girando, il FRONTE ruota
+    di taglio e sparisce: sotto il retro non resta nessuna illustrazione, solo il fondale del riquadro. Quindi il
+    retro se la ridisegna da sé: questo ::before porta la stessa carta (--card-art, passata da FlipCard), sfocata e
+    scurita da un velo semitrasparente steso sopra di lei nello stesso background. Si riconosce la carta, e il testo
+    resta leggibile: gesso su questo velo 8,6:1 sulla carta più chiara del database (misurato).
+    z-index -1: dentro lo stacking context del retro il ::before sta sopra il fondo del genitore e sotto il testo.
+    Senza illustrazione (carta senza immagine) restano i soli veli, come prima.
+    La gemma del mana sta a z-index 3, sopra tutto: resta sempre visibile, com'è stato chiesto.
+  */
+  .card-tile-info::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
     background:
-      radial-gradient(120% 70% at 50% 0%, rgba(242, 210, 60, 0.16), transparent 70%),
-      linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep));
+      radial-gradient(120% 70% at 50% 0%, rgba(63, 196, 232, 0.16), transparent 70%),
+      linear-gradient(170deg, rgba(18, 26, 44, 0.82), rgba(10, 6, 24, 0.88)),
+      var(--card-art, linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep)));
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* l'illustrazione sfocata resta un fondo, non un secondo soggetto da guardare */
+    filter: blur(2.5px) saturate(0.85);
+    /* la sfocatura sfrangia i bordi: l'immagine si allarga appena, così non si vede la cornice del riquadro */
+    transform: scale(1.06);
+  }
+  .card-tile.is-legendary .card-tile-info::before {
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgba(242, 210, 60, 0.18), transparent 70%),
+      linear-gradient(170deg, rgba(18, 26, 44, 0.82), rgba(10, 6, 24, 0.88)),
+      var(--card-art, linear-gradient(170deg, var(--color-night-2), var(--color-felt-deep)));
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
   @media (hover: hover) {
     .card-tile-art {

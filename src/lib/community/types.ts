@@ -52,3 +52,11 @@ export const GUIDE_DRAFT_KEY = "originsmeta.publish.guide.v1";
  * normale, ferma chi riempirebbe la tabella. Sta qui perché actions.ts ("use server") esporta solo funzioni.
  */
 export const MAX_PRIVATE_DECKS = 50;
+
+/**
+ * Tetto ai mazzi PUBBLICATI di un utente normale (Pierluigi, 23/09/2026: "mazzi 5 massimo per utente normale,
+ * per staff, influencer e pro senza limiti"). Chi ha un tag autore (Influencer, Pro, Staff) e gli admin non
+ * hanno tetto. Il conto tiene insieme pubblicati e nascosti; i privati hanno il loro tetto qui sopra.
+ * Lo applica il trigger enforce_deck_limit di supabase/schema.sql, questa costante lo ripete al sito.
+ */
+export const MAX_PUBLISHED_DECKS = 5;

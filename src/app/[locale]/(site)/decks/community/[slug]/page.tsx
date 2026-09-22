@@ -5,7 +5,7 @@ import { formatDate, href, siteUrl, type Dictionary, type Locale } from "@/lib/i
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
-import { getCard } from "@/lib/data/cards";
+import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
@@ -100,6 +100,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const path = href(locale, `/decks/community/${deck.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const author = authorName(deck.profile);
+  /** versione del gioco in vigore quando il mazzo è stato creato (dal calendario delle patch, non dichiarata) */
+  const deckPatch = patchAt(deck.created_at);
   const handle = authorHandle(deck.profile);
   const others = (await listPublishedDecks(40)).filter((x) => x.slug !== deck.slug).slice(0, 8);
   // Il builder si apre già caricato dal link (`#OM1.…`, formato interno che l'utente non vede più): se il codice
@@ -158,14 +160,27 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </Link>
           ) : null}
           <div className="min-w-0 flex-1 basis-64">
+            {/* Quando è nato il mazzo e con quale versione del gioco (Pierluigi, 23/09/2026): la versione non la
+                dichiara l'autore, si ricava dalla data con `patchAt`, cioè dal calendario delle patch ufficiali.
+                L'aggiornamento resta accanto, perché un mazzo ritoccato dopo una patch non è più quello di prima. */}
             <p className="kicker text-mint">
-              {c.kicker} · {d.common.updated} {formatDate(locale, deck.updated_at.slice(0, 10))}
+              {c.kicker} · {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
+              {deckPatch ? ` · ${d.common.patch} ${patchLabel(deckPatch, locale)}` : ""}
+              {deck.updated_at.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, deck.updated_at.slice(0, 10))}` : ""}
             </p>
             <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
             <p className="mt-3 flex items-center gap-2 text-pale-muted">
               <Avatar profile={deck.profile} name={author} size={32} />
               <span>
-                {c.by} <strong className="text-pale">{author}</strong>
+                {c.by}{" "}
+                {/* il nome porta alla pagina pubblica dell'autore: i suoi mazzi e le sue tier list (23/09/2026) */}
+                {deck.profile?.username ? (
+                  <Link href={href(locale, `/u/${deck.profile.username}`)} className="font-bold text-pale hover:text-mint hover:underline">
+                    {author}
+                  </Link>
+                ) : (
+                  <strong className="text-pale">{author}</strong>
+                )}
                 {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
               </span>
             </p>

@@ -54,6 +54,7 @@ export function builderLabels(d: Dictionary): BuilderLabels {
     publish: b.publish,
     completeHint: b.completeHint,
     publishLoginHint: b.publishLoginHint,
+    loginRequired: b.loginRequired,
     savePrivate: b.savePrivate,
     savingPrivate: b.savingPrivate,
     savedPrivate: b.savedPrivate,

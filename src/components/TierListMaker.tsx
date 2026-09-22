@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState, useTransition } from "react";
 import type { DragEvent as ReactDragEvent, KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
+import Link from "next/link";
 import { initials } from "@/lib/cardArt";
+import { saveTierList, type TierActionState } from "@/lib/community/tierActions";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { supabaseEnabled } from "@/lib/supabase/env";
 import type { BuilderCard } from "@/lib/deckrules";
 import {
   TIERS,
@@ -97,6 +101,15 @@ export type TierMakerLabels = {
   textHeading: string;
   /** ultima riga del testo copiato: "Fatta su OriginsMeta: {url}" */
   textFooter: string;
+  /* salvataggio nel profilo (23/09/2026): una tier list per utente e per scheda, e alimenta quella della community */
+  save: string;
+  saving: string;
+  savedToProfile: string;
+  viewProfile: string;
+  saveHint: string;
+  /** lucchetto sul tasto per chi non ha un account */
+  loginRequired: string;
+  saveErrors: Record<string, string>;
 };
 
 type Row = Tier | "pool";
@@ -159,7 +172,20 @@ function adoptLinked(current: Record<TierKind, TierBoard>, linked: DecodedTierLi
   return { boards: { ...current, [linked.kind]: linked.board }, changed: true, backup };
 }
 
-export function TierListMaker({ legendaries, cards, shareBase, labels }: { legendaries: TierCard[]; cards: TierCard[]; shareBase: string; labels: TierMakerLabels }) {
+export function TierListMaker({
+  legendaries,
+  cards,
+  shareBase,
+  labels,
+  locale,
+}: {
+  legendaries: TierCard[];
+  cards: TierCard[];
+  shareBase: string;
+  labels: TierMakerLabels;
+  /** lingua della pagina: serve al salvataggio nel profilo e al giro dall'accesso */
+  locale: string;
+}) {
   const pools = useMemo<Record<TierKind, TierCard[]>>(() => ({ legendaries, cards }), [legendaries, cards]);
   const bySlug = useMemo(() => new Map([...legendaries, ...cards].map((c) => [c.slug, c])), [legendaries, cards]);
   const known = useMemo(() => ({ legendaries: new Set(legendaries.map((c) => c.slug)), cards: new Set(cards.map((c) => c.slug)) }), [legendaries, cards]);
@@ -183,6 +209,30 @@ export function TierListMaker({ legendaries, cards, shareBase, labels }: { legen
   /** appunti negati dal browser: si mostra il testo da copiare a mano (calcolato ogni volta, così resta aggiornato) */
   const [fallback, setFallback] = useState<"link" | "text" | null>(null);
   const [q, setQ] = useState("");
+
+  /* --- salvataggio nel profilo (23/09/2026): una tier list per utente e per scheda. Chi non ha un account
+         continua a usare il tool com'era, con il salvataggio nel browser e il link da condividere. --- */
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(supabaseEnabled ? null : false);
+  const [saving, startSave] = useTransition();
+  /** esito dell'ultimo salvataggio, legato al codice salvato: cambiando la lista il messaggio sparisce */
+  const [saveResult, setSaveResult] = useState<(TierActionState & { code: string }) | null>(null);
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    let alive = true;
+    sb.auth.getSession().then(({ data }) => {
+      if (alive) setLoggedIn(Boolean(data.session));
+    });
+    const {
+      data: { subscription },
+    } = sb.auth.onAuthStateChange((_event, session) => {
+      if (alive) setLoggedIn(Boolean(session));
+    });
+    return () => {
+      alive = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   /** modifiche non ancora scritte nel browser, per scheda: senza, niente scrittura (due schede aperte non si sovrascrivono) */
   const dirty = useRef<Record<TierKind, boolean>>({ legendaries: false, cards: false });
@@ -610,6 +660,38 @@ export function TierListMaker({ legendaries, cards, shareBase, labels }: { legen
       : tierListText(board, (s) => bySlug.get(s), cleanTitle(board.title) || fmt(labels.textHeading, { kind: kindLabel(kind) }), fmt(labels.textFooter, { url: link }));
   };
 
+  /**
+   * "Salva nel profilo": manda il codice TL1 alla Server Action, che lo rilegge, lo ripulisce e lo salva al posto
+   * della tier list che l'utente aveva per questa scheda (una per utente e per tipo). Chi non è entrato passa
+   * dall'accesso e torna qui: la lista sta nel browser e nel link, quindi non si perde.
+   */
+  function save() {
+    const code = encodeTierCode(kind, board);
+    if (!canShare) return;
+    if (loggedIn === false && supabaseEnabled) {
+      // navigazione completa e non router.push: al ritorno dall'accesso la pagina deve rileggere l'hash con la lista
+      const next = encodeURIComponent(`${window.location.pathname}#${code}`);
+      const loginUrl = ["", locale, `login?next=${next}`].join("/");
+      window.location.assign(loginUrl);
+      return;
+    }
+    startSave(async () => {
+      const fd = new FormData();
+      fd.set("code", code);
+      fd.set("title", cleanTitle(board.title));
+      fd.set("locale", locale);
+      let r: TierActionState;
+      try {
+        r = await saveTierList({}, fd);
+      } catch {
+        r = { error: "db" };
+      }
+      setSaveResult({ ...r, code });
+      if (r.ok) say(labels.savedToProfile);
+    });
+  }
+  const savedShown = saveResult && saveResult.code === encodeTierCode(kind, board) ? saveResult : null;
+
   async function copy(what: "link" | "text") {
     try {
       await navigator.clipboard.writeText(shareText(what));
@@ -812,7 +894,18 @@ export function TierListMaker({ legendaries, cards, shareBase, labels }: { legen
             ) : (
               // sul telefono uno sotto l'altro a tutta larghezza: affiancati, "Copia come testo" andava su tre righe
               <div key="actions" className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => copy("link")} disabled={!canShare} className="btn btn-primary whitespace-nowrap max-sm:w-full">
+                {/* Salvare la propria tier list nel profilo è l'azione che ora conta di più (23/09/2026): è
+                    quella che la fa vivere oltre questo browser e che alimenta la tier list della community. */}
+                <button type="button" onClick={save} disabled={!canShare || saving} className="btn btn-primary whitespace-nowrap max-sm:w-full">
+                  {loggedIn === false ? (
+                    <>
+                      <span aria-hidden="true">🔒</span>
+                      <span className="sr-only">{labels.loginRequired}. </span>
+                    </>
+                  ) : null}
+                  {saving ? labels.saving : savedShown?.ok ? `✓ ${labels.savedToProfile}` : labels.save}
+                </button>
+                <button type="button" onClick={() => copy("link")} disabled={!canShare} className="btn btn-ink whitespace-nowrap max-sm:w-full max-sm:justify-center">
                   {copied === "link" ? `✓ ${labels.linkCopied}` : labels.copyLink}
                 </button>
                 <button type="button" onClick={() => copy("text")} disabled={!canShare} className="btn btn-ink whitespace-nowrap max-sm:w-full max-sm:justify-center">
@@ -836,6 +929,23 @@ export function TierListMaker({ legendaries, cards, shareBase, labels }: { legen
           <div className="min-w-0 lg:col-span-2">
             {!canShare ? <p className="text-xs text-pale-muted">{labels.shareHint}</p> : null}
             {hydrated && !isEmptyBoard(board) ? <p className="text-xs text-pale-muted">{storageOk ? `✓ ${labels.autosaved}` : labels.storageBlocked}</p> : null}
+            {/* esito del salvataggio nel profilo */}
+            <div aria-live="polite">
+              {savedShown ? (
+                savedShown.ok ? (
+                  <p className="alert-good mt-3">
+                    {labels.savedToProfile}{" "}
+                    <Link href={savedShown.href ?? `/${locale}/account#tierlists`} className="link-mint whitespace-nowrap">
+                      {labels.viewProfile} →
+                    </Link>
+                  </p>
+                ) : (
+                  <p className="alert-bad mt-3">{labels.saveErrors[savedShown.error ?? "db"] ?? labels.saveErrors.db}</p>
+                )
+              ) : loggedIn === false && canShare ? (
+                <p className="mt-3 text-xs text-pale">{labels.saveHint}</p>
+              ) : null}
+            </div>
             {fallback ? (
               <div className="mt-2">
                 <label htmlFor="tier-fallback" className="text-xs font-bold text-pale">

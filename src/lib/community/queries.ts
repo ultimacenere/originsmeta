@@ -1,5 +1,5 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import type { CommunityDeck } from "./types";
+import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Profile } from "./types";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -53,6 +53,67 @@ export async function listUserDecks(client: Db, userId: string): Promise<Communi
   const { data, error } = await client.from("community_decks").select(DECK_SELECT).eq("owner", userId).order("updated_at", { ascending: false });
   if (error || !data) return [];
   return withRatings(client, data as unknown as CommunityDeck[]);
+}
+
+/**
+ * Quanti mazzi pubblicati (compresi i nascosti) ha un utente e quanti ne può avere (Pierluigi, 23/09/2026:
+ * "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti"). Il tetto vero lo impone il
+ * trigger `enforce_deck_limit` di supabase/schema.sql: questa lettura serve al sito, per fermarsi prima e
+ * spiegare il perché invece di mostrare un errore del database. I mazzi privati ('draft') non entrano nel
+ * conto: hanno il loro tetto (MAX_PRIVATE_DECKS). Richiede il client con la sessione dell'utente.
+ */
+export async function publishedDeckLimit(client: Db, userId: string): Promise<{ used: number; cap: number }> {
+  const { count } = await client.from("community_decks").select("id", { count: "exact", head: true }).eq("owner", userId).neq("status", "draft");
+  const { data } = await client.from("profiles").select("role, badge").eq("id", userId).maybeSingle();
+  const p = data as { role: string; badge: string } | null;
+  const unlimited = p?.role === "admin" || ["influencer", "pro", "staff"].includes(p?.badge ?? "");
+  return { used: count ?? 0, cap: unlimited ? Infinity : MAX_PUBLISHED_DECKS };
+}
+
+/**
+ * Profilo pubblico di un utente dal suo nome utente (pagina /u/<username>, 23/09/2026). Il nome utente lo
+ * assegna il trigger `handle_new_user` alla registrazione ed è unico: è l'indirizzo pubblico della persona.
+ */
+export async function getProfileByUsername(username: string): Promise<(Profile & { id: string; created_at: string }) | null> {
+  const client = supabasePublic();
+  if (!client) return null;
+  const { data, error } = await client.from("profiles").select("id, username, display_name, avatar_url, badge, created_at").eq("username", username).maybeSingle();
+  if (error || !data) return null;
+  return data as unknown as Profile & { id: string; created_at: string };
+}
+
+/** Mazzi pubblicati di un utente, dal più recente: quel che si vede sulla sua pagina pubblica. */
+export async function listDecksByOwner(userId: string, limit = 50): Promise<CommunityDeck[]> {
+  const client = supabasePublic();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("community_decks")
+    .select(DECK_SELECT)
+    .eq("owner", userId)
+    .eq("status", PUBLISHED)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+  return withRatings(client, data as unknown as CommunityDeck[]);
+}
+
+/** Nomi utente con almeno un mazzo pubblicato: le pagine profilo che vale la pena mettere in sitemap. */
+export async function listPublicProfiles(): Promise<{ username: string; updated_at: string }[]> {
+  const client = supabasePublic();
+  if (!client) return [];
+  const { data } = await client
+    .from("community_decks")
+    .select("updated_at, profile:profiles!community_decks_owner_fkey(username)")
+    .eq("status", PUBLISHED)
+    .order("updated_at", { ascending: false })
+    .limit(500);
+  const rows = (data ?? []) as unknown as { updated_at: string; profile: { username: string | null } | null }[];
+  const seen = new Map<string, string>();
+  for (const r of rows) {
+    const u = r.profile?.username;
+    if (u && !seen.has(u)) seen.set(u, r.updated_at);
+  }
+  return Array.from(seen, ([username, updated_at]) => ({ username, updated_at }));
 }
 
 /** Slug dei mazzi pubblicati (per la sitemap). */

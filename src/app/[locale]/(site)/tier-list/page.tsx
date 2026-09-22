@@ -13,6 +13,7 @@ import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { DiscordButton } from "@/components/DiscordButton";
 import { newTabProps } from "@/components/SteamButton";
+import { TierListNav } from "@/components/TierListNav";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -96,15 +97,23 @@ export default async function TierListPage({ params }: { params: LocaleParams })
       <CardMentionEdges />
       <p className="kicker text-mint">{d.nav.tierList}</p>
       <h1 className="t-page mt-2">{d.tier.title}</h1>
+      {/* Due tier list, due fonti, due pagine (Pierluigi, 23/09/2026): questa è quella ufficiale, costruita sui
+          risultati dei tornei di Origins; la tendina porta a quella della community e al tool. */}
+      <TierListNav locale={locale} dict={d} current="official" />
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.tier.intro}</p>
 
       {/* Invito alla tier list personalizzata (note del 22/09/2026): la propria classifica, senza account e con un link da
           condividere. In cima, prima della lista ufficiale, perché mentre le fasce sono vuote è l'azione che vale di più. */}
       <div className="felt-panel-mint mt-6 flex max-w-4xl flex-wrap items-center gap-4 p-5">
         <p className="min-w-0 flex-1 basis-64 text-pale">{d.tier.makerText}</p>
-        <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
-          {d.tier.makerCta} →
-        </Link>
+        <div className="flex flex-wrap gap-2 max-sm:w-full">
+          <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
+            {d.tier.makerCta} →
+          </Link>
+          <Link href={href(locale, "/tier-list/community")} className="btn btn-ink max-sm:w-full max-sm:justify-center">
+            {d.tier.navCommunity} →
+          </Link>
+        </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_1fr]">

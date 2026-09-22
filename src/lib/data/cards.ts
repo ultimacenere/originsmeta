@@ -108,6 +108,20 @@ export function patchLabel(id: PatchId, locale: Locale): string {
 export const latestPatch: PatchId = patchOrder[patchOrder.length - 1];
 
 /**
+ * La patch in vigore a una certa data (23/09/2026, richiesta di Pierluigi: "sui mazzi del sito deve essere
+ * specificato, la data di creazione e la versione del gioco o patch"). È l'ultima patch uscita entro quella
+ * data: non è un dato inventato, si legge dal calendario delle patch ufficiali qui sopra. Un mazzo pubblicato
+ * prima della prima patch che conosciamo non ha versione (undefined), e la scheda non ne mostra nessuna.
+ * `date` è una data ISO (aaaa-mm-gg) o un timestamp: si confronta il solo giorno.
+ */
+export function patchAt(date: string): PatchId | undefined {
+  const day = date.slice(0, 10);
+  let found: PatchId | undefined;
+  for (const id of patchOrder) if (patches[id].date <= day) found = id;
+  return found;
+}
+
+/**
  * Ultima verifica carta per carta sul gioco (collezione della demo, My Decks → Cards): data e numero di
  * carte confrontate. Il deck builder la mostra nel disclaimer sui dati; va aggiornata a ogni nuova verifica.
  */

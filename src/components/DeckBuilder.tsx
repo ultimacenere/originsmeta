@@ -73,6 +73,8 @@ export type BuilderLabels = {
   /** sotto i tasti quando il mazzo non è completo: pubblicare e salvare nel profilo richiedono Leggendaria + 12 carte */
   completeHint: string;
   publishLoginHint: string;
+  /** testo del lucchetto sui tasti che richiedono l'accesso (letto dai lettori di schermo) */
+  loginRequired: string;
   savePrivate: string;
   savingPrivate: string;
   savedPrivate: string;
@@ -119,6 +121,21 @@ type Persisted = { mode: "single" | "tournament"; active: number; decks: DeckSta
 type SaveResult = { code: string; ok: true; href: string } | { code: string; ok: false; error: string };
 
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+
+/**
+ * Lucchetto dei tasti che richiedono un account (Pierluigi, 23/09/2026: "chiunque può creare un deck, solo chi è
+ * registrato può salvarlo: se non sei registrato i tasti pubblica e salva devono essere con un lucchetto").
+ * Disegno per chi vede, testo per chi ascolta: il simbolo è nascosto ai lettori di schermo e al suo posto passa
+ * "Serve l'accesso", che entra nel nome del tasto.
+ */
+function Lock({ label }: { label: string }) {
+  return (
+    <>
+      <span aria-hidden="true">🔒</span>
+      <span className="sr-only">{label}. </span>
+    </>
+  );
+}
 
 /** Salvataggio del browser: null se manca, se è illeggibile o se lo storage è bloccato (finestra privata). */
 function readSaved(key: string): Persisted | null {
@@ -515,6 +532,14 @@ export function DeckBuilder({
   const issues = validateDeck(deck);
   const complete = isComplete(deck);
   const deckEmpty = !deck.legendary && deck.cards.length === 0;
+  /** "Svuota il tuo mazzo" (tasto rosso in cima al pannello): toglie le carte e chiude quel che non ha più senso. */
+  const clearDeck = () => {
+    updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }));
+    // il mazzo nuovo che nascerà qui non è il mazzo privato aperto da /account
+    if (draftLink.current?.slot === active) draftLink.current = null;
+    setConfirmClear(false);
+    setShareOpen(false); // un mazzo vuoto non ha niente da condividere
+  };
   const cardCount = (deck.legendary ? 1 : 0) + deck.cards.length * RULES.copiesPerCard;
   const freeSlots = Math.max(0, RULES.distinctCards - deck.cards.length);
   const curve = manaCurve(deck, lookup);
@@ -678,6 +703,7 @@ export function DeckBuilder({
     if (loggedIn === false) {
       return (
         <a className={`btn btn-primary ${size}`} href={publishLoginHref} onClick={rememberPending}>
+          <Lock label={labels.loginRequired} />
           {labels.publish}
         </a>
       );
@@ -799,23 +825,43 @@ export function DeckBuilder({
             <h2 id="builder-deck-title" className="t-section">
               {labels.deckTitle}
             </h2>
-            {locked ? (
-              <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
-            ) : (
-              <div className="flex gap-1 rounded-full border-2 border-sky p-0.5">
-                {(["single", "tournament"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    aria-pressed={mode === m}
-                    onClick={() => setMode(m)}
-                    className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
-                  >
-                    {m === "single" ? labels.modeSingle : labels.modeTournament}
+            <div className="flex flex-wrap items-center gap-2">
+              {locked ? (
+                <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
+              ) : (
+                <div className="flex gap-1 rounded-full border-2 border-sky p-0.5">
+                  {(["single", "tournament"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      aria-pressed={mode === m}
+                      onClick={() => setMode(m)}
+                      className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
+                    >
+                      {m === "single" ? labels.modeSingle : labels.modeTournament}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* "Svuota il tuo mazzo" in alto a destra del titolo, fondo rosso e scritta bianca (Pierluigi,
+                  23/09/2026). Era un link grigio in fondo alla colonna, dove nessuno lo trovava. La conferma
+                  resta: il mazzo si svuota solo dopo un secondo clic, qui accanto. */}
+              {confirmClear ? (
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-pale">{labels.clearConfirm}</span>
+                  <button type="button" className="btn btn-danger-solid px-3 py-1 text-xs" onClick={clearDeck}>
+                    {labels.clearYes}
                   </button>
-                ))}
-              </div>
-            )}
+                  <button type="button" autoFocus className="rounded-full px-3 py-1 text-xs text-pale-muted hover:text-chalk" onClick={() => setConfirmClear(false)}>
+                    {labels.cancel}
+                  </button>
+                </span>
+              ) : (
+                <button type="button" className="btn btn-danger-solid px-3 py-1.5 text-xs" onClick={() => setConfirmClear(true)} disabled={deckEmpty}>
+                  {labels.clear}
+                </button>
+              )}
+            </div>
           </div>
           {mode === "tournament" ? (
             <div className="mt-3 flex flex-wrap gap-1">
@@ -948,6 +994,9 @@ export function DeckBuilder({
                 disabled={!complete || saving || savedNow}
                 aria-describedby={!complete && !onSubmit ? "builder-complete-hint" : undefined}
               >
+                {/* Chi non è registrato costruisce il mazzo come tutti, ma per salvarlo serve un account
+                    (Pierluigi, 23/09/2026): il lucchetto lo dice prima del clic, come su "Pubblica". */}
+                {loggedIn === false ? <Lock label={labels.loginRequired} /> : null}
                 {saving ? labels.savingPrivate : savedNow ? `${labels.saved} ✓` : labels.savePrivate}
               </button>
               <button
@@ -1024,40 +1073,12 @@ export function DeckBuilder({
               </div>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+            {/* "Svuota il tuo mazzo" è salito in cima al pannello, accanto al titolo: qui resta il solo
+                salvataggio automatico nel browser. */}
+            <div className="mt-4 text-xs">
               <span className="text-pale-muted" aria-live="polite">
                 {autoSaved ? `✓ ${labels.autosaved}` : ""}
               </span>
-              {confirmClear ? (
-                <span className="flex flex-wrap items-center gap-2">
-                  <span className="text-pale">{labels.clearConfirm}</span>
-                  <button
-                    type="button"
-                    className="btn btn-danger px-3 py-1 text-xs"
-                    onClick={() => {
-                      updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }));
-                      // il mazzo nuovo che nascerà qui non è il mazzo privato aperto da /account
-                      if (draftLink.current?.slot === active) draftLink.current = null;
-                      setConfirmClear(false);
-                      setShareOpen(false); // un mazzo vuoto non ha niente da condividere
-                    }}
-                  >
-                    {labels.clearYes}
-                  </button>
-                  <button type="button" autoFocus className="rounded-full px-3 py-1 text-pale-muted hover:text-chalk" onClick={() => setConfirmClear(false)}>
-                    {labels.cancel}
-                  </button>
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  className="text-pale-muted underline-offset-4 hover:text-chalk hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                  onClick={() => setConfirmClear(true)}
-                  disabled={deckEmpty}
-                >
-                  {labels.clear}
-                </button>
-              )}
             </div>
           </div>
 

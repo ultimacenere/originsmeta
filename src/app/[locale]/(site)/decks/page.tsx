@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { href, type Locale } from "@/lib/i18n";
+import { formatDate, href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import type { Dictionary } from "@/lib/i18n";
 import { archetypeLabels, decks } from "@/lib/data/decks";
 import type { Card } from "@/lib/data/cards";
-import { activeCards, getCard, statLine } from "@/lib/data/cards";
+import { activeCards, getCard, patchAt, patchLabel, statLine } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
@@ -71,9 +71,11 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
   const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
+  // L'ordine lo decide l'elenco nel browser (di partenza: dal più recente, Pierluigi 23/09/2026); qui basta
+  // una lista stabile.
   const communityList: ExplorerDeck[] = community
     .slice()
-    .sort((a, b) => (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || b.created_at.localeCompare(a.created_at))
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .map((deck) => {
       const leg = deck.legendary ? getCard(deck.legendary) : undefined;
       const legCustom = !leg ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
@@ -96,6 +98,11 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s), locale, d),
         code: gameCodes.get(deck.slug) ?? undefined,
         updated: deck.updated_at.slice(0, 10),
+        // data di creazione e versione del gioco di quel giorno (richiesta di Pierluigi del 23/09/2026)
+        created: deck.created_at.slice(0, 10),
+        createdLabel: formatDate(locale, deck.created_at.slice(0, 10)),
+        patchId: patchAt(deck.created_at),
+        patchLabel: patchAt(deck.created_at) ? patchLabel(patchAt(deck.created_at)!, locale) : undefined,
         rating: deck.rating,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
         creatorBadge: d.community.badges[(deck.profile?.badge ?? "community") as keyof typeof d.community.badges] ?? deck.profile?.badge ?? undefined,
@@ -179,6 +186,12 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             copyCode: d.common.copyCode,
             copied: d.common.copied,
             firstDecks: d.decks.firstDecks,
+            patch: d.common.patch,
+            patchFilter: d.common.filterPatch,
+            sortBy: d.common.sortBy,
+            sortNewest: d.common.sortNewest,
+            sortRated: d.common.sortRated,
+            createdOn: d.common.createdOn,
           }}
           invite={{ href: href(locale, "/deck-builder"), title: d.decks.inviteTitle, text: d.decks.inviteText, cta: d.decks.inviteCta }}
         />

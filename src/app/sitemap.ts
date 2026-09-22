@@ -6,7 +6,7 @@ import { newsPath, sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { authors } from "@/lib/data/authors";
-import { listPublishedSlugs } from "@/lib/community/queries";
+import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries";
 import { listTournamentSlugs } from "@/lib/tournament/queries";
 
 /** Data dell'ultima revisione editoriale delle pagine fisse (aggiornare quando cambiano testi o struttura). */
@@ -22,7 +22,7 @@ type Entry = { path: string; lastModified: string; changeFrequency: "daily" | "w
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestNews = sortedNews[0]?.date ?? SITE_UPDATED;
   const latestDeck = decks.map((d) => d.updated).sort().at(-1) ?? SITE_UPDATED;
-  const [community, tournaments] = await Promise.all([listPublishedSlugs(), listTournamentSlugs()]);
+  const [community, tournaments, profiles] = await Promise.all([listPublishedSlugs(), listTournamentSlugs(), listPublicProfiles()]);
   const latestCommunity = community.map((c) => c.updated_at.slice(0, 10)).sort().at(-1);
   const latestTournament = tournaments.map((t) => t.updated_at.slice(0, 10)).sort().at(-1);
   const guides = getGuides("en");
@@ -34,6 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Tier list personalizzabile (22/09/2026): la pagina cambia quando cambiano le carte attive, cioè con una patch
     // o con una nuova verifica delle carte sul gioco.
     { path: "/tier-list/create", lastModified: [TIER_MAKER_ADDED, patches[latestPatch].date, cardsVerified.date].sort().at(-1) ?? TIER_MAKER_ADDED, changeFrequency: "weekly", priority: 0.8 },
+    // Tier list della community (23/09/2026): cambia quando qualcuno salva la sua, cioè spesso quanto i mazzi.
+    { path: "/tier-list/community", lastModified: [latestCommunity ?? "", SITE_UPDATED].sort().at(-1) || SITE_UPDATED, changeFrequency: "daily", priority: 0.7 },
     { path: "/cards", lastModified: patches[latestPatch].date, changeFrequency: "weekly", priority: 0.9 },
     { path: "/decks", lastModified: [latestDeck, latestCommunity ?? ""].sort().at(-1) || latestDeck, changeFrequency: "daily", priority: 0.9 },
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },
@@ -58,6 +60,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Ogni news ha la sua pagina dal 21/09/2026: data dell'ultima revisione, altrimenti quella di pubblicazione.
     ...sortedNews.map((n) => ({ path: newsPath(n), lastModified: n.updated ?? n.date, changeFrequency: "monthly" as const, priority: 0.7 })),
     ...community.map((c) => ({ path: `/decks/community/${c.slug}`, lastModified: c.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.6 })),
+    // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026)
+    ...profiles.map((p) => ({ path: `/u/${p.username}`, lastModified: p.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.4 })),
     ...tournaments.map((t) => ({ path: `/tournaments/${t.slug}`, lastModified: t.updated_at.slice(0, 10), changeFrequency: "daily" as const, priority: 0.6 })),
   ];
 
