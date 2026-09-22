@@ -821,47 +821,48 @@ export function DeckBuilder({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         {/* ---------- mazzo ---------- */}
         <section id="builder-deck" aria-labelledby="builder-deck-title" className="card-night scroll-mt-24 p-5 sm:p-6">
+          {/* Riga del titolo: a destra, sulla stessa riga, "Svuota il tuo mazzo" (Pierluigi, 23/09/2026: tasto
+              rosso con scritta bianca in alto a destra del titolo; prima era un link grigio in fondo alla colonna,
+              dove nessuno lo trovava). La conferma resta: il mazzo si svuota solo al secondo clic, qui accanto.
+              La scelta Singolo/Torneo scende sotto, così il tasto non viene spinto a capo dal selettore. */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="builder-deck-title" className="t-section">
               {labels.deckTitle}
             </h2>
-            <div className="flex flex-wrap items-center gap-2">
-              {locked ? (
-                <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
-              ) : (
-                <div className="flex gap-1 rounded-full border-2 border-sky p-0.5">
-                  {(["single", "tournament"] as const).map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      aria-pressed={mode === m}
-                      onClick={() => setMode(m)}
-                      className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
-                    >
-                      {m === "single" ? labels.modeSingle : labels.modeTournament}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {/* "Svuota il tuo mazzo" in alto a destra del titolo, fondo rosso e scritta bianca (Pierluigi,
-                  23/09/2026). Era un link grigio in fondo alla colonna, dove nessuno lo trovava. La conferma
-                  resta: il mazzo si svuota solo dopo un secondo clic, qui accanto. */}
-              {confirmClear ? (
-                <span className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs text-pale">{labels.clearConfirm}</span>
-                  <button type="button" className="btn btn-danger-solid px-3 py-1 text-xs" onClick={clearDeck}>
-                    {labels.clearYes}
-                  </button>
-                  <button type="button" autoFocus className="rounded-full px-3 py-1 text-xs text-pale-muted hover:text-chalk" onClick={() => setConfirmClear(false)}>
-                    {labels.cancel}
-                  </button>
-                </span>
-              ) : (
-                <button type="button" className="btn btn-danger-solid px-3 py-1.5 text-xs" onClick={() => setConfirmClear(true)} disabled={deckEmpty}>
-                  {labels.clear}
+            {confirmClear ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-pale">{labels.clearConfirm}</span>
+                <button type="button" className="btn btn-danger-solid px-3 py-1 text-xs" onClick={clearDeck}>
+                  {labels.clearYes}
                 </button>
-              )}
-            </div>
+                <button type="button" autoFocus className="rounded-full px-3 py-1 text-xs text-pale-muted hover:text-chalk" onClick={() => setConfirmClear(false)}>
+                  {labels.cancel}
+                </button>
+              </span>
+            ) : (
+              <button type="button" className="btn btn-danger-solid px-3 py-1.5 text-xs" onClick={() => setConfirmClear(true)} disabled={deckEmpty}>
+                {labels.clear}
+              </button>
+            )}
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {locked ? (
+              <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
+            ) : (
+              <div className="flex gap-1 rounded-full border-2 border-sky p-0.5">
+                {(["single", "tournament"] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    aria-pressed={mode === m}
+                    onClick={() => setMode(m)}
+                    className={`rounded-full px-3 py-1 font-display text-xs font-bold ${mode === m ? "bg-night-3 text-sky" : "text-pale-muted hover:text-sky"}`}
+                  >
+                    {m === "single" ? labels.modeSingle : labels.modeTournament}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {mode === "tournament" ? (
             <div className="mt-3 flex flex-wrap gap-1">

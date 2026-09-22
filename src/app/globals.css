@@ -369,6 +369,12 @@
     scelte per il contrasto: il rosso #b3003c sull'azzurro chiaro #a9e6f7 fa 5,2:1 (il crimson della palette sul
     celeste pieno si fermava a 2,6:1 e non era leggibile).
   */
+  /* Mentre si trascina una carta della tier list (TierListMaker, 23/09/2026): niente selezione di testo sotto il
+     puntatore e cursore "mano chiusa" ovunque, anche fuori dalla carta che si sta spostando. */
+  body.is-dragging-card {
+    cursor: grabbing;
+    user-select: none;
+  }
   .badge-pro {
     background: #a9e6f7;
     color: #b3003c;

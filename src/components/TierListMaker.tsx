@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useMemo, useRef, useState, useTransition } from "react";
-import type { DragEvent as ReactDragEvent, KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import Link from "next/link";
 import { initials } from "@/lib/cardArt";
 import { saveTierList, type TierActionState } from "@/lib/community/tierActions";
@@ -37,8 +37,11 @@ import { CardPeek, hasPeek } from "./CardPeek";
  * builder: la lista si salva nel browser (una chiave per scheda) e si condivide con un link (#TL1…, vedi tiercode.ts).
  *
  * Tre modi di spostare una carta, tutti sulle stesse funzioni pure di tiercode.ts:
- * - mouse: drag and drop HTML5, con il segno menta dove cadrà la carta (anche per riordinare dentro una fascia);
- * - telefono, dove il drag nativo non c'è: tocca una carta per selezionarla, poi tocca una fascia (o la barra in basso
+ * - mouse e penna: la carta si stacca e segue il puntatore (eventi pointer, non il drag and drop nativo), la fascia
+ *   sotto si accende, il segno menta dice dove cadrà e la pagina scorre da sola vicino ai bordi. Le carte da
+ *   classificare restano agganciate in basso allo schermo, così il viaggio è corto (rifatto il 23/09/2026 su
+ *   richiesta di Pierluigi: "difficilmente prendibili e draggabili", §1 punto 27.2 della KB);
+ * - telefono, dove trascinare su uno schermo piccolo è più lento che toccare: tocca una carta per selezionarla, poi tocca una fascia (o la barra in basso
  *   con S A B C D, così non si deve risalire la pagina) oppure un'altra carta, davanti alla quale andrà. Una carta presa
  *   con un clic (anche l'Invio dei lettori di schermo in modalità navigazione) porta il focus sul tasto S della barra;
  *   con il colore forzato di Windows carta in mano e segno di caduta restano visibili (contorno e bordo);
@@ -564,59 +567,159 @@ export function TierListMaker({
     else moveFocus(slug, row, key);
   }
 
-  /* --- drag and drop (computer) --- */
+  /* ---------------------------------------------------------------------------------------------------
+     Trascinamento col puntatore (23/09/2026, §1 punto 27.2 della KB — Pierluigi: "le carte sotto le tier
+     list sono difficilmente prendibili e mettibili o draggabili dentro la tier list, serve una soluzione
+     più friendly").
 
-  function onDragStart(e: ReactDragEvent<HTMLElement>, slug: string) {
-    e.dataTransfer.effectAllowed = "move";
-    try {
-      // Firefox non comincia il trascinamento senza dati; il nome, se cade in un campo di testo, è innocuo
-      e.dataTransfer.setData("text/plain", nameOf(slug));
-    } catch {
-      /* dati non impostabili: il trascinamento prosegue con lo stato di React */
-    }
-    setDragging(slug);
-    setHeld(null);
-    setActive(slug);
+     Prima si usava il drag and drop nativo HTML5: parte solo col mouse, non scorre la pagina mentre si
+     trascina (e le carte da classificare stanno sotto tutte e cinque le fasce, quindi il viaggio è lungo) e
+     l'immagine trascinata la decide il browser. Ora il trascinamento lo facciamo noi con gli eventi del
+     puntatore: la carta si stacca e segue il mouse, la fascia sotto il puntatore si accende, la pagina
+     scorre da sola quando ci si avvicina al bordo e si lascia dove si vuole.
+
+     Solo con mouse e penna. Col dito resta il modo di prima, che è più rapido di un trascinamento su uno
+     schermo piccolo: un tocco prende la carta, la barra in basso con S A B C D la assegna. Così non si
+     tocca `touch-action` e lo scorrimento della pagina col dito resta quello di sempre.
+  --------------------------------------------------------------------------------------------------- */
+
+  /** Carta che si sta trascinando: da dove è partito il puntatore e a che punto è. */
+  const drag = useRef<{ slug: string; pointerId: number; startX: number; startY: number; started: boolean } | null>(null);
+  /** posizione della carta "in mano" che segue il puntatore (null = nessun trascinamento in corso) */
+  const [ghost, setGhost] = useState<{ x: number; y: number } | null>(null);
+  /** verso dello scorrimento automatico vicino ai bordi della finestra (0 = fermo) */
+  const autoScroll = useRef(0);
+  const autoScrollRaf = useRef(0);
+
+  /** Distanza dal bordo entro cui la pagina scorre da sola, e velocità massima in pixel al secondo. */
+  const EDGE = 96;
+  const EDGE_SPEED = 900;
+
+  function stopAutoScroll() {
+    autoScroll.current = 0;
+    if (autoScrollRaf.current) cancelAnimationFrame(autoScrollRaf.current);
+    autoScrollRaf.current = 0;
   }
 
-  function onDragEnd() {
-    setDragging(null);
-    setHint(null);
-  }
-
-  function onRowDragOver(e: ReactDragEvent<HTMLElement>, row: Row) {
-    if (!dragging) return; // file o testo trascinati da fuori: non ci riguardano
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    let before: string | null = null;
-    if (row !== "pool") {
-      const el = e.target instanceof Element ? e.target.closest<HTMLElement>("[data-slug]") : null;
-      const over = el?.dataset.slug;
-      const list = rows[row];
-      if (el && over && list.includes(over)) {
-        const r = el.getBoundingClientRect();
-        before = e.clientX < r.left + r.width / 2 ? over : (list[list.indexOf(over) + 1] ?? null);
-      } else if (hint?.row === row) {
-        return; // nello spazio fra due carte si tiene l'ultimo segno, senza farlo saltare in fondo
+  /** Scorrimento continuo finché il puntatore resta vicino al bordo: un solo ciclo, con la velocità in un ref. */
+  function runAutoScroll() {
+    if (autoScrollRaf.current) return;
+    let last = performance.now();
+    const step = (now: number) => {
+      const dt = Math.min(64, now - last);
+      last = now;
+      if (!autoScroll.current || !drag.current?.started) {
+        autoScrollRaf.current = 0;
+        return;
       }
+      window.scrollBy(0, (autoScroll.current * EDGE_SPEED * dt) / 1000);
+      autoScrollRaf.current = requestAnimationFrame(step);
+    };
+    autoScrollRaf.current = requestAnimationFrame(step);
+  }
+
+  /** Dove cadrebbe la carta se si lasciasse qui: la fila sotto il puntatore e la carta davanti alla quale va. */
+  function dropTarget(x: number, y: number): { row: Row; before: string | null } | null {
+    const el = document.elementFromPoint(x, y);
+    const rowEl = el instanceof Element ? el.closest<HTMLElement>("[data-row]") : null;
+    const row = rowEl?.dataset.row as Row | undefined;
+    if (!row) return null;
+    if (row === "pool") return { row, before: null }; // le non classificate non hanno un ordine proprio
+    const cardEl = el instanceof Element ? el.closest<HTMLElement>("[data-slug]") : null;
+    const over = cardEl?.dataset.slug;
+    const list = rows[row];
+    if (cardEl && over && over !== drag.current?.slug && list.includes(over)) {
+      const r = cardEl.getBoundingClientRect();
+      // prima metà della carta: la nuova va davanti; seconda metà: dietro
+      return { row, before: x < r.left + r.width / 2 ? over : (list[list.indexOf(over) + 1] ?? null) };
     }
-    if (hint?.row !== row || hint.before !== before) setHint({ row, before });
+    return { row, before: null };
   }
 
-  function onRowDragLeave(e: ReactDragEvent<HTMLElement>, row: Row) {
-    if (e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget)) return;
-    setHint((h) => (h?.row === row ? null : h));
-  }
-
-  function onRowDrop(e: ReactDragEvent<HTMLElement>, row: Row) {
-    if (!dragging) return;
-    e.preventDefault();
-    const slug = dragging;
-    const before = hint?.row === row ? hint.before : null;
+  function endDrag() {
+    drag.current = null;
+    stopAutoScroll();
+    setGhost(null);
     setDragging(null);
     setHint(null);
-    place(slug, row === "pool" ? null : row, before);
+    document.body.classList.remove("is-dragging-card");
   }
+
+  /** Il puntatore si muove: aggiorna la carta in mano, il segno di caduta e lo scorrimento ai bordi. */
+  const onPointerMove = useEffectEvent((e: PointerEvent) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    if (!d.started) {
+      // soglia: sotto i 6 px è un clic, non un trascinamento (così il clic per selezionare funziona ancora)
+      if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < 6) return;
+      d.started = true;
+      setDragging(d.slug);
+      setHeld(null);
+      setActive(d.slug);
+      document.body.classList.add("is-dragging-card");
+    }
+    e.preventDefault();
+    setGhost({ x: e.clientX, y: e.clientY });
+    const target = dropTarget(e.clientX, e.clientY);
+    setHint((h) => (h?.row === target?.row && h?.before === (target?.before ?? null) ? h : target));
+    // vicino al bordo alto o basso la pagina si muove da sola, tanto più in fretta quanto più ci si avvicina
+    const top = e.clientY - EDGE;
+    const bottom = e.clientY - (window.innerHeight - EDGE);
+    autoScroll.current = top < 0 ? Math.max(-1, top / EDGE) : bottom > 0 ? Math.min(1, bottom / EDGE) : 0;
+    if (autoScroll.current) runAutoScroll();
+    else stopAutoScroll();
+  });
+
+  /** Si lascia la carta: se il trascinamento era partito, la si posa dove dice il segno. */
+  const onPointerUp = useEffectEvent((e: PointerEvent) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    const started = d.started;
+    const slug = d.slug;
+    const target = started ? (dropTarget(e.clientX, e.clientY) ?? (hint?.row ? { row: hint.row, before: hint.before } : null)) : null;
+    endDrag();
+    if (!started) return; // era un clic: lo gestisce onClick della carta
+    if (target) place(slug, target.row === "pool" ? null : target.row, target.before);
+  });
+
+  /* I tre ascoltatori vivono sulla finestra solo mentre si trascina: `passive: false` perché il movimento
+     chiama preventDefault (senza, il browser selezionerebbe il testo sotto il puntatore). */
+  const pointerDown = ghost !== null || drag.current !== null;
+  const onPointerCancel = useEffectEvent(() => endDrag());
+  useEffect(() => {
+    if (!pointerDown) return;
+    const move = (e: PointerEvent) => onPointerMove(e);
+    const up = (e: PointerEvent) => onPointerUp(e);
+    const cancel = () => onPointerCancel();
+    window.addEventListener("pointermove", move, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+    };
+  }, [pointerDown]);
+
+  /** Mouse o penna premuti su una carta: si prepara il trascinamento, che parte al primo movimento vero. */
+  function onCardPointerDown(e: ReactPointerEvent<HTMLElement>, slug: string) {
+    if (e.pointerType === "touch") return; // col dito vale il tocco per selezionare, vedi il commento sopra
+    if (e.button !== 0) return;
+    drag.current = { slug, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, started: false };
+    // basta uno stato qualsiasi per far attaccare gli ascoltatori: il fantasma vero arriva al primo movimento
+    setGhost({ x: e.clientX, y: e.clientY });
+  }
+
+  /* Esc annulla anche il trascinamento col mouse, non solo la carta presa con un clic */
+  const onEscapeDrag = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key === "Escape" && drag.current) endDrag();
+  });
+  useEffect(() => {
+    if (!pointerDown) return;
+    const handler = (e: KeyboardEvent) => onEscapeDrag(e);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [pointerDown]);
 
   /** tocco su una fascia (sulla lettera o nello spazio libero) con una carta in mano: la carta va in fondo alla fascia */
   function onRowClick(e: ReactMouseEvent<HTMLElement>, row: Row) {
@@ -757,9 +860,7 @@ export function TierListMaker({
             aria-pressed={isHeld}
             aria-describedby="tier-help"
             data-slug={slug}
-            draggable
-            onDragStart={(e) => onDragStart(e, slug)}
-            onDragEnd={onDragEnd}
+            onPointerDown={(e) => onCardPointerDown(e, slug)}
             onClick={() => {
               // una carta presa con un clic porta il focus sulla barra in basso (vedi l'effetto su `held`)
               if (!held || (row === "pool" && held.slug !== slug && rowOf(held.slug) === "pool")) pendingBarFocus.current = true;
@@ -992,10 +1093,9 @@ export function TierListMaker({
           {TIERS.map((t, i) => (
             <div
               key={t}
+              /* `data-row`: è così che il trascinamento riconosce la fascia sotto il puntatore (dropTarget) */
+              data-row={t}
               className={`grid grid-cols-[48px_minmax(0,1fr)] sm:grid-cols-[72px_minmax(0,1fr)] ${i < TIERS.length - 1 ? "border-b border-felt-line/70" : ""} ${held ? "cursor-pointer" : ""}`}
-              onDragOver={(e) => onRowDragOver(e, t)}
-              onDragLeave={(e) => onRowDragLeave(e, t)}
-              onDrop={(e) => onRowDrop(e, t)}
               onClick={(e) => onRowClick(e, t)}
             >
               <div
@@ -1006,7 +1106,9 @@ export function TierListMaker({
               </div>
               <ul
                 aria-label={fmt(labels.tierRow, { tier: t })}
-                className={`flex min-h-[6.5rem] min-w-0 flex-wrap content-start items-start gap-1 p-2 transition-colors sm:gap-1.5 sm:p-3 ${hint?.row === t ? "bg-mint/10" : "bg-felt-deep/60"} ${
+                className={`flex min-h-[6.5rem] min-w-0 flex-wrap content-start items-start gap-1 p-2 transition-colors sm:gap-1.5 sm:p-3 ${
+                  hint?.row === t ? "bg-mint/15 inset-ring-2 inset-ring-mint" : "bg-felt-deep/60"
+                } ${
                   i === 0 ? "rounded-tr-[11px]" : ""
                 } ${i === TIERS.length - 1 ? "rounded-br-[11px]" : ""}`}
               >
@@ -1021,13 +1123,19 @@ export function TierListMaker({
           ))}
         </div>
 
-        {/* Le non classificate: il mazzo da cui si parte. Anche qui si lascia cadere una carta per toglierla dalle fasce. */}
+        {/*
+          Le non classificate: il mazzo da cui si parte, e dove si rimette una carta per toglierla dalle fasce.
+          Dal 23/09/2026 resta agganciato in basso allo schermo mentre si scorrono le fasce (`lg:sticky`): con
+          111 carte base l'elenco è lungo e prima bisognava risalire tutta la pagina per prendere la carta dopo.
+          Solo da 1024 px in su, cioè dove c'è il mouse e si trascina; sul telefono resta in fondo, dove il modo
+          di classificare è il tocco più la barra in basso.
+        */}
         <section
           aria-labelledby="tier-pool-title"
-          className={`felt-panel mt-6 p-3 transition-colors sm:p-4 ${hint?.row === "pool" ? "bg-mint/10" : ""} ${held ? "cursor-pointer" : ""}`}
-          onDragOver={(e) => onRowDragOver(e, "pool")}
-          onDragLeave={(e) => onRowDragLeave(e, "pool")}
-          onDrop={(e) => onRowDrop(e, "pool")}
+          data-row="pool"
+          className={`felt-panel mt-6 p-3 transition-colors sm:p-4 lg:sticky lg:bottom-3 lg:z-20 lg:max-h-[46vh] lg:overflow-y-auto lg:shadow-lift ${
+            hint?.row === "pool" ? "bg-mint/15 inset-ring-2 inset-ring-mint" : ""
+          } ${held ? "cursor-pointer" : ""}`}
           onClick={(e) => onRowClick(e, "pool")}
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1058,6 +1166,21 @@ export function TierListMaker({
           </ul>
         </section>
       </div>
+
+      {/* La carta che segue il puntatore mentre la si trascina: solo disegno, non riceve eventi (pointer-events:none,
+          altrimenti `elementFromPoint` troverebbe sempre lei e mai la fascia sotto). */}
+      {dragging && ghost ? (
+        <div className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 opacity-90" style={{ left: ghost.x, top: ghost.y }} aria-hidden="true">
+          <span className={`deck-card block w-20 rotate-3 shadow-lift ${bySlug.get(dragging)?.legendary ? "is-legendary" : ""}`}>
+            {bySlug.get(dragging)?.thumb ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={bySlug.get(dragging)!.thumb} alt="" width={160} height={230} decoding="async" />
+            ) : (
+              <span className="deck-card-initials">{initials(nameOf(dragging))}</span>
+            )}
+          </span>
+        </div>
+      ) : null}
 
       {/* Annunci per i lettori di schermo: cambi di fascia, selezione, copia */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
