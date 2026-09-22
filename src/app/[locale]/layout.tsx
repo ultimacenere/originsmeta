@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Kalam } from "next/font/google";
+import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -26,9 +26,9 @@ const noto = Noto_Sans({ subsets: ["latin"], weight: ["600"], variable: "--font-
 // con le lettere accentate dell'italiano. Variabile (400-700, un solo file). Niente preload: serve a pochi
 // foglietti per pagina e non deve contendere la banda ai font del testo; con display swap si vede subito il ripiego.
 const hand = Caveat({ subsets: ["latin"], variable: "--font-hand", display: "swap", preload: false });
-// Solo per i due post-it grandi di Tier list e MetaShifting in home (Pierluigi, 22/09/2026: "un font come se stessi
-// scrivendo a penna"): Kalam, la grafia di una penna a sfera, con maiuscole regolari e le lettere accentate.
-const pen = Kalam({ subsets: ["latin", "latin-ext"], weight: ["400"], variable: "--font-pen", display: "swap", preload: false });
+// Solo per i due post-it grandi di Tier list e MetaShifting in home (Pierluigi, 22/09/2026: "come se stessi
+// scrivendo a penna", poi "scritte di fretta"): Reenie Beanie, una biro veloce e irregolare. Niente preload.
+const pen = Reenie_Beanie({ subsets: ["latin"], weight: ["400"], variable: "--font-pen", display: "swap", preload: false });
 
 // dynamicParams resta al default (true): le lingue sconosciute finiscono in notFound() qui sotto, e le pagine
 // generate su richiesta (mazzi della community) restano possibili.

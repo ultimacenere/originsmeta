@@ -603,26 +603,24 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
             </ul>
           </div>
           {/* Etichette di sezione della home: i foglietti grandi TIER e META del disegno di Pierluigi (22/09/2026),
-              rosa e menta, scritti a penna (Kalam), lettere tutte della stessa misura. Sono le classi vere della home. */}
+              rosa e menta, scritti a penna e di fretta (Reenie Beanie), stessa misura, a capo solo se serve. Sono le classi vere della home. */}
           <div className="grid gap-6">
             <p className="t-item text-base">{s.postits.label}</p>
             <p className="-mt-4 text-sm text-pale">{s.postits.labelNote}</p>
             <div className="strip-labeled card-night flex flex-wrap items-center gap-4">
-              <p className="strip-postit strip-postit-pink strip-postit-tape" style={{ ["--tilt" as string]: "-3deg" } as React.CSSProperties}>
-                <span className="strip-postit-line">{d.home.tierPostit1}</span>
-                <span className="strip-postit-line">{d.home.tierPostit2}</span>
+              <p className="strip-postit strip-postit-pink strip-postit-tape" style={{ ["--tilt" as string]: "-5deg", ["--scrawl" as string]: "-3deg" } as React.CSSProperties}>
+                <span className="strip-postit-text">{d.home.tierPostit1} {d.home.tierPostit2}</span>
               </p>
               <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
             </div>
             <div className="strip-labeled card-night flex flex-wrap items-center gap-4">
-              <p className="strip-postit strip-postit-mint" style={{ ["--tilt" as string]: "2.5deg" } as React.CSSProperties}>
-                <span className="strip-postit-line">{d.home.metaPostit1}</span>
-                <span className="strip-postit-line">{d.home.metaPostit2}</span>
+              <p className="strip-postit strip-postit-mint" style={{ ["--tilt" as string]: "4deg", ["--scrawl" as string]: "-1.5deg" } as React.CSSProperties}>
+                <span className="strip-postit-text">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               </p>
               <p className="text-sm text-pale-muted">{d.home.metashiftSub}</p>
             </div>
             <p>
-              <Code>.strip-labeled · .strip-postit · .strip-postit-pink / -mint · .strip-postit-line · var(--font-pen)</Code>
+              <Code>.strip-labeled · .strip-postit · .strip-postit-pink / -mint · .strip-postit-text · var(--font-pen)</Code>
             </p>
           </div>
         </div>

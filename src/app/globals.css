@@ -753,7 +753,7 @@
     con il nome scritto a penna su due righe (TIER / LIST, META / SHIFTING), lettere tutte della stessa misura. Il
     contenuto della striscia sta a destra. Sul telefono il foglietto si attacca al bordo in alto e il contenuto scende.
     Markup: <section class="strip-labeled card-night …"><h2 class="strip-postit strip-postit-pink [strip-postit-tape]"
-    style="--tilt:…"><span class="strip-postit-line">Tier</span><span class="strip-postit-line">list</span></h2>…</section>.
+    style="--tilt:…; --scrawl:…"><span class="strip-postit-text">Tier list</span></h2>…</section>.
   */
   /* Il padding lo decide solo questa classe: sulla striscia non va messa un'utility p-* di Tailwind, che vincerebbe
      (le utility stanno in un layer successivo ai components) e farebbe finire il contenuto sotto il foglietto. */
@@ -762,17 +762,17 @@
     padding: 5.75rem 1.25rem 1.25rem;
   }
   .strip-postit {
-    --tilt: -3deg;
+    --tilt: -5deg;
     --sway: 0.55deg; /* foglio grande: si muove meno dei post-it piccoli, ma si muove */
     --postit-bg: var(--postit-patch);
     position: absolute;
     top: -1.15rem;
     left: -0.35rem;
     z-index: 2;
-    width: min(64%, 15rem);
+    width: min(80%, 17rem);
     margin: 0;
     padding: 0.45rem 1rem 0.55rem;
-    /* grafia di penna a sfera (Kalam, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
+    /* grafia a penna (Reenie Beanie, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
     font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-weight: 400;
     color: var(--color-ink);
@@ -785,15 +785,20 @@
     transform-origin: 30% 10%;
     animation: postit-sway 9.5s ease-in-out -2s infinite;
   }
-  /* Il nome su due righe (TIER / LIST, META / SHIFTING), lettere tutte della stessa misura, anche fra i due
-     foglietti: la misura è tarata sulla parola più lunga ("SHIFTING") perché stia nel foglietto senza uscirne. */
-  .strip-postit-line {
-    display: block;
-    font-size: 2.05rem;
-    line-height: 1.05;
-    letter-spacing: 0.03em;
+  /* La scritta, "di fretta" (Pierluigi, 22/09/2026: "più storte, più grandi, scritte di fretta, non per forza su
+     due righe se ci sta su una riga"): biro veloce (Reenie Beanie), inclinata in avanti e storta rispetto al
+     foglietto (--scrawl), che va a capo solo se non ci sta. Lettere della stessa misura sui due foglietti.
+     Il tratto è calcato appena (text-stroke) perché la biro sottile resti leggibile da lontano. */
+  .strip-postit-text {
+    display: inline-block;
+    font-size: 3.1rem;
+    line-height: 0.82;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    white-space: nowrap;
+    -webkit-text-stroke: 0.7px currentColor;
+    transform: rotate(var(--scrawl, -2deg)) skewX(-8deg);
+    transform-origin: 0 50%;
+    overflow-wrap: normal;
   }
   /* Colori dei due foglietti (via il giallo, Pierluigi 22/09/2026): rosa per la tier list, menta per MetaShifting,
      i colori del sito (rosa dei bottoni, menta del logo). Testo ink: 8,7:1 sul rosa, 11,3:1 sul menta. */
@@ -827,16 +832,17 @@
     background: color-mix(in srgb, var(--color-chalk) 45%, transparent);
     box-shadow: 0 1px 2px rgba(14, 7, 31, 0.28);
   }
-  @media (min-width: 768px) {
-    /* Il foglietto occupa il bordo sinistro per tutta l'altezza e sborda: il contenuto parte dopo di lui */
+  @media (min-width: 1024px) {
+    /* Dal 1024 il foglietto occupa il bordo sinistro per tutta l'altezza e sborda: il contenuto parte dopo di lui.
+       Sotto il 1024 resta in alto (i chip di MetaShifting non starebbero interi accanto a lui). */
     .strip-labeled {
       min-height: 9rem;
-      padding: 1.25rem 1.25rem 1.25rem calc(clamp(11rem, 24%, 16rem) + 1.75rem);
+      padding: 1.25rem 1.25rem 1.25rem calc(clamp(17rem, 27%, 19rem) + 1.75rem);
     }
     .strip-postit {
       top: -1.25rem;
       left: -0.9rem;
-      width: clamp(11rem, 24%, 16rem);
+      width: clamp(17rem, 27%, 19rem);
       /* sborda sopra e sotto una striscia di altezza normale; se la striscia si allunga (testo a capo su tablet)
          il foglietto non diventa una colonna: resta un foglietto in alto */
       height: calc(100% + 2.5rem);
@@ -846,8 +852,9 @@
       justify-content: center;
       padding: 0.6rem 1.25rem 0.8rem 1.4rem;
     }
-    .strip-postit-line {
-      font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+    .strip-postit-text {
+      /* tetto tarato sulla larghezza massima del foglietto (19rem): oltre, TIER LIST tornerebbe su due righe */
+      font-size: clamp(3.2rem, 4.4vw, 3.6rem);
     }
   }
   /* Ridondante con la regola globale di @layer base, di proposito: il requisito sta scritto accanto ai post-it. */

@@ -250,9 +250,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
             penna sono decorative (aria-hidden) e il nome intero della sezione resta per i lettori di schermo.
           */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier">
-            <h2 id="home-tier" className="strip-postit strip-postit-pink strip-postit-tape" style={{ "--tilt": "-3deg" } as CSSProperties}>
-              <span className="strip-postit-line" aria-hidden="true">{d.home.tierPostit1}</span>
-              <span className="strip-postit-line" aria-hidden="true">{d.home.tierPostit2}</span>
+            <h2 id="home-tier" className="strip-postit strip-postit-pink strip-postit-tape" style={{ "--tilt": "-5deg", "--scrawl": "-3deg" } as CSSProperties}>
+              <span className="strip-postit-text" aria-hidden="true">{d.home.tierPostit1} {d.home.tierPostit2}</span>
               <span className="sr-only">{d.home.tierTitle}</span>
             </h2>
             <div className="min-w-[220px] flex-1">
@@ -295,9 +294,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
-            <h2 id="home-metashift" className="strip-postit strip-postit-mint" style={{ "--tilt": "2.5deg" } as CSSProperties}>
-              <span className="strip-postit-line" aria-hidden="true">{d.home.metaPostit1}</span>
-              <span className="strip-postit-line" aria-hidden="true">{d.home.metaPostit2}</span>
+            <h2 id="home-metashift" className="strip-postit strip-postit-mint" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
+              <span className="strip-postit-text" aria-hidden="true">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               <span className="sr-only">{d.common.metashift}</span>
             </h2>
             <div className="min-w-[220px] max-w-xs flex-1">
@@ -307,10 +305,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <p className="mt-2 text-sm text-pale-muted">{d.home.metashiftSub}</p>
             </div>
             {/* Leggendarie per prime con la stella gialla, poi le altre (note del 22/09/2026: "★ Dorothy, ★ Wicked Stepmother, poi carte normali") */}
-            <ol className="flex flex-1 flex-wrap gap-2">
+            <ol className="flex basis-full flex-wrap gap-2 xl:basis-auto xl:flex-1">
               {legendaryFirst(top, (x) => Boolean(x.card.legendary)).map(({ card, change }) => (
                 <li key={`${card.slug}-${change.patch}`}>
-                  <Link href={href(locale, `/cards/${card.slug}`)} className="flex items-center gap-2 rounded-lg border-2 border-sky px-2.5 py-1.5 text-xs hover:bg-night-3">
+                  {/* sm:whitespace-nowrap: da 640 px ogni chip resta su una riga (nome, statistiche, esito) e se lo spazio
+                      manca va a capo il chip intero; sul telefono può andare a capo dentro, per non sbordare dallo schermo */}
+                  <Link href={href(locale, `/cards/${card.slug}`)} className="flex items-center gap-2 rounded-lg border-2 border-sky px-2.5 py-1.5 text-xs hover:bg-night-3 sm:whitespace-nowrap">
                     <span className="t-item text-xs">
                       <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
                     </span>
