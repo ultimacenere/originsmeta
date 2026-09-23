@@ -66,7 +66,8 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
       </HideOnPath>
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Wordmark className="text-2xl" />
+          {/* nel footer il logo è più grande e porta il nome del sito per chi non vede l'immagine */}
+          <Wordmark height={38} alt="OriginsMeta" />
           <p className="mt-3 max-w-sm text-sm text-chalk-muted">{dict.footer.disclaimer}</p>
           <p className="mt-3 text-sm text-chalk-muted">
             {dict.common.contact}: <a className="link-mint" href={`mailto:${contactEmail}`}>{contactEmail}</a>

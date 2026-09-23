@@ -36,7 +36,8 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px */}
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2 2xl:gap-3">
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
-          <Wordmark />
+          {/* il nome del sito lo dice l'aria-label del link qui sopra: l'immagine resta muta */}
+          <Wordmark height={30} className="max-[359px]:!h-6" />
         </Link>
         {/* voce della pagina corrente: aria-current="page"; aspetto (riposo, passaggio, attiva) tutto in .nav-link */}
         <nav className="ml-3 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label={dict.nav.mainNav}>

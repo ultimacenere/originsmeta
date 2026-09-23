@@ -31,8 +31,9 @@ export const organization: Json = {
   "@id": organizationId,
   name: "OriginsMeta",
   url: siteUrl,
-  // Logo di OriginsMeta, non di Koin: i dati strutturati dichiarano l'identità del sito.
-  logo: `${siteUrl}/media/originsmeta-icon.png`,
+  // Logo di OriginsMeta, non di Koin: i dati strutturati dichiarano l'identità del sito. Dal 23/09/2026 è il
+  // lettering nuovo, lo stesso dell'header e del footer; l'icona quadrata resta per la scheda del browser.
+  logo: `${siteUrl}/media/logo-originsmeta.webp`,
   email: "staff@originsmeta.com",
   description: "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English and Italian.",
   // Mese in cui è nato il sito.
