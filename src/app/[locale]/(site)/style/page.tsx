@@ -614,7 +614,7 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
               <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
             </div>
             <div className="strip-labeled card-night flex flex-wrap items-center gap-4">
-              <p className="strip-postit strip-postit-mint" style={{ ["--tilt" as string]: "4deg", ["--scrawl" as string]: "-1.5deg" } as React.CSSProperties}>
+              <p className="strip-postit strip-postit-mint strip-postit-bang" style={{ ["--tilt" as string]: "4deg", ["--scrawl" as string]: "-1.5deg" } as React.CSSProperties}>
                 <span className="strip-postit-text">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               </p>
               <p className="text-sm text-pale-muted">{d.home.metashiftSub}</p>

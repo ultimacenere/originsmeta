@@ -810,7 +810,8 @@
     z-index: 2;
     width: min(80%, 17rem);
     margin: 0;
-    padding: 0.45rem 1rem 0.55rem;
+    /* il bordo inferiore lascia respiro alla sottolineatura disegnata (vedi .strip-postit-text::before) */
+    padding: 0.45rem 1rem 0.9rem;
     /* grafia a penna (Reenie Beanie, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
     font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-weight: 400;
@@ -843,6 +844,50 @@
     transform: rotate(var(--scrawl, -2deg)) skewX(-8deg);
     transform-origin: 0 50%;
     overflow-wrap: normal;
+    /* il tratto sotto la scritta (::before) si posiziona rispetto a questo box */
+    position: relative;
+  }
+  /*
+    Sottolineatura tirata a mano sotto la scritta dei due foglietti (Pierluigi, 23/09/2026: "due sottolineature e
+    un punto esclamativo su MetaShifting, sempre stesso effetto come se fosse scritto a mano", poi "fai sì che le
+    due sottolineature non siano uguali sui due post-it ma differenti").
+
+    È un disegno, non un `text-decoration`, che verrebbe una riga da tipografia: due passate di biro in un SVG
+    usato come maschera, così il colore resta quello della scritta (ink) e cambia da solo con il foglietto. Il
+    disegno è diverso sui due: sulla tier list due tratti quasi paralleli tirati dritti; su MetaShifting una
+    passata mossa più marcata con una seconda, più corta, che la ripassa solo in fondo.
+    `preserveAspectRatio: none`: il tratto si allunga quanto la scritta, su ogni larghezza di schermo.
+  */
+  .strip-postit-text::before {
+    content: "";
+    position: absolute;
+    right: 0.06em;
+    bottom: -0.16em;
+    left: 0.02em;
+    height: 0.22em;
+    background: currentColor;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+  }
+  /* Tier list: due tratti quasi paralleli, tirati di fretta ma dritti. */
+  .strip-postit-pink .strip-postit-text::before {
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 22' preserveAspectRatio='none'><path d='M4 7 C 44 3, 120 11, 196 5' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/><path d='M12 16 C 62 12, 128 19, 188 13' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'/></svg>");
+  }
+  /* MetaShifting: una passata sola, ondulata e calcata, ripassata in fondo con un tratto corto. */
+  .strip-postit-mint .strip-postit-text::before {
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 22' preserveAspectRatio='none'><path d='M3 9 C 34 2, 58 16, 96 8 S 162 2, 197 12' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/><path d='M104 19 C 132 15, 160 21, 192 17' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/></svg>");
+  }
+  /*
+    Punto esclamativo di MetaShifting: sta nel disegno, non nel testo dei dizionari, perché è un segno della
+    grafia e non parte del nome della sezione (che resta "MetaShifting" nel menu, nei link e per chi ascolta).
+    Scritto un po' più grande e più storto della parola, come viene calcando l'ultimo segno.
+  */
+  .strip-postit-bang .strip-postit-text::after {
+    content: "!";
+    display: inline-block;
+    margin-left: 0.04em;
+    font-size: 1.12em;
+    transform: rotate(6deg);
   }
   /* Colori dei due foglietti (via il giallo, Pierluigi 22/09/2026): rosa per la tier list, menta per MetaShifting,
      i colori del sito (rosa dei bottoni, menta del logo). Testo ink: 8,7:1 sul rosa, 11,3:1 sul menta. */
@@ -894,7 +939,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 0.6rem 1.25rem 0.8rem 1.4rem;
+      padding: 0.6rem 1.25rem 1rem 1.4rem;
     }
     .strip-postit-text {
       /* tetto tarato sulla larghezza massima del foglietto (19rem): oltre, TIER LIST tornerebbe su due righe */
