@@ -898,25 +898,25 @@
     transform: rotate(6deg);
   }
   /*
-    Faccina disegnata a penna nell'angolo destro del foglietto (Pierluigi, 23/09/2026: "sempre per l'effetto
-    scrivania, uno smile fatto a penna nell'angolo a destra di MetaShifting, :S"). È uno scarabocchio, non
-    un'emoji: cerchio tracciato a mano che non si chiude, due occhi e la bocca a S, come il muso storto di chi
-    legge le patch notes. Stessa tecnica delle sottolineature — SVG come maschera e colore della scritta — così
-    resta ink sul foglietto e non è un'immagine da caricare. Occupa l'angolo lasciato libero dalla piega tolta
-    lo stesso giorno. Decorativo: nessun testo, nessun contenuto per chi ascolta la pagina.
+    Faccina disegnata a penna in alto a destra del foglietto, accanto alla parola "META" (Pierluigi, 23/09/2026,
+    dopo averla vista in basso: "va messa in alto a destra, un po' più grande, di fianco alla parola meta").
+    È uno scarabocchio, non un'emoji: cerchio tracciato a mano che non si chiude, due occhi e la bocca a S, il
+    muso storto di chi legge le patch notes. Stessa tecnica delle sottolineature (SVG come maschera, colore della
+    scritta), quindi resta ink sul foglietto e non è un'immagine da caricare.
+    È un elemento suo e non uno pseudo-elemento: ::after sul post-it disegna l'angolo piegato, e uno solo dei due
+    può esistere. Decorativo, aria-hidden nel markup: chi ascolta la pagina non lo sente.
   */
-  .strip-postit-doodle::after {
-    content: "";
+  .postit-smile {
     position: absolute;
+    top: 0.55rem;
     right: 0.7rem;
-    bottom: 0.5rem;
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 2.7rem;
+    height: 2.7rem;
     background: currentColor;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
     mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M33 13 C35 23, 28 34, 18 34 C8 34, 3 26, 5 17 C7 8, 15 3, 24 5 C28 6, 31 8, 32 11'/><path d='M14 15 L14.6 19'/><path d='M25 14.5 L25.6 18.5'/><path d='M12 25 C15 28, 17 23, 20 25 C23 27, 25 29, 28 24'/></g></svg>");
-    transform: rotate(-6deg);
+    transform: rotate(-8deg);
     opacity: 0.85;
   }
   /* Colori dei due foglietti (via il giallo, Pierluigi 22/09/2026): rosa per la tier list, menta per MetaShifting,
@@ -928,13 +928,22 @@
     --postit-bg: var(--postit-guide);
   }
   /*
-    L'angolo piegato in basso a destra è stato tolto il 23/09/2026 (riunione: "l'angolo in basso a destra di uno
-    dei due post-it ha uno stile diverso, effetto sticker sollevato: o uniformare o rimuovere da entrambi").
-    Il disegno era identico sui due — stessa misura, stesso gradiente — ma il triangolo prende la tinta del
-    foglietto schiarita con il bianco: sul menta stacca parecchio dal fondo e sembra un adesivo appiccicato,
-    sul rosa si confonde. Invece di inseguire due tinte che si comportano in modo diverso, via da tutti e due:
-    a sollevare il foglietto bastano l'ombra e la rotazione, che restano.
+    Angolo in basso a destra che si solleva, come nel disegno (il bordo destro "curva"). Tolto e rimesso il
+    23/09/2026: la riunione chiedeva "o uniformare o rimuovere da entrambi", e la scelta di Pierluigi, guardando
+    il sito, è stata di rimetterlo su tutti e due. È lo stesso disegno per i due foglietti — stessa misura, stesso
+    gradiente — e prende la tinta del foglietto schiarita col bianco, quindi sul menta stacca più che sul rosa.
   */
+  .strip-postit::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    background: linear-gradient(135deg, rgba(22, 16, 42, 0.18) 0 45%, color-mix(in srgb, var(--postit-bg) 78%, white) 50% 100%);
+    border-radius: 0 0 6px 0;
+    box-shadow: -2px -2px 4px rgba(14, 7, 31, 0.18);
+  }
   /*
     Striscia di scotch di carta con una parola scritta sopra (Pierluigi, 23/09/2026: il titolo "Fai la tua mossa"
     resta, e alla sua destra va "un pezzo di scotch storto con su scritto unisciti!", con lo stesso carattere dei

@@ -302,8 +302,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
-            <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang strip-postit-doodle" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
+            <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.metaPostit1} {d.home.metaPostit2}</span>
+              <span className="postit-smile" aria-hidden="true" />
               <span className="sr-only">{d.common.metashift}</span>
             </h2>
             <div className="min-w-[220px] max-w-xs flex-1">
