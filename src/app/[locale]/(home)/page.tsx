@@ -220,16 +220,19 @@ export default async function Home({ params }: { params: LocaleParams }) {
             Fai la tua mossa (UX-1, 21/09/2026): la home non conteneva un solo invito a costruire, pubblicare o
             organizzare. Tre colonne (una sul telefono), ognuna con un verbo, una riga e un'azione.
           */}
-          <section className="card-night relative mt-8 p-5 sm:p-7" aria-labelledby="home-moves">
-            {/* Striscia di scotch di carta in alto a destra, scritta con la penna dei post-it (Pierluigi,
-                23/09/2026). È un segno, non un titolo: la sezione ha già il suo H2, quindi resta decorativa. */}
-            <span className="tape-note" aria-hidden="true">
-              {mv.tape}
-            </span>
+          <section className="card-night mt-8 p-5 sm:p-7" aria-labelledby="home-moves">
             <p className="kicker text-mint">{mv.kicker}</p>
-            <h2 id="home-moves" className="t-section mt-1">
-              {mv.title}
-            </h2>
+            {/* Il titolo resta "Fai la tua mossa" e accanto, a destra, un pezzo di scotch di carta storto con
+                "Unisciti!" scritto con la penna dei post-it (Pierluigi, 23/09/2026). Lo scotch è un segno, non un
+                titolo: aria-hidden, così chi ascolta la pagina sente solo il nome della sezione. */}
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <h2 id="home-moves" className="t-section">
+                {mv.title}
+              </h2>
+              <span className="tape-note" aria-hidden="true">
+                {mv.tape}
+              </span>
+            </div>
             <ul className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
               {moves.map((m) => (
                 <li key={m.id} className="flex flex-col rounded-xl border-2 border-sky/50 bg-night-2/80 p-4 md:p-5">
@@ -299,7 +302,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
           <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
-            <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
+            <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang strip-postit-doodle" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               <span className="sr-only">{d.common.metashift}</span>
             </h2>

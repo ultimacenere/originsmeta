@@ -897,6 +897,28 @@
     font-size: 1.12em;
     transform: rotate(6deg);
   }
+  /*
+    Faccina disegnata a penna nell'angolo destro del foglietto (Pierluigi, 23/09/2026: "sempre per l'effetto
+    scrivania, uno smile fatto a penna nell'angolo a destra di MetaShifting, :S"). È uno scarabocchio, non
+    un'emoji: cerchio tracciato a mano che non si chiude, due occhi e la bocca a S, come il muso storto di chi
+    legge le patch notes. Stessa tecnica delle sottolineature — SVG come maschera e colore della scritta — così
+    resta ink sul foglietto e non è un'immagine da caricare. Occupa l'angolo lasciato libero dalla piega tolta
+    lo stesso giorno. Decorativo: nessun testo, nessun contenuto per chi ascolta la pagina.
+  */
+  .strip-postit-doodle::after {
+    content: "";
+    position: absolute;
+    right: 0.7rem;
+    bottom: 0.5rem;
+    width: 2.1rem;
+    height: 2.1rem;
+    background: currentColor;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M33 13 C35 23, 28 34, 18 34 C8 34, 3 26, 5 17 C7 8, 15 3, 24 5 C28 6, 31 8, 32 11'/><path d='M14 15 L14.6 19'/><path d='M25 14.5 L25.6 18.5'/><path d='M12 25 C15 28, 17 23, 20 25 C23 27, 25 29, 28 24'/></g></svg>");
+    transform: rotate(-6deg);
+    opacity: 0.85;
+  }
   /* Colori dei due foglietti (via il giallo, Pierluigi 22/09/2026): rosa per la tier list, menta per MetaShifting,
      i colori del sito (rosa dei bottoni, menta del logo). Testo ink: 8,7:1 sul rosa, 11,3:1 sul menta. */
   .strip-postit-pink {
@@ -914,23 +936,19 @@
     a sollevare il foglietto bastano l'ombra e la rotazione, che restano.
   */
   /*
-    Striscia di scotch di carta con una parola scritta sopra (Pierluigi, 23/09/2026: "sulla sezione Fai la tua
-    mossa, in alto a destra, una striscia di scotch di carta con su scritto con lo stesso carattere dei post-it
-    «unisciti!»"). Va messa dentro un contenitore con `position: relative`.
+    Striscia di scotch di carta con una parola scritta sopra (Pierluigi, 23/09/2026: il titolo "Fai la tua mossa"
+    resta, e alla sua destra va "un pezzo di scotch storto con su scritto unisciti!", con lo stesso carattere dei
+    post-it). Sta nella riga del titolo, accanto all'H2.
 
     Il nastro è carta, non plastica: fondo avorio opaco appena sporco, niente lucidità, e i due lati corti
-    strappati a mano (i dentelli del `clip-path`, che sui lati lunghi resta dritto). Sta storto di tre gradi e
-    sborda sopra il bordo del pannello, come se fosse stato appiccicato dopo. Testo con la penna dei post-it
-    (--font-pen) in ink: 14,8:1 sull'avorio.
+    strappati a mano (i dentelli del `clip-path`, che sui lati lunghi resta dritto). Sta storto di tre gradi, come
+    se fosse stato appiccicato dopo. Testo con la penna dei post-it (--font-pen) in ink: 14,8:1 sull'avorio.
   */
   .tape-note {
-    position: absolute;
-    z-index: 2;
-    top: -0.85rem;
-    right: 1.25rem;
-    padding: 0.3rem 1.15rem 0.4rem;
+    display: inline-block;
+    padding: 0.3rem 1.2rem 0.45rem;
     font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
-    font-size: 1.85rem;
+    font-size: 2.9rem;
     line-height: 1;
     color: var(--color-ink);
     text-transform: uppercase;
@@ -939,7 +957,7 @@
     paint-order: stroke fill;
     background: linear-gradient(103deg, rgba(22, 16, 42, 0.06), transparent 28%, rgba(22, 16, 42, 0.05)), #efe6cf;
     box-shadow: 0 2px 6px -2px rgba(14, 7, 31, 0.55);
-    transform: rotate(3deg);
+    transform: rotate(-7deg);
     /* lati corti strappati: i denti stanno solo a destra e a sinistra, il resto del bordo è dritto */
     clip-path: polygon(
       0 0,
@@ -957,11 +975,10 @@
     );
   }
   @media (max-width: 639px) {
-    /* sul telefono il pannello è stretto: il nastro si accorcia e si avvicina all'angolo */
+    /* sul telefono lo scotch si accorcia: accanto al titolo lo spazio è poco */
     .tape-note {
-      right: 0.75rem;
-      padding: 0.25rem 0.8rem 0.35rem;
-      font-size: 1.5rem;
+      padding: 0.2rem 0.75rem 0.3rem;
+      font-size: 2.05rem;
     }
   }
   /* nastro adesivo in cima, solo sul primo foglietto (nel disegno ce l'ha "TIER") */
