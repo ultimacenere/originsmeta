@@ -1161,8 +1161,11 @@
     z-index: 0;
     inset: 0 0 0 50%;
     border-radius: 0 6px 6px 0; /* raggio interno: 8 px della riga meno i 2 px della cornice */
+    /* 23/09/2026: qui arriva la finestra d'arte da 560 px (`art`), non più la miniatura della carta intera da
+       160 px, che allargata su mezza riga si vedeva sgranata. Essendo già il solo riquadro dell'illustrazione,
+       si centra invece di puntare al 28% dall'alto, che serviva a saltare la cornice della carta. */
     background-image: var(--row-art, none);
-    background-position: center 28%;
+    background-position: center 45%;
     background-size: cover;
     opacity: 0.55;
     mask-image: linear-gradient(to right, transparent, #000 55%);

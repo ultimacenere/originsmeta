@@ -1190,7 +1190,7 @@ export function DeckBuilder({
                     onClick={() => (inDeck ? removeCard(c.slug) : blocked ? undefined : addCard(c))}
                     className={`builder-row deck-card-wrap text-left ${rowClasses(c, peek)} ${inDeck ? "is-in-deck" : ""} ${blocked ? "is-full" : ""}`}
                     title={peek ? undefined : c.name}
-                    style={c.thumb ?? c.art ? ({ ["--row-art" as string]: `url(${c.thumb ?? c.art})` } as React.CSSProperties) : undefined}
+                    style={c.art ?? c.image ?? c.thumb ? ({ ["--row-art" as string]: `url(${c.art ?? c.image ?? c.thumb})` } as React.CSSProperties) : undefined}
                   >
                     <ManaGem mana={c.mana} label={labels.cost} />
                     <BuilderArt card={c} />
@@ -1367,7 +1367,7 @@ function DeckRow({ card, copies, onRemove, labels }: { card: BuilderCard; copies
     <div
       className={`builder-row is-in-deck deck-card-wrap ${rowClasses(card, peek)}`}
       title={peek ? undefined : card.name}
-      style={card.thumb ?? card.art ? ({ ["--row-art" as string]: `url(${card.thumb ?? card.art})` } as React.CSSProperties) : undefined}
+      style={card.art ?? card.image ?? card.thumb ? ({ ["--row-art" as string]: `url(${card.art ?? card.image ?? card.thumb})` } as React.CSSProperties) : undefined}
     >
       <ManaGem mana={card.mana} label={labels.cost} />
       <span className="builder-row-copies">{copies}×</span>
