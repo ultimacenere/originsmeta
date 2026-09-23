@@ -127,19 +127,36 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
     return () => ro.disconnect();
   }, [repeats, items]);
 
+  /*
+   * Posizione con i decimali (23/09/2026). A 16 px al secondo ogni fotogramma vale 0,27 px, e `scrollLeft` non
+   * tiene i decimali: scriverci sopra `+= 0,27` sessanta volte al secondo lascia la striscia a zero per sempre.
+   * È il motivo per cui il nastro restava fermo anche con la lista ripetuta (misurato in pagina: tre incrementi
+   * da 0,27 px di fila, scrollLeft ancora 0; con 5 px si muove). Quindi il conto lo teniamo noi qui, in virgola
+   * mobile, e allo scroll passiamo il totale: il movimento avanza di un pixel ogni quattro fotogrammi, cioè piano
+   * e senza scatti visibili. `applied` ricorda l'ultimo valore scritto: se nel frattempo la posizione è cambiata
+   * per mano di qualcuno (rotella, dito, frecce) ci si risincronizza invece di riportare indietro la striscia.
+   */
+  const pos = useRef(0);
+  const applied = useRef(0);
   useEffect(() => {
     const el = ref.current;
     if (!el || hover || !inView || !pageVisible) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
     let last = performance.now();
+    pos.current = el.scrollLeft;
+    applied.current = el.scrollLeft;
     const step = (now: number) => {
       const dt = Math.min(64, now - last);
       last = now;
       const half = el.scrollWidth / 2;
       if (now > pausedUntil.current && half > el.clientWidth) {
-        el.scrollLeft += (speed * dt) / 1000;
-        if (el.scrollLeft >= half) el.scrollLeft -= half;
+        // scorrimento arrivato da fuori (rotella, dito, frecce): si riparte da dove si trova ora
+        if (Math.abs(el.scrollLeft - applied.current) > 2) pos.current = el.scrollLeft;
+        pos.current += (speed * dt) / 1000;
+        if (pos.current >= half) pos.current -= half;
+        el.scrollLeft = pos.current;
+        applied.current = el.scrollLeft;
       }
       raf = requestAnimationFrame(step);
     };
