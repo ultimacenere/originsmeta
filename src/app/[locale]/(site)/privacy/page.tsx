@@ -21,6 +21,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p id="feedback" className="mt-6 scroll-mt-24">
           {d.privacy.feedback}
         </p>
+        {/* Modulo "Mandaci la tua guida" (23/09/2026): l'ancora #guide è il link "Informativa privacy" del modulo. */}
+        <p id="guide" className="mt-6 scroll-mt-24">
+          {d.privacy.guides}
+        </p>
       </article>
     </div>
   );

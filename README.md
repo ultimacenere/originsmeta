@@ -183,6 +183,16 @@ Richiesta di Pierluigi e Davdas dopo la demo: nei primi giorni dopo il lancio ch
   - `NEXT_PUBLIC_FEEDBACK=off` spegne bottone, pannello e rotta. Acceso di default; entra nel codice alla build, quindi serve un deploy.
 - La voce "Feedback" dell'informativa (`privacy.feedback`, ancora `/privacy#feedback`) resta anche a widget spento: i messaggi ricevuti stanno nel canale Discord.
 
+## "Mandaci la tua guida" (dal 23/09/2026)
+
+Richiesta della diretta Twitch del 23/09: chi scrive una guida (o ha un mazzo da raccontare) la manda dal sito, e arriva nello **stesso canale Discord privato dello staff** dei feedback. Nessun database: lo staff la legge, la sistema e la pubblica a mano come le altre guide (EN e IT, con la firma dell'autore).
+
+- **Dove**: riquadro "Hai scritto una guida?" sotto l'intro di `/guides`, che porta al modulo `/guides/submit` (pagina statica, `noindex`, fuori dalla sitemap). Componente `src/components/GuideSubmitForm.tsx`, testi in `guideSubmit` dei dizionari, costanti condivise con la rotta in `src/lib/guideSubmitLabels.ts`.
+- **Campi**: titolo (5–120), testo (300–20.000 caratteri, facoltativo se c'è un link), link (http/https), codice del mazzo (codice del gioco o link del builder), firma (2–60), email e nome utente Discord facoltativi, casella obbligatoria con l'autorizzazione a pubblicare anche rivista e tradotta. La bozza si salva da sola in `localStorage` (`originsmeta.guideDraft.v1`, senza email né Discord) e si cancella dopo l'invio.
+- **Rotta** (`src/app/api/guide-submission/route.ts`): GET `{ attivo }`, POST con gli stessi controlli del modulo. Difese condivise con `/api/feedback` in `src/lib/formGuard.ts` (stessa origine e JSON, limite in memoria di **3 guide all'ora** per IP, CAPTCHA Turnstile con `TURNSTILE_SECRET_KEY` se c'è, testo semplice). Su Discord arriva un embed celeste (titolo, firma, lingua, caratteri, link, codice, contatti, autorizzazione, data, anteprima di 1000 caratteri) più il **testo completo in un file `.txt` allegato** (`sendDiscordWebhook` con `files`, richiesta multipart).
+- **Variabili**: la stessa `DISCORD_FEEDBACK_WEBHOOK_URL` del feedback, quindi **non va tolta quando si spegne il feedback**. `NEXT_PUBLIC_FEEDBACK=off` non spegne il modulo delle guide. Senza webhook il modulo lo dice subito e propone staff@originsmeta.com.
+- Informativa: voce `privacy.guides`, ancora `/privacy#guide`.
+
 ## Cookie e GDPR
 
 - Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.

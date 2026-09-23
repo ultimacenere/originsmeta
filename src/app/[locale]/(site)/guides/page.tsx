@@ -40,6 +40,17 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
       <p className="kicker text-mint">{d.nav.guides}</p>
       <h1 className="t-page mt-2">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
+      {/* "Mandaci la tua guida" (diretta Twitch del 23/09/2026): subito sotto l'intro, come l'invito a pubblicare
+          di /decks; il modulo manda la guida al canale Discord privato dello staff */}
+      <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+        <div className="min-w-0 flex-1 basis-72">
+          <h2 className="t-item">{d.guides.submitTitle}</h2>
+          <p className="mt-1 text-pale-muted">{d.guides.submitText}</p>
+        </div>
+        <Link className="btn btn-primary shrink-0" href={href(locale, "/guides/submit")}>
+          {d.guides.submitCta} →
+        </Link>
+      </section>
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
           const count = guides.filter((g) => g.category === id).length;

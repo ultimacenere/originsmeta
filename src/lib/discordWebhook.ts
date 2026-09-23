@@ -1,7 +1,8 @@
 /**
  * Invio a un webhook Discord, solo lato server (nessuna dipendenza: solo fetch). Nato per il pop-up dei
- * feedback (22/09/2026, `src/app/api/feedback/route.ts`); le notifiche dei tornei (`src/lib/tournament/notify.ts`)
- * hanno ancora il loro invio interno, che in futuro può passare da qui.
+ * feedback (22/09/2026, `src/app/api/feedback/route.ts`), usato anche da "Mandaci la tua guida" (23/09/2026,
+ * `src/app/api/guide-submission/route.ts`); le notifiche dei tornei (`src/lib/tournament/notify.ts`) hanno
+ * ancora il loro invio interno, che in futuro può passare da qui.
  *
  * L'URL di un webhook è un segreto (chi lo conosce scrive nel canale): si legge da una variabile d'ambiente
  * senza prefisso NEXT_PUBLIC_, impostata su Vercel, e non va mai nel codice né nel repository.
@@ -27,6 +28,12 @@ export type DiscordWebhookPayload = {
   username?: string;
   embeds?: DiscordEmbed[];
 };
+
+/**
+ * File di testo allegato al messaggio (per esempio il testo completo di una guida inviata dal sito, che in un
+ * embed non ci sta: la descrizione ha un tetto di 4096 caratteri). Discord ne mostra un'anteprima nel canale.
+ */
+export type DiscordFile = { name: string; content: string };
 
 /**
  * Legge l'URL del webhook dalla variabile indicata e lo accetta solo se è davvero un webhook Discord
@@ -67,14 +74,28 @@ export function escapeDiscord(text: string): string {
 /**
  * Manda il messaggio e dice se Discord l'ha accettato. Non lancia mai eccezioni: rete giù, timeout o risposta
  * d'errore diventano `{ ok: false }` (con il codice HTTP quando c'è), e il dettaglio finisce in console.error.
+ * Con dei file allegati la richiesta diventa multipart (il messaggio va nel campo `payload_json`, i file in
+ * `files[n]`), come vuole l'API dei webhook di Discord.
  */
-export async function sendDiscordWebhook(url: string, payload: DiscordWebhookPayload, timeoutMs = 5000): Promise<{ ok: boolean; status?: number }> {
+export async function sendDiscordWebhook(
+  url: string,
+  payload: DiscordWebhookPayload,
+  { timeoutMs = 5000, files = [] }: { timeoutMs?: number; files?: DiscordFile[] } = {},
+): Promise<{ ok: boolean; status?: number }> {
+  // nessuna menzione può partire, qualunque cosa contenga il testo
+  const json = JSON.stringify({ ...payload, allowed_mentions: { parse: [] } });
+  let body: string | FormData = json;
+  if (files.length) {
+    body = new FormData();
+    body.append("payload_json", json);
+    files.forEach((f, i) => (body as FormData).append(`files[${i}]`, new Blob([f.content], { type: "text/plain; charset=utf-8" }), f.name));
+  }
   try {
     const res = await fetch(url, {
       method: "POST",
-      headers: { "content-type": "application/json" },
-      // nessuna menzione può partire, qualunque cosa contenga il testo
-      body: JSON.stringify({ ...payload, allowed_mentions: { parse: [] } }),
+      // con FormData il tipo (e il separatore delle parti) lo scrive fetch
+      headers: files.length ? undefined : { "content-type": "application/json" },
+      body,
       cache: "no-store",
       signal: AbortSignal.timeout(timeoutMs),
     });
