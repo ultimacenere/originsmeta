@@ -296,7 +296,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </h2>
         {knownCards.length ? (
           <div className="mt-3">
-            <DeckCardGrid slugs={knownCards} locale={locale} copies={RULES.copiesPerCard} />
+            {/* niente "×2" sulle carte (riunione del 23/09/2026): in un mazzo le carte base sono sempre due */}
+            <DeckCardGrid slugs={knownCards} locale={locale} />
           </div>
         ) : null}
         {customCards.length ? (

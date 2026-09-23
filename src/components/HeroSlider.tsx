@@ -113,7 +113,12 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
 
   return (
     <section
-      className="group relative w-full overflow-hidden bg-felt-deep sm:h-[calc(36vh+200px)] sm:max-h-[660px] sm:min-h-[450px]"
+      /* Altezza abbassata di 80 px il 23/09/2026 (riunione: "header troppo alto, taglia le card e spinge i titoli
+         troppo in basso; ridurre di circa 80 px per far emergere i titoli nella prima schermata"). Era
+         calc(36vh + 200px) con tetto 660 e minimo 450: ora la parte fissa scende a 120 px, il tetto a 580 e il
+         minimo a 400, così su un portatile la prima scheda delle news entra nella schermata invece di restare
+         sotto la piega. Sul telefono non cambia niente: lì la slide resta 2:1. */
+      className="group relative w-full overflow-hidden bg-felt-deep sm:h-[calc(36vh+120px)] sm:max-h-[580px] sm:min-h-[400px]"
       aria-roledescription="carousel"
       aria-label="Origins TCG"
       onMouseEnter={() => setHovered(true)}

@@ -95,12 +95,20 @@
       transition: none !important;
     }
   }
+  /*
+    Sfondo della pagina: due aloni (menta in alto a sinistra, magenta in alto a destra) su fondo viola inchiostro.
+    Il 23/09/2026 è sparita la terza trama, un `repeating-linear-gradient` a righe da 1 px ogni 3 (bianco all'1,2%):
+    era pensata come grana appena percepibile, ma un motivo così fine si ripete migliaia di volte sull'altezza
+    della pagina e, appena lo zoom o la scala dello schermo non è un numero intero, i pixel si arrotondano in modo
+    irregolare e la grana diventa una serie di fasce che si notano scorrendo (riunione: "lo sfondo in loop va in
+    disincronia, si vede la ripetizione"). Gli aloni non hanno il problema: sono due sole macchie sfumate.
+    Chi volesse rimettere una grana usi un motivo non ripetitivo (una texture) e non una riga ogni 3 px.
+  */
   body {
     background-color: var(--color-felt);
     background-image:
       radial-gradient(1100px 520px at 12% -10%, rgba(49, 227, 189, 0.16), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(200, 30, 122, 0.16), transparent 55%),
-      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px);
+      radial-gradient(900px 500px at 100% 0%, rgba(200, 30, 122, 0.16), transparent 55%);
     color: var(--color-chalk);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -897,17 +905,64 @@
   .strip-postit-mint {
     --postit-bg: var(--postit-guide);
   }
-  /* angolo in basso a destra che si solleva, come nel disegno (il bordo destro "curva") */
-  .strip-postit::after {
-    content: "";
+  /*
+    L'angolo piegato in basso a destra è stato tolto il 23/09/2026 (riunione: "l'angolo in basso a destra di uno
+    dei due post-it ha uno stile diverso, effetto sticker sollevato: o uniformare o rimuovere da entrambi").
+    Il disegno era identico sui due — stessa misura, stesso gradiente — ma il triangolo prende la tinta del
+    foglietto schiarita con il bianco: sul menta stacca parecchio dal fondo e sembra un adesivo appiccicato,
+    sul rosa si confonde. Invece di inseguire due tinte che si comportano in modo diverso, via da tutti e due:
+    a sollevare il foglietto bastano l'ombra e la rotazione, che restano.
+  */
+  /*
+    Striscia di scotch di carta con una parola scritta sopra (Pierluigi, 23/09/2026: "sulla sezione Fai la tua
+    mossa, in alto a destra, una striscia di scotch di carta con su scritto con lo stesso carattere dei post-it
+    «unisciti!»"). Va messa dentro un contenitore con `position: relative`.
+
+    Il nastro è carta, non plastica: fondo avorio opaco appena sporco, niente lucidità, e i due lati corti
+    strappati a mano (i dentelli del `clip-path`, che sui lati lunghi resta dritto). Sta storto di tre gradi e
+    sborda sopra il bordo del pannello, come se fosse stato appiccicato dopo. Testo con la penna dei post-it
+    (--font-pen) in ink: 14,8:1 sull'avorio.
+  */
+  .tape-note {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 1.6rem;
-    height: 1.6rem;
-    background: linear-gradient(135deg, rgba(22, 16, 42, 0.18) 0 45%, color-mix(in srgb, var(--postit-bg) 78%, white) 50% 100%);
-    border-radius: 0 0 6px 0;
-    box-shadow: -2px -2px 4px rgba(14, 7, 31, 0.18);
+    z-index: 2;
+    top: -0.85rem;
+    right: 1.25rem;
+    padding: 0.3rem 1.15rem 0.4rem;
+    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-size: 1.85rem;
+    line-height: 1;
+    color: var(--color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    -webkit-text-stroke: 0.9px currentColor;
+    paint-order: stroke fill;
+    background: linear-gradient(103deg, rgba(22, 16, 42, 0.06), transparent 28%, rgba(22, 16, 42, 0.05)), #efe6cf;
+    box-shadow: 0 2px 6px -2px rgba(14, 7, 31, 0.55);
+    transform: rotate(3deg);
+    /* lati corti strappati: i denti stanno solo a destra e a sinistra, il resto del bordo è dritto */
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - 3px) 20%,
+      100% 40%,
+      calc(100% - 2px) 60%,
+      100% 80%,
+      calc(100% - 3px) 100%,
+      0 100%,
+      3px 80%,
+      0 60%,
+      2px 40%,
+      0 20%
+    );
+  }
+  @media (max-width: 639px) {
+    /* sul telefono il pannello è stretto: il nastro si accorcia e si avvicina all'angolo */
+    .tape-note {
+      right: 0.75rem;
+      padding: 0.25rem 0.8rem 0.35rem;
+      font-size: 1.5rem;
+    }
   }
   /* nastro adesivo in cima, solo sul primo foglietto (nel disegno ce l'ha "TIER") */
   .strip-postit-tape::before {
@@ -1514,19 +1569,6 @@
     align-items: center;
     gap: 4px;
   }
-  .card-tile-copies {
-    display: grid;
-    height: 22px;
-    padding: 0 6px;
-    place-items: center;
-    border-radius: 999px;
-    background: var(--color-night);
-    color: var(--color-pale);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 1px 3px rgba(14, 7, 31, 0.6);
-  }
   .card-tile-mana {
     display: grid;
     min-width: 26px;
@@ -1621,7 +1663,6 @@
   */
   .card-tile-name,
   .card-tile-text,
-  .card-tile-kicker,
   .card-tile-stats {
     text-shadow: 0 1px 3px rgba(6, 3, 16, 0.95);
   }
@@ -1683,24 +1724,10 @@
     min-height: 2.9em;
     -webkit-line-clamp: 9;
   }
-  .card-tile-kicker {
-    display: block;
-  }
-  .card-tile-kw {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 8px;
-  }
-  /* Carta stretta (griglia a 2-3 colonne con il mouse, per esempio un tablet con il trackpad): il retro tiene
-     l'essenziale, cioè nome, pastiglie, testo e statistiche; saga e parole chiave si leggono nella scheda.
-     Il display di saga e parole chiave sta qui e non in utility Tailwind, che vincerebbero su questa regola. */
+  /* Carta stretta (griglia a 2-3 colonne con il mouse, per esempio un tablet con il trackpad): il retro si
+     stringe. Dal 23/09/2026 non c'è più niente da nascondere, perché porta solo nome, pastiglie, testo e
+     statistiche su ogni misura. */
   @container card-tile (max-width: 190px) {
-    .card-tile-kw,
-    .card-tile-info.has-head .card-tile-kicker,
-    .card-tile-info.has-head .card-tile-rarity.stat-pill {
-      display: none;
-    }
     .card-tile-info {
       padding: 40px 9px 9px;
     }

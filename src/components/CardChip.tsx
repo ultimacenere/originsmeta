@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getDictionary, href, type Locale } from "@/lib/i18n";
-import { getCard, lastChange, sagas, statLine, type Card } from "@/lib/data/cards";
+import { getCard, statLine, type Card } from "@/lib/data/cards";
 import { initials, sagaHue } from "@/lib/cardArt";
 import { CardPeek, hasPeek, type PeekCard } from "./CardPeek";
 import { FlipCard, type FlipCardData, type FlipCardLabels } from "./FlipCard";
@@ -123,10 +123,8 @@ export function CardChipList({ slugs, locale, max }: { slugs: string[]; locale: 
  * scheda di un mazzo e /style, così il retro dice le stesse cose ovunque. Solo quello che serve, niente database
  * nel browser (CardExplorer li riceve già pronti dalla pagina).
  */
-export function flipOf(card: Card, locale: Locale, copies?: number): FlipCardData {
+export function flipOf(card: Card, locale: Locale): FlipCardData {
   const c = getDictionary(locale).common;
-  const rarityLabel = { common: c.common, rare: c.rare, epic: c.epic, legendary: c.legendary } as const;
-  const lc = lastChange(card);
   return {
     slug: card.slug,
     href: href(locale, `/cards/${card.slug}`),
@@ -140,16 +138,10 @@ export function flipOf(card: Card, locale: Locale, copies?: number): FlipCardDat
     power: card.power,
     health: card.health,
     legendary: Boolean(card.legendary),
-    kicker: sagas[card.saga]?.[locale],
     alignment: card.alignment,
-    rarityLabel: card.rarity ? rarityLabel[card.rarity] : undefined,
     removed: card.status === "removed",
     removedLabel: c.removed,
-    lastKind: lc?.kind,
-    lastKindLabel: lc ? c[lc.kind === "deck" ? "rework" : lc.kind] : undefined,
     ability: card.ability?.[locale],
-    keywords: card.keywords ?? [],
-    copies: card.legendary ? undefined : copies,
     ...cardLabels(card, locale),
   };
 }
@@ -165,10 +157,10 @@ export function flipLabels(locale: Locale): FlipCardLabels {
  * carte nella sezione Carte, più grandi"). Stessa carta (`FlipCard`) e stesse colonne del database /cards (2 sul
  * telefono, 3 su tablet, 4 dove la pagina è larga), così la carta ha la stessa misura e lo stesso comportamento.
  * Unica differenza: il nome sotto la carta c'è solo su touch (`foot="touch"`), col mouse sta sul retro.
- * Leggendaria per prima, poi le altre per costo e nome come nel gioco. `copies` mette la pastiglia ×2 accanto al
- * costo. Le carte fuori dal nostro database non ci sono: le mostra la pagina a parte, con il loro nome.
+ * Leggendaria per prima, poi le altre per costo e nome come nel gioco. Le carte fuori dal nostro database non ci
+ * sono: le mostra la pagina a parte, con il loro nome.
  */
-export function DeckCardGrid({ slugs, locale, copies }: { slugs: string[]; locale: Locale; copies?: number }) {
+export function DeckCardGrid({ slugs, locale }: { slugs: string[]; locale: Locale }) {
   const list = slugs
     .map((s) => getCard(s))
     .filter((c): c is Card => c !== undefined)
@@ -179,7 +171,7 @@ export function DeckCardGrid({ slugs, locale, copies }: { slugs: string[]; local
     <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
       {list.map((card) => (
         <li key={card.slug} className="min-w-0">
-          <FlipCard card={flipOf(card, locale, copies)} labels={labels} foot="touch" />
+          <FlipCard card={flipOf(card, locale)} labels={labels} foot="touch" />
         </li>
       ))}
     </ul>

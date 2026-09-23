@@ -29,7 +29,9 @@ export function navItems(dict: Dictionary): { label: string; path: string }[] {
 export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const items = navItems(dict);
   return (
-    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt-deep/85 backdrop-blur supports-[backdrop-filter]:bg-felt-deep/70">
+    // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
+    // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
+    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
       {/* tra 1280 e 1535 px la riga ospita menu completo, ricerca, Accedi e lingua: spazi e ricerca un po' più stretti;
           sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px */}
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2 2xl:gap-3">

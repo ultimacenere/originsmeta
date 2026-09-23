@@ -180,6 +180,8 @@ export const en = {
     moves: {
       kicker: "Build · Publish · Host",
       title: "Make your move",
+      /* strip of masking tape in the top right corner, written by hand (Pierluigi, 23/09/2026) */
+      tape: "Join us!",
       build: { title: "Build a deck", text: "1 Legendary + 12 base cards ×2 = 25 cards. Free, no account needed." },
       publish: { title: "Publish your list", text: "Add a guide, collect the community's star ratings and give your deck a page of its own.", cta: "Browse and publish" },
       host: { title: "Host a tournament", text: "Automatic bracket and a short link to paste on Discord.", cta: "Create a tournament" },

@@ -182,6 +182,8 @@ export const it: Dictionary = {
     moves: {
       kicker: "Costruisci · Pubblica · Organizza",
       title: "Fai la tua mossa",
+      /* striscia di scotch di carta in alto a destra, scritta a penna (Pierluigi, 23/09/2026) */
+      tape: "Unisciti!",
       build: { title: "Costruisci un mazzo", text: "1 Leggendaria + 12 carte base ×2 = 25 carte. Gratis, senza account." },
       publish: { title: "Pubblica la tua lista", text: "Aggiungi una guida, raccogli i voti a stelle della community e dai al tuo mazzo una pagina tutta sua.", cta: "Sfoglia e pubblica" },
       host: { title: "Organizza un torneo", text: "Tabellone automatico e un link breve da incollare su Discord.", cta: "Crea un torneo" },

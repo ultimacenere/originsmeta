@@ -220,7 +220,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
             Fai la tua mossa (UX-1, 21/09/2026): la home non conteneva un solo invito a costruire, pubblicare o
             organizzare. Tre colonne (una sul telefono), ognuna con un verbo, una riga e un'azione.
           */}
-          <section className="card-night mt-8 p-5 sm:p-7" aria-labelledby="home-moves">
+          <section className="card-night relative mt-8 p-5 sm:p-7" aria-labelledby="home-moves">
+            {/* Striscia di scotch di carta in alto a destra, scritta con la penna dei post-it (Pierluigi,
+                23/09/2026). È un segno, non un titolo: la sezione ha già il suo H2, quindi resta decorativa. */}
+            <span className="tape-note" aria-hidden="true">
+              {mv.tape}
+            </span>
             <p className="kicker text-mint">{mv.kicker}</p>
             <h2 id="home-moves" className="t-section mt-1">
               {mv.title}
