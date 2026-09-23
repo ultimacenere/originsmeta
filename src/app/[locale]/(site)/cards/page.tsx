@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { activeCards, cards, cardSource, sagas, type SagaId } from "@/lib/data/cards";
@@ -56,6 +57,12 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       <p className="kicker text-mint">{d.nav.cards}</p>
       <h1 className="t-page mt-2">{d.cards.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>
+      {/* I Luoghi sono l'altra metà del tabellone: da qui ci si arriva senza passare dal menu (23/09/2026) */}
+      <p className="mt-3 text-sm">
+        <Link href={href(locale, "/locations")} className="link-mint font-bold">
+          {d.locations.h1} →
+        </Link>
+      </p>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
       <p className="mt-6 font-display text-3xl font-extrabold text-mint">
         {inDemo} <span className="text-base font-bold text-chalk-muted">{d.cards.countLabel}</span>

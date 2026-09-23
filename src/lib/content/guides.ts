@@ -34,6 +34,7 @@ export type Guide = {
 };
 
 export const guideSlugs = [
+  "origins-tcg-locations",
   "on-reveal-midrange-guide",
   "king-of-value-trade-guide",
   "dorothy-combo-guide",
@@ -70,6 +71,73 @@ const threePigsMidRange = ["three-not-so-little-pigs", "bagheera", "rumple", "ax
 const healingHealsing = ["van-helsing", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "phuong-hoang", "jekyll", "boitata", "tin-woodman", "spellbook", "searing-light", "forbidden-knowledge"];
 
 const en: Record<GuideSlug, Guide> = {
+  "origins-tcg-locations": {
+    slug: "origins-tcg-locations",
+    category: "game",
+    tags: { cards: ["christopher-robin", "merry-man", "bandersnatch", "ellen-trechend", "boogeyman", "dorothy", "king-arthur"] },
+    title: "Origins TCG locations: how the three lanes change every game",
+    metaTitle: "Origins TCG locations explained",
+    excerpt: "Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.",
+    readTime: 7,
+    updated: "2026-09-23",
+    image: "/media/ss-board-locations.webp",
+    faq: [
+      { q: "How many locations are there in Origins TCG?", a: "The Demo 2.0 rotates 44 of them. The official Steam page says the full game draws from a pool of more than one hundred locations." },
+      { q: "When do you see the locations of a game?", a: "One per round over the first three rounds: the first is known from the start, the second arrives in round two and the third in round three. From round four you play with the whole board in sight." },
+      { q: "Does a location work for both players?", a: "Yes. A location is a rule of that lane, not a bonus for whoever gets there first: Amplifying Amphitheatre doubles your damage and theirs." },
+      { q: "Where can I see the full list?", a: "On the OriginsMeta locations page, with search, filters by kind of effect and links to the cards some of them summon." },
+    ],
+    body: `
+## Why locations matter more than they look
+
+Origins TCG is played across **three locations**, and each one carries a rule that applies to that lane for the whole game. It is the part of the game that a decklist cannot control: two players can sit down with the same twenty-five cards and get two completely different games, because one board doubles damage and the other makes everything cost one less.
+
+The Demo 2.0 rotates **44 locations**. The [official Steam page](https://store.steampowered.com/app/4429430/Origins_TCG/) says the full game will draw "from a pool of 100+ rotating locations that reshape the board and demand a unique strategy". The complete list with every effect is on the [locations page](/en/locations), searchable and filterable; this guide is about what to do with them.
+
+## How they arrive
+
+The three locations are revealed **one per round over the first three rounds**. The first is on the table from the start, the second appears in round two, the third in round three. From round four on, nothing more is hidden and you are playing a board you can see entirely.
+
+That schedule is the reason the early rounds are not just about curve: on round one you are committing cards to a lane whose two neighbours you do not know yet. Holding a character for one round to see where it belongs is often worth more than playing it on curve into the wrong lane.
+
+## The families of effects
+
+On our list the locations are grouped by what they do to the game, and the groups are worth knowing because they ask for different answers.
+
+- **Damage.** Amplifying Amphitheatre doubles all damage there, Burnturn Arena chips every character after combat, Soul Artillery hits both barriers whenever something dies. Small bodies stop being safe.
+- **Mana and costs.** Gold Spinning Wheel takes one off everything, Castle in the Clouds only off cards that cost seven or more, Treasurer's Office adds one, Mana Battery lets you keep what you did not spend. These decide who gets ahead on tempo.
+- **Draw and discard.** The Sultan's Court gives a card each round that you must spend, Knowledge Vault rewards whoever fills the lane first, Junkyard takes one from both players, Nostradamus' Call destroys both decks at the start of round six.
+- **Movement.** Conveyor Belt slides everyone right after combat, Ballroom sends a random character back to hand, Open Meadow grants Move.
+- **Summons and copies.** Cloning Lab fills your spaces with copies of what you just played, Reflecting Pool copies it in another location, Sherwood Forest keeps producing [Merry Men](/en/cards/merry-man), Hundred Acre Woods puts a [Christopher Robin](/en/cards/christopher-robin) on both sides.
+- **Granted keywords.** Stomping Grounds gives Trample, The Colosseum Double Attack, Windmill Ridge Defender, Poison Grounds gives Deathtouch to Evil characters, Blessed Grounds gives Shield to Good ones.
+- **Abilities.** Mirror Dimension repeats On Reveal, Burial Grounds repeats On Death, Anti-Magic Vault strips abilities entirely, Wonderland reverses the attack order.
+- **Destruction and barriers.** The Gallows destroys the enemy across from anything that lands there, The Hill kills everything tied for the lowest power after combat, Wall of Dumpty eats the first character you play, Broken Gate makes barriers come back with 10 health instead of 40.
+
+## The locations that decide games
+
+A few of them are worth recognising the moment they turn up, because they change what you should do with your hand.
+
+- **Cloning Lab.** Whatever you play there gets copied into your free spaces in that lane. A cheap body with a good On Reveal becomes three, and the lane is decided in one turn.
+- **Mirror Dimension.** Every On Reveal happens twice. It does for a whole lane what [Mulan](/en/cards/mulan) does for a deck, and it stacks with her.
+- **The Gallows.** Anything that enters play there destroys the enemy across from it. It turns your cheapest character into removal, and it punishes whoever commits first.
+- **Anti-Magic Vault.** Characters lose all abilities. A deck built on triggers has nothing to do there; a deck of plain bodies is suddenly at home.
+- **Amplifying Amphitheatre.** All damage doubled, both ways. A Trample finisher like [Ellen Trechend](/en/cards/ellen-trechend) ends the game through the barrier; so does theirs.
+- **Nostradamus' Call.** Both decks are destroyed at the start of round six. Whatever your plan is, it has to be done by round five.
+
+## Building with locations in mind
+
+You cannot choose the board, but you can build a deck that is rarely helpless on it.
+
+1. **Do not put everything on one trigger.** A deck that only works through On Reveal is a deck that loses a lane to Anti-Magic Vault. Keep a few cards that are good as plain bodies.
+2. **Keep a reach card.** Locations that hit barriers (Overloaded Circuit, "Human" Cannon, Soul Artillery) reward decks that can finish a lane from a distance instead of grinding it.
+3. **Cheap characters gain the most.** Every location that grants a keyword or copies a body pays more on a two-drop than on a seven-drop: the location is doing the expensive part.
+4. **Watch the lanes that punish committing.** The Hill, Wall of Dumpty and The Gallows all punish the player who fills a lane first. Against an unknown board, the second card into a lane is often safer than the first.
+
+## What we still want to check
+
+This list is trascribed from the community database and matches the Demo 2.0 rotation. We have not yet gone through the locations one by one inside the game, as we did with the 122 cards on 22 September 2026: when we do, the [locations page](/en/locations) will say so, with the date and the count.
+`,
+  },
   "on-reveal-midrange-guide": {
     slug: "on-reveal-midrange-guide",
     category: "decks",
@@ -1070,6 +1138,73 @@ Sources: [official pre-registration page](https://founder.origins-tcg.com), [Ste
 };
 
 const it: Record<GuideSlug, Guide> = {
+  "origins-tcg-locations": {
+    slug: "origins-tcg-locations",
+    category: "game",
+    tags: { cards: ["christopher-robin", "merry-man", "bandersnatch", "ellen-trechend", "boogeyman", "dorothy", "king-arthur"] },
+    title: "I Luoghi di Origins TCG: come cambiano la partita",
+    metaTitle: "I Luoghi di Origins TCG spiegati",
+    excerpt: "I Luoghi sono il terzo giocatore al tavolo: raddoppiano i danni, cambiano i costi, spostano i personaggi. Come funzionano, quali decidono le partite e come tenerne conto quando costruisci.",
+    readTime: 7,
+    updated: "2026-09-23",
+    image: "/media/ss-board-locations.webp",
+    faq: [
+      { q: "Quanti Luoghi ci sono in Origins TCG?", a: "Nella Demo 2.0 ne girano 44. La pagina Steam ufficiale dice che il gioco completo pesca da un insieme di oltre cento luoghi." },
+      { q: "Quando si vedono i luoghi di una partita?", a: "Uno per round nei primi tre round: il primo si conosce da subito, il secondo arriva al secondo round e il terzo al terzo. Dal quarto si gioca vedendo tutto il tabellone." },
+      { q: "L'effetto di un luogo vale per entrambi i giocatori?", a: "Sì. Un luogo è una regola di quella corsia, non un bonus per chi ci arriva prima: Amplifying Amphitheatre raddoppia i tuoi danni e anche i suoi." },
+      { q: "Dove vedo l'elenco completo?", a: "Nella pagina dei Luoghi di OriginsMeta, con ricerca, filtri per tipo di effetto e collegamenti alle carte che alcuni luoghi evocano." },
+    ],
+    body: `
+## Perché i Luoghi contano più di quanto sembri
+
+Origins TCG si gioca su **tre luoghi**, e ognuno porta una regola che vale in quella corsia per tutta la partita. È la parte di gioco che una lista non può controllare: due giocatori possono sedersi con le stesse venticinque carte e ritrovarsi in due partite diverse, perché un tabellone raddoppia i danni e l'altro fa costare tutto uno in meno.
+
+Nella Demo 2.0 ne girano **44**. La [pagina Steam ufficiale](https://store.steampowered.com/app/4429430/Origins_TCG/) dice che il gioco completo pescherà da un insieme di "100+ rotating locations that reshape the board and demand a unique strategy". L'elenco completo con tutti gli effetti sta nella [pagina dei Luoghi](/it/locations), con ricerca e filtri; questa guida serve a sapere che farsene.
+
+## Come arrivano
+
+I tre luoghi si scoprono **uno per round nei primi tre round**. Il primo è sul tavolo da subito, il secondo compare al secondo round, il terzo al terzo. Dal quarto in poi non c'è più niente di nascosto e si gioca su un tabellone che si vede tutto.
+
+Questo calendario è il motivo per cui i primi round non sono solo una questione di curva: al primo round stai impegnando carte in una corsia di cui non conosci ancora le due vicine. Tenere un personaggio un round in più per capire dove serve vale spesso più che giocarlo sulla curva nella corsia sbagliata.
+
+## Le famiglie di effetti
+
+Nel nostro elenco i luoghi sono raggruppati per quello che fanno alla partita, e vale la pena conoscere i gruppi perché chiedono risposte diverse.
+
+- **Danni.** Amplifying Amphitheatre raddoppia tutti i danni lì, Burnturn Arena rosicchia ogni personaggio dopo il combattimento, Soul Artillery colpisce entrambe le barriere ogni volta che qualcosa muore. I corpi piccoli smettono di essere al sicuro.
+- **Mana e costi.** Gold Spinning Wheel toglie uno a tutto, Castle in the Clouds solo alle carte da sette o più, Treasurer's Office aggiunge uno, Mana Battery ti fa conservare quello che non hai speso. Sono i luoghi che decidono chi va avanti di tempo.
+- **Pesca e scarto.** The Sultan's Court regala una carta ogni round che però va spesa, Knowledge Vault premia chi riempie per primo la corsia, Junkyard ne toglie una a entrambi, Nostradamus' Call distrugge i due mazzi all'inizio del sesto round.
+- **Movimento.** Conveyor Belt sposta tutti a destra dopo il combattimento, Ballroom rimanda in mano un personaggio a caso, Open Meadow regala Move.
+- **Evocazioni e copie.** Cloning Lab riempie le tue caselle di copie di quello che hai appena giocato, Reflecting Pool lo copia in un altro luogo, Sherwood Forest continua a produrre [Merry Man](/it/cards/merry-man), Hundred Acre Woods mette un [Christopher Robin](/it/cards/christopher-robin) da entrambe le parti.
+- **Parole chiave.** Stomping Grounds dà Trample, The Colosseum Double Attack, Windmill Ridge Defender, Poison Grounds dà Deathtouch ai personaggi Evil, Blessed Grounds dà Shield a quelli Good.
+- **Abilità.** Mirror Dimension ripete gli On Reveal, Burial Grounds gli On Death, Anti-Magic Vault toglie le abilità a tutti, Wonderland inverte l'ordine di attacco.
+- **Distruzione e barriere.** The Gallows distrugge il nemico di fronte a chi entra, The Hill uccide tutti quelli che hanno la potenza più bassa dopo il combattimento, Wall of Dumpty si mangia il primo personaggio che giochi, Broken Gate fa tornare le barriere con 10 salute invece di 40.
+
+## I Luoghi che decidono le partite
+
+Alcuni vanno riconosciuti appena compaiono, perché cambiano quello che devi fare con la mano che hai.
+
+- **Cloning Lab.** Quello che giochi lì viene copiato nelle tue caselle libere di quella corsia. Un corpo economico con un buon On Reveal diventa tre, e la corsia è decisa in un turno.
+- **Mirror Dimension.** Ogni On Reveal si attiva due volte. Fa per una corsia quello che [Mulan](/it/cards/mulan) fa per un mazzo intero, e con lei si somma.
+- **The Gallows.** Tutto quello che entra in gioco lì distrugge il nemico di fronte. Trasforma il tuo personaggio più economico in una rimozione, e punisce chi si espone per primo.
+- **Anti-Magic Vault.** I personaggi perdono tutte le abilità. Un mazzo costruito sulle attivazioni lì non ha niente da fare; un mazzo di corpi solidi è a casa sua.
+- **Amplifying Amphitheatre.** Tutti i danni raddoppiati, da entrambe le parti. Una chiusura con Trample come [Ellen Trechend](/it/cards/ellen-trechend) finisce la partita passando dalla barriera; ma vale anche per la sua.
+- **Nostradamus' Call.** I due mazzi vengono distrutti all'inizio del sesto round. Qualunque sia il tuo piano, deve essere finito al quinto.
+
+## Costruire tenendo conto dei Luoghi
+
+Il tabellone non lo scegli, ma puoi costruire un mazzo che quasi mai si trova senza risposte.
+
+1. **Non mettere tutto su una sola attivazione.** Un mazzo che funziona solo con gli On Reveal è un mazzo che perde una corsia contro Anti-Magic Vault. Tieni qualche carta che va bene anche come corpo e basta.
+2. **Tieni una carta che arriva lontano.** I luoghi che colpiscono le barriere (Overloaded Circuit, "Human" Cannon, Soul Artillery) premiano i mazzi capaci di chiudere una corsia da lontano invece di consumarla.
+3. **I personaggi economici guadagnano di più.** Ogni luogo che regala una parola chiave o copia un corpo rende molto di più su una carta da due che su una da sette: la parte costosa la fa il luogo.
+4. **Attenzione alle corsie che puniscono chi si espone.** The Hill, Wall of Dumpty e The Gallows puniscono tutti chi riempie per primo. Su un tabellone che non conosci, la seconda carta in una corsia è spesso più sicura della prima.
+
+## Che cosa ci resta da verificare
+
+Questo elenco è trascritto dal database della community e corrisponde alla rotazione della Demo 2.0. Non abbiamo ancora controllato i luoghi uno per uno dentro il gioco, come abbiamo fatto con le 122 carte il 22 settembre 2026: quando lo faremo, la [pagina dei Luoghi](/it/locations) lo dirà, con la data e il conteggio.
+`,
+  },
   "on-reveal-midrange-guide": {
     slug: "on-reveal-midrange-guide",
     category: "decks",

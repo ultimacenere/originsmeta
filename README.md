@@ -82,6 +82,10 @@ I crediti stampati sulle carte (illustratore e numero di collezione) stanno in `
 
 **Copertina dei mazzi della community**: è automatica, l'illustrazione della Leggendaria del mazzo (`cover`). Nessuno la sceglie, né in `/decks` né nell'anteprima social della scheda mazzo.
 
+### Aggiornare i Luoghi
+
+I luoghi stanno in `src/lib/data/locations.ts`: nome, effetto in inglese e in italiano, una o più famiglie di effetti (per i filtri della pagina) e gli slug delle carte citate. Non arrivano da `npm run import:woo`, che porta solo le carte: si aggiornano a mano quando cambia la rotazione del gioco, aggiornando anche `locationsPatch`. Quando li avremo confrontati uno per uno dentro il gioco, come si fa con le carte, si valorizza `locationsVerified` e la pagina lo dichiara da sola.
+
 ### Aggiungere una guida
 
 In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati). Il corpo è Markdown; i link interni vanno scritti con il prefisso lingua (`/en/…`, `/it/…`). Per una guida a un mazzo della community usa `tags.communityDecks` (slug della scheda `/decks/community/[slug]` e nome del mazzo): la guida mostra il mazzo tra i correlati e la scheda del mazzo mostra la guida in "Guide correlate", senza leggere Supabase (la guida resta statica). Prime guide di questo tipo: le quattro sui mazzi di Davdas (16/09/2026).

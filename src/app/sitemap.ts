@@ -4,6 +4,7 @@ import { cards, cardsVerified, latestPatch, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
 import { newsPath, sortedNews } from "@/lib/data/news";
 import { tierList } from "@/lib/data/tierlist";
+import { locationsPatch } from "@/lib/data/locations";
 import { getGuides } from "@/lib/content/guides";
 import { authors } from "@/lib/data/authors";
 import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries";
@@ -37,6 +38,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Tier list della community (23/09/2026): cambia quando qualcuno salva la sua, cioè spesso quanto i mazzi.
     { path: "/tier-list/community", lastModified: [latestCommunity ?? "", SITE_UPDATED].sort().at(-1) || SITE_UPDATED, changeFrequency: "daily", priority: 0.7 },
     { path: "/cards", lastModified: patches[latestPatch].date, changeFrequency: "weekly", priority: 0.9 },
+    // I Luoghi (23/09/2026): cambiano quando cambia la rotazione del gioco, cioè con una patch
+    { path: "/locations", lastModified: patches[locationsPatch].date, changeFrequency: "monthly", priority: 0.8 },
     { path: "/decks", lastModified: [latestDeck, latestCommunity ?? ""].sort().at(-1) || latestDeck, changeFrequency: "daily", priority: 0.9 },
     { path: "/deck-builder", lastModified: SITE_UPDATED, changeFrequency: "monthly", priority: 0.8 },
     { path: "/guides", lastModified: guides.map((g) => g.updated).sort().at(-1) ?? SITE_UPDATED, changeFrequency: "weekly", priority: 0.8 },
