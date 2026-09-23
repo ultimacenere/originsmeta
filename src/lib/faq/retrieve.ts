@@ -129,5 +129,5 @@ export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, 
 export const copertura = () => ({
   carte: cards.filter((c) => c.status === "active").length,
   guide: getGuides("it").length,
-  patch: "0.6.3",
+  patch: "21/09/2026",
 });

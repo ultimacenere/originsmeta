@@ -47,7 +47,7 @@ const en: Faq[] = [
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of playtest patch 0.6.3, from 27 August 2026. The illustrations are the official ones from Koin Games; the sagas, the Italian translations and the notes on each legend are ours.",
+    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026. The illustrations are the official ones from Koin Games; the sagas, the Italian translations and the notes on each legend are ours.",
   },
 ];
 
@@ -79,7 +79,7 @@ const it: Faq[] = [
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch 0.6.3 del playtest, del 27 agosto 2026. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe, le traduzioni italiane e le note sulle origini delle leggende sono nostre.",
+    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe, le traduzioni italiane e le note sulle origini delle leggende sono nostre.",
   },
 ];
 

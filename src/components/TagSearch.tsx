@@ -60,12 +60,13 @@ export function TagSearch({ labels }: { labels: TagSearchLabels }) {
           maxLength={12}
           autoComplete="off"
           spellCheck={false}
-          className="mt-1 block w-40 rounded-lg border-2 border-sky bg-night px-3 py-2 font-mono text-sm uppercase text-pale focus:border-mint"
+          className="mt-1 block w-full min-w-40 rounded-lg border-2 border-sky bg-night px-3 py-2 font-mono text-sm uppercase text-pale focus:border-mint"
           aria-invalid={error}
         />
       </label>
       {/* secondario: nella pagina dei tornei il primario è "Organizza un torneo" */}
-      <button type="submit" className="btn btn-ink text-xs">
+      {/* il campo prende la larghezza dell'etichetta e il tasto la sua altezza: prima "Apri" restava staccato di 50 px e 2 px più basso */}
+      <button type="submit" className="btn btn-ink min-h-10 text-xs">
         {labels.button}
       </button>
       {error ? (

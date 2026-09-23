@@ -65,6 +65,9 @@ function LoginLink({ locale, label }: { locale: string; label: string }) {
 export function AccountMenu({ locale, labels }: { locale: string; labels: AccountLabels }) {
   const [user, setUser] = useState<Session>(supabaseEnabled ? undefined : null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  // finché il profilo non è arrivato il nome resta generico: prima si vedeva per un attimo la parte dell'email
+  // prima della @ (e per sempre se la lettura del profilo falliva), da evitare anche per chi entra in diretta
+  const [profileReady, setProfileReady] = useState(false);
 
   useEffect(() => {
     const sb = supabaseBrowser();
@@ -78,8 +81,11 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
       const u = session?.user;
       setUser(u ? { id: u.id, email: u.email } : null);
       if (u) {
-        const { data } = await sb.from("profiles").select("username, display_name, avatar_url").eq("id", u.id).maybeSingle();
-        if (alive) setProfile((data as Profile | null) ?? null);
+        const { data, error } = await sb.from("profiles").select("username, display_name, avatar_url").eq("id", u.id).maybeSingle();
+        if (!alive) return;
+        setProfile((data as Profile | null) ?? null);
+        // con un errore di rete il profilo potrebbe esistere: niente ripiego sull'email, resta il nome generico
+        setProfileReady(!error);
       } else setProfile(null);
     };
     load();
@@ -103,7 +109,7 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
       </Suspense>
     );
   }
-  const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || labels.player;
+  const name = profile?.display_name || profile?.username || (profileReady ? user.email?.split("@")[0] : "") || labels.player;
   return (
     <AutoCloseDetails
       className="relative"
@@ -118,7 +124,7 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
       }
     >
       <nav className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={labels.account}>
-        <p className="truncate px-3 py-1 font-mono text-[11px] text-chalk-muted">{profile?.username ? `@${profile.username}` : user.email}</p>
+        <p className="truncate px-3 py-1 font-mono text-[11px] text-chalk-muted">{profile?.username ? `@${profile.username}` : profileReady ? user.email : ""}</p>
         <NavLink href={`/${locale}/account`} className="nav-link-block">
           {labels.account}
         </NavLink>

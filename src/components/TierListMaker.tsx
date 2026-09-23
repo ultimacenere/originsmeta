@@ -1134,8 +1134,8 @@ export function TierListMaker({
           aria-labelledby="tier-pool-title"
           data-row="pool"
           className={`felt-panel mt-6 p-3 transition-colors sm:p-4 lg:sticky lg:bottom-3 lg:z-20 lg:max-h-[46vh] lg:overflow-y-auto lg:shadow-lift ${
-            hint?.row === "pool" ? "bg-mint/15 inset-ring-2 inset-ring-mint" : ""
-          } ${held ? "cursor-pointer" : ""}`}
+            hint?.row === "pool" ? "bg-mint/15 inset-ring-2 inset-ring-mint" : "lg:bg-felt-deep/95"
+          } lg:backdrop-blur-md ${held ? "cursor-pointer" : ""}`}
           onClick={(e) => onRowClick(e, "pool")}
         >
           <div className="flex flex-wrap items-center justify-between gap-3">

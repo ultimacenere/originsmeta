@@ -47,7 +47,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             </NavLink>
           ))}
         </nav>
-        <form action={href(locale, "/cards")} method="get" role="search" className="ml-auto hidden items-center md:flex">
+        <form action={href(locale, "/cards")} method="get" role="search" className="ml-auto hidden items-stretch md:flex">
           <label htmlFor="header-card-search" className="sr-only">
             {dict.common.search}
           </label>
