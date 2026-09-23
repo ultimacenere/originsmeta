@@ -17,7 +17,10 @@ export type Author = {
   tagline: L10n;
   /** titolo per la SERP: `pageMeta` ci aggiunge il marchio quando manca, quindi il risultato finale deve stare in 60 caratteri */
   metaTitle: L10n;
-  /** biografia completa, 3-5 frasi: deve spiegare la competenza, non raccontare la vita */
+  /**
+   * biografia completa: deve spiegare la competenza, non raccontare la vita (3-5 frasi quando la scriviamo noi;
+   * quella data dalla persona si pubblica così com'è, vedi il commento su `authors`)
+   */
   bio: L10n;
   /**
    * Mese di ingresso nel progetto (ISO 8601 YYYY-MM: il giorno esatto non è documentato, quindi non
@@ -43,6 +46,9 @@ export type Author = {
  * I requisiti editoriali di Google chiedono che si capisca chi scrive e perché sa di cosa parla:
  * la biografia spiega la competenza, non racconta la vita. Prima di aggiungere una frase su una
  * persona reale serve un riscontro pubblico; nel dubbio la frase non si scrive.
+ * Unica eccezione: una biografia fornita dalla persona stessa, o da Pierluigi per lei, si pubblica così
+ * com'è (in italiano parola per parola, in inglese tradotta), con mestiere e studi compresi. È il caso di
+ * Davdas: testo dato da Pierluigi il 24/09/2026.
  */
 export const authors: Author[] = [
   {
@@ -66,7 +72,8 @@ export const authors: Author[] = [
   {
     // Lo slug è il nickname pubblico, non il nome anagrafico: finisce nell'URL indicizzato.
     slug: "davdas",
-    // Finché Luigi non conferma per iscritto, sul sito compare solo il nickname già pubblico.
+    // Titolo e dati strutturati usano il nickname pubblico. Il nome anagrafico, Luigi Ragoni, compare nella
+    // biografia che Pierluigi ha dato il 24/09/2026; per metterlo anche qui basta cambiare `name`.
     name: "Davdas",
     displayName: "Davdas",
     role: n("Administrator · community decks and tournaments", "Amministratore · mazzi della community e tornei"),
@@ -75,9 +82,10 @@ export const authors: Author[] = [
       "Secondo amministratore di OriginsMeta: ha pubblicato i primi due mazzi della community del sito e le sue note di gioco sono la base delle guide ai mazzi.",
     ),
     metaTitle: n("Davdas, Origins TCG community decks · OriginsMeta", "Davdas, mazzi della community di Origins TCG"),
+    // Biografia data da Pierluigi il 24/09/2026: l'italiano è il suo testo parola per parola, l'inglese è tradotto.
     bio: n(
-      "Davdas is the second administrator of OriginsMeta and carries the Staff tag on the site. He published the first two community decks here, on 15 September 2026: Healing Healsing, a Van Helsing control list, and 3 Pigs Mid Range, a midrange list led by Three Not So Little Pigs. The notes on both deck pages are his. Those notes are what the deck guides on OriginsMeta are built on — the game plan, the mulligan and the round-by-round play come from there, while the reading of the matchups is written by OriginsMeta on the card texts of patch 0.6.3.",
-      "Davdas è il secondo amministratore di OriginsMeta e sul sito porta il tag Staff. Ha pubblicato qui i primi due mazzi della community, il 15 settembre 2026: Healing Healsing, una lista controllo di Van Helsing, e 3 Pigs Mid Range, una lista midrange guidata dai Three Not So Little Pigs. Le note sulle schede dei due mazzi sono sue. Su quelle note sono costruite le guide ai mazzi di OriginsMeta — il piano di gioco, il mulligan e il round per round vengono da lì, mentre la lettura dei matchup la scrive OriginsMeta sui testi delle carte della patch 0.6.3.",
+      "Luigi Ragoni is an actor, director, trainer and artistic director. Born on 2 August 1982, he graduated as an actor from the Civica Scuola Paolo Grassi in Milan at the age of 25. He began his career touring Italy with a range of stage productions, moving on to television, film and radio, and developed his teaching skills working in theatres, academies, universities and high schools. Fascinated by the world of digital entertainment, he put his theatre experience to work for several international companies, becoming the artistic director of many events and shows. For more than 15 years he has worked as an entertainment consultant, host, writer, interviewer and speaker. His credits include hosting and casting major events for some of the most famous and successful games, such as Hearthstone, FIFA, eFootball, Valorant, Clash Royale, Brawl Stars and many more.",
+      "Luigi Ragoni è un attore, regista, formatore e direttore artistico. Nato il 2 agosto 1982 si diploma come attore alla Civica Scuola Paolo Grassi di Milano a 25 anni. Inizia la professione girando l’Italia con vari spettacoli teatrali, passando per la tv, il cinema e la radio, sviluppa le sue capacità di insegnamento lavorando in teatri, accademie, atenei e licei. Affascinato dal mondo dell’intrattenimento digitale porta le proprie esperienze teatrali al servizio di alcune aziende internazionali diventando il direttore artistico di molti eventi e programmi. Da più di 15 anni lavora come consulente in ambito spettacolistico, presentatore, autore, intervistatore e speaker. Ha al suo attivo la presentazione e il cast di grandi eventi di alcuni dei giochi più famosi e di successo come: Hearthstone, FIFA, eFootball, Valorant, Clash Royale, Brawl Stars e molti altri.",
     ),
     joined: "2026-09",
     knowsAbout: ["Origins TCG", "Deck building", "Community deck lists", "Card game tournaments"],
