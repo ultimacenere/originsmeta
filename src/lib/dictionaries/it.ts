@@ -63,6 +63,8 @@ export const it: Dictionary = {
     viewAll: "Vedi tutto",
     search: "Cerca una carta",
     all: "Tutte",
+    /* "Tutti" per i filtri al maschile (archetipo, creator, tipo di autore): "Tutte" vale per Leggendarie e versioni */
+    allMasculine: "Tutti",
     mana: "Mana",
     power: "Potenza",
     health: "Salute",
@@ -147,7 +149,10 @@ export const it: Dictionary = {
     filterLegendary: "Leggendaria",
     filterArchetype: "Archetipo",
     filterCreator: "Creator",
+    /* filtro per tag autore dei mazzi (diretta Twitch del 23/09/2026) */
+    filterAuthorType: "Tipo di autore",
     filterCard: "Carta",
+    clearFilters: "Azzera i filtri",
     /* filtro e ordinamento dei mazzi per data e per versione del gioco (Pierluigi, 23/09/2026) */
     filterPatch: "Versione del gioco",
     sortNewest: "Più recenti",

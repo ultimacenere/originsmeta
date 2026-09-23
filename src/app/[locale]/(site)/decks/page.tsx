@@ -128,6 +128,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
     };
   });
 
+  // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
+  const authorTypes = (["staff", "pro", "influencer", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
+
   // Lista per i dati strutturati: solo i mazzi editoriali statici (oggi `decks` è vuoto, quindi l'ItemList
   // resta senza voci). I mazzi della community non ci vanno: arrivano da Supabase e cambiano a ogni
   // pubblicazione, e ognuno ha già la sua scheda indicizzabile in /decks/community/[slug].
@@ -175,8 +178,12 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             legendary: d.common.filterLegendary,
             archetype: d.common.filterArchetype,
             creator: d.common.filterCreator,
+            authorType: d.common.filterAuthorType,
+            authorTypes,
+            clear: d.common.clearFilters,
             card: d.common.filterCard,
             all: d.common.all,
+            allMasculine: d.common.allMasculine,
             results: d.common.results,
             noResults: d.common.noDecks,
             votes: d.community.votes,

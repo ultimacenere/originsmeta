@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { CardPeek, hasPeek } from "./CardPeek";
@@ -63,8 +63,15 @@ type Labels = {
   legendary: string;
   archetype: string;
   creator: string;
+  /** filtro per tag autore (diretta del 23/09/2026): etichetta e voci [id, nome] nell'ordine in cui compaiono */
+  authorType: string;
+  authorTypes: [string, string][];
+  /** tasto che rimette tutti i filtri su "Tutti" */
+  clear: string;
   card: string;
   all: string;
+  /** "Tutti" in italiano, per archetipo, tipo di autore e creator ("Tutte" resta a Leggendaria e versione) */
+  allMasculine: string;
   results: string;
   noResults: string;
   votes: string;
@@ -88,10 +95,17 @@ type Labels = {
 export type ExplorerInvite = { href: string; title: string; text: string; cta: string };
 
 /**
- * Sotto questa soglia quattro filtri e "2 risultati" dicono "qui non viene nessuno" (UX-13): i filtri spariscono,
- * il conteggio diventa una riga di benvenuto e il primo posto della griglia è un invito a pubblicare.
+ * Sotto questa soglia "2 risultati" dice "qui non viene nessuno" (UX-13): finché nessun filtro è attivo il
+ * conteggio diventa una riga di benvenuto e il primo posto della griglia è un invito a pubblicare.
+ * I filtri invece si vedono sempre (diretta Twitch del 23/09/2026): con 9 mazzi online il pannello era nascosto e
+ * in diretta sembrava che i filtri per Leggendaria e archetipo non esistessero.
  */
 const FEW_DECKS = 12;
+
+/** Tag autore di un mazzo per il filtro: i mazzi della community senza tag sono "community", quelli editoriali non ne hanno. */
+function authorOf(d: ExplorerDeck): string | undefined {
+  return d.creatorBadgeId ?? (d.source === "community" ? "community" : undefined);
+}
 
 /**
  * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
@@ -147,6 +161,7 @@ function CopyCode({ code, labels }: { code: string; labels: Labels }) {
 export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[]; labels: Labels; invite?: ExplorerInvite }) {
   const [legendary, setLegendary] = useState("all");
   const [archetype, setArchetype] = useState("all");
+  const [author, setAuthor] = useState("all");
   const [creator, setCreator] = useState("all");
   const [patch, setPatch] = useState("all");
   const [card, setCard] = useState("");
@@ -154,6 +169,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   /* Ordine di partenza: dal più recente al più vecchio (Pierluigi, 23/09/2026). Prima i mazzi erano ordinati per
      voto medio, e con due soli voti la classifica diceva poco; chi arriva vuole vedere l'ultimo mazzo uscito. */
   const [sort, setSort] = useState<"new" | "rated">("new");
+  const firstFilter = useRef<HTMLSelectElement>(null);
 
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);
   const archetypes = useMemo(() => Array.from(new Map(decks.map((d) => [d.archetype, d.archetypeLabel])).entries()), [decks]);
@@ -172,6 +188,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     const filtered = decks.filter((d) => {
       if (legendary !== "all" && d.legendary?.slug !== legendary) return false;
       if (archetype !== "all" && d.archetype !== archetype) return false;
+      if (author !== "all" && authorOf(d) !== author) return false;
       if (creator !== "all" && d.creator !== creator) return false;
       if (patch !== "all" && d.patchId !== patch) return false;
       if (needle && !d.cardNames.some((c) => c.toLowerCase().includes(needle)) && !d.name.toLowerCase().includes(needle)) return false;
@@ -184,10 +201,22 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         ? when(b).localeCompare(when(a))
         : (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || when(b).localeCompare(when(a)),
     );
-  }, [decks, legendary, archetype, creator, patch, card, sort]);
+  }, [decks, legendary, archetype, author, creator, patch, card, sort]);
 
   const few = decks.length < FEW_DECKS;
-  const showInvite = Boolean(invite) && few;
+  // con un filtro attivo contano i risultati, non il benvenuto: e l'invito a pubblicare non deve sembrare un risultato
+  const filtering = legendary !== "all" || archetype !== "all" || author !== "all" || creator !== "all" || patch !== "all" || card.trim() !== "";
+  const showInvite = Boolean(invite) && few && !filtering;
+  const clearFilters = () => {
+    setLegendary("all");
+    setArchetype("all");
+    setAuthor("all");
+    setCreator("all");
+    setPatch("all");
+    setCard("");
+    // il tasto sparisce con i filtri: il focus va sul primo filtro, non si perde in cima alla pagina
+    firstFilter.current?.focus();
+  };
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const viewBtn = (active: boolean) => `rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition ${active ? "bg-mint text-ink" : "text-pale hover:bg-night-3"}`;
@@ -252,53 +281,73 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
 
   return (
     <div>
-      {few ? null : (
-        <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="flex flex-col gap-1">
-            <span className="kicker text-chalk-muted">{labels.legendary}</span>
-            <select id="deck-legendary" value={legendary} onChange={(e) => setLegendary(e.target.value)} className={selectCls}>
-              <option value="all">{labels.all}</option>
-              {legendaries.map(([slug, name]) => (
-                <option key={slug} value={slug}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="kicker text-chalk-muted">{labels.archetype}</span>
-            <select id="deck-archetype" value={archetype} onChange={(e) => setArchetype(e.target.value)} className={selectCls}>
-              <option value="all">{labels.all}</option>
-              {archetypes.map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="kicker text-chalk-muted">{labels.creator}</span>
-            <select id="deck-creator" value={creator} onChange={(e) => setCreator(e.target.value)} className={selectCls}>
-              <option value="all">{labels.all}</option>
-              {creators.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="kicker text-chalk-muted">{labels.card}</span>
-            <input id="deck-card" type="search" value={card} onChange={(e) => setCard(e.target.value)} placeholder="Merlin…" className={selectCls} />
-          </label>
-        </div>
-      )}
+      <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.legendary}</span>
+          <select ref={firstFilter} id="deck-legendary" value={legendary} onChange={(e) => setLegendary(e.target.value)} className={selectCls}>
+            <option value="all">{labels.all}</option>
+            {legendaries.map(([slug, name]) => (
+              <option key={slug} value={slug}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.archetype}</span>
+          <select id="deck-archetype" value={archetype} onChange={(e) => setArchetype(e.target.value)} className={selectCls}>
+            <option value="all">{labels.allMasculine}</option>
+            {archetypes.map(([id, label]) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        {/* Tutti i tag, anche quelli che oggi non hanno mazzi: in diretta sono stati chiesti Staff, Influencer e
+            Community, e la voce vuota dice "Nessun mazzo" invece di sparire. */}
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.authorType}</span>
+          <select id="deck-author" value={author} onChange={(e) => setAuthor(e.target.value)} className={selectCls}>
+            <option value="all">{labels.allMasculine}</option>
+            {labels.authorTypes.map(([id, label]) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.creator}</span>
+          <select id="deck-creator" value={creator} onChange={(e) => setCreator(e.target.value)} className={selectCls}>
+            <option value="all">{labels.allMasculine}</option>
+            {creators.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.card}</span>
+          <input id="deck-card" type="search" value={card} onChange={(e) => setCard(e.target.value)} placeholder="Merlin…" className={selectCls} />
+        </label>
+      </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        {/* con pochi mazzi niente "2 risultati": una riga che li presenta come i primi della community */}
-        <p className="kicker text-chalk-muted">{few ? (decks.length ? labels.firstDecks : null) : `${list.length} ${labels.results}`}</p>
-        {/* Ordinamento e versione del gioco stanno qui e non nel pannello dei filtri, che con pochi mazzi non
-            viene disegnato: l'ordine di visibilità è una scelta che deve esserci da subito. */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* con pochi mazzi e nessun filtro niente "2 risultati": una riga che li presenta come i primi della community */}
+          <p className="kicker text-chalk-muted" aria-live="polite">
+            {few && !filtering ? (decks.length ? labels.firstDecks : null) : `${list.length} ${labels.results}`}
+          </p>
+          {filtering ? (
+            <button type="button" onClick={clearFilters} className="btn btn-ghost text-xs">
+              {labels.clear}
+            </button>
+          ) : null}
+        </div>
+        {/* Ordinamento e versione del gioco stanno sulla riga del conteggio (nati quando il pannello dei filtri con
+            pochi mazzi non si vedeva): dicono in che ordine e di che epoca sono i mazzi, non che cosa contengono. */}
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 text-xs text-chalk-muted">
             {labels.sortBy}

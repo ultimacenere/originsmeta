@@ -61,6 +61,8 @@ export const en = {
     viewAll: "View all",
     search: "Search a card",
     all: "All",
+    /* Italian needs a masculine "all" for some filters (archetype, creator, author type); English does not */
+    allMasculine: "All",
     mana: "Mana",
     power: "Power",
     health: "Health",
@@ -145,7 +147,10 @@ export const en = {
     filterLegendary: "Legendary",
     filterArchetype: "Archetype",
     filterCreator: "Creator",
+    /* deck filter by author tag (Twitch live of 23/09/2026) */
+    filterAuthorType: "Author type",
     filterCard: "Card",
+    clearFilters: "Clear filters",
     /* deck filtering and sorting by date and game version (Pierluigi, 23/09/2026) */
     filterPatch: "Game version",
     sortNewest: "Newest first",
