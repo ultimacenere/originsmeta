@@ -1533,7 +1533,7 @@
     Fondo del retro (23/09/2026, richiesta di Pierluigi: "quando si girano non mostrano più in background la grafica
     della carta ma solo uno sfondo nero opaco, bisogna rendere trasparente quello sfondo"). Girando, il FRONTE ruota
     di taglio e sparisce: sotto il retro non resta nessuna illustrazione, solo il fondale del riquadro. Quindi il
-    retro se la ridisegna da sé: questo ::before porta la stessa carta (--card-art, passata da FlipCard), sfocata e
+    retro se la ridisegna da sé: questo ::before porta la stessa carta (--card-art, passata da FlipCard),
     scurita da un velo semitrasparente steso sopra di lei nello stesso background. Si riconosce la carta, e il testo
     resta leggibile. Il velo è stato alleggerito il 23/09/2026 (Pierluigi: "le carte devono essere un po' più
     trasparenti"): da 0,82-0,88 a 0,74-0,70, cioè dal 15% al 30% di illustrazione che passa. Contrasto misurato sul
@@ -1555,10 +1555,9 @@
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    /* l'illustrazione sfocata resta un fondo, non un secondo soggetto da guardare */
-    filter: blur(2px) saturate(0.9);
-    /* la sfocatura sfrangia i bordi: l'immagine si allarga appena, così non si vede la cornice del riquadro */
-    transform: scale(1.06);
+    /* 23/09/2026, prova voluta da Pierluigi: niente sfocatura, solo il velo trasparente. L'illustrazione resta
+       nitida sotto il testo; se alla prova il testo risulta faticoso da leggere si torna a blur(2px) oppure si
+       scurisce il velo. Senza sfocatura non serve più nemmeno lo `scale` che ne nascondeva i bordi sfrangiati. */
   }
   .card-tile.is-legendary .card-tile-info::before {
     background:
