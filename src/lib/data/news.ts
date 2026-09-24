@@ -61,6 +61,183 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Annuncio sul Discord ufficiale del 24/09/2026 ("BIG CRIMSON CUP ANNOUNCEMENT"), passato da Pierluigi, più il post
+    // su X dello stesso giorno. La copertina è un ritaglio 16:9 della grafica ufficiale dei premi (crediti della carta interi).
+    slug: "crimson-cup-format-check-in",
+    image: "/media/news-crimson-cup-rules.webp",
+    guides: ["steam-next-fest-2026"],
+    date: "2026-09-24",
+    title: n(
+      "Crimson Cup rules: three-deck Conquest, decklists hidden until the top 4 and a check-in you can't miss",
+      "Regole della Crimson Cup: Conquest a tre mazzi, liste segrete fino alla top 4 e check-in obbligatorio",
+    ),
+    metaTitle: n("Origins TCG Crimson Cup: format and check-in", "Crimson Cup di Origins TCG: formato e check-in"),
+    description: n(
+      "The Origins TCG Crimson Cup rules: three-deck Conquest, at least 8 unique cards between decks, lists hidden until the top 4, and the check-in times.",
+      "Le regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, almeno 8 carte uniche fra i mazzi, liste segrete fino alla top 4 e orari del check-in.",
+    ),
+    summary: n(
+      "After the player survey, Koin Games has set the Crimson Cup rules: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you don't play. The tournament runs on the demo, not on the playtest.",
+      "Dopo il sondaggio tra i giocatori, Koin Games ha fissato le regole della Crimson Cup: Conquest a tre mazzi, almeno 8 carte uniche fra ogni coppia di mazzi, liste segrete fino alla top 4 e niente ban nelle partite al meglio delle cinque. Il check-in apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi: chi lo salta non gioca. Il torneo si gioca sulla demo, non sul playtest.",
+    ),
+    highlights: {
+      en: [
+        { label: "Three-deck Conquest", text: "at least 8 unique cards between each pair of decks", anchor: "format" },
+        { label: "Decklists hidden until the top 4", text: "in the ban you only see the Legendary", anchor: "decklists" },
+        { label: "Best-of-five without a ban", text: "you have to win with all three decks", anchor: "best-of-five" },
+        { label: "Check-in", text: "opens two hours before, closes five minutes before the start with deck submission", anchor: "check-in" },
+        { label: "Practise on the demo", text: "the playtest will get updates the tournament won't have", anchor: "demo-playtest" },
+        { label: "Last balance patch", text: "two weeks before Steam Next Fest", anchor: "balance" },
+        { label: "Prizes", text: "10,000 dollars, the exact prize pool next week", anchor: "prizes" },
+      ],
+      it: [
+        { label: "Conquest a tre mazzi", text: "almeno 8 carte uniche fra ogni coppia di mazzi", anchor: "formato" },
+        { label: "Liste segrete fino alla top 4", text: "nel ban si vede solo la Leggendaria", anchor: "liste" },
+        { label: "Al meglio delle cinque senza ban", text: "bisogna vincere con tutti e tre i mazzi", anchor: "al-meglio-delle-cinque" },
+        { label: "Check-in", text: "apre due ore prima, chiude cinque minuti prima dell'inizio con la consegna dei mazzi", anchor: "check-in" },
+        { label: "Allenarsi sulla demo", text: "il playtest avrà aggiornamenti che il torneo non avrà", anchor: "demo-playtest" },
+        { label: "Ultima patch di bilanciamento", text: "due settimane prima dello Steam Next Fest", anchor: "bilanciamento" },
+        { label: "Premi", text: "10.000 dollari, la ripartizione esatta la settimana prossima", anchor: "premi" },
+      ],
+    },
+    body: n(
+      `## Three-deck Conquest {#format}
+
+A few days ago Koin Games ran a survey among players, and this announcement settles the format: the Crimson Cup uses Conquest with three decks. Between each pair of decks there must be at least 8 unique cards.
+
+Every deck has 13 different cards: the Legendary and twelve base cards, whose second copy the game adds on its own. Our reading is that two decks can share at most 5 cards, but the announcement does not spell out how unique cards are counted. At Big Bob's Playtest Battle in August the rule was at least nine cards of difference.
+
+## Decklists hidden until the top 4 {#decklists}
+
+Decks stay private until the top 4. When you ban one of your opponent's decks, you only see its Legendary.
+
+## Best-of-five: no ban, win with all three {#best-of-five}
+
+Best-of-five matches have no ban: to take the match you have to win with all three decks. In the first announcement, on 9 September, best-of-five was the grand final, with best-of-three matches before it.
+
+## Check-in: be on time {#check-in}
+
+The planned schedule for each qualifier:
+
+1. Check-in opens two hours before the tournament starts.
+2. Check-in and deck submission close five minutes before the official start.
+3. A short window lets players on the waitlist claim the free spots, first come, first served.
+4. The tournament introduction.
+5. Matches start as soon as the introduction is over.
+
+If you don't check in, you can't play. For the EMEA qualifier on 20 October, which starts at 7pm CEST, that means checking in between 5pm and 6:55pm CEST. The AMER qualifier is on the 21st and the APAC one on the 22nd: times and spots are in our [Steam Next Fest guide](/en/guides/steam-next-fest-2026).
+
+## Demo or playtest: where to practise {#demo-playtest}
+
+- The **demo** has the tournament card list. Ranked switches on there for Steam Next Fest, with new ranked rewards. This is the build to practise on.
+- The **playtest** is the same as the demo today, with ranked already on and a few minor changes. It will get more updates and will be different from the tournament build.
+
+You can play both, but the tournament is held on the main demo and only with the cards available there.
+
+## The last balance patch {#balance}
+
+The last balance patch will arrive two weeks before Steam Next Fest, which starts on 19 October. We will track it card by card in [MetaShifting](/en/metashifting).
+
+## Prizes {#prizes}
+
+The official post on X talks about a 10,000-dollar prize pool, and the Discord announcement says the exact prize pool will be shared next week. In September Koin described prizes worth 10,000 dollars in total, between an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash ([our article](/en/news/biggest-tournament-ever)).
+
+## What we don't know yet {#unknowns}
+
+- The exact prize pool, due next week.
+- How the unique cards between two decks are counted.
+- The date of the last balance patch: the announcement only says two weeks before the festival.
+
+## Where this comes from {#sources}
+
+- The "Big Crimson Cup announcement" posted on the official Origins TCG Discord on 24 September, which also points to a new video going over the tournament details.
+- The [Origins TCG post on X](https://x.com/origins_tcg/status/2103111100321677670) of the same day, with the 10,000-dollar prize pool.`,
+      `## Conquest a tre mazzi {#formato}
+
+Nei giorni scorsi Koin Games ha fatto un sondaggio tra i giocatori, e questo annuncio chiude la questione del formato: la Crimson Cup si gioca in Conquest con tre mazzi. Fra ogni coppia di mazzi servono almeno 8 carte uniche.
+
+Ogni mazzo ha 13 carte diverse: la Leggendaria e dodici carte base, di cui il gioco aggiunge da solo la seconda copia. La nostra lettura è che due mazzi possano avere in comune al massimo 5 carte, ma l'annuncio non dice come si contano le carte uniche. A Big Bob's Playtest Battle, ad agosto, la regola era di almeno nove carte di differenza.
+
+## Liste segrete fino alla top 4 {#liste}
+
+I mazzi restano privati fino alla top 4. Quando si banna un mazzo dell'avversario, se ne vede solo la Leggendaria.
+
+## Al meglio delle cinque: niente ban, si vince con tutti e tre {#al-meglio-delle-cinque}
+
+Le partite al meglio delle cinque si giocano senza ban: per vincere il match bisogna vincere con tutti e tre i mazzi. Nel primo annuncio, il 9 settembre, al meglio delle cinque era la finalissima, con partite al meglio delle tre prima.
+
+## Check-in: puntuali {#check-in}
+
+Il programma previsto per ogni qualificazione:
+
+1. Due ore prima dell'inizio apre il check-in.
+2. Cinque minuti prima dell'inizio ufficiale chiudono il check-in e la consegna dei mazzi.
+3. Una breve finestra permette a chi è in lista d'attesa di prendere i posti liberi, in ordine di arrivo.
+4. La presentazione del torneo.
+5. Le partite partono appena finisce la presentazione.
+
+Chi non fa il check-in non gioca. Per la qualificazione EMEA del 20 ottobre, che parte alle 19 ora italiana, vuol dire fare il check-in fra le 17 e le 18:55. L'AMER è il 21 e l'APAC il 22: orari e posti sono nella nostra [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026).
+
+## Demo o playtest: dove allenarsi {#demo-playtest}
+
+- La **demo** ha la lista carte del torneo. Lì la classificata si accende per lo Steam Next Fest, con nuove ricompense. È la build su cui allenarsi.
+- Il **playtest** oggi è uguale alla demo, con la classificata già attiva e qualche piccola modifica. Riceverà altri aggiornamenti e sarà diverso dalla build del torneo.
+
+Si possono giocare tutti e due, ma il torneo si gioca sulla demo principale e solo con le carte che ci sono lì.
+
+## L'ultima patch di bilanciamento {#bilanciamento}
+
+L'ultima patch di bilanciamento arriverà due settimane prima dello Steam Next Fest, che parte il 19 ottobre. La seguiremo carta per carta in [MetaShifting](/it/metashifting).
+
+## I premi {#premi}
+
+Il post ufficiale su X parla di un montepremi da 10.000 dollari, e l'annuncio su Discord dice che la ripartizione esatta arriverà la settimana prossima. A settembre Koin aveva descritto premi per un valore complessivo di 10.000 dollari, fra una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha e premi in denaro ([il nostro articolo](/it/news/biggest-tournament-ever)).
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- La ripartizione esatta dei premi, attesa la settimana prossima.
+- Come si contano le carte uniche fra due mazzi.
+- La data dell'ultima patch di bilanciamento: l'annuncio dice solo due settimane prima del festival.
+
+## Da dove arriva {#fonti}
+
+- Il "Big Crimson Cup announcement" pubblicato sul Discord ufficiale di Origins TCG il 24 settembre, che rimanda anche a un nuovo video con i dettagli del torneo.
+- Il [post di Origins TCG su X](https://x.com/origins_tcg/status/2103111100321677670) dello stesso giorno, con il montepremi da 10.000 dollari.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "How many unique cards do Crimson Cup decks need?",
+          a: "At least 8 unique cards between each pair of decks, says the 24 September announcement. Every deck has 13 different cards: our reading is that two decks can share at most 5 of them.",
+        },
+        {
+          q: "When is the Crimson Cup check-in?",
+          a: "It opens two hours before each qualifier and closes five minutes before the start, together with deck submission. If you miss it you can't play: for the EMEA qualifier at 7pm CEST, check in between 5pm and 6:55pm CEST.",
+        },
+        {
+          q: "Which build is the Crimson Cup played on?",
+          a: "On the main demo, with only the cards available there. The playtest will get more updates and will differ from the tournament build.",
+        },
+      ],
+      it: [
+        {
+          q: "Quante carte uniche servono fra i mazzi della Crimson Cup?",
+          a: "Almeno 8 fra ogni coppia di mazzi, dice l'annuncio del 24 settembre. Ogni mazzo ha 13 carte diverse: la nostra lettura è che due mazzi possano averne in comune al massimo 5.",
+        },
+        {
+          q: "Quando si fa il check-in della Crimson Cup?",
+          a: "Apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi. Chi lo salta non gioca: per la qualificazione EMEA delle 19 il check-in va dalle 17 alle 18:55, ora italiana.",
+        },
+        {
+          q: "Su quale build si gioca la Crimson Cup?",
+          a: "Sulla demo principale, solo con le carte che ci sono lì. Il playtest riceverà altri aggiornamenti e sarà diverso dalla build del torneo.",
+        },
+      ],
+    },
+    url: "https://x.com/origins_tcg/status/2103111100321677670",
+    source: "press",
+  },
+  {
     // Prima news sulle novità del sito ("Upgrade Meta", richiesta di Pierluigi del 24/09/2026): le funzioni andate
     // online dal 22 al 24 settembre, il grazie a coachcronos per la diretta e a chi ha mandato un feedback.
     slug: "upgrade-meta-0924",

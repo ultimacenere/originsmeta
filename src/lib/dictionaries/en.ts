@@ -246,7 +246,7 @@ export const en = {
     intro: "Every deck is tagged by Legendary, archetype, deck type and creator, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
     description: "Origins TCG decklists published by the community, each with a guide and star ratings: filter by Legendary, archetype and creator, or search by card.",
     conquestTitle: "Conquest format, explained",
-    conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026) and again at the Next Fest tournament: you submit several decks with different Legendary cards and at least nine cards of difference between them, and you ban one of your opponent's decks before the match.",
+    conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026) and chosen for the Crimson Cup: you submit several decks with different Legendary cards that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
     submitTitle: "Publish your deck with your guide",
     submitText: "Build it in the deck builder and write your game plan: it joins this database under your name and the community rates it from 1 to 5 stars.",
     submitCta: "Publish a deck",

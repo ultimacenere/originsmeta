@@ -930,14 +930,14 @@ Because collector cards are cosmetic, a tier list only has to care about the car
     metaTitle: "Origins TCG at Steam Next Fest 2026: dates",
     excerpt: "Origins TCG at Steam Next Fest, 19–26 October 2026: the Demo 2.0 update, the Crimson Cup from 20 to 25 October, the prizes and how to sign up.",
     readTime: 6,
-    updated: "2026-09-15",
+    updated: "2026-09-24",
     image: "/media/keyart-queen-of-hearts.webp",
     faq: [
       { q: "When is Steam Next Fest October 2026?", a: "From Monday 19 October at 10:00 Pacific time (13:00 Eastern, 18:00 UK, 19:00 central Europe) to Monday 26 October 2026. Origins TCG takes part with the Demo 2.0 build." },
       { q: "When is the Origins TCG tournament?", a: "From 20 to 25 October 2026: three qualifiers on the 20th, 21st and 22nd (one per major region), then playoffs and finals." },
       { q: "Can I join a qualifier from Europe?", a: "Yes. Koin Games says you can join any of the qualifiers no matter where you live, but asks you to sign up only for the ones you can actually attend." },
       { q: "Does it cost anything?", a: "No. The demo is free on Steam and the tournament sign-up is on the official Discord. Origins TCG is free-to-compete: every competitive card is earned by playing." },
-      { q: "What is the Conquest format?", a: "You submit several decks before the tournament, each led by a different Legendary and with at least nine different cards between any two decks, and you ban one of your opponent's decks before the match. Koin Games tested it at Big Bob's Playtest Battle on 28 August." },
+      { q: "What is the Conquest format?", a: "At the Crimson Cup each player submits three decks, each led by a different Legendary, with at least 8 unique cards between any two of them. Decklists stay hidden until the top 4: when you ban one of your opponent's decks you only see its Legendary. In best-of-five matches there is no ban and you must win with all three decks. Koin Games first tested the format at Big Bob's Playtest Battle on 28 August." },
     ],
     body: `
 ## The two dates to remember
@@ -947,7 +947,7 @@ Because collector cards are cosmetic, a tier list only has to care about the car
 
 ## What Demo 2.0 brings
 
-The build was tested in three closed playtests in August (patches [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) and [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), all tracked in our [MetaShifting](/en/tier-list)). Koin Games announced three things for it:
+The build was tested in three closed playtests in August (patches [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) and [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), all tracked in our [MetaShifting](/en/metashifting)). Koin Games announced three things for it:
 
 - **five new decks**, on top of the ones in the July demo;
 - **more than 70 new cards**;
@@ -959,15 +959,17 @@ The playtests also introduced a ranked ladder with divisions up to Grandmaster a
 
 1. **Qualifiers, 20–22 October.** Three of them, 512 spots each: EMEA on the 20th at 7pm CEST (32 advance), AMER on the 21st at 7pm EST (64), APAC on the 22nd at 7pm SGT (32), plus 128 wild cards. In Koin's words, "you can join ANY of the qualifiers, no matter where you live": pick the one whose time suits you, and sign up only for the ones you will really play — you may enter more than one.
 2. **Playoffs and finals, 24–25 October.** The playoff stage has 256 spots on the 24th (10am EST / 4pm CEST / 10pm SGT) and four players come out of it for the finals on the 25th at 10am EST (3pm CET / 10pm SGT). Mind the clocks: Europe goes off summer time during the night of the 24th while the United States stays on it until 1 November, so the same Eastern start time lands an hour earlier on European clocks on the Sunday. Content creators get wildcard invites straight into the playoffs (ask on Discord).
-3. **Format.** Official, from the announcement: **best-of-3 matches, Conquest format, best-of-5 grand final**. The details of Conquest are not spelled out for this tournament: at Big Bob's Playtest Battle on 28 August Koin ran it with several decks, a different Legendary in each, at least nine cards of difference between decks, and the ban of one of your opponent's decks. Expect something close to that, and read the official rules when they are published.
-4. **Prizes.** **Prizes worth $10,000**, in Koin's own words: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. It is not a cash pool: money is one of the four categories, and how it is split has not been announced. The tournament is called the **Crimson Cup** — the name is on Koin's own artwork, not a community nickname.
+3. **Format.** Official, from the announcements of 9 and 24 September: **Conquest with three decks**, with at least 8 unique cards between each pair of decks; decklists stay hidden until the top 4, so when you ban one of your opponent's decks you only see its Legendary. **Best-of-3 matches, best-of-5 grand final**: in best-of-five there is no ban and you must win with all three decks. Details in [our article on the rules](/en/news/crimson-cup-format-check-in).
+4. **Check-in.** It opens two hours before each qualifier and closes five minutes before the start, together with deck submission; then a short first-come window gives waitlisted players the free spots. Miss the check-in and you can't play: for the EMEA qualifier at 7pm CEST, check in between 5pm and 6:55pm.
+5. **Which build.** The tournament is played on the main demo, with only the cards available there: practise on it. The playtest will get more updates and will differ from the tournament build. The last balance patch arrives two weeks before Steam Next Fest.
+6. **Prizes.** **Prizes worth $10,000**, in Koin's own words: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. It is not a cash pool: money is one of the four categories, and Koin promised the exact prize pool for the week after 24 September. The tournament is called the **Crimson Cup** — the name is on Koin's own artwork, not a community nickname.
 
 Sign-ups are on the [official Discord](https://discord.gg/originstcg).
 
 ## How to prepare in five moves
 
 1. [Install the free demo on Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) and play the missions: they teach the three lanes and the simultaneous turns.
-2. Read [Origins TCG explained in five minutes](/en/guides/origins-tcg-explained) and the [card database](/en/cards): the current stats are those of patch 0.6.3.
+2. Read [Origins TCG explained in five minutes](/en/guides/origins-tcg-explained) and the [card database](/en/cards): the stats are those of the demo patch of 21 September, checked card by card in the game.
 3. Build your three Conquest decks in our [deck builder](/en/deck-builder): it checks the different-Legendary rule and counts the cards that differ between decks.
 4. Study the [decks published by the community](/en/decks): every list comes with its composition charts, the author's notes, a button that opens it in the builder and the game code to paste into Origins. Publish yours with a guide so other players can rate it.
 5. Follow the [news](/en/news): every announcement is summarized within a day, with a link to the source.
@@ -1997,14 +1999,14 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
     metaTitle: "Origins TCG allo Steam Next Fest 2026: date",
     excerpt: "Origins TCG allo Steam Next Fest, dal 19 al 26 ottobre 2026: l'aggiornamento Demo 2.0, la Crimson Cup dal 20 al 25 ottobre, i premi e le iscrizioni.",
     readTime: 6,
-    updated: "2026-09-15",
+    updated: "2026-09-24",
     image: "/media/keyart-queen-of-hearts.webp",
     faq: [
       { q: "Quando si svolge lo Steam Next Fest di ottobre 2026?", a: "Da lunedì 19 ottobre alle 10:00 ora del Pacifico (le 19:00 in Italia) a lunedì 26 ottobre 2026. Origins TCG partecipa con la build Demo 2.0." },
       { q: "Quando c'è il torneo di Origins TCG?", a: "Dal 20 al 25 ottobre 2026: tre qualificazioni il 20, 21 e 22 (una per macro-regione), poi playoff e finali." },
       { q: "Posso partecipare a una qualificazione dall'Italia?", a: "Sì. Koin Games dice che ci si può iscrivere a qualsiasi qualificazione a prescindere da dove si vive, ma chiede di iscriversi solo a quelle a cui si può davvero partecipare." },
       { q: "Costa qualcosa?", a: "No. La demo è gratuita su Steam e l'iscrizione al torneo si fa sul Discord ufficiale. Origins TCG è free-to-compete: ogni carta competitiva si guadagna giocando." },
-      { q: "Cos'è il formato Conquest?", a: "Si registrano più mazzi prima del torneo, ognuno guidato da una Leggendaria diversa e con almeno nove carte di differenza tra due mazzi qualsiasi, e prima della partita si banna un mazzo dell'avversario. Koin Games lo ha provato a Big Bob's Playtest Battle il 28 agosto." },
+      { q: "Cos'è il formato Conquest?", a: "Alla Crimson Cup ogni giocatore registra tre mazzi, ognuno guidato da una Leggendaria diversa, con almeno 8 carte uniche fra due mazzi qualsiasi. Le liste restano segrete fino alla top 4: quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria. Al meglio delle cinque non c'è ban e si vince con tutti e tre i mazzi. Koin Games ha provato il formato la prima volta a Big Bob's Playtest Battle il 28 agosto." },
     ],
     body: `
 ## Le due date da segnare
@@ -2014,7 +2016,7 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
 
 ## Cosa porta la Demo 2.0
 
-La build è stata provata in tre playtest chiusi ad agosto (patch [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) e [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), tutte tracciate nel nostro [MetaShifting](/it/tier-list)). Koin Games ha annunciato tre cose:
+La build è stata provata in tre playtest chiusi ad agosto (patch [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) e [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), tutte tracciate nel nostro [MetaShifting](/it/metashifting)). Koin Games ha annunciato tre cose:
 
 - **cinque nuovi mazzi**, oltre a quelli della demo di luglio;
 - **più di 70 nuove carte**;
@@ -2026,15 +2028,17 @@ I playtest hanno introdotto anche una classificata con divisioni fino a Grandmas
 
 1. **Qualificazioni, 20–22 ottobre.** Tre, da 512 posti ciascuna: EMEA il 20 alle 19 CEST (32 passano), AMER il 21 alle 19 EST (64), APAC il 22 alle 19 SGT (32), più 128 wild card. Nelle parole di Koin, "puoi partecipare a QUALSIASI qualificazione, ovunque tu viva": scegli quella con l'orario che ti conviene e iscriviti solo a quelle che giocherai davvero — se ne può giocare più di una.
 2. **Playoff e finali, 24–25 ottobre.** I playoff hanno 256 posti il 24 (le 10 EST, le 16 in Italia, le 22 SGT) e ne escono quattro giocatori per le finali del 25 alle 10 EST (le 15 in Italia, le 22 SGT). Attenzione all'ora: nella notte tra il 24 e il 25 ottobre in Europa finisce l'ora legale e l'Italia torna a UTC+1, mentre gli Stati Uniti restano in ora legale fino al 1° novembre; per questo lo stesso orario della costa est vale le 16 il sabato e le 15 la domenica. I content creator hanno inviti wildcard direttamente ai playoff (basta chiedere su Discord).
-3. **Formato.** Ufficiale, dall'annuncio: **partite al meglio delle tre, formato Conquest, gran finale al meglio delle cinque**. I dettagli del Conquest per questo torneo non sono stati precisati: a Big Bob's Playtest Battle, il 28 agosto, Koin lo ha giocato con più mazzi, una Leggendaria diversa in ciascuno, almeno nove carte di differenza tra i mazzi e il ban di un mazzo dell'avversario. Aspettati qualcosa di simile e leggi il regolamento ufficiale quando uscirà.
-4. **Premi.** **Premi per un valore complessivo di 10.000 $**, come li chiama Koin: una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro. Non è un montepremi in contanti: il denaro è una delle quattro categorie, e come venga ripartito non è stato annunciato. Il torneo si chiama **Crimson Cup**: il nome è sulla grafica ufficiale di Koin, non un soprannome della community.
+3. **Formato.** Ufficiale, dagli annunci del 9 e del 24 settembre: **Conquest a tre mazzi**, con almeno 8 carte uniche fra ogni coppia di mazzi; le liste restano segrete fino alla top 4, quindi quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria. **Partite al meglio delle tre, gran finale al meglio delle cinque**: al meglio delle cinque non c'è ban e si vince con tutti e tre i mazzi. I dettagli nel [nostro articolo sulle regole](/it/news/crimson-cup-format-check-in).
+4. **Check-in.** Apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi; poi una breve finestra, in ordine di arrivo, assegna i posti liberi a chi è in lista d'attesa. Chi salta il check-in non gioca: per la qualificazione EMEA delle 19 il check-in va dalle 17 alle 18:55, ora italiana.
+5. **Su quale build.** Il torneo si gioca sulla demo principale e solo con le carte che ci sono lì: allenati su quella. Il playtest riceverà altri aggiornamenti e sarà diverso dalla build del torneo. L'ultima patch di bilanciamento arriva due settimane prima dello Steam Next Fest.
+6. **Premi.** **Premi per un valore complessivo di 10.000 $**, come li chiama Koin: una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro. Non è un montepremi in contanti: il denaro è una delle quattro categorie, e Koin ha promesso la ripartizione esatta per la settimana dopo il 24 settembre. Il torneo si chiama **Crimson Cup**: il nome è sulla grafica ufficiale di Koin, non un soprannome della community.
 
 Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg).
 
 ## Come prepararsi in cinque mosse
 
 1. [Installa la demo gratuita su Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) e gioca le missioni: insegnano le tre corsie e i turni simultanei.
-2. Leggi [Origins TCG spiegato in cinque minuti](/it/guides/origins-tcg-explained) e il [database carte](/it/cards): le statistiche attuali sono quelle della patch 0.6.3.
+2. Leggi [Origins TCG spiegato in cinque minuti](/it/guides/origins-tcg-explained) e il [database carte](/it/cards): le statistiche sono quelle della patch della demo del 21 settembre, verificate carta per carta nel gioco.
 3. Costruisci i tuoi tre mazzi Conquest nel nostro [deck builder](/it/deck-builder): controlla la regola delle Leggendarie diverse e conta le carte che cambiano tra un mazzo e l'altro.
 4. Studia i [mazzi pubblicati dalla community](/it/decks): ogni lista ha i grafici di composizione, le note dell'autore, un tasto per aprirla nel builder e il codice del gioco da incollare in Origins. Pubblica la tua con una guida, così gli altri possono votarla.
 5. Segui le [news](/it/news): ogni annuncio è riassunto entro un giorno, con il link alla fonte.

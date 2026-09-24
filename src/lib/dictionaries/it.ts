@@ -248,7 +248,7 @@ export const it: Dictionary = {
     intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e creator ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
     description: "Le liste di Origins TCG pubblicate dalla community, ognuna con guida e voti a stelle: filtri per Leggendaria, archetipo e creator, ricerca per carta.",
     conquestTitle: "Il formato Conquest, spiegato",
-    conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026) e di nuovo al torneo del Next Fest: si registrano più mazzi con Leggendarie diverse e almeno nove carte di differenza tra loro, e prima della partita si banna un mazzo dell'avversario.",
+    conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026) e scelto per la Crimson Cup: si registrano più mazzi con Leggendarie diverse, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",
     submitTitle: "Pubblica il tuo mazzo con la tua guida",
     submitText: "Costruiscilo nel deck builder e scrivi il tuo piano di gioco: entra in questo database a tuo nome e la community lo vota da 1 a 5 stelle.",
     submitCta: "Pubblica un mazzo",
