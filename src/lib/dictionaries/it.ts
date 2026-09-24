@@ -28,6 +28,9 @@ export const it: Dictionary = {
     skipToContent: "Vai al contenuto",
     mainNav: "Navigazione principale",
     playerFallback: "Giocatore",
+    /* il nostro server Discord (24/09/2026): loghino nell'header, tasto nel menu sul telefono */
+    discord: "Discord di OriginsMeta",
+    discordJoin: "Unisciti al nostro Discord",
   },
   faq: {
     kicker: "Domande",
@@ -224,6 +227,8 @@ export const it: Dictionary = {
     title: "Database carte di Origins TCG",
     intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese e italiano, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
     description: "Tutte le carte di Origins TCG della Demo 2.0 in un database cercabile: filtri per tipo, saga e rarità, testo ufficiale, statistiche e bilanciamenti.",
+    /* segnaposto della ricerca: si cerca anche nel testo della carta (24/09/2026) */
+    searchHint: "Nome o testo: Merlin, On Reveal…",
     countLabel: "carte nella Demo 2.0",
     countCreated: "carte create",
     countRemoved: "rimosse nelle build precedenti",
@@ -589,6 +594,9 @@ export const it: Dictionary = {
     moreNews: "Altre news",
     published: "Pubblicato il",
     sourceTitle: "Fonte",
+    /* invito al nostro Discord in fondo a ogni articolo (24/09/2026) */
+    discordTitle: "Parliamone sul nostro Discord",
+    discordText: "Commenta la news, fai domande allo staff e condividi i tuoi mazzi con la community di OriginsMeta.",
   },
   about: {
     title: "Chi siamo: OriginsMeta, sito non ufficiale su Origins TCG",
@@ -632,7 +640,7 @@ export const it: Dictionary = {
     cookies:
       "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Vercel Web Analytics misura le visite senza cookie e senza identificarti. I video nelle pagine dei mazzi della community sono incorporati tramite youtube-nocookie.com, la modalità a privacy potenziata di YouTube, che non imposta nulla finché non premi play. Se scegli “Accetta tutto” parte anche Google Analytics 4 (Google Ireland Ltd): imposta cookie che iniziano con _ga per un massimo di 2 anni per contare visite e pagine, con anonimizzazione dell'IP e senza funzioni pubblicitarie; Google può trattare questi dati negli Stati Uniti in base alle clausole contrattuali standard. Con “Solo necessari” non viene caricato nulla di Google. Nessun cookie pubblicitario o di profilazione, nessun altro tracciante di terze parti. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
     feedback:
-      "Feedback: se usi il riquadro “Dicci la tua”, riceviamo il tuo messaggio, il tuo indirizzo email se decidi di aggiungerlo (facoltativo), la pagina in cui ti trovavi e la lingua del sito. Arrivano tramite webhook in un canale privato del server Discord dello staff, quindi sono trattati da Discord Inc. (Stati Uniti), e li legge solo lo staff di OriginsMeta. Li usiamo per correggere i problemi e migliorare il sito nelle prime settimane online, l'unico periodo in cui il riquadro resta attivo; l'email serve solo a risponderti e non la usiamo mai per newsletter né per nient'altro. Il tuo indirizzo IP serve solo a limitare lo spam: resta per poco nella memoria del server e non viene mai inviato con il messaggio. Il controllo anti-bot, quando è attivo, è fornito da Cloudflare (Turnstile). Per far cancellare un messaggio scrivi a staff@originsmeta.com.",
+      "Feedback: se usi il riquadro “Dicci la tua”, riceviamo il tuo messaggio, il tuo nome o nickname e il tuo indirizzo email se decidi di aggiungerli (entrambi facoltativi), la pagina in cui ti trovavi e la lingua del sito. Arrivano tramite webhook in un canale privato del server Discord dello staff, quindi sono trattati da Discord Inc. (Stati Uniti), e li legge solo lo staff di OriginsMeta. Li usiamo per correggere i problemi e migliorare il sito nelle prime settimane online, l'unico periodo in cui il riquadro resta attivo; il nome ci dice chi ci ha scritto e non lo pubblichiamo mai senza chiedertelo; l'email serve solo a risponderti e non la usiamo mai per newsletter né per nient'altro. Il tuo indirizzo IP serve solo a limitare lo spam: resta per poco nella memoria del server e non viene mai inviato con il messaggio. Il controllo anti-bot, quando è attivo, è fornito da Cloudflare (Turnstile). Per far cancellare un messaggio scrivi a staff@originsmeta.com.",
     guides:
       "Guide inviate: se usi il modulo “Mandaci la tua guida”, riceviamo il titolo e il testo della guida, il link e il codice del mazzo se li aggiungi, la firma che scegli, il tuo indirizzo email e il tuo nome utente Discord se decidi di lasciarli (facoltativi) e la lingua del sito. Arrivano tramite webhook nello stesso canale privato del server Discord dello staff che riceve i feedback, quindi sono trattati da Discord Inc. (Stati Uniti), e li legge solo lo staff di OriginsMeta. Li usiamo per valutare la guida, scriverti se serve e, con la tua autorizzazione, pubblicarla con la tua firma; email e nome Discord non vengono mai pubblicati né usati per nient'altro. Finché non la invii, la bozza resta solo nella memoria locale del tuo browser (senza email né nome Discord). Il tuo indirizzo IP serve solo a limitare lo spam: resta per poco nella memoria del server e non viene mai inviato con la guida. Il controllo anti-bot, quando è attivo, è fornito da Cloudflare (Turnstile). Per ritirare una guida o far cancellare i tuoi dati scrivi a staff@originsmeta.com.",
   },
@@ -652,6 +660,10 @@ export const it: Dictionary = {
     question: "Che cosa ti piace, che cosa manca, che cosa non funziona?",
     messagePlaceholder: "Basta anche una frase.",
     lengthHint: "Da {min} a {max} caratteri.",
+    /* nome facoltativo (24/09/2026: il primo feedback era anonimo e non sapevamo chi l'aveva scritto) */
+    nameLabel: "Nome o nickname (facoltativo)",
+    namePlaceholder: "es. il tuo nome su Discord",
+    nameHint: "Così sappiamo chi ci ha scritto: non lo pubblichiamo senza chiedertelo.",
     emailLabel: "Email (facoltativa)",
     emailPlaceholder: "nome@esempio.it",
     emailHint: "Solo se vuoi una risposta: non la usiamo per nient'altro.",
@@ -714,8 +726,13 @@ export const it: Dictionary = {
     pool: "Carte disponibili",
     poolHint: "le carte della Demo 2.0, con i costi e le statistiche del gioco",
     searchPool: "Cerca tra le carte",
+    /* la ricerca guarda anche il testo della carta (primo feedback dal pop-up del sito, 24/09/2026) */
+    searchPoolHint: "Nome o testo: Reveal…",
     filterType: "Filtra per tipo",
     filterCost: "Filtra per costo",
+    poolCount: "{n} carte",
+    poolCountOne: "1 carta",
+    poolEmpty: "Nessuna carta corrisponde. La ricerca guarda il nome, la saga e il testo della carta, anche in inglese.",
     cost: "Costo",
     remove: "Togli",
     curve: "Curva di mana",

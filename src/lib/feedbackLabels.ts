@@ -22,6 +22,11 @@ export const feedbackEnabled = (process.env.NEXT_PUBLIC_FEEDBACK ?? "").trim().t
 /** Lunghezza del messaggio, in caratteri (le emoji contano uno). */
 export const FEEDBACK_MIN = 10;
 export const FEEDBACK_MAX = 1000;
+/**
+ * Nome o nickname facoltativo (24/09/2026, Pierluigi: il primo feedback era anonimo, "per capire chi lo ha fatto").
+ * Stessa misura della firma di "Mandaci la tua guida" (`GUIDE_NAME_MAX`).
+ */
+export const FEEDBACK_NAME_MAX = 60;
 /** Lunghezza massima di un indirizzo email (RFC 5321). */
 export const FEEDBACK_EMAIL_MAX = 254;
 /**
@@ -55,6 +60,9 @@ export type FeedbackLabels = {
   messagePlaceholder: string;
   /** contiene {min} e {max} */
   lengthHint: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  nameHint: string;
   emailLabel: string;
   emailPlaceholder: string;
   emailHint: string;
@@ -96,6 +104,9 @@ export function feedbackLabels(dict: Dictionary): FeedbackLabels {
     question: f.question,
     messagePlaceholder: f.messagePlaceholder,
     lengthHint: f.lengthHint,
+    nameLabel: f.nameLabel,
+    namePlaceholder: f.namePlaceholder,
+    nameHint: f.nameHint,
     emailLabel: f.emailLabel,
     emailPlaceholder: f.emailPlaceholder,
     emailHint: f.emailHint,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
+import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
 import { FlipCard, type FlipCardData } from "./FlipCard";
 
 /**
@@ -14,11 +15,15 @@ export type ExplorerCard = FlipCardData & {
   sagaLabel: string;
   rarity?: string;
   keywords: string[];
+  /** testo inglese del gioco, solo sulle pagine non inglesi: la ricerca trova "draw" anche dove c'è "Pesca" */
+  abilityEn?: string;
   removed: boolean;
 };
 
 type Labels = {
   search: string;
+  /** segnaposto: esempi di nome e di testo della carta */
+  searchHint: string;
   all: string;
   type: string;
   saga: string;
@@ -71,15 +76,19 @@ export function CardExplorer({
   const [showRemoved, setShowRemoved] = useState(false);
   const [sort, setSort] = useState<"name" | "mana" | "power" | "health">("mana");
 
+  /* Si cerca in nome, saga, parole chiave e testo della carta (anche inglese sulle pagine non inglesi): la stessa
+     ricerca del deck builder (`cardSearch.ts`, 24/09/2026), più le parole chiave, che qui c'erano già e portano
+     anche categorie che nel testo non ci sono ("Buff", "Vanilla"). */
+  const haystacks = useMemo(() => new Map(cards.map((c) => [c.slug, searchHaystack([c.name, c.sagaLabel, ...c.keywords, c.ability, c.abilityEn])])), [cards]);
   const list = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const terms = searchTerms(q);
     const out = cards.filter((c) => {
       if (c.removed && !showRemoved) return false;
       if (type !== "all" && (type === "legendary" ? !c.legendary : c.type !== type)) return false;
       if (saga !== "all" && c.sagaId !== saga) return false;
       if (alignment !== "all" && c.alignment !== alignment) return false;
       if (rarity !== "all" && c.rarity !== rarity) return false;
-      if (needle && !c.name.toLowerCase().includes(needle) && !c.keywords.some((k) => k.toLowerCase().includes(needle)) && !c.sagaLabel.toLowerCase().includes(needle)) return false;
+      if (!matchesSearch(haystacks.get(c.slug) ?? "", terms)) return false;
       return true;
     });
     const num = (v?: number) => (v === undefined ? 99 : v);
@@ -90,7 +99,7 @@ export function CardExplorer({
       return num(b.health === undefined ? -99 : -b.health) - num(a.health === undefined ? -99 : -a.health) || a.name.localeCompare(b.name);
     });
     return out;
-  }, [cards, q, type, saga, alignment, rarity, showRemoved, sort]);
+  }, [cards, haystacks, q, type, saga, alignment, rarity, showRemoved, sort]);
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const removedCount = cards.filter((c) => c.removed).length;
@@ -107,7 +116,7 @@ export function CardExplorer({
               type="search"
               value={q}
               onChange={(e) => setQEdit(e.target.value)}
-              placeholder="Merlin, On Reveal…"
+              placeholder={labels.searchHint}
               className={selectCls}
             />
           </label>

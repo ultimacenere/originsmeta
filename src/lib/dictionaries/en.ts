@@ -26,6 +26,9 @@ export const en = {
     skipToContent: "Skip to content",
     mainNav: "Main navigation",
     playerFallback: "Player",
+    /* our own Discord server (24/09/2026): logo in the header, button in the menu on phones */
+    discord: "OriginsMeta Discord",
+    discordJoin: "Join our Discord",
   },
   faq: {
     kicker: "Questions",
@@ -222,6 +225,8 @@ export const en = {
     title: "Origins TCG card database",
     intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English and Italian, balance history and the legend each card comes from.",
     description: "Every Origins TCG card from Demo 2.0 in one searchable database: filter by type, saga, alignment and rarity, with official text, stats and balance history.",
+    /* search placeholder: the search also reads the card text (24/09/2026) */
+    searchHint: "Name or text: Merlin, On Reveal…",
     countLabel: "cards in Demo 2.0",
     countCreated: "created cards",
     countRemoved: "removed in earlier builds",
@@ -587,6 +592,9 @@ export const en = {
     moreNews: "More news",
     published: "Published",
     sourceTitle: "Source",
+    /* invite to our Discord at the end of every article (24/09/2026) */
+    discordTitle: "Talk about it on our Discord",
+    discordText: "Comment on the news, ask the staff and share your decks with the OriginsMeta community.",
   },
   about: {
     title: "About OriginsMeta, the unofficial Origins TCG site",
@@ -630,7 +638,7 @@ export const en = {
     cookies:
       "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. Vercel Web Analytics measures visits without cookies and without identifying you. Videos on community deck pages are embedded through youtube-nocookie.com, YouTube's privacy-enhanced mode, which sets nothing until you press play. If you choose “Accept all”, Google Analytics 4 (Google Ireland Ltd) also runs: it sets cookies starting with _ga for up to 2 years to count visits and pages, with IP anonymization and no advertising features; Google may process this data in the United States under its standard contractual clauses. With “Only necessary” nothing from Google loads. No advertising or profiling cookies, no other third-party trackers. You can change your choice at any time from “Cookie preferences” in the footer.",
     feedback:
-      "Feedback: if you use the “Feedback” box, we receive your message, your email address if you choose to add it (optional), the page you were on and the site language. They reach a private channel on the staff's Discord server through a webhook, so they are processed by Discord Inc. (United States), and only the OriginsMeta staff can read them. We use them to fix problems and improve the site during its first weeks online, the only period in which the box stays active; the email is used only to reply to you, never for newsletters or anything else. Your IP address is used only to limit spam: it stays briefly in the server's memory and is never sent with the message. The anti-bot check, when active, is provided by Cloudflare (Turnstile). To have a message deleted, write to staff@originsmeta.com.",
+      "Feedback: if you use the “Feedback” box, we receive your message, your name or nickname and your email address if you choose to add them (both optional), the page you were on and the site language. They reach a private channel on the staff's Discord server through a webhook, so they are processed by Discord Inc. (United States), and only the OriginsMeta staff can read them. We use them to fix problems and improve the site during its first weeks online, the only period in which the box stays active; the name tells us who wrote to us and is never published without asking you first; the email is used only to reply to you, never for newsletters or anything else. Your IP address is used only to limit spam: it stays briefly in the server's memory and is never sent with the message. The anti-bot check, when active, is provided by Cloudflare (Turnstile). To have a message deleted, write to staff@originsmeta.com.",
     guides:
       "Submitted guides: if you use the “Send us your guide” form, we receive the guide's title and text, the link and deck code if you add them, the byline you choose, your email address and Discord username if you decide to leave them (optional) and the site language. They reach the same private channel on the staff's Discord server that receives feedback, through a webhook, so they are processed by Discord Inc. (United States), and only the OriginsMeta staff can read them. We use them to review the guide, to write to you if needed and, with your permission, to publish it under your byline; your email and Discord username are never published or used for anything else. Until you send it, the draft stays only in your browser's local storage (without email or Discord username). Your IP address is used only to limit spam: it stays briefly in the server's memory and is never sent with the guide. The anti-bot check, when active, is provided by Cloudflare (Turnstile). To withdraw a guide or have your data deleted, write to staff@originsmeta.com.",
   },
@@ -650,6 +658,10 @@ export const en = {
     question: "What do you like, what's missing, what doesn't work?",
     messagePlaceholder: "Even one sentence helps.",
     lengthHint: "Between {min} and {max} characters.",
+    /* optional name (24/09/2026: the first feedback was anonymous and we couldn't tell who sent it) */
+    nameLabel: "Name or nickname (optional)",
+    namePlaceholder: "e.g. your Discord name",
+    nameHint: "So we know who wrote to us: we won't publish it without asking you.",
     emailLabel: "Email (optional)",
     emailPlaceholder: "you@example.com",
     emailHint: "Only if you'd like a reply: we won't use it for anything else.",
@@ -712,8 +724,13 @@ export const en = {
     pool: "Card pool",
     poolHint: "the Demo 2.0 cards, with in-game costs and stats",
     searchPool: "Search the pool",
+    /* the search also reads the card text (first feedback from the site pop-up, 24/09/2026) */
+    searchPoolHint: "Name or text: Reveal…",
     filterType: "Filter by type",
     filterCost: "Filter by cost",
+    poolCount: "{n} cards",
+    poolCountOne: "1 card",
+    poolEmpty: "No card matches. The search looks at the name, the saga and the card text.",
     cost: "Cost",
     remove: "Remove",
     curve: "Mana curve",

@@ -254,7 +254,9 @@ export const cards: Card[] = data.cards.map((w) => {
     if (ch.alignment) card.alignment = ch.alignment.to;
   }
   if (w.rarity && !w.tokenOnly) card.rarity = w.rarity;
-  if (w.keywords.length) card.keywords = w.keywords;
+  // Le parole chiave corrette in `card-lore.ts` vincono su quelle di World of Origins, come il testo qui sotto.
+  const keywords = lore?.keywords ?? w.keywords;
+  if (keywords.length) card.keywords = keywords;
   // Il testo letto nel gioco (`card-lore.ts`, campo `en`) vince su quello di World of Origins quando è rimasto indietro.
   const abilityEn = lore?.en ?? w.ability;
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn };

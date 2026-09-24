@@ -451,6 +451,19 @@
     border-radius: 3px;
     background: var(--color-sky);
   }
+  /* Da 1280 px la riga dell'header ospita menu completo, ricerca, loghino del nostro Discord (24/09/2026), Accedi e
+     lingua dentro i 1280 px del contenitore, che non cresce oltre: con le voci a 0,65rem l'inglese sforava di 19 px
+     a 1280; a 0,5rem (più il menu attaccato al logo, `xl:ml-1` in Header.tsx) restano 7 px di margine a 1280 e 22
+     da 1296 in su. Vale anche sopra i 1536 px, dove prima la riga sforava già (82 px in inglese, 9 in italiano). */
+  @media (min-width: 80rem) {
+    .nav-link {
+      padding-inline: 0.5rem;
+    }
+    .nav-link[aria-current="page"]::after {
+      right: 0.5rem;
+      left: 0.5rem;
+    }
+  }
   .nav-link-block {
     display: flex;
     width: 100%;
@@ -2333,6 +2346,15 @@
   .btn-discord-sm {
     font-size: 0.78rem;
     padding: 0.45rem 0.7rem;
+  }
+  /* Solo il logo (header, 24/09/2026): tondo da 32 px, alto come il tasto Accedi accanto */
+  .btn-discord-icon {
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 9999px;
   }
   /* Niente più .link-discord: il blurple come colore del testo faceva 3,44:1 sul blu notte e 4,07:1 sul feltro.
      Un link verso Discord è sempre DiscordButton (anche size="sm" in mezzo a un testo). */

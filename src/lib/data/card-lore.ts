@@ -18,6 +18,11 @@ export type Lore = {
    */
   en?: string;
   it?: string;
+  /**
+   * Parole chiave quando quelle di World of Origins non corrispondono al testo del gioco: sostituiscono le sue.
+   * 24/09/2026: a Queen of Hearts restava "On Reveal" (il testo dice On Death), a Bagheera mancava "On Reveal".
+   */
+  keywords?: string[];
   /** chiave ufficiale della carta quando World of Origins non la espone (letta dal materiale ufficiale Koin) */
   key?: string;
 };
@@ -38,7 +43,7 @@ export const cardLore: Record<string, Lore> = {
 
   // ---------- Paese delle Meraviglie ----------
   alice: { saga: "wonderland", origin: { en: "The girl who followed the White Rabbit down the hole in Lewis Carroll's 1865 novel.", it: "La bambina che seguì il Bianconiglio nella tana nel romanzo di Lewis Carroll del 1865." }, it: "Dopo il combattimento, riduci il costo delle carte nella tua mano del mio ⚔️. Se non hai carte, ottengo invece +2⚔️/+2❤️." },
-  "queen-of-hearts": { saga: "wonderland", origin: { en: "The furious monarch of Wonderland whose answer to everything is \"Off with their heads!\".", it: "La furiosa sovrana del Paese delle Meraviglie, la cui risposta a tutto è \"Tagliategli la testa!\"." }, en: "First Strike\nWhen an ally On Death ability happens, repeat it.", it: "First Strike\nQuando un'abilità On Death di un alleato si attiva, ripetila." },
+  "queen-of-hearts": { saga: "wonderland", origin: { en: "The furious monarch of Wonderland whose answer to everything is \"Off with their heads!\".", it: "La furiosa sovrana del Paese delle Meraviglie, la cui risposta a tutto è \"Tagliategli la testa!\"." }, en: "First Strike\nWhen an ally On Death ability happens, repeat it.", it: "First Strike\nQuando un'abilità On Death di un alleato si attiva, ripetila.", keywords: ["On Death", "First Strike"] },
   "off-with-your-head": { saga: "wonderland", origin: { en: "The Queen of Hearts' favourite sentence, shouted at anyone who displeases her.", it: "La sentenza preferita della Regina di Cuori, urlata a chiunque la contrari." }, it: "Distruggi un alleato. Evoca una sua copia base in ogni altro luogo." },
   "white-queen": { saga: "wonderland", origin: { en: "The gentle, absent-minded chess queen of Through the Looking-Glass, who remembers things before they happen.", it: "La mite e distratta regina degli scacchi di Attraverso lo specchio, che ricorda le cose prima che accadano." }, it: "On Reveal: Rimanda QUALSIASI personaggio nella mano del suo proprietario." },
   "red-knight": { saga: "wonderland", origin: { en: "The chess knight who fights the White Knight for Alice in Through the Looking-Glass.", it: "Il cavallo degli scacchi che si batte con il Cavaliere Bianco per Alice in Attraverso lo specchio." }, it: "Trample\nIl personaggio di fronte a me ha Trample." },
@@ -115,7 +120,7 @@ export const cardLore: Record<string, Lore> = {
 
   // ---------- Il libro della giungla ----------
   mowgli: { saga: "jungle-book", origin: { en: "The man-cub raised by wolves in Kipling's 1894 Jungle Book.", it: "Il cucciolo d'uomo cresciuto dai lupi nel Libro della giungla di Kipling (1894)." }, it: "On Reveal: Evoca Baloo [6⚔️/6❤️] in un altro luogo casuale." },
-  bagheera: { saga: "jungle-book", origin: { en: "The black panther who buys Mowgli's life with a freshly killed bull.", it: "La pantera nera che compra la vita di Mowgli con un toro appena ucciso." }, en: "On Reveal: If I'm on a middle space, I get +2⚔️/+2❤️.", it: "On Reveal: Se sono su una casella centrale, ottengo +2⚔️/+2❤️." },
+  bagheera: { saga: "jungle-book", origin: { en: "The black panther who buys Mowgli's life with a freshly killed bull.", it: "La pantera nera che compra la vita di Mowgli con un toro appena ucciso." }, en: "On Reveal: If I'm on a middle space, I get +2⚔️/+2❤️.", it: "On Reveal: Se sono su una casella centrale, ottengo +2⚔️/+2❤️.", keywords: ["On Reveal", "Self Buff"] },
   baloo: { saga: "jungle-book", origin: { en: "The sleepy brown bear who teaches Mowgli the Law of the Jungle.", it: "L'orso bruno sonnolento che insegna a Mowgli la Legge della Giungla." } },
   "shere-khan": { saga: "jungle-book", origin: { en: "The lame tiger who claims Mowgli as his prey from the first page.", it: "La tigre zoppa che rivendica Mowgli come preda fin dalla prima pagina." }, it: "Quando uccidi un alleato, ottengo Double Attack in questo round." },
 

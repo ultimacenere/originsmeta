@@ -7,6 +7,7 @@ import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, v
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
 import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY } from "@/lib/community/types";
 import { saveDeckPrivate, type ActionState } from "@/lib/community/actions";
+import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
@@ -39,8 +40,15 @@ export type BuilderLabels = {
   pool: string;
   poolHint: string;
   searchPool: string;
+  /** segnaposto della ricerca: dice che si cerca anche nel testo della carta (feedback del 24/09/2026) */
+  searchPoolHint: string;
   filterType: string;
   filterCost: string;
+  /** sotto i filtri, solo mentre si filtra: "{n} carte", il singolare e il pool vuoto */
+  poolCount: string;
+  poolCountOne: string;
+  poolEmpty: string;
+  clearFilters: string;
   all: string;
   cost: string;
   remove: string;
@@ -392,18 +400,27 @@ export function DeckBuilder({
     setDecks((prev) => prev.map((d, i) => (i === active ? fn(d) : d)));
   };
 
-  /* --- pool filtrato --- */
+  /* --- pool filtrato ---
+     La ricerca guarda nome, saga e testo della carta, sulle pagine non inglesi anche il testo inglese del gioco
+     (primo feedback dal pop-up, 24/09/2026: "cercare nel testo della carta… inserendo 'Reveal'"). */
+  const haystacks = useMemo(() => new Map(pool.map((c) => [c.slug, searchHaystack([c.name, c.sagaLabel, c.ability, c.abilityEn])])), [pool]);
   const visiblePool = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const terms = searchTerms(q);
     return pool
       .filter((c) => c.type !== "token")
       // scelta la Leggendaria, le altre spariscono dalla lista
       .filter((c) => !c.legendary || !deck.legendary || c.slug === deck.legendary)
       .filter((c) => (typeFilter === "all" ? true : c.type === typeFilter))
       .filter((c) => (costFilter === "all" ? true : costFilter === "8" ? (c.mana ?? 0) >= 8 : String(c.mana ?? "?") === costFilter))
-      .filter((c) => !needle || c.name.toLowerCase().includes(needle) || c.sagaLabel.toLowerCase().includes(needle))
+      .filter((c) => matchesSearch(haystacks.get(c.slug) ?? "", terms))
       .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
-  }, [pool, q, typeFilter, costFilter, deck.legendary]);
+  }, [pool, haystacks, q, typeFilter, costFilter, deck.legendary]);
+  const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter !== "all";
+  const clearFilters = () => {
+    setQ("");
+    setTypeFilter("all");
+    setCostFilter("all");
+  };
 
   const addCard = (c: BuilderCard) => {
     updateDeck((d) => {
@@ -1156,7 +1173,7 @@ export function DeckBuilder({
           </h2>
           <p className="mt-1 text-xs text-chalk-muted">{labels.poolHint}</p>
           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[1.5fr_1fr_1fr]">
-            <input id="pool-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.searchPool} aria-label={labels.searchPool} className={fieldCls} />
+            <input id="pool-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.searchPoolHint} aria-label={labels.searchPool} className={fieldCls} />
             <select id="pool-type" aria-label={labels.filterType} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)} className={fieldCls}>
               <option value="all">{labels.all}</option>
               <option value="unit">{labels.typeUnit}</option>
@@ -1174,7 +1191,20 @@ export function DeckBuilder({
               <option value="8">8+</option>
             </select>
           </div>
-          <ul aria-labelledby="builder-pool-title" className="mt-3 space-y-1 lg:max-h-[640px] lg:overflow-y-auto lg:pr-1">
+          {/* Quante carte restano e "Azzera i filtri", solo mentre si filtra. Il conteggio sta in una regione che resta
+              montata, così il lettore di schermo annuncia anche il primo cambio. */}
+          <div className={filtering ? "mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" : undefined}>
+            <span aria-live="polite" className="text-chalk-muted">
+              {filtering ? (visiblePool.length === 1 ? labels.poolCountOne : fmt(labels.poolCount, { n: visiblePool.length })) : null}
+            </span>
+            {filtering ? (
+              <button type="button" onClick={clearFilters} className="link-mint font-semibold">
+                {labels.clearFilters}
+              </button>
+            ) : null}
+          </div>
+          {visiblePool.length === 0 ? <p className="mt-3 rounded-lg bg-night-3/70 px-3 py-2 text-sm text-pale">{labels.poolEmpty}</p> : null}
+          <ul aria-labelledby="builder-pool-title" className={`mt-3 space-y-1 lg:max-h-[640px] lg:overflow-y-auto lg:pr-1 ${visiblePool.length ? "" : "hidden"}`}>
             {visiblePool.map((c) => {
               const inDeck = deck.legendary === c.slug || deck.cards.includes(c.slug);
               const full = !c.legendary && deck.cards.length >= RULES.distinctCards;

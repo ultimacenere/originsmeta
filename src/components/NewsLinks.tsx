@@ -12,6 +12,11 @@ export function isDeckNews(item: NewsItem): boolean {
   return item.source === "community" || item.source === "staff";
 }
 
+/** Novità del sito raccontate da noi (`source: "site"`): la fonte è l'articolo stesso, quindi nessun link "Fonte". */
+export function isSiteNews(item: NewsItem): boolean {
+  return item.source === "site";
+}
+
 /** Dominio leggibile di un link esterno (senza "www."): serve a dire dove porta il link prima del clic. */
 function linkDomain(url: string): string {
   try {
@@ -29,6 +34,7 @@ function linkDomain(url: string): string {
  * (SteamButton.tsx): nuova scheda, `noopener` e l'avviso per i lettori di schermo.
  */
 export function NewsSourceLink({ item, locale, dict, className = "" }: Props & { className?: string }) {
+  if (isSiteNews(item)) return null;
   if (isDeckNews(item)) {
     return (
       <Link href={href(locale, item.url)} className={className}>
@@ -58,9 +64,10 @@ export function NewsDeckButton({ item, locale, dict, className = "" }: Props & {
   );
 }
 
-/** Etichetta della pill accanto alla data: Steam, Staff, Community o Fonte. */
+/** Etichetta della pill accanto alla data: Steam, Staff, Community, OriginsMeta o Fonte. */
 export function newsSourceLabel(item: NewsItem, dict: Dictionary): string {
   if (item.source === "steam") return "Steam";
+  if (item.source === "site") return "OriginsMeta";
   if (item.source === "staff") return dict.community.badges.staff;
   return item.source === "community" ? dict.common.community : dict.common.source;
 }
@@ -72,6 +79,8 @@ export function newsSourceLabel(item: NewsItem, dict: Dictionary): string {
 export function newsSourceClass(item: NewsItem): string {
   if (item.source === "staff") return `${badgePill} ${badgeStyle.staff}`;
   const base = "stat-pill text-[11px] font-semibold uppercase";
+  // le novità del sito nel menta del logo, con il testo scuro dei fondi pieni menta
+  if (item.source === "site") return `${base} bg-mint text-ink`;
   return item.source === "steam" ? `${base} pill-steam` : `${base} bg-night-3 text-pale`;
 }
 

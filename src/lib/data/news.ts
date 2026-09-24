@@ -40,10 +40,17 @@ export type NewsItem = {
   faq?: Record<Locale, { q: string; a: string }[]>;
   /** slug dell'autore che firma (src/lib/data/authors.ts); se manca firma chi risponde dei contenuti */
   author?: string;
-  /** fonte: post ufficiale su Steam, stampa, oppure un mazzo pubblicato sul sito (url interno senza prefisso lingua) */
+  /**
+   * fonte: post ufficiale su Steam, stampa, oppure un mazzo pubblicato sul sito (url interno senza prefisso lingua).
+   * Per le novità del sito (`source: "site"`) la fonte è l'articolo stesso: `url` è la pagina del sito di cui parla
+   * di più (percorso interno senza prefisso lingua) e non compare come "Fonte".
+   */
   url: string;
-  /** "staff" per i mazzi pubblicati dallo staff di OriginsMeta: mostra il tag Staff e basta, mai anche "Community". */
-  source: "steam" | "press" | "community" | "staff";
+  /**
+   * "staff" per i mazzi pubblicati dallo staff di OriginsMeta: mostra il tag Staff e basta, mai anche "Community".
+   * "site" per le novità di OriginsMeta raccontate da noi (dal 24/09/2026, "Upgrade Meta"): pill OriginsMeta, niente "Fonte".
+   */
+  source: "steam" | "press" | "community" | "staff" | "site";
   /** copertina, sempre presente e diversa per ogni news: media kit ufficiale in /public/media, copertina di una carta o miniatura ufficiale YouTube */
   image: string;
   /** slug delle carte toccate dall'annuncio (o, per i mazzi della community, le carte del mazzo) */
@@ -53,6 +60,186 @@ export type NewsItem = {
 };
 
 export const news: NewsItem[] = [
+  {
+    // Prima news sulle novità del sito ("Upgrade Meta", richiesta di Pierluigi del 24/09/2026): le funzioni andate
+    // online dal 22 al 24 settembre, il grazie a coachcronos per la diretta e a chi ha mandato un feedback.
+    slug: "upgrade-meta-0924",
+    image: "/media/keyart-mulan-wide.webp",
+    guides: ["on-reveal-midrange-guide", "king-of-value-trade-guide", "dorothy-combo-guide", "trick-or-treat-legion-guide", "origins-tcg-locations"],
+    date: "2026-09-24",
+    title: n(
+      "Upgrade Meta: card text search, a rebuilt tier list, Locations and our own Discord",
+      "Upgrade Meta: la ricerca nel testo delle carte, la tier list rifatta, i Luoghi e il nostro Discord",
+    ),
+    metaTitle: n("Upgrade Meta: what's new on OriginsMeta for Origins TCG", "Upgrade Meta: novità di OriginsMeta per Origins TCG"),
+    description: n(
+      "Three days of OriginsMeta updates: card text search, a rebuilt tier list, Locations, public profiles and our own Discord. Thank you, coachcronos.",
+      "Tre giorni di novità su OriginsMeta: ricerca nel testo delle carte, tier list rifatta, Luoghi, profili pubblici e il nostro Discord. Grazie, coachcronos.",
+    ),
+    summary: n(
+      "OriginsMeta changed a lot in three days: the deck builder now searches card text, the tier list shows three sources side by side, and Locations, public profiles and our own Discord server have arrived. Thanks to coachcronos for the stream and to everyone who wrote to us: many of these changes started as your requests.",
+      "In tre giorni OriginsMeta è cambiato parecchio: nel deck builder ora si cerca anche nel testo delle carte, la tier list ha tre fonti a vista, e sono arrivati i Luoghi, i profili pubblici e il nostro server Discord. Grazie a coachcronos per la diretta e a chi ci ha scritto: molte di queste novità sono nate dalle vostre richieste.",
+    ),
+    highlights: {
+      en: [
+        { label: "Search the card text", text: "in the deck builder and the card database: type Reveal and the On Reveal cards remain", anchor: "search" },
+        { label: "A rebuilt tier list", text: "OriginsMeta, Community and Most played side by side, MetaShifting on its own page", anchor: "tier-list" },
+        { label: "Locations", text: "the 44 locations of Demo 2.0, searchable and filterable", anchor: "locations" },
+        { label: "Decks, guides and profiles", text: "author type filter, date and patch on every deck, public profiles, four new guides", anchor: "decks" },
+        { label: "Cards checked in the game", text: "all 122 cards compared one by one, plus the 21 September patch", anchor: "cards" },
+        { label: "An easier site to read", text: "new logo, cards that flip, a calendar that scrolls", anchor: "look" },
+        { label: "Our own Discord", text: "logo in the menu, new articles and guides posted automatically", anchor: "discord" },
+        { label: "Thank you, coachcronos", text: "for the 23 September stream", anchor: "thanks-coachcronos" },
+        { label: "Thank you for writing to us", text: "and from today you can leave your name in the feedback box", anchor: "thanks-feedback" },
+      ],
+      it: [
+        { label: "Cerca nel testo delle carte", text: "nel deck builder e nel database: scrivi Reveal e restano le carte con On Reveal", anchor: "ricerca" },
+        { label: "Tier list rifatta", text: "OriginsMeta, Community e Le più giocate a vista, MetaShifting su una pagina sua", anchor: "tier-list" },
+        { label: "I Luoghi", text: "i 44 luoghi della Demo 2.0 da cercare e filtrare", anchor: "luoghi" },
+        { label: "Mazzi, guide e profili", text: "filtro per tipo di autore, data e patch su ogni mazzo, profili pubblici, quattro guide nuove", anchor: "mazzi" },
+        { label: "Carte verificate sul gioco", text: "tutte le 122 carte confrontate una per una, più la patch del 21 settembre", anchor: "carte" },
+        { label: "Un sito più leggibile", text: "logo nuovo, carte che si girano, calendario che scorre", anchor: "grafica" },
+        { label: "Il nostro Discord", text: "loghino nel menu, news e guide nuove annunciate da sole", anchor: "discord" },
+        { label: "Grazie, coachcronos", text: "per la diretta del 23 settembre", anchor: "grazie-coachcronos" },
+        { label: "Grazie a chi ci scrive", text: "e da oggi nel pop-up dei feedback puoi lasciare il tuo nome", anchor: "grazie-feedback" },
+      ],
+    },
+    body: n(
+      `## Search the card text {#search}
+
+The first message that reached us through the feedback box asked for something precise: while building a deck around Mulan, the person who wrote wanted to see only the cards with On Reveal by typing "Reveal" in the search, as you can in the game. Now you can.
+
+- The [deck builder](/en/deck-builder) search looks at the name, the saga and the **card text**. Type "Reveal" and the On Reveal cards remain: there are 33 in the current demo.
+- Capitals and accents don't matter, and with several words you get the cards that contain all of them, for example "reveal damage".
+- Below the filters you see how many cards are left, with "Clear filters"; when nothing matches, the builder says so instead of showing an empty list.
+- The same search works in the [card database](/en/cards) and in the "Search a card" box at the top of every page. On the Italian site it also reads the English text of the game, so "draw" works there too.
+
+## A rebuilt tier list {#tier-list}
+
+The [tier list](/en/tier-list) now shows three sources side by side, each with its own page:
+
+- **OriginsMeta**: tiers come only from tournament results, so they arrive after the Crimson Cup; meanwhile the page shows the top-rated decks and the cards that appear in the most decks.
+- **[Community](/en/tier-list/community)**: the average of the tier lists saved by members, which becomes a ranking from 5 lists up.
+- **[Most played](/en/tier-list/most-played)**: how many published decks each card appears in. That is popularity, not win rate.
+
+The balance tracker has its own page, [MetaShifting](/en/metashifting), with the most recent patch first. In the [tier list maker](/en/tier-list/create) cards really drag now; on a phone there is the S A B C D bar, and with an account you can save your list, which then counts in the community tier list.
+
+## Locations {#locations}
+
+A new [Locations](/en/locations) page: the 44 locations of Demo 2.0, with search by name and effect, filters by effect family (damage, mana, movement and more) and the cards they mention linked to their pages. To see how they change a match, read the [Locations guide](/en/guides/origins-tcg-locations).
+
+## Decks, guides and profiles {#decks}
+
+- In [Decks](/en/decks) the filters are always visible, with a new one for the **author type**: Staff, Pro, Influencer, Community. Decks sort newest first, and each one shows its creation date and the game version it was built on.
+- Every member has a **public page** with their published decks and saved tier lists.
+- The deck builder has four buttons: Publish on the site, Save privately (the deck stays in your profile and only you can see it), Share, Clear deck. The deck you are building saves itself in your browser.
+- Four new guides to the decks Davdas published: [On Reveal Mid Range](/en/guides/on-reveal-midrange-guide) with Mulan, [King of Value Trade](/en/guides/king-of-value-trade-guide), [Dorothy Combo](/en/guides/dorothy-combo-guide) and [The Trick-or-Treat Legion](/en/guides/trick-or-treat-legion-guide).
+- Wrote a guide yourself? [Send it to us](/en/guides/submit): we read it and, with your permission, publish it under your name.
+
+## Cards checked in the game {#cards}
+
+On 22 September we compared all 122 cards of Demo 2.0 with the game's collection, one by one: costs, stats and alignments all matched, 16 texts did not, and now they are the game's. The database also has the [21 September demo patch](/en/news/demo-patch-notes-0921) with the 14 cards it changes, and the top of the deck builder says which game version the cards are up to date with. Today we also fixed the keywords of Queen of Hearts and Bagheera, which had fallen behind their text.
+
+## An easier site to read {#look}
+
+The logo is now a hand-drawn lettering. On deck pages the cards are shown whole and, with a mouse, flip over to show their text; the card preview keeps only what you need (name, type, alignment and effect). The calendar under the slider really scrolls now, slowly, and the home page header is shorter, so the news fits on the first screen.
+
+## Our own Discord {#discord}
+
+OriginsMeta has its own Discord server. The Discord logo is in the top menu (on a phone, inside "Menu") and the invite is at the end of every article. New articles and guides are posted there automatically as soon as they go live on the site. The [official Origins TCG Discord](https://discord.gg/originstcg) is still Koin Games' server, for announcements, AMAs and tournament sign-ups.
+
+## Thank you, coachcronos {#thanks-coachcronos}
+
+On 23 September coachcronos hosted us live on his Twitch channel, with Davdas and Pierluigi, to talk about the site and Origins TCG with his chat. Thank you from the heart: for the space, for the enthusiasm he brings to the game and for introducing us to his community. Several changes in this article started on that stream: deck filters that are always visible, the author type filter and "Send us your guide".
+
+## Thank you for writing to us {#thanks-feedback}
+
+The feedback box has been open for a few days and the staff reads every message. Card text search started that way, from an unsigned message: thank you, whoever you are. From today the box also has a field for your name or nickname, optional, so we know who to thank (we never publish it without asking you). Keep writing to us: from the feedback box at the bottom right, with [Send us your guide](/en/guides/submit) or on our Discord.`,
+      `## Cerca nel testo delle carte {#ricerca}
+
+Il primo messaggio arrivato dal pop-up dei feedback chiedeva una cosa precisa: mentre costruiva un mazzo con Mulan, chi ci ha scritto voleva vedere solo le carte con On Reveal scrivendo "Reveal" nella ricerca, come si fa nel gioco. Ora si può.
+
+- La ricerca del [deck builder](/it/deck-builder) guarda il nome, la saga e il **testo della carta**. Scrivi "Reveal" e restano le carte con On Reveal: nella demo attuale sono 33.
+- Cerca anche nel testo inglese del gioco: "pesca" e "draw" trovano le stesse carte.
+- Maiuscole e accenti non contano, e con più parole restano le carte che le contengono tutte, per esempio "reveal danni".
+- Sotto i filtri compare quante carte restano, con "Azzera i filtri"; se nessuna carta corrisponde, il builder lo dice invece di mostrare una lista vuota.
+- La stessa ricerca vale nel [database carte](/it/cards) e nella casella "Cerca una carta" in alto su ogni pagina.
+
+## Tier list rifatta {#tier-list}
+
+La [tier list](/it/tier-list) ora ha tre fonti a vista, ognuna con la sua pagina:
+
+- **OriginsMeta**: le fasce vengono solo dai risultati dei tornei, quindi arrivano dopo la Crimson Cup; intanto la pagina mostra i mazzi più votati e le carte più presenti nei mazzi.
+- **[Community](/it/tier-list/community)**: la media delle tier list salvate dagli iscritti, che diventa una classifica da 5 liste in su.
+- **[Le più giocate](/it/tier-list/most-played)**: in quanti mazzi pubblicati compare ogni carta. È popolarità, non win rate.
+
+Il tracker dei bilanciamenti ha una pagina sua, [MetaShifting](/it/metashifting), con le patch dalla più recente. Nel tool [Crea la tua tier list](/it/tier-list/create) le carte si trascinano davvero; col dito c'è la barra S A B C D, e con un account puoi salvare la tua lista, che poi conta nella tier list della community.
+
+## I Luoghi {#luoghi}
+
+Nuova pagina [Luoghi](/it/locations): i 44 luoghi della Demo 2.0, con la ricerca per nome ed effetto, i filtri per famiglia di effetti (danni, mana, movimento e altri) e le carte citate collegate alla loro scheda. Per capire come cambiano una partita c'è la [guida ai Luoghi](/it/guides/origins-tcg-locations).
+
+## Mazzi, guide e profili {#mazzi}
+
+- In [Mazzi](/it/decks) i filtri sono sempre visibili, con quello nuovo per **tipo di autore**: Staff, Pro, Influencer, Community. I mazzi si ordinano dal più recente e ognuno mostra la data di creazione e la versione del gioco in cui è nato.
+- Ogni iscritto ha una **pagina pubblica** con i mazzi pubblicati e le tier list salvate.
+- Nel deck builder i tasti sono quattro: Pubblica sul sito, Salva privato (il mazzo resta nel tuo profilo e lo vedi solo tu), Condividi, Svuota mazzo. Il mazzo che stai costruendo si salva da solo nel browser.
+- Quattro nuove guide ai mazzi pubblicati da Davdas: [On Reveal Mid Range](/it/guides/on-reveal-midrange-guide) con Mulan, [King of Value Trade](/it/guides/king-of-value-trade-guide), [Dorothy Combo](/it/guides/dorothy-combo-guide) e [The Trick-or-Treat Legion](/it/guides/trick-or-treat-legion-guide).
+- Hai scritto una guida? [Mandacela](/it/guides/submit): la leggiamo e, con il tuo permesso, la pubblichiamo con la tua firma.
+
+## Carte verificate sul gioco {#carte}
+
+Il 22 settembre abbiamo confrontato una per una tutte le 122 carte della Demo 2.0 con la collezione del gioco: costi, statistiche e allineamenti coincidevano, 16 testi no, e ora sono quelli del gioco. Nel database c'è anche la [patch della demo del 21 settembre](/it/news/demo-patch-notes-0921) con le 14 carte che cambiano, e in testa al deck builder c'è scritto a che versione del gioco sono aggiornate le carte. Oggi abbiamo sistemato anche le parole chiave di Queen of Hearts e Bagheera, rimaste indietro rispetto al testo.
+
+## Un sito più leggibile {#grafica}
+
+Il logo è diventato un lettering disegnato. Nelle schede dei mazzi le carte sono intere e, col mouse, si girano mostrando il testo; l'anteprima delle carte tiene solo quello che serve (nome, tipo, allineamento ed effetto). Il calendario sotto lo slider ora scorre davvero, piano, e la testata della home è più bassa, così le news entrano nella prima schermata.
+
+## Il nostro Discord {#discord}
+
+OriginsMeta ha un suo server Discord. Il loghino di Discord è nel menu in alto (sul telefono dentro "Menu") e l'invito è in fondo a ogni news. Lì arrivano da sole le news e le guide nuove, appena escono sul sito. Il [Discord ufficiale di Origins TCG](https://discord.gg/originstcg) resta il server di Koin Games, per annunci, AMA e iscrizioni ai tornei.
+
+## Grazie, coachcronos {#grazie-coachcronos}
+
+Il 23 settembre coachcronos ci ha ospitati in diretta sul suo canale Twitch, con Davdas e Pierluigi, a parlare del sito e di Origins TCG con la sua chat. Grazie di cuore: per lo spazio, per l'entusiasmo con cui racconta il gioco e per averci fatto conoscere la sua community. Parecchie novità di questo articolo sono nate da quella diretta: i filtri dei mazzi sempre visibili, il filtro per tipo di autore e "Mandaci la tua guida".
+
+## Grazie a chi ci scrive {#grazie-feedback}
+
+Il pop-up "Dicci la tua" è aperto da pochi giorni e ogni messaggio lo legge lo staff. La ricerca nel testo delle carte è nata così, da un messaggio senza firma: grazie, chiunque tu sia. Da oggi nel pop-up c'è anche un campo per il nome o nickname, facoltativo, così sappiamo chi ringraziare (non lo pubblichiamo mai senza chiedertelo). Continua a scriverci: dal pop-up in basso a destra, con [Mandaci la tua guida](/it/guides/submit) o sul nostro Discord.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "How do I find the On Reveal cards in the deck builder?",
+          a: "Type Reveal in the deck builder search: the cards with On Reveal in their text remain. The search looks at the name, the saga and the card text, and works the same way in the card database.",
+        },
+        {
+          q: "How do I join the OriginsMeta Discord?",
+          a: "Use the Discord logo in the top menu (on a phone, inside Menu) or the button at the end of every article. It is the OriginsMeta server, separate from the official Origins TCG Discord run by Koin Games.",
+        },
+        {
+          q: "How can I suggest a change to the site?",
+          a: "Use the feedback box at the bottom right: one sentence is enough, name and email are optional. Guides go through Send us your guide, in the Guides section.",
+        },
+      ],
+      it: [
+        {
+          q: "Come trovo nel deck builder le carte con On Reveal?",
+          a: "Scrivi Reveal nella ricerca del deck builder: restano le carte che hanno On Reveal nel testo. La ricerca guarda il nome, la saga e il testo della carta, anche in inglese, e funziona allo stesso modo nel database carte.",
+        },
+        {
+          q: "Come entro nel Discord di OriginsMeta?",
+          a: "Dal loghino di Discord nel menu in alto (sul telefono dentro Menu) o dal tasto in fondo a ogni news. È il server di OriginsMeta, diverso dal Discord ufficiale di Origins TCG gestito da Koin Games.",
+        },
+        {
+          q: "Come suggerisco una novità per il sito?",
+          a: "Dal pop-up Dicci la tua, in basso a destra: basta una frase, nome ed email sono facoltativi. Le guide si mandano da Mandaci la tua guida, nella sezione Guide.",
+        },
+      ],
+    },
+    url: "/deck-builder",
+    source: "site",
+  },
   {
     slug: "demo-patch-notes-0921",
     image: "/cards/cover/dorothy.webp",
