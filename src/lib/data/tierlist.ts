@@ -15,31 +15,6 @@ export type TierSection = {
 
 const empty = (): Record<TierId, string[]> => ({ S: [], A: [], B: [], C: [], D: [] });
 
-/**
- * Voci della sezione mazzi che sono mazzi della community (scheda /decks/community/[slug]) e non mazzi
- * editoriali di decks.ts: si scrivono con questo prefisso, es. "community:healing-healsing-9411".
- */
-export const COMMUNITY_DECK_PREFIX = "community:";
-
-/**
- * Mazzi della community citati in tier list. La pagina è statica e non legge Supabase, quindi nome e
- * Leggendaria stanno qui: il nome è quello delle guide (`tags.communityDecks` in guides.ts), la Leggendaria
- * è la prima carta del campo `cards` della news del mazzo (news.ts). Se un mazzo viene nascosto o eliminato
- * dal suo autore, va tolto anche da qui.
- */
-export const communityDecks: Record<string, { name: string; legendary: string }> = {
-  "3-pigs-mid-range-6311": { name: "3 Pigs Mid Range", legendary: "three-not-so-little-pigs" },
-  "healing-healsing-9411": { name: "Healing Healsing", legendary: "van-helsing" },
-};
-
-/** Il mazzo della community dietro una voce della tier list, se la voce è un mazzo della community. */
-export function communityDeckOf(entry: string): { slug: string; name: string; legendary: string } | undefined {
-  if (!entry.startsWith(COMMUNITY_DECK_PREFIX)) return undefined;
-  const slug = entry.slice(COMMUNITY_DECK_PREFIX.length);
-  const deck = communityDecks[slug];
-  return deck ? { slug, ...deck } : undefined;
-}
-
 /** Tutto ciò che sta già in una fascia: serve a non ripetere la stessa voce fra le "non ancora classificate". */
 const placed = (tiers: Record<TierId, string[]>): Set<string> => new Set(tierIds.flatMap((t) => tiers[t]));
 
@@ -54,19 +29,19 @@ const cardTiers = empty();
 
 /**
  * Tier list di OriginsMeta. Aggiornare `updated` a ogni modifica e spiegare ogni spostamento nelle news.
- * Finché le fasce sono vuote, fra le voci "non ancora classificate" stanno i mazzi pubblicati sul sito e
- * tutte le Leggendarie attive della Demo 2.0, lette dal database carte: una Leggendaria nuova entra da sola
- * al prossimo import, una rimossa esce da sola.
+ * Finché le fasce sono vuote, fra le voci "non ancora classificate" stanno tutte le Leggendarie attive della
+ * Demo 2.0, lette dal database carte (le schede carta mostrano "non ancora classificata"). La pagina
+ * /tier-list, intanto, mostra le anteprime vere: mazzi più votati e carte più presenti nei mazzi pubblicati.
  */
 export const tierList: { updated: string; sections: TierSection[] } = {
   updated: "2026-09-22",
   sections: [
     {
       id: "decks",
+      // slug dei mazzi pubblicati (/decks/community/<slug>) quando entreranno in fascia; i mazzi li legge la pagina
+      // da Supabase (24/09/2026: prima qui ce n'erano 2 scritti a mano su 14 pubblicati)
       tiers: deckTiers,
-      unranked: Object.keys(communityDecks)
-        .map((slug) => `${COMMUNITY_DECK_PREFIX}${slug}`)
-        .filter((entry) => !placed(deckTiers).has(entry)),
+      unranked: [],
     },
     {
       id: "legendaries",

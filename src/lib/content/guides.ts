@@ -402,7 +402,7 @@ Ranked data is not public: this is a reading of the lists, not a win rate.
 ## Where to go next
 
 - The [deck page](/en/decks/community/dorothy-combo-7503) has the full list, the charts, the author's notes, “Open in the deck builder” and the game code.
-- The buffs behind this list are in the [21 September patch notes](/en/news/demo-patch-notes-0921); MetaShifting tracks every change on the [tier list page](/en/tier-list#tracker).
+- The buffs behind this list are in the [21 September patch notes](/en/news/demo-patch-notes-0921); MetaShifting tracks every change on [its own page](/en/metashifting).
 `,
   },
   "trick-or-treat-legion-guide": {
@@ -1469,7 +1469,7 @@ I dati della classificata non sono pubblici: questa è una lettura delle liste, 
 ## Dove andare adesso
 
 - La [scheda del mazzo](/it/decks/community/dorothy-combo-7503) ha la lista completa, i grafici, le note dell'autore, "Apri nel deck builder" e il codice del gioco.
-- I potenziamenti da cui nasce questa lista sono nelle [patch notes del 21 settembre](/it/news/demo-patch-notes-0921); MetaShifting segue ogni modifica nella [pagina della tier list](/it/tier-list#tracker).
+- I potenziamenti da cui nasce questa lista sono nelle [patch notes del 21 settembre](/it/news/demo-patch-notes-0921); MetaShifting segue ogni modifica nella [sua pagina](/it/metashifting).
 `,
   },
   "trick-or-treat-legion-guide": {

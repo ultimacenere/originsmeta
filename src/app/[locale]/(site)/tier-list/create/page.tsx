@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { cardsVerified } from "@/lib/data/cards";
+import { tierIds, tierList } from "@/lib/data/tierlist";
 import { builderPool } from "@/lib/builderLabels";
 import { TierListMaker, type TierCard, type TierMakerLabels } from "@/components/TierListMaker";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
-import { TierListNav } from "@/components/TierListNav";
+import { TierListHeader } from "@/components/TierListHeader";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 /*
@@ -139,19 +139,24 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
       />
       {/* Anteprima delle carte al passaggio del mouse: la tiene dentro la finestra ai bordi. */}
       <CardMentionEdges />
-      <p className="kicker text-mint">{d.nav.tierList}</p>
-      <h1 className="t-page mt-2">{m.h1}</h1>
-      <p className="mt-4 max-w-3xl text-chalk-muted">{m.intro}</p>
-      {/* la tendina della sezione: da qui si passa alla tier list ufficiale e a quella della community */}
-      <TierListNav locale={locale} dict={d} current="create" />
-      <p className="mt-3 flex flex-wrap gap-4 text-sm">
-        <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
-          {m.officialLink} →
-        </Link>
-        <Link href={href(locale, "/tier-list/community")} className="link-mint font-bold">
-          {m.communityLink} →
-        </Link>
-      </p>
+      {/* La testata della sezione (24/09/2026): le tre fonti a vista al posto della tendina e dei due link che la
+          ripetevano. Il tool è statico e non legge Supabase, quindi sotto Community e Le più giocate c'è una dicitura
+          fissa invece dei conteggi. */}
+      <TierListHeader
+        locale={locale}
+        dict={d}
+        current="create"
+        title={m.h1}
+        intro={m.intro}
+        state={{
+          // la tier list di OriginsMeta è un dato statico (tierlist.ts): quando avrà le fasce, qui compare la data
+          official: tierList.sections.some((s) => tierIds.some((t) => s.tiers[t].length))
+            ? d.tier.sourceOfficialUpdated.replace("{date}", formatDate(locale, tierList.updated))
+            : d.tier.sourceOfficialSoon,
+          community: d.tier.sourceCommunityHint,
+          played: d.tier.sourcePlayedHint,
+        }}
+      />
 
       <div className="mt-8">
         <TierListMaker legendaries={legendaries} cards={cards} shareBase={url} labels={labels} locale={locale} />

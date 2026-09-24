@@ -175,7 +175,7 @@ The patch has no version number: the team calls it the demo patch notes of 21 Se
 ## What changes on OriginsMeta {#on-the-site}
 
 - Every card page shows the new stats and the change in its balance history, with a link to the Steam post.
-- [MetaShifting](/en/tier-list#tracker) lists the patch next to the playtest ones.
+- [MetaShifting](/en/metashifting) lists the patch next to the playtest ones.
 - The [deck builder](/en/deck-builder) uses the new costs: Dorothy now counts as a 4-drop in the mana curve.
 - The official text of the six cards that change what they do will be updated when the community card database imports the patch. Until then, the balance history on each card page explains the change.
 
@@ -260,7 +260,7 @@ La patch non ha un numero di versione: il team la chiama patch notes della demo 
 ## Cosa cambia su OriginsMeta {#sul-sito}
 
 - Ogni scheda carta mostra le statistiche nuove e la modifica nello storico dei bilanciamenti, con il link al post su Steam.
-- Il [MetaShifting](/it/tier-list#tracker) elenca la patch accanto a quelle del playtest.
+- Il [MetaShifting](/it/metashifting) elenca la patch accanto a quelle del playtest.
 - Il [deck builder](/it/deck-builder) usa i costi nuovi: Dorothy ora conta come carta da 4 nella curva di mana.
 - Il testo ufficiale delle sei carte che cambiano effetto sarà aggiornato quando il database carte della community importerà la patch. Fino ad allora lo storico dei bilanciamenti di ogni scheda spiega la modifica.
 
@@ -347,7 +347,7 @@ The update adds new voice lines; the announcement says nothing more about them.
 
 ### Balance changes {#balance}
 
-The details came out the same evening, in the Steam post and on Discord: Dorothy drops to 4 mana, eight cards change stats, Itsy Bitsy Spider turns Evil, six cards change what they do, and two game rules and The Gallows location are fixed. Everything is in [the patch notes article](/en/news/demo-patch-notes-0921), and already in [MetaShifting](/en/tier-list#tracker) and in the balance history of every card it touches.
+The details came out the same evening, in the Steam post and on Discord: Dorothy drops to 4 mana, eight cards change stats, Itsy Bitsy Spider turns Evil, six cards change what they do, and two game rules and The Gallows location are fixed. Everything is in [the patch notes article](/en/news/demo-patch-notes-0921), and already in [MetaShifting](/en/metashifting) and in the balance history of every card it touches.
 
 ## Ranked mode opens with Steam Next Fest {#ranked}
 
@@ -404,7 +404,7 @@ L'aggiornamento aggiunge nuove voci al gioco; l'annuncio non dice altro.
 
 ### Modifiche di bilanciamento {#bilanciamento}
 
-Il dettaglio è uscito la sera stessa, nel post su Steam e sul Discord: Dorothy scende a 4 mana, otto carte cambiano statistiche, Itsy Bitsy Spider diventa Malvagia, sei carte cambiano effetto, e si correggono due regole di gioco e il luogo The Gallows. È tutto nell'[articolo sulle patch notes](/it/news/demo-patch-notes-0921), e già nel [MetaShifting](/it/tier-list#tracker) e nello storico di ogni carta toccata.
+Il dettaglio è uscito la sera stessa, nel post su Steam e sul Discord: Dorothy scende a 4 mana, otto carte cambiano statistiche, Itsy Bitsy Spider diventa Malvagia, sei carte cambiano effetto, e si correggono due regole di gioco e il luogo The Gallows. È tutto nell'[articolo sulle patch notes](/it/news/demo-patch-notes-0921), e già nel [MetaShifting](/it/metashifting) e nello storico di ogni carta toccata.
 
 ## La classificata parte con lo Steam Next Fest {#classificata}
 

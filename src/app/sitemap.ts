@@ -14,6 +14,8 @@ import { listTournamentSlugs } from "@/lib/tournament/queries";
 const SITE_UPDATED = "2026-09-21";
 /** Giorno in cui è nata la tier list personalizzabile (/tier-list/create). */
 const TIER_MAKER_ADDED = "2026-09-22";
+/** Riprogettazione della sezione Tier list: nascono /tier-list/most-played e /metashifting (24/09/2026). */
+const TIER_REDESIGN = "2026-09-24";
 
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
@@ -31,7 +33,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: Entry[] = [
     { path: "", lastModified: latestNews, changeFrequency: "daily", priority: 1 },
     { path: "/news", lastModified: latestNews, changeFrequency: "daily", priority: 0.9 },
-    { path: "/tier-list", lastModified: tierList.updated, changeFrequency: "weekly", priority: 0.9 },
+    // Dal 24/09/2026 la tier list mostra anche le anteprime dei mazzi pubblicati: cambia quando cambiano loro
+    { path: "/tier-list", lastModified: [tierList.updated, TIER_REDESIGN, latestCommunity ?? ""].sort().at(-1) ?? tierList.updated, changeFrequency: "daily", priority: 0.9 },
+    // Le più giocate (24/09/2026): calcolata dai mazzi pubblicati, cambia con loro
+    { path: "/tier-list/most-played", lastModified: [TIER_REDESIGN, latestCommunity ?? ""].sort().at(-1) ?? TIER_REDESIGN, changeFrequency: "daily", priority: 0.8 },
+    // MetaShifting su una pagina sua (24/09/2026): cambia con le patch
+    { path: "/metashifting", lastModified: [TIER_REDESIGN, patches[latestPatch].date].sort().at(-1) ?? TIER_REDESIGN, changeFrequency: "weekly", priority: 0.8 },
     // Tier list personalizzabile (22/09/2026): la pagina cambia quando cambiano le carte attive, cioè con una patch
     // o con una nuova verifica delle carte sul gioco.
     { path: "/tier-list/create", lastModified: [TIER_MAKER_ADDED, patches[latestPatch].date, cardsVerified.date].sort().at(-1) ?? TIER_MAKER_ADDED, changeFrequency: "weekly", priority: 0.8 },

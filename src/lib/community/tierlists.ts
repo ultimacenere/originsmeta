@@ -3,67 +3,28 @@ import type { TierListRow } from "@/lib/supabase/database";
 import { TIERS, type Tier, type TierBoard, type TierKind } from "@/lib/tiercode";
 
 /**
- * Tier list della community (23/09/2026, §1 punto 27.1 della KB). Le tier list che gli utenti salvano dal tool
- * `/tier-list/create` alimentano una classifica unica: per ogni carta si fa la media delle fasce ricevute
- * (S=5, A=4, B=3, C=2, D=1) e la si rimette in una fascia. La media la calcola la vista `tier_card_scores`
- * di supabase/schema.sql; la soglia sta qui, così si cambia senza toccare il database.
+ * Tier list della community. Le tier list che gli iscritti salvano dal tool `/tier-list/create` alimentano una
+ * classifica unica: per ogni carta la media delle fasce ricevute (S=5 … D=1), il numero di voti e la distribuzione.
+ * Dal 24/09/2026 (riprogettazione della sezione, §1 punto 32 della KB) i numeri li calcola il sito, con
+ * `aggregateLists` di `src/lib/tierstats.ts` (funzione pura, con test): la vista SQL `tier_card_scores` dava media e
+ * voti ma non la distribuzione per fascia, che ora il dettaglio di ogni carta mostra.
  *
- * Questa classifica è dichiaratamente l'opinione della community, non un dato del gioco: la tier list ufficiale
+ * È dichiaratamente l'opinione di chi frequenta il sito, non un dato del gioco: la tier list di OriginsMeta
  * (/tier-list) resta separata e aspetta i risultati dei tornei ufficiali.
  */
 
-/** Punteggio di ogni fascia: la S vale 5, la D vale 1. Cambiare qui cambia anche la vista SQL. */
-export const TIER_SCORE: Record<Tier, number> = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+export type PublishedTierList = { kind: TierKind; entries: unknown; updated_at: string };
 
-/**
- * Quante persone devono aver classificato una carta perché entri nelle fasce. Sotto questa soglia la carta
- * resta fra le "non ancora classificate": con un voto solo la classifica sarebbe quella di una persona.
- * Parte da 1 perché la funzione è appena nata e le tier list salvate sono poche; si alza quando cresceranno.
- */
-export const MIN_TIER_VOTES = 1;
-
-export type CommunityTierScore = { slug: string; avg: number; votes: number; tier: Tier };
-
-/** La fascia che corrisponde a una media: 4,5 e oltre è S, sotto 1,5 è D. */
-export function tierFromScore(avg: number): Tier {
-  if (avg >= 4.5) return "S";
-  if (avg >= 3.5) return "A";
-  if (avg >= 2.5) return "B";
-  if (avg >= 1.5) return "C";
-  return "D";
-}
-
-/** Punteggi della community per un tipo di tier list, dal più alto; vuoto se la community è spenta. */
-export async function communityScores(kind: TierKind): Promise<CommunityTierScore[]> {
+/** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists`). */
+export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tier_card_scores").select("slug, avg_score, votes").eq("kind", kind);
+  const { data, error } = await client.from("tier_lists").select("kind, entries, updated_at").eq("status", "published").limit(5000);
   if (error) {
-    console.error("[community] communityScores:", error.message);
+    console.error("[community] listPublishedTierLists:", error.message);
     return [];
   }
-  return ((data ?? []) as { slug: string; avg_score: number | string; votes: number | string }[])
-    .map((r) => {
-      const avg = Number(r.avg_score);
-      return { slug: r.slug, avg, votes: Number(r.votes), tier: tierFromScore(avg) };
-    })
-    .filter((r) => r.votes >= MIN_TIER_VOTES)
-    .sort((a, b) => b.avg - a.avg || b.votes - a.votes || a.slug.localeCompare(b.slug));
-}
-
-/** Quante tier list pubblicate ci sono per un tipo: è il "quante persone hanno votato" della pagina. */
-export async function communityTierCount(kind: TierKind): Promise<number> {
-  const client = supabasePublic();
-  if (!client) return 0;
-  const { count } = await client.from("tier_lists").select("id", { count: "exact", head: true }).eq("kind", kind).eq("status", "published");
-  return count ?? 0;
-}
-
-/** I punteggi divisi per fascia, nell'ordine delle fasce: quel che la pagina disegna. */
-export function byTier(scores: CommunityTierScore[]): Record<Tier, CommunityTierScore[]> {
-  const out = { S: [], A: [], B: [], C: [], D: [] } as Record<Tier, CommunityTierScore[]>;
-  for (const s of scores) out[s.tier].push(s);
-  return out;
+  return (data ?? []) as unknown as PublishedTierList[];
 }
 
 const TIER_LIST_SELECT = "id, owner, kind, title, code, entries, status, created_at, updated_at";

@@ -279,7 +279,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 const ranked = rankedIn(s);
                 return (
                   <li key={s.id}>
-                    <Link href={href(locale, `/tier-list#${s.id}`)} className="block rounded-lg border-2 border-sky px-3 py-2 text-pale hover:bg-night-3 hover:text-chalk">
+                    {/* Finché le fasce sono vuote ogni riquadro porta alla sua sezione di "Le più giocate" (24/09/2026):
+                        prima prometteva "dopo il Next Fest" e portava a una pagina senza classifica */}
+                    <Link
+                      href={href(locale, ranked > 0 ? `/tier-list#${s.id}` : `/tier-list/most-played#${s.id}`)}
+                      className="block rounded-lg border-2 border-sky px-3 py-2 text-pale hover:bg-night-3 hover:text-chalk"
+                    >
                       <span className="t-item block text-sm">{sectionTitle[s.id]}</span>
                       <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">{ranked > 0 ? `${ranked} ${d.common.ranked}` : d.home.tierSoon}</span>
                     </Link>
@@ -329,8 +334,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 </li>
               ))}
             </ol>
-            {/* Il tasto promette il tracker delle patch: porta direttamente a quella sezione, non in cima alla tier list */}
-            <Link href={href(locale, "/tier-list#tracker")} className="btn btn-primary text-xs">
+            {/* Il tasto promette il tracker delle patch: dal 24/09/2026 ha una pagina sua, /metashifting */}
+            <Link href={href(locale, "/metashifting")} className="btn btn-primary text-xs">
               {d.tier.trackerTitle} →
             </Link>
           </section>
