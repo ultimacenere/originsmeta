@@ -91,9 +91,15 @@ export const authors: Author[] = [
     ),
     joined: "2026-09",
     knowsAbout: ["Origins TCG", "Deck building", "Community deck lists", "Card game tournaments"],
+    // Tutti i mazzi pubblicati da Davdas (account luigidavdasragoni), in ordine di pubblicazione: elenco
+    // riallineato con il database il 25/09/2026. Quando ne pubblica altri vanno aggiunti qui.
     communityDecks: [
       { slug: "healing-healsing-9411", name: "Healing Healsing" },
       { slug: "3-pigs-mid-range-6311", name: "3 Pigs Mid Range" },
+      { slug: "on-reveal-mid-range-772e", name: "On Reveal Mid Range" },
+      { slug: "dorothy-combo-7503", name: "Dorothy Combo" },
+      { slug: "king-of-value-trade-fd14", name: "King of Value Trade" },
+      { slug: "the-trick-or-treat-legion-72c4", name: "The Trick-or-Treat Legion" },
     ],
     links: [],
   },
