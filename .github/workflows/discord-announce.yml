@@ -52,6 +52,7 @@ jobs:
           DISCORD_WEBHOOK_GUIDES: ${{ secrets.DISCORD_WEBHOOK_GUIDES }}
           DISCORD_WEBHOOK_METASHIFTING: ${{ secrets.DISCORD_WEBHOOK_METASHIFTING }}
           DISCORD_WEBHOOK_DECKS: ${{ secrets.DISCORD_WEBHOOK_DECKS }}
+          EVENT: ${{ github.event_name }}
           REPO: ${{ github.repository }}
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}

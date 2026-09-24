@@ -320,6 +320,11 @@ async function archiveItems(since) {
 
 async function main() {
   const since = process.env.BACKFILL_SINCE?.trim();
+  // Lanciata a mano senza data né voci: prima finiva in verde senza fare nulla (24/09/2026, archivio lanciato senza
+  // `backfill_since`, 7 secondi e nessun messaggio). Meglio un errore che dica che cosa manca.
+  if (process.env.EVENT === "workflow_dispatch" && !since && !process.env.SLUGS?.trim()) {
+    throw new Error("Lancio a mano senza backfill_since né slugs: per l'archivio scrivi la data (es. 2026-09-01) nel campo backfill_since.");
+  }
   const items = process.env.SLUGS?.trim() ? await manualItems(process.env.SLUGS) : since ? await archiveItems(since) : await pushItems();
   if (!items.length) {
     console.log("Niente da annunciare.");
