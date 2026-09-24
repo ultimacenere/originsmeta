@@ -1,10 +1,12 @@
-# Ogni news e guida nuova finisce da sola sul Discord di OriginsMeta (Pierluigi, 24/09/2026).
-# A ogni push su main che tocca news o guide, lo script confronta gli slug prima e dopo il push, aspetta che le
-# pagine nuove siano online (deploy di Vercel) e le manda al canale con un webhook. Dettagli in
-# scripts/discord-announce.mjs e nel README, sezione "Annunci su Discord".
+# I contenuti del sito finiscono da soli sul Discord di OriginsMeta (Pierluigi, 24/09/2026).
+# A ogni push su main che tocca news o guide, lo script trova gli slug nuovi, aspetta che le pagine siano online
+# (deploy di Vercel) e le pubblica nei canali: news in #announcements e #site-news, patch notes anche in
+# #metashifting, guide in #guides (o #site-news). Dettagli in scripts/discord-announce.mjs e nel README, sezione
+# "Discord: contenuti automatici". I mazzi della community e i tornei li pubblica il sito stesso, in diretta.
 #
-# Serve il secret DISCORD_WEBHOOK_NEWS (Settings → Secrets and variables → Actions → New repository secret):
-# senza, l'Action finisce con un avviso e non manda nulla. DISCORD_WEBHOOK_GUIDES è facoltativo.
+# Secret (Settings → Secrets and variables → Actions → New repository secret), uno per canale:
+# DISCORD_WEBHOOK_ANNOUNCEMENTS, DISCORD_WEBHOOK_NEWS, DISCORD_WEBHOOK_METASHIFTING, DISCORD_WEBHOOK_DECKS (solo per
+# l'archivio) e, facoltativo, DISCORD_WEBHOOK_GUIDES. Un canale senza secret si salta con un avviso.
 name: Annunci su Discord
 
 on:
@@ -15,14 +17,17 @@ on:
       - src/lib/content/guides.ts
   workflow_dispatch:
     inputs:
+      backfill_since:
+        description: 'Archivio: pubblica tutto da questa data (aaaa-mm-gg), una volta sola. Esempio: 2026-09-01'
+        required: false
       slugs:
-        description: 'Da annunciare a mano, separati da virgola: news:<slug> o guides:<slug>'
-        required: true
+        description: 'Oppure voci singole, separate da virgola: news:<slug>, guides:<slug>, decks:<slug>'
+        required: false
 
 permissions:
   contents: read
 
-# un annuncio alla volta: due push ravvicinati non si pestano i piedi
+# un invio alla volta: due push ravvicinati non si pestano i piedi
 concurrency:
   group: discord-announce
   cancel-in-progress: false
@@ -30,7 +35,7 @@ concurrency:
 jobs:
   announce:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,12 +43,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Annuncia le news e le guide nuove
+      - name: Pubblica sul Discord
         run: node scripts/discord-announce.mjs
         env:
+          DISCORD_WEBHOOK_ANNOUNCEMENTS: ${{ secrets.DISCORD_WEBHOOK_ANNOUNCEMENTS }}
           DISCORD_WEBHOOK_NEWS: ${{ secrets.DISCORD_WEBHOOK_NEWS }}
           DISCORD_WEBHOOK_GUIDES: ${{ secrets.DISCORD_WEBHOOK_GUIDES }}
+          DISCORD_WEBHOOK_METASHIFTING: ${{ secrets.DISCORD_WEBHOOK_METASHIFTING }}
+          DISCORD_WEBHOOK_DECKS: ${{ secrets.DISCORD_WEBHOOK_DECKS }}
           REPO: ${{ github.repository }}
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
+          BACKFILL_SINCE: ${{ github.event.inputs.backfill_since }}
           SLUGS: ${{ github.event.inputs.slugs }}

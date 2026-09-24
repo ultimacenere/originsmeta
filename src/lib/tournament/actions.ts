@@ -9,7 +9,7 @@ import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
 import { newSlug, parseTournamentForm, splitCodes } from "./util";
 import { decksRequired } from "./types";
-import { notifyIfStarted, notifyMatchResult, notifyTournamentFinished } from "./notify";
+import { notifyIfStarted, notifyMatchResult, notifyTournamentCreated, notifyTournamentFinished } from "./notify";
 
 /**
  * Server Action del Tournament Organizer. Creazione e cancellazione passano dalle policy RLS della
@@ -96,11 +96,13 @@ export async function createTournament(_prev: TournamentActionState, formData: F
     const { data, error } = await ctx.supabase
       .from("tournaments")
       .insert({ ...parsed.row, slug, organizer: ctx.user.id })
-      .select("slug")
+      .select("id, slug")
       .single();
     if (!error && data) {
-      const s = (data as { slug: string }).slug;
+      const { id, slug: s } = data as { id: string; slug: string };
       revalidateTournamentPaths(s);
+      // in diretta nel canale dei tornei del nostro Discord, solo se il torneo è pubblico
+      notifyTournamentCreated(id);
       // ?new=1: la scheda apre in cima il pannello "Torneo creato" con il link da incollare su Discord (UX-9)
       return { ok: true, href: `/${locale}/tournaments/${s}?new=1` };
     }
