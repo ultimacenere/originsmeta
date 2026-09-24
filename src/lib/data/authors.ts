@@ -7,13 +7,16 @@ const n = (en: string, it: string, fr?: string): L10n => (fr ? { en, it, fr } : 
 
 export type Author = {
   slug: string;
-  /** nome completo, usato nell'H1 e nei dati strutturati */
+  /**
+   * nome completo con il nickname fra virgolette (Pierluigi, 24/09/2026: Pierluigi “Aldry” Cella, Luigi “Davdas”
+   * Ragoni), usato nell'H1, nelle schede dell'indice, nelle firme di news e guide e nei dati strutturati
+   */
   name: string;
   /** nome breve o nickname: firme, titoli delle sezioni ("Guide di {name}") */
   displayName: string;
-  /** ruolo sul sito, una riga */
+  /** ruolo sul sito, una riga: "Fondatore" per tutti e due (Pierluigi, 24/09/2026), ed è l'unica descrizione nelle schede dell'indice */
   role: L10n;
-  /** una riga sola: scheda dell'indice e meta description del profilo (120-158 caratteri: oltre, Google taglia) */
+  /** una riga sola: meta description del profilo (120-158 caratteri: oltre, Google taglia); nelle schede dell'indice non compare più */
   tagline: L10n;
   /** titolo per la SERP: `pageMeta` ci aggiunge il marchio quando manca, quindi il risultato finale deve stare in 60 caratteri */
   metaTitle: L10n;
@@ -53,17 +56,17 @@ export type Author = {
 export const authors: Author[] = [
   {
     slug: "pierluigi-cella",
-    name: "Pierluigi Cella",
+    name: "Pierluigi “Aldry” Cella",
     displayName: "Pierluigi",
-    role: n("Owner and founder", "Proprietario e fondatore"),
+    role: n("Founder", "Fondatore"),
     tagline: n(
-      "Owner and founder of OriginsMeta: he opened the site in September 2026 and signs the news, the guides, the roadmap and the card economy pieces.",
-      "Proprietario e fondatore di OriginsMeta: ha aperto il sito a settembre 2026 e firma le news, le guide, la roadmap e i testi sull'economia delle carte.",
+      "Founder of OriginsMeta: he opened the site in September 2026 and signs the news, the guides, the roadmap and the card economy pieces.",
+      "Fondatore di OriginsMeta: ha aperto il sito a settembre 2026 e firma le news, le guide, la roadmap e i testi sull'economia delle carte.",
     ),
-    metaTitle: n("Pierluigi Cella, Origins TCG guides · OriginsMeta", "Pierluigi Cella, guide Origins TCG · OriginsMeta"),
+    metaTitle: n("Pierluigi “Aldry” Cella, Origins TCG guides · OriginsMeta", "Pierluigi “Aldry” Cella, guide Origins TCG · OriginsMeta"),
     bio: n(
-      "Pierluigi Cella is the owner and founder of OriginsMeta: he opened the site in September 2026 to gather in one place what the sources of Origins TCG publish in scattered pieces. The rule the site works by is his: every date, every statistic and every rule comes from an official source — the Steam page, the patch notes, the official Discord — and every page carries the date it was last updated, so that any reader can check it. On OriginsMeta he signs the news, the guides, the roadmap and the pieces on the card economy. The rest of the editorial line is his too: no invented data, no card art taken from other sites, and the reminder that OriginsMeta is not affiliated with Koin Games on every page. You can write to him at staff@originsmeta.com.",
-      "Pierluigi Cella è il proprietario e fondatore di OriginsMeta: ha aperto il sito a settembre 2026 per raccogliere in un posto solo quello che le fonti di Origins TCG pubblicano sparso. È sua la regola con cui lavora il sito: ogni data, ogni statistica e ogni regola arrivano da una fonte ufficiale — la pagina Steam, le patch notes, il Discord ufficiale — e ogni pagina porta la data dell'ultimo aggiornamento, così chi legge può verificare. Su OriginsMeta firma le news, le guide, la roadmap e i testi sull'economia delle carte. È suo anche il resto della linea editoriale: nessun dato inventato, nessuna illustrazione presa da altri siti e, su ogni pagina, la precisazione che OriginsMeta non è affiliato a Koin Games. Gli si può scrivere a staff@originsmeta.com.",
+      "Pierluigi “Aldry” Cella is one of the founders of OriginsMeta: he opened the site in September 2026 to gather in one place what the sources of Origins TCG publish in scattered pieces. The rule the site works by is his: every date, every statistic and every rule comes from an official source — the Steam page, the patch notes, the official Discord — and every page carries the date it was last updated, so that any reader can check it. On OriginsMeta he signs the news, the guides, the roadmap and the pieces on the card economy. The rest of the editorial line is his too: no invented data, no card art taken from other sites, and the reminder that OriginsMeta is not affiliated with Koin Games on every page. You can write to him at staff@originsmeta.com.",
+      "Pierluigi “Aldry” Cella è uno dei fondatori di OriginsMeta: ha aperto il sito a settembre 2026 per raccogliere in un posto solo quello che le fonti di Origins TCG pubblicano sparso. È sua la regola con cui lavora il sito: ogni data, ogni statistica e ogni regola arrivano da una fonte ufficiale — la pagina Steam, le patch notes, il Discord ufficiale — e ogni pagina porta la data dell'ultimo aggiornamento, così chi legge può verificare. Su OriginsMeta firma le news, le guide, la roadmap e i testi sull'economia delle carte. È suo anche il resto della linea editoriale: nessun dato inventato, nessuna illustrazione presa da altri siti e, su ogni pagina, la precisazione che OriginsMeta non è affiliato a Koin Games. Gli si può scrivere a staff@originsmeta.com.",
     ),
     joined: "2026-09",
     knowsAbout: ["Origins TCG", "Koin Games", "Trading card games", "Digital card game economy", "Game release roadmaps"],
@@ -72,16 +75,15 @@ export const authors: Author[] = [
   {
     // Lo slug è il nickname pubblico, non il nome anagrafico: finisce nell'URL indicizzato.
     slug: "davdas",
-    // Titolo e dati strutturati usano il nickname pubblico. Il nome anagrafico, Luigi Ragoni, compare nella
-    // biografia che Pierluigi ha dato il 24/09/2026; per metterlo anche qui basta cambiare `name`.
-    name: "Davdas",
+    // Nome completo con il nickname, come lo ha chiesto Pierluigi il 24/09/2026 (prima compariva solo "Davdas").
+    name: "Luigi “Davdas” Ragoni",
     displayName: "Davdas",
-    role: n("Administrator · community decks and tournaments", "Amministratore · mazzi della community e tornei"),
+    role: n("Founder", "Fondatore"),
     tagline: n(
-      "Second administrator of OriginsMeta: he published the first two community decks on the site, and his game notes are what the deck guides are built on.",
-      "Secondo amministratore di OriginsMeta: ha pubblicato i primi due mazzi della community del sito e le sue note di gioco sono la base delle guide ai mazzi.",
+      "Founder of OriginsMeta: he published the first two community decks on the site, and his game notes are what the deck guides are built on.",
+      "Fondatore di OriginsMeta: ha pubblicato i primi due mazzi della community del sito e le sue note di gioco sono la base delle guide ai mazzi.",
     ),
-    metaTitle: n("Davdas, Origins TCG community decks · OriginsMeta", "Davdas, mazzi della community di Origins TCG"),
+    metaTitle: n("Luigi “Davdas” Ragoni, Origins TCG decks · OriginsMeta", "Luigi “Davdas” Ragoni, mazzi di Origins TCG"),
     // Biografia data da Pierluigi il 24/09/2026: l'italiano è il suo testo parola per parola, l'inglese è tradotto.
     bio: n(
       "Luigi Ragoni is an actor, director, trainer and artistic director. Born on 2 August 1982, he graduated as an actor from the Civica Scuola Paolo Grassi in Milan at the age of 25. He began his career touring Italy with a range of stage productions, moving on to television, film and radio, and developed his teaching skills working in theatres, academies, universities and high schools. Fascinated by the world of digital entertainment, he put his theatre experience to work for several international companies, becoming the artistic director of many events and shows. For more than 15 years he has worked as an entertainment consultant, host, writer, interviewer and speaker. His credits include hosting and casting major events for some of the most famous and successful games, such as Hearthstone, FIFA, eFootball, Valorant, Clash Royale, Brawl Stars and many more.",

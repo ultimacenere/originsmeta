@@ -37,10 +37,11 @@ export default async function AuthorsPage({ params }: { params: LocaleParams }) 
       <ul className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
         {authors.map((a) => (
           <li key={a.slug}>
+            {/* Solo ruolo e nome (Pierluigi, 24/09/2026: "come descrizione solo Fondatore, per entrambi"); la tagline
+                resta la meta description della pagina autore */}
             <Link href={href(locale, `/authors/${a.slug}`)} className="card-night card-night-hover flex h-full flex-col p-6">
               <p className="kicker text-pale-muted">{a.role[locale]}</p>
-              <h2 className="t-item mt-1 leading-tight">{a.name}</h2>
-              <p className="mt-2 flex-1 text-sm text-pale-muted">{a.tagline[locale]}</p>
+              <h2 className="t-item mt-1 flex-1 leading-tight">{a.name}</h2>
               <span className="mt-4 font-display text-sm font-bold text-mint">{d.authors.profileCta} →</span>
             </Link>
           </li>
