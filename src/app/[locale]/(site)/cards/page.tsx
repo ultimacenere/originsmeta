@@ -26,6 +26,8 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
     sagaLabel: sagas[c.saga][locale],
     rarity: c.rarity,
     keywords: c.keywords ?? [],
+    // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
+    abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
     removed: c.status === "removed",
   }));
   const usedSagas = Array.from(new Set(cards.map((c) => c.saga))) as SagaId[];
@@ -78,6 +80,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             rarities={(["common", "rare", "epic", "legendary"] as const).map((id) => ({ id, label: rarityLabel[id] }))}
             labels={{
               search: d.common.search,
+              searchHint: d.cards.searchHint,
               all: d.common.all,
               type: d.common.filterType,
               saga: d.common.filterSaga,

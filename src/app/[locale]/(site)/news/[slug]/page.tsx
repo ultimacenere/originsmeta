@@ -11,7 +11,9 @@ import { CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { NewsCover } from "@/components/NewsCover";
 import { SteamButton } from "@/components/SteamButton";
-import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
+import { DiscordButton } from "@/components/DiscordButton";
+import { ORIGINSMETA_DISCORD } from "@/lib/discord";
+import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, isSiteNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -63,9 +65,12 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const author = authorOfNews(item);
   const authorPath = href(locale, `/authors/${author.slug}`);
   const authorUrl = `${siteUrl}${authorPath}`;
-  // La fonte da cui nasce l'articolo: il post ufficiale, oppure la scheda del mazzo pubblicato qui.
+  // La fonte da cui nasce l'articolo: il post ufficiale, oppure la scheda del mazzo pubblicato qui. Le novità del
+  // sito (`site`) non hanno una fonte fuori dall'articolo: niente "Fonte" e niente `isBasedOn`.
   const deckNews = isDeckNews(item);
-  const sourceUrl = deckNews ? `${siteUrl}${href(locale, item.url)}` : item.url;
+  const siteNews = isSiteNews(item);
+  const ownSource = deckNews || siteNews;
+  const sourceUrl = siteNews ? undefined : deckNews ? `${siteUrl}${href(locale, item.url)}` : item.url;
 
   const article = {
     "@context": "https://schema.org",
@@ -167,10 +172,11 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
         {/* I nomi delle carte nel testo diventano link alla scheda con l'anteprima della carta al passaggio del mouse */}
         {body ? <Markdown source={body} linkCards={locale} /> : null}
 
-        {deckNews && !item.cards?.length && !item.guides?.length ? null : (
-          <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby={deckNews ? undefined : "news-source"}>
-            {/* per le news sui mazzi la "fonte" è la scheda del mazzo, già aperta dal tasto sotto la copertina */}
-            {deckNews ? null : (
+        {ownSource && !item.cards?.length && !item.guides?.length ? null : (
+          <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby={ownSource ? undefined : "news-source"}>
+            {/* per le news sui mazzi la "fonte" è la scheda del mazzo, già aperta dal tasto sotto la copertina;
+                per le novità del sito è l'articolo stesso */}
+            {ownSource ? null : (
               <>
                 <h2 id="news-source" className="kicker text-pale-muted">
                   {d.news.sourceTitle}
@@ -187,7 +193,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
               </>
             )}
             {item.cards?.length ? (
-              <div className={deckNews ? "" : "mt-6"}>
+              <div className={ownSource ? "" : "mt-6"}>
                 <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
                 <CardChipList slugs={item.cards} locale={locale} />
               </div>
@@ -220,6 +226,19 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
         </p>
         <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
+
+      {/* Invito al NOSTRO Discord in fondo a ogni news (Pierluigi, 24/09/2026), prima delle altre news */}
+      <section aria-labelledby="news-discord" className="card-night mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 p-5 sm:p-6">
+        <div className="min-w-0 flex-1 basis-64">
+          <h2 id="news-discord" className="t-item">
+            {d.news.discordTitle}
+          </h2>
+          <p className="mt-1 text-sm text-pale">{d.news.discordText}</p>
+        </div>
+        <DiscordButton href={ORIGINSMETA_DISCORD} className="justify-center">
+          {d.nav.discordJoin}
+        </DiscordButton>
+      </section>
 
       <section className="mt-12" aria-labelledby="more-news">
         <div className="flex flex-wrap items-baseline justify-between gap-3">

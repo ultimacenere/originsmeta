@@ -13,8 +13,12 @@ export type DiscordEmbedField = { name: string; value: string; inline?: boolean 
 
 export type DiscordEmbed = {
   title?: string;
+  /** link del titolo */
+  url?: string;
   /** fino a 4096 caratteri */
   description?: string;
+  /** immagine grande sotto il testo (URL assoluto) */
+  image?: { url: string };
   /** colore della barra laterale, come intero (0x31e3bd = menta) */
   color?: number;
   fields?: DiscordEmbedField[];

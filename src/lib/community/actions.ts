@@ -10,6 +10,7 @@ import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { publishedDeckLimit } from "./queries";
+import { announceDeck } from "./discordDeck";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
@@ -94,6 +95,8 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
       // solo una riga dell'utente e solo se è ancora privata: un id qualunque non cancella niente
       if (isUuid(draftId)) await p.supabase.from("community_decks").delete().eq("id", draftId).eq("owner", p.user.id).eq("status", "draft");
       revalidateDeckPaths(s);
+      // in diretta nel canale #community-decks del nostro Discord, dopo la risposta (senza webhook non fa nulla)
+      announceDeck(s);
       return { ok: true, href: `/${p.locale}/decks/community/${s}?new=1` };
     }
     if (error?.code !== "23505") return { error: "db" };

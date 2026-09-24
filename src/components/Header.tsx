@@ -5,6 +5,8 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 import { AccountMenu } from "./AccountMenu";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
+import { DiscordButton, DiscordIconLink } from "./DiscordButton";
+import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 
 export function navItems(dict: Dictionary): { label: string; path: string }[] {
   return [
@@ -32,15 +34,16 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
     // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
     <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
-      {/* tra 1280 e 1535 px la riga ospita menu completo, ricerca, Accedi e lingua: spazi e ricerca un po' più stretti;
+      {/* da 1280 px la riga ospita menu completo, ricerca, Discord, Accedi e lingua: spazi e ricerca più stretti, anche
+          sopra i 1536 px (il contenitore resta di 1280: lì ricerca da 208 px e spazi da 12 facevano sforare la riga);
           sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px */}
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2 2xl:gap-3">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2">
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
           {/* il nome del sito lo dice l'aria-label del link qui sopra: l'immagine resta muta */}
           <Wordmark height={30} className="max-[359px]:!h-6" />
         </Link>
         {/* voce della pagina corrente: aria-current="page"; aspetto (riposo, passaggio, attiva) tutto in .nav-link */}
-        <nav className="ml-3 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label={dict.nav.mainNav}>
+        <nav className="ml-1 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label={dict.nav.mainNav}>
           {items.map((it) => (
             <NavLink key={it.path} href={href(locale, it.path)}>
               {it.label}
@@ -56,13 +59,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             name="q"
             type="search"
             placeholder={dict.nav.search}
-            className="w-44 rounded-l-full border border-felt-line bg-felt px-4 py-2 text-sm text-chalk placeholder:text-chalk-muted/70 focus:border-mint xl:w-28 2xl:w-52"
+            className="w-44 rounded-l-full border border-felt-line bg-felt px-4 py-2 text-sm text-chalk placeholder:text-chalk-muted/70 focus:border-mint xl:w-28"
           />
           <button type="submit" className="rounded-r-full border border-l-0 border-felt-line bg-felt-soft px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-mint hover:bg-felt-line">
             {dict.nav.searchButton}
           </button>
         </form>
         <div className="ml-auto flex items-center gap-2 md:ml-2">
+          {/* Loghino del NOSTRO Discord (Pierluigi, 24/09/2026); sotto 640 px la riga è piena e il tasto sta nel menu */}
+          <DiscordIconLink href={ORIGINSMETA_DISCORD} label={dict.nav.discord} className="max-sm:!hidden" />
           <AccountMenu
             locale={locale}
             labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout, player: dict.nav.playerFallback }}
@@ -88,10 +93,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             <NavLink href={href(locale, "/about")} className="nav-link-block">
               {dict.nav.about}
             </NavLink>
-            {/* sotto 640 px il selettore lingua sta qui: nella riga dell'header non c'è spazio */}
+            {/* sotto 640 px il selettore lingua e il Discord stanno qui: nella riga dell'header non c'è spazio */}
             <div className="mt-2 flex items-center justify-between gap-3 border-t border-felt-line px-3 pt-3 sm:hidden">
               <span className="text-xs text-chalk-muted">{dict.nav.language}</span>
               <LocaleSwitcher locale={locale} label={dict.nav.language} />
+            </div>
+            <div className="mt-3 px-3 pb-1 sm:hidden">
+              <DiscordButton href={ORIGINSMETA_DISCORD} size="sm" className="w-full justify-center">
+                {dict.nav.discordJoin}
+              </DiscordButton>
             </div>
           </nav>
         </AutoCloseDetails>

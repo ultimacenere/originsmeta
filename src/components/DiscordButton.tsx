@@ -40,3 +40,15 @@ export function DiscordButton({
     </a>
   );
 }
+
+/**
+ * Solo il logo, nello stesso blurple dei tasti (loghino dell'header, richiesta di Pierluigi del 24/09/2026).
+ * Il logo è muto: il nome del link lo dà `label`, più l'avviso della nuova scheda di `newTabProps`.
+ */
+export function DiscordIconLink({ href, label, className = "" }: { href: string; label: string; className?: string }) {
+  return (
+    <a href={href} {...newTabProps} aria-label={label} title={label} className={`btn-discord btn-discord-icon ${className}`}>
+      <DiscordLogo className="h-4 w-4" />
+    </a>
+  );
+}

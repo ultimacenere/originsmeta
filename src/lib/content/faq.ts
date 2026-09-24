@@ -35,13 +35,13 @@ const en: Faq[] = [
   {
     id: "conquest",
     q: "What is the Conquest format?",
-    a: "You register more than one deck, each with a different Legendary, and at least nine cards have to differ from deck to deck. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. Koin ran it at Big Bob's Playtest Battle and chose it for the Crimson Cup.",
+    a: "You register more than one deck, each with a different Legendary, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, with at least nine cards of difference.",
     guides: ["steam-next-fest-2026"],
   },
   {
     id: "crimson-cup",
     q: "When is the Crimson Cup and what do you win?",
-    a: "From 20 to 25 October 2026, during Steam Next Fest: three qualifiers of 512 spots each on the 20th, 21st and 22nd, playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total — an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash. Sign-ups are on Koin's official Discord.",
+    a: "From 20 to 25 October 2026, during Steam Next Fest: three qualifiers of 512 spots each on the 20th, 21st and 22nd, playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total — an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash; the exact prize pool was promised for the week after 24 September. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play.",
     guides: ["steam-next-fest-2026"],
   },
   {
@@ -67,13 +67,13 @@ const it: Faq[] = [
   {
     id: "conquest",
     q: "Come funziona il formato Conquest?",
-    a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e fra un mazzo e l'altro devono cambiare almeno nove carte. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Koin lo ha provato a Big Bob's Playtest Battle e lo ha scelto per la Crimson Cup.",
+    a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, con almeno nove carte di differenza.",
     guides: ["steam-next-fest-2026"],
   },
   {
     id: "crimson-cup",
     q: "Quando è la Crimson Cup e che cosa si vince?",
-    a: "Dal 20 al 25 ottobre 2026, durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22, playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $ — una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro. Le iscrizioni sono sul Discord ufficiale di Koin.",
+    a: "Dal 20 al 25 ottobre 2026, durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22, playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $ — una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro; la ripartizione esatta è promessa per la settimana dopo il 24 settembre. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca.",
     guides: ["steam-next-fest-2026"],
   },
   {

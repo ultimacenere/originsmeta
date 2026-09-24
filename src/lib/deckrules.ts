@@ -35,6 +35,8 @@ export type BuilderCard = {
   art?: string;
   /** testo dell abilità nella lingua della pagina e allineamento: servono all anteprima al passaggio del mouse */
   ability?: string;
+  /** testo inglese, com'è nel gioco, solo sulle pagine non inglesi: la ricerca del pool trova "draw" anche dove c'è "Pesca" */
+  abilityEn?: string;
   alignment?: "good" | "evil" | "neutral";
   alignmentLabel?: string;
   typeLabel?: string;

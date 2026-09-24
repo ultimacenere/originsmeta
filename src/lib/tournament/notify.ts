@@ -12,12 +12,14 @@ import { tournamentShortLink } from "./types";
  * Il tabellone parte da solo dentro le RPC (tm_autostart, chiamata da join_tournament e
  * submit_tournament_decks, che ritornano void) e nessuno avvisava i giocatori. Questo modulo manda un
  * messaggio breve, in inglese e in italiano, al canale Discord del sito quando:
+ *   - nasce un torneo pubblico (24/09/2026, Pierluigi: "quando pubblichiamo sul sito deve essere pubblicato live
+ *     su Discord"): data, formato, posti e link per iscriversi;
  *   - il tabellone parte (da solo o avviato dall'organizzatore): abbinamenti del primo turno;
  *   - una partita ha un risultato confermato (referto doppio o risultato imposto): risultato e prossimo turno;
  *   - l'organizzatore chiude il torneo: vincitore e secondo posto.
  *
  * INTERRUTTORE: variabile d'ambiente DISCORD_WEBHOOK_URL (solo server, MAI con prefisso NEXT_PUBLIC_).
- *   Valore: l'URL del webhook del canale (Discord → Impostazioni del canale → Integrazioni → Webhook →
+ *   Valore: l'URL del webhook del canale `#tournaments-feed` del nostro server (Discord → Impostazioni del canale → Integrazioni → Webhook →
  *   Nuovo webhook → Copia URL, nella forma https://discord.com/api/webhooks/<id>/<token>).
  *   Dove: Vercel → Project → Settings → Environment Variables (Production), poi un nuovo deploy.
  *   È un segreto: chi conosce l'URL può scrivere nel canale, quindi non va nel codice né nel repository.
@@ -131,6 +133,23 @@ function links(t: TInfo): string[] {
 
 function nameOf(names: Map<string, string>, id: string | null, fallback = "?"): string {
   return id ? names.get(id) ?? fallback : fallback;
+}
+
+type CreatedInfo = TInfo & { starts_at: string; size: number; deck_mode: string; conquest_decks: number; best_of: number; listed: boolean };
+
+async function createdMessage(sb: Client, tid: string): Promise<string | null> {
+  const { data } = await sb.from("tournaments").select("id, slug, tag, name, lang, status, visibility, starts_at, size, deck_mode, conquest_decks, best_of, listed").eq("id", tid).maybeSingle();
+  const t = data as unknown as CreatedInfo | null;
+  // come readTournament: mai un torneo privato, e solo finché è aperto alle iscrizioni
+  if (!t || t.visibility !== "public" || t.status !== "open") return null;
+  // <t:…:F> è la data nel formato di Discord: ognuno la vede nel proprio fuso orario
+  const when = `<t:${Math.floor(Date.parse(t.starts_at) / 1000)}:F>`;
+  const mode = t.deck_mode === "conquest" ? { en: `Conquest, ${t.conquest_decks} decks`, it: `Conquest, ${t.conquest_decks} mazzi` } : { en: "one deck", it: "un mazzo" };
+  return [
+    header(t),
+    ...bilingual(t.lang, `New tournament, sign-ups are open: ${when} · ${mode.en} · Bo${t.best_of} · ${t.size} players.`, `Nuovo torneo, iscrizioni aperte: ${when} · ${mode.it} · Bo${t.best_of} · ${t.size} giocatori.`),
+    ...links(t),
+  ].join("\n");
 }
 
 async function startedMessage(sb: Client, tid: string, before: string | undefined): Promise<string | null> {
@@ -250,6 +269,11 @@ function schedule(key: string | null, build: (sb: Client) => Promise<string | nu
     // fuori da una richiesta (per esempio uno script): si parte subito, senza attendere
     void job();
   }
+}
+
+/** Da chiamare dopo la creazione di un torneo: parte solo se è pubblico (i privati non escono mai). */
+export function notifyTournamentCreated(tournamentId: string): void {
+  schedule(`created:${tournamentId}`, (sb) => createdMessage(sb, tournamentId));
 }
 
 /**

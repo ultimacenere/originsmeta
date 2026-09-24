@@ -993,11 +993,12 @@ export function TierListMaker({
                 </button>
               </div>
             ) : (
-              // sul telefono uno sotto l'altro a tutta larghezza: affiancati, "Copia come testo" andava su tre righe
-              <div key="actions" className="flex flex-wrap items-center gap-2">
+              // sul telefono "Salva" a tutta riga e gli altri due per riga (24/09/2026: prima quattro righe piene prima
+              // delle fasce); da 640 px in fila
+              <div key="actions" className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                 {/* Salvare la propria tier list nel profilo è l'azione che ora conta di più (23/09/2026): è
                     quella che la fa vivere oltre questo browser e che alimenta la tier list della community. */}
-                <button type="button" onClick={save} disabled={!canShare || saving} className="btn btn-primary whitespace-nowrap max-sm:w-full">
+                <button type="button" onClick={save} disabled={!canShare || saving} className="btn btn-primary col-span-2 justify-center whitespace-nowrap">
                   {loggedIn === false ? (
                     <>
                       <span aria-hidden="true">🔒</span>
@@ -1006,10 +1007,10 @@ export function TierListMaker({
                   ) : null}
                   {saving ? labels.saving : savedShown?.ok ? `✓ ${labels.savedToProfile}` : labels.save}
                 </button>
-                <button type="button" onClick={() => copy("link")} disabled={!canShare} className="btn btn-ink whitespace-nowrap max-sm:w-full max-sm:justify-center">
+                <button type="button" onClick={() => copy("link")} disabled={!canShare} className="btn btn-ink justify-center whitespace-nowrap">
                   {copied === "link" ? `✓ ${labels.linkCopied}` : labels.copyLink}
                 </button>
-                <button type="button" onClick={() => copy("text")} disabled={!canShare} className="btn btn-ink whitespace-nowrap max-sm:w-full max-sm:justify-center">
+                <button type="button" onClick={() => copy("text")} disabled={!canShare} className="btn btn-ink justify-center whitespace-nowrap">
                   {copied === "text" ? `✓ ${labels.textCopied}` : labels.copyText}
                 </button>
                 <button
@@ -1020,7 +1021,7 @@ export function TierListMaker({
                     setConfirmReset(true);
                   }}
                   disabled={isEmptyBoard(board)}
-                  className="btn btn-ghost whitespace-nowrap max-sm:w-full max-sm:justify-center"
+                  className="btn btn-ghost col-span-2 justify-center whitespace-nowrap"
                 >
                   {labels.reset}
                 </button>
@@ -1087,9 +1088,12 @@ export function TierListMaker({
         </p>
 
         <h2 className="sr-only">{cleanTitle(board.title) || fmt(labels.textHeading, { kind: kindLabel(kind) })}</h2>
+        {/* Da 1024 px fasce a sinistra e non classificate in una colonna a destra (24/09/2026): prima il mazzo delle
+            non classificate stava agganciato in basso allo schermo e, a 1440×900, copriva la fascia S all'apertura. */}
+        <div className="mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:items-start lg:gap-6">
         {/* Niente overflow-hidden sul riquadro: taglierebbe l'anteprima delle carte che si apre sopra la carta.
             Gli angoli arrotondati li portano le celle ai bordi (11 px = 12 px del riquadro meno il bordo). */}
-        <div className="mt-4 rounded-xl border border-felt-line">
+        <div className="rounded-xl border border-felt-line">
           {TIERS.map((t, i) => (
             <div
               key={t}
@@ -1125,15 +1129,15 @@ export function TierListMaker({
 
         {/*
           Le non classificate: il mazzo da cui si parte, e dove si rimette una carta per toglierla dalle fasce.
-          Dal 23/09/2026 resta agganciato in basso allo schermo mentre si scorrono le fasce (`lg:sticky`): con
-          111 carte base l'elenco è lungo e prima bisognava risalire tutta la pagina per prendere la carta dopo.
-          Solo da 1024 px in su, cioè dove c'è il mouse e si trascina; sul telefono resta in fondo, dove il modo
-          di classificare è il tocco più la barra in basso.
+          Da 1024 px è la colonna di destra, ferma mentre si scorrono le fasce (`lg:sticky`, 24/09/2026; dal 23/09
+          era agganciata in basso e copriva la fascia S): con 111 carte base l'elenco scorre dentro la colonna e
+          la carta dopo resta sempre a portata. Sul telefono resta in fondo, dove il modo di classificare è il
+          tocco più la barra in basso.
         */}
         <section
           aria-labelledby="tier-pool-title"
           data-row="pool"
-          className={`felt-panel mt-6 p-3 transition-colors sm:p-4 lg:sticky lg:bottom-3 lg:z-20 lg:max-h-[46vh] lg:overflow-y-auto lg:shadow-lift ${
+          className={`felt-panel mt-6 p-3 transition-colors sm:p-4 lg:sticky lg:top-24 lg:z-20 lg:mt-0 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto ${
             hint?.row === "pool" ? "bg-mint/15 inset-ring-2 inset-ring-mint" : "lg:bg-felt-deep/95"
           } lg:backdrop-blur-md ${held ? "cursor-pointer" : ""}`}
           onClick={(e) => onRowClick(e, "pool")}
@@ -1165,6 +1169,7 @@ export function TierListMaker({
             ) : null}
           </ul>
         </section>
+        </div>
       </div>
 
       {/* La carta che segue il puntatore mentre la si trascina: solo disegno, non riceve eventi (pointer-events:none,

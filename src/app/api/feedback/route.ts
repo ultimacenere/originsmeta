@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { locales, siteUrl } from "@/lib/i18n";
 import { discordWebhookUrl, escapeDiscord, sendDiscordWebhook, type DiscordEmbedField } from "@/lib/discordWebhook";
 import { captchaValido, indirizzoIp, limiteInvii, lunghezza, stessaOrigine, testoSemplice } from "@/lib/formGuard";
-import { FEEDBACK_EMAIL_MAX, FEEDBACK_EMAIL_RE, FEEDBACK_MAX, FEEDBACK_MIN, feedbackEnabled, type FeedbackApiError } from "@/lib/feedbackLabels";
+import { FEEDBACK_EMAIL_MAX, FEEDBACK_EMAIL_RE, FEEDBACK_MAX, FEEDBACK_MIN, FEEDBACK_NAME_MAX, feedbackEnabled, type FeedbackApiError } from "@/lib/feedbackLabels";
 
 /**
  * Messaggi del pop-up dei feedback (`src/components/FeedbackWidget.tsx`, richiesta del 22/09/2026).
@@ -10,8 +10,9 @@ import { FEEDBACK_EMAIL_MAX, FEEDBACK_EMAIL_RE, FEEDBACK_MAX, FEEDBACK_MIN, feed
  * database, nessuna copia sul sito.
  *
  * GET  → { attivo }: il widget lo chiede prima di aprirsi da solo, così non propone un modulo che non arriverebbe.
- * POST { message, email?, page, locale, token? } → { ok: true } oppure { errore: <codice> } (codici in
- *      `FeedbackApiError`, `src/lib/feedbackLabels.ts`).
+ * POST { message, name?, email?, page, locale, token? } → { ok: true } oppure { errore: <codice> } (codici in
+ *      `FeedbackApiError`, `src/lib/feedbackLabels.ts`). Il nome facoltativo c'è dal 24/09/2026: il primo feedback
+ *      era anonimo e lo staff non sapeva chi l'aveva scritto.
  *
  * Difese, in ordine: stessa origine e JSON (una pagina di un altro sito non può spedire a nome dei visitatori),
  * corpo piccolo, validazione (lunghezze, email se presente, pagina come semplice percorso), limite per
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
   // corpo dichiarato troppo grande: si scarta prima di leggerlo
   if (Number(req.headers.get("content-length") ?? 0) > MAX_CORPO) return errore("lungo", 413);
 
-  let corpo: { message?: unknown; email?: unknown; page?: unknown; locale?: unknown; token?: unknown };
+  let corpo: { message?: unknown; name?: unknown; email?: unknown; page?: unknown; locale?: unknown; token?: unknown };
   try {
     const grezzo = await req.text();
     if (grezzo.length > MAX_CORPO) return errore("lungo", 413);
@@ -85,6 +86,10 @@ export async function POST(req: Request) {
   const messaggio = typeof corpo.message === "string" ? testoSemplice(corpo.message) : "";
   if (lunghezza(messaggio) < FEEDBACK_MIN) return errore("corto", 400);
   if (lunghezza(messaggio) > FEEDBACK_MAX) return errore("lungo", 400);
+
+  // nome su una riga, testo semplice come la firma delle guide; più lungo del campo può arrivare solo a mano
+  const nome = typeof corpo.name === "string" ? testoSemplice(corpo.name).replace(/\s+/g, " ") : "";
+  if (lunghezza(nome) > FEEDBACK_NAME_MAX) return errore("richiesta", 400);
 
   const email = typeof corpo.email === "string" ? corpo.email.trim() : "";
   if (email && (email.length > FEEDBACK_EMAIL_MAX || !FEEDBACK_EMAIL_RE.test(email))) return errore("email", 400);
@@ -107,6 +112,8 @@ export async function POST(req: Request) {
 
   const adesso = new Date();
   const campi: DiscordEmbedField[] = [
+    // per primo chi scrive: è testo dell'utente, quindi formattazione e menzioni annullate come nel messaggio
+    { name: "Nome", value: nome ? escapeDiscord(nome) : "(non indicato)" },
     // il percorso è già ristretto a caratteri sicuri: resta un link cliccabile per lo staff
     { name: "Pagina", value: pagina ? `${siteUrl}${pagina}` : "(non indicata)" },
     { name: "Lingua", value: locale.toUpperCase(), inline: true },

@@ -12,6 +12,7 @@ import {
   FEEDBACK_EMAIL_RE,
   FEEDBACK_MAX,
   FEEDBACK_MIN,
+  FEEDBACK_NAME_MAX,
   FEEDBACK_STAFF_EMAIL,
   feedbackEnabled,
   type FeedbackApiError,
@@ -35,6 +36,8 @@ import {
  * - Il messaggio va a `/api/feedback`, che lo gira al canale Discord privato dello staff. Se la rotta risulta
  *   spenta al momento dell'invio lo diciamo apertamente, con l'email dello staff come alternativa: niente finti
  *   "grazie". Il Discord ufficiale del gioco NON è un'alternativa: è il server di Koin Games, non il nostro.
+ * - Nome o nickname facoltativo (24/09/2026: il primo feedback era anonimo). Resta nel campo dopo l'invio, così
+ *   "Scrivine un altro" non lo fa riscrivere; l'email invece si svuota come prima.
  * - Accessibilità: dialog non modale (la pagina resta usabile) con titolo. Aperto dal bottone, il focus entra nel
  *   pannello e torna dov'era alla chiusura (X, Esc, "Chiudi"); aperto da solo, il focus NON si sposta (nessun
  *   cambio di contesto non chiesto) e un'area `aria-live` fuori dal pannello ne annuncia il titolo. Esc chiude il
@@ -155,6 +158,7 @@ function Widget({ locale, labels }: Props) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [errore, setErrore] = useState<Errore | null>(null);
   const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [sentWithEmail, setSentWithEmail] = useState(false);
   const [token, setToken] = useState("");
@@ -178,6 +182,8 @@ function Widget({ locale, labels }: Props) {
   const introId = `${baseId}-intro`;
   const msgId = `${baseId}-msg`;
   const hintId = `${baseId}-hint`;
+  const nameId = `${baseId}-name`;
+  const nameHintId = `${baseId}-name-hint`;
   const emailId = `${baseId}-email`;
   const emailHintId = `${baseId}-email-hint`;
 
@@ -348,7 +354,7 @@ function Widget({ locale, labels }: Props) {
       const r = await fetch("/api/feedback", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: text, email: mail || undefined, page: pathname, locale, token: token || undefined }),
+        body: JSON.stringify({ message: text, name: name.trim() || undefined, email: mail || undefined, page: pathname, locale, token: token || undefined }),
       });
       if (r.ok) {
         setSentWithEmail(Boolean(mail));
@@ -531,6 +537,24 @@ function Widget({ locale, labels }: Props) {
               <span className="font-mono tabular-nums" aria-hidden="true">
                 {message.length}/{FEEDBACK_MAX}
               </span>
+            </p>
+
+            <label htmlFor={nameId} className="mt-4 block text-sm font-bold text-pale">
+              {labels.nameLabel}
+            </label>
+            <input
+              id={nameId}
+              type="text"
+              autoComplete="nickname"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={FEEDBACK_NAME_MAX}
+              aria-describedby={nameHintId}
+              placeholder={labels.namePlaceholder}
+              className={fieldCls}
+            />
+            <p id={nameHintId} className="mt-1 text-xs text-chalk-muted">
+              {labels.nameHint}
             </p>
 
             <label htmlFor={emailId} className="mt-4 block text-sm font-bold text-pale">

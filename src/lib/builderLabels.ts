@@ -22,8 +22,13 @@ export function builderLabels(d: Dictionary): BuilderLabels {
     pool: b.pool,
     poolHint: b.poolHint,
     searchPool: b.searchPool,
+    searchPoolHint: b.searchPoolHint,
     filterType: b.filterType,
     filterCost: b.filterCost,
+    poolCount: b.poolCount,
+    poolCountOne: b.poolCountOne,
+    poolEmpty: b.poolEmpty,
+    clearFilters: d.common.clearFilters,
     all: d.common.all,
     cost: b.cost,
     remove: b.remove,
@@ -117,6 +122,8 @@ export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
       art: c.art,
       // per l'anteprima al passaggio del mouse: testo già nella lingua della pagina, niente database nel bundle
       ability: c.ability?.[locale],
+      // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
+      abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
       alignment: c.alignment,
       alignmentLabel: c.alignment && alignLabel ? alignLabel[c.alignment] : undefined,
       typeLabel: typeLabel ? typeLabel[c.type] : undefined,
