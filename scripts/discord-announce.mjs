@@ -206,11 +206,17 @@ export function webhookFor(channel, env = process.env) {
   return c.fallback ? (env[CHANNELS[c.fallback].env] || "").trim() : "";
 }
 
-/** Un file del repo: da GitHub al commit indicato, oppure dalla cartella locale del repo (prove). */
+/**
+ * Un file del repo: da GitHub al commit indicato, oppure dalla cartella locale del repo (prove). Un file che al
+ * commit indicato non c'è (commit sbagliato, percorso cambiato) ferma tutto: meglio un errore di un "niente da
+ * annunciare" silenzioso.
+ */
 async function source(path) {
   const { REPO, AFTER } = process.env;
   if (!REPO || !AFTER) return readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
-  return fileAt(REPO, AFTER, path);
+  const text = await fileAt(REPO, AFTER, path);
+  if (!text) throw new Error(`${path} non trovato su GitHub al commit ${AFTER}`);
+  return text;
 }
 
 async function fileAt(repo, sha, path) {
@@ -272,12 +278,13 @@ async function pushItems() {
     console.log("Nessun commit precedente da confrontare: nessun annuncio.");
     return [];
   }
+  // prima del push un file può non esserci ancora (vale vuoto); dopo il push deve esserci
   const [newsA, newsB, guidesA, guidesB, cards] = await Promise.all([
     fileAt(REPO, BEFORE, FILES.news),
-    fileAt(REPO, AFTER, FILES.news),
+    source(FILES.news),
     fileAt(REPO, BEFORE, FILES.guides),
-    fileAt(REPO, AFTER, FILES.guides),
-    fileAt(REPO, AFTER, FILES.cards),
+    source(FILES.guides),
+    source(FILES.cards),
   ]);
   const patches = patchNews(cards);
   const newsItems = added(newsSlugs(newsA), newsSlugs(newsB)).map((slug) => ({ kind: "news", slug, patch: patches.get(slug)?.patch, channels: newsChannels(slug, patches) }));
@@ -366,6 +373,7 @@ async function main() {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((e) => {
     console.error(`::error::${e.message}`);
-    process.exit(1);
+    // exitCode e non exit(): Node chiude da solo quando le connessioni sono finite (con exit() su Windows libuv protesta)
+    process.exitCode = 1;
   });
 }
