@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
-import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale, type PageMetaOptions } from "@/lib/page";
+import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, resolveLocale, type PageMetaOptions } from "@/lib/page";
+import { deckLead, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
@@ -53,22 +54,20 @@ function legendaryName(deck: CommunityDeck): string | undefined {
 /**
  * Descrizione del mazzo nella lingua della pagina. Prima era un taglio grezzo del testo dell'autore: su /en
  * usciva in italiano, spezzata a metà parola e a volte con un trattino di elenco in testa. Qui la costruiamo
- * con le etichette del dizionario e i dati del mazzo; il riassunto della guida si aggiunge in coda solo quando
- * si legge nella lingua della pagina: scritto così dall'autore o tradotto dal sito (dal 25/09/2026).
+ * dai dati del mazzo: dal 25/09/2026 (Ondata 1 SEO/GEO) la prima frase dice Leggendaria, "Origins TCG", nome,
+ * autore e archetipo ("Merlin deck for Origins TCG: Spellcast by …, Control archetype.", `deckLead` in
+ * src/lib/cardTitles.ts); il riassunto della guida si aggiunge in coda solo quando si legge nella lingua della
+ * pagina: scritto così dall'autore o tradotto dal sito (dal 25/09/2026).
  * La usano sia i metadati sia il JSON-LD, così dicono la stessa cosa.
  */
 function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, max: number = DESCRIPTION_MAX): string {
-  const star = legendaryName(deck);
-  const facts = [
-    `${deck.name} · ${dict.community.kicker} ${dict.community.by} ${authorName(deck.profile)}`,
-    star ? `${dict.common.legendary}: ${star}` : "",
-    `${dict.common.archetype}: ${archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}`,
-  ]
-    .filter(Boolean)
-    .join(". ");
+  const lead = deckLead(
+    { name: deck.name, legendary: legendaryName(deck), author: authorName(deck.profile), archetype: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype },
+    locale,
+  );
   const view = localizedGuide(deck, locale);
   const own = view.lang === locale ? cleanDescription(view.text.summary, max) : "";
-  const text = cleanDescription(own ? `${facts}. ${own}` : `${facts}.`, max);
+  const text = cleanDescription(own ? `${lead} ${own}` : lead, max);
   // Senza il riassunto (guida in un'altra lingua, traduzione non ancora pronta) restano i soli fatti, una
   // novantina di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina.
   return text.length < 120 ? cleanDescription(`${text} ${dict.community.metaTail}`, max) : text;
@@ -87,7 +86,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
   const langs = guideLocales(deck, locales);
-  return pageMeta(locale, `/decks/community/${deck.slug}`, pageTitleWith(deck.name, dict.community.kicker), deckDescription(deck, locale, dict), cover, {
+  // Title con la Leggendaria in testa ("Merlin deck: Spellcast", "Mazzo di Merlin: Spellcast", "Mazo de Merlin:
+  // Spellcast"): chi cerca un mazzo scrive il nome della Leggendaria. Il nome del mazzo lo sceglie l'utente e si
+  // accorcia lui se non ci sta; il kicker visibile "Origins deck" resta nella pagina, cambia solo il <title>.
+  return pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
     ...art,
     languages: langs,
     noindex: !langs.includes(locale),

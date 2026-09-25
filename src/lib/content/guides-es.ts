@@ -82,7 +82,7 @@ Esta lista está transcrita de la base de datos de la comunidad y coincide con l
   },
   "on-reveal-midrange-guide": {
     title: "On Reveal Mid Range: cómo se juega el mazo midrange de Mulan",
-    metaTitle: "On Reveal Mid Range: mazo de Origins TCG",
+    metaTitle: "Guía del mazo Mulan: On Reveal Mid Range",
     excerpt: "Plan de juego, mulligan y ronda a ronda de On Reveal Mid Range, mazo de Mulan que repite habilidades Al revelar, para clasificatoria, competitivo y torneos.",
     faq: [
       {
@@ -174,7 +174,7 @@ La página del mazo enumera dos: **una buena curva suele ser esencial** y **pued
   },
   "king-of-value-trade-guide": {
     title: "King of Value Trade: cómo se juega el mazo midrange de King Arthur",
-    metaTitle: "King of Value Trade: mazo de Origins TCG",
+    metaTitle: "Guía del mazo King Arthur: King of Value Trade",
     excerpt: "Plan de juego, mulligan y ronda a ronda de King of Value Trade, el mazo midrange de King Arthur construido para ganar cada intercambio dos cartas por una.",
     faq: [
       {
@@ -267,7 +267,7 @@ La página del mazo enumera tres: **ninguna eliminación de área**, **Dark Omen
   },
   "dorothy-combo-guide": {
     title: "Dorothy Combo: cómo se juega el mazo move tras el parche del 21 de septiembre",
-    metaTitle: "Dorothy Combo: mazo move de Origins TCG",
+    metaTitle: "Guía del mazo Dorothy: Dorothy Combo",
     excerpt: "El mazo move reconstruido en torno a los buffs del 21 de septiembre: cómo crece Dorothy, qué combos buscar, el mulligan y lo que la lista aún no puede hacer.",
     faq: [
       {
@@ -355,7 +355,7 @@ Los datos de la clasificatoria no son públicos: esta es una lectura de las list
   },
   "trick-or-treat-legion-guide": {
     title: "The Trick-or-Treat Legion: cómo jugar el mazo de Legion of the Dead",
-    metaTitle: "Trick-or-Treat Legion: mazo de Origins TCG",
+    metaTitle: "Guía del mazo Legion of the Dead",
     excerpt: "La lista de Legion of the Dead hecha para ser impredecible: cómo funciona el tablero de Zombies, el combo Golden Egg y Boogeyman, el mulligan y los matchups.",
     faq: [
       {
@@ -454,7 +454,7 @@ Son dos, según la ficha del mazo: **Mind Palace es muy importante para no queda
   },
   "three-pigs-midrange-guide": {
     title: "3 Pigs Mid Range: cómo jugar el mazo midrange de Three Not So Little Pigs",
-    metaTitle: "3 Pigs Mid Range: guía del mazo de Origins TCG",
+    metaTitle: "Guía del mazo Three Not So Little Pigs",
     excerpt: "Plan de juego, mulligan y ronda a ronda de 3 Pigs Mid Range, el mazo midrange liderado por Three Not So Little Pigs, para ladder y competitivo.",
     faq: [
       {
@@ -534,7 +534,7 @@ La ficha del mazo es clara sobre el principal punto débil: "salirse de la curva
   },
   "three-pigs-midrange-matchups": {
     title: "3 Pigs Mid Range: matchups, interacciones clave y Conquest",
-    metaTitle: "3 Pigs Mid Range: matchups en Origins TCG",
+    metaTitle: "Matchups del mazo Three Not So Little Pigs",
     excerpt: "Segunda parte de la guía de 3 Pigs Mid Range: las interacciones que ganan partidas, cómo jugar los principales matchups, los errores que evitar y Conquest.",
     faq: [
       {
@@ -587,7 +587,7 @@ El mazo está etiquetado tanto para la ladder como para el juego competitivo. El
   },
   "healing-healsing-guide": {
     title: "Healing Healsing: cómo jugar el mazo de control de Van Helsing",
-    metaTitle: "Healing Healsing: guía del mazo de Origins TCG",
+    metaTitle: "Guía del mazo Van Helsing: Healing Healsing",
     excerpt: "Plan de juego, mulligan y ronda a ronda de Healing Healsing, el mazo de control de Van Helsing que cura, roba cartas y reinicia el tablero.",
     faq: [
       {
@@ -676,7 +676,7 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
   },
   "healing-healsing-matchups": {
     title: "Healing Healsing: matchups, interacciones clave y errores que evitar",
-    metaTitle: "Healing Healsing: matchups en Origins TCG",
+    metaTitle: "Matchups del mazo Van Helsing",
     excerpt: "Guía de Healing Healsing, segunda parte: las interacciones de curación y robo, los principales matchups, los errores que hacen perder contra aggro y Conquest.",
     faq: [
       {
