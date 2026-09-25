@@ -47,16 +47,21 @@ jobs:
     # testi spagnoli delle guide non entra nella coda degli annunci: in coda GitHub tiene un solo run in attesa, e un
     # run nuovo annulla quello che aspetta, con le sue news mai annunciate. La condizione è ripetuta nel gruppo di
     # concorrenza, così un job saltato non tocca la coda comunque GitHub ordini `if` e `concurrency`.
+    # GitHub mette nell'evento al massimo 20 commit: con un push di 20 commit o più la lista è troncata (il 25/09/2026
+    # un push di 26 commit ha saltato il job pur toccando news.ts), quindi in quel caso il job parte comunque. Lo script
+    # annuncia solo gli slug nuovi del push, al massimo gira senza fare niente.
     if: >-
       ${{ (github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
       || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
-      || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"'))) }}
+      || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"')
+      || github.event.commits[19])) }}
     # un invio alla volta: due push ravvicinati non si pestano i piedi
     concurrency:
       group: >-
         ${{ ((github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
         || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
-        || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"'))))
+        || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"')
+        || github.event.commits[19])))
         && 'discord-announce' || format('discord-announce-skip-{0}', github.run_id) }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
