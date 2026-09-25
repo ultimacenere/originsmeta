@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
-import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, resolveLocale, type PageMetaOptions } from "@/lib/page";
+import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { deckLead, deckShortTail, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
+import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
 import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
-import { guideLocales, localizedGuide } from "@/lib/community/deckTranslation";
+import { localizedGuide } from "@/lib/community/deckTranslation";
+import { communityPageLabels, editorialAuthor, indexableLocales, relatedDecks } from "@/lib/community/deckQuality";
+import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
 import { CardArt, DeckCardGrid } from "@/components/CardChip";
@@ -26,7 +29,7 @@ import { contactEmail, officialLinks } from "@/components/Footer";
 import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
-import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -88,15 +91,21 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const art: PageMetaOptions = cover ? { imageSize: { width: 1200, height: 675 }, imageAlt: star ? `${star} · ${deck.name}` : deck.name } : {};
   // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
-  const langs = guideLocales(deck, locales);
+  // Dal 26/09/2026 (Ondata 2, RIV-08 e DECKS-02) conta anche la soglia di parole della guida (`indexableLocales` in
+  // deckQuality.ts): sotto soglia nessuna lingua si indicizza, lo stesso criterio di sitemap e ItemList di /decks.
+  const langs = indexableLocales(deck, locales);
   // Title con il nome del mazzo in testa ("Spellcast, Merlin deck", "Spellcast, mazzo di Merlin", "Spellcast, mazo de
   // Merlin"), poi il solo nome, poi il nome accorciato: regole e motivo in `deckTitle` (cardTitles.ts). Un nome che dice
   // già "deck"/"mazzo"/"mazo" non ripete la parola ("Spellcast Deck with Merlin"). Il kicker visibile resta nella pagina.
-  return pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
+  const meta = pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
     ...art,
     languages: langs,
     noindex: !langs.includes(locale),
   });
+  // Mazzo sotto la soglia: noindex in tutte le lingue e fuori da hreflang. `pageMeta` con un elenco di lingue vuoto le
+  // dichiarerebbe tutte (`alternatesFor`), quindi resta la sola canonical, che punta alla pagina stessa.
+  if (!langs.length) meta.alternates = { canonical: meta.alternates?.canonical };
+  return meta;
 }
 
 export default async function CommunityDeckPage({ params }: { params: Params }) {
@@ -117,7 +126,19 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   /** versione del gioco in vigore quando il mazzo è stato creato (dal calendario delle patch, non dichiarata) */
   const deckPatch = patchAt(deck.created_at);
   const handle = authorHandle(deck.profile);
-  const others = (await listPublishedDecks(40)).filter((x) => x.slug !== deck.slug).slice(0, 8);
+  const L = communityPageLabels[locale];
+  // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
+  // dati di Next condivide (una al minuto), invece di una query per scheda.
+  const published = await listPublishedDecks();
+  // Altri mazzi con la stessa Leggendaria, poi i più recenti (DECKS-11, 26/09/2026): prima erano gli 8 più recenti, e
+  // i link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts).
+  const related = relatedDecks(deck, published);
+  // L'autore editoriale dietro l'account, se authors.ts dichiara uno dei suoi mazzi (Davdas: luigidavdasragoni).
+  const editorial = editorialAuthor(
+    authors,
+    [deck.slug, ...published.filter((x) => x.owner === deck.owner).map((x) => x.slug)],
+    deck.profile?.username,
+  );
   // Il builder si apre già caricato dal link (`#OM1.…`, formato interno che l'utente non vede più): se il codice
   // salvato manca lo si ricava dal mazzo, così il tasto c'è sempre.
   const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
@@ -130,26 +151,26 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
 
-  const article: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: deck.name,
+  // Dati strutturati costruiti in src/lib/jsonld/deck.ts (26/09/2026, DECKS-08, DECKS-10, GEO-14): l'autore è il Person
+  // del suo profilo /u (stesso `@id` della pagina profilo, `sameAs` verso /authors quando è un autore editoriale), la
+  // headline è il title della SERP, la Leggendaria e le carte rimandano alle loro schede. Il voto non si dichiara più
+  // come AggregateRating: il perché è nel commento di `deckArticle`.
+  const article = deckArticle({
+    locale,
+    pageUrl,
+    headline: pageTitle(deckTitle(deck.name, legendaryName(deck), locale)),
     description: deckDescription(deck, locale, d, 200),
-    // Lingua del documento, non del testo dell'autore: la pagina /en resta una pagina inglese.
-    inLanguage: locale,
-    datePublished: deck.created_at,
-    dateModified: deck.updated_at,
+    published: deck.created_at,
+    modified: deck.updated_at,
     // `image` è obbligatoria per i rich result: la copertina della Leggendaria, altrimenti l'immagine social del sito.
     image: legendary?.cover ? `${siteUrl}${legendary.cover}` : `${siteUrl}${defaultOgImage}`,
-    author: { "@type": "Person", name: author },
-    publisher: { "@id": organizationId },
-    mainEntityOfPage: pageUrl,
-    // Rimando all'entità unica del gioco, che il layout radice emette su ogni pagina: una copia
-    // in linea creerebbe un secondo "Origins TCG" e dividerebbe il segnale fra due entità.
-    about: { "@id": videoGameId },
-  };
-  // Sotto i 3 voti la media non dice niente (un 5/5 su un voto solo) e Google non genera comunque lo snippet per un Article.
-  if ((deck.rating?.votes ?? 0) >= 3) article.aggregateRating = { "@type": "AggregateRating", ratingValue: deck.rating?.avg, ratingCount: deck.rating?.votes, bestRating: 5, worstRating: 1 };
+    author: communityPerson({ locale, username: deck.profile?.username, name: author, editorial }),
+    legendary,
+    cards: knownCards.flatMap((s) => {
+      const card = getCard(s);
+      return card ? [{ slug: card.slug, name: card.name }] : [];
+    }),
+  });
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <JsonLd
@@ -230,6 +251,24 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             {view.translated ? `${deck.guide.lang.toUpperCase()} → ${locale.toUpperCase()}` : deck.guide.lang.toUpperCase()}
           </span>
         </div>
+
+        {/* La guida di OriginsMeta a questo mazzo, in alto e ben visibile (MQ-13 e DECKS-11, 26/09/2026): la guida porta
+            già alla scheda con il tasto principale, e la scheda prima la citava solo in fondo, dopo l'articolo. Le due
+            pagine si dividono le ricerche: la scheda il nome del mazzo, la guida "{Leggendaria} deck guide". */}
+        {guides.length ? (
+          <div className="mt-6 rounded-lg border-2 border-mint bg-mint/10 p-3 text-sm">
+            <p className="kicker text-mint">{L.guideCallout}</p>
+            <ul className="mt-1 space-y-1">
+              {guides.map((g) => (
+                <li key={g.slug}>
+                  <Link href={href(locale, `/guides/${g.slug}`)} className="font-semibold text-pale underline-offset-2 hover:text-mint hover:underline">
+                    {g.title} →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas).
             Dal 25/09/2026 il sito traduce le guide (deckTranslation.ts): la pagina mostra la traduzione nella sua lingua,
@@ -396,23 +435,30 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </section>
       ) : null}
 
-      {others.length ? (
-        <section className="mt-10">
-          <h2 className="t-section">{c.others}</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {others.map((x) => (
-              <li key={x.slug}>
-                <Link href={href(locale, `/decks/community/${x.slug}`)} className="btn btn-ghost text-xs">
-                  {x.name}
-                  <span className="font-mono font-normal text-chalk-muted">
-                    {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {authorName(x.profile)}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      {/* Altri mazzi: prima quelli con la stessa Leggendaria, poi i più recenti (DECKS-11). Il titolo del secondo blocco
+          resta "Altri mazzi di Origins" quando il primo non c'è. */}
+      {[
+        { key: "same", title: L.sameLegendary.replace("{legendary}", legendaryName(deck) ?? deck.legendary ?? ""), list: related.sameLegendary },
+        { key: "recent", title: related.sameLegendary.length ? L.recentAfter : c.others, list: related.recent },
+      ].map((block) =>
+        block.list.length ? (
+          <section key={block.key} className="mt-10">
+            <h2 className="t-section">{block.title}</h2>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {block.list.map((x) => (
+                <li key={x.slug}>
+                  <Link href={href(locale, `/decks/community/${x.slug}`)} className="btn btn-ghost text-xs">
+                    {x.name}
+                    <span className="font-mono font-normal text-chalk-muted">
+                      {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {authorName(x.profile)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null,
+      )}
 
       {/* La segnalazione resta, ma in fondo e in piccolo: non è un'azione da mettere accanto ai due tasti del mazzo */}
       <p className="mt-12 text-right text-xs text-pale-muted">
