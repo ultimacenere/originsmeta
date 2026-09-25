@@ -99,6 +99,8 @@ export function weightedRating(avg: number, votes: number, prior = 3, weight = 2
  * pagine in disaccordo sugli stessi dati: sei Leggendarie a pari merito con 2 mazzi, e ognuna ne citava tre diverse
  * (una spareggiava per nome, l'altra per costo). Da qui una regola sola, con le stesse frasi: le due pagine passano le
  * loro voci a `deckBrief`, che sceglie chi citare (`pickBrief`) e scrive le frasi con i nomi linkati alle schede.
+ * Le anteprime a striscia di /tier-list seguono lo stesso ordine e lo stesso divieto di spezzare un pari merito
+ * (`pickPreview`), così la pagina non dà due risposte.
  */
 
 /** Una voce citabile: il nome, il link alla sua scheda e il numero che la ordina (mazzi in cui compare, o voto pesato). */
@@ -110,7 +112,13 @@ export type BriefItem = { name: string; href: string; value: number };
  */
 export type BriefPick<T extends BriefItem> = { kind: "top"; items: T[] } | { kind: "tie"; items: T[]; value: number } | { kind: "none" };
 
-/** Quante voci cita una frase (3), fin dove un pari merito sul taglio si cita per intero (5 nomi) e fin dove si dice "sei a pari merito" (8). */
+/**
+ * Quante voci cita una frase (3) e fin dove un pari merito sul taglio si cita per intero, ognuno col suo numero (5 nomi
+ * in tutto). Oltre i 5 il mandato del 25/09/2026 lasciava due strade, dirlo elencandoli tutti oppure omettere la frase;
+ * la regola scelta (revisione dell'Ondata 1): se il pari merito è in testa la frase lo dice ("sei Leggendarie sono a
+ * pari merito…") e li elenca tutti fino a 8 nomi (`maxTied`: un elenco più lungo non è più un "in breve"); se non è in
+ * testa, o supera gli 8 nomi, la frase si omette. Il taglio non sale mai a chi sta sopra un pari merito lungo.
+ */
 export const BRIEF_LIMITS = { limit: 3, maxNames: 5, maxTied: 8 } as const;
 
 /** Due numeri uguali anche se arrivano da conti diversi: il voto pesato è una frazione (5 con 1 voto = 4 con 4 voti). */
@@ -122,30 +130,56 @@ export function briefOrder(a: BriefItem, b: BriefItem): number {
   return a.name.localeCompare(b.name, "en") || (a.href < b.href ? -1 : a.href > b.href ? 1 : 0);
 }
 
+/** Le voci citabili nell'ordine unico: solo quelle sopra zero, per `briefOrder`. */
+const briefSorted = <T extends BriefItem>(entries: readonly T[]): T[] => entries.filter((e) => e.value > 0).sort(briefOrder);
+
 /**
- * Le voci da citare, nell'ordine di `briefOrder`. Un pari merito sul taglio non si spezza mai:
+ * Il pari merito che un taglio a `limit` voci spezzerebbe: `start` è la prima voce pari all'ultima del taglio, `end` la
+ * prima dopo il pari merito. `undefined` se il taglio non spezza niente (o le voci non arrivano al taglio).
+ */
+function tieAtCut(sorted: readonly BriefItem[], limit: number): { start: number; end: number } | undefined {
+  if (sorted.length <= limit || !sameValue(sorted[limit].value, sorted[limit - 1].value)) return undefined;
+  const cut = sorted[limit - 1].value;
+  let start = limit - 1;
+  while (start > 0 && sameValue(sorted[start - 1].value, cut)) start--;
+  let end = limit;
+  while (end < sorted.length && sameValue(sorted[end].value, cut)) end++;
+  return { start, end };
+}
+
+/**
+ * Le voci da citare, nell'ordine di `briefOrder`. Un pari merito sul taglio non si spezza mai (regola in `BRIEF_LIMITS`):
  * - se l'ultima voce del taglio non ha pari merito dopo di sé, le prime `limit`;
- * - se ce l'ha, tutte le voci pari all'ultima, quando in tutto restano entro `maxNames`;
- * - oltre, se sopra il pari merito c'è qualcuno il taglio sale fin lì (A con 5 mazzi, B con 3, poi sei a 2: A e B);
- * - se il pari merito è in testa, `tie` con tutte le voci, fino a `maxTied`; più ancora, `none`.
+ * - se ce l'ha, tutte le voci fino alla fine del pari merito, quando in tutto restano entro `maxNames`;
+ * - oltre, se il pari merito è in testa, `tie` con tutte le voci, fino a `maxTied`;
+ * - altrimenti `none` (A con 5 mazzi, B con 3, poi sei a 2: la frase si omette).
  * Le voci a zero non si citano.
  */
 export function pickBrief<T extends BriefItem>(
   entries: readonly T[],
   { limit, maxNames, maxTied }: { limit: number; maxNames: number; maxTied: number } = BRIEF_LIMITS,
 ): BriefPick<T> {
-  const sorted = entries.filter((e) => e.value > 0).sort(briefOrder);
+  const sorted = briefSorted(entries);
   if (!sorted.length) return { kind: "none" };
-  if (sorted.length <= limit) return { kind: "top", items: sorted };
-  const cut = sorted[limit - 1].value;
-  if (!sameValue(sorted[limit].value, cut)) return { kind: "top", items: sorted.slice(0, limit) };
-  let end = limit;
-  while (end < sorted.length && sameValue(sorted[end].value, cut)) end++;
-  if (end <= maxNames) return { kind: "top", items: sorted.slice(0, end) };
-  let start = limit - 1;
-  while (start > 0 && sameValue(sorted[start - 1].value, cut)) start--;
-  if (start > 0) return { kind: "top", items: sorted.slice(0, start) };
-  return end <= maxTied ? { kind: "tie", items: sorted.slice(0, end), value: cut } : { kind: "none" };
+  const tie = tieAtCut(sorted, limit);
+  if (!tie) return { kind: "top", items: sorted.slice(0, limit) };
+  if (tie.end <= maxNames) return { kind: "top", items: sorted.slice(0, tie.end) };
+  if (tie.start === 0 && tie.end <= maxTied) return { kind: "tie", items: sorted.slice(0, tie.end), value: sorted[0].value };
+  return { kind: "none" };
+}
+
+/**
+ * Le anteprime a striscia di /tier-list (i mazzi più votati, le Leggendarie e le carte base nei mazzi più pubblicati):
+ * stesso ordine di "In breve" e stesso divieto di spezzare un pari merito. La revisione dell'Ondata 1 le ha trovate a
+ * contraddire la frase sopra: quattro delle sei Leggendarie a pari merito, spareggiate per costo. Una striscia va a capo
+ * e non deve sparire, quindi niente `none`: il pari merito sul taglio si mostra per intero se in tutto restano entro
+ * `max` voci, altrimenti la striscia si ferma a chi sta sopra; se il pari merito lungo è in testa si mostra tutto.
+ */
+export function pickPreview<T extends BriefItem>(entries: readonly T[], { limit, max }: { limit: number; max: number }): T[] {
+  const sorted = briefSorted(entries);
+  const tie = tieAtCut(sorted, limit);
+  if (!tie) return sorted.slice(0, limit);
+  return sorted.slice(0, tie.end <= max || tie.start === 0 ? tie.end : tie.start);
 }
 
 /** Un pezzo di frase: testo, oppure un nome con il link alla sua scheda (le pagine lo rendono con `<Link>`). */

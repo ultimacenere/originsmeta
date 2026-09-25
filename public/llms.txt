@@ -28,7 +28,7 @@ Community decks are written by players in their own language; the site translate
 - [Most played](https://originsmeta.com/en/tier-list/most-played): how many of the decks published on OriginsMeta use each Legendary and card, with the deck archetypes. Popularity, not a win rate.
 - [Community tier list](https://originsmeta.com/en/tier-list/community): the average of the tier lists saved by members, with votes per card; a preview until 5 lists.
 - [Tier list maker](https://originsmeta.com/en/tier-list/create): make your own Origins TCG tier list by dragging the Demo 2.0 cards into tiers S to D, with the Legendaries on their own list, and share it with a link. Free, no account needed.
-- [MetaShifting](https://originsmeta.com/en/metashifting): Origins TCG patch notes: every balance change, card by card and patch by patch, newest first, from the official patch notes.
+- [MetaShifting](https://originsmeta.com/en/metashifting): Origins TCG patch notes: every balance change, card by card and patch by patch, newest first, taken from Koin Games' official posts.
 - [Card list](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game, balance history and the legend it comes from.
 - [Locations](https://originsmeta.com/en/locations): the locations of the Demo 2.0 with their effects, searchable and filterable.
 - [Decks](https://originsmeta.com/en/decks): deck lists published by the community from the deck builder, each with a guide and 1–5 star ratings.
@@ -47,7 +47,7 @@ Community decks are written by players in their own language; the site translate
 - [Le più giocate](https://originsmeta.com/it/tier-list/most-played): in quanti dei mazzi pubblicati su OriginsMeta compare ogni Leggendaria e ogni carta, con gli archetipi dei mazzi. Popolarità, non win rate.
 - [Tier list della community](https://originsmeta.com/it/tier-list/community): la media delle tier list salvate dagli iscritti, con i voti per carta; un'anteprima fino a 5 liste.
 - [Crea la tua tier list](https://originsmeta.com/it/tier-list/create): la tua tier list di Origins TCG, trascinando le carte della Demo 2.0 nelle fasce da S a D, con le Leggendarie a parte, da condividere con un link. Gratis, senza account.
-- [MetaShifting](https://originsmeta.com/it/metashifting): le patch notes di Origins TCG: ogni bilanciamento, carta per carta e patch per patch, dal più recente, dalle patch notes ufficiali.
+- [MetaShifting](https://originsmeta.com/it/metashifting): le patch notes di Origins TCG, cioè ogni bilanciamento, carta per carta e patch per patch, dal più recente, prese dai post ufficiali di Koin Games.
 - [Lista carte](https://originsmeta.com/it/cards): tutte le carte della Demo 2.0 con statistiche attuali, testo ufficiale in inglese e in italiano, come nel gioco, storico dei bilanciamenti e la leggenda di origine.
 - [Luoghi](https://originsmeta.com/it/locations): i luoghi della Demo 2.0 con il loro effetto, da cercare e filtrare.
 - [Mazzi](https://originsmeta.com/it/decks): le liste pubblicate dalla community dal deck builder, ognuna con guida e voto da 1 a 5 stelle.
@@ -66,7 +66,7 @@ Community decks are written by players in their own language; the site translate
 - [Las más jugadas](https://originsmeta.com/es/tier-list/most-played): en cuántos de los mazos publicados en OriginsMeta aparece cada Legendaria y cada carta, con los arquetipos de los mazos. Popularidad, no win rate.
 - [Tier list de la comunidad](https://originsmeta.com/es/tier-list/community): la media de las tier lists guardadas por los miembros, con los votos por carta; una vista previa hasta llegar a 5 listas.
 - [Crea tu tier list](https://originsmeta.com/es/tier-list/create): tu propia tier list de Origins TCG, arrastrando las cartas de la Demo 2.0 a los tiers de S a D, con las Legendarias aparte, para compartirla con un enlace. Gratis, sin cuenta.
-- [MetaShifting](https://originsmeta.com/es/metashifting): las notas del parche de Origins TCG: cada cambio de equilibrio, carta por carta y parche por parche, del más reciente al más antiguo, según las notas de parche oficiales.
+- [MetaShifting](https://originsmeta.com/es/metashifting): las notas del parche de Origins TCG: cada cambio de equilibrio, carta por carta y parche por parche, del más reciente al más antiguo, a partir de las publicaciones oficiales de Koin Games.
 - [Lista de cartas](https://originsmeta.com/es/cards): todas las cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés y en español, como en el juego, el historial de cambios y la leyenda de la que viene cada una.
 - [Ubicaciones](https://originsmeta.com/es/locations): las ubicaciones de la Demo 2.0 con su efecto, con búsqueda y filtros.
 - [Mazos](https://originsmeta.com/es/decks): las listas publicadas por la comunidad desde el deck builder, cada una con su guía y una valoración de 1 a 5 estrellas.
