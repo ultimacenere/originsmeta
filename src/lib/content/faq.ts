@@ -133,7 +133,7 @@ export const suggerimenti: Record<Locale, string[]> = {
     "Come si costruisce un mazzo legale?",
     "Che cosa è cambiato nella patch 0.6.3?",
     "Quali Leggendarie ci sono nella Demo 2.0?",
-    "Che cosa vuol dire On Reveal?",
+    "Che cosa fa un'abilità Alla rivelazione?",
   ],
   es: [
     "¿Qué hace Mulan?",
@@ -141,6 +141,6 @@ export const suggerimenti: Record<Locale, string[]> = {
     "¿Cómo construyo un mazo válido?",
     "¿Qué cambió en el parche 0.6.3?",
     "¿Qué Legendarias hay en la Demo 2.0?",
-    "¿Qué significa On Reveal?",
+    "¿Qué hace una habilidad Al revelar?",
   ],
 };

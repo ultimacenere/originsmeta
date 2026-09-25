@@ -350,7 +350,7 @@ La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y
         { label: "Thank you for writing to us", text: "and from today you can leave your name in the feedback box", anchor: "thanks-feedback" },
       ],
       it: [
-        { label: "Cerca nel testo delle carte", text: "nel deck builder e nel database: scrivi Reveal e restano le carte con On Reveal", anchor: "ricerca" },
+        { label: "Cerca nel testo delle carte", text: "nel deck builder e nel database: scrivi Reveal e restano le carte con un'abilità Alla rivelazione", anchor: "ricerca" },
         { label: "Tier list rifatta", text: "OriginsMeta, Community e Le più giocate a vista, MetaShifting su una pagina sua", anchor: "tier-list" },
         { label: "I Luoghi", text: "i 44 luoghi della Demo 2.0 da cercare e filtrare", anchor: "luoghi" },
         { label: "Mazzi, guide e profili", text: "filtro per tipo di autore, data e patch su ogni mazzo, profili pubblici, quattro guide nuove", anchor: "mazzi" },
@@ -363,7 +363,7 @@ La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y
       es: [
         {
           label: "Busca en el texto de las cartas",
-          text: "en el deck builder y en la base de datos de cartas: escribe Reveal y quedan las cartas con On Reveal",
+          text: "en el deck builder y en la base de datos de cartas: escribe Reveal y quedan las cartas con una habilidad Al revelar",
           anchor: "busqueda",
         },
         { label: "Una tier list renovada", text: "OriginsMeta, Comunidad y Las más jugadas una junto a otra, MetaShifting en su propia página", anchor: "tier-list" },
@@ -429,9 +429,9 @@ On 23 September coachcronos hosted us live on his Twitch channel, with Davdas an
 The feedback box has been open for a few days and the staff reads every message. Card text search started that way, from an unsigned message: thank you, whoever you are. From today the box also has a field for your name or nickname, optional, so we know who to thank (we never publish it without asking you). Keep writing to us: from the feedback box at the bottom right, with [Send us your guide](/en/guides/submit) or on our Discord.`,
       `## Cerca nel testo delle carte {#ricerca}
 
-Il primo messaggio arrivato dal pop-up dei feedback chiedeva una cosa precisa: mentre costruiva un mazzo con Mulan, chi ci ha scritto voleva vedere solo le carte con On Reveal scrivendo "Reveal" nella ricerca, come si fa nel gioco. Ora si può.
+Il primo messaggio arrivato dal pop-up dei feedback chiedeva una cosa precisa: mentre costruiva un mazzo con Mulan, chi ci ha scritto voleva vedere solo le carte con un'abilità Alla rivelazione (On Reveal) scrivendo "Reveal" nella ricerca, come si fa nel gioco. Ora si può.
 
-- La ricerca del [deck builder](/it/deck-builder) guarda il nome, la saga e il **testo della carta**. Scrivi "Reveal" e restano le carte con On Reveal: nella demo attuale sono 33.
+- La ricerca del [deck builder](/it/deck-builder) guarda il nome, la saga e il **testo della carta**. Scrivi "Reveal" e restano le carte con un'abilità Alla rivelazione: nella demo attuale sono 33.
 - Cerca anche nel testo inglese del gioco: "pesca" e "draw" trovano le stesse carte.
 - Maiuscole e accenti non contano, e con più parole restano le carte che le contengono tutte, per esempio "reveal danni".
 - Sotto i filtri compare quante carte restano, con "Azzera i filtri"; se nessuna carta corrisponde, il builder lo dice invece di mostrare una lista vuota.
@@ -480,9 +480,9 @@ Il 23 settembre coachcronos ci ha ospitati in diretta sul suo canale Twitch, con
 Il pop-up "Dicci la tua" è aperto da pochi giorni e ogni messaggio lo legge lo staff. La ricerca nel testo delle carte è nata così, da un messaggio senza firma: grazie, chiunque tu sia. Da oggi nel pop-up c'è anche un campo per il nome o nickname, facoltativo, così sappiamo chi ringraziare (non lo pubblichiamo mai senza chiedertelo). Continua a scriverci: dal pop-up in basso a destra, con [Mandaci la tua guida](/it/guides/submit) o sul nostro Discord.`,
       `## Busca en el texto de las cartas {#busqueda}
 
-El primer mensaje que nos llegó por el buzón de comentarios pedía algo muy concreto: mientras construía un mazo en torno a Mulan, quien nos escribió quería ver solo las cartas con On Reveal escribiendo "Reveal" en la búsqueda, como se puede hacer en el juego. Ahora ya se puede.
+El primer mensaje que nos llegó por el buzón de comentarios pedía algo muy concreto: mientras construía un mazo en torno a Mulan, quien nos escribió quería ver solo las cartas con una habilidad Al revelar (On Reveal) escribiendo "Reveal" en la búsqueda, como se puede hacer en el juego. Ahora ya se puede.
 
-- La búsqueda del [deck builder](/es/deck-builder) mira el nombre, la saga y el **texto de la carta**. Escribe "Reveal" y quedan las cartas con On Reveal: en la demo actual hay 33.
+- La búsqueda del [deck builder](/es/deck-builder) mira el nombre, la saga y el **texto de la carta**. Escribe "Reveal" y quedan las cartas con una habilidad Al revelar: en la demo actual hay 33.
 - Las mayúsculas y los acentos no cuentan, y con varias palabras obtienes las cartas que las contienen todas, por ejemplo "reveal daño".
 - Debajo de los filtros ves cuántas cartas quedan, con "Borrar filtros"; si ninguna carta coincide, el deck builder te lo dice en lugar de mostrar una lista vacía.
 - La misma búsqueda funciona en la [base de datos de cartas](/es/cards) y en el buscador "Busca una carta" que está arriba en todas las páginas. En el sitio en italiano también lee el texto en inglés del juego, así que allí también funciona "draw".
@@ -546,8 +546,8 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
       ],
       it: [
         {
-          q: "Come trovo nel deck builder le carte con On Reveal?",
-          a: "Scrivi Reveal nella ricerca del deck builder: restano le carte che hanno On Reveal nel testo. La ricerca guarda il nome, la saga e il testo della carta, anche in inglese, e funziona allo stesso modo nel database carte.",
+          q: "Come trovo nel deck builder le carte con un'abilità Alla rivelazione?",
+          a: "Scrivi rivelazione (o Reveal) nella ricerca del deck builder: restano le carte con un'abilità Alla rivelazione. La ricerca guarda il nome, la saga e il testo della carta, anche in inglese, e funziona allo stesso modo nel database carte.",
         },
         {
           q: "Come entro nel Discord di OriginsMeta?",
@@ -560,8 +560,8 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
       ],
       es: [
         {
-          q: "¿Cómo encuentro las cartas con On Reveal en el deck builder?",
-          a: "Escribe Reveal en la búsqueda del deck builder: quedan las cartas que tienen On Reveal en su texto. La búsqueda mira el nombre, la saga y el texto de la carta, y funciona igual en la base de datos de cartas.",
+          q: "¿Cómo encuentro las cartas con una habilidad Al revelar en el deck builder?",
+          a: "Escribe revelar (o Reveal) en la búsqueda del deck builder: quedan las cartas con una habilidad Al revelar. La búsqueda mira el nombre, la saga y el texto de la carta, y funciona igual en la base de datos de cartas.",
         },
         {
           q: "¿Cómo me uno al Discord de OriginsMeta?",
@@ -611,7 +611,7 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
       ],
       it: [
         { label: "Dorothy costa 4", text: "un mana in meno per la Leggendaria che cresce ogni volta che un alleato si muove", anchor: "dorothy" },
-        { label: "Wicked Stepmother sale a 4 di Potenza", text: "la Leggendaria col Deathtouch passa da 3/6 a 4/6", anchor: "wicked-stepmother" },
+        { label: "Wicked Stepmother sale a 4 di Potenza", text: "la Leggendaria con Tocco letale passa da 3/6 a 4/6", anchor: "wicked-stepmother" },
         { label: "Christopher Robin torna 5/4", text: "le statistiche che aveva prima della patch 0.6.3", anchor: "christopher-robin" },
         { label: "Altre cinque carte cambiano statistiche", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet e Roo", anchor: "statistiche" },
         { label: "Itsy Bitsy Spider diventa Malvagia", text: "da Neutrale, con tutte le sinergie Malvagie che ne seguono", anchor: "itsy-bitsy-spider" },
@@ -621,7 +621,7 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
       ],
       es: [
         { label: "Dorothy cuesta 4", text: "un maná menos para la Legendaria que crece cada vez que un aliado se mueve", anchor: "dorothy" },
-        { label: "Wicked Stepmother sube a 4 de Poder", text: "la Legendaria con Deathtouch pasa de 3/6 a 4/6", anchor: "wicked-stepmother" },
+        { label: "Wicked Stepmother sube a 4 de Poder", text: "la Legendaria con Toque mortal pasa de 3/6 a 4/6", anchor: "wicked-stepmother" },
         { label: "Christopher Robin vuelve a 5/4", text: "las estadísticas que tenía antes del parche 0.6.3", anchor: "christopher-robin" },
         { label: "Otros cinco cambios de estadísticas", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet y Roo", anchor: "estadisticas" },
         { label: "Itsy Bitsy Spider pasa a ser Evil", text: "de Neutral, con todas las sinergias Evil que eso implica", anchor: "itsy-bitsy-spider" },
@@ -736,11 +736,11 @@ I numeri sono confrontati con l'ultima build del playtest, la 0.6.3: le stesse s
 
 ### Dorothy costa 4 {#dorothy}
 
-Dorothy può muoversi a ogni round e ha +1/+1 per ogni volta che un alleato si è mosso nella partita. A 4 mana scende un round prima, con un round in più per crescere. Nella stessa patch Roo, un personaggio da 2 mana con Move, guadagna 1 di Salute.
+Dorothy può muoversi a ogni round e ha +1/+1 per ogni volta che un alleato si è mosso nella partita. A 4 mana scende un round prima, con un round in più per crescere. Nella stessa patch Roo, un personaggio da 2 mana con Muovere, guadagna 1 di Salute.
 
 ### Wicked Stepmother sale a 4 di Potenza {#wicked-stepmother}
 
-La Leggendaria con Deathtouch, il cui On Reveal dà Deathtouch ai tuoi personaggi Malvagi, passa da 3/6 a 4/6.
+La Leggendaria con Tocco letale, la cui abilità Alla rivelazione dà Tocco letale ai tuoi personaggi Malvagi, passa da 3/6 a 4/6.
 
 ## Christopher Robin torna 5/4 {#christopher-robin}
 
@@ -748,7 +748,7 @@ La patch 0.6.3 lo aveva portato da 5/4 a 4/5, più resistente ma meno incisivo. 
 
 ## Itsy Bitsy Spider diventa Malvagia {#itsy-bitsy-spider}
 
-La 1/1 da 0 mana passa da Neutrale a Malvagia. Conta per tutte le carte che guardano ai personaggi Malvagi: l'On Reveal di Wicked Stepmother, per esempio, ora dà Deathtouch anche a lei.
+La 1/1 da 0 mana passa da Neutrale a Malvagia. Conta per tutte le carte che guardano ai personaggi Malvagi: l'abilità Alla rivelazione di Wicked Stepmother, per esempio, ora dà Tocco letale anche a lei.
 
 ## Sei carte cambiano effetto {#effetti}
 
@@ -758,15 +758,15 @@ Ora può colpire anche le barriere, oltre ai personaggi.
 
 ### Don Quixote {#don-quixote}
 
-Ha ottenuto Defender: è tutto quello che le patch notes dicono di lui.
+Ha ottenuto Difensore: è tutto quello che le patch notes dicono di lui.
 
 ### Heroic Charge {#heroic-charge}
 
-La magia dà agli alleati +2 Potenza e Trample per il round. Quando viene ripetuta, il bonus di +2 Potenza ora si applica di nuovo.
+La magia dà agli alleati +2 Potenza e Travolgere per il round. Quando viene ripetuta, il bonus di +2 Potenza ora si applica di nuovo.
 
 ### Frog Prince e Magic Carpet {#frog-prince-magic-carpet}
 
-Hanno entrambi un On Reveal a scelta ("Choose One"). Quando vengono giocati non perdono più i potenziamenti che avevano già, e se tornano in mano possono scegliere di nuovo. Magic Carpet guadagna anche 1 di Potenza.
+Hanno entrambi un'abilità Alla rivelazione a scelta ("Choose One"). Quando vengono giocati non perdono più i potenziamenti che avevano già, e se tornano in mano possono scegliere di nuovo. Magic Carpet guadagna anche 1 di Potenza.
 
 ### Wooden Stake {#wooden-stake}
 
@@ -776,7 +776,7 @@ Ora può bersagliare personaggi con la Salute piena, ma fallisce comunque se il 
 
 ### Le statistiche restano nel cimitero {#cimitero}
 
-Le statistiche di un personaggio non si azzerano più nel cimitero. Un personaggio potenziato con Rebirth torna sul tabellone ancora potenziato, anche se con 1 di Salute.
+Le statistiche di un personaggio non si azzerano più nel cimitero. Un personaggio potenziato con Rinascita torna sul tabellone ancora potenziato, anche se con 1 di Salute.
 
 ### Prima il Before combat, poi gli scarti Temporary {#before-combat}
 
@@ -784,7 +784,7 @@ Le abilità "Before combat" ora si attivano prima che le carte Temporary vengano
 
 ## The Gallows {#the-gallows}
 
-Il luogo distrugge sempre il nemico di fronte alla casella in cui è entrato il personaggio. Se un'abilità On Reveal sposta quel personaggio in un altro luogo, The Gallows non distrugge più il personaggio avversario nel nuovo luogo.
+Il luogo distrugge sempre il nemico di fronte allo spazio in cui è entrato il personaggio. Se un'abilità Alla rivelazione sposta quel personaggio in un altro luogo, The Gallows non distrugge più il personaggio avversario nel nuovo luogo.
 
 ## Da dove arrivano queste note {#fonti}
 
@@ -821,11 +821,11 @@ Los números se comparan con la última build del playtest, la 0.6.3: las mismas
 
 ### Dorothy cuesta 4 {#dorothy}
 
-Dorothy puede usar Move en cada ronda y tiene +1/+1 por cada vez que un aliado se movió en esta partida. Con coste 4 se puede jugar una ronda antes, con una ronda más para crecer. En el mismo parche Roo, un personaje de coste 2 con Move, gana 1 de Salud.
+Dorothy puede usar Mover en cada ronda y tiene +1/+1 por cada vez que un aliado se movió en esta partida. Con coste 4 se puede jugar una ronda antes, con una ronda más para crecer. En el mismo parche Roo, un personaje de coste 2 con Mover, gana 1 de Salud.
 
 ### Wicked Stepmother sube a 4 de Poder {#wicked-stepmother}
 
-La Legendaria con Deathtouch, cuyo On Reveal da Deathtouch a tus personajes Evil, pasa de 3/6 a 4/6.
+La Legendaria con Toque mortal, cuya habilidad Al revelar da Toque mortal a tus personajes Evil, pasa de 3/6 a 4/6.
 
 ## Christopher Robin vuelve a 5/4 {#christopher-robin}
 
@@ -833,7 +833,7 @@ El parche 0.6.3 lo había cambiado de 5/4 a 4/5: más resistente, pero con menos
 
 ## Itsy Bitsy Spider pasa a ser Evil {#itsy-bitsy-spider}
 
-La 1/1 de coste 0 pasa de Neutral a Evil. Importa para todas las cartas que cuentan personajes Evil: el On Reveal de Wicked Stepmother, por ejemplo, ahora también le da Deathtouch a ella.
+La 1/1 de coste 0 pasa de Neutral a Evil. Importa para todas las cartas que cuentan personajes Evil: la habilidad Al revelar de Wicked Stepmother, por ejemplo, ahora también le da Toque mortal a ella.
 
 ## Seis cartas cambian lo que hacen {#efectos}
 
@@ -843,15 +843,15 @@ Ahora puede tener como objetivo barreras, además de personajes.
 
 ### Don Quixote {#don-quixote}
 
-Ahora tiene Defender: es todo lo que dicen de él las notas del parche.
+Ahora tiene Defensor: es todo lo que dicen de él las notas del parche.
 
 ### Heroic Charge {#heroic-charge}
 
-El hechizo da a los aliados +2 de Poder y Trample durante esta ronda. Cuando se repite, el buff de +2 de Poder ahora se vuelve a aplicar.
+El hechizo da a los aliados +2 de Poder y Arrollar durante esta ronda. Cuando se repite, el buff de +2 de Poder ahora se vuelve a aplicar.
 
 ### Frog Prince y Magic Carpet {#frog-prince-magic-carpet}
 
-Las dos cartas tienen un On Reveal de "Choose One". Al jugarlas ya no pierden los buffs que tenían, y si vuelven a la mano pueden elegir de nuevo. Magic Carpet también gana 1 de Poder.
+Las dos cartas tienen una habilidad Al revelar de "Choose One". Al jugarlas ya no pierden los buffs que tenían, y si vuelven a la mano pueden elegir de nuevo. Magic Carpet también gana 1 de Poder.
 
 ### Wooden Stake {#wooden-stake}
 
@@ -861,7 +861,7 @@ Ahora puede tener como objetivo personajes con la Salud completa, pero sigue fal
 
 ### Las estadísticas se mantienen en el cementerio {#cementerio}
 
-Las estadísticas de un personaje ya no se restablecen en el cementerio. Un personaje con buffs y Rebirth vuelve al tablero con sus buffs, aunque con 1 de Salud.
+Las estadísticas de un personaje ya no se restablecen en el cementerio. Un personaje con buffs y Renacer vuelve al tablero con sus buffs, aunque con 1 de Salud.
 
 ### Primero Before combat, luego los descartes de Temporary {#before-combat}
 
@@ -869,7 +869,7 @@ Las habilidades "Before combat" ahora se activan antes de que se descarten las c
 
 ## The Gallows {#the-gallows}
 
-La ubicación siempre destruye al enemigo situado frente a la casilla en la que entró un personaje. Si una habilidad On Reveal mueve a ese personaje a otra ubicación, The Gallows ya no destruye al personaje rival en la nueva ubicación.
+La ubicación siempre destruye al enemigo situado frente al espacio en el que entró un personaje. Si una habilidad Al revelar mueve a ese personaje a otra ubicación, The Gallows ya no destruye al personaje rival en la nueva ubicación.
 
 ## De dónde vienen estas notas {#fuentes}
 
@@ -1243,11 +1243,11 @@ Un altro giocatore ha risposto che è un bug noto legato a Spellbook e che dovre
 
 Il 19 settembre un altro giocatore ha descritto un combattimento al luogo Colosseum:
 
-1. il suo Golden Egg è stato rotto dall'On Reveal del Black Knight, che infligge 2 danni al nemico di fronte;
-2. l'uovo ha evocato la Golden Goose, una 5/5, nella stessa casella;
+1. il suo Golden Egg è stato rotto dall'abilità Alla rivelazione del Black Knight, che infligge 2 danni al nemico di fronte;
+2. l'uovo ha evocato la Golden Goose, una 5/5, nello stesso spazio;
 3. in combattimento la Goose non ha inflitto danni: il Black Knight, un 2/2, è sopravvissuto e la Goose è rimasta 5/3.
 
-Somiglia alla regola spiegata sul forum dallo sviluppatore Fenchurch il 15 settembre: un personaggio evocato a metà combattimento, nella casella in cui compare, non attacca fino al round successivo. L'evocazione però non lo mette al riparo dai danni, e questo spiega il 5/3. Cosa aggiunga il Colosseum non è ancora chiaro: il thread per ora non ha risposte.
+Somiglia alla regola spiegata sul forum dallo sviluppatore Fenchurch il 15 settembre: un personaggio evocato a metà combattimento, nello spazio in cui compare, non attacca fino al round successivo. L'evocazione però non lo mette al riparo dai danni, e questo spiega il 5/3. Cosa aggiunga il Colosseum non è ancora chiaro: il thread per ora non ha risposte.
 
 ## Un tasto rivincita per le partite private
 
@@ -1268,11 +1268,11 @@ Otro jugador respondió que es un bug conocido relacionado con Spellbook y que d
 
 El 19 de septiembre otro jugador describió un combate en la ubicación Colosseum:
 
-1. el On Reveal del Black Knight, que inflige 2 de daño al enemigo que tiene enfrente, rompió su Golden Egg;
-2. el huevo invocó a la Golden Goose, una 5/5, en la misma casilla;
+1. la habilidad Al revelar del Black Knight, que inflige 2 de daño al enemigo que tiene enfrente, rompió su Golden Egg;
+2. el huevo invocó a la Golden Goose, una 5/5, en el mismo espacio;
 3. en el combate la Goose no infligió daño: el Black Knight, un 2/2, sobrevivió, y la Goose se quedó en 5/3.
 
-Se parece a la regla que el desarrollador Fenchurch explicó en el foro el 15 de septiembre: un personaje invocado a mitad del combate, en la casilla en la que aparece, no ataca hasta la ronda siguiente. Ser invocado no lo protege del daño, y eso explica el 5/3. Lo que añade el Colosseum todavía no está claro: por ahora el hilo no tiene respuestas.
+Se parece a la regla que el desarrollador Fenchurch explicó en el foro el 15 de septiembre: un personaje invocado a mitad del combate, en el espacio en el que aparece, no ataca hasta la ronda siguiente. Ser invocado no lo protege del daño, y eso explica el 5/3. Lo que añade el Colosseum todavía no está claro: por ahora el hilo no tiene respuestas.
 
 ## Un botón de revancha para las partidas privadas
 
@@ -1407,7 +1407,7 @@ Il 15 settembre un giocatore ha raccontato sul forum Steam quattro partite contr
 - le zucche colpivano sempre la barriera con meno vita;
 - le magie che infliggono 6 danni a caso finivano sempre sul personaggio più forte con 6 di vita o meno;
 - gli scarti casuali prendevano sempre la carta più pericolosa in mano;
-- le evocazioni casuali comparivano sempre nella casella migliore.
+- le evocazioni casuali comparivano sempre nello spazio migliore.
 
 ## La risposta del team
 
@@ -1429,7 +1429,7 @@ El 15 de septiembre un jugador publicó en el foro de Steam el relato de cuatro 
 - las calabazas siempre golpeaban la barrera con menos salud;
 - los hechizos que infligen 6 de daño al azar siempre caían sobre el personaje más fuerte con 6 de Salud o menos;
 - los descartes aleatorios siempre se llevaban la carta más peligrosa de la mano;
-- las invocaciones aleatorias siempre aparecían en la mejor casilla.
+- las invocaciones aleatorias siempre aparecían en el mejor espacio.
 
 ## La respuesta del equipo
 
@@ -1540,8 +1540,8 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     ),
     summary: n(
       "The second deck by Davdas, OriginsMeta staff, is a midrange list led by Three Not So Little Pigs, tagged for ladder and competitive play. The plan: take the board in the first rounds, win at least one location, then close with En Passant, Ellen Trechend's Trample and the Lightning Strikes that Impundulu generates. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
-      "Il secondo mazzo di Davdas, staff di OriginsMeta, è una lista midrange guidata dai Three Not So Little Pigs, segnata per la ladder e il gioco competitivo. Il piano: prendere il tabellone nei primi round, vincere almeno un luogo e chiudere con En Passant, il Trample di Ellen Trechend e i Lightning Strike generati da Impundulu. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan dell'autore, il codice del gioco e il tasto per aprirla nel deck builder, e due guide su come giocarla.",
-      "El segundo mazo de Davdas, del staff de OriginsMeta, es una lista midrange liderada por Three Not So Little Pigs y etiquetada para la ladder y el juego competitivo. El plan: hacerse con el tablero en las primeras rondas, ganar al menos una ubicación y cerrar con En Passant, el Trample de Ellen Trechend y los Lightning Strike que genera Impundulu. En la ficha del mazo tienes la lista completa con los gráficos de composición, las notas de mulligan del autor, el código del juego y el botón para abrirla en el deck builder, además de dos guías sobre cómo jugarla.",
+      "Il secondo mazzo di Davdas, staff di OriginsMeta, è una lista midrange guidata dai Three Not So Little Pigs, segnata per la ladder e il gioco competitivo. Il piano: prendere il tabellone nei primi round, vincere almeno un luogo e chiudere con En Passant, Ellen Trechend con Travolgere e i Lightning Strike generati da Impundulu. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan dell'autore, il codice del gioco e il tasto per aprirla nel deck builder, e due guide su come giocarla.",
+      "El segundo mazo de Davdas, del staff de OriginsMeta, es una lista midrange liderada por Three Not So Little Pigs y etiquetada para la ladder y el juego competitivo. El plan: hacerse con el tablero en las primeras rondas, ganar al menos una ubicación y cerrar con En Passant, Ellen Trechend con Arrollar y los Lightning Strike que genera Impundulu. En la ficha del mazo tienes la lista completa con los gráficos de composición, las notas de mulligan del autor, el código del juego y el botón para abrirla en el deck builder, además de dos guías sobre cómo jugarla.",
       "Le deuxième deck de Davdas, membre du staff d'OriginsMeta, est une liste midrange menée par Three Not So Little Pigs, prévue pour le ladder et le jeu compétitif. Le plan : prendre le plateau dans les premiers tours, gagner au moins un lieu, puis conclure avec En Passant, le Trample d'Ellen Trechend et les Lightning Strike générés par Impundulu. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code du jeu et le bouton pour l'ouvrir dans le deck builder, et deux guides pour le jouer.",
     ),
     url: "/decks/community/3-pigs-mid-range-6311",
@@ -1581,8 +1581,8 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     ),
     summary: n(
       "In the current playtest you unlock a deck by winning three ranked matches and then beating an AI boss; players call it punishing when they meet full collections with a starter deck. Developer Fenchurch replied that the team reads every Steam forum post and is considering making deck-unlock matches PvE-only. Also reported: cards that generate random cards (Humpty, Spellbook) can add extra Legendaries to a deck, requests to redesign Spellbook, and Asanbosam's On Reveal not repeating at the Cloning Lab location.",
-      "Nel playtest attuale un mazzo si sblocca vincendo tre partite classificate e poi battendo un boss IA; i giocatori lo trovano punitivo quando incontrano collezioni complete con un mazzo iniziale. Lo sviluppatore Fenchurch ha risposto che il team legge ogni post del forum Steam e valuta di rendere le partite di sblocco solo PvE. Segnalati anche: le carte che generano carte casuali (Humpty, Spellbook) possono aggiungere Leggendarie extra al mazzo, richieste di ridisegnare Spellbook e l'On Reveal di Asanbosam che non si ripete nel luogo Cloning Lab.",
-      "En el playtest actual desbloqueas un mazo ganando tres partidas clasificatorias y derrotando después a un jefe controlado por la IA; los jugadores lo consideran castigador cuando se cruzan con colecciones completas llevando un mazo inicial. El desarrollador Fenchurch respondió que el equipo lee todas las publicaciones del foro de Steam y está estudiando que las partidas de desbloqueo sean solo PvE. También se señalaron: las cartas que generan cartas aleatorias (Humpty, Spellbook), que pueden añadir Legendarias de más a un mazo; las peticiones de rediseñar Spellbook; y el On Reveal de Asanbosam, que no se repite en la ubicación Cloning Lab.",
+      "Nel playtest attuale un mazzo si sblocca vincendo tre partite classificate e poi battendo un boss IA; i giocatori lo trovano punitivo quando incontrano collezioni complete con un mazzo iniziale. Lo sviluppatore Fenchurch ha risposto che il team legge ogni post del forum Steam e valuta di rendere le partite di sblocco solo PvE. Segnalati anche: le carte che generano carte casuali (Humpty, Spellbook) possono aggiungere Leggendarie extra al mazzo, richieste di ridisegnare Spellbook e l'abilità Alla rivelazione di Asanbosam che non si ripete nel luogo Cloning Lab.",
+      "En el playtest actual desbloqueas un mazo ganando tres partidas clasificatorias y derrotando después a un jefe controlado por la IA; los jugadores lo consideran castigador cuando se cruzan con colecciones completas llevando un mazo inicial. El desarrollador Fenchurch respondió que el equipo lee todas las publicaciones del foro de Steam y está estudiando que las partidas de desbloqueo sean solo PvE. También se señalaron: las cartas que generan cartas aleatorias (Humpty, Spellbook), que pueden añadir Legendarias de más a un mazo; las peticiones de rediseñar Spellbook; y la habilidad Al revelar de Asanbosam, que no se repite en la ubicación Cloning Lab.",
       "Dans le playtest actuel, un deck se débloque en gagnant trois parties classées puis en battant un boss IA ; les joueurs trouvent cela punitif face à des collections complètes. Le développeur Fenchurch a répondu que l'équipe lit chaque post du forum Steam et envisage des parties de déblocage uniquement PvE. Signalés aussi : les cartes qui génèrent des cartes aléatoires (Humpty, Spellbook) peuvent ajouter des Légendaires, des demandes de refonte de Spellbook et l'On Reveal d'Asanbosam qui ne se répète pas au lieu Cloning Lab.",
     ),
     url: "https://steamcommunity.com/app/4429430/discussions/0/617711086156647978/",
@@ -1686,8 +1686,8 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Parche 0.6.2 del playtest: cambios de equilibrio en 23 cartas", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
     summary: n(
       "Eight cards changed what their ability does. Mulan gains Double Attack, the Queen of Hearts drops to 4 Mana 3/3 with First Strike, Ellen Trechend becomes an 8-Mana 3/3 that grows +3/+3 per enemy. Van Helsing's Tools is free but the Silver Bullet deals 1. The collection is now scoped to the ten playtest decks.",
-      "Otto carte hanno cambiato abilità. Mulan ottiene Doppio Attacco, la Regina di Cuori scende a 4 Mana 3/3 con Primo Colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma il Proiettile d'Argento fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
-      "Ocho cartas cambiaron lo que hace su habilidad. Mulan obtiene Double Attack, la Queen of Hearts baja a 4 de maná y 3/3 con First Strike, Ellen Trechend pasa a ser una 3/3 de 8 de maná que crece +3/+3 por enemigo. Van Helsing's Tools es gratis, pero la Silver Bullet inflige 1 de daño. La colección se limita ahora a los diez mazos del playtest.",
+      "Otto carte hanno cambiato abilità. Mulan ottiene Doppio attacco, la Queen of Hearts scende a 4 Mana 3/3 con Primo colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma il Proiettile d'Argento fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
+      "Ocho cartas cambiaron lo que hace su habilidad. Mulan obtiene Ataque doble, la Queen of Hearts baja a 4 de maná y 3/3 con Primer golpe, Ellen Trechend pasa a ser una 3/3 de 8 de maná que crece +3/+3 por enemigo. Van Helsing's Tools es gratis, pero la Silver Bullet inflige 1 de daño. La colección se limita ahora a los diez mazos del playtest.",
       "Huit cartes ont changé de capacité. Mulan gagne Double Attaque, la Reine de Cœur passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Balle d'argent inflige 1. La collection est désormais limitée aux dix decks du playtest.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",

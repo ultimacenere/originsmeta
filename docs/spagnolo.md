@@ -20,12 +20,12 @@ stessa cura SEO. Questo file raccoglie le scelte fatte per lo spagnolo, perché 
 - **Nomi delle carte, dei luoghi, dei mazzi della community, di prodotti ed eventi**: Merlin, Queen of Hearts,
   Van Helsing's Tools, Wonderland, "Healing Healsing", Steam Next Fest, Crimson Cup, Demo 2.0, MetaShifting. Il sito
   trasforma da solo i nomi delle carte in link: vanno scritti esattamente come nel database.
-- **Parole chiave del gioco**: dipende dal testo. Nei **testi di gioco** (carte, carte create, luoghi) si usano i nomi
-  ufficiali spagnoli, perché il gioco è tradotto: Al revelar, Al morir, Escudo, Arrollar, Toque mortal, Defensor…
-  (glossario completo in `docs/testi-di-gioco.md`). Nei **testi editoriali** (guide, news, interfaccia) per ora restano
-  in inglese come in italiano (On Reveal, Trample, Conquest…), finché Pierluigi non decide se allinearli al gioco.
-  Le etichette di allineamento restano **Good / Evil / Neutral** come sulla carta del gioco, ma nel testo delle regole
-  il gioco scrive "tus personajes Buenos", "Malvados".
+- **Parole chiave del gioco**: si usano i nomi ufficiali spagnoli, perché il gioco è tradotto: Al revelar, Al morir,
+  Escudo, Arrollar, Toque mortal, Defensor, Primer golpe, Ataque doble, Disparo certero, Renacer, Mover… (glossario
+  completo in `docs/testi-di-gioco.md`), nei testi delle carte come in guide, news e interfaccia (decisione di
+  Pierluigi del 25/09/2026). "Su habilidad Al revelar", non "su On Reveal". Restano in inglese Conquest e il gergo
+  (midrange, buff, nerf, "mazo move"). Le etichette di allineamento restano **Good / Evil / Neutral** come sulla carta
+  del gioco, ma nel testo delle regole il gioco scrive "tus personajes Buenos", "Malvados".
 - Segnaposto tra graffe ({n}, {lang}, {from}…), emoji e notazioni delle statistiche ("+2⚔️/+2❤️", "[5⚔️/3❤️]").
 
 ## Glossario (EN → ES)
@@ -41,7 +41,7 @@ stessa cura SEO. Questo file raccoglie le scelte fatte per lo spagnolo, perché 
 | character, ally, enemy | personaje, aliado, enemigo | |
 | barrier | barrera | |
 | location | ubicación | sezione "Ubicaciones" |
-| lane, space | carril, espacio | il gioco dice "espacio"; guide e news già scritte hanno ancora "casilla" |
+| lane, space | carril, espacio | il gioco dice "espacio" (mai "casilla") |
 | mana, cost | maná, coste | |
 | Power, Health | Poder, Salud | |
 | round, turn, combat | ronda, turno, combate | |

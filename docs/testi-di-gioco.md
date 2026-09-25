@@ -12,10 +12,17 @@ ora sono quelli del sito. Questo file dice cosa ne segue e come rifare la verifi
   finché non li confrontiamo nel gioco).
 - **Nomi** di carte, carte create, luoghi e mazzi: restano in inglese, come nel gioco ("Evoca una Broomstick",
   "Invoca a Tweedledee", "tre Pumpkins").
-- **Testi editoriali** (guide, news, storico dei bilanciamenti, interfaccia, guide dei mazzi tradotte in automatico):
-  per ora tengono le parole chiave in inglese (On Reveal, Trample…) e "casella" / "casilla". Allinearli al gioco è
-  una scelta di Pierluigi, ancora da fare (KB §1): sono circa 160 parole chiave e 45 "casella" per lingua fra guide
-  e news.
+- **Testi editoriali** (guide, news, storico dei bilanciamenti, interfaccia): anche loro usano i termini del gioco,
+  per decisione di Pierluigi del 25/09/2026 ("ok allinea anche guide e news"). Quando la parola chiave sta per
+  "l'abilità" si scrive "abilità Alla rivelazione" / "habilidad Al revelar" ("la sua abilità Alla rivelazione
+  evoca…"); nelle tre guide introduttive (`origins-tcg-explained`, `play-the-demo`, `origins-tcg-locations`) la
+  prima citazione di ogni parola chiave porta il nome inglese tra parentesi, "Alla rivelazione (On Reveal)", perché
+  chi ha giocato il playtest le conosce in inglese. Restano in inglese i nomi di carte, luoghi e mazzi (anche "On
+  Reveal Mid Range"), le citazioni in inglese e le etichette Good / Evil / Neutral. "Casella" resta solo quando è
+  quella dell'interfaccia (la casella di ricerca).
+- **Ancora in inglese**: le pastiglie sotto le schede carta (sono i tag di World of Origins: On Reveal, Trample,
+  Summon…) e le guide dei mazzi della community tradotte in automatico (il prompt di `deckTranslation.ts` tiene le
+  parole chiave in inglese). Cambiarle è una scelta da fare con Pierluigi.
 
 ## Glossario ufficiale
 

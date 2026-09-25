@@ -228,7 +228,7 @@ export const it: Dictionary = {
     intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese, italiano e spagnolo come si legge nel gioco, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
     description: "Tutte le carte di Origins TCG della Demo 2.0 in un database cercabile: filtri per tipo, saga e rarità, testo ufficiale, statistiche e bilanciamenti.",
     /* segnaposto della ricerca: si cerca anche nel testo della carta (24/09/2026) */
-    searchHint: "Nome o testo: Merlin, On Reveal…",
+    searchHint: "Nome o testo: Merlin, Alla rivelazione…",
     countLabel: "carte nella Demo 2.0",
     countCreated: "carte create",
     countRemoved: "rimosse nelle build precedenti",
@@ -477,10 +477,10 @@ export const it: Dictionary = {
     facts: [
       "I tre luoghi di una partita si scoprono uno per round nei primi tre round: dal quarto si gioca sapendo tutto il tabellone.",
       "L'effetto di un luogo vale per entrambi i giocatori, non solo per chi lo sfrutta per primo.",
-      "Un luogo può ribaltare il valore di una carta: lo stesso personaggio vale molto di più dove i danni raddoppiano o dove tutti hanno Trample.",
+      "Un luogo può ribaltare il valore di una carta: lo stesso personaggio vale molto di più dove i danni raddoppiano o dove tutti hanno Travolgere.",
     ],
     search: "Cerca un luogo",
-    searchPlaceholder: "Nome o effetto: mana, Trample, barriera…",
+    searchPlaceholder: "Nome o effetto: mana, Travolgere, barriera…",
     results: "luoghi",
     noResults: "Nessun luogo corrisponde alla ricerca.",
     related: "Carte collegate",

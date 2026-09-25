@@ -12,7 +12,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 4, power: 2, health: 4 },
       to: { mana: 4, power: 2, health: 4 },
-      note: { en: "Stats unchanged; gains Double Attack on top of repeating allies' On Reveal abilities.", it: "Statistiche invariate; ottiene Doppio Attacco oltre a ripetere le On Reveal degli alleati.", es: "Estadísticas sin cambios; obtiene Double Attack además de repetir las habilidades On Reveal de los aliados.", fr: "Statistiques inchangées ; gagne Double Attaque en plus de répéter les On Reveal des alliés." },
+      note: { en: "Stats unchanged; gains Double Attack on top of repeating allies' On Reveal abilities.", it: "Statistiche invariate; ottiene Doppio attacco oltre a ripetere le abilità Alla rivelazione degli alleati.", es: "Estadísticas sin cambios; obtiene Ataque doble además de repetir las habilidades Al revelar de los aliados.", fr: "Statistiques inchangées ; gagne Double Attaque en plus de répéter les On Reveal des alliés." },
     },
   ],
   "queen-of-hearts": [
@@ -21,7 +21,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 5, power: 3, health: 5 },
       to: { mana: 4, power: 3, health: 3 },
-      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo Colpo oltre a ripetere le On Death degli alleati.", es: "Más barata y más pequeña; obtiene First Strike además de repetir las habilidades On Death de los aliados.", fr: "Moins chère et plus petite ; gagne Initiative en plus de répéter les On Death des alliés." },
+      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo colpo oltre a ripetere le abilità Alla morte degli alleati.", es: "Más barata y más pequeña; obtiene Primer golpe además de repetir las habilidades Al morir de los aliados.", fr: "Moins chère et plus petite ; gagne Initiative en plus de répéter les On Death des alliés." },
     },
   ],
   "king-arthur": [
@@ -66,7 +66,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 1, power: 1, health: 2 },
       to: { mana: 1, power: 1, health: 1 },
-      note: { en: "Loses 1 Health; On Reveal bonus on a middle space rises from +1/+1 to +2/+2.", it: "Perde 1 Salute; il bonus On Reveal su spazio centrale sale da +1/+1 a +2/+2.", es: "Pierde 1 de Salud; la bonificación de su On Reveal en una casilla central sube de +1/+1 a +2/+2.", fr: "Perd 1 Vie ; le bonus On Reveal sur case centrale passe de +1/+1 à +2/+2." },
+      note: { en: "Loses 1 Health; On Reveal bonus on a middle space rises from +1/+1 to +2/+2.", it: "Perde 1 Salute; il bonus dell'abilità Alla rivelazione su spazio centrale sale da +1/+1 a +2/+2.", es: "Pierde 1 de Salud; la bonificación de su habilidad Al revelar en un espacio central sube de +1/+1 a +2/+2.", fr: "Perd 1 Vie ; le bonus On Reveal sur case centrale passe de +1/+1 à +2/+2." },
     },
   ],
   mowgli: [
@@ -139,7 +139,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "0.6.2",
       kind: "nerf",
-      note: { en: "On Reveal now grants +1 Power only; it no longer grants Health.", it: "L'On Reveal dà solo +1 Potenza; non dà più Salute.", es: "Su On Reveal ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "L'On Reveal ne donne plus que +1 Puissance ; plus de Vie." },
+      note: { en: "On Reveal now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla rivelazione dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al revelar ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "L'On Reveal ne donne plus que +1 Puissance ; plus de Vie." },
     },
   ],
   kanga: [
@@ -386,7 +386,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "0.6.2",
       kind: "nerf",
-      note: { en: "On Death now grants +1 Power only; it no longer grants Health.", it: "L'On Death dà solo +1 Potenza; non dà più Salute.", es: "Su On Death ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "L'On Death ne donne plus que +1 Puissance ; plus de Vie." },
+      note: { en: "On Death now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla morte dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al morir ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "L'On Death ne donne plus que +1 Puissance ; plus de Vie." },
     },
   ],
   koschei: [
@@ -498,7 +498,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "demo-0921",
       kind: "rework",
-      note: { en: "Gained Defender.", it: "Ha ottenuto Defender.", es: "Obtiene Defender." },
+      note: { en: "Gained Defender.", it: "Ha ottenuto Difensore.", es: "Obtiene Defensor." },
     },
   ],
   "heroic-charge": [

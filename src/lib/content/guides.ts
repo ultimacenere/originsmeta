@@ -1147,7 +1147,7 @@ const it: Record<GuideSlug, Guide> = {
     tags: { cards: ["christopher-robin", "merry-man", "bandersnatch", "ellen-trechend", "boogeyman", "dorothy", "king-arthur"] },
     title: "I Luoghi di Origins TCG: come cambiano la partita",
     metaTitle: "I Luoghi di Origins TCG spiegati",
-    excerpt: "I Luoghi sono il terzo giocatore al tavolo: raddoppiano i danni, cambiano i costi, spostano i personaggi. Come funzionano, quali decidono le partite e come tenerne conto quando costruisci.",
+    excerpt: "I Luoghi sono il terzo giocatore al tavolo: raddoppiano i danni, cambiano i costi, muovono i personaggi. Come funzionano, quali decidono le partite e come tenerne conto quando costruisci.",
     readTime: 7,
     updated: "2026-09-23",
     image: "/media/ss-board-locations.webp",
@@ -1177,28 +1177,28 @@ Nel nostro elenco i luoghi sono raggruppati per quello che fanno alla partita, e
 - **Danni.** Amplifying Amphitheatre raddoppia tutti i danni lì, Burnturn Arena rosicchia ogni personaggio dopo il combattimento, Soul Artillery colpisce entrambe le barriere ogni volta che qualcosa muore. I corpi piccoli smettono di essere al sicuro.
 - **Mana e costi.** Gold Spinning Wheel toglie uno a tutto, Castle in the Clouds solo alle carte da sette o più, Treasurer's Office aggiunge uno, Mana Battery ti fa conservare quello che non hai speso. Sono i luoghi che decidono chi va avanti di tempo.
 - **Pesca e scarto.** The Sultan's Court regala una carta ogni round che però va spesa, Knowledge Vault premia chi riempie per primo la corsia, Junkyard ne toglie una a entrambi, Nostradamus' Call distrugge i due mazzi all'inizio del sesto round.
-- **Movimento.** Conveyor Belt sposta tutti a destra dopo il combattimento, Ballroom rimanda in mano un personaggio a caso, Open Meadow regala Move.
-- **Evocazioni e copie.** Cloning Lab riempie le tue caselle di copie di quello che hai appena giocato, Reflecting Pool lo copia in un altro luogo, Sherwood Forest continua a produrre [Merry Man](/it/cards/merry-man), Hundred Acre Woods mette un [Christopher Robin](/it/cards/christopher-robin) da entrambe le parti.
-- **Parole chiave.** Stomping Grounds dà Trample, The Colosseum Double Attack, Windmill Ridge Defender, Poison Grounds dà Deathtouch ai personaggi Evil, Blessed Grounds dà Shield a quelli Good.
-- **Abilità.** Mirror Dimension ripete gli On Reveal, Burial Grounds gli On Death, Anti-Magic Vault toglie le abilità a tutti, Wonderland inverte l'ordine di attacco.
+- **Movimento.** Conveyor Belt muove tutti a destra dopo il combattimento, Ballroom rimanda in mano un personaggio a caso, Open Meadow regala Muovere (Move).
+- **Evocazioni e copie.** Cloning Lab riempie i tuoi spazi di copie di quello che hai appena giocato, Reflecting Pool lo copia in un altro luogo, Sherwood Forest continua a produrre [Merry Man](/it/cards/merry-man), Hundred Acre Woods mette un [Christopher Robin](/it/cards/christopher-robin) da entrambe le parti.
+- **Parole chiave.** Stomping Grounds dà Travolgere (Trample), The Colosseum Doppio attacco (Double Attack), Windmill Ridge Difensore (Defender), Poison Grounds dà Tocco letale (Deathtouch) ai personaggi Evil, Blessed Grounds dà Scudo (Shield) a quelli Good.
+- **Abilità.** Mirror Dimension ripete le abilità Alla rivelazione (On Reveal), Burial Grounds quelle Alla morte (On Death), Anti-Magic Vault toglie le abilità a tutti, Wonderland inverte l'ordine di attacco.
 - **Distruzione e barriere.** The Gallows distrugge il nemico di fronte a chi entra, The Hill uccide tutti quelli che hanno la potenza più bassa dopo il combattimento, Wall of Dumpty si mangia il primo personaggio che giochi, Broken Gate fa tornare le barriere con 10 salute invece di 40.
 
 ## I Luoghi che decidono le partite
 
 Alcuni vanno riconosciuti appena compaiono, perché cambiano quello che devi fare con la mano che hai.
 
-- **Cloning Lab.** Quello che giochi lì viene copiato nelle tue caselle libere di quella corsia. Un corpo economico con un buon On Reveal diventa tre, e la corsia è decisa in un turno.
-- **Mirror Dimension.** Ogni On Reveal si attiva due volte. Fa per una corsia quello che [Mulan](/it/cards/mulan) fa per un mazzo intero, e con lei si somma.
+- **Cloning Lab.** Quello che giochi lì viene copiato nei tuoi spazi liberi di quella corsia. Un corpo economico con una buona abilità Alla rivelazione diventa tre, e la corsia è decisa in un turno.
+- **Mirror Dimension.** Ogni abilità Alla rivelazione si attiva due volte. Fa per una corsia quello che [Mulan](/it/cards/mulan) fa per un mazzo intero, e con lei si somma.
 - **The Gallows.** Tutto quello che entra in gioco lì distrugge il nemico di fronte. Trasforma il tuo personaggio più economico in una rimozione, e punisce chi si espone per primo.
 - **Anti-Magic Vault.** I personaggi perdono tutte le abilità. Un mazzo costruito sulle attivazioni lì non ha niente da fare; un mazzo di corpi solidi è a casa sua.
-- **Amplifying Amphitheatre.** Tutti i danni raddoppiati, da entrambe le parti. Una chiusura con Trample come [Ellen Trechend](/it/cards/ellen-trechend) finisce la partita passando dalla barriera; ma vale anche per la sua.
+- **Amplifying Amphitheatre.** Tutti i danni raddoppiati, da entrambe le parti. Una chiusura con Travolgere come [Ellen Trechend](/it/cards/ellen-trechend) finisce la partita passando dalla barriera; ma vale anche per la sua.
 - **Nostradamus' Call.** I due mazzi vengono distrutti all'inizio del sesto round. Qualunque sia il tuo piano, deve essere finito al quinto.
 
 ## Costruire tenendo conto dei Luoghi
 
 Il tabellone non lo scegli, ma puoi costruire un mazzo che quasi mai si trova senza risposte.
 
-1. **Non mettere tutto su una sola attivazione.** Un mazzo che funziona solo con gli On Reveal è un mazzo che perde una corsia contro Anti-Magic Vault. Tieni qualche carta che va bene anche come corpo e basta.
+1. **Non mettere tutto su una sola attivazione.** Un mazzo che funziona solo con le abilità Alla rivelazione è un mazzo che perde una corsia contro Anti-Magic Vault. Tieni qualche carta che va bene anche come corpo e basta.
 2. **Tieni una carta che arriva lontano.** I luoghi che colpiscono le barriere (Overloaded Circuit, "Human" Cannon, Soul Artillery) premiano i mazzi capaci di chiudere una corsia da lontano invece di consumarla.
 3. **I personaggi economici guadagnano di più.** Ogni luogo che regala una parola chiave o copia un corpo rende molto di più su una carta da due che su una da sette: la parte costosa la fa il luogo.
 4. **Attenzione alle corsie che puniscono chi si espone.** The Hill, Wall of Dumpty e The Gallows puniscono tutti chi riempie per primo. Su un tabellone che non conosci, la seconda carta in una corsia è spesso più sicura della prima.
@@ -1218,20 +1218,20 @@ Questo elenco è trascritto dal database della community e corrisponde alla rota
     },
     title: "On Reveal Mid Range: come si gioca il mazzo midrange di Mulan",
     metaTitle: "On Reveal Mid Range: mazzo Origins TCG",
-    excerpt: "Piano di gioco, mulligan e round per round di On Reveal Mid Range, il mazzo di Mulan che ripete ogni abilità On Reveal, per classificata, competitivo e tornei.",
+    excerpt: "Piano di gioco, mulligan e round per round di On Reveal Mid Range, mazzo di Mulan che ripete le abilità Alla rivelazione: classificata, competitivo e tornei.",
     readTime: 6,
     updated: "2026-09-23",
     image: "/cards/cover/mulan.webp",
     faq: [
-      { q: "Che cosa fa Mulan in questo mazzo?", a: "Mulan è una 2/4 da 4 mana con Double Attack e, quando si attiva l'abilità On Reveal di un alleato, la ripete. Nella lista ci sono nove carte con un On Reveal: lei le raddoppia." },
-      { q: "Che cosa si tiene al mulligan?", a: "Una curva che arrivi a Mulan al quarto round: Bagheera su una casella centrale, Baby Bear, poi Black Knight o Frog Prince. Mary vale la pena tenerla quando ci si aspetta una partita lunga." },
-      { q: "Quale On Reveal guadagna di più da Mulan?", a: "Mowgli, che a 6 mana evoca un Baloo 6/6 in un altro luogo casuale: ripetuto, mette due Baloo sul campo. Raddoppiano bene anche Ellen Trechend e Fairy Godmother." },
+      { q: "Che cosa fa Mulan in questo mazzo?", a: "Mulan è una 2/4 da 4 mana con Doppio attacco e, quando si attiva l'abilità Alla rivelazione di un alleato, la ripete. Nella lista ci sono nove carte con un'abilità Alla rivelazione: lei le raddoppia." },
+      { q: "Che cosa si tiene al mulligan?", a: "Una curva che arrivi a Mulan al quarto round: Bagheera su uno spazio centrale, Baby Bear, poi Black Knight o Frog Prince. Mary vale la pena tenerla quando ci si aspetta una partita lunga." },
+      { q: "Quale abilità Alla rivelazione guadagna di più da Mulan?", a: "Mowgli, che a 6 mana evoca un Baloo 6/6 in un altro luogo casuale: ripetuto, mette due Baloo sul campo. Raddoppiano bene anche Ellen Trechend e Fairy Godmother." },
       { q: "Come si prova il mazzo?", a: "Dalla scheda del mazzo su OriginsMeta con “Apri nel deck builder”, oppure “Copia codice del gioco” per incollare il codice (KGBLDC…) in Origins." },
     ],
     body: `
 ## Il mazzo in un paragrafo
 
-**On Reveal Mid Range** è una lista **midrange** guidata da [Mulan](/it/cards/mulan), pubblicata su OriginsMeta il 22 settembre 2026 da Davdas, dello staff del sito, e dichiarata per **classificata**, **competitivo** e **tornei**. L'idea è quella che l'autore scrive nella [scheda del mazzo](/it/decks/community/on-reveal-mid-range-772e): Mulan "permette di sfruttare a pieno le abilità On Reveal", e la lista è costruita per averne una che valga la pena ripetere in ogni round. Regge contro un mazzo aggressivo e diventa opprimente contro un controllo, perché le stesse carte comprano tempo e costruiscono il campo.
+**On Reveal Mid Range** è una lista **midrange** guidata da [Mulan](/it/cards/mulan), pubblicata su OriginsMeta il 22 settembre 2026 da Davdas, dello staff del sito, e dichiarata per **classificata**, **competitivo** e **tornei**. L'idea è quella che l'autore scrive nella [scheda del mazzo](/it/decks/community/on-reveal-mid-range-772e): Mulan permette "di sfruttare a pieno" le abilità Alla rivelazione, e la lista è costruita per averne una che valga la pena ripetere in ogni round. Regge contro un mazzo aggressivo e diventa opprimente contro un controllo, perché le stesse carte comprano tempo e costruiscono il campo.
 
 ## La lista
 
@@ -1239,42 +1239,42 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna. Le st
 
 | Carta | Costo | Che cosa fa |
 | --- | --- | --- |
-| [Mulan](/it/cards/mulan) ★ | 4 | 2/4, Double Attack; quando si attiva un On Reveal alleato, lo ripete |
-| [Bagheera](/it/cards/bagheera) | 1 | 1/1; On Reveal su una casella centrale ottiene +2⚔️/+2❤️ |
-| [Baby Bear](/it/cards/baby-bear) | 2 | 1/1; infligge 1 danno a chi colpisce la tua barriera qui e in morte aggiunge un Papa Bear 4/4 alla mano |
-| [Mary](/it/cards/mary) | 3 | 1/1; On Reveal aggiunge un Little Lamb alla mano, in morte i tuoi Lamb ottengono +3⚔️/+3❤️ per sempre |
-| [Black Knight](/it/cards/black-knight) | 3 | 2/2; On Reveal infligge 2 danni al nemico di fronte |
-| [Frog Prince](/it/cards/frog-prince) | 3 | 2/2; On Reveal +3⚔️ oppure +3❤️, a scelta |
+| [Mulan](/it/cards/mulan) ★ | 4 | 2/4, Doppio attacco; quando si attiva un'abilità Alla rivelazione di un alleato, la ripete |
+| [Bagheera](/it/cards/bagheera) | 1 | 1/1; Alla rivelazione su uno spazio centrale ottiene +2⚔️/+2❤️ |
+| [Baby Bear](/it/cards/baby-bear) | 2 | 1/1; infligge 1 danno a chi colpisce la tua barriera qui e Alla morte aggiunge un Papa Bear 4/4 alla mano |
+| [Mary](/it/cards/mary) | 3 | 1/1; Alla rivelazione aggiunge un Little Lamb alla mano, Alla morte i tuoi Lamb ottengono +3⚔️/+3❤️ per sempre |
+| [Black Knight](/it/cards/black-knight) | 3 | 2/2; Alla rivelazione infligge 2 danni al nemico di fronte |
+| [Frog Prince](/it/cards/frog-prince) | 3 | 2/2; Alla rivelazione +3⚔️ oppure +3❤️, a scelta |
 | [Ali Baba](/it/cards/ali-baba) | 3 | 2/3; pesca una carta ogni volta che danneggia una barriera avversaria |
-| [White Queen](/it/cards/white-queen) | 4 | 3/3; On Reveal rimanda QUALSIASI personaggio nella mano del proprietario |
-| [Fairy Godmother](/it/cards/fairy-godmother) | 5 | 3/3; On Reveal dà +3⚔️/+3❤️ a un altro alleato |
-| [Mowgli](/it/cards/mowgli) | 6 | 2/2; On Reveal evoca Baloo (6/6) in un altro luogo casuale |
-| [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Trample; On Reveal ottiene +3⚔️/+3❤️ per ogni carta nemica nel suo luogo |
+| [White Queen](/it/cards/white-queen) | 4 | 3/3; Alla rivelazione riporta QUALSIASI personaggio nella mano del proprietario |
+| [Fairy Godmother](/it/cards/fairy-godmother) | 5 | 3/3; Alla rivelazione dà +3⚔️/+3❤️ a un altro alleato |
+| [Mowgli](/it/cards/mowgli) | 6 | 2/2; Alla rivelazione evoca Baloo (6/6) in un altro luogo casuale |
+| [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Travolgere; Alla rivelazione ottiene +3⚔️/+3❤️ per ogni carta nemica nel suo luogo |
 | [Bullseye](/it/cards/bullseye) | 1 | Magia: 3 danni a QUALSIASI personaggio |
-| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi il suo ⚔️ al personaggio di fronte |
+| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi la sua ⚔️ al personaggio di fronte |
 
-Dieci unità e due magie, nove delle quali con un On Reveal. È tutto il senso del mazzo: Mulan non è una carta da chiusura, è un moltiplicatore.
+Dieci unità e due magie, nove delle quali con un'abilità Alla rivelazione. È tutto il senso del mazzo: Mulan non è una carta da chiusura, è un moltiplicatore.
 
 ## Come vince il mazzo
 
-Mulan ripete l'On Reveal di un alleato, quindi ogni carta giocata dopo di lei vale il doppio. Le tre copie migliori:
+Mulan ripete l'abilità Alla rivelazione di un alleato, quindi ogni carta giocata dopo di lei vale il doppio. Le tre copie migliori:
 
 - **Mowgli** costa sei ed evoca un Baloo 6/6 in un altro luogo casuale. Ripetuto sono due Baloo: una carta sola che riempie due corsie che non stavi contendendo.
-- **Ellen Trechend** cresce di +3⚔️/+3❤️ per ogni carta nemica nel suo luogo e ha Trample. In una corsia affollata è già una minaccia da sola; ripetuta, il bonus si applica due volte prima del combattimento.
+- **Ellen Trechend** cresce di +3⚔️/+3❤️ per ogni carta nemica nel suo luogo e ha Travolgere. In una corsia affollata è già una minaccia da sola; ripetuta, il bonus si applica due volte prima del combattimento.
 - **Fairy Godmother** dà +3⚔️/+3❤️ a un altro alleato. Le due attivazioni si possono concentrare sullo stesso corpo o dividere su due, a seconda di che cosa l'avversario riesce a rimuovere.
 
-Mulan ha anche **Double Attack**, quindi il suo 2/4 scambia meglio di come si legge.
+Mulan ha anche **Doppio attacco**, quindi il suo 2/4 scambia meglio di come si legge.
 
 ## Mulligan
 
-Serve una curva che arrivi a Mulan al quarto round senza restare indietro: **Bagheera** su una casella centrale (un 3/3 da un mana), poi **Baby Bear**, poi **Black Knight** o **Frog Prince**. **Mary** si tiene quando ci si aspetta una partita lunga: il Lamb che aggiunge alla mano è un corpo a basso costo e, se Mary muore, i Lamb già giocati crescono in modo permanente.
+Serve una curva che arrivi a Mulan al quarto round senza restare indietro: **Bagheera** su uno spazio centrale (un 3/3 da un mana), poi **Baby Bear**, poi **Black Knight** o **Frog Prince**. **Mary** si tiene quando ci si aspetta una partita lunga: il Lamb che aggiunge alla mano è un corpo a basso costo e, se Mary muore, i Lamb già giocati crescono in modo permanente.
 
 ## Round per round
 
 1. **Round 1–3: prendere spazio senza esporsi.** Bagheera al centro, Baby Bear dove ti aspetti i primi attacchi, Black Knight di fronte a qualcosa che vuoi morto. Una carta per corsia basta: il mazzo vuole un campo pari, non affollato, quando arriva Mulan.
-2. **Round 4: Mulan.** Da qui in poi conta più l'ordine delle giocate delle carte in mano. Ogni round chiediti quale On Reveal valga la pena raddoppiare, e gioca quella carta nel luogo di Mulan.
-3. **Round 5–6: le carte di valore.** Fairy Godmother, poi Mowgli al sesto. White Queen è la carta risposta della lista: rimanda QUALSIASI personaggio nella mano del proprietario, quindi toglie di mezzo una chiusura avversaria per un round, o raccoglie la tua Mary per rigiocarla.
-4. **Round 7–8: chiusura.** Ellen Trechend nella corsia che l'avversario ha riempito; En Passant per muovere un alleato, colpire chi ha di fronte e aprire la strada al danno Trample.
+2. **Round 4: Mulan.** Da qui in poi conta più l'ordine delle giocate delle carte in mano. Ogni round chiediti quale abilità Alla rivelazione valga la pena raddoppiare, e gioca quella carta nel luogo di Mulan.
+3. **Round 5–6: le carte di valore.** Fairy Godmother, poi Mowgli al sesto. White Queen è la carta risposta della lista: riporta QUALSIASI personaggio nella mano del proprietario, quindi toglie di mezzo una chiusura avversaria per un round, o raccoglie la tua Mary per rigiocarla.
+4. **Round 7–8: chiusura.** Ellen Trechend nella corsia che l'avversario ha riempito; En Passant per muovere un alleato, colpire chi ha di fronte e aprire la strada al danno di Travolgere.
 
 ## Le carte che comprano tempo
 
@@ -1286,7 +1286,7 @@ I dati della classificata non sono pubblici: quella che segue è una lettura di 
 
 - **Contro i mazzi aggressivi.** Baby Bear e Frog Prince giocato come 2/5 tengono le corsie; Bullseye toglie di mezzo i corpi da tre salute per un mana. Non spendere White Queen presto: serve per la prima minaccia grossa.
 - **Contro i mazzi controllo.** Ali Baba è la carta che tiene piena la mano mentre spingi su una barriera. Non impegnare tutto in un luogo: una pulizia del campo a cui rispondi con un solo Mowgli è uno scambio accettabile, una mano vuota no.
-- **Contro gli altri midrange.** Il mazzo fa lo stesso gioco di [3 Pigs Mid Range](/it/decks/community/3-pigs-mid-range-6311) e [King of Value Trade](/it/decks/community/king-of-value-trade-fd14): vince chi tira fuori più valore da ogni carta. Raddoppiare un On Reveal è esattamente questo, quindi proteggi Mulan e gioca gli On Reveal economici prima di lei solo se sei costretto.
+- **Contro gli altri midrange.** Il mazzo fa lo stesso gioco di [3 Pigs Mid Range](/it/decks/community/3-pigs-mid-range-6311) e [King of Value Trade](/it/decks/community/king-of-value-trade-fd14): vince chi tira fuori più valore da ogni carta. Raddoppiare un'abilità Alla rivelazione è esattamente questo, quindi proteggi Mulan e gioca le carte economiche con un'abilità Alla rivelazione prima di lei solo se sei costretto.
 
 ## I punti deboli, nelle parole dell'autore
 
@@ -1313,9 +1313,9 @@ La scheda ne elenca due: **una buona curva è spesso essenziale** e **si rischia
     updated: "2026-09-23",
     image: "/cards/cover/king-arthur.webp",
     faq: [
-      { q: "Che cos'è uno scambio di valore in Origins TCG?", a: "Far rispondere una tua carta a due dell'avversario, o scambiare una carta economica con una costosa. Questo mazzo è costruito su quell'idea: Shield, First Strike e potenziamenti fanno sopravvivere i tuoi personaggi allo scontro che vincono." },
+      { q: "Che cos'è uno scambio di valore in Origins TCG?", a: "Far rispondere una tua carta a due dell'avversario, o scambiare una carta economica con una costosa. Questo mazzo è costruito su quell'idea: Scudo, Primo colpo e potenziamenti fanno sopravvivere i tuoi personaggi allo scontro che vincono." },
       { q: "Che cosa si tiene al mulligan?", a: "Bagheera e Roo, solidi sulla curva, Musketeer e Shield Maiden per i primi round. Contro i mazzi aggressivi si tiene Cowardly Lion, contro il controllo Ali Baba." },
-      { q: "Perché Roo è forte dopo la patch del 21 settembre?", a: "La patch della Demo del 21 settembre 2026 ha portato Roo a 2/3 per due mana mantenendo Move, quindi sopravvive alla maggior parte degli scambi dei primi round invece di scambiare in perdita." },
+      { q: "Perché Roo è forte dopo la patch del 21 settembre?", a: "La patch della Demo del 21 settembre 2026 ha portato Roo a 2/3 per due mana mantenendo Muovere, quindi sopravvive alla maggior parte degli scambi dei primi round invece di scambiare in perdita." },
       { q: "Spellbook è indispensabile?", a: "No. Aggiunge una magia casuale ogni round per avere benzina e imprevedibilità, ma la scheda del mazzo dice che la lista può vincere anche senza." },
     ],
     body: `
@@ -1329,18 +1329,18 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 
 | Carta | Costo | Che cosa fa |
 | --- | --- | --- |
-| [King Arthur](/it/cards/king-arthur) ★ | 7 | 7/7 con Shield; On Reveal dà Shield ai tuoi personaggi Good |
-| [Bagheera](/it/cards/bagheera) | 1 | 1/1; On Reveal su una casella centrale ottiene +2⚔️/+2❤️ |
-| [Musketeer](/it/cards/musketeer) | 2 | 2/1 con First Strike |
-| [Roo](/it/cards/roo) | 2 | 2/3 con Move |
+| [King Arthur](/it/cards/king-arthur) ★ | 7 | 7/7 con Scudo; Alla rivelazione dà Scudo ai tuoi personaggi Good |
+| [Bagheera](/it/cards/bagheera) | 1 | 1/1; Alla rivelazione su uno spazio centrale ottiene +2⚔️/+2❤️ |
+| [Musketeer](/it/cards/musketeer) | 2 | 2/1 con Primo colpo |
+| [Roo](/it/cards/roo) | 2 | 2/3 con Muovere |
 | [Shahrazad](/it/cards/shahrazad) | 2 | 1/4; cura 1 danno alla tua barriera qui ogni volta che una carta entra nella tua mano |
-| [Shield Maiden](/it/cards/shield-maiden) | 3 | 3/1 con Shield |
+| [Shield Maiden](/it/cards/shield-maiden) | 3 | 3/1 con Scudo |
 | [Dark Omen](/it/cards/dark-omen) | 3 | Magia: distruggi QUALSIASI personaggio |
-| [Cowardly Lion](/it/cards/cowardly-lion) | 3 | 2/5 con Defender |
+| [Cowardly Lion](/it/cards/cowardly-lion) | 3 | 2/5 con Difensore |
 | [Ali Baba](/it/cards/ali-baba) | 3 | 2/3; pesca una carta ogni volta che danneggia una barriera avversaria |
 | [Spellbook](/it/cards/spellbook) | 3 | Magia: da ora in poi una magia casuale in mano a ogni round, scartata prima del combattimento |
 | [Lancelot](/it/cards/lancelot) | 4 | 4/4; ogni personaggio Good giocato nel suo luogo ottiene +2⚔️/+2❤️ |
-| [Fairy Godmother](/it/cards/fairy-godmother) | 5 | 3/3; On Reveal dà +3⚔️/+3❤️ a un altro alleato |
+| [Fairy Godmother](/it/cards/fairy-godmother) | 5 | 3/3; Alla rivelazione dà +3⚔️/+3❤️ a un altro alleato |
 | [Boitata](/it/cards/boitata) | 5 | 5/5; i danni di magie e abilità diretti alle tue barriere vanno invece su quelle avversarie |
 
 Dieci unità e due magie, e dieci carte su tredici sono personaggi Good: non è un caso, è ciò che rende la Leggendaria degna dei suoi sette mana.
@@ -1349,22 +1349,22 @@ Dieci unità e due magie, e dieci carte su tredici sono personaggi Good: non è 
 
 Il lavoro lo fanno tre parole chiave.
 
-- **Shield** assorbe il primo danno. King Arthur lo dà a tutti i tuoi personaggi Good in una volta, e [Shield Maiden](/it/cards/shield-maiden) se lo porta da sola: un 3/1 con Shield scambia con un 3/3 e resta sul campo.
-- **First Strike** su [Musketeer](/it/cards/musketeer) fa incassare il danno al nemico prima che possa rispondere: due mana che tolgono di mezzo un corpo più grosso.
+- **Scudo** assorbe il primo danno. King Arthur lo dà a tutti i tuoi personaggi Good in una volta, e [Shield Maiden](/it/cards/shield-maiden) se lo porta da sola: un 3/1 con Scudo scambia con un 3/3 e resta sul campo.
+- **Primo colpo** su [Musketeer](/it/cards/musketeer) fa incassare il danno al nemico prima che possa rispondere: due mana che tolgono di mezzo un corpo più grosso.
 - **I potenziamenti** di [Lancelot](/it/cards/lancelot) e [Fairy Godmother](/it/cards/fairy-godmother) trasformano uno scontro pari in uno a senso unico. Lancelot potenzia ogni personaggio Good giocato nel suo luogo, quindi premia chi insiste su una corsia invece di spargersi.
 
 [Ali Baba](/it/cards/ali-baba) è il motore: ogni volta che danneggia una barriera peschi. [Shahrazad](/it/cards/shahrazad) è l'altra metà della stessa idea — cura un danno alla tua barriera nel suo luogo ogni volta che una carta entra in mano, quindi pescare ti tiene in piedi oltre che in vantaggio.
 
 ## Mulligan
 
-**Bagheera è un must have**, e **Roo** adesso si tiene in ogni mano: la [patch della Demo del 21 settembre](/it/news/demo-patch-notes-0921) lo ha portato a 2/3, quindi sopravvive agli scambi dei primi round. **Musketeer** e **Shield Maiden** ti mandano avanti al secondo e al terzo round. Contro un mazzo aggressivo tieni **Cowardly Lion**, il cui Defender tiene la corsia; contro un controllo tieni **Ali Baba**, che trasforma una barriera scoperta in carte. Se immagini una partita lunga, tenere **Spellbook** è una scelta sensata.
+**Bagheera è un must have**, e **Roo** adesso si tiene in ogni mano: la [patch della Demo del 21 settembre](/it/news/demo-patch-notes-0921) lo ha portato a 2/3, quindi sopravvive agli scambi dei primi round. **Musketeer** e **Shield Maiden** ti mandano avanti al secondo e al terzo round. Contro un mazzo aggressivo tieni **Cowardly Lion**, il cui Difensore tiene la corsia; contro un controllo tieni **Ali Baba**, che trasforma una barriera scoperta in carte. Se immagini una partita lunga, tenere **Spellbook** è una scelta sensata.
 
 ## Round per round
 
 1. **Round 1–3: scambiare in vantaggio.** Bagheera al centro, Musketeer di fronte a un corpo da una o due salute, Roo dove potresti voler muovere più tardi. Ogni scontro vinto senza perdere il corpo è una carta guadagnata.
 2. **Round 4–5: tenere una corsia.** Lancelot, poi i personaggi Good nel suo luogo: ognuno arriva +2⚔️/+2❤️ più grosso di quanto dovrebbe. Boitata al quinto è un 5/5 che gira sull'avversario i danni da magia diretti alle tue barriere.
-3. **Round 6–7: la Leggendaria.** King Arthur è un 7/7 con Shield e il suo On Reveal dà Shield a tutto il Good che hai già sul campo. Non giocarlo su un campo vuoto: il valore sta negli Shield, non nel corpo.
-4. **Dark Omen, quando conta.** Tre mana per distruggere QUALSIASI personaggio sono la risposta all'unica carta che non puoi battere in uno scontro: un corpo potenziato, un Defender nella corsia sbagliata, una Leggendaria avversaria.
+3. **Round 6–7: la Leggendaria.** King Arthur è un 7/7 con Scudo e la sua abilità Alla rivelazione dà Scudo a tutto il Good che hai già sul campo. Non giocarlo su un campo vuoto: il valore sta negli Scudi, non nel corpo.
+4. **Dark Omen, quando conta.** Tre mana per distruggere QUALSIASI personaggio sono la risposta all'unica carta che non puoi battere in uno scontro: un corpo potenziato, un Difensore nella corsia sbagliata, una Leggendaria avversaria.
 
 ## Due note dell'autore
 
@@ -1375,7 +1375,7 @@ Il lavoro lo fanno tre parole chiave.
 
 I dati della classificata non sono pubblici: questa è una lettura di OriginsMeta sulle liste, non un win rate.
 
-- **Contro i mazzi aggressivi.** Cowardly Lion e Shahrazad insieme sono la rete di sicurezza: il Defender incassa, la cura restituisce i danni che passano. Non scambiare Shield Maiden presto con un corpo da una salute se ne sta arrivando uno più grosso.
+- **Contro i mazzi aggressivi.** Cowardly Lion e Shahrazad insieme sono la rete di sicurezza: il Difensore incassa, la cura restituisce i danni che passano. Non scambiare Shield Maiden presto con un corpo da una salute se ne sta arrivando uno più grosso.
 - **Contro i mazzi controllo.** Ali Baba, poi il secondo. La scheda è chiara: la lista vuole continuare a pescare mentre l'avversario cerca le risposte. Tieni Dark Omen per la carta che chiude la loro partita, non per la prima che giocano.
 - **Contro chi colpisce le tue barriere con le magie** ([Healing Healsing](/it/decks/community/healing-healsing-9411) e le altre liste con Boitata). Chi piazza Boitata per primo gira quel danno: con due copie in lista conviene tenerne una, invece di perderle entrambe nello stesso scontro.
 
@@ -1405,7 +1405,7 @@ La scheda ne elenca tre: **nessuna rimozione ad area**, **l'utilizzo di Dark Ome
     image: "/cards/cover/dorothy.webp",
     faq: [
       { q: "Come cresce Dorothy?", a: "Dorothy può muoversi ogni round e ha +1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita. Il contatore vale per tutta la partita, non per il round: ogni movimento, ovunque, la fa crescere." },
-      { q: "Quali combo cerca il mazzo?", a: "Card Soldier, che dopo essersi mosso evoca una copia di sé sulla casella precedente; Pegasus, che dopo il movimento raddoppia il suo ⚔️; e Magic Carpet, che all'ingresso muove gli altri alleati di una casella a destra o a sinistra." },
+      { q: "Quali combo cerca il mazzo?", a: "Card Soldier, che dopo essersi mosso evoca una copia di sé sullo spazio precedente; Pegasus, che dopo il movimento raddoppia la sua ⚔️; e Magic Carpet, che all'ingresso muove gli altri alleati di uno spazio a destra o a sinistra." },
       { q: "È un mazzo competitivo?", a: "L'autore lo dichiara per classificata e fun e dice apertamente che probabilmente non è ancora ai livelli dei top tier, ma che dopo i potenziamenti del 21 settembre qualcosa si sta muovendo." },
       { q: "Come si prova il mazzo?", a: "Dalla scheda del mazzo su OriginsMeta con “Apri nel deck builder”, oppure copiando il codice del gioco (KGBLDC…) in Origins." },
     ],
@@ -1422,17 +1422,17 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 | --- | --- | --- |
 | [Dorothy](/it/cards/dorothy) ★ | 5 | 1/1; può muoversi ogni round e ottiene +1⚔️/+1❤️ per ogni movimento di un alleato nella partita |
 | [Twister Toss](/it/cards/twister-toss) | 1 | Magia: muovi un alleato |
-| [Card Soldier](/it/cards/card-soldier) | 2 | 3/1; dopo che si muove evoca una copia di sé sulla casella precedente |
-| [Roo](/it/cards/roo) | 2 | 2/3 con Move |
-| [Basilisk](/it/cards/basilisk) | 2 | 1/2 con Deathtouch |
-| [Pegasus](/it/cards/pegasus) | 3 | 2/4; dopo che si muove raddoppia il suo ⚔️ |
-| [Flying Monkey](/it/cards/flying-monkey) | 3 | 4/1; On Reveal sposta QUALSIASI altro personaggio su una casella casuale qui |
-| [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) | 3 | 1/5; quando sopravvive a un danno aggiunge una Flying Monkey alla mano e si sposta di una casella a sinistra |
+| [Card Soldier](/it/cards/card-soldier) | 2 | 3/1; dopo che si muove evoca una copia di sé sullo spazio precedente |
+| [Roo](/it/cards/roo) | 2 | 2/3 con Muovere |
+| [Basilisk](/it/cards/basilisk) | 2 | 1/2 con Tocco letale |
+| [Pegasus](/it/cards/pegasus) | 3 | 2/4; dopo che si muove raddoppia la sua ⚔️ |
+| [Flying Monkey](/it/cards/flying-monkey) | 3 | 4/1; Alla rivelazione muove QUALSIASI altro personaggio su uno spazio casuale qui |
+| [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) | 3 | 1/5; quando sopravvive a un danno aggiunge una Flying Monkey alla mano e si muove di uno spazio a sinistra |
 | [Kanga](/it/cards/kanga) | 3 | 2/3; prima del combattimento dà +1⚔️/+1❤️ agli alleati che si sono mossi |
-| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi il suo ⚔️ al personaggio di fronte |
+| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi la sua ⚔️ al personaggio di fronte |
 | [Spellbook](/it/cards/spellbook) | 3 | Magia: da ora in poi una magia casuale in mano a ogni round, scartata prima del combattimento |
-| [Magic Carpet](/it/cards/magic-carpet) | 4 | 3/4; On Reveal muove gli altri alleati di una casella a sinistra oppure a destra |
-| [Hare](/it/cards/hare) | 5 | 4/1 con First Strike e Move |
+| [Magic Carpet](/it/cards/magic-carpet) | 4 | 3/4; Alla rivelazione muove gli altri alleati di uno spazio a sinistra oppure a destra |
+| [Hare](/it/cards/hare) | 5 | 4/1 con Primo colpo e Muovere |
 
 Nove unità e tre magie, e quasi tutto o si muove o premia un movimento.
 
@@ -1443,8 +1443,8 @@ Dorothy è un 1/1 che conta: **+1⚔️/+1❤️ per ogni volta che un alleato s
 Le combo che danno senso alla lista sono tre:
 
 1. **Card Soldier più un movimento qualsiasi.** Un 3/1 da due mana che lascia una copia di sé ogni volta che si muove: con Twister Toss o Magic Carpet riempie una corsia da solo.
-2. **Pegasus più un movimento qualsiasi.** Dopo essersi mosso raddoppia il suo ⚔️: da 2/4 diventa 4/4, e con il +1⚔️ di Kanga prima del combattimento è un corpo da 5 di potenza che l'avversario aveva valutato tre mana.
-3. **Magic Carpet come motore.** Muove *tutti* gli altri alleati di una casella, nella direzione che scegli: una carta, più attivazioni — una copia di Card Soldier, un Pegasus raddoppiato, punti su Dorothy e il bonus di Kanga su tutto ciò che si è mosso.
+2. **Pegasus più un movimento qualsiasi.** Dopo essersi mosso raddoppia la sua ⚔️: da 2/4 diventa 4/4, e con il +1⚔️ di Kanga prima del combattimento è un corpo da 5 di potenza che l'avversario aveva valutato tre mana.
+3. **Magic Carpet come motore.** Muove *tutti* gli altri alleati di uno spazio, nella direzione che scegli: una carta, più attivazioni — una copia di Card Soldier, un Pegasus raddoppiato, punti su Dorothy e il bonus di Kanga su tutto ciò che si è mosso.
 
 ## Mulligan
 
@@ -1453,21 +1453,21 @@ Sul mulligan l'autore non lascia note, quindi questa è una lettura di OriginsMe
 ## Round per round
 
 1. **Round 1–2: accendere il contatore.** Card Soldier o Roo, poi Twister Toss su di lui. Ogni movimento è un punto permanente su Dorothy, anche quando il campo sembra fermo.
-2. **Round 3: scegliere la corsia.** Pegasus, la Strega o Kanga. [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) è quella che genera da sola: un 1/5 che sopravvive quasi sempre e, ogni volta che sopravvive, ti mette in mano una Flying Monkey e si sposta di una casella a sinistra — un altro punto per Dorothy.
-3. **Round 4: Magic Carpet.** Scegli la direzione che porta i Card Soldier verso una casella libera e Pegasus dentro uno scontro che adesso vince.
-4. **Dal quinto round: Dorothy, poi chiudere.** Hare ha First Strike e Move: colpisce prima della risposta e tiene acceso il contatore. [Basilisk](/it/cards/basilisk) con Deathtouch è la risposta economica al corpo troppo grosso per affrontarlo ad armi pari, ed En Passant trasforma un Pegasus raddoppiato in una rimozione.
+2. **Round 3: scegliere la corsia.** Pegasus, la Strega o Kanga. [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) è quella che genera da sola: un 1/5 che sopravvive quasi sempre e, ogni volta che sopravvive, ti mette in mano una Flying Monkey e si muove di uno spazio a sinistra — un altro punto per Dorothy.
+3. **Round 4: Magic Carpet.** Scegli la direzione che porta i Card Soldier verso uno spazio libero e Pegasus dentro uno scontro che adesso vince.
+4. **Dal quinto round: Dorothy, poi chiudere.** Hare ha Primo colpo e Muovere: colpisce prima della risposta e tiene acceso il contatore. [Basilisk](/it/cards/basilisk) con Tocco letale è la risposta economica al corpo troppo grosso per affrontarlo ad armi pari, ed En Passant trasforma un Pegasus raddoppiato in una rimozione.
 
 ## Quello che il mazzo non sa fare
 
-L'autore elenca due punti deboli, e sono quelli onesti: **può capitare di trovarsi incastrati male con le carte** e **alcune combo potrebbero non essere consistenti**. Vengono dallo stesso posto: [Flying Monkey](/it/cards/flying-monkey) sposta un personaggio su una casella *casuale*, la copia di Card Soldier va sulla casella che ha lasciato e Magic Carpet muove tutto, compresi gli alleati che volevi dov'erano. Decidi la direzione prima di giocare il Tappeto e non dare per scontato che una casella resti libera.
+L'autore elenca due punti deboli, e sono quelli onesti: **può capitare di trovarsi incastrati male con le carte** e **alcune combo potrebbero non essere consistenti**. Vengono dallo stesso posto: [Flying Monkey](/it/cards/flying-monkey) muove un personaggio su uno spazio *casuale*, la copia di Card Soldier va sullo spazio che ha lasciato e Magic Carpet muove tutto, compresi gli alleati che volevi dov'erano. Decidi la direzione prima di giocare il Tappeto e non dare per scontato che uno spazio resti libero.
 
 ## Matchup
 
 I dati della classificata non sono pubblici: questa è una lettura delle liste, non un win rate.
 
-- **Contro i mazzi aggressivi.** La Strega e Roo tengono le prime corsie; il Deathtouch di Basilisk risponde al primo corpo grosso. Dorothy può aspettare: è migliore tardi, quando il contatore è alto.
+- **Contro i mazzi aggressivi.** La Strega e Roo tengono le prime corsie; il Tocco letale di Basilisk risponde al primo corpo grosso. Dorothy può aspettare: è migliore tardi, quando il contatore è alto.
 - **Contro i mazzi controllo.** È il matchup buono. Le copie di Card Soldier e le Flying Monkey continuano a tornare, quindi una sola pulizia del campo non ti svuota. Dopo una pulizia tieni in mano un Twister Toss per riaccendere il contatore.
-- **Contro gli altri mazzi move.** Vince chi muove di più, ma Flying Monkey sposta *qualsiasi* personaggio: usala per trascinare un Pegasus avversario fuori dalla casella dove stava per raddoppiare.
+- **Contro gli altri mazzi move.** Vince chi muove di più, ma Flying Monkey muove *qualsiasi* personaggio: usala per trascinare un Pegasus avversario fuori dallo spazio dove stava per raddoppiare.
 
 ## Dove andare adesso
 
@@ -1490,8 +1490,8 @@ I dati della classificata non sono pubblici: questa è una lettura delle liste, 
     updated: "2026-09-23",
     image: "/cards/cover/legion-of-the-dead.webp",
     faq: [
-      { q: "Che cosa fa Legion of the Dead?", a: "È una Leggendaria magia da 7 mana: riempie il tuo campo di Zombie (2⚔️/2❤️). Una carta, tutte le caselle libere occupate." },
-      { q: "Qual è la combo tra Golden Egg e Boogeyman?", a: "Boogeyman è un 7/7 da 4 mana il cui On Reveal distrugge l'alleato con il ⚔️ più basso nel suo luogo, anche sé stesso. Golden Egg è uno 0/1 che alla morte evoca una Golden Goose 5/5 sulla sua casella: giocando prima l'Uovo, l'abilità di Boogeyman lo trasforma in una Goose invece di uccidere un tuo corpo vero." },
+      { q: "Che cosa fa Legion of the Dead?", a: "È una Leggendaria magia da 7 mana: riempie il tuo campo di Zombie (2⚔️/2❤️). Una carta, tutti gli spazi liberi occupati." },
+      { q: "Qual è la combo tra Golden Egg e Boogeyman?", a: "Boogeyman è un 7/7 da 4 mana la cui abilità Alla rivelazione distrugge l'alleato con la ⚔️ più bassa nel suo luogo, anche sé stesso. Golden Egg è uno 0/1 che alla morte evoca una Golden Goose 5/5 sul suo spazio: giocando prima l'Uovo, l'abilità di Boogeyman lo trasforma in una Goose invece di uccidere un tuo corpo vero." },
       { q: "Che cosa si tiene al mulligan?", a: "Bagheera e Thumbelina, meglio se affiancate da Bullseye. Anche la coppia Golden Egg più Boogeyman vale la pena tenerla di prima mano." },
       { q: "Perché Mind Palace è importante?", a: "Il mazzo svuota la mano in fretta: senza le due carte che pesca Mind Palace si rimane senza giocate prima che arrivi la Leggendaria." },
     ],
@@ -1508,43 +1508,43 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 | --- | --- | --- |
 | [Legion of the Dead](/it/cards/legion-of-the-dead) ★ | 7 | Leggendaria magia: riempi il tuo campo di Zombie (2⚔️/2❤️) |
 | [Bullseye](/it/cards/bullseye) | 1 | Magia: 3 danni a QUALSIASI personaggio |
-| [Bagheera](/it/cards/bagheera) | 1 | 1/1; On Reveal su una casella centrale ottiene +2⚔️/+2❤️ |
+| [Bagheera](/it/cards/bagheera) | 1 | 1/1; Alla rivelazione su uno spazio centrale ottiene +2⚔️/+2❤️ |
 | [Thumbelina](/it/cards/thumbelina) | 1 | 2/2, senza abilità |
-| [Morgiana](/it/cards/morgiana) | 2 | 2/3; impedisce a TUTTE le abilità On Reveal di attivarsi nel suo luogo |
+| [Morgiana](/it/cards/morgiana) | 2 | 2/3; impedisce a TUTTE le abilità Alla rivelazione di attivarsi nel suo luogo |
 | [Mind Palace](/it/cards/mind-palace) | 2 | Magia: pesca 2 carte |
-| [Asanbosam](/it/cards/asanbosam) | 3 | 5/5; On Reveal fa scartare una carta casuale di costo pari |
-| [Golden Egg](/it/cards/golden-egg) | 3 | 0/1; alla morte evoca una Golden Goose (5/5) sulla sua casella |
-| [Flying Monkey](/it/cards/flying-monkey) | 3 | 4/1; On Reveal sposta QUALSIASI altro personaggio su una casella casuale qui |
-| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi il suo ⚔️ al personaggio di fronte |
-| [Boogeyman](/it/cards/boogeyman) | 4 | 7/7; On Reveal distrugge l'alleato con il ⚔️ più basso qui, anche sé stesso |
-| [White Queen](/it/cards/white-queen) | 4 | 3/3; On Reveal rimanda QUALSIASI personaggio nella mano del proprietario |
+| [Asanbosam](/it/cards/asanbosam) | 3 | 5/5; Alla rivelazione fa scartare una carta casuale di costo pari |
+| [Golden Egg](/it/cards/golden-egg) | 3 | 0/1; Alla morte evoca una Golden Goose (5/5) sul suo spazio |
+| [Flying Monkey](/it/cards/flying-monkey) | 3 | 4/1; Alla rivelazione muove QUALSIASI altro personaggio su uno spazio casuale qui |
+| [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi la sua ⚔️ al personaggio di fronte |
+| [Boogeyman](/it/cards/boogeyman) | 4 | 7/7; Alla rivelazione distrugge l'alleato con la ⚔️ più bassa qui, anche sé stesso |
+| [White Queen](/it/cards/white-queen) | 4 | 3/3; Alla rivelazione riporta QUALSIASI personaggio nella mano del proprietario |
 | [Impundulu](/it/cards/impundulu) | 5 | 3/6; quando attacca aggiunge un Lightning Strike alla mano, da scartare prima del combattimento successivo |
 
-Dieci unità e tre magie. Le tre carte da un mana non sono riempitivo: questo mazzo ha bisogno che il campo sia suo prima che arrivi la Leggendaria, perché gli Zombie occupano solo le caselle *libere*.
+Dieci unità e tre magie. Le tre carte da un mana non sono riempitivo: questo mazzo ha bisogno che il campo sia suo prima che arrivi la Leggendaria, perché gli Zombie occupano solo gli spazi *liberi*.
 
 ## Come vince il mazzo
 
 Il danno lo fanno tre carte — **Boogeyman, Asanbosam e Impundulu** — e tutto il resto serve a proteggerle o ad aprire loro la strada.
 
-- **Boogeyman** è un 7/7 da quattro mana, il rapporto migliore della lista, con una controindicazione: all'ingresso distrugge l'alleato con il ⚔️ più basso nel suo luogo, compreso sé stesso. In una corsia vuota si uccide da solo; accanto a un [Golden Egg](/it/cards/golden-egg) uccide l'Uovo, che lascia sulla sua casella una Golden Goose 5/5. È la combo che indica l'autore: due carte, un 7/7 e un 5/5.
+- **Boogeyman** è un 7/7 da quattro mana, il rapporto migliore della lista, con una controindicazione: all'ingresso distrugge l'alleato con la ⚔️ più bassa nel suo luogo, compreso sé stesso. In una corsia vuota si uccide da solo; accanto a un [Golden Egg](/it/cards/golden-egg) uccide l'Uovo, che lascia sul suo spazio una Golden Goose 5/5. È la combo che indica l'autore: due carte, un 7/7 e un 5/5.
 - **Asanbosam** è un 5/5 da tre mana e all'ingresso fa scartare all'avversario una carta casuale di costo pari.
 - **Impundulu** trasforma ogni attacco in un [Lightning Strike](/it/cards/lightning-strike) in mano: danno ripetibile, a patto di spenderlo prima del combattimento successivo.
 
-La **Leggendaria** chiude la partita più di quanto la apra: a sette mana *riempi il tuo campo di Zombie* occupa in un colpo solo tutte le caselle libere. Rende di più il round dopo uno scambio che ti ha svuotato il campo, o sulle due corsie che non stavi contendendo.
+La **Leggendaria** chiude la partita più di quanto la apra: a sette mana *riempi il tuo campo di Zombie* occupa in un colpo solo tutti gli spazi liberi. Rende di più il round dopo uno scambio che ti ha svuotato il campo, o sulle due corsie che non stavi contendendo.
 
 ## Gli "scherzetti"
 
 [En Passant](/it/cards/en-passant), [Flying Monkey](/it/cards/flying-monkey) e [White Queen](/it/cards/white-queen) sono ciò che l'autore intende quando parla di fare uno scherzetto ogni turno.
 
-- **En Passant** muove un alleato e infligge il suo ⚔️ al personaggio di fronte: su Boogeyman o su una Golden Goose sono cinque-sette danni più un riposizionamento.
-- **Flying Monkey** sposta QUALSIASI altro personaggio su una casella casuale del suo luogo: trascina fuori un bloccante avversario, o porta un tuo corpo dove si combatte. La casella è casuale, quindi è uno scherzetto, non un piano.
-- **White Queen** rimanda QUALSIASI personaggio nella mano del proprietario: una chiusura avversaria sparisce per un round, oppure il tuo Golden Egg torna in mano per essere rigiocato accanto a un secondo Boogeyman.
+- **En Passant** muove un alleato e infligge la sua ⚔️ al personaggio di fronte: su Boogeyman o su una Golden Goose sono cinque-sette danni più un riposizionamento.
+- **Flying Monkey** muove QUALSIASI altro personaggio su uno spazio casuale del suo luogo: trascina fuori un bloccante avversario, o porta un tuo corpo dove si combatte. Lo spazio è casuale, quindi è uno scherzetto, non un piano.
+- **White Queen** riporta QUALSIASI personaggio nella mano del proprietario: una chiusura avversaria sparisce per un round, oppure il tuo Golden Egg torna in mano per essere rigiocato accanto a un secondo Boogeyman.
 
-[Morgiana](/it/cards/morgiana) è la carta silenziosa: nel suo luogo non si attiva nessun On Reveal, per nessuno dei due. Va messa dove gli On Reveal avversari fanno più male, ricordando che blocca anche i tuoi, Boogeyman compreso.
+[Morgiana](/it/cards/morgiana) è la carta silenziosa: nel suo luogo non si attiva nessuna abilità Alla rivelazione, per nessuno dei due. Va messa dove le abilità Alla rivelazione avversarie fanno più male, ricordando che blocca anche le tue, Boogeyman compreso.
 
 ## Mulligan
 
-La nota dell'autore è breve e chiara: **Bagheera e Thumbelina sono partenze perfette da affiancare a Bullseye**, e **la combo Golden Egg più Boogeyman può svoltare la partita anche tenuta di prima mano**. Bagheera su una casella centrale è un 3/3 da un mana; Thumbelina è un semplice 2/2, che a un mana è presenza sul campo senza doverci pensare.
+La nota dell'autore è breve e chiara: **Bagheera e Thumbelina sono partenze perfette da affiancare a Bullseye**, e **la combo Golden Egg più Boogeyman può svoltare la partita anche tenuta di prima mano**. Bagheera su uno spazio centrale è un 3/3 da un mana; Thumbelina è un semplice 2/2, che a un mana è presenza sul campo senza doverci pensare.
 
 ## Round per round
 
@@ -1552,19 +1552,19 @@ La nota dell'autore è breve e chiara: **Bagheera e Thumbelina sono partenze per
 2. **Round 3: la prima minaccia.** Asanbosam come 5/5, oppure il Golden Egg nella corsia dove il round dopo arriverà Boogeyman.
 3. **Round 4: Boogeyman.** Sull'Uovo se ce l'hai, altrimenti accanto al corpo più piccolo che puoi permetterti di perdere — e mai in una corsia vuota.
 4. **Round 5–6: pressione e carte.** Impundulu comincia a produrre Lightning Strike; Mind Palace ricarica la mano. L'autore è esplicito: senza Mind Palace si resta senza carte troppo presto.
-5. **Round 7: Legion of the Dead.** Ogni casella libera diventa un 2/2. Conta le caselle prima di giocarla: dopo un round di scambi vale due o tre corpi in più.
+5. **Round 7: Legion of the Dead.** Ogni spazio libero diventa un 2/2. Conta gli spazi prima di giocarla: dopo un round di scambi vale due o tre corpi in più.
 
 ## Matchup
 
 I dati della classificata non sono pubblici: questa è una lettura di OriginsMeta sulle liste.
 
-- **Contro i mazzi che riempiono il campo.** Gli Zombie arrivano sulle caselle libere, quindi più l'avversario è largo, meno rende la Leggendaria. Apri prima il campo con Bullseye e Boogeyman, e tieni Flying Monkey per il corpo potenziato.
+- **Contro i mazzi che riempiono il campo.** Gli Zombie arrivano sugli spazi liberi, quindi più l'avversario è largo, meno rende la Leggendaria. Apri prima il campo con Bullseye e Boogeyman, e tieni Flying Monkey per il corpo potenziato.
 - **Contro i mazzi controllo.** Lo scarto di Asanbosam e i Lightning Strike di Impundulu sono pressione che non dipende dalla sopravvivenza del campo. Tieni un Boogeyman dopo una pulizia: un 7/7 da quattro mana è il modo più rapido per ricostruire.
-- **Contro i mazzi On Reveal** (per esempio [On Reveal Mid Range](/it/decks/community/on-reveal-mid-range-772e), che con Mulan ripete ogni On Reveal). È qui che Morgiana si guadagna il posto: mettila nel luogo dove stanno accumulando abilità, accetta che lì si fermino anche le tue e gioca normalmente le altre due corsie.
+- **Contro i mazzi basati sulle abilità Alla rivelazione** (per esempio [On Reveal Mid Range](/it/decks/community/on-reveal-mid-range-772e), che con Mulan ripete ogni abilità Alla rivelazione). È qui che Morgiana si guadagna il posto: mettila nel luogo dove stanno accumulando abilità, accetta che lì si fermino anche le tue e gioca normalmente le altre due corsie.
 
 ## I punti deboli, nelle parole dell'autore
 
-Sono due, dalla scheda del mazzo: **Mind Palace è molto importante per non rimanere troppo presto senza carte** e **Boogeyman ha bisogno di un bersaglio valido oppure di Morgiana**. Il secondo vale la pena ripeterlo: quel 7/7 è buono solo se nel suo luogo c'è qualcos'altro con ⚔️ più basso. Il Golden Egg è l'assicurazione economica, gli Zombie della Leggendaria quella per la fase finale.
+Sono due, dalla scheda del mazzo: **Mind Palace è molto importante per non rimanere troppo presto senza carte** e **Boogeyman ha bisogno di un bersaglio valido oppure di Morgiana**. Il secondo vale la pena ripeterlo: quel 7/7 è buono solo se nel suo luogo c'è qualcos'altro con ⚔️ più bassa. Il Golden Egg è l'assicurazione economica, gli Zombie della Leggendaria quella per la fase finale.
 
 ## Dove andare adesso
 
@@ -1587,9 +1587,9 @@ Sono due, dalla scheda del mazzo: **Mind Palace è molto importante per non rima
     updated: "2026-09-16",
     image: "/cards/cover/three-not-so-little-pigs.webp",
     faq: [
-      { q: "Quale Leggendaria guida 3 Pigs Mid Range?", a: "Three Not So Little Pigs, un 3/3 da 7 mana con Trample: la sua On Reveal evoca un Not So Little Pig con Trample in ogni altro luogo, quindi una sola carta mette un corpo in ogni corsia." },
+      { q: "Quale Leggendaria guida 3 Pigs Mid Range?", a: "Three Not So Little Pigs, un 3/3 da 7 mana con Travolgere: la sua abilità Alla rivelazione evoca un Not So Little Pig con Travolgere in ogni altro luogo, quindi una sola carta mette un corpo in ogni corsia." },
       { q: "Cosa si tiene nel mulligan?", a: "Cerca sempre Bagheera, Ali Baba, Big Bad Wolf e Rumple. Contro i mazzi con carte pericolose da 4 Salute, come Van Helsing o Glinda, tieni anche Axe Throw." },
-      { q: "Come chiude la partita il mazzo?", a: "Con En Passant, che muove un alleato e colpisce il personaggio di fronte; con Ellen Trechend, il cui Trample spinge i danni fino alla barriera; e con i Lightning Strike che Impundulu aggiunge alla mano ogni volta che attacca." },
+      { q: "Come chiude la partita il mazzo?", a: "Con En Passant, che muove un alleato e colpisce il personaggio di fronte; con Ellen Trechend, che grazie a Travolgere spinge i danni fino alla barriera; e con i Lightning Strike che Impundulu aggiunge alla mano ogni volta che attacca." },
       { q: "Come provo il mazzo?", a: "Apri la scheda del mazzo su OriginsMeta e premi “Apri nel deck builder”, oppure “Copia codice del gioco” per incollare il codice del gioco (KGBLDC…) in Origins. Il builder controlla la regola 1 Leggendaria + 12 carte × 2." },
     ],
     body: `
@@ -1603,19 +1603,19 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 
 | Carta | Costo | Ruolo |
 | --- | --- | --- |
-| [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) ★ | 7 | Leggendaria: Trample, e con l'On Reveal evoca un Not So Little Pig con Trample in ogni altro luogo |
-| [Bagheera](/it/cards/bagheera) | 1 | Carta da un mana che cresce se giocata su una casella centrale |
+| [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) ★ | 7 | Leggendaria: Travolgere, e con l'abilità Alla rivelazione evoca un Not So Little Pig con Travolgere in ogni altro luogo |
+| [Bagheera](/it/cards/bagheera) | 1 | Carta da un mana che cresce se giocata su uno spazio centrale |
 | [Rumple](/it/cards/rumple) | 2 | 2/2 che ti dà +1 mana nel round successivo |
 | [Axe Throw](/it/cards/axe-throw) | 2 | 4 danni a qualsiasi personaggio |
 | [Mind Palace](/it/cards/mind-palace) | 2 | Pesca 2 carte |
-| [Piglet](/it/cards/piglet) | 2 | On Reveal: potenzia gli altri alleati nel suo luogo |
+| [Piglet](/it/cards/piglet) | 2 | Alla rivelazione: potenzia gli altri alleati nel suo luogo |
 | [Big Bad Wolf](/it/cards/big-bad-wolf) | 3 | 3/3 che ottiene +1/+1 dopo ogni combattimento |
-| [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) | 3 | 1/5: quando sopravvive a un danno aggiunge una Flying Monkey alla tua mano e si sposta di una casella a sinistra |
+| [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) | 3 | 1/5: quando sopravvive a un danno aggiunge una Flying Monkey alla tua mano e si muove di uno spazio a sinistra |
 | [En Passant](/it/cards/en-passant) | 3 | Muovi un alleato e infliggi danni pari alla sua Potenza al personaggio di fronte |
 | [Ali Baba](/it/cards/ali-baba) | 3 | 2/3 che pesca una carta quando danneggia la barriera avversaria |
 | [Frog Prince](/it/cards/frog-prince) | 3 | Scegli +3 Potenza o +3 Salute quando viene rivelato |
 | [Impundulu](/it/cards/impundulu) | 5 | 3/6: ogni volta che attacca aggiunge un Lightning Strike alla tua mano |
-| [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Trample; con l'On Reveal cresce per ogni carta nemica nel suo luogo |
+| [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Travolgere; con l'abilità Alla rivelazione cresce per ogni carta nemica nel suo luogo |
 
 Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa tre mana o meno: per questo l'autore definisce la curva "molto solida", c'è sempre qualcosa da giocare dal round uno al quattro.
 
@@ -1624,10 +1624,10 @@ Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa 
 Il piano, dalla scheda del mazzo: prendere il controllo del tabellone nei primi round, acquisire vantaggio su almeno un luogo e poi chiudere con tre carte.
 
 - **En Passant** muove un alleato e infligge danni pari alla sua Potenza al personaggio di fronte: apre la strada a un tuo pezzo grosso, oppure trasforma un Big Bad Wolf cresciuto in una rimozione.
-- **Ellen Trechend** ha Trample e quando viene rivelata cresce per ogni carta nemica nel suo luogo: più l'avversario ha investito in una corsia, più forte colpisce, e il Trample manda i danni in eccesso oltre il bloccante fino alla barriera. La scheda del mazzo la chiama "una chiusura al limite dell'illegale".
+- **Ellen Trechend** ha Travolgere e quando viene rivelata cresce per ogni carta nemica nel suo luogo: più l'avversario ha investito in una corsia, più forte colpisce, e Travolgere manda i danni in eccesso oltre il bloccante fino alla barriera. La scheda del mazzo la chiama "una chiusura al limite dell'illegale".
 - **Impundulu**, se hai lavorato bene i primi round, ti ricompensa con un Lightning Strike a ogni attacco. Ogni Strike va usato prima del combattimento successivo o viene scartato: metti in conto due mana a round per lui.
 
-La Leggendaria è il ponte tra le due fasi. A sette mana i Three Not So Little Pigs mettono un maialino con Trample in ciascuno degli altri due luoghi con una sola carta, oltre al proprio corpo 3/3 con Trample. Giocata in curva, riempie tutto il tabellone il round prima che Ellen Trechend entri in gioco.
+La Leggendaria è il ponte tra le due fasi. A sette mana i Three Not So Little Pigs mettono un maialino con Travolgere in ciascuno degli altri due luoghi con una sola carta, oltre al proprio corpo 3/3 con Travolgere. Giocata in curva, riempie tutto il tabellone il round prima che Ellen Trechend entri in gioco.
 
 ## Mulligan
 
@@ -1635,9 +1635,9 @@ Cerca sempre **Bagheera, Ali Baba, Big Bad Wolf e Rumple**: regalano una buona p
 
 ## Round per round
 
-1. **Round 1–3: prendi il tabellone.** Bagheera su una casella centrale, poi Rumple o Piglet, poi una carta da tre. Rumple al round due significa quattro mana al round tre: un Wolf più Bagheera, o una Witch più una magia. La Wicked Witch of the West è il muro del mazzo: con cinque Salute sopravvive alla maggior parte dei colpi iniziali, e ogni volta che lo fa ricevi una Flying Monkey in mano e lei scivola di una casella a sinistra.
+1. **Round 1–3: prendi il tabellone.** Bagheera su uno spazio centrale, poi Rumple o Piglet, poi una carta da tre. Rumple al round due significa quattro mana al round tre: un Wolf più Bagheera, o una Witch più una magia. La Wicked Witch of the West è il muro del mazzo: con cinque Salute sopravvive alla maggior parte dei colpi iniziali, e ogni volta che lo fa ricevi una Flying Monkey in mano e lei scivola di uno spazio a sinistra.
 2. **Round 4–6: scegli una corsia e spingi.** Ali Baba vuole colpire una barriera: ogni volta che lo fa peschi. Frog Prince è un 5/2 che scambia al rialzo oppure un 2/5 che tiene la corsia: scegli dopo aver visto cosa ha rivelato l'avversario. Impundulu scende al round cinque e produce Lightning Strike dal primo attacco.
-3. **Round 7–8: le chiusure.** I Pigs al sette (o al sei con un Rumple il round prima), Ellen Trechend all'otto nel luogo dove l'avversario ha più carte. Nello stesso round usa En Passant per spostare una minaccia dove non è attesa, o per togliere di mezzo l'unico bloccante.
+3. **Round 7–8: le chiusure.** I Pigs al sette (o al sei con un Rumple il round prima), Ellen Trechend all'otto nel luogo dove l'avversario ha più carte. Nello stesso round usa En Passant per muovere una minaccia dove non è attesa, o per togliere di mezzo l'unico bloccante.
 
 ## Restare in curva
 
@@ -1668,7 +1668,7 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
     updated: "2026-09-16",
     image: "/media/ss-board-clash.webp",
     faq: [
-      { q: "Cosa fa Ellen Trechend contro un tabellone largo?", a: "Quando viene rivelata cresce per ogni carta nemica nel suo luogo e ha Trample: una corsia che l'avversario ha riempito diventa il suo bersaglio migliore, e i danni oltre la Salute del bloccante finiscono nella barriera." },
+      { q: "Cosa fa Ellen Trechend contro un tabellone largo?", a: "Quando viene rivelata cresce per ogni carta nemica nel suo luogo e ha Travolgere: una corsia che l'avversario ha riempito diventa il suo bersaglio migliore, e i danni oltre la Salute del bloccante finiscono nella barriera." },
       { q: "Come si gioca contro i mazzi di Van Helsing?", a: "Tieni Axe Throw per Van Helsing, che ha quattro Salute, fai pressione presto prima che Forbidden Knowledge arrivi a otto mana, e indirizza i Lightning Strike sui personaggi invece che sulle barriere finché Boitata è sul tabellone." },
       { q: "3 Pigs Mid Range e Healing Healsing si possono giocare insieme in Conquest?", a: "Sì. I due mazzi hanno Leggendarie diverse e condividono una sola carta, Ali Baba, quindi differiscono per undici carte, più delle nove richieste al Big Bob's Playtest Battle." },
     ],
@@ -1680,10 +1680,10 @@ Questa è la seconda parte della guida a **3 Pigs Mid Range**, il mazzo midrange
 ## Cinque interazioni da conoscere
 
 1. **Rumple verso le chiusure.** Rumple ti dà +1 mana nel round successivo. Giocato al round cinque ti permette di rivelare i Three Not So Little Pigs al round sei, un round intero prima di quando l'avversario si aspetta una carta da sette; giocato al round sei mette Ellen Trechend sul tabellone al round sette.
-2. **La Wicked Witch e la sua Flying Monkey.** La Witch è un 1/5: raramente muore per un solo colpo, e ogni volta che sopravvive a un danno ricevi una [Flying Monkey](/it/cards/flying-monkey) in mano e lei si sposta di una casella a sinistra. L'On Reveal della Monkey sposta qualsiasi altro personaggio, tuo o avversario, su una casella casuale nel suo luogo: usala per trascinare un bloccante nemico fuori dalla corsia in cui stai travolgendo, o per portare un Wolf dove si combatte.
-3. **En Passant su un corpo cresciuto.** La magia muove un alleato e infligge danni pari alla sua Potenza al personaggio di fronte. Su un Big Bad Wolf che ha combattuto due volte sono cinque danni più uno spostamento; su Ellen Trechend è una rimozione che sposta anche il suo Trample dove la barriera è più debole. È anche la risposta a un bloccante parcheggiato davanti a uno dei tuoi maialini.
+2. **La Wicked Witch e la sua Flying Monkey.** La Witch è un 1/5: raramente muore per un solo colpo, e ogni volta che sopravvive a un danno ricevi una [Flying Monkey](/it/cards/flying-monkey) in mano e lei si muove di uno spazio a sinistra. L'abilità Alla rivelazione della Monkey muove qualsiasi altro personaggio, tuo o avversario, su uno spazio casuale nel suo luogo: usala per trascinare un bloccante nemico fuori dalla corsia in cui stai travolgendo, o per portare un Wolf dove si combatte.
+3. **En Passant su un corpo cresciuto.** La magia muove un alleato e infligge danni pari alla sua Potenza al personaggio di fronte. Su un Big Bad Wolf che ha combattuto due volte sono cinque danni più uno spostamento; su Ellen Trechend è una rimozione che sposta anche il suo Travolgere dove la barriera è più debole. È anche la risposta a un bloccante parcheggiato davanti a uno dei tuoi maialini.
 4. **I Lightning Strike di Impundulu.** Ogni attacco aggiunge un [Lightning Strike](/it/cards/lightning-strike), due mana per tre danni a qualsiasi personaggio o barriera, da usare prima del combattimento successivo. Sono tre danni mirati e ripetibili: bastano per la maggior parte delle carte iniziali del pool attuale, oppure vanno dritti in barriera quando il tabellone è già tuo.
-5. **Piglet sui maialini.** L'On Reveal di Piglet potenzia gli altri alleati nel suo luogo. Il round dopo i Pigs, un Piglet accanto a un Not So Little Pig crea un corpo con Trample che colpisce più forte: la scheda del mazzo nota che le carte del mulligan "supportano i porcellini già in board".
+5. **Piglet sui maialini.** L'abilità Alla rivelazione di Piglet potenzia gli altri alleati nel suo luogo. Il round dopo i Pigs, un Piglet accanto a un Not So Little Pig crea un corpo con Travolgere che colpisce più forte: la scheda del mazzo nota che le carte del mulligan "supportano i porcellini già in board".
 
 ## Matchup
 
@@ -1691,13 +1691,13 @@ I dati della classificata non sono ancora pubblici, quindi quella che segue è u
 
 **Contro il controllo di Van Helsing, per esempio [Healing Healsing](/it/decks/community/healing-healsing-9411), dello stesso autore.** È il matchup che la nota sul mulligan ha in mente quando dice di tenere Axe Throw: Van Helsing è un 3/4 e quattro danni lo tolgono di mezzo prima che i suoi Tools inizino ad arrivare a ogni combattimento. Spingi i danni presto, perché il mazzo controllo vuole arrivare a otto mana per Forbidden Knowledge, che distrugge ogni personaggio sul tabellone, tuoi e suoi. Non calare i Pigs ed Ellen Trechend nella stessa finestra: tieni una chiusura per il round dopo la pulizia. Finché Boitata è in gioco, i danni delle magie alle sue barriere vengono inflitti alle tue, quindi indirizza i Lightning Strike sui personaggi finché non sparisce.
 
-**Contro i tabelloni larghi (liste in stile Swarm, Mulan).** Più vanno larghi, più Ellen Trechend diventa grande: cresce per ogni carta nemica nel suo luogo. Tieni la Witch come muro nella corsia che stanno inondando, gioca Frog Prince come 2/5 invece che come 5/2 e conserva Axe Throw per la carta che potenzia le altre. [Mulan](/it/cards/mulan) ripete le abilità On Reveal dei suoi alleati: è lei il bersaglio prioritario.
+**Contro i tabelloni larghi (liste in stile Swarm, Mulan).** Più vanno larghi, più Ellen Trechend diventa grande: cresce per ogni carta nemica nel suo luogo. Tieni la Witch come muro nella corsia che stanno inondando, gioca Frog Prince come 2/5 invece che come 5/2 e conserva Axe Throw per la carta che potenzia le altre. [Mulan](/it/cards/mulan) ripete le abilità Alla rivelazione dei suoi alleati: è lei il bersaglio prioritario.
 
-**Contro gli altri mazzi midrange (King Arthur, Robin Hood).** Decide il tempo: chi esce di curva perde. Qui Rumple dà il meglio, e gli Strike di Impundulu fanno la differenza a tabellone pari. L'On Reveal di [Robin Hood](/it/cards/robin-hood) infligge 2 danni a tutti i nemici: uccide Bagheera, Piglet e un Rumple appena giocato, ma non la Witch né un Frog Prince giocato come 2/5. A otto mana, non sovraccaricare una corsia di unità piccole. [King Arthur](/it/cards/king-arthur) dà Shield ai personaggi Good: tieni Axe Throw per dopo che lo Shield è stato consumato.
+**Contro gli altri mazzi midrange (King Arthur, Robin Hood).** Decide il tempo: chi esce di curva perde. Qui Rumple dà il meglio, e gli Strike di Impundulu fanno la differenza a tabellone pari. L'abilità Alla rivelazione di [Robin Hood](/it/cards/robin-hood) infligge 2 danni a tutti i nemici: uccide Bagheera, Piglet e un Rumple appena giocato, ma non la Witch né un Frog Prince giocato come 2/5. A otto mana, non sovraccaricare una corsia di unità piccole. [King Arthur](/it/cards/king-arthur) dà Scudo ai personaggi Good: tieni Axe Throw per dopo che lo Scudo è stato consumato.
 
 ## Errori da evitare
 
-- **Giocare i Pigs come salvataggio.** La Leggendaria evoca i maialini su caselle casuali degli altri luoghi: rende al massimo quando in quelle corsie ci sono già un Wolf o una Witch con cui combattere, non quando è già tutto perso.
+- **Giocare i Pigs come salvataggio.** La Leggendaria evoca i maialini su spazi casuali degli altri luoghi: rende al massimo quando in quelle corsie ci sono già un Wolf o una Witch con cui combattere, non quando è già tutto perso.
 - **Tenere Rumple.** È un corpo 2/2 con un bonus, e il bonus vale di più tra il round due e il sei.
 - **Sprecare i Lightning Strike.** Vengono scartati prima del combattimento successivo: uno Strike in barriera è meglio di uno Strike perso.
 - **Dimenticare i punti deboli.** Li elenca la scheda del mazzo: nessuna rimozione di massa e nessuna cura per le barriere. Non correre contro un mazzo che cura se non sei già avanti sul tabellone.
@@ -1739,17 +1739,17 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 | Carta | Costo | Ruolo |
 | --- | --- | --- |
 | [Van Helsing](/it/cards/van-helsing) ★ | 4 | Leggendaria: prima del combattimento aggiunge Van Helsing's Tools alla tua mano se non ce l'hai |
-| [Baby Bear](/it/cards/baby-bear) | 2 | Colpisce i nemici che danneggiano la tua barriera; On Death aggiunge Papa Bear alla tua mano |
-| [Scarecrow](/it/cards/scarecrow) | 2 | On Reveal: pesca una carta |
+| [Baby Bear](/it/cards/baby-bear) | 2 | Colpisce i nemici che danneggiano la tua barriera; Alla morte aggiunge Papa Bear alla tua mano |
+| [Scarecrow](/it/cards/scarecrow) | 2 | Alla rivelazione: pesca una carta |
 | [Shahrazad](/it/cards/shahrazad) | 2 | 1/4: cura 1 danno alla tua barriera ogni volta che una carta entra nella tua mano |
 | [Ali Baba](/it/cards/ali-baba) | 3 | 2/3 che pesca una carta quando danneggia la barriera avversaria |
 | [Jill](/it/cards/jill) | 3 | 2/4: cura 2 danni alla tua barriera ogni volta che subisce danni |
 | [Spellbook](/it/cards/spellbook) | 3 | Per il resto della partita, una magia casuale in mano all'inizio di ogni round |
-| [Phuong Hoang](/it/cards/phuong-hoang) | 4 | Rebirth, Move; ottiene +1/+1 ogni volta che un alleato o una barriera viene curato |
-| [Jekyll](/it/cards/jekyll) | 4 | On Reveal cura 3; se resta in mano dopo il combattimento diventa Hyde, un 5/3 con Trample |
+| [Phuong Hoang](/it/cards/phuong-hoang) | 4 | Rinascita, Muovere; ottiene +1/+1 ogni volta che un alleato o una barriera viene curato |
+| [Jekyll](/it/cards/jekyll) | 4 | Alla rivelazione cura 3; se resta in mano dopo il combattimento diventa Hyde, un 5/3 con Travolgere |
 | [Searing Light](/it/cards/searing-light) | 4 | 4 danni a un nemico e 4 cure alla tua barriera in quel luogo |
 | [Boitata](/it/cards/boitata) | 5 | 5/5: i danni di magie e abilità alle tue barriere vengono inflitti invece alla barriera avversaria |
-| [Tin Woodman](/it/cards/tin-woodman) | 6 | On Reveal cura 8 a qualsiasi altro personaggio o barriera nel suo luogo |
+| [Tin Woodman](/it/cards/tin-woodman) | 6 | Alla rivelazione cura 8 a qualsiasi altro personaggio o barriera nel suo luogo |
 | [Forbidden Knowledge](/it/cards/forbidden-knowledge) | 8 | Distruggi tutti i personaggi |
 
 Nove unità e tre magie; quasi tutto costa tra due e quattro mana, con Boitata, Tin Woodman e Forbidden Knowledge in cima. Tre carte pescano, cinque curano, una pulisce il tabellone.
@@ -1763,7 +1763,7 @@ Il piano dalla scheda del mazzo, in quattro passi:
 3. **Vincere di vantaggio carte e valore.** Il mazzo avversario dovrebbe finire le risorse mentre tu hai ancora abbastanza cure per far scalare i danni di Phuong Hoang.
 4. **Mantenere il controllo.** Le carte in più ti permettono di tenere il tabellone a lungo.
 
-Due motori fanno funzionare il tutto. Il primo sono le **carte che entrano in mano**: Van Helsing aggiunge i suoi Tools prima di ogni combattimento, Spellbook aggiunge una magia all'inizio di ogni round, Scarecrow e Ali Baba pescano, e ognuna di quelle carte cura 1 attraverso Shahrazad. Il secondo sono le **cure**: ogni cura, dal singolo punto di Shahrazad agli otto di Tin Woodman, dà +1/+1 a Phuong Hoang. Una Phuong che sta sul tabellone da qualche round è la vera minaccia del mazzo, e porta anche le parole chiave Rebirth e Move (vedi la sua scheda).
+Due motori fanno funzionare il tutto. Il primo sono le **carte che entrano in mano**: Van Helsing aggiunge i suoi Tools prima di ogni combattimento, Spellbook aggiunge una magia all'inizio di ogni round, Scarecrow e Ali Baba pescano, e ognuna di quelle carte cura 1 attraverso Shahrazad. Il secondo sono le **cure**: ogni cura, dal singolo punto di Shahrazad agli otto di Tin Woodman, dà +1/+1 a Phuong Hoang. Una Phuong che sta sul tabellone da qualche round è la vera minaccia del mazzo, e porta anche le parole chiave Rinascita e Muovere (vedi la sua scheda).
 
 ## Van Helsing's Tools
 
@@ -1771,7 +1771,7 @@ La Leggendaria in sé è un 3/4 da quattro mana. Quello che conta è la carta ch
 
 - [Holy Water](/it/cards/holy-water): rimuovi tutte le abilità da qualsiasi personaggio.
 - [Silver Bullet](/it/cards/silver-bullet): danni a qualsiasi personaggio.
-- [Garlic](/it/cards/garlic): Stun a qualsiasi personaggio.
+- [Garlic](/it/cards/garlic): stordisci qualsiasi personaggio.
 - [Wooden Stake](/it/cards/wooden-stake): distruggi qualsiasi personaggio danneggiato.
 
 "Se non ce l'hai" è la clausola da ricordare: usa i Tools ogni round, altrimenti Van Helsing smette di aggiungerli. Wooden Stake è la rimozione su singolo bersaglio che, secondo la scheda del mazzo, altrimenti manca alla lista: danneggia un personaggio con il colpo di Baby Bear, con Searing Light o con il Silver Bullet, poi impalalo.
@@ -1813,7 +1813,7 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
     image: "/media/ss-board-combat.webp",
     faq: [
       { q: "Qual è l'interazione più forte di Healing Healsing?", a: "Shahrazad con Van Helsing e Spellbook: i Tools prima di ogni combattimento e la magia all'inizio di ogni round curano 1 ciascuno attraverso Shahrazad, e ogni cura dà +1/+1 a Phuong Hoang." },
-      { q: "Come si gioca contro 3 Pigs Mid Range?", a: "Non riempire una corsia: Ellen Trechend cresce per ogni carta nemica nel suo luogo. Tieni Boitata per i Lightning Strike, cura i danni del Trample dei maialini e conserva Forbidden Knowledge per il round dopo la calata dei Pigs." },
+      { q: "Come si gioca contro 3 Pigs Mid Range?", a: "Non riempire una corsia: Ellen Trechend cresce per ogni carta nemica nel suo luogo. Tieni Boitata per i Lightning Strike, cura i danni dei maialini con Travolgere e conserva Forbidden Knowledge per il round dopo la calata dei Pigs." },
       { q: "Cosa fa perdere le partite con questo mazzo?", a: "Lanciare Forbidden Knowledge troppo presto, lasciare Van Helsing's Tools in mano così che lui smetta di aggiungerli, e giocare Phuong Hoang prima che ci sia qualcosa da curare." },
     ],
     body: `
@@ -1824,8 +1824,8 @@ Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controll
 ## Cinque interazioni da conoscere
 
 1. **Shahrazad e tutto ciò che mette una carta in mano.** [Shahrazad](/it/cards/shahrazad) cura 1 danno alla tua barriera nel suo luogo ogni volta che una carta entra nella tua mano. Van Helsing aggiunge i suoi Tools prima di ogni combattimento, Spellbook aggiunge una magia all'inizio di ogni round, Scarecrow e Ali Baba pescano, la morte di Baby Bear aggiunge Papa Bear. Con Shahrazad e Van Helsing sul tabellone curi ogni singolo round senza spendere una carta.
-2. **Ogni cura nutre Phuong Hoang.** [Phuong Hoang](/it/cards/phuong-hoang) ottiene +1/+1 ogni volta che un alleato o una barriera viene curato. L'On Reveal di Tin Woodman è una sola cura da otto punti, quindi un solo +1/+1; le tante piccole cure di Shahrazad valgono più per Phuong di una grande.
-3. **Jekyll e Hyde.** L'On Reveal di [Jekyll](/it/cards/jekyll) cura 3 a qualsiasi altro personaggio o barriera nel suo luogo. Tenuto in mano dopo il combattimento diventa [Hyde](/it/cards/hyde), un 5/3 con Trample, e un Hyde tenuto in mano ridiventa Jekyll: la stessa carta è un curatore o una chiusura a seconda di quando la giochi.
+2. **Ogni cura nutre Phuong Hoang.** [Phuong Hoang](/it/cards/phuong-hoang) ottiene +1/+1 ogni volta che un alleato o una barriera viene curato. L'abilità Alla rivelazione di Tin Woodman è una sola cura da otto punti, quindi un solo +1/+1; le tante piccole cure di Shahrazad valgono più per Phuong di una grande.
+3. **Jekyll e Hyde.** L'abilità Alla rivelazione di [Jekyll](/it/cards/jekyll) cura 3 a qualsiasi altro personaggio o barriera nel suo luogo. Tenuto in mano dopo il combattimento diventa [Hyde](/it/cards/hyde), un 5/3 con Travolgere, e un Hyde tenuto in mano ridiventa Jekyll: la stessa carta è un curatore o una chiusura a seconda di quando la giochi.
 4. **Boitata contro il burn.** Se una magia o un'abilità danneggerebbe una delle tue barriere, [Boitata](/it/cards/boitata) infligge invece quel danno alla barriera avversaria in quel luogo. Contro i mazzi che chiudono con Lightning Strike o Searing Light, Boitata trasforma la loro portata nella tua.
 5. **La famiglia di Baby Bear.** [Baby Bear](/it/cards/baby-bear) colpisce ogni nemico che danneggia la tua barriera nel suo luogo e, quando muore, aggiunge [Papa Bear](/it/cards/papa-bear) alla tua mano; Papa Bear colpisce più forte e quando muore aggiunge [Mama Bear](/it/cards/mama-bear), che distrugge i nemici che danneggiano la tua barriera. Tre corpi per una sola carta da due mana, e la cosa migliore da avere sul tabellone quando Forbidden Knowledge si risolve.
 
@@ -1833,11 +1833,11 @@ Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controll
 
 I dati della classificata non sono ancora pubblici, quindi quella che segue è una lettura delle liste, non un win rate.
 
-**Contro 3 Pigs Mid Range ([l'altro mazzo](/it/decks/community/3-pigs-mid-range-6311) dello stesso autore) e le altre liste midrange.** La loro chiusura, Ellen Trechend, cresce per ogni carta nemica nel suo luogo: distribuisci le unità invece di ammassarle in una corsia. I Lightning Strike di Impundulu sono esattamente ciò per cui esiste Boitata. Axe Throw infligge quattro danni, che sono esattamente la Salute di Van Helsing: aspettati che venga risposto, e non affidarti solo a lui per le rimozioni. I Pigs scendono a sette mana e riempiono ogni corsia di Trample: è il round per cui conservare Forbidden Knowledge, un round dopo.
+**Contro 3 Pigs Mid Range ([l'altro mazzo](/it/decks/community/3-pigs-mid-range-6311) dello stesso autore) e le altre liste midrange.** La loro chiusura, Ellen Trechend, cresce per ogni carta nemica nel suo luogo: distribuisci le unità invece di ammassarle in una corsia. I Lightning Strike di Impundulu sono esattamente ciò per cui esiste Boitata. Axe Throw infligge quattro danni, che sono esattamente la Salute di Van Helsing: aspettati che venga risposto, e non affidarti solo a lui per le rimozioni. I Pigs scendono a sette mana e riempiono ogni corsia di corpi con Travolgere: è il round per cui conservare Forbidden Knowledge, un round dopo.
 
 **Contro i mazzi aggro e i tabelloni larghi.** È il matchup che la nota sul mulligan ha in mente quando dice di tenere Jill: ogni volta che subisce danni cura 2 alla tua barriera. Baby Bear punisce ogni attaccante che passa, Jekyll cura ciò che conta, gli otto punti di Tin Woodman rimettono in piedi una barriera. Non inseguire le loro unità con i Tools una per una: stabilizza la barriera, arriva a otto mana e lascia che Forbidden Knowledge si prenda tutto il tabellone.
 
-**Contro gli altri mazzi controllo.** Decide il vantaggio carte, e questo mazzo pesca più di quasi tutti: Spellbook è la carta da proteggere e da giocare per prima. Tieni Hyde per una corsia rimasta vuota, e conserva Holy Water per una Leggendaria la cui abilità regge il mazzo avversario, come [Mulan](/it/cards/mulan), che ripete le On Reveal dei suoi alleati, o la [Queen of Hearts](/it/cards/queen-of-hearts), che ne ripete le On Death.
+**Contro gli altri mazzi controllo.** Decide il vantaggio carte, e questo mazzo pesca più di quasi tutti: Spellbook è la carta da proteggere e da giocare per prima. Tieni Hyde per una corsia rimasta vuota, e conserva Holy Water per una Leggendaria la cui abilità regge il mazzo avversario, come [Mulan](/it/cards/mulan), che ripete le abilità Alla rivelazione dei suoi alleati, o la [Queen of Hearts](/it/cards/queen-of-hearts), che ne ripete le abilità Alla morte.
 
 ## Errori da evitare
 
@@ -1863,7 +1863,7 @@ Il mazzo è segnato solo per la ladder, ma si inserisce bene in una formazione C
     faq: [
       { q: "Cos'è Origins TCG?", a: "Un gioco di carte collezionabili digitale di Koin Games, studio di Tampa (Florida) fondato nel 2021. I personaggi sono leggende di pubblico dominio — Robin Hood, Mulan, la Regina di Cuori, Dracula e molti altri — reinterpretate in un unico mondo originale." },
       { q: "Quanto dura una partita?", a: "Circa sette minuti. I due giocatori agiscono insieme su tre corsie, quindi non si aspetta mai il turno dell'avversario." },
-      { q: "Da quante carte è fatto un mazzo?", a: "Venticinque nel playtest attuale, costruite intorno a una Leggendaria con un'abilità caratteristica. Mulan ripete le abilità On Reveal dei tuoi alleati, la Regina di Cuori ripete le loro On Death." },
+      { q: "Da quante carte è fatto un mazzo?", a: "Venticinque nel playtest attuale, costruite intorno a una Leggendaria con un'abilità caratteristica. Mulan ripete le abilità Alla rivelazione dei tuoi alleati, la Queen of Hearts ripete le loro abilità Alla morte." },
       { q: "Si può giocare gratis a Origins TCG?", a: "Sì. La demo su Steam è gratuita e comprende il tutorial, le missioni contro boss con una propria IA e il gioco online. Ogni carta che serve per giocare a livello competitivo si guadagna giocando; i soldi comprano solo versioni da collezione delle carte." },
     ],
     body: `
@@ -1875,11 +1875,11 @@ La promessa è il **free-to-compete**: ogni carta che serve per giocare a livell
 
 ## Come funziona una partita
 
-- **Tre corsie.** Tu e l'avversario combattete su tre tavoli contemporaneamente. Ogni corsia ha una location, pescata da un gruppo di più di cento che ruotano e cambiano le regole di quel tavolo.
+- **Tre corsie.** Tu e l'avversario combattete su tre tavoli contemporaneamente. Ogni corsia ha un luogo, pescato da un gruppo di più di cento che ruotano e cambiano le regole di quel tavolo.
 - **Turni simultanei.** I due giocatori agiscono insieme, quindi non si aspetta mai. Una partita dura circa sette minuti.
 - **Le carte combattono.** A differenza dei giochi che contano solo i punti sulle corsie, le unità si attaccano: la Potenza è quanto colpisci, la Salute quanto incassi.
-- **Parole chiave.** Il playtest usa On Reveal (si attiva quando giochi la carta), On Death, First Strike, Double Attack e Deathtouch.
-- **Una Leggendaria guida il mazzo.** Nel playtest attuale i mazzi sono da 25 carte e ognuno è costruito intorno a una Leggendaria con un'abilità caratteristica: Mulan ripete le abilità On Reveal dei tuoi alleati, la Regina di Cuori ripete le loro On Death.
+- **Parole chiave.** Il playtest usa Alla rivelazione (On Reveal), che si attiva quando giochi la carta, Alla morte (On Death), Primo colpo (First Strike), Doppio attacco (Double Attack) e Tocco letale (Deathtouch).
+- **Una Leggendaria guida il mazzo.** Nel playtest attuale i mazzi sono da 25 carte e ognuno è costruito intorno a una Leggendaria con un'abilità caratteristica: Mulan ripete le abilità Alla rivelazione dei tuoi alleati, la Queen of Hearts ripete le loro abilità Alla morte.
 
 ## Modalità
 
@@ -2132,7 +2132,7 @@ Lingue: **inglese, francese, italiano e tedesco**, sia interfaccia sia audio com
 1. **Installa Steam** ed entra con un account (quello gratuito basta).
 2. **Apri la [pagina della demo](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/)** e premi "Download Origins TCG Demo"; oppure cerca "Origins TCG" dentro Steam e scegli la Demo. L'installazione dura un paio di minuti.
 3. **Scegli la lingua** se Steam non l'ha fatto: tasto destro sul gioco nella libreria, Proprietà, Lingua. L'italiano ha l'audio completo.
-4. **Gioca il tutorial** e poi le missioni: insegnano le tre corsie, i turni simultanei e le parole chiave (On Reveal, On Death, First Strike, Double Attack, Deathtouch). La nostra [guida in cinque minuti](/it/guides/origins-tcg-explained) copre le stesse cose per iscritto.
+4. **Gioca il tutorial** e poi le missioni: insegnano le tre corsie, i turni simultanei e le parole chiave Alla rivelazione (On Reveal), Alla morte (On Death), Primo colpo (First Strike), Doppio attacco (Double Attack) e Tocco letale (Deathtouch). La nostra [guida in cinque minuti](/it/guides/origins-tcg-explained) copre le stesse cose per iscritto.
 5. **Vai online** e prova i mazzi preimpostati. Quando vuoi qualcosa di più, leggi i [mazzi pubblicati dalla community](/it/decks), ricostruiscili nel [deck builder](/it/deck-builder) e controlla le statistiche attuali delle carte nel [database carte](/it/cards) (patch 0.6.3).
 
 ## Cosa sbloccano i giocatori della demo

@@ -232,7 +232,7 @@ export const es: Dictionary = {
     intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés, italiano y español tal como aparece en el juego, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
     description: "Todas las cartas de Origins TCG de la Demo 2.0 en una base de datos: busca y filtra por tipo, saga, alineamiento y rareza, con texto oficial y estadísticas.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
-    searchHint: "Nombre o texto: Merlin, On Reveal…",
+    searchHint: "Nombre o texto: Merlin, Al revelar…",
     countLabel: "cartas en la Demo 2.0",
     countCreated: "cartas creadas",
     countRemoved: "retiradas en builds anteriores",
@@ -481,10 +481,10 @@ export const es: Dictionary = {
     facts: [
       "Las tres ubicaciones de una partida se revelan una por ronda durante las tres primeras rondas: desde la cuarta ronda se juega con todo el tablero a la vista.",
       "Una ubicación funciona para los dos jugadores, no solo para quien la aprovecha primero.",
-      "Una ubicación puede cambiar lo que vale una carta: el mismo personaje es mucho mejor donde el daño se duplica o donde todos tienen Trample.",
+      "Una ubicación puede cambiar lo que vale una carta: el mismo personaje es mucho mejor donde el daño se duplica o donde todos tienen Arrollar.",
     ],
     search: "Buscar una ubicación",
-    searchPlaceholder: "Nombre o efecto: maná, Trample, barrera…",
+    searchPlaceholder: "Nombre o efecto: maná, Arrollar, barrera…",
     results: "ubicaciones",
     noResults: "Ninguna ubicación coincide con esta búsqueda.",
     related: "Cartas relacionadas",
