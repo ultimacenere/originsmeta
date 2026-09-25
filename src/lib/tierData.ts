@@ -5,6 +5,7 @@ import { getGuides } from "@/lib/content/guides";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { listPublishedTierLists } from "@/lib/community/tierlists";
 import { authorName } from "@/lib/community/util";
+import { indexableLocales } from "@/lib/community/deckQuality";
 import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 
@@ -16,9 +17,16 @@ import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
  * Senza Supabase (community spenta) le liste tornano vuote e le pagine mostrano gli inviti.
  */
 
+/**
+ * Un mazzo della sezione con `indexable`: la sua scheda si indicizza nella lingua della pagina (`indexableLocales`, guida
+ * di almeno 75 parole e leggibile in quella lingua). Solo questi entrano fra "i più votati" di "In breve" e delle
+ * anteprime, come nella classifica dei migliori mazzi di /decks (Ondata 3): una risposta sola sulle due pagine.
+ */
+export type TierRankedDeck = TierDeckEntry & { indexable: boolean };
+
 export type TierData = {
   cards: TierCardEntry[];
-  decks: TierDeckEntry[];
+  decks: TierRankedDeck[];
   /** date del primo e dell'ultimo mazzo pubblicato, già scritte */
   deckRange?: { from: string; to: string };
   /** versioni del gioco dei mazzi pubblicati, dalla più recente */
@@ -35,7 +43,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
   const [rawDecks, lists] = await Promise.all([listPublishedDecks(), listPublishedTierLists()]);
 
   // Mazzi: dal più votato (voto pesato sul numero di voti), quelli senza voti in fondo dal più recente
-  const decks: TierDeckEntry[] = rawDecks
+  const decks: TierRankedDeck[] = rawDecks
     .map((deck) => {
       const leg = deck.legendary ? activeCards.find((c) => c.slug === deck.legendary) : undefined;
       const rating = deck.rating ?? { avg: 0, votes: 0 };
@@ -57,6 +65,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
         created,
         createdLabel: formatDate(locale, created),
         patchLabel: patch ? patchLabel(patch, locale) : undefined,
+        indexable: indexableLocales(deck, [locale]).length > 0,
       };
     })
     .sort((a, b) => Number(b.rating.votes > 0) - Number(a.rating.votes > 0) || b.score - a.score || b.created.localeCompare(a.created));

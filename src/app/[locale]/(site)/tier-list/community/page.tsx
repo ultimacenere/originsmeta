@@ -63,8 +63,10 @@ export default async function CommunityTierListPage({ params }: { params: Locale
   const preview = (n: number) => fill(c.preview, n);
   // Tier list firmate (Ondata 3, TOOL-01): dalla stessa lettura di `loadTierData`, già raggruppate per autore
   const signed = data.signed;
+  // nell'indice il numero conta le tier list della sezione, come le altre voci contano le carte (non gli autori)
+  const signedLists = signed.reduce((n, a) => n + a.lists.length, 0);
   const sectionIndex = [
-    ...(signed.length ? [{ id: "signed", label: c.signedTitle, count: signed.length }] : []),
+    ...(signedLists ? [{ id: "signed", label: c.signedTitle, count: signedLists }] : []),
     ...(lists ? kinds.map((k) => ({ id: k.id, label: k.title, count: k.entries.length })) : []),
   ];
 

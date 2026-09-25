@@ -192,12 +192,15 @@ export const en = {
     tierSub: "Decks, Legendaries, base cards",
     tierStatus: "OriginsMeta ranking after the Crimson Cup (20–25 Oct). Meanwhile: the most played cards.",
     tierSoon: "Most played",
-    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01), nella striscia della tier list: {n} liste della scheda più
-       salvata, {min} la soglia della community (COMMUNITY_MIN_LISTS), {people} "2 people". Il numero lo calcola la home
-       (ISR) a ogni rigenerazione, con `communityStage` di tierstats.ts come /tier-list/community */
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01), nella striscia della tier list. Conto per persone: {n} le
+       persone che hanno salvato la scheda più salvata (una lista per persona e per scheda), {min} la soglia della community
+       (COMMUNITY_MIN_LISTS), {people} "2 people". `intro` è la frase senza numeri dell'HTML statico; quella con i numeri la
+       scrive il browser (`TierInvite`, dati da /api/tier-list-counts) con `tierInviteText` di tierstats.ts */
     tierInvite: {
-      empty: "Community tier list: it goes live at {min} saved lists, and nobody has saved one yet.",
-      preview: "Community tier list: {n} of the {min} lists it needs to go live.",
+      intro: "Community tier list: the average of the lists members save (it needs at least {min} people).",
+      empty: "Community tier list: it goes live with {min} people, and nobody has saved theirs yet.",
+      previewOne: "Community tier list: 1 of the {min} people it needs to go live.",
+      preview: "Community tier list: {n} of the {min} people it needs to go live.",
       live: "Community tier list: the average of the lists saved by {people}.",
       cta: "Save yours",
     },
@@ -318,12 +321,18 @@ export const en = {
       anchor: "best-decks",
       kicker: "Community ranking",
       title: "The best Origins TCG decks right now",
-      lead: "The ranking of the stars the community gives to the decks published on OriginsMeta, updated on {date}. It is not our opinion: every vote moves it.",
+      lead: "A ranking built from the stars the community gives to decks published on OriginsMeta with a complete guide, updated on {date}. It is not our opinion: every vote moves it.",
       score: "weighted {score}",
       by: "by {name}",
       method: "How it is calculated: each deck's average rating weighted by its number of votes (every deck starts from 3 stars worth two votes), so a single 5-star vote does not beat four votes that average 4.5. Ranked: decks with at least one vote and a complete guide in English (at least {min} words).",
-      excludedOne: "One rated deck stays out: its guide is shorter or not yet in English.",
-      excludedMany: "{n} rated decks stay out: their guide is shorter or not yet in English.",
+      excludedOne: "One rated deck stays out: its guide is under {min} words or not yet in English.",
+      excludedMany: "{n} rated decks stay out: their guide is under {min} words or not yet in English.",
+      excludedAboveOne: "{list} has the weighted score to make the ranking but stays out: its guide is under {min} words or not yet in English.",
+      excludedAboveMany: "{list} have the weighted score to make the ranking but stay out: their guide is under {min} words or not yet in English.",
+      excludedRestOne: "One more rated deck stays out for the same reason.",
+      excludedRestMany: "{n} more rated decks stay out for the same reason.",
+      tiedOne: "One more deck has the same weighted score and is also #{rank}: you'll find it in the full list below.",
+      tiedMany: "{n} more decks have the same weighted score and are also #{rank}: you'll find them in the full list below.",
       moreOne: "One more rated deck is in the full list below.",
       moreMany: "{n} more rated decks are in the full list below.",
       vote: "Played one of these decks? Rate it from 1 to 5 stars on its page (you need an account): the ranking follows the votes.",

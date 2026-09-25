@@ -19,16 +19,8 @@ import { Postit, type PostitKind } from "@/components/Postit";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
 import { changeLabel } from "@/lib/linkLabels";
 import { supabaseEnabled } from "@/lib/supabase/env";
-import { listPublishedTierLists } from "@/lib/community/tierlists";
-import { COMMUNITY_MIN_LISTS, communityStage, tierListCounts } from "@/lib/tierstats";
-
-/*
-  Dall'Ondata 3 (TOOL-01) la home legge quante tier list sono state salvate, per l'invito nella striscia della tier
-  list: è in ISR come /decks e le pagine della tier list (la lettura è la stessa di `loadTierData` e ne condivide la
-  cache dei dati di Next). Il layout resta statico: la lettura sta solo in questa pagina. Con un errore del database la
-  lettura lancia (DECKS-12) e resta la home di prima.
-*/
-export const revalidate = 300;
+import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
+import { TierInvite } from "@/components/TierInvite";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -130,16 +122,19 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
   /* la promessa datata resta finché nessuna sezione ha una fascia: sparisce da sola alla prima classifica */
   const nothingRanked = tierList.sections.every((s) => rankedIn(s) === 0);
-  // Invito a salvare la propria tier list (Ondata 3, TOOL-01): quante liste mancano alla tier list della community,
-  // con lo stesso conto e la stessa soglia di /tier-list/community (`tierListCounts`, `communityStage`). Con la
-  // community spenta (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
-  let tierInvite: string | null = null;
-  if (supabaseEnabled) {
-    const counts = tierListCounts(await listPublishedTierLists());
-    const { stage, lists } = communityStage(counts);
-    const people = counts.people === 1 ? d.tier.sourceCommunityPeopleOne : d.tier.sourceCommunityPeopleMany.replace("{n}", String(counts.people));
-    tierInvite = d.home.tierInvite[stage].replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS)).replace("{n}", String(lists)).replace("{people}", people);
-  }
+  // Invito a salvare la propria tier list (Ondata 3, TOOL-01). La home resta statica (niente letture di Supabase qui né
+  // nel layout): nell'HTML la frase senza numeri, il conteggio vero lo scrive il browser (`TierInvite`, da
+  // /api/tier-list-counts, con lo stesso conto e la stessa soglia di /tier-list/community). Con la community spenta
+  // (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
+  const ti = d.home.tierInvite;
+  const inviteWords = {
+    empty: ti.empty,
+    previewOne: ti.previewOne,
+    preview: ti.preview,
+    live: ti.live,
+    peopleOne: d.tier.sourceCommunityPeopleOne,
+    peopleMany: d.tier.sourceCommunityPeopleMany,
+  };
   const sl = d.home.slides;
   const mv = d.home.moves;
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
@@ -298,21 +293,14 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   {d.home.tierStatus}
                 </p>
               ) : null}
-              {/* Invito con il conteggio vero (Ondata 3, TOOL-01): la tier list della community parte da 5 liste */}
-              {tierInvite ? (
-                <p className="mt-2 flex items-start gap-1.5 text-xs font-semibold text-chalk">
-                  <svg viewBox="0 0 16 16" className="mt-px h-3.5 w-3.5 shrink-0 fill-none stroke-mint stroke-[1.6]" aria-hidden="true">
-                    <circle cx="6" cy="5" r="2.25" />
-                    <path d="M1.75 13.5c.4-2.4 2.1-3.75 4.25-3.75s3.85 1.35 4.25 3.75" strokeLinecap="round" />
-                    <path d="M10.75 3.25a2.25 2.25 0 0 1 0 4.25M12.25 9.9c1.1.55 1.8 1.75 2 3.6" strokeLinecap="round" />
-                  </svg>
-                  <span>
-                    {tierInvite}{" "}
-                    <Link href={href(locale, "/tier-list/create")} className="whitespace-nowrap text-mint hover:underline">
-                      {d.home.tierInvite.cta} →
-                    </Link>
-                  </span>
-                </p>
+              {/* Invito con il conteggio vero (Ondata 3, TOOL-01): la tier list della community parte da 5 persone */}
+              {supabaseEnabled ? (
+                <TierInvite
+                  words={inviteWords}
+                  fallback={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))}
+                  cta={ti.cta}
+                  href={href(locale, "/tier-list/create")}
+                />
               ) : null}
             </div>
             <ul className="flex flex-wrap gap-2">
