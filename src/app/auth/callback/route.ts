@@ -5,6 +5,24 @@ import { defaultLocale, isLocale, locales, type Locale } from "@/lib/i18n";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 import { authErrorKind, type AuthErrorKind } from "@/lib/loginLabels";
 
+/**
+ * Prima iscrizione: Supabase crea l'utente e lo fa accedere nello stesso istante, quindi `created_at` e
+ * `last_sign_in_at` coincidono a meno di pochi secondi. Serve solo a mandare l'evento `sign_up` a GA4
+ * (richiesta del 25/09/2026): il conteggio vero degli iscritti resta quello del database.
+ */
+function primaIscrizione(user: { created_at?: string; last_sign_in_at?: string | null } | null | undefined): boolean {
+  const creato = user?.created_at ? Date.parse(user.created_at) : NaN;
+  if (!Number.isFinite(creato)) return false;
+  const accesso = user?.last_sign_in_at ? Date.parse(user.last_sign_in_at) : Date.now();
+  return Math.abs(accesso - creato) < 10_000;
+}
+
+/** Aggiunge `signup=<via>` all'indirizzo di ritorno: lo legge `SignupTracker` e manda l'evento a GA4. */
+function conSignup(next: string, nuovo: boolean, via: string): string {
+  if (!nuovo) return next;
+  return `${next}${next.includes("?") ? "&" : "?"}signup=${via}`;
+}
+
 /** Solo percorsi interni: niente redirect verso altri siti. */
 function safeNext(raw: string | null, locale: Locale): string {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return `/${locale}/account`;
@@ -54,13 +72,13 @@ export async function GET(request: Request) {
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) return NextResponse.redirect(`${origin}${conSignup(next, primaIscrizione(data.user), via)}`);
     return fail(authErrorKind(null, error.code ?? "exchange", via));
   }
   if (tokenHash && type) {
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+    if (!error) return NextResponse.redirect(`${origin}${conSignup(next, primaIscrizione(data.user), via)}`);
     return fail(authErrorKind(null, error.code ?? "otp", via));
   }
   // Nessun codice: se Supabase ha messo l'errore nel frammento (#error=…), il browser lo conserva nel redirect

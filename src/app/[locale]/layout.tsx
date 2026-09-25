@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { SignupTracker } from "@/components/SignupTracker";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { feedbackLabels } from "@/lib/feedbackLabels";
 import { JsonLd, organization, videoGame, website } from "@/components/JsonLd";
@@ -90,6 +91,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         <JsonLd data={[website(l, d.meta.siteDescription), organization, videoGame]} />
         <GoogleAnalytics id={GA_ID} />
+        <SignupTracker />
         <Analytics />
         <SpeedInsights />
       </body>

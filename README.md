@@ -228,6 +228,21 @@ OriginsMeta ha un suo server Discord, distinto da quello ufficiale del gioco (`o
 - **Mazzi e tornei in diretta**: non bloccano mai la pubblicazione (`after()`, timeout, nessuna eccezione) e rileggono i dati con il client anonimo, quindi partono solo se il mazzo è pubblicato e il torneo è pubblico.
 - Test in `scripts/discord-announce.test.mjs` (in `npm test`): lettura di news, guide e patch dai file veri, canali di ogni voce, archivio in ordine, forma dei messaggi.
 
+## Eventi di Google Analytics (dal 25/09/2026)
+
+Quattro eventi seguono le azioni che contano, così si leggono dalla dashboard GA4 senza interrogare il database. Si inviano dal browser con l'helper `src/lib/analytics.ts` (`traccia`), che non fa nulla se il visitatore non ha accettato i cookie statistici.
+
+| Evento | Quando parte | Parametri | Dove è agganciato |
+| --- | --- | --- | --- |
+| `sign_up` | prima iscrizione completata | `method`: discord | email | `/auth/callback` riconosce l'utente appena creato (created_at ≈ last_sign_in_at) e aggiunge `?signup=<via>`; `SignupTracker` nel layout legge il parametro, manda l'evento e ripulisce l'indirizzo |
+| `deck_created` | mazzo salvato nel profilo dal builder ("Salva privato") | `locale`, `legendary`, `cards` | `DeckBuilder`, dopo l'esito positivo di `saveDeckPrivate` |
+| `deck_published` | mazzo pubblicato nel database mazzi | `locale` | `PublishDeckForm`, solo in modalità `create` (una modifica non è un mazzo nuovo) |
+| `tierlist_created` | tier list salvata nel profilo | `locale`, `kind`: cards | legendaries | `TierListMaker`, dopo l'esito positivo di `saveTierList` |
+
+`sign_up` è un nome raccomandato da GA4, gli altri tre sono personalizzati. **Dove si vedono**: in GA4 → Report → Tempo reale compaiono subito, in Report → Coinvolgimento → Eventi entro 24 ore. **Per averli nei rapporti principali** vanno marcati come eventi chiave: Amministrazione → Eventi → interruttore "Contrassegna come evento chiave" sulla riga dell'evento (appare solo dopo il primo invio).
+
+Attenzione: gli eventi contano solo chi accetta i cookie, quindi sono sempre una sottostima. Il numero vero di iscritti, mazzi e tier list resta quello del database.
+
 ## Cookie e GDPR
 
 - Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.

@@ -5,6 +5,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 import Link from "next/link";
 import { initials } from "@/lib/cardArt";
 import { saveTierList, type TierActionState } from "@/lib/community/tierActions";
+import { traccia } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import type { BuilderCard } from "@/lib/deckrules";
@@ -790,7 +791,10 @@ export function TierListMaker({
         r = { error: "db" };
       }
       setSaveResult({ ...r, code });
-      if (r.ok) say(labels.savedToProfile);
+      if (r.ok) {
+        traccia("tierlist_created", { locale, kind });
+        say(labels.savedToProfile);
+      }
     });
   }
   const savedShown = saveResult && saveResult.code === encodeTierCode(kind, board) ? saveResult : null;
