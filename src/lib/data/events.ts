@@ -65,8 +65,9 @@ export const events: Event[] = [
     rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup") },
     start: "2026-10-20",
     end: "2026-10-25",
-    // Il nome ufficiale in testa (Ondata 2, GEO-09): il torneo si chiama Crimson Cup, è scritto sulla grafica di Koin.
-    title: n("Crimson Cup: the Steam Next Fest tournament", "Crimson Cup: il torneo dello Steam Next Fest", "Crimson Cup: el torneo del Steam Next Fest", "Crimson Cup : le tournoi du Steam Next Fest"),
+    // Titolo visibile invariato (striscia del calendario e schede): il nome ufficiale "Crimson Cup" sta in `ld.name`, nei
+    // dati strutturati. Metterlo in testa anche qui è un cambio editoriale da far decidere a Pierluigi (Ondata 2, GEO-09).
+    title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Torneo del Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
     where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "Online, en el juego; inscripciones en el Discord oficial", "En ligne, en jeu ; inscriptions sur le Discord officiel"),
     // formato completato con l'annuncio sul Discord ufficiale del 24/09/2026 (news `crimson-cup-format-check-in`); orari
     // e fusi come li scrive la grafica ufficiale del calendario (media/news-crimson-cup.webp), senza conversioni nostre
@@ -90,12 +91,15 @@ export const events: Event[] = [
     source: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
     // Inizio = qualificazione EMEA, 20 ottobre alle 19:00 CEST (UTC+2 fino al 25 ottobre): grafica ufficiale e guida
     // steam-next-fest-2026. La fine resta un giorno: la grafica dà l'ora d'inizio delle finali, non quella di chiusura.
+    // Iscriversi è gratis (offerta a prezzo 0 verso il Discord ufficiale). È il torneo di Koin dello Steam Next Fest: il
+    // festival è il `superEvent`, come per la classificata qui sotto, e l'organizzatore resta Koin Games.
     ld: {
       name: n("Crimson Cup", "Crimson Cup", "Crimson Cup"),
       alternateName: n("Origins TCG Steam Next Fest tournament", "Torneo dello Steam Next Fest di Origins TCG", "Torneo del Steam Next Fest de Origins TCG"),
       startAt: "2026-10-20T19:00:00+02:00",
       image: "/media/news-crimson-cup.webp",
       free: true,
+      festival: true,
     },
   },
   {
@@ -115,6 +119,8 @@ export const events: Event[] = [
     source: "https://store.steampowered.com/sale/nextfest",
     // L'evento è di Koin (la classificata nella demo), dentro il festival di Valve: nei dati strutturati il nome porta
     // il gioco davanti e il festival diventa il `superEvent`. Nessun orario: il post dice solo "con l'inizio" del festival.
+    // Niente `free`: non c'è un'iscrizione, e un'offerta a prezzo 0 verso la pagina Steam del gioco completo (non ancora
+    // uscito; la classificata è nella demo) si leggerebbe come "Origins TCG è gratis", che il sito non dice.
     ld: {
       name: n(
         "Origins TCG ranked opens in the demo (Steam Next Fest)",
@@ -122,7 +128,6 @@ export const events: Event[] = [
         "Origins TCG: la clasificatoria se abre en la demo (Steam Next Fest)",
       ),
       image: "/media/keyart-queen-of-hearts.webp",
-      free: true,
       festival: true,
     },
   },

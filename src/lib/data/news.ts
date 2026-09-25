@@ -778,6 +778,8 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
     cards: ["dorothy", "wicked-stepmother", "christopher-robin", "guy-of-gisborne", "quasimodo", "beauty", "magic-carpet", "roo", "itsy-bitsy-spider", "silver-bullet", "don-quixote", "heroic-charge", "frog-prince", "wooden-stake"],
     guides: ["steam-next-fest-2026"],
     date: "2026-09-21",
+    // 25/09/2026 (Ondata 2, COMP-08): la nota sul nome "patch 0.7" che usano alcuni creator, nel testo e nelle FAQ
+    updated: "2026-09-25",
     title: n(
       "Origins TCG demo patch notes, 21 September: Dorothy costs 4, 14 cards change and The Gallows is fixed",
       "Patch notes della demo del 21 settembre: Dorothy costa 4, cambiano 14 carte e The Gallows è corretto",
@@ -904,6 +906,8 @@ The location always destroys the enemy across from the space a character entered
 
 The patch has no version number: the team calls it the demo patch notes of 21 September. Some creators call it "patch 0.7", but that number is not in the official posts. On this site it appears as "Demo · 21 Sep".
 
+**Update, 25 September:** we added the note on the name "patch 0.7", which some creators use for this update.
+
 ## What changes on OriginsMeta {#on-the-site}
 
 - Every card page shows the new stats and the change in its balance history, with a link to the Steam post.
@@ -989,6 +993,8 @@ Il luogo distrugge sempre il nemico di fronte allo spazio in cui è entrato il p
 
 La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Alcuni creator la chiamano "patch 0.7", ma quel numero non c'è nei post ufficiali. Sul sito compare come "Demo · 21 set".
 
+**Aggiornamento del 25 settembre:** abbiamo aggiunto la nota sul nome "patch 0.7", che alcuni creator usano per questo aggiornamento.
+
 ## Cosa cambia su OriginsMeta {#sul-sito}
 
 - Ogni scheda carta mostra le statistiche nuove e la modifica nello storico dei bilanciamenti, con il link al post su Steam.
@@ -1072,7 +1078,9 @@ La ubicación siempre destruye al enemigo situado frente al espacio en el que en
 - La publicación oficial de Steam del 21 de septiembre, la que anuncia la actualización, enumera los cambios de estadísticas y las seis cartas que cambian lo que hacen, "en comparación con la última build del playtest". La publicación del equipo en Reddit dice lo mismo.
 - La versión publicada en el Discord oficial añade Christopher Robin, las dos reglas de juego y The Gallows. La reproducimos completa.
 
-El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. Algunos creadores lo llaman "patch 0.7" o "parche 0.7", pero ese número no está en las publicaciones oficiales. En este sitio aparece como "Demo · 21 sep".
+El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. Algunos creadores de contenido lo llaman "patch 0.7", pero ese número no está en las publicaciones oficiales. En este sitio aparece como "Demo · 21 sep".
+
+**Actualización del 25 de septiembre:** hemos añadido la nota sobre el nombre "patch 0.7", que algunos creadores de contenido usan para esta actualización.
 
 ## Qué cambia en OriginsMeta {#en-el-sitio}
 
@@ -1101,7 +1109,7 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
         },
         {
           q: "¿Es el parche 0.7 de Origins TCG?",
-          a: "Es la actualización que algunos creadores llaman patch 0.7 o parche 0.7, pero el parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre de 2026, y los cambios se comparan con la última build del playtest, la 0.6.3.",
+          a: "Es la actualización que algunos creadores de contenido llaman patch 0.7, pero el parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre de 2026, y los cambios se comparan con la última build del playtest, la 0.6.3.",
         },
         {
           q: "¿Debo construir mis mazos para la Crimson Cup con estas estadísticas?",

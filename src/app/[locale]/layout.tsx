@@ -12,19 +12,10 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { feedbackLabels } from "@/lib/feedbackLabels";
 import { JsonLd, koinGames, organization, videoGame, website } from "@/components/JsonLd";
-import { entityLabels } from "@/lib/entityLabels";
 import { defaultOgAlt } from "@/lib/page";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
-
-/**
- * Feed RSS delle news in ogni lingua (Ondata 2): il percorso lo definisce la rotta del feed, quando c'è. Qui il layout lo
- * dichiara con un <link rel="alternate" type="application/rss+xml"> in ogni pagina, che React porta nell'<head>. Non
- * passa dai metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del
- * layout. Vuoto finché la rotta non esiste: nessun link verso un indirizzo che risponde 404.
- */
-const NEWS_FEEDS: Partial<Record<Locale, string>> = {};
 
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
@@ -81,11 +72,14 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!isLocale(locale)) notFound();
   const l: Locale = locale;
   const d = getDictionary(l);
-  const feed = NEWS_FEEDS[l];
   return (
     <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
       <body className="min-h-full flex flex-col">
-        {feed ? <link rel="alternate" type="application/rss+xml" title={entityLabels[l].feedTitle} href={feed} /> : null}
+        {/* Qui va il <link rel="alternate" type="application/rss+xml"> del feed delle news nella lingua della pagina
+            (Ondata 2), che React porta nell'<head>: rotta /<lingua>/news/feed.xml, percorso e titolo del canale da
+            src/lib/newsFeed.ts del pacchetto SITEMAP (`newsFeedPath`, `newsFeedLabels`), da collegare al merge. Non passa
+            dai metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del
+            layout. */}
         {/* Salta al contenuto: il <main> ha id="main" sia nella home sia nel gruppo (site). */}
         <a
           href="#main"

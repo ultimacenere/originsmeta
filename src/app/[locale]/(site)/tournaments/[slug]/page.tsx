@@ -21,7 +21,8 @@ import { TournamentCard } from "@/components/TournamentCard";
 import { CardMentions } from "@/components/CardMentions";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { CardChip } from "@/components/CardChip";
-import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
+import { FREE_OFFER_CURRENCY, JsonLd, breadcrumbs, memberRef, personRef, videoGameId } from "@/components/JsonLd";
+import { authorByUsername } from "@/lib/data/authorsCore";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type Search = Promise<Record<string, string | string[] | undefined>>;
@@ -128,9 +129,17 @@ export default async function TournamentPage({ params, searchParams }: { params:
   }
 
   // Dati strutturati (Ondata 2, GEO-09): un Event solo per i tornei pubblici (i privati sono noindex e visibili solo a
-  // chi è invitato). L'`@id` è legato al link breve /t/<tag>, uguale in ogni lingua; l'organizzatore è la persona che
-  // l'ha creato, con la sua pagina pubblica quando ha un nome utente; iscriversi è gratis, qui sulla scheda.
-  const organizerUrl = t.profile?.username ? `${siteUrl}${href(locale, `/u/${t.profile.username}`)}` : undefined;
+  // chi è invitato). L'`@id` è legato al link breve /t/<tag>, uguale in ogni lingua; iscriversi è gratis, qui sulla
+  // scheda. L'organizzatore è la persona che l'ha creato, una sola nel grafo: per un autore del sito la Person della sua
+  // pagina autore (`personRef`), per un iscritto quella del suo profilo /u (`memberRef`), le stesse della firma dei
+  // mazzi; senza nome utente resta il solo nome.
+  const username = t.profile?.username;
+  const editorial = authorByUsername(username);
+  const organizerLd = editorial
+    ? personRef(editorial, href(locale, `/authors/${editorial.slug}`))
+    : username
+      ? memberRef({ username, name: organizer }, href(locale, `/u/${username}`))
+      : { "@type": "Person", name: organizer };
   const event: Record<string, unknown> | null =
     t.visibility === "public"
       ? {
@@ -143,12 +152,12 @@ export default async function TournamentPage({ params, searchParams }: { params:
           eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
           eventStatus: t.status === "cancelled" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
           location: { "@type": "VirtualLocation", url: pageUrl },
-          organizer: organizerUrl ? { "@type": "Person", name: organizer, url: organizerUrl } : { "@type": "Person", name: organizer },
+          organizer: organizerLd,
           url: pageUrl,
           inLanguage: t.lang,
           image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
           isAccessibleForFree: true,
-          offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", url: pageUrl },
+          offers: { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY, url: pageUrl },
           maximumAttendeeCapacity: t.size,
           about: { "@id": videoGameId },
         }

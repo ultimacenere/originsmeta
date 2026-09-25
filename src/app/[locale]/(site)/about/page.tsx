@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { href } from "@/lib/i18n";
+import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { authors } from "@/lib/data/authors";
-import { cardSource } from "@/lib/data/cards";
-import { entityLabels } from "@/lib/entityLabels";
+import { cardSource, cardsVerified } from "@/lib/data/cards";
+import { OFFICIAL_TEXTS_READ, aboutChecks, aboutDisclaimer, entityLabels } from "@/lib/entityLabels";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { SteamButton, isSteamUrl, newTabProps } from "@/components/SteamButton";
 import { DiscordButton, isDiscordUrl } from "@/components/DiscordButton";
@@ -15,7 +15,8 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   const { locale, dict } = await resolveLocale(params);
   // Descrizione scritta apposta per la SERP: `p1` è il primo paragrafo della pagina, più lungo del
   // limite, e verrebbe tagliato a metà frase. Il titolo lo compone `pageMeta`, marchio compreso.
-  return pageMeta(locale, "/about", dict.about.title, dict.about.description);
+  // Dall'Ondata 2 la description nomina le stesse fonti della pagina (World of Origins, verifica nel gioco: TOOL-13).
+  return pageMeta(locale, "/about", dict.about.title, entityLabels[locale].about.description);
 }
 
 /**
@@ -40,13 +41,20 @@ function withSlot(template: string, slot: string, node: React.ReactNode) {
 /*
   Pagina "Chi siamo" come segnale di affidabilità (Ondata 2 del piano SEO/GEO, 25/09/2026: HOME-09, TOOL-13). Oltre al
   testo di sempre: come verifichiamo i dati (sezione #how-we-check, a cui rimanda `publishingPrinciples` del nodo
-  Organization), World of Origins fra le fonti, il permesso di Koin Games del 19/09/2026 al posto del "fair use", il
-  link all'elenco degli autori e i dati strutturati AboutPage + BreadcrumbList. I testi nuovi stanno in entityLabels.ts.
+  Organization), World of Origins fra le fonti, un disclaimer senza "fair use" (il permesso di Koin Games del 19/09/2026
+  è pronto ma spento finché Pierluigi non lo approva: `KOIN_PERMISSION_PUBLIC`), il link all'elenco degli autori e i dati
+  strutturati AboutPage + BreadcrumbList. I testi nuovi stanno in entityLabels.ts.
 */
 export default async function AboutPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const x = entityLabels[locale].about;
   const path = href(locale, "/about");
+  // Data e numero dell'ultima verifica carta per carta dai dati (`cardsVerified`), come nel disclaimer del deck builder
+  const checks = aboutChecks(locale, {
+    date: formatDate(locale, cardsVerified.date),
+    count: cardsVerified.count,
+    textsDate: formatDate(locale, OFFICIAL_TEXTS_READ),
+  });
   // Etichette dal dizionario: sulla pagina inglese non devono comparire scritte italiane.
   const sources: [string, string][] = [
     [d.about.sources.steam, officialLinks.steam],
@@ -68,7 +76,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
             { name: "OriginsMeta", path: href(locale) },
             { name: d.about.title, path },
           ]),
-          aboutPage({ locale, path, name: d.about.title, description: d.about.description }),
+          aboutPage({ locale, path, name: d.about.title, description: x.description }),
         ]}
       />
       <p className="kicker text-mint">{d.nav.about}</p>
@@ -103,7 +111,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
           {/* l'indice degli autori, che prima riceveva link quasi solo dalle pagine autore (TOOL-09) */}
           <li>
             <Link className="btn btn-ghost text-xs" href={href(locale, "/authors")}>
-              {x.allAuthors} →
+              {entityLabels[locale].author.allAuthors} →
             </Link>
           </li>
         </ul>
@@ -119,7 +127,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
         <h2 id="how-we-check" className="t-section scroll-mt-24 pt-4">
           {x.checkTitle}
         </h2>
-        {x.check.map((p) => (
+        {checks.map((p) => (
           <p key={p}>{p}</p>
         ))}
         <p>
@@ -153,8 +161,9 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
           ))}
         </ul>
         <h2 className="t-section pt-4">{d.about.disclaimerTitle}</h2>
-        {/* La non affiliazione resta in testa, parola per parola; il "fair use" lascia il posto al permesso di Koin */}
-        <p className="text-base text-pale-muted">{x.disclaimer}</p>
+        {/* La non affiliazione resta in testa, parola per parola; niente più "fair use" (il permesso di Koin quando
+            Pierluigi lo approva, `KOIN_PERMISSION_PUBLIC` in entityLabels.ts) */}
+        <p className="text-base text-pale-muted">{aboutDisclaimer(locale)}</p>
       </article>
     </div>
   );

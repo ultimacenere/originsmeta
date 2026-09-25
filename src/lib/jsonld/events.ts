@@ -1,6 +1,6 @@
 import { href, siteUrl, type Locale } from "../i18n";
 import { steamNextFest, type Event } from "../data/events";
-import { koinGamesRef, videoGameId, type Json } from "./entities";
+import { FREE_OFFER_CURRENCY, koinGamesRef, videoGameId, type Json } from "./entities";
 
 /*
   Eventi del calendario come dati strutturati (schema.org Event), rilievo GEO-09 dell'Ondata 2 (25/09/2026). Prima ogni
@@ -64,8 +64,10 @@ export function eventNode(e: Event, locale: Locale): Json {
   if (e.official) node.organizer = koinGamesRef;
   if (ld.free) {
     node.isAccessibleForFree = true;
-    if (e.signup) node.offers = { "@type": "Offer", price: "0", priceCurrency: "USD", url: e.signup.url };
+    if (e.signup) node.offers = { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY, url: e.signup.url };
   }
+  // Una regola sola per gli eventi di Koin che si tengono dentro lo Steam Next Fest (la classificata nella demo e la
+  // Crimson Cup): il festival è il `superEvent`, l'organizzatore resta Koin Games.
   if (ld.festival) node.superEvent = festivalNode();
   return node;
 }

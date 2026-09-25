@@ -7,7 +7,7 @@ import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor, nickna
 import { newsPath } from "@/lib/data/news";
 import { fill } from "@/lib/tournament/types";
 import { isExternalHref, newTabProps } from "@/components/SteamButton";
-import { JsonLd, breadcrumbs, person, profilePage } from "@/components/JsonLd";
+import { JsonLd, authorProfilePage, breadcrumbs, person } from "@/components/JsonLd";
 import { entityLabels } from "@/lib/entityLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -57,7 +57,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <JsonLd
         data={[
-          profilePage({ locale, path, name: a.name, slug: a.slug }),
+          authorProfilePage({ locale, path, name: a.name, slug: a.slug }),
           personLd,
           breadcrumbs([
             { name: "OriginsMeta", path: href(locale) },

@@ -1,6 +1,8 @@
 import { siteUrl, type Locale } from "../i18n";
 import { ORIGINSMETA_DISCORD } from "../discord";
-import { founders } from "../data/authors";
+// Il nucleo leggero degli autori, non authors.ts: il layout radice importa questo modulo, e authors.ts si porta dietro
+// news e guide (circa 560 KB di sorgente) che al grafo del sito non servono.
+import { founders } from "../data/authorsCore";
 
 /*
   Dati strutturati del sito (schema.org, JSON-LD): le entità uniche e i costruttori dei nodi di pagina. Funzioni pure,
@@ -20,10 +22,12 @@ export type Json = Record<string, unknown>;
 /**
  * Convenzione degli `@id`, uguale per tutti i nodi:
  * - entità reali, una sola per tutto il dominio e per tutte le lingue: `${siteUrl}/#<nome>` (organization, origins-tcg,
- *   koin-games, person-<slug>, event-<slug>);
+ *   koin-games, person-<slug>, user-<username>, event-<slug>);
  * - nodi legati a una pagina: `<indirizzo della pagina>#<nome>` (website, collection, page, app).
  * Chi ha bisogno di puntare a un'entità scrive `{ "@id": organizationId }` (o `videoGameId`, `koinGamesId`,
- * `personId(slug)`): mai una copia dell'oggetto, altrimenti nascono entità duplicate.
+ * `personId(slug)`, `memberId(username)`), o usa `personRef`/`memberRef`/`koinGamesRef` quando servono anche nome e
+ * indirizzo sul posto: mai una copia dell'oggetto, altrimenti nascono entità duplicate. Le pagine non scrivono a mano
+ * l'`@id` di una persona (un test lo controlla sotto src/app).
  */
 export const organizationId = `${siteUrl}/#organization`;
 export const videoGameId = `${siteUrl}/#origins-tcg`;
@@ -35,6 +39,20 @@ export const koinGamesId = `${siteUrl}/#koin-games`;
  * guide e profilo della community usano questo.
  */
 export const personId = (slug: string): string => `${siteUrl}/#person-${slug}`;
+
+/**
+ * Un iscritto della community che non è un autore del sito: anche lui una persona sola in tutte le lingue, legata al
+ * nome utente (la sua pagina è /<lingua>/u/<username>). Per un autore editoriale vale `personId` (authorByUsername).
+ * È la formula che usano anche la firma dei mazzi e il profilo /u del pacchetto DECKS.
+ */
+export const memberId = (username: string): string => `${siteUrl}/#user-${username}`;
+
+/**
+ * Valuta delle offerte a prezzo 0 (strumenti gratuiti, iscrizioni gratuite a eventi e tornei): una sola in tutto il
+ * sito, perché la stessa iscrizione gratuita non risulti in euro su una pagina e in dollari su un'altra. È quella che
+ * /tier-list/create usava già.
+ */
+export const FREE_OFFER_CURRENCY = "EUR";
 
 /** Il sito in una lingua (nodo WebSite del layout): lo usano `isPartOf` delle pagine. */
 export const websiteId = (locale: Locale | string): string => `${siteUrl}/${locale}#website`;
@@ -194,6 +212,14 @@ export function personRef(author: { slug: string; name: string }, url: string): 
 }
 
 /**
+ * Rimando a un iscritto della community (organizzatore di un torneo, autore di un mazzo) che non è un autore del sito:
+ * `memberId`, il nome mostrato e la sua pagina /u nella lingua di chi legge.
+ */
+export function memberRef(member: { username: string; name: string }, url: string): Json {
+  return { "@type": "Person", "@id": memberId(member.username), name: member.name, url: absolute(url) };
+}
+
+/**
  * Pagina lista (carte, mazzi, guide…): CollectionPage con dentro l'ItemList delle voci.
  * `path` e i `path` delle voci sono già localizzati, come li produce `href(locale, …)`;
  * `about` è l'`@id` dell'entità di cui parla la lista: di norma `videoGameId`, mai una copia
@@ -272,7 +298,7 @@ export function website(locale: string, description: string): Json {
 /**
  * Uno strumento gratuito nel browser (deck builder, tier list personalizzabile): WebApplication con gioco, sito ed
  * editore per `@id`. Nessun `aggregateRating`: non ci sono voti sugli strumenti e non si inventano. `features` sono
- * solo funzioni che il codice fa davvero. La valuta dell'offerta gratuita è la stessa di /tier-list/create.
+ * solo funzioni che il codice fa davvero. La valuta dell'offerta gratuita è quella di tutto il sito (`FREE_OFFER_CURRENCY`).
  */
 export function webApplication({
   locale,
@@ -300,7 +326,7 @@ export function webApplication({
     operatingSystem: "Any",
     browserRequirements: "Requires JavaScript",
     isAccessibleForFree: true,
-    offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    offers: { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY },
     isPartOf: { "@id": websiteId(locale) },
     publisher: { "@id": organizationId },
     about: { "@id": videoGameId },
@@ -332,10 +358,13 @@ export function aboutPage({ locale, path, name, description }: { locale: string;
 }
 
 /**
- * La pagina di un autore (/authors/<slug>): ProfilePage il cui soggetto è la Person unica (`personId`). Il nodo Person
- * completo lo scrive `person()` nella stessa pagina.
+ * La pagina di un autore del sito (/authors/<slug>): ProfilePage il cui soggetto è la Person unica (`personId`). Il nodo
+ * Person completo lo scrive `person()` nella stessa pagina; `mainEntity` ripete comunque nome e pagina, che Google
+ * chiede sul posto (documentazione "Profile page"), come fa `koinGamesRef` per l'organizzatore di un evento.
+ * Si chiama così, e non `profilePage`, per non confondersi con la pagina /u di un iscritto (`communityProfilePage`
+ * del pacchetto DECKS).
  */
-export function profilePage({ locale, path, name, slug }: { locale: string; path: string; name: string; slug: string }): Json {
+export function authorProfilePage({ locale, path, name, slug }: { locale: string; path: string; name: string; slug: string }): Json {
   const url = `${siteUrl}${path}`;
   return {
     "@context": "https://schema.org",
@@ -345,6 +374,6 @@ export function profilePage({ locale, path, name, slug }: { locale: string; path
     url,
     inLanguage: locale,
     isPartOf: { "@id": websiteId(locale) },
-    mainEntity: { "@id": personId(slug) },
+    mainEntity: { "@type": "Person", "@id": personId(slug), name, url },
   };
 }
