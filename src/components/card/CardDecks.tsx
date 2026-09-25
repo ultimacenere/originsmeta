@@ -5,17 +5,21 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { weightedRating } from "@/lib/tierstats";
 import type { TierDeckEntry } from "@/lib/tierTypes";
 import type { Companion, DeckRef } from "@/lib/cardSynergy";
-import { cardLabels, deckSentence, fill, itDei, type DeckCount } from "@/lib/cardPage";
+import { cardLabels, cardList, fill, fillParts, itDei } from "@/lib/cardPage";
 import { TierDeckList } from "@/components/TierDecks";
 import { CardChip, legendaryFirst } from "@/components/CardChip";
+import { CardParts } from "./CardParts";
 
 /**
- * Mazzi pubblicati sulla scheda carta (SCHEDE-02, DECKS-04, COMP-03): "Mazzi guidati da Merlin", "Mazzi con Spellbook",
- * "Mazzi che generano Garlic". Prima la sezione leggeva `decks.ts`, vuoto dal 15/09/2026, e puntava alla rotta vecchia
- * dei mazzi: non compariva mai, e nessuna delle 690 schede linkava un mazzo della community.
+ * Mazzi pubblicati sulla scheda carta (SCHEDE-02, DECKS-04, COMP-03): "Mazzi guidati da Merlin", "Mazzi con Spellbook".
+ * Prima la sezione leggeva `decks.ts`, vuoto dal 15/09/2026, e puntava alla rotta vecchia dei mazzi: non compariva
+ * mai, e nessuna delle 690 schede linkava un mazzo della community.
  * Le voci sono quelle della tier list (`TierDeckList`: Leggendaria, nome, archetipo, autore con il tag, voto), nello
  * stesso ordine (voto pesato, poi i più recenti). Si linkano solo i mazzi la cui pagina è indicizzabile nella lingua
- * della scheda; quanti restano fuori lo dice una riga, con il link all'elenco di tutti i mazzi.
+ * della scheda, al massimo `MAX_DECKS` (`listedDecks` di cardSynergy.ts, la stessa funzione del JSON-LD e delle date);
+ * quanti restano fuori lo dice una riga, con il link all'elenco di tutti i mazzi. Il conto "in n dei N mazzi" sta
+ * nella frase d'attacco e non si ripete qui (revisione del 25/09/2026): qui c'è come sono ordinati e che cosa vuol
+ * dire il conto.
  */
 
 /** Un `DeckRef` nella forma delle voci della tier list, nella lingua della pagina. */
@@ -41,59 +45,74 @@ export function deckEntry(deck: DeckRef, locale: Locale, d: Dictionary): TierDec
   };
 }
 
-/** Quanti mazzi mostrare al massimo: oggi la carta più usata ne ha 9 su 16. */
-const MAX_DECKS = 12;
-
 export function CardDecks({
-  card,
   locale,
   dict,
   title,
-  count,
-  shown,
+  listed,
   others,
-  intro,
 }: {
-  card: Pick<Card, "type" | "legendary">;
   locale: Locale;
   dict: Dictionary;
   title: string;
-  /** il conto per la riga "in n dei N mazzi"; assente per le carte create (i mazzi sono quelli della carta che le genera) */
-  count?: DeckCount;
-  shown: readonly DeckRef[];
+  /** i mazzi da elencare, già scelti e ordinati (`listedDecks`) */
+  listed: readonly DeckRef[];
+  /** mazzi con la carta non elencati qui: noindex in questa lingua o oltre il tetto */
   others: number;
-  intro?: string;
 }) {
   const l = cardLabels[locale];
-  if (!shown.length && !others) return null;
-  const list = shown.slice(0, MAX_DECKS);
-  const hidden = others + (shown.length - list.length);
+  if (!listed.length && !others) return null;
   return (
     <section className="mt-10" id="decks">
       <h2 className="t-section">{title}</h2>
-      {count ? (
-        <p className="mt-2 max-w-3xl text-sm text-pale-muted">
-          {deckSentence(card, count, locale)} {l.popularity}{" "}
-          <Link href={href(locale, "/tier-list/most-played")} className="link-mint">
-            {l.mostPlayed} →
-          </Link>
-        </p>
-      ) : intro ? (
-        <p className="mt-2 max-w-3xl text-sm text-pale-muted">{intro}</p>
-      ) : null}
-      {list.length ? (
+      <p className="mt-2 max-w-3xl text-sm text-pale-muted">
+        {l.decksNote}{" "}
+        <Link href={href(locale, "/tier-list/most-played")} className="link-mint">
+          {l.mostPlayed} →
+        </Link>
+      </p>
+      {listed.length ? (
         <div className="mt-4">
-          <TierDeckList decks={list.map((deck) => deckEntry(deck, locale, dict))} dict={dict} locale={locale} />
+          <TierDeckList decks={listed.map((deck) => deckEntry(deck, locale, dict))} dict={dict} locale={locale} />
         </div>
       ) : null}
-      {hidden ? (
+      {others ? (
         <p className="mt-3 text-sm text-pale-muted">
-          {hidden === 1 ? l.moreDecksOne : fill(l.moreDecksMany, { n: hidden })}{" "}
+          {others === 1 ? l.moreDecksOne : fill(l.moreDecksMany, { n: others })}{" "}
           <Link href={href(locale, "/decks")} className="link-mint">
             {l.allDecks} →
           </Link>
         </p>
       ) : null}
+    </section>
+  );
+}
+
+/**
+ * Carte create: "Mazzi che generano Garlic". Solo il conto dei mazzi pubblicati con la carta della demo che la genera
+ * (Van Helsing) e il link alla sezione dei mazzi della sua scheda, non l'elenco: la stessa lista su cinque schede
+ * (Van Helsing's Tools, Garlic, Holy Water, Silver Bullet, Wooden Stake) sarebbe un blocco ripetuto, e la scheda di
+ * Van Helsing's Tools finirebbe per contendere alla Leggendaria la ricerca "van helsing origins tcg" (SCHEDE-06).
+ */
+export function CardRootDecks({ locale, title, roots, decks }: { locale: Locale; title: string; roots: readonly Card[]; decks: number }) {
+  const l = cardLabels[locale];
+  if (!roots.length || !decks) return null;
+  const count = fillParts(decks === 1 ? l.tokenDecksOne : l.tokenDecksMany, { n: decks, roots: cardList(roots, locale, true) });
+  return (
+    <section className="mt-10" id="decks">
+      <h2 className="t-section">{title}</h2>
+      <p className="mt-2 max-w-3xl text-pale">
+        <CardParts parts={count} locale={locale} />
+      </p>
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        {roots.map((root) => (
+          <li key={root.slug}>
+            <Link href={`${href(locale, `/cards/${root.slug}`)}#decks`} className="link-mint font-bold">
+              {fill(root.legendary ? l.decksLed : l.decksWith, { name: root.name })} →
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -121,6 +140,7 @@ export function CardCompanions({
   const known = list.filter((c) => getCard(c.slug));
   if (!known.length) return null;
   const sorted = legendaryFirst([...known], (c) => Boolean(getCard(c.slug)?.legendary));
+  // {dei} solo nell'etichetta delle Leggendarie ("degli 8 mazzi guidati da…"): davanti a "suoi" resta "dei"
   const intro = fill(card.legendary ? l.togetherIntroLed : l.togetherIntro, { name: card.name, min, n: decks, dei: itDei(decks) });
   return (
     <section className="mt-10">

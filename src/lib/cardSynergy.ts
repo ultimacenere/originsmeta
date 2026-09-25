@@ -44,7 +44,8 @@ export type DeckRef = {
   badge: string;
   /**
    * Lingue in cui la pagina del mazzo è indicizzabile: quella della guida più le traduzioni aggiornate
-   * (`guideLocales` di `deckTranslation.ts`, la stessa regola di hreflang, sitemap e noindex della scheda del mazzo).
+   * (`guideLocales` di `deckTranslation.ts`, la stessa regola di hreflang, sitemap e noindex della scheda del mazzo;
+   * con il pacchetto DECKS, `indexableLocales` di `deckQuality.ts`, che toglie anche i mazzi con la guida troppo corta).
    */
   locales: Locale[];
 };
@@ -110,15 +111,49 @@ export function companions(decks: readonly DeckRef[], slug: string, min = 2): Co
     .sort((a, b) => b.together - a.together || a.slug.localeCompare(b.slug));
 }
 
+/** Quanti mazzi elenca al massimo la scheda di una carta: oggi la carta più usata ne ha 9 su 16. */
+export const MAX_DECKS = 12;
+
 /**
- * I giorni dei mazzi che contengono una delle carte: la scheda li conta nel suo `dateModified` e la sitemap nel
- * `lastmod`, così le due date restano uguali. Contano solo i mazzi della carta, non il totale dei mazzi pubblicati:
- * un mazzo nuovo senza la carta cambia solo il conto "{n} dei {N}", non il contenuto della scheda.
+ * I mazzi che la scheda di una carta della demo elenca nella lingua della pagina (`listed`: indicizzabili, nell'ordine
+ * della tier list, al massimo `MAX_DECKS`) e quanti ne conta soltanto (`others`: pagina noindex in questa lingua o
+ * oltre il tetto). Una sola funzione per l'elenco, il JSON-LD (`relatedLink` e ItemList) e le date, così i tre non
+ * possono dire mazzi diversi.
+ */
+export function listedDecks(decks: readonly DeckRef[], slugs: string | readonly string[], locale: Locale): { listed: DeckRef[]; others: number } {
+  const all = decksByCard(decks, slugs);
+  const { shown } = decksForLocale(all, locale);
+  const listed = shown.slice(0, MAX_DECKS);
+  return { listed, others: all.length - listed.length };
+}
+
+/** I giorni di modifica di un elenco di mazzi, senza orario. */
+export function deckDays(decks: readonly DeckRef[]): Day[] {
+  return decks.map((d) => toDay(d.updated)).filter((d): d is Day => Boolean(d));
+}
+
+/**
+ * I giorni dei mazzi che contengono una delle carte, in tutte le lingue: il conto generico. Per la data della scheda
+ * si usa `cardPageDeckDays`, che guarda solo i mazzi che la pagina elenca.
  */
 export function cardDeckDays(decks: readonly DeckRef[], slugs: string | readonly string[]): Day[] {
-  return decksByCard(decks, slugs)
-    .map((d) => toDay(d.updated))
-    .filter((d): d is Day => Boolean(d));
+  return deckDays(decksByCard(decks, slugs));
+}
+
+/**
+ * I giorni dei mazzi che la scheda carta ELENCA in quella lingua: la scheda li conta nel suo `dateModified` e la
+ * sitemap nel `lastmod`, con questa stessa funzione, così le due date restano uguali (Ondata 2, 25/09/2026).
+ * - Solo le carte della demo elencano mazzi: le carte create mostrano soltanto il conto dei mazzi con la carta che le
+ *   genera e le rimosse nessun mazzo, quindi per loro nessun giorno (`decks` può anche essere `null`: lettura fallita).
+ * - Solo i mazzi elencati (`listedDecks`): un mazzo noindex in quella lingua, o oltre il tetto, cambia solo il conto.
+ * - Un mazzo nuovo senza la carta cambia solo il totale "{n} dei {N}" della frase d'attacco: non conta.
+ * Limite dichiarato: i giorni sono quelli dei mazzi di oggi, quindi se un mazzo viene nascosto o eliminato la data può
+ * tornare a un giorno precedente (una data della sparizione non c'è). Succede di rado e non inganna nessuno: la
+ * pagina non ha più quel mazzo, e il giorno dichiarato resta quello di un contenuto vero.
+ */
+export function cardPageDeckDays(card: Pick<RelCard, "type" | "status" | "slug">, locale: Locale, decks: readonly DeckRef[] | null): Day[] {
+  if (!decks || card.status !== "active" || card.type === "token") return [];
+  return deckDays(listedDecks(decks, card.slug, locale).listed);
 }
 
 // ---------- Carte generate ----------
@@ -248,9 +283,9 @@ export function deckRoots<C extends RelCard>(chain: readonly C[][]): C[] {
 }
 
 /**
- * Le carte i cui mazzi compaiono sulla scheda: la carta stessa; per una carta creata, le carte della demo che la
- * generano (`deckRoots`); nessuna per le carte rimosse, che non mostrano mazzi. La usano la scheda e la sitemap, così
- * contano gli stessi mazzi.
+ * Le carte i cui mazzi conta la scheda: la carta stessa; per una carta creata, le carte della demo che la generano
+ * (`deckRoots`: la scheda dice in quanti mazzi sono e rimanda alla loro sezione dei mazzi); nessuna per le carte
+ * rimosse, che non mostrano mazzi.
  */
 export function cardDeckSlugs<C extends RelCard>(card: C, all: readonly C[]): string[] {
   if (card.status === "removed") return [];
@@ -260,9 +295,9 @@ export function cardDeckSlugs<C extends RelCard>(card: C, all: readonly C[]): st
 
 /**
  * Il giorno dell'ultima modifica di una scheda carta con i mazzi: quello di `cardLastmod` (patch, verifica sul gioco,
- * testi letti nel gioco, guide) più i giorni dei mazzi che la scheda mostra (`cardDeckDays` sulle carte di
- * `cardDeckSlugs`). È il `dateModified` della pagina e deve essere anche il `lastmod` della sitemap: le stesse
- * regole di `lastmodFor` (nascita della lingua, mai nel futuro).
+ * testi letti nel gioco, guide) più i giorni dei mazzi che la scheda elenca (`cardPageDeckDays`). È il `dateModified`
+ * della pagina e deve essere anche il `lastmod` della sitemap, calcolato con le stesse due funzioni: le stesse regole
+ * di `lastmodFor` (nascita della lingua, mai nel futuro).
  */
 export function cardPageLastmod(base: Day, locale: Locale, deckDays: Iterable<Day>, today: Day): Day {
   return lastmodFor(locale, [base, ...deckDays], today);

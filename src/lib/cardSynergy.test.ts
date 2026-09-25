@@ -36,7 +36,25 @@ registerHooks({
 const synergy: typeof import("./cardSynergy") = await import("./cardSynergy.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const cardsModule: typeof import("./data/cards") = await import("./data/cards.ts");
-const { byRating, cardDeckDays, cardDeckSlugs, cardPageLastmod, cardRelations, companions, createdChain, creationChain, deckRoots, decksByCard, decksForLocale, earlierCreators, linkedCards, namedTokens } = synergy;
+const {
+  MAX_DECKS,
+  byRating,
+  cardDeckDays,
+  cardDeckSlugs,
+  cardPageDeckDays,
+  cardPageLastmod,
+  cardRelations,
+  companions,
+  createdChain,
+  creationChain,
+  deckRoots,
+  decksByCard,
+  decksForLocale,
+  earlierCreators,
+  linkedCards,
+  listedDecks,
+  namedTokens,
+} = synergy;
 type DeckRef = import("./cardSynergy").DeckRef;
 const { cards, getCard } = cardsModule;
 
@@ -147,7 +165,29 @@ describe("date della scheda con i mazzi", () => {
     assert.deepEqual(cardDeckDays(decks, "nessuna"), []);
   });
 
-  test("le carte i cui mazzi stanno sulla scheda: sé stessa, chi la genera per le carte create, nessuna per le rimosse", () => {
+  test("i giorni della scheda sono quelli dei mazzi che elenca in quella lingua; nessuno per create, rimosse e lettura fallita", () => {
+    // il mazzo b è indicizzabile solo in italiano: la scheda inglese di Dracula non lo elenca, e il suo giorno non conta
+    assert.deepEqual(cardPageDeckDays(card("dracula"), "en", decks), ["2026-09-22"]);
+    assert.deepEqual(cardPageDeckDays(card("dracula"), "it", decks).sort(), ["2026-09-22", "2026-09-24"]);
+    assert.deepEqual(cardPageDeckDays(card("dracula"), "en", null), []);
+    assert.deepEqual(cardPageDeckDays(card("garlic"), "en", [deck("vh", "van-helsing", ["genie"], { updated: "2026-09-29T10:00:00Z" })]), []);
+    assert.deepEqual(cardPageDeckDays(card("baker"), "it", decks), []);
+  });
+
+  test("elenco della scheda: indicizzabili nella lingua, al massimo MAX_DECKS, e gli altri contati", () => {
+    const many = Array.from({ length: MAX_DECKS + 3 }, (_, i) => deck(`m${i}`, "merlin", ["genie"], { created: `2026-09-${String(10 + i).padStart(2, "0")}T10:00:00Z` }));
+    const withIt = [...many, deck("only-it", "merlin", ["genie"], { locales: ["it"] })];
+    const en = listedDecks(withIt, "genie", "en");
+    assert.equal(en.listed.length, MAX_DECKS);
+    assert.equal(en.others, 4);
+    // dal più recente, come la tier list
+    assert.equal(en.listed[0].slug, `m${MAX_DECKS + 2}`);
+    assert.equal(listedDecks(decks, "dracula", "en").others, 1);
+    // le date guardano solo i mazzi elencati: 12 giorni, non 16
+    assert.equal(cardPageDeckDays(card("genie"), "en", withIt).length, MAX_DECKS);
+  });
+
+  test("le carte i cui mazzi conta la scheda: sé stessa, chi la genera per le carte create, nessuna per le rimosse", () => {
     assert.deepEqual(cardDeckSlugs(card("merlin"), cards), ["merlin"]);
     assert.deepEqual(cardDeckSlugs(card("garlic"), cards), ["van-helsing"]);
     assert.deepEqual(cardDeckSlugs(card("reflection"), cards), []);

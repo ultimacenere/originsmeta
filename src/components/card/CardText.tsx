@@ -11,8 +11,10 @@ import { cardLabels } from "@/lib/cardPage";
  * - Carte create e rimosse: la collezione non le mostra, quindi in italiano e spagnolo il testo è una traduzione di
  *   OriginsMeta fatta con il glossario ufficiale del gioco (docs/testi-di-gioco.md); in inglese viene da World of
  *   Origins.
- * - Sulle pagine italiane e spagnole segue il testo inglese del gioco, con `lang="en"`. Se il testo locale manca e la
- *   scheda ripiega sull'inglese, c'è solo quello, con la sua etichetta e il suo `lang`.
+ * - Sulle pagine italiane e spagnole segue il testo inglese, con `lang="en"`: "Testo inglese del gioco" sulle carte
+ *   della collezione, "Testo inglese (World of Origins)" su create e rimosse, che nel gioco non si possono verificare
+ *   (la stessa fonte che la pagina inglese dichiara). Se il testo locale manca e la scheda ripiega sull'inglese, c'è
+ *   solo quello, con la sua etichetta e il suo `lang`.
  * `outdated`: una patch successiva ha cambiato il testo (`textOutdated`), e la scheda lo dice invece di lasciarlo
  * credere attuale.
  */
@@ -34,7 +36,7 @@ export function CardText({ card, locale, outdated }: { card: Card; locale: Local
       )}
       {locale !== "en" ? (
         <>
-          <p className={`kicker text-chalk-muted ${onlyEnglish ? "" : "mt-3"}`}>{l.textEnglish}</p>
+          <p className={`kicker text-chalk-muted ${onlyEnglish ? "" : "mt-3"}`}>{inCollection ? l.textEnglish : l.textEnglishWoo}</p>
           <p lang="en" className={`mt-1 whitespace-pre-line ${onlyEnglish ? "text-lg text-pale" : "text-sm text-pale-muted"}`}>
             {english}
           </p>

@@ -18,7 +18,7 @@ import { CardParts } from "./CardParts";
  * - "Carte collegate (World of Origins)": i collegamenti del database che nessun testo spiega (Merlin ↔ Merlin's
  *   Prophecy), senza dire "genera": il legame può venire dal potere leggendario, non ancora letto nel gioco.
  */
-export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" | "name" | "type">; locale: Locale; rel: Relations<Card> }) {
+export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" | "name" | "type" | "status">; locale: Locale; rel: Relations<Card> }) {
   const l = cardLabels[locale];
   const slugs = (list: readonly Card[]) => list.map((c) => c.slug);
   const token = card.type === "token";
@@ -66,7 +66,8 @@ export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" |
 
       {created?.length ? (
         <section className="mt-10">
-          <h2 className="t-section">{l.creates}</h2>
+          {/* Le carte rimosse al passato: "Carte che generava" (Headless Horseman, Necromancer, Pumpkin Patch) */}
+          <h2 className="t-section">{card.status === "removed" ? l.createdPast : l.creates}</h2>
           <p className="mt-2 text-sm text-pale-muted">{l.createsIntro}</p>
           <div className="mt-4">
             <CardChipList slugs={slugs(created)} locale={locale} />

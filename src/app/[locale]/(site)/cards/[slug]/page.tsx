@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, pageTitle, resolveLocale } from "@/lib/page";
-import { imageSizeOf } from "@/lib/imageSize";
 import { cardDescription, cardTitle, textOutdated } from "@/lib/cardTitles";
 import { cardLastmod, cardTextSource } from "@/lib/cardDates";
 import { todayUtc } from "@/lib/lastmod";
@@ -13,8 +12,23 @@ import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
 import { keywordLabel } from "@/lib/keywordLabels";
 import { alignStyle } from "@/lib/cardArt";
-import { cardDeckDays, cardDeckSlugs, cardPageLastmod, cardRelations, companions, decksByCard, decksForLocale, deckRoots } from "@/lib/cardSynergy";
-import { asOfLine, cardBrief, cardImageAlt, cardLabels, cardLead, fill, kindWord, legendaryPowers, partsText, sourceNote, type CardFacts } from "@/lib/cardPage";
+import { cardDeckSlugs, cardPageDeckDays, cardPageLastmod, cardRelations, companions, decksByCard, deckRoots, listedDecks } from "@/lib/cardSynergy";
+import {
+  asOfLine,
+  cardBrief,
+  cardImageAlt,
+  cardImageSize,
+  cardLabels,
+  cardLdTexts,
+  cardLead,
+  cardStatusLd,
+  fill,
+  kindWord,
+  legendaryPowers,
+  partsText,
+  sourceNote,
+  type CardFacts,
+} from "@/lib/cardPage";
 import { loadCommunityScores, loadDeckRefs } from "@/lib/community/decksByCard";
 import { cardJsonLd } from "@/lib/jsonld/card";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
@@ -26,7 +40,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { RemovedArchiveLink } from "@/components/RemovedCardsArchive";
 import { CardParts } from "@/components/card/CardParts";
 import { CardText } from "@/components/card/CardText";
-import { CardCompanions, CardDecks } from "@/components/card/CardDecks";
+import { CardCompanions, CardDecks, CardRootDecks } from "@/components/card/CardDecks";
 import { CardRelations, CardRootCta } from "@/components/card/CardRelations";
 import { CardBrief, CardCommunityScore } from "@/components/card/CardBrief";
 import { CardCollectible } from "@/components/card/CardCollectible";
@@ -38,25 +52,23 @@ type Params = Promise<{ locale: string; slug: string }>;
  * - Leggendarie e carte base della Demo 2.0: frase d'attacco dai dati, "Mazzi guidati da {Leggendaria}" / "Mazzi con
  *   {carta}", "Spesso nello stesso mazzo", carte che genera, storico, "In breve", tier list della community (dietro la
  *   soglia), invito al deck builder, guide, stessa saga;
- * - carte create: prima riga con chi le genera (catena dai testi), "Come si ottiene", i mazzi con la carta che le
- *   genera, e al posto del deck builder, che non le accetta, l'invito a costruire un mazzo con quella carta;
+ * - carte create: prima riga con chi le genera (catena dai testi), "Come si ottiene", il conto dei mazzi con la carta
+ *   che le genera (con il link alla sua sezione dei mazzi, non la stessa lista ripetuta), e al posto del deck builder,
+ *   che non le accetta, l'invito a costruire un mazzo con quella carta;
  * - carte rimosse: prima riga "non è nella Demo 2.0, quindi non si può aggiungere nel deck builder", niente mazzi né
  *   tier list, rimando all'archivio delle carte non nella demo.
  * Mazzi e tier list della community vengono da Supabase: la pagina resta generata in build per tutte le 690 URL
  * (generateStaticParams) e diventa ISR. La lettura è una sola per tutte le schede (`src/lib/community/decksByCard.ts`,
  * cache condivisa con etichetta) e le Server Action dei mazzi rigenerano le schede quando un mazzo viene pubblicato,
  * modificato, nascosto o eliminato; `revalidate` è la riserva, un'ora, la stessa della cache dei dati.
+ * Con la pagina in ISR nessun dato si legge dal disco a runtime (su Vercel la funzione non ha `public/`): le misure
+ * della carta ufficiale vengono da `card-art.json` (`cardImageSize`).
  * Title e description restano quelli di `cardTitles.ts` (Ondata 1).
  */
 export const revalidate = 3600;
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => cards.map((c) => ({ locale, slug: c.slug })));
-}
-
-/** Testo su una riga sola: nel database delle carte gli a capo sono frequenti. */
-function oneLine(text: string): string {
-  return text.replace(/\s+/g, " ").trim();
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -70,9 +82,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts. Un testo che una patch ha superato
   // (`textOutdated`, come Silver Bullet: il database dice ancora 3 danni, la 0.6.2 li ha portati a 1) non va nella
   // description.
-  // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file. L'alt descrive
-  // la carta (nome, tipo, gioco, illustratore, © Koin Games), come sulla pagina (CARDS-16).
-  const opts = card.image ? { imageAlt: cardImageAlt(card, locale), imageSize: imageSizeOf(card.image) } : {};
+  // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): la misura viene da card-art.json,
+  // non dal file, perché la scheda è ISR e su Vercel la rigenerazione non vede `public/`. L'alt descrive la carta
+  // (nome, tipo, gioco, illustratore, © Koin Games), come sulla pagina (CARDS-16).
+  const opts = card.image ? { imageAlt: cardImageAlt(card, locale), imageSize: cardImageSize(card) } : {};
   return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards, cardTextSource), card.image, opts);
 }
 
@@ -93,20 +106,28 @@ export default async function CardPage({ params }: { params: Params }) {
 
   // Legami con le altre carte, dai testi (cardSynergy.ts): chi la genera, che cosa genera, collegate da World of Origins.
   const rel = cardRelations(card, cards);
-  // Una carta creata non entra nei mazzi: si guardano i mazzi con la carta della demo che la genera (le stesse carte
-  // che conta la sitemap, `cardDeckSlugs`). Le rimosse non ne mostrano.
+  // Una carta creata non si aggiunge nel deck builder: si contano i mazzi con la carta della demo che la genera
+  // (`cardDeckSlugs`). Le rimosse non ne mostrano.
   const roots = token ? deckRoots(rel.createdBy) : [];
   const deckSlugs = cardDeckSlugs(card, cards);
 
-  // Mazzi pubblicati e tier list della community, dalla cache condivisa fra tutte le schede. Le rimosse non ne
-  // mostrano: non leggono niente, così non si rigenerano a ogni cambio dei mazzi.
+  // Mazzi pubblicati e tier list della community, dalla cache condivisa fra tutte le schede. Le rimosse (e le create
+  // che nessun testo della demo genera) non ne mostrano: non leggono niente.
   const [allDecks, scores] = await Promise.all([deckSlugs.length ? loadDeckRefs() : Promise.resolve(null), playable ? loadCommunityScores() : Promise.resolve(null)]);
   const withCard = allDecks ? decksByCard(allDecks, deckSlugs) : [];
-  const { shown, others } = decksForLocale(withCard, locale);
+  // Elenco, JSON-LD e date guardano gli stessi mazzi (`listedDecks`): indicizzabili in questa lingua, al massimo 12.
+  const { listed, others } = allDecks && playable ? listedDecks(allDecks, card.slug, locale) : { listed: [], others: 0 };
   const count = allDecks && playable ? { n: withCard.length, total: allDecks.length } : undefined;
   const together = allDecks && playable ? companions(allDecks, card.slug) : [];
 
-  const facts: CardFacts = { decks: count, ...rel };
+  const facts: CardFacts = {
+    decks: count,
+    companions: together.flatMap((c) => {
+      const other = getCard(c.slug);
+      return other ? [{ card: other, together: c.together }] : [];
+    }),
+    ...rel,
+  };
   const lead = cardLead(card, facts, locale);
   const brief = cardBrief(card, facts, locale);
 
@@ -126,11 +147,11 @@ export default async function CardPage({ params }: { params: Params }) {
 
   const path = href(locale, `/cards/${card.slug}`);
   const today = todayUtc();
-  // Lo stesso giorno del `lastmod` della sitemap: le date della scheda (`cardLastmod`: patch, verifica sul gioco,
-  // testi letti nel gioco, guide) più quelle dei mazzi che la scheda mostra (`cardDeckDays`, da passare anche alla
-  // sitemap: vedi le note dell'Ondata 2).
-  const dateModified = cardPageLastmod(cardLastmod(card, locale, today), locale, allDecks ? cardDeckDays(allDecks, deckSlugs) : [], today);
-  const ldText = outdated ? undefined : card.ability?.[locale];
+  // Lo stesso giorno del `lastmod` della sitemap, con le stesse due funzioni: le date della scheda (`cardLastmod`:
+  // patch, verifica sul gioco, testi letti nel gioco, guide) più quelle dei mazzi che la scheda elenca
+  // (`cardPageDeckDays`; la sitemap le deve contare allo stesso modo: note dell'Ondata 2).
+  const dateModified = cardPageLastmod(cardLastmod(card, locale, today), locale, cardPageDeckDays(card, locale, allDecks), today);
+  const decksTitle = fill(token ? l.decksCreating : card.legendary ? l.decksLed : l.decksWith, { name: card.name });
   const ld = cardJsonLd({
     card,
     locale,
@@ -138,7 +159,7 @@ export default async function CardPage({ params }: { params: Params }) {
     title: pageTitle(cardTitle(card, locale)),
     description: cardDescription(card, locale, cards, cardTextSource),
     lead: partsText(lead),
-    text: ldText ? oneLine(ldText) : undefined,
+    texts: cardLdTexts(card, outdated),
     dateModified,
     crumbs: [
       { name: "OriginsMeta", path: href(locale) },
@@ -146,16 +167,17 @@ export default async function CardPage({ params }: { params: Params }) {
       { name: card.name, path },
     ],
     keywords: [kindWord(card, locale), ...(card.rarity && card.rarity !== "legendary" ? [rarityLabel[card.rarity]] : []), ...(card.keywords ?? []).map((k) => keywordLabel(k, locale))],
-    status: removed ? l.status.removed : token ? l.status.token : l.status.active,
+    status: cardStatusLd(card, rel),
     image: card.image
-      ? { ...imageSizeOf(card.image), alt: cardImageAlt(card, locale), credit: card.credit?.illus ? fill(l.creditText, { illus: card.credit.illus }) : "© Koin Games" }
+      ? { ...cardImageSize(card), alt: cardImageAlt(card, locale), credit: card.credit?.illus ? fill(l.creditText, { illus: card.credit.illus }) : "© Koin Games" }
       : undefined,
-    deckPaths: shown.map((deck) => href(locale, `/decks/community/${deck.slug}`)),
+    decks: { title: decksTitle, items: listed.map((deck) => ({ name: deck.name, path: href(locale, `/decks/community/${deck.slug}`) })) },
   });
 
-  const decksTitle = fill(token ? l.decksCreating : card.legendary ? l.decksLed : l.decksWith, { name: card.name });
-  const decksSection = (
-    <CardDecks card={card} locale={locale} dict={d} title={decksTitle} count={count} shown={shown} others={others} intro={token ? l.decksCreatingIntro : undefined} />
+  const decksSection = token ? (
+    <CardRootDecks locale={locale} title={decksTitle} roots={roots} decks={withCard.length} />
+  ) : (
+    <CardDecks locale={locale} dict={d} title={decksTitle} listed={listed} others={others} />
   );
 
   return (
