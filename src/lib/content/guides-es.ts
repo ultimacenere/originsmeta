@@ -82,7 +82,7 @@ Esta lista está transcrita de la base de datos de la comunidad y coincide con l
   },
   "on-reveal-midrange-guide": {
     title: "On Reveal Mid Range: cómo se juega el mazo midrange de Mulan",
-    metaTitle: "Guía del mazo Mulan: On Reveal Mid Range",
+    metaTitle: "Guía del mazo de Mulan: On Reveal Mid Range",
     excerpt: "Plan de juego, mulligan y ronda a ronda de On Reveal Mid Range, mazo de Mulan que repite habilidades Al revelar, para clasificatoria, competitivo y torneos.",
     faq: [
       {
@@ -174,7 +174,7 @@ La página del mazo enumera dos: **una buena curva suele ser esencial** y **pued
   },
   "king-of-value-trade-guide": {
     title: "King of Value Trade: cómo se juega el mazo midrange de King Arthur",
-    metaTitle: "Guía del mazo King Arthur: King of Value Trade",
+    metaTitle: "Guía del King of Value Trade de King Arthur",
     excerpt: "Plan de juego, mulligan y ronda a ronda de King of Value Trade, el mazo midrange de King Arthur construido para ganar cada intercambio dos cartas por una.",
     faq: [
       {
@@ -267,7 +267,7 @@ La página del mazo enumera tres: **ninguna eliminación de área**, **Dark Omen
   },
   "dorothy-combo-guide": {
     title: "Dorothy Combo: cómo se juega el mazo move tras el parche del 21 de septiembre",
-    metaTitle: "Guía del mazo Dorothy: Dorothy Combo",
+    metaTitle: "Guía del mazo de Dorothy: Dorothy Combo",
     excerpt: "El mazo move reconstruido en torno a los buffs del 21 de septiembre: cómo crece Dorothy, qué combos buscar, el mulligan y lo que la lista aún no puede hacer.",
     faq: [
       {
@@ -331,19 +331,19 @@ El autor no deja ninguna nota sobre el mulligan, así que esta es la lectura de 
 ## Ronda a ronda
 
 1. **Rondas 1–2: poner en marcha el contador.** Card Soldier o Roo, y luego Twister Toss sobre él. Cada movimiento es un punto permanente para Dorothy, aunque el tablero parezca tranquilo.
-2. **Ronda 3: elegir el carril.** Pegasus, la Bruja o Kanga. [Wicked Witch of the West](/es/cards/wicked-witch-of-the-west) es la que genera por sí sola: un 1/5 que sobrevive a la mayoría de los golpes y, cada vez que lo hace, te da un Flying Monkey en la mano y se mueve un espacio a la izquierda: otro punto para Dorothy.
+2. **Ronda 3: elegir el carril.** Pegasus, la Witch o Kanga. [Wicked Witch of the West](/es/cards/wicked-witch-of-the-west) es la que genera por sí sola: un 1/5 que sobrevive a la mayoría de los golpes y, cada vez que lo hace, te da un Flying Monkey en la mano y se mueve un espacio a la izquierda: otro punto para Dorothy.
 3. **Ronda 4: Magic Carpet.** Elige la dirección que empuje a tus Card Soldier hacia un espacio libre y lleve a Pegasus a un combate que ahora ganará.
 4. **De la ronda 5 en adelante: Dorothy, y luego cerrar.** Hare tiene Primer golpe y Mover: golpea antes de la respuesta y mantiene el contador en marcha. [Basilisk](/es/cards/basilisk) con Toque mortal es la respuesta barata a un cuerpo demasiado grande para combatirlo de igual a igual, y En Passant convierte un Pegasus duplicado en una eliminación.
 
 ## Lo que el mazo no puede hacer
 
-El autor enumera dos puntos débiles, y son honestos: **puedes acabar muy atascado con tus cartas** y **algunos combos no son consistentes**. Los dos tienen el mismo origen: [Flying Monkey](/es/cards/flying-monkey) mueve a un personaje a un espacio *al azar*, la copia de Card Soldier va al espacio que dejó y Magic Carpet lo mueve todo, incluidos los aliados que querías donde estaban. Planifica la dirección antes de jugar la Alfombra y no cuentes con que un espacio concreto esté libre.
+El autor enumera dos puntos débiles, y son honestos: **puedes acabar muy atascado con tus cartas** y **algunos combos no son consistentes**. Los dos tienen el mismo origen: [Flying Monkey](/es/cards/flying-monkey) mueve a un personaje a un espacio *al azar*, la copia de Card Soldier va al espacio que dejó y Magic Carpet lo mueve todo, incluidos los aliados que querías donde estaban. Planifica la dirección antes de jugar Magic Carpet y no cuentes con que un espacio concreto esté libre.
 
 ## Matchups
 
 Los datos de la clasificatoria no son públicos: esta es una lectura de las listas, no un win rate.
 
-- **Contra mazos agresivos.** La Bruja y Roo aguantan los carriles en las primeras rondas; el Toque mortal de Basilisk responde al primer cuerpo grande. Dorothy puede esperar: es mejor tarde, cuando el contador está alto.
+- **Contra mazos agresivos.** La Witch y Roo aguantan los carriles en las primeras rondas; el Toque mortal de Basilisk responde al primer cuerpo grande. Dorothy puede esperar: es mejor tarde, cuando el contador está alto.
 - **Contra mazos de control.** Este es el buen matchup. Las copias de Card Soldier y los Flying Monkey siguen volviendo, así que una sola limpieza no vacía tu tablero. Después de una limpieza, ten un Twister Toss en la mano para reactivar el contador.
 - **Contra otros mazos move.** Quien más se mueve consigue la Dorothy más grande, pero Flying Monkey mueve a *cualquier* personaje: úsalo para sacar a un Pegasus enemigo del espacio donde iba a duplicarse.
 
@@ -355,7 +355,7 @@ Los datos de la clasificatoria no son públicos: esta es una lectura de las list
   },
   "trick-or-treat-legion-guide": {
     title: "The Trick-or-Treat Legion: cómo jugar el mazo de Legion of the Dead",
-    metaTitle: "Legion of the Dead: guía de Trick-or-Treat",
+    metaTitle: "Guía del mazo de Legion of the Dead",
     excerpt: "La lista de Legion of the Dead hecha para ser impredecible: cómo funciona el tablero de Zombies, el combo Golden Egg y Boogeyman, el mulligan y los matchups.",
     faq: [
       {
@@ -454,7 +454,7 @@ Son dos, según la ficha del mazo: **Mind Palace es muy importante para no queda
   },
   "three-pigs-midrange-guide": {
     title: "3 Pigs Mid Range: cómo jugar el mazo midrange de Three Not So Little Pigs",
-    metaTitle: "Guía del mazo Three Not So Little Pigs",
+    metaTitle: "Guía del mazo de Three Not So Little Pigs",
     excerpt: "Plan de juego, mulligan y ronda a ronda de 3 Pigs Mid Range, el mazo midrange liderado por Three Not So Little Pigs, para ladder y competitivo.",
     faq: [
       {
@@ -534,7 +534,7 @@ La ficha del mazo es clara sobre el principal punto débil: "salirse de la curva
   },
   "three-pigs-midrange-matchups": {
     title: "3 Pigs Mid Range: matchups, interacciones clave y Conquest",
-    metaTitle: "Matchups del mazo Three Not So Little Pigs",
+    metaTitle: "Matchups del mazo de Three Not So Little Pigs",
     excerpt: "Segunda parte de la guía de 3 Pigs Mid Range: las interacciones que ganan partidas, cómo jugar los principales matchups, los errores que evitar y Conquest.",
     faq: [
       {
@@ -587,7 +587,7 @@ El mazo está etiquetado tanto para la ladder como para el juego competitivo. El
   },
   "healing-healsing-guide": {
     title: "Healing Healsing: cómo jugar el mazo de control de Van Helsing",
-    metaTitle: "Guía del mazo Van Helsing: Healing Healsing",
+    metaTitle: "Guía del mazo de Van Helsing: Healing Healsing",
     excerpt: "Plan de juego, mulligan y ronda a ronda de Healing Healsing, el mazo de control de Van Helsing que cura, roba cartas y reinicia el tablero.",
     faq: [
       {

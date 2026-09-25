@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
+import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { getNews, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
+import { getNews, news, newsDates, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
 import { authorOfNews } from "@/lib/data/authors";
 import { patchOrder, patches } from "@/lib/data/cards";
 import { relatedNews } from "@/lib/relatedNews";
@@ -25,6 +25,13 @@ type Params = Promise<{ locale: string; slug: string }>;
 /** Oltre i 110 caratteri Google ignora `headline`: se il titolo è più lungo, nei dati strutturati va il titolo per la SERP. */
 const HEADLINE_MAX = 110;
 
+/**
+ * Etichetta della firma quando la data di modifica è solo la nascita della versione tradotta (`newsDates`, oggi lo
+ * spagnolo dal 25/09/2026): "Traducido el …" al posto di "Actualizado", che promette un paragrafo di aggiornamento
+ * nel testo. La usa solo questa pagina.
+ */
+const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradotto il", es: "Traducido el" };
+
 /** Le news che raccontano una patch (campo `news` delle patch in cards.ts): per le news correlate sono dello stesso tipo. */
 const patchNews = new Set(patchOrder.map((id) => patches[id].news).filter((s): s is string => Boolean(s)));
 
@@ -37,13 +44,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict: d } = await resolveLocale(params);
   const item = getNews(slug);
   if (!item) return {};
+  const dates = newsDates(item, locale);
   // Titolo per la SERP: `metaTitle` quando c'è; altrimenti il titolo dell'articolo, che `pageTitleWith`
   // accorcia all'ultima parola intera se non sta nei 60 caratteri. Il marchio lo aggiunge `pageMeta`.
   const title = item.metaTitle?.[locale] ?? pageTitleWith(item.title[locale], d.nav.news);
   return pageMeta(locale, newsPath(item), title, item.description?.[locale] ?? item.summary[locale], item.image, {
     type: "article",
-    published: item.date,
-    modified: item.updated ?? item.date,
+    published: dates.published,
+    modified: dates.modified,
     imageAlt: item.title[locale],
     // Le copertine hanno misure diverse (1600×900, 1200×675…): si leggono dal file; le miniature remote no.
     imageSize: imageSizeOf(item.image),
@@ -63,7 +71,11 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
 
   const title = item.title[locale];
   const path = href(locale, newsPath(item));
-  const updated = item.updated ?? item.date;
+  // Pubblicazione: la data dell'articolo in ogni lingua. Modifica: in spagnolo mai prima del 25/09/2026, quando la
+  // versione è nata (`newsDates`, la stessa regola delle guide). Firma, dati strutturati e Open Graph la condividono;
+  // se è solo la nascita della traduzione, la firma dice "Traducido el" invece di "Actualizado".
+  const dates = newsDates(item, locale);
+  const updated = dates.modified;
   const body = item.body?.[locale];
   const faq = item.faq?.[locale] ?? [];
   const highlights = item.highlights?.[locale] ?? [];
@@ -152,7 +164,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
           {updated !== item.date ? (
             <>
               {" · "}
-              {d.common.updated} <time dateTime={updated}>{formatDate(locale, updated)}</time>
+              {dates.translated ? TRANSLATED_ON[locale] : d.common.updated} <time dateTime={updated}>{formatDate(locale, updated)}</time>
             </>
           ) : null}
         </p>
