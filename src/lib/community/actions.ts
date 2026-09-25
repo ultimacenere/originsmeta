@@ -12,17 +12,26 @@ import { currentUser } from "@/lib/supabase/server";
 import { publishedDeckLimit } from "./queries";
 import { announceDeck } from "./discordDeck";
 import { translateDeckLater } from "./translate";
+import { refreshCardDecks } from "./decksByCard";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
 
-function revalidateDeckPaths(slug?: string) {
+/**
+ * Pagine da rigenerare quando cambia un mazzo pubblicato. Dall'Ondata 2 (25/09/2026) anche le schede carta, che
+ * mostrano "Mazzi con questa carta", le carte spesso nello stesso mazzo e il conto dei mazzi: `refreshCardDecks`
+ * invalida la lettura condivisa dei mazzi e con lei tutte le schede che la usano. `gone` quando il mazzo sparisce
+ * (nascosto o eliminato): allora le schede non devono servirlo neanche una volta di più (`updateTag`). Un mazzo privato
+ * eliminato non è mai stato sulle schede: `cardPages = false` le lascia com'erano.
+ */
+function revalidateDeckPaths(slug?: string, gone = false, cardPages = true) {
   for (const l of locales) {
     revalidatePath(`/${l}/decks`);
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/decks/community/${slug}`);
   }
   revalidatePath("/sitemap.xml");
+  if (cardPages) refreshCardDecks(gone);
 }
 
 function localeOf(fd: FormData): Locale {
@@ -234,7 +243,7 @@ export async function setDeckStatus(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const status = formData.get("status") === "hidden" ? "hidden" : "published";
   const { data } = await supabase.from("community_decks").update({ status }).eq("id", id).neq("status", "draft").select("slug").maybeSingle();
-  revalidateDeckPaths((data as { slug: string } | null)?.slug);
+  revalidateDeckPaths((data as { slug: string } | null)?.slug, status === "hidden");
   // un mazzo rimesso online recupera le traduzioni che gli mancano (per esempio se era nascosto prima del 25/09/2026)
   if (data && status === "published" && isUuid(id)) translateDeckLater(supabase, id);
   redirect(`/${locale}/account`);
@@ -246,8 +255,9 @@ export async function deleteDeck(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   if (!supabase || !user) redirect(`/${locale}/login`);
   const id = String(formData.get("id") ?? "");
-  const { data } = await supabase.from("community_decks").delete().eq("id", id).select("slug").maybeSingle();
-  revalidateDeckPaths((data as { slug: string } | null)?.slug);
+  const { data } = await supabase.from("community_decks").delete().eq("id", id).select("slug, status").maybeSingle();
+  const deleted = data as { slug: string; status: string } | null;
+  revalidateDeckPaths(deleted?.slug, true, deleted?.status !== "draft");
   redirect(`/${locale}/account${formData.get("back") === "private" ? "#private" : ""}`);
 }
 

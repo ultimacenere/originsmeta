@@ -1,28 +1,54 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
-import { pageMeta, resolveLocale } from "@/lib/page";
+import { formatDate, href, locales } from "@/lib/i18n";
+import { pageMeta, pageTitle, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
 import { cardDescription, cardTitle, textOutdated } from "@/lib/cardTitles";
 import { cardLastmod, cardTextSource } from "@/lib/cardDates";
 import { todayUtc } from "@/lib/lastmod";
 import { changeLabel } from "@/lib/linkLabels";
-import { cards, cardSource, getCard, patchLabel, patches, relatedFrom, sagas, statLine } from "@/lib/data/cards";
-import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
+import { cards, cardSource, getCard, patchLabel, patches, sagas, statLine } from "@/lib/data/cards";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
+import { keywordLabel } from "@/lib/keywordLabels";
+import { alignStyle } from "@/lib/cardArt";
+import { cardDeckDays, cardDeckSlugs, cardPageLastmod, cardRelations, companions, decksByCard, decksForLocale, deckRoots } from "@/lib/cardSynergy";
+import { asOfLine, cardBrief, cardImageAlt, cardLabels, cardLead, fill, kindWord, legendaryPowers, partsText, sourceNote, type CardFacts } from "@/lib/cardPage";
+import { loadCommunityScores, loadDeckRefs } from "@/lib/community/decksByCard";
+import { cardJsonLd } from "@/lib/jsonld/card";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { CardArt, CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
+import { CardName, legendaryFirst } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GameCard } from "@/components/GameCard";
-import { alignStyle } from "@/lib/cardArt";
-import { keywordLabel } from "@/lib/keywordLabels";
 import { SteamButton, newTabProps } from "@/components/SteamButton";
-import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
+import { JsonLd } from "@/components/JsonLd";
 import { RemovedArchiveLink } from "@/components/RemovedCardsArchive";
+import { CardParts } from "@/components/card/CardParts";
+import { CardText } from "@/components/card/CardText";
+import { CardCompanions, CardDecks } from "@/components/card/CardDecks";
+import { CardRelations, CardRootCta } from "@/components/card/CardRelations";
+import { CardBrief, CardCommunityScore } from "@/components/card/CardBrief";
+import { CardCollectible } from "@/components/card/CardCollectible";
 
 type Params = Promise<{ locale: string; slug: string }>;
+
+/**
+ * Scheda carta, modello dell'Ondata 2 del piano SEO/GEO (schede carta, Leggendarie e mazzi), uno per tipo di carta:
+ * - Leggendarie e carte base della Demo 2.0: frase d'attacco dai dati, "Mazzi guidati da {Leggendaria}" / "Mazzi con
+ *   {carta}", "Spesso nello stesso mazzo", carte che genera, storico, "In breve", tier list della community (dietro la
+ *   soglia), invito al deck builder, guide, stessa saga;
+ * - carte create: prima riga con chi le genera (catena dai testi), "Come si ottiene", i mazzi con la carta che le
+ *   genera, e al posto del deck builder, che non le accetta, l'invito a costruire un mazzo con quella carta;
+ * - carte rimosse: prima riga "non è nella Demo 2.0, quindi non si può aggiungere nel deck builder", niente mazzi né
+ *   tier list, rimando all'archivio delle carte non nella demo.
+ * Mazzi e tier list della community vengono da Supabase: la pagina resta generata in build per tutte le 690 URL
+ * (generateStaticParams) e diventa ISR. La lettura è una sola per tutte le schede (`src/lib/community/decksByCard.ts`,
+ * cache condivisa con etichetta) e le Server Action dei mazzi rigenerano le schede quando un mazzo viene pubblicato,
+ * modificato, nascosto o eliminato; `revalidate` è la riserva, un'ora, la stessa della cache dei dati.
+ * Title e description restano quelli di `cardTitles.ts` (Ondata 1).
+ */
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => cards.map((c) => ({ locale, slug: c.slug })));
@@ -35,7 +61,7 @@ function oneLine(text: string): string {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const { locale, dict } = await resolveLocale(params);
+  const { locale } = await resolveLocale(params);
   const card = getCard(slug);
   if (!card) return {};
   // Title e description per tipo di carta e per lingua (Ondata 1 SEO/GEO, 25/09/2026): "Merlin: carta Leggendaria di
@@ -44,8 +70,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts. Un testo che una patch ha superato
   // (`textOutdated`, come Silver Bullet: il database dice ancora 3 danni, la 0.6.2 li ha portati a 1) non va nella
   // description.
-  // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file.
-  const opts = card.image ? { imageAlt: `${dict.cards.collectible}: ${card.name}`, imageSize: imageSizeOf(card.image) } : {};
+  // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file. L'alt descrive
+  // la carta (nome, tipo, gioco, illustratore, © Koin Games), come sulla pagina (CARDS-16).
+  const opts = card.image ? { imageAlt: cardImageAlt(card, locale), imageSize: imageSizeOf(card.image) } : {};
   return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards, cardTextSource), card.image, opts);
 }
 
@@ -54,51 +81,86 @@ export default async function CardPage({ params }: { params: Params }) {
   const { locale, dict: d } = await resolveLocale(params);
   const card = getCard(slug);
   if (!card) notFound();
+  const l = cardLabels[locale];
   const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
   const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   const rarityLabel = { common: d.common.common, rare: d.common.rare, epic: d.common.epic, legendary: d.common.legendary } as const;
-  // Stessa saga: Leggendarie per prime, con la stella davanti al nome (regola del 22/09/2026)
+
+  const token = card.type === "token";
+  const removed = card.status === "removed";
+  /** carta della collezione della Demo 2.0: la sola che il deck builder accetta (stesso filtro del pool in builderLabels.ts) */
+  const playable = !removed && !token;
+
+  // Legami con le altre carte, dai testi (cardSynergy.ts): chi la genera, che cosa genera, collegate da World of Origins.
+  const rel = cardRelations(card, cards);
+  // Una carta creata non entra nei mazzi: si guardano i mazzi con la carta della demo che la genera (le stesse carte
+  // che conta la sitemap, `cardDeckSlugs`). Le rimosse non ne mostrano.
+  const roots = token ? deckRoots(rel.createdBy) : [];
+  const deckSlugs = cardDeckSlugs(card, cards);
+
+  // Mazzi pubblicati e tier list della community, dalla cache condivisa fra tutte le schede. Le rimosse non ne
+  // mostrano: non leggono niente, così non si rigenerano a ogni cambio dei mazzi.
+  const [allDecks, scores] = await Promise.all([deckSlugs.length ? loadDeckRefs() : Promise.resolve(null), playable ? loadCommunityScores() : Promise.resolve(null)]);
+  const withCard = allDecks ? decksByCard(allDecks, deckSlugs) : [];
+  const { shown, others } = decksForLocale(withCard, locale);
+  const count = allDecks && playable ? { n: withCard.length, total: allDecks.length } : undefined;
+  const together = allDecks && playable ? companions(allDecks, card.slug) : [];
+
+  const facts: CardFacts = { decks: count, ...rel };
+  const lead = cardLead(card, facts, locale);
+  const brief = cardBrief(card, facts, locale);
+
   const related = legendaryFirst(
     cards.filter((c) => c.saga === card.saga && c.slug !== card.slug && c.status === "active"),
     (c) => Boolean(c.legendary),
   );
-  const linked = (card.related ?? []).filter((s) => getCard(s));
-  const linkedFrom = relatedFrom(card.slug);
-  const inDecks = decksWithCard(card.slug);
   const guides = getGuides(locale).filter((g) => g.tags?.cards?.includes(card.slug));
-  const tier = tierOf(card.legendary ? "legendaries" : "cards", card.slug);
+  // Guida al mazzo della Leggendaria, in cima alla scheda (mappa delle query, C22): la guida il cui mazzo è guidato da lei.
+  const deckGuide = card.legendary ? guides.find((g) => g.category === "decks" && g.deckList?.[0] === card.slug) : undefined;
+  // Solo una fascia vera della tier list di OriginsMeta: la pastiglia "Non ancora classificata" era un blocco ripetuto
+  // su tutte le Leggendarie senza dire niente (TECH-04, CARDS-06).
+  const tier = playable ? tierOf(card.legendary ? "legendaries" : "cards", card.slug) : undefined;
+  const power = card.legendary && playable ? legendaryPowers[card.slug]?.[locale] : undefined;
+  const outdated = textOutdated(card, cardTextSource);
+  const asOf = asOfLine(card, locale, cardSource) ?? d.common.asOf;
 
-  // Nodo della carta per i motori e per le risposte generative: solo campi che la scheda mostra davvero.
   const path = href(locale, `/cards/${card.slug}`);
-  const url = `${siteUrl}${path}`;
-  const cardLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "@id": `${url}#card`,
-    name: card.name,
-    url,
-    inLanguage: locale,
-    // La carta fa parte del nostro database e parla del gioco: le due entità sono dichiarate qui sotto.
-    isPartOf: { "@id": `${siteUrl}${href(locale, "/cards")}#collection` },
-    about: { "@id": videoGameId },
-  };
-  // Come nella description: un testo superato da una patch non si dichiara, resta l'origine della leggenda.
-  const ldText = (textOutdated(card, cardTextSource) ? undefined : card.ability?.[locale]) ?? card.origin?.[locale];
-  if (ldText) cardLd.description = oneLine(ldText);
-  if (card.image) cardLd.image = `${siteUrl}${card.image}`;
-  // L'illustratore è stampato sulla carta ufficiale: va reso anche nei dati strutturati.
-  if (card.credit?.illus) cardLd.creator = { "@type": "Person", name: card.credit.illus };
-  // Lo stesso giorno del `lastmod` della sitemap (`cardLastmod`): patch, verifica sul gioco, testi italiani e spagnoli
-  // letti nel gioco, guide e tier list; prima qui c'era solo l'ultima patch e le due date non coincidevano.
-  cardLd.dateModified = cardLastmod(card, locale, todayUtc());
+  const today = todayUtc();
+  // Lo stesso giorno del `lastmod` della sitemap: le date della scheda (`cardLastmod`: patch, verifica sul gioco,
+  // testi letti nel gioco, guide) più quelle dei mazzi che la scheda mostra (`cardDeckDays`, da passare anche alla
+  // sitemap: vedi le note dell'Ondata 2).
+  const dateModified = cardPageLastmod(cardLastmod(card, locale, today), locale, allDecks ? cardDeckDays(allDecks, deckSlugs) : [], today);
+  const ldText = outdated ? undefined : card.ability?.[locale];
+  const ld = cardJsonLd({
+    card,
+    locale,
+    path,
+    title: pageTitle(cardTitle(card, locale)),
+    description: cardDescription(card, locale, cards, cardTextSource),
+    lead: partsText(lead),
+    text: ldText ? oneLine(ldText) : undefined,
+    dateModified,
+    crumbs: [
+      { name: "OriginsMeta", path: href(locale) },
+      { name: d.cards.title, path: href(locale, "/cards") },
+      { name: card.name, path },
+    ],
+    keywords: [kindWord(card, locale), ...(card.rarity && card.rarity !== "legendary" ? [rarityLabel[card.rarity]] : []), ...(card.keywords ?? []).map((k) => keywordLabel(k, locale))],
+    status: removed ? l.status.removed : token ? l.status.token : l.status.active,
+    image: card.image
+      ? { ...imageSizeOf(card.image), alt: cardImageAlt(card, locale), credit: card.credit?.illus ? fill(l.creditText, { illus: card.credit.illus }) : "© Koin Games" }
+      : undefined,
+    deckPaths: shown.map((deck) => href(locale, `/decks/community/${deck.slug}`)),
+  });
+
+  const decksTitle = fill(token ? l.decksCreating : card.legendary ? l.decksLed : l.decksWith, { name: card.name });
+  const decksSection = (
+    <CardDecks card={card} locale={locale} dict={d} title={decksTitle} count={count} shown={shown} others={others} intro={token ? l.decksCreatingIntro : undefined} />
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <JsonLd
-        data={[
-          breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.cards.title, path: href(locale, "/cards") }, { name: card.name, path }]),
-          cardLd]}
-      />
+      <JsonLd data={ld} />
       {/* Una volta per pagina: tiene dentro la finestra le anteprime delle carte collegate (CardChip) */}
       <CardMentionEdges />
       <p className="text-sm">
@@ -114,7 +176,7 @@ export default async function CardPage({ params }: { params: Params }) {
           <GameCard card={card} locale={locale} priority className="w-full max-w-[230px]" />
           {card.image ? (
             <div className="flex items-start gap-3">
-              <CardArt card={card} full className="!h-[112px] !w-[80px] shrink-0 text-base" />
+              <CardCollectible card={card} alt={cardImageAlt(card, locale)} className="!h-[112px] !w-[80px] shrink-0 text-base" />
               <div className="text-[11px] leading-relaxed text-pale-muted">
                 <p className="text-chalk-muted">{d.cards.collectible}</p>
                 {/* Il nome dell'illustratore è stampato sulla carta: va reso, non solo il copyright. */}
@@ -135,19 +197,32 @@ export default async function CardPage({ params }: { params: Params }) {
           <p className="kicker text-mint">
             {d.cards.detailKicker} · {sagas[card.saga][locale]}
           </p>
-          {/* Nell'H1 solo la stella (nascosta ai lettori di schermo) e il nome: "Leggendaria" lo dice già la pastiglia
-              oro accanto alle statistiche, e il titolo letto dai motori resta il nome della carta */}
-          <h1 className="t-page mt-2 leading-tight">
+          {/* La stella della Leggendaria resta visibile ma fuori dall'H1 (SCHEDE-17): prima i crawler leggevano "★Merlin".
+              Il contenitore ha la stessa misura del titolo, perché la stella (1,15em) resti grande come prima. */}
+          <div className="t-page mt-2 flex items-baseline leading-tight">
             {card.legendary ? (
               <span className="legendary-star" aria-hidden="true">
                 ★
               </span>
             ) : null}
-            {card.name}
-          </h1>
+            <h1 className="t-page min-w-0 leading-tight">{card.name}</h1>
+          </div>
           {card.formerName ? (
             <p className="mt-1 text-sm text-pale-muted">
               {d.common.formerName}: {card.formerName}
+            </p>
+          ) : null}
+          {/* Frase d'attacco dai dati (CARDS-05, GEO-07): che cos'è la carta, stato e mazzi, senza giudizi. Sulle carte
+              create la prima cosa è chi le genera, sulle rimosse che non sono nella Demo 2.0. */}
+          <p className="mt-4 max-w-2xl text-pale">
+            <CardParts parts={lead} locale={locale} self={card.slug} />
+          </p>
+          {deckGuide ? (
+            <p className="mt-3 text-sm">
+              <span className="kicker mr-2 text-mint">{l.deckGuide}</span>
+              <Link href={href(locale, `/guides/${deckGuide.slug}`)} className="link-mint font-bold">
+                {deckGuide.title} →
+              </Link>
             </p>
           ) : null}
           <div className="mt-4 flex flex-wrap gap-2">
@@ -157,15 +232,16 @@ export default async function CardPage({ params }: { params: Params }) {
             {/* Pastiglie leggibili: allineamento dalla mappa condivisa (tinte tenui, testo scuro, come nel database
                 carte); "Rimossa" chalk sul magenta scuro 6,1:1 (sul magenta pieno faceva 3,99:1). */}
             {card.alignment ? <span className={`stat-pill font-bold ${alignStyle[card.alignment]}`}>{alignLabel[card.alignment]}</span> : null}
-            {card.status === "removed" ? <span className="stat-pill bg-crimson-deep font-bold text-chalk">{d.common.removed}</span> : null}
-            {tier ? (
+            {removed ? <span className="stat-pill bg-crimson-deep font-bold text-chalk">{d.common.removed}</span> : null}
+            {tier && tier !== "unranked" ? (
               <span className="stat-pill bg-night-3 text-pale">
-                {d.common.tierPosition}: {tier === "unranked" ? d.common.unranked : tier}
+                {d.common.tierPosition}: {tier}
               </span>
             ) : null}
           </div>
-          {card.ability ? <p className="mt-6 whitespace-pre-line text-lg text-pale">{card.ability[locale]}</p> : null}
-          {card.ability && locale !== "en" ? <p className="mt-2 whitespace-pre-line text-sm text-pale-muted">{card.ability.en}</p> : null}
+          {/* Testo della carta con l'etichetta: testo ufficiale del gioco o traduzione nostra, e l'inglese del gioco
+              sulle pagine italiane e spagnole, con lang="en" (SCHEDE-07). */}
+          <CardText card={card} locale={locale} outdated={outdated} />
           {card.keywords?.length ? (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {card.keywords.map((k) => (
@@ -174,6 +250,14 @@ export default async function CardPage({ params }: { params: Params }) {
                 </span>
               ))}
             </div>
+          ) : null}
+          {/* Potere leggendario (SCHEDE-13): compare quando `legendaryPowers` in cardPage.ts ha il testo letto nel gioco.
+              Oggi è vuoto: niente testo copiato da altri siti né scritto a memoria. */}
+          {power ? (
+            <>
+              <h2 className="t-section mt-8">{l.legendaryPower}</h2>
+              <p className="mt-2 whitespace-pre-line text-pale">{power}</p>
+            </>
           ) : null}
           {card.origin ? (
             <>
@@ -204,30 +288,20 @@ export default async function CardPage({ params }: { params: Params }) {
             </dl>
           )}
           {card.key ? <p className="mt-3 font-mono text-[11px] text-chalk-muted/80">ID {card.key}</p> : null}
-          <p className="mt-4 text-[11px] leading-snug text-chalk-muted/80">{d.common.asOf}</p>
+          {/* Le carte create e rimosse non stanno nella collezione della demo: la riga non dice più che sono state
+              verificate nel gioco (CARDS-09). */}
+          <p className="mt-4 text-[11px] leading-snug text-chalk-muted/80">{asOf}</p>
         </aside>
       </article>
 
-      {linked.length || linkedFrom.length ? (
-        <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-          {linked.length ? (
-            <div>
-              <h2 className="t-section">{d.common.related}</h2>
-              <div className="mt-4">
-                <CardChipList slugs={linked} locale={locale} />
-              </div>
-            </div>
-          ) : null}
-          {linkedFrom.length ? (
-            <div>
-              <h2 className="t-section">{d.common.relatedFrom}</h2>
-              <div className="mt-4">
-                <CardChipList slugs={linkedFrom.map((c) => c.slug)} locale={locale} />
-              </div>
-            </div>
-          ) : null}
-        </section>
-      ) : null}
+      {/* Carte create: prima come si ottengono, poi i mazzi con la carta che le genera */}
+      {token ? <CardRelations card={card} locale={locale} rel={rel} /> : null}
+
+      {!removed ? decksSection : null}
+
+      {playable ? <CardCompanions card={card} locale={locale} list={together} decks={withCard.length} min={2} /> : null}
+
+      {!token ? <CardRelations card={card} locale={locale} rel={rel} /> : null}
 
       {card.history.length ? (
         <section className="mt-10">
@@ -274,26 +348,14 @@ export default async function CardPage({ params }: { params: Params }) {
         </section>
       ) : null}
 
-      {inDecks.length ? (
-        <section className="mt-10">
-          <h2 className="t-section">{d.common.decksWithCard}</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {inDecks.map((deck) => (
-              <li key={deck.slug}>
-                <Link href={href(locale, `/decks/${deck.slug}`)} className="btn btn-ink text-xs">
-                  {deck.name} <span className="font-mono font-normal text-pale-muted">{archetypeLabels[deck.archetype][locale]}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <CardBrief card={card} locale={locale} items={brief} />
+
+      {playable ? <CardCommunityScore card={card} locale={locale} scores={scores} /> : null}
 
       {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
-          builderLabels.ts). Su carte create e fuori dalla demo prometteva una cosa che non funziona (SCHEDE-04): le
-          rimosse rimandano invece all'archivio delle carte non nella demo in fondo a /cards; le create hanno già il
-          riquadro "Richiamata da" qui sopra. */}
-      {card.status === "active" && card.type !== "token" ? (
+          builderLabels.ts). Sulle carte create l'invito è a costruire un mazzo con la carta che le genera; le rimosse
+          rimandano all'archivio delle carte non nella demo in fondo a /cards (SCHEDE-04). */}
+      {playable ? (
         <section className="card-night mt-10 p-6 sm:p-8">
           <h2 className="t-section">{d.cards.buildTitle}</h2>
           <p className="mt-2 max-w-2xl text-pale">{d.cards.buildText}</p>
@@ -301,9 +363,11 @@ export default async function CardPage({ params }: { params: Params }) {
             {d.nav.builder}
           </Link>
         </section>
-      ) : card.status === "removed" ? (
+      ) : token ? (
+        <CardRootCta card={card} locale={locale} roots={roots} builderLabel={d.nav.builder} />
+      ) : (
         <RemovedArchiveLink locale={locale} />
-      ) : null}
+      )}
 
       {guides.length ? (
         <section className="mt-10">
@@ -322,9 +386,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {related.length ? (
         <section className="mt-12">
-          <h2 className="t-section">
-            {d.cards.relatedTitle}: {sagas[card.saga][locale]}
-          </h2>
+          <h2 className="t-section">{removed ? `${l.sameSagaDemo}: ${sagas[card.saga][locale]}` : `${d.cards.relatedTitle}: ${sagas[card.saga][locale]}`}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {related.map((c) => (
               <li key={c.slug}>
@@ -345,7 +407,7 @@ export default async function CardPage({ params }: { params: Params }) {
         <a href={cardSource.url} {...newTabProps} className="link-mint">
           {cardSource.name}
         </a>{" "}
-        ({d.common.patch} {cardSource.patch}){d.cards.sourceAfter}
+        ({sourceNote(locale, cardSource)}){d.cards.sourceAfter}
       </p>
     </div>
   );
