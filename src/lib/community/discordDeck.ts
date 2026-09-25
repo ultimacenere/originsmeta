@@ -25,23 +25,35 @@ const TIMEOUT_MS = 3000;
 
 export type AnnouncedDeck = { slug: string; name: string; legendary: string; archetype: string; author: string };
 
-/** Messaggio del canale: italiano per primo, con il link alla pagina inglese; copertina della Leggendaria. */
+/**
+ * Messaggio del canale: italiano per primo, con i link alle pagine inglese e spagnola (lo spagnolo dal 25/09/2026:
+ * la scheda esiste in tutte e tre le lingue, con la guida tradotta o l'originale); copertina della Leggendaria.
+ */
 export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
   const card = getCard(d.legendary);
   const legendary = card?.name ?? d.legendary;
   const arch = archetypeLabels[d.archetype];
   const image = card?.cover ?? card?.image;
   const author = escapeDiscord(d.author);
+  // il nome del mazzo non si traduce: è lo stesso titolo nelle tre lingue
+  const name = d.name.replace(/[[\]]/g, "").slice(0, 200);
   return {
-    content: "🃏 **Nuovo mazzo · New deck**",
+    content: "🃏 **Nuovo mazzo · New deck · Nuevo mazo**",
     embeds: [
       {
         // il titolo di un embed non interpreta il Markdown: il nome resta com'è, solo accorciato
         title: d.name.slice(0, 256),
         url: `${siteUrl}/it/decks/community/${d.slug}`,
-        description: [`**${legendary}**${arch ? ` · ${arch.it}` : ""} · di ${author}`, `${legendary}${arch ? ` · ${arch.en}` : ""} · by ${author}`].join("\n"),
-        // stesso formato dei messaggi della GitHub Action: titolo inglese (qui il nome del mazzo) collegato alla pagina inglese
-        fields: [{ name: "🇬🇧 English", value: `[${d.name.replace(/[[\]]/g, "").slice(0, 200)}](${siteUrl}/en/decks/community/${d.slug})` }],
+        description: [
+          `**${legendary}**${arch ? ` · ${arch.it}` : ""} · di ${author}`,
+          `${legendary}${arch ? ` · ${arch.en}` : ""} · by ${author}`,
+          `${legendary}${arch ? ` · ${arch.es}` : ""} · de ${author}`,
+        ].join("\n"),
+        // stesso formato dei messaggi della GitHub Action: titoli inglese e spagnolo collegati alle loro pagine
+        fields: [
+          { name: "🇬🇧 English", value: `[${name}](${siteUrl}/en/decks/community/${d.slug})` },
+          { name: "🇪🇸 Español", value: `[${name}](${siteUrl}/es/decks/community/${d.slug})` },
+        ],
         ...(image ? { image: { url: `${siteUrl}${image}` } } : {}),
         color: MINT,
         footer: { text: "originsmeta.com" },

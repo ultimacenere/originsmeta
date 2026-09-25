@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
-import { alternatesFor, getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
+import { getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -47,7 +47,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(siteUrl),
     title: { default: d.meta.homeTitle, template: `%s · ${d.meta.siteName}` },
     description: d.meta.description,
-    alternates: { canonical: `${siteUrl}/${locale}`, ...alternatesFor("") },
+    // Niente canonical né hreflang qui (Ondata 1, 25/09/2026): ogni pagina li dichiara con `pageMeta`, e una pagina
+    // che li ereditasse dal layout (una 404, un errore) punterebbe alla home. Le 404 li azzerano in (site)/not-found.tsx.
     openGraph: {
       type: "website",
       siteName: d.meta.siteName,
@@ -58,7 +59,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       images: [{ url: "/media/og.jpg", width: 1200, height: 630, alt: defaultOgAlt[locale] }],
     },
     twitter: { card: "summary_large_image", title: d.meta.homeTitle, description: d.meta.description, images: ["/media/og.jpg"] },
-    robots: { index: true, follow: true },
+    // Anteprime grandi in Discover e in Google Immagini (NEWS-05): valgono per tutto il sito. Una pagina noindex
+    // (`pageMeta` con `noindex`, account, login…) dichiara il proprio `robots`, che sostituisce per intero questo.
+    robots: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     // Verifica della proprietà su Google Search Console (account ultimacenere@gmail.com).
     verification: { google: "ck0gbXaqDgigihYXiyoKywmrKP2LOC2YOOYFu6c8SZs" },
   };

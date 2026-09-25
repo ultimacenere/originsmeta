@@ -23,8 +23,8 @@
  *      le news da quella data, tutte le patch notes (solo in #metashifting quelle più vecchie), tutte le guide, i
  *      mazzi pubblicati da quella data; tutto in ordine cronologico, dal più vecchio.
  *   3. a mano, SLUGS="news:<slug>,guides:<slug>,decks:<slug>".
- * Titolo, descrizione e copertina vengono dai meta Open Graph delle pagine italiana e inglese: esattamente quello
- * che vede chi apre il link. Nessuna menzione (allowed_mentions vuoto).
+ * Titolo, descrizione e copertina vengono dai meta Open Graph delle pagine italiana, inglese e spagnola: esattamente
+ * quello che vede chi apre il link. Nessuna menzione (allowed_mentions vuoto).
  *
  * Altre variabili: REPO ("proprietario/nome") e AFTER per leggere i file da GitHub (senza REPO si leggono dalla
  * cartella del repo, per le prove in locale); SITE_URL (predefinito https://originsmeta.com); WAIT_MINUTES
@@ -39,6 +39,12 @@ const SITE = (process.env.SITE_URL || "https://originsmeta.com").replace(/\/+$/,
 const DRY_RUN = process.env.DRY_RUN === "1";
 const WAIT_MS = Number(process.env.WAIT_MINUTES || 20) * 60_000;
 const POLL_MS = 20_000;
+/**
+ * Attesa delle pagine inglese e spagnola, lette dopo l'italiana: sono dello stesso deploy, quindi se l'italiana è online
+ * lo sono anche loro. Un minuto basta per un intoppo di rete; una lingua che manca davvero resta fuori dal messaggio
+ * senza fermare l'Action per WAIT_MINUTES a ogni voce.
+ */
+const SIBLING_WAIT_MS = Math.min(WAIT_MS, 60_000);
 /** Pausa fra due messaggi: Discord accetta al massimo 5 richieste ogni 2 secondi per webhook e 30 al minuto per canale. */
 const PAUSE_MS = 2_500;
 /** Menta del sito (--color-mint #31e3bd). */
@@ -53,11 +59,11 @@ const FILES = {
 
 /** I canali: variabile del webhook, canale di riserva e riga in cima al messaggio. */
 export const CHANNELS = {
-  announcements: { env: "DISCORD_WEBHOOK_ANNOUNCEMENTS", name: "#announcements", label: "📰 **Nuova news · New article**" },
-  news: { env: "DISCORD_WEBHOOK_NEWS", name: "#site-news", label: "📰 **Nuova news · New article**" },
-  guides: { env: "DISCORD_WEBHOOK_GUIDES", fallback: "news", name: "#guides", label: "📘 **Nuova guida · New guide**" },
+  announcements: { env: "DISCORD_WEBHOOK_ANNOUNCEMENTS", name: "#announcements", label: "📰 **Nuova news · New article · Nueva noticia**" },
+  news: { env: "DISCORD_WEBHOOK_NEWS", name: "#site-news", label: "📰 **Nuova news · New article · Nueva noticia**" },
+  guides: { env: "DISCORD_WEBHOOK_GUIDES", fallback: "news", name: "#guides", label: "📘 **Nuova guida · New guide · Nueva guía**" },
   metashifting: { env: "DISCORD_WEBHOOK_METASHIFTING", name: "#metashifting", label: "⚖️ **Patch notes · MetaShifting**" },
-  decks: { env: "DISCORD_WEBHOOK_DECKS", name: "#community-decks", label: "🃏 **Nuovo mazzo · New deck**" },
+  decks: { env: "DISCORD_WEBHOOK_DECKS", name: "#community-decks", label: "🃏 **Nuovo mazzo · New deck · Nuevo mazo**" },
 };
 
 /** Percorso delle pagine per tipo di voce. */
@@ -166,17 +172,24 @@ export function h1Of(html) {
 /** Titolo per il messaggio: l'H1, oppure il titolo dei meta senza il marchio in coda. */
 const titleOf = (html) => h1Of(html) || ogValue(html, "title").replace(/\s+·\s+(?:OriginsMeta|Origins TCG)$/, "");
 
-/** Messaggio per un canale: italiano per primo, titolo inglese collegato, copertina; su #metashifting il link alla patch. */
-export function payload(channel, item, itHtml, enHtml) {
+/**
+ * Messaggio per un canale: italiano per primo, poi i titoli inglese e spagnolo collegati alle loro pagine (lo spagnolo
+ * dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN), copertina; su
+ * #metashifting il link alla patch. Una lingua di cui non si è letta la pagina (HTML vuoto) resta fuori.
+ */
+export function payload(channel, item, itHtml, enHtml, esHtml = "") {
   const path = PATHS[item.kind];
   const itUrl = `${SITE}/it/${path}/${item.slug}`;
   const enUrl = `${SITE}/en/${path}/${item.slug}`;
+  const esUrl = `${SITE}/es/${path}/${item.slug}`;
   const image = ogValue(itHtml, "image");
   const enTitle = titleOf(enHtml);
+  const esTitle = titleOf(esHtml);
   const fields = [];
   if (enTitle) fields.push({ name: "🇬🇧 English", value: `[${enTitle.replace(/[[\]]/g, "")}](${enUrl})`.slice(0, 1024) });
+  if (esTitle) fields.push({ name: "🇪🇸 Español", value: `[${esTitle.replace(/[[\]]/g, "")}](${esUrl})`.slice(0, 1024) });
   if (channel === "metashifting" && item.patch) {
-    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes](${SITE}/it/metashifting#patch-${item.patch})` });
+    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${SITE}/it/metashifting#patch-${item.patch})` });
   }
   return {
     content: CHANNELS[channel].label,
@@ -237,9 +250,9 @@ async function decksSince(since) {
   return (await r.json()).map((d) => ({ slug: d.slug, date: String(d.created_at).slice(0, 10), createdAt: d.created_at }));
 }
 
-/** Aspetta che la pagina sia online e ne restituisce l'HTML; null se non arriva entro WAIT_MS. */
-async function waitForPage(url) {
-  const until = Date.now() + WAIT_MS;
+/** Aspetta che la pagina sia online e ne restituisce l'HTML; null se non arriva entro `waitMs` (di norma WAIT_MS). */
+async function waitForPage(url, waitMs = WAIT_MS) {
+  const until = Date.now() + waitMs;
   for (;;) {
     try {
       const r = await fetch(url, { headers: { "cache-control": "no-cache" }, redirect: "follow" });
@@ -350,9 +363,10 @@ async function main() {
       failed++;
       continue;
     }
-    const enHtml = (await waitForPage(`${SITE}/en/${path}/${item.slug}`)) ?? "";
+    const enHtml = (await waitForPage(`${SITE}/en/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
+    const esHtml = (await waitForPage(`${SITE}/es/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
     for (const { channel, webhook } of targets) {
-      const body = payload(channel, item, itHtml, enHtml);
+      const body = payload(channel, item, itHtml, enHtml, esHtml);
       if (DRY_RUN) {
         console.log(`[prova] ${CHANNELS[channel].name.padEnd(17)} ← ${item.kind}/${item.slug}${item.date ? ` (${item.date})` : ""} · ${body.embeds[0].title}`);
         if (process.env.DRY_RUN_JSON === "1") console.log(JSON.stringify(body, null, 2));
