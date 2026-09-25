@@ -26,7 +26,6 @@ import {
   kindWord,
   legendaryPowers,
   partsText,
-  sourceNote,
   type CardFacts,
 } from "@/lib/cardPage";
 import { loadCommunityScores, loadDeckRefs } from "@/lib/community/decksByCard";
@@ -35,7 +34,7 @@ import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardName, legendaryFirst } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GameCard } from "@/components/GameCard";
-import { SteamButton, newTabProps } from "@/components/SteamButton";
+import { SteamButton } from "@/components/SteamButton";
 import { JsonLd } from "@/components/JsonLd";
 import { RemovedArchiveLink } from "@/components/RemovedCardsArchive";
 import { CardParts } from "@/components/card/CardParts";
@@ -104,7 +103,7 @@ export default async function CardPage({ params }: { params: Params }) {
   /** carta della collezione della Demo 2.0: la sola che il deck builder accetta (stesso filtro del pool in builderLabels.ts) */
   const playable = !removed && !token;
 
-  // Legami con le altre carte, dai testi (cardSynergy.ts): chi la genera, che cosa genera, collegate da World of Origins.
+  // Legami con le altre carte, solo dai testi (cardSynergy.ts): chi la genera e che cosa genera.
   const rel = cardRelations(card, cards);
   // Una carta creata non si aggiunge nel deck builder: si contano i mazzi con la carta della demo che la genera
   // (`cardDeckSlugs`). Le rimosse non ne mostrano.
@@ -424,13 +423,10 @@ export default async function CardPage({ params }: { params: Params }) {
         </section>
       ) : null}
 
-      <p className="mt-10 text-xs text-chalk-muted/70">
-        {d.cards.sourceBefore}{" "}
-        <a href={cardSource.url} {...newTabProps} className="link-mint">
-          {cardSource.name}
-        </a>{" "}
-        ({sourceNote(locale, cardSource)}){d.cards.sourceAfter}
-      </p>
+      {/* Da dove vengono i dati, detto per quello che è verificato (25/09/2026, decisione di Pierluigi): carte della demo
+          verificate nel gioco, bilanciamenti dalle patch notes ufficiali, create e rimosse non verificate. Il sito non
+          nomina né linka la fonte dei dati importati. */}
+      <p className="mt-10 text-xs text-chalk-muted/70">{d.cards.sourceNote}</p>
     </div>
   );
 }

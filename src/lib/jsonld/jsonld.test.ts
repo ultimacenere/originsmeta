@@ -369,12 +369,16 @@ describe("testi del pacchetto (entityLabels.ts)", () => {
     }
   });
 
-  test("description di /about fra 120 e 158 caratteri, con le stesse fonti della pagina", () => {
+  test("description di /about fra 120 e 158 caratteri, con la verifica nel gioco come la pagina e senza nominare la fonte dei dati importati", () => {
+    const checked: Record<Locale, RegExp> = { en: /checked .*in the game/, it: /verificate .*nel gioco/, es: /comprobadas .*en el juego/ };
     for (const l of locales) {
       const text = entityLabels[l].about.description;
       assert.ok(text.length >= 120 && text.length <= 158, `${l}: ${text.length} caratteri`);
       assert.match(text, /Origins TCG/, l);
-      assert.match(text, /World of Origins/, l);
+      assert.match(text, checked[l], l);
+      // dal 25/09/2026 (decisione di Pierluigi) il sito non nomina World of Origins: né la description né la pagina
+      const page = [text, entityLabels[l].about.p2, ...entityLabels[l].about.check].join(" ");
+      assert.doesNotMatch(page, /world\s*of\s*origins|worldoforigins/i, l);
     }
   });
 

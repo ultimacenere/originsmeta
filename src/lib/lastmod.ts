@@ -44,13 +44,13 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
  */
 export const PAGE_UPDATED = {
   "/": "2026-09-25", // Ondata 1: title sul marchio, "In breve" in Stato del gioco, tutte le slide nell'HTML
-  "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting
-  "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup
+  "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting; 25/09: news senza fonte citabile senza "Fonte"
+  "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup; via World of Origins
   "/guides": "2026-09-25", // Ondata 1: title e description
   "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
-  "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse
-  "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi
-  "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco
+  "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
+  "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"
+  "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco; 25/09: riga della fonte senza World of Origins
   "/decks": "2026-09-25", // Ondata 2: ItemList con la soglia di qualità dei mazzi
   "/decks/[slug]": "2026-09-25", // 63fa759
   "/decks/community/[slug]": "2026-09-25", // Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
@@ -63,7 +63,7 @@ export const PAGE_UPDATED = {
   "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
   "/faq": "2026-09-25", // Ondata 1: H1, pagina senza assistente, link alle news
-  "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, World of Origins, disclaimer, link agli autori
+  "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas
   "/u/[username]": "2026-09-25", // Ondata 2: noindex senza contenuti, title e description dai dati, ProfilePage

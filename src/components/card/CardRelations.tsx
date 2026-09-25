@@ -8,15 +8,15 @@ import { CardParts } from "./CardParts";
 
 /**
  * Legami della carta con le altre carte, ricavati dai testi (SCHEDE-06, SCHEDE-12). Sostituisce i due riquadri di
- * prima, "Carte collegate" e "Richiamata da", che leggevano il campo `related` di World of Origins e davano dati
+ * prima, "Carte collegate" e "Richiamata da", che leggevano il campo `related` dei dati importati e davano dati
  * sbagliati sulle carte create (su Garlic "Richiamata da Van Helsing", il cui testo non nomina Garlic).
  * - Carte create: "Come si ottiene", con chi la genera passaggio per passaggio (Garlic ← Van Helsing's Tools ← Van
- *   Helsing) e le carte fuori dalla demo che la generavano; se nessun testo lo dice, lo si dice, con il collegamento di
- *   World of Origins dichiarato come tale.
+ *   Helsing) e le carte fuori dalla demo che la generavano; se nessun testo lo dice, lo si dice e basta.
  * - Altre carte: "Carte che genera", dal testo, con il passaggio successivo (Van Helsing → Van Helsing's Tools →
  *   Holy Water, Silver Bullet, Garlic, Wooden Stake).
- * - "Carte collegate (World of Origins)": i collegamenti del database che nessun testo spiega (Merlin ↔ Merlin's
- *   Prophecy), senza dire "genera": il legame può venire dal potere leggendario, non ancora letto nel gioco.
+ * Fino al 25/09/2026 c'era anche il riquadro "Carte collegate (World of Origins)", con i collegamenti del database che
+ * nessun testo spiega (Merlin ↔ Merlin's Prophecy): tolto quando il sito ha smesso di nominare la fonte dei dati
+ * importati (decisione di Pierluigi), perché senza la fonte un legame che nessun testo spiega non ha base.
  */
 export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" | "name" | "type" | "status">; locale: Locale; rel: Relations<Card> }) {
   const l = cardLabels[locale];
@@ -30,17 +30,7 @@ export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" |
         <section className="mt-10" id="how-to-get">
           <h2 className="t-section">{l.howToGet}</h2>
           {orphan ? (
-            <div className="mt-4 space-y-3">
-              <p className="text-pale">{l.noCreator}</p>
-              {rel.linked.length ? (
-                <div>
-                  <p className="kicker text-chalk-muted">{l.linkedBy}</p>
-                  <div className="mt-2">
-                    <CardChipList slugs={slugs(rel.linked)} locale={locale} />
-                  </div>
-                </div>
-              ) : null}
-            </div>
+            <p className="mt-4 text-pale">{l.noCreator}</p>
           ) : (
             <div className="mt-4 space-y-4">
               {rel.createdBy.map((level, i) => (
@@ -83,16 +73,6 @@ export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" |
               </div>
             );
           })}
-        </section>
-      ) : null}
-
-      {rel.linked.length && !orphan ? (
-        <section className="mt-10">
-          <h2 className="t-section">{l.linked}</h2>
-          <p className="mt-2 text-sm text-pale-muted">{l.linkedIntro}</p>
-          <div className="mt-4">
-            <CardChipList slugs={slugs(rel.linked)} locale={locale} />
-          </div>
         </section>
       ) : null}
     </>

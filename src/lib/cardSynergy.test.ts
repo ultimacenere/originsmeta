@@ -51,7 +51,6 @@ const {
   decksByCard,
   decksForLocale,
   earlierCreators,
-  linkedCards,
   listedDecks,
   namedTokens,
 } = synergy;
@@ -236,26 +235,25 @@ describe("carte generate: chi le genera", () => {
     assert.deepEqual(names(earlierCreators(card("zombie"), cards)), ["Necromancer"]);
   });
 
-  test("nessun testo le nomina: niente catena, e il legame di World of Origins resta come \"collegata\"", () => {
-    for (const [slug, linked] of [
-      ["reflection", ["Mulan"]],
-      ["off-with-your-head", ["Queen of Hearts"]],
-      ["little-pig", ["Three Not So Little Pigs"]],
-    ] as const) {
+  test("nessun testo le nomina: niente catena (e dal 25/09/2026 nessun legame preso dal campo `related` dell'import)", () => {
+    for (const slug of ["reflection", "off-with-your-head", "little-pig"]) {
       assert.deepEqual(creationChain(card(slug), cards), [], slug);
-      assert.deepEqual(names(linkedCards(card(slug), cards)), linked, slug);
+      assert.deepEqual(cardRelations(card(slug), cards), { createdBy: [], createdByEarlier: [], creates: [] }, slug);
     }
   });
 
-  test("le carte non create non hanno catena, e ogni carta creata ha chi la genera o un collegamento", () => {
+  test("le carte non create non hanno catena; le carte create senza catena sono solo quelle che nessun testo nomina", () => {
+    const orphans: string[] = [];
     for (const c of cards) {
       if (c.type !== "token") {
         assert.deepEqual(creationChain(c, cards), [], c.slug);
         continue;
       }
-      const rel = cardRelations(c, cards);
-      assert.ok(rel.createdBy.length || rel.linked.length, `${c.slug}: né catena né collegamenti`);
+      if (!cardRelations(c, cards).createdBy.length) orphans.push(c.slug);
     }
+    // Una carta creata nuova senza chi la genera va guardata: la sua scheda dirà "nessun testo di carta dice quale carta
+    // la genera" e "non si può dire con certezza" se è nella demo.
+    assert.deepEqual(orphans.sort(), ["little-pig", "off-with-your-head", "reflection"]);
   });
 
   test("le carte da cui passano i mazzi di una carta creata sono quelle della demo che si mettono nel mazzo", () => {
@@ -292,15 +290,14 @@ describe("carte generate: che cosa genera una carta", () => {
   });
 });
 
-describe("carte collegate da World of Origins", () => {
-  test("solo i legami che nessun testo spiega", () => {
-    // Merlin ↔ Merlin's Prophecy: il testo di Merlin non la nomina (il legame viene dal potere leggendario)
-    assert.deepEqual(names(linkedCards(card("merlin"), cards)), ["Merlin's Prophecy"]);
-    assert.deepEqual(names(linkedCards(card("merlins-prophecy"), cards)), ["Merlin"]);
-    // Van Helsing: tutte le carte di `related` stanno già nella catena, nessuna resta "collegata"
-    assert.deepEqual(cardRelations(card("van-helsing"), cards).linked, []);
-    // Garlic: la Leggendaria è nella catena, non una "collegata" (prima la scheda diceva "Richiamata da Van Helsing")
-    assert.deepEqual(cardRelations(card("garlic"), cards).linked, []);
-    assert.deepEqual(cardRelations(card("pumpkin"), cards).linked, []);
+describe("legami solo dai testi (dal 25/09/2026)", () => {
+  test("niente \"carte collegate\": i legami sono solo chi genera e che cosa genera", () => {
+    // Merlin ↔ Merlin's Prophecy: nessun testo di carta spiega il legame, che veniva solo dal campo `related` dei dati
+    // importati; senza la fonte nominata il legame non ha base e la scheda non lo mostra più
+    assert.deepEqual(cardRelations(card("merlin"), cards), { createdBy: [], createdByEarlier: [], creates: [] });
+    assert.deepEqual(cardRelations(card("merlins-prophecy"), cards), { createdBy: [], createdByEarlier: [], creates: [] });
+    for (const c of cards) assert.deepEqual(Object.keys(cardRelations(c, cards)).sort(), ["createdBy", "createdByEarlier", "creates"], c.slug);
+    // e le carte non portano più il campo `related`
+    for (const c of cards) assert.equal("related" in c, false, c.slug);
   });
 });

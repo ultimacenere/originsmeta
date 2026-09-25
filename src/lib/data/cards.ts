@@ -8,7 +8,9 @@ import { cardCredits, type CardCredit } from "./card-credits";
 /**
  * Database carte. Quattro sorgenti unite qui:
  * - `woo-cards.json`: dati di gioco (nome, costo, statistiche, testo inglese, tag, rarità, allineamento, chiave
- *   ufficiale, carte collegate) importati dal database community World of Origins con `npm run import:woo`;
+ *   ufficiale) importati dal database community World of Origins con `npm run import:woo`. Strumento interno: dal
+ *   25/09/2026 (decisione di Pierluigi) il sito non nomina e non linka la fonte; le pagine dicono solo che cosa è
+ *   verificato nel gioco (le carte della collezione della demo, `cardsVerified`) e che cosa viene dalle patch notes;
  * - `card-lore.ts`: saga, origine della leggenda e traduzione italiana del testo, scritte a mano;
  * - `card-history.ts`: storico dei bilanciamenti trascritto dalle patch notes ufficiali su Steam;
  * - `card-art.json`: illustrazioni ufficiali Koin convertite da `npm run import:art`, indicizzate per chiave.
@@ -170,8 +172,6 @@ export type Card = {
   /** testo ufficiale della carta (en) e traduzione (it) */
   ability?: L10n;
   origin?: L10n;
-  /** slug delle carte create o richiamate dal testo */
-  related?: string[];
   status: "active" | "removed";
   history: Change[];
 };
@@ -194,16 +194,19 @@ type WooCard = {
   series?: number;
   keywords: string[];
   ability?: string;
-  related?: string[];
+  // Il JSON ha anche `related` (carte collegate secondo la fonte dell'import): dal 25/09/2026 il sito non lo legge più.
 };
 
 type WooData = { source: string; patch: string; fetched: string; cards: WooCard[] };
 const data = woo as unknown as WooData;
 
-/** Provenienza dei dati di gioco: sito, patch e data dell'ultimo import. */
+/**
+ * Patch e data dell'ultimo import dei dati di gioco: servono alla logica delle patch qui sotto e alla riga delle carte
+ * rimosse ("ultimi dati noti, alla patch …"). Dal 25/09/2026, per decisione di Pierluigi, il sito non nomina e non
+ * linka la fonte dell'import (World of Origins, `data.source`): nome e indirizzo non stanno più qui, così nessuna
+ * pagina li può mostrare. L'import resta uno strumento interno (`npm run import:woo`).
+ */
 export const cardSource = {
-  name: "World of Origins",
-  url: data.source,
   patch: data.patch.replace(/^.*:v/, ""),
   fetched: data.fetched,
 };
@@ -261,7 +264,6 @@ export const cards: Card[] = data.cards.map((w) => {
   const abilityEn = lore?.en ?? w.ability;
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn };
   if (lore?.origin) card.origin = lore.origin;
-  if (w.related?.length) card.related = w.related;
   return card;
 });
 
@@ -273,11 +275,6 @@ export function getCard(slug: string): Card | undefined {
 
 /** Carte giocabili nella demo attuale (attive, non create da altre carte). */
 export const activeCards: Card[] = cards.filter((c) => c.status === "active" && c.type !== "token");
-
-/** Carte il cui testo crea o richiama questa carta. */
-export function relatedFrom(slug: string): Card[] {
-  return cards.filter((c) => c.related?.includes(slug));
-}
 
 export function statLine(card: Pick<Card, "mana" | "power" | "health" | "type">): string {
   if (card.mana === undefined && card.power === undefined) return "";

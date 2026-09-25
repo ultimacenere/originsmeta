@@ -46,8 +46,11 @@ export type NewsItem = {
    * fonte: post ufficiale su Steam, stampa, oppure un mazzo pubblicato sul sito (url interno senza prefisso lingua).
    * Per le novità del sito (`source: "site"`) la fonte è l'articolo stesso: `url` è la pagina del sito di cui parla
    * di più (percorso interno senza prefisso lingua) e non compare come "Fonte".
+   * Manca solo su una news di stampa (`press`) il cui fatto non ha una fonte pubblica che possiamo citare: allora la
+   * news non mostra nessun link "Fonte", non dichiara `isBasedOn` e la pill dice "Community" (dal 25/09/2026, caso
+   * unico: `itzbolt-wins-conquest`, la cui fonte era un sito della community che il sito non nomina più).
    */
-  url: string;
+  url?: string;
   /**
    * "staff" per i mazzi pubblicati dallo staff di OriginsMeta: mostra il tag Staff e basta, mai anche "Community".
    * "site" per le novità di OriginsMeta raccontate da noi (dal 24/09/2026, "Upgrade Meta"): pill OriginsMeta, niente "Fonte".
@@ -1949,6 +1952,11 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     source: "press",
   },
   {
+    // Fino al 25/09/2026 il riassunto diceva "come riportato dal sito community World of Origins" e `url` era la sua
+    // pagina delle news: tolti tutti e due quando il sito ha smesso di nominarlo (decisione di Pierluigi). Una fonte
+    // pubblica alternativa per la vittoria di itzBolt non l'abbiamo trovata (il post Steam ufficiale del 25/08, news
+    // `big-bobs-playtest-battle`, annuncia il torneo, non il risultato): la news resta senza "Fonte" finché Pierluigi
+    // non decide che cosa farne.
     slug: "itzbolt-wins-conquest",
     image: "/media/ss-board-hand-full.webp",
     guides: ["steam-next-fest-2026"],
@@ -1961,12 +1969,11 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "itzBolt ganó el Big Bob's Playtest Battle, el primer torneo de Origins TCG en formato Conquest, jugado en el playtest 0.6.3 con partidas al mejor de tres.",
     ),
     summary: n(
-      "The community tournament played on the 0.6.3 playtest build with full deckbuilding and the Conquest format (several decks with different Legendaries, best-of-3) was won by itzBolt, as reported by the World of Origins community site. It was the first public test of the format that Koin has since chosen for the Crimson Cup.",
-      "Il torneo community giocato sulla build 0.6.3 del playtest con deckbuilding completo e formato Conquest (più mazzi con Leggendarie diverse, al meglio delle tre) è stato vinto da itzBolt, come riportato dal sito community World of Origins. È stato il primo test pubblico del formato che Koin ha poi scelto per la Crimson Cup.",
-      "El torneo de la comunidad jugado en la build 0.6.3 del playtest, con construcción de mazos completa y formato Conquest (varios mazos con Legendarias distintas, al mejor de tres), lo ganó itzBolt, según informó el sitio de la comunidad World of Origins. Fue la primera prueba pública del formato que Koin ha elegido después para la Crimson Cup.",
-      "Le tournoi communautaire joué sur la build 0.6.3 du playtest, avec deckbuilding complet et format Conquest (plusieurs decks aux Légendaires différentes, au meilleur des trois), a été remporté par itzBolt, comme le rapporte le site communautaire World of Origins. Premier test public du format retenu ensuite par Koin pour la Crimson Cup.",
+      "The community tournament played on the 0.6.3 playtest build with full deckbuilding and the Conquest format (several decks with different Legendaries, best-of-3) was won by itzBolt. It was the first public test of the format that Koin has since chosen for the Crimson Cup.",
+      "Il torneo community giocato sulla build 0.6.3 del playtest con deckbuilding completo e formato Conquest (più mazzi con Leggendarie diverse, al meglio delle tre) è stato vinto da itzBolt. È stato il primo test pubblico del formato che Koin ha poi scelto per la Crimson Cup.",
+      "El torneo de la comunidad jugado en la build 0.6.3 del playtest, con construcción de mazos completa y formato Conquest (varios mazos con Legendarias distintas, al mejor de tres), lo ganó itzBolt. Fue la primera prueba pública del formato que Koin ha elegido después para la Crimson Cup.",
+      "Le tournoi communautaire joué sur la build 0.6.3 du playtest, avec deckbuilding complet et format Conquest (plusieurs decks aux Légendaires différentes, au meilleur des trois), a été remporté par itzBolt. Premier test public du format retenu ensuite par Koin pour la Crimson Cup.",
     ),
-    url: "https://worldoforigins.fun/news",
     source: "press",
   },
   {

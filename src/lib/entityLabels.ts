@@ -12,16 +12,17 @@ const en = {
   about: {
     /**
      * Meta description di /about e description del nodo AboutPage (120-158 caratteri), al posto di `about.description`
-     * del dizionario, che dava come fonti solo Steam, le patch notes e Discord: la pagina ora dice anche World of Origins
-     * e la verifica nel gioco (TOOL-13), e la description deve dire la stessa cosa.
+     * del dizionario, che dava come fonti solo Steam, le patch notes e Discord: la pagina dice anche la verifica nel
+     * gioco (TOOL-13), e la description deve dire la stessa cosa. Dal 25/09/2026 (decisione di Pierluigi) né la pagina
+     * né la description nominano la fonte dei dati importati delle carte: dicono solo che cosa è verificato nel gioco.
      */
     description:
-      "Who runs OriginsMeta, the independent Origins TCG fan site: official sources, card data from World of Origins checked in the game, and how to reach us.",
+      "Who runs OriginsMeta, the independent Origins TCG fan site: official sources, demo cards checked one by one in the game, and how to reach us.",
     /**
-     * Al posto di `about.p2` del dizionario, che citava solo Steam e Discord come fonti dei numeri: i dati delle carte
-     * vengono da World of Origins (eccezione decisa da Pierluigi il 15/09/2026) e sono verificati nel gioco.
+     * Al posto di `about.p2` del dizionario, che citava solo Steam e Discord come fonti dei numeri: le carte della
+     * Demo 2.0 sono verificate nel gioco (22/09/2026, testi italiani e spagnoli il 25/09/2026).
      */
-    p2: "We are players, not the publisher. Dates, rules and events come only from official sources; card data come from the World of Origins community database and are checked in the game; and every page says when it was last updated.",
+    p2: "We are players, not the publisher. Dates, rules and events come only from official sources; the Demo 2.0 cards are checked one by one in the game; and every page says when it was last updated.",
     /** riga con il link alla guida "che cos'è Origins TCG" (mappa delle query, C01): {link} è il testo del link */
     newToGame: "New to the game? Start with {link}.",
     newToGameLink: "what Origins TCG is",
@@ -34,14 +35,12 @@ const en = {
      */
     check: [
       "Dates, rules, events and balance changes come only from official sources: the Steam page, the patch notes on Steam, the official Discord and Koin Games' announcements. When a detail is only on Discord, the article says so.",
-      "Card stats, texts, tags and official IDs are imported from World of Origins, the community card database. The balance changes of each new patch are applied from the official patch notes until the database has imported it.",
+      "The balance changes of each new patch are copied from the official patch notes onto the card pages, with the date and the link to the post.",
       "On {date} we compared all {count} cards of the demo with the game's collection, one by one: costs, stats and alignments matched, and the English texts that had fallen behind are now the game's. The Italian and Spanish card texts are the official ones too, read in the game on {textsDate}. We repeat the check after every patch, in all three languages.",
-      "Created cards and removed cards are not in the game's collection: their Italian and Spanish texts are ours, written with the game's official glossary. The sagas and the notes on each legend are ours too.",
+      "Created cards and removed cards are not in the game's collection, so they have not been checked in the game, and their pages say so; their Italian and Spanish texts are ours, written with the game's official glossary. The locations have not been checked one by one in the game yet either: the locations page will say when they are, and their Italian and Spanish effects are ours, with the same glossary. The sagas and the notes on each legend are ours too.",
     ],
     /** chiusura della sezione: {email} diventa il link mailto */
     checkErrors: "Found a mistake? Write to {email}: we fix it, and the page shows the new date.",
-    /** etichetta della fonte nuova nell'elenco "Le fonti che usiamo" */
-    worldOfOrigins: "World of Origins · card database",
     /**
      * Al posto di `about.disclaimer` del dizionario, che parlava di "fair use" (una dottrina statunitense, per un uso che
      * in realtà Koin Games ha autorizzato). La non affiliazione resta, parola per parola, in testa. È la versione che si
@@ -89,19 +88,18 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   it: {
     about: {
       description:
-        "Chi c'è dietro OriginsMeta, il sito fan indipendente su Origins TCG: fonti ufficiali, dati delle carte da World of Origins verificati nel gioco e contatti.",
-      p2: "Siamo giocatori, non l'editore. Date, regole ed eventi arrivano solo da fonti ufficiali; i dati delle carte arrivano dal database della community World of Origins e sono verificati nel gioco; e ogni pagina dice quando è stata aggiornata.",
+        "Chi c'è dietro OriginsMeta, il sito fan indipendente su Origins TCG: fonti ufficiali, carte della demo verificate una per una nel gioco e contatti.",
+      p2: "Siamo giocatori, non l'editore. Date, regole ed eventi arrivano solo da fonti ufficiali; le carte della Demo 2.0 sono verificate una per una nel gioco; e ogni pagina dice quando è stata aggiornata.",
       newToGame: "Non conosci il gioco? Parti da {link}.",
       newToGameLink: "che cos'è Origins TCG",
       checkTitle: "Come verifichiamo i dati",
       check: [
         "Date, regole, eventi e bilanciamenti arrivano solo da fonti ufficiali: la pagina Steam, le patch notes su Steam, il Discord ufficiale e i comunicati di Koin Games. Quando un dettaglio c'è solo sul Discord, l'articolo lo dice.",
-        "Statistiche, testi, tag e ID ufficiali delle carte si importano da World of Origins, il database delle carte della community. Le modifiche di ogni patch nuova si applicano dalle patch notes ufficiali finché il database non l'ha importata.",
+        "Le modifiche di bilanciamento di ogni patch nuova si trascrivono dalle patch notes ufficiali sulle schede delle carte, con la data e il link al post.",
         "Il {date} abbiamo confrontato una per una tutte le {count} carte della demo con la collezione del gioco: costi, statistiche e allineamenti coincidevano, e i testi inglesi rimasti indietro ora sono quelli del gioco. Anche i testi italiani e spagnoli delle carte sono quelli ufficiali, letti nel gioco il {textsDate}. Rifacciamo la verifica dopo ogni patch, nelle tre lingue.",
-        "Le carte generate e le carte rimosse non sono nella collezione del gioco: il loro testo italiano e spagnolo è nostro, scritto con il glossario ufficiale del gioco. Sono nostre anche le saghe e le note su ogni leggenda.",
+        "Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco, e le loro schede lo dicono; il loro testo italiano e spagnolo è nostro, scritto con il glossario ufficiale del gioco. Anche i luoghi non sono ancora stati verificati uno per uno nel gioco: la pagina dei luoghi dirà quando lo saranno, e i loro effetti in italiano e spagnolo sono nostri, con lo stesso glossario. Sono nostre anche le saghe e le note su ogni leggenda.",
       ],
       checkErrors: "Hai trovato un errore? Scrivi a {email}: lo correggiamo, e la pagina mostra la nuova data.",
-      worldOfOrigins: "World of Origins · database delle carte",
       disclaimer:
         "OriginsMeta non è affiliato a Koin Games, né approvato o sponsorizzato da Koin Games. Origins TCG è un marchio del suo titolare. Nomi delle carte, illustrazioni e dati di gioco appartengono a Koin Games; il materiale ufficiale sul sito (illustrazioni delle carte, key art, screenshot) è usato come contenuto, per informare e commentare, e mai come identità di OriginsMeta.",
       disclaimerPermission:
@@ -128,19 +126,18 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   es: {
     about: {
       description:
-        "Quién hace OriginsMeta, el sitio fan independiente de Origins TCG: fuentes oficiales, datos de cartas de World of Origins comprobados en el juego y contacto.",
-      p2: "Somos jugadores, no la editora del juego. Las fechas, las reglas y los eventos vienen solo de fuentes oficiales; los datos de las cartas vienen de la base de datos de la comunidad World of Origins y se comprueban en el juego; y cada página indica cuándo se actualizó por última vez.",
+        "Quién hace OriginsMeta, el sitio fan independiente de Origins TCG: fuentes oficiales, cartas de la demo comprobadas una por una en el juego y contacto.",
+      p2: "Somos jugadores, no la editora del juego. Las fechas, las reglas y los eventos vienen solo de fuentes oficiales; las cartas de la Demo 2.0 se comprueban una por una en el juego; y cada página indica cuándo se actualizó por última vez.",
       newToGame: "¿No conoces el juego? Empieza por {link}.",
       newToGameLink: "qué es Origins TCG",
       checkTitle: "Cómo comprobamos los datos",
       check: [
         "Las fechas, las reglas, los eventos y los cambios de equilibrio vienen solo de fuentes oficiales: la página de Steam, las notas del parche en Steam, el Discord oficial y los comunicados de Koin Games. Cuando un detalle solo está en Discord, el artículo lo dice.",
-        "Las estadísticas, los textos, las etiquetas y los ID oficiales de las cartas se importan de World of Origins, la base de datos de cartas de la comunidad. Los cambios de cada parche nuevo se aplican a partir de las notas oficiales hasta que la base de datos lo importa.",
+        "Los cambios de equilibrio de cada parche nuevo se copian de las notas oficiales del parche en las fichas de las cartas, con la fecha y el enlace a la publicación.",
         "El {date} comparamos una por una las {count} cartas de la demo con la colección del juego: costes, estadísticas y alineamientos coincidían, y los textos en inglés que se habían quedado atrás ahora son los del juego. Los textos de las cartas en italiano y en español también son los oficiales, leídos en el juego el {textsDate}. Repetimos la comprobación después de cada parche, en los tres idiomas.",
-        "Las cartas creadas y las cartas retiradas no están en la colección del juego: su texto en italiano y en español es nuestro, escrito con el glosario oficial del juego. También son nuestras las sagas y las notas sobre cada leyenda.",
+        "Las cartas creadas y las cartas retiradas no están en la colección del juego, así que no se han verificado en el juego, y sus fichas lo dicen; su texto en italiano y en español es nuestro, escrito con el glosario oficial del juego. Las ubicaciones tampoco se han verificado todavía una por una en el juego: la página de ubicaciones dirá cuándo lo estén, y sus efectos en italiano y en español son nuestros, con el mismo glosario. También son nuestras las sagas y las notas sobre cada leyenda.",
       ],
       checkErrors: "¿Has encontrado un error? Escribe a {email}: lo corregimos, y la página muestra la nueva fecha.",
-      worldOfOrigins: "World of Origins · base de datos de cartas",
       disclaimer:
         "OriginsMeta no está afiliado a Koin Games ni cuenta con su respaldo o patrocinio. Origins TCG es una marca de su titular. Los nombres de las cartas, las ilustraciones y los datos del juego pertenecen a Koin Games; el material oficial del sitio (ilustraciones de las cartas, key art, capturas de pantalla) se usa como contenido, para informar y comentar, y nunca como imagen de marca de OriginsMeta.",
       disclaimerPermission:

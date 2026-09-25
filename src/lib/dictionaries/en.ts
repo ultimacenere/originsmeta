@@ -108,7 +108,8 @@ export const en = {
     updated: "Updated",
     stats: "Stats",
     unknownStats: "stats not yet published",
-    asOf: "Stats as of the demo patch of 21 September 2026 (the 122 demo cards checked in the game on 22 September): card data from the World of Origins community database, balance notes from the official patch notes.",
+    /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
+    asOf: "Stats as of the demo patch of 21 September 2026: the 122 demo cards were checked in the game on 22 September, and the balance notes come from the official patch notes.",
     alignment: "Alignment",
     good: "Good",
     evil: "Evil",
@@ -251,8 +252,9 @@ export const en = {
     countCreated: "created cards",
     countRemoved: "removed in earlier builds",
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
-    sourceBefore: "Card data from the community database",
-    sourceAfter: "; card text © Koin Games, in English, Italian and Spanish as in the game. Sagas, origin notes and the Italian and Spanish text of created and removed cards are by OriginsMeta.",
+    /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
+    sourceNote:
+      "Costs, stats, alignments and texts of the Demo 2.0 cards are checked in the game, in English, Italian and Spanish; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian and Spanish text of created and removed cards are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",
@@ -552,7 +554,7 @@ export const en = {
     noResults: "No location matches this search.",
     related: "Related cards",
     clear: "Clear filters",
-    source: "Location names and effects come from the World of Origins community database, updated to {patch}.",
+    source: "Location names and effects are updated to {patch}.",
     notVerified: "We have not checked them one by one in the game yet: we will, as we did for the cards, and this line will say so.",
     verified: "Checked one by one in the game: {n} locations.",
     guideCta: "Read the locations guide",
