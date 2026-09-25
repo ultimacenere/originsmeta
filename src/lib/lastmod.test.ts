@@ -55,6 +55,9 @@ describe("lastmod di un URL", () => {
     assert.equal(lastmodFor("es", ["2026-08-27"], today), "2026-09-25");
     assert.equal(lastmodFor("es", [], today), "2026-09-25");
   });
+  test("la soglia comune è la nascita della lingua più recente, non un cambio di header o footer", () => {
+    assert.equal(SITE_WIDE_CHANGE, latestDay(Object.values(LOCALE_SINCE)));
+  });
   test("un contenuto vecchio sale all'ultimo cambio di tutto il sito (hreflang di ogni pagina)", () => {
     assert.equal(lastmodFor("en", ["2026-03-13"], today), SITE_WIDE_CHANGE);
     assert.equal(lastmodFor("it", ["2026-08-21"], today), SITE_WIDE_CHANGE);

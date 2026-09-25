@@ -4,12 +4,12 @@ import { cards, cardsVerified, latestPatch, patches, type Card } from "@/lib/dat
 import { cardLore } from "@/lib/data/card-lore";
 import { decks, decksWithCard } from "@/lib/data/decks";
 import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
-import { tierList } from "@/lib/data/tierlist";
+import { tierList, tierOf } from "@/lib/data/tierlist";
 import { locationsPatch, locationsVerified } from "@/lib/data/locations";
 import { getGuides, type Guide } from "@/lib/content/guides";
 import { authors, guidesByAuthor, newsByAuthor } from "@/lib/data/authors";
 import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries";
-import { listPublishedTierLists } from "@/lib/community/tierlists";
+import { supabasePublic } from "@/lib/supabase/public";
 import { listTournamentSlugs } from "@/lib/tournament/queries";
 import { NEWS_PAGES_SINCE, latestDay, pageLastmod, todayUtc, type PageRoute } from "@/lib/lastmod";
 
@@ -37,32 +37,66 @@ const newsDay = (n: NewsItem) => n.updated ?? n.date;
 
 /**
  * Date che cambiano una scheda carta: le patch che l'hanno toccata, la verifica sul gioco quando ne ha corretto
- * testo o parole chiave (`card-lore.ts`, campi `en` e `keywords`), i mazzi editoriali che la contengono.
+ * testo o parole chiave (`card-lore.ts`, campi `en` e `keywords`), i mazzi editoriali che la contengono, le guide
+ * della lingua che la citano (il riquadro "Guide correlate") e la tier list di OriginsMeta quando la scheda ne
+ * mostra la fascia: le stesse fonti che legge la pagina.
  */
-function cardDates(c: Card): Dates {
+function cardDates(c: Card, guides: readonly Guide[]): Dates {
   const lore = cardLore[c.slug];
-  return [...c.history.map((h) => patches[h.patch].date), lore?.en || lore?.keywords ? cardsVerified.date : undefined, ...decksWithCard(c.slug).map((d) => d.updated)];
+  return [
+    ...c.history.map((h) => patches[h.patch].date),
+    lore?.en || lore?.keywords ? cardsVerified.date : undefined,
+    ...decksWithCard(c.slug).map((d) => d.updated),
+    ...guides.filter((g) => g.tags?.cards?.includes(c.slug)).map((g) => g.updated),
+    tierOf(c.legendary ? "legendaries" : "cards", c.slug) ? tierList.updated : undefined,
+  ];
+}
+
+/**
+ * Date delle tier list salvate dagli iscritti: la più recente (per /tier-list/community e /tier-list) e quella di
+ * ogni utente (la sua pagina pubblica /u/<nome> le mostra). Si legge solo `updated_at` con il nome utente, mai le
+ * fasce (`entries`, JSON pesante che alla sitemap non serve): dalla più recente, quindi la prima di ogni utente è la sua.
+ */
+async function tierListDates(): Promise<{ latest?: string; byUser: Map<string, string> }> {
+  const byUser = new Map<string, string>();
+  const client = supabasePublic();
+  if (!client) return { byUser };
+  const { data, error } = await client
+    .from("tier_lists")
+    .select("updated_at, profile:profiles!tier_lists_owner_fkey(username)")
+    .eq("status", "published")
+    .order("updated_at", { ascending: false })
+    .limit(1000);
+  if (error) {
+    console.error("[sitemap] tier_lists:", error.message);
+    return { byUser };
+  }
+  const rows = (data ?? []) as unknown as { updated_at: string; profile: { username: string | null } | null }[];
+  for (const r of rows) {
+    const u = r.profile?.username;
+    if (u && !byUser.has(u)) byUser.set(u, r.updated_at);
+  }
+  return { latest: rows[0]?.updated_at, byUser };
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const today = todayUtc();
-  const [community, tournaments, profiles, tierLists] = await Promise.all([listPublishedSlugs(), listTournamentSlugs(), listPublicProfiles(), listPublishedTierLists()]);
+  const [community, tournaments, profiles, tierLists] = await Promise.all([listPublishedSlugs(), listTournamentSlugs(), listPublicProfiles(), tierListDates()]);
   const latestNews = latestDay(sortedNews.map(newsDay));
   const latestCommunity = latestDay(community.map((c) => c.updated_at));
-  const latestTierList = latestDay(tierLists.map((t) => t.updated_at));
   const latestTournament = latestDay(tournaments.map((t) => t.updated_at));
   const patchDay = patches[latestPatch].date;
-  const cardDays = latestDay(cards.flatMap((c) => cardDates(c)));
   // Le guide hanno date per lingua: la versione spagnola non è più vecchia del 25/09/2026 (`getGuides`).
   const guidesBy = Object.fromEntries(locales.map((l) => [l, getGuides(l)])) as Record<Locale, Guide[]>;
   const guideDay = (l: Locale, slug: string) => guidesBy[l].find((g) => g.slug === slug)?.updated;
+  const cardDatesBy = (l: Locale) => cards.map((c) => cardDates(c, guidesBy[l]));
 
   const entries: Entry[] = [
     // La home mostra le ultime news, i movimenti dell'ultima patch e la tier list.
     { path: "", route: "/", dates: [latestNews, patchDay, tierList.updated], changeFrequency: "daily", priority: 1 },
     { path: "/news", route: "/news", dates: [latestNews], changeFrequency: "daily", priority: 0.9 },
     // Dal 24/09/2026 la tier list mostra anche lo stato delle altre fonti e le anteprime dei mazzi pubblicati.
-    { path: "/tier-list", route: "/tier-list", dates: [tierList.updated, latestCommunity, latestTierList], changeFrequency: "daily", priority: 0.9 },
+    { path: "/tier-list", route: "/tier-list", dates: [tierList.updated, latestCommunity, tierLists.latest], changeFrequency: "daily", priority: 0.9 },
     // Le più giocate: calcolata dai mazzi pubblicati, cambia con loro.
     { path: "/tier-list/most-played", route: "/tier-list/most-played", dates: [latestCommunity], changeFrequency: "daily", priority: 0.8 },
     // MetaShifting: cambia con le patch.
@@ -70,8 +104,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Tier list personalizzabile: cambia quando cambiano le carte attive, cioè con una patch o una nuova verifica sul gioco.
     { path: "/tier-list/create", route: "/tier-list/create", dates: [patchDay, cardsVerified.date], changeFrequency: "weekly", priority: 0.8 },
     // Tier list della community: cambia quando qualcuno salva la sua.
-    { path: "/tier-list/community", route: "/tier-list/community", dates: [latestTierList], changeFrequency: "daily", priority: 0.7 },
-    { path: "/cards", route: "/cards", dates: [cardDays], changeFrequency: "weekly", priority: 0.9 },
+    { path: "/tier-list/community", route: "/tier-list/community", dates: [tierLists.latest], changeFrequency: "daily", priority: 0.7 },
+    // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
+    { path: "/cards", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())], changeFrequency: "weekly", priority: 0.9 },
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.
     { path: "/locations", route: "/locations", dates: [patches[locationsPatch].date, locationsVerified?.date], changeFrequency: "monthly", priority: 0.8 },
     { path: "/decks", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity], changeFrequency: "daily", priority: 0.9 },
@@ -94,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     })),
     // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
-    ...cards.map((c) => ({ path: `/cards/${c.slug}`, route: "/cards/[slug]" as const, dates: cardDates(c), changeFrequency: "weekly" as const, priority: 0.6 })),
+    ...cards.map((c) => ({ path: `/cards/${c.slug}`, route: "/cards/[slug]" as const, dates: (l: Locale) => cardDates(c, guidesBy[l]), changeFrequency: "weekly" as const, priority: 0.6 })),
     ...decks.map((d) => ({ path: `/decks/${d.slug}`, route: "/decks/[slug]" as const, dates: [d.updated], changeFrequency: "weekly" as const, priority: 0.7 })),
     ...guidesBy.en.map((g) => ({ path: `/guides/${g.slug}`, route: "/guides/[slug]" as const, dates: (l: Locale) => [guideDay(l, g.slug)], changeFrequency: "weekly" as const, priority: 0.8 })),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
@@ -102,8 +137,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Solo le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate, 25/09/2026): le altre
     // versioni della scheda sono noindex finché la traduzione non c'è.
     ...community.map((c) => ({ path: `/decks/community/${c.slug}`, route: "/decks/community/[slug]" as const, dates: [c.updated_at], changeFrequency: "weekly" as const, priority: 0.6, locales: c.locales })),
-    // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026)
-    ...profiles.map((p) => ({ path: `/u/${p.username}`, route: "/u/[username]" as const, dates: [p.updated_at], changeFrequency: "weekly" as const, priority: 0.4 })),
+    // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026): i loro mazzi e le loro tier list.
+    ...profiles.map((p) => ({ path: `/u/${p.username}`, route: "/u/[username]" as const, dates: [p.updated_at, tierLists.byUser.get(p.username)], changeFrequency: "weekly" as const, priority: 0.4 })),
     ...tournaments.map((t) => ({ path: `/tournaments/${t.slug}`, route: "/tournaments/[slug]" as const, dates: [t.updated_at], changeFrequency: "daily" as const, priority: 0.6 })),
   ];
 

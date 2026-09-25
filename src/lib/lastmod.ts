@@ -23,10 +23,14 @@ export type Day = string;
 export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25" };
 
 /**
- * Ultimo cambio che ha toccato i link di TUTTE le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni pagina
- * l'hreflang `es` e la voce del selettore della lingua (per Google una modifica dei link è significativa).
- * Si sposta solo per un cambio di questo tipo (una lingua nuova, link nuovi nell'header o nel footer di ogni
- * pagina), mai per comodità: per il resto contano le date delle singole pagine.
+ * Soglia comune a tutte le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni URL l'hreflang `es` (e la voce del
+ * selettore della lingua), cioè un cambio dei segnali di lingua di tutto il sito.
+ * Si sposta SOLO quando nasce una lingua nuova o cambia l'hreflang di tutte le pagine. Mai per i link di navigazione
+ * nell'header o nel footer (la colonna "Esplora" compresa) né per altri ritocchi del contorno: Google non li considera
+ * un cambio del contenuto, e portare ogni URL allo stesso giorno per il contorno toglierebbe credibilità al lastmod
+ * (lo stesso difetto della vecchia SITE_UPDATED, TECH-06). Per tutto il resto contano le date delle pagine e dei loro
+ * modelli (`PAGE_UPDATED`). Il test la vuole uguale alla nascita della lingua più recente: se un giorno si sposta per
+ * un cambio di hreflang senza lingue nuove, si aggiorna anche il test, spiegando perché.
  */
 export const SITE_WIDE_CHANGE: Day = "2026-09-25";
 

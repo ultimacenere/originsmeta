@@ -38,7 +38,7 @@ export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
   // il nome del mazzo non si traduce: è lo stesso titolo nelle tre lingue
   const name = d.name.replace(/[[\]]/g, "").slice(0, 200);
   return {
-    content: "🃏 **Nuovo mazzo · New deck**",
+    content: "🃏 **Nuovo mazzo · New deck · Nuevo mazo**",
     embeds: [
       {
         // il titolo di un embed non interpreta il Markdown: il nome resta com'è, solo accorciato
