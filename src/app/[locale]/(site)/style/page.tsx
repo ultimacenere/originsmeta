@@ -16,6 +16,7 @@ import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
 import { officialLinks } from "@/components/Footer";
+import { changeLabel as changeLabelOf } from "@/lib/linkLabels";
 
 /*
   Pagina di riferimento del sistema grafico (/style, richiesta della riunione del 21/09/2026: "una sezione di
@@ -131,7 +132,7 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
   const ink = hexOf("color-ink", "#16102a");
   const chalk = hexOf("color-chalk", "#d9dfe8");
   const roles = s.roles as Record<string, string>;
-  const changeLabel = (k: ChangeKind) => d.common[k === "deck" ? "rework" : k];
+  const changeLabel = (k: ChangeKind) => changeLabelOf(k, locale, d.common);
   const samples = peekSamples();
   const marks = markSamples();
   const covers = latestCovers();

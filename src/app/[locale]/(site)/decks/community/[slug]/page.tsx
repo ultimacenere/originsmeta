@@ -89,10 +89,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
   const langs = guideLocales(deck, locales);
-  // Title con la Leggendaria in testa ("Merlin deck: Spellcast", "Mazzo di Merlin: Spellcast", "Mazo de Merlin:
-  // Spellcast"): chi cerca un mazzo scrive il nome della Leggendaria. Il nome del mazzo lo sceglie l'utente: se non ci
-  // sta si passa alla forma compatta ("Legion of the Dead: The Trick-or-Treat Legion") e solo dopo si accorcia il
-  // nome, che resta sempre (`deckTitle`); il kicker visibile "Origins deck" resta nella pagina, cambia solo il <title>.
+  // Title con il nome del mazzo in testa ("Spellcast, Merlin deck", "Spellcast, mazzo di Merlin", "Spellcast, mazo de
+  // Merlin"), poi il solo nome, poi il nome accorciato: regole e motivo in `deckTitle` (cardTitles.ts). Un nome che dice
+  // già "deck"/"mazzo"/"mazo" non ripete la parola ("Spellcast Deck with Merlin"). Il kicker visibile resta nella pagina.
   return pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
     ...art,
     languages: langs,

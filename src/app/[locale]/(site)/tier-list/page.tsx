@@ -19,6 +19,7 @@ import { CardName, legendaryFirst } from "@/components/CardChip";
 import { DiscordButton } from "@/components/DiscordButton";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { changeLabel } from "@/lib/linkLabels";
 
 /*
   Tier list di OriginsMeta (riprogettazione del 24/09/2026, §1 punto 32 della KB, decisioni di Pierluigi).
@@ -266,7 +267,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
                   <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
                 </span>
                 <StatDelta from={change.from} to={change.to} />
-                <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                <ChangeChip kind={change.kind} label={changeLabel(change.kind, locale, d.common)} />
               </Link>
             </li>
           ))}

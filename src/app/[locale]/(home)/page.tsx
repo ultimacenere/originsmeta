@@ -17,6 +17,7 @@ import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
 import { Postit, type PostitKind } from "@/components/Postit";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
+import { changeLabel } from "@/lib/linkLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -332,7 +333,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                       <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
                     </span>
                     <StatDelta from={change.from} to={change.to} />
-                    <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                    <ChangeChip kind={change.kind} label={changeLabel(change.kind, locale, d.common)} />
                   </Link>
                 </li>
               ))}
