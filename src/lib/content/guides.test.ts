@@ -1,9 +1,11 @@
 /**
  * Test delle guide nuove (Ondata 3 del piano SEO/GEO, 25/09/2026) con il runner integrato di Node:
  * `node --test src/lib/content/guides.test.ts`. Controlla, nelle tre lingue, i limiti SEO (title in SERP con "Origins
- * TCG" entro 60 caratteri, excerpt fra 120 e 158), le date, la copertina (in public/media e diversa da quelle delle altre
- * guide e delle news), le ancore delle sezioni, i link interni (prefisso della lingua, pagine e ancore che esistono, stesse
- * destinazioni in ogni lingua) e, per la guida alle Leggendarie, che tabella, ordine e testi citati coincidano con il
+ * TCG" entro 60 caratteri, excerpt fra 120 e 158), le date, la copertina (in public/media e di una famiglia di immagini
+ * diversa da quelle delle altre guide, delle news e dello slider della home), l'assenza di World of Origins, le ancore
+ * delle sezioni, i link interni (prefisso della lingua, pagine e ancore che esistono, stesse destinazioni in ogni lingua,
+ * collegamenti fra le guide nuove, nomi di mazzi che contengono una carta sempre linkati) e, per la guida alle
+ * Leggendarie, che tabella, ordine e testi citati coincidano con il
  * database delle carte: quando una patch cambia una Leggendaria, o ne arriva una nuova, il test fallisce finché la guida
  * non è aggiornata. Usa il codice vero del sito (guides.ts, cards.ts, news.ts, page.ts) con lo stesso hook di
  * risoluzione dei moduli di cardTitles.test.ts (Node ≥ 22.15).
@@ -42,6 +44,8 @@ const cardsModule: typeof import("../data/cards") = await import("../data/cards.
 const newsModule: typeof import("../data/news") = await import("../data/news.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const pageModule: typeof import("../page") = await import("../page.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const cardlinksModule: typeof import("../cardlinks") = await import("../cardlinks.ts");
 
 type Locale = "en" | "it" | "es";
 const locales: Locale[] = ["en", "it", "es"];
@@ -49,6 +53,7 @@ const { getGuide, getGuides, guideSlugs } = guidesModule;
 const { cards, getCard } = cardsModule;
 const { news } = newsModule;
 const { pageTitle } = pageModule;
+const { linkCardNames } = cardlinksModule;
 
 /** Le guide controllate qui: quelle dell'Ondata 3. Una guida nuova può aggiungersi all'elenco. */
 const CHECKED = ["origins-tcg-legendaries", "origins-tcg-ranked", "origins-tcg-conquest"] as const;
@@ -116,27 +121,46 @@ describe("guide dell'Ondata 3: registrazione e SEO", () => {
       for (const s of CHECKED) assert.ok(!others.has((guide(l, s).metaTitle ?? "").toLowerCase()), `${l} ${s}`);
     }
   });
-  test("pubblicate e aggiornate il 25/09/2026 in ogni lingua", () => {
+  test("pubblicate il 25/09/2026 in ogni lingua, aggiornate non prima", () => {
     for (const l of locales)
       for (const s of CHECKED) {
         const g = guide(l, s);
         assert.equal(g.published, DAY, `${l} ${s}`);
-        assert.equal(g.updated, DAY, `${l} ${s}`);
+        // le guide promettono aggiornamenti (patch, apertura della classificata): `updated` può solo andare avanti
+        assert.match(g.updated, /^\d{4}-\d{2}-\d{2}$/, `${l} ${s}`);
+        assert.ok(g.updated >= (g.published ?? DAY), `${l} ${s}: updated ${g.updated} prima della pubblicazione`);
       }
   });
-  test("copertina in public/media, diversa da quelle delle altre guide e delle news", () => {
+  test("copertina in public/media, diversa da quelle delle altre guide, delle news e dello slider della home", () => {
+    /*
+      Si confrontano le "famiglie" di immagini, non solo i file: la stessa illustrazione esiste in più tagli o varianti
+      (hero-1200 / hero-1920, keyart-mulan / keyart-mulan-wide, keyart-queen-of-hearts / -cyber / -wide), e due file
+      diversi della stessa famiglia in /guides o /news sembrano la stessa copertina.
+    */
+    const family = (img: string) => img.replace(/^\/media\//, "").replace(/\.webp$/, "").replace(/-(?:wide|cyber|\d{3,4})$/, "");
     const used = new Map<string, string>();
-    for (const g of getGuides("en")) if (g.image && !(CHECKED as readonly string[]).includes(g.slug)) used.set(g.image, g.slug);
-    for (const n of news) used.set(n.image, n.slug);
+    for (const g of getGuides("en")) if (g.image && !(CHECKED as readonly string[]).includes(g.slug)) used.set(family(g.image), g.slug);
+    for (const n of news) used.set(family(n.image), n.slug);
+    used.set(family("/media/hero-1920.webp"), "slider della home"); // prima slide, src/app/[locale]/(home)/page.tsx
     const mine = new Set<string>();
     for (const s of CHECKED) {
       const img = guide("en", s).image ?? "";
       assert.match(img, /^\/media\/[a-z0-9-]+\.webp$/, s);
       assert.ok(existsSync(new URL(`../../../public${img}`, import.meta.url)), `${s}: ${img} non esiste`);
-      assert.ok(!used.has(img), `${s}: ${img} è già usata da ${used.get(img)}`);
-      assert.ok(!mine.has(img), `${s}: ${img} ripetuta fra le guide nuove`);
-      mine.add(img);
+      assert.ok(!used.has(family(img)), `${s}: ${img} è della stessa famiglia di una copertina di ${used.get(family(img))}`);
+      assert.ok(!mine.has(family(img)), `${s}: ${img} ripetuta fra le guide nuove`);
+      mine.add(family(img));
+      // la versione italiana e quella spagnola hanno la stessa copertina
+      for (const l of locales) assert.equal(guide(l, s).image, img, `${l} ${s}: copertina diversa dall'inglese`);
     }
+  });
+  test("nessun riferimento a World of Origins (regola del 25/09/2026: il sito non lo nomina e non lo linka)", () => {
+    for (const l of locales)
+      for (const s of CHECKED) {
+        const g = guide(l, s);
+        const text = [g.title, g.metaTitle ?? "", g.excerpt, g.body, ...(g.faq ?? []).flatMap((f) => [f.q, f.a])].join("\n");
+        assert.doesNotMatch(text, /world\s*of\s*origins|worldoforigins/i, `${l} ${s}`);
+      }
   });
   test("stesse FAQ (per numero) nelle tre lingue", () => {
     for (const s of CHECKED) {
@@ -180,15 +204,36 @@ describe("guide dell'Ondata 3: sezioni e link", () => {
       for (const l of locales) assert.deepEqual(of(l), of("en"), `${l} ${s}`);
     }
   });
-  test("le guide esistenti che la mappa delle query indica rimandano alle nuove, in ogni lingua", () => {
+  test("le guide che la mappa delle query indica rimandano alle nuove, e le nuove si collegano fra loro, in ogni lingua", () => {
+    // Il tipo Guide non ha un campo "guide correlate": i collegamenti fra guide stanno nel testo.
     const expected: Record<string, string[]> = {
       "origins-tcg-explained": ["origins-tcg-legendaries", "origins-tcg-ranked"],
       "steam-next-fest-2026": ["origins-tcg-ranked", "origins-tcg-conquest"],
+      "origins-tcg-legendaries": ["origins-tcg-conquest", "origins-tcg-ranked"],
+      "origins-tcg-ranked": ["origins-tcg-legendaries", "origins-tcg-conquest", "steam-next-fest-2026"],
+      "origins-tcg-conquest": ["origins-tcg-legendaries", "origins-tcg-ranked", "steam-next-fest-2026"],
     };
     for (const [from, to] of Object.entries(expected))
       for (const l of locales) {
         const links = internalLinks(guide(l, from).body);
         for (const t of to) assert.ok(links.includes(`/${l}/guides/${t}`), `${l} ${from} → ${t}`);
+      }
+  });
+  test("i nomi dei mazzi che contengono il nome di una carta sono sempre link espliciti", () => {
+    /*
+      Markdown.tsx collega da solo i nomi delle carte nel testo semplice (linkCardNames): "Glinda Reborn" scritto senza
+      link diventerebbe "[Glinda](/xx/cards/glinda) Reborn", un link alla carta dentro il nome di un mazzo. Chi scrive
+      un mazzo così deve linkarlo alla sua scheda, che il riconoscimento automatico salta.
+    */
+    for (const s of CHECKED)
+      for (const l of locales) {
+        const body = guide(l, s).body;
+        const deckNames = new Set([...body.matchAll(/\[([^\]]+)\]\(\/[a-z]{2}\/decks\/community\/[a-z0-9-]+\)/g)].map((m) => m[1].replace(/\\/g, "")));
+        const plain = body.replace(/!?\[[^\]\n]*\]\([^)\n]*\)/g, " ");
+        for (const name of deckNames) {
+          const hasCard = linkCardNames(name).some((seg) => typeof seg !== "string" && seg.text !== name);
+          if (hasCard) assert.ok(!plain.includes(name), `${l} ${s}: "${name}" senza link, il nome di una carta dentro diventerebbe un link alla carta`);
+        }
       }
   });
 });

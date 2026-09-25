@@ -26,7 +26,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
       },
       {
         q: "¿Hay alguna Legendaria que sea un hechizo?",
-        a: "Sí, una sola: Legion of the Dead, un hechizo de 7 de maná que llena tu tablero de Zombies 2/2.",
+        a: "Sí, una sola en la Demo 2.0: Legion of the Dead, un hechizo de 7 de maná que llena tu tablero de Zombies 2/2.",
       },
     ],
     body: `
@@ -38,7 +38,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
 - Siete cambiaron en los parches de equilibrio entre agosto y el 21 de septiembre de 2026; Dracula, Van Helsing, Legion of the Dead y Robin Hood no.
 - A 25 de septiembre de 2026, los 19 mazos publicados en OriginsMeta usan diez de las once: Van Helsing y Three Not So Little Pigs lideran tres mazos cada una, Wicked Stepmother ninguno. Seis Legendarias tienen una guía de OriginsMeta sobre uno de sus mazos.
 
-Aquí abajo las Legendarias van por orden de coste y, con el mismo coste, por orden alfabético. La guía describe lo que hace cada carta, no lo fuerte que es: eso lo dirá nuestra [tier list de Origins TCG](/es/tier-list), con los resultados de los torneos, a partir de la Crimson Cup.
+Aquí abajo las Legendarias van por orden de coste y, con el mismo coste, por orden alfabético. La guía describe lo que hace cada carta, no lo fuerte que es: eso lo dirá nuestra [tier list de Origins TCG](/es/tier-list), con los resultados de los torneos y la cima de la [clasificatoria](/es/guides/origins-tcg-ranked), a partir de la Crimson Cup.
 
 ## Las 11 Legendarias en una tabla {#tabla}
 
@@ -89,7 +89,7 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 > Al revelar: Invoca Brides of Dracula [2⚔️/2❤️] en un espacio aleatorio aquí.
 
 - **La leyenda.** El conde transilvano de la novela de Bram Stoker de 1897, el vampiro al que copian todos los demás.
-- **Cartas que crea.** [Brides of Dracula](/es/cards/brides-of-dracula), una 2/2 cuyo texto, cada vez que descartas una carta, inflige 1 de daño a la barrera del oponente en su ubicación y le da +1❤️.
+- **Cartas que crea.** [Brides of Dracula](/es/cards/brides-of-dracula), una 2/2 que, según su texto, cada vez que descartas una carta inflige 1 de daño a la barrera del oponente en su ubicación y obtiene +1❤️ (carta creada: texto no verificado en el juego).
 - **Parches.** Dracula no ha cambiado. Brides of Dracula bajó de 3 a 2 de maná con el parche 0.6.2 ([notas del parche](/es/news/patch-0-6-2)).
 - **Mazos en OriginsMeta a 25 de septiembre de 2026.** Dos: [Discard](/es/decks/community/discard-8bff) y [Dracula SUPER FUN](/es/decks/community/dracula-super-fun-d936).
 - **Guía.** Todavía no: [mándanos la tuya](/es/guides/submit).
@@ -103,7 +103,7 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 >
 > Cuando ocurre una habilidad Al revelar de un aliado, repítela.
 
-- **La leyenda.** La guerrera que ocupa el lugar de su padre en el ejército, de la balada china de Mulán del siglo VI.
+- **La leyenda.** La guerrera que ocupa el lugar de su padre en el ejército, de una balada china del siglo VI.
 - **Parches.** Parche 0.6.2: estadísticas sin cambios, obtiene Ataque doble además de repetir las habilidades Al revelar de los aliados ([notas del parche](/es/news/patch-0-6-2)).
 - **Mazos en OriginsMeta a 25 de septiembre de 2026.** Uno: [On Reveal Mid Range](/es/decks/community/on-reveal-mid-range-772e).
 - **Guía.** [Guía del mazo de Mulan: On Reveal Mid Range](/es/guides/on-reveal-midrange-guide).
@@ -130,7 +130,7 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 > Antes del combate, añade Van Helsing's Tools a tu mano si no está ya allí.
 
 - **La leyenda.** Abraham Van Helsing, el profesor holandés que dirige la caza de Drácula.
-- **Cartas que crea.** [Van Helsing's Tools](/es/cards/van-helsings-tools), que te hace elegir y jugar una de cuatro cartas creadas: [Holy Water](/es/cards/holy-water), [Silver Bullet](/es/cards/silver-bullet), [Garlic](/es/cards/garlic) o [Wooden Stake](/es/cards/wooden-stake).
+- **Cartas que crea.** [Van Helsing's Tools](/es/cards/van-helsings-tools), que te hace elegir y jugar una de cuatro cartas creadas: [Holy Water](/es/cards/holy-water), [Silver Bullet](/es/cards/silver-bullet), [Garlic](/es/cards/garlic) o [Wooden Stake](/es/cards/wooden-stake) (cartas creadas: textos no verificados en el juego).
 - **Parches.** Van Helsing no ha cambiado. Con el parche 0.6.2 Van Helsing's Tools pasó a ser gratis (de 1 a 0 de maná) y la Silver Bullet que crea pasó de 3 de daño a 1 ([notas del parche](/es/news/patch-0-6-2)); con el parche de la demo del 21 de septiembre de 2026 la Silver Bullet también puede elegir como objetivo las barreras, y la Wooden Stake puede elegir a personajes con la Salud al máximo, aunque falla si el objetivo no está dañado cuando se revela ([notas del parche](/es/news/demo-patch-notes-0921)).
 - **Mazos en OriginsMeta a 25 de septiembre de 2026.** Tres: [Healing Healsing](/es/decks/community/healing-healsing-9411), [Cure Control](/es/decks/community/cure-control-b630) y [CONTROL](/es/decks/community/control-2c2b).
 - **Guías.** [Guía del mazo de Van Helsing: Healing Healsing](/es/guides/healing-healsing-guide) y [sus matchups](/es/guides/healing-healsing-matchups).
@@ -222,11 +222,11 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 
 ## Las Legendarias que no están en la Demo 2.0 {#fuera-de-la-demo}
 
-Nuestra base de datos conserva también nueve Legendarias que no están en la Demo 2.0: [Alice](/es/cards/alice), [Beowulf](/es/cards/beowulf), [Cinderella](/es/cards/cinderella), [Death](/es/cards/death), [Dr. Frank](/es/cards/dr-frank), [Mirror Mirror](/es/cards/mirror-mirror), [Red](/es/cards/red), [Winnie-the-Pooh](/es/cards/winnie-the-pooh) y [Wizard of Oz](/es/cards/wizard-of-oz). Sus fichas mantienen los últimos datos conocidos de la base de datos de la comunidad World of Origins, que no se pueden comprobar en el juego. En los AMA, el equipo ha descrito un lanzamiento completo con todo el elenco de cartas Legendarias: las fechas que conocemos están en el [roadmap](/es/guides/roadmap-and-dates).
+Nuestra base de datos conserva también nueve Legendarias que no están en la Demo 2.0: [Alice](/es/cards/alice), [Beowulf](/es/cards/beowulf), [Cinderella](/es/cards/cinderella), [Death](/es/cards/death), [Dr. Frank](/es/cards/dr-frank), [Mirror Mirror](/es/cards/mirror-mirror), [Red](/es/cards/red), [Winnie-the-Pooh](/es/cards/winnie-the-pooh) y [Wizard of Oz](/es/cards/wizard-of-oz). Sus fichas mantienen los últimos datos conocidos, no verificados en el juego. En los AMA, el equipo ha descrito un lanzamiento completo con todo el elenco de cartas Legendarias: las fechas que conocemos están en el [roadmap](/es/guides/roadmap-and-dates).
 
 ## De dónde salen los números {#fuentes}
 
-- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta, construida sobre la base de datos de la comunidad World of Origins; costes, estadísticas y textos en inglés comprobados uno por uno en el juego el 22 de septiembre de 2026, textos en italiano y en español leídos en el juego el 25 de septiembre de 2026.
+- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta: costes, estadísticas y textos en inglés de las cartas de la demo comprobados uno por uno en el juego el 22 de septiembre de 2026, textos en italiano y en español leídos en el juego el 25 de septiembre de 2026.
 - **Parches:** las notas oficiales de los parches en Steam, carta por carta en [MetaShifting](/es/metashifting).
 - **Mazos:** los 19 mazos publicados en OriginsMeta del 15 al 25 de septiembre de 2026, contados el 25 de septiembre ([todos los mazos de Origins TCG](/es/decks)).
 
@@ -235,8 +235,8 @@ Actualizaremos esta guía cada vez que un parche cambie una Legendaria o la demo
   },
   "origins-tcg-ranked": {
     title: "La clasificatoria de Origins TCG: lo que sabemos de la ladder antes del Steam Next Fest",
-    metaTitle: "Clasificatoria de Origins TCG: divisiones y Grandmaster",
-    excerpt: "La clasificatoria se abre en la demo de Origins TCG con el Steam Next Fest, el 19 de octubre de 2026. Lo que confirmó Koin: Grandmaster, VP y premios.",
+    metaTitle: "Clasificatoria de Origins TCG: cuándo empieza y Grandmaster",
+    excerpt: "La clasificatoria llega a la demo de Origins TCG con el Steam Next Fest (19 de octubre de 2026). Lo que confirmó Koin: divisiones, Grandmaster y recompensas.",
     faq: [
       {
         q: "¿Cuándo empieza la clasificatoria en la demo de Origins TCG?",
@@ -260,8 +260,8 @@ Actualizaremos esta guía cada vez que un parche cambie una Legendaria o la demo
 
 - La clasificatoria se activa en la demo gratuita **con el inicio del Steam Next Fest**, el lunes 19 de octubre de 2026, "con recompensas exclusivas" (publicación de Koin Games en Steam del 21 de septiembre de 2026).
 - No es nueva: el playtest cerrado tiene una ladder clasificatoria desde el parche 0.6.1 del 14 de agosto de 2026, y el 24 de septiembre allí seguía activa.
-- Lo que confirman las notas oficiales de los parches: las divisiones, una división más alta llamada **Grandmaster** con una clasificación mundial y los **Puntos de Victoria** (VP), que cambian después de cada partida.
-- Lo que Koin todavía no ha dicho: la lista completa de divisiones, cuántos VP vale una partida, las temporadas y los reinicios, y en qué consisten las recompensas.
+- Lo que confirman las notas oficiales de los parches: las divisiones, una división más alta llamada **Grandmaster** con una clasificación mundial y los **Puntos de Victoria** (VP) que se ganan y se pierden en las partidas clasificatorias: las notas hablan de un cambio de +10 y −10, y desde el parche 0.6.2 las partidas en sala no dan VP.
+- Lo que Koin todavía no ha dicho: la lista completa de divisiones, si los +10/−10 VP del playtest se mantienen en todas las divisiones y en la demo, las temporadas y los reinicios, y en qué consisten las recompensas.
 
 Actualizaremos esta guía cuando la clasificatoria se abra en la demo.
 
@@ -276,10 +276,10 @@ El 24 de septiembre, el anuncio de la Crimson Cup en el Discord oficial lo repit
 La clasificatoria está activa en el playtest cerrado desde mediados de agosto, y tres notas oficiales de parches la describen:
 
 - **Parche 0.6.1, 14 de agosto de 2026.** La ladder clasificatoria es la gran novedad de la actualización, y "la división Grandmaster tiene una clasificación mundial" ([notas del parche](https://store.steampowered.com/news/app/4429430/view/1840944183780414)). Un error conocido de esa build: los VP (Puntos de Victoria) se mostraban mal en cuanto un jugador llegaba a Grandmaster.
-- **Parche 0.6.2, 21 de agosto de 2026.** La Grandmaster League ya muestra el rango, los VP y la división correctos de cada jugador; al final de una partida en Grandmaster todavía no se veía la variación de VP, aunque los puntos cambiaban correctamente ([notas del parche](https://store.steampowered.com/news/app/4429430/view/1841579228669961)).
-- **Parche 0.6.3, 27 de agosto de 2026.** En la división más alta, la pantalla de resultados mostraba valores de relleno en lugar de los del jugador; ahora la división, el total de VP y la variación de VP se muestran bien, y al final de cada partida deberían aparecer siempre el resultado, los Puntos de Victoria y el rango ([notas del parche](https://store.steampowered.com/news/app/4429430/view/1842212951301184)).
+- **Parche 0.6.2, 21 de agosto de 2026.** La Grandmaster League ya muestra el rango, los VP y la división correctos de cada jugador, y las partidas en sala ya no dan VP. Dos errores conocidos de esa build: los VP se ganaban y se perdían bien, pero el +10 y el −10 que acompañan el cambio del total habían desaparecido temporalmente, y al final de una partida en Grandmaster no se veía la variación de VP, aunque los puntos cambiaban ([notas del parche](https://store.steampowered.com/news/app/4429430/view/1841579228669961)).
+- **Parche 0.6.3, 27 de agosto de 2026.** En la división más alta, la pantalla de resultados mostraba valores de relleno en lugar de los del jugador; ahora la división, el total de VP y la variación de VP se muestran bien, el +10 y el −10 ya no se superponen al total de VP mientras cambia, y al final de cada partida deberían aparecer siempre el resultado, los Puntos de Victoria y el rango ([notas del parche](https://store.steampowered.com/news/app/4429430/view/1842212951301184)).
 
-En conjunto: la ladder está hecha de divisiones, **Grandmaster es la más alta** (el parche 0.6.3 la llama "la división más alta") y tiene una clasificación mundial con un rango para cada jugador, y cada partida mueve tus Puntos de Victoria. Las notas citan "Diamond IV" solo como uno de los valores de relleno mostrados por error: no enumeran las divisiones por debajo de Grandmaster. Nuestro resumen del primer parche de la clasificatoria está en [parche 0.6.1: clasificatoria y Grandmaster](/es/news/patch-0-6-1-ranked).
+En conjunto: la ladder está hecha de divisiones, **Grandmaster es la más alta** (el parche 0.6.3 la llama "la división más alta") y tiene una clasificación mundial con un rango para cada jugador, y las partidas clasificatorias mueven tus Puntos de Victoria, con un cambio de +10 o −10 en las notas del playtest (las partidas en sala no, desde el 0.6.2). Las notas citan "Diamond IV" solo como uno de los valores de relleno mostrados por error: no enumeran las divisiones por debajo de Grandmaster. Nuestro resumen del primer parche de la clasificatoria está en [parche 0.6.1: clasificatoria y Grandmaster](/es/news/patch-0-6-1-ranked).
 
 ## Clasificatoria y desbloqueo de mazos {#desbloqueos}
 
@@ -290,6 +290,7 @@ En el playtest cerrado, según los jugadores del foro de Steam el 14 de septiemb
 - **La demo** es gratuita en [Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) y tiene la lista de cartas de la Crimson Cup; la clasificatoria llegará allí con el festival.
 - **El playtest cerrado** ya tiene clasificatoria. La publicación de Koin en Steam del 25 de agosto de 2026 remite al [Discord oficial](https://discord.gg/originstcg) para las instrucciones de acceso, y el 24 de septiembre el equipo dijo que el playtest recibirá actualizaciones que la build del torneo no tendrá.
 - Para preparar mazos: el [deck builder](/es/deck-builder) y [todos los mazos de Origins TCG](/es/decks) publicados por la comunidad, cada uno con el código del juego (KGBLDC…) para pegarlo en Origins. Las [11 Legendarias](/es/guides/origins-tcg-legendaries) que los lideran se describen una por una en nuestra guía.
+- Si preparas la Crimson Cup, que se juega con tres mazos en Conquest: [cómo construir los tres mazos](/es/guides/origins-tcg-conquest).
 
 ## Qué hará OriginsMeta con la clasificatoria {#originsmeta}
 
@@ -299,7 +300,7 @@ Nuestro plan a 25 de septiembre de 2026: la primera [tier list](/es/tier-list) d
 
 - En qué consisten las "recompensas exclusivas" de la clasificatoria y cómo se consiguen.
 - Cuántas divisiones hay y cómo se llaman las que están por debajo de Grandmaster.
-- Cuántos Puntos de Victoria vale una victoria o una derrota.
+- Si una victoria y una derrota valen siempre +10 y −10 VP, como en las notas del playtest, en todas las divisiones y en la demo.
 - Si la clasificatoria tendrá temporadas o reinicios, y si seguirá activa en la demo cuando termine el festival, el 26 de octubre.
 - Si el progreso en la clasificatoria pasará al juego completo.
 
@@ -314,8 +315,8 @@ Las publicaciones oficiales de Koin Games en Steam: [parche 0.6.1](https://store
     excerpt: "Cómo armar tus tres mazos de Conquest en Origins TCG: cómo se cuentan las cartas únicas, el control del deck builder y mazos reales que la cumplen.",
     faq: [
       {
-        q: "¿Cuántas cartas pueden compartir dos mazos de Conquest en la Crimson Cup?",
-        a: "Como máximo 5 de sus 13 cartas distintas, si cada carta cuenta una vez y la Legendaria también cuenta: es la interpretación de OriginsMeta de la regla de al menos 8 cartas únicas entre cada par de mazos. Koin Games no ha explicado cómo se hace el recuento.",
+        q: "¿Cómo se cuentan las cartas en común entre dos mazos de Conquest?",
+        a: "Se toman las 13 cartas distintas de cada mazo, la Legendaria y las doce cartas base, cada una contada una vez, tenga las copias que tenga: las cartas únicas entre los dos mazos son 13 menos las cartas en común. Con un mínimo de 8 cartas únicas, dos mazos pueden compartir como máximo 5. Es la interpretación de OriginsMeta, porque Koin Games no ha explicado cómo se hace el recuento; la regla está en nuestro artículo sobre las reglas de la Crimson Cup.",
       },
       {
         q: "¿Dos de mis mazos de Conquest pueden tener la misma Legendaria?",
@@ -333,7 +334,7 @@ Las publicaciones oficiales de Koin Games en Steam: [parche 0.6.1](https://store
     body: `
 ## En resumen {#en-resumen}
 
-- **Conquest** significa llevar más de un mazo, cada uno con una Legendaria distinta y lo bastante diferente de los demás, y banear uno de los mazos de tu rival (Koin Games, 25 de agosto de 2026).
+- **Conquest** significa llevar más de un mazo, lo bastante diferentes entre sí, y banear uno de los mazos de tu rival (Koin Games, 25 de agosto de 2026); Big Bob's Playtest Battle y la Crimson Cup piden además una Legendaria distinta en cada mazo.
 - En la **Crimson Cup** (del 20 al 25 de octubre de 2026) llevas tres mazos con al menos 8 cartas únicas entre cada par. Las reglas, las fechas, los premios y el check-in están en [nuestro artículo sobre las reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in): esta guía trata de cómo construir los tres mazos.
 - Koin no ha explicado cómo se cuentan las cartas únicas. OriginsMeta cuenta cada carta una vez, tenga las copias que tenga, con la Legendaria incluida: así, dos mazos pueden compartir como máximo 5 cartas.
 - El [deck builder](/es/deck-builder) lo comprueba todo en su modo "Torneo (3 mazos)".
@@ -378,6 +379,8 @@ Si Koin cuenta de otra forma, por ejemplo copia por copia, los números cambian:
 
 El deck builder guarda los tres mazos en tu navegador mientras trabajas. Los [torneos](/es/tournaments) creados en OriginsMeta también pueden usar Conquest, con 2 a 4 mazos por jugador y un mínimo que elige quien organiza, y el deck builder de cada torneo aplica esas reglas. Las Legendarias entre las que puedes elegir están todas en [nuestra guía de las 11 Legendarias](/es/guides/origins-tcg-legendaries).
 
+La Crimson Cup es el torneo del Steam Next Fest, y con el mismo festival se abre la clasificatoria en la demo: todo sobre el festival está en nuestra [guía del Steam Next Fest](/es/guides/steam-next-fest-2026), y [lo confirmado sobre la clasificatoria](/es/guides/origins-tcg-ranked), en su propia guía.
+
 ## Mazos de la comunidad que cumplen la regla, y uno que no {#pares-de-la-comunidad}
 
 A 25 de septiembre de 2026, OriginsMeta tiene 19 mazos publicados, liderados por 10 Legendarias distintas. Eso da 171 pares posibles:
@@ -398,7 +401,18 @@ Algunos pares con sus números reales:
 | [Qoh](/es/decks/community/qoh-f876) + [Value Board](/es/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5: Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | sí, en el límite |
 | [Buff](/es/decks/community/buff-6f60) + [FACE IS THE PLACE](/es/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | no |
 
-Ocho pares están justo en 8: 3 Pigs Mid Range con On Reveal Mid Range, CONTROL con Spellcast, Cure Control con Glinda Reborn, Cure Control con Spellcast, FACE IS THE PLACE con Glinda Reborn, Healing Healsing con Spellcast, Qoh con Value Board y Qoh con VALUE MAXXING. De los 969 tríos posibles de mazos publicados, 770 tienen tres Legendarias distintas y cumplen la regla en los tres pares.
+Ocho pares están justo en 8:
+
+- [3 Pigs Mid Range](/es/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/es/decks/community/on-reveal-mid-range-772e)
+- [CONTROL](/es/decks/community/control-2c2b) + [Spellcast](/es/decks/community/spellcast-250f)
+- [Cure Control](/es/decks/community/cure-control-b630) + [Glinda Reborn](/es/decks/community/glinda-reborn-2d6d)
+- [Cure Control](/es/decks/community/cure-control-b630) + [Spellcast](/es/decks/community/spellcast-250f)
+- [FACE IS THE PLACE](/es/decks/community/face-is-the-place-b049) + [Glinda Reborn](/es/decks/community/glinda-reborn-2d6d)
+- [Healing Healsing](/es/decks/community/healing-healsing-9411) + [Spellcast](/es/decks/community/spellcast-250f)
+- [Qoh](/es/decks/community/qoh-f876) + [Value Board](/es/decks/community/value-board-c44a)
+- [Qoh](/es/decks/community/qoh-f876) + [VALUE MAXXING](/es/decks/community/value-maxxing-739d)
+
+De los 969 tríos posibles de mazos publicados, 770 tienen tres Legendarias distintas y cumplen la regla en los tres pares.
 
 Son recuentos, no consejos: dicen qué mazos pueden ir juntos según la regla, no qué alineación gana. Cómo se juega cada mazo está en su página, en la guía de su autor.
 
