@@ -9,12 +9,14 @@ import {
   communitySample,
   aggregateLists,
   briefSentence,
+  communityOrder,
   deckBrief,
   fillParts,
   pickBrief,
   pickPreview,
   tierFromAverage,
   usageCounts,
+  usageOrder,
   weightedRating,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in tiercode.test.ts.
@@ -97,6 +99,30 @@ describe("weightedRating", () => {
   });
   test("senza voti restituisce il valore di partenza", () => {
     assert.equal(weightedRating(0, 0), 3);
+  });
+});
+
+describe("ordini condivisi fra pagina e dati strutturati (Ondata 2, GEO-10)", () => {
+  test("usageOrder: più mazzi, poi costo più basso (senza costo in fondo), poi nome", () => {
+    const rows = [
+      { name: "B", used: 2, mana: 3 },
+      { name: "A", used: 2, mana: 3 },
+      { name: "C", used: 2, mana: 1 },
+      { name: "D", used: 5 },
+      { name: "E", used: 2 },
+    ];
+    assert.deepEqual(rows.sort(usageOrder).map((r) => r.name), ["D", "C", "A", "B", "E"]);
+  });
+  test("communityOrder: media più alta, poi più voti, poi costo e nome", () => {
+    const rows = [
+      { name: "B", mana: 2, community: { avg: 4, votes: 3 } },
+      { name: "A", mana: 2, community: { avg: 4, votes: 3 } },
+      { name: "C", mana: 1, community: { avg: 4, votes: 3 } },
+      { name: "D", mana: 5, community: { avg: 4, votes: 6 } },
+      { name: "E", mana: 1, community: { avg: 4.5, votes: 1 } },
+      { name: "F", mana: 1 },
+    ];
+    assert.deepEqual(rows.sort(communityOrder).map((r) => r.name), ["E", "D", "C", "A", "B", "F"]);
   });
 });
 

@@ -1,10 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { activeCards } from "@/lib/data/cards";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
+import { revalidateSitemaps } from "@/lib/sitemapData";
+import { COMMUNITY_TIER_LISTS_TAG } from "./decksByCard";
 import { cleanTitle, decodeTierCode, encodeTierCode, rankedCount, TIER_KINDS, type TierKind } from "@/lib/tiercode";
 import { boardEntries } from "./tierlists";
 import { isUuid } from "./util";
@@ -38,12 +40,20 @@ function localeOf(fd: FormData): Locale {
   return isLocale(raw) ? raw : "en";
 }
 
+/**
+ * Pagine da rigenerare quando cambia una tier list salvata (salvata, nascosta, ripubblicata, eliminata). Dall'Ondata 2
+ * anche il lastmod delle sitemap (/tier-list, /tier-list/community, /u/<nome>) e il punteggio della community sulle
+ * schede carta (etichetta `community-tier-lists` di decksByCard.ts, profilo "max": la visita dopo riceve ancora la
+ * scheda vecchia e ne fa partire una nuova); senza, si aggiornerebbero entro 5 minuti e entro un'ora.
+ */
 function revalidateTierPaths(username?: string | null) {
   for (const l of locales) {
     revalidatePath(`/${l}/tier-list/community`);
     revalidatePath(`/${l}/account`);
     if (username) revalidatePath(`/${l}/u/${username}`);
   }
+  revalidateSitemaps();
+  revalidateTag(COMMUNITY_TIER_LISTS_TAG, "max");
 }
 
 /**

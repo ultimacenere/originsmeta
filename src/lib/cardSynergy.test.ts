@@ -129,6 +129,22 @@ describe("decksByCard", () => {
     // una regola più stretta (per esempio le guide troppo corte) si passa da fuori
     assert.deepEqual(decksForLocale(withDracula, "it", (d) => d.slug !== "a"), { shown: [decks[1]], others: 1 });
   });
+
+  test("un mazzo con la guida sotto la soglia di DECKS non ha lingue indicizzabili e resta fra gli altri", async () => {
+    // come in decksByCard.ts: le lingue del DeckRef vengono da indexableLocales (integrazione dell'Ondata 2)
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const quality: typeof import("./community/deckQuality") = await import("./community/deckQuality.ts");
+    const words = (n: number) => Array.from({ length: n }, (_, i) => `parola${i}`).join(" ");
+    const guide = (n: number) => ({ lang: "it", summary: words(n) }) as never;
+    const all = ["en", "it", "es"] as const;
+    const thin = quality.indexableLocales({ guide: guide(quality.GUIDE_MIN_WORDS - 1) }, all);
+    const full = quality.indexableLocales({ guide: guide(quality.GUIDE_MIN_WORDS) }, all);
+    assert.deepEqual(thin, []);
+    assert.deepEqual(full, ["it"]);
+    const list = [deck("sottile", "dracula", ["genie"], { locales: thin }), deck("completo", "dracula", ["genie"], { locales: full })];
+    assert.deepEqual(decksForLocale(list, "it"), { shown: [list[1]], others: 1 });
+    assert.deepEqual(decksForLocale(list, "en"), { shown: [], others: 2 });
+  });
 });
 
 describe("companions", () => {

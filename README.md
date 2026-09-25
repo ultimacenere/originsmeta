@@ -18,6 +18,8 @@ npm run build   # build di produzione, da lanciare prima di ogni push
 npm run lint
 ```
 
+La build legge Supabase (mazzi, tier list, sitemap) e fallisce se non lo raggiunge; senza rete: `NEXT_PUBLIC_COMMUNITY=off npm run build`.
+
 ## Dove si aggiorna cosa
 
 | Cosa | File |
@@ -226,33 +228,57 @@ OriginsMeta ha un suo server Discord, distinto da quello ufficiale del gioco (`o
 - **Archivio** (una volta, per popolare il server; scelta di Pierluigi: da settembre): Actions → "Annunci su Discord" → Run workflow con `backfill_since` = `2026-09-01`. Pubblica dal più vecchio le news da quella data, tutte le patch notes (quelle più vecchie solo in `#metashifting`), tutte le guide e i mazzi pubblicati da quella data (letti da Supabase con la chiave pubblica). Prova a secco del 24/09/2026: 47 voci, 61 messaggi. Con `slugs` (`news:<slug>`, `guides:<slug>`, `decks:<slug>`) si pubblicano voci singole, per esempio se un secret mancava al momento del push.
 - **Prove in locale, senza scrivere nei canali**: `DRY_RUN=1 BACKFILL_SINCE=2026-09-01 node scripts/discord-announce.mjs` elenca cosa partirebbe e dove (`DRY_RUN_JSON=1` stampa anche i messaggi; `SITE_URL=http://localhost:3107` per leggere le pagine dalla demo locale). Senza `REPO` lo script legge i file dalla cartella del repo.
 - **Mazzi e tornei in diretta**: non bloccano mai la pubblicazione (`after()`, timeout, nessuna eccezione) e rileggono i dati con il client anonimo, quindi partono solo se il mazzo è pubblicato e il torneo è pubblico.
+- **UTM** su tutti i link al sito dei messaggi (Action, mazzi e tornei in diretta): `utm_source=discord&utm_medium=social`, `utm_campaign` = tipo di contenuto (news, patch_notes, guide, deck, tournament), `utm_content` = canale in cui il messaggio esce davvero. Il canonical delle pagine resta pulito.
+- **IndexNow** (Bing e gli altri motori che lo usano, dal 25/09/2026): nello stesso workflow, job `indexnow` indipendente dagli annunci e mai bloccante (il job degli annunci parte solo se il push tocca `news.ts` o `guides.ts`); a mano dal campo `indexnow` del workflow (es. `sitemap:/es`). I mazzi li segnala la Server Action di pubblicazione e modifica, le traduzioni `translate.ts`, solo in produzione e solo per le versioni indicizzabili.
 - Test in `scripts/discord-announce.test.mjs` (in `npm test`): lettura di news, guide e patch dai file veri, canali di ogni voce, archivio in ordine, forma dei messaggi.
 
-## Eventi di Google Analytics (dal 25/09/2026)
+## Eventi di Google Analytics e Vercel (dal 25/09/2026)
 
-Quattro eventi seguono le azioni che contano, così si leggono dalla dashboard GA4 senza interrogare il database. Si inviano dal browser con l'helper `src/lib/analytics.ts` (`traccia`), che non fa nulla se il visitatore non ha accettato i cookie statistici.
+Gli eventi seguono le azioni che contano, così si leggono dalle dashboard senza interrogare il database. Partono tutti dal browser e da un solo modulo, `src/lib/analytics.ts` (catalogo in testa al file, nomi stabili: `trackEvent` dai componenti, attributi `data-om-*` sul markup, e i link verso Steam e Discord riconosciuti da soli dall'ascoltatore dei clic montato da `GoogleAnalytics.tsx`). Ogni evento va a **Vercel Web Analytics** sempre, senza cookie e con al massimo due proprietà (piano Pro), e a **GA4** solo con "Accetta tutto" nel banner cookie, con in più `lang` (en, it, es). Niente dati personali nei parametri: né email né nomi utente né testi scritti dagli utenti. Il browser dello staff non conta (vedi "Traffico interno" qui sotto).
 
-| Evento | Quando parte | Parametri | Dove è agganciato |
-| --- | --- | --- | --- |
-| `sign_up` | prima iscrizione completata | `method`: discord | email | `/auth/callback` riconosce l'utente appena creato (created_at ≈ last_sign_in_at) e aggiunge `?signup=<via>`; `SignupTracker` nel layout legge il parametro, manda l'evento e ripulisce l'indirizzo |
-| `deck_created` | mazzo salvato nel profilo dal builder ("Salva privato") | `locale`, `legendary`, `cards` | `DeckBuilder`, dopo l'esito positivo di `saveDeckPrivate` |
-| `deck_published` | mazzo pubblicato nel database mazzi | `locale` | `PublishDeckForm`, solo in modalità `create` (una modifica non è un mazzo nuovo) |
-| `tierlist_created` | tier list salvata nel profilo | `locale`, `kind`: cards | legendaries | `TierListMaker`, dopo l'esito positivo di `saveTierList` |
+I primi quattro (online con a9400e8) hanno tenuto nome e parametri quando è arrivato il pacchetto MIS dell'Ondata 2: se in GA4 sono già segnati come eventi chiave, restano validi. ★ = evento chiave consigliato in GA4.
 
-`sign_up` è un nome raccomandato da GA4, gli altri tre sono personalizzati. **Dove si vedono**: in GA4 → Report → Tempo reale compaiono subito, in Report → Coinvolgimento → Eventi entro 24 ore. **Per averli nei rapporti principali** vanno marcati come eventi chiave: Amministrazione → Eventi → interruttore "Contrassegna come evento chiave" sulla riga dell'evento (appare solo dopo il primo invio).
+| Evento | Quando parte | Parametri |
+| --- | --- | --- |
+| ★ `sign_up` | primo accesso completato di un account nuovo | `method`: discord \| email |
+| ★ `deck_created` | mazzo salvato nel profilo dal deck builder ("Salva privato" riuscito) | `locale`, `legendary`, `cards`, `placement` (builder \| tournament_builder) |
+| ★ `deck_published` | mazzo pubblicato sul sito, solo alla prima pubblicazione (non alle modifiche) | `locale`, `legendary`, `source` (builder \| private_draft) |
+| ★ `tierlist_created` | tier list salvata nel profilo (salvataggio riuscito) | `locale`, `kind`: legendaries \| cards |
+| `login` | accesso completato di un account che c'era già | `method` |
+| `login_start` | clic su "Accedi con Discord" o link via email spedito | `method` |
+| `login_error` | errore mostrato dal pannello di accesso | `kind`, `method` |
+| `deck_complete` | il mazzo del builder arriva a 25 carte (una volta per casella e per scheda) | `placement` |
+| ★ `game_code_copy` | copia riuscita del codice del gioco (KGBLDC…) | `placement` (builder, tournament_builder, deck_page, decks_list) |
+| `deck_share` | link, lista in testo o "Condividi con…" dal builder | `method`, `placement` |
+| `deck_open_builder` | "Apri nel deck builder" dalla scheda di un mazzo | `placement` |
+| `deck_original_open` | dalla guida tradotta di un mazzo all'originale | `guide_lang` |
+| ★ `deck_vote` | voto a un mazzo della community | `stars`, `vote_type` (new \| update) |
+| `tier_list_share` | link o testo di una tier list copiati | `method`, `kind` |
+| ★ `tournament_create` | torneo creato (non le modifiche) | `visibility`, `deck_mode` |
+| `tournament_join` | iscrizione a un torneo | `size` |
+| `feedback_submit` | messaggio mandato dal riquadro dei feedback | nessuno |
+| `faq_ask` | domanda all'assistente della FAQ, risposta arrivata | `sources` |
+| ★ `steam_click` | clic su un link verso Steam | `target`, `placement`, `cta` |
+| ★ `discord_click` | clic su un link verso Discord | `server` (originsmeta \| official \| other), `placement`, `cta` |
+| `view_search_results` | ricerca fra le carte in /cards e nel deck builder (dopo 1,5 s senza scrivere) | `search_term`, `results`, `search_area` |
+| `home_route` | clic dalla home verso una sezione o fuori dal sito | `destination`, `section` |
+| `tier_entry_open` / `tier_entry_click` | scheda di una voce aperta nelle tier list, clic da lì | `tier_source`, `card` / `target` |
 
-Attenzione: gli eventi contano solo chi accetta i cookie, quindi sono sempre una sottostima. Il numero vero di iscritti, mazzi e tier list resta quello del database.
+- **Accesso**: `/auth/callback` aggiunge all'indirizzo di ritorno `?om_auth=sign_up|login&om_method=discord|email` (`withAuthSignal`); un account è nuovo se `isNewAccount` lo riconosce (con l'email conta la conferma appena avvenuta, perché Supabase crea l'utente quando parte il link), e un secondo `sign_up` nello stesso browser entro un'ora diventa `login`. L'evento lo manda `consumeAuthSignal` in `GoogleAnalytics.tsx`, che poi toglie il segnale dall'indirizzo: un account nuovo = un solo `sign_up`.
+- **In GA4** (a carico di Pierluigi): segnare come eventi chiave quelli con ★ (Amministrazione → Eventi → "Contrassegna come evento chiave", appare dopo il primo invio); registrare come definizioni personalizzate con ambito evento le dimensioni `lang`, `locale`, `placement`, `target`, `server`, `cta`, `legendary`, `source`, `kind`, `stars`, `vote_type`, `search_area`, `destination`, `section`, `tier_source`, `card`, `visibility`, `deck_mode`, `guide_lang` e le metriche `results`, `size`, `sources`, `cards`; nello stream spegnere "Interazioni con i moduli" (misurazione avanzata) e alzare il timeout di sessione a 60-120 minuti. In Tempo reale gli eventi compaiono subito, in Coinvolgimento → Eventi entro 24 ore.
+- Attenzione: in GA4 contano solo i visitatori che accettano i cookie, quindi i numeri sono una sottostima (Vercel conta tutti). Il numero vero di iscritti, mazzi e tier list resta quello del database.
 
 ## Cookie e GDPR
 
-- Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Oggi il sito ha solo cookie tecnici (sessione Supabase dopo il login) e statistiche senza cookie, quindi il banner è informativo; strumenti futuri (es. GA4) vanno caricati solo se `getConsent() === "all"` (`src/lib/consent.ts`). La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
+- Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Senza consenso il sito usa solo cookie tecnici (sessione Supabase dopo il login) e le statistiche senza cookie di Vercel; GA4 e i suoi eventi partono solo se `getConsent() === "all"` (`src/lib/consent.ts`, `src/lib/analytics.ts`), e ritirare il consenso, anche da un'altra scheda, spegne GA4 e cancella i cookie _ga. La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
 
 ## Analytics, Search Console e SEO
 
-- Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie).
-- **Google Analytics 4**: proprietà "OriginsMeta" (account Google ultimacenere@gmail.com, account GA 396971166, proprietà 554263065, stream web 15780517209, ID misurazione `G-9J5Q803XJS`). Il tag (`src/components/GoogleAnalytics.tsx`) parte solo con "Accetta tutto" nel banner cookie, con Consent Mode v2 (pubblicità sempre negata) e IP anonimizzato. L'ID ha un default nel layout e si può sovrascrivere con `NEXT_PUBLIC_GA_ID`. Esiste anche una proprietà "OriginsMeta" creata per errore sull'account pierluigicella85@gmail.com (dentro l'account GA "Frameplays", ID G-RCGV4S861S): non è usata dal sito e si può cestinare.
+- Vercel Web Analytics e Speed Insights sono inclusi nel layout (senza cookie). Web Analytics passa da `VercelAnalytics` (`src/components/GoogleAnalytics.tsx`), che scarta il traffico interno dello staff. Eventi: sezione "Eventi di Google Analytics e Vercel" qui sopra.
+- **Traffico interno dello staff**: una volta per browser e dispositivo si visita `https://originsmeta.com/?staff=<codice>` (il codice sta nella KB, §11, mai nel repo: nel codice c'è solo la sua impronta SHA-256, `STAFF_TOKEN_SHA256`); `?staff=off` lo spegne. Nelle verifiche automatiche (pannello browser di Claude, Claude in Chrome) si imposta `localStorage.setItem("originsmeta.internal.v1", "1")` insieme al consenso `originsmeta.consent.v1`. Con il flag GA4 non parte e Vercel non conta né pagine né eventi.
+- **Google Analytics 4**: proprietà "OriginsMeta" (account Google ultimacenere@gmail.com, account GA 396971166, proprietà 554263065, stream web 15780517209, ID misurazione `G-9J5Q803XJS`). Il tag (`src/components/GoogleAnalytics.tsx`) parte solo con "Accetta tutto" nel banner cookie, con Consent Mode v2 (pubblicità sempre negata); `anonymize_ip` non c'è più, era di Universal Analytics e GA4 non registra gli indirizzi IP. Se il consenso viene ritirato GA4 si spegne subito e i cookie _ga vengono cancellati. L'ID ha un default nel layout e si può sovrascrivere con `NEXT_PUBLIC_GA_ID`. Esiste anche una proprietà "OriginsMeta" creata per errore sull'account pierluigicella85@gmail.com (dentro l'account GA "Frameplays", ID G-RCGV4S861S): non è usata dal sito e si può cestinare.
 - **Search Console**: proprietà URL-prefix `https://originsmeta.com` sull'account ultimacenere@gmail.com, verificata con il meta tag `google-site-verification` nel layout (più il file `public/google10672860791f4a82.html`): non rimuoverli. Sitemap inviata il 15/09/2026.
-- **SEO on-page**: `pageMeta` aggiunge "Origins TCG" ai title che non lo contengono e un'immagine social di default; i dati strutturati stanno in `src/components/JsonLd.tsx` (WebSite + Organization nel layout, Article per guide e mazzi community, Event per i tornei, BreadcrumbList per carte e mazzi). La sitemap usa le date reali di news, patch, mazzi e guide, calcolate in `src/lib/lastmod.ts` (solo il giorno, mai nel futuro; `PAGE_UPDATED` va aggiornato nello stesso commit che cambia il modello di una pagina). Strategia e calendario editoriale: artifact "OriginsMeta SEO Playbook" (15/09/2026); analisi e piano a ondate del 25/09/2026: artifact "Il fossato di OriginsMeta".
+- **SEO on-page**: `pageMeta` aggiunge "Origins TCG" ai title che non lo contengono e un'immagine social di default; i dati strutturati stanno in `src/lib/jsonld/` (dall'Ondata 2: `entities.ts` con OriginsMeta, Koin Games, il gioco e le Person con @id uguali in ogni lingua, `events.ts`, `card.ts`, `deck.ts`), e `src/components/JsonLd.tsx` è solo il componente che li scrive. La sitemap usa le date reali di news, patch, mazzi e guide, calcolate in `src/lib/lastmod.ts` (solo il giorno, mai nel futuro; `PAGE_UPDATED` va aggiornato nello stesso commit che cambia il modello di una pagina). Dal 25/09/2026 (Ondata 2) /sitemap.xml è l'indice di /sitemap-home.xml e delle /<lingua>/sitemap-<sezione>.xml (pages, news, guides, cards, cards-created, cards-removed, decks, community: `src/lib/sitemapEntries.ts`; dati della community in cache per 5 minuti da `src/lib/sitemapData.ts`, invalidati con `revalidateSitemaps()`; il lastmod delle schede carta è lo stesso del loro `dateModified`). robots.txt dichiara solo l'indice. Feed RSS delle news in /<lingua>/news/feed.xml (`src/lib/newsFeed.ts`, etichette in `newsFeedMeta.ts`, link nel layout). IndexNow: chiave pubblica in `src/lib/indexnow.ts` e `public/<chiave>.txt`, invio da `scripts/indexnow.mjs` nel job "indexnow" del workflow degli annunci (news, guide, testi spagnoli delle guide, schede delle carte, luoghi; solo le lingue toccate). Strategia e calendario editoriale: artifact "OriginsMeta SEO Playbook" (15/09/2026); analisi e piano a ondate del 25/09/2026: artifact "Il fossato di OriginsMeta".
 - **Scansione (25/09/2026)**: `robots.txt` (`src/app/robots.ts`) blocca `?_rsc=` e `/xx/login?`, perché Googlebot spendeva il 78% delle richieste nei prefetch RSC delle griglie di carte; `FlipCard` ha `prefetch={false}`. Il proxy risponde 410 agli URL di spam `/?r=…&channel=…`; `originsmeta.vercel.app` va in 308 su originsmeta.com (`next.config.ts`); gli indirizzi inesistenti sotto una lingua rispondono 404 con un HTML minimo nella lingua (`src/app/[locale]/(site)/[...rest]/route.ts`). Il matcher del proxy va aggiornato a mano con ogni lingua nuova.
 
 ## Convenzioni

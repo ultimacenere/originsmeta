@@ -30,7 +30,7 @@ import { changeLabel as changeLabelOf } from "@/lib/linkLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  // Non entra in sitemap (src/app/sitemap.ts elenca le pagine a mano) e non si indicizza.
+  // Non entra in sitemap (src/lib/sitemapEntries.ts elenca le pagine a mano) e non si indicizza.
   return { ...pageMeta(locale, "/style", dict.style.title, dict.style.description), robots: { index: false, follow: false } };
 }
 

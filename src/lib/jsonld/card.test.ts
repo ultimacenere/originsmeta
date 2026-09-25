@@ -5,9 +5,8 @@
  * dipende dalla lingua sta sulla pagina (ItemPage). Più: Koin Games solo per `@id` (mai un oggetto anonimo),
  * l'illustratore come `contributor` dell'immagine e non come autore, niente FAQPage né AggregateRating, ItemList dei
  * mazzi solo quando la pagina ne elenca.
- * `JsonLd.tsx` è un file .tsx, che Node non esegue: come nel test di deckQuality.ts (pacchetto DECKS) il test lo
- * sostituisce con un modulo finto con le sole tre cose che jsonld/card.ts ne importa, scritte come nel componente.
- * Gli altri moduli si caricano con l'hook di risoluzione di `cardTitles.test.ts` (`module.registerHooks`, Node ≥ 22.15),
+ * Dall'integrazione dell'Ondata 2 jsonld/card.ts prende le entità da jsonld/entities.ts (modulo puro), non più da
+ * `JsonLd.tsx`: il test carica i moduli veri, niente modulo finto. I moduli si caricano con l'hook di risoluzione di `cardTitles.test.ts` (`module.registerHooks`, Node ≥ 22.15),
  * che traduce `@/` nella cartella src, aggiunge `.ts` e dichiara i JSON.
  */
 import * as nodeModule from "node:module";
@@ -22,14 +21,6 @@ const srcUrl = new URL("../../", import.meta.url);
 const SITE = "https://originsmeta.com";
 registerHooks({
   resolve(specifier, context, next) {
-    if (specifier === "@/components/JsonLd") {
-      const code = [
-        `export const organizationId = ${JSON.stringify(`${SITE}/#organization`)};`,
-        `export const videoGameId = ${JSON.stringify(`${SITE}/#origins-tcg`)};`,
-        `export function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: ${JSON.stringify(SITE)} + it.path })) }; }`,
-      ].join(" ");
-      return { url: `data:text/javascript,${encodeURIComponent(code)}`, shortCircuit: true };
-    }
     const spec = specifier.startsWith("@/") ? new URL(specifier.slice(2), srcUrl).href : specifier;
     if ((/^\.\.?\//.test(spec) || spec.startsWith("file:")) && !/\.(?:[cm]?[jt]sx?|json)$/.test(spec)) {
       try {

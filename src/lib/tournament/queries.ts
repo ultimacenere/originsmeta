@@ -114,15 +114,6 @@ export async function listUserTournaments(client: Db, userId: string): Promise<{
   return { organized, playing, invited: invited.filter((t) => t.status === "open" || t.status === "running") };
 }
 
-/** Slug dei tornei pubblici non annullati (sitemap). */
-export async function listTournamentSlugs(): Promise<{ slug: string; updated_at: string }[]> {
-  const client = supabasePublic();
-  if (!client) return [];
-  const { data, error } = await client.from("tournaments").select("slug, updated_at").eq("visibility", "public").neq("status", "cancelled").order("created_at", { ascending: false }).limit(1000);
-  if (error) console.error("[tournaments] listTournamentSlugs:", error.message);
-  return (data ?? []) as { slug: string; updated_at: string }[];
-}
-
 /** Codice del link d'invito (solo organizzatore e admin, per policy), oppure null. */
 export async function getInviteCode(client: Db, tid: string): Promise<string | null> {
   const { data } = await client.from("tournament_secrets").select("invite_code").eq("tournament_id", tid).maybeSingle();

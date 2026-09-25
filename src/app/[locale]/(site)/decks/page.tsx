@@ -11,7 +11,8 @@ import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
-import { guideLocales, localizedGuide } from "@/lib/community/deckTranslation";
+import { localizedGuide } from "@/lib/community/deckTranslation";
+import { indexableLocales } from "@/lib/community/deckQuality";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { deckBrief, usageCounts, weightedRating } from "@/lib/tierstats";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
@@ -164,11 +165,12 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
 
   // Lista per i dati strutturati: i mazzi editoriali statici (oggi nessuno) e quelli della community che la pagina
   // mostra, dal più recente, ma solo dove la scheda si indicizza in questa lingua: la guida originale o una traduzione
-  // aggiornata (`guideLocales`, lo stesso criterio di hreflang e sitemap). Senza voci l'ItemList non si dichiara:
+  // aggiornata, e solo se la guida supera la soglia di parole (`indexableLocales`, lo stesso criterio di robots, hreflang
+  // e sitemap). Senza voci l'ItemList non si dichiara:
   // una lista vuota su una pagina piena di mazzi sarebbe falsa (revisione dell'Ondata 1).
   const listed = [
     ...decks.map((deck) => ({ name: deck.name, path: href(locale, `/decks/${deck.slug}`) })),
-    ...newestFirst.filter((deck) => guideLocales(deck, [locale]).length > 0).map((deck) => ({ name: deck.name, path: href(locale, `/decks/community/${deck.slug}`) })),
+    ...newestFirst.filter((deck) => indexableLocales(deck, [locale]).length > 0).map((deck) => ({ name: deck.name, path: href(locale, `/decks/community/${deck.slug}`) })),
   ];
   const collection = collectionPage({
     locale,

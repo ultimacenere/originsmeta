@@ -77,6 +77,11 @@ Community decks are written by players in their own language; the site translate
 - [Quién escribe aquí](https://originsmeta.com/es/authors): las personas que firman las guías, los mazos y las noticias, y de qué se ocupa cada una.
 - [Quiénes somos](https://originsmeta.com/es/about): quiénes somos, cómo trabajamos y qué fuentes usamos.
 
+## Feeds and sitemaps
+
+- [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml) and Spanish (/es/news/feed.xml).
+- [Sitemap index](https://originsmeta.com/sitemap.xml): one sitemap per section and language.
+
 ## Sources
 
 - [Origins TCG on Steam](https://store.steampowered.com/app/4429430/Origins_TCG/): the official store page of the game.

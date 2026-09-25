@@ -1,10 +1,12 @@
 import { href, siteUrl, type Locale } from "@/lib/i18n";
-import { organizationId, videoGameId } from "@/components/JsonLd";
+import { memberId, organizationId, personId, videoGameId } from "./entities";
+import { cardEntityId } from "./card";
 
 /**
  * Dati strutturati della community: la scheda di un mazzo (Article) e la pagina pubblica di chi lo ha pubblicato
  * (ProfilePage), con la stessa persona nei due posti (Ondata 2 del piano SEO/GEO, rilievi DECKS-08, DECKS-10 e
- * GEO-14, 25/09/2026). Il modulo legge da `src/components/JsonLd.tsx` solo gli `@id` delle entità del sito.
+ * GEO-14, 25/09/2026). Gli `@id` delle entità del sito vengono da src/lib/jsonld/entities.ts e quello delle carte da
+ * src/lib/jsonld/card.ts: una fonte sola per ogni formula (integrazione dell'Ondata 2).
  *
  * Convenzione degli `@id` quella del pacchetto LD della stessa ondata (src/lib/jsonld/entities.ts, TOOL-09): le entità
  * reali hanno un `@id` unico per tutto il dominio e per tutte le lingue, `${siteUrl}/#<nome>`; i nodi legati a una
@@ -17,20 +19,10 @@ import { organizationId, videoGameId } from "@/components/JsonLd";
  *   entità per la stessa persona), con `url` del profilo nella lingua della pagina.
  * - Carte: lo stesso `@id` della scheda carta, unico per le tre lingue (`${siteUrl}/#card-<ID ufficiale>`, o lo slug
  *   senza ID: `cardEntityId` del pacchetto CARDS in src/lib/jsonld/card.ts).
- * `personId` e `cardEntityId` qui sotto ripetono le formule di quei due moduli, che su questo ramo non ci sono ancora:
- * dopo l'integrazione si importano da lì (note del pacchetto DECKS).
+ * `personId`, `memberId` e `cardEntityId` vengono da quei due moduli.
  */
 
 type Json = Record<string, unknown>;
-
-/** `@id` della Person di un autore editoriale: stessa formula di `personId` in src/lib/jsonld/entities.ts (pacchetto LD). */
-const personId = (slug: string): string => `${siteUrl}/#person-${slug}`;
-
-/** `@id` di un iscritto della community senza pagina autore: uno per tutte le lingue, come le altre entità del sito. */
-const memberId = (username: string): string => `${siteUrl}/#user-${username}`;
-
-/** `@id` di una carta: stessa formula di `cardEntityId` in src/lib/jsonld/card.ts (pacchetto CARDS). */
-const cardEntityId = (card: { key?: string; slug: string }): string => `${siteUrl}/#card-${card.key ?? card.slug}`;
 
 /** Autore editoriale collegato a un account (vedi `editorialAuthor` in src/lib/community/deckQuality.ts). */
 export type EditorialLink = { slug: string; name: string };

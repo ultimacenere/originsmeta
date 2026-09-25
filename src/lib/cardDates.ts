@@ -1,7 +1,6 @@
 import type { Locale } from "./i18n";
 import { cardsVerified, patchOrder, patches, type Card } from "./data/cards";
 import { cardLore } from "./data/card-lore";
-import { decksWithCard } from "./data/decks";
 import { tierList, tierOf } from "./data/tierlist";
 import { getGuides, type Guide } from "./content/guides";
 import { pageLastmod, type Day } from "./lastmod";
@@ -39,20 +38,22 @@ function guidesOf(locale: Locale): readonly Guide[] {
 /**
  * Date che cambiano una scheda carta nella lingua `locale`: le patch che l'hanno toccata, la verifica sul gioco quando
  * ne ha corretto testo o parole chiave (`card-lore.ts`, campi `en` e `keywords`), i testi italiani e spagnoli letti nel
- * gioco (solo per quelle lingue), i mazzi editoriali che la contengono, le guide della lingua che la citano (il
- * riquadro "Guide correlate") e la tier list di OriginsMeta quando la scheda ne mostra la fascia: le stesse fonti che
- * legge la pagina. `guides` si passa quando il chiamante le ha già (la sitemap, che le legge una volta per lingua);
+ * gioco (solo per quelle lingue), le guide della lingua che la citano (il riquadro "Guide correlate") e la tier list
+ * di OriginsMeta quando la scheda ne mostra la fascia (non "unranked": dall'Ondata 2 la scheda non mostra più quella
+ * pastiglia): le stesse fonti che legge la pagina. I giorni dei mazzi della community li aggiunge `cardPageLastmod`
+ * (cardSynergy.ts), nella scheda e nella sitemap; i mazzi editoriali di decks.ts non contano più (il file è vuoto e
+ * la scheda non li legge). `guides` si passa quando il chiamante le ha già (la sitemap, che le legge una volta per lingua);
  * la scheda non le passa e le prende da `guidesOf`.
  */
 export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] = guidesOf(locale)): (string | undefined)[] {
   const lore = cardLore[card.slug];
+  const tier = tierOf(card.legendary ? "legendaries" : "cards", card.slug);
   return [
     ...card.history.map((h) => patches[h.patch].date),
     lore?.en || lore?.keywords ? cardsVerified.date : undefined,
     locale !== "en" && lore?.[locale] ? localizedTextsRead[locale] : undefined,
-    ...decksWithCard(card.slug).map((d) => d.updated),
     ...guides.filter((g) => g.tags?.cards?.includes(card.slug)).map((g) => g.updated),
-    tierOf(card.legendary ? "legendaries" : "cards", card.slug) ? tierList.updated : undefined,
+    tier && tier !== "unranked" ? tierList.updated : undefined,
   ];
 }
 

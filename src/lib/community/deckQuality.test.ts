@@ -6,9 +6,9 @@
  *
  * I moduli sono scritti per Next (import senza estensione, alias `@/`): prima di caricarli il test registra un piccolo
  * hook di risoluzione dei moduli di Node (`module.registerHooks`, Node ≥ 22.15, come cardTitles.test.ts), che traduce
- * `@/` nella cartella src e aggiunge `.ts` agli import senza estensione. `@/components/JsonLd` è un file .tsx, che Node
- * non esegue: il test lo sostituisce con i soli `@id` che jsonld/deck.ts ne legge (più `breadcrumbs`), con lo stesso
- * `siteUrl`. Nessuna chiamata a Supabase: di queries.ts si provano solo le funzioni pure.
+ * `@/` nella cartella src e aggiunge `.ts` agli import senza estensione. Dall'integrazione dell'Ondata 2 jsonld/deck.ts
+ * prende gli `@id` da jsonld/entities.ts e jsonld/card.ts (moduli puri), non più da `JsonLd.tsx`: niente modulo finto.
+ * Nessuna chiamata a Supabase: di queries.ts si provano solo le funzioni pure.
  */
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
@@ -19,15 +19,8 @@ type ResolveHook = (specifier: string, context: object, next: (specifier: string
 // I tipi di @types/node del progetto (20.x) non conoscono ancora `registerHooks`: la funzione c'è in Node 24.
 const { registerHooks } = nodeModule as unknown as { registerHooks: (hooks: { resolve: ResolveHook }) => void };
 const srcUrl = new URL("../../", import.meta.url);
-/** indirizzo del sito per il finto JsonLd.tsx, letto da i18n.ts prima di caricare jsonld/deck.ts */
-let stubSite = "";
 registerHooks({
   resolve(specifier, context, next) {
-    if (specifier === "@/components/JsonLd") {
-      // `breadcrumbs` serve a src/lib/jsonld/card.ts (pacchetto CARDS), se jsonld/deck.ts ne importerà `cardEntityId`
-      const code = `export const organizationId = ${JSON.stringify(`${stubSite}/#organization`)}; export const videoGameId = ${JSON.stringify(`${stubSite}/#origins-tcg`)}; export function breadcrumbs() { return {}; }`;
-      return { url: `data:text/javascript,${encodeURIComponent(code)}`, shortCircuit: true };
-    }
     const spec = specifier.startsWith("@/") ? new URL(specifier.slice(2), srcUrl).href : specifier;
     if ((/^\.\.?\//.test(spec) || spec.startsWith("file:")) && !/\.(?:[cm]?[jt]sx?|json)$/.test(spec)) {
       try {
@@ -48,7 +41,6 @@ const tr: typeof import("./deckTranslation") = await import("./deckTranslation.t
 const queries: typeof import("./queries") = await import("./queries.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const i18n: typeof import("../i18n") = await import("../i18n.ts");
-stubSite = i18n.siteUrl;
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const ld: typeof import("../jsonld/deck") = await import("../jsonld/deck.ts");
 

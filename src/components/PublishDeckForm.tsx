@@ -3,12 +3,13 @@
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { localeNames, locales, type Dictionary } from "@/lib/i18n";
+import { isLocale, localeNames, locales, type Dictionary } from "@/lib/i18n";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
 import { BUILDER_STORAGE_KEY, GUIDE_DRAFT_KEY, PENDING_PUBLISH_KEY, deckTypes, guideSections, type Guide } from "@/lib/community/types";
 import { suggestArchetype } from "@/lib/archetype";
+import { guideFormWords, guideMeter } from "@/lib/community/deckQuality";
 import { legendaryParam, trackEvent, type EventParams } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
@@ -174,6 +175,9 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const [, startSubmit] = useTransition();
   /* "Ricomincia da capo" sulla bozza ripristinata: cambia la chiave dei campi e li rimonta vuoti */
   const [draftReset, setDraftReset] = useState(0);
+  /* parole della guida mentre si scrive (DECKS-02): sotto la soglia la pagina del mazzo non va su Google; in modifica
+     si parte dalla guida salvata, in creazione dalla prima battuta */
+  const [guideWords, setGuideWords] = useState<number | null>(() => (initial ? guideFormWords((k) => initial.guide[k]) : null));
   /* misura: il mazzo inviato, per l'evento deck_published quando l'azione risponde "fatto" (solo in creazione) */
   const sent = useRef<EventParams["deck_published"] | null>(null);
 
@@ -288,6 +292,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   }
 
   const g = initial?.guide;
+  const meter = guideWords === null ? null : guideMeter(guideWords, isLocale(locale) ? locale : "en");
   const v = (k: (typeof DRAFT_FIELDS)[number], fallback?: string) => restored?.[k] ?? fallback;
   /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative */
   const hasOptional = [...guideSections, "video" as const].some((k) => Boolean(restored?.[k] || (k === "video" ? initial?.video : g?.[k])));
@@ -322,7 +327,11 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
         if (mode === "create") sent.current = { locale, legendary: legendaryParam(deck.legendary), source: draftId ? "private_draft" : "builder" };
         startSubmit(() => formAction(fd));
       }}
-      onChange={saveDraft}
+      onChange={(e) => {
+        saveDraft(e);
+        const fd = new FormData(e.currentTarget);
+        setGuideWords(guideFormWords((k) => fd.get(k)));
+      }}
       // un campo non valido dentro il <details> chiuso non si può mettere a fuoco: prima lo apriamo
       onInvalidCapture={(e) => {
         const det = (e.target as HTMLElement).closest("details");
@@ -350,6 +359,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
                   /* ignore */
                 }
                 setDraftReset((n) => n + 1);
+                setGuideWords(null); // campi di nuovo vuoti: l'indicatore riparte dalla prima battuta
               }}
               className="text-mint underline underline-offset-2 hover:text-sky"
             >
@@ -404,6 +414,11 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
         </div>
 
         <Field id="summary" label={labels.summary} hint={labels.summaryHint} placeholder={ph.summary} required minLength={20} maxLength={600} rows={4} defaultValue={v("summary", g?.summary)} />
+        {meter ? (
+          <p className={`mt-2 text-xs ${meter.ok ? "text-good" : "text-pale-muted"}`} aria-live="polite">
+            {meter.text}
+          </p>
+        ) : null}
 
         {/* Le sei sezioni facoltative e il video: chiuse, così il modulo non sembra un compito in classe */}
         <details className="group mt-5 rounded-xl bg-night-2/80 px-4 py-3" open={hasOptional}>

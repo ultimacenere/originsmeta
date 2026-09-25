@@ -111,6 +111,31 @@ export function usageCounts(decks: readonly { legendary: string | null; cards: r
 }
 
 /**
+ * Ordine di "Le più giocate": più mazzi, poi costo più basso (senza costo in fondo), poi nome. Un comparatore solo per
+ * le righe visibili (`TierExplorer`, modo `usage`) e per l'ItemList dei dati strutturati di /tier-list/most-played
+ * (Ondata 2, GEO-10), così la lista dichiarata è quella che si legge nella pagina.
+ */
+export function usageOrder(a: { used: number; mana?: number; name: string }, b: { used: number; mana?: number; name: string }): number {
+  return b.used - a.used || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name);
+}
+
+/**
+ * Ordine dentro una fascia della tier list della community: media più alta, poi più voti, poi costo e nome, come si
+ * leggono le carte nel gioco. Lo usano le fasce visibili (`TierExplorer`) e l'ItemList di /tier-list/community.
+ */
+export function communityOrder(
+  a: { community?: { avg: number; votes: number }; mana?: number; name: string },
+  b: { community?: { avg: number; votes: number }; mana?: number; name: string },
+): number {
+  return (
+    (b.community?.avg ?? 0) - (a.community?.avg ?? 0) ||
+    (b.community?.votes ?? 0) - (a.community?.votes ?? 0) ||
+    (a.mana ?? 99) - (b.mana ?? 99) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+/**
  * Voto pesato sul numero di voti (media bayesiana): parte da `prior` con il peso di `weight` voti immaginari, così
  * un solo 5 stelle non vale più di tre 4,3. Con zero voti restituisce `prior`: chi ordina mette in fondo i mazzi
  * senza voti prima di guardare questo numero.

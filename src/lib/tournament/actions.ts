@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
+import { revalidateSitemaps } from "@/lib/sitemapData";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
@@ -30,7 +31,8 @@ function revalidateTournamentPaths(slug?: string) {
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/tournaments/${slug}`);
   }
-  revalidatePath("/sitemap.xml");
+  // l'indice e tutte le sitemap divise (Ondata 2): revalidatePath("/sitemap.xml") rinfrescava solo l'indice
+  revalidateSitemaps();
 }
 
 function localeOf(fd: FormData): Locale {

@@ -1,5 +1,5 @@
 import { siteUrl, type Locale } from "@/lib/i18n";
-import { breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
+import { breadcrumbs, koinGamesRef, organizationId, videoGameId } from "./entities";
 import type { Card } from "@/lib/data/cards";
 
 /**
@@ -25,19 +25,11 @@ import type { Card } from "@/lib/data/cards";
  * nome e sito perché il rimando resti leggibile anche da solo, mai con un logo (regola del materiale ufficiale).
  * Niente FAQPage (i rich result FAQ non escono più dal 7/5/2026) e niente AggregateRating: la fascia della tier list è
  * un giudizio di gioco, non una recensione.
- * Il modulo importa da `JsonLd.tsx` in sola lettura (il componente è di un altro pacchetto), e solo `breadcrumbs`,
- * `organizationId` e `videoGameId`: sono le tre cose che il finto JsonLd del test di deckQuality.ts (pacchetto DECKS)
- * sostituisce, perché jsonld/deck.ts importerà `cardEntityId` da qui.
+ * Le entità del sito (`breadcrumbs`, `organizationId`, `videoGameId`, `koinGamesRef`) vengono da src/lib/jsonld/entities.ts,
+ * modulo puro che anche i test caricano così com'è (integrazione dell'Ondata 2): Koin Games resta un'entità sola.
  */
 
 type Json = Record<string, unknown>;
-
-/**
- * Koin Games per `@id`: la stessa formula di `koinGamesId` / `koinGamesRef` del pacchetto LD (src/lib/jsonld/entities.ts,
- * riesportati da JsonLd.tsx). Qui è ripetuta perché su questo ramo quel modulo non c'è ancora: dopo l'integrazione si
- * può importare `koinGamesRef` da "@/components/JsonLd" (note del pacchetto CARDS).
- */
-const koinGamesRef: Json = { "@type": "Organization", "@id": `${siteUrl}/#koin-games`, name: "Koin Games", url: "https://koingames.io" };
 
 /**
  * `@id` della carta, uguale nelle tre lingue: l'ID ufficiale quando c'è (tutte le 230 carte oggi), altrimenti lo slug.

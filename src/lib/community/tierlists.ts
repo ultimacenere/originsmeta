@@ -1,6 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { TierListRow } from "@/lib/supabase/database";
 import { TIERS, type Tier, type TierBoard, type TierKind } from "@/lib/tiercode";
+import { rowsOrThrow } from "./queries";
 
 /**
  * Tier list della community. Le tier list che gli iscritti salvano dal tool `/tier-list/create` alimentano una
@@ -19,12 +20,10 @@ export type PublishedTierList = { owner: string; kind: TierKind; entries: unknow
 export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tier_lists").select("owner, kind, entries, updated_at").eq("status", "published").limit(5000);
-  if (error) {
-    console.error("[community] listPublishedTierLists:", error.message);
-    return [];
-  }
-  return (data ?? []) as unknown as PublishedTierList[];
+  // Con un errore lancia (DECKS-12): la rigenerazione fallisce e restano le tier list di prima, non una classifica vuota.
+  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate.
+  const res = await client.from("tier_lists").select("owner, kind, entries, updated_at").eq("status", "published").limit(5000);
+  return rowsOrThrow<PublishedTierList>("listPublishedTierLists", res);
 }
 
 const TIER_LIST_SELECT = "id, owner, kind, title, code, entries, status, created_at, updated_at";
@@ -40,9 +39,9 @@ export async function listUserTierLists(client: Db, userId: string): Promise<Tie
 export async function listPublicTierLists(userId: string): Promise<TierListRow[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tier_lists").select(TIER_LIST_SELECT).eq("owner", userId).eq("status", "published").order("kind");
-  if (error || !data) return [];
-  return data as unknown as TierListRow[];
+  // Con un errore lancia (DECKS-12), come le letture di queries.ts: il profilo pubblico tiene la versione di prima.
+  const res = await client.from("tier_lists").select(TIER_LIST_SELECT).eq("owner", userId).eq("status", "published").order("kind");
+  return rowsOrThrow<TierListRow>("listPublicTierLists", res);
 }
 
 /** Le fasce di una riga salvata, ripulite: solo le cinque lettere e solo elenchi di stringhe. */

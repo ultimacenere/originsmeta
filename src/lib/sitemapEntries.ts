@@ -8,6 +8,7 @@ import { getGuides, type Guide } from "./content/guides";
 import { authors, guidesByAuthor, newsByAuthor } from "./data/authors";
 import { NEWS_PAGES_SINCE, latestDay, pageLastmod, type Day, type PageRoute } from "./lastmod";
 import { cardDates, cardLastmod } from "./cardDates";
+import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
 import type { IndexEntry, UrlEntry } from "./seoXml";
 
 /**
@@ -34,8 +35,12 @@ import type { IndexEntry, UrlEntry } from "./seoXml";
 export const SITEMAP_SECTIONS = ["pages", "news", "guides", "cards", "cards-created", "cards-removed", "decks", "community"] as const;
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
 
-/** Le sezioni che leggono i dati della community: le altre dipendono solo dai file del repository. */
-export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "decks", "community"];
+/**
+ * Le sezioni che leggono i dati della community: le altre dipendono solo dai file del repository. Le carte attive ci
+ * sono perché il loro lastmod conta i mazzi elencati nella scheda (`deckRefs`, come il `dateModified`); per create e
+ * rimosse `cardPageDeckDays` non conta mazzi e i dati non servono.
+ */
+export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "cards", "decks", "community"];
 
 export const HOME_SITEMAP_PATH = "/sitemap-home.xml";
 
@@ -48,6 +53,14 @@ export function sectionSitemapPath(section: SitemapSection, locale: Locale): str
 export type CommunityData = {
   /** mazzi pubblicati, con le lingue in cui la scheda è indicizzabile (guida originale + traduzioni aggiornate) */
   decks: { slug: string; updated_at: string; locales: Locale[] }[];
+  /** data dell'ultimo mazzo pubblicato o modificato, anche sotto soglia: /decks e le tier list mostrano tutti i mazzi */
+  latestDeck?: string;
+  /**
+   * I mazzi pubblicati come li legge la scheda carta (`loadDeckRefs`, src/lib/community/decksByCard.ts), per dare alle
+   * schede lo stesso lastmod del loro `dateModified` (`cardPageLastmod` + `cardPageDeckDays`). null o assente: nessun
+   * giorno dei mazzi (community spenta, oppure la build, dove la lettura può rispondere null).
+   */
+  deckRefs?: DeckRef[] | null;
   /** tornei pubblici non annullati */
   tournaments: { slug: string; updated_at: string }[];
   /** iscritti con almeno un mazzo pubblicato (/u/<nome>) */
@@ -60,7 +73,7 @@ export type CommunityData = {
   tierLists: { latest?: string; byUser: [username: string, updatedAt: string][] };
 };
 
-export const EMPTY_COMMUNITY: CommunityData = { decks: [], tournaments: [], profiles: [], tierLists: { byUser: [] } };
+export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
 
 /** Sezione di una scheda carta: prima le rimosse (anche le Leggendarie e le create), poi le create, poi le attive. */
 export function cardSection(card: Pick<Card, "status" | "type">): "cards" | "cards-created" | "cards-removed" {
@@ -102,7 +115,7 @@ function ownImages(paths: readonly (string | undefined)[]): string[] {
 /** Tutte le pagine della sitemap, con la loro sezione. */
 export function sitemapPages(data: CommunityData): SitemapPage[] {
   const latestNews = latestDay(sortedNews.map(newsDay));
-  const latestCommunity = latestDay(data.decks.map((c) => c.updated_at));
+  const latestCommunity = latestDay([data.latestDeck, ...data.decks.map((c) => c.updated_at)]);
   const latestTournament = latestDay(data.tournaments.map((t) => t.updated_at));
   const patchDay = patches[latestPatch].date;
   const tierListOf = new Map(data.tierLists.byUser);
@@ -150,7 +163,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
       }),
     ),
     // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
-    // Lo stesso giorno del `dateModified` della scheda, dalla stessa funzione (`cardLastmod` in src/lib/cardDates.ts).
+    // Lo stesso giorno del `dateModified` della scheda, dalle stesse funzioni (`cardLastmod` in src/lib/cardDates.ts,
+    // più i giorni dei mazzi elencati nella scheda in quella lingua: `cardPageLastmod` e `cardPageDeckDays`).
     // L'immagine è la carta ufficiale (media kit Koin, contenuto e non interfaccia), che la scheda mostra intera.
     ...cards.map(
       (c): SitemapPage => ({
@@ -158,7 +172,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
         section: cardSection(c),
         route: "/cards/[slug]",
         dates: [],
-        lastmod: (l, today) => cardLastmod(c, l, today, guidesBy[l]),
+        lastmod: (l, today) => cardPageLastmod(cardLastmod(c, l, today, guidesBy[l]), l, cardPageDeckDays(c, l, data.deckRefs ?? null), today),
         images: () => [c.image],
       }),
     ),

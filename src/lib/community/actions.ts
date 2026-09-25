@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { archetypeLabels } from "@/lib/data/decks";
 import { getCard } from "@/lib/data/cards";
 import { suggestArchetype } from "@/lib/archetype";
@@ -9,10 +10,13 @@ import { MAX_PRIVATE_DECKS, deckTypes } from "@/lib/community/types";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
+import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
+import { revalidateSitemaps } from "@/lib/sitemapData";
 import { publishedDeckLimit } from "./queries";
 import { announceDeck } from "./discordDeck";
 import { translateDeckLater } from "./translate";
 import { refreshCardDecks } from "./decksByCard";
+import { deckIndexable } from "./deckQuality";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
@@ -33,8 +37,22 @@ function revalidateDeckPaths(slug?: string, gone = false, cardPages = true) {
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/decks/community/${slug}`);
   }
-  revalidatePath("/sitemap.xml");
+  // l'indice e tutte le sitemap divise (Ondata 2): revalidatePath("/sitemap.xml") rinfrescava solo l'indice
+  revalidateSitemaps();
   if (cardPages) refreshCardDecks(gone);
+}
+
+/** IndexNow (Bing): le versioni indicizzabili della scheda di un mazzo, dopo la risposta al browser (solo in produzione). */
+function pingIndexNow(paths: string[]): void {
+  if (!indexNowEnabled() || !paths.length) return;
+  const job = async () => {
+    await submitIndexNow(paths);
+  };
+  try {
+    after(job);
+  } catch {
+    void job();
+  }
 }
 
 function localeOf(fd: FormData): Locale {
@@ -110,6 +128,8 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
       revalidateDeckPaths(s);
       // in diretta nel canale #community-decks del nostro Discord, dopo la risposta (senza webhook non fa nulla)
       announceDeck(s);
+      // la scheda nella lingua della guida, l'unica indicizzabile finché la traduzione non c'è; sotto la soglia di DECKS è noindex
+      if (deckIndexable(p.row)) pingIndexNow([`/${p.row.guide.lang}/decks/community/${s}`]);
       // la guida si traduce nelle altre lingue del sito, dopo la risposta (senza ANTHROPIC_API_KEY non fa nulla)
       translateDeckLater(p.supabase, id);
       return { ok: true, href: `/${p.locale}/decks/community/${s}?new=1` };
@@ -230,6 +250,8 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if (!data) return { error: "forbidden" };
   const { slug: s, status } = data as { slug: string; status: string };
   revalidateDeckPaths(s, false, status === "published");
+  // come in publishDeck: solo un mazzo pubblicato e sopra la soglia di parole ha una scheda da segnalare
+  if (status === "published" && deckIndexable(p.row)) pingIndexNow([`/${p.row.guide.lang}/decks/community/${s}`]);
   // guida cambiata: le traduzioni fatte sul testo vecchio non valgono più e si rifanno (solo le lingue rimaste indietro)
   translateDeckLater(p.supabase, id);
   return { ok: true, href: `/${p.locale}/decks/community/${s}` };

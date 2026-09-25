@@ -3,6 +3,7 @@ import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { loadTierData } from "@/lib/tierData";
+import { usageOrder } from "@/lib/tierstats";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
 import { TierExplorer } from "@/components/TierExplorer";
@@ -45,6 +46,19 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
     { id: "legendaries", label: t.sections.legendaries.title, count: legendaries.length },
     { id: "cards", label: t.sections.cards.title, count: base.length },
   ];
+  // ItemList vera (Ondata 2, GEO-10): le carte nell'ordine in cui la pagina le mostra (usageOrder, lo stesso di
+  // TierExplorer), tutte le Leggendarie giocate e le prime 20 carte base, quelle visibili prima di "Mostra le altre".
+  // I mazzi e gli archetipi restano fuori. Senza mazzi pubblicati restano le ancore delle sezioni.
+  const played = n
+    ? [...legendaries.filter((c) => c.used > 0).sort(usageOrder), ...base.filter((c) => c.used > 0).sort(usageOrder).slice(0, 20)]
+    : [];
+  const listItems = played.length
+    ? played.map((c) => ({
+        name: c.name,
+        path: c.href,
+        description: `${c.used === 1 ? t.inDecksOne : t.inDecksMany.replace("{n}", String(c.used))} · ${Math.round((c.used / n) * 100)}%`,
+      }))
+    : sections.map((s) => ({ name: s.label, path: `${href(locale, "/tier-list/most-played")}#${s.id}` }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -60,7 +74,7 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
             path: href(locale, "/tier-list/most-played"),
             name: p.title,
             description: p.description,
-            items: sections.map((s) => ({ name: s.label, path: `${href(locale, "/tier-list/most-played")}#${s.id}` })),
+            items: listItems,
             about: videoGameId,
           }),
         ]}

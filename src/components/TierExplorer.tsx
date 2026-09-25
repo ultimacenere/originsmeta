@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import Link from "next/link";
 import { CardPeek, type PeekCard } from "./CardPeek";
 import { tierTone } from "@/lib/tiercode";
-import { TIER_ORDER, type Tier } from "@/lib/tierstats";
+import { TIER_ORDER, communityOrder, usageOrder, type Tier } from "@/lib/tierstats";
 import type { TierCardEntry } from "@/lib/tierTypes";
 import { trackNamedEvent } from "@/lib/analytics";
 
@@ -99,11 +99,6 @@ function matches(e: TierCardEntry, f: Filters): boolean {
   if (f.cost === "5+" && m < 5) return false;
   if (f.align && e.alignment !== f.align) return false;
   return true;
-}
-
-/** Dentro la fascia: media più alta, poi più voti, poi costo e nome, come si leggono le carte nel gioco. */
-function byCommunity(a: TierCardEntry, b: TierCardEntry): number {
-  return (b.community?.avg ?? 0) - (a.community?.avg ?? 0) || (b.community?.votes ?? 0) - (a.community?.votes ?? 0) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name);
 }
 
 /** Eventi della scheda di una voce: a GA4 con il consenso e a Vercel senza cookie (src/lib/analytics.ts). */
@@ -345,7 +340,7 @@ export function TierExplorer({
     const ranked = (t: Tier) =>
       official
         ? pool.filter((e) => official[e.slug] === t).sort((a, b) => Object.keys(official).indexOf(a.slug) - Object.keys(official).indexOf(b.slug))
-        : pool.filter((e) => e.community?.tier === t).sort(byCommunity);
+        : pool.filter((e) => e.community?.tier === t).sort(communityOrder);
     const unranked = pool.filter((e) => !tierOfEntry(e));
     return (
       <div className="tier-board">
@@ -377,7 +372,7 @@ export function TierExplorer({
   /* ---------- le più giocate ---------- */
   const usage = () => {
     if (!pool.length) return nothing;
-    const sorted = pool.slice().sort((a, b) => b.used - a.used || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
+    const sorted = pool.slice().sort(usageOrder);
     const used = sorted.filter((e) => e.used > 0);
     const unused = sorted.filter((e) => e.used === 0);
     const hidden = showAll ? 0 : Math.max(0, used.length - USAGE_LIMIT);

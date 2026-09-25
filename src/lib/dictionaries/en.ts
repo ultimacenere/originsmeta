@@ -680,15 +680,11 @@ export const en = {
   },
   about: {
     title: "About OriginsMeta, the unofficial Origins TCG site",
-    description:
-      "OriginsMeta is an independent Origins TCG site in English, Italian and Spanish: news, cards, decks and tournaments, from Steam, the patch notes and Discord.",
     p1: "OriginsMeta is an independent companion site for Origins TCG, the free-to-compete trading card game by Koin Games. We track news, patches, cards, decks and tournaments, in English, Italian and Spanish.",
-    p2: "We are players, not the publisher. Card names, artwork and game data belong to Koin Games; we quote them for information and commentary. Our numbers come from the official Steam page, the Steam patch notes and the official Discord, and every page says when it was last updated.",
     p3: "The site launched in September 2026, during the Steam demo, so that the archive is complete from day one when the game launches.",
     contactTitle: "Contact",
     contactText: "Corrections, decklists, tournaments, partnerships:",
     disclaimerTitle: "Disclaimer",
-    disclaimer: "OriginsMeta is not affiliated with, endorsed by or sponsored by Koin Games. Origins TCG is a trademark of its owner. All game content is used under fair use for informational purposes.",
     sourcesTitle: "Sources we use",
     sources: {
       steam: "Steam · Origins TCG",

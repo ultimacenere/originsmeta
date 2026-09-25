@@ -45,28 +45,28 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
 export const PAGE_UPDATED = {
   "/": "2026-09-25", // Ondata 1: title sul marchio, "In breve" in Stato del gioco, tutte le slide nell'HTML
   "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting
-  "/news/[slug]": "2026-09-25", // Ondata 1: News correlate e "Cosa cambia in questa patch"
+  "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup
   "/guides": "2026-09-25", // Ondata 1: title e description
-  "/guides/[slug]": "2026-09-25", // Ondata 1: "News su questo argomento"
+  "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
   "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse
-  "/cards/[slug]": "2026-09-25", // Ondata 1: title e description per tipo, link alle news delle patch
+  "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco
-  "/decks": "2026-09-25", // 7e3c971: guide dei mazzi tradotte
+  "/decks": "2026-09-25", // Ondata 2: ItemList con la soglia di qualità dei mazzi
   "/decks/[slug]": "2026-09-25", // 63fa759
-  "/decks/community/[slug]": "2026-09-25", // 7e3c971
-  "/deck-builder": "2026-09-25", // Ondata 1: title e H1
+  "/decks/community/[slug]": "2026-09-25", // Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
+  "/deck-builder": "2026-09-25", // Ondata 2: WebApplication nei dati strutturati
   "/tier-list": "2026-09-25", // Ondata 1: In breve dai dati, tessere con i link alle schede
-  "/tier-list/community": "2026-09-25", // Ondata 1: anteprima dichiarata, link alle schede
-  "/tier-list/most-played": "2026-09-25", // Ondata 1: link alle schede e ai mazzi
+  "/tier-list/community": "2026-09-25", // Ondata 2: ItemList delle carte (2c6ab28: persone e liste salvate)
+  "/tier-list/most-played": "2026-09-25", // Ondata 2: ItemList delle carte più giocate
   "/tier-list/create": "2026-09-25", // Ondata 1: H1
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
-  "/tournaments": "2026-09-25", // Ondata 1: Crimson Cup in testa con regole e iscrizione
-  "/tournaments/[slug]": "2026-09-22", // a0d9f9c
+  "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
+  "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
   "/faq": "2026-09-25", // Ondata 1: H1, pagina senza assistente, link alle news
-  "/about": "2026-09-21", // 615177a
-  "/authors": "2026-09-25", // 1713d26: i mazzi di Davdas nel suo profilo
-  "/authors/[slug]": "2026-09-25", // 1713d26
-  "/u/[username]": "2026-09-23", // e0d0ad4: nasce il profilo pubblico
+  "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, World of Origins, disclaimer, link agli autori
+  "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
+  "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas
+  "/u/[username]": "2026-09-25", // Ondata 2: noindex senza contenuti, title e description dai dati, ProfilePage
 } as const satisfies Record<string, Day>;
 
 export type PageRoute = keyof typeof PAGE_UPDATED;

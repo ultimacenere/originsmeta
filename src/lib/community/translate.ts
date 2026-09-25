@@ -1,13 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
-import { locales } from "@/lib/i18n";
+import { locales, type Locale } from "@/lib/i18n";
 import { cards } from "@/lib/data/cards";
 import { locations } from "@/lib/data/locations";
+import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
+import { revalidateSitemaps } from "@/lib/sitemapData";
 import type { Db } from "@/lib/supabase/public";
 import type { Guide } from "./types";
 import { guideHash, guideText, missingLocales, namesIn, translateGuideWith, type DeckTranslations } from "./deckTranslation";
 import { refreshCardDecks } from "./decksByCard";
+import { indexableLocales } from "./deckQuality";
 
 /**
  * Dopo la pubblicazione o la modifica di un mazzo, la guida si traduce nelle altre lingue del sito
@@ -94,6 +97,12 @@ export async function translateDeck(supabase: Db, deckId: string): Promise<strin
     } catch {
       // fuori dalla richiesta: le schede si aggiornano comunque entro un'ora
     }
+    // la scheda esiste ora anche in queste lingue: sitemap aggiornata (revalidateSitemaps non lancia mai) e avviso a
+    // IndexNow, solo per le versioni indicizzabili. `next` e non `fresh.translations`, che sono quelle di prima.
+    revalidateSitemaps();
+    const indexable = new Set(indexableLocales({ ...fresh, translations: next }, locales));
+    const ping = written.filter((l) => indexable.has(l as Locale));
+    if (indexNowEnabled() && ping.length) await submitIndexNow(ping.map((l) => `/${l}/decks/community/${fresh.slug}`));
   }
   return written;
 }

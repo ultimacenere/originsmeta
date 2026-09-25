@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cache } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { COMMUNITY_MIN_LISTS, communitySample } from "@/lib/tierstats";
+import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communitySample } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
@@ -48,6 +48,15 @@ export default async function CommunityTierListPage({ params }: { params: Locale
     { id: "cards" as const, title: t.sections.cards.title, text: t.sections.cards.text, entries: data.cards.filter((x) => !x.legendary), n: data.lists.cards },
   ];
   const listsLabel = (n: number) => (n === 1 ? t.sourceCommunityOne : t.sourceCommunityMany.replace("{n}", String(n)));
+  // ItemList vera (Ondata 2, GEO-10) solo per le liste che non sono più un'anteprima (almeno COMMUNITY_MIN_LISTS
+  // salvate di quel tipo): le carte fascia per fascia, nell'ordine delle fasce visibili (communityOrder, lo stesso di
+  // TierExplorer). Altrimenti restano le ancore delle sezioni.
+  const ranked = kinds
+    .filter((k) => k.n >= COMMUNITY_MIN_LISTS)
+    .flatMap((k) => TIER_ORDER.flatMap((tier) => k.entries.filter((e) => e.community?.tier === tier).sort(communityOrder)));
+  const listItems = ranked.length
+    ? ranked.map((e) => ({ name: e.name, path: e.href, description: `${e.community!.tier} · ${e.community!.avg.toFixed(1)} (${e.community!.votes})` }))
+    : kinds.map((k) => ({ name: k.title, path: `${href(locale, "/tier-list/community")}#${k.id}` }));
   const fill = (s: string, n: number) => s.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS)).replace("{n}", String(n));
   const preview = (n: number) => fill(c.preview, n);
 
@@ -65,7 +74,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
             path: href(locale, "/tier-list/community"),
             name: lists < COMMUNITY_MIN_LISTS ? c.titlePreview : c.title,
             description: c.description,
-            items: kinds.map((k) => ({ name: k.title, path: `${href(locale, "/tier-list/community")}#${k.id}` })),
+            items: listItems,
             about: videoGameId,
           }),
         ]}

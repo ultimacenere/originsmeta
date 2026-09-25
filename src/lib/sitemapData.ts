@@ -1,7 +1,7 @@
-import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { isLocale } from "@/lib/i18n";
-import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries";
+import { listPublicProfiles, listPublishedDeckIndex } from "@/lib/community/queries";
+import { loadDeckRefs } from "@/lib/community/decksByCard";
 import { supabasePublic } from "@/lib/supabase/public";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
@@ -24,18 +24,22 @@ import {
  * condivisa (`unstable_cache`, la cache dei dati di Next: su Vercel è comune a tutte le funzioni) con il tag
  * `SITEMAP_TAG` e una validità di `DATA_TTL` secondi: le 25 sitemap li leggono una volta sola, non una per sitemap
  * (con 25 file senza cache sarebbero state una trentina di query a ogni giro). Le route sono ISR (`revalidate = 3600`),
- * ma Next prende il più breve fra la route e le cache che usa: l'indice e le sitemap delle pagine, dei mazzi e della
- * community si rigenerano quindi ogni `DATA_TTL` (un mazzo nuovo entra in sitemap entro una decina di minuti), le
- * altre ogni ora (news, guide e carte cambiano solo con un deploy; l'ora serve al taglio "mai nel futuro" delle date).
+ * ma Next prende il più breve fra la route e le cache che usa: l'indice e le sitemap delle pagine, delle carte attive
+ * (il loro lastmod conta i mazzi della scheda), dei mazzi e della community si rigenerano quindi ogni `DATA_TTL` (un
+ * mazzo nuovo entra in sitemap entro una decina di minuti), le altre ogni ora (news, guide, carte create e rimosse
+ * cambiano solo con un deploy; l'ora serve al taglio "mai nel futuro" delle date).
  * Durante la rigenerazione di una route un dato scaduto della cache si rilegge subito, non in background
  * (node_modules/next/dist/server/web/spec-extension/unstable-cache.js, ramo `isStale`). Le route ereditano il tag,
  * quindi `revalidateSitemaps()` (dopo la pubblicazione di un mazzo o di un torneo) rinnova dati e sitemap insieme.
  *
  * Errori. Una lettura fallita lancia (`readCommunity`), e nessun risultato vuoto finisce in cache: durante la
  * rigenerazione `unstable_cache` risponde con la copia precedente, e se non c'è Next continua a servire la sitemap
- * di prima (guida ISR, "Handling uncaught exceptions"). Solo alla build una lettura fallita dà le sitemap senza
- * community, corrette alla prima rigenerazione. `listPublishedSlugs` e `listPublicProfiles` (src/lib/community/
- * queries.ts) lanciano da soli dal pacchetto DECKS dell'Ondata 2; tornei e tier list si leggono qui.
+ * di prima (guida ISR, "Handling uncaught exceptions"). Anche alla build l'errore sale (integrazione dell'Ondata 2,
+ * proposta del pacchetto DECKS): una sitemap senza mazzi è proprio il guasto di DECKS-12, e con Supabase irraggiungibile
+ * la build fallisce comunque sulle pagine dei mazzi; senza rete si costruisce con `NEXT_PUBLIC_COMMUNITY=off`.
+ * `listPublishedDeckIndex` e `listPublicProfiles` (src/lib/community/queries.ts) lanciano da soli dal pacchetto
+ * DECKS; tornei e tier list si leggono qui. I mazzi delle schede carta (`loadDeckRefs`) si leggono fuori da
+ * `readCommunity`, vedi `communityData`.
  *
  * Perché `unstable_cache`: nel progetto le Cache Components (`cacheComponents`) sono spente, e senza di loro è l'unica
  * cache condivisa con tag e scadenza. Se si accendono, va sostituita con la direttiva 'use cache' (cacheTag, cacheLife),
@@ -65,7 +69,7 @@ class SitemapReadError extends Error {
   }
 }
 
-/** Tornei pubblici non annullati: le regole di `listTournamentSlugs`, ma un errore lancia invece di dare []. */
+/** Tornei pubblici non annullati (la vecchia `listTournamentSlugs` di tournament/queries.ts, tolta): un errore lancia. */
 async function tournamentSlugs(): Promise<CommunityData["tournaments"]> {
   const client = supabasePublic();
   if (!client) return [];
@@ -106,24 +110,26 @@ async function tierListDates(): Promise<CommunityData["tierLists"]> {
 
 /** Le quattro letture, in parallelo. Il risultato è JSON puro (niente Map): la cache lo serializza. */
 async function readCommunity(): Promise<CommunityData> {
-  const [decks, tournaments, profiles, tierLists] = await Promise.all([listPublishedSlugs(), tournamentSlugs(), listPublicProfiles(), tierListDates()]);
-  return { decks, tournaments, profiles, tierLists };
+  const [deckIndex, tournaments, profiles, tierLists] = await Promise.all([listPublishedDeckIndex(), tournamentSlugs(), listPublicProfiles(), tierListDates()]);
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, tournaments, profiles, tierLists };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });
 
 /**
- * I dati della community per le sitemap. Se la lettura fallisce e la cache non ha una copia: alla build le sitemap
- * escono senza community (e si rigenerano dopo `DATA_TTL`); in produzione l'errore sale, e Next tiene la sitemap di prima.
+ * I dati della community per le sitemap. Se la lettura fallisce l'errore sale: la rigenerazione fallisce e Next
+ * continua a servire la sitemap di prima; nel caso peggiore (cache appena scaduta con `revalidateSitemaps`) il motore
+ * riceve un errore e riprova, tenendo la sitemap già letta. Mai una sitemap vuota per un errore (DECKS-12).
+ *
+ * `loadDeckRefs` (i mazzi come li vede la scheda carta, per il lastmod delle schede) si chiama qui, FUORI da
+ * `readCommunity`: una `unstable_cache` annidata non passa le sue etichette a quella esterna (ramo
+ * `isNestedUnstableCache` in node_modules/next/dist/server/web/spec-extension/unstable-cache.js), mentre chiamata dalla
+ * route le passa l'etichetta `community-decks`, e le sitemap si rinnovano con le schede. Ha i suoi errori: null alla
+ * build (le schede escono senza mazzi, quindi niente giorni dei mazzi nemmeno qui), rilanciati a sito acceso.
  */
 async function communityData(): Promise<CommunityData> {
-  try {
-    return await cachedCommunity();
-  } catch (e) {
-    console.error("[sitemap] dati della community non letti:", e instanceof Error ? e.message : e);
-    if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) return EMPTY_COMMUNITY;
-    throw e;
-  }
+  const [base, deckRefs] = await Promise.all([cachedCommunity(), loadDeckRefs()]);
+  return { ...base, deckRefs };
 }
 
 /**

@@ -4,7 +4,8 @@ import { locales } from "@/lib/i18n";
 import { aggregateLists, type Tier } from "@/lib/tierstats";
 import type { TierKind } from "@/lib/tiercode";
 import type { DeckRef } from "@/lib/cardSynergy";
-import { guideLocales, type DeckTranslations } from "./deckTranslation";
+import type { DeckTranslations } from "./deckTranslation";
+import { indexableLocales } from "./deckQuality";
 import { authorName } from "./util";
 import type { Guide, Profile } from "./types";
 
@@ -59,8 +60,8 @@ const building = process.env.NEXT_PHASE === "phase-production-build";
 
 /**
  * Colonne che servono alle schede carta. Si leggono anche `guide` e `translations` (tutti i testi delle guide e delle
- * traduzioni) perché le lingue in cui un mazzo è indicizzabile dipendono dall'impronta del testo (`guideLocales`) e,
- * con il pacchetto DECKS, dalla sua lunghezza: il peso sta solo nella risposta di Supabase, una volta all'ora. Nella
+ * traduzioni) perché le lingue in cui un mazzo è indicizzabile dipendono dall'impronta del testo e dalla sua
+ * lunghezza (`indexableLocales` di deckQuality.ts): il peso sta solo nella risposta di Supabase, una volta all'ora. Nella
  * cache finisce il risultato di `fetchDeckRefs`, fatto di soli `DeckRef` (niente guide né codici).
  */
 const DECK_COLUMNS =
@@ -118,8 +119,9 @@ async function fetchDeckRefs(): Promise<DeckRef[] | null> {
     updated: r.updated_at,
     author: authorName(r.profile),
     badge: r.profile?.badge ?? "community",
-    // Con il pacchetto DECKS: `indexableLocales(r, locales)` di ./deckQuality (anche la soglia di parole della guida).
-    locales: guideLocales(r, locales),
+    // Le lingue in cui la scheda del mazzo si indicizza (guida originale e traduzioni aggiornate, e solo sopra la soglia
+    // di parole del pacchetto DECKS): lo stesso criterio di robots, hreflang, sitemap e ItemList di /decks.
+    locales: indexableLocales(r, locales),
   }));
 }
 

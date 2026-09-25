@@ -74,7 +74,6 @@ function hubDescriptions(d: Dict): Record<string, string> {
     news: d.news.description,
     guides: d.guides.description,
     authors: d.authors.description,
-    about: d.about.description,
   };
 }
 
