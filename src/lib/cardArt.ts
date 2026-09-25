@@ -35,7 +35,7 @@ export function initials(name: string): string {
  * (supera quella di Davdas del 15/09: Staff menta, Pro rosa, Influencer oro):
  * Staff scritta nera su giallo (12,3:1), Community com'era (gesso su night-3, 8,6:1), Pro rosso su azzurro
  * (`.badge-pro`, 5,2:1), Influencer gradiente stile Instagram con scritta bianca (`.badge-ig`, come i bottoni
- * primari), Creator viola pieno con scritta bianca (`.badge-creator`, 25/09/2026: chi crea contenuti sul sito). Le due varianti con gradiente e con colori fuori palette stanno in globals.css, non in utility.
+ * primari), Autore celeste con scritta scura (`.badge-creator`, id `creator`, 25/09/2026: chi pubblica contenuti sul sito). Le due varianti con gradiente e con colori fuori palette stanno in globals.css, non in utility.
  * Chi è Staff non mostra anche "Community"; il tag community di default non si mostra affatto.
  */
 export const badgeStyle: Record<string, string> = {
