@@ -7,6 +7,12 @@
 # Secret (Settings → Secrets and variables → Actions → New repository secret), uno per canale:
 # DISCORD_WEBHOOK_ANNOUNCEMENTS, DISCORD_WEBHOOK_NEWS, DISCORD_WEBHOOK_METASHIFTING, DISCORD_WEBHOOK_DECKS (solo per
 # l'archivio) e, facoltativo, DISCORD_WEBHOOK_GUIDES. Un canale senza secret si salta con un avviso.
+#
+# Accanto agli annunci, IndexNow (Ondata 2 SEO/GEO, 25/09/2026): gli URL nuovi o cambiati (news, guide, schede delle
+# carte toccate da una patch o da una rilettura dei testi, luoghi) partono verso Bing e gli altri motori del protocollo
+# appena il deploy di produzione è pronto. Nessun secret: la chiave è pubblica (src/lib/indexnow.ts). È un job a
+# parte, fuori dalla coda degli annunci, e non ferma mai l'Action: un errore resta un avviso. Dettagli in
+# scripts/indexnow.mjs, che confronta gli stessi file elencati qui sotto (FILES; un test controlla che coincidano).
 name: Annunci su Discord
 
 on:
@@ -15,6 +21,11 @@ on:
     paths:
       - src/lib/data/news.ts
       - src/lib/content/guides.ts
+      # i file seguenti servono solo a IndexNow: per loro il job degli annunci non parte
+      - src/lib/content/guides-es.ts
+      - src/lib/data/card-history.ts
+      - src/lib/data/card-lore.ts
+      - src/lib/data/locations.ts
   workflow_dispatch:
     inputs:
       backfill_since:
@@ -23,17 +34,31 @@ on:
       slugs:
         description: 'Oppure voci singole, separate da virgola: news:<slug>, guides:<slug>, decks:<slug>'
         required: false
+      indexnow:
+        description: 'Solo IndexNow, niente Discord: voci separate da virgola (news:<slug>, cards:<slug>, /es/cards, sitemap:/es per una lingua intera)'
+        required: false
 
 permissions:
   contents: read
 
-# un invio alla volta: due push ravvicinati non si pestano i piedi
-concurrency:
-  group: discord-announce
-  cancel-in-progress: false
-
 jobs:
   announce:
+    # Solo se il push tocca news o guide (o a mano, senza il campo indexnow). Un push delle sole carte, dei luoghi o dei
+    # testi spagnoli delle guide non entra nella coda degli annunci: in coda GitHub tiene un solo run in attesa, e un
+    # run nuovo annulla quello che aspetta, con le sue news mai annunciate. La condizione è ripetuta nel gruppo di
+    # concorrenza, così un job saltato non tocca la coda comunque GitHub ordini `if` e `concurrency`.
+    if: >-
+      ${{ (github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
+      || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
+      || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"'))) }}
+    # un invio alla volta: due push ravvicinati non si pestano i piedi
+    concurrency:
+      group: >-
+        ${{ ((github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
+        || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
+        || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"'))))
+        && 'discord-announce' || format('discord-announce-skip-{0}', github.run_id) }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -58,3 +83,37 @@ jobs:
           AFTER: ${{ github.sha }}
           BACKFILL_SINCE: ${{ github.event.inputs.backfill_since }}
           SLUGS: ${{ github.event.inputs.slugs }}
+
+  indexnow:
+    # A ogni push della lista qui sopra, e a mano con i campi indexnow o slugs. Indipendente dagli annunci: parte anche
+    # se non partono o falliscono, e senza gruppo di concorrenza, perché l'attesa del deploy (fino a dieci minuti) non
+    # deve tenere in coda nessuno; ogni run segnala solo il suo push (BEFORE..AFTER). Mai rosso: continue-on-error.
+    if: ${{ github.event_name == 'push' || github.event.inputs.indexnow || github.event.inputs.slugs }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    permissions:
+      contents: read
+      # IndexNow aspetta il deploy di produzione di Vercel, che GitHub registra come "deployment"
+      deployments: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # src/lib per src/lib/indexnow.ts, che scripts/indexnow.mjs importa
+          sparse-checkout: |
+            scripts
+            src/lib
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Segnala a IndexNow
+        # il flag rende esplicita la lettura del TypeScript di src/lib/indexnow.ts (predefinita da Node 22.18)
+        run: node --experimental-strip-types scripts/indexnow.mjs
+        env:
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          SLUGS: ${{ github.event.inputs.slugs }}
+          INDEXNOW_TARGETS: ${{ github.event.inputs.indexnow }}
+          GITHUB_TOKEN: ${{ github.token }}

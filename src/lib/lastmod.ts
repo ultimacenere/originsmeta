@@ -8,7 +8,7 @@ import type { Locale } from "./i18n";
  * dichiara il giorno più recente fra quelli che ne hanno cambiato davvero il contenuto:
  *   - il modello della pagina (`PAGE_UPDATED`, dalla storia del repository);
  *   - i suoi dati (data della news, `updated` della guida, patch che hanno toccato la carta, `updated_at` di un mazzo…),
- *     che raccoglie `src/app/sitemap.ts`;
+ *     che raccoglie `src/lib/sitemapEntries.ts` (dal 25/09/2026 le sitemap sono divise per sezione e lingua);
  *   - due soglie: il giorno in cui la lingua è nata (`LOCALE_SINCE`) e l'ultimo cambio che ha toccato i link di
  *     tutte le pagine (`SITE_WIDE_CHANGE`).
  * Mai nel futuro (si taglia a oggi) e mai con un orario: solo il giorno (aaaa-mm-gg), perché "2026-09-25T12:00Z"
