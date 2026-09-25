@@ -11,7 +11,7 @@ import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries"
 import { supabasePublic } from "@/lib/supabase/public";
 import { listTournamentSlugs } from "@/lib/tournament/queries";
 import { NEWS_PAGES_SINCE, latestDay, pageLastmod, todayUtc, type PageRoute } from "@/lib/lastmod";
-import { cardDates } from "@/lib/cardDates";
+import { cardDates, cardLastmod } from "@/lib/cardDates";
 
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
@@ -22,11 +22,14 @@ type Dates = readonly (string | null | undefined)[];
  * Una pagina della sitemap. `route` è il modello (la sua data sta in `PAGE_UPDATED` di `src/lib/lastmod.ts`),
  * `dates` le date dei dati che la pagina mostra: una funzione quando cambiano con la lingua (le guide).
  * `locales`: solo quando la pagina non esiste in tutte le lingue (mazzi della community senza traduzione).
+ * `lastmod`: il giorno già calcolato da chi lo dichiara anche nella pagina, al posto di `route` + `dates` (le schede
+ * carta, con `cardLastmod`: la stessa funzione del loro `dateModified`).
  */
 type Entry = {
   path: string;
   route: PageRoute;
   dates: Dates | ((locale: Locale) => Dates);
+  lastmod?: (locale: Locale) => string;
   changeFrequency: "daily" | "weekly" | "monthly";
   priority: number;
   locales?: readonly Locale[];
@@ -112,8 +115,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     })),
     // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
-    // Stesse date del `dateModified` della scheda (`cardDates` in src/lib/cardDates.ts, con `pageLastmod` qui sotto).
-    ...cards.map((c) => ({ path: `/cards/${c.slug}`, route: "/cards/[slug]" as const, dates: (l: Locale) => cardDates(c, l, guidesBy[l]), changeFrequency: "weekly" as const, priority: 0.6 })),
+    // Lo stesso giorno del `dateModified` della scheda, dalla stessa funzione (`cardLastmod` in src/lib/cardDates.ts).
+    ...cards.map((c) => ({
+      path: `/cards/${c.slug}`,
+      route: "/cards/[slug]" as const,
+      dates: [],
+      lastmod: (l: Locale) => cardLastmod(c, l, today, guidesBy[l]),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
     ...decks.map((d) => ({ path: `/decks/${d.slug}`, route: "/decks/[slug]" as const, dates: [d.updated], changeFrequency: "weekly" as const, priority: 0.7 })),
     ...guidesBy.en.map((g) => ({ path: `/guides/${g.slug}`, route: "/guides/[slug]" as const, dates: (l: Locale) => [guideDay(l, g.slug)], changeFrequency: "weekly" as const, priority: 0.8 })),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
@@ -137,7 +147,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       out.push({
         url: `${siteUrl}${href(l, e.path)}`,
         // Solo il giorno (aaaa-mm-gg), mai un orario: vedi `lastmodFor` in src/lib/lastmod.ts.
-        lastModified: pageLastmod(e.route, l, typeof e.dates === "function" ? e.dates(l) : e.dates, today),
+        lastModified: e.lastmod ? e.lastmod(l) : pageLastmod(e.route, l, typeof e.dates === "function" ? e.dates(l) : e.dates, today),
         changeFrequency: e.changeFrequency,
         priority: e.priority,
         alternates: { languages },

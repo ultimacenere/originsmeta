@@ -65,15 +65,26 @@ const sections = [
 ] as const;
 
 /**
- * Redirect temporanei (307) delle sezioni senza lingua, con le stesse regole della radice. `:path*` prende anche il
- * percorso vuoto (/cards). Nessun giro: le destinazioni cominciano con una lingua, che non è mai una sezione.
+ * Redirect temporanei (307) delle sezioni senza lingua, con le stesse regole della radice, in due forme per lingua: la
+ * sola sezione (/cards) e la sezione con il resto del percorso (/cards/merlin, /tournaments/<slug>/deck).
+ * Il resto del percorso non ha punti (`[^.]+`): i redirect di questo file vengono PRIMA dei file di `public` (docs di
+ * Next, next-config-js/redirects.md: "Redirects are checked before the filesystem which includes pages and `/public`
+ * files"), e public/cards ha le illustrazioni, le miniature e le copertine (/cards/aladdin.webp, /cards/sm/…,
+ * /cards/cover/…). Con un `:path*` qualunque finivano su /en/cards/aladdin.webp, la 404 della scheda carta, e sparivano
+ * tutte le immagini delle carte. Nessuno slug del sito ha punti (carte, news, guide, mazzi e nomi utente sono fatti di
+ * lettere, cifre e trattini); un percorso con un punto che non è un file (/news/a.b) resta alla 404, come prima.
+ * Nessun giro: le destinazioni cominciano con una lingua, che non è mai una sezione. Test in notFoundHtml.test.ts con
+ * il matcher vero di Next, su tutti i file di `public`.
  */
 function sectionRedirects() {
-  const source = `/:section(${sections.join("|")})/:path*`;
-  return [
-    ...browserLocales.map(({ locale, acceptLanguage: language }) => ({ source, has: acceptLanguage(language), destination: `/${locale}/:section/:path*`, permanent: false })),
-    { source, destination: "/en/:section/:path*", permanent: false },
+  const section = `:section(${sections.join("|")})`;
+  const forms = [
+    { source: `/${section}`, rest: ":section" },
+    { source: `/${section}/:path([^.]+)`, rest: ":section/:path" },
   ];
+  const to = (locale: string, has?: ReturnType<typeof acceptLanguage>) =>
+    forms.map(({ source, rest }) => ({ source, ...(has ? { has } : {}), destination: `/${locale}/${rest}`, permanent: false }));
+  return [...browserLocales.flatMap(({ locale, acceptLanguage: language }) => to(locale, acceptLanguage(language))), ...to("en")];
 }
 
 const nextConfig: NextConfig = {

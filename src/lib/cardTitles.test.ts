@@ -1,8 +1,8 @@
 /**
- * Test dei title e delle description delle schede carta, dei mazzi e delle guide ai mazzi (`cardTitles.ts`), e delle
- * date delle schede carta (`cardDates.ts`, le stesse della sitemap e del `dateModified`), con il
- * runner integrato di Node: `node --test src/lib/cardTitles.test.ts`. Come per gli altri test, gli import hanno
- * l'estensione `.ts`.
+ * Test dei title e delle description delle schede carta, dei mazzi e delle guide ai mazzi (`cardTitles.ts`), delle
+ * date delle schede carta (`cardDates.ts`, le stesse della sitemap e del `dateModified`) e, in fondo, delle etichette
+ * delle modifiche di bilanciamento (`linkLabels.ts`), con il runner integrato di Node:
+ * `node --test src/lib/cardTitles.test.ts`. Come per gli altri test, gli import hanno l'estensione `.ts`.
  *
  * Gira su TUTTE le carte del database, nelle tre lingue, e usa il codice vero del sito: il database di `cards.ts`
  * (con l'unione di woo-cards.json, card-lore.ts, card-history.ts e le patch uscite dopo l'import), `pageTitle` di
@@ -31,6 +31,8 @@ import {
   type TitleCard,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./cardTitles.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { changeDetail, changeLabel, linkLabels, patchIntro } from "./linkLabels.ts";
 
 type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
@@ -215,18 +217,25 @@ describe("cardDescription", () => {
 });
 
 describe("textOutdated", () => {
-  test("oggi solo due carte create hanno il testo superato da una patch successiva all'import", () => {
+  test("oggi solo due carte create hanno il testo superato da una modifica dello storico", () => {
     // Se l'elenco cambia, va ricontrollato a mano il testo delle carte nuove (e magari corretto in card-lore.ts).
     assert.deepEqual(cards.filter((c) => textOutdated(c, src)).map((c) => c.slug).sort(), ["silver-bullet", "wooden-stake"]);
+  });
+  test("Silver Bullet è superata già dalla 0.6.2, uscita prima dell'import: il database dice ancora 3 danni", () => {
+    // Senza la patch della demo del 21/09 resta la sola 0.6.2 (danno da 3 a 1): basta quella
+    const silver = card("silver-bullet");
+    const only062 = { ...silver, history: silver.history.filter((h) => h.patch === "0.6.2") };
+    assert.equal(only062.history.length, 1);
+    assert.equal(textOutdated(only062, src), true);
   });
   test("le carte della collezione lette nel gioco dopo la patch citano il testo: Don Quixote", () => {
     // Don Quixote prende Difensore con la patch della demo del 21/09, ma il testo è quello letto nel gioco il 22/09
     assert.equal(textOutdated(card("don-quixote"), src), false);
     assert.match(cardDescription(card("don-quixote"), "en", cards, src), /Defender/);
   });
-  test("conta la fonte del testo: la verifica sul gioco per la collezione, l'import per carte create e rimosse", () => {
-    // Patch finte con gli id veri: importata la 0.6.2, verifica sul gioco fra la 0.6.2 e la 0.6.3
-    const source: TextSource = { order: ["0.6.1", "0.6.2", "0.6.3"], dates: { "0.6.1": "2026-01-01", "0.6.2": "2026-02-01", "0.6.3": "2026-03-01" }, imported: "0.6.2", verified: "2026-02-15" };
+  test("conta la fonte del testo: la verifica sul gioco per la collezione, qualunque modifica per carte create e rimosse", () => {
+    // Patch finte con gli id veri: verifica sul gioco fra la 0.6.2 e la 0.6.3
+    const source: TextSource = { dates: { "0.6.1": "2026-01-01", "0.6.2": "2026-02-01", "0.6.3": "2026-03-01" }, verified: "2026-02-15" };
     type History = TitleCard["history"];
     const note = { en: "", it: "", es: "" };
     const text = (patch: "0.6.2" | "0.6.3", kind: "buff" | "deck" = "buff"): History => [{ patch, kind, note }];
@@ -234,15 +243,15 @@ describe("textOutdated", () => {
     const token = (history: History) => ({ status: "active" as const, type: "token" as const, history });
     assert.equal(textOutdated(unit(text("0.6.3")), source), true);
     assert.equal(textOutdated(unit(text("0.6.2")), source), false);
+    // carte create e rimosse: nessuno le ha rilette nel gioco, e il testo importato può essere rimasto indietro
     assert.equal(textOutdated(token(text("0.6.3")), source), true);
-    assert.equal(textOutdated(token(text("0.6.2")), source), false);
-    assert.equal(textOutdated({ ...token(text("0.6.3")), status: "removed" }, source), true);
-    // statistiche, allineamento e scambi nei mazzi non toccano il testo
+    assert.equal(textOutdated(token(text("0.6.2")), source), true);
+    assert.equal(textOutdated({ ...unit(text("0.6.2")), status: "removed" }, source), true);
+    // statistiche, allineamento e modifiche ai mazzi non toccano il testo
     assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "nerf", from: { mana: 2 }, to: { mana: 3 }, note }]), source), false);
     assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "rework", alignment: { from: "good", to: "evil" }, note }]), source), false);
     assert.equal(textOutdated(token(text("0.6.3", "deck")), source), false);
-    // una patch importata che non conosciamo: vincono i dati importati
-    assert.equal(textOutdated(token(text("0.6.3")), { ...source, imported: "0.9.9" }), false);
+    assert.equal(textOutdated(token([{ patch: "0.6.2", kind: "nerf", from: { power: 3 }, to: { power: 1 }, note }]), source), false);
   });
 });
 
@@ -255,9 +264,19 @@ describe("cardDates", () => {
     assert.equal(datesLatest(cardDates(baker, "es")), localizedTextsRead.es);
     assert.equal(datesLatest(cardDates(baker, "en")), undefined);
   });
-  test("scheda e sitemap danno lo stesso giorno: le guide lette una volta o passate dalla sitemap", () => {
+  // La scheda (`dateModified`) e la sitemap (`lastmod`) chiamano tutte e due `cardLastmod`: la scheda senza guide, che
+  // la funzione legge da sé, la sitemap con quelle che ha già letto per ogni lingua.
+  test("le guide lette da `cardLastmod` sono quelle che passa la sitemap: stesso giorno per ogni carta", () => {
     for (const c of cardsModule.cards)
       for (const locale of locales) assert.equal(cardLastmod(c, locale, "2026-12-31"), cardLastmod(c, locale, "2026-12-31", guidesModule.getGuides(locale)), `${locale} ${c.slug}`);
+  });
+  test("una guida che cita la carta, più recente delle sue patch, sposta il giorno; mai oltre oggi", () => {
+    const merlin = cardsModule.getCard("merlin");
+    assert.ok(merlin);
+    const guide = { ...guidesModule.getGuides("en")[0], updated: "2026-10-10", tags: { cards: ["merlin"] } };
+    assert.equal(cardLastmod(merlin, "en", "2026-12-31", [guide]), "2026-10-10");
+    assert.ok(cardLastmod(merlin, "en", "2026-12-31", []) < "2026-10-10");
+    assert.equal(cardLastmod(merlin, "en", "2026-10-01", [guide]), "2026-10-01");
   });
 });
 
@@ -286,6 +305,28 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("Merlinator", "Merlin", "en"), "Merlinator, Merlin deck");
     assert.equal(deckTitle("Buff", undefined, "it"), "Buff");
   });
+  test("un nome che dice già \"deck\", \"mazzo\" o \"mazo\" nella lingua della pagina non ripete la parola", () => {
+    assert.equal(deckTitle("Merlin Deck", "Merlin", "en"), "Merlin Deck");
+    assert.equal(deckTitle("Dracula deck", "Dracula", "en"), "Dracula deck");
+    assert.equal(pageTitle(deckTitle("Merlin Deck", "Merlin", "en")), "Merlin Deck · Origins TCG · OriginsMeta");
+    assert.equal(deckTitle("Spellcast Deck", "Merlin", "en"), "Spellcast Deck with Merlin");
+    assert.equal(deckTitle("Mazzo Merlin", "Merlin", "it"), "Mazzo Merlin per Origins TCG");
+    assert.equal(deckTitle("Mazzo Spellcast", "Merlin", "it"), "Mazzo Spellcast con Merlin");
+    assert.equal(deckTitle("Mazo Merlin", "Merlin", "es"), "Mazo Merlin para Origins TCG");
+    assert.equal(deckTitle("Mazo Spellcast", "Merlin", "es"), "Mazo Spellcast con Merlin");
+    // la parola di un'altra lingua non ripete niente
+    assert.equal(deckTitle("Spellcast Deck", "Merlin", "it"), "Spellcast Deck, mazzo di Merlin");
+    assert.equal(deckTitle("Merlin Deck", "Merlin", "es"), "Merlin Deck, mazo de Origins TCG");
+    assert.equal(deckTitle("Mazzo Spellcast", "Merlin", "en"), "Mazzo Spellcast, Merlin deck");
+    // una parola che la contiene non conta ("Deckard", "Mazzola")
+    assert.equal(deckTitle("Deckard", "Merlin", "en"), "Deckard, Merlin deck");
+    assert.equal(deckTitle("Mazzola", "Merlin", "it"), "Mazzola, mazzo di Merlin");
+    for (const locale of locales)
+      for (const name of ["Merlin Deck", "Spellcast Deck", "Mazzo Merlin", "Mazo Spellcast"]) {
+        const t = deckTitle(name, "Merlin", locale);
+        assert.doesNotMatch(t, /\b(deck|mazzo|mazo)\b.*\b\1\b/i, `${locale} ${t}`);
+      }
+  });
   test("se il modello con la Leggendaria non ci sta, resta il solo nome", () => {
     for (const locale of locales) {
       assert.equal(deckTitle("The Trick-or-Treat Legion", "Legion of the Dead", locale), "The Trick-or-Treat Legion");
@@ -303,13 +344,22 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("Trick-or-Treat-Halloween-Legion-Zombies-and-Pumpkins", "Three Not So Little Pigs", "es"), "Trick-or-Treat-Halloween-Legion-Zombies…");
   });
   test("con il modello lungo le tre lingue hanno tre title diversi", () => {
-    for (const [name, legendary] of [["Spellcast", "Merlin"], ["Healing Healsing", "Van Helsing"], ["Dorothy Combo", "Dorothy"], ["Value Board", "Three Not So Little Pigs"]] as const) {
+    for (const [name, legendary] of [
+      ["Spellcast", "Merlin"],
+      ["Healing Healsing", "Van Helsing"],
+      ["Dorothy Combo", "Dorothy"],
+      ["Value Board", "Three Not So Little Pigs"],
+      ["Spellcast Deck", "Merlin"],
+      ["Merlin Deck", "Merlin"],
+      ["Mazzo Spellcast", "Merlin"],
+      ["Mazo Merlin", "Merlin"],
+    ] as const) {
       const titles = locales.map((l) => deckTitle(name, legendary, l));
       assert.equal(new Set(titles).size, 3, titles.join(" | "));
     }
   });
   test("due mazzi diversi della stessa Leggendaria non hanno lo stesso title", () => {
-    const names = ["Spellcast", "The Trick-or-Treat Legion", "Trick or Treat Zombies", "Legion of the Dead", "3 Pigs Mid Range", "Value Board", "Zombie rush for the Crimson Cup finals"];
+    const names = ["Spellcast", "Spellcast Deck", "The Trick-or-Treat Legion", "Trick or Treat Zombies", "Legion of the Dead", "3 Pigs Mid Range", "Value Board", "Zombie rush for the Crimson Cup finals"];
     for (const l of ["Merlin", "Legion of the Dead", "Three Not So Little Pigs"])
       for (const locale of locales) {
         const titles = names.map((n) => deckTitle(n, l, locale));
@@ -317,7 +367,7 @@ describe("deckTitle", () => {
       }
   });
   test("qualunque nome: title finale entro 60 caratteri, mai vuoto, e senza \"Origins TCG\" entro 46", () => {
-    const names = ["A", "Spellcast", "The Trick-or-Treat Legion", "x".repeat(80), `${"word ".repeat(30)}end`, "Dracula SUPER FUN", "Just f***in em", "Move/Combo/Tempo/Value/Aggro/Control", "Dracula and the very long list of words that follows"];
+    const names = ["A", "Spellcast", "The Trick-or-Treat Legion", "x".repeat(80), `${"word ".repeat(30)}end`, "Dracula SUPER FUN", "Just f***in em", "Move/Combo/Tempo/Value/Aggro/Control", "Dracula and the very long list of words that follows", "Merlin Deck", "Mazzo Merlin with a very long name for a deck", "Mazo de Legion of the Dead"];
     const legendaries = [undefined, "Merlin", "Dracula", "Three Not So Little Pigs", "Legion of the Dead", "A custom Legendary with a very very long name typed by hand"];
     for (const n of names)
       for (const l of legendaries)
@@ -375,5 +425,79 @@ describe("deckLead", () => {
   });
   test("la coda corta c'è nelle tre lingue e dice OriginsMeta", () => {
     for (const locale of locales) assert.match(deckShortTail[locale], /OriginsMeta\.$/);
+  });
+});
+
+// ---------- Modifiche di bilanciamento (linkLabels.ts) ----------
+// Stanno qui perché questo file è nello script `npm test` (package.json elenca i test uno per uno) e ha già il
+// database carte vero: le modifiche di una patch sono quelle di `patchChanges`, le stesse del blocco della patch nelle
+// news e di MetaShifting. La 0.6.1 ha 1 carta cambiata (Huntsman) e 7 carte nelle modifiche ai mazzi preimpostati del
+// playtest (tipo "deck": tre scambi per sei carte, più Koschei), che non sono rework.
+
+const common = { buff: "Buff", nerf: "Nerf", rework: "Rework" };
+const patchItemsOf = (patch: string) => cardsModule.patchChanges().find((g) => g.patch === patch)?.items ?? [];
+
+describe("changeLabel", () => {
+  test("le modifiche ai mazzi hanno la loro etichetta nelle tre lingue, le altre quella del dizionario", () => {
+    assert.equal(changeLabel("deck", "en", common), "Deck change");
+    assert.equal(changeLabel("deck", "it", common), "Cambio di mazzo");
+    assert.equal(changeLabel("deck", "es", common), "Cambio de mazo");
+    for (const locale of locales) {
+      assert.equal(changeLabel("rework", locale, common), "Rework");
+      assert.equal(changeLabel("buff", locale, common), "Buff");
+      assert.equal(changeLabel("nerf", locale, common), "Nerf");
+    }
+  });
+});
+
+describe("changeDetail", () => {
+  test("modifica al mazzo: niente dettaglio, solo la nota (mai \"abilità\")", () => {
+    const deckChanges = patchItemsOf("0.6.1").filter((m) => m.change.kind === "deck");
+    assert.equal(deckChanges.length, 7);
+    for (const { change } of deckChanges) assert.equal(changeDetail(change), "none");
+  });
+  test("statistiche, allineamento, testo", () => {
+    assert.equal(changeDetail({ kind: "rework", from: { mana: 4 }, to: { mana: 6 } }), "stats");
+    assert.equal(changeDetail({ kind: "rework", alignment: { from: "neutral", to: "evil" } }), "alignment");
+    assert.equal(changeDetail({ kind: "buff" }), "text");
+  });
+});
+
+describe("patchIntro", () => {
+  test("0.6.1: 1 carta cambiata e 7 nelle modifiche ai mazzi, contate a parte, nelle tre lingue", () => {
+    const items = patchItemsOf("0.6.1");
+    assert.equal(items.length, 8);
+    assert.equal(
+      patchIntro(items, "en"),
+      "1 card changes in this patch. 7 cards are part of the changes to the playtest's preset decks. Each name opens the card page with its full balance history.",
+    );
+    assert.equal(
+      patchIntro(items, "it"),
+      "In questa patch cambia 1 carta. Le modifiche ai mazzi preimpostati del playtest riguardano 7 carte. Ogni nome apre la scheda della carta con tutto il suo storico dei bilanciamenti.",
+    );
+    assert.equal(
+      patchIntro(items, "es"),
+      "En este parche cambia 1 carta. Los cambios en los mazos predefinidos del playtest afectan a 7 cartas. Cada nombre abre la página de la carta con todo su historial de cambios de equilibrio.",
+    );
+  });
+  test("senza modifiche ai mazzi resta la sola frase delle carte cambiate; una carta con due modifiche conta una volta", () => {
+    const one = { slug: "x" };
+    const items = [
+      { card: one, change: { kind: "nerf" as const } },
+      { card: one, change: { kind: "rework" as const } },
+    ];
+    assert.equal(patchIntro(items, "it"), `${linkLabels.it.patch.introOne} ${linkLabels.it.patch.linksOne}`);
+    const many = patchItemsOf("demo-0921");
+    assert.ok(many.length > 1);
+    assert.ok(many.every((m) => m.change.kind !== "deck"));
+    const n = new Set(many.map((m) => m.card.slug)).size;
+    for (const locale of locales) {
+      const l = linkLabels[locale].patch;
+      assert.equal(patchIntro(many, locale), `${l.introMany.replace("{n}", String(n))} ${l.linksMany}`);
+    }
+  });
+  test("solo modifiche ai mazzi: niente frase sulle carte cambiate", () => {
+    const items = [{ card: { slug: "a" }, change: { kind: "deck" as const } }];
+    for (const locale of locales) assert.equal(patchIntro(items, locale), `${linkLabels[locale].patch.swapsOne} ${linkLabels[locale].patch.linksOne}`);
   });
 });

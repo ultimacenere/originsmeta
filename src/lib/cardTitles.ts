@@ -30,34 +30,30 @@ export type TitleCard = Pick<Card, "slug" | "name" | "type" | "status" | "legend
  * da fuori perché questo modulo importa solo tipi.
  */
 export type TextSource = {
-  /** patch in ordine di uscita (`patchOrder`) */
-  order: readonly string[];
   /** giorno di uscita di ogni patch */
   dates: Readonly<Record<string, string>>;
-  /** patch dei dati importati da World of Origins (`cardSource.patch`) */
-  imported: string;
   /** giorno della verifica sul gioco (`cardsVerified.date`): vale per le carte della collezione della demo */
   verified: string;
 };
 
 /**
  * Il testo della carta nei nostri dati è superato da una modifica dello storico? Contano le sole modifiche del testo
- * (senza statistiche prima/dopo, senza allineamento e senza scambi nei mazzi: per esempio il danno di una magia, che
- * sta nel testo) uscite dopo la fonte del testo:
+ * (senza statistiche prima/dopo, senza allineamento e senza modifiche ai mazzi: per esempio il danno di una magia, che
+ * sta nel testo):
  * - carte della collezione della demo (attive e non create): il testo è stato letto nel gioco (`verified`), quindi
  *   conta solo una patch uscita dopo quel giorno;
- * - carte create e rimosse: non stanno nella collezione e il testo è quello importato da World of Origins, quindi
- *   conta una patch successiva all'import.
- * Esempio: Silver Bullet, carta creata, nel database dice "Deal 3 damage to ANY character.", ma dopo l'import della
- * 0.6.3 la patch della demo del 21/09/2026 le fa colpire anche le barriere (e la 0.6.2 aveva già portato il danno a 1).
- * Il testo resta sulla scheda, con lo storico sotto; la description e i dati strutturati non lo citano.
+ * - carte create e rimosse: non stanno nella collezione, quindi nessuno le ha rilette nel gioco, e il testo importato
+ *   da World of Origins non segue sempre le patch, nemmeno quelle uscite prima dell'import: conta qualunque modifica
+ *   del testo nello storico.
+ * Esempio: Silver Bullet, carta creata, nel database dice ancora "Deal 3 damage to ANY character." anche se la 0.6.2,
+ * uscita prima dell'import della 0.6.3, ha portato il danno a 1 (e la patch della demo del 21/09/2026 le fa colpire
+ * anche le barriere). Il testo resta sulla scheda, con lo storico sotto; la description e i dati strutturati non lo citano.
  */
 export function textOutdated(card: Pick<Card, "status" | "type" | "history">, src: TextSource): boolean {
   const inCollection = card.status === "active" && card.type !== "token";
-  const imported = src.order.indexOf(src.imported);
   return card.history.some((h) => {
     if (h.kind === "deck" || (h.from && h.to) || h.alignment) return false;
-    return inCollection ? (src.dates[h.patch] ?? "") > src.verified : imported >= 0 && src.order.indexOf(h.patch) > imported;
+    return inCollection ? (src.dates[h.patch] ?? "") > src.verified : true;
   });
 }
 
@@ -369,8 +365,8 @@ export function cardDescription(card: TitleCard, locale: Locale, all: readonly T
 
 /**
  * Un title di mazzo senza "Origins TCG" riceve da `pageTitle` " · Origins TCG" (14 caratteri), quindi il title nudo
- * deve stare entro 46 perché quello finale resti entro 60. Un title che contiene già "Origins TCG" (la forma `named`
- * in italiano e spagnolo) deve starci da solo, entro 60.
+ * deve stare entro 46 perché quello finale resti entro 60. Un title che contiene già "Origins TCG" (le forme `named`
+ * e `namedWord` in italiano e spagnolo) deve starci da solo, entro 60.
  */
 export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
 
@@ -381,11 +377,47 @@ export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
  * - `named`: il nome contiene già la Leggendaria e non la ripete. In inglese basta "deck" ("Dorothy Combo deck"); in
  *   italiano e spagnolo "Dorothy Combo, mazzo" non si legge, quindi al posto della Leggendaria va il gioco ("Dorothy
  *   Combo, mazzo di Origins TCG"), così le tre lingue restano diverse.
+ * - `withWord` e `namedWord`: le stesse due forme quando il nome contiene già la parola "mazzo" della lingua
+ *   (`word`): gli utenti chiamano spesso i mazzi "Merlin Deck" o "Mazzo Merlin", e "Merlin Deck deck" o "Mazzo
+ *   Merlin, mazzo di…" ripetono la parola. Diventano "Spellcast Deck with Merlin", "Mazzo Spellcast con Merlin" e, per
+ *   un nome che contiene anche la Leggendaria, "Merlin Deck" (in inglese il solo nome) o "Mazzo Merlin per Origins TCG".
+ *   La parola conta solo nella lingua della pagina: "Spellcast Deck, mazzo di Merlin" non ripete niente.
  */
-const deckTitles: Record<Locale, { with: (legendary: string, name: string) => string; only: (legendary: string) => string; named: (name: string) => string }> = {
-  en: { with: (l, n) => `${n}, ${l} deck`, only: (l) => `${l} deck`, named: (n) => `${n} deck` },
-  it: { with: (l, n) => `${n}, mazzo di ${l}`, only: (l) => `Mazzo di ${l}`, named: (n) => `${n}, mazzo di Origins TCG` },
-  es: { with: (l, n) => `${n}, mazo de ${l}`, only: (l) => `Mazo de ${l}`, named: (n) => `${n}, mazo de Origins TCG` },
+const deckTitles: Record<
+  Locale,
+  {
+    with: (legendary: string, name: string) => string;
+    only: (legendary: string) => string;
+    named: (name: string) => string;
+    word: RegExp;
+    withWord: (legendary: string, name: string) => string;
+    namedWord: (name: string) => string;
+  }
+> = {
+  en: {
+    with: (l, n) => `${n}, ${l} deck`,
+    only: (l) => `${l} deck`,
+    named: (n) => `${n} deck`,
+    word: /(?<!\p{L})decks?(?!\p{L})/iu,
+    withWord: (l, n) => `${n} with ${l}`,
+    namedWord: (n) => n,
+  },
+  it: {
+    with: (l, n) => `${n}, mazzo di ${l}`,
+    only: (l) => `Mazzo di ${l}`,
+    named: (n) => `${n}, mazzo di Origins TCG`,
+    word: /(?<!\p{L})mazz[oi](?!\p{L})/iu,
+    withWord: (l, n) => `${n} con ${l}`,
+    namedWord: (n) => `${n} per Origins TCG`,
+  },
+  es: {
+    with: (l, n) => `${n}, mazo de ${l}`,
+    only: (l) => `Mazo de ${l}`,
+    named: (n) => `${n}, mazo de Origins TCG`,
+    word: /(?<!\p{L})mazos?(?!\p{L})/iu,
+    withWord: (l, n) => `${n} con ${l}`,
+    namedWord: (n) => `${n} para Origins TCG`,
+  },
 };
 
 /**
@@ -400,8 +432,9 @@ const deckTitles: Record<Locale, { with: (legendary: string, name: string) => st
  * 1. il modello con la Leggendaria, se ci sta;
  * 2. altrimenti il solo nome ("3 Pigs Mid Range": uguale nelle tre lingue, ma ogni pagina ha l'hreflang giusto);
  * 3. altrimenti il nome accorciato all'ultima parola intera, con i puntini ("The Trick-or-Treat Legion of Halloween…").
- * Un nome che contiene già la Leggendaria non la ripete (`named`); uno uguale alla Leggendaria, o nessun nome, dà
- * "Merlin deck". Senza Leggendaria nota resta il nome del mazzo.
+ * Un nome che contiene già la Leggendaria non la ripete (`named`), uno che contiene già la parola "mazzo" della
+ * lingua non la ripete (`withWord`, `namedWord`); uno uguale alla Leggendaria, o nessun nome, dà "Merlin deck". Senza
+ * Leggendaria nota resta il nome del mazzo.
  */
 export function deckTitle(name: string, legendary: string | undefined, locale: Locale): string {
   const n = name.replace(/\s+/g, " ").trim();
@@ -413,8 +446,9 @@ export function deckTitle(name: string, legendary: string | undefined, locale: L
   if (!l) return fitName(n, DECK_TITLE_MAX);
   // Nessun nome, o uguale alla Leggendaria; una Leggendaria scritta a mano e lunghissima si accorcia come un nome
   if (!n || n.toLowerCase() === l.toLowerCase()) return fits(t.only(l)) ? t.only(l) : fitName(l, DECK_TITLE_MAX);
-  if (new RegExp(`(?<!\\p{L})${escapeRe(l)}(?!\\p{L})`, "iu").test(n)) return orName(t.named(n));
-  return orName(t.with(l, n));
+  const worded = t.word.test(n);
+  if (new RegExp(`(?<!\\p{L})${escapeRe(l)}(?!\\p{L})`, "iu").test(n)) return orName(worded ? t.namedWord(n) : t.named(n));
+  return orName(worded ? t.withWord(l, n) : t.with(l, n));
 }
 
 /**

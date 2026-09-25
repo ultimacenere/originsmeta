@@ -42,7 +42,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Origins TCG", "Garlic: carta creada de Origins TCG"… e una frase fatta dei soli dati della scheda, con "Origins TCG"
   // e "Koin Games". Il title contiene già la parola chiave: `pageTitle` aggiunge solo " · OriginsMeta" se ci sta.
   // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts. Un testo che una patch ha superato
-  // (`textOutdated`, come Silver Bullet dopo la patch della demo del 21/09) non va nella description.
+  // (`textOutdated`, come Silver Bullet: il database dice ancora 3 danni, la 0.6.2 li ha portati a 1) non va nella
+  // description.
   // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file.
   const opts = card.image ? { imageAlt: `${dict.cards.collectible}: ${card.name}`, imageSize: imageSizeOf(card.image) } : {};
   return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards, cardTextSource), card.image, opts);

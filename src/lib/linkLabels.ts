@@ -9,7 +9,8 @@ import type { Change, ChangeKind } from "./data/cards";
  * un modulo solo per questi link, nelle tre lingue insieme. `en` è il tipo di riferimento, come per i dizionari.
  * I nomi delle sezioni sono quelli del sito (spagnolo: glossario in docs/spagnolo.md).
  * In fondo, le funzioni pure che scelgono etichetta e dettaglio di una modifica di bilanciamento, condivise da
- * MetaShifting, dalle schede carta e dal blocco della patch nelle news (test in linkLabels.test.ts).
+ * MetaShifting, dalle schede carta e dal blocco della patch nelle news (test in fondo a cardTitles.test.ts, che è
+ * nello script `npm test`).
  */
 const en = {
   explore: {
@@ -30,9 +31,13 @@ const en = {
     /** {n} = carte cambiate davvero (statistiche, testo, allineamento), senza gli scambi nei mazzi */
     introOne: "1 card changes in this patch.",
     introMany: "{n} cards change in this patch.",
-    /** {n} = carte delle modifiche di tipo "deck": entrano o escono dai mazzi preimpostati del playtest, la carta non cambia */
-    swapsOne: "1 card is involved in the swaps in the playtest's preset decks.",
-    swapsMany: "{n} cards are involved in the swaps in the playtest's preset decks.",
+    /**
+     * {n} = carte delle modifiche di tipo "deck" (card-history.ts), la carta non cambia. Non sono tutte scambi: nella
+     * 0.6.1 i tre scambi toccano sei carte, e la settima è Koschei, intorno a cui è costruito il Discard. Per questo
+     * "fanno parte delle modifiche ai mazzi" e non "sono scambiate".
+     */
+    swapsOne: "1 card is part of the changes to the playtest's preset decks.",
+    swapsMany: "{n} cards are part of the changes to the playtest's preset decks.",
     /** chiude l'attacco: "One" quando nel blocco c'è una carta sola */
     linksOne: "Its name opens the card page with its full balance history.",
     linksMany: "Each name opens the card page with its full balance history.",
@@ -68,8 +73,8 @@ export const linkLabels: Record<Locale, LinkLabels> = {
       title: "Cosa cambia in questa patch",
       introOne: "In questa patch cambia 1 carta.",
       introMany: "In questa patch cambiano {n} carte.",
-      swapsOne: "1 carta è coinvolta negli scambi dei mazzi preimpostati del playtest.",
-      swapsMany: "{n} carte sono coinvolte negli scambi dei mazzi preimpostati del playtest.",
+      swapsOne: "Le modifiche ai mazzi preimpostati del playtest riguardano 1 carta.",
+      swapsMany: "Le modifiche ai mazzi preimpostati del playtest riguardano {n} carte.",
       linksOne: "Il nome apre la scheda della carta con tutto il suo storico dei bilanciamenti.",
       linksMany: "Ogni nome apre la scheda della carta con tutto il suo storico dei bilanciamenti.",
       numbers: "I numeri sono mana · Potenza/Salute, prima e dopo.",
@@ -93,8 +98,8 @@ export const linkLabels: Record<Locale, LinkLabels> = {
       title: "Qué cambia en este parche",
       introOne: "En este parche cambia 1 carta.",
       introMany: "En este parche cambian {n} cartas.",
-      swapsOne: "1 carta participa en los intercambios de los mazos predefinidos del playtest.",
-      swapsMany: "{n} cartas participan en los intercambios de los mazos predefinidos del playtest.",
+      swapsOne: "Los cambios en los mazos predefinidos del playtest afectan a 1 carta.",
+      swapsMany: "Los cambios en los mazos predefinidos del playtest afectan a {n} cartas.",
       linksOne: "Su nombre abre la página de la carta con todo su historial de cambios de equilibrio.",
       linksMany: "Cada nombre abre la página de la carta con todo su historial de cambios de equilibrio.",
       numbers: "Los números son maná · Poder/Salud, antes y después.",
@@ -119,8 +124,8 @@ export function changeLabel(kind: ChangeKind, locale: Locale, common: Readonly<R
 
 /**
  * Che cosa mostrare accanto alla pastiglia: il prima/dopo delle statistiche, il cambio di allineamento, la parola
- * "abilità" per le modifiche del solo testo, oppure niente per gli scambi nei mazzi (la carta non cambia: resta la
- * nota, che dice in quale mazzo entra o da quale esce).
+ * "abilità" per le modifiche del solo testo, oppure niente per le modifiche ai mazzi (la carta non cambia: resta la
+ * nota, che dice che cosa cambia nel mazzo).
  */
 export function changeDetail(change: Pick<Change, "kind" | "from" | "to" | "alignment">): "stats" | "alignment" | "text" | "none" {
   if (change.kind === "deck") return "none";
@@ -129,10 +134,11 @@ export function changeDetail(change: Pick<Change, "kind" | "from" | "to" | "alig
 }
 
 /**
- * Attacco del blocco "Cosa cambia in questa patch" (news delle patch notes): le carte cambiate davvero e quelle degli
- * scambi nei mazzi si contano a parte, così la 0.6.1 dice "cambia 1 carta" (Huntsman) e "7 carte sono coinvolte negli
- * scambi", come il riassunto della news ("Swarm, Evil e Discard cambiano una carta ciascuno"), e non "cambiano 8
- * carte". Una carta con più modifiche nella stessa patch conta una volta per gruppo.
+ * Attacco del blocco "Cosa cambia in questa patch" (news delle patch notes): le carte cambiate davvero e quelle delle
+ * modifiche ai mazzi si contano a parte, così la 0.6.1 dice "cambia 1 carta" (Huntsman) e "le modifiche ai mazzi
+ * preimpostati del playtest riguardano 7 carte" (i tre scambi di Swarm, Evil e Discard più Koschei, come il riassunto
+ * della news: "Swarm, Evil e Discard cambiano una carta ciascuno"), e non "cambiano 8 carte" né "7 carte scambiate".
+ * Una carta con più modifiche nella stessa patch conta una volta per gruppo.
  */
 export function patchIntro(items: readonly { card: { slug: string }; change: { kind: ChangeKind } }[], locale: Locale): string {
   const l = linkLabels[locale].patch;

@@ -1,5 +1,5 @@
 import type { Locale } from "./i18n";
-import { cardSource, cardsVerified, patchOrder, patches, type Card } from "./data/cards";
+import { cardsVerified, patchOrder, patches, type Card } from "./data/cards";
 import { cardLore } from "./data/card-lore";
 import { decksWithCard } from "./data/decks";
 import { tierList, tierOf } from "./data/tierlist";
@@ -24,9 +24,7 @@ export const localizedTextsRead: Readonly<Partial<Record<Locale, Day>>> = { it: 
 
 /** Da quando vale il testo delle carte: serve a `textOutdated` e `cardDescription` in `cardTitles.ts`. */
 export const cardTextSource: TextSource = {
-  order: patchOrder,
   dates: Object.fromEntries(patchOrder.map((id) => [id, patches[id].date])),
-  imported: cardSource.patch,
   verified: cardsVerified.date,
 };
 
@@ -43,7 +41,8 @@ function guidesOf(locale: Locale): readonly Guide[] {
  * ne ha corretto testo o parole chiave (`card-lore.ts`, campi `en` e `keywords`), i testi italiani e spagnoli letti nel
  * gioco (solo per quelle lingue), i mazzi editoriali che la contengono, le guide della lingua che la citano (il
  * riquadro "Guide correlate") e la tier list di OriginsMeta quando la scheda ne mostra la fascia: le stesse fonti che
- * legge la pagina. `guides` si passa quando il chiamante le ha già (la sitemap, la scheda).
+ * legge la pagina. `guides` si passa quando il chiamante le ha già (la sitemap, che le legge una volta per lingua);
+ * la scheda non le passa e le prende da `guidesOf`.
  */
 export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] = guidesOf(locale)): (string | undefined)[] {
   const lore = cardLore[card.slug];
@@ -58,8 +57,9 @@ export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] =
 }
 
 /**
- * Il giorno dell'ultima modifica di una scheda carta: il `lastmod` della sitemap e il `dateModified` della pagina.
- * Stesse regole di tutte le pagine (`pageLastmod`: modello della pagina, nascita della lingua, mai nel futuro).
+ * Il giorno dell'ultima modifica di una scheda carta: il `lastmod` della sitemap e il `dateModified` della pagina,
+ * calcolati tutti e due da questa funzione. Stesse regole di tutte le pagine (`pageLastmod`: modello della pagina,
+ * nascita della lingua, mai nel futuro).
  */
 export function cardLastmod(card: Card, locale: Locale, today: Day, guides?: readonly Guide[]): Day {
   return pageLastmod("/cards/[slug]", locale, cardDates(card, locale, guides), today);
