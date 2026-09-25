@@ -45,7 +45,98 @@ export function communitySample(w: SampleWords, n: { legendaries: number; cards:
     .replace("{cards}", String(n.cards));
 }
 
-export type CardScore = { slug: string; avg: number; votes: number; dist: Record<Tier, number>; tier: Tier };
+/**
+ * Liste salvate per scheda e persone distinte, dalle righe pubblicate di `tier_lists` (una per persona e per scheda,
+ * indice unico `owner, kind`). La usano la sezione Tier list (`loadTierData`) e l'invito della home (Ondata 3, TOOL-01),
+ * così i due numeri non possono divergere.
+ */
+export function tierListCounts(lists: readonly { owner: string; kind: string }[]): { legendaries: number; cards: number; people: number } {
+  return {
+    legendaries: lists.filter((l) => l.kind === "legendaries").length,
+    cards: lists.filter((l) => l.kind === "cards").length,
+    people: new Set(lists.map((l) => l.owner)).size,
+  };
+}
+
+/**
+ * A che punto è la tier list della community: `lists` sono le liste della scheda più salvata (Leggendarie o carte base),
+ * lo stesso numero che /tier-list/community confronta con la soglia; `empty` senza liste, `preview` sotto
+ * `COMMUNITY_MIN_LISTS`, `live` dalla soglia in su. Home e pagina della community leggono lo stato da qui.
+ */
+export function communityStage(
+  n: { legendaries: number; cards: number },
+  min: number = COMMUNITY_MIN_LISTS,
+): { stage: "empty" | "preview" | "live"; lists: number } {
+  const lists = Math.max(n.legendaries, n.cards);
+  return { stage: lists === 0 ? "empty" : lists < min ? "preview" : "live", lists };
+}
+
+/*
+ * Tier list firmate (Ondata 3 del piano SEO/GEO, TOOL-01): le tier list salvate da chi ha un tag autore assegnato dallo
+ * staff compaiono con nome e tag su /tier-list/community, così durante il Next Fest la sezione ha qualcosa di firmato
+ * anche mentre la media della community è un'anteprima. Restano opinioni dei loro autori: contano nella media come le
+ * altre, niente peso in più.
+ */
+
+/** I tag che firmano una tier list: Staff, Pro, Influencer e Autore (`creator`, mostrato come "Autore" dal 25/09/2026). */
+export const SIGNED_BADGES: readonly string[] = ["staff", "pro", "influencer", "creator"];
+
+/** Ordine delle schede del tool: prima le Leggendarie, poi le carte base (come le schede di /tier-list/create). */
+const KIND_ORDER = ["legendaries", "cards"];
+
+/** Carte classificate in una tier list salvata: slug distinti nelle cinque fasce, come li conta `aggregateLists`. */
+export function rankedCount(entries: unknown): number {
+  if (!entries || typeof entries !== "object") return 0;
+  const seen = new Set<string>();
+  for (const tier of TIER_ORDER) {
+    const slugs = (entries as Record<string, unknown>)[tier];
+    if (Array.isArray(slugs)) for (const slug of slugs) if (typeof slug === "string" && slug) seen.add(slug);
+  }
+  return seen.size;
+}
+
+/** Una riga pubblicata di `tier_lists` con il profilo di chi l'ha salvata (la lettura di `listPublishedTierLists`). */
+export type SignedSourceRow = {
+  owner: string;
+  kind: string;
+  title?: string | null;
+  code?: string | null;
+  entries: unknown;
+  updated_at: string;
+  profile?: { username: string | null; display_name: string | null; badge?: string | null } | null;
+};
+
+/** Una tier list firmata: scheda, titolo scelto dall'autore, codice TL1 per aprirla nel tool, data e carte classificate. */
+export type SignedList = { kind: string; title: string; code: string; updated: string; ranked: number };
+
+/** Chi firma: nome utente (per /u/<nome>), nome mostrato, tag, data della sua ultima lista e le sue liste. */
+export type SignedAuthor = { username: string; name: string; badge: string; updated: string; lists: SignedList[] };
+
+/**
+ * Le tier list firmate, raggruppate per autore: solo i profili con un tag di `SIGNED_BADGES` e con un nome utente (senza,
+ * la pagina pubblica non esiste e non ci sarebbe niente da linkare). Dentro ogni autore le liste seguono l'ordine delle
+ * schede del tool; gli autori vanno dal più recente, poi per nome. Nessuna riga firmata: elenco vuoto (la pagina non
+ * mostra la sezione).
+ */
+export function signedTierLists(rows: readonly SignedSourceRow[]): SignedAuthor[] {
+  const byOwner = new Map<string, SignedAuthor>();
+  for (const row of rows) {
+    const p = row.profile;
+    const username = p?.username?.trim();
+    if (!p || !username || !p.badge || !SIGNED_BADGES.includes(p.badge)) continue;
+    const updated = row.updated_at.slice(0, 10);
+    const author = byOwner.get(row.owner) ?? { username, name: p.display_name?.trim() || username, badge: p.badge, updated, lists: [] };
+    if (updated > author.updated) author.updated = updated;
+    author.lists.push({ kind: row.kind, title: (row.title ?? "").trim(), code: row.code ?? "", updated, ranked: rankedCount(row.entries) });
+    byOwner.set(row.owner, author);
+  }
+  const kindIndex = (k: string) => (KIND_ORDER.includes(k) ? KIND_ORDER.indexOf(k) : KIND_ORDER.length);
+  return Array.from(byOwner.values())
+    .map((a) => ({ ...a, lists: a.lists.slice().sort((x, y) => kindIndex(x.kind) - kindIndex(y.kind)) }))
+    .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name, "en") || a.username.localeCompare(b.username, "en"));
+}
+
+export type CardScore ={ slug: string; avg: number; votes: number; dist: Record<Tier, number>; tier: Tier };
 
 /** La fascia di una media: 4,5 e oltre è S, sotto 1,5 è D (le stesse soglie della vista SQL `tier_card_scores`). */
 export function tierFromAverage(avg: number): Tier {
@@ -330,4 +421,33 @@ export function deckBrief(o: {
     ),
   ];
   return sentences.filter((s) => s.length).flatMap((s, i) => (i ? [" ", ...s] : s));
+}
+
+/*
+ * "I migliori mazzi di Origins TCG adesso" (Ondata 3 del piano SEO/GEO, mappa delle query C18: la pagina primaria di
+ * "best decks" è /decks, quindi una sezione lì e non una pagina nuova). È la classifica dei voti della community, non
+ * un giudizio nostro: stesso voto pesato (`weightedRating`) e stesso ordine (`briefOrder`) di "In breve", stessa regola
+ * dei pari merito delle anteprime (`pickPreview`: un pari merito sul taglio non si spezza), più la posizione.
+ */
+
+/** Quanti mazzi mostra la classifica (5) e fin dove un pari merito sul taglio entra per intero (10 voci in tutto). */
+export const BEST_DECKS = { limit: 5, max: 10 } as const;
+
+/** Una voce con la sua posizione: i pari merito hanno la stessa (1, 1, 3…, come nelle classifiche sportive). */
+export type RankedItem<T> = { item: T; rank: number };
+
+/**
+ * La classifica dei mazzi più votati: le voci scelte da `pickPreview` con la posizione di ognuna, e `more`, quante voci
+ * citabili (sopra zero) restano fuori. Chi chiama passa solo i mazzi che possono stare in classifica (con voti, e su
+ * /decks con la guida indicizzabile nella lingua della pagina), già col voto pesato come `value`.
+ */
+export function bestDecks<T extends BriefItem>(
+  entries: readonly T[],
+  opts: { limit: number; max: number } = BEST_DECKS,
+): { ranked: RankedItem<T>[]; more: number } {
+  const shown = pickPreview(entries, opts);
+  // posizione = 1 + quante voci hanno un numero davvero più alto: le voci mostrate sono le prime dell'ordine unico,
+  // quindi chi sta sopra una voce è per forza fra quelle mostrate
+  const ranked = shown.map((item) => ({ item, rank: 1 + shown.filter((o) => o.value > item.value && !sameValue(o.value, item.value)).length }));
+  return { ranked, more: entries.filter((e) => e.value > 0).length - shown.length };
 }

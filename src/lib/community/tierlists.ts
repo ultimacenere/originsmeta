@@ -14,15 +14,30 @@ import { rowsOrThrow } from "./queries";
  * (/tier-list) resta separata e aspetta i risultati dei tornei ufficiali.
  */
 
-export type PublishedTierList = { owner: string; kind: TierKind; entries: unknown; updated_at: string };
+export type PublishedTierList = {
+  owner: string;
+  kind: TierKind;
+  entries: unknown;
+  updated_at: string;
+  /** titolo scelto dall'autore e codice TL1: le tier list firmate di /tier-list/community si aprono nel tool (Ondata 3) */
+  title: string;
+  code: string;
+  /** chi l'ha salvata: nome, nome utente e tag autore (le tier list firmate, `signedTierLists` in tierstats.ts) */
+  profile: { username: string | null; display_name: string | null; badge: string | null } | null;
+};
 
-/** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists`). */
+/** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists` e di `profiles`). */
 export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
   // Con un errore lancia (DECKS-12): la rigenerazione fallisce e restano le tier list di prima, non una classifica vuota.
-  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate.
-  const res = await client.from("tier_lists").select("owner, kind, entries, updated_at").eq("status", "published").limit(5000);
+  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate. Titolo, codice e profilo (Ondata 3) servono
+  // alle tier list firmate: stessa lettura, niente query in più; la home la condivide nella cache dei dati di Next.
+  const res = await client
+    .from("tier_lists")
+    .select("owner, kind, entries, updated_at, title, code, profile:profiles!tier_lists_owner_fkey(username, display_name, badge)")
+    .eq("status", "published")
+    .limit(5000);
   return rowsOrThrow<PublishedTierList>("listPublishedTierLists", res);
 }
 

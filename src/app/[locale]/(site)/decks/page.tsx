@@ -12,9 +12,10 @@ import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 import { localizedGuide } from "@/lib/community/deckTranslation";
-import { indexableLocales } from "@/lib/community/deckQuality";
+import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/deckQuality";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { deckBrief, usageCounts, weightedRating } from "@/lib/tierstats";
+import { badgeStyle } from "@/lib/cardArt";
+import { bestDecks, deckBrief, usageCounts, weightedRating } from "@/lib/tierstats";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
@@ -160,6 +161,32 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       })
     : [];
 
+  // I migliori mazzi di Origins TCG adesso (Ondata 3 del piano SEO/GEO, mappa delle query C18: la pagina primaria di
+  // "best decks" è questa). È la classifica dei voti, non un giudizio nostro: stesso voto pesato e stesso ordine di
+  // "In breve" (`bestDecks` usa `pickPreview`, che non spezza un pari merito sul taglio), ricalcolata a ogni
+  // rigenerazione ISR. Entrano solo i mazzi con voti che si indicizzano nella lingua della pagina (`indexableLocales`,
+  // lo stesso criterio dell'ItemList qui sotto): una classifica pensata per chi cerca "best decks" non manda a schede
+  // noindex. "In breve" invece cita tutti i mazzi votati, come /tier-list: la riga del metodo dice quanti ne restano
+  // fuori e perché, così le due frasi non si contraddicono.
+  const rated = community.filter((deck) => (deck.rating?.votes ?? 0) > 0);
+  const rankable = rated.filter((deck) => indexableLocales(deck, [locale]).length > 0);
+  const best = bestDecks(
+    rankable.map((deck) => ({
+      name: deck.name,
+      href: href(locale, `/decks/community/${deck.slug}`),
+      value: weightedRating(deck.rating!.avg, deck.rating!.votes),
+      rating: deck.rating!,
+      deck,
+    })),
+  );
+  const bestLabels = d.decks.best;
+  const outOfRanking = rated.length - rankable.length;
+  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const twoDecimals = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const votesLabel = (n: number) => (n === 1 ? d.tier.explorer.votesOne : d.tier.explorer.votesMany.replace("{n}", String(n)));
+  // data della classifica: quella della rigenerazione che l'ha calcolata (la pagina è ISR)
+  const rankingDate = formatDate(locale, new Date().toISOString().slice(0, 10));
+
   // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
   const authorTypes = (["staff", "pro", "influencer", "creator", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
 
@@ -220,6 +247,78 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         <Link className="btn btn-primary shrink-0" href={href(locale, "/deck-builder")}>
           {d.decks.submitCta} →
         </Link>
+      </section>
+
+      {/*
+        I migliori mazzi adesso (Ondata 3, C18): la classifica dei voti, con l'ancora tradotta per lingua
+        (#best-decks, #migliori-mazzi, #mejores-mazos) per i link dalle altre pagine. Posizione "da classifica": i pari
+        merito hanno lo stesso numero. Ogni riga porta alla scheda del mazzo e a quella della sua Leggendaria.
+      */}
+      <section id={bestLabels.anchor} aria-labelledby="best-decks-title" className="card-night mt-6 scroll-mt-28 p-5 sm:p-6" data-om-placement="decks_best">
+        <p className="kicker text-mint">{bestLabels.kicker}</p>
+        <h2 id="best-decks-title" className="t-section mt-1">
+          {bestLabels.title}
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm text-pale">{fillLabel(bestLabels.lead, { date: rankingDate })}</p>
+        {best.ranked.length ? (
+          <ol className="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {best.ranked.map(({ item, rank }) => {
+              const deck = item.deck;
+              const leg = deck.legendary ? getCard(deck.legendary) : undefined;
+              const legName = leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name;
+              const badge = deck.profile?.badge ?? "community";
+              return (
+                <li key={deck.slug} className="flex min-w-0 items-center gap-2.5 rounded-xl border-2 border-sky/50 bg-night-2/80 p-3 sm:gap-3">
+                  <span className="w-8 shrink-0 text-center font-display text-lg font-bold text-sky tabular sm:w-11 sm:text-xl">#{rank}</span>
+                  {leg?.thumb ? (
+                    // carta intera rimpicciolita, senza ritagli: i crediti impressi restano
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={leg.thumb} alt="" width={160} height={230} loading="lazy" decoding="async" className="h-[60px] w-auto shrink-0 rounded sm:h-[72px]" />
+                  ) : null}
+                  <div className="min-w-0 flex-1">
+                    {/* il nome va a capo invece di tagliarsi: sul telefono è la cosa da leggere */}
+                    <Link href={item.href} className="t-item block break-words leading-tight hover:text-mint">
+                      {deck.name}
+                    </Link>
+                    <p className="mt-1 text-xs text-pale-muted">
+                      {leg ? (
+                        <Link href={href(locale, `/cards/${leg.slug}`)} className="text-gold hover:underline">
+                          ★ {leg.name}
+                        </Link>
+                      ) : legName ? (
+                        <span className="text-gold">★ {legName}</span>
+                      ) : null}
+                      {legName ? " · " : ""}
+                      {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype} · {fillLabel(bestLabels.by, { name: authorName(deck.profile) })}
+                      {badge !== "community" ? (
+                        <span className={`stat-pill ml-1.5 px-1.5 py-0 text-[10px] font-extrabold uppercase ${badgeStyle[badge] ?? ""}`}>
+                          {d.community.badges[badge as keyof typeof d.community.badges] ?? badge}
+                        </span>
+                      ) : null}
+                    </p>
+                    <p className="mt-1 font-mono text-xs text-pale">
+                      <span className="text-gold" aria-hidden="true">
+                        ★
+                      </span>{" "}
+                      {fillLabel(d.decks.brief.rating, { avg: oneDecimal.format(item.rating.avg), votes: votesLabel(item.rating.votes) })} ·{" "}
+                      {fillLabel(bestLabels.score, { score: twoDecimals.format(item.value) })}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        ) : (
+          <p className="mt-4 max-w-3xl text-pale-muted">{bestLabels.empty}</p>
+        )}
+        {best.more > 0 ? (
+          <p className="mt-3 text-sm text-pale-muted">{best.more === 1 ? bestLabels.moreOne : fillLabel(bestLabels.moreMany, { n: String(best.more) })}</p>
+        ) : null}
+        <p className="mt-4 max-w-4xl text-xs leading-relaxed text-chalk-muted">
+          {fillLabel(bestLabels.method, { min: String(GUIDE_MIN_WORDS) })}
+          {outOfRanking > 0 ? ` ${outOfRanking === 1 ? bestLabels.excludedOne : fillLabel(bestLabels.excludedMany, { n: String(outOfRanking) })}` : ""}
+        </p>
+        <p className="mt-2 max-w-4xl text-xs leading-relaxed text-chalk-muted">{bestLabels.vote}</p>
       </section>
 
       <div className="mt-8">

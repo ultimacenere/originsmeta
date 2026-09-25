@@ -192,6 +192,15 @@ export const en = {
     tierSub: "Decks, Legendaries, base cards",
     tierStatus: "OriginsMeta ranking after the Crimson Cup (20–25 Oct). Meanwhile: the most played cards.",
     tierSoon: "Most played",
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01), nella striscia della tier list: {n} liste della scheda più
+       salvata, {min} la soglia della community (COMMUNITY_MIN_LISTS), {people} "2 people". Il numero lo calcola la home
+       (ISR) a ogni rigenerazione, con `communityStage` di tierstats.ts come /tier-list/community */
+    tierInvite: {
+      empty: "Community tier list: it goes live at {min} saved lists, and nobody has saved one yet.",
+      preview: "Community tier list: {n} of the {min} lists it needs to go live.",
+      live: "Community tier list: the average of the lists saved by {people}.",
+      cta: "Save yours",
+    },
     newsBoardTitle: "News board",
     newsBoardSub: "Announcements, events and community news, newest first.",
     featured: "Featured",
@@ -301,6 +310,25 @@ export const en = {
       rating: "{avg}/5, {votes}",
       numbers: ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"],
     },
+    /* "I migliori mazzi di Origins TCG adesso" (Ondata 3, mappa delle query C18): la classifica dei voti della community,
+       calcolata dalla pagina (ISR) con `bestDecks` di tierstats.ts, lo stesso voto pesato e lo stesso ordine di "In breve".
+       `anchor` è l'id della sezione, tradotto per lingua (/en/decks#best-decks, /it/decks#migliori-mazzi,
+       /es/decks#mejores-mazos); {min} è la soglia di parole della guida (GUIDE_MIN_WORDS in deckQuality.ts) */
+    best: {
+      anchor: "best-decks",
+      kicker: "Community ranking",
+      title: "The best Origins TCG decks right now",
+      lead: "The ranking of the stars the community gives to the decks published on OriginsMeta, updated on {date}. It is not our opinion: every vote moves it.",
+      score: "weighted {score}",
+      by: "by {name}",
+      method: "How it is calculated: each deck's average rating weighted by its number of votes (every deck starts from 3 stars worth two votes), so a single 5-star vote does not beat four votes that average 4.5. Ranked: decks with at least one vote and a complete guide in English (at least {min} words).",
+      excludedOne: "One rated deck stays out: its guide is shorter or not yet in English.",
+      excludedMany: "{n} rated decks stay out: their guide is shorter or not yet in English.",
+      moreOne: "One more rated deck is in the full list below.",
+      moreMany: "{n} more rated decks are in the full list below.",
+      vote: "Played one of these decks? Rate it from 1 to 5 stars on its page (you need an account): the ranking follows the votes.",
+      empty: "No deck has votes and a complete guide in English yet: rate the decks you play and the ranking starts.",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO
@@ -398,6 +426,11 @@ export const en = {
       emptyCta: "Make your tier list",
       officialLink: "See the OriginsMeta tier list",
       disclaimer: "It is the opinion of the people on this site, not a game statistic: it weighs as much as the people who voted.",
+      /* Tier list firmate (Ondata 3, TOOL-01): quelle salvate da profili con il tag Staff, Pro, Influencer o Autore
+         (`signedTierLists` in tierstats.ts). Senza liste firmate la sezione non c'è */
+      signedTitle: "Signed tier lists",
+      signedText: "Saved by OriginsMeta members with an author tag (Staff, Pro, Influencer, Author): each one is the opinion of whoever signs it. They count in the community average like every other list.",
+      signedProfile: "Profile",
     },
     /* Most played (24/09/2026): how many published decks use each card */
     played: {

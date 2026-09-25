@@ -5,7 +5,7 @@ import { getGuides } from "@/lib/content/guides";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { listPublishedTierLists } from "@/lib/community/tierlists";
 import { authorName } from "@/lib/community/util";
-import { aggregateLists, usageCounts, weightedRating, type CardScore } from "@/lib/tierstats";
+import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 
 /**
@@ -26,6 +26,8 @@ export type TierData = {
   /** tier list salvate per tipo e data dell'ultima */
   /** liste salvate per scheda (una per persona e per scheda) e persone distinte che ne hanno salvata almeno una */
   lists: { legendaries: number; cards: number; people: number; updated?: string };
+  /** tier list firmate da Staff, Pro, Influencer e Autori, per autore (Ondata 3, TOOL-01): dalla stessa lettura */
+  signed: SignedAuthor[];
 };
 
 export async function loadTierData(locale: Locale): Promise<TierData> {
@@ -110,11 +112,8 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
     decks,
     deckRange: created.length ? { from: formatDate(locale, created[0]), to: formatDate(locale, created[created.length - 1]) } : undefined,
     deckPatches: patchIds.reverse().map((p) => patchLabel(p, locale)),
-    lists: {
-      legendaries: lists.filter((l) => l.kind === "legendaries").length,
-      cards: lists.filter((l) => l.kind === "cards").length,
-      people: new Set(lists.map((l) => l.owner)).size,
-      updated: updated ? formatDate(locale, updated) : undefined,
-    },
+    // conteggi con la stessa funzione dell'invito in home (`tierListCounts`), così i due numeri non divergono
+    lists: { ...tierListCounts(lists), updated: updated ? formatDate(locale, updated) : undefined },
+    signed: signedTierLists(lists),
   };
 }
