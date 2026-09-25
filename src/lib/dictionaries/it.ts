@@ -39,9 +39,10 @@ export const it: Dictionary = {
   faq: {
     kicker: "Domande",
     /* title (H1) e metaTitle (SERP) non promettono l'assistente, che può essere spento (piano SEO del 25/09/2026);
-       nel metaTitle solo gli argomenti che le risposte approvate coprono davvero */
+       nel metaTitle solo gli argomenti che le risposte approvate coprono davvero, e non le parole di un altro primario
+       ("mazzi" è di /decks: revisione dell'Ondata 1) */
     title: "Domande frequenti su Origins TCG",
-    metaTitle: "FAQ di Origins TCG: mazzi, Kickstarter e Crimson Cup",
+    metaTitle: "FAQ di Origins TCG: regole, Kickstarter e Crimson Cup",
     intro: "Scrivi una domanda e la risposta viene costruita con i dati di questo sito: il database carte (patch della demo del 21 settembre 2026), le nostre guide e il calendario degli eventi. Sotto, le risposte che abbiamo scritto e riletto noi.",
     /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
        collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
@@ -54,7 +55,7 @@ export const it: Dictionary = {
     suggestions: "Prova con una di queste",
     sources: "Da dove viene",
     disclaimer: "Risposta costruita sui dati di questo sito da un assistente. Non siamo Koin Games: per regolamenti, date e annunci valgono le fonti ufficiali.",
-    coverage: "Può leggere le {cards} carte della Demo 2.0 e le {created} carte che creano, {guides} guide e il calendario eventi. Le statistiche seguono la patch della demo del {patch}.",
+    coverage: "Può leggere le {cards} carte della Demo 2.0 e le {created} carte generate dalle loro abilità, {guides} guide e il calendario eventi. Le statistiche seguono la patch della demo del {patch}.",
     /* riquadro sotto le risposte quando l'assistente è spento: due strade che rispondono comunque, senza parlare dell'assistente */
     offlineTitle: "Non hai trovato la risposta?",
     offline: "Per una carta, il database carte ha il testo ufficiale, le statistiche e lo storico dei bilanciamenti. Per tutto il resto, chiedi alla community sul Discord ufficiale.",
@@ -235,7 +236,7 @@ export const it: Dictionary = {
     slides: {
       keyArt: { kicker: "Demo Steam disponibile · uscita nel Q4 2026", title: "Origins TCG", text: "Il gioco di carte digitale free-to-compete di Koin Games: leggende da ogni storia, una Leggendaria a guidare ogni mazzo.", cta: "Gioca la demo su Steam", alt: "Key art: un'eroina bionda sorride tra le carte in volo su uno sfondo rosa e viola, accanto al logo Origins TCG." },
       rapunzel: { kicker: "Key art ufficiale", title: "Leggende da ogni storia", text: "Rapunzel nel banner ufficiale: il roster delle Leggendarie cresce a ogni reveal.", cta: "Database carte", alt: "Banner ufficiale: Rapunzel seduta con cuffie e controller, i capelli lunghissimi attraversano tutta l'immagine." },
-      zeroPay: { kicker: "Schermata ufficiale", title: "Zero pay-to-win", text: "Ogni carta competitiva si guadagna giocando: è la promessa del modello free-to-compete.", cta: "Come funziona il gioco", alt: "Schermata di caricamento: quattro pacchetti che si sbloccano a 4, 8 e 12 vittorie e oltre; tutti ottengono ogni carta." },
+      zeroPay: { kicker: "Schermata ufficiale", title: "Zero pay-to-win", text: "Ogni carta competitiva si guadagna giocando: è la promessa del modello free-to-compete.", cta: "È pay to win?", alt: "Schermata di caricamento: quattro pacchetti che si sbloccano a 4, 8 e 12 vittorie e oltre; tutti ottengono ogni carta." },
       realCollecting: { kicker: "Schermata ufficiale", title: "Collezionismo vero", text: "I collector pack contengono carte che si possono scambiare: l'economia da collezione, spiegata.", cta: "Economia da collezione", alt: "Schermata di caricamento: un box sigillato con le sue bustine accanto a una carta con valutazione digitale 10." },
       collectAll: { kicker: "Schermata ufficiale", title: "Prendile tutte", text: "Tutte le carte della Demo 2.0 con statistiche, testo ufficiale e storico dei bilanciamenti.", cta: "Sfoglia le carte", alt: "Schermata di caricamento: quattro versioni della carta Alice, dalla starter alle illustrazioni alternative alla promo." },
     },
@@ -263,11 +264,12 @@ export const it: Dictionary = {
     buildText: "1 Leggendaria + 12 carte base diverse, ognuna in due copie: 25 carte. Il deck builder è gratuito e non serve un account.",
   },
   decks: {
-    /* title = H1 (e briciole); metaTitle = titolo in SERP con "liste" e "codici" (piano SEO del 25/09/2026) */
+    /* title = H1 (e briciole); metaTitle = titolo in SERP con "liste" e "guide" (piano SEO del 25/09/2026). "codici" è
+       uscito dal titolo con la revisione dell'Ondata 1: il primario di "codice del mazzo" è /deck-builder; resta nella description */
     title: "Mazzi di Origins TCG della community",
-    metaTitle: "Mazzi di Origins TCG: liste e codici della community",
+    metaTitle: "Mazzi di Origins TCG: liste e guide della community",
     intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e creator ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
-    description: "Le liste dei mazzi di Origins TCG, il gioco di carte di Koin Games, con piano di gioco, voti e codice del gioco. Filtra per Leggendaria, archetipo o carta.",
+    description: "Le liste dei mazzi di Origins TCG, il gioco di carte di Koin Games, con la guida, i voti e il codice del gioco. Filtra per Leggendaria, archetipo o carta.",
     conquestTitle: "Il formato Conquest, spiegato",
     conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026) e scelto per la Crimson Cup: si registrano più mazzi con Leggendarie diverse, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",
     submitTitle: "Pubblica il tuo mazzo con la tua guida",
@@ -283,25 +285,35 @@ export const it: Dictionary = {
     detailKicker: "Mazzo",
     otherDecks: "Altri mazzi",
     /* "In breve" di /decks e di /tier-list (piano SEO/GEO del 25/09/2026): frasi costruite sul server con i dati dei mazzi
-       pubblicati, mai numeri scritti a mano. {list} è un elenco "Nome (n mazzi)" o "Mazzo (4,8/5, 5 voti)" */
+       pubblicati, mai numeri scritti a mano (`deckBrief` in tierstats.ts, uguale per le due pagine). {list} è un elenco
+       "Nome (n mazzi)" o "Mazzo (4,8/5, 5 voti)"; le forme `Tie` servono quando più di cinque voci sono a pari merito in
+       testa: {count} quante sono (in lettere, da `numbers`: dal 6 in su, senza accordo di genere), {n} il numero comune */
     brief: {
       count: "Finora la community ha pubblicato su OriginsMeta {n} mazzi di Origins TCG (Koin Games), l'ultimo il {date}.",
       countOne: "Finora la community ha pubblicato su OriginsMeta un mazzo di Origins TCG (Koin Games), il {date}.",
       legendaries: "Leggendarie più giocate: {list}.",
+      legendariesOne: "Leggendaria più giocata: {list}.",
+      legendariesTie: "{count} Leggendarie sono a pari merito in testa, con {n} ciascuna: {list}.",
       cards: "Carte base più giocate: {list}.",
+      cardsOne: "Carta base più giocata: {list}.",
+      cardsTie: "{count} carte base sono a pari merito in testa, con {n} ciascuna: {list}.",
       rated: "Mazzi più votati: {list}.",
       ratedOne: "Mazzo più votato: {list}.",
+      ratedTie: "{count} mazzi sono a pari merito con il voto più alto: {list}.",
       rating: "{avg}/5, {votes}",
+      numbers: ["Zero", "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", "Sette", "Otto", "Nove", "Dieci"],
     },
   },
   tier: {
-    /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO del 25/09/2026) */
+    /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO
+       del 25/09/2026), senza "mazzi" e "carte", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list di Origins TCG",
-    metaTitle: "Tier list di Origins TCG e meta: mazzi e carte",
+    metaTitle: "Tier list e meta di Origins TCG",
     intro: "Mazzi, Leggendarie e carte base. La nostra classifica nasce dai risultati dei tornei, mai dalle sensazioni, e parte dopo la Crimson Cup. Fino ad allora: le carte più giocate e la tier list della community.",
-    description: "Tier list di Origins TCG (Koin Games): la nostra classifica parte dopo la Crimson Cup. Intanto i mazzi più votati e le carte più giocate.",
-    /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
-    mainText: "Per la classifica costruita sui risultati dei tornei:",
+    description: "Tier list e meta di Origins TCG (Koin Games): la nostra classifica parte dopo la Crimson Cup. Intanto i mazzi più votati e le carte più giocate.",
+    /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
+       e il testo non la promette (revisione dell'Ondata 1) */
+    mainText: "La nostra classifica dai risultati dei tornei, dopo la Crimson Cup:",
     mainAnchor: "tier list di Origins TCG",
     decksText: "Per le liste complete:",
     decksAnchor: "tutti i mazzi di Origins TCG",
@@ -525,7 +537,7 @@ export const it: Dictionary = {
     description: "Tutti i Luoghi di Origins TCG con il loro effetto, in italiano: ricerca, filtri per tipo di effetto e collegamenti alle carte. Aggiornati alla Demo 2.0.",
     /* nome breve della sezione (link da /cards); l'H1 della pagina è `headline`, con il gioco e quanti sono ({n}) */
     h1: "I Luoghi",
-    headline: "I {n} Luoghi di Origins TCG e i loro effetti",
+    headline: "I {n} Luoghi della Demo 2.0 di Origins TCG e i loro effetti",
     intro: "Ogni partita di Origins TCG si gioca su tre luoghi, e sono loro a decidere che partita sarà: raddoppiano i danni, cambiano i costi, spostano i personaggi, ne evocano altri. Nella Demo 2.0 ne girano {n}; nel gioco completo saranno più di cento. Qui ci sono tutti, con il loro effetto in italiano.",
     facts: [
       "I tre luoghi di una partita si scoprono uno per round nei primi tre round: dal quarto si gioca sapendo tutto il tabellone.",
@@ -634,9 +646,10 @@ export const it: Dictionary = {
     lead: "Il calendario degli eventi ufficiali di Origins TCG e i tornei organizzati dalla community: crea il tuo, condividi il link sul tuo Discord e gioca il tabellone qui.",
     description: "Tornei ed eventi di Origins TCG: il calendario delle date ufficiali con formati e premi, più i tornei della community da organizzare o a cui iscriversi qui.",
     /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
-       con i fatti dell'evento e della news delle regole; il titolo resta generico (la Crimson Cup è della sua news) */
-    descriptionCup: "Tornei di Origins TCG: la Crimson Cup si gioca dal 20 al 25 ottobre 2026 allo Steam Next Fest, con 10.000 $ di premi. Calendario e tornei della community.",
-    cupLead: "La Crimson Cup, il torneo ufficiale di Origins TCG organizzato da Koin Games, si gioca dal 20 al 25 ottobre 2026 durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22 ottobre, playoff il 24, finali il 25, premi per 10.000 $.",
+       con l'evento e le date; posti, premi e regole sono della news delle regole, la pagina primaria, a cui rimandano
+       (revisione dell'Ondata 1). Il titolo resta generico */
+    descriptionCup: "Tornei di Origins TCG: la Crimson Cup si gioca dal 20 al 25 ottobre 2026 allo Steam Next Fest; regole, premi e check-in nel nostro articolo.",
+    cupLead: "La Crimson Cup, il torneo ufficiale di Origins TCG organizzato da Koin Games, si gioca dal 20 al 25 ottobre 2026 durante lo Steam Next Fest. Regole, premi e check-in sono nel nostro articolo.",
     cupRules: "Regole, formato e check-in della Crimson Cup",
     cupSignup: "Iscriviti sul Discord ufficiale",
     submitCta: "Segnala un evento",

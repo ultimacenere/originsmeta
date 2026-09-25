@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Fragment } from "react";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { latestPatch, movers, patchChanges, patchLabel } from "@/lib/data/cards";
 import { tierIds, tierList } from "@/lib/data/tierlist";
 import { tierTone } from "@/lib/tiercode";
-import type { Tier } from "@/lib/tierstats";
+import { deckBrief, type Tier } from "@/lib/tierstats";
 import { loadTierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
@@ -65,35 +66,23 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   const topCards = base.filter((c) => c.used > 0).sort(byUsed).slice(0, 8);
 
   // In breve (piano SEO/GEO del 25/09/2026, TOOL-03): la risposta subito, in testo, con i dati già caricati qui sopra.
-  // Il gioco con Koin Games fra parentesi (le ricerche generiche sono piene di Riftbound: Origins), le carte presenti
-  // in più mazzi con il loro numero (così i pari merito si vedono), il mazzo più votato e la data dell'ultimo mazzo.
-  // I nomi dei mazzi li scrivono gli utenti: si inseriscono con una funzione, perché "$&" e simili non vengano letti.
-  const br = d.decks.brief;
-  const put = (s: string, key: string, value: string) => s.replace(`{${key}}`, () => value);
-  const listOf = (items: string[]) => new Intl.ListFormat(locale, { type: "conjunction" }).format(items);
-  const inDecks = (n: number) => (n === 1 ? t.inDecksOne : put(t.inDecksMany, "n", String(n)));
-  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const bestDeck = topDecks[0];
+  // Il gioco con Koin Games fra parentesi (le ricerche generiche sono piene di Riftbound: Origins), le Leggendarie e le
+  // carte base presenti in più mazzi, i mazzi più votati e la data dell'ultimo mazzo. Voci, regola dei pari merito e
+  // frasi sono quelle di /decks, con i nomi linkati alle schede (`deckBrief` in tierstats.ts, revisione dell'Ondata 1):
+  // l'ordine è per numero e poi per nome, non quello per costo delle anteprime qui sotto.
   const brief = data.deckRange
-    ? [
-        put(put(data.decks.length === 1 ? br.countOne : br.count, "n", String(data.decks.length)), "date", data.deckRange.to),
-        topLegendaries.length ? put(br.legendaries, "list", listOf(topLegendaries.slice(0, 3).map((c) => `${c.name} (${inDecks(c.used)})`))) : "",
-        topCards.length ? put(br.cards, "list", listOf(topCards.slice(0, 3).map((c) => `${c.name} (${inDecks(c.used)})`))) : "",
-        bestDeck
-          ? put(
-              br.ratedOne,
-              "list",
-              `${bestDeck.name} (${put(
-                put(br.rating, "avg", oneDecimal.format(bestDeck.rating.avg)),
-                "votes",
-                bestDeck.rating.votes === 1 ? t.explorer.votesOne : put(t.explorer.votesMany, "n", String(bestDeck.rating.votes)),
-              )})`,
-            )
-          : "",
-      ]
-        .filter(Boolean)
-        .join(" ")
-    : "";
+    ? deckBrief({
+        locale,
+        t: d.decks.brief,
+        decks: data.decks.length,
+        lastDate: data.deckRange.to,
+        legendaries: legendaries.map((c) => ({ name: c.name, href: c.href, value: c.used })),
+        cards: base.map((c) => ({ name: c.name, href: c.href, value: c.used })),
+        rated: data.decks.flatMap((dk) => (dk.rating.votes > 0 ? [{ name: dk.name, href: dk.href, value: dk.score, rating: dk.rating }] : [])),
+        inDecks: (n) => (n === 1 ? t.inDecksOne : t.inDecksMany.replace("{n}", String(n))),
+        votes: (n) => (n === 1 ? t.explorer.votesOne : t.explorer.votesMany.replace("{n}", String(n))),
+      })
+    : [];
 
   // Riquadro dell'ultima patch (l'ancora #tracker resta per i link già pubblicati in news e guide)
   const latest = legendaryFirst(movers(latestPatch).slice(0, 3), (m) => Boolean(m.card.legendary));
@@ -138,10 +127,18 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         state={state}
         sections={sectionIds.map((id) => ({ id, label: t.sections[id].title, count: counts[id] }))}
       />
-      {brief ? (
+      {brief.length ? (
         <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
           <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
-          {brief}
+          {brief.map((part, i) =>
+            typeof part === "string" ? (
+              <Fragment key={i}>{part}</Fragment>
+            ) : (
+              <Link key={i} href={part.href} className="link-mint">
+                {part.text}
+              </Link>
+            ),
+          )}
         </p>
       ) : null}
       <TierSourceLine

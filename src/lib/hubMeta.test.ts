@@ -115,6 +115,27 @@ for (const [locale, d] of dicts) {
       assert.doesNotMatch(d.news.metaTitle, /patch|parche/i);
     });
 
+    test("i titoli degli hub non prendono le parole di un altro primario (revisione dell'Ondata 1)", () => {
+      // "mazzi" è di /decks, "carte" di /cards, "codici" di /deck-builder
+      assert.doesNotMatch(d.tier.metaTitle, /decks?\b|cards?\b|mazzi|carte|mazos|cartas/i);
+      assert.match(d.tier.metaTitle, /meta\b/i);
+      assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos/i);
+      assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos/i);
+      assert.match(d.decks.metaTitle, /guides|guide|guías/i);
+    });
+
+    test("/tournaments nomina la Crimson Cup ma lascia posti e premi alla news delle regole", () => {
+      for (const text of [d.events.descriptionCup, d.events.cupLead]) {
+        assert.match(text, /Crimson Cup/);
+        assert.match(text, /2026/);
+        assert.doesNotMatch(text, /512|10[.,]000|\$/);
+      }
+    });
+
+    test("l'H1 dei Luoghi dice che sono quelli della Demo 2.0", () => {
+      assert.match(d.locations.headline, /Demo 2\.0/);
+    });
+
     test("la FAQ non promette l'assistente nel titolo", () => {
       for (const title of [d.faq.title, d.faq.metaTitle]) assert.doesNotMatch(title, /ask|chiedi|pregunta lo que/i);
     });
@@ -131,7 +152,11 @@ for (const [locale, d] of dicts) {
       const br = d.decks.brief;
       assert.match(br.count, /\{n\}.*\{date\}|\{date\}.*\{n\}/);
       assert.match(br.countOne, /\{date\}/);
-      for (const text of [br.legendaries, br.cards, br.rated, br.ratedOne]) assert.match(text, /\{list\}/);
+      for (const text of [br.legendaries, br.legendariesOne, br.cards, br.cardsOne, br.rated, br.ratedOne]) assert.match(text, /\{list\}/);
+      // il pari merito in testa (deckBrief in tierstats.ts): quante sono, il numero comune dove c'è, e tutti i nomi
+      for (const text of [br.legendariesTie, br.cardsTie]) assert.match(text, /^\{count\}.*\{n\}.*\{list\}/);
+      assert.match(br.ratedTie, /^\{count\}.*\{list\}/);
+      assert.equal(br.numbers.length, 11);
       assert.match(br.rating, /\{avg\}.*\{votes\}/);
       // la patch senza numero ha già una data come etichetta: la sua frase non ripete il nome
       assert.match(d.metashifting.latest, /\{patch\}.*\{date\}.*\{changes\}/);

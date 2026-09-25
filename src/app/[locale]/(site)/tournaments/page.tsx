@@ -18,10 +18,10 @@ export const revalidate = 300;
 /**
  * La Crimson Cup in events.ts. Finché è in calendario, description e prima riga della pagina la nominano (piano SEO
  * del 25/09/2026, "origins tcg tournament" porta qui); finito l'evento tornano quelle generiche da sole, alla prima
- * rigenerazione. Il titolo in SERP resta generico: per regole, date e premi la pagina primaria è la news delle regole.
+ * rigenerazione. Il titolo in SERP resta generico: per regole, posti e premi la pagina primaria è la news delle regole,
+ * il cui slug sta nell'evento (`rules.news`), una fonte sola per il link in testa e per quello della scheda evento.
  */
 const CRIMSON_CUP = "next-fest-tournament";
-const CRIMSON_CUP_RULES = "/news/crimson-cup-format-check-in";
 const cupAhead = () => upcomingEvents().some((e) => e.slug === CRIMSON_CUP);
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -86,14 +86,18 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
           <p className="kicker text-mint">{d.nav.events}</p>
           <h1 className="t-page mt-2">{d.events.title}</h1>
           {/* Risposta diretta finché la Crimson Cup è in calendario, con il link fisso alla news delle regole e il tasto
-              per iscriversi sul Discord ufficiale (l'indirizzo è quello dell'evento in events.ts) */}
+              per iscriversi sul Discord ufficiale (slug delle regole e indirizzo sono quelli dell'evento in events.ts).
+              La scheda dell'evento più in basso linka lo stesso articolo con il testo breve ("Crimson Cup rules"):
+              due ancore diverse verso la stessa pagina, tenute apposta (in testa la risposta, sotto la scheda). */}
           {cup ? (
             <>
               <p className="mt-4 max-w-2xl text-pale">{d.events.cupLead}</p>
               <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-                <Link href={href(locale, CRIMSON_CUP_RULES)} className="link-mint font-bold">
-                  {d.events.cupRules} →
-                </Link>
+                {cup.rules ? (
+                  <Link href={href(locale, `/news/${cup.rules.news}`)} className="link-mint font-bold">
+                    {d.events.cupRules} →
+                  </Link>
+                ) : null}
                 {cup.signup ? (
                   <DiscordButton href={cup.signup.url} size="sm">
                     {d.events.cupSignup}

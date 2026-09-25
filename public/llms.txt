@@ -27,14 +27,15 @@ Community decks are written by players in their own language; the site translate
 - [Tier list](https://originsmeta.com/en/tier-list): decks, Legendaries and base cards; the OriginsMeta ranking starts after the Crimson Cup (20–25 October 2026), built on tournament results.
 - [Most played](https://originsmeta.com/en/tier-list/most-played): how many of the decks published on OriginsMeta use each Legendary and card, with the deck archetypes. Popularity, not a win rate.
 - [Community tier list](https://originsmeta.com/en/tier-list/community): the average of the tier lists saved by members, with votes per card; a preview until 5 lists.
-- [MetaShifting](https://originsmeta.com/en/metashifting): every balance change from the official patch notes, newest first.
-- [Card database](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game, balance history and the legend it comes from.
+- [Tier list maker](https://originsmeta.com/en/tier-list/create): make your own Origins TCG tier list by dragging the Demo 2.0 cards into tiers S to D, with the Legendaries on their own list, and share it with a link. Free, no account needed.
+- [MetaShifting](https://originsmeta.com/en/metashifting): Origins TCG patch notes: every balance change, card by card and patch by patch, newest first, from the official patch notes.
+- [Card list](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game, balance history and the legend it comes from.
 - [Locations](https://originsmeta.com/en/locations): the locations of the Demo 2.0 with their effects, searchable and filterable.
 - [Decks](https://originsmeta.com/en/decks): deck lists published by the community from the deck builder, each with a guide and 1–5 star ratings.
 - [Deck builder](https://originsmeta.com/en/deck-builder): build a legal deck in the browser — one Legendary plus twelve different base cards in two copies each, 25 cards — then export the game code or publish the list. Free, no account needed to build.
 - [Guides](https://originsmeta.com/en/guides): how the game works, the roadmap, the collector economy, how to play the demo, deck guides and matchups.
 - [Tournaments and events](https://originsmeta.com/en/tournaments): official and community events, plus the community tournament organizer.
-- [News](https://originsmeta.com/en/news): patch notes, official announcements and the decks published on the site; every item has its own signed article page, with the date, the official source and the cards it touches.
+- [News](https://originsmeta.com/en/news): official announcements, demo updates, events and the decks published on the site; every patch also has its own article. Every item has its own signed article page, with the date, the official source and the cards it touches.
 - [Who writes here](https://originsmeta.com/en/authors): the people who sign the guides, the decks and the news, and what each of them covers.
 - [About](https://originsmeta.com/en/about): who we are, how we work and which sources we use.
 
@@ -45,14 +46,15 @@ Community decks are written by players in their own language; the site translate
 - [Tier list](https://originsmeta.com/it/tier-list): mazzi, Leggendarie e carte base; la classifica di OriginsMeta parte dopo la Crimson Cup (20–25 ottobre 2026), sui risultati dei tornei.
 - [Le più giocate](https://originsmeta.com/it/tier-list/most-played): in quanti dei mazzi pubblicati su OriginsMeta compare ogni Leggendaria e ogni carta, con gli archetipi dei mazzi. Popolarità, non win rate.
 - [Tier list della community](https://originsmeta.com/it/tier-list/community): la media delle tier list salvate dagli iscritti, con i voti per carta; un'anteprima fino a 5 liste.
-- [MetaShifting](https://originsmeta.com/it/metashifting): ogni bilanciamento dalle patch notes ufficiali, dal più recente.
-- [Database carte](https://originsmeta.com/it/cards): tutte le carte della Demo 2.0 con statistiche attuali, testo ufficiale in inglese e in italiano, come nel gioco, storico dei bilanciamenti e la leggenda di origine.
+- [Crea la tua tier list](https://originsmeta.com/it/tier-list/create): la tua tier list di Origins TCG, trascinando le carte della Demo 2.0 nelle fasce da S a D, con le Leggendarie a parte, da condividere con un link. Gratis, senza account.
+- [MetaShifting](https://originsmeta.com/it/metashifting): le patch notes di Origins TCG: ogni bilanciamento, carta per carta e patch per patch, dal più recente, dalle patch notes ufficiali.
+- [Lista carte](https://originsmeta.com/it/cards): tutte le carte della Demo 2.0 con statistiche attuali, testo ufficiale in inglese e in italiano, come nel gioco, storico dei bilanciamenti e la leggenda di origine.
 - [Luoghi](https://originsmeta.com/it/locations): i luoghi della Demo 2.0 con il loro effetto, da cercare e filtrare.
 - [Mazzi](https://originsmeta.com/it/decks): le liste pubblicate dalla community dal deck builder, ognuna con guida e voto da 1 a 5 stelle.
 - [Deck builder](https://originsmeta.com/it/deck-builder): si costruisce un mazzo legale nel browser — una Leggendaria più dodici carte base diverse in due copie ciascuna, 25 carte — poi si esporta il codice del gioco o si pubblica la lista. È gratuito e per costruire non serve un account.
 - [Guide](https://originsmeta.com/it/guides): come funziona il gioco, la roadmap, l'economia da collezione, come provare la demo, guide ai mazzi e matchup.
 - [Tornei ed eventi](https://originsmeta.com/it/tournaments): eventi ufficiali e della community, più il gestore dei tornei della community.
-- [News](https://originsmeta.com/it/news): patch notes, annunci ufficiali e i mazzi pubblicati sul sito; ogni notizia ha la sua pagina firmata, con la data, la fonte ufficiale e le carte che tocca.
+- [News](https://originsmeta.com/it/news): annunci ufficiali, aggiornamenti della demo, eventi e i mazzi pubblicati sul sito; ogni patch ha anche il suo articolo. Ogni notizia ha la sua pagina firmata, con la data, la fonte ufficiale e le carte che tocca.
 - [Chi scrive qui](https://originsmeta.com/it/authors): le persone che firmano le guide, i mazzi e le news, e di che cosa si occupa ciascuna.
 - [Chi siamo](https://originsmeta.com/it/about): chi siamo, come lavoriamo e quali fonti usiamo.
 
@@ -63,14 +65,15 @@ Community decks are written by players in their own language; the site translate
 - [Tier list](https://originsmeta.com/es/tier-list): mazos, Legendarias y cartas base; la clasificación de OriginsMeta empieza después de la Crimson Cup (20–25 de octubre de 2026), con los resultados de los torneos.
 - [Las más jugadas](https://originsmeta.com/es/tier-list/most-played): en cuántos de los mazos publicados en OriginsMeta aparece cada Legendaria y cada carta, con los arquetipos de los mazos. Popularidad, no win rate.
 - [Tier list de la comunidad](https://originsmeta.com/es/tier-list/community): la media de las tier lists guardadas por los miembros, con los votos por carta; una vista previa hasta llegar a 5 listas.
-- [MetaShifting](https://originsmeta.com/es/metashifting): cada cambio de equilibrio de las notas de parche oficiales, del más reciente al más antiguo.
-- [Base de datos de cartas](https://originsmeta.com/es/cards): todas las cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés y en español, como en el juego, el historial de cambios y la leyenda de la que viene cada una.
+- [Crea tu tier list](https://originsmeta.com/es/tier-list/create): tu propia tier list de Origins TCG, arrastrando las cartas de la Demo 2.0 a los tiers de S a D, con las Legendarias aparte, para compartirla con un enlace. Gratis, sin cuenta.
+- [MetaShifting](https://originsmeta.com/es/metashifting): las notas del parche de Origins TCG: cada cambio de equilibrio, carta por carta y parche por parche, del más reciente al más antiguo, según las notas de parche oficiales.
+- [Lista de cartas](https://originsmeta.com/es/cards): todas las cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés y en español, como en el juego, el historial de cambios y la leyenda de la que viene cada una.
 - [Ubicaciones](https://originsmeta.com/es/locations): las ubicaciones de la Demo 2.0 con su efecto, con búsqueda y filtros.
 - [Mazos](https://originsmeta.com/es/decks): las listas publicadas por la comunidad desde el deck builder, cada una con su guía y una valoración de 1 a 5 estrellas.
 - [Deck builder](https://originsmeta.com/es/deck-builder): construye un mazo legal en el navegador — una Legendaria más doce cartas base distintas con dos copias de cada una, 25 cartas — y luego exporta el código del juego o publica la lista. Gratis, sin cuenta para construir.
 - [Guías](https://originsmeta.com/es/guides): cómo funciona el juego, la hoja de ruta, la economía de coleccionismo, cómo jugar la demo, guías de mazos y matchups.
 - [Torneos y eventos](https://originsmeta.com/es/tournaments): eventos oficiales y de la comunidad, más el organizador de torneos de la comunidad.
-- [Noticias](https://originsmeta.com/es/news): notas de parche, anuncios oficiales y los mazos publicados en el sitio; cada noticia tiene su propia página firmada, con la fecha, la fuente oficial y las cartas a las que afecta.
+- [Noticias](https://originsmeta.com/es/news): anuncios oficiales, actualizaciones de la demo, eventos y los mazos publicados en el sitio; cada parche tiene además su propio artículo. Cada noticia tiene su propia página firmada, con la fecha, la fuente oficial y las cartas a las que afecta.
 - [Quién escribe aquí](https://originsmeta.com/es/authors): las personas que firman las guías, los mazos y las noticias, y de qué se ocupa cada una.
 - [Quiénes somos](https://originsmeta.com/es/about): quiénes somos, cómo trabajamos y qué fuentes usamos.
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Fragment, type ReactNode } from "react";
+import { Fragment } from "react";
 import { formatDate, href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import type { Dictionary } from "@/lib/i18n";
@@ -11,28 +11,13 @@ import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
-import { localizedGuide } from "@/lib/community/deckTranslation";
+import { guideLocales, localizedGuide } from "@/lib/community/deckTranslation";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { weightedRating } from "@/lib/tierstats";
+import { deckBrief, usageCounts, weightedRating } from "@/lib/tierstats";
+import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
 const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
-
-/** Riempie i segnaposto `{nome}` di una frase del dizionario con testo o link. */
-function fillNodes(template: string, values: Record<string, ReactNode>): ReactNode[] {
-  return template.split(/(\{\w+\})/).map((part, i) => {
-    const key = /^\{(\w+)\}$/.exec(part)?.[1];
-    return key && key in values ? <Fragment key={i}>{values[key]}</Fragment> : part;
-  });
-}
-
-/** Elenco con le virgole e la congiunzione della lingua ("A, B and C", "A, B e C", "A, B y C"), anche con dei link dentro. */
-function listNodes(locale: Locale, items: ReactNode[]): ReactNode[] {
-  return new Intl.ListFormat(locale, { type: "conjunction" })
-    .formatToParts(items.map((_, i) => String(i)))
-    .map((p, i) => (p.type === "element" ? <Fragment key={i}>{items[Number(p.value)]}</Fragment> : p.value));
-}
-import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
 type CardLike = {
@@ -81,7 +66,8 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  // In SERP "decklists and codes" (piano SEO del 25/09/2026); l'H1 resta `title`, più leggibile sulla pagina
+  // In SERP "decklists and guides" (piano SEO del 25/09/2026; "codes" è di /deck-builder dalla revisione dell'Ondata 1);
+  // l'H1 resta `title`, più leggibile sulla pagina
   return pageMeta(locale, "/decks", dict.decks.metaTitle, dict.decks.description);
 }
 
@@ -94,10 +80,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
   const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
   // L'ordine lo decide l'elenco nel browser (di partenza: dal più recente, Pierluigi 23/09/2026); qui basta
-  // una lista stabile.
-  const communityList: ExplorerDeck[] = community
-    .slice()
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+  // una lista stabile, la stessa dei dati strutturati.
+  const newestFirst = community.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const communityList: ExplorerDeck[] = newestFirst
     .map((deck) => {
       const leg = deck.legendary ? getCard(deck.legendary) : undefined;
       const legCustom = !leg ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
@@ -152,36 +137,48 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   });
 
   // In breve (piano SEO/GEO del 25/09/2026, DECKS-05): quanti mazzi, le Leggendarie più giocate e i mazzi più votati,
-  // calcolati qui a ogni rigenerazione (ISR), mai scritti a mano. I voti si ordinano col voto pesato sul numero di voti,
-  // come nella tier list; accanto a ogni nome il suo numero, così i pari merito si vedono.
-  const br = d.decks.brief;
+  // calcolati qui a ogni rigenerazione (ISR), mai scritti a mano. Voci, regola dei pari merito e frasi sono quelle di
+  // /tier-list (`deckBrief` in tierstats.ts, revisione dell'Ondata 1): le Leggendarie della demo contate come in
+  // "Le più giocate" (`usageCounts`), i mazzi col voto pesato sul numero di voti. /tier-list aggiunge le carte base.
   const lastDeck = community.map((deck) => deck.created_at.slice(0, 10)).sort().at(-1);
-  const legendaryUse = new Map<string, number>();
-  for (const deck of community) {
-    const leg = deck.legendary ? getCard(deck.legendary) : undefined;
-    if (leg?.legendary) legendaryUse.set(leg.slug, (legendaryUse.get(leg.slug) ?? 0) + 1);
-  }
-  const topLegendaries = [...legendaryUse]
-    .map(([slug, n]) => ({ card: getCard(slug)!, n }))
-    .sort((a, b) => b.n - a.n || a.card.name.localeCompare(b.card.name))
-    .slice(0, 3);
-  const ratingOf = (deck: (typeof community)[number]) => deck.rating ?? { avg: 0, votes: 0 };
-  const topRated = community
-    .filter((deck) => ratingOf(deck).votes > 0)
-    .map((deck) => ({ deck, rating: ratingOf(deck), score: weightedRating(ratingOf(deck).avg, ratingOf(deck).votes) }))
-    .sort((a, b) => b.score - a.score || b.rating.votes - a.rating.votes || b.deck.created_at.localeCompare(a.deck.created_at))
-    .slice(0, 3);
-  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const inDecks = (n: number) => (n === 1 ? d.tier.inDecksOne : d.tier.inDecksMany.replace("{n}", String(n)));
-  const votesOf = (n: number) => (n === 1 ? d.tier.explorer.votesOne : d.tier.explorer.votesMany.replace("{n}", String(n)));
+  const usage = usageCounts(community);
+  const brief = lastDeck
+    ? deckBrief({
+        locale,
+        t: d.decks.brief,
+        decks: community.length,
+        lastDate: formatDate(locale, lastDeck),
+        legendaries: legendaries.map((c) => ({ name: c.name, href: href(locale, `/cards/${c.slug}`), value: usage.legendaries[c.slug] ?? 0 })),
+        rated: community.flatMap((deck) =>
+          deck.rating && deck.rating.votes > 0
+            ? [{ name: deck.name, href: href(locale, `/decks/community/${deck.slug}`), value: weightedRating(deck.rating.avg, deck.rating.votes), rating: deck.rating }]
+            : [],
+        ),
+        inDecks: (n) => (n === 1 ? d.tier.inDecksOne : d.tier.inDecksMany.replace("{n}", String(n))),
+        votes: (n) => (n === 1 ? d.tier.explorer.votesOne : d.tier.explorer.votesMany.replace("{n}", String(n))),
+      })
+    : [];
 
   // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
   const authorTypes = (["staff", "pro", "influencer", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
 
-  // Lista per i dati strutturati: solo i mazzi editoriali statici (oggi `decks` è vuoto, quindi l'ItemList
-  // resta senza voci). I mazzi della community non ci vanno: arrivano da Supabase e cambiano a ogni
-  // pubblicazione, e ognuno ha già la sua scheda indicizzabile in /decks/community/[slug].
-  const listed = decks.map((deck) => ({ name: deck.name, path: href(locale, `/decks/${deck.slug}`) }));
+  // Lista per i dati strutturati: i mazzi editoriali statici (oggi nessuno) e quelli della community che la pagina
+  // mostra, dal più recente, ma solo dove la scheda si indicizza in questa lingua: la guida originale o una traduzione
+  // aggiornata (`guideLocales`, lo stesso criterio di hreflang e sitemap). Senza voci l'ItemList non si dichiara:
+  // una lista vuota su una pagina piena di mazzi sarebbe falsa (revisione dell'Ondata 1).
+  const listed = [
+    ...decks.map((deck) => ({ name: deck.name, path: href(locale, `/decks/${deck.slug}`) })),
+    ...newestFirst.filter((deck) => guideLocales(deck, [locale]).length > 0).map((deck) => ({ name: deck.name, path: href(locale, `/decks/community/${deck.slug}`) })),
+  ];
+  const collection = collectionPage({
+    locale,
+    path: href(locale, "/decks"),
+    name: d.decks.title,
+    description: d.decks.description,
+    items: listed,
+    about: videoGameId,
+  });
+  if (!listed.length) delete collection.mainEntity;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -191,59 +188,24 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             { name: "OriginsMeta", path: href(locale) },
             { name: d.decks.title, path: href(locale, "/decks") },
           ]),
-          collectionPage({
-            locale,
-            path: href(locale, "/decks"),
-            name: d.decks.title,
-            description: d.decks.description,
-            items: listed,
-            about: videoGameId,
-          }),
+          collection,
         ]}
       />
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="t-page mt-2">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
-      {lastDeck ? (
+      {brief.length ? (
         <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
           <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
-          {fillNodes(community.length === 1 ? br.countOne : br.count, { n: String(community.length), date: formatDate(locale, lastDeck) })}
-          {topLegendaries.length ? (
-            <>
-              {" "}
-              {fillNodes(br.legendaries, {
-                list: listNodes(
-                  locale,
-                  topLegendaries.map(({ card, n }) => (
-                    <Fragment key={card.slug}>
-                      <Link href={href(locale, `/cards/${card.slug}`)} className="link-mint">
-                        {card.name}
-                      </Link>{" "}
-                      ({inDecks(n)})
-                    </Fragment>
-                  )),
-                ),
-              })}
-            </>
-          ) : null}
-          {topRated.length ? (
-            <>
-              {" "}
-              {fillNodes(topRated.length === 1 ? br.ratedOne : br.rated, {
-                list: listNodes(
-                  locale,
-                  topRated.map(({ deck, rating }) => (
-                    <Fragment key={deck.slug}>
-                      <Link href={href(locale, `/decks/community/${deck.slug}`)} className="link-mint">
-                        {deck.name}
-                      </Link>{" "}
-                      ({fillNodes(br.rating, { avg: oneDecimal.format(rating.avg), votes: votesOf(rating.votes) })})
-                    </Fragment>
-                  )),
-                ),
-              })}
-            </>
-          ) : null}
+          {brief.map((part, i) =>
+            typeof part === "string" ? (
+              <Fragment key={i}>{part}</Fragment>
+            ) : (
+              <Link key={i} href={part.href} className="link-mint">
+                {part.text}
+              </Link>
+            ),
+          )}
         </p>
       ) : null}
 
