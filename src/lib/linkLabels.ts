@@ -11,7 +11,8 @@ import type { Locale } from "./i18n";
 const en = {
   explore: {
     title: "Explore",
-    metashifting: "MetaShifting",
+    /** ancora descrittiva: /metashifting è la pagina primaria per "Origins TCG patch notes" (mappa delle query, C25) */
+    metashifting: "Patch notes (MetaShifting)",
     locations: "Locations",
     mostPlayed: "Most played",
     communityTierList: "Community tier list",
@@ -24,8 +25,10 @@ const en = {
   patch: {
     title: "What changes in this patch",
     /** {n} = carte toccate dalla patch */
-    introOne: "1 card changes in this patch. Its name opens the card page with its full balance history; the numbers are mana · Power/Health, before and after.",
-    introMany: "{n} cards change in this patch. Each name opens the card page with its full balance history; the numbers are mana · Power/Health, before and after.",
+    introOne: "1 card changes in this patch. Its name opens the card page with its full balance history.",
+    introMany: "{n} cards change in this patch. Each name opens the card page with its full balance history.",
+    /** solo nella versione con prima/dopo (patch notes senza testo) */
+    numbers: "The numbers are mana · Power/Health, before and after.",
     metashifting: "Every balance change in MetaShifting",
   },
   /** blocco in fondo a una guida: le news il cui campo `guides` la cita */
@@ -39,7 +42,7 @@ export const linkLabels: Record<Locale, LinkLabels> = {
   it: {
     explore: {
       title: "Esplora",
-      metashifting: "MetaShifting",
+      metashifting: "Patch notes (MetaShifting)",
       locations: "Luoghi",
       mostPlayed: "Le più giocate",
       communityTierList: "Tier list della community",
@@ -49,8 +52,9 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     relatedNews: "News correlate",
     patch: {
       title: "Cosa cambia in questa patch",
-      introOne: "In questa patch cambia 1 carta. Il nome apre la scheda della carta con tutto il suo storico dei bilanciamenti; i numeri sono mana · Potenza/Salute, prima e dopo.",
-      introMany: "In questa patch cambiano {n} carte. Ogni nome apre la scheda della carta con tutto il suo storico dei bilanciamenti; i numeri sono mana · Potenza/Salute, prima e dopo.",
+      introOne: "In questa patch cambia 1 carta. Il nome apre la scheda della carta con tutto il suo storico dei bilanciamenti.",
+      introMany: "In questa patch cambiano {n} carte. Ogni nome apre la scheda della carta con tutto il suo storico dei bilanciamenti.",
+      numbers: "I numeri sono mana · Potenza/Salute, prima e dopo.",
       metashifting: "Tutti i bilanciamenti in MetaShifting",
     },
     guideNews: "News su questo argomento",
@@ -58,7 +62,7 @@ export const linkLabels: Record<Locale, LinkLabels> = {
   es: {
     explore: {
       title: "Explorar",
-      metashifting: "MetaShifting",
+      metashifting: "Notas del parche (MetaShifting)",
       locations: "Ubicaciones",
       mostPlayed: "Las más jugadas",
       communityTierList: "Tier list de la comunidad",
@@ -68,8 +72,9 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     relatedNews: "Noticias relacionadas",
     patch: {
       title: "Qué cambia en este parche",
-      introOne: "En este parche cambia 1 carta. Su nombre abre la página de la carta con todo su historial de cambios de equilibrio; los números son maná · Poder/Salud, antes y después.",
-      introMany: "En este parche cambian {n} cartas. Cada nombre abre la página de la carta con todo su historial de cambios de equilibrio; los números son maná · Poder/Salud, antes y después.",
+      introOne: "En este parche cambia 1 carta. Su nombre abre la página de la carta con todo su historial de cambios de equilibrio.",
+      introMany: "En este parche cambian {n} cartas. Cada nombre abre la página de la carta con todo su historial de cambios de equilibrio.",
+      numbers: "Los números son maná · Poder/Salud, antes y después.",
       metashifting: "Todos los cambios de equilibrio en MetaShifting",
     },
     guideNews: "Noticias sobre este tema",

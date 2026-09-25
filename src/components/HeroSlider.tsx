@@ -40,7 +40,8 @@ const getServerReducedMotion = () => false;
  * - sul telefono l'immagine sta sopra (2:1) e il testo sotto, sempre visibile e ad altezza fissa: il primo schermo
  *   non è più tutto slider e la pagina non salta a ogni cambio di slide; da sm in su il testo resta sovrapposto;
  * - tasto pausa/riproduci (WCAG 2.2.2) e `aria-live` solo quando la rotazione è ferma: con uno screen reader la
- *   home non parla più ogni 4,5 secondi, ma annuncia la slide quando è l'utente a cambiarla;
+ *   home non parla più ogni 4,5 secondi, ma annuncia la slide quando è l'utente a cambiarla (dal 25/09/2026 con
+ *   una riga nascosta alla vista, "kicker: titolo", che cambia testo a ogni cambio scelto dall'utente);
  * - puntini con area cliccabile di 24 px;
  * - si montano solo la slide attiva e la successiva (più quelle già viste), non tutte e cinque; la prima ha
  *   priorità alta perché è l'elemento più grande del primo schermo.
@@ -49,7 +50,9 @@ const getServerReducedMotion = () => false;
  * nell'HTML renderizzato sul server, sovrapposti nella stessa cella di una griglia; prima c'era solo quello della
  * slide attiva, quindi le guide delle altre slide (pay-to-win, economia da collezione) non ricevevano link dalla home.
  * Le slide non attive sono trasparenti, `inert` (fuori dal Tab e dai lettori di schermo) e `aria-hidden`, ma non
- * `display: none`. Le immagini restano montate a richiesta come prima.
+ * `display: none`; i loro tasti non si precaricano (`prefetch={false}`) finché la slide non entra. Le immagini
+ * restano montate a richiesta come prima. L'annuncio della slide non può più stare sul riquadro dei testi (ci sono
+ * tutte e cinque e al cambio non cambia il testo, solo `inert`): sta in una riga `sr-only` a parte.
  */
 export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[]; labels: SliderLabels; interval?: number }) {
   const n = slides.length;
@@ -72,8 +75,11 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
   /* testo e tasto di ogni slide; `refocus`: il focus stava sul tasto della slide che esce (frecce da tastiera) */
   const texts = useRef<(HTMLDivElement | null)[]>([]);
   const refocus = useRef(false);
+  /* la riga per i lettori di schermo resta vuota finché è l'utente a cambiare slide: niente testo doppio all'apertura */
+  const [announced, setAnnounced] = useState(false);
   const go = (k: number) => {
     refocus.current = Boolean(texts.current[index]?.contains(document.activeElement));
+    setAnnounced(true);
     setIndex(((k % n) + n) % n);
   };
   /* la slide che esce diventa inert e perderebbe il focus: passa subito al tasto della slide che entra, prima del disegno */
@@ -205,7 +211,7 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
             ogni slide la riempie (tasto in fondo, come prima) e da sm ognuna si appoggia in basso. `minmax(0,1fr)` e
             `min-w-0`: il kicker su una riga (`truncate`) non allarga la colonna oltre lo schermo.
           */}
-          <div className="grid min-h-[140px] w-full max-w-2xl grid-cols-[minmax(0,1fr)] sm:min-h-0 sm:w-auto" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+          <div className="grid min-h-[140px] w-full max-w-2xl grid-cols-[minmax(0,1fr)] sm:min-h-0 sm:w-auto">
             {slides.map((s, k) => {
               const on = k === index;
               return (
@@ -228,7 +234,8 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
                         {s.cta}
                       </SteamButton>
                     ) : (
-                      <Link href={s.href} className="btn btn-primary text-xs">
+                      // il link c'è nell'HTML di ogni slide, ma si precarica solo quando la slide è quella visibile
+                      <Link href={s.href} prefetch={on ? undefined : false} className="btn btn-primary text-xs">
                         {s.cta}
                       </Link>
                     )}
@@ -237,6 +244,10 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
               );
             })}
           </div>
+          {/* annuncio della slide scelta dall'utente (frecce, puntini, swipe), muto mentre la rotazione è automatica */}
+          <p className="sr-only" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+            {announced ? `${slides[index].kicker}: ${slides[index].title}` : ""}
+          </p>
           <div className="hidden items-center gap-3 sm:flex">
             {controls}
             <span className="font-mono text-[10px] uppercase tracking-wider text-chalk-muted/70">{labels.credit}</span>

@@ -143,6 +143,8 @@ export function TierExplorer({
   const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  /* voce su cui è stata premuta la barra spaziatrice: il dettaglio si apre al rilascio sulla stessa voce */
+  const spaceOn = useRef<string | null>(null);
 
   const pool = useMemo(() => entries.filter((e) => matches(e, f)), [entries, f]);
   const active = (f.q ? 1 : 0) + (f.type ? 1 : 0) + (f.cost ? 1 : 0) + (f.align ? 1 : 0);
@@ -181,11 +183,21 @@ export function TierExplorer({
     onAuxClick: (ev: MouseEvent<HTMLAnchorElement>) => {
       if (ev.button === 1) track("tier_entry_click", { tier_source: source, target: "card" });
     },
-    // come i bottoni di prima: anche la barra spaziatrice apre il dettaglio (Invio passa già dal clic)
+    // come i bottoni di prima: anche la barra spaziatrice apre il dettaglio (Invio passa già dal clic). Si apre al
+    // rilascio, come un bottone: aprendo alla pressione il focus passerebbe al tasto "Chiudi" prima del rilascio e
+    // Firefox, che attiva i bottoni al keyup della barra, chiuderebbe subito il dettaglio. Alla pressione si ferma
+    // solo lo scorrimento della pagina e si ricorda quale voce l'ha ricevuta.
     onKeyDown: (ev: KeyboardEvent<HTMLAnchorElement>) => {
       if (ev.key !== " ") return;
       ev.preventDefault();
-      openCard(e.slug);
+      spaceOn.current = e.slug;
+    },
+    onKeyUp: (ev: KeyboardEvent<HTMLAnchorElement>) => {
+      if (ev.key !== " ") return;
+      ev.preventDefault();
+      const pressed = spaceOn.current === e.slug;
+      spaceOn.current = null;
+      if (pressed) openCard(e.slug);
     },
   });
   const current = open ? entries.find((e) => e.slug === open) : undefined;
