@@ -1,5 +1,6 @@
 import { cards, cardsVerified, latestPatch, patchLabel, patches, sagas, type Card } from "@/lib/data/cards";
-import { getGuides } from "@/lib/content/guides";
+import { faqs, type Faq } from "@/lib/content/faq";
+import { getGuide, getGuides } from "@/lib/content/guides";
 import { events } from "@/lib/data/events";
 import { RULES } from "@/lib/deckrules";
 import type { Locale } from "@/lib/i18n";
@@ -48,6 +49,48 @@ function punteggio(card: Card, domanda: string, parole: string[], locale: Locale
   if (p > 0 && card.status === "removed") p -= 10; // le rimosse contano meno: non sono nella Demo 2.0
   if (p > 0 && card.legendary) p += 2;
   return p;
+}
+
+/**
+ * Parole da non contare quando si cercano le risposte approvate: quelle di `STOPWORDS`, il nome del gioco e le forme
+ * spagnole più comuni (per le carte lo spagnolo non serviva: lì contano i nomi, che sono in inglese).
+ */
+const STOPWORDS_FAQ = new Set([
+  ...STOPWORDS,
+  ...["origins", "tcg", "originsmeta"],
+  ...["cuando", "donde", "como", "para", "esta", "este", "estan", "puedo", "tiene", "hay", "juego", "carta", "cartas", "mazo", "mazos", "sobre", "todas", "todos"],
+  ...["questo", "questa", "tutte", "tutti", "sulla", "nella", "della"],
+]);
+
+/** Una parola della domanda vale per una parola della risposta approvata con la stessa radice (lingue/lingua, idioma/idiomas). */
+const stessaRadice = (a: string, b: string) => (a.length >= 5 && b.length >= 5 ? a.slice(0, 5) === b.slice(0, 5) : a === b);
+
+/**
+ * Le risposte approvate (`src/lib/content/faq.ts`) più vicine alla domanda (Ondata 3, 25/09/2026). Prima l'assistente
+ * leggeva solo carte, guide ed eventi: a "è su mobile?" o "è Riftbound?" arrivavano al più 900 caratteri di una guida,
+ * mentre la risposta scritta e verificata da noi c'era già. Una parola in comune con la domanda approvata vale 4,
+ * una radice trovata nella risposta vale 1; entrano le prime `max` con almeno 4 punti. Funzione pura (test in faq.test.ts).
+ */
+export function risposteApprovate(domanda: string, locale: Locale, max = 2): Faq[] {
+  const parole = normalizza(domanda)
+    .split(/\s+/)
+    .filter((w) => w.length > 3 && !STOPWORDS_FAQ.has(w));
+  if (!parole.length) return [];
+  return faqs[locale]
+    .map((f, i) => {
+      const nellaDomanda = normalizza(f.q).split(/\s+/);
+      const nellaRisposta = normalizza(f.a);
+      let p = 0;
+      for (const w of parole) {
+        if (nellaDomanda.some((q) => stessaRadice(w, q))) p += 4;
+        if (nellaRisposta.includes(w.length >= 5 ? w.slice(0, 5) : w)) p += 1;
+      }
+      return { f, p, i };
+    })
+    .filter((x) => x.p >= 4)
+    .sort((a, b) => b.p - a.p || a.i - b.i)
+    .slice(0, max)
+    .map((x) => x.f);
 }
 
 /** Scheda compatta di una carta: solo fatti del database, niente prosa. */
@@ -114,6 +157,16 @@ export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, 
     `REGOLE DEL MAZZO: ${RULES.legendarySlots} Leggendaria + ${RULES.distinctCards} carte diverse in ${RULES.copiesPerCard} copie = ${RULES.deckSize} carte. Formato Conquest della Crimson Cup (annunci ufficiali del 9 e del 24/09/2026): tre mazzi, ognuno con una Leggendaria diversa, con almeno 8 carte uniche fra ogni coppia di mazzi (l'annuncio non dice come si contano; la nostra lettura: due mazzi possono avere al massimo 5 carte in comune); liste segrete fino alla top 4, nel ban si vede solo la Leggendaria; partite al meglio delle tre, gran finale al meglio delle cinque, e al meglio delle cinque non c'è ban e si vince con tutti e tre i mazzi. Il controllo Conquest del deck builder di OriginsMeta segue la stessa regola: conta le carte uniche, ogni carta una volta sola, e ne chiede almeno ${RULES.conquestMinDifferent} fra ogni coppia di mazzi.`,
   ];
 
+  // Le risposte approvate vengono prima delle carte: sono già scritte e verificate, con la data della fonte. Le guide
+  // che ci rimandano entrano fra le fonti mostrate sotto la risposta.
+  const approvate = risposteApprovate(domanda, locale);
+  if (approvate.length) {
+    blocchi.push(`RISPOSTE APPROVATE DEL SITO (scritte e verificate da noi, con la fonte e la data):\n${approvate.map((f) => `- D: ${f.q}\n  R: ${f.a}`).join("\n")}`);
+    for (const slug of approvate.flatMap((f) => f.guides ?? [])) {
+      const g = getGuide(locale, slug);
+      if (g && !fonti.some((x) => x.tipo === "guide" && x.slug === slug)) fonti.push({ tipo: "guide", slug, nome: g.title, href: `/guides/${slug}` });
+    }
+  }
   if (trovate.length) {
     blocchi.push(`CARTE DEL DATABASE — ${patchInfo()}:\n${trovate.map((t) => schedaCarta(t.c, locale)).join("\n")}`);
     for (const t of trovate) fonti.push({ tipo: "card", slug: t.c.slug, nome: t.c.name, href: `/cards/${t.c.slug}` });
@@ -122,7 +175,9 @@ export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, 
     blocchi.push(
       `GUIDE DEL SITO (estratti):\n${guide.map((x) => `- "${x.g.title}": ${x.g.excerpt}\n  ${x.g.body.replace(/[#*_>`]/g, "").replace(/\s*\n\s*/g, " ").slice(0, 900)}`).join("\n")}`,
     );
-    for (const x of guide) fonti.push({ tipo: "guide", slug: x.g.slug, nome: x.g.title, href: `/guides/${x.g.slug}` });
+    for (const x of guide) {
+      if (!fonti.some((f) => f.tipo === "guide" && f.slug === x.g.slug)) fonti.push({ tipo: "guide", slug: x.g.slug, nome: x.g.title, href: `/guides/${x.g.slug}` });
+    }
   }
   if (prossimi.length) {
     blocchi.push(`EVENTI IN CALENDARIO:\n${prossimi.map((e) => `- ${e.title[locale]} (${e.start}–${e.end}): ${e.text[locale]}`).join("\n")}`);

@@ -14,16 +14,48 @@ Community decks are written by players in their own language; the site translate
 
 - Release: the Steam store page says "Q4 2026", with no exact date. No early access has been announced.
 - Demo: the free Demo 2.0 has been on Steam since 21 September 2026, when the first big demo update arrived (new interface and board, test packs, voice lines, balance changes). Ranked mode opens with the Steam Next Fest, 19–26 October 2026. Guide: [How to play the demo](https://originsmeta.com/en/guides/play-the-demo).
-- Crimson Cup: the official tournament of the Next Fest, from 20 to 25 October 2026, played on the demo. The format is three-deck Conquest with at least 8 unique cards between each pair of decks, and decklists stay hidden until the top 4. Rules: [Crimson Cup format and check-in](https://originsmeta.com/en/news/crimson-cup-format-check-in).
+- Crimson Cup: the official tournament of the Next Fest, from 20 to 25 October 2026, played on the demo. The format is three-deck Conquest with at least 8 unique cards between each pair of decks, and decklists stay hidden until the top 4. Summary in the next section; rules: [Crimson Cup format and check-in](https://originsmeta.com/en/news/crimson-cup-format-check-in).
 - Kickstarter: the main menu of the demo shows it as "Coming soon – Oct 27" (read on 25 September 2026). No official post confirms the date yet. Pre-registration is open: a refundable $1 deposit gives 15% off, and the Alpha boxes are preorder-only. Guide: [Origins TCG Kickstarter](https://originsmeta.com/en/guides/origins-tcg-kickstarter).
-- Languages: Steam lists English, French, Italian and German for the interface, with full audio in English only. The demo also has the interface and the card texts in Spanish.
-- Deck rules: one Legendary plus twelve different base cards, two copies each, for 25 cards.
+- Languages: Steam lists English, French, Italian and German for the interface, with full audio in English only. The demo also has the interface and the card texts in Spanish (checked in the game on 25 September 2026), which Steam does not list yet.
+- Platforms: the Steam page lists Windows and macOS. Mobile is not out: on its pre-registration page (founder.origins-tcg.com) Koin Games writes "Mobile pack opening is coming! We have our sights set on 2027 for Origins on Mobile." (read on 25 September 2026).
+- Demo progress: according to the Steam post of 21 September 2026, whoever played the demo, the playtest or both keeps whichever progress is further ahead. The exclusive demo collectibles become tradeable on the Steam marketplace when the full game launches (Steam post of 16 July 2026).
+- Not Riftbound: "Riftbound Origins" cards are the ones in the booster packs of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026). Origins TCG by Koin Games is a different game.
+- Deck rules: one Legendary plus twelve different base cards, two copies each, for 25 cards. Deck codes of the game start with KGBLDC: the deck builder imports them and exports them.
+- Answers to the most common questions, each with its source and date: [FAQ](https://originsmeta.com/en/faq).
 - Dates and roadmap: [Roadmap and dates](https://originsmeta.com/en/guides/roadmap-and-dates). Next Fest: [Steam Next Fest 2026 guide](https://originsmeta.com/en/guides/steam-next-fest-2026).
+
+## Crimson Cup rules in brief
+
+The official Origins TCG tournament of Steam Next Fest, run by Koin Games (announcements of 9 and 24 September 2026). Full rules and times: [Crimson Cup rules](https://originsmeta.com/en/news/crimson-cup-format-check-in).
+
+- When and where: 20–25 October 2026, entirely online and in the game, on the main demo (not on the playtest). Three qualifiers of 512 spots each: EMEA on 20 October at 7pm CEST, AMER on 21 October at 7pm EST, APAC on 22 October at 7pm SGT; players can join any qualifier, wherever they live. Playoffs on 24 October (256 spots), finals on 25 October.
+- Format: Conquest with three decks, each led by a different Legendary, with at least 8 unique cards between each pair of decks. Decklists stay hidden until the top 4: in the ban you only see the Legendary.
+- Matches: best of three, with a best-of-five grand final (announcement of 9 September). Best-of-five matches have no ban: you must win with all three decks.
+- Check-in: opens two hours before each qualifier and closes five minutes before the start, together with deck submission. Miss it and you can't play.
+- Prizes: worth $10,000 in total, not a cash pool: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. The exact prize pool was promised for the week after 24 September.
+- Balance: the last balance patch before the tournament arrives two weeks before Steam Next Fest.
+- Sign-ups on the [official Discord](https://discord.gg/originstcg). Guide to the festival: [Origins TCG at Steam Next Fest 2026](https://originsmeta.com/en/guides/steam-next-fest-2026). The [deck builder](https://originsmeta.com/en/deck-builder) has a tournament mode that checks three decks against the Conquest rule.
+
+## Legendaries
+
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (Demo · 21 Sep, 21 September 2026); each card page has the official text in English, Italian and Spanish and the balance history.
+
+- [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
+- [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
+- [King Arthur](https://originsmeta.com/en/cards/king-arthur): Legendary unit, 7 mana, 7 Power / 7 Health, Good. Shield. On Reveal: Give your Good characters Shield.
+- [Legion of the Dead](https://originsmeta.com/en/cards/legion-of-the-dead): Legendary spell, 7 mana, Neutral. Fill your board with Zombies [2 Power/2 Health].
+- [Merlin](https://originsmeta.com/en/cards/merlin): Legendary unit, 5 mana, 5 Power / 5 Health, Neutral. Repeat the first spell you play each round.
+- [Mulan](https://originsmeta.com/en/cards/mulan): Legendary unit, 4 mana, 2 Power / 4 Health, Good. Double Attack. When an ally On Reveal ability happens, repeat it.
+- [Queen of Hearts](https://originsmeta.com/en/cards/queen-of-hearts): Legendary unit, 4 mana, 3 Power / 3 Health, Evil. First Strike. When an ally On Death ability happens, repeat it.
+- [Robin Hood](https://originsmeta.com/en/cards/robin-hood): Legendary unit, 8 mana, 4 Power / 4 Health, Good. Snipe 3. On Reveal: Deal 2 damage to all enemies.
+- [Three Not So Little Pigs](https://originsmeta.com/en/cards/three-not-so-little-pigs): Legendary unit, 7 mana, 3 Power / 3 Health, Neutral. Trample. On Reveal: Summon a Not So Little Pig [3 Power/3 Health] with Trample on a random space at each other location.
+- [Van Helsing](https://originsmeta.com/en/cards/van-helsing): Legendary unit, 4 mana, 3 Power / 4 Health, Good. Before combat, add Van Helsing's Tools to your hand if it is not already there.
+- [Wicked Stepmother](https://originsmeta.com/en/cards/wicked-stepmother): Legendary unit, 4 mana, 4 Power / 6 Health, Evil. Deathtouch. On Reveal: Give your Evil characters Deathtouch.
 
 ## English pages
 
 - [Home](https://originsmeta.com/en): what is new across the site — news, calendar, tier list and MetaShifting.
-- [FAQ](https://originsmeta.com/en/faq): the answers we have written and checked, on the game, the cards and the events.
+- [FAQ](https://originsmeta.com/en/faq): the answers we have written and checked, each with its source and date: release date, languages, mobile, demo progress, ranked mode, the Legendaries, deck codes, the Crimson Cup and the Kickstarter.
 - [Tier list](https://originsmeta.com/en/tier-list): decks, Legendaries and base cards; the OriginsMeta ranking starts after the Crimson Cup (20–25 October 2026), built on tournament results.
 - [Most played](https://originsmeta.com/en/tier-list/most-played): how many of the decks published on OriginsMeta use each Legendary and card, with the deck archetypes. Popularity, not a win rate.
 - [Community tier list](https://originsmeta.com/en/tier-list/community): the average of the tier lists saved by members, with votes per card; a preview until 5 lists.
@@ -39,10 +71,31 @@ Community decks are written by players in their own language; the site translate
 - [Who writes here](https://originsmeta.com/en/authors): the people who sign the guides, the decks and the news, and what each of them covers.
 - [About](https://originsmeta.com/en/about): who we are, how we work and which sources we use.
 
+## Guides
+
+Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…) and Spanish (/es/guides/…) with the same slug.
+
+- [Origins TCG locations: how the three lanes change every game](https://originsmeta.com/en/guides/origins-tcg-locations): Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.
+- [How to download and play the Origins TCG demo on Steam](https://originsmeta.com/en/guides/play-the-demo): The free demo in five steps: requirements, download, language, first matches, what demo players unlock and what the 21 September update brought.
+- [Origins TCG explained in five minutes](https://originsmeta.com/en/guides/origins-tcg-explained): What Origins TCG is, how a match works across three lanes with simultaneous turns, what free-to-compete means and how to play the demo today.
+- [Origins TCG at Steam Next Fest 2026: Demo 2.0, dates and the tournament](https://originsmeta.com/en/guides/steam-next-fest-2026): Origins TCG at Steam Next Fest, 19–26 October 2026: ranked mode in the demo, the Crimson Cup from 20 to 25 October, the prizes and how to sign up.
+- [Roadmap and dates: from the demo to launch](https://originsmeta.com/en/guides/roadmap-and-dates): Every confirmed Origins TCG date, from the first Steam post to the Demo 2.0 update and the Crimson Cup at Next Fest, plus what is planned for 2027.
+- [Is Origins TCG pay-to-win? Free-to-compete, explained](https://originsmeta.com/en/guides/is-origins-tcg-pay-to-win): Koin Games sells Origins TCG as the first free-to-compete card game with zero pay-to-win. What money actually buys, and the honest caveats.
+- [Origins TCG Kickstarter: date, pre-registration, Alpha Edition and what we know](https://originsmeta.com/en/guides/origins-tcg-kickstarter): The demo menu shows the Kickstarter as “Coming soon – Oct 27”. Pre-registration is open: 15% off for a refundable 1 dollar deposit, preorder-only Alpha boxes.
+- [Two ways to collect: how the Origins economy works](https://originsmeta.com/en/guides/collector-economy): Competitive cards are free. Collector cards are limited, graded and tradeable on Steam. Here is what is confirmed and what is not.
+- [On Reveal Mid Range: how to play the Mulan midrange deck](https://originsmeta.com/en/guides/on-reveal-midrange-guide): Game plan, mulligan and round-by-round play for On Reveal Mid Range, the Mulan deck that repeats every On Reveal ability, for ladder, competitive and tournaments.
+- [King of Value Trade: how to play the King Arthur midrange deck](https://originsmeta.com/en/guides/king-of-value-trade-guide): Game plan, mulligan and round-by-round play for King of Value Trade, the King Arthur midrange deck built to win every trade two cards for one.
+- [Dorothy Combo: how to play the move deck after the 21 September patch](https://originsmeta.com/en/guides/dorothy-combo-guide): The move deck rebuilt around the 21 September buffs: how Dorothy grows, which combos to look for, the mulligan and what the list still cannot do.
+- [The Trick-or-Treat Legion: how to play the Legion of the Dead deck](https://originsmeta.com/en/guides/trick-or-treat-legion-guide): The Legion of the Dead list built to be unpredictable: how the Zombie board works, the Golden Egg and Boogeyman combo, the mulligan and the matchups.
+- [3 Pigs Mid Range: how to play the Three Not So Little Pigs midrange deck](https://originsmeta.com/en/guides/three-pigs-midrange-guide): Game plan, mulligan and round-by-round play for 3 Pigs Mid Range, the midrange deck led by Three Not So Little Pigs, for ladder and competitive.
+- [3 Pigs Mid Range: matchups, key interactions and Conquest](https://originsmeta.com/en/guides/three-pigs-midrange-matchups): Part two of the 3 Pigs Mid Range guide: the interactions that win games, how to play the main matchups, the mistakes to avoid and Conquest.
+- [Healing Healsing: how to play the Van Helsing control deck](https://originsmeta.com/en/guides/healing-healsing-guide): Game plan, mulligan and round-by-round play for Healing Healsing, the Van Helsing control deck that heals, draws and resets the board.
+- [Healing Healsing: matchups, key interactions and mistakes to avoid](https://originsmeta.com/en/guides/healing-healsing-matchups): Part two of the Healing Healsing guide: the healing and card-draw interactions, the main matchups, the mistakes that lose to aggro, Conquest.
+
 ## Pagine in italiano
 
 - [Home](https://originsmeta.com/it): le novità del sito — news, calendario, tier list e MetaShifting.
-- [FAQ](https://originsmeta.com/it/faq): le risposte che abbiamo scritto e verificato, sul gioco, sulle carte e sugli eventi.
+- [FAQ](https://originsmeta.com/it/faq): le risposte che abbiamo scritto e verificato, ognuna con la fonte e la data: data di uscita, lingue, mobile, progressi della demo, classificata, Leggendarie, codici dei mazzi, Crimson Cup e Kickstarter.
 - [Tier list](https://originsmeta.com/it/tier-list): mazzi, Leggendarie e carte base; la classifica di OriginsMeta parte dopo la Crimson Cup (20–25 ottobre 2026), sui risultati dei tornei.
 - [Le più giocate](https://originsmeta.com/it/tier-list/most-played): in quanti dei mazzi pubblicati su OriginsMeta compare ogni Leggendaria e ogni carta, con gli archetipi dei mazzi. Popolarità, non win rate.
 - [Tier list della community](https://originsmeta.com/it/tier-list/community): la media delle tier list salvate dagli iscritti, con i voti per carta; un'anteprima fino a 5 liste.
@@ -61,7 +114,7 @@ Community decks are written by players in their own language; the site translate
 ## Páginas en español
 
 - [Inicio](https://originsmeta.com/es): las novedades del sitio — noticias, calendario, tier list y MetaShifting.
-- [FAQ](https://originsmeta.com/es/faq): las respuestas que hemos escrito y comprobado, sobre el juego, las cartas y los eventos.
+- [FAQ](https://originsmeta.com/es/faq): las respuestas que hemos escrito y comprobado, cada una con su fuente y su fecha: fecha de lanzamiento, idiomas, versión móvil, progreso de la demo, clasificatoria, Legendarias, códigos de mazos, Crimson Cup y Kickstarter.
 - [Tier list](https://originsmeta.com/es/tier-list): mazos, Legendarias y cartas base; la clasificación de OriginsMeta empieza después de la Crimson Cup (20–25 de octubre de 2026), con los resultados de los torneos.
 - [Las más jugadas](https://originsmeta.com/es/tier-list/most-played): en cuántos de los mazos publicados en OriginsMeta aparece cada Legendaria y cada carta, con los arquetipos de los mazos. Popularidad, no win rate.
 - [Tier list de la comunidad](https://originsmeta.com/es/tier-list/community): la media de las tier lists guardadas por los miembros, con los votos por carta; una vista previa hasta llegar a 5 listas.
@@ -77,8 +130,9 @@ Community decks are written by players in their own language; the site translate
 - [Quién escribe aquí](https://originsmeta.com/es/authors): las personas que firman las guías, los mazos y las noticias, y de qué se ocupa cada una.
 - [Quiénes somos](https://originsmeta.com/es/about): quiénes somos, cómo trabajamos y qué fuentes usamos.
 
-## Feeds and sitemaps
+## Feeds, sitemaps and full text
 
+- [Full text (llms-full.txt)](https://originsmeta.com/llms-full.txt): every guide and news article in English as plain Markdown, plus every Demo 2.0 card with its official English text. Generated from the site's data at every deploy.
 - [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml) and Spanish (/es/news/feed.xml).
 - [Sitemap index](https://originsmeta.com/sitemap.xml): one sitemap per section and language.
 

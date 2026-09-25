@@ -103,8 +103,9 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
               <article key={f.id} id={f.id} className="card-night p-5 sm:p-6">
                 <h3 className="t-item leading-tight">{f.q}</h3>
                 <p className="mt-3 text-pale">{f.a}</p>
-                {carte.length ? <div className="mt-4">{<CardChipList slugs={carte} locale={locale} max={6} />}</div> : null}
-                {guide.length || f.news?.length ? (
+                {/* fino a 12 schede: la risposta sulle Leggendarie le collega tutte e 11 (Ondata 3, 25/09/2026) */}
+                {carte.length ? <div className="mt-4">{<CardChipList slugs={carte} locale={locale} max={12} />}</div> : null}
+                {guide.length || f.news?.length || f.links?.length ? (
                   <ul className="mt-4 flex flex-wrap gap-2">
                     {guide.map((g) => (
                       <li key={g.slug}>
@@ -117,6 +118,14 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
                       <li key={n.slug}>
                         <Link href={href(locale, `/news/${n.slug}`)} className="btn btn-ghost text-xs">
                           {n.label}
+                        </Link>
+                      </li>
+                    ))}
+                    {/* sezioni del sito quando la pagina primaria non è una guida né una news (deck builder, database carte) */}
+                    {(f.links ?? []).map((l) => (
+                      <li key={l.path}>
+                        <Link href={href(locale, l.path)} className="btn btn-ghost text-xs">
+                          {l.label}
                         </Link>
                       </li>
                     ))}

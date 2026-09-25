@@ -13,6 +13,15 @@ import type { GuideSlug } from "./guides";
  * `cards` e `guides` sono gli slug da collegare sotto la risposta. `news` (dal 25/09/2026, MQ-06) porta all'articolo
  * che fa da fonte o da pagina di riferimento, con il testo del link scritto per quella lingua ("Crimson Cup rules",
  * dalla mappa delle query): le stesse news in ogni lingua, lo controlla `newsMeta.test.ts`.
+ *
+ * Da 6 a 15 risposte con l'Ondata 3 del piano SEO/GEO (25/09/2026, GEO-12, MQ-12): le domande che il picco dello
+ * Steam Next Fest farà (data di uscita, lingue, mobile, Riftbound, progressi della demo, classificata, Leggendarie,
+ * codici dei mazzi, elenco delle carte). Ogni risposta ha il link alla sua pagina primaria (mappa delle query) e
+ * dice da dove viene ogni fatto, con la data in cui l'abbiamo letto. `links` (dalla stessa data) porta a una sezione
+ * del sito quando la pagina primaria non è una guida né una news (il deck builder per i codici, il database carte):
+ * `path` senza lingua, `label` scritta per quella lingua. I numeri che cambiano con una patch (le Leggendarie, le
+ * carte della Demo 2.0) li controlla `faq.test.ts` sul database delle carte, così non restano indietro.
+ * L'ordine è quello della pagina: prima le domande del festival sul gioco, poi demo ed eventi, poi i mazzi.
  */
 export type Faq = {
   id: string;
@@ -21,13 +30,47 @@ export type Faq = {
   cards?: string[];
   guides?: GuideSlug[];
   news?: { slug: string; label: string }[];
+  links?: { path: string; label: string }[];
 };
+
+/** Le 11 Leggendarie della Demo 2.0 (patch della demo del 21/09/2026), per le schede sotto la risposta. */
+const legendaries = [
+  "dorothy",
+  "dracula",
+  "king-arthur",
+  "legion-of-the-dead",
+  "merlin",
+  "mulan",
+  "queen-of-hearts",
+  "robin-hood",
+  "three-not-so-little-pigs",
+  "van-helsing",
+  "wicked-stepmother",
+];
 
 const en: Faq[] = [
   {
-    id: "deck-rules",
-    q: "How many cards does a deck have in Origins TCG?",
-    a: "Twenty-five: one Legendary and twelve different cards, each played in two copies. You pick the thirteen names, the game doubles the twelve base cards for you. The deck builder on this site enforces the rule and tells you what is missing.",
+    id: "release-date",
+    q: "When does Origins TCG come out?",
+    a: "The Steam store page lists the release for Q4 2026, with no more precise date (read on 25 September 2026). You can already play: the free demo has been on Steam since 15 July 2026, got its first big update on 21 September and switches on ranked mode with Steam Next Fest, 19–26 October 2026. Our roadmap keeps every confirmed date.",
+    guides: ["roadmap-and-dates", "play-the-demo"],
+  },
+  {
+    id: "languages",
+    q: "What languages is Origins TCG in?",
+    a: "The Steam page lists English, French, Italian and German for the interface, with full audio in English only (read on 25 September 2026). On 25 September 2026 the demo also had its interface and card texts in Spanish, which Steam does not list yet (checked in the game). To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian and Spanish, with the game's own card texts in each.",
+    guides: ["play-the-demo"],
+  },
+  {
+    id: "mobile",
+    q: "Is Origins TCG on mobile?",
+    a: "Not yet. The Steam page lists Windows and macOS (read on 25 September 2026). On its pre-registration page Koin Games writes that mobile pack opening is coming: “We have our sights set on 2027 for Origins on Mobile.” The game had a soft launch on the App Store in selected regions in November 2025, before the studio moved card trading to Steam.",
+    guides: ["roadmap-and-dates"],
+  },
+  {
+    id: "riftbound",
+    q: "Is Origins TCG the same as Riftbound Origins?",
+    a: "No. Origins TCG is the digital trading card game by Koin Games, on Steam, with a cast of public-domain legends such as Robin Hood, Mulan and Dracula. “Riftbound Origins” cards are the ones in the booster packs of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026): another game, not made by Koin Games. Searching for “Origins” decks or cards can bring up both.",
     guides: ["origins-tcg-explained"],
   },
   {
@@ -37,11 +80,31 @@ const en: Faq[] = [
     guides: ["is-origins-tcg-pay-to-win"],
   },
   {
-    id: "conquest",
-    q: "What is the Conquest format?",
-    a: "You register more than one deck, each with a different Legendary, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, with at least nine cards of difference.",
+    id: "kickstarter",
+    q: "When does the Origins TCG Kickstarter start?",
+    a: "On 25 September 2026 the demo's main menu showed the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”; Koin Games has not announced the date on Steam or on the official Discord yet. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter AMA of 10 September" }],
+  },
+  {
+    id: "demo-progress",
+    q: "Do I keep my progress from the Origins TCG demo?",
+    a: "Within the demo, yes. On 16 September 2026 a Koin Games staff member wrote on the official Discord that deck unlocks and boss progress from Demo 1 carry over to Demo 2, and the Steam post of 21 September adds that whoever played the demo, the playtest or both keeps whichever progress is further ahead, “so no one will have to unlock cards again”. For the full game, the launch post of 16 July says the exclusive demo collectibles will be tradeable on the Steam marketplace; no official Steam post says yet whether deck unlocks carry over too.",
+    guides: ["play-the-demo"],
+    news: [
+      { slug: "demo-first-big-update", label: "Demo update of 21 September" },
+      { slug: "demo-2-progress-carryover", label: "Demo 1 unlocks carry over" },
+    ],
+  },
+  {
+    id: "ranked",
+    q: "When does ranked mode start in Origins TCG?",
+    a: "With the start of Steam Next Fest, on Monday 19 October 2026, according to the Steam post of 21 September, which promises exclusive ranked rewards without detailing them yet. Ranked already existed in the closed playtest, from patch 0.6.1 of 14 August 2026: a ladder of divisions up to Grandmaster, with a world leaderboard for the Grandmaster division.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
+    news: [
+      { slug: "demo-first-big-update", label: "Ranked at Steam Next Fest" },
+      { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: the ranked ladder" },
+    ],
   },
   {
     id: "crimson-cup",
@@ -51,11 +114,40 @@ const en: Faq[] = [
     news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
   },
   {
-    id: "kickstarter",
-    q: "When does the Origins TCG Kickstarter start?",
-    a: "On 25 September 2026 the demo's main menu showed the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”; Koin Games has not announced the date on Steam or on the official Discord yet. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
-    guides: ["origins-tcg-kickstarter", "collector-economy"],
-    news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter AMA of 10 September" }],
+    id: "conquest",
+    q: "What is the Conquest format?",
+    a: "You register more than one deck, each with a different Legendary, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, with at least nine cards of difference.",
+    guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
+  },
+  {
+    id: "deck-rules",
+    q: "How many cards does a deck have in Origins TCG?",
+    a: "Twenty-five: one Legendary and twelve different cards, each played in two copies. You pick the thirteen names, the game doubles the twelve base cards for you. The deck builder on this site enforces the rule and tells you what is missing.",
+    guides: ["origins-tcg-explained"],
+  },
+  {
+    id: "legendaries",
+    q: "Which Legendaries are in the Origins TCG demo?",
+    a: "There are 11 in the Demo 2.0, as of the demo patch of 21 September 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
+    cards: legendaries,
+    guides: ["origins-tcg-explained"],
+    links: [{ path: "/cards", label: "Card database" }],
+  },
+  {
+    id: "deck-code",
+    q: "How do I import a deck code?",
+    a: "To bring a deck from the game to this site, paste its code (it starts with KGBLDC) into the box at the top of our deck builder and press “Import”: the box also reads a share link or a text list, and names any card it cannot match. The other way round, every deck page on OriginsMeta has a “Copy game code” button, and in the deck builder the same code is under “Share”: that is the code to paste into Origins. The builder makes it only when it knows the official ID of every card in the deck.",
+    links: [
+      { path: "/deck-builder", label: "Deck builder" },
+      { path: "/decks", label: "Community decks" },
+    ],
+  },
+  {
+    id: "card-list",
+    q: "Where can I see every Origins TCG card?",
+    a: "In our card database: the 122 cards of the Demo 2.0 with their current stats, the official text in English, Italian and Spanish as it reads in the game and the balance history of each one, plus the 22 cards that other cards create. In the game, the collection is under My Decks → Cards: turn on the “Unowned” filter to see the cards you don't own yet as well.",
+    links: [{ path: "/cards", label: "Card database" }],
   },
   {
     id: "where-cards",
@@ -67,9 +159,27 @@ const en: Faq[] = [
 
 const it: Faq[] = [
   {
-    id: "deck-rules",
-    q: "Quante carte ha un mazzo di Origins TCG?",
-    a: "Venticinque: una Leggendaria e dodici carte diverse, ognuna giocata in due copie. Tu scegli i tredici nomi, il gioco raddoppia da solo le dodici carte base. Il deck builder di questo sito applica la regola e ti dice che cosa manca.",
+    id: "release-date",
+    q: "Quando esce Origins TCG?",
+    a: "La pagina Steam indica l'uscita nel quarto trimestre 2026 (“Q4 2026”), senza una data più precisa (letta il 25 settembre 2026). Intanto si gioca già: la demo gratuita è su Steam dal 15 luglio 2026, ha avuto il primo grande aggiornamento il 21 settembre e accende la classificata con lo Steam Next Fest, dal 19 al 26 ottobre 2026. La nostra roadmap raccoglie tutte le date confermate.",
+    guides: ["roadmap-and-dates", "play-the-demo"],
+  },
+  {
+    id: "languages",
+    q: "In che lingue è Origins TCG?",
+    a: "Secondo la pagina Steam l'interfaccia è in inglese, francese, italiano e tedesco e l'audio completo solo in inglese (letta il 25 settembre 2026). Il 25 settembre 2026 la demo aveva anche interfaccia e testi delle carte in spagnolo, che Steam non elenca ancora (verificato nel gioco). Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese e spagnolo, con i testi delle carte del gioco in ogni lingua.",
+    guides: ["play-the-demo"],
+  },
+  {
+    id: "mobile",
+    q: "Origins TCG c'è su mobile?",
+    a: "Non ancora. La pagina Steam elenca Windows e macOS (letta il 25 settembre 2026). Sulla sua pagina di pre-registrazione Koin Games scrive che l'apertura dei pacchetti su mobile è in arrivo e che l'obiettivo è il 2027: “We have our sights set on 2027 for Origins on Mobile.” Nel novembre 2025 il gioco ha avuto un soft launch sull'App Store in alcune regioni, prima che lo studio spostasse lo scambio delle carte su Steam.",
+    guides: ["roadmap-and-dates"],
+  },
+  {
+    id: "riftbound",
+    q: "Origins TCG è la stessa cosa di Riftbound Origins?",
+    a: "No. Origins TCG è il gioco di carte collezionabili digitale di Koin Games, su Steam, con un cast di leggende di pubblico dominio come Robin Hood, Mulan e Dracula. Le carte “Riftbound Origins” sono quelle dei pacchetti di Riftbound, il gioco di carte collezionabili di League of Legends (sito ufficiale di Riftbound, letto il 25 settembre 2026): un altro gioco, che non è di Koin Games. Cercando mazzi o carte di “Origins” può capitare di trovarli tutti e due.",
     guides: ["origins-tcg-explained"],
   },
   {
@@ -79,11 +189,31 @@ const it: Faq[] = [
     guides: ["is-origins-tcg-pay-to-win"],
   },
   {
-    id: "conquest",
-    q: "Come funziona il formato Conquest?",
-    a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, con almeno nove carte di differenza.",
+    id: "kickstarter",
+    q: "Quando parte il Kickstarter di Origins TCG?",
+    a: "Il 25 settembre 2026 il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”; Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA sul Kickstarter del 10 settembre" }],
+  },
+  {
+    id: "demo-progress",
+    q: "I progressi della demo di Origins TCG restano?",
+    a: "Dentro la demo sì. Il 16 settembre 2026 un membro dello staff di Koin Games ha scritto sul Discord ufficiale che gli sblocchi dei mazzi e i progressi contro i boss della Demo 1 passano alla Demo 2, e il post su Steam del 21 settembre aggiunge che chi ha giocato la demo, il playtest o entrambi conserva i progressi del percorso più avanzato, “così nessuno dovrà sbloccare di nuovo le carte”. Per il gioco completo, il post di lancio del 16 luglio dice che i collezionabili esclusivi della demo saranno scambiabili sul marketplace di Steam; nessun post ufficiale su Steam dice ancora se passeranno anche gli sblocchi dei mazzi.",
+    guides: ["play-the-demo"],
+    news: [
+      { slug: "demo-first-big-update", label: "Aggiornamento della demo del 21 settembre" },
+      { slug: "demo-2-progress-carryover", label: "Gli sblocchi della Demo 1 restano" },
+    ],
+  },
+  {
+    id: "ranked",
+    q: "Quando parte la classificata di Origins TCG?",
+    a: "Con l'inizio dello Steam Next Fest, lunedì 19 ottobre 2026, secondo il post su Steam del 21 settembre, che promette ricompense esclusive per la classificata senza ancora dire quali. La classificata c'era già nel playtest chiuso, dalla patch 0.6.1 del 14 agosto 2026: una ladder a divisioni fino a Grandmaster, con una classifica mondiale per la divisione Grandmaster.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
+    news: [
+      { slug: "demo-first-big-update", label: "Classificata allo Steam Next Fest" },
+      { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: la classificata" },
+    ],
   },
   {
     id: "crimson-cup",
@@ -93,11 +223,40 @@ const it: Faq[] = [
     news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
   },
   {
-    id: "kickstarter",
-    q: "Quando parte il Kickstarter di Origins TCG?",
-    a: "Il 25 settembre 2026 il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”; Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
-    guides: ["origins-tcg-kickstarter", "collector-economy"],
-    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA sul Kickstarter del 10 settembre" }],
+    id: "conquest",
+    q: "Come funziona il formato Conquest?",
+    a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, con almeno nove carte di differenza.",
+    guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
+  },
+  {
+    id: "deck-rules",
+    q: "Quante carte ha un mazzo di Origins TCG?",
+    a: "Venticinque: una Leggendaria e dodici carte diverse, ognuna giocata in due copie. Tu scegli i tredici nomi, il gioco raddoppia da solo le dodici carte base. Il deck builder di questo sito applica la regola e ti dice che cosa manca.",
+    guides: ["origins-tcg-explained"],
+  },
+  {
+    id: "legendaries",
+    q: "Quali Leggendarie ci sono nella demo di Origins TCG?",
+    a: "Nella Demo 2.0 ce ne sono 11, con la patch della demo del 21 settembre 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
+    cards: legendaries,
+    guides: ["origins-tcg-explained"],
+    links: [{ path: "/cards", label: "Database carte" }],
+  },
+  {
+    id: "deck-code",
+    q: "Come si importa il codice di un mazzo?",
+    a: "Per portare un mazzo dal gioco a questo sito, incolla il suo codice (comincia con KGBLDC) nella casella in cima al nostro deck builder e premi “Importa”: la casella legge anche un link di condivisione o una lista in testo, e indica le carte che non riesce ad abbinare. Per la strada opposta, ogni scheda mazzo di OriginsMeta ha il tasto “Copia codice del gioco”, e nel deck builder lo stesso codice sta in “Condividi”: è quello da incollare in Origins. Il builder lo genera solo quando conosce l'ID ufficiale di tutte le carte del mazzo.",
+    links: [
+      { path: "/deck-builder", label: "Deck builder" },
+      { path: "/decks", label: "Mazzi della community" },
+    ],
+  },
+  {
+    id: "card-list",
+    q: "Dove si vedono tutte le carte di Origins TCG?",
+    a: "Nel nostro database carte: le 122 carte della Demo 2.0 con le statistiche attuali, il testo ufficiale in inglese, italiano e spagnolo come nel gioco e lo storico dei bilanciamenti di ognuna, più le 22 carte generate da altre carte. Nel gioco la collezione sta in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
+    links: [{ path: "/cards", label: "Database carte" }],
   },
   {
     id: "where-cards",
@@ -109,9 +268,27 @@ const it: Faq[] = [
 
 const es: Faq[] = [
   {
-    id: "deck-rules",
-    q: "¿Cuántas cartas tiene un mazo de Origins TCG?",
-    a: "Veinticinco: una Legendaria y doce cartas distintas, cada una en dos copias. Tú eliges los trece nombres y el juego duplica por ti las doce cartas base. El deck builder de este sitio aplica la regla y te dice qué falta.",
+    id: "release-date",
+    q: "¿Cuándo sale Origins TCG?",
+    a: "La página de Steam indica el lanzamiento para el cuarto trimestre de 2026 (“Q4 2026”), sin una fecha más precisa (consultada el 25 de septiembre de 2026). Mientras tanto ya puedes jugar: la demo gratuita está en Steam desde el 15 de julio de 2026, recibió su primera gran actualización el 21 de septiembre y activa la clasificatoria con el Steam Next Fest, del 19 al 26 de octubre de 2026. Nuestra hoja de ruta reúne todas las fechas confirmadas.",
+    guides: ["roadmap-and-dates", "play-the-demo"],
+  },
+  {
+    id: "languages",
+    q: "¿En qué idiomas está Origins TCG?",
+    a: "La página de Steam indica inglés, francés, italiano y alemán para la interfaz, con audio completo solo en inglés (consultada el 25 de septiembre de 2026). El 25 de septiembre de 2026 la demo también tenía la interfaz y los textos de las cartas en español, que Steam todavía no indica (comprobado en el juego). Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés e italiano, con los textos de las cartas del juego en cada idioma.",
+    guides: ["play-the-demo"],
+  },
+  {
+    id: "mobile",
+    q: "¿Hay versión móvil de Origins TCG?",
+    a: "Todavía no. La página de Steam indica Windows y macOS (consultada el 25 de septiembre de 2026). En su página de prerregistro, Koin Games escribe que la apertura de sobres en dispositivos móviles está en camino y que el objetivo es 2027: “We have our sights set on 2027 for Origins on Mobile.” El juego tuvo un soft launch en el App Store en algunas regiones en noviembre de 2025, antes de que el estudio llevara el intercambio de cartas a Steam.",
+    guides: ["roadmap-and-dates"],
+  },
+  {
+    id: "riftbound",
+    q: "¿Origins TCG es lo mismo que Riftbound Origins?",
+    a: "No. Origins TCG es el juego de cartas coleccionables digital de Koin Games, en Steam, con un elenco de leyendas de dominio público como Robin Hood, Mulan y Dracula. Las cartas “Riftbound Origins” son las de los sobres de Riftbound, el juego de cartas coleccionables de League of Legends (sitio oficial de Riftbound, consultado el 25 de septiembre de 2026): otro juego, que no es de Koin Games. Si buscas mazos o cartas de “Origins”, puedes encontrar los dos.",
     guides: ["origins-tcg-explained"],
   },
   {
@@ -121,11 +298,31 @@ const es: Faq[] = [
     guides: ["is-origins-tcg-pay-to-win"],
   },
   {
-    id: "conquest",
-    q: "¿Qué es el formato Conquest?",
-    a: "Registras más de un mazo, cada uno con una Legendaria distinta, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, con al menos nueve cartas de diferencia.",
+    id: "kickstarter",
+    q: "¿Cuándo empieza el Kickstarter de Origins TCG?",
+    a: "El 25 de septiembre de 2026 el menú principal de la demo mostraba el Kickstarter como “Coming soon – Oct 27”, junto a “Preregister for 15% off”; Koin Games aún no ha anunciado la fecha en Steam ni en el Discord oficial. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA del Kickstarter del 10 de septiembre" }],
+  },
+  {
+    id: "demo-progress",
+    q: "¿Conservo mi progreso de la demo de Origins TCG?",
+    a: "Dentro de la demo, sí. El 16 de septiembre de 2026 un miembro del staff de Koin Games escribió en el Discord oficial que los desbloqueos de mazos y el progreso contra los jefes de la Demo 1 pasan a la Demo 2, y la publicación de Steam del 21 de septiembre añade que quien haya jugado a la demo, al playtest o a ambos conserva el progreso del que esté más avanzado, “para que nadie tenga que volver a desbloquear cartas”. Para el juego completo, la publicación de lanzamiento del 16 de julio dice que los coleccionables exclusivos de la demo se podrán intercambiar en el mercado de Steam; ninguna publicación oficial en Steam dice todavía si también pasarán los desbloqueos de mazos.",
+    guides: ["play-the-demo"],
+    news: [
+      { slug: "demo-first-big-update", label: "Actualización de la demo del 21 de septiembre" },
+      { slug: "demo-2-progress-carryover", label: "Los desbloqueos de la Demo 1 se conservan" },
+    ],
+  },
+  {
+    id: "ranked",
+    q: "¿Cuándo empieza la clasificatoria de Origins TCG?",
+    a: "Con el inicio del Steam Next Fest, el lunes 19 de octubre de 2026, según la publicación de Steam del 21 de septiembre, que promete recompensas exclusivas de clasificatoria sin detallarlas todavía. La clasificatoria ya existía en el playtest cerrado desde el parche 0.6.1 del 14 de agosto de 2026: una ladder con divisiones hasta Grandmaster y un ranking mundial para la división Grandmaster.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
+    news: [
+      { slug: "demo-first-big-update", label: "Clasificatoria en el Steam Next Fest" },
+      { slug: "patch-0-6-1-ranked", label: "Parche 0.6.1: la clasificatoria" },
+    ],
   },
   {
     id: "crimson-cup",
@@ -135,11 +332,40 @@ const es: Faq[] = [
     news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
   },
   {
-    id: "kickstarter",
-    q: "¿Cuándo empieza el Kickstarter de Origins TCG?",
-    a: "El 25 de septiembre de 2026 el menú principal de la demo mostraba el Kickstarter como “Coming soon – Oct 27”, junto a “Preregister for 15% off”; Koin Games aún no ha anunciado la fecha en Steam ni en el Discord oficial. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
-    guides: ["origins-tcg-kickstarter", "collector-economy"],
-    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA del Kickstarter del 10 de septiembre" }],
+    id: "conquest",
+    q: "¿Qué es el formato Conquest?",
+    a: "Registras más de un mazo, cada uno con una Legendaria distinta, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, con al menos nueve cartas de diferencia.",
+    guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
+  },
+  {
+    id: "deck-rules",
+    q: "¿Cuántas cartas tiene un mazo de Origins TCG?",
+    a: "Veinticinco: una Legendaria y doce cartas distintas, cada una en dos copias. Tú eliges los trece nombres y el juego duplica por ti las doce cartas base. El deck builder de este sitio aplica la regla y te dice qué falta.",
+    guides: ["origins-tcg-explained"],
+  },
+  {
+    id: "legendaries",
+    q: "¿Qué Legendarias hay en la demo de Origins TCG?",
+    a: "En la Demo 2.0 hay 11, con el parche de la demo del 21 de septiembre de 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
+    cards: legendaries,
+    guides: ["origins-tcg-explained"],
+    links: [{ path: "/cards", label: "Base de datos de cartas" }],
+  },
+  {
+    id: "deck-code",
+    q: "¿Cómo se importa el código de un mazo?",
+    a: "Para llevar un mazo del juego a este sitio, pega su código (empieza por KGBLDC) en el cuadro de la parte superior de nuestro deck builder y pulsa “Importar”: el cuadro también lee un enlace para compartir o una lista en texto, e indica las cartas que no consigue identificar. Para el camino inverso, cada página de mazo de OriginsMeta tiene el botón “Copiar código del juego”, y en el deck builder el mismo código está en “Compartir”: es el que se pega en Origins. El builder solo lo genera cuando conoce el ID oficial de todas las cartas del mazo.",
+    links: [
+      { path: "/deck-builder", label: "Deck builder" },
+      { path: "/decks", label: "Mazos de la comunidad" },
+    ],
+  },
+  {
+    id: "card-list",
+    q: "¿Dónde puedo ver todas las cartas de Origins TCG?",
+    a: "En nuestra base de datos de cartas: las 122 cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés, italiano y español tal como aparece en el juego y el historial de cambios de cada una, además de las 22 cartas que crean otras cartas. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
+    links: [{ path: "/cards", label: "Base de datos de cartas" }],
   },
   {
     id: "where-cards",
