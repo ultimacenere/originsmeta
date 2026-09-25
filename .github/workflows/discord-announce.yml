@@ -42,27 +42,76 @@ permissions:
   contents: read
 
 jobs:
+  detect:
+    # Decide se il run entra nella coda degli annunci: sì a mano (senza il campo indexnow) e per un push che cambia news
+    # o guide. I file cambiati si leggono dall'API compare di GitHub fra BEFORE e AFTER, gli stessi due commit che lo
+    # script confronta. Il filtro di prima cercava i due file nella lista dei commit dell'evento, ma nel payload del push
+    # che GitHub Actions passa al workflow i commit non hanno added/modified/removed (documentazione dell'evento push,
+    # changelog GitHub del 16/10/2019): non scattava mai, e il 25/09/2026 ha saltato gli annunci del push delle 15:09
+    # UTC (nessuno slug nuovo) e di quello delle 20:15 UTC, con le tre guide dell'Ondata 3 annunciate poi a mano.
+    # Se l'API non risponde, risponde senza l'elenco dei file o il confronto arriva a 300 file (il massimo che restituisce),
+    # gli annunci partono comunque: lo script annuncia solo gli slug nuovi fra BEFORE e AFTER, al massimo gira senza fare
+    # niente. In quel caso però entra nella coda e, se un altro run aspetta, prende il suo posto: il run annullato si
+    # recupera con Run workflow e il campo slugs.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      announce: ${{ steps.files.outputs.announce }}
+    steps:
+      - id: files
+        name: File cambiati nel push (API compare)
+        # bash esplicito vuol dire -eo pipefail; curl e jq restano comunque separati, così il loro esito arriva all'if
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          INDEXNOW_ONLY: ${{ github.event.inputs.indexnow }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ -z "$INDEXNOW_ONLY" ]; then echo "announce=true" >> "$GITHUB_OUTPUT"; else echo "announce=false" >> "$GITHUB_OUTPUT"; fi
+            exit 0
+          fi
+          if [ "$EVENT" != "push" ]; then
+            echo "announce=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # primo push di un branch: lo script non confronta niente (pushItems), quindi niente coda
+          if [ -z "$BEFORE" ] || [ -z "${BEFORE//0/}" ]; then
+            echo "Nessun commit precedente da confrontare: niente annunci"
+            echo "announce=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! body=$(curl -sSfL --retry 3 --connect-timeout 10 --max-time 30 \
+                -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/$REPO/compare/$BEFORE...$AFTER") \
+              || ! files=$(jq -r 'if (.files | type) == "array" then .files[].filename else error("elenco dei file assente") end' <<< "$body"); then
+            echo "::warning::API compare di GitHub non disponibile ($BEFORE...$AFTER): gli annunci partono comunque"
+            echo "announce=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          count=$(grep -c . <<< "$files" || true)
+          echo "File cambiati nel push: $count"
+          if [ "$count" -ge 300 ] || grep -qxF -e 'src/lib/data/news.ts' -e 'src/lib/content/guides.ts' <<< "$files"; then
+            echo "announce=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Né news.ts né guides.ts: niente annunci, solo IndexNow"
+            echo "announce=false" >> "$GITHUB_OUTPUT"
+          fi
+
   announce:
-    # Solo se il push tocca news o guide (o a mano, senza il campo indexnow). Un push delle sole carte, dei luoghi o dei
-    # testi spagnoli delle guide non entra nella coda degli annunci: in coda GitHub tiene un solo run in attesa, e un
-    # run nuovo annulla quello che aspetta, con le sue news mai annunciate. La condizione è ripetuta nel gruppo di
-    # concorrenza, così un job saltato non tocca la coda comunque GitHub ordini `if` e `concurrency`.
-    # GitHub mette nell'evento al massimo 20 commit: con un push di 20 commit o più la lista è troncata (il 25/09/2026
-    # un push di 26 commit ha saltato il job pur toccando news.ts), quindi in quel caso il job parte comunque. Lo script
-    # annuncia solo gli slug nuovi del push, al massimo gira senza fare niente.
-    if: >-
-      ${{ (github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
-      || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
-      || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"')
-      || github.event.commits[19])) }}
+    # Quando lo dice `detect`, oppure su un push se `detect` stesso è fallito (per esempio fermato dal timeout): meglio un
+    # run che non annuncia niente che annunci persi. Un push delle sole carte, dei luoghi o dei testi spagnoli delle
+    # guide non entra nella coda degli annunci: in coda GitHub tiene un solo run in attesa, e un run nuovo annulla quello
+    # che aspetta, con le sue news mai annunciate. La condizione è ripetuta nel gruppo di concorrenza, così un job
+    # saltato non tocca la coda comunque GitHub ordini `if` e `concurrency`.
+    needs: detect
+    if: ${{ !cancelled() && (needs.detect.outputs.announce == 'true' || (github.event_name == 'push' && needs.detect.result == 'failure')) }}
     # un invio alla volta: due push ravvicinati non si pestano i piedi
     concurrency:
-      group: >-
-        ${{ ((github.event_name == 'workflow_dispatch' && !github.event.inputs.indexnow)
-        || (github.event_name == 'push' && (contains(toJSON(github.event.commits), '"src/lib/data/news.ts"')
-        || contains(toJSON(github.event.commits), '"src/lib/content/guides.ts"')
-        || github.event.commits[19])))
-        && 'discord-announce' || format('discord-announce-skip-{0}', github.run_id) }}
+      group: ${{ (needs.detect.outputs.announce == 'true' || (github.event_name == 'push' && needs.detect.result == 'failure')) && 'discord-announce' || format('discord-announce-skip-{0}', github.run_id) }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 40

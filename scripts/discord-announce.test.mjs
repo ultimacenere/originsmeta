@@ -183,3 +183,43 @@ describe("messaggi", () => {
     assert.equal(utmCampaign({ kind: "decks", slug: "x" }), "deck");
   });
 });
+
+describe("quando parte il job degli annunci", () => {
+  // Fino al 25/09/2026 il job cercava news.ts e guides.ts nella lista dei commit dell'evento, che nelle Actions non ha i
+  // file cambiati: non scattava mai (le tre guide dell'Ondata 3 sono state annunciate a mano). Ora decide il job
+  // `detect` con l'API compare fra BEFORE e AFTER; la sua logica è stata provata con bash, con l'API vera e con gli errori.
+  const yml = read(".github/workflows/discord-announce.yml").replace(/\r\n/g, "\n");
+  const code = yml.split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
+  /** Il blocco di un job: dalla riga "  nome:" alla riga del job successivo. */
+  const job = (name) => yml.split(/\n(?= {2}[a-z]+:\n)/).find((b) => b.startsWith(`  ${name}:\n`)) ?? "";
+  test("non legge più la lista dei commit dell'evento, che nelle Actions non ha i file cambiati", () => {
+    assert.doesNotMatch(code, /github\.event\.commits/);
+  });
+  test("detect confronta BEFORE e AFTER e guarda i due file che contano per gli annunci", () => {
+    const detect = job("detect");
+    assert.match(detect, /compare\/\$BEFORE\.\.\.\$AFTER/);
+    for (const file of ["src/lib/data/news.ts", "src/lib/content/guides.ts"]) assert.ok(detect.includes(`'${file}'`), file);
+  });
+  test("detect: un errore dell'API arriva davvero all'avviso, e gli annunci partono comunque", () => {
+    const detect = job("detect");
+    // con "shell: bash" il passo gira con pipefail; curl e jq separati, senza pipe, così l'esito di curl non si perde
+    assert.match(detect, /\n {8}shell: bash\n/);
+    // una pipe verso jq o grep, non l'operatore ||
+    assert.doesNotMatch(detect, /(?<!\|)\|(?!\|)\s*(jq|grep)\b/);
+    assert.match(detect, /--max-time \d+/);
+    assert.match(detect, /::warning::[^\n]*\n\s*echo "announce=true"/);
+    // primo push di un branch: niente confronto, come in pushItems
+    assert.match(detect, /\$\{BEFORE\/\/0\/\}/);
+  });
+  test("announce dipende da detect, con la stessa condizione nel filtro e nel gruppo di concorrenza", () => {
+    const announce = job("announce");
+    assert.match(announce, /\n {4}needs: detect\n/);
+    const cond = /\n {4}if: \$\{\{ !cancelled\(\) && \((.+)\) \}\}\n/.exec(announce)?.[1];
+    assert.ok(cond, "if di announce");
+    assert.ok(cond.includes("needs.detect.outputs.announce == 'true'"));
+    assert.ok(announce.includes(`group: \${{ (${cond}) && 'discord-announce' ||`), "gruppo con la stessa condizione");
+  });
+  test("IndexNow non aspetta detect", () => {
+    assert.doesNotMatch(job("indexnow"), /\n {4}needs:/);
+  });
+});
