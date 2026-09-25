@@ -132,7 +132,7 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
           breadcrumbs([
             { name: "OriginsMeta", path: href(locale) },
             { name: d.tier.title, path: href(locale, "/tier-list") },
-            { name: m.h1, path },
+            { name: m.title, path },
           ]),
           webApplication,
         ]}
@@ -142,11 +142,12 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
       {/* La testata della sezione (24/09/2026): le tre fonti a vista al posto della tendina e dei due link che la
           ripetevano. Il tool è statico e non legge Supabase, quindi sotto Community e Le più giocate c'è una dicitura
           fissa invece dei conteggi. */}
+      {/* H1 = titolo della pagina, con il nome del gioco (piano SEO del 25/09/2026: prima era "Crea la tua tier list") */}
       <TierListHeader
         locale={locale}
         dict={d}
         current="create"
-        title={m.h1}
+        title={m.title}
         intro={m.intro}
         state={{
           // la tier list di OriginsMeta è un dato statico (tierlist.ts): quando avrà le fasce, qui compare la data

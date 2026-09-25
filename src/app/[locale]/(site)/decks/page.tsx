@@ -64,7 +64,8 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/decks", dict.decks.title, dict.decks.description);
+  // In SERP "decklists and codes" (piano SEO del 25/09/2026); l'H1 resta `title`, più leggibile sulla pagina
+  return pageMeta(locale, "/decks", dict.decks.metaTitle, dict.decks.description);
 }
 
 export default async function DecksPage({ params }: { params: LocaleParams }) {

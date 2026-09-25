@@ -4,7 +4,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { faqs, suggerimenti } from "@/lib/content/faq";
 import { getGuide } from "@/lib/content/guides";
-import { getCard } from "@/lib/data/cards";
+import { activeCards, cards, getCard } from "@/lib/data/cards";
 import { copertura } from "@/lib/faq/retrieve";
 import { aiAttiva } from "@/lib/faq/ask";
 import { AskBox } from "@/components/AskBox";
@@ -30,7 +30,9 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/faq", dict.faq.title, dict.faq.description);
+  // Titolo e H1 non promettono l'assistente, che può essere spento (piano SEO del 25/09/2026): in SERP gli argomenti
+  // che le risposte approvate coprono, nell'H1 solo il nome della pagina ("Origins TCG FAQ")
+  return pageMeta(locale, "/faq", dict.faq.metaTitle, dict.faq.description);
 }
 
 export default async function FaqPage({ params }: { params: LocaleParams }) {
@@ -38,6 +40,9 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
   const lista = faqs[locale];
   const stat = copertura();
   const attiva = aiAttiva();
+  // Le carte che l'assistente legge, dette come le dice il resto del sito: le 122 della Demo 2.0 più le carte create
+  // (prima un solo numero, 144, che le sommava e contraddiceva il "122" delle risposte)
+  const create = cards.filter((c) => c.status === "active" && c.type === "token").length;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
@@ -53,7 +58,7 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
 
       <p className="kicker text-mint">{d.faq.kicker}</p>
       <h1 className="t-page mt-2">{d.faq.title}</h1>
-      <p className="mt-4 max-w-2xl text-chalk-muted">{d.faq.intro}</p>
+      <p className="mt-4 max-w-2xl text-chalk-muted">{attiva ? d.faq.intro : d.faq.introOffline}</p>
 
       <section className="mt-8">
         <h2 className="sr-only">{d.faq.askTitle}</h2>
@@ -85,9 +90,16 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
             </div>
           </div>
         )}
-        <p className="mt-3 text-xs text-chalk-muted">
-          {d.faq.coverage.replace("{cards}", String(stat.carte)).replace("{guides}", String(stat.guide)).replace("{patch}", stat.patch)}
-        </p>
+        {/* Che cosa legge l'assistente: la riga ha senso solo quando è acceso */}
+        {attiva ? (
+          <p className="mt-3 text-xs text-chalk-muted">
+            {d.faq.coverage
+              .replace("{cards}", String(activeCards.length))
+              .replace("{created}", String(create))
+              .replace("{guides}", String(stat.guide))
+              .replace("{patch}", stat.patch)}
+          </p>
+        ) : null}
       </section>
 
       <section className="mt-12">

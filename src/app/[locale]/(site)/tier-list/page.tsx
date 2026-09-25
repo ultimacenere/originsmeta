@@ -32,7 +32,8 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/tier-list", dict.tier.title, dict.tier.description);
+  // In SERP "tier list and meta" (piano SEO del 25/09/2026: è la pagina primaria di quelle ricerche); l'H1 resta `title`
+  return pageMeta(locale, "/tier-list", dict.tier.metaTitle, dict.tier.description);
 }
 
 const byUsed = (a: TierCardEntry, b: TierCardEntry) => b.used - a.used || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name);

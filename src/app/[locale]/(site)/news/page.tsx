@@ -12,7 +12,8 @@ import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/J
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/news", dict.news.title, dict.news.description);
+  // "patch notes" non sta più nel titolo (piano SEO del 25/09/2026): la pagina primaria di quella ricerca è /metashifting
+  return pageMeta(locale, "/news", dict.news.metaTitle, dict.news.description);
 }
 
 export default async function NewsPage({ params }: { params: LocaleParams }) {
@@ -45,6 +46,13 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
       <p className="kicker text-mint">{d.nav.news}</p>
       <h1 className="t-page mt-2">{d.news.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.news.intro}</p>
+      {/* In cima, il rimando fisso alla pagina che raccoglie tutte le patch (piano SEO del 25/09/2026) */}
+      <p className="mt-2 max-w-2xl text-sm text-chalk-muted">
+        {d.news.patchNotesText}{" "}
+        <Link href={href(locale, "/metashifting")} className="link-mint font-bold">
+          {d.news.patchNotesLink} →
+        </Link>
+      </p>
       <ol className="mt-10 space-y-4">
         {sortedNews.map((n) => (
           <li key={n.slug} id={n.slug} className="card-night scroll-mt-24 p-6">

@@ -50,6 +50,15 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
       <p className="kicker text-mint">{d.common.metashift}</p>
       <h1 className="t-page mt-2">{m.h1}</h1>
       <p className="mt-3 max-w-3xl text-chalk-muted">{m.intro}</p>
+      {/* L'ultima patch in una frase, dai dati (piano SEO/GEO del 25/09/2026): la risposta a "qual è l'ultima patch" */}
+      {groups[0] ? (
+        <p className="mt-2 max-w-3xl text-chalk">
+          {m.latest
+            .replace("{patch}", patchLabel(groups[0].patch, locale))
+            .replace("{date}", formatDate(locale, patches[groups[0].patch].date))
+            .replace("{n}", String(groups[0].items.length))}
+        </p>
+      ) : null}
       <p className="tier-line">{m.source}</p>
 
       {/* Indice delle patch, dalla più recente */}

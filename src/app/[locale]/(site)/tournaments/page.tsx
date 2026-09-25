@@ -14,9 +14,18 @@ import { TagSearch } from "@/components/TagSearch";
 /** Gli eventi ufficiali sono statici; i tornei della community arrivano da Supabase: la pagina si rigenera al massimo ogni 5 minuti e dopo ogni Server Action. */
 export const revalidate = 300;
 
+/**
+ * La Crimson Cup in events.ts. Finché è in calendario, description e prima riga della pagina la nominano (piano SEO
+ * del 25/09/2026, "origins tcg tournament" porta qui); finito l'evento tornano quelle generiche da sole, alla prima
+ * rigenerazione. Il titolo in SERP resta generico: per regole, date e premi la pagina primaria è la news delle regole.
+ */
+const CRIMSON_CUP = "next-fest-tournament";
+const CRIMSON_CUP_RULES = "/news/crimson-cup-format-check-in";
+const cupAhead = () => upcomingEvents().some((e) => e.slug === CRIMSON_CUP);
+
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/tournaments", dict.events.title, dict.events.description);
+  return pageMeta(locale, "/tournaments", dict.events.metaTitle, cupAhead() ? dict.events.descriptionCup : dict.events.description);
 }
 
 export default async function EventsPage({ params }: { params: LocaleParams }) {
@@ -73,6 +82,15 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <p className="kicker text-mint">{d.nav.events}</p>
           <h1 className="t-page mt-2">{d.events.title}</h1>
+          {/* Risposta diretta finché la Crimson Cup è in calendario, con il link fisso alla news delle regole */}
+          {cupAhead() ? (
+            <p className="mt-4 max-w-2xl text-pale">
+              {d.events.cupLead}{" "}
+              <Link href={href(locale, CRIMSON_CUP_RULES)} className="link-mint font-bold">
+                {d.events.cupRules} →
+              </Link>
+            </p>
+          ) : null}
           <p className="mt-4 max-w-2xl text-chalk-muted">{d.events.lead}</p>
         </div>
         <Link href={newHref} className="btn btn-primary">

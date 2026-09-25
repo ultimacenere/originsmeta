@@ -2,9 +2,10 @@ export const en = {
   meta: {
     siteName: "OriginsMeta",
     tagline: "The meta, on the table.",
-    homeTitle: "Origins TCG tier list, decks, cards and news · OriginsMeta",
+    /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cards" sono delle loro pagine */
+    homeTitle: "Origins TCG, Koin Games' digital card game · OriginsMeta",
     description:
-      "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English, Italian and Spanish.",
+      "Origins TCG is Koin Games' free-to-compete digital card game. Unofficial fan site in English, Italian and Spanish: cards, decks, deck builder, guides, news.",
   },
   nav: {
     news: "News",
@@ -32,9 +33,14 @@ export const en = {
   },
   faq: {
     kicker: "Questions",
-    title: "Ask anything about Origins TCG",
+    /* title (H1) e metaTitle (SERP) non promettono l'assistente, che può essere spento (piano SEO del 25/09/2026);
+       nel metaTitle solo gli argomenti che le risposte approvate coprono davvero */
+    title: "Origins TCG FAQ",
+    metaTitle: "Origins TCG FAQ: decks, Kickstarter and Crimson Cup",
     intro: "Type a question and the answer is built from this site's own data: the card database (demo patch of 21 September 2026), our guides and the event calendar. Below, the answers we have written and checked.",
-    description: "Ask a question about Origins TCG: the answer is built from our Demo 2.0 card database, our guides and the calendar, plus the answers we wrote by hand.",
+    /* intro con l'assistente spento: solo quello che la pagina offre davvero */
+    introOffline: "The questions that come back most often, answered and checked by us with their sources. For a single card, the card database answers by itself.",
+    description: "Short answers about Origins TCG, the Koin Games card game: deck rules, pay-to-win, the Conquest format, Crimson Cup dates and prizes, the Kickstarter.",
     askTitle: "Ask a question",
     placeholder: "What does Mulan do? What goes well with Van Helsing?",
     send: "Ask",
@@ -42,7 +48,7 @@ export const en = {
     suggestions: "Try one of these",
     sources: "Where this comes from",
     disclaimer: "Answer built from this site's data by an assistant. We are not Koin Games: for rules, dates and announcements, the official sources win.",
-    coverage: "It can read {cards} cards from the Demo 2.0, {guides} guides and the event calendar. Stats follow the demo patch of {patch}.",
+    coverage: "It can read the {cards} Demo 2.0 cards and the {created} cards they create, {guides} guides and the event calendar. Stats follow the demo patch of {patch}.",
     offline: "The assistant is off at the moment. The answers below are always here, and the card database answers most questions by itself.",
     offlineCards: "Search the card database",
     offlineDiscord: "Ask on Discord",
@@ -168,7 +174,7 @@ export const en = {
     tomorrow: "tomorrow",
   },
   home: {
-    h1: "Origins TCG: news, tier list, decks, cards and tournaments",
+    h1: "Origins TCG: the unofficial fan site for Koin Games' card game",
     metashiftSub: "The biggest changes in the latest patch",
     tierTitle: "Tier list",
     /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
@@ -197,6 +203,9 @@ export const en = {
     guidesTitle: "Start here",
     guidesStartSub: "New to Origins TCG? Three short reads: what the game is, how to play the demo and what happens at Steam Next Fest.",
     statusTitle: "State of the game",
+    /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
+       solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
+    inBrief: "Origins TCG is the free-to-compete digital card game by Koin Games: the demo is free on Steam and the release is set for Q4 2026, according to the Steam page. OriginsMeta is an unofficial fan site in English, Italian and Spanish, not affiliated with Koin Games.",
     status: {
       demo: "Steam demo",
       demoValue: "Live since 15 July 2026",
@@ -224,9 +233,11 @@ export const en = {
     },
   },
   cards: {
-    title: "Origins TCG card database",
+    /* title = H1 (e briciole); metaTitle = titolo in SERP, costruito sulla ricerca "origins tcg cards / card list" (piano SEO del 25/09/2026) */
+    title: "Origins TCG card list",
+    metaTitle: "Origins TCG cards: full Demo 2.0 card list",
     intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian and Spanish as it reads in the game, balance history and the legend each card comes from.",
-    description: "Every Origins TCG card from Demo 2.0 in one searchable database: filter by type, saga, alignment and rarity, with official text, stats and balance history.",
+    description: "Every Demo 2.0 card of Origins TCG, the Koin Games card game: official text, stats and balance history, with filters by type, saga and rarity.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
     countLabel: "cards in Demo 2.0",
@@ -244,9 +255,11 @@ export const en = {
     buildText: "One Legendary plus 12 different base cards, two copies of each: 25 cards. The deck builder is free and needs no account.",
   },
   decks: {
-    title: "Origins TCG deck database",
+    /* title = H1 (e briciole); metaTitle = titolo in SERP con "decklists" e "codes" (piano SEO del 25/09/2026) */
+    title: "Origins TCG decks from the community",
+    metaTitle: "Origins TCG decks: community decklists and codes",
     intro: "Every deck is tagged by Legendary, archetype, deck type and creator, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
-    description: "Origins TCG decklists published by the community, each with a guide and star ratings: filter by Legendary, archetype and creator, or search by card.",
+    description: "Community decklists for Origins TCG, the Koin Games card game: game plans, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
     conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026) and chosen for the Crimson Cup: you submit several decks with different Legendary cards that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
     submitTitle: "Publish your deck with your guide",
@@ -263,9 +276,16 @@ export const en = {
     otherDecks: "Other decks",
   },
   tier: {
+    /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO del 25/09/2026) */
     title: "Origins TCG tier list",
+    metaTitle: "Origins TCG tier list and meta: decks and cards",
     intro: "Decks, Legendaries and base cards. Our ranking is built on tournament results, never on gut feeling, and starts after the Crimson Cup. Until then: the most played cards and the community tier list.",
-    description: "The Origins TCG tier list: decks, Legendaries and base cards. Our ranking starts after the Crimson Cup; meanwhile, the most played cards and the community list.",
+    description: "Origins TCG (Koin Games) tier list: our ranking starts after the Crimson Cup. Meanwhile, the top-rated community decks and the most played cards.",
+    /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
+    mainText: "For the ranking built on tournament results:",
+    mainAnchor: "Origins TCG tier list",
+    decksText: "For the lists themselves:",
+    decksAnchor: "all the Origins TCG decks",
     sections: {
       decks: { title: "Decks", text: "The main list. Every entry links to the deck page and its guides." },
       legendaries: { title: "Legendaries", text: "The card that leads the deck, ranked on its own." },
@@ -328,9 +348,12 @@ export const en = {
     inDecksOne: "1 deck",
     inDecksMany: "{n} decks",
     community: {
-      title: "Origins TCG community tier list",
-      description: "The Origins TCG community tier list: the average of the rankings saved by OriginsMeta members, Legendaries and base cards, updated with every new list.",
+      /* sotto COMMUNITY_MIN_LISTS liste la pagina è un'anteprima e lo dicono anche titolo in SERP e H1 (decisione del 24/09/2026) */
+      title: "Origins TCG community tier list: members' votes",
+      titlePreview: "Origins TCG community tier list (preview)",
+      description: "The Origins TCG community tier list: the average of the lists saved by OriginsMeta members, Legendaries and base cards, with the votes behind each card.",
       h1: "Community tier list",
+      h1Preview: "Community tier list (preview)",
       intro: "This ranking does not come from tournament results: it is the average of the tier lists members save with our maker. Each tier is worth points (S=5 … D=1); a card lands in the tier of its average.",
       sourceText: "tier lists saved by members",
       updatedText: "latest on {date}",
@@ -400,6 +423,7 @@ export const en = {
   tierMaker: {
     title: "Origins TCG tier list maker",
     description: "Free Origins TCG tier list maker: drag the Demo 2.0 cards into tiers S to D, with the Legendaries on their own list, and share it with a link. No account.",
+    /* l'H1 della pagina è `title` (piano SEO del 25/09/2026); `h1` resta il nome di riserva di una lista salvata senza titolo */
     h1: "Make your tier list",
     intro: "Rank the Demo 2.0 cards your way, from S to D: Legendaries and base cards are two separate lists. No account needed: your list saves in this browser and travels with a link, ready for Discord.",
     officialLink: "See the OriginsMeta tier list",
@@ -461,10 +485,12 @@ export const en = {
   },
   /* MetaShifting on its own page (24/09/2026, Pierluigi: "a dedicated URL /metashifting") */
   metashifting: {
-    title: "MetaShifting: Origins TCG balance changes",
+    /* la pagina primaria per "origins tcg patch notes" (piano SEO del 25/09/2026): /news non le ha più nel titolo */
+    title: "Origins TCG patch notes: every balance change",
     h1: "MetaShifting: every balance change",
     description: "Every Origins TCG balance change from the official patch notes, newest first: stats, abilities and alignments, tagged as buff, nerf or rework.",
     intro: "Every change in the official patches, newest first: stats, abilities and alignments, tagged as buff, nerf or rework. Each card links to its page with its full balance history.",
+    latest: "The latest patch is {patch} ({date}): {n} changes.",
     source: "From the official patch notes on Steam and, when it is more complete, the official Discord.",
     patchesLabel: "Patches",
     tierLink: "See the tier list",
@@ -472,7 +498,9 @@ export const en = {
   locations: {
     title: "Origins TCG locations and their effects",
     description: "Every Origins TCG location with its effect: search, filter by kind of effect and jump to the cards they summon. Updated to the Demo 2.0.",
+    /* nome breve della sezione (link da /cards); l'H1 della pagina è `headline`, con il gioco e quanti sono ({n}) */
     h1: "Locations",
+    headline: "Origins TCG locations: all {n} and their effects",
     intro: "Every game of Origins TCG is played across three locations, and they decide what kind of game it will be: they double damage, change costs, move characters, summon new ones. The Demo 2.0 rotates {n} of them; the full game will have more than a hundred. They are all here, with their effect.",
     facts: [
       "The three locations of a game are revealed one per round over the first three rounds: from round four you play with the whole board in sight.",
@@ -492,6 +520,7 @@ export const en = {
   },
   guides: {
     title: "Origins TCG guides",
+    metaTitle: "Origins TCG guides: how to play, decks, events",
     intro: "Short, accurate, dated. Deck guides, rank climbs, archetypes, interviews and event reports. We only publish what we can verify on the official channels or at the table.",
     description: "Origins TCG guides: decks, ranked climbs, archetypes, the collector economy, interviews and event reports, all dated and checked on official sources.",
     readTime: "min read",
@@ -575,9 +604,15 @@ export const en = {
   },
   events: {
     title: "Origins TCG tournaments & events",
+    metaTitle: "Origins TCG tournaments and events calendar",
     intro: "Official and community events, with formats, prizes and sign-up links. Organizers: send us your event and we add it.",
     lead: "The calendar of official Origins TCG events and the tournaments organized by the community: create yours, share the link on your Discord and play the bracket here.",
     description: "Origins TCG tournaments and events: the calendar of official dates with formats and prizes, plus community tournaments to organize or sign up for here.",
+    /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
+       con i fatti dell'evento e della news delle regole; il titolo resta generico (la Crimson Cup è della sua news) */
+    descriptionCup: "Origins TCG tournaments: the Crimson Cup runs 20–25 October 2026 during Steam Next Fest, with $10,000 in prizes. Full calendar and community tournaments.",
+    cupLead: "The Crimson Cup, Koin Games' official Origins TCG tournament, runs from 20 to 25 October 2026 during Steam Next Fest: three qualifiers of 512 spots on 20, 21 and 22 October, playoffs on the 24th, finals on the 25th, prizes worth $10,000. Sign-ups are on the official Discord.",
+    cupRules: "Crimson Cup rules, format and check-in",
     submitCta: "Submit an event",
     submitLead: "Running an event outside OriginsMeta?",
     guideCta: "Event guide",
@@ -586,9 +621,13 @@ export const en = {
     calendarTitle: "Calendar",
   },
   news: {
-    title: "Origins TCG news and patch notes",
+    /* "patch notes" è di /metashifting (piano SEO del 25/09/2026): qui il titolo punta a news, aggiornamenti ed eventi */
+    title: "Origins TCG news",
+    metaTitle: "Origins TCG news: demo updates and events",
     intro: "Every official announcement, summarized and dated, with a link to the source and the cards it touches.",
-    description: "Origins TCG news and patch notes, summarized and dated, with a link to the official source and the cards each balance change touches.",
+    description: "Origins TCG news from Koin Games and the community, summarized and dated: demo updates, events and new decks, each with a link to its source.",
+    patchNotesText: "Every balance change, card by card and patch by patch:",
+    patchNotesLink: "Origins TCG patch notes in MetaShifting",
     readArticle: "Read the article",
     inBrief: "In brief",
     moreNews: "More news",
@@ -625,6 +664,8 @@ export const en = {
     title: "Authors",
     metaTitle: "Who writes about Origins TCG here",
     intro: "The people behind the guides, the news and the card notes on OriginsMeta: each profile shows their role and everything they have published.",
+    /* description per la SERP: l'intro non nomina il gioco */
+    description: "Who writes the Origins TCG guides, news and card notes on OriginsMeta: each author's page shows their role and everything they have published here.",
     role: "Role",
     writtenBy: "Written by",
     profileCta: "Read their profile",
@@ -705,7 +746,8 @@ export const en = {
     ctaDiscord: "Join the Discord",
   },
   builder: {
-    title: "Origins TCG deck builder",
+    /* H1 e titolo in SERP insieme (piano SEO del 25/09/2026): i codici del gioco sono una funzione del builder */
+    title: "Origins TCG deck builder and deck codes",
     intro: "Build a legal Origins deck: one Legendary plus twelve different cards, each played as two copies (25 cards). Your deck is saved in this browser as you build: share it with a link or a game code, save it privately to your profile or publish it with a guide, and check three decks at once for the Conquest tournament format.",
     description: "Free Origins TCG deck builder: 1 Legendary plus 12 base cards, legality checks, Conquest mode for three decks, shareable links and in-game codes.",
     dataKicker: "Card data",
