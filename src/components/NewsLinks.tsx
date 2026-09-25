@@ -68,14 +68,16 @@ export function NewsDeckButton({ item, locale, dict, className = "" }: Props & {
 }
 
 /**
- * Etichetta della pill accanto alla data: Steam, Staff, Community, OriginsMeta o Fonte. Una news di stampa senza `url`
- * non ha una fonte da mostrare: "Fonte" sarebbe una promessa vuota, quindi dice "Community", da dove è arrivato il fatto.
+ * Etichetta della pill accanto alla data: Steam, Staff, Community, OriginsMeta, Fonte o News. Una news di stampa senza
+ * `url` non ha una fonte da mostrare: "Fonte" sarebbe una promessa vuota e "Community" la confonderebbe con le news sui
+ * mazzi della community, quindi dice solo "News" (da dove viene il fatto lo dice il riassunto).
  */
 export function newsSourceLabel(item: NewsItem, dict: Dictionary): string {
   if (item.source === "steam") return "Steam";
   if (item.source === "site") return "OriginsMeta";
   if (item.source === "staff") return dict.community.badges.staff;
-  return item.source === "community" || !item.url ? dict.common.community : dict.common.source;
+  if (item.source === "community") return dict.common.community;
+  return item.url ? dict.common.source : dict.common.news;
 }
 
 /**

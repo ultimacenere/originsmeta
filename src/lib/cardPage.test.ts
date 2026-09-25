@@ -9,6 +9,7 @@
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
@@ -420,13 +421,15 @@ describe("etichette e fonti", () => {
  * Dal 25/09/2026, per decisione di Pierluigi, il sito non nomina e non linka World of Origins, il database della
  * community da cui `npm run import:woo` importa i dati delle carte: l'import resta uno strumento interno. Questo test
  * fallisce se il nome o il dominio ricompaiono nei testi pubblici scritti nel codice: etichette della scheda carta,
- * etichette di /about e dei dati strutturati del sito, dizionari, news, etichette dei tag; e se `cardSource` torna a
- * portare nome o indirizzo della fonte, che le pagine potrebbero mostrare.
+ * etichette di /about e dei dati strutturati del sito, dizionari, news, etichette dei tag, luoghi ed eventi; se
+ * `cardSource` torna a portare nome o indirizzo della fonte, che le pagine potrebbero mostrare; e se `woo-cards.json`,
+ * che cards.ts importa intero e che quindi arriva anche nei chunk del browser, torna ad avere nome o dominio.
+ * Da estendere a faq.ts, guide e llms.txt quando saranno ripuliti anche loro (li sta modificando un altro lavoro).
  */
 describe("World of Origins non si nomina nei testi pubblici", () => {
   const woo = /world\s*of\s*origins|worldoforigins/i;
 
-  test("etichette, dizionari, news e tag", async () => {
+  test("etichette, dizionari, news, tag, luoghi ed eventi", async () => {
     // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
     const entity: typeof import("./entityLabels") = await import("./entityLabels.ts");
     // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -439,6 +442,10 @@ describe("World of Origins non si nomina nei testi pubblici", () => {
     const newsModule: typeof import("./data/news") = await import("./data/news.ts");
     // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
     const keywords: typeof import("./keywordLabels") = await import("./keywordLabels.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const locationsModule: typeof import("./data/locations") = await import("./data/locations.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const eventsModule: typeof import("./data/events") = await import("./data/events.ts");
     const sources: Record<string, unknown> = {
       cardLabels,
       entityLabels: entity.entityLabels,
@@ -447,6 +454,9 @@ describe("World of Origins non si nomina nei testi pubblici", () => {
       "dictionaries/es": dictEs.es,
       news: newsModule.news,
       keywordLabels: keywords.keywordLabels,
+      locations: locationsModule.locations,
+      locationTagLabels: locationsModule.locationTagLabels,
+      events: eventsModule.events,
     };
     for (const [name, value] of Object.entries(sources)) assert.doesNotMatch(JSON.stringify(value), woo, name);
     for (const l of locales) assert.doesNotMatch(entity.aboutDisclaimer(l) + entity.aboutChecks(l, { date: "D", count: 1, textsDate: "T" }).join(" "), woo, l);
@@ -465,5 +475,12 @@ describe("World of Origins non si nomina nei testi pubblici", () => {
 
   test("cardSource porta solo patch e data dell'import, niente nome né indirizzo della fonte", () => {
     assert.deepEqual(Object.keys(cardSource).sort(), ["fetched", "patch"]);
+  });
+
+  test("woo-cards.json, che arriva intero nei chunk del browser, non nomina la fonte", () => {
+    const raw = readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8");
+    const json = JSON.parse(raw) as Record<string, unknown>;
+    assert.deepEqual(Object.keys(json).sort(), ["cards", "fetched", "patch"]);
+    assert.doesNotMatch(raw, woo);
   });
 });

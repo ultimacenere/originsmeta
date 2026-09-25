@@ -197,14 +197,16 @@ type WooCard = {
   // Il JSON ha anche `related` (carte collegate secondo la fonte dell'import): dal 25/09/2026 il sito non lo legge più.
 };
 
-type WooData = { source: string; patch: string; fetched: string; cards: WooCard[] };
+// Dal 25/09/2026 il JSON non porta più `source` né `license` (li scriveva `import-woo.mjs`): cards.ts lo importa intero e
+// il file arriva anche nei chunk del browser, dove il nome della fonte non deve comparire.
+type WooData = { patch: string; fetched: string; cards: WooCard[] };
 const data = woo as unknown as WooData;
 
 /**
  * Patch e data dell'ultimo import dei dati di gioco: servono alla logica delle patch qui sotto e alla riga delle carte
  * rimosse ("ultimi dati noti, alla patch …"). Dal 25/09/2026, per decisione di Pierluigi, il sito non nomina e non
- * linka la fonte dell'import (World of Origins, `data.source`): nome e indirizzo non stanno più qui, così nessuna
- * pagina li può mostrare. L'import resta uno strumento interno (`npm run import:woo`).
+ * linka la fonte dell'import (World of Origins): nome e indirizzo non stanno più qui né in `woo-cards.json`, così
+ * nessuna pagina e nessun chunk del browser li può mostrare. L'import resta uno strumento interno (`npm run import:woo`).
  */
 export const cardSource = {
   patch: data.patch.replace(/^.*:v/, ""),

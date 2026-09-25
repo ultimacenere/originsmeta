@@ -119,8 +119,6 @@ export const en = {
     rare: "Rare",
     epic: "Epic",
     showRemoved: "Show cards removed from the demo",
-    related: "Related cards",
-    relatedFrom: "Referenced by",
     formerName: "Former name",
     results: "results",
     noResults: "No card matches this search.",
@@ -151,6 +149,8 @@ export const en = {
     playtest: "Playtest",
     official: "Official",
     community: "Community",
+    /* pill di una news di stampa senza una fonte pubblica da linkare (NewsLinks.tsx, 25/09/2026) */
+    news: "News",
     video: "Watch the video",
     decksWithCard: "Decks with this card",
     relatedGuides: "Related guides",
@@ -554,7 +554,7 @@ export const en = {
     noResults: "No location matches this search.",
     related: "Related cards",
     clear: "Clear filters",
-    source: "Location names and effects are updated to {patch}.",
+    source: "Location names and effects refer to {patch}.",
     notVerified: "We have not checked them one by one in the game yet: we will, as we did for the cards, and this line will say so.",
     verified: "Checked one by one in the game: {n} locations.",
     guideCta: "Read the locations guide",
@@ -687,7 +687,8 @@ export const en = {
     contactTitle: "Contact",
     contactText: "Corrections, decklists, tournaments, partnerships:",
     disclaimerTitle: "Disclaimer",
-    sourcesTitle: "Sources we use",
+    /* 25/09/2026: l'elenco ha solo i link ufficiali, quindi il titolo non lo presenta come l'elenco di tutte le fonti */
+    sourcesTitle: "Official sources",
     sources: {
       steam: "Steam · Origins TCG",
       demo: "Steam · Origins TCG Demo",

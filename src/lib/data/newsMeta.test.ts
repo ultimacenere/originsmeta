@@ -209,6 +209,15 @@ describe("news", () => {
     const problems = news.flatMap((item) => newsProblems(item, locales, checks));
     assert.deepEqual(problems, []);
   });
+  test("`url` manca solo su una news di stampa senza una fonte pubblica citabile (oggi solo itzbolt-wins-conquest)", () => {
+    // Senza `url` una news non mostra "Fonte", il tasto di Steam né "Apri il mazzo": dimenticarlo altrove passerebbe
+    // inosservato. Una news nuova senza fonte citabile si aggiunge qui solo con l'OK di Pierluigi.
+    for (const item of news) if (item.source !== "press") assert.ok(item.url, `${item.slug}: manca url`);
+    assert.deepEqual(
+      news.filter((item) => !item.url).map((item) => item.slug),
+      ["itzbolt-wins-conquest"],
+    );
+  });
   test("ogni news ha il suo title nella SERP", () => {
     assert.deepEqual(duplicateMetaTitles(news, locales), []);
   });

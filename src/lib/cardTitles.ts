@@ -194,7 +194,7 @@ function escapeRe(text: string): string {
  * volte solo lì il nome è giusto (Van Helsing's Tools in inglese dice "Silver Bolt", in italiano e spagnolo "Silver
  * Bullet"). Fra più fonti restano quelle nella demo, quando ce ne sono. Un nome contenuto in uno più lungo ("Little
  * Pig" in "Not So Little Pig") non conta dentro il nome più lungo.
- * Il campo `related` di World of Origins non basta: vuol dire "citata da" (la scheda lo mostra come "Richiamata da"),
+ * Il campo `related` di World of Origins non basta (e dal 25/09/2026 il sito non lo legge più): vuol dire "citata da",
  * a volte salta un passaggio (Garlic risulta da Van Helsing, ma la gioca Van Helsing's Tools) e su Reflection, Off With
  * Your Head! e Little Pig nessun testo di carta dice chi le crea. Se nessun testo la nomina, la risposta è vuota: la
  * description allora non nomina nessuno, invece di dare per creatrice una carta che la cita soltanto.
