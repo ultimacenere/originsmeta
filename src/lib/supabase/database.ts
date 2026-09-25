@@ -4,6 +4,8 @@
  */
 import type { BuilderCard } from "@/lib/deckrules";
 import type { DeckStatus, Guide } from "@/lib/community/types";
+import type { DeckTranslations } from "@/lib/community/deckTranslation";
+import type { Locale } from "@/lib/i18n";
 
 export type ProfileRow = {
   id: string;
@@ -28,14 +30,17 @@ export type CommunityDeckRow = {
   deck_types: string[];
   video_url: string | null;
   guide: Guide;
+  /** traduzioni automatiche della guida (25/09/2026): le scrive il sito dopo la pubblicazione, non l'autore */
+  translations: DeckTranslations;
   code_om: string | null;
   status: DeckStatus;
   created_at: string;
   updated_at: string;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations"> & {
   id?: string;
+  translations?: DeckTranslations;
   deck_types?: string[];
   status?: DeckStatus;
   video_url?: string | null;
@@ -77,7 +82,8 @@ export type TournamentRow = {
   cover_url: string | null;
   description: string;
   rules: string;
-  lang: "en" | "it";
+  /** lingua del torneo scelta dall'organizzatore: una delle lingue del sito (dal 25/09/2026 anche lo spagnolo) */
+  lang: Locale;
   starts_at: string;
   size: number;
   format: "single_elim";

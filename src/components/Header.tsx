@@ -36,7 +36,9 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
       {/* da 1280 px la riga ospita menu completo, ricerca, Discord, Accedi e lingua: spazi e ricerca più stretti, anche
           sopra i 1536 px (il contenitore resta di 1280: lì ricerca da 208 px e spazi da 12 facevano sforare la riga);
-          sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px */}
+          sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px.
+          25/09/2026, tre lingue: a 768 px il tasto "Acceder" e il terzo tasto lingua facevano sforare lo spagnolo di 11 px,
+          quindi la ricerca fra 768 e 1279 px è da 160 px invece di 176 */}
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2">
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
           {/* il nome del sito lo dice l'aria-label del link qui sopra: l'immagine resta muta */}
@@ -59,7 +61,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             name="q"
             type="search"
             placeholder={dict.nav.search}
-            className="w-44 rounded-l-full border border-felt-line bg-felt px-4 py-2 text-sm text-chalk placeholder:text-chalk-muted/70 focus:border-mint xl:w-28"
+            className="w-40 rounded-l-full border border-felt-line bg-felt px-4 py-2 text-sm text-chalk placeholder:text-chalk-muted/70 focus:border-mint xl:w-28"
           />
           <button type="submit" className="rounded-r-full border border-l-0 border-felt-line bg-felt-soft px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-mint hover:bg-felt-line">
             {dict.nav.searchButton}

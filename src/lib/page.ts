@@ -14,6 +14,7 @@ const defaultOgSize = { width: 1200, height: 630 };
 export const defaultOgAlt: Record<Locale, string> = {
   en: "Origins TCG key art: a blonde heroine among cards flying across a pink and purple background, next to the Origins Trading Card Game logo.",
   it: "Key art di Origins TCG: un'eroina bionda tra le carte in volo su uno sfondo rosa e viola, accanto al logo Origins Trading Card Game.",
+  es: "Key art de Origins TCG: una heroína rubia entre cartas que vuelan sobre un fondo rosa y morado, junto al logo de Origins Trading Card Game.",
 };
 
 /** Oltre i ~160 caratteri Google taglia lo snippet: teniamo un margine. */
@@ -108,6 +109,13 @@ export type PageMetaOptions = {
   imageSize?: { width: number; height: number };
   /** Testo alternativo dell'immagine social: descrive l'immagine, non la pagina. */
   imageAlt?: string;
+  /**
+   * Lingue in cui la pagina esiste davvero nella sua lingua, quando non sono tutte: gli hreflang elencano solo
+   * quelle. Serve ai mazzi della community, la cui guida si legge nella lingua dell'autore e nelle traduzioni.
+   */
+  languages?: readonly Locale[];
+  /** Versione da non indicizzare (resta navigabile e i link si seguono): per esempio una guida non ancora tradotta. */
+  noindex?: boolean;
 };
 
 /**
@@ -130,7 +138,8 @@ export function pageMeta(locale: Locale, path: string, title: string, descriptio
     // `absolute`: il titolo è già completo, il template `%s · OriginsMeta` del layout non deve applicarsi.
     title: { absolute: fullTitle },
     description: desc,
-    alternates: { canonical: url, ...alternatesFor(path) },
+    alternates: { canonical: url, ...alternatesFor(path, opts.languages) },
+    ...(opts.noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: opts.type === "article" ? { ...base, type: "article", publishedTime: opts.published, modifiedTime: opts.modified } : { ...base, type: "website" },
     twitter: { card: "summary_large_image", title: fullTitle, description: desc, images: [ogImage] },
   };

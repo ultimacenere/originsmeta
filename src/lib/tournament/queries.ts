@@ -1,4 +1,5 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
+import type { Locale } from "@/lib/i18n";
 import { LISTING_BADGES, type Tournament, type TournamentInvite, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
 
 /**
@@ -47,7 +48,7 @@ export async function getTournament(slug: string, client: Db | null = supabasePu
 export async function getTournamentByTag(tag: string, client: Db | null = supabasePublic()): Promise<Pick<Tournament, "slug" | "lang"> | null> {
   if (!client) return null;
   const { data } = await client.from("tournaments").select("slug, lang").eq("tag", tag).maybeSingle();
-  return (data as { slug: string; lang: "en" | "it" } | null) ?? null;
+  return (data as { slug: string; lang: Locale } | null) ?? null;
 }
 
 /** Liste consegnate visibili al client passato (per l'anonimo: solo a torneo finito, per policy). */

@@ -35,7 +35,7 @@ export const organization: Json = {
   // lettering nuovo, lo stesso dell'header e del footer; l'icona quadrata resta per la scheda del browser.
   logo: `${siteUrl}/media/logo-originsmeta.webp`,
   email: "staff@originsmeta.com",
-  description: "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English and Italian.",
+  description: "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English, Italian and Spanish.",
   // Mese in cui è nato il sito.
   foundingDate: "2026-09",
   knowsAbout: ["Origins TCG", "Koin Games", "digital collectible card games"],
@@ -43,7 +43,7 @@ export const organization: Json = {
     "@type": "ContactPoint",
     contactType: "editorial",
     email: "staff@originsmeta.com",
-    availableLanguage: ["en", "it"],
+    availableLanguage: ["en", "it", "es"],
   },
 };
 

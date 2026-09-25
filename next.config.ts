@@ -6,11 +6,17 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Radice del sito: manda alla lingua del browser (it), altrimenti inglese.
+      // Radice del sito: manda alla lingua del browser (it, es), altrimenti inglese.
       {
         source: "/",
         has: [{ type: "header", key: "accept-language", value: "^it.*" }],
         destination: "/it",
+        permanent: false,
+      },
+      {
+        source: "/",
+        has: [{ type: "header", key: "accept-language", value: "^es.*" }],
+        destination: "/es",
         permanent: false,
       },
       { source: "/", destination: "/en", permanent: false },

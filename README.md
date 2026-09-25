@@ -1,6 +1,6 @@
 # OriginsMeta
 
-Sito community non ufficiale su **Origins TCG** (Koin Games): database carte, mazzi, tier list, tracker delle patch, calendario tornei e guide. Due lingue: inglese (`/en`) e italiano (`/it`); il francese è stato ritirato (i vecchi link /fr reindirizzano a /en) e i testi FR restano nei file dati per un eventuale ritorno. Online su [originsmeta.com](https://originsmeta.com).
+Sito community non ufficiale su **Origins TCG** (Koin Games): database carte, mazzi, tier list, tracker delle patch, calendario tornei e guide. Tre lingue: inglese (`/en`), italiano (`/it`) e, dal 25/09/2026, spagnolo (`/es`); il francese è stato ritirato (i vecchi link /fr reindirizzano a /en) e i testi FR restano nei file dati per un eventuale ritorno. Regole e glossario dello spagnolo in `docs/spagnolo.md`. Online su [originsmeta.com](https://originsmeta.com).
 
 ## Stack
 
@@ -22,9 +22,9 @@ npm run lint
 
 | Cosa | File |
 | --- | --- |
-| Testi dell'interfaccia (EN/IT) | `src/lib/dictionaries/{en,it}.ts` |
+| Testi dell'interfaccia (EN/IT/ES) | `src/lib/dictionaries/{en,it,es}.ts` |
 | Carte: dati di gioco importati da World of Origins | `src/lib/data/woo-cards.json` (generato da `npm run import:woo`) |
-| Carte: saghe, origini e traduzioni italiane | `src/lib/data/card-lore.ts` |
+| Carte: saghe, origini e traduzioni italiane e spagnole | `src/lib/data/card-lore.ts` |
 | Carte: storico bilanciamenti (patch notes ufficiali) | `src/lib/data/card-history.ts` |
 | Carte: tipi, saghe, patch e unione dei tre file | `src/lib/data/cards.ts` |
 | Eventi e tornei | `src/lib/data/events.ts` |
@@ -32,6 +32,8 @@ npm run lint
 | Tier list (mazzi, leggendarie, carte base) | `src/lib/data/tierlist.ts` |
 | News (riassunti + link alla fonte; per i mazzi pubblicati qui `source: "community"` o `"staff"`, url interno e guide collegate) | `src/lib/data/news.ts` |
 | Guide (Markdown, EN/IT, con categoria e tag di collegamento) | `src/lib/content/guides.ts` |
+| Guide in spagnolo (solo i testi: il resto viene dall'inglese) | `src/lib/content/guides-es.ts` |
+| Traduzione automatica delle guide dei mazzi della community | `src/lib/community/deckTranslation.ts`, `translate.ts`, `scripts/translate-decks.mjs` |
 | Immagini ufficiali ottimizzate | `public/media/` |
 | Palette e componenti CSS | `src/app/globals.css` |
 | Schema del database community (tabelle, trigger, policy RLS) | `supabase/schema.sql` (+ `scripts/db-migrate.mjs`) |
@@ -41,7 +43,7 @@ npm run lint
 
 ### Aggiungere una carta
 
-I dati di gioco (nome, costo, statistiche, testo inglese, tag, rarità, allineamento, ID ufficiale, carte collegate) arrivano dal database community [World of Origins](https://worldoforigins.fun): `npm run import:woo` scarica i chunk del sito, prende la patch più recente e riscrive `src/lib/data/woo-cards.json` (122 carte della Demo 2.0, 86 rimosse nelle build precedenti, 22 carte create), stampando le differenze rispetto all'import precedente e controllando che lo storico scritto a mano coincida con le statistiche per patch. Per ogni carta nuova o con testo cambiato va aggiornato `src/lib/data/card-lore.ts` (saga, una riga sull'origine in EN e IT, traduzione italiana del testo; le parole chiave restano in inglese). I bilanciamenti trascritti dalle patch notes stanno in `src/lib/data/card-history.ts`, per slug. Le pagine `/cards` (filtri per tipo, saga, allineamento, rarità, carte rimosse) e `/cards/[slug]` (testo EN/IT, carte collegate, storico) e la sitemap si aggiornano da sole. Nessuna immagine viene importata.
+I dati di gioco (nome, costo, statistiche, testo inglese, tag, rarità, allineamento, ID ufficiale, carte collegate) arrivano dal database community [World of Origins](https://worldoforigins.fun): `npm run import:woo` scarica i chunk del sito, prende la patch più recente e riscrive `src/lib/data/woo-cards.json` (122 carte della Demo 2.0, 86 rimosse nelle build precedenti, 22 carte create), stampando le differenze rispetto all'import precedente e controllando che lo storico scritto a mano coincida con le statistiche per patch. Per ogni carta nuova o con testo cambiato va aggiornato `src/lib/data/card-lore.ts` (saga, una riga sull'origine in EN, IT ed ES, traduzioni italiana e spagnola del testo; le parole chiave restano in inglese). I bilanciamenti trascritti dalle patch notes stanno in `src/lib/data/card-history.ts`, per slug. Le pagine `/cards` (filtri per tipo, saga, allineamento, rarità, carte rimosse) e `/cards/[slug]` (testo EN/IT, carte collegate, storico) e la sitemap si aggiornano da sole. Nessuna immagine viene importata.
 
 ### Aggiungere un mazzo
 
@@ -84,15 +86,15 @@ I crediti stampati sulle carte (illustratore e numero di collezione) stanno in `
 
 ### Aggiornare i Luoghi
 
-I luoghi stanno in `src/lib/data/locations.ts`: nome, effetto in inglese e in italiano, una o più famiglie di effetti (per i filtri della pagina) e gli slug delle carte citate. Non arrivano da `npm run import:woo`, che porta solo le carte: si aggiornano a mano quando cambia la rotazione del gioco, aggiornando anche `locationsPatch`. Quando li avremo confrontati uno per uno dentro il gioco, come si fa con le carte, si valorizza `locationsVerified` e la pagina lo dichiara da sola.
+I luoghi stanno in `src/lib/data/locations.ts`: nome, effetto in inglese, italiano e spagnolo, una o più famiglie di effetti (per i filtri della pagina) e gli slug delle carte citate. Non arrivano da `npm run import:woo`, che porta solo le carte: si aggiornano a mano quando cambia la rotazione del gioco, aggiornando anche `locationsPatch`. Quando li avremo confrontati uno per uno dentro il gioco, come si fa con le carte, si valorizza `locationsVerified` e la pagina lo dichiara da sola.
 
 ### Aggiungere una guida
 
-In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati). Il corpo è Markdown; i link interni vanno scritti con il prefisso lingua (`/en/…`, `/it/…`). Per una guida a un mazzo della community usa `tags.communityDecks` (slug della scheda `/decks/community/[slug]` e nome del mazzo): la guida mostra il mazzo tra i correlati e la scheda del mazzo mostra la guida in "Guide correlate", senza leggere Supabase (la guida resta statica). Prime guide di questo tipo: le quattro sui mazzi di Davdas (16/09/2026).
+In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati); in `src/lib/content/guides-es.ts` aggiungi i soli testi spagnoli (`title`, `metaTitle`, `excerpt`, `faq`, `body`: il tipo non compila finché manca una guida). Il corpo è Markdown; i link interni vanno scritti con il prefisso lingua (`/en/…`, `/it/…`, `/es/…`). Per una guida a un mazzo della community usa `tags.communityDecks` (slug della scheda `/decks/community/[slug]` e nome del mazzo): la guida mostra il mazzo tra i correlati e la scheda del mazzo mostra la guida in "Guide correlate", senza leggere Supabase (la guida resta statica). Prime guide di questo tipo: le quattro sui mazzi di Davdas (16/09/2026).
 
 ### Aggiungere una news
 
-In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary` in EN/IT (l'helper `n` richiede anche il FR), `image` obbligatoria (media kit in `public/media/` o miniatura YouTube ufficiale), `url` e `source`: `steam` per i post ufficiali, `press` per stampa e siti community esterni, `community` per i mazzi della community. In quest'ultimo caso `url` è il percorso interno senza lingua (es. `/decks/community/<slug>`) e il link diventa "Apri il mazzo" (`src/components/NewsLinks.tsx`). Dal 24/09/2026 c'è anche `site`, per le novità di OriginsMeta raccontate da noi (la serie "Upgrade Meta"): pill "OriginsMeta" in menta e nessuna "Fonte", perché la fonte è l'articolo stesso; `url` è la pagina del sito di cui parla di più. Campi facoltativi: `cards` (chip delle carte) e `guides` (slug delle guide del sito, elencate sotto la news in home e in /news). Le due news più recenti vanno in evidenza in home. In fondo a ogni articolo c'è l'invito al nostro Discord, e dopo il push su main la news viene pubblicata da sola in `#announcements` e `#site-news` (le patch notes anche in `#metashifting`): vedi "Discord: contenuti automatici".
+In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary` in EN/IT/ES (`n(en, it, es)`; il quarto argomento, facoltativo, è il vecchio FR), `image` obbligatoria (media kit in `public/media/` o miniatura YouTube ufficiale), `url` e `source`: `steam` per i post ufficiali, `press` per stampa e siti community esterni, `community` per i mazzi della community. In quest'ultimo caso `url` è il percorso interno senza lingua (es. `/decks/community/<slug>`) e il link diventa "Apri il mazzo" (`src/components/NewsLinks.tsx`). Dal 24/09/2026 c'è anche `site`, per le novità di OriginsMeta raccontate da noi (la serie "Upgrade Meta"): pill "OriginsMeta" in menta e nessuna "Fonte", perché la fonte è l'articolo stesso; `url` è la pagina del sito di cui parla di più. Campi facoltativi: `cards` (chip delle carte) e `guides` (slug delle guide del sito, elencate sotto la news in home e in /news). Le due news più recenti vanno in evidenza in home. In fondo a ogni articolo c'è l'invito al nostro Discord, e dopo il push su main la news viene pubblicata da sola in `#announcements` e `#site-news` (le patch notes anche in `#metashifting`): vedi "Discord: contenuti automatici".
 
 ## Deploy e dominio
 
@@ -111,6 +113,17 @@ In `src/lib/data/news.ts`: `slug`, `date` (data dell'evento), `title` e `summary
 - **Pagina pubblica dell'iscritto** `/u/<username>` (dal 23/09/2026): i suoi mazzi pubblicati (con data di creazione e versione del gioco) e le sue tier list salvate, in ISR e in sitemap; il nome utente è quello assegnato dal trigger `handle_new_user`. `/account` resta il pannello privato, con in più i mazzi nascosti, i privati, le tier list nascoste e il conteggio dei mazzi pubblicati rispetto al tetto.
 - **Tetto ai mazzi pubblicati** (23/09/2026): 5 per un account della community, nessuno per Influencer, Pro, Staff e admin. Lo impone il trigger `enforce_deck_limit` dello schema; il sito lo legge prima con `publishedDeckLimit` (`src/lib/community/queries.ts`) per fermarsi con un messaggio chiaro. I mazzi privati (`draft`) hanno il loro tetto nel codice (`MAX_PRIVATE_DECKS`, 50).
 - Le pagine `/login`, `/decks/publish`, `/account` e le pagine di modifica sono `noindex`.
+
+### Guide dei mazzi tradotte in automatico (dal 25/09/2026)
+
+Chi pubblica scrive la guida in una lingua sola (inglese, italiano o spagnolo, campo "Lingua della guida"); il sito la traduce nelle altre due e ogni versione della scheda mazzo mostra il testo nella sua lingua, con la nota "Tradotta automaticamente dall'…" e il link al testo originale (che sta nella versione della pagina nella lingua dell'autore: una sola lingua per pagina, come chiede Google). Il nome del mazzo non si traduce; i nomi delle carte e le parole chiave restano in inglese e quindi restano link.
+
+- **Come funziona**: dopo `publishDeck`, `updateDeck` e la ripubblicazione di un mazzo nascosto, `translateDeckLater` (`src/lib/community/translate.ts`) parte dentro `after()`, cioè dopo la risposta al browser, e scrive con la sessione del proprietario (le stesse policy RLS). Le parti pure stanno in `src/lib/community/deckTranslation.ts` (con test): impronta del testo (`guideHash`), traduzione aggiornata o no (`freshTranslation`), versione da mostrare (`localizedGuide`), lingue disponibili (`guideLocales`), richiesta al modello (`claude-opus-5`, istruzioni fisse in cache, risposta vincolata a uno schema JSON con gli stessi campi della guida, `fallbacks: "default"`) e controlli della risposta (`parseTranslation`: stessi campi, niente testi vuoti o molto più lunghi dell'originale). Una traduzione vale solo finché l'impronta coincide: se l'autore modifica la guida, la pagina torna all'originale finché non arriva la traduzione nuova.
+- **Database**: colonna `community_decks.translations` (jsonb, una voce per lingua con `hash`, `at`, `model`, `guide`; tetto di 120 KB) e trigger `touch_deck_updated_at`, che non sposta `updated_at` quando cambiano solo le traduzioni. Si applica con `node scripts/db-migrate.mjs`. Finché la colonna non esiste il sito legge i mazzi come prima (`readWithTranslations` in `queries.ts`).
+- **Interruttore**: `ANTHROPIC_API_KEY` su Vercel (tipo Secret, tutti gli ambienti), la stessa chiave dell'assistente delle FAQ. Senza chiave non parte nessuna traduzione: le pagine mostrano l'originale con la nota "la traduzione automatica non è ancora pronta".
+- **SEO**: hreflang, sitemap e indicizzazione seguono le lingue in cui la guida si legge davvero. La versione in una lingua non ancora tradotta resta navigabile ma è `noindex` e fuori dalla sitemap (sarebbe una pagina con la guida nella lingua sbagliata); `x-default` va all'inglese se c'è, altrimenti alla lingua dell'autore. Nei dati strutturati `inLanguage` è la lingua della pagina e la description usa il riassunto nella stessa lingua.
+- **Arretrati e nuovi tentativi**: `node scripts/translate-decks.mjs` (dal repo; legge `.env.local`, anche quello del checkout principale se lanciato da un worktree). `--dry-run` elenca che cosa manca, senza opzioni traduce con l'API e salva, `--only <slug>` limita a un mazzo, `--export <file>` scrive i testi da tradurre e `--from <file>` salva traduzioni già pronte (`{ "<slug>": { "<lingua>": { summary, … } } }`). Ogni salvataggio ricontrolla l'impronta dentro una transazione: una traduzione fatta su un testo vecchio non si scrive.
+- **Costo**: una traduzione per lingua a ogni pubblicazione o modifica del testo, sforzo basso; le guide sono corte (in media meno di 600 caratteri il 25/09/2026). Si tiene d'occhio dalla dashboard Anthropic.
 
 ### CAPTCHA sull'accesso (Turnstile, dal 20/09/2026)
 

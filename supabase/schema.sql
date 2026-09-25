@@ -210,7 +210,7 @@ create table if not exists public.tournaments (
   cover_url text,
   description text not null default '' check (char_length(description) <= 2000),
   rules text not null default '' check (char_length(rules) <= 2000),
-  lang text not null default 'en' check (lang in ('en','it')),
+  lang text not null default 'en' check (lang in ('en','it','es')),
   starts_at timestamptz not null,
   size int not null check (size in (4,8,16,32,64,128)),
   format text not null default 'single_elim' check (format in ('single_elim')),
@@ -1226,3 +1226,34 @@ end $$;
 drop trigger if exists community_decks_limit on public.community_decks;
 create trigger community_decks_limit before insert or update of status, owner on public.community_decks
   for each row execute function public.enforce_deck_limit();
+
+-- ---------- traduzioni automatiche delle guide dei mazzi (Pierluigi, 25/09/2026) ----------
+-- "I deck degli utenti vanno tradotti": l'autore scrive nella sua lingua, il sito traduce la guida nelle altre
+-- lingue del sito (src/lib/community/deckTranslation.ts) e le salva qui, una per lingua, con l'impronta del testo
+-- da cui sono state fatte: {"es": {"hash": "…", "at": "…", "model": "…", "guide": {"summary": "…", …}}}.
+-- Le policy di community_decks valgono anche per questa colonna: la scrive il sito con la sessione del proprietario
+-- (o lo staff con scripts/translate-decks.mjs). Il tetto di dimensione ferma chi volesse riempirla a mano.
+alter table public.community_decks add column if not exists translations jsonb not null default '{}'::jsonb;
+alter table public.community_decks drop constraint if exists community_decks_translations_check;
+alter table public.community_decks add constraint community_decks_translations_check
+  check (jsonb_typeof(translations) = 'object' and octet_length(translations::text) <= 120000);
+
+-- La data di aggiornamento di un mazzo resta quella dell'autore: scrivere le traduzioni non la sposta (la scheda
+-- del mazzo la mostra come "aggiornato il" e la sitemap la usa come lastmod).
+create or replace function public.touch_deck_updated_at()
+returns trigger language plpgsql as $$
+begin
+  if (to_jsonb(new) - 'translations' - 'updated_at') is distinct from (to_jsonb(old) - 'translations' - 'updated_at') then
+    new.updated_at := now();
+  end if;
+  return new;
+end $$;
+drop trigger if exists community_decks_touch on public.community_decks;
+create trigger community_decks_touch before update on public.community_decks
+  for each row execute function public.touch_deck_updated_at();
+
+-- ---------- spagnolo, terza lingua del sito (25/09/2026) ----------
+-- La lingua di un torneo è una delle lingue del sito: il vincolo scritto nella create table sopra vale solo per un
+-- database nuovo, su quello esistente si sostituisce qui (il nome è quello che Postgres dà ai check di colonna).
+alter table public.tournaments drop constraint if exists tournaments_lang_check;
+alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es'));

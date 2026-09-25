@@ -1,9 +1,15 @@
 import type { BuilderCard } from "@/lib/deckrules";
+import type { Locale } from "@/lib/i18n";
+import { guideSections, type DeckTranslations } from "./deckTranslation";
 
-export type GuideLang = "en" | "it";
+/** Lingua in cui l'autore ha scritto la guida: una delle lingue del sito (dal 25/09/2026 anche lo spagnolo). */
+export type GuideLang = Locale;
 
-/** Sezioni facoltative della guida, nell'ordine in cui vengono mostrate. */
-export const guideSections = ["strengths", "weaknesses", "mulligan", "combos", "matchups", "notes"] as const;
+/**
+ * Sezioni facoltative della guida, nell'ordine in cui vengono mostrate. La definizione sta in deckTranslation.ts,
+ * che deve restare senza import a runtime (lo esegue anche Node, negli script e nei test).
+ */
+export { guideSections };
 export type GuideSection = (typeof guideSections)[number];
 
 export type Guide = { lang: GuideLang; summary: string } & Partial<Record<GuideSection, string>>;
@@ -34,6 +40,8 @@ export type CommunityDeck = {
   deck_types: string[];
   video_url: string | null;
   guide: Guide;
+  /** traduzioni automatiche della guida nelle altre lingue del sito (colonna `translations`, dal 25/09/2026) */
+  translations?: DeckTranslations | null;
   code_om: string | null;
   status: DeckStatus;
   created_at: string;

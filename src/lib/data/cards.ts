@@ -47,23 +47,23 @@ export type SagaId =
   | "other";
 
 export const sagas: Record<SagaId, L10n> = {
-  arthurian: { en: "Arthurian legend", it: "Ciclo arturiano", fr: "Légende arthurienne" },
-  wonderland: { en: "Wonderland", it: "Paese delle Meraviglie", fr: "Pays des Merveilles" },
-  "hundred-acre-wood": { en: "Hundred Acre Wood", it: "Bosco dei Cento Acri", fr: "Forêt des Rêves bleus" },
-  oz: { en: "Land of Oz", it: "Terra di Oz", fr: "Pays d'Oz" },
-  sherwood: { en: "Sherwood", it: "Sherwood", fr: "Sherwood" },
-  gothic: { en: "Gothic horror", it: "Horror gotico", fr: "Horreur gothique" },
-  "jungle-book": { en: "The Jungle Book", it: "Il libro della giungla", fr: "Le Livre de la jungle" },
-  "fairy-tale": { en: "Fairy tales", it: "Fiabe", fr: "Contes de fées" },
-  "nursery-rhyme": { en: "Nursery rhymes", it: "Filastrocche", fr: "Comptines" },
-  "myth-folklore": { en: "Myth & folklore", it: "Miti e folclore", fr: "Mythes et folklore" },
-  "african-folklore": { en: "African folklore", it: "Folclore africano", fr: "Folklore africain" },
-  "american-tales": { en: "American tales", it: "Racconti americani", fr: "Récits américains" },
-  "classic-literature": { en: "Classic literature", it: "Letteratura classica", fr: "Littérature classique" },
-  "ballad-of-mulan": { en: "Ballad of Mulan", it: "Ballata di Mulan", fr: "Ballade de Mulan" },
-  "arabian-nights": { en: "Arabian Nights", it: "Le mille e una notte", fr: "Les Mille et Une Nuits" },
-  "baker-street": { en: "Baker Street", it: "Baker Street", fr: "Baker Street" },
-  other: { en: "Other", it: "Altro", fr: "Autre" },
+  arthurian: { en: "Arthurian legend", it: "Ciclo arturiano", es: "Leyenda artúrica", fr: "Légende arthurienne" },
+  wonderland: { en: "Wonderland", it: "Paese delle Meraviglie", es: "País de las Maravillas", fr: "Pays des Merveilles" },
+  "hundred-acre-wood": { en: "Hundred Acre Wood", it: "Bosco dei Cento Acri", es: "Bosque de los Cien Acres", fr: "Forêt des Rêves bleus" },
+  oz: { en: "Land of Oz", it: "Terra di Oz", es: "Tierra de Oz", fr: "Pays d'Oz" },
+  sherwood: { en: "Sherwood", it: "Sherwood", es: "Sherwood", fr: "Sherwood" },
+  gothic: { en: "Gothic horror", it: "Horror gotico", es: "Terror gótico", fr: "Horreur gothique" },
+  "jungle-book": { en: "The Jungle Book", it: "Il libro della giungla", es: "El libro de la selva", fr: "Le Livre de la jungle" },
+  "fairy-tale": { en: "Fairy tales", it: "Fiabe", es: "Cuentos de hadas", fr: "Contes de fées" },
+  "nursery-rhyme": { en: "Nursery rhymes", it: "Filastrocche", es: "Canciones infantiles", fr: "Comptines" },
+  "myth-folklore": { en: "Myth & folklore", it: "Miti e folclore", es: "Mitos y folclore", fr: "Mythes et folklore" },
+  "african-folklore": { en: "African folklore", it: "Folclore africano", es: "Folclore africano", fr: "Folklore africain" },
+  "american-tales": { en: "American tales", it: "Racconti americani", es: "Cuentos americanos", fr: "Récits américains" },
+  "classic-literature": { en: "Classic literature", it: "Letteratura classica", es: "Literatura clásica", fr: "Littérature classique" },
+  "ballad-of-mulan": { en: "Ballad of Mulan", it: "Ballata di Mulan", es: "Balada de Mulán", fr: "Ballade de Mulan" },
+  "arabian-nights": { en: "Arabian Nights", it: "Le mille e una notte", es: "Las mil y una noches", fr: "Les Mille et Une Nuits" },
+  "baker-street": { en: "Baker Street", it: "Baker Street", es: "Baker Street", fr: "Baker Street" },
+  other: { en: "Other", it: "Altro", es: "Otras", fr: "Autre" },
 };
 
 /** `url` è il post Steam della patch (gid verificati con l'API ufficiale Valve `ISteamNews/GetNewsForApp`, appid 4429430). */
@@ -94,7 +94,7 @@ export const patches: Record<PatchId, { date: string; url: string; title: string
     date: "2026-09-21",
     url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
     title: "The first big update to the Origins demo just landed!",
-    label: { en: "Demo · 21 Sep", it: "Demo · 21 set" },
+    label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep" },
     news: "demo-patch-notes-0921",
   },
 };
@@ -259,7 +259,7 @@ export const cards: Card[] = data.cards.map((w) => {
   if (keywords.length) card.keywords = keywords;
   // Il testo letto nel gioco (`card-lore.ts`, campo `en`) vince su quello di World of Origins quando è rimasto indietro.
   const abilityEn = lore?.en ?? w.ability;
-  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn };
+  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn };
   if (lore?.origin) card.origin = lore.origin;
   if (w.related?.length) card.related = w.related;
   return card;

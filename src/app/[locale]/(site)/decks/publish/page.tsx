@@ -7,6 +7,13 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
 
+/**
+ * Durata massima delle Server Action di questa pagina: dopo la pubblicazione la guida si traduce nelle altre
+ * lingue dentro `after()` (src/lib/community/translate.ts), che vive quanto la funzione. Due traduzioni in
+ * parallelo stanno di solito sotto il mezzo minuto; il margine copre le guide più lunghe.
+ */
+export const maxDuration = 120;
+
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
   return { ...pageMeta(locale, "/decks/publish", dict.community.publishTitle, dict.community.publishIntro), robots: { index: false, follow: true } };

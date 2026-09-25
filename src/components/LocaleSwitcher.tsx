@@ -18,7 +18,7 @@ export function LocaleSwitcher({ locale, label, className = "flex" }: { locale: 
             href={`/${l}${rest}`}
             hrefLang={l}
             aria-current={active ? "page" : undefined}
-            className={`rounded-full px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider transition ${
+            className={`rounded-full px-2 py-1 font-mono text-[11px] uppercase tracking-wider transition ${
               active ? "bg-mint text-ink" : "text-chalk-muted hover:text-chalk"
             }`}
           >

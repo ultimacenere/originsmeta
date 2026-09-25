@@ -10,7 +10,11 @@ import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
+import { localizedGuide } from "@/lib/community/deckTranslation";
 import { deckGameCode } from "@/lib/deckGameCode";
+
+/** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
+const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
@@ -83,7 +87,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         slug: `community-${deck.slug}`,
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
-        tagline: deck.guide.summary.length > 140 ? `${deck.guide.summary.slice(0, 140).trimEnd()}…` : deck.guide.summary,
+        // riassunto nella lingua della pagina quando la traduzione del sito c'è (25/09/2026), altrimenti quello dell'autore
+        tagline: shorten(localizedGuide(deck, locale).text.summary, 140),
         legendary: leg
           ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana }
           : legCustom

@@ -8,7 +8,7 @@ import type { Locale } from "@/lib/i18n";
  * (quindi Google le legge) e finiscono nei dati strutturati FAQPage della pagina.
  *
  * Come cresce questo file: dalle domande che arrivano davvero. Quando una domanda torna spesso e la risposta
- * regge, si scrive qui in inglese e in italiano e smette di costare una chiamata al modello.
+ * regge, si scrive qui in inglese, italiano e spagnolo e smette di costare una chiamata al modello.
  * `cards` e `guides` sono gli slug da collegare sotto la risposta.
  */
 export type Faq = {
@@ -47,7 +47,7 @@ const en: Faq[] = [
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026. The illustrations are the official ones from Koin Games; the sagas, the Italian translations and the notes on each legend are ours.",
+    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026. The illustrations are the official ones from Koin Games; the sagas, the Italian and Spanish translations and the notes on each legend are ours.",
   },
 ];
 
@@ -79,11 +79,43 @@ const it: Faq[] = [
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe, le traduzioni italiane e le note sulle origini delle leggende sono nostre.",
+    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe, le traduzioni in italiano e spagnolo e le note sulle origini delle leggende sono nostre.",
   },
 ];
 
-export const faqs: Record<Locale, Faq[]> = { en, it };
+const es: Faq[] = [
+  {
+    id: "deck-rules",
+    q: "¿Cuántas cartas tiene un mazo de Origins TCG?",
+    a: "Veinticinco: una Legendaria y doce cartas distintas, cada una en dos copias. Tú eliges los trece nombres y el juego duplica por ti las doce cartas base. El deck builder de este sitio aplica la regla y te dice qué falta.",
+    guides: ["origins-tcg-explained"],
+  },
+  {
+    id: "free-to-compete",
+    q: "¿Origins TCG es pay-to-win?",
+    a: "No, y el diseño lo dice explícitamente: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—. El dinero cambia lo que posees, no lo que puedes jugar. El razonamiento completo, con lo que aún no está confirmado, está en nuestra guía.",
+    guides: ["is-origins-tcg-pay-to-win"],
+  },
+  {
+    id: "conquest",
+    q: "¿Qué es el formato Conquest?",
+    a: "Registras más de un mazo, cada uno con una Legendaria distinta, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, con al menos nueve cartas de diferencia.",
+    guides: ["steam-next-fest-2026"],
+  },
+  {
+    id: "crimson-cup",
+    q: "¿Cuándo es la Crimson Cup y qué se gana?",
+    a: "Del 20 al 25 de octubre de 2026, durante el Steam Next Fest: tres clasificatorios de 512 plazas cada uno los días 20, 21 y 22, playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares: una carta promo 1/1 exclusiva del torneo, otras cartas promo, sobres digitales, cajas y cases de sobres Alpha, y dinero en efectivo; el reparto exacto de la bolsa de premios se prometió para la semana siguiente al 24 de septiembre. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar.",
+    guides: ["steam-next-fest-2026"],
+  },
+  {
+    id: "where-cards",
+    q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
+    a: "De la base de datos de la comunidad World of Origins, importadas con un script y contrastadas con las notas oficiales de los parches en Steam. Son los números del parche de la demo del 21 de septiembre de 2026: los costes, las estadísticas y los textos de las 122 cartas de la demo se comprobaron uno por uno en el juego el 22 de septiembre de 2026. Las ilustraciones son las oficiales de Koin Games; las sagas, las traducciones al italiano y al español y las notas sobre cada leyenda son nuestras.",
+  },
+];
+
+export const faqs: Record<Locale, Faq[]> = { en, it, es };
 
 /** Domande pronte sotto il campo: non sostituiscono la domanda libera, la riempiono. */
 export const suggerimenti: Record<Locale, string[]> = {
@@ -102,5 +134,13 @@ export const suggerimenti: Record<Locale, string[]> = {
     "Che cosa è cambiato nella patch 0.6.3?",
     "Quali Leggendarie ci sono nella Demo 2.0?",
     "Che cosa vuol dire On Reveal?",
+  ],
+  es: [
+    "¿Qué hace Mulan?",
+    "¿Qué cartas funcionan bien con Van Helsing?",
+    "¿Cómo construyo un mazo válido?",
+    "¿Qué cambió en el parche 0.6.3?",
+    "¿Qué Legendarias hay en la Demo 2.0?",
+    "¿Qué significa On Reveal?",
   ],
 };

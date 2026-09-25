@@ -1,4 +1,5 @@
 import { supabaseUrl } from "@/lib/supabase/env";
+import { isLocale } from "@/lib/i18n";
 import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
@@ -80,7 +81,7 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
   if (!(BEST_OF_OPTIONS as readonly number[]).includes(bestOf)) return { ok: false, error: "bestOf" };
 
   const lang = String(fd.get("lang") ?? "");
-  if (lang !== "en" && lang !== "it") return { ok: false, error: "lang" };
+  if (!isLocale(lang)) return { ok: false, error: "lang" };
 
   const description = text(fd, "description", LIMITS.textMax);
   const rules = text(fd, "rules", LIMITS.textMax);

@@ -45,23 +45,31 @@ const ALIGN: Record<string, { label: string; bg: string; fg: string; ring: strin
  * Il testo viene dal nostro database (non da input degli utenti): niente HTML in ingresso, solo nodi React.
  */
 function formatAbility(text: string): React.ReactNode[] {
-  const pattern = new RegExp(`(${KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni)\\b|\\bQUALSIASI\\b|\\bANY\\b)`, "g");
+  // danni e "qualsiasi" nelle tre lingue del testo: "3 damage", "3 danni", "3 de daño"; ANY, QUALSIASI, CUALQUIER
+  const pattern = new RegExp(`(${KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|de daño)\\b|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bANY\\b)`, "g");
   return text.split(pattern).map((part, i) => {
     if (!part) return null;
     if (KEYWORDS.includes(part)) return <b key={i} className="gc-kw">{part}</b>;
     if (/⚔️$/.test(part)) return <b key={i} className="gc-atk">{part.replace("⚔️", "⚔")}</b>;
     if (/❤️$/.test(part)) return <b key={i} className="gc-hp">{part.replace("❤️", "♥")}</b>;
-    if (/^\d+ (damage|danni)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
-    if (part === "QUALSIASI" || part === "ANY") return <b key={i} className="gc-any">{part}</b>;
+    if (/^\d+ (damage|danni|de daño)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
+    if (part === "QUALSIASI" || part === "CUALQUIER" || part === "ANY") return <b key={i} className="gc-any">{part}</b>;
     return <span key={i}>{part}</span>;
   });
 }
 
 const line = (t: L10n | undefined, locale: Locale) => (t ? t[locale] ?? t.en : "");
 
+/** Tipo della carta sulla riga del tipo, nella lingua della pagina (corto, come sulla carta del gioco). */
+const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
+  en: { unit: "Unit", spell: "Spell", token: "Token" },
+  it: { unit: "Unità", spell: "Magia", token: "Creata" },
+  es: { unit: "Unidad", spell: "Hechizo", token: "Creada" },
+};
+
 export function GameCard({ card, locale, className = "", priority = false }: { card: Card; locale: Locale; className?: string; priority?: boolean }) {
   const align = card.alignment ? ALIGN[card.alignment] : undefined;
-  const type = card.type === "spell" ? (locale === "it" ? "Magia" : "Spell") : card.type === "token" ? (locale === "it" ? "Creata" : "Token") : locale === "it" ? "Unità" : "Unit";
+  const type = (TYPE_LABEL[locale] ?? TYPE_LABEL.en)[card.type === "spell" ? "spell" : card.type === "token" ? "token" : "unit"];
   return (
     <article className={`game-card ${card.legendary ? "is-legendary" : ""} ${className}`}>
       <div className="gc-window" style={card.art ? undefined : { background: sagaHue[card.saga] ?? sagaHue.other }}>

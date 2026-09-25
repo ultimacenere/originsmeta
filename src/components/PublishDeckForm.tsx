@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Dictionary } from "@/lib/i18n";
+import { localeNames, locales, type Dictionary } from "@/lib/i18n";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
@@ -366,10 +366,17 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           </label>
           <label className="block">
             <span className="kicker text-pale-muted">{labels.guideLang}</span>
-            <select id="pub-lang" name="lang" defaultValue={v("lang", g?.lang ?? locale)} className={inputCls}>
-              <option value="en">English</option>
-              <option value="it">Italiano</option>
+            <select id="pub-lang" name="lang" defaultValue={v("lang", g?.lang ?? locale)} className={inputCls} aria-describedby="pub-lang-hint">
+              {locales.map((l) => (
+                <option key={l} value={l}>
+                  {localeNames[l]}
+                </option>
+              ))}
             </select>
+            {/* la guida si scrive in una lingua sola: le altre le fa il sito (traduzione automatica, 25/09/2026) */}
+            <span id="pub-lang-hint" className="mt-1 block text-xs text-pale-muted">
+              {labels.guideLangHint}
+            </span>
           </label>
           <fieldset className="block sm:col-span-2">
             <legend className="kicker text-pale-muted">{labels.deckType}</legend>

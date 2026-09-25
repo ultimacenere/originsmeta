@@ -1,4 +1,5 @@
 import { getCard } from "@/lib/data/cards";
+import { isLocale } from "@/lib/i18n";
 import { RULES, type BuilderCard, type DeckState } from "@/lib/deckrules";
 import { guideSections, type Guide, type GuideLang, type Profile } from "./types";
 
@@ -80,8 +81,8 @@ export function parseGuide(fd: FormData, fallbackLang: GuideLang): { ok: true; g
       .replace(/\r\n/g, "\n")
       .trim()
       .slice(0, max);
-  const rawLang = fd.get("lang");
-  const lang: GuideLang = rawLang === "en" || rawLang === "it" ? rawLang : fallbackLang;
+  const rawLang = String(fd.get("lang") ?? "");
+  const lang: GuideLang = isLocale(rawLang) ? rawLang : fallbackLang;
   const summary = str("summary", LIMITS.summaryMax);
   if (summary.length < LIMITS.summaryMin) return { ok: false, code: "summary" };
   const guide: Guide = { lang, summary };

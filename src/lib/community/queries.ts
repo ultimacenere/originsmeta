@@ -1,5 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Profile } from "./types";
+import { locales, type Locale } from "@/lib/i18n";
+import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Guide, type Profile } from "./types";
+import { guideLocales, type DeckTranslations } from "./deckTranslation";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -14,6 +16,24 @@ const PUBLISHED = "published";
 
 const DECK_SELECT =
   "id, slug, owner, name, legendary, cards, custom_cards, archetype, deck_types, video_url, guide, code_om, status, created_at, updated_at, profile:profiles!community_decks_owner_fkey(username, display_name, avatar_url, badge)";
+
+/*
+ * Traduzioni automatiche delle guide (colonna `translations`, 25/09/2026). Finché la migrazione non è applicata
+ * la colonna non esiste e PostgREST risponde 42703: allora si rifà la lettura senza, una volta per istanza, così
+ * il sito non resta senza mazzi se il codice arriva online prima dello schema.
+ */
+let hasTranslations = true;
+type ReadResult = { data: unknown; error: { code?: string; message: string } | null };
+
+async function readWithTranslations(base: string, run: (select: string) => PromiseLike<ReadResult>): Promise<ReadResult> {
+  const res = await run(hasTranslations ? `${base}, translations` : base);
+  if (res.error && hasTranslations && (res.error.code === "42703" || res.error.message.includes("translations"))) {
+    hasTranslations = false;
+    console.error("[community] manca la colonna community_decks.translations: va applicato supabase/schema.sql");
+    return run(base);
+  }
+  return res;
+}
 
 async function withRatings(client: Db, decks: CommunityDeck[]): Promise<CommunityDeck[]> {
   if (!decks.length) return decks;
@@ -33,7 +53,9 @@ async function withRatings(client: Db, decks: CommunityDeck[]): Promise<Communit
 export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("community_decks").select(DECK_SELECT).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) =>
+    client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+  );
   if (error) console.error("[community] listPublishedDecks:", error.message);
   if (error || !data) return [];
   return withRatings(client, data as unknown as CommunityDeck[]);
@@ -42,7 +64,7 @@ export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> 
 export async function getCommunityDeck(slug: string): Promise<CommunityDeck | null> {
   const client = supabasePublic();
   if (!client) return null;
-  const { data, error } = await client.from("community_decks").select(DECK_SELECT).eq("slug", slug).eq("status", PUBLISHED).maybeSingle();
+  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("slug", slug).eq("status", PUBLISHED).maybeSingle());
   if (error || !data) return null;
   const [deck] = await withRatings(client, [data as unknown as CommunityDeck]);
   return deck;
@@ -50,7 +72,7 @@ export async function getCommunityDeck(slug: string): Promise<CommunityDeck | nu
 
 /** Tutti i mazzi di un utente, anche nascosti e privati (draft): richiede il client con la sessione dell'utente. */
 export async function listUserDecks(client: Db, userId: string): Promise<CommunityDeck[]> {
-  const { data, error } = await client.from("community_decks").select(DECK_SELECT).eq("owner", userId).order("updated_at", { ascending: false });
+  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("owner", userId).order("updated_at", { ascending: false }));
   if (error || !data) return [];
   return withRatings(client, data as unknown as CommunityDeck[]);
 }
@@ -86,13 +108,9 @@ export async function getProfileByUsername(username: string): Promise<(Profile &
 export async function listDecksByOwner(userId: string, limit = 50): Promise<CommunityDeck[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client
-    .from("community_decks")
-    .select(DECK_SELECT)
-    .eq("owner", userId)
-    .eq("status", PUBLISHED)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) =>
+    client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+  );
   if (error || !data) return [];
   return withRatings(client, data as unknown as CommunityDeck[]);
 }
@@ -116,11 +134,17 @@ export async function listPublicProfiles(): Promise<{ username: string; updated_
   return Array.from(seen, ([username, updated_at]) => ({ username, updated_at }));
 }
 
-/** Slug dei mazzi pubblicati (per la sitemap). */
-export async function listPublishedSlugs(): Promise<{ slug: string; updated_at: string }[]> {
+/**
+ * Slug dei mazzi pubblicati (per la sitemap), con le lingue in cui la guida si legge davvero: quella dell'autore
+ * più le traduzioni aggiornate (25/09/2026). Le altre versioni della pagina sono noindex e fuori dalla sitemap.
+ */
+export async function listPublishedSlugs(): Promise<{ slug: string; updated_at: string; locales: Locale[] }[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("community_decks").select("slug, updated_at").eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(1000);
+  const { data, error } = await readWithTranslations("slug, updated_at, guide", (sel) =>
+    client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(1000),
+  );
   if (error) console.error("[community] listPublishedSlugs:", error.message);
-  return (data ?? []) as { slug: string; updated_at: string }[];
+  const rows = (data ?? []) as { slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }[];
+  return rows.map((r) => ({ slug: r.slug, updated_at: r.updated_at, locales: guideLocales(r, locales) }));
 }

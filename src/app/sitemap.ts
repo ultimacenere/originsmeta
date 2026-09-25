@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { defaultLocale, locales, siteUrl, href } from "@/lib/i18n";
+import { defaultLocale, locales, siteUrl, href, type Locale } from "@/lib/i18n";
 import { cards, cardsVerified, latestPatch, patches } from "@/lib/data/cards";
 import { decks } from "@/lib/data/decks";
 import { newsPath, sortedNews } from "@/lib/data/news";
@@ -20,7 +20,8 @@ const TIER_REDESIGN = "2026-09-24";
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
 
-type Entry = { path: string; lastModified: string; changeFrequency: "daily" | "weekly" | "monthly"; priority: number };
+/** `locales`: solo quando la pagina non esiste in tutte le lingue (mazzi della community senza traduzione). */
+type Entry = { path: string; lastModified: string; changeFrequency: "daily" | "weekly" | "monthly"; priority: number; locales?: readonly Locale[] };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestNews = sortedNews[0]?.date ?? SITE_UPDATED;
@@ -69,7 +70,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guides.map((g) => ({ path: `/guides/${g.slug}`, lastModified: g.updated, changeFrequency: "weekly" as const, priority: 0.8 })),
     // Ogni news ha la sua pagina dal 21/09/2026: data dell'ultima revisione, altrimenti quella di pubblicazione.
     ...sortedNews.map((n) => ({ path: newsPath(n), lastModified: n.updated ?? n.date, changeFrequency: "monthly" as const, priority: 0.7 })),
-    ...community.map((c) => ({ path: `/decks/community/${c.slug}`, lastModified: c.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.6 })),
+    // Solo le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate, 25/09/2026): le altre
+    // versioni della scheda sono noindex finché la traduzione non c'è.
+    ...community.map((c) => ({ path: `/decks/community/${c.slug}`, lastModified: c.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.6, locales: c.locales })),
     // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026)
     ...profiles.map((p) => ({ path: `/u/${p.username}`, lastModified: p.updated_at.slice(0, 10), changeFrequency: "weekly" as const, priority: 0.4 })),
     ...tournaments.map((t) => ({ path: `/tournaments/${t.slug}`, lastModified: t.updated_at.slice(0, 10), changeFrequency: "daily" as const, priority: 0.6 })),
@@ -77,11 +80,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const out: MetadataRoute.Sitemap = [];
   for (const e of entries) {
-    for (const l of locales) {
+    const langs = e.locales?.length ? locales.filter((l) => e.locales?.includes(l)) : locales;
+    for (const l of langs) {
       const languages: Record<string, string> = {};
-      for (const ll of locales) languages[ll] = `${siteUrl}${href(ll, e.path)}`;
+      for (const ll of langs) languages[ll] = `${siteUrl}${href(ll, e.path)}`;
       // x-default: la stessa riga che l'HTML dichiara in alternatesFor(), così i due segnali coincidono.
-      languages["x-default"] = `${siteUrl}${href(defaultLocale, e.path)}`;
+      languages["x-default"] = `${siteUrl}${href(langs.includes(defaultLocale) ? defaultLocale : langs[0], e.path)}`;
       out.push({
         url: `${siteUrl}${href(l, e.path)}`,
         lastModified: new Date(`${e.lastModified}T12:00:00Z`),

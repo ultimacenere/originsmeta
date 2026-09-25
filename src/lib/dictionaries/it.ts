@@ -6,7 +6,7 @@ export const it: Dictionary = {
     tagline: "Il meta, sul tavolo.",
     homeTitle: "Origins TCG: tier list, mazzi, carte e news · OriginsMeta",
     description:
-      "Sito non ufficiale su Origins TCG: news, tier list, guide, database carte, mazzi e calendario tornei. In italiano e inglese.",
+      "Sito non ufficiale su Origins TCG: news, tier list, guide, database carte, mazzi e calendario tornei. In italiano, inglese e spagnolo.",
   },
   nav: {
     news: "News",
@@ -225,7 +225,7 @@ export const it: Dictionary = {
   },
   cards: {
     title: "Database carte di Origins TCG",
-    intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese e italiano, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
+    intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese con le traduzioni in italiano e spagnolo, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
     description: "Tutte le carte di Origins TCG della Demo 2.0 in un database cercabile: filtri per tipo, saga e rarità, testo ufficiale, statistiche e bilanciamenti.",
     /* segnaposto della ricerca: si cerca anche nel testo della carta (24/09/2026) */
     searchHint: "Nome o testo: Merlin, On Reveal…",
@@ -234,7 +234,7 @@ export const it: Dictionary = {
     countRemoved: "rimosse nelle build precedenti",
     legendNote: "Le carte Leggendarie guidano il mazzo: una per mazzo, segnate con la stella. Le saghe sono una classificazione di OriginsMeta per leggenda d'origine; il gioco non le espone.",
     sourceBefore: "Dati carte dal database community",
-    sourceAfter: "; testi delle carte © Koin Games. Saghe, note sulle origini e traduzioni italiane sono di OriginsMeta.",
+    sourceAfter: "; testi delle carte © Koin Games. Saghe, note sulle origini e traduzioni in italiano e spagnolo sono di OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta da collezione",
     changesTitle: "Storico bilanciamenti",
@@ -512,20 +512,20 @@ export const it: Dictionary = {
     deckListNote: "1 Leggendaria + 12 carte base × 2 = 25 carte",
     /* riquadro "Mandaci la tua guida" in /guides (diretta Twitch del 23/09/2026) */
     submitTitle: "Hai scritto una guida?",
-    submitText: "Mandacela: la legge lo staff e, se è in linea con il sito, la pubblichiamo con la tua firma, in italiano e in inglese.",
+    submitText: "Mandacela: la legge lo staff e, se è in linea con il sito, la pubblichiamo con la tua firma, in italiano, inglese e spagnolo.",
     submitCta: "Mandaci la tua guida",
   },
   /* modulo "Mandaci la tua guida" (/guides/submit): la guida arriva nel canale Discord privato dello staff */
   guideSubmit: {
     title: "Mandaci la tua guida",
     description: "Hai scritto una guida a un mazzo o a una meccanica di Origins TCG? Mandala a OriginsMeta: la legge lo staff e le migliori escono con la tua firma.",
-    intro: "Una guida a un mazzo, a una Leggendaria, a una meccanica o a come salire in classificata: se l'hai scritta tu, mandacela. La legge lo staff e, se è in linea con il sito, la sistemiamo, la traduciamo e la pubblichiamo in italiano e in inglese con la tua firma.",
+    intro: "Una guida a un mazzo, a una Leggendaria, a una meccanica o a come salire in classificata: se l'hai scritta tu, mandacela. La legge lo staff e, se è in linea con il sito, la sistemiamo, la traduciamo e la pubblichiamo in italiano, inglese e spagnolo con la tua firma.",
     form: {
       titleLabel: "Titolo della guida",
       titlePlaceholder: "Es. Dorothy Combo: come si gioca e contro chi",
       textLabel: "La guida",
       textPlaceholder: "Piano di gioco, mulligan, combo, matchup, errori da evitare…",
-      textHint: "Da {min} a {max} caratteri, in italiano o in inglese. Testo semplice: gli a capo restano, la formattazione no. Se la guida è in un documento o in un video bastano il link e due righe di presentazione.",
+      textHint: "Da {min} a {max} caratteri, in italiano, inglese o spagnolo. Testo semplice: gli a capo restano, la formattazione no. Se la guida è in un documento o in un video bastano il link e due righe di presentazione.",
       draftNote: "La bozza si salva da sola in questo browser finché non la invii.",
       linkLabel: "Link (facoltativo)",
       linkPlaceholder: "https://…",
@@ -601,8 +601,8 @@ export const it: Dictionary = {
   about: {
     title: "Chi siamo: OriginsMeta, sito non ufficiale su Origins TCG",
     description:
-      "OriginsMeta è un sito indipendente su Origins TCG in italiano e inglese: news, carte, mazzi e tornei, da Steam, dalle patch notes e dal Discord.",
-    p1: "OriginsMeta è un sito indipendente dedicato a Origins TCG, il gioco di carte collezionabili free-to-compete di Koin Games. Seguiamo news, patch, carte, mazzi e tornei, in italiano e inglese.",
+      "OriginsMeta è un sito indipendente su Origins TCG in italiano, inglese e spagnolo: news, carte, mazzi e tornei, da Steam, dalle patch notes e dal Discord.",
+    p1: "OriginsMeta è un sito indipendente dedicato a Origins TCG, il gioco di carte collezionabili free-to-compete di Koin Games. Seguiamo news, patch, carte, mazzi e tornei, in italiano, inglese e spagnolo.",
     p2: "Siamo giocatori, non l'editore. Nomi delle carte, illustrazioni e dati di gioco appartengono a Koin Games; li citiamo a scopo informativo e di commento. I nostri numeri vengono dalla pagina Steam ufficiale, dalle patch notes su Steam e dal Discord ufficiale, e ogni pagina dice quando è stata aggiornata.",
     p3: "Il sito è nato a settembre 2026, durante la demo Steam, perché l'archivio sia completo dal primo giorno quando aprirà l'early access.",
     contactTitle: "Contatti",
@@ -692,7 +692,7 @@ export const it: Dictionary = {
   },
   footer: {
     disclaimer: "OriginsMeta è un progetto indipendente e non ufficiale, non affiliato a Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
-    built: "Costruito al tavolo, in due lingue.",
+    built: "Costruito al tavolo, in tre lingue.",
     links: "Link",
     official: "Ufficiali",
     legal: "Note legali",
@@ -868,6 +868,7 @@ export const it: Dictionary = {
     name: "Nome del mazzo",
     archetype: "Archetipo",
     guideLang: "Lingua della guida",
+    guideLangHint: "Scrivi nella lingua che preferisci: il sito traduce da solo la tua guida nelle altre sue lingue.",
     deckType: "Tipo di mazzo",
     deckTypeHint: "Puoi sceglierne più di uno.",
     deckTypes: { ladder: "Ladder", competitive: "Competitivo", fun: "Fun", tournament: "Torneo" },
@@ -933,8 +934,12 @@ export const it: Dictionary = {
       openTierList: "Apri nello strumento",
     },
     kicker: "Mazzo di Origins",
-    guideLangNote: "Questa guida è stata scritta dall'autore in {lang} e viene mostrata così com'è: il sito non traduce i testi della community.",
-    langNames: { en: "inglese", it: "italiano" },
+    guideLangNote: "Questa guida è stata scritta dall'autore in {lang} e viene mostrata così com'è: la traduzione automatica non è ancora pronta.",
+    langNames: { en: "inglese", it: "italiano", es: "spagnolo" },
+    /** "da <lingua>", dopo "Tradotta automaticamente" */
+    langFrom: { en: "dall'inglese", it: "dall'italiano", es: "dallo spagnolo" },
+    translatedNote: "Tradotta automaticamente {from}: i nomi delle carte e le parole chiave restano in inglese, come nel gioco.",
+    originalText: "Testo originale dell'autore ({lang})",
     metaTail: "Lista completa, grafici e codice del gioco su OriginsMeta.",
     by: "di",
     rating: "Valutazione",

@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Dictionary } from "@/lib/i18n";
+import { localeNames, locales, type Dictionary, type Locale } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, bestOfLabel, fill, type DeckMode, type Visibility } from "@/lib/tournament/types";
 import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
@@ -23,7 +23,7 @@ export type TournamentInitial = {
   conquest_decks: number;
   conquest_min_different: number;
   best_of: number;
-  lang: "en" | "it";
+  lang: Locale;
   description: string;
   rules: string;
   discord_url: string | null;
@@ -32,7 +32,7 @@ export type TournamentInitial = {
 };
 
 type Props = {
-  locale: "en" | "it";
+  locale: Locale;
   userId: string;
   /** Influencer, Pro, Staff o admin: possono pubblicare sul calendario e caricare una copertina propria */
   canList: boolean;
@@ -374,8 +374,11 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             <label className="block text-sm">
               <span className="kicker text-mint">{c.lang}</span>
               <select name="lang" defaultValue={initial?.lang ?? locale} className={inputCls}>
-                <option value="en">English</option>
-                <option value="it">Italiano</option>
+                {locales.map((l) => (
+                  <option key={l} value={l}>
+                    {localeNames[l]}
+                  </option>
+                ))}
               </select>
             </label>
           </div>

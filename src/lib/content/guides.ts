@@ -1,4 +1,5 @@
 import type { Locale } from "../i18n";
+import { esText } from "./guides-es";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
 
@@ -135,7 +136,7 @@ You cannot choose the board, but you can build a deck that is rarely helpless on
 
 ## What we still want to check
 
-This list is trascribed from the community database and matches the Demo 2.0 rotation. We have not yet gone through the locations one by one inside the game, as we did with the 122 cards on 22 September 2026: when we do, the [locations page](/en/locations) will say so, with the date and the count.
+This list is transcribed from the community database and matches the Demo 2.0 rotation. We have not yet gone through the locations one by one inside the game, as we did with the 122 cards on 22 September 2026: when we do, the [locations page](/en/locations) will say so, with the date and the count.
 `,
   },
   "on-reveal-midrange-guide": {
@@ -2208,7 +2209,16 @@ Fonti: [pagina ufficiale di pre-registrazione](https://founder.origins-tcg.com),
   },
 };
 
-const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it };
+/** I testi di una guida, senza i dati che non cambiano con la lingua: le traduzioni nuove (guides-es.ts) portano solo questi. */
+export type GuideCopy = Pick<Guide, "title" | "excerpt" | "body"> & Partial<Pick<Guide, "metaTitle" | "faq">>;
+
+/**
+ * Spagnolo (25/09/2026): i testi di guides-es.ts sopra i dati della versione inglese (categoria, carte, lista del mazzo,
+ * copertina, data, tempo di lettura), così quei dati restano scritti una volta sola.
+ */
+const es = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...esText[s] }])) as Record<GuideSlug, Guide>;
+
+const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es };
 
 export function getGuides(locale: Locale): Guide[] {
   return guideSlugs.map((s) => all[locale][s]);

@@ -2,7 +2,7 @@ import { after } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database";
 import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
-import { siteUrl } from "@/lib/i18n";
+import { siteUrl, type Locale } from "@/lib/i18n";
 import { roundLabel, standings } from "./bracket";
 import { tournamentShortLink } from "./types";
 
@@ -41,6 +41,10 @@ const DISCORD_MAX = 2000;
 /** Abbinamenti mostrati al massimo nel messaggio di avvio (poi "+N"), per restare sotto il limite. */
 const MAX_PAIRINGS = 16;
 
+/**
+ * Lingue dei messaggi del nostro Discord: italiano e inglese. Un torneo in spagnolo (dal 25/09/2026) scrive in
+ * inglese per primo, come uno inglese; il link porta comunque alla sua pagina spagnola.
+ */
 type Lang = "en" | "it";
 
 function webhookUrl(): string | null {
@@ -64,7 +68,7 @@ function freshClient() {
 }
 type Client = NonNullable<ReturnType<typeof freshClient>>;
 
-type TInfo = { id: string; slug: string; tag: string; name: string; lang: Lang; status: string; visibility: string };
+type TInfo = { id: string; slug: string; tag: string; name: string; lang: Locale; status: string; visibility: string };
 type MInfo = { id: string; tournament_id: string; round: number; position: number; player_a: string | null; player_b: string | null; winner: string | null; score_a: number | null; score_b: number | null; status: string; forfeit: boolean };
 
 const MATCH_FIELDS = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, forfeit";
@@ -118,7 +122,7 @@ function pageUrl(t: TInfo): string {
 }
 
 /** Le due lingue, prima quella del torneo. */
-function bilingual(lang: Lang, en: string, it: string): string[] {
+function bilingual(lang: Locale, en: string, it: string): string[] {
   return lang === "it" ? [`IT · ${it}`, `EN · ${en}`] : [`EN · ${en}`, `IT · ${it}`];
 }
 

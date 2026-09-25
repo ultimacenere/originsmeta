@@ -11,6 +11,7 @@ import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { publishedDeckLimit } from "./queries";
 import { announceDeck } from "./discordDeck";
+import { translateDeckLater } from "./translate";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
@@ -88,15 +89,17 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
     const { data, error } = await p.supabase
       .from("community_decks")
       .insert({ ...p.row, slug, owner: p.user.id, status: "published" })
-      .select("slug")
+      .select("id, slug")
       .single();
     if (!error && data) {
-      const s = (data as { slug: string }).slug;
+      const { id, slug: s } = data as { id: string; slug: string };
       // solo una riga dell'utente e solo se è ancora privata: un id qualunque non cancella niente
       if (isUuid(draftId)) await p.supabase.from("community_decks").delete().eq("id", draftId).eq("owner", p.user.id).eq("status", "draft");
       revalidateDeckPaths(s);
       // in diretta nel canale #community-decks del nostro Discord, dopo la risposta (senza webhook non fa nulla)
       announceDeck(s);
+      // la guida si traduce nelle altre lingue del sito, dopo la risposta (senza ANTHROPIC_API_KEY non fa nulla)
+      translateDeckLater(p.supabase, id);
       return { ok: true, href: `/${p.locale}/decks/community/${s}?new=1` };
     }
     if (error?.code !== "23505") return { error: "db" };
@@ -215,6 +218,8 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if (!data) return { error: "forbidden" };
   const s = (data as { slug: string }).slug;
   revalidateDeckPaths(s);
+  // guida cambiata: le traduzioni fatte sul testo vecchio non valgono più e si rifanno (solo le lingue rimaste indietro)
+  translateDeckLater(p.supabase, id);
   return { ok: true, href: `/${p.locale}/decks/community/${s}` };
 }
 
@@ -230,6 +235,8 @@ export async function setDeckStatus(formData: FormData): Promise<void> {
   const status = formData.get("status") === "hidden" ? "hidden" : "published";
   const { data } = await supabase.from("community_decks").update({ status }).eq("id", id).neq("status", "draft").select("slug").maybeSingle();
   revalidateDeckPaths((data as { slug: string } | null)?.slug);
+  // un mazzo rimesso online recupera le traduzioni che gli mancano (per esempio se era nascosto prima del 25/09/2026)
+  if (data && status === "published" && isUuid(id)) translateDeckLater(supabase, id);
   redirect(`/${locale}/account`);
 }
 

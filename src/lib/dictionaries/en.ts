@@ -4,7 +4,7 @@ export const en = {
     tagline: "The meta, on the table.",
     homeTitle: "Origins TCG tier list, decks, cards and news · OriginsMeta",
     description:
-      "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English and Italian.",
+      "Unofficial Origins TCG companion: news, tier list, guides, card database, decks and tournament calendar. In English, Italian and Spanish.",
   },
   nav: {
     news: "News",
@@ -223,7 +223,7 @@ export const en = {
   },
   cards: {
     title: "Origins TCG card database",
-    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English and Italian, balance history and the legend each card comes from.",
+    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official English text with Italian and Spanish translations, balance history and the legend each card comes from.",
     description: "Every Origins TCG card from Demo 2.0 in one searchable database: filter by type, saga, alignment and rarity, with official text, stats and balance history.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
@@ -232,7 +232,7 @@ export const en = {
     countRemoved: "removed in earlier builds",
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     sourceBefore: "Card data from the community database",
-    sourceAfter: "; card text © Koin Games. Sagas, origin notes and Italian translations are by OriginsMeta.",
+    sourceAfter: "; card text © Koin Games. Sagas, origin notes and the Italian and Spanish translations are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",
@@ -510,20 +510,20 @@ export const en = {
     deckListNote: "1 Legendary + 12 base cards × 2 = 25 cards",
     /* "Send us your guide" box on /guides (Twitch live of 23/09/2026) */
     submitTitle: "Wrote a guide?",
-    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in English and Italian.",
+    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in English, Italian and Spanish.",
     submitCta: "Send us your guide",
   },
   /* "Send us your guide" form (/guides/submit): the guide reaches the staff's private Discord channel */
   guideSubmit: {
     title: "Send us your guide",
     description: "Wrote a guide to an Origins TCG deck or mechanic? Send it to OriginsMeta: the staff reads every one and publishes the best under your name.",
-    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in English and Italian under your name.",
+    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in English, Italian and Spanish under your name.",
     form: {
       titleLabel: "Guide title",
       titlePlaceholder: "E.g. Dorothy Combo: how to play it and against whom",
       textLabel: "Your guide",
       textPlaceholder: "Game plan, mulligan, combos, matchups, mistakes to avoid…",
-      textHint: "{min} to {max} characters, in English or Italian. Plain text: line breaks stay, formatting doesn't. If the guide lives in a document or a video, the link and a couple of lines to introduce it are enough.",
+      textHint: "{min} to {max} characters, in English, Italian or Spanish. Plain text: line breaks stay, formatting doesn't. If the guide lives in a document or a video, the link and a couple of lines to introduce it are enough.",
       draftNote: "Your draft saves itself in this browser until you send it.",
       linkLabel: "Link (optional)",
       linkPlaceholder: "https://…",
@@ -599,8 +599,8 @@ export const en = {
   about: {
     title: "About OriginsMeta, the unofficial Origins TCG site",
     description:
-      "OriginsMeta is an independent Origins TCG site in English and Italian: news, cards, decks and tournaments, from Steam, the patch notes and Discord.",
-    p1: "OriginsMeta is an independent companion site for Origins TCG, the free-to-compete trading card game by Koin Games. We track news, patches, cards, decks and tournaments, in English and Italian.",
+      "OriginsMeta is an independent Origins TCG site in English, Italian and Spanish: news, cards, decks and tournaments, from Steam, the patch notes and Discord.",
+    p1: "OriginsMeta is an independent companion site for Origins TCG, the free-to-compete trading card game by Koin Games. We track news, patches, cards, decks and tournaments, in English, Italian and Spanish.",
     p2: "We are players, not the publisher. Card names, artwork and game data belong to Koin Games; we quote them for information and commentary. Our numbers come from the official Steam page, the Steam patch notes and the official Discord, and every page says when it was last updated.",
     p3: "The site launched in September 2026, during the Steam demo, so that the archive is complete from day one when early access opens.",
     contactTitle: "Contact",
@@ -690,7 +690,7 @@ export const en = {
   },
   footer: {
     disclaimer: "OriginsMeta is an independent, unofficial project and is not affiliated with Koin Games. Origins TCG and all related names and artwork belong to their owners.",
-    built: "Built at the table, in two languages.",
+    built: "Built at the table, in three languages.",
     links: "Links",
     official: "Official",
     legal: "Legal",
@@ -866,6 +866,7 @@ export const en = {
     name: "Deck name",
     archetype: "Archetype",
     guideLang: "Guide language",
+    guideLangHint: "Write in the language you prefer: the site translates your guide into its other languages on its own.",
     deckType: "Deck type",
     deckTypeHint: "You can pick more than one.",
     deckTypes: { ladder: "Ladder", competitive: "Competitive", fun: "Fun", tournament: "Tournament" },
@@ -931,8 +932,12 @@ export const en = {
       openTierList: "Open in the maker",
     },
     kicker: "Origins deck",
-    guideLangNote: "This guide was written by its author in {lang} and is shown as written: the site does not translate community texts.",
-    langNames: { en: "English", it: "Italian" },
+    guideLangNote: "This guide was written by its author in {lang} and is shown as written: the automatic translation is not ready yet.",
+    langNames: { en: "English", it: "Italian", es: "Spanish" },
+    /** "from <language>", after "Translated automatically" */
+    langFrom: { en: "from English", it: "from Italian", es: "from Spanish" },
+    translatedNote: "Translated automatically {from}: card names and game keywords stay in English, as in the game.",
+    originalText: "Original text by the author ({lang})",
     metaTail: "Full list, charts and the game's deck code on OriginsMeta.",
     by: "by",
     rating: "Rating",

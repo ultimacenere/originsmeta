@@ -14,6 +14,8 @@ import { loginLabels } from "@/lib/loginLabels";
 type Params = Promise<{ locale: string; slug: string }>;
 
 export const dynamic = "force-dynamic";
+/** Dopo una modifica la guida si ritraduce dentro `after()`: la funzione deve vivere abbastanza (vedi /decks/publish). */
+export const maxDuration = 120;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;

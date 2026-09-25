@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, href, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
+import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
@@ -11,6 +11,7 @@ import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
+import { guideLocales, localizedGuide } from "@/lib/community/deckTranslation";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
 import { CardArt, DeckCardGrid } from "@/components/CardChip";
@@ -52,8 +53,8 @@ function legendaryName(deck: CommunityDeck): string | undefined {
 /**
  * Descrizione del mazzo nella lingua della pagina. Prima era un taglio grezzo del testo dell'autore: su /en
  * usciva in italiano, spezzata a metà parola e a volte con un trattino di elenco in testa. Qui la costruiamo
- * con le etichette del dizionario e i dati del mazzo; il testo dell'autore si aggiunge in coda solo quando è
- * scritto nella lingua della pagina, perché il sito non traduce i testi della community.
+ * con le etichette del dizionario e i dati del mazzo; il riassunto della guida si aggiunge in coda solo quando
+ * si legge nella lingua della pagina: scritto così dall'autore o tradotto dal sito (dal 25/09/2026).
  * La usano sia i metadati sia il JSON-LD, così dicono la stessa cosa.
  */
 function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, max: number = DESCRIPTION_MAX): string {
@@ -65,10 +66,11 @@ function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, 
   ]
     .filter(Boolean)
     .join(". ");
-  const own = deck.guide.lang === locale ? cleanDescription(deck.guide.summary, max) : "";
+  const view = localizedGuide(deck, locale);
+  const own = view.lang === locale ? cleanDescription(view.text.summary, max) : "";
   const text = cleanDescription(own ? `${facts}. ${own}` : `${facts}.`, max);
-  // Senza il testo dell'autore (guida scritta nell'altra lingua) restano i soli fatti, una novantina
-  // di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina.
+  // Senza il riassunto (guida in un'altra lingua, traduzione non ancora pronta) restano i soli fatti, una
+  // novantina di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina.
   return text.length < 120 ? cleanDescription(`${text} ${dict.community.metaTail}`, max) : text;
 }
 
@@ -82,7 +84,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const star = legendaryName(deck);
   // Le copertine in public/cards/cover sono 1200×675: lo dichiariamo perché l'anteprima social non venga ritagliata a caso.
   const art: PageMetaOptions = cover ? { imageSize: { width: 1200, height: 675 }, imageAlt: star ? `${star} · ${deck.name}` : deck.name } : {};
-  return pageMeta(locale, `/decks/community/${deck.slug}`, pageTitleWith(deck.name, dict.community.kicker), deckDescription(deck, locale, dict), cover, art);
+  // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
+  // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
+  const langs = guideLocales(deck, locales);
+  return pageMeta(locale, `/decks/community/${deck.slug}`, pageTitleWith(deck.name, dict.community.kicker), deckDescription(deck, locale, dict), cover, {
+    ...art,
+    languages: langs,
+    noindex: !langs.includes(locale),
+  });
 }
 
 export default async function CommunityDeckPage({ params }: { params: Params }) {
@@ -109,7 +118,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
   // Codice del gioco (KGBLDC…), l'unico da copiare (note del 22/09/2026): null se una carta non ha l'ID ufficiale.
   const gameCode = await deckGameCode(deck);
-  const sections = guideSections.filter((k) => deck.guide[k]);
+  // La guida nella lingua della pagina: la traduzione del sito quando è aggiornata, altrimenti l'originale.
+  const view = localizedGuide(deck, locale);
+  const sections = guideSections.filter((k) => view.text[k]);
+  const langName = c.langNames[deck.guide.lang] ?? deck.guide.lang;
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
 
@@ -208,18 +220,33 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           ) : customLegendary ? (
             <span className="stat-pill bg-gold text-ink">★ {customLegendary.name}</span>
           ) : null}
-          <span className="stat-pill bg-night-3 text-pale font-mono">{deck.guide.lang.toUpperCase()}</span>
+          {/* lingua dell'autore, e quella della traduzione quando la pagina ne mostra una */}
+          <span className="stat-pill bg-night-3 text-pale font-mono">
+            {view.translated ? `${deck.guide.lang.toUpperCase()} → ${locale.toUpperCase()}` : deck.guide.lang.toUpperCase()}
+          </span>
         </div>
 
-        {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas) */}
-        {deck.guide.lang !== locale ? (
-          /* la guida è nella lingua dell'autore: il sito non traduce i testi della community (nota per chi cambia lingua) */
-          <p className="mt-6 rounded-lg border-2 border-gold bg-gold/10 p-3 text-xs text-pale">{c.guideLangNote.replace("{lang}", c.langNames[deck.guide.lang] ?? deck.guide.lang)}</p>
+        {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas).
+            Dal 25/09/2026 il sito traduce le guide (deckTranslation.ts): la pagina mostra la traduzione nella sua lingua,
+            dice che è automatica e porta all'originale, che sta nella versione della pagina nella lingua dell'autore.
+            L'originale non si incorpora qui (nemmeno chiuso in un <details>): Google chiede una sola lingua per pagina
+            e di evitare le traduzioni affiancate (Search Central, "Managing multi-regional and multilingual sites"). */}
+        {view.translated ? (
+          <p className="mt-6 rounded-lg border-2 border-sky bg-sky/10 p-3 text-xs text-pale">
+            {c.translatedNote.replace("{from}", c.langFrom[deck.guide.lang] ?? deck.guide.lang)}{" "}
+            <Link href={href(deck.guide.lang, `/decks/community/${deck.slug}`)} hrefLang={deck.guide.lang} className="font-semibold text-mint underline-offset-2 hover:underline">
+              {c.originalText.replace("{lang}", langName)} →
+            </Link>
+          </p>
+        ) : deck.guide.lang !== locale ? (
+          /* guida nella lingua dell'autore: la traduzione automatica non è ancora arrivata (la pagina intanto è noindex) */
+          <p className="mt-6 rounded-lg border-2 border-gold bg-gold/10 p-3 text-xs text-pale">{c.guideLangNote.replace("{lang}", langName)}</p>
         ) : null}
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
           <p className="kicker text-mint">{c.summary}</p>
-          <p className="mt-2 whitespace-pre-line text-lg text-pale">
-            <CardMentions text={deck.guide.summary} locale={locale} dict={d} id="cm-summary" />
+          {/* lang: la lingua del testo mostrato (quella della pagina se tradotto, dell'autore se la traduzione manca) */}
+          <p className="mt-2 whitespace-pre-line text-lg text-pale" lang={view.lang}>
+            <CardMentions text={view.text.summary} locale={locale} dict={d} id="cm-summary" />
           </p>
         </div>
 
@@ -336,8 +363,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {sections.map((k) => (
                 <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
                   <h3 className={`kicker ${sectionStyle[k]?.title ?? "text-mint"}`}>{c[k]}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm text-pale">
-                    <CardMentions text={deck.guide[k] ?? ""} locale={locale} dict={d} id={`cm-${k}`} />
+                  <p className="mt-2 whitespace-pre-line text-sm text-pale" lang={view.lang}>
+                    <CardMentions text={view.text[k] ?? ""} locale={locale} dict={d} id={`cm-${k}`} />
                   </p>
                 </section>
               ))}
