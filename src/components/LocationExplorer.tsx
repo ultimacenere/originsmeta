@@ -16,6 +16,11 @@ export type ExplorerLocation = {
   slug: string;
   name: string;
   effect: string;
+  /**
+   * Effetto in inglese sulle pagine italiane e spagnole: gli effetti usano le parole chiave del gioco tradotte
+   * (Travolgere, Arrollar), ma chi cerca "Trample" deve trovare lo stesso il luogo, come nel database carte.
+   */
+  effectEn?: string;
   tags: string[];
   /** carte citate dall'effetto, già con nome e indirizzo nella lingua della pagina */
   cards: { slug: string; name: string; href: string }[];
@@ -42,7 +47,7 @@ export function LocationExplorer({ locations, tags, labels }: { locations: Explo
       if (tag !== "all" && !l.tags.includes(tag)) return false;
       if (!needle) return true;
       // si cerca nel nome e nell'effetto: chi cerca "mana" vuole i luoghi che parlano di mana, non solo quelli che si chiamano così
-      return l.name.toLowerCase().includes(needle) || l.effect.toLowerCase().includes(needle);
+      return l.name.toLowerCase().includes(needle) || l.effect.toLowerCase().includes(needle) || Boolean(l.effectEn?.toLowerCase().includes(needle));
     });
   }, [locations, q, tag]);
 

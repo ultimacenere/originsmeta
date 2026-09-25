@@ -27,6 +27,7 @@ export default async function LocationsPage({ params }: { params: LocaleParams }
     slug: l.slug,
     name: l.name,
     effect: l.effect[locale],
+    effectEn: locale !== "en" && l.effect.en !== l.effect[locale] ? l.effect.en : undefined,
     tags: l.tags,
     cards: (l.cards ?? []).flatMap((slug) => {
       const card = getCard(slug);

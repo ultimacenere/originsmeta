@@ -8,24 +8,23 @@ import { initials, sagaHue } from "@/lib/cardArt";
  * finestra d'arte ufficiale. La carta da collezione ufficiale, con la sua cornice e i crediti, resta `CardArt`.
  */
 
-/** Parole chiave del gioco: restano in inglese come nelle pill del sito, e vanno evidenziate nel testo. */
+/**
+ * Parole chiave del gioco da evidenziare nel testo. I testi italiani e spagnoli delle carte sono quelli ufficiali del
+ * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle tre lingue (glossario in `docs/testi-di-gioco.md`).
+ */
 const KEYWORDS = [
-  "On Reveal",
-  "On Death",
-  "Ongoing",
-  "Double Attack",
-  "Deathtouch",
-  "Defender",
-  "Discard",
-  "Rebirth",
-  "Shield",
-  "Snipe",
-  "Stun",
-  "Summon",
-  "Trample",
-  "Vanilla",
-  "Heal",
+  // inglese
+  ...["On Reveal", "On Death", "On Kill", "Ongoing", "First Strike", "Double Attack", "Deathtouch", "Defender", "Discard", "Rebirth"],
+  ...["Shield", "Snipe", "Stun", "Summon", "Trample", "Vanilla", "Heal"],
+  // italiano
+  ...["Alla rivelazione", "Alla morte", "All'uccisione", "Primo colpo", "Doppio attacco", "Tocco letale", "Difensore", "Rinascita"],
+  ...["Scudo", "Tiro di precisione", "Stordisci", "Travolgere"],
+  // spagnolo
+  ...["Al revelar", "Al morir", "Al matar", "Primer golpe", "Ataque doble", "Toque mortal", "Defensor", "Renacer", "Escudo"],
+  ...["Disparo certero", "Aturde", "Arrollar"],
 ];
+/** Le più lunghe prima: nell'alternativa della regex vince la prima che combacia. */
+const KEYWORD_PATTERN = [...KEYWORDS].sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
 
 /*
   Allineamento come pastiglia piena: prima era testo colorato su un velo del suo colore, e l'Evil in magenta sul
@@ -45,14 +44,14 @@ const ALIGN: Record<string, { label: string; bg: string; fg: string; ring: strin
  * Il testo viene dal nostro database (non da input degli utenti): niente HTML in ingresso, solo nodi React.
  */
 function formatAbility(text: string): React.ReactNode[] {
-  // danni e "qualsiasi" nelle tre lingue del testo: "3 damage", "3 danni", "3 de daño"; ANY, QUALSIASI, CUALQUIER
-  const pattern = new RegExp(`(${KEYWORDS.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|de daño)\\b|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bANY\\b)`, "g");
+  // danni e "qualsiasi" nelle tre lingue del testo: "3 damage", "3 danni", "1 danno", "3 de daño"; ANY, QUALSIASI, CUALQUIER
+  const pattern = new RegExp(`(${KEYWORD_PATTERN}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|danno|de daño)\\b|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bANY\\b)`, "g");
   return text.split(pattern).map((part, i) => {
     if (!part) return null;
     if (KEYWORDS.includes(part)) return <b key={i} className="gc-kw">{part}</b>;
     if (/⚔️$/.test(part)) return <b key={i} className="gc-atk">{part.replace("⚔️", "⚔")}</b>;
     if (/❤️$/.test(part)) return <b key={i} className="gc-hp">{part.replace("❤️", "♥")}</b>;
-    if (/^\d+ (damage|danni|de daño)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
+    if (/^\d+ (damage|danni|danno|de daño)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
     if (part === "QUALSIASI" || part === "CUALQUIER" || part === "ANY") return <b key={i} className="gc-any">{part}</b>;
     return <span key={i}>{part}</span>;
   });

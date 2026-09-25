@@ -18,9 +18,9 @@ import type { PatchId } from "./cards";
  * COME È FATTA UNA VOCE
  * - `slug`: chiave stabile, usata nell'indirizzo della pagina e nelle ancore.
  * - `name`: il nome ufficiale, in inglese come nel gioco (i nomi delle carte non si traducono).
- * - `effect`: il testo dell'effetto, in inglese e in italiano. Le parole chiave del gioco (On Reveal, Shield,
- *   Trample, Move, Deathtouch, Defender, Double Attack, On Death) restano in inglese anche in italiano, come nelle
- *   pastiglie del sito e nelle traduzioni delle carte in `card-lore.ts`.
+ * - `effect`: il testo dell'effetto in inglese, italiano e spagnolo. Italiano e spagnolo sono nostri ma usano il
+ *   glossario ufficiale del gioco, come i testi delle carte in `card-lore.ts` (Alla rivelazione / Al revelar,
+ *   Travolgere / Arrollar, Muovere / Mover, spazio / espacio…): vedi `docs/testi-di-gioco.md`.
  * - `tags`: come si comporta il luogo, per i filtri della pagina. Un luogo può averne più d'uno.
  * - `cards`: slug delle carte del nostro database citate dall'effetto, per i collegamenti incrociati.
  */
@@ -77,7 +77,7 @@ export const locations: GameLocation[] = [
   {
     slug: "arcane-leyline",
     name: "Arcane Leyline",
-    effect: { en: "Both players get +2 mana this round.", it: "Entrambi i giocatori ottengono +2 mana in questo round.", es: "Ambos jugadores obtienen +2 de maná en esta ronda." },
+    effect: { en: "Both players get +2 mana this round.", it: "Entrambi i giocatori ottengono +2 mana in questo round.", es: "Ambos jugadores obtienen +2 maná esta ronda." },
     tags: ["mana"],
   },
   {
@@ -86,7 +86,7 @@ export const locations: GameLocation[] = [
     effect: {
       en: "When you play a character here, discard your rightmost card then draw a card.",
       it: "Quando giochi un personaggio qui, scarta la carta più a destra e poi pesca una carta.",
-      es: "Cuando juegues un personaje aquí, descarta tu carta más a la derecha y luego roba una carta.",
+      es: "Cuando juegas un personaje aquí, descarta tu carta más a la derecha y luego roba una carta.",
     },
     tags: ["cards"],
   },
@@ -95,8 +95,8 @@ export const locations: GameLocation[] = [
     name: "Ballroom",
     effect: {
       en: "After combat, return a random character here to it's owner's hand for both players.",
-      it: "Dopo il combattimento, rimanda un personaggio casuale qui nella mano del suo proprietario, per entrambi i giocatori.",
-      es: "Después del combate, devuelve un personaje aleatorio de aquí a la mano de su propietario, para ambos jugadores.",
+      it: "Dopo il combattimento, riporta un personaggio casuale qui nella mano del suo proprietario, per entrambi i giocatori.",
+      es: "Después del combate, devuelve un personaje aleatorio de aquí a la mano de su dueño, para ambos jugadores.",
     },
     tags: ["move"],
   },
@@ -106,7 +106,7 @@ export const locations: GameLocation[] = [
     effect: {
       en: "After you play a character here, there is a 10% chance it will transform into a Bandersnatch this round.",
       it: "Dopo che giochi un personaggio qui, c'è il 10% di probabilità che si trasformi in un Bandersnatch in questo round.",
-      es: "Después de jugar un personaje aquí, hay un 10 % de probabilidad de que se transforme en un Bandersnatch en esta ronda.",
+      es: "Después de jugar un personaje aquí, hay un 10 % de probabilidad de que se transforme en un Bandersnatch esta ronda.",
     },
     tags: ["summon"],
     cards: ["bandersnatch"],
@@ -114,7 +114,7 @@ export const locations: GameLocation[] = [
   {
     slug: "blessed-grounds",
     name: "Blessed Grounds",
-    effect: { en: "When a Good character is played here, it gets Shield.", it: "Quando un personaggio Good viene giocato qui, ottiene Shield.", es: "Cuando se juega un personaje Good aquí, obtiene Shield." },
+    effect: { en: "When a Good character is played here, it gets Shield.", it: "Quando un personaggio Buono viene giocato qui, ottiene Scudo.", es: "Cuando un personaje Bueno es jugado aquí, obtiene Escudo." },
     tags: ["keyword"],
   },
   {
@@ -132,7 +132,7 @@ export const locations: GameLocation[] = [
   {
     slug: "burial-grounds",
     name: "Burial Grounds",
-    effect: { en: "On Death abilities happen twice here.", it: "Le abilità On Death si attivano due volte qui.", es: "Las habilidades On Death se activan dos veces aquí." },
+    effect: { en: "On Death abilities happen twice here.", it: "Le abilità Alla morte avvengono due volte qui.", es: "Las habilidades Al morir ocurren dos veces aquí." },
     tags: ["ability"],
   },
   {
@@ -152,21 +152,21 @@ export const locations: GameLocation[] = [
     name: "Cloning Lab",
     effect: {
       en: "After you play a character here, fill your spaces here with copies of it.",
-      it: "Dopo che giochi un personaggio qui, riempi le tue caselle qui con sue copie.",
-      es: "Después de jugar un personaje aquí, llena tus casillas de esta ubicación con copias suyas.",
+      it: "Dopo che giochi un personaggio qui, riempi i tuoi spazi qui con sue copie.",
+      es: "Después de jugar un personaje aquí, llena tus espacios de esta ubicación con copias suyas.",
     },
     tags: ["summon"],
   },
   {
     slug: "conveyor-belt",
     name: "Conveyor Belt",
-    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, sposta tutti i personaggi qui di una casella a destra.", es: "Después del combate, mueve a todos los personajes de aquí una casilla a la derecha." },
+    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, muovi tutti i personaggi qui di uno spazio a destra.", es: "Después del combate, mueve a todos los personajes de aquí un espacio a la derecha." },
     tags: ["move"],
   },
   {
     slug: "field-of-mice",
     name: "Field of Mice",
-    effect: { en: "After a character enters play here, stun it.", it: "Dopo che un personaggio entra in gioco qui, stordiscilo.", es: "Después de que un personaje entre en juego aquí, atúrdelo." },
+    effect: { en: "After a character enters play here, stun it.", it: "Dopo che un personaggio entra in gioco qui, stordiscilo.", es: "Después de que un personaje entra en juego aquí, atúrdelo." },
     tags: ["ability"],
   },
   {
@@ -193,7 +193,7 @@ export const locations: GameLocation[] = [
     effect: {
       en: "When you play a character here, destroy it and deal damage equal to its power to the opponent's barrier.",
       it: "Quando giochi un personaggio qui, distruggilo e infliggi danni pari alla sua potenza alla barriera avversaria.",
-      es: "Cuando juegues un personaje aquí, destrúyelo e inflige a la barrera del oponente un daño igual a su poder.",
+      es: "Cuando juegas un personaje aquí, destrúyelo e inflige a la barrera del oponente un daño igual a su poder.",
     },
     tags: ["destroy", "barrier", "damage"],
   },
@@ -225,7 +225,7 @@ export const locations: GameLocation[] = [
   {
     slug: "mirror-dimension",
     name: "Mirror Dimension",
-    effect: { en: "On Reveal abilities happen twice here.", it: "Le abilità On Reveal si attivano due volte qui.", es: "Las habilidades On Reveal se activan dos veces aquí." },
+    effect: { en: "On Reveal abilities happen twice here.", it: "Le abilità Alla rivelazione avvengono due volte qui.", es: "Las habilidades Al revelar ocurren dos veces aquí." },
     tags: ["ability"],
   },
   {
@@ -237,7 +237,7 @@ export const locations: GameLocation[] = [
   {
     slug: "open-meadow",
     name: "Open Meadow",
-    effect: { en: "When a character enters play here, it gets Move.", it: "Quando un personaggio entra in gioco qui, ottiene Move.", es: "Cuando un personaje entra en juego aquí, obtiene Move." },
+    effect: { en: "When a character enters play here, it gets Move.", it: "Quando un personaggio entra in gioco qui, ottiene Muovere.", es: "Cuando un personaje entra en juego aquí, obtiene Mover." },
     tags: ["keyword", "move"],
   },
   {
@@ -253,7 +253,7 @@ export const locations: GameLocation[] = [
   {
     slug: "poison-grounds",
     name: "Poison Grounds",
-    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Evil qui hanno Deathtouch.", es: "Los personajes Evil de aquí tienen Deathtouch." },
+    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Malvagi qui hanno Tocco letale.", es: "Los personajes Malvados de aquí tienen Toque mortal." },
     tags: ["keyword"],
   },
   {
@@ -272,25 +272,25 @@ export const locations: GameLocation[] = [
   {
     slug: "soul-artillery",
     name: "Soul Artillery",
-    effect: { en: "After a character dies here, deal 1 damage to BOTH barriers.", it: "Dopo che un personaggio muore qui, infliggi 1 danno a ENTRAMBE le barriere.", es: "Después de que un personaje muera aquí, inflige 1 de daño a AMBAS barreras." },
+    effect: { en: "After a character dies here, deal 1 damage to BOTH barriers.", it: "Dopo che un personaggio muore qui, infliggi 1 danno a ENTRAMBE le barriere.", es: "Después de que un personaje muere aquí, inflige 1 de daño a AMBAS barreras." },
     tags: ["barrier", "damage"],
   },
   {
     slug: "stomping-grounds",
     name: "Stomping Grounds",
-    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Trample.", es: "Los personajes de aquí tienen Trample." },
+    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Travolgere.", es: "Los personajes de aquí tienen Arrollar." },
     tags: ["keyword"],
   },
   {
     slug: "the-colosseum",
     name: "The Colosseum",
-    effect: { en: "Characters here have Double Attack.", it: "I personaggi qui hanno Double Attack.", es: "Los personajes de aquí tienen Double Attack." },
+    effect: { en: "Characters here have Double Attack.", it: "I personaggi qui hanno Doppio attacco.", es: "Los personajes de aquí tienen Ataque doble." },
     tags: ["keyword"],
   },
   {
     slug: "the-gallows",
     name: "The Gallows",
-    effect: { en: "When a character enters play here, destroy the enemy across from it.", it: "Quando un personaggio entra in gioco qui, distruggi il nemico di fronte a lui.", es: "Cuando un personaje entre en juego aquí, destruye al enemigo que tiene enfrente." },
+    effect: { en: "When a character enters play here, destroy the enemy across from it.", it: "Quando un personaggio entra in gioco qui, distruggi il nemico di fronte a lui.", es: "Cuando un personaje entra en juego aquí, destruye al enemigo frente a él." },
     tags: ["destroy"],
   },
   {
@@ -316,7 +316,7 @@ export const locations: GameLocation[] = [
   {
     slug: "the-well",
     name: "The Well",
-    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegues un personaje aquí, cura 1 de daño a tu barrera de esta ubicación." },
+    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegas un personaje aquí, cura 1 de daño de tu barrera aquí." },
     tags: ["barrier"],
   },
   {
@@ -334,7 +334,7 @@ export const locations: GameLocation[] = [
   {
     slug: "treasurers-office",
     name: "Treasurer's Office",
-    effect: { en: "Cards cost 1 more to play this round.", it: "Le carte costano 1 in più da giocare in questo round.", es: "Las cartas cuestan 1 más en esta ronda." },
+    effect: { en: "Cards cost 1 more to play this round.", it: "Le carte costano 1 in più da giocare in questo round.", es: "Las cartas cuestan 1 más esta ronda." },
     tags: ["mana"],
   },
   {
@@ -352,7 +352,7 @@ export const locations: GameLocation[] = [
   {
     slug: "windmill-ridge",
     name: "Windmill Ridge",
-    effect: { en: "Characters here have Defender.", it: "I personaggi qui hanno Defender.", es: "Los personajes de aquí tienen Defender." },
+    effect: { en: "Characters here have Defender.", it: "I personaggi qui hanno Difensore.", es: "Los personajes de aquí tienen Defensor." },
     tags: ["keyword"],
   },
   {
