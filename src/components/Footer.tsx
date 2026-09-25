@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
+import { linkLabels } from "@/lib/linkLabels";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { NEW_TAB_HINT_ID, NEW_TAB_REL, NewTabIcon, SteamLogo } from "./SteamButton";
@@ -24,6 +25,23 @@ export const contactEmail = "staff@originsmeta.com";
 
 /** Link del footer come quelli dell'header: a riposo chalk, al passaggio menta. */
 const linkCls = "text-chalk transition-colors hover:text-mint";
+
+/**
+ * Colonna "Esplora" (Ondata 1 del piano SEO/GEO, 25/09/2026, rilievi TOOL-06 e TECH-16): le pagine che non stanno nel
+ * menu e ricevevano 3-11 link interni (MetaShifting, Luoghi, le due tier list dei dati, il tool, gli autori). Il menu
+ * dell'header non cambia: MetaShifting e Luoghi restano fuori finché Pierluigi non decide (decisione 7 del 25/09).
+ */
+function exploreItems(locale: Locale): { label: string; path: string }[] {
+  const x = linkLabels[locale].explore;
+  return [
+    { label: x.metashifting, path: "/metashifting" },
+    { label: x.locations, path: "/locations" },
+    { label: x.mostPlayed, path: "/tier-list/most-played" },
+    { label: x.communityTierList, path: "/tier-list/community" },
+    { label: x.makeTierList, path: "/tier-list/create" },
+    { label: x.authors, path: "/authors" },
+  ];
+}
 
 /** Link ufficiale esterno: nuova scheda, freccia visibile e avviso per i lettori di schermo nel nome del link. */
 function OfficialLink({ url, newTab, children }: { url: string; newTab: string; children: ReactNode }) {
@@ -64,8 +82,10 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           </section>
         </div>
       </HideOnPath>
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div>
+      {/* Cinque colonne da 1024 px; sotto, il logo sta su una riga sua e i quattro elenchi di link si dividono la
+          larghezza (quattro da 768 px, due per riga da 640), sul telefono uno sotto l'altro come prima. */}
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 md:grid-cols-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+        <div className="sm:col-span-2 md:col-span-4 lg:col-span-1">
           {/* nel footer il logo è più grande e porta il nome del sito per chi non vede l'immagine */}
           <Wordmark height={38} alt="OriginsMeta" />
           <p className="mt-3 max-w-sm text-sm text-chalk-muted">{dict.footer.disclaimer}</p>
@@ -78,6 +98,18 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <h2 className="kicker mb-3 text-mint">{dict.footer.links}</h2>
           <ul className="space-y-1.5 text-sm">
             {navItems(dict).map((it) => (
+              <li key={it.path}>
+                <Link className={linkCls} href={href(locale, it.path)}>
+                  {it.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="kicker mb-3 text-mint">{linkLabels[locale].explore.title}</h2>
+          <ul className="space-y-1.5 text-sm">
+            {exploreItems(locale).map((it) => (
               <li key={it.path}>
                 <Link className={linkCls} href={href(locale, it.path)}>
                   {it.label}

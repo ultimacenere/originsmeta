@@ -14,6 +14,7 @@ import { RULES } from "@/lib/deckrules";
 import { Markdown } from "@/components/Markdown";
 import { CardChip, CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
+import { GuideNewsLinks } from "@/components/NewsLinks";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 import { siteUrl } from "@/lib/i18n";
 
@@ -241,6 +242,9 @@ export default async function GuidePage({ params }: { params: Params }) {
           ) : null}
         </section>
       ) : null}
+
+      {/* News che citano questa guida (campo `guides` delle news), dalla più recente: senza news non rende nulla */}
+      <GuideNewsLinks guideSlug={g.slug} locale={locale} />
     </div>
   );
 }
