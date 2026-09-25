@@ -7,6 +7,7 @@ import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, v
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
 import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY } from "@/lib/community/types";
 import { saveDeckPrivate, type ActionState } from "@/lib/community/actions";
+import { traccia } from "@/lib/analytics";
 import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
@@ -667,6 +668,7 @@ export function DeckBuilder({
       }
       if (r.ok) {
         setSaveResult({ code, ok: true, href: r.href ?? `/${locale}/account#private` });
+        traccia("deck_created", { locale, legendary: deck.legendary ?? "", cards: deck.cards.length });
         return;
       }
       if (r.error === "notLoggedIn" && canGoToLogin) {

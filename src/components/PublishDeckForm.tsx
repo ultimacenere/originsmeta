@@ -7,6 +7,7 @@ import { localeNames, locales, type Dictionary } from "@/lib/i18n";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
+import { traccia } from "@/lib/analytics";
 import { BUILDER_STORAGE_KEY, GUIDE_DRAFT_KEY, PENDING_PUBLISH_KEY, deckTypes, guideSections, type Guide } from "@/lib/community/types";
 import { suggestArchetype } from "@/lib/archetype";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -222,10 +223,14 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
 
   useEffect(() => {
     if (state.ok && state.href) {
-      if (mode === "create") clearLocalDrafts();
+      // solo la prima pubblicazione è un evento: una modifica non crea un mazzo nuovo
+      if (mode === "create") {
+        clearLocalDrafts();
+        traccia("deck_published", { locale });
+      }
       router.push(state.href);
     }
-  }, [state, router, mode]);
+  }, [state, router, mode, locale]);
 
   const deck = useMemo(() => (code ? decodeOmCode(code) : null), [code]);
   /* archetipo: suggerito dalla composizione, ma l'utente può cambiarlo */
