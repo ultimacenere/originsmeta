@@ -440,7 +440,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
                     [d.home.status.matches, d.home.status.matchesValue],
                     [d.home.status.launch, d.home.status.launchValue, "/guides/roadmap-and-dates"],
                     [d.home.status.mobile, d.home.status.mobileValue, "/guides/roadmap-and-dates"],
-                    [d.home.status.languages, d.home.status.languagesValue, "/guides/play-the-demo"],
+                    // le lingue hanno la risposta primaria in /faq (C30, Ondata 3): Steam, demo e testi di gioco nella stessa voce
+                    [d.home.status.languages, d.home.status.languagesValue, "/faq#languages"],
                     [d.home.status.kickstarter, d.home.status.kickstarterValue, "/guides/origins-tcg-kickstarter"],
                   ] as [string, string, string?][]
                 ).map(([k, v, to], i, all) => (

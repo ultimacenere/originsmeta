@@ -306,3 +306,27 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
     }
   });
 });
+
+describe("tutte le guide: le righe di tabella con una carta coincidono con il database", () => {
+  // Righe come "| [Roo](/en/cards/roo) | 2 | 2/4 with Move |": costo e statistiche devono essere quelli di oggi.
+  // Il 25/09/2026 le guide dei mazzi Dorothy Combo e King of Value Trade avevano ancora Dorothy a 5 mana, Roo a 2/3 e
+  // Magic Carpet a 3/4, i valori di prima della patch della demo del 21/09 (card-history.ts): dopo una patch il test
+  // fallisce finché le tabelle non sono aggiornate.
+  const ROW = /^\| \[[^\]]+\]\(\/[a-z]{2}\/cards\/([a-z0-9-]+)\)[^|]*\| (\d+) \| (\d+)\/(\d+)/;
+  test("costo, potenza e salute delle carte nelle tabelle, nelle tre lingue", () => {
+    let rows = 0;
+    for (const l of locales)
+      for (const g of getGuides(l))
+        for (const line of g.body.split("\n")) {
+          const m = line.match(ROW);
+          if (!m) continue;
+          rows++;
+          const card = getCard(m[1]);
+          assert.ok(card, `${l} ${g.slug}: carta che non esiste, ${m[1]}`);
+          assert.equal(card.mana, Number(m[2]), `${l} ${g.slug} ${m[1]}: costo`);
+          if (card.power !== undefined) assert.equal(`${m[3]}/${m[4]}`, `${card.power}/${card.health}`, `${l} ${g.slug} ${m[1]}: statistiche`);
+        }
+    // le tabelle delle guide dei mazzi e di quella alle Leggendarie: se il numero crolla, l'espressione non le trova più
+    assert.ok(rows >= 100, `solo ${rows} righe trovate`);
+  });
+});

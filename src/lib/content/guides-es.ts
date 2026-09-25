@@ -606,7 +606,7 @@ La página del mazo enumera dos: **una buena curva suele ser esencial** y **pued
       },
       {
         q: "¿Por qué Roo es bueno tras el parche del 21 de septiembre?",
-        a: "El parche de la Demo del 21 de septiembre de 2026 llevó a Roo a 2/3 por dos de maná, manteniendo la palabra clave Mover, así que sobrevive a la mayoría de los intercambios de las primeras rondas en lugar de salir perdiendo.",
+        a: "El parche de la Demo del 21 de septiembre de 2026 llevó a Roo de 2/3 a 2/4 (+1 de Salud) por dos de maná, manteniendo la palabra clave Mover, así que sobrevive a la mayoría de los intercambios de las primeras rondas en lugar de salir perdiendo.",
       },
       {
         q: "¿Spellbook es imprescindible?",
@@ -627,7 +627,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | [King Arthur](/es/cards/king-arthur) ★ | 7 | 7/7 con Escudo; Al revelar da Escudo a tus personajes Good |
 | [Bagheera](/es/cards/bagheera) | 1 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Musketeer](/es/cards/musketeer) | 2 | 2/1 con Primer golpe |
-| [Roo](/es/cards/roo) | 2 | 2/3 con Mover |
+| [Roo](/es/cards/roo) | 2 | 2/4 con Mover |
 | [Shahrazad](/es/cards/shahrazad) | 2 | 1/4; cura 1 de daño a tu barrera aquí cada vez que una carta entra en tu mano |
 | [Shield Maiden](/es/cards/shield-maiden) | 3 | 3/1 con Escudo |
 | [Dark Omen](/es/cards/dark-omen) | 3 | Hechizo: destruye a CUALQUIER personaje |
@@ -652,7 +652,7 @@ Tres palabras clave hacen el trabajo.
 
 ## Mulligan
 
-**Bagheera es imprescindible**, y ahora vale la pena conservar a **Roo** en cualquier mano: el [parche de la Demo del 21 de septiembre](/es/news/demo-patch-notes-0921) lo convirtió en un 2/3, así que sobrevive a los intercambios de las primeras rondas. **Musketeer** y **Shield Maiden** te ponen por delante en la segunda y la tercera ronda. Contra un mazo agresivo conserva a **Cowardly Lion**, cuyo Defensor aguanta el carril; contra un mazo de control conserva a **Ali Baba**, que convierte un golpe libre a la barrera en cartas. Si esperas una partida larga, conservar **Spellbook** es una decisión razonable.
+**Bagheera es imprescindible**, y ahora vale la pena conservar a **Roo** en cualquier mano: el [parche de la Demo del 21 de septiembre](/es/news/demo-patch-notes-0921) lo convirtió en un 2/4, así que sobrevive a los intercambios de las primeras rondas. **Musketeer** y **Shield Maiden** te ponen por delante en la segunda y la tercera ronda. Contra un mazo agresivo conserva a **Cowardly Lion**, cuyo Defensor aguanta el carril; contra un mazo de control conserva a **Ali Baba**, que convierte un golpe libre a la barrera en cartas. Si esperas una partida larga, conservar **Spellbook** es una decisión razonable.
 
 ## Ronda a ronda
 
@@ -717,10 +717,10 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 
 | Carta | Coste | Qué hace |
 | --- | --- | --- |
-| [Dorothy](/es/cards/dorothy) ★ | 5 | 1/1; puede moverse cada ronda y obtiene +1⚔️/+1❤️ por cada vez que un aliado se ha movido en esta partida |
+| [Dorothy](/es/cards/dorothy) ★ | 4 | 1/1; puede moverse cada ronda y obtiene +1⚔️/+1❤️ por cada vez que un aliado se ha movido en esta partida |
 | [Twister Toss](/es/cards/twister-toss) | 1 | Hechizo: mueve a un aliado |
 | [Card Soldier](/es/cards/card-soldier) | 2 | 3/1; después de moverse, invoca una copia de sí mismo en su espacio anterior |
-| [Roo](/es/cards/roo) | 2 | 2/3 con Mover |
+| [Roo](/es/cards/roo) | 2 | 2/4 con Mover |
 | [Basilisk](/es/cards/basilisk) | 2 | 1/2 con Toque mortal |
 | [Pegasus](/es/cards/pegasus) | 3 | 2/4; después de moverse, duplica su Poder |
 | [Flying Monkey](/es/cards/flying-monkey) | 3 | 4/1; Al revelar mueve a CUALQUIER otro personaje a un espacio al azar de aquí |
@@ -728,7 +728,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | [Kanga](/es/cards/kanga) | 3 | 2/3; antes del combate, los aliados que se movieron en esta ronda obtienen +1⚔️/+1❤️ |
 | [En Passant](/es/cards/en-passant) | 3 | Hechizo: mueve a un aliado e inflige daño igual a su Poder al personaje que tiene enfrente |
 | [Spellbook](/es/cards/spellbook) | 3 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
-| [Magic Carpet](/es/cards/magic-carpet) | 4 | 3/4; Al revelar mueve a tus otros aliados un espacio a la izquierda, o un espacio a la derecha |
+| [Magic Carpet](/es/cards/magic-carpet) | 4 | 4/4; Al revelar mueve a tus otros aliados un espacio a la izquierda, o un espacio a la derecha |
 | [Hare](/es/cards/hare) | 5 | 4/1 con Primer golpe y Mover |
 
 Nueve unidades y tres hechizos, y casi todo o se mueve o premia un movimiento.

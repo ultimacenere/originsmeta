@@ -105,7 +105,8 @@ export const events: Event[] = [
   {
     slug: "steam-next-fest",
     official: true,
-    guide: "steam-next-fest-2026",
+    // la guida della classificata (C13, Ondata 3): la guida al festival resta collegata alla Crimson Cup (next-fest-tournament)
+    guide: "origins-tcg-ranked",
     start: "2026-10-19",
     end: "2026-10-26",
     title: n("Steam Next Fest: ranked opens in the demo", "Steam Next Fest: nella demo parte la classificata", "Steam Next Fest: la clasificatoria se abre en la demo"),

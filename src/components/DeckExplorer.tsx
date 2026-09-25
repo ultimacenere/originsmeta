@@ -54,6 +54,8 @@ export type ExplorerDeck = {
   patchLabel?: string;
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
+  /** voto pesato sul numero di voti (weightedRating): l'ordine "Più votati", lo stesso della classifica di /decks */
+  score?: number;
   /** tipo di mazzo e tag autore (solo mazzi della community) */
   deckTypeLabels?: string[];
   creatorBadge?: string;
@@ -205,7 +207,11 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     return filtered.sort((a, b) =>
       sort === "new"
         ? when(b).localeCompare(when(a))
-        : (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || when(b).localeCompare(when(a)),
+        : // prima i mazzi votati, poi il voto pesato; a pari voto pesato l'ordine è per nome, come briefOrder (tierstats.ts)
+          Number((b.rating?.votes ?? 0) > 0) - Number((a.rating?.votes ?? 0) > 0) ||
+          (Math.abs((b.score ?? 0) - (a.score ?? 0)) > 1e-9 ? (b.score ?? 0) - (a.score ?? 0) : 0) ||
+          a.name.localeCompare(b.name, "en") ||
+          when(b).localeCompare(when(a)),
     );
   }, [decks, legendary, archetype, author, creator, patch, card, sort]);
 

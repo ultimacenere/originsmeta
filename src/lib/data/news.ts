@@ -259,7 +259,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
     // su X dello stesso giorno. La copertina è un ritaglio 16:9 della grafica ufficiale dei premi (crediti della carta interi).
     slug: "crimson-cup-format-check-in",
     image: "/media/news-crimson-cup-rules.webp",
-    guides: ["steam-next-fest-2026"],
+    guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-09-24",
     title: n(
       "Crimson Cup rules: three-deck Conquest, decklists hidden until the top 4 and a check-in you can't miss",
@@ -1123,7 +1123,7 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
   {
     slug: "demo-first-big-update",
     image: "/media/news-play-collect-trade.webp",
-    guides: ["play-the-demo", "steam-next-fest-2026", "collector-economy"],
+    guides: ["play-the-demo", "steam-next-fest-2026", "collector-economy", "origins-tcg-ranked"],
     date: "2026-09-21",
     updated: "2026-09-22",
     title: n(
@@ -2129,7 +2129,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
   {
     slug: "big-bobs-playtest-battle",
     image: "/media/ss-versus.webp",
-    guides: ["steam-next-fest-2026"],
+    guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-08-25",
     title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle trae el formato Conquest", "Big Bob's Playtest Battle inaugure le format Conquest"),
     metaTitle: n("Big Bob's Playtest Battle brings Conquest to Origins TCG", "Big Bob's Playtest Battle: il Conquest arriva su Origins TCG", "Big Bob's Playtest Battle: el Conquest llega a Origins TCG"),
@@ -2173,7 +2173,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     slug: "patch-0-6-1-ranked",
     image: "/media/news-patch-061.webp",
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
-    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
+    guides: ["roadmap-and-dates", "steam-next-fest-2026", "origins-tcg-ranked"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Parche 0.6.1: ladder clasificatoria, ranking Grandmaster y tres mazos reajustados", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
     metaTitle: n("Patch 0.6.1: ranked ladder and Grandmaster", "Patch 0.6.1: classificata e Grandmaster", "Parche 0.6.1: clasificatoria y Grandmaster"),

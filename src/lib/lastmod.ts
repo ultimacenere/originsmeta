@@ -43,7 +43,7 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
  * Le pagine senza dati propri (FAQ, chi siamo, deck builder…) hanno solo questa data.
  */
 export const PAGE_UPDATED = {
-  "/": "2026-09-25", // Ondata 1: title sul marchio, "In breve" in Stato del gioco, tutte le slide nell'HTML
+  "/": "2026-09-25", // Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
   "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting
   "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup
   "/guides": "2026-09-25", // Ondata 1: title e description
@@ -51,18 +51,18 @@ export const PAGE_UPDATED = {
   "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse
   "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco
-  "/decks": "2026-09-25", // Ondata 2: ItemList con la soglia di qualità dei mazzi
+  "/decks": "2026-09-25", // Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
   "/decks/[slug]": "2026-09-25", // 63fa759
   "/decks/community/[slug]": "2026-09-25", // Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
   "/deck-builder": "2026-09-25", // Ondata 2: WebApplication nei dati strutturati
-  "/tier-list": "2026-09-25", // Ondata 1: In breve dai dati, tessere con i link alle schede
-  "/tier-list/community": "2026-09-25", // Ondata 2: ItemList delle carte (2c6ab28: persone e liste salvate)
+  "/tier-list": "2026-09-25", // Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
+  "/tier-list/community": "2026-09-25", // Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
   "/tier-list/most-played": "2026-09-25", // Ondata 2: ItemList delle carte più giocate
   "/tier-list/create": "2026-09-25", // Ondata 1: H1
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
   "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
-  "/faq": "2026-09-25", // Ondata 1: H1, pagina senza assistente, link alle news
+  "/faq": "2026-09-25", // Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, World of Origins, disclaimer, link agli autori
   "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas

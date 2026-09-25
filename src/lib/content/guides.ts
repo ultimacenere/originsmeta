@@ -667,12 +667,12 @@ The deck page lists two: **a good curve is often essential**, and **you can run 
     metaTitle: "King Arthur deck guide: King of Value Trade",
     excerpt: "Game plan, mulligan and round-by-round play for King of Value Trade, the King Arthur midrange deck built to win every trade two cards for one.",
     readTime: 6,
-    updated: "2026-09-23",
+    updated: "2026-09-25",
     image: "/cards/cover/king-arthur.webp",
     faq: [
       { q: "What is a value trade in Origins TCG?", a: "Making one of your cards answer two of the opponent's, or trading a cheap card for an expensive one. This deck is built around that idea: Shield, First Strike and buffs make your characters survive the fight they win." },
       { q: "What do you keep in the mulligan?", a: "Bagheera and Roo, which are solid on curve, Musketeer and Shield Maiden for the early rounds. Against aggressive decks keep Cowardly Lion; against control, Ali Baba." },
-      { q: "Why is Roo good after the 21 September patch?", a: "The Demo patch of 21 September 2026 took Roo to 2/3 for two mana while keeping the Move keyword, so it survives most of the early exchanges instead of trading down." },
+      { q: "Why is Roo good after the 21 September patch?", a: "The Demo patch of 21 September 2026 took Roo from 2/3 to 2/4 (+1 Health) for two mana while keeping the Move keyword, so it survives most of the early exchanges instead of trading down." },
       { q: "Is Spellbook necessary?", a: "No. It adds a random spell each round for fuel and unpredictability, but the deck page says the list can win without it." },
     ],
     body: `
@@ -689,7 +689,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [King Arthur](/en/cards/king-arthur) ★ | 7 | 7/7 with Shield; On Reveal it gives Shield to your Good characters |
 | [Bagheera](/en/cards/bagheera) | 1 | 1/1; On Reveal on a middle space it gets +2⚔️/+2❤️ |
 | [Musketeer](/en/cards/musketeer) | 2 | 2/1 with First Strike |
-| [Roo](/en/cards/roo) | 2 | 2/3 with Move |
+| [Roo](/en/cards/roo) | 2 | 2/4 with Move |
 | [Shahrazad](/en/cards/shahrazad) | 2 | 1/4; heals 1 damage from your barrier here whenever a card enters your hand |
 | [Shield Maiden](/en/cards/shield-maiden) | 3 | 3/1 with Shield |
 | [Dark Omen](/en/cards/dark-omen) | 3 | Spell: destroy ANY character |
@@ -714,7 +714,7 @@ Three keywords do the work.
 
 ## Mulligan
 
-**Bagheera is a must-have**, and **Roo** is now worth keeping in every hand: the [Demo patch of 21 September](/en/news/demo-patch-notes-0921) made it a 2/3, so it survives the early exchanges. **Musketeer** and **Shield Maiden** put you ahead in rounds two and three. Against an aggressive deck keep **Cowardly Lion**, whose Defender holds the lane; against a control deck keep **Ali Baba**, which turns a free barrier hit into cards. If you expect a long game, keeping **Spellbook** is a fair call.
+**Bagheera is a must-have**, and **Roo** is now worth keeping in every hand: the [Demo patch of 21 September](/en/news/demo-patch-notes-0921) made it a 2/4, so it survives the early exchanges. **Musketeer** and **Shield Maiden** put you ahead in rounds two and three. Against an aggressive deck keep **Cowardly Lion**, whose Defender holds the lane; against a control deck keep **Ali Baba**, which turns a free barrier hit into cards. If you expect a long game, keeping **Spellbook** is a fair call.
 
 ## Round by round
 
@@ -758,7 +758,7 @@ The deck page lists three: **no area removal**, **Dark Omen must be used precise
     metaTitle: "Dorothy deck guide: Dorothy Combo",
     excerpt: "The move deck rebuilt around the 21 September buffs: how Dorothy grows, which combos to look for, the mulligan and what the list still cannot do.",
     readTime: 5,
-    updated: "2026-09-23",
+    updated: "2026-09-25",
     image: "/cards/cover/dorothy.webp",
     faq: [
       { q: "How does Dorothy grow?", a: "Dorothy can Move each round and has +1⚔️/+1❤️ for each time an ally moved this game. The counter is the whole game, not the round, so every Move you make anywhere makes her bigger." },
@@ -777,10 +777,10 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 
 | Card | Cost | What it does |
 | --- | --- | --- |
-| [Dorothy](/en/cards/dorothy) ★ | 5 | 1/1; can Move each round, and gets +1⚔️/+1❤️ for each time an ally moved this game |
+| [Dorothy](/en/cards/dorothy) ★ | 4 | 1/1; can Move each round, and gets +1⚔️/+1❤️ for each time an ally moved this game |
 | [Twister Toss](/en/cards/twister-toss) | 1 | Spell: move an ally |
 | [Card Soldier](/en/cards/card-soldier) | 2 | 3/1; after it moves, it summons a copy of itself on its previous space |
-| [Roo](/en/cards/roo) | 2 | 2/3 with Move |
+| [Roo](/en/cards/roo) | 2 | 2/4 with Move |
 | [Basilisk](/en/cards/basilisk) | 2 | 1/2 with Deathtouch |
 | [Pegasus](/en/cards/pegasus) | 3 | 2/4; after it moves, it doubles its Power |
 | [Flying Monkey](/en/cards/flying-monkey) | 3 | 4/1; On Reveal moves ANY other character to a random space here |
@@ -788,7 +788,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [Kanga](/en/cards/kanga) | 3 | 2/3; before combat, allies that moved this round get +1⚔️/+1❤️ |
 | [En Passant](/en/cards/en-passant) | 3 | Spell: move an ally and deal its Power to the character across from it |
 | [Spellbook](/en/cards/spellbook) | 3 | Spell: from now on, a random spell in hand each round, discarded before combat |
-| [Magic Carpet](/en/cards/magic-carpet) | 4 | 3/4; On Reveal moves your other allies one space left, or one space right |
+| [Magic Carpet](/en/cards/magic-carpet) | 4 | 4/4; On Reveal moves your other allies one space left, or one space right |
 | [Hare](/en/cards/hare) | 5 | 4/1 with First Strike and Move |
 
 Nine units and three spells, and almost everything either moves or rewards a move.
@@ -2145,12 +2145,12 @@ La scheda ne elenca due: **una buona curva è spesso essenziale** e **si rischia
     metaTitle: "Guida al King of Value Trade di King Arthur",
     excerpt: "Piano di gioco, mulligan e round per round di King of Value Trade, il midrange di King Arthur costruito per vincere ogni scambio due carte contro una.",
     readTime: 6,
-    updated: "2026-09-23",
+    updated: "2026-09-25",
     image: "/cards/cover/king-arthur.webp",
     faq: [
       { q: "Che cos'è uno scambio di valore in Origins TCG?", a: "Far rispondere una tua carta a due dell'avversario, o scambiare una carta economica con una costosa. Questo mazzo è costruito su quell'idea: Scudo, Primo colpo e potenziamenti fanno sopravvivere i tuoi personaggi allo scontro che vincono." },
       { q: "Che cosa si tiene al mulligan?", a: "Bagheera e Roo, solidi sulla curva, Musketeer e Shield Maiden per i primi round. Contro i mazzi aggressivi si tiene Cowardly Lion, contro il controllo Ali Baba." },
-      { q: "Perché Roo è forte dopo la patch del 21 settembre?", a: "La patch della Demo del 21 settembre 2026 ha portato Roo a 2/3 per due mana mantenendo Muovere, quindi sopravvive alla maggior parte degli scambi dei primi round invece di scambiare in perdita." },
+      { q: "Perché Roo è forte dopo la patch del 21 settembre?", a: "La patch della Demo del 21 settembre 2026 ha portato Roo da 2/3 a 2/4 (+1 Salute) per due mana mantenendo Muovere, quindi sopravvive alla maggior parte degli scambi dei primi round invece di scambiare in perdita." },
       { q: "Spellbook è indispensabile?", a: "No. Aggiunge una magia casuale ogni round per avere benzina e imprevedibilità, ma la scheda del mazzo dice che la lista può vincere anche senza." },
     ],
     body: `
@@ -2167,7 +2167,7 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 | [King Arthur](/it/cards/king-arthur) ★ | 7 | 7/7 con Scudo; Alla rivelazione dà Scudo ai tuoi personaggi Good |
 | [Bagheera](/it/cards/bagheera) | 1 | 1/1; Alla rivelazione su uno spazio centrale ottiene +2⚔️/+2❤️ |
 | [Musketeer](/it/cards/musketeer) | 2 | 2/1 con Primo colpo |
-| [Roo](/it/cards/roo) | 2 | 2/3 con Muovere |
+| [Roo](/it/cards/roo) | 2 | 2/4 con Muovere |
 | [Shahrazad](/it/cards/shahrazad) | 2 | 1/4; cura 1 danno alla tua barriera qui ogni volta che una carta entra nella tua mano |
 | [Shield Maiden](/it/cards/shield-maiden) | 3 | 3/1 con Scudo |
 | [Dark Omen](/it/cards/dark-omen) | 3 | Magia: distruggi QUALSIASI personaggio |
@@ -2192,7 +2192,7 @@ Il lavoro lo fanno tre parole chiave.
 
 ## Mulligan
 
-**Bagheera è un must have**, e **Roo** adesso si tiene in ogni mano: la [patch della Demo del 21 settembre](/it/news/demo-patch-notes-0921) lo ha portato a 2/3, quindi sopravvive agli scambi dei primi round. **Musketeer** e **Shield Maiden** ti mandano avanti al secondo e al terzo round. Contro un mazzo aggressivo tieni **Cowardly Lion**, il cui Difensore tiene la corsia; contro un controllo tieni **Ali Baba**, che trasforma una barriera scoperta in carte. Se immagini una partita lunga, tenere **Spellbook** è una scelta sensata.
+**Bagheera è un must have**, e **Roo** adesso si tiene in ogni mano: la [patch della Demo del 21 settembre](/it/news/demo-patch-notes-0921) lo ha portato a 2/4, quindi sopravvive agli scambi dei primi round. **Musketeer** e **Shield Maiden** ti mandano avanti al secondo e al terzo round. Contro un mazzo aggressivo tieni **Cowardly Lion**, il cui Difensore tiene la corsia; contro un controllo tieni **Ali Baba**, che trasforma una barriera scoperta in carte. Se immagini una partita lunga, tenere **Spellbook** è una scelta sensata.
 
 ## Round per round
 
@@ -2236,7 +2236,7 @@ La scheda ne elenca tre: **nessuna rimozione ad area**, **l'utilizzo di Dark Ome
     metaTitle: "Guida al mazzo di Dorothy: Dorothy Combo",
     excerpt: "Il mazzo move ricostruito sui potenziamenti del 21 settembre: come cresce Dorothy, quali combo cercare, il mulligan e quello che la lista ancora non sa fare.",
     readTime: 5,
-    updated: "2026-09-23",
+    updated: "2026-09-25",
     image: "/cards/cover/dorothy.webp",
     faq: [
       { q: "Come cresce Dorothy?", a: "Dorothy può muoversi ogni round e ha +1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita. Il contatore vale per tutta la partita, non per il round: ogni movimento, ovunque, la fa crescere." },
@@ -2255,10 +2255,10 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 
 | Carta | Costo | Che cosa fa |
 | --- | --- | --- |
-| [Dorothy](/it/cards/dorothy) ★ | 5 | 1/1; può muoversi ogni round e ottiene +1⚔️/+1❤️ per ogni movimento di un alleato nella partita |
+| [Dorothy](/it/cards/dorothy) ★ | 4 | 1/1; può muoversi ogni round e ottiene +1⚔️/+1❤️ per ogni movimento di un alleato nella partita |
 | [Twister Toss](/it/cards/twister-toss) | 1 | Magia: muovi un alleato |
 | [Card Soldier](/it/cards/card-soldier) | 2 | 3/1; dopo che si muove evoca una copia di sé sullo spazio precedente |
-| [Roo](/it/cards/roo) | 2 | 2/3 con Muovere |
+| [Roo](/it/cards/roo) | 2 | 2/4 con Muovere |
 | [Basilisk](/it/cards/basilisk) | 2 | 1/2 con Tocco letale |
 | [Pegasus](/it/cards/pegasus) | 3 | 2/4; dopo che si muove raddoppia la sua ⚔️ |
 | [Flying Monkey](/it/cards/flying-monkey) | 3 | 4/1; Alla rivelazione muove QUALSIASI altro personaggio su uno spazio casuale qui |
@@ -2266,7 +2266,7 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 | [Kanga](/it/cards/kanga) | 3 | 2/3; prima del combattimento dà +1⚔️/+1❤️ agli alleati che si sono mossi |
 | [En Passant](/it/cards/en-passant) | 3 | Magia: muovi un alleato e infliggi la sua ⚔️ al personaggio di fronte |
 | [Spellbook](/it/cards/spellbook) | 3 | Magia: da ora in poi una magia casuale in mano a ogni round, scartata prima del combattimento |
-| [Magic Carpet](/it/cards/magic-carpet) | 4 | 3/4; Alla rivelazione muove gli altri alleati di uno spazio a sinistra oppure a destra |
+| [Magic Carpet](/it/cards/magic-carpet) | 4 | 4/4; Alla rivelazione muove gli altri alleati di uno spazio a sinistra oppure a destra |
 | [Hare](/it/cards/hare) | 5 | 4/1 con Primo colpo e Muovere |
 
 Nove unità e tre magie, e quasi tutto o si muove o premia un movimento.

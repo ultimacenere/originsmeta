@@ -71,7 +71,9 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   // Le voci di "In breve" e delle anteprime, le stesse: carte contate dai mazzi pubblicati, mazzi col voto pesato
   const legendaryItems = usedItems(legendaries);
   const baseItems = usedItems(base);
-  const ratedItems = data.decks.flatMap((dk) => (dk.rating.votes > 0 ? [{ name: dk.name, href: dk.href, value: dk.score, rating: dk.rating, deck: dk }] : []));
+  // Mazzi votati: solo quelli con la scheda indicizzabile nella lingua (`indexable`, tierData.ts), gli stessi di "In breve"
+  // e della classifica dei migliori mazzi di /decks (Ondata 3): le due pagine danno la stessa risposta
+  const ratedItems = data.decks.flatMap((dk) => (dk.rating.votes > 0 && dk.indexable ? [{ name: dk.name, href: dk.href, value: dk.score, rating: dk.rating, deck: dk }] : []));
 
   // Anteprime mentre le fasce sono vuote: dati veri, dichiarati per quello che sono. Ordine e pari merito come in
   // "In breve" (revisione dell'Ondata 1): prima la striscia ne mostrava quattro, spareggiate per costo, delle sei
