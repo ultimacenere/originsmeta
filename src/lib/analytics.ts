@@ -13,9 +13,7 @@
  * testi scritti dagli utenti; il termine cercato fra le carte passa, ripulito da `searchTermForAnalytics`.
  *
  * EVENTI (nomi stabili: non si rinominano, i rapporti li contano per nome). ★ = da segnare come evento chiave in GA4
- * (Amministrazione → Eventi → "Segna come evento chiave", dopo che l'evento è arrivato almeno una volta). Per vedere i
- * parametri nei rapporti di GA4 vanno registrati come dimensioni personalizzate con ambito evento (method e search_term
- * ci sono già): lang, placement, target, server, cta, legendary, source, kind, stars, vote_type, search_area, results.
+ * (Amministrazione → Eventi → "Segna come evento chiave", dopo che l'evento è arrivato almeno una volta).
  *
  *   ★ sign_up             primo accesso completato di un account nuovo           method (discord | email)
  *     login               accesso completato di un account che c'era già         method
@@ -25,45 +23,72 @@
  *                         discord_cancelled, discord, generic al ritorno da /auth/callback)
  *   ★ deck_publish        mazzo pubblicato sul sito (non le modifiche)            legendary, source (builder | private_draft)
  *     deck_save_private   mazzo salvato privato nel profilo                       legendary, placement
- *     deck_complete       il mazzo del builder arriva a 25 carte (anche importato) placement
- *   ★ game_code_copy      copia del codice del gioco (KGBLDC…)                    placement (builder | tournament_builder | deck_page)
+ *     deck_complete       il mazzo del builder arriva a 25 carte, una volta per    placement
+ *                         casella e per scheda (di nuovo solo dopo "Svuota mazzo")
+ *   ★ game_code_copy      copia RIUSCITA del codice del gioco (KGBLDC…)           placement (builder | tournament_builder |
+ *                                                                                 deck_page | decks_list)
  *     deck_share          link, lista in testo o "Condividi con…" dal builder      method (link | text | native), placement
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
+ *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
  *   ★ deck_vote           voto a un mazzo della community                         stars (1-5), vote_type (new | update)
  *   ★ tier_list_save      tier list salvata nel profilo                           kind (legendaries | cards)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
- *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest | community | other), placement, cta
- *   ★ discord_click       clic su un link verso Discord                           server (originsmeta | official), placement, cta
- *     view_search_results ricerca fra le carte in /cards e nel deck builder       search_term, results, search_area (cards | deck_builder)
- *     home_route          clic dalla home verso una sezione (attributi data-om-*) destination
+ *   ★ tournament_create   torneo creato (non le modifiche)                        visibility (public | private), deck_mode
+ *     tournament_join     iscrizione a un torneo                                  size (posti del torneo)
+ *     feedback_submit     messaggio mandato dal riquadro dei feedback             (nessun parametro)
+ *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
+ *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest |
+ *                                                                                 community | other), placement, cta
+ *   ★ discord_click       clic su un link verso Discord                           server (originsmeta | official | other),
+ *                                                                                 placement, cta
+ *     view_search_results ricerca fra le carte in /cards e nel deck builder       search_term, results, search_area
+ *                                                                                 (cards | deck_builder)
+ *     home_route          clic dalla home verso una sezione o fuori dal sito      destination, section
  *     tier_entry_open     scheda di una voce aperta nelle tier list (TierExplorer) tier_source, card
  *     tier_entry_click    clic dalla scheda di una voce                           tier_source, target
  *
- * `placement` dei clic in uscita: `data-om-placement` del link o di un suo contenitore, altrimenti header, footer,
- * content (dentro <main>) o other (banner, pop-up). `cta`: `data-om-cta` del link (button per SteamButton e
+ * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
+ * con ambito "evento" (method e search_term GA4 li ha già):
+ *   - dimensioni personalizzate: lang, placement, target, server, cta, legendary, source, kind, stars, vote_type,
+ *     search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang;
+ *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources.
+ *
+ * `placement` dei clic in uscita (e `section` di home_route): `data-om-placement` del link o di un suo contenitore,
+ * altrimenti header, footer, content (dentro <main>), slider (lo slider della home, fuori dal <main>), calendar (la
+ * striscia del calendario) o other (banner, pop-up). `cta`: `data-om-cta` del link (button per SteamButton e
  * DiscordButton, icon per il loghino Discord dell'header), altrimenti link.
- * discord_click vale per tutti e due i server: il nostro (`ORIGINSMETA_DISCORD`) ha server=originsmeta, quello ufficiale
- * di Koin Games server=official. Chi vuole contare solo gli ingressi nel nostro crea in GA4 un evento derivato
- * (discord_click con server = originsmeta).
+ * discord_click distingue tre server: il nostro (`ORIGINSMETA_DISCORD`) ha server=originsmeta, quello ufficiale di
+ * Koin Games (discord.gg/originstcg, `officialLinks.discord` in Footer.tsx) server=official, tutti gli altri (i
+ * Discord dei tornei e dei creator, i link ai canali) server=other.
+ * home_route parte da solo per ogni link cliccato nella home fuori da header e footer: `destination` è la sezione a
+ * cui porta il link (tier_list, tier_list_maker, decks, deck_page, builder, cards, card_page, news, news_article,
+ * guides, guide, metashifting, tournaments…) oppure steam, discord, youtube, external; `section` è il posto del link
+ * nella home (il `placement` qui sopra: le sezioni della home hanno il loro `data-om-placement`).
  *
  * Tre modi di mandare un evento:
  *   1. `trackEvent(nome, parametri)` dai componenti client, con i parametri controllati dai tipi (`EventParams`);
- *   2. attributi sul markup, anche nei componenti server: `data-om-event="home_route" data-om-destination="decks"`
- *      su un link o su un contenitore (i parametri sono gli altri `data-om-*`); li legge `onDocumentClick`;
- *   3. i link verso Steam e Discord non hanno bisogno di niente: `onDocumentClick` li riconosce dall'indirizzo.
+ *   2. attributi sul markup, anche nei componenti server: `data-om-event="deck_open_builder" data-om-placement="deck_page"`
+ *      su un link o su un contenitore (i parametri sono gli altri `data-om-*`); li legge `onDocumentClick` al clic;
+ *   3. i link verso Steam e Discord e i link della home non hanno bisogno di niente: `onDocumentClick` li riconosce.
  * `onDocumentClick` lo registra GoogleAnalytics.tsx, montato nel layout della lingua su ogni pagina.
  *
- * TRAFFICO INTERNO (MIS-03): visitando una volta https://originsmeta.com/?staff=on (oppure /it?staff=on…) da ogni
- * browser e dispositivo dello staff, il browser si segna come interno (localStorage `originsmeta.internal.v1`): GA4 non
- * parte, gli eventi non vanno da nessuna parte (si leggono nella console, utile per le prove) e le pagine viste di
- * Vercel le scarta `vercelBeforeSend`. ?staff=off lo spegne. Il parametro sparisce subito dall'indirizzo.
+ * TRAFFICO INTERNO (MIS-03): visitando una volta https://originsmeta.com/?staff=<codice dello staff> (oppure
+ * /it?staff=…) da ogni browser e dispositivo dello staff, il browser si segna come interno (localStorage
+ * `originsmeta.internal.v1` = "1"): GA4 non parte, gli eventi non vanno da nessuna parte (si leggono nella console,
+ * utile per le prove) e le pagine viste di Vercel le scarta `vercelBeforeSend`. ?staff=off lo spegne. Il parametro
+ * sparisce subito dall'indirizzo. Il codice NON sta nel repo (qui c'è solo la sua impronta SHA-256, `STAFF_TOKEN_SHA256`)
+ * ma nella KB: così un link con ?staff=… girato su Discord non può spegnere la misura a chi lo apre. Un codice
+ * sbagliato esclude solo quella pagina. Nelle sessioni automatiche (pannello browser di Claude, Claude in Chrome) si
+ * imposta direttamente `localStorage.setItem("originsmeta.internal.v1", "1")`, insieme al consenso.
  *
- * CONSENSO RITIRATO (MIS-08): `stopGoogleAnalytics` nega il consenso a gtag, lo spegne (`ga-disable-<ID>`) e cancella
+ * CONSENSO RITIRATO (MIS-08): `stopGoogleAnalytics` spegne GA4 (`ga-disable-<ID>`), nega il consenso a gtag e cancella
  * i cookie _ga; GoogleAnalytics.tsx poi ricarica la pagina, l'unico modo sicuro di togliere gtag.js, che altrimenti
- * resterebbe in pagina con la misurazione avanzata e manderebbe ping senza cookie.
+ * resterebbe in pagina con la misurazione avanzata. Se nella pagina c'è un modulo con testo non salvato
+ * (`hasUnsavedInput`) il ricaricamento aspetta il prossimo cambio di pagina: intanto GA4 è già spento. Vale anche per
+ * le altre schede aperte del sito (evento `storage`).
  */
 import { track } from "@vercel/analytics";
-import { getConsent } from "./consent";
+import { CONSENT_KEY, getConsent } from "./consent";
 import { ORIGINSMETA_DISCORD } from "./discord";
 
 declare global {
@@ -77,6 +102,7 @@ declare global {
 
 export type AuthMethod = "discord" | "email";
 export type SearchArea = "cards" | "deck_builder";
+export type DiscordServer = "originsmeta" | "official" | "other";
 
 export type EventParams = {
   sign_up: { method: AuthMethod };
@@ -89,13 +115,18 @@ export type EventParams = {
   game_code_copy: { placement: string };
   deck_share: { method: "link" | "text" | "native"; placement: string };
   deck_open_builder: { placement: string };
+  deck_original_open: { guide_lang: string };
   deck_vote: { stars: number; vote_type: "new" | "update" };
   tier_list_save: { kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
+  tournament_create: { visibility: string; deck_mode: string };
+  tournament_join: { size: number };
+  feedback_submit: Record<string, never>;
+  faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
-  discord_click: { server: "originsmeta" | "official"; placement: string; cta: string };
+  discord_click: { server: DiscordServer; placement: string; cta: string };
   view_search_results: { search_term: string; results: number; search_area: SearchArea };
-  home_route: { destination: string };
+  home_route: { destination: string; section: string };
   tier_entry_open: { tier_source: string; card: string };
   tier_entry_click: { tier_source: string; target: string };
 };
@@ -113,13 +144,18 @@ export const VERCEL_PROPS = {
   game_code_copy: ["placement"],
   deck_share: ["method", "placement"],
   deck_open_builder: ["placement"],
+  deck_original_open: ["guide_lang"],
   deck_vote: ["stars", "vote_type"],
   tier_list_save: ["kind"],
   tier_list_share: ["method", "kind"],
+  tournament_create: ["visibility", "deck_mode"],
+  tournament_join: ["size"],
+  feedback_submit: [],
+  faq_ask: ["sources"],
   steam_click: ["target", "placement"],
   discord_click: ["server", "placement"],
   view_search_results: ["search_term", "results"],
-  home_route: ["destination"],
+  home_route: ["destination", "section"],
   tier_entry_open: ["tier_source", "card"],
   tier_entry_click: ["tier_source", "target"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
@@ -168,6 +204,8 @@ export function legendaryParam(slug: string | null | undefined): string {
 /* ---------- invio ---------- */
 
 let gaStarted = false;
+/** GA4 spento da un ritiro del consenso in questa pagina (gtag.js resta caricato fino al ricaricamento). */
+let gaStopped = false;
 /** Eventi arrivati con il consenso prima che GA4 fosse avviato (un effetto figlio parte prima di quello del layout). */
 const pendingGa: [string, Props][] = [];
 const PENDING_MAX = 20;
@@ -179,8 +217,8 @@ export function gaAllowed(): boolean {
 
 function sendToGa(name: string, params: Props) {
   if (!gaAllowed()) return;
-  if (gaStarted && window.gtag) window.gtag("event", name, params);
-  else if (pendingGa.length < PENDING_MAX) pendingGa.push([name, params]);
+  if (gaStarted && !gaStopped && window.gtag) window.gtag("event", name, params);
+  else if (!gaStarted && pendingGa.length < PENDING_MAX) pendingGa.push([name, params]);
 }
 
 /**
@@ -221,7 +259,7 @@ export function trackEvent<N extends EventName>(name: N, params: EventParams[N])
   send(name, params as Record<string, unknown>);
 }
 
-/** Come `trackEvent`, per chi ha il nome in una stringa (attributi data-om-*, TierExplorer): i nomi fuori catalogo si scartano. */
+/** Come `trackEvent`, per chi ha il nome in una stringa (attributi data-om-*, CopyButton, TierExplorer): i nomi fuori catalogo si scartano. */
 export function trackNamedEvent(name: string, params: Record<string, unknown>): void {
   if (isEventName(name)) send(name, params);
 }
@@ -238,11 +276,18 @@ function setGaDisabled(id: string, off: boolean) {
  * Google, tale e quale, eseguito qui invece che in uno script inline, così `window.gtag` esiste subito e gli eventi in
  * attesa partono dopo `config`. Consent Mode v2: pubblicità sempre negata, statistiche concesse. `anonymize_ip` non
  * c'è più: era di Universal Analytics e in GA4 non fa niente (GA4 non registra gli indirizzi IP).
+ * Consenso ridato nella stessa pagina dopo un ritiro (ricaricamento rimandato per un modulo compilato): GA4 si riaccende.
  */
 export function startGoogleAnalytics(id: string): void {
-  if (typeof window === "undefined" || !id || gaStarted) return;
+  if (typeof window === "undefined" || !id) return;
   try {
-    // un consenso dato di nuovo dopo un ritiro, nella stessa pagina: GA4 torna attivo
+    if (gaStarted) {
+      if (!gaStopped) return;
+      setGaDisabled(id, false);
+      window.gtag?.("consent", "update", { analytics_storage: "granted" });
+      gaStopped = false;
+      return;
+    }
     setGaDisabled(id, false);
     const dataLayer = (window.dataLayer = window.dataLayer || []);
     // gtag vuole l'oggetto `arguments`, non un array: con un array GA4 ignora i comandi
@@ -261,24 +306,34 @@ export function startGoogleAnalytics(id: string): void {
 }
 
 /**
- * Consenso ritirato ("Solo necessari" dopo "Accetta tutto"): consenso negato a gtag, GA4 spento con la proprietà
- * `ga-disable-<ID>` e cookie _ga cancellati. Restituisce true se GA4 girava in questa pagina:
- * allora gtag.js è ancora caricato e il chiamante ricarica la pagina, perché la misurazione avanzata (pagine viste
- * nella cronologia, scorrimento, clic in uscita) sta dentro gtag.js e con il solo consenso negato continuerebbe a
- * mandare ping senza cookie.
+ * Consenso ritirato ("Solo necessari" dopo "Accetta tutto", anche da un'altra scheda): GA4 spento con la proprietà
+ * `ga-disable-<ID>`, consenso negato a gtag e cookie _ga cancellati. Prima la proprietà e poi il consenso: con
+ * l'ordine opposto gtag.js, già caricato, lavorerebbe per un attimo in Consent Mode avanzato e potrebbe mandare un
+ * ping senza cookie. Restituisce true se GA4 girava in questa pagina (una volta sola): allora gtag.js è ancora
+ * caricato e il chiamante ricarica la pagina, perché la misurazione avanzata (pagine viste nella cronologia,
+ * scorrimento, clic in uscita) sta dentro gtag.js.
  */
 export function stopGoogleAnalytics(id: string): boolean {
   if (typeof window === "undefined") return false;
-  const wasRunning = gaStarted;
+  const wasRunning = gaStarted && !gaStopped;
   try {
-    window.gtag?.("consent", "update", { analytics_storage: "denied" });
     if (id) setGaDisabled(id, true);
+    window.gtag?.("consent", "update", { analytics_storage: "denied" });
   } catch {
     /* si cancellano comunque i cookie */
   }
+  if (gaStarted) gaStopped = true;
   pendingGa.length = 0;
   deleteGaCookies();
   return wasRunning;
+}
+
+/**
+ * Le chiavi del browser che cambiano il permesso di GA4, per l'evento `storage` delle altre schede: il consenso, il
+ * flag dello staff e null (tutto lo storage svuotato).
+ */
+export function storageAffectsGa(key: string | null): boolean {
+  return key === null || key === CONSENT_KEY || key === INTERNAL_KEY;
 }
 
 /** Nomi dei cookie di Google Analytics presenti in `document.cookie` (_ga, _ga_<ID>, _gid, _gat…, _gac_…, _gcl_…). */
@@ -322,6 +377,48 @@ export function deleteGaCookies(): void {
   }
 }
 
+/* ---------- testo non salvato nella pagina (ricaricamento al ritiro del consenso) ---------- */
+
+type FieldLike = { tagName?: string; type?: string; readOnly?: boolean; isContentEditable?: boolean; form?: unknown };
+/** Campi che non contano: le ricerche, i campi nascosti e i tasti. */
+const NOT_UNSAVED = new Set(["search", "hidden", "button", "submit", "reset", "image"]);
+
+/**
+ * Un campo in cui scrivere lascia testo da non perdere con un ricaricamento: un'area di testo, un contenuto
+ * modificabile, oppure un campo o una tendina dentro un <form> (guida da mandare, torneo, feedback, modifica di un
+ * mazzo…). Le ricerche e i filtri fuori da un modulo (/cards, pool del builder, tier list) non contano.
+ */
+export function isUnsavedInputTarget(el: FieldLike | null | undefined): boolean {
+  if (!el || typeof el !== "object") return false;
+  if (el.isContentEditable) return true;
+  const tag = (el.tagName ?? "").toUpperCase();
+  if (tag === "TEXTAREA") return !el.readOnly;
+  if (tag !== "INPUT" && tag !== "SELECT") return false;
+  if (!el.form || el.readOnly) return false;
+  return !NOT_UNSAVED.has((el.type ?? "").toLowerCase());
+}
+
+let unsavedInput = false;
+
+/** Ascoltatore `input` sul documento (GoogleAnalytics.tsx): segna che nella pagina c'è testo scritto e non ancora salvato. */
+export function noteUnsavedInput(e: Event): void {
+  try {
+    if (isUnsavedInputTarget(e.target as FieldLike | null)) unsavedInput = true;
+  } catch {
+    /* niente */
+  }
+}
+
+/** Qualcuno ha scritto in un modulo di questa pagina (dall'ultimo cambio di pagina). */
+export function hasUnsavedInput(): boolean {
+  return unsavedInput;
+}
+
+/** Cambio di pagina: i moduli di prima non ci sono più. */
+export function clearUnsavedInput(): void {
+  unsavedInput = false;
+}
+
 /* ---------- parametri nell'indirizzo ---------- */
 
 /** Query (`?a=1&b=2`) senza i parametri indicati: gli altri restano scritti com'erano, byte per byte. */
@@ -342,7 +439,13 @@ export function withoutParams(search: string, names: readonly string[]): string 
   return kept.length ? `?${kept.join("&")}` : "";
 }
 
-/** Cambia la query dell'indirizzo senza navigare (Next tiene il suo stato: è lo stesso uso di DeckBuilder e NewDeckBanner). */
+/**
+ * Cambia la query dell'indirizzo senza navigare, come DeckBuilder e NewDeckBanner. Va chiamata dopo il primo giro di
+ * effetti (GoogleAnalytics.tsx lo fa nell'effetto su `mounted`): a quel punto Next ha già preso in carico
+ * `history.replaceState`, che con lo stato `null` copia lo stato interno del router e gli comunica il nuovo indirizzo.
+ * Passare `history.state` sarebbe peggio: porta il segno di Next (`__NA`), e allora Next lascia passare la chiamata
+ * senza aggiornare il suo indirizzo, che alla navigazione dopo rimetterebbe il parametro tolto.
+ */
 function replaceSearch(search: string) {
   const { pathname, hash } = window.location;
   window.history.replaceState(null, "", `${pathname}${search}${hash}`);
@@ -352,50 +455,89 @@ function replaceSearch(search: string) {
 
 export const INTERNAL_KEY = "originsmeta.internal.v1";
 export const STAFF_PARAM = "staff";
+/**
+ * Impronta SHA-256 del codice dello staff (il codice sta nella KB, §11, mai nel repo). Per cambiarlo:
+ * node -e "console.log(require('crypto').createHash('sha256').update('<nuovo codice>').digest('hex'))"
+ * e si incolla qui il risultato.
+ */
+export const STAFF_TOKEN_SHA256 = "a7e776eeac0e499373b569710e9c3379fcb0cc38561552a5ae4b632aa7ac95ac";
 
-/** ?staff=on (o 1) → true, ?staff=off (o 0) → false, altrimenti null. */
-export function staffSwitch(search: string): boolean | null {
-  const v = new URLSearchParams(search).get(STAFF_PARAM)?.trim().toLowerCase();
-  if (v === "on" || v === "1") return true;
-  if (v === "off" || v === "0") return false;
-  return null;
+export type StaffParam = { off: true } | { token: string };
+
+/** ?staff=off (o 0) → spegni; ?staff=<qualunque altro valore> → un codice da verificare; null senza il parametro. */
+export function staffParam(search: string): StaffParam | null {
+  const v = new URLSearchParams(search).get(STAFF_PARAM)?.trim();
+  if (!v) return null;
+  if (v.toLowerCase() === "off" || v === "0") return { off: true };
+  return { token: v.slice(0, 200) };
 }
 
+/** SHA-256 in esadecimale (Web Crypto, anche in Node); null se il browser non lo offre (pagina non sicura). */
+export async function sha256Hex(text: string): Promise<string | null> {
+  try {
+    const subtle = globalThis.crypto?.subtle;
+    if (!subtle) return null;
+    const digest = await subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return null;
+  }
+}
+
+/** Decisione di questa pagina, finché la verifica del codice non finisce o se lo storage è bloccato; null = vale il flag salvato. */
+let staffOverride: boolean | null = null;
+
 /**
- * Browser dello staff? Vale il parametro dell'indirizzo, se c'è (la prima pagina, prima che `applyStaffSwitch` lo
- * salvi e lo tolga), altrimenti il flag salvato.
+ * Browser dello staff? Vale la decisione di questa pagina (`applyStaffSwitch`), poi il parametro dell'indirizzo se c'è
+ * ancora (un codice non verificato conta come staff: al peggio non si conta quella pagina), poi il flag salvato.
  */
 export function isInternalTraffic(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    const fromUrl = staffSwitch(window.location.search);
-    if (fromUrl !== null) return fromUrl;
+    if (staffOverride !== null) return staffOverride;
+    const p = staffParam(window.location.search);
+    if (p) return !("off" in p);
     return localStorage.getItem(INTERNAL_KEY) === "1";
   } catch {
     return false;
   }
 }
 
-/** ?staff=on|off: salva la scelta nel browser, la conferma nella console e toglie il parametro dall'indirizzo. */
-export function applyStaffSwitch(): void {
+/**
+ * ?staff=<codice>|off: toglie subito il parametro dall'indirizzo, verifica il codice (la sua impronta deve essere
+ * `expectedHash`), salva la scelta nel browser e la conferma nella console. Un codice sbagliato non cambia niente.
+ */
+export async function applyStaffSwitch(expectedHash: string = STAFF_TOKEN_SHA256): Promise<void> {
   if (typeof window === "undefined") return;
+  let p: StaffParam | null;
   try {
-    const on = staffSwitch(window.location.search);
-    if (on === null) return;
-    try {
-      if (on) localStorage.setItem(INTERNAL_KEY, "1");
-      else localStorage.removeItem(INTERNAL_KEY);
-    } catch {
-      /* storage bloccato: vale solo per questa pagina */
-    }
-    console.info(on ? "[OriginsMeta] Traffico interno: in questo browser GA4 e Vercel non contano più nulla (?staff=off per tornare)." : "[OriginsMeta] Traffico interno spento: questo browser torna a essere contato.");
+    p = staffParam(window.location.search);
+    if (!p) return;
+    // fino alla fine della verifica la pagina non si conta (e con ?staff=off sì)
+    staffOverride = !("off" in p);
     replaceSearch(withoutParams(window.location.search, [STAFF_PARAM]));
   } catch {
-    /* indirizzo non leggibile */
+    return;
   }
+  const on = "token" in p ? (await sha256Hex(p.token)) === expectedHash : false;
+  if ("token" in p && !on) {
+    staffOverride = null;
+    console.info("[OriginsMeta] Codice dello staff non valido: questo browser resta contato.");
+    return;
+  }
+  let saved = false;
+  try {
+    if (on) localStorage.setItem(INTERNAL_KEY, "1");
+    else localStorage.removeItem(INTERNAL_KEY);
+    saved = true;
+  } catch {
+    /* storage bloccato: vale solo per questa pagina */
+  }
+  staffOverride = saved ? null : on;
+  console.info(on ? "[OriginsMeta] Traffico interno: in questo browser GA4 e Vercel non contano più nulla (?staff=off per tornare)." : "[OriginsMeta] Traffico interno spento: questo browser torna a essere contato.");
 }
 
-/** Parametri della misura da togliere dagli indirizzi che arrivano a Vercel. */
+/** Parametri della misura da togliere dagli indirizzi che arrivano a Vercel (gli UTM restano). */
 const TRACKING_PARAMS = [STAFF_PARAM, "om_auth", "om_method"] as const;
 
 /** Indirizzo senza i parametri della misura (il resto intatto, frammento compreso). */
@@ -410,7 +552,7 @@ export function stripTrackingParams(url: string): string {
 
 /**
  * `beforeSend` di Vercel Web Analytics (componente `VercelAnalytics` in GoogleAnalytics.tsx): scarta pagine viste ed
- * eventi del browser dello staff e toglie i parametri della misura dall'indirizzo.
+ * eventi del browser dello staff e toglie i parametri della misura dall'indirizzo (il codice dello staff compreso).
  */
 export function vercelBeforeSend<E extends { url: string }>(event: E): E | null {
   if (isInternalTraffic()) return null;
@@ -448,23 +590,50 @@ export function readAuthSignal(search: string): { event: AuthEvent; method: Auth
 /** Finestre per riconoscere un account nuovo: la conferma appena avvenuta, la creazione entro la durata del link via email (1 ora). */
 export const NEW_ACCOUNT_CONFIRMED_MS = 10 * 60_000;
 export const NEW_ACCOUNT_CREATED_MS = 60 * 60_000;
+/** Scarto massimo fra creazione e conferma di un account confermato da Supabase alla creazione (conferme spente, OAuth). */
+const CONFIRMED_AT_CREATION_MS = 5_000;
 
 /**
- * L'accesso appena completato è un'iscrizione? Sì se l'account è stato confermato negli ultimi 10 minuti (il primo link
- * via email aperto, anche per un account creato giorni prima e mai completato; il primo accesso con Discord) oppure
- * creato nell'ultima ora (il link via email scade dopo un'ora: vale anche se Supabase conferma gli indirizzi alla
- * creazione). Un secondo accesso nella prima ora conta ancora come iscrizione: caso raro, accettato.
+ * L'accesso appena completato (sul server, in /auth/callback) è un'iscrizione?
+ * - Sì se l'account è stato confermato negli ultimi 10 minuti: il primo link via email aperto (anche per un account
+ *   creato giorni prima e mai completato) e il primo accesso con Discord.
+ * - Per l'email, anche se l'account è stato creato nell'ultima ora (il link scade dopo un'ora) ma SOLO quando Supabase
+ *   lo ha confermato già alla creazione (conferma e creazione a pochi secondi): con le conferme accese un secondo
+ *   accesso nella stessa ora ha una conferma vecchia e resta un login.
+ * - Per Discord, la creazione negli ultimi 10 minuti (il giro su Discord dura poco).
+ * Restano possibili doppioni rari (un secondo accesso entro 10 minuti dalla conferma): nello stesso browser li toglie
+ * `dedupeSignUp`; il numero certo degli iscritti resta quello del database (auth.users).
  */
 export function isNewAccount(
   user: { created_at?: string | null; confirmed_at?: string | null; email_confirmed_at?: string | null } | null | undefined,
+  method: AuthMethod = "email",
   now = Date.now(),
 ): boolean {
   if (!user) return false;
-  const recent = (iso: string | null | undefined, windowMs: number) => {
+  const at = (iso: string | null | undefined) => {
     const t = Date.parse(iso ?? "");
-    return Number.isFinite(t) && Math.abs(now - t) < windowMs;
+    return Number.isFinite(t) ? t : null;
   };
-  return recent(user.confirmed_at ?? user.email_confirmed_at, NEW_ACCOUNT_CONFIRMED_MS) || recent(user.created_at, NEW_ACCOUNT_CREATED_MS);
+  const recent = (t: number | null, windowMs: number) => t !== null && Math.abs(now - t) < windowMs;
+  const created = at(user.created_at);
+  const confirmed = at(user.confirmed_at ?? user.email_confirmed_at);
+  if (recent(confirmed, NEW_ACCOUNT_CONFIRMED_MS)) return true;
+  if (method === "discord") return recent(created, NEW_ACCOUNT_CONFIRMED_MS);
+  const confirmedAtCreation = confirmed === null || (created !== null && Math.abs(confirmed - created) < CONFIRMED_AT_CREATION_MS);
+  return confirmedAtCreation && recent(created, NEW_ACCOUNT_CREATED_MS);
+}
+
+/** Chiave del browser con l'ora dell'ultimo sign_up mandato da qui. */
+export const SIGNUP_KEY = "originsmeta.signup.v1";
+
+/**
+ * Un secondo sign_up nello stesso browser entro un'ora dal primo diventa login: è lo stesso account che rientra (un
+ * secondo link via email, Discord dopo un'uscita) nella finestra in cui `isNewAccount` non lo distingue.
+ */
+export function dedupeSignUp(event: AuthEvent, lastSignUp: number | null, now: number): AuthEvent {
+  if (event !== "sign_up" || lastSignUp === null || !Number.isFinite(lastSignUp)) return event;
+  const age = now - lastSignUp;
+  return age >= 0 && age < NEW_ACCOUNT_CREATED_MS ? "login" : event;
 }
 
 /** All'arrivo dopo l'accesso: manda sign_up o login e toglie il segnale dall'indirizzo (un ricaricamento non lo ripete). */
@@ -476,7 +645,17 @@ export function consumeAuthSignal(): void {
     if (!p.has(AUTH_PARAM) && !p.has(AUTH_METHOD_PARAM)) return;
     const signal = readAuthSignal(search);
     replaceSearch(withoutParams(search, [AUTH_PARAM, AUTH_METHOD_PARAM]));
-    if (signal) trackEvent(signal.event, { method: signal.method });
+    if (!signal) return;
+    let event = signal.event;
+    try {
+      const raw = localStorage.getItem(SIGNUP_KEY);
+      const now = Date.now();
+      event = dedupeSignUp(event, raw === null ? null : Number(raw), now);
+      if (event === "sign_up") localStorage.setItem(SIGNUP_KEY, String(now));
+    } catch {
+      /* storage bloccato: si manda com'è */
+    }
+    trackEvent(event, { method: signal.method });
   } catch {
     /* indirizzo non leggibile */
   }
@@ -523,25 +702,44 @@ export function trackSearch(area: SearchArea, rawTerm: string, results: number):
   }
 }
 
-/* ---------- clic: link verso Steam e Discord, attributi data-om-* ---------- */
+/* ---------- clic: link verso Steam e Discord, home, attributi data-om-* ---------- */
 
 /** App di Steam del gioco e della demo (gli stessi di `officialLinks` in Footer.tsx). */
 const STEAM_GAME_APP = "4429430";
 const STEAM_DEMO_APP = "4756630";
 
-/** Dove porta un link di Steam: pagina del gioco, della demo, una news (patch notes), il Next Fest, la community, altro. */
+const isSteamHost = (host: string) => /(?:^|\.)(?:steampowered|steamcommunity)\.com$/i.test(host);
+const isDiscordHost = (host: string) => /^discord\.gg$/i.test(host) || /(?:^|\.)discord(?:app)?\.com$/i.test(host);
+
+/**
+ * Dove porta un link di Steam: pagina del gioco, della demo, una news (patch notes sullo store e archivio delle news
+ * della community, `officialLinks.news`), il Next Fest, il resto della community, altro.
+ */
 export function steamTarget(url: URL): string {
-  if (/(?:^|\.)steamcommunity\.com$/i.test(url.hostname)) return "community";
   const path = url.pathname.toLowerCase();
-  if (path.startsWith("/news/")) return "news";
+  if (path.startsWith("/news/") || /\/(?:all)?news(?:\/|$)/.test(path)) return "news";
+  if (/(?:^|\.)steamcommunity\.com$/i.test(url.hostname)) return "community";
   if (path.startsWith("/sale/nextfest")) return "next_fest";
   if (path.startsWith(`/app/${STEAM_DEMO_APP}`)) return "demo";
   if (path.startsWith(`/app/${STEAM_GAME_APP}`)) return "store";
   return "other";
 }
 
-/** Codice d'invito del nostro Discord ("RAG7nnrNGP"), da `ORIGINSMETA_DISCORD`. */
+/** Codice d'invito del nostro Discord ("RAG7nnrNGP"), da `ORIGINSMETA_DISCORD`: gli inviti a caso distinguono le maiuscole. */
 const OUR_INVITE = ORIGINSMETA_DISCORD.replace(/\/+$/, "").split("/").pop() ?? "";
+/**
+ * Inviti del Discord ufficiale di Koin Games: l'indirizzo personalizzato di `officialLinks.discord` in Footer.tsx
+ * (discord.gg/originstcg), che non distingue le maiuscole. Se Koin ne aggiunge altri, vanno qui.
+ */
+const OFFICIAL_INVITES = new Set(["originstcg"]);
+
+/** Server di un link Discord: il nostro, quello ufficiale, oppure un altro (tornei, creator, link ai canali). */
+export function discordServer(url: URL): DiscordServer {
+  const code = url.pathname.replace(/^\/(?:invite\/)?/, "").replace(/\/+$/, "");
+  if (OUR_INVITE && code === OUR_INVITE) return "originsmeta";
+  const isInvite = url.hostname.toLowerCase() === "discord.gg" || /^\/invite\//i.test(url.pathname);
+  return isInvite && OFFICIAL_INVITES.has(code.toLowerCase()) ? "official" : "other";
+}
 
 type LinkEvent = { name: "steam_click"; params: EventParams["steam_click"] } | { name: "discord_click"; params: EventParams["discord_click"] };
 
@@ -554,14 +752,67 @@ export function linkEvent(href: string, placement: string, cta: string): LinkEve
     return null;
   }
   const host = url.hostname.toLowerCase();
-  if (/(?:^|\.)(?:steampowered|steamcommunity)\.com$/.test(host)) return { name: "steam_click", params: { target: steamTarget(url), placement, cta } };
-  if (host === "discord.gg" || /(?:^|\.)discord(?:app)?\.com$/.test(host)) {
+  if (isSteamHost(host)) return { name: "steam_click", params: { target: steamTarget(url), placement, cta } };
+  if (isDiscordHost(host)) {
     // le API (webhook) non sono link per i visitatori
     if (url.pathname.startsWith("/api/")) return null;
-    const code = url.pathname.replace(/^\/(?:invite\/)?/, "").replace(/\/+$/, "");
-    return { name: "discord_click", params: { server: OUR_INVITE && code === OUR_INVITE ? "originsmeta" : "official", placement, cta } };
+    return { name: "discord_click", params: { server: discordServer(url), placement, cta } };
   }
   return null;
+}
+
+/** La home: /en, /it, /es, con o senza la barra finale. */
+export function isHomePath(pathname: string): boolean {
+  return /^\/(?:en|it|es)\/?$/.test(pathname);
+}
+
+/**
+ * Destinazione di un link cliccato nella home (evento home_route, HOME-12): la sezione del sito a cui porta, oppure
+ * steam, discord, youtube, external per i link in uscita. null per la home stessa (logo, ancore) e per i link che non
+ * sono pagine (mailto:, javascript:).
+ */
+export function homeDestination(href: string, origin: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(href, origin);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+  if (url.origin !== origin) {
+    const host = url.hostname.toLowerCase();
+    if (isSteamHost(host)) return "steam";
+    if (isDiscordHost(host)) return "discord";
+    if (/(?:^|\.)(?:youtube(?:-nocookie)?\.com|youtu\.be)$/.test(host)) return "youtube";
+    return "external";
+  }
+  const segs = url.pathname.split("/").filter(Boolean);
+  // link breve di un torneo (/t/OM-XXXX), fuori dalle lingue
+  if (segs[0] === "t") return "tournaments";
+  const [first, second] = langOf(url.pathname) ? segs.slice(1) : segs;
+  if (!first) return null;
+  switch (first) {
+    case "tier-list":
+      return second === "create" ? "tier_list_maker" : second === "community" ? "tier_list_community" : second === "most-played" ? "tier_list_most_played" : "tier_list";
+    case "decks":
+      return second === "publish" ? "deck_publish" : second ? "deck_page" : "decks";
+    case "deck-builder":
+      return "builder";
+    case "cards":
+      return second ? "card_page" : "cards";
+    case "news":
+      return second ? "news_article" : "news";
+    case "guides":
+      return second ? "guide" : "guides";
+    default:
+      return (
+        first
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "")
+          .slice(0, 40) || null
+      );
+  }
 }
 
 /** `data-om-search-area` → "search_area": nome del parametro da una chiave del dataset (senza il prefisso "om"). */
@@ -584,20 +835,31 @@ export function datasetEvent(dataset: Record<string, string | undefined>): { nam
   return { name, params: cleanParams(raw) };
 }
 
-/** Posto del link nella pagina: `data-om-placement` (del link o di un contenitore), header, footer, content, other. */
-function placementOf(el: Element): string {
+type Closest = { closest(selector: string): { getAttribute(name: string): string | null } | null };
+
+/**
+ * Posto del link nella pagina: `data-om-placement` (del link o di un contenitore), header, footer, content (dentro
+ * <main>); fuori dal <main> lo slider della home (HeroSlider, l'unico carosello del sito) e la striscia del calendario
+ * (EventTicker, classe `ticker`); other per il resto (banner dei cookie, riquadro dei feedback).
+ */
+export function placementOf(el: Closest): string {
   const own = el.closest("[data-om-placement]")?.getAttribute("data-om-placement");
   if (own) return own.slice(0, 40);
   if (el.closest("body > header")) return "header";
   if (el.closest("body > footer")) return "footer";
   if (el.closest("main")) return "content";
+  if (el.closest('[aria-roledescription="carousel"]')) return "slider";
+  if (el.closest(".ticker")) return "calendar";
   return "other";
 }
 
+/** Posti della pagina che non sono la home anche quando si è nella home: header, footer, banner e pop-up. */
+const OUTSIDE_HOME = new Set(["header", "footer", "other"]);
+
 /**
  * Ascoltatore dei clic su tutto il documento (click e clic con la rotellina, auxclick), registrato da GoogleAnalytics.tsx
- * in fase di cattura: così vede anche i link di componenti server (SteamButton, DiscordButton, footer, testi delle news)
- * senza trasformarli in componenti client, e anche i clic che un altro gestore ferma.
+ * in fase di cattura: così vede anche i link di componenti server (SteamButton, DiscordButton, footer, testi delle news,
+ * home) senza trasformarli in componenti client, e anche i clic che un altro gestore ferma.
  */
 export function onDocumentClick(e: MouseEvent): void {
   try {
@@ -606,13 +868,16 @@ export function onDocumentClick(e: MouseEvent): void {
     const el = target?.closest<HTMLElement>("a[href], button");
     if (!el) return;
     const tagged = el.closest<HTMLElement>("[data-om-event]");
-    if (tagged) {
-      const ev = datasetEvent({ ...tagged.dataset });
-      if (ev) send(ev.name, ev.params);
-    }
-    if (el instanceof HTMLAnchorElement) {
-      const ev = linkEvent(el.href, placementOf(el), el.dataset.omCta || "link");
-      if (ev) send(ev.name, ev.params);
+    const declared = tagged ? datasetEvent({ ...tagged.dataset }) : null;
+    if (declared) send(declared.name, declared.params);
+    if (!(el instanceof HTMLAnchorElement)) return;
+    const placement = placementOf(el);
+    const ev = linkEvent(el.href, placement, el.dataset.omCta || "link");
+    if (ev) send(ev.name, ev.params);
+    // HOME-12: ogni link della home (fuori da header, footer e pop-up) dice dove porta chi arriva in home
+    if (declared?.name !== "home_route" && isHomePath(window.location.pathname) && !OUTSIDE_HOME.has(placement)) {
+      const destination = homeDestination(el.href, window.location.origin);
+      if (destination) send("home_route", { destination, section: placement });
     }
   } catch {
     /* il clic va avanti comunque */

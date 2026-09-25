@@ -552,9 +552,12 @@ export function DeckBuilder({
   const issues = validateDeck(deck);
   const complete = isComplete(deck);
   const deckEmpty = !deck.legendary && deck.cards.length === 0;
+  /* misura: caselle il cui mazzo è già stato contato come completo (deck_complete, più sotto) */
+  const completedSlots = useRef(new Set<number>());
   /** "Svuota il tuo mazzo" (tasto rosso in cima al pannello): toglie le carte e chiude quel che non ha più senso. */
   const clearDeck = () => {
     updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }));
+    completedSlots.current.delete(active); // misura: un mazzo nuovo in questa casella conterà di nuovo
     // il mazzo nuovo che nascerà qui non è il mazzo privato aperto da /account
     if (draftLink.current?.slot === active) draftLink.current = null;
     setConfirmClear(false);
@@ -571,13 +574,17 @@ export function DeckBuilder({
   /* --- misura (src/lib/analytics.ts): builder del sito o di un torneo --- */
   const placement = preset ? "tournament_builder" : "builder";
   /* deck_complete: il mazzo attivo arriva a 25 carte per una modifica fatta qui (anche un'importazione), non al
-     ripristino dal browser né passando a un'altra casella già completa */
+     ripristino dal browser né passando a un'altra casella già completa. Una volta per casella e per scheda: con 12
+     carte diverse lo scambio di una carta passa da 24 a 25 ogni volta, e contarlo farebbe di ogni ritocco un mazzo
+     nuovo. "Svuota mazzo" rimette in gioco la casella (clearDeck). */
   const completeSeen = useRef<{ slot: number; complete: boolean } | null>(null);
   useEffect(() => {
     if (!hydrated) return;
     const prev = completeSeen.current;
     completeSeen.current = { slot: active, complete };
-    if (prev && prev.slot === active && !prev.complete && complete) trackEvent("deck_complete", { placement });
+    if (!prev || prev.slot !== active || prev.complete || !complete || completedSlots.current.has(active)) return;
+    completedSlots.current.add(active);
+    trackEvent("deck_complete", { placement });
   }, [hydrated, active, complete, placement]);
 
   /* codice del gioco: servono le chiavi ufficiali di tutte le carte (dal database o insegnate dall'utente) */

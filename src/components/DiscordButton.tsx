@@ -17,7 +17,7 @@ export const isDiscordUrl = (url?: string | null): boolean => /discord\.(gg|com)
  * "blurple" = azione principale (#5865F2), "grey" = secondaria (#4E5058), come nell'app Discord.
  * Con un indirizzo esterno (il caso normale: invito o canale) si apre in una nuova scheda, con l'avviso per i
  * lettori di schermo (vedi `newTabProps` in SteamButton.tsx). Il clic lo misura `onDocumentClick` (discord_click,
- * con il nostro server distinto da quello ufficiale): vedi la nota in SteamButton.tsx.
+ * con il nostro server, quello ufficiale e gli altri, come i Discord dei tornei, distinti): vedi la nota in SteamButton.tsx.
  */
 export function DiscordButton({
   href,

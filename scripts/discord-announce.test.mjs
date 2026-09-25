@@ -5,7 +5,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { added, backfillItems, guideDates, guideSlugs, newsChannels, newsEntries, newsSlugs, ogValue, patchNews, payload, utmCampaign, webhookFor, withUtm } from "./discord-announce.mjs";
+import { added, backfillItems, deliveredChannel, guideDates, guideSlugs, newsChannels, newsEntries, newsSlugs, ogValue, patchNews, payload, utmCampaign, webhookFor, withUtm } from "./discord-announce.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
@@ -157,6 +157,20 @@ describe("messaggi", () => {
     });
     // l'immagine resta com'è
     assert.equal(news.image.url, "https://originsmeta.com/media/x.webp");
+  });
+  test("utm_content dice il canale in cui il messaggio esce davvero: le guide senza webhook escono in #site-news", () => {
+    const guide = { kind: "guides", slug: "g" };
+    assert.equal(deliveredChannel("guides", { DISCORD_WEBHOOK_NEWS: "https://x" }), "news");
+    assert.equal(deliveredChannel("guides", { DISCORD_WEBHOOK_GUIDES: "https://y", DISCORD_WEBHOOK_NEWS: "https://x" }), "guides");
+    assert.equal(deliveredChannel("guides", {}), "guides", "nessun webhook (prova a secco): il canale della voce");
+    assert.equal(deliveredChannel("announcements", {}), "announcements");
+    const viaNews = payload("guides", guide, html, en, "", deliveredChannel("guides", { DISCORD_WEBHOOK_NEWS: "https://x" })).embeds[0];
+    for (const href of [viaNews.url, ...viaNews.fields.map((f) => mdHref(f.value))]) {
+      assert.deepEqual(split(href).utm, { utm_source: "discord", utm_medium: "social", utm_campaign: "guide", utm_content: "site-news" }, href);
+    }
+    // testo del messaggio: sempre quello della guida
+    assert.match(payload("guides", guide, html, en, "", "news").content, /Nuova guida/);
+    assert.equal(split(payload("guides", guide, html, en, "", "guides").embeds[0].url).utm.utm_content, "guides");
   });
   test("withUtm: gli UTM prima del frammento, i parametri che c'erano restano", () => {
     assert.equal(
