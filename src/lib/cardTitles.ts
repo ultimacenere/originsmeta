@@ -110,7 +110,7 @@ type Head = {
   name: string;
   align: string;
   legendary: boolean;
-  /** magia (le carte create non lo dicono: si chiamano "carta creata") */
+  /** magia (le carte create non lo dicono: si chiamano "carta generata" / "carta creada") */
   spell: boolean;
   stats: string;
   /** chi crea la carta, già unito ("Van Helsing's Tools", "Animate Object and Sorcerer's Apprentice") */

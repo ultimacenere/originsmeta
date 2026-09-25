@@ -19,7 +19,12 @@ import { refreshCardDecks } from "./decksByCard";
 import { deckIndexable } from "./deckQuality";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
-export type ActionState = { error?: string; ok?: boolean; href?: string };
+/**
+ * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
+ * aggiornare il mazzo privato riaperto (?draft=<id>) o risalvare lo stesso mazzo sono `ok` ma non `created`, e il
+ * browser manda l'evento chiave deck_created solo nel primo caso (revisione dell'integrazione dell'Ondata 2).
+ */
+export type ActionState = { error?: string; ok?: boolean; href?: string; created?: boolean };
 
 /**
  * Pagine da rigenerare quando cambia un mazzo pubblicato. Dall'Ondata 2 (25/09/2026) anche le schede carta, che
@@ -226,7 +231,8 @@ export async function saveDeckPrivate(_prev: ActionState, formData: FormData): P
     const { error } = await supabase.from("community_decks").insert({ ...row, slug, owner: user.id, status: "draft" });
     if (!error) {
       revalidateAccount();
-      return done;
+      // l'unico ramo che crea un mazzo: gli aggiornamenti qui sopra restituiscono `done` senza `created`
+      return { ...done, created: true };
     }
     if (error.code !== "23505") return { error: "db" };
     slug = newSlug(name);

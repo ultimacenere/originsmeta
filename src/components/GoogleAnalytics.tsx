@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { CONSENT_EVENT, getConsent } from "@/lib/consent";
 import { useMounted } from "@/lib/useMounted";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import {
   applyStaffSwitch,
   clearUnsavedInput,
@@ -20,7 +21,20 @@ import {
   stopGoogleAnalytics,
   storageAffectsGa,
   vercelBeforeSend,
+  type SessionUser,
 } from "@/lib/analytics";
+
+/**
+ * L'utente della sessione Supabase di questo browser, per verificare il segnale ?om_auth= (`consumeAuthSignal`). Si
+ * chiama solo quando il segnale c'è, cioè una volta per accesso: `getUser()` chiede l'utente a Supabase, con il suo
+ * `last_sign_in_at` aggiornato. Il client è lo stesso che l'header carica già per il menu dell'account.
+ */
+async function sessionUser(): Promise<SessionUser | null> {
+  const sb = supabaseBrowser();
+  if (!sb) return null;
+  const { data } = await sb.auth.getUser();
+  return data.user;
+}
 
 /**
  * Google Analytics 4, caricato SOLO se l'utente ha scelto "Accetta tutto" nel banner cookie (Consent Mode v2:
@@ -32,7 +46,8 @@ import {
  * - il flag del traffico interno dello staff (?staff=<codice>|off);
  * - l'ascoltatore dei clic (link verso Steam e Discord, link della home, attributi data-om-*), che parte anche senza
  *   consenso: i clic vanno sempre a Vercel, senza cookie, e a GA4 solo con il consenso;
- * - l'evento di accesso o iscrizione all'arrivo da /auth/callback (?om_auth=…);
+ * - l'evento di accesso o iscrizione all'arrivo da /auth/callback (?om_auth=…), solo se la sessione del browser ha
+ *   un accesso appena avvenuto (`sessionUser` qui sotto);
  * - il ritiro del consenso (MIS-08), da questa scheda o da un'altra (evento `storage`): se GA4 girava, GA4 spento,
  *   consenso negato, cookie _ga cancellati e pagina ricaricata, perché gtag.js non si può scaricare. Il ricaricamento
  *   farebbe perdere il testo scritto nei moduli che non tengono una bozza nel browser (guida da mandare, torneo,
@@ -109,7 +124,7 @@ export function GoogleAnalytics({ id }: { id: string }) {
   useEffect(() => {
     if (!mounted) return;
     void applyStaffSwitch();
-    consumeAuthSignal();
+    void consumeAuthSignal(sessionUser);
   }, [mounted]);
 
   if (!enabled) return null;

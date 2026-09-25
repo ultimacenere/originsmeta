@@ -7,7 +7,7 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
-import { CommunityReadError, getProfileByUsername, listDecksByOwner, listPublicTierListKinds } from "@/lib/community/queries";
+import { getProfileByUsername, listDecksByOwner } from "@/lib/community/queries";
 import { countEntries, listPublicTierLists } from "@/lib/community/tierlists";
 import {
   communityPageLabels,
@@ -50,11 +50,12 @@ export function generateStaticParams() {
 async function loadProfile(username: string) {
   const profile = await getProfileByUsername(username);
   if (!profile) return null;
-  const [decks, tierLists, tierKinds] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id), listPublicTierListKinds(profile.id)]);
-  // `listPublicTierLists` (tierlists.ts) trasforma ancora un errore in una lista vuota: i fatti del profilo (title,
-  // description, noindex) vengono dalla lettura che lancia, e se le due letture non si accordano (ci sono tier list ma
-  // la lista completa è vuota) la rigenerazione fallisce, invece di mettere in cache un profilo "senza tier list".
-  if (tierKinds.length > 0 && tierLists.length === 0) throw new CommunityReadError("listPublicTierLists", "nessuna riga letta per un profilo che ha tier list pubblicate");
+  // Le due letture lanciano con un errore (DECKS-12, `rowsOrThrow`): un profilo "senza mazzi" o "senza tier list" per
+  // un guasto di rete non finisce in cache. I tipi delle tier list (title, description, noindex) si ricavano dalla
+  // lettura completa, una per tipo e già in ordine di tipo (revisione dell'integrazione dell'Ondata 2: prima una
+  // seconda lettura dei soli tipi, quando `listPublicTierLists` trasformava ancora un errore in una lista vuota).
+  const [decks, tierLists] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id)]);
+  const tierKinds = [...new Set(tierLists.map((t) => t.kind))];
   const name = authorName(profile);
   // Le Leggendarie dei mazzi, dal più recente e senza doppioni (anche quelle scritte a mano, fuori dal database)
   const legendaries = [

@@ -5,7 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { isCaptchaError, turnstileEnabled } from "@/lib/turnstile";
 import { authErrorKind, type AuthErrorKind, type LoginLabels } from "@/lib/loginLabels";
-import { trackEvent, type AuthMethod } from "@/lib/analytics";
+import { countsOnArrival, navigationType, trackEvent, type AuthMethod } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
 import { DiscordLogo } from "./DiscordButton";
 import { Turnstile } from "./Turnstile";
@@ -70,13 +70,17 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const urlError: AuthErrorKind | null = status === "idle" && !pending ? ((fromQuery === "generic" ? fromHash : null) ?? fromQuery ?? fromHash) : null;
 
   /* Misura del percorso di accesso (MIS-11): l'errore arrivato dal ritorno (/auth/callback, sempre con `via`) si conta
-     una volta sola per pagina, anche se ricompare tornando indietro dalla cache del browser (pageshow). Gli errori
-     di questa pagina li manda `reportLoginError` dove il pannello imposta lo stato. */
+     una volta sola per pagina, anche se ricompare tornando indietro dalla cache del browser (pageshow), e solo
+     all'arrivo: `?error=` resta nell'indirizzo (il messaggio deve restare mentre si scrive l'email), quindi un
+     ricaricamento o un ritorno con avanti/indietro lo rimostrano ma non lo ricontano (`countsOnArrival`, revisione
+     dell'integrazione dell'Ondata 2). Gli errori di questa pagina li manda `reportLoginError` dove il pannello
+     imposta lo stato. */
   const urlVia = params?.get("via");
   const urlErrorCounted = useRef(false);
   useEffect(() => {
     if (!urlError || urlErrorCounted.current) return;
     urlErrorCounted.current = true;
+    if (!countsOnArrival(navigationType())) return;
     reportLoginError(ERROR_KIND[urlError], urlVia === "discord" || urlVia === "email" ? urlVia : undefined);
   }, [urlError, urlVia]);
 

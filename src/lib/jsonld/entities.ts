@@ -22,8 +22,14 @@ export type Json = Record<string, unknown>;
 /**
  * Convenzione degli `@id`, uguale per tutti i nodi:
  * - entità reali, una sola per tutto il dominio e per tutte le lingue: `${siteUrl}/#<nome>` (organization, origins-tcg,
- *   koin-games, person-<slug>, user-<username>, event-<slug>);
- * - nodi legati a una pagina: `<indirizzo della pagina>#<nome>` (website, collection, page, app).
+ *   koin-games, person-<slug>, user-<username>, card-<ID>, e lo Steam Next Fest: event-steam-next-fest-october-2026);
+ * - nodi legati a una pagina: `<indirizzo della pagina>#<nome>` (website, collection, page, app, e gli eventi del
+ *   calendario, event-<slug> sulla scheda /<lingua>/tournaments: portano nome, descrizione e indirizzo tradotti, quindi
+ *   uno per lingua; revisione dell'integrazione dell'Ondata 2, vedi jsonld/events.ts).
+ * Regola: un nodo con un `@id` comune alle lingue porta solo valori uguali in ogni lingua. Eccezione accettata: le
+ * Person degli autori (`person()`), che nella propria pagina autore hanno `url`, `mainEntityOfPage`, `jobTitle` e
+ * `description` nella lingua della pagina. Una persona reale resta una: tre `@id` per lingua sarebbero proprio le tre
+ * entità che TOOL-09 ha unito, e i campi tradotti descrivono la stessa persona con le stesse informazioni.
  * Chi ha bisogno di puntare a un'entità scrive `{ "@id": organizationId }` (o `videoGameId`, `koinGamesId`,
  * `personId(slug)`, `memberId(username)`), o usa `personRef`/`memberRef`/`koinGamesRef` quando servono anche nome e
  * indirizzo sul posto: mai una copia dell'oggetto, altrimenti nascono entità duplicate. Le pagine non scrivono a mano

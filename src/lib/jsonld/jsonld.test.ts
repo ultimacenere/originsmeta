@@ -53,7 +53,7 @@ const newsData: typeof import("../data/news") = await import("../data/news.ts");
 
 const { organization, organizationId, videoGame, videoGameId, koinGames, koinGamesId, gameLinks, personId, person, personRef, memberId, memberRef, website, websiteId, FREE_OFFER_CURRENCY } =
   entities;
-const { eventId, eventNode, festivalNode } = eventsLd;
+const { eventId, eventNode, festivalId, festivalNode } = eventsLd;
 const { events, steamNextFest } = eventsData;
 const { authors, founders, nicknameOf, authorByUsername } = authorsData;
 const { entityLabels, deckBuilderApp, aboutChecks, aboutDisclaimer, KOIN_PERMISSION_PUBLIC } = labelsModule;
@@ -172,7 +172,7 @@ describe("entità del sito", () => {
       entities.aboutPage({ locale: "it", path: "/it/about", name: "x", description: "x" }),
       entities.authorProfilePage({ locale: "es", path: "/es/authors/davdas", name: "x", slug: "davdas" }),
       entities.collectionPage({ locale: "en", path: "/en/authors", name: "x", description: "x", items: authors.map((a) => ({ name: a.name, path: "/x", id: personId(a.slug) })) }),
-      entities.collectionPage({ locale: "en", path: "/en/tournaments", name: "x", description: "x", items: upcoming.map((e) => ({ name: "x", path: "/x", id: eventId(e.slug) })) }),
+      ...locales.map((l) => entities.collectionPage({ locale: l, path: `/${l}/tournaments`, name: "x", description: "x", items: upcoming.map((e) => ({ name: "x", path: "/x", id: eventId(e.slug, l) })) })),
     ];
     // entità definite: i nodi del layout (su ogni pagina), le persone (pagine autore), gli eventi (/tournaments)
     const known = new Set<string>([
@@ -181,8 +181,8 @@ describe("entità del sito", () => {
       koinGamesId,
       ...locales.map((l) => websiteId(l)),
       ...authors.map((a) => personId(a.slug)),
-      ...upcoming.map((e) => eventId(e.slug)),
-      eventId(steamNextFest.slug),
+      ...locales.flatMap((l) => upcoming.map((e) => eventId(e.slug, l))),
+      festivalId,
     ]);
     const missing = nodes.flatMap((n) => references(n)).filter((id) => !known.has(id));
     assert.deepEqual([...new Set(missing)], []);
@@ -253,7 +253,9 @@ describe("eventi", () => {
     assert.ok(cup);
     for (const l of locales) {
       const node = eventNode(cup, l);
-      assert.equal(node["@id"], eventId("next-fest-tournament"), l);
+      // un @id per lingua, legato alla scheda di /tournaments: il nodo porta nome, descrizione e indirizzo tradotti
+      assert.equal(node["@id"], `https://originsmeta.com/${l}/tournaments#event-next-fest-tournament`, l);
+      assert.equal(node["@id"], eventId("next-fest-tournament", l), l);
       assert.equal(node.name, "Crimson Cup", l);
       assert.match(String(node.alternateName), /Origins TCG/, l);
       assert.equal(node.startDate, "2026-10-20T19:00:00+02:00", l);
@@ -264,7 +266,7 @@ describe("eventi", () => {
       assert.deepEqual(node.offers, { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY, url: "https://discord.gg/originstcg" }, l);
       assert.equal(node.url, `https://originsmeta.com/${l}/tournaments#next-fest-tournament`, l);
       // il torneo di Koin dello Steam Next Fest: il festival è il superEvent (organizzato da Valve), come per la classificata
-      assert.equal((node.superEvent as Json)["@id"], eventId(steamNextFest.slug), l);
+      assert.equal((node.superEvent as Json)["@id"], festivalId, l);
       // il titolo visibile resta quello di prima (cambio editoriale da far decidere a Pierluigi), con il nome dentro
       assert.match(cup.title[l], /Crimson Cup/, l);
     }
@@ -284,6 +286,25 @@ describe("eventi", () => {
     assert.equal(node.startDate, steamNextFest.startAt.slice(0, 10));
     // nessuna offerta: non c'è un'iscrizione, e un prezzo 0 verso la pagina del gioco completo direbbe "il gioco è gratis"
     assert.ok(!("offers" in node) && !("isAccessibleForFree" in node));
+  });
+
+  test("un @id non porta mai valori diversi da una lingua all'altra: eventi per lingua, festival unico", () => {
+    // Revisione dell'integrazione dell'Ondata 2: un @id comune alle tre lingue dava alla stessa entità tre nomi e tre url.
+    const byId = new Map<string, Set<string>>();
+    const note = (n: Json) => {
+      const id = String(n["@id"]);
+      const seen = byId.get(id) ?? new Set<string>();
+      seen.add(JSON.stringify({ name: n.name, alternateName: n.alternateName, description: n.description, url: n.url }));
+      byId.set(id, seen);
+    };
+    for (const l of locales)
+      for (const e of events.filter((x) => x.ld)) {
+        const node = eventNode(e, l);
+        note(node);
+        if (node.superEvent) note(node.superEvent as Json);
+      }
+    for (const [id, variants] of byId) assert.equal(variants.size, 1, id);
+    assert.equal(festivalId, `https://originsmeta.com/#event-${steamNextFest.slug}`);
   });
 
   test("gli orari sono ISO 8601 con il fuso e cadono nel giorno della scheda", () => {

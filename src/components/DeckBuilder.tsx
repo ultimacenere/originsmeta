@@ -690,8 +690,10 @@ export function DeckBuilder({
       }
       if (r.ok) {
         setSaveResult({ code, ok: true, href: r.href ?? `/${locale}/account#private` });
-        // deck_created (evento GA4 già online dal 25/09/2026): nome e parametri di allora, più il posto del builder
-        trackEvent("deck_created", { locale, legendary: legendaryParam(deck.legendary), cards: deck.cards.length, placement });
+        // deck_created (evento GA4 già online dal 25/09/2026): nome e parametri di allora, più il posto del builder.
+        // Solo quando il server ha creato un mazzo privato nuovo (`created`): aggiornare quello riaperto da /account
+        // o risalvare lo stesso mazzo non è una creazione (revisione dell'integrazione dell'Ondata 2).
+        if (r.created) trackEvent("deck_created", { locale, legendary: legendaryParam(deck.legendary), cards: deck.cards.length, placement });
         return;
       }
       if (r.error === "notLoggedIn" && canGoToLogin) {

@@ -3,7 +3,6 @@ import { locales } from "@/lib/i18n";
 import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Guide, type Profile } from "./types";
 import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
-import type { TierKind } from "@/lib/tiercode";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -216,26 +215,4 @@ export async function listPublishedDeckIndex(): Promise<{ decks: SitemapDeck[]; 
   );
   const rows = rowsOrThrow<{ slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }>("listPublishedDeckIndex", res);
   return sitemapDecks(rows, locales);
-}
-
-/**
- * Slug dei mazzi da mettere in sitemap, con le lingue indicizzabili: i soli `decks` di `listPublishedDeckIndex`. I mazzi
- * sotto soglia non ci sono proprio: un elenco `locales` vuoto, nella sitemap, vorrebbe dire "tutte le lingue". Le altre
- * versioni delle schede sono noindex. Con un errore lancia.
- */
-export async function listPublishedSlugs(): Promise<SitemapDeck[]> {
-  return (await listPublishedDeckIndex()).decks;
-}
-
-/**
- * I tipi delle tier list pubblicate di un utente (una per tipo), per decidere title, description e noindex del suo
- * profilo. Con un errore lancia: la lettura completa di `listPublicTierLists` (tierlists.ts) trasforma ancora un errore
- * in "nessuna tier list", e un profilo con le sole tier list finirebbe noindex e senza hreflang fino alla rigenerazione
- * successiva, proprio il guasto di DECKS-12 (revisione dell'Ondata 2). Una colonna sola, una query leggera.
- */
-export async function listPublicTierListKinds(userId: string): Promise<TierKind[]> {
-  const client = supabasePublic();
-  if (!client) return [];
-  const res = await client.from("tier_lists").select("kind").eq("owner", userId).eq("status", PUBLISHED).order("kind");
-  return rowsOrThrow<{ kind: TierKind }>("listPublicTierListKinds", res).map((r) => r.kind);
 }

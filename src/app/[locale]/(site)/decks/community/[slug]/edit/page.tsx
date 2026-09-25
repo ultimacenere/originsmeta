@@ -10,8 +10,10 @@ import { currentUser } from "@/lib/supabase/server";
 import type { CommunityDeck } from "@/lib/community/types";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
+import { withCarriedParams } from "@/lib/analytics";
 
 type Params = Promise<{ locale: string; slug: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export const dynamic = "force-dynamic";
 /** Dopo una modifica la guida si ritraduce dentro `after()`: la funzione deve vivere abbastanza (vedi /decks/publish). */
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return { ...pageMeta(locale, `/decks/community/${slug}/edit`, dict.community.editTitle, dict.community.publishIntro), robots: { index: false, follow: false } };
 }
 
-export default async function EditDeckPage({ params }: { params: Params }) {
+export default async function EditDeckPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const { supabase, user } = await currentUser();
@@ -42,8 +44,9 @@ export default async function EditDeckPage({ params }: { params: Params }) {
   const pool: PoolCard[] = cards.filter((c) => c.status === "active" && c.type !== "token").map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary) }));
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   const code = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
-  // Un mazzo privato non ha ancora la guida: "modificarlo" significa pubblicarlo, dal modulo apposito.
-  if (deck.status === "draft") redirect(`${href(locale, "/decks/publish")}?deck=${encodeURIComponent(code)}&draft=${deck.id}`);
+  // Un mazzo privato non ha ancora la guida: "modificarlo" significa pubblicarlo, dal modulo apposito. Il segnale
+  // dell'accesso (?om_auth=, se si arriva qui dal login) passa alla pagina di pubblicazione, che lo conta.
+  if (deck.status === "draft") redirect(withCarriedParams(`${href(locale, "/decks/publish")}?deck=${encodeURIComponent(code)}&draft=${deck.id}`, await searchParams));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

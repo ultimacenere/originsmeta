@@ -14,16 +14,25 @@ const ONLINE = "https://schema.org/OnlineEventAttendanceMode";
 const SCHEDULED = "https://schema.org/EventScheduled";
 
 /**
- * Un evento è una sola entità in tutte le lingue: lo stesso `@id` su /tournaments, nella news delle sue regole e nella
- * guida dedicata (che lo possono ripetere con `eventNode`).
+ * `@id` di un evento del calendario, uno per lingua e legato alla sua scheda (/<lingua>/tournaments): lo stesso su
+ * /tournaments, nella news delle sue regole e nella guida dedicata di quella lingua (che lo ripetono con `eventNode`).
+ * Per lingua, e non unico come quello delle carte, perché il nodo porta nome, descrizione e indirizzo tradotti: un
+ * `@id` comune alle tre lingue dava alla stessa entità tre nomi e tre `url` (revisione dell'integrazione dell'Ondata 2;
+ * è l'errore che jsonld/card.ts ha tolto alle carte tenendo sull'entità unica solo i valori uguali in ogni lingua).
  */
-export const eventId = (slug: string): string => `${siteUrl}/#event-${slug}`;
+export const eventId = (slug: string, locale: Locale): string => `${siteUrl}${href(locale, "/tournaments")}#event-${slug}`;
+
+/**
+ * `@id` dello Steam Next Fest, unico in tutte le lingue: il suo nodo (`festivalNode`) porta solo valori uguali ovunque
+ * (nome ufficiale in inglese, date, Valve, indirizzo di Steam).
+ */
+export const festivalId = `${siteUrl}/#event-${steamNextFest.slug}`;
 
 /** Lo Steam Next Fest come nodo (dentro `superEvent`): lo organizza Valve, non Koin Games. */
 export function festivalNode(): Json {
   return {
     "@type": "Event",
-    "@id": eventId(steamNextFest.slug),
+    "@id": festivalId,
     name: steamNextFest.name,
     startDate: steamNextFest.startAt,
     endDate: steamNextFest.end,
@@ -46,7 +55,7 @@ export function eventNode(e: Event, locale: Locale): Json {
   const node: Json = {
     "@context": "https://schema.org",
     "@type": "Event",
-    "@id": eventId(e.slug),
+    "@id": eventId(e.slug, locale),
     name: ld.name?.[locale] ?? e.title[locale],
   };
   if (ld.alternateName) node.alternateName = ld.alternateName[locale];

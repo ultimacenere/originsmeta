@@ -19,16 +19,19 @@
  * (Amministrazione → Eventi → "Segna come evento chiave", dopo che l'evento è arrivato almeno una volta).
  *
  *   ★ sign_up             primo accesso completato di un account nuovo           method (discord | email)
- *                         (dal 25/09/2026, a9400e8; un account nuovo = un solo sign_up, vedi `isNewAccount`)
+ *                         (dal 25/09/2026, a9400e8; un account nuovo = un solo sign_up, vedi `isNewAccount`; solo
+ *                         con una sessione appena aperta nel browser, vedi `consumeAuthSignal`)
  *     login               accesso completato di un account che c'era già         method
  *     login_start         clic su "Accedi con Discord", o link via email spedito  method
  *     login_error         errore mostrato dal pannello di accesso                 kind, method
  *                         (kind: discord_start, email_send, captcha, rate_limited nel pannello; expired, other_browser,
- *                         discord_cancelled, discord, generic al ritorno da /auth/callback)
+ *                         discord_cancelled, discord, generic al ritorno da /auth/callback, contati solo all'arrivo:
+ *                         non a un ricaricamento né tornando con avanti/indietro, vedi `countsOnArrival`)
  *   ★ deck_published      mazzo pubblicato sul sito, solo la prima volta (non le   locale, legendary, source
  *                         modifiche; dal 25/09/2026, a9400e8)                     (builder | private_draft)
- *   ★ deck_created        mazzo salvato privato nel profilo dal deck builder       locale, legendary, cards, placement
- *                         ("Salva privato" riuscito; dal 25/09/2026, a9400e8)
+ *   ★ deck_created        mazzo privato NUOVO salvato nel profilo dal deck         locale, legendary, cards, placement
+ *                         builder ("Salva privato" che crea una riga; non l'aggiornamento del mazzo riaperto da
+ *                         /account né lo stesso mazzo salvato di nuovo: `created` di saveDeckPrivate; dal 25/09/2026)
  *     deck_complete       il mazzo del builder arriva a 25 carte, una volta per    placement
  *                         casella e per scheda (di nuovo solo dopo "Svuota mazzo")
  *   ★ game_code_copy      copia RIUSCITA del codice del gioco (KGBLDC…)           placement (builder | tournament_builder |
@@ -37,8 +40,8 @@
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
  *   ★ deck_vote           voto a un mazzo della community                         stars (1-5), vote_type (new | update)
- *   ★ tierlist_created    tier list salvata nel profilo (salvataggio riuscito;     locale, kind (legendaries | cards)
- *                         dal 25/09/2026, a9400e8)
+ *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
+ *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
  *   ★ tournament_create   torneo creato (non le modifiche)                        visibility (public | private), deck_mode
  *     tournament_join     iscrizione a un torneo                                  size (posti del torneo)
@@ -71,8 +74,10 @@
  * Discord dei tornei e dei creator, i link ai canali) server=other.
  * home_route parte da solo per ogni link cliccato nella home fuori da header e footer: `destination` è la sezione a
  * cui porta il link (tier_list, tier_list_maker, decks, deck_page, builder, cards, card_page, news, news_article,
- * guides, guide, metashifting, tournaments…) oppure steam, discord, youtube, external; `section` è il posto del link
- * nella home (il `placement` qui sopra: le sezioni della home hanno il loro `data-om-placement`).
+ * guides, guide, metashifting, tournaments…) oppure youtube, external; `section` è il posto del link nella home (il
+ * `placement` qui sopra: le sezioni della home hanno il loro `data-om-placement`). I link verso Steam e Discord della
+ * home non lo mandano: steam_click e discord_click hanno già il posto nel `placement` (slider, home_news…), e un
+ * secondo evento per lo stesso clic gonfierebbe i conteggi.
  *
  * Tre modi di mandare un evento:
  *   1. `trackEvent(nome, parametri)` dai componenti client, con i parametri controllati dai tipi (`EventParams`);
@@ -587,6 +592,35 @@ export function withAuthSignal(next: string, event: AuthEvent, method: AuthMetho
   return `${path}${sep}${AUTH_PARAM}=${event}&${AUTH_METHOD_PARAM}=${method}${hash}`;
 }
 
+/** Parametri della misura che un reindirizzamento del server deve portare con sé: il segnale dell'accesso e gli UTM. */
+export function isCarriedParam(key: string): boolean {
+  return key === AUTH_PARAM || key === AUTH_METHOD_PARAM || key.startsWith("utm_");
+}
+
+/**
+ * `path` (percorso interno, con o senza query e frammento) con il segnale dell'accesso (`om_auth`, `om_method`) e gli
+ * UTM della richiesta che si sta reindirizzando (`from`: `req.nextUrl.searchParams` in un route handler, i
+ * `searchParams` di una pagina). Serve ai reindirizzamenti del server che stanno fra /auth/callback e la pagina
+ * d'arrivo: il link d'invito /t/<tag>/<codice> (che porta account nuovi per definizione), il link breve /t/<tag>, la
+ * modifica di un mazzo privato che rimanda a /decks/publish, gestione e stanza di un torneo che rimandano alla
+ * scheda. Senza, il segnale si perdeva e l'accesso non si contava (revisione dell'integrazione dell'Ondata 2). Di ogni
+ * parametro vale il primo valore. Funzione pura: nessun evento parte sul server.
+ */
+export function withCarriedParams(path: string, from: URLSearchParams | Record<string, string | string[] | undefined>): string {
+  const entries: [string, string][] =
+    from instanceof URLSearchParams
+      ? [...from.entries()]
+      : Object.entries(from).flatMap(([k, v]): [string, string][] => (typeof v === "string" ? [[k, v]] : Array.isArray(v) && v.length ? [[k, v[0]]] : []));
+  const carried = new Map<string, string>();
+  for (const [k, v] of entries) if (isCarriedParam(k) && !carried.has(k)) carried.set(k, v);
+  if (!carried.size) return path;
+  const hashAt = path.indexOf("#");
+  const base = hashAt < 0 ? path : path.slice(0, hashAt);
+  const hash = hashAt < 0 ? "" : path.slice(hashAt);
+  const sep = !base.includes("?") ? "?" : base.endsWith("?") || base.endsWith("&") ? "" : "&";
+  return `${base}${sep}${new URLSearchParams([...carried]).toString()}${hash}`;
+}
+
 /** Il segnale nella query, se è valido. */
 export function readAuthSignal(search: string): { event: AuthEvent; method: AuthMethod } | null {
   const p = new URLSearchParams(search);
@@ -632,8 +666,32 @@ export function isNewAccount(
   return confirmedAtCreation && recent(created, NEW_ACCOUNT_CREATED_MS);
 }
 
-/** Chiave del browser con l'ora dell'ultimo sign_up mandato da qui. */
+/**
+ * Chiave del browser con l'ora dell'ultimo sign_up mandato da qui. Si scrive anche senza il consenso ai cookie, perché
+ * serve anche a Vercel (che conta senza consenso): l'informativa lo dice (`privacy.cookies` dei dizionari). Non esce
+ * mai dal browser.
+ */
 export const SIGNUP_KEY = "originsmeta.signup.v1";
+
+/**
+ * Finestra entro cui l'ultimo accesso della sessione del browser rende credibile il segnale ?om_auth=. Ampia nelle due
+ * direzioni, perché l'orologio del dispositivo può essere avanti o indietro rispetto a quello di Supabase.
+ */
+export const AUTH_SIGNAL_MAX_AGE_MS = 10 * 60_000;
+
+/** L'ultimo accesso (`last_sign_in_at` di Supabase) è di pochi minuti fa? */
+export function freshSignIn(lastSignInAt: string | null | undefined, now = Date.now()): boolean {
+  const t = Date.parse(lastSignInAt ?? "");
+  return Number.isFinite(t) && Math.abs(now - t) < AUTH_SIGNAL_MAX_AGE_MS;
+}
+
+/** I dati dell'utente della sessione che servono a verificare il segnale (i campi dell'utente di Supabase). */
+export type SessionUser = {
+  last_sign_in_at?: string | null;
+  created_at?: string | null;
+  confirmed_at?: string | null;
+  email_confirmed_at?: string | null;
+};
 
 /**
  * Un secondo sign_up nello stesso browser entro un'ora dal primo diventa login: è lo stesso account che rientra (un
@@ -645,8 +703,18 @@ export function dedupeSignUp(event: AuthEvent, lastSignUp: number | null, now: n
   return age >= 0 && age < NEW_ACCOUNT_CREATED_MS ? "login" : event;
 }
 
-/** All'arrivo dopo l'accesso: manda sign_up o login e toglie il segnale dall'indirizzo (un ricaricamento non lo ripete). */
-export function consumeAuthSignal(): void {
+/**
+ * All'arrivo dopo l'accesso: toglie subito il segnale dall'indirizzo (un ricaricamento non lo ripete), poi manda
+ * sign_up o login.
+ *
+ * Il segnale sta in chiaro nella query, quindi da solo non prova niente: chiunque potrebbe girare un link con
+ * ?om_auth=sign_up e gonfiare l'evento chiave delle iscrizioni (revisione dell'integrazione dell'Ondata 2). L'evento
+ * parte solo se `sessionUser` (in GoogleAnalytics.tsx: l'utente della sessione Supabase del browser) restituisce un
+ * utente con un accesso di pochi minuti fa (`freshSignIn`); e un sign_up vale solo se anche qui l'account risulta
+ * nuovo (`isNewAccount`, la stessa regola di /auth/callback), altrimenti diventa login. Resta il caso raro di un link
+ * falso aperto nei dieci minuti dopo un accesso vero: al massimo un login in più.
+ */
+export async function consumeAuthSignal(sessionUser: () => Promise<SessionUser | null | undefined>): Promise<void> {
   if (typeof window === "undefined") return;
   try {
     const search = window.location.search;
@@ -655,10 +723,17 @@ export function consumeAuthSignal(): void {
     const signal = readAuthSignal(search);
     replaceSearch(withoutParams(search, [AUTH_PARAM, AUTH_METHOD_PARAM]));
     if (!signal) return;
-    let event = signal.event;
+    let user: SessionUser | null | undefined;
+    try {
+      user = await sessionUser();
+    } catch {
+      user = null;
+    }
+    const now = Date.now();
+    if (!user || !freshSignIn(user.last_sign_in_at, now)) return;
+    let event: AuthEvent = signal.event === "sign_up" && !isNewAccount(user, signal.method, now) ? "login" : signal.event;
     try {
       const raw = localStorage.getItem(SIGNUP_KEY);
-      const now = Date.now();
       event = dedupeSignUp(event, raw === null ? null : Number(raw), now);
       if (event === "sign_up") localStorage.setItem(SIGNUP_KEY, String(now));
     } catch {
@@ -668,6 +743,29 @@ export function consumeAuthSignal(): void {
   } catch {
     /* indirizzo non leggibile */
   }
+}
+
+/**
+ * Tipo della navigazione che ha caricato il documento ("navigate", "reload", "back_forward", "prerender"), undefined
+ * se il browser non lo dice. Le navigazioni interne di Next non lo cambiano: vale per l'ultimo caricamento completo.
+ */
+export function navigationType(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const [nav] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+    return nav?.type;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Un dato che arriva nell'indirizzo con un caricamento completo (l'errore del ritorno da /auth/callback, ?error=) si
+ * conta solo all'arrivo: non a un ricaricamento né tornando con avanti/indietro, quando l'indirizzo è ancora lo
+ * stesso. Se il browser non dice il tipo, si conta.
+ */
+export function countsOnArrival(type: string | undefined): boolean {
+  return type !== "reload" && type !== "back_forward";
 }
 
 /* ---------- UTM dei messaggi Discord mandati dal sito (MIS-07) ---------- */
@@ -790,7 +888,8 @@ export function isHomePath(pathname: string): boolean {
 /**
  * Destinazione di un link cliccato nella home (evento home_route, HOME-12): la sezione del sito a cui porta, oppure
  * steam, discord, youtube, external per i link in uscita. null per la home stessa (logo, ancore) e per i link che non
- * sono pagine (mailto:, javascript:).
+ * sono pagine (mailto:, javascript:). Steam e Discord restano nella classificazione, ma `onDocumentClick` per quei link
+ * manda solo steam_click e discord_click.
  */
 export function homeDestination(href: string, origin: string): string | null {
   let url: URL;
@@ -895,8 +994,10 @@ export function onDocumentClick(e: MouseEvent): void {
     const placement = placementOf(el);
     const ev = linkEvent(el.href, placement, el.dataset.omCta || "link");
     if (ev) send(ev.name, ev.params);
-    // HOME-12: ogni link della home (fuori da header, footer e pop-up) dice dove porta chi arriva in home
-    if (declared?.name !== "home_route" && isHomePath(window.location.pathname) && !OUTSIDE_HOME.has(placement)) {
+    // HOME-12: ogni link della home (fuori da header, footer e pop-up) dice dove porta chi arriva in home. Non i link
+    // verso Steam e Discord (`ev`): steam_click e discord_click portano già il posto nella home, e lo stesso clic non
+    // deve contare due volte (revisione dell'integrazione dell'Ondata 2).
+    if (!ev && declared?.name !== "home_route" && isHomePath(window.location.pathname) && !OUTSIDE_HOME.has(placement)) {
       const destination = homeDestination(el.href, window.location.origin);
       if (destination) send("home_route", { destination, section: placement });
     }

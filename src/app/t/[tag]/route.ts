@@ -3,6 +3,7 @@ import { defaultLocale, locales } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase/server";
 import { getTournamentByTag } from "@/lib/tournament/queries";
 import { normalizeTag } from "@/lib/tournament/types";
+import { withCarriedParams } from "@/lib/analytics";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 
 /**
@@ -17,8 +18,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tag:
   const locale = preferredLocale(req.headers.get("accept-language"), locales, defaultLocale, LANGUAGE_ALIASES);
   const normalized = normalizeTag(decodeURIComponent(tag));
   const found = normalized ? await getTournamentByTag(normalized, await supabaseServer()) : null;
-  const target = new URL(found ? `/${locale}/tournaments/${found.slug}` : `/${locale}/tournaments?tag=missing`, req.url);
-  // gli UTM del link (annunci in #tournaments-feed, src/lib/tournament/notify.ts) arrivano alla scheda: niente altro
-  for (const [k, v] of req.nextUrl.searchParams) if (k.startsWith("utm_")) target.searchParams.set(k, v);
-  return NextResponse.redirect(target, 302);
+  // gli UTM del link (annunci in #tournaments-feed, src/lib/tournament/notify.ts) e l'eventuale segnale dell'accesso
+  // (?om_auth=, se /t/<tag> è stato il ritorno di un accesso) arrivano alla scheda: niente altro
+  const path = found ? `/${locale}/tournaments/${found.slug}` : `/${locale}/tournaments?tag=missing`;
+  return NextResponse.redirect(new URL(withCarriedParams(path, req.nextUrl.searchParams), req.url), 302);
 }

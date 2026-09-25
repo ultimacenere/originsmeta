@@ -42,7 +42,11 @@ import type { Guide, Profile } from "./types";
 
 /** Etichetta della cache dei mazzi pubblicati: la usano le schede carta e la invalidano le Server Action dei mazzi. */
 export const COMMUNITY_DECKS_TAG = "community-decks";
-/** Etichetta della cache delle tier list salvate (punteggio della community sulla scheda carta). */
+/**
+ * Etichetta della cache delle tier list salvate (punteggio della community sulla scheda carta). Nessuna Server Action
+ * la invalida (vedi `refreshCardDecks`): la lettura scade con `CARD_DATA_REVALIDATE`. Resta per poterla rinnovare a
+ * mano o da un'azione futura dello staff.
+ */
 export const COMMUNITY_TIER_LISTS_TAG = "community-tier-lists";
 /** Secondi di validità delle due letture, come riserva se una rigenerazione su richiesta non arriva. */
 export const CARD_DATA_REVALIDATE = 3600;
@@ -212,7 +216,11 @@ export async function loadCommunityScores(): Promise<CommunityScores | null> {
  *   la visita successiva aspetta i dati nuovi, così nessuna scheda continua a linkare un mazzo che non c'è più.
  *   `updateTag` vale solo nelle Server Action.
  * I voti (voteDeck) non la chiamano: cambiano solo il voto mostrato e l'ordine dei mazzi, che si aggiornano entro
- * un'ora (`CARD_DATA_REVALIDATE`), e un voto per richiesta non deve poter rinnovare 430 pagine.
+ * un'ora (`CARD_DATA_REVALIDATE`), e un voto per richiesta non deve poter rinnovare 430 pagine. Per lo stesso motivo
+ * le azioni delle tier list (tierActions.ts: salva, nascondi, ripubblica, elimina) non rinnovano il punteggio della
+ * community sulle schede (`COMMUNITY_TIER_LISTS_TAG`): arriva anche lui entro un'ora.
+ * Le sitemap non dipendono da queste etichette: le rinnova `revalidateSitemaps()` (sitemapData.ts), chiamata dalle
+ * stesse azioni, con il profilo "max".
  */
 export function refreshCardDecks(gone = false): void {
   if (gone) updateTag(COMMUNITY_DECKS_TAG);

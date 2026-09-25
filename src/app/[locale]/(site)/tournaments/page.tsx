@@ -50,7 +50,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
   // Gli eventi futuri sono anche nodi Event di questa pagina: la voce ne porta il nome e rimanda al nodo per `@id`
   // (GEO-10), così lista ed Event parlano della stessa cosa; i passati restano con il titolo della scheda.
   const listed = [
-    ...up.map((e) => ({ name: e.ld?.name?.[locale] ?? e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}`, id: eventId(e.slug) })),
+    ...up.map((e) => ({ name: e.ld?.name?.[locale] ?? e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}`, id: eventId(e.slug, locale) })),
     ...past.map((e) => ({ name: e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}` })),
   ];
 

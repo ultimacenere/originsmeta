@@ -1,12 +1,11 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { activeCards } from "@/lib/data/cards";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { revalidateSitemaps } from "@/lib/sitemapData";
-import { COMMUNITY_TIER_LISTS_TAG } from "./decksByCard";
 import { cleanTitle, decodeTierCode, encodeTierCode, rankedCount, TIER_KINDS, type TierKind } from "@/lib/tiercode";
 import { boardEntries } from "./tierlists";
 import { isUuid } from "./util";
@@ -24,7 +23,12 @@ import { isUuid } from "./util";
  * e la vista `tier_card_scores` (la tier list della community) resta pulita.
  */
 
-export type TierActionState = { error?: string; ok?: boolean; href?: string };
+/**
+ * Esito delle azioni. `created` solo quando il salvataggio ha creato la tier list di quel tipo (prima dell'utente per
+ * quella scheda): le sostituzioni successive sono `ok` ma non `created`, e il browser manda l'evento chiave
+ * tierlist_created solo nel primo caso (revisione dell'integrazione dell'Ondata 2).
+ */
+export type TierActionState = { error?: string; ok?: boolean; href?: string; created?: boolean };
 
 /** Slug ammessi per ogni scheda: le carte attive della Demo 2.0, Leggendarie da una parte e carte base dall'altra. */
 function knownSlugs(): Record<TierKind, ReadonlySet<string>> {
@@ -42,9 +46,10 @@ function localeOf(fd: FormData): Locale {
 
 /**
  * Pagine da rigenerare quando cambia una tier list salvata (salvata, nascosta, ripubblicata, eliminata). Dall'Ondata 2
- * anche il lastmod delle sitemap (/tier-list, /tier-list/community, /u/<nome>) e il punteggio della community sulle
- * schede carta (etichetta `community-tier-lists` di decksByCard.ts, profilo "max": la visita dopo riceve ancora la
- * scheda vecchia e ne fa partire una nuova); senza, si aggiornerebbero entro 5 minuti e entro un'ora.
+ * anche il lastmod delle sitemap (/tier-list, /tier-list/community, /u/<nome>); senza, si aggiornerebbe entro 5 minuti.
+ * Le schede carta NO (revisione dell'integrazione dell'Ondata 2): il punteggio della community lo prendono entro un'ora
+ * (`CARD_DATA_REVALIDATE` di decksByCard.ts), come i voti ai mazzi. Salvare, nascondere o ripubblicare una tier list è
+ * un'azione che un iscritto può ripetere quanto vuole, e non deve poter rinnovare le circa 430 schede ogni volta.
  */
 function revalidateTierPaths(username?: string | null) {
   for (const l of locales) {
@@ -53,7 +58,6 @@ function revalidateTierPaths(username?: string | null) {
     if (username) revalidatePath(`/${l}/u/${username}`);
   }
   revalidateSitemaps();
-  revalidateTag(COMMUNITY_TIER_LISTS_TAG, "max");
 }
 
 /**
@@ -75,12 +79,16 @@ export async function saveTierList(_prev: TierActionState, formData: FormData): 
   const title = typed || cleanTitle(board.title);
   const row = { owner: user.id, kind, title, code: encodeTierCode(kind, { ...board, title }), entries: boardEntries(board) };
 
+  // C'era già una tier list di questo tipo (pubblicata o nascosta)? Serve solo alla misura: `created` dice al browser
+  // se mandare tierlist_created. Se la lettura non riesce non si dichiara nulla di creato: meglio un evento in meno
+  // che uno in più per una sostituzione.
+  const { data: existing, error: readError } = await supabase.from("tier_lists").select("id").eq("owner", user.id).eq("kind", kind).maybeSingle();
   // upsert sulla coppia (owner, kind): la propria tier list di quel tipo viene sostituita
   const { error } = await supabase.from("tier_lists").upsert(row, { onConflict: "owner,kind" });
   if (error) return { error: "db" };
   const { data: profile } = await supabase.from("profiles").select("username").eq("id", user.id).maybeSingle();
   revalidateTierPaths((profile as { username: string | null } | null)?.username);
-  return { ok: true, href: `/${locale}/account#tierlists` };
+  return { ok: true, href: `/${locale}/account#tierlists`, created: !readError && !existing };
 }
 
 /** Nasconde o ripubblica una tier list dell'utente (modulo nel profilo). */

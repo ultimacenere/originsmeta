@@ -59,10 +59,13 @@ function formatAbility(text: string): React.ReactNode[] {
 
 const line = (t: L10n | undefined, locale: Locale) => (t ? t[locale] ?? t.en : "");
 
-/** Tipo della carta sulla riga del tipo, nella lingua della pagina (corto, come sulla carta del gioco). */
+/**
+ * Tipo della carta sulla riga del tipo, nella lingua della pagina (corto, come sulla carta del gioco). Le carte create
+ * con il glossario del sito (docs/spagnolo.md): "created card", "carta generata", "carta creada".
+ */
 const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
-  en: { unit: "Unit", spell: "Spell", token: "Token" },
-  it: { unit: "Unità", spell: "Magia", token: "Creata" },
+  en: { unit: "Unit", spell: "Spell", token: "Created" },
+  it: { unit: "Unità", spell: "Magia", token: "Generata" },
   es: { unit: "Unidad", spell: "Hechizo", token: "Creada" },
 };
 

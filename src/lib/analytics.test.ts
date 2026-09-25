@@ -343,6 +343,32 @@ describe("accesso e iscrizione", () => {
     assert.equal(A.dedupeSignUp("sign_up", Number.NaN, now), "sign_up");
     assert.equal(A.dedupeSignUp("login", now, now), "login");
   });
+  test("freshSignIn: un accesso di pochi minuti fa, con un margine per l'orologio del dispositivo", () => {
+    const now = Date.parse("2026-09-25T12:00:00Z");
+    const ago = (min: number) => new Date(now - min * 60_000).toISOString();
+    assert.equal(A.freshSignIn(ago(0), now), true);
+    assert.equal(A.freshSignIn(ago(9), now), true);
+    assert.equal(A.freshSignIn(ago(-3), now), true, "orologio del dispositivo indietro di qualche minuto");
+    assert.equal(A.freshSignIn(ago(11), now), false, "un accesso di ieri non rende vero un link di oggi");
+    assert.equal(A.freshSignIn(null, now), false);
+    assert.equal(A.freshSignIn("non è una data", now), false);
+  });
+  test("withCarriedParams: il segnale dell'accesso e gli UTM passano nel reindirizzamento, nient'altro", () => {
+    const q = new URLSearchParams("om_auth=sign_up&om_method=discord&utm_source=discord&code=segreto&next=%2Fx");
+    assert.equal(A.withCarriedParams("/it/tournaments/crimson", q), "/it/tournaments/crimson?om_auth=sign_up&om_method=discord&utm_source=discord");
+    assert.equal(A.withCarriedParams("/it/tournaments?tag=invite", q), "/it/tournaments?tag=invite&om_auth=sign_up&om_method=discord&utm_source=discord");
+    assert.equal(A.withCarriedParams("/it/decks/publish?deck=OM1a%2Bb&draft=1#x", { om_auth: "login", om_method: ["email", "discord"], q: "merlin" }), "/it/decks/publish?deck=OM1a%2Bb&draft=1&om_auth=login&om_method=email#x");
+    assert.equal(A.withCarriedParams("/it/tournaments/crimson", new URLSearchParams("x=1")), "/it/tournaments/crimson", "senza parametri della misura il percorso resta com'è");
+    assert.equal(A.withCarriedParams("/it/tournaments/crimson", {}), "/it/tournaments/crimson");
+    assert.deepEqual(A.readAuthSignal(new URL(A.withCarriedParams("/es/tournaments/x", q), "https://originsmeta.com").search), { event: "sign_up", method: "discord" });
+  });
+  test("countsOnArrival: l'errore del ritorno si conta all'arrivo, non a un ricaricamento né con avanti/indietro", () => {
+    assert.equal(A.countsOnArrival("navigate"), true);
+    assert.equal(A.countsOnArrival("prerender"), true);
+    assert.equal(A.countsOnArrival(undefined), true, "senza il dato si conta");
+    assert.equal(A.countsOnArrival("reload"), false);
+    assert.equal(A.countsOnArrival("back_forward"), false);
+  });
 });
 
 describe("termine cercato", () => {
@@ -364,7 +390,8 @@ describe("sul server", () => {
     A.trackEvent("sign_up", { method: "email" });
     A.trackNamedEvent("tier_entry_open", { tier_source: "community", card: "merlin" });
     A.trackSearch("cards", "merlin", 1);
-    A.consumeAuthSignal();
+    await A.consumeAuthSignal(async () => null);
+    assert.equal(A.navigationType(), undefined);
     await A.applyStaffSwitch();
     assert.equal(A.isInternalTraffic(), false);
     assert.equal(A.stopGoogleAnalytics("G-TEST"), false);
@@ -496,26 +523,53 @@ describe("nel browser", () => {
     }
   });
 
-  test("arrivo dopo l'accesso: sign_up una volta, e il segnale sparisce dall'indirizzo", () => {
+  test("arrivo dopo l'accesso: sign_up una volta, e il segnale sparisce dall'indirizzo", async () => {
+    const minutesAgo = (min: number) => new Date(Date.now() - min * 60_000).toISOString();
+    // l'utente della sessione del browser appena creato con Discord, e uno che c'era già
+    const newUser = async () => ({ created_at: minutesAgo(0), confirmed_at: minutesAgo(0), last_sign_in_at: minutesAgo(0) });
+    const oldUser = async () => ({ created_at: minutesAgo(60 * 24 * 10), confirmed_at: minutesAgo(60 * 24 * 10), last_sign_in_at: minutesAgo(1) });
     store.delete(A.SIGNUP_KEY);
     go("https://originsmeta.com/es/deck-builder?intent=save&om_auth=sign_up&om_method=discord#OM1x");
-    A.consumeAuthSignal();
+    const pending = A.consumeAuthSignal(newUser);
+    assert.equal(loc.search, "?intent=save", "il segnale sparisce subito, prima della verifica");
+    await pending;
     assert.deepEqual(vercelEvents().at(-1), { name: "sign_up", data: { method: "discord" }, options: undefined });
     assert.deepEqual(gaEvents().at(-1), ["event", "sign_up", { method: "discord", lang: "es" }]);
     assert.equal(loc.search, "?intent=save");
     assert.equal(loc.hash, "#OM1x");
     assert.ok(store.has(A.SIGNUP_KEY), "il browser ricorda l'iscrizione appena contata");
     const n = vercelEvents().length;
-    A.consumeAuthSignal();
+    await A.consumeAuthSignal(newUser);
     assert.equal(vercelEvents().length, n, "un ricaricamento non lo ripete");
     go("https://originsmeta.com/it/account?om_auth=hack&om_method=email");
-    A.consumeAuthSignal();
+    await A.consumeAuthSignal(newUser);
     assert.equal(vercelEvents().length, n, "un segnale non valido si toglie senza eventi");
     assert.equal(loc.search, "");
     // lo stesso account che rientra nella stessa ora (secondo link, altro metodo): login, non un'altra iscrizione
     go("https://originsmeta.com/it/account?om_auth=sign_up&om_method=email");
-    A.consumeAuthSignal();
+    await A.consumeAuthSignal(newUser);
     assert.deepEqual(vercelEvents().at(-1), { name: "login", data: { method: "email" }, options: undefined });
+
+    // link falso girato su Discord (revisione dell'integrazione dell'Ondata 2): senza sessione, o con un accesso vecchio,
+    // niente eventi; il segnale sparisce comunque
+    store.delete(A.SIGNUP_KEY);
+    const m = vercelEvents().length;
+    go("https://originsmeta.com/it?om_auth=sign_up&om_method=discord");
+    await A.consumeAuthSignal(async () => null);
+    assert.equal(loc.search, "");
+    go("https://originsmeta.com/it?om_auth=sign_up&om_method=discord");
+    await A.consumeAuthSignal(async () => ({ created_at: minutesAgo(60 * 24), last_sign_in_at: minutesAgo(60 * 24) }));
+    go("https://originsmeta.com/it?om_auth=login&om_method=email");
+    await A.consumeAuthSignal(async () => {
+      throw new Error("rete assente");
+    });
+    assert.equal(vercelEvents().length, m, "nessun evento senza un accesso appena avvenuto in questo browser");
+    assert.equal(store.has(A.SIGNUP_KEY), false);
+    // un account vecchio con un accesso vero da poco e un ?om_auth=sign_up falso: al massimo un login
+    go("https://originsmeta.com/it?om_auth=sign_up&om_method=discord");
+    await A.consumeAuthSignal(oldUser);
+    assert.deepEqual(vercelEvents().at(-1), { name: "login", data: { method: "discord" }, options: undefined });
+    assert.equal(store.has(A.SIGNUP_KEY), false);
   });
 
   test("traffico interno: solo il codice giusto accende il flag; ?staff=off lo spegne; le pagine viste di Vercel lo seguono", async () => {
@@ -567,13 +621,20 @@ describe("nel browser", () => {
     click(new FakeAnchor("a", { href: "https://discord.gg/originstcg" }, tree.footer), "auxclick", 2);
     assert.equal(vercelEvents().length, n);
 
-    // home: il tasto Steam dello slider conta come steam_click e come home_route
+    // home: il tasto Steam dello slider conta solo come steam_click, che porta già il posto (niente home_route doppio)
     go("https://originsmeta.com/it");
+    const s = vercelEvents().length;
     click(new FakeAnchor("a", { href: "https://store.steampowered.com/app/4756630/", "data-om-cta": "button" }, new FakeEl("div", {}, tree.slider)));
-    assert.deepEqual(vercelEvents().slice(-2), [
-      { name: "steam_click", data: { target: "demo", placement: "slider" }, options: undefined },
-      { name: "home_route", data: { destination: "steam", section: "slider" }, options: undefined },
-    ]);
+    assert.equal(vercelEvents().length, s + 1);
+    assert.deepEqual(vercelEvents().at(-1), { name: "steam_click", data: { target: "demo", placement: "slider" }, options: undefined });
+    // lo stesso per un link Discord nella bacheca delle news
+    const homeNews = new FakeEl("section", { "data-om-placement": "home_news" }, tree.main);
+    click(new FakeAnchor("a", { href: "https://discord.gg/originstcg" }, homeNews));
+    assert.equal(vercelEvents().length, s + 2);
+    assert.deepEqual(vercelEvents().at(-1), { name: "discord_click", data: { server: "official", placement: "home_news" }, options: undefined });
+    // un link in uscita che non è Steam né Discord resta home_route
+    click(new FakeAnchor("a", { href: "https://www.youtube.com/watch?v=x" }, homeNews));
+    assert.deepEqual(vercelEvents().at(-1), { name: "home_route", data: { destination: "youtube", section: "home_news" }, options: undefined });
     // un tasto di "Fai la tua mossa", con la sezione dichiarata sul contenitore
     const moves = new FakeEl("section", { "data-om-placement": "home_moves" }, tree.main);
     click(new FakeAnchor("a", { href: "/it/deck-builder" }, moves));

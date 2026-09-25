@@ -14,8 +14,10 @@ import { BracketEditor } from "@/components/BracketEditor";
 import { LocalTime } from "@/components/LocalTime";
 import { CopyButton } from "@/components/CopyButton";
 import { contactEmail } from "@/components/Footer";
+import { withCarriedParams } from "@/lib/analytics";
 
 type Params = Promise<{ locale: string; slug: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /** Pagina dell'organizzatore (o di un admin): dinamica, legge la sessione, passa dal proxy. */
 export const dynamic = "force-dynamic";
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return { ...pageMeta(locale, `/tournaments/${slug}/manage`, dict.tournaments.manage.title, dict.tournaments.manage.intro), robots: { index: false, follow: false } };
 }
 
-export default async function ManageTournamentPage({ params }: { params: Params }) {
+export default async function ManageTournamentPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
@@ -40,7 +42,8 @@ export default async function ManageTournamentPage({ params }: { params: Params 
   if (!t) notFound();
   const { data: prof } = await supabase.from("profiles").select("badge, role").eq("id", user.id).maybeSingle();
   const profile = (prof as { badge: string; role: string } | null) ?? null;
-  if (t.organizer !== user.id && profile?.role !== "admin") redirect(back);
+  // chi non organizza torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
+  if (t.organizer !== user.id && profile?.role !== "admin") redirect(withCarriedParams(back, await searchParams));
 
   const [players, matches, invites, inviteCode] = await Promise.all([listPlayers(t.id, supabase), listMatches(t.id, supabase), listInvites(supabase, t.id), getInviteCode(supabase, t.id)]);
   const managed: ManagedPlayer[] = players.map((p) => ({ user_id: p.user_id, name: authorName(p.profile), status: p.status, decks: p.decks_submitted }));

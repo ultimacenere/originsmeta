@@ -11,8 +11,10 @@ import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
 import { CardChip } from "@/components/CardChip";
 import { MatchRoom } from "@/components/MatchRoom";
+import { withCarriedParams } from "@/lib/analytics";
 
 type Params = Promise<{ locale: string; slug: string; id: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /** Stanza della partita: solo i due giocatori, l'organizzatore e gli admin. Dinamica (sessione), passa dal proxy. */
 export const dynamic = "force-dynamic";
@@ -32,7 +34,7 @@ async function signedScreens(client: NonNullable<Awaited<ReturnType<typeof curre
   return (signed ?? []).map((s) => s.signedUrl).filter((u): u is string => Boolean(u));
 }
 
-export default async function MatchPage({ params }: { params: Params }) {
+export default async function MatchPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { slug, id } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
@@ -52,7 +54,8 @@ export default async function MatchPage({ params }: { params: Params }) {
   const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   const isAdmin = (prof as { role: string } | null)?.role === "admin";
   const side: "a" | "b" | null = match.player_a === user.id ? "a" : match.player_b === user.id ? "b" : null;
-  if (side === null && t.organizer !== user.id && !isAdmin) redirect(back);
+  // chi non gioca la partita torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
+  if (side === null && t.organizer !== user.id && !isAdmin) redirect(withCarriedParams(back, await searchParams));
 
   const [players, decks, messages, screensA, screensB] = await Promise.all([
     listPlayers(t.id, supabase),

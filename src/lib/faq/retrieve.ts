@@ -56,7 +56,7 @@ function schedaCarta(card: Card, locale: Locale): string {
     `${card.name}${card.legendary ? " (Leggendaria)" : ""}`,
     `costo ${card.mana ?? "?"}`,
     card.power !== undefined ? `${card.power}/${card.health}` : undefined,
-    card.type === "spell" ? "magia" : card.type === "token" ? "carta creata" : "unità",
+    card.type === "spell" ? "magia" : card.type === "token" ? "carta generata" : "unità",
     card.alignment,
     `saga: ${sagas[card.saga][locale]}`,
     card.status === "removed" ? "NON nella Demo 2.0" : undefined,

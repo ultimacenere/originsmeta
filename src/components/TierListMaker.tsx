@@ -793,7 +793,8 @@ export function TierListMaker({
       setSaveResult({ ...r, code });
       if (r.ok) {
         say(labels.savedToProfile);
-        trackEvent("tierlist_created", { locale, kind });
+        // solo la prima tier list di questo tipo (`created`): le sostituzioni successive non sono una creazione
+        if (r.created) trackEvent("tierlist_created", { locale, kind });
       }
     });
   }
