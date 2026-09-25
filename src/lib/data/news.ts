@@ -77,7 +77,9 @@ export const news: NewsItem[] = [
       "Regole della Crimson Cup: Conquest a tre mazzi, liste segrete fino alla top 4 e check-in obbligatorio",
       "Reglas de la Crimson Cup: Conquest con tres mazos, listas ocultas hasta el top 4 y check-in obligatorio",
     ),
-    metaTitle: n("Origins TCG Crimson Cup: format and check-in", "Crimson Cup di Origins TCG: formato e check-in", "Crimson Cup de Origins TCG: formato y check-in"),
+    // Pagina primaria sulla Crimson Cup (mappa delle query del 25/09/2026): il title porta regole, date, premi e check-in;
+    // le altre pagine sulla coppa (annuncio del 9/9, aggiornamento della demo) nominano la coppa ma non questi dettagli.
+    metaTitle: n("Origins TCG Crimson Cup: rules, dates, prizes, check-in", "Crimson Cup di Origins TCG: regole, date, premi, check-in", "Crimson Cup de Origins TCG: reglas, fechas y premios"),
     description: n(
       "The Origins TCG Crimson Cup rules: three-deck Conquest, at least 8 unique cards between decks, lists hidden until the top 4, and the check-in times.",
       "Le regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, almeno 8 carte uniche fra i mazzi, liste segrete fino alla top 4 e orari del check-in.",
@@ -932,7 +934,8 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
       "Il primo grande aggiornamento della demo di Origins TCG: pacchetti di prova, classificata e Crimson Cup",
       "La primera gran actualización de la demo de Origins TCG: sobres de prueba, clasificatoria y Crimson Cup",
     ),
-    metaTitle: n("Origins TCG demo update: ranked, test packs, Crimson Cup", "Aggiornamento demo Origins TCG: classificata e Crimson Cup", "Origins TCG actualiza la demo: clasificatoria y Crimson Cup"),
+    // Senza "Crimson Cup" dal 25/09/2026: sulla coppa vince l'articolo delle regole; qui restano interfaccia, pacchetti e classificata.
+    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Aggiornamento demo di Origins TCG: nuova UI e classificata", "Origins TCG actualiza la demo: nueva UI y clasificatoria"),
     description: n(
       "Origins TCG demo update of 21 September: new UI, test packs, the Crimson Cup card list, progress kept from demo and playtest, ranked at Next Fest.",
       "Aggiornamento della demo di Origins TCG del 21/9: nuova interfaccia, pacchetti di prova, lista carte Crimson Cup, progressi salvi e classificata al Next Fest.",
