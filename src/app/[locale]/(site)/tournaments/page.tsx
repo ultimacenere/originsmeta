@@ -7,7 +7,8 @@ import { EventCard } from "@/components/EventCard";
 import { DiscordButton } from "@/components/DiscordButton";
 import { contactEmail } from "@/components/Footer";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
-import { siteUrl, href } from "@/lib/i18n";
+import { eventNode } from "@/lib/jsonld/events";
+import { href } from "@/lib/i18n";
 import { listListedTournaments } from "@/lib/tournament/queries";
 import { TournamentCard } from "@/components/TournamentCard";
 import { TagSearch } from "@/components/TagSearch";
@@ -40,21 +41,9 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
   const groups = (["open", "running", "finished"] as const).map((s) => ({ status: s, list: community.filter((t) => t.status === s) })).filter((g) => g.list.length);
   const newHref = href(locale, "/tournaments/new");
   const steps = [x.howTo.step1, x.howTo.step2, x.howTo.step3, x.howTo.step4];
-  const events = up.map((e) => ({
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: e.title[locale],
-    description: e.text[locale],
-    startDate: e.start,
-    endDate: e.end ?? e.start,
-    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-    eventStatus: "https://schema.org/EventScheduled",
-    location: { "@type": "VirtualLocation", url: e.signup?.url ?? e.source ?? `${siteUrl}${href(locale, "/tournaments")}` },
-    organizer: { "@type": "Organization", name: e.official ? "Koin Games" : "Community", url: e.official ? "https://origins-tcg.com/" : `${siteUrl}${href(locale, "/tournaments")}` },
-    url: `${siteUrl}${href(locale, "/tournaments")}#${e.slug}`,
-    image: `${siteUrl}/media/og.jpg`,
-    isAccessibleForFree: true,
-  }));
+  // Un Event per ogni evento futuro del calendario (Ondata 2, GEO-09): nome ufficiale, orario con fuso, Koin Games per
+  // `@id` come organizzatore degli eventi ufficiali, Valve per lo Steam Next Fest, immagine dal materiale ufficiale.
+  const events = up.map((e) => eventNode(e, locale));
 
   // Lista per i dati strutturati: gli eventi statici del calendario (futuri e passati), ognuno con la sua
   // ancora sulla pagina. I tornei della community non ci vanno: arrivano da Supabase e cambiano da soli.

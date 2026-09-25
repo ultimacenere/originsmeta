@@ -39,6 +39,12 @@ export type Author = {
    * scheda del mazzo porta il nome di chi lo ha pubblicato.
    */
   communityDecks?: { slug: string; name: string }[];
+  /**
+   * Nome utente dell'account della community (pagina /u/<username>), quando l'autore ne ha uno noto: la pagina autore
+   * lo linka e, nei dati strutturati, il profilo della community e la pagina autore parlano della stessa Person
+   * (`personId`, TOOL-09 dell'Ondata 2).
+   */
+  username?: string;
   /** contatti pubblici verificati; `mailto:` diventa `email`, i link http(s) diventano `sameAs` */
   links: { label: string; url: string }[];
 };
@@ -81,10 +87,12 @@ export const authors: Author[] = [
     name: "Luigi “Davdas” Ragoni",
     displayName: "Davdas",
     role: n("Founder", "Fondatore", "Fundador"),
+    // Tagline riscritta con l'Ondata 2 (TOOL-09, 25/09/2026): "i primi due mazzi" era vero ma incompleto, ora i mazzi
+    // sono di più. Nessun numero scritto a mano (tornerebbe vecchio al mazzo successivo): l'elenco sta in `communityDecks`.
     tagline: n(
-      "Founder of OriginsMeta: he published the first two community decks on the site, and his game notes are what the deck guides are built on.",
-      "Fondatore di OriginsMeta: ha pubblicato i primi due mazzi della community del sito e le sue note di gioco sono la base delle guide ai mazzi.",
-      "Fundador de OriginsMeta: publicó en el sitio los dos primeros mazos de la comunidad, y sus notas de juego son la base de las guías de los mazos.",
+      "Founder of OriginsMeta: he has published community decks here since the very first, Healing Healsing, and his game notes are the basis of our deck guides.",
+      "Fondatore di OriginsMeta: pubblica mazzi della community sul sito dal primo, Healing Healsing, e le sue note di gioco sono la base delle guide ai mazzi.",
+      "Fundador de OriginsMeta: publica aquí mazos de la comunidad desde el primero, Healing Healsing, y sus notas de juego son la base de las guías de mazos.",
     ),
     metaTitle: n("Luigi “Davdas” Ragoni, Origins TCG decks · OriginsMeta", "Luigi “Davdas” Ragoni, mazzi di Origins TCG", "Luigi “Davdas” Ragoni, mazos de Origins TCG · OriginsMeta"),
     // Biografia data da Pierluigi il 24/09/2026: l'italiano è il suo testo parola per parola, l'inglese è tradotto.
@@ -105,6 +113,8 @@ export const authors: Author[] = [
       { slug: "king-of-value-trade-fd14", name: "King of Value Trade" },
       { slug: "the-trick-or-treat-legion-72c4", name: "The Trick-or-Treat Legion" },
     ],
+    // l'account da cui pubblica i mazzi (vedi il commento qui sopra): pagina pubblica /u/luigidavdasragoni
+    username: "luigidavdasragoni",
     links: [],
   },
 ];
@@ -112,6 +122,28 @@ export const authors: Author[] = [
 export function getAuthor(slug: string): Author | undefined {
   return authors.find((a) => a.slug === slug);
 }
+
+/**
+ * Il nickname fra le virgolette del nome completo ("Aldry" in Pierluigi “Aldry” Cella): è l'`alternateName` della
+ * Person nei dati strutturati (prima lo era `displayName`, cioè "Pierluigi", che non è un altro nome).
+ */
+export function nicknameOf(a: Author): string | undefined {
+  return a.name.match(/“([^”]+)”/)?.[1];
+}
+
+/**
+ * L'autore a cui appartiene un account della community, se c'è (`username`). Serve al profilo pubblico /u/<username>
+ * per usare la stessa Person della pagina autore e per linkarla.
+ */
+export function authorByUsername(username: string | null | undefined): Author | undefined {
+  return username ? authors.find((a) => a.username === username) : undefined;
+}
+
+/**
+ * I fondatori del sito: gli autori con il ruolo "Founder" (Pierluigi, 24/09/2026: "Fondatore" per tutti e due). Li
+ * dichiara `founder` nel nodo Organization di OriginsMeta (src/lib/jsonld/entities.ts).
+ */
+export const founders: Author[] = authors.filter((a) => a.role.en === "Founder");
 
 /**
  * Chi firma una guida. Unico punto di verità: la pagina della guida (firma in fondo e nodo Article

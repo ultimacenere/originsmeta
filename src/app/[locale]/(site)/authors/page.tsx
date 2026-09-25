@@ -3,7 +3,7 @@ import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { authors } from "@/lib/data/authors";
-import { JsonLd, breadcrumbs, collectionPage } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, collectionPage, organizationId, personId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -13,13 +13,15 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function AuthorsPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  // Stesso helper delle altre pagine lista: l'`@id` è `…/authors#collection`, come su carte, mazzi e guide.
+  // Stesso helper delle altre pagine lista: l'`@id` è `…/authors#collection`, come su carte, mazzi e guide. Ogni voce
+  // punta anche alla Person unica dell'autore (`personId`, Ondata 2, TOOL-09) e la lista parla di OriginsMeta.
   const collection = collectionPage({
     locale,
     path: href(locale, "/authors"),
     name: d.authors.title,
     description: d.authors.intro,
-    items: authors.map((a) => ({ name: a.name, path: href(locale, `/authors/${a.slug}`) })),
+    items: authors.map((a) => ({ name: a.name, path: href(locale, `/authors/${a.slug}`), id: personId(a.slug) })),
+    about: organizationId,
   });
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">

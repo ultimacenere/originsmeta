@@ -902,7 +902,7 @@ The location always destroys the enemy across from the space a character entered
 - The official Steam post of 21 September, the one announcing the update, lists the stat changes and the six cards that change what they do, "compared to the latest playtest build". The team's Reddit post says the same.
 - The version posted on the official Discord adds Christopher Robin, the two game rules and The Gallows. We report it in full.
 
-The patch has no version number: the team calls it the demo patch notes of 21 September. On this site it appears as "Demo · 21 Sep".
+The patch has no version number: the team calls it the demo patch notes of 21 September. Some creators call it "patch 0.7", but that number is not in the official posts. On this site it appears as "Demo · 21 Sep".
 
 ## What changes on OriginsMeta {#on-the-site}
 
@@ -987,7 +987,7 @@ Il luogo distrugge sempre il nemico di fronte allo spazio in cui è entrato il p
 - Il post ufficiale su Steam del 21 settembre, quello che annuncia l'aggiornamento, elenca le modifiche alle statistiche e le sei carte che cambiano effetto, "rispetto all'ultima build del playtest". Il post del team su Reddit dice lo stesso.
 - La versione pubblicata sul Discord ufficiale aggiunge Christopher Robin, le due regole di gioco e The Gallows. La riportiamo per intero.
 
-La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Sul sito compare come "Demo · 21 set".
+La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Alcuni creator la chiamano "patch 0.7", ma quel numero non c'è nei post ufficiali. Sul sito compare come "Demo · 21 set".
 
 ## Cosa cambia su OriginsMeta {#sul-sito}
 
@@ -1072,7 +1072,7 @@ La ubicación siempre destruye al enemigo situado frente al espacio en el que en
 - La publicación oficial de Steam del 21 de septiembre, la que anuncia la actualización, enumera los cambios de estadísticas y las seis cartas que cambian lo que hacen, "en comparación con la última build del playtest". La publicación del equipo en Reddit dice lo mismo.
 - La versión publicada en el Discord oficial añade Christopher Robin, las dos reglas de juego y The Gallows. La reproducimos completa.
 
-El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. En este sitio aparece como "Demo · 21 sep".
+El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. Algunos creadores lo llaman "patch 0.7" o "parche 0.7", pero ese número no está en las publicaciones oficiales. En este sitio aparece como "Demo · 21 sep".
 
 ## Qué cambia en OriginsMeta {#en-el-sitio}
 
@@ -1086,12 +1086,12 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
     faq: {
       en: [
         { q: "What changed in the Origins TCG demo patch of 21 September?", a: "Dorothy costs 4 instead of 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet and Roo change stats; Itsy Bitsy Spider becomes Evil; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet and Wooden Stake change what they do; two game rules and The Gallows location are fixed." },
-        { q: "Does this patch have a version number?", a: "No. The team calls it the demo patch notes of 21 September 2026, and the changes are compared to the last playtest build, 0.6.3." },
+        { q: "Is this Origins TCG patch 0.7?", a: "It is the update some creators call patch 0.7, but the patch has no version number: the team calls it the demo patch notes of 21 September 2026, and the changes are compared to the last playtest build, 0.6.3." },
         { q: "Should I build my Crimson Cup decks on these stats?", a: "Yes: the tentative card list of the tournament arrived with the same update. The team warns that further balance patches can still come before the Crimson Cup, from 20 to 25 October 2026." },
       ],
       it: [
         { q: "Cosa cambia con la patch della demo di Origins TCG del 21 settembre?", a: "Dorothy costa 4 invece di 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet e Roo cambiano statistiche; Itsy Bitsy Spider diventa Malvagia; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet e Wooden Stake cambiano effetto; si correggono due regole di gioco e il luogo The Gallows." },
-        { q: "Questa patch ha un numero di versione?", a: "No. Il team la chiama patch notes della demo del 21 settembre 2026, e le modifiche sono confrontate con l'ultima build del playtest, la 0.6.3." },
+        { q: "È la patch 0.7 di Origins TCG?", a: "È l'aggiornamento che alcuni creator chiamano patch 0.7, ma la patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre 2026, e le modifiche sono confrontate con l'ultima build del playtest, la 0.6.3." },
         { q: "Devo costruire i mazzi per la Crimson Cup su queste statistiche?", a: "Sì: la lista carte provvisoria del torneo è arrivata con lo stesso aggiornamento. Il team avverte che prima della Crimson Cup, dal 20 al 25 ottobre 2026, possono arrivare altre patch di bilanciamento." },
       ],
       es: [
@@ -1100,8 +1100,8 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
           a: "Dorothy cuesta 4 en lugar de 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet y Roo cambian sus estadísticas; Itsy Bitsy Spider pasa a ser Evil; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet y Wooden Stake cambian lo que hacen; se corrigen dos reglas de juego y la ubicación The Gallows.",
         },
         {
-          q: "¿Este parche tiene número de versión?",
-          a: "No. El equipo lo llama las notas del parche de la demo del 21 de septiembre de 2026, y los cambios se comparan con la última build del playtest, la 0.6.3.",
+          q: "¿Es el parche 0.7 de Origins TCG?",
+          a: "Es la actualización que algunos creadores llaman patch 0.7 o parche 0.7, pero el parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre de 2026, y los cambios se comparan con la última build del playtest, la 0.6.3.",
         },
         {
           q: "¿Debo construir mis mazos para la Crimson Cup con estas estadísticas?",

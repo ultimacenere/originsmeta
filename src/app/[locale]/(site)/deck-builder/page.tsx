@@ -9,6 +9,8 @@ import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { contactEmail } from "@/components/Footer";
+import { JsonLd, breadcrumbs, webApplication } from "@/components/JsonLd";
+import { deckBuilderApp } from "@/lib/entityLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -19,8 +21,22 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
   const { locale, dict: d } = await resolveLocale(params);
   const pool = builderPool(locale, d);
   const b = d.builder;
+  const path = href(locale, "/deck-builder");
+  // Dati strutturati (Ondata 2: TOOL-05, COMP-11, GEO-13): lo strumento gratuito del sito, con le regole vere del mazzo
+  // e di Conquest (RULES, la stessa regola della Crimson Cup) e solo le funzioni che il builder ha davvero.
+  const app = deckBuilderApp(locale);
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.decks.title, path: href(locale, "/decks") },
+            { name: b.title, path },
+          ]),
+          webApplication({ locale, path, name: b.title, description: app.description, features: app.features }),
+        ]}
+      />
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="t-page mt-2">{b.title}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{b.intro}</p>
@@ -68,7 +84,7 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           pool={pool}
           locale={locale}
           contactEmail={contactEmail}
-          shareBase={`${siteUrl}${href(locale, "/deck-builder")}`}
+          shareBase={`${siteUrl}${path}`}
           publishHref={href(locale, "/decks/publish")}
           labels={builderLabels(d)}
         />

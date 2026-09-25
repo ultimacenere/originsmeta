@@ -127,26 +127,37 @@ export default async function TournamentPage({ params, searchParams }: { params:
     });
   }
 
-  const event: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: t.name,
-    description: (t.description || x.sectionIntro).slice(0, 300),
-    startDate: t.starts_at,
-    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-    eventStatus: t.status === "cancelled" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
-    location: { "@type": "VirtualLocation", url: pageUrl },
-    organizer: { "@type": "Person", name: organizer },
-    url: pageUrl,
-    image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
-    isAccessibleForFree: true,
-    maximumAttendeeCapacity: t.size,
-    about: { "@id": videoGameId },
-  };
+  // Dati strutturati (Ondata 2, GEO-09): un Event solo per i tornei pubblici (i privati sono noindex e visibili solo a
+  // chi è invitato). L'`@id` è legato al link breve /t/<tag>, uguale in ogni lingua; l'organizzatore è la persona che
+  // l'ha creato, con la sua pagina pubblica quando ha un nome utente; iscriversi è gratis, qui sulla scheda.
+  const organizerUrl = t.profile?.username ? `${siteUrl}${href(locale, `/u/${t.profile.username}`)}` : undefined;
+  const event: Record<string, unknown> | null =
+    t.visibility === "public"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "@id": `${shortLink}#event`,
+          name: t.name,
+          description: (t.description || x.sectionIntro).slice(0, 300),
+          startDate: t.starts_at,
+          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+          eventStatus: t.status === "cancelled" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+          location: { "@type": "VirtualLocation", url: pageUrl },
+          organizer: organizerUrl ? { "@type": "Person", name: organizer, url: organizerUrl } : { "@type": "Person", name: organizer },
+          url: pageUrl,
+          inLanguage: t.lang,
+          image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
+          isAccessibleForFree: true,
+          offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", url: pageUrl },
+          maximumAttendeeCapacity: t.size,
+          about: { "@id": videoGameId },
+        }
+      : null;
+  const crumbs = breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.events.title, path: href(locale, "/tournaments") }, { name: t.name, path }]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <JsonLd data={[event, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.events.title, path: href(locale, "/tournaments") }, { name: t.name, path }])]} />
+      <JsonLd data={event ? [event, crumbs] : [crumbs]} />
       <p className="text-sm">
         <Link href={href(locale, "/tournaments")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.events.title}
