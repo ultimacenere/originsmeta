@@ -66,6 +66,195 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Seconda news "Upgrade Meta" (richiesta di Pierluigi del 25/09/2026): lo spagnolo, i testi ufficiali delle carte
+    // nelle tre lingue, due anticipazioni (l'overlay, uno strumento di gioco per tutti, volutamente vago per scelta di Pierluigi, e il
+    // mazzo della settimana), il grazie alla community e i link per partecipare.
+    slug: "upgrade-meta-0925",
+    image: "/media/keyart-queen-of-hearts-wide.webp",
+    guides: ["play-the-demo", "origins-tcg-explained"],
+    date: "2026-09-25",
+    title: n(
+      "Upgrade Meta: OriginsMeta speaks Spanish, every card in three languages and what's coming next",
+      "Upgrade Meta: OriginsMeta parla spagnolo, tutte le carte in tre lingue e le prossime novità",
+      "Upgrade Meta: OriginsMeta habla español, todas las cartas en tres idiomas y lo que viene",
+    ),
+    metaTitle: n("Upgrade Meta: OriginsMeta for Origins TCG, now in Spanish", "Upgrade Meta: OriginsMeta per Origins TCG ora in spagnolo", "Upgrade Meta: OriginsMeta para Origins TCG, ya en español"),
+    description: n(
+      "OriginsMeta is now in Spanish too, and every Demo 2.0 card has the game's official text in three languages. Plus a first look at what we're building next.",
+      "OriginsMeta ora è anche in spagnolo, e ogni carta della Demo 2.0 ha il testo ufficiale del gioco in tre lingue. E un primo sguardo a cosa stiamo preparando.",
+      "OriginsMeta ya está en español, y cada carta de la Demo 2.0 tiene el texto oficial del juego en tres idiomas. Además, un vistazo a lo que estamos preparando.",
+    ),
+    summary: n(
+      "OriginsMeta now speaks Spanish too, and every Demo 2.0 card shows the game's official text in English, Italian and Spanish. We're also working on an overlay, a game tool for every player, and on ways to reward what you create: the first idea is a deck of the week chosen by your votes. Thank you for your support: at the end of the article you'll find everything you need to join in.",
+      "OriginsMeta ora parla anche spagnolo, e ogni carta della Demo 2.0 mostra il testo ufficiale del gioco in inglese, italiano e spagnolo. Stiamo lavorando a un overlay, uno strumento di gioco per tutti, e a un modo per premiare quello che create: la prima idea è un mazzo della settimana scelto con i vostri voti. Grazie del sostegno: in fondo all'articolo trovate tutto quello che serve per partecipare.",
+      "OriginsMeta ya habla español, y cada carta de la Demo 2.0 muestra el texto oficial del juego en inglés, italiano y español. También estamos trabajando en un overlay, una herramienta de juego para todos, y en formas de premiar tus creaciones: la primera idea es un mazo de la semana elegido con los votos de la comunidad. Gracias por el apoyo: al final del artículo tienes todo lo necesario para participar.",
+    ),
+    highlights: {
+      en: [
+        { label: "Spanish is here", text: "the whole site, guides and news included, and community deck guides translated automatically", anchor: "spanish" },
+        { label: "Every card, three languages", text: "the game's official Italian and Spanish text, checked on all 122 Demo 2.0 cards", anchor: "cards" },
+        { label: "An overlay for everyone", text: "a game tool for every player, in the works: we'll show it when it's ready", anchor: "overlay" },
+        { label: "Deck of the week", text: "chosen by your votes: our first idea to reward what you create", anchor: "deck-of-the-week" },
+        { label: "Thank you", text: "to everyone who signed up, published, voted and wrote to us", anchor: "thanks" },
+        { label: "Join in", text: "sign up, build a deck, make your tier list, come to our Discord", anchor: "join" },
+      ],
+      it: [
+        { label: "Lo spagnolo è arrivato", text: "tutto il sito, guide e news comprese, e le guide dei mazzi della community tradotte in automatico", anchor: "spagnolo" },
+        { label: "Ogni carta in tre lingue", text: "i testi ufficiali italiani e spagnoli del gioco, controllati su tutte le 122 carte della Demo 2.0", anchor: "carte" },
+        { label: "Un overlay per tutti", text: "uno strumento di gioco per tutti i giocatori, a cui stiamo lavorando: lo mostriamo quando è pronto", anchor: "overlay" },
+        { label: "Il mazzo della settimana", text: "scelto con i vostri voti: la prima idea per premiare quello che create", anchor: "mazzo-della-settimana" },
+        { label: "Grazie", text: "a chi si è iscritto, ha pubblicato, ha votato e ci ha scritto", anchor: "grazie" },
+        { label: "Partecipa", text: "iscriviti, costruisci un mazzo, crea la tua tier list, vieni sul nostro Discord", anchor: "partecipa" },
+      ],
+      es: [
+        { label: "Llega el español", text: "todo el sitio, guías y noticias incluidas, y las guías de los mazos de la comunidad traducidas automáticamente", anchor: "espanol" },
+        { label: "Cada carta, en tres idiomas", text: "el texto oficial del juego en italiano y en español, revisado en las 122 cartas de la Demo 2.0", anchor: "cartas" },
+        { label: "Un overlay para todos", text: "una herramienta de juego para todos los jugadores, en la que estamos trabajando: la mostraremos cuando esté lista", anchor: "overlay" },
+        { label: "El mazo de la semana", text: "elegido con los votos de la comunidad: nuestra primera idea para premiar tus creaciones", anchor: "mazo-de-la-semana" },
+        { label: "Gracias", text: "a quienes se registraron, publicaron, votaron y nos escribieron", anchor: "gracias" },
+        { label: "Participa", text: "regístrate, construye un mazo, crea tu tier list y únete a nuestro Discord", anchor: "participa" },
+      ],
+    },
+    body: n(
+      `## Spanish is here {#spanish}
+
+As of 25 September 2026, OriginsMeta is also in Spanish: cards, decks, guides, news, tier lists, the deck builder and tournaments. Switch language with EN · IT · ES at the top of every page (on a phone, inside Menu). We write in neutral Spanish, for players in Spain and Latin America, and card names stay in English, as in the game.
+
+Community decks speak every language too: the author writes the guide in their own language, the site translates it into the other two, says so on the page and links to the original. A deck published in Italian can now be read in English and Spanish too.
+
+## Every card, three languages {#cards}
+
+On 25 September we opened the demo in Spanish and in Italian and read the 122 cards of the collection one by one. The Italian and Spanish texts you now find in the [card list](/en/cards) are the game's official ones: 101 Spanish and 88 Italian texts were different from our translations, and they have been replaced.
+
+The keywords use the game's official terms too: On Reveal is "Alla rivelazione" in Italian and "Al revelar" in Spanish. On the Italian and Spanish pages you'll find the same terms in the tags under each card, in the guides and in the news. Created cards and removed cards don't appear in the game's collection, and we haven't checked the [Locations](/en/locations) in the game yet: their Italian and Spanish text is ours, written with the game's glossary.
+
+## An overlay for everyone {#overlay}
+
+We're working on an overlay: a game tool for every Origins TCG player, not just for those who stream. We'd rather show it than describe it: we'll tell you more as soon as we have something worth seeing.
+
+## Deck of the week {#deck-of-the-week}
+
+We want to reward the people who create, and give more visibility to your decks, guides and tier lists. The first idea is a deck of the week, chosen by your star ratings. Every vote counts: if you try a deck from the community, rate it.
+
+## Thank you {#thanks}
+
+OriginsMeta went online on 15 September. In ten days many of you signed up, published decks, voted, saved tier lists and wrote to us with ideas and corrections. Many of the recent changes started with your messages. Thank you: this site grows with you.
+
+## Join in {#join}
+
+- [Sign up](/en/login): free, with Discord or with your email, no password needed. With an account you can publish your decks, vote and save your tier lists.
+- [Build a deck](/en/deck-builder): free, even without an account. Copy the game code or, with an account, publish the deck on the site with your guide.
+- [Make your tier list](/en/tier-list/create) and see the [community tier list](/en/tier-list/community), which becomes a real ranking once 5 lists are saved.
+- [Join our Discord](https://discord.gg/RAG7nnrNGP): new articles and guides arrive there as soon as they go live. The [official Origins TCG Discord](https://discord.gg/originstcg) is Koin Games' server, for announcements and tournament sign-ups.`,
+      `## Lo spagnolo è arrivato {#spagnolo}
+
+Dal 25 settembre 2026 OriginsMeta è anche in spagnolo: carte, mazzi, guide, news, tier list, deck builder e tornei. La lingua si cambia con EN · IT · ES in alto su ogni pagina (sul telefono dentro Menu). È uno spagnolo neutro, per chi gioca in Spagna e in America Latina, e i nomi delle carte restano in inglese, come nel gioco.
+
+Anche i mazzi della community parlano tre lingue: l'autore scrive la guida nella sua lingua, il sito la traduce nelle altre due, lo segnala sulla pagina e mette il link all'originale. Un mazzo pubblicato in italiano ora si legge anche in inglese e in spagnolo.
+
+## Ogni carta in tre lingue {#carte}
+
+Il 25 settembre abbiamo aperto la demo in spagnolo e in italiano e letto una per una le 122 carte della collezione. I testi italiani e spagnoli che trovi nella [lista carte](/it/cards) sono quelli ufficiali del gioco: 101 testi spagnoli e 88 italiani erano diversi dalle nostre traduzioni e sono stati sostituiti.
+
+Anche le parole chiave usano i termini ufficiali del gioco: On Reveal in italiano è "Alla rivelazione", in spagnolo "Al revelar". Gli stessi termini li trovi nelle etichette sotto ogni carta, nelle guide e nelle news. Le carte generate e le carte rimosse non compaiono nella collezione del gioco, e i [Luoghi](/it/locations) non li abbiamo ancora confrontati nel gioco: il loro testo italiano e spagnolo lo scriviamo noi, con il glossario del gioco.
+
+## Un overlay per tutti {#overlay}
+
+Stiamo lavorando a un overlay: uno strumento di gioco per tutti i giocatori di Origins TCG, non solo per chi fa dirette. Preferiamo mostrarlo piuttosto che raccontarlo: ve ne parliamo appena abbiamo qualcosa che valga la pena vedere.
+
+## Il mazzo della settimana {#mazzo-della-settimana}
+
+Vogliamo premiare chi crea e dare più visibilità ai mazzi, alle guide e alle tier list della community. La prima idea è un mazzo della settimana, scelto in base alle stelle che ricevono i mazzi. Ogni voto conta: se provi un mazzo della community, votalo.
+
+## Grazie {#grazie}
+
+OriginsMeta è online dal 15 settembre. In dieci giorni in tanti vi siete iscritti, avete pubblicato mazzi, votato, salvato tier list e ci avete mandato idee e correzioni. Molte novità di questi giorni sono nate dai vostri messaggi. Grazie: questo sito cresce insieme a voi.
+
+## Partecipa {#partecipa}
+
+- [Iscriviti](/it/login): è gratis, con Discord o con la tua email, senza password. Con un account pubblichi i tuoi mazzi, voti e salvi le tue tier list.
+- [Costruisci un mazzo](/it/deck-builder): gratis, anche senza account. Copia il codice del gioco oppure, con un account, pubblica il mazzo sul sito con la tua guida.
+- [Crea la tua tier list](/it/tier-list/create) e guarda la [tier list della community](/it/tier-list/community), che diventa una classifica vera a partire da 5 liste salvate.
+- [Entra nel nostro Discord](https://discord.gg/RAG7nnrNGP): le news e le guide nuove arrivano lì appena escono. Il [Discord ufficiale di Origins TCG](https://discord.gg/originstcg) è il server di Koin Games, per gli annunci e le iscrizioni ai tornei.`,
+      `## Llega el español {#espanol}
+
+Desde el 25 de septiembre de 2026 OriginsMeta también está en español: cartas, mazos, guías, noticias, tier lists, el deck builder y los torneos. Cambia de idioma con EN · IT · ES en la parte superior de cada página (en el teléfono, dentro de Menú). Es un español neutro, para quienes juegan en España y en América Latina, y los nombres de las cartas siguen en inglés, como en el juego.
+
+Los mazos de la comunidad también hablan tres idiomas: el autor escribe la guía en su idioma, el sitio la traduce a los otros dos, lo indica en la página y enlaza el original. Un mazo publicado en italiano ahora también se lee en inglés y en español.
+
+## Cada carta, en tres idiomas {#cartas}
+
+El 25 de septiembre abrimos la demo en español y en italiano y leímos una por una las 122 cartas de la colección. Los textos en español y en italiano que ves en la [lista de cartas](/es/cards) son los oficiales del juego: 101 textos en español y 88 en italiano eran distintos de nuestras traducciones, y los hemos sustituido.
+
+Las palabras clave también usan los términos oficiales del juego: On Reveal es "Al revelar" en español y "Alla rivelazione" en italiano. Encontrarás los mismos términos en las etiquetas de cada carta, en las guías y en las noticias. Las cartas creadas y las retiradas no aparecen en la colección del juego, y las [Ubicaciones](/es/locations) aún no las hemos comparado en el juego: su texto en español y en italiano lo escribimos nosotros, con el glosario del juego.
+
+## Un overlay para todos {#overlay}
+
+Estamos trabajando en un overlay: una herramienta de juego para todos los jugadores de Origins TCG, no solo para quienes transmiten sus partidas. Preferimos mostrarlo antes que contarlo: te daremos más detalles en cuanto tengamos algo que valga la pena ver.
+
+## El mazo de la semana {#mazo-de-la-semana}
+
+Queremos premiar a quienes crean contenido y dar más visibilidad a los mazos, las guías y las tier lists de la comunidad. La primera idea es un mazo de la semana, elegido según las estrellas que reciben los mazos. Cada voto cuenta: si pruebas un mazo de la comunidad, valóralo.
+
+## Gracias {#gracias}
+
+OriginsMeta está en línea desde el 15 de septiembre. En diez días, muchos jugadores se registraron, publicaron mazos, votaron, guardaron tier lists y nos escribieron con ideas y correcciones. Muchas novedades de estos días nacieron de esos mensajes. Gracias: este sitio crece con toda la comunidad.
+
+## Participa {#participa}
+
+- [Regístrate](/es/login): es gratis, con Discord o con tu correo electrónico, sin contraseña. Con una cuenta publicas tus mazos, votas y guardas tus tier lists.
+- [Construye un mazo](/es/deck-builder): gratis, incluso sin cuenta. Copia el código del juego o, con una cuenta, publica el mazo en el sitio con tu guía.
+- [Crea tu tier list](/es/tier-list/create) y mira la [tier list de la comunidad](/es/tier-list/community), que se convierte en una clasificación de verdad a partir de 5 listas guardadas.
+- [Únete a nuestro Discord](https://discord.gg/RAG7nnrNGP): las noticias y las guías nuevas llegan allí en cuanto se publican. El [Discord oficial de Origins TCG](https://discord.gg/originstcg) es el servidor de Koin Games, para anuncios e inscripciones a torneos.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Is OriginsMeta available in Spanish?",
+          a: "Yes, since 25 September 2026: the whole site, with guides, news, tier lists and the deck builder. Switch language with EN · IT · ES at the top of the page; community deck guides are translated automatically.",
+        },
+        {
+          q: "Are the Italian and Spanish card texts official?",
+          a: "Yes, for the 122 Demo 2.0 cards: we read them in the game on 25 September 2026. Created and removed cards are not in the game's collection and the Locations have not been checked in the game yet, so their Italian and Spanish text is our translation with the game's glossary.",
+        },
+        {
+          q: "How do I publish a deck on OriginsMeta?",
+          a: "Build it in the deck builder, sign in with Discord or your email and press Publish on the site: a short game plan is required, the rest of the guide is optional.",
+        },
+      ],
+      it: [
+        {
+          q: "OriginsMeta è disponibile in spagnolo?",
+          a: "Sì, dal 25 settembre 2026: tutto il sito, con guide, news, tier list e deck builder. La lingua si cambia con EN · IT · ES in alto; le guide dei mazzi della community vengono tradotte in automatico.",
+        },
+        {
+          q: "I testi italiani e spagnoli delle carte sono ufficiali?",
+          a: "Sì, per le 122 carte della Demo 2.0: li abbiamo letti nel gioco il 25 settembre 2026. Carte generate e carte rimosse non sono nella collezione del gioco e i Luoghi non li abbiamo ancora confrontati nel gioco: il loro testo è una nostra traduzione con il glossario del gioco.",
+        },
+        {
+          q: "Come pubblico un mazzo su OriginsMeta?",
+          a: "Costruiscilo nel deck builder, accedi con Discord o con la tua email e premi Pubblica sul sito: serve un breve piano di gioco, il resto della guida è facoltativo.",
+        },
+      ],
+      es: [
+        {
+          q: "¿OriginsMeta está disponible en español?",
+          a: "Sí, desde el 25 de septiembre de 2026: todo el sitio, con guías, noticias, tier lists y el deck builder. Cambia de idioma con EN · IT · ES arriba en la página; las guías de los mazos de la comunidad se traducen automáticamente.",
+        },
+        {
+          q: "¿Los textos de las cartas en español e italiano son oficiales?",
+          a: "Sí, para las 122 cartas de la Demo 2.0: los leímos en el juego el 25 de septiembre de 2026. Las cartas creadas y las retiradas no están en la colección del juego, y las Ubicaciones aún no las hemos comparado en el juego: su texto es una traducción nuestra con el glosario del juego.",
+        },
+        {
+          q: "¿Cómo publico un mazo en OriginsMeta?",
+          a: "Créalo en el deck builder, accede con Discord o con tu correo electrónico y pulsa Publicar en el sitio: hace falta un breve plan de juego; el resto de la guía es opcional.",
+        },
+      ],
+    },
+    url: "/cards",
+    source: "site",
+  },
+  {
     // Annuncio sul Discord ufficiale del 24/09/2026 ("BIG CRIMSON CUP ANNOUNCEMENT"), passato da Pierluigi, più il post
     // su X dello stesso giorno. La copertina è un ritaglio 16:9 della grafica ufficiale dei premi (crediti della carta interi).
     slug: "crimson-cup-format-check-in",
