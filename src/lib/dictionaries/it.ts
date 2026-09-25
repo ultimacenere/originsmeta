@@ -7,7 +7,10 @@ export const it: Dictionary = {
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "mazzi" e "carte" sono delle loro pagine */
     homeTitle: "Origins TCG, il gioco di carte di Koin Games · OriginsMeta",
     description:
-      "Origins TCG è il gioco di carte digitale free-to-compete di Koin Games. Sito non ufficiale in italiano, inglese e spagnolo: carte, mazzi, guide e news.",
+      "Origins TCG è il gioco di carte free-to-compete di Koin Games. Sito non ufficiale in italiano, inglese e spagnolo: carte, mazzi, deck builder, guide, news.",
+    /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
+    siteDescription:
+      "Sito di fan non ufficiale su Origins TCG, il gioco di carte di Koin Games, in italiano, inglese e spagnolo: carte, mazzi, deck builder, tier list, guide e news.",
   },
   nav: {
     news: "News",
@@ -40,8 +43,9 @@ export const it: Dictionary = {
     title: "Domande frequenti su Origins TCG",
     metaTitle: "FAQ di Origins TCG: mazzi, Kickstarter e Crimson Cup",
     intro: "Scrivi una domanda e la risposta viene costruita con i dati di questo sito: il database carte (patch della demo del 21 settembre 2026), le nostre guide e il calendario degli eventi. Sotto, le risposte che abbiamo scritto e riletto noi.",
-    /* intro con l'assistente spento: solo quello che la pagina offre davvero */
-    introOffline: "Le domande che tornano più spesso, con le risposte scritte e verificate da noi e le loro fonti. Per una carta sola, il database carte risponde da sé.",
+    /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
+       collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
+    introOffline: "Risposte brevi alle domande più frequenti su Origins TCG, il gioco di carte di Koin Games, con il link alla guida che approfondisce, quando c'è.",
     description: "Risposte brevi su Origins TCG, il gioco di carte di Koin Games: regole del mazzo, pay-to-win, formato Conquest, date e premi della Crimson Cup, Kickstarter.",
     askTitle: "Fai una domanda",
     placeholder: "Che cosa fa Mulan? Che cosa ci sta bene con Van Helsing?",
@@ -51,7 +55,9 @@ export const it: Dictionary = {
     sources: "Da dove viene",
     disclaimer: "Risposta costruita sui dati di questo sito da un assistente. Non siamo Koin Games: per regolamenti, date e annunci valgono le fonti ufficiali.",
     coverage: "Può leggere le {cards} carte della Demo 2.0 e le {created} carte che creano, {guides} guide e il calendario eventi. Le statistiche seguono la patch della demo del {patch}.",
-    offline: "L'assistente è spento in questo momento. Le risposte qui sotto ci sono sempre, e il database carte risponde da solo a gran parte delle domande.",
+    /* riquadro sotto le risposte quando l'assistente è spento: due strade che rispondono comunque, senza parlare dell'assistente */
+    offlineTitle: "Non hai trovato la risposta?",
+    offline: "Per una carta, il database carte ha il testo ufficiale, le statistiche e lo storico dei bilanciamenti. Per tutto il resto, chiedi alla community sul Discord ufficiale.",
     offlineCards: "Cerca nel database carte",
     offlineDiscord: "Chiedi su Discord",
     approvedTitle: "Le risposte che restano",
@@ -176,7 +182,7 @@ export const it: Dictionary = {
     tomorrow: "domani",
   },
   home: {
-    h1: "Origins TCG: il sito non ufficiale sul gioco di carte di Koin Games",
+    h1: "Origins TCG: un sito di fan non ufficiale sul gioco di carte di Koin Games",
     metashiftSub: "Le variazioni più grandi dell'ultima patch",
     tierTitle: "Tier list",
     /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
@@ -276,6 +282,17 @@ export const it: Dictionary = {
     legendariesText: "Nella Demo 2.0 si giocano {n} Leggendarie, una alla guida di ogni mazzo. Eccole tutte: ogni nome apre la scheda con testo, statistiche e bilanciamenti. Quelle del playtest che non sono nella demo restano nel database carte, segnate come rimosse.",
     detailKicker: "Mazzo",
     otherDecks: "Altri mazzi",
+    /* "In breve" di /decks e di /tier-list (piano SEO/GEO del 25/09/2026): frasi costruite sul server con i dati dei mazzi
+       pubblicati, mai numeri scritti a mano. {list} è un elenco "Nome (n mazzi)" o "Mazzo (4,8/5, 5 voti)" */
+    brief: {
+      count: "Finora la community ha pubblicato su OriginsMeta {n} mazzi di Origins TCG (Koin Games), l'ultimo il {date}.",
+      countOne: "Finora la community ha pubblicato su OriginsMeta un mazzo di Origins TCG (Koin Games), il {date}.",
+      legendaries: "Leggendarie più giocate: {list}.",
+      cards: "Carte base più giocate: {list}.",
+      rated: "Mazzi più votati: {list}.",
+      ratedOne: "Mazzo più votato: {list}.",
+      rating: "{avg}/5, {votes}",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO del 25/09/2026) */
@@ -492,7 +509,13 @@ export const it: Dictionary = {
     h1: "MetaShifting: ogni bilanciamento",
     description: "Ogni bilanciamento di Origins TCG dalle patch notes ufficiali, dal più recente: statistiche, effetti e allineamenti, classificati come buff, nerf o rework.",
     intro: "Ogni modifica delle patch ufficiali, dalla più recente: statistiche, effetti e allineamenti, classificati come buff, nerf o rework. Ogni carta porta alla sua scheda con lo storico completo dei bilanciamenti.",
-    latest: "L'ultima patch è {patch} ({date}): {n} modifiche.",
+    /* l'ultima patch in una frase (latestPatch di cards.ts): col numero di versione `latest`, senza (patch della demo,
+       la cui etichetta è già una data) `latestDated`; {changes} è una delle tre forme qui sotto */
+    latest: "L'ultima patch di Origins TCG è la {patch}, uscita il {date}: {changes}.",
+    latestDated: "L'ultima patch di Origins TCG è uscita il {date}: {changes}.",
+    changesMany: "{n} modifiche alle carte",
+    changesOne: "una modifica alle carte",
+    changesNone: "nessuna modifica alle carte",
     source: "Dalle patch notes ufficiali su Steam e, quando è più completo, dal Discord ufficiale.",
     patchesLabel: "Patch",
     tierLink: "Vedi la tier list",
@@ -613,8 +636,9 @@ export const it: Dictionary = {
     /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
        con i fatti dell'evento e della news delle regole; il titolo resta generico (la Crimson Cup è della sua news) */
     descriptionCup: "Tornei di Origins TCG: la Crimson Cup si gioca dal 20 al 25 ottobre 2026 allo Steam Next Fest, con 10.000 $ di premi. Calendario e tornei della community.",
-    cupLead: "La Crimson Cup, il torneo ufficiale di Origins TCG organizzato da Koin Games, si gioca dal 20 al 25 ottobre 2026 durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22 ottobre, playoff il 24, finali il 25, premi per 10.000 $. Le iscrizioni sono sul Discord ufficiale.",
+    cupLead: "La Crimson Cup, il torneo ufficiale di Origins TCG organizzato da Koin Games, si gioca dal 20 al 25 ottobre 2026 durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22 ottobre, playoff il 24, finali il 25, premi per 10.000 $.",
     cupRules: "Regole, formato e check-in della Crimson Cup",
+    cupSignup: "Iscriviti sul Discord ufficiale",
     submitCta: "Segnala un evento",
     submitLead: "Organizzi un evento fuori da OriginsMeta?",
     guideCta: "Guida all'evento",
@@ -627,7 +651,7 @@ export const it: Dictionary = {
     title: "News di Origins TCG",
     metaTitle: "News di Origins TCG: aggiornamenti ed eventi",
     intro: "Ogni annuncio ufficiale, riassunto e datato, con il link alla fonte e le carte che tocca.",
-    description: "Le news di Origins TCG da Koin Games e dalla community, riassunte e datate: aggiornamenti della demo, eventi e nuovi mazzi, ognuna con la sua fonte.",
+    description: "Le news di Origins TCG da Koin Games e dalla community, riassunte e datate: aggiornamenti della demo, eventi e nuovi mazzi, con la fonte ufficiale quando c'è.",
     patchNotesText: "Ogni bilanciamento, carta per carta e patch per patch:",
     patchNotesLink: "patch notes di Origins TCG nel MetaShifting",
     readArticle: "Leggi l'articolo",
@@ -735,7 +759,7 @@ export const it: Dictionary = {
   },
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
-    disclaimer: "OriginsMeta è un sito di fan indipendente e non ufficiale su Origins TCG, il gioco di carte digitale di Koin Games, non affiliato a Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
+    disclaimer: "OriginsMeta è un sito di fan indipendente e non ufficiale, non affiliato a Koin Games, dedicato a Origins TCG, il gioco di carte digitale di Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
     built: "Costruito al tavolo, in tre lingue.",
     links: "Link",
     official: "Ufficiali",

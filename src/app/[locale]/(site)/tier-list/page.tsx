@@ -64,6 +64,37 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   const topLegendaries = legendaries.filter((c) => c.used > 0).sort(byUsed).slice(0, 4);
   const topCards = base.filter((c) => c.used > 0).sort(byUsed).slice(0, 8);
 
+  // In breve (piano SEO/GEO del 25/09/2026, TOOL-03): la risposta subito, in testo, con i dati già caricati qui sopra.
+  // Il gioco con Koin Games fra parentesi (le ricerche generiche sono piene di Riftbound: Origins), le carte presenti
+  // in più mazzi con il loro numero (così i pari merito si vedono), il mazzo più votato e la data dell'ultimo mazzo.
+  // I nomi dei mazzi li scrivono gli utenti: si inseriscono con una funzione, perché "$&" e simili non vengano letti.
+  const br = d.decks.brief;
+  const put = (s: string, key: string, value: string) => s.replace(`{${key}}`, () => value);
+  const listOf = (items: string[]) => new Intl.ListFormat(locale, { type: "conjunction" }).format(items);
+  const inDecks = (n: number) => (n === 1 ? t.inDecksOne : put(t.inDecksMany, "n", String(n)));
+  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const bestDeck = topDecks[0];
+  const brief = data.deckRange
+    ? [
+        put(put(data.decks.length === 1 ? br.countOne : br.count, "n", String(data.decks.length)), "date", data.deckRange.to),
+        topLegendaries.length ? put(br.legendaries, "list", listOf(topLegendaries.slice(0, 3).map((c) => `${c.name} (${inDecks(c.used)})`))) : "",
+        topCards.length ? put(br.cards, "list", listOf(topCards.slice(0, 3).map((c) => `${c.name} (${inDecks(c.used)})`))) : "",
+        bestDeck
+          ? put(
+              br.ratedOne,
+              "list",
+              `${bestDeck.name} (${put(
+                put(br.rating, "avg", oneDecimal.format(bestDeck.rating.avg)),
+                "votes",
+                bestDeck.rating.votes === 1 ? t.explorer.votesOne : put(t.explorer.votesMany, "n", String(bestDeck.rating.votes)),
+              )})`,
+            )
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : "";
+
   // Riquadro dell'ultima patch (l'ancora #tracker resta per i link già pubblicati in news e guide)
   const latest = legendaryFirst(movers(latestPatch).slice(0, 3), (m) => Boolean(m.card.legendary));
   const latestCount = patchChanges().find((g) => g.patch === latestPatch)?.items.length ?? 0;
@@ -107,6 +138,12 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         state={state}
         sections={sectionIds.map((id) => ({ id, label: t.sections[id].title, count: counts[id] }))}
       />
+      {brief ? (
+        <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
+          <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
+          {brief}
+        </p>
+      ) : null}
       <TierSourceLine
         items={[
           { label: t.lineSource, text: t.officialSourceText },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
+import { latestPatch, patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardName } from "@/components/CardChip";
 import { newTabProps } from "@/components/SteamButton";
@@ -28,6 +28,15 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
   const groups = patchChanges();
   const alignmentLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   const path = href(locale, "/metashifting");
+  // L'ultima patch uscita (non l'ultima con modifiche alle carte: patchChanges scarta quelle senza) e quante carte tocca.
+  // Le patch senza numero hanno un'etichetta che è già una data ("Demo · 21 set"): per loro basta la data.
+  const latestCount = groups.find((g) => g.patch === latestPatch)?.items.length ?? 0;
+  const latestChanges =
+    latestCount === 0 ? m.changesNone : latestCount === 1 ? m.changesOne : m.changesMany.replace("{n}", String(latestCount));
+  const latestLine = (patches[latestPatch].label ? m.latestDated : m.latest)
+    .replace("{patch}", patchLabel(latestPatch, locale))
+    .replace("{date}", formatDate(locale, patches[latestPatch].date))
+    .replace("{changes}", latestChanges);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -51,14 +60,7 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
       <h1 className="t-page mt-2">{m.h1}</h1>
       <p className="mt-3 max-w-3xl text-chalk-muted">{m.intro}</p>
       {/* L'ultima patch in una frase, dai dati (piano SEO/GEO del 25/09/2026): la risposta a "qual è l'ultima patch" */}
-      {groups[0] ? (
-        <p className="mt-2 max-w-3xl text-chalk">
-          {m.latest
-            .replace("{patch}", patchLabel(groups[0].patch, locale))
-            .replace("{date}", formatDate(locale, patches[groups[0].patch].date))
-            .replace("{n}", String(groups[0].items.length))}
-        </p>
-      ) : null}
+      <p className="mt-2 max-w-3xl text-chalk">{latestLine}</p>
       <p className="tier-line">{m.source}</p>
 
       {/* Indice delle patch, dalla più recente */}

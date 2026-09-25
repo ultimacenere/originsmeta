@@ -4,6 +4,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { pastEvents, upcomingEvents } from "@/lib/data/events";
 import { dayNumber, monthShort } from "@/lib/i18n";
 import { EventCard } from "@/components/EventCard";
+import { DiscordButton } from "@/components/DiscordButton";
 import { contactEmail } from "@/components/Footer";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { siteUrl, href } from "@/lib/i18n";
@@ -33,6 +34,8 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
   const x = d.tournaments;
   const up = upcomingEvents();
   const past = pastEvents();
+  // la Crimson Cup finché è in calendario: prima riga della pagina e description dei dati strutturati, come nei metadati
+  const cup = up.find((e) => e.slug === CRIMSON_CUP);
   const community = await listListedTournaments();
   const groups = (["open", "running", "finished"] as const).map((s) => ({ status: s, list: community.filter((t) => t.status === s) })).filter((g) => g.list.length);
   const newHref = href(locale, "/tournaments/new");
@@ -69,7 +72,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
             locale,
             path: href(locale, "/tournaments"),
             name: d.events.title,
-            description: d.events.description,
+            description: cup ? d.events.descriptionCup : d.events.description,
             items: listed,
             about: videoGameId,
           }),
@@ -82,14 +85,22 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <p className="kicker text-mint">{d.nav.events}</p>
           <h1 className="t-page mt-2">{d.events.title}</h1>
-          {/* Risposta diretta finché la Crimson Cup è in calendario, con il link fisso alla news delle regole */}
-          {cupAhead() ? (
-            <p className="mt-4 max-w-2xl text-pale">
-              {d.events.cupLead}{" "}
-              <Link href={href(locale, CRIMSON_CUP_RULES)} className="link-mint font-bold">
-                {d.events.cupRules} →
-              </Link>
-            </p>
+          {/* Risposta diretta finché la Crimson Cup è in calendario, con il link fisso alla news delle regole e il tasto
+              per iscriversi sul Discord ufficiale (l'indirizzo è quello dell'evento in events.ts) */}
+          {cup ? (
+            <>
+              <p className="mt-4 max-w-2xl text-pale">{d.events.cupLead}</p>
+              <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+                <Link href={href(locale, CRIMSON_CUP_RULES)} className="link-mint font-bold">
+                  {d.events.cupRules} →
+                </Link>
+                {cup.signup ? (
+                  <DiscordButton href={cup.signup.url} size="sm">
+                    {d.events.cupSignup}
+                  </DiscordButton>
+                ) : null}
+              </p>
+            </>
           ) : null}
           <p className="mt-4 max-w-2xl text-chalk-muted">{d.events.lead}</p>
         </div>

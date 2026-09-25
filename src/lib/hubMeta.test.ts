@@ -118,6 +118,28 @@ for (const [locale, d] of dicts) {
     test("la FAQ non promette l'assistente nel titolo", () => {
       for (const title of [d.faq.title, d.faq.metaTitle]) assert.doesNotMatch(title, /ask|chiedi|pregunta lo que/i);
     });
+
+    test("con l'assistente spento la FAQ non ne parla", () => {
+      for (const text of [d.faq.introOffline, d.faq.offlineTitle, d.faq.offline]) assert.doesNotMatch(text, /assistant|assistente|asistente/i);
+    });
+
+    test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games/);
+    });
+
+    test("le frasi costruite con i dati hanno i loro segnaposto", () => {
+      const br = d.decks.brief;
+      assert.match(br.count, /\{n\}.*\{date\}|\{date\}.*\{n\}/);
+      assert.match(br.countOne, /\{date\}/);
+      for (const text of [br.legendaries, br.cards, br.rated, br.ratedOne]) assert.match(text, /\{list\}/);
+      assert.match(br.rating, /\{avg\}.*\{votes\}/);
+      // la patch senza numero ha già una data come etichetta: la sua frase non ripete il nome
+      assert.match(d.metashifting.latest, /\{patch\}.*\{date\}.*\{changes\}/);
+      assert.match(d.metashifting.latestDated, /\{date\}.*\{changes\}/);
+      assert.doesNotMatch(d.metashifting.latestDated, /\{patch\}/);
+      assert.match(d.metashifting.changesMany, /\{n\}/);
+      assert.match(d.locations.headline, /Origins TCG.*\{n\}|\{n\}.*Origins TCG/);
+    });
   });
 }
 

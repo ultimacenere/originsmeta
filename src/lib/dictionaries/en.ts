@@ -6,6 +6,9 @@ export const en = {
     homeTitle: "Origins TCG, Koin Games' digital card game · OriginsMeta",
     description:
       "Origins TCG is Koin Games' free-to-compete digital card game. Unofficial fan site in English, Italian and Spanish: cards, decks, deck builder, guides, news.",
+    /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
+    siteDescription:
+      "Unofficial fan site for Origins TCG, the Koin Games card game, in English, Italian and Spanish: cards, decks, deck builder, tier list, guides and news.",
   },
   nav: {
     news: "News",
@@ -38,8 +41,9 @@ export const en = {
     title: "Origins TCG FAQ",
     metaTitle: "Origins TCG FAQ: decks, Kickstarter and Crimson Cup",
     intro: "Type a question and the answer is built from this site's own data: the card database (demo patch of 21 September 2026), our guides and the event calendar. Below, the answers we have written and checked.",
-    /* intro con l'assistente spento: solo quello che la pagina offre davvero */
-    introOffline: "The questions that come back most often, answered and checked by us with their sources. For a single card, the card database answers by itself.",
+    /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
+       collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
+    introOffline: "Short answers to the most frequent questions about Origins TCG, the Koin Games card game, with a link to the guide that goes deeper when there is one.",
     description: "Short answers about Origins TCG, the Koin Games card game: deck rules, pay-to-win, the Conquest format, Crimson Cup dates and prizes, the Kickstarter.",
     askTitle: "Ask a question",
     placeholder: "What does Mulan do? What goes well with Van Helsing?",
@@ -49,7 +53,9 @@ export const en = {
     sources: "Where this comes from",
     disclaimer: "Answer built from this site's data by an assistant. We are not Koin Games: for rules, dates and announcements, the official sources win.",
     coverage: "It can read the {cards} Demo 2.0 cards and the {created} cards they create, {guides} guides and the event calendar. Stats follow the demo patch of {patch}.",
-    offline: "The assistant is off at the moment. The answers below are always here, and the card database answers most questions by itself.",
+    /* riquadro sotto le risposte quando l'assistente è spento: due strade che rispondono comunque, senza parlare dell'assistente */
+    offlineTitle: "Didn't find your answer?",
+    offline: "For a single card, the card database has its official text, stats and balance history. For anything else, ask the community on the official Discord.",
     offlineCards: "Search the card database",
     offlineDiscord: "Ask on Discord",
     approvedTitle: "Answers that stay",
@@ -174,7 +180,7 @@ export const en = {
     tomorrow: "tomorrow",
   },
   home: {
-    h1: "Origins TCG: the unofficial fan site for Koin Games' card game",
+    h1: "Origins TCG: an unofficial fan site for Koin Games' card game",
     metashiftSub: "The biggest changes in the latest patch",
     tierTitle: "Tier list",
     /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
@@ -274,6 +280,17 @@ export const en = {
     legendariesText: "Demo 2.0 has {n} playable Legendaries, one leading each deck. Here they all are: each name opens the card page with its text, stats and balance changes. The playtest ones that are not in the demo stay in the card database, marked as removed.",
     detailKicker: "Deck",
     otherDecks: "Other decks",
+    /* "In brief" di /decks e di /tier-list (piano SEO/GEO del 25/09/2026): frasi costruite sul server con i dati dei mazzi
+       pubblicati, mai numeri scritti a mano. {list} è un elenco "Nome (n mazzi)" o "Mazzo (4,8/5, 5 voti)" */
+    brief: {
+      count: "So far the community has published {n} Origins TCG (Koin Games) decks on OriginsMeta, the latest on {date}.",
+      countOne: "So far the community has published one Origins TCG (Koin Games) deck on OriginsMeta, on {date}.",
+      legendaries: "Most played Legendaries: {list}.",
+      cards: "Most played base cards: {list}.",
+      rated: "Best-rated decks: {list}.",
+      ratedOne: "Best-rated deck: {list}.",
+      rating: "{avg}/5, {votes}",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO del 25/09/2026) */
@@ -284,7 +301,7 @@ export const en = {
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
     mainText: "For the ranking built on tournament results:",
     mainAnchor: "Origins TCG tier list",
-    decksText: "For the lists themselves:",
+    decksText: "For the full decklists:",
     decksAnchor: "all the Origins TCG decks",
     sections: {
       decks: { title: "Decks", text: "The main list. Every entry links to the deck page and its guides." },
@@ -490,7 +507,13 @@ export const en = {
     h1: "MetaShifting: every balance change",
     description: "Every Origins TCG balance change from the official patch notes, newest first: stats, abilities and alignments, tagged as buff, nerf or rework.",
     intro: "Every change in the official patches, newest first: stats, abilities and alignments, tagged as buff, nerf or rework. Each card links to its page with its full balance history.",
-    latest: "The latest patch is {patch} ({date}): {n} changes.",
+    /* l'ultima patch in una frase (latestPatch di cards.ts): col numero di versione `latest`, senza (patch della demo,
+       la cui etichetta è già una data) `latestDated`; {changes} è una delle tre forme qui sotto */
+    latest: "The latest Origins TCG patch is {patch}, released on {date}: {changes}.",
+    latestDated: "The latest Origins TCG patch came out on {date}: {changes}.",
+    changesMany: "{n} card changes",
+    changesOne: "one card change",
+    changesNone: "no card changes",
     source: "From the official patch notes on Steam and, when it is more complete, the official Discord.",
     patchesLabel: "Patches",
     tierLink: "See the tier list",
@@ -611,8 +634,9 @@ export const en = {
     /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
        con i fatti dell'evento e della news delle regole; il titolo resta generico (la Crimson Cup è della sua news) */
     descriptionCup: "Origins TCG tournaments: the Crimson Cup runs 20–25 October 2026 during Steam Next Fest, with $10,000 in prizes. Full calendar and community tournaments.",
-    cupLead: "The Crimson Cup, Koin Games' official Origins TCG tournament, runs from 20 to 25 October 2026 during Steam Next Fest: three qualifiers of 512 spots on 20, 21 and 22 October, playoffs on the 24th, finals on the 25th, prizes worth $10,000. Sign-ups are on the official Discord.",
+    cupLead: "The Crimson Cup, Koin Games' official Origins TCG tournament, runs from 20 to 25 October 2026 during Steam Next Fest: three qualifiers of 512 spots on 20, 21 and 22 October, playoffs on the 24th, finals on the 25th, prizes worth $10,000.",
     cupRules: "Crimson Cup rules, format and check-in",
+    cupSignup: "Sign up on the official Discord",
     submitCta: "Submit an event",
     submitLead: "Running an event outside OriginsMeta?",
     guideCta: "Event guide",
@@ -625,7 +649,7 @@ export const en = {
     title: "Origins TCG news",
     metaTitle: "Origins TCG news: demo updates and events",
     intro: "Every official announcement, summarized and dated, with a link to the source and the cards it touches.",
-    description: "Origins TCG news from Koin Games and the community, summarized and dated: demo updates, events and new decks, each with a link to its source.",
+    description: "Origins TCG news from Koin Games and the community, summarized and dated: demo updates, events and new decks, with the official source when there is one.",
     patchNotesText: "Every balance change, card by card and patch by patch:",
     patchNotesLink: "Origins TCG patch notes in MetaShifting",
     readArticle: "Read the article",
