@@ -4,12 +4,6 @@ import type { Event } from "@/lib/data/events";
 import { NEW_TAB_REL, NewTabIcon, SteamButton, isSteamUrl } from "./SteamButton";
 import { DiscordButton, isDiscordUrl } from "./DiscordButton";
 
-/**
- * Etichetta del link alla nostra news sulle regole dell'evento (campo `rules` di events.ts). Sta qui e non nei
- * dizionari perché serve solo a questa scheda, come le etichette di `builderLabels.ts`.
- */
-const RULES_LABEL: Record<Locale, string> = { en: "Rules and format", it: "Regole e formato", es: "Reglas y formato" };
-
 export function EventCard({ event, locale, dict, compact = false }: { event: Event; locale: Locale; dict: Dictionary; compact?: boolean }) {
   const range = event.end
     ? `${formatDateShort(locale, event.start)} – ${formatDateShort(locale, event.end)} ${event.end.slice(0, 4)}`
@@ -55,10 +49,11 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
             {dict.events.guideCta}
           </Link>
         ) : null}
-        {/* Le regole stanno in un nostro articolo: link interno fisso, accanto alla guida (la fonte ufficiale resta sotto) */}
+        {/* Le regole stanno in un nostro articolo: link interno fisso, accanto alla guida (la fonte ufficiale resta
+            sotto); il testo, con il nome dell'evento, arriva da events.ts come quello delle iscrizioni */}
         {event.rules ? (
-          <Link href={href(locale, `/news/${event.rules}`)} className="btn btn-ink text-xs">
-            {RULES_LABEL[locale]}
+          <Link href={href(locale, `/news/${event.rules.news}`)} className="btn btn-ink text-xs">
+            {event.rules.label[locale]}
           </Link>
         ) : null}
         {event.signup ? (

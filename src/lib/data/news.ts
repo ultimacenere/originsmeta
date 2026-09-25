@@ -81,9 +81,9 @@ export const news: NewsItem[] = [
     // le altre pagine sulla coppa (annuncio del 9/9, aggiornamento della demo) nominano la coppa ma non questi dettagli.
     metaTitle: n("Origins TCG Crimson Cup: rules, dates, prizes, check-in", "Crimson Cup di Origins TCG: regole, date, premi, check-in", "Crimson Cup de Origins TCG: reglas, fechas y premios"),
     description: n(
-      "The Origins TCG Crimson Cup rules: three-deck Conquest, at least 8 unique cards between decks, lists hidden until the top 4, and the check-in times.",
-      "Le regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, almeno 8 carte uniche fra i mazzi, liste segrete fino alla top 4 e orari del check-in.",
-      "Reglas de la Crimson Cup de Origins TCG: Conquest con tres mazos, al menos 8 cartas únicas entre mazos, listas ocultas hasta el top 4 y horarios del check-in.",
+      "Origins TCG Crimson Cup rules: three-deck Conquest, 8 unique cards between decks, qualifiers on 20–22 October, prizes worth $10,000 and check-in times.",
+      "Regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, 8 carte uniche fra i mazzi, qualificazioni dal 20 al 22 ottobre, premi per 10.000 $ e check-in.",
+      "Crimson Cup de Origins TCG: Conquest con tres mazos, 8 cartas únicas entre mazos, clasificatorios del 20 al 22 de octubre, premios por 10.000 $ y check-in.",
     ),
     summary: n(
       "After the player survey, Koin Games has set the Crimson Cup rules: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you don't play. The tournament runs on the demo, not on the playtest.",
@@ -1465,7 +1465,7 @@ It is not the first change to the bosses. The playtest patch notes 0.6.3 of 27 A
 
 Bosses are part of the unlock path: in the playtest a deck opens after three ranked wins and a win against an AI boss. A boss that feels unfair slows down the whole collection. It is the second time in a week that this path comes back from the feedback threads, after [the reply of 14 September](/en/news/playtest-feedback-deck-unlock) about making those matches PvE only.
 
-## What came next {#next}
+## Update, 21 September: what came next {#next}
 
 On 21 September the [first big demo update](/en/news/demo-first-big-update) arrived. The announcement does not mention the bosses: whether the new AI is already in it is not known yet.`,
       `## La segnalazione {#segnalazione}
@@ -1487,7 +1487,7 @@ Non è il primo intervento sui boss. Le patch notes del playtest 0.6.3, del 27 a
 
 I boss fanno parte del percorso di sblocco: nel playtest un mazzo si apre dopo tre vittorie in classificata e una vittoria contro un boss IA. Un boss che sembra scorretto rallenta tutta la collezione. È la seconda volta in una settimana che questo percorso torna dai thread di feedback, dopo [la risposta del 14 settembre](/it/news/playtest-feedback-deck-unlock) sull'idea di rendere quelle partite solo PvE.
 
-## Cosa è successo dopo {#dopo}
+## Aggiornamento del 21 settembre: cosa è successo dopo {#dopo}
 
 Il 21 settembre è arrivato il [primo grande aggiornamento della demo](/it/news/demo-first-big-update). L'annuncio non parla dei boss: se la nuova IA ci sia già non si sa ancora.`,
       `## El reporte {#reporte}
@@ -1509,7 +1509,7 @@ No es el primer cambio en los jefes. Las notas del parche 0.6.3 del playtest, de
 
 Los jefes forman parte del camino de desbloqueo: en el playtest un mazo se abre tras tres victorias en clasificatoria y una victoria contra un jefe controlado por la IA. Un jefe que parece injusto frena toda la colección. Es la segunda vez en una semana que este camino vuelve a salir en los hilos de feedback, después de [la respuesta del 14 de septiembre](/es/news/playtest-feedback-deck-unlock) sobre hacer esas partidas solo PvE.
 
-## Lo que pasó después {#despues}
+## Actualización del 21 de septiembre: lo que pasó después {#despues}
 
 El 21 de septiembre llegó la [primera gran actualización de la demo](/es/news/demo-first-big-update). El anuncio no menciona a los jefes: todavía no se sabe si la nueva IA ya está incluida.`,
     ),
@@ -1627,8 +1627,10 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "3 Pigs Mid Range: un mazo midrange de Three Not So Little Pigs para la ladder y los torneos",
       "3 Pigs Mid Range : un deck midrange Three Not So Little Pigs pour le ladder et les tournois",
     ),
-    // Title e description dal 25/09/2026 (prima il titolo usciva tagliato con "…"): senza il nome dell'autore, regola del 16/09.
-    metaTitle: n("3 Pigs Mid Range: an Origins TCG midrange deck", "3 Pigs Mid Range: mazzo midrange di Origins TCG", "3 Pigs Mid Range: mazo midrange de Origins TCG"),
+    // Title e description dal 25/09/2026 (prima il titolo usciva tagliato con "…"): senza il nome dell'autore, regola del
+    // 16/09. La news resta l'annuncio (mappa delle query, C34): il nome del mazzo con la Leggendaria o l'archetipo è il
+    // title della scheda del mazzo e della guida, qui c'è solo la notizia del mazzo nuovo dello staff.
+    metaTitle: n("New Origins TCG staff deck: 3 Pigs Mid Range", "Nuovo mazzo dello staff per Origins TCG: 3 Pigs Mid Range", "Nuevo mazo del staff para Origins TCG: 3 Pigs Mid Range"),
     description: n(
       "A midrange Origins TCG deck led by Three Not So Little Pigs, for ladder and tournaments: take the board early, win a location, close with En Passant.",
       "Un mazzo midrange di Origins TCG guidato dai Three Not So Little Pigs, per ladder e tornei: prendi il tabellone, vinci un luogo, chiudi con En Passant.",
@@ -1655,7 +1657,8 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Healing Healsing, el primer mazo de la comunidad: una lista de control de Van Helsing para la ladder",
       "Healing Healsing, le premier deck de la communauté : une liste contrôle Van Helsing pour le ladder",
     ),
-    metaTitle: n("Healing Healsing: Van Helsing control in Origins TCG", "Healing Healsing: controllo con Van Helsing su Origins TCG", "Healing Healsing: control con Van Helsing en Origins TCG"),
+    // l'annuncio, come per 3 Pigs (C34): "Van Helsing" e "controllo" restano ai title della scheda e della guida
+    metaTitle: n("Healing Healsing, first Origins TCG deck on OriginsMeta", "Healing Healsing, primo mazzo di Origins TCG su OriginsMeta", "Healing Healsing, primer mazo de Origins TCG en OriginsMeta"),
     description: n(
       "The first deck published on OriginsMeta: a Van Helsing control list for the Origins TCG ladder that heals through damage and resets the board late.",
       "Il primo mazzo pubblicato su OriginsMeta: una lista controllo di Van Helsing per la ladder di Origins TCG che cura i danni e azzera il tabellone.",
@@ -1726,7 +1729,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "gameplay-trailer",
     image: "/media/news-trailer.webp",
-    guides: ["origins-tcg-explained", "steam-next-fest-2026"],
+    guides: ["origins-tcg-explained"],
     date: "2026-09-03",
     title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Tráiler oficial de gameplay publicado en YouTube", "Bande-annonce de gameplay officielle sur YouTube"),
     metaTitle: n("Origins TCG official gameplay trailer on YouTube", "Trailer di gameplay ufficiale di Origins TCG su YouTube", "Tráiler oficial de gameplay de Origins TCG en YouTube"),
@@ -1766,9 +1769,11 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     source: "press",
   },
   {
-    // Il primo annuncio (post Steam del 9/9). Dal 25/09/2026 ha un testo a sezioni con gli stessi fatti del riassunto
-    // e l'aggiornamento che rimanda alle regole definitive del 24/9 (`crimson-cup-format-check-in`, la pagina primaria
-    // sulla Crimson Cup): il title per la SERP nomina solo l'annuncio, regole, date e premi restano a quell'articolo.
+    // Il primo annuncio (post Steam del 9/9). Dal 25/09/2026 ha un testo a sezioni con gli stessi fatti del riassunto,
+    // una riga in cima che porta alle regole definitive del 24/9 (`crimson-cup-format-check-in`, la pagina primaria
+    // sulla Crimson Cup, mappa delle query C12) e il paragrafo di aggiornamento in fondo. Title e sottotitoli raccontano
+    // l'annuncio: "regole, date, premi" restano a quell'articolo. Da confermare con Pierluigi prima del push: la KB
+    // (§1 p.34, 24/9) diceva che le news vecchie restano com'erano.
     slug: "biggest-tournament-ever",
     image: "/media/news-crimson-cup.webp",
     guides: ["steam-next-fest-2026"],
@@ -1779,7 +1784,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     description: n(
       "On 9 September Koin Games announced the Origins TCG Crimson Cup: 20–25 October, regional qualifiers, prizes worth $10,000. Updated with the final rules.",
       "Il 9 settembre Koin Games ha annunciato la Crimson Cup di Origins TCG: 20–25 ottobre, qualificazioni per regione, premi per 10.000 $. Con le regole finali.",
-      "La Crimson Cup de Origins TCG, anunciada el 9 de septiembre: del 20 al 25 de octubre, clasificatorios por región y premios por valor de 10.000 dólares.",
+      "La Crimson Cup de Origins TCG, anunciada el 9/9: del 20 al 25 de octubre, clasificatorios por región y premios por 10.000 dólares. Con las reglas finales.",
     ),
     summary: n(
       "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
@@ -1808,14 +1813,16 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       ],
     },
     body: n(
-      `## Dates: 20–25 October {#dates}
+      `Rules, format and check-in, as set on 24 September: [Crimson Cup rules](/en/news/crimson-cup-format-check-in).
+
+## What Koin announced on 9 September {#dates}
 
 On 9 September Koin Games announced on Steam its biggest tournament ever: a multi-day event during Steam Next Fest, from 20 to 25 October 2026.
 
 1. **Qualifiers**, one for each of the three major regions, on 20, 21 and 22 October.
 2. **Playoffs and finals** after the qualifiers.
 
-## Prizes worth $10,000 {#prizes}
+## The prizes announced {#prizes}
 
 The prizes are worth $10,000 in total and come in several forms:
 
@@ -1834,14 +1841,16 @@ Sign-ups are on the [official Origins TCG Discord](https://discord.gg/originstcg
 This article reports the first announcement, of 9 September. On 24 September, after a survey among players, Koin Games set the format: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in is mandatory: it opens two hours before each qualifier and closes five minutes before the start, together with deck submission. The tournament is played on the main demo, and the exact prize pool was promised for the following week.
 
 The rules, the check-in times and what we don't know yet are in [our article on the Crimson Cup rules](/en/news/crimson-cup-format-check-in); dates, spots per region and how to prepare are in our [Steam Next Fest 2026 guide](/en/guides/steam-next-fest-2026).`,
-      `## Date: dal 20 al 25 ottobre {#date}
+      `Regole, formato e check-in, fissati il 24 settembre: [regole della Crimson Cup](/it/news/crimson-cup-format-check-in).
+
+## Cosa ha annunciato Koin il 9 settembre {#date}
 
 Il 9 settembre Koin Games ha annunciato su Steam il suo torneo più grande di sempre: un evento su più giorni durante lo Steam Next Fest, dal 20 al 25 ottobre 2026.
 
 1. **Qualificazioni**, una per ciascuna delle tre macro-regioni, il 20, il 21 e il 22 ottobre.
 2. **Playoff e finali** dopo le qualificazioni.
 
-## Premi per 10.000 $ {#premi}
+## I premi annunciati {#premi}
 
 I premi valgono in tutto 10.000 $ e sono di più tipi:
 
@@ -1860,14 +1869,16 @@ Le iscrizioni sono sul [Discord ufficiale di Origins TCG](https://discord.gg/ori
 Questo articolo racconta il primo annuncio, del 9 settembre. Il 24 settembre, dopo un sondaggio tra i giocatori, Koin Games ha fissato il formato: Conquest a tre mazzi, almeno 8 carte uniche fra ogni coppia di mazzi, liste segrete fino alla top 4 e niente ban nelle partite al meglio delle cinque. Il check-in è obbligatorio: apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi. Il torneo si gioca sulla demo principale, e la ripartizione esatta dei premi è stata promessa per la settimana successiva.
 
 Regole, orari del check-in e cosa non sappiamo ancora sono nel [nostro articolo sulle regole della Crimson Cup](/it/news/crimson-cup-format-check-in); date, posti per regione e come prepararsi nella nostra [guida allo Steam Next Fest 2026](/it/guides/steam-next-fest-2026).`,
-      `## Fechas: del 20 al 25 de octubre {#fechas}
+      `Reglas, formato y check-in, fijados el 24 de septiembre: [reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in).
+
+## Lo que anunció Koin el 9 de septiembre {#fechas}
 
 El 9 de septiembre Koin Games anunció en Steam su torneo más grande hasta la fecha: un evento de varios días durante el Steam Next Fest, del 20 al 25 de octubre de 2026.
 
 1. **Clasificatorios**, uno para cada una de las tres grandes regiones, los días 20, 21 y 22 de octubre.
 2. **Playoffs y finales** después de los clasificatorios.
 
-## Premios por valor de 10.000 dólares {#premios}
+## Los premios anunciados {#premios}
 
 Los premios suman un valor de 10.000 dólares y son de varios tipos:
 
@@ -1894,7 +1905,8 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     slug: "patch-0-6-3",
     image: "/media/ss-board-ley-line.webp",
     cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
-    guides: ["steam-next-fest-2026"],
+    // la cronologia della roadmap elenca le patch del playtest una per una; la guida del Next Fest racconta a cosa servivano
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-27",
     // Nomi delle carte in inglese anche in italiano (docs/testi-di-gioco.md): "King Arthur", non più "Re Artù".
     title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, King Arthur a 7/7", "Parche 0.6.3 del playtest: dieciséis cartas ajustadas, King Arthur sube a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
@@ -1902,7 +1914,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     description: n(
       "Origins TCG playtest patch 0.6.3, 27 August: buffs to King Arthur, Merlin and Lancelot, nerfs to Bandersnatch and Bigfoot, three reworks, smarter bosses.",
       "Patch 0.6.3 del playtest di Origins TCG, 27 agosto: buff a King Arthur, Merlin e Lancelot, nerf a Bandersnatch e Bigfoot, tre carte riviste, boss più furbi.",
-      "Parche 0.6.3 del playtest de Origins TCG, 27 de agosto: buffs a King Arthur, Merlin y Lancelot, nerfs a Bandersnatch y Bigfoot, tres reworks y mejor IA.",
+      "Parche 0.6.3 de Origins TCG (playtest, 27 de agosto): buffs a King Arthur, Merlin y Lancelot, nerfs a Bandersnatch y Bigfoot, tres reworks, jefes más listos.",
     ),
     summary: n(
       "A tuning-and-fixes patch, used for Big Bob's tournament two days later. Buffs to King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll and Blow the House Down; nerfs to Bandersnatch, Bigfoot, Scarecrow and Merlin's Prophecy; Bagheera, Christopher Robin and Sandman reworked. Bosses got smarter AI.",
@@ -1922,8 +1934,8 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     metaTitle: n("Big Bob's Playtest Battle brings Conquest to Origins TCG", "Big Bob's Playtest Battle: il Conquest arriva su Origins TCG", "Big Bob's Playtest Battle: el Conquest llega a Origins TCG"),
     description: n(
       "Big Bob's Playtest Battle, 28 August: the first Origins TCG tournament in Conquest format, best-of-three single elimination, with Next Fest wildcards.",
-      "Big Bob's Playtest Battle, 28 agosto: il primo torneo di Origins TCG in formato Conquest, al meglio delle tre a eliminazione diretta, con wildcard in palio.",
-      "Big Bob's Playtest Battle, 28 de agosto: el primer torneo de Origins TCG en formato Conquest, al mejor de tres y eliminación directa, con wildcards en juego.",
+      "Big Bob's Playtest Battle, 28 agosto: il primo torneo Conquest di Origins TCG, al meglio delle tre a eliminazione diretta, con wildcard per il Next Fest.",
+      "Big Bob's Playtest Battle, 28 de agosto: el primer torneo Conquest de Origins TCG, al mejor de tres y eliminación directa, con wildcards para el Next Fest.",
     ),
     summary: n(
       "Tournament on 28 August on the playtest build with full deckbuilding. Best-of-3, single elimination, and the first use of Conquest: submit several decks with different Legendaries and at least nine different cards, ban one of your opponent's. Prizes: wildcards for the Next Fest tournament and Collector Packs.",
@@ -1938,7 +1950,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     slug: "patch-0-6-2",
     image: "/media/ss-board-reveals.webp",
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
-    guides: ["steam-next-fest-2026"],
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Parche 0.6.2 del playtest: cambios de equilibrio en 23 cartas", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
     metaTitle: n("Origins TCG patch 0.6.2 notes: 23 cards rebalanced", "Patch 0.6.2 di Origins TCG: 23 carte ribilanciate", "Parche 0.6.2 de Origins TCG: 23 cartas reequilibradas"),
@@ -1960,14 +1972,14 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     slug: "patch-0-6-1-ranked",
     image: "/media/news-patch-061.webp",
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
-    guides: ["steam-next-fest-2026"],
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Parche 0.6.1: ladder clasificatoria, ranking Grandmaster y tres mazos reajustados", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
     metaTitle: n("Patch 0.6.1: ranked ladder and Grandmaster", "Patch 0.6.1: classificata e Grandmaster", "Parche 0.6.1: clasificatoria y Grandmaster"),
     description: n(
       "Origins TCG patch 0.6.1, 14 August: ranked mode with a world leaderboard for the Grandmaster division, quality-of-life options, Huntsman at 6 mana.",
       "Patch 0.6.1 di Origins TCG, 14 agosto: arriva la classificata con una classifica mondiale per la divisione Grandmaster, più comodità e Huntsman a 6 mana.",
-      "Parche 0.6.1 de Origins TCG, 14 de agosto: llega la clasificatoria con un ranking mundial para la división Grandmaster y Huntsman pasa a 6 de maná.",
+      "Parche 0.6.1 de Origins TCG, 14 de agosto: llega la clasificatoria con ranking mundial para la división Grandmaster, calidad de vida y Huntsman a 6 de maná.",
     ),
     summary: n(
       "Ranked mode arrives with a world leaderboard for the Grandmaster division, plus quality of life: skip the tutorial, preview the opponent's Legendary during mulligan, mute emotes. Huntsman moves to 6 Mana 6/6; Swarm, Evil and Discard each swap one card.",
@@ -1988,7 +2000,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     description: n(
       "The Origins TCG update for Steam Next Fest goes to community playtests from 7 August: 5 new decks, 70+ new cards and deckbuilding, open to all via Discord.",
       "L'aggiornamento di Origins TCG per lo Steam Next Fest va nei playtest dal 7 agosto: 5 mazzi nuovi, oltre 70 carte e deckbuilding, aperti a tutti su Discord.",
-      "La actualización de Origins TCG para el Steam Next Fest llega a los playtests desde el 7 de agosto: 5 mazos, más de 70 cartas y construcción de mazos.",
+      "La actualización de Origins TCG para el Next Fest, en playtests abiertos por Discord desde el 7 de agosto: 5 mazos, más de 70 cartas y construcción de mazos.",
     ),
     summary: n(
       "The update that will ship for Steam Next Fest in October goes to community playtests, starting Friday 7 August at 9pm UTC with a game night. Open to everyone through Discord.",
@@ -2009,7 +2021,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     description: n(
       "Six days after launch, the Origins TCG demo passed 1,000 players and 13,000 matches, with a 1h51m median. Plus an AMA, a first tournament and Card Party.",
       "Sei giorni dopo il lancio, la demo di Origins TCG supera i 1.000 giocatori e le 13.000 partite, mediana 1h51m. In arrivo un AMA, un torneo e il Card Party.",
-      "Seis días después del lanzamiento, la demo de Origins TCG supera los 1.000 jugadores y las 13.000 partidas, con 1h51m de mediana. Además, un AMA y un torneo.",
+      "Seis días después de salir, la demo de Origins TCG supera los 1.000 jugadores y las 13.000 partidas, mediana 1h51m. Llegan un AMA, un torneo y la Card Party.",
     ),
     summary: n(
       "Six days after launch the team shares the demo stats and lines up an AMA with CEO Tim Jooste and head of game design Kevin Lambert (22 July), the first demo tournament (24 July) and a booth at Card Party in Fort Lauderdale (24–26 July).",
