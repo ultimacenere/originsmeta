@@ -279,7 +279,13 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         {view.translated ? (
           <p className="mt-6 rounded-lg border-2 border-sky bg-sky/10 p-3 text-xs text-pale">
             {c.translatedNote.replace("{from}", c.langFrom[deck.guide.lang] ?? deck.guide.lang)}{" "}
-            <Link href={href(deck.guide.lang, `/decks/community/${deck.slug}`)} hrefLang={deck.guide.lang} className="font-semibold text-mint underline-offset-2 hover:underline">
+            <Link
+              href={href(deck.guide.lang, `/decks/community/${deck.slug}`)}
+              hrefLang={deck.guide.lang}
+              className="font-semibold text-mint underline-offset-2 hover:underline"
+              data-om-event="deck_original_open"
+              data-om-guide-lang={deck.guide.lang}
+            >
               {c.originalText.replace("{lang}", langName)} →
             </Link>
           </p>
@@ -391,11 +397,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             Il codice OriginsMeta e "Copia link" non ci sono più. Senza gli ID ufficiali di tutte le carte, al posto
             del secondo tasto c'è una frase (un tasto disabilitato non riceve il focus e da tastiera non si trova). */}
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          <Link href={builderHref} className="btn btn-ink text-xs">
+          {/* misura (src/lib/analytics.ts): gli attributi data-om-* li legge l'ascoltatore dei clic, anche qui nel componente server */}
+          <Link href={builderHref} className="btn btn-ink text-xs" data-om-event="deck_open_builder" data-om-placement="deck_page">
             {c.openInBuilder}
           </Link>
           {gameCode.code ? (
-            <CopyButton text={gameCode.code} label={c.copyGameCode} copied={c.copied} className="btn btn-ink text-xs" />
+            <CopyButton
+              text={gameCode.code}
+              label={c.copyGameCode}
+              copied={c.copied}
+              className="btn btn-ink text-xs"
+              event={{ name: "game_code_copy", params: { placement: "deck_page" } }}
+            />
           ) : (
             <p className="text-xs text-pale-muted">{c.gameCodeMissing}</p>
           )}

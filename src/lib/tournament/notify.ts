@@ -5,6 +5,7 @@ import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { siteUrl, type Locale } from "@/lib/i18n";
 import { roundLabel, standings } from "./bracket";
 import { tournamentShortLink } from "./types";
+import { discordUtm } from "@/lib/analytics";
 
 /**
  * Notifiche Discord del Tournament Organizer (UX-8, 21/09/2026).
@@ -36,6 +37,11 @@ import { tournamentShortLink } from "./types";
  */
 
 const TIMEOUT_MS = 3000;
+/**
+ * UTM dei link dei messaggi (Ondata 2, MIS-07), come gli annunci di scripts/discord-announce.mjs: senza, chi arriva
+ * dall'app di Discord finisce fra le visite dirette. Il link breve /t/<tag> li passa alla scheda del torneo.
+ */
+const UTM = discordUtm("tournament", "tournaments-feed");
 /** Limite di Discord per il campo `content`. */
 const DISCORD_MAX = 2000;
 /** Abbinamenti mostrati al massimo nel messaggio di avvio (poi "+N"), per restare sotto il limite. */
@@ -120,7 +126,7 @@ function roundName(lang: Lang, round: number, size: number): string {
 }
 
 function pageUrl(t: TInfo): string {
-  return `${siteUrl}/${t.lang}/tournaments/${t.slug}`;
+  return `${siteUrl}/${t.lang}/tournaments/${t.slug}?${UTM}`;
 }
 
 /** Le righe del messaggio, prima la lingua del torneo: inglese e italiano sempre, lo spagnolo solo se il torneo è in spagnolo. */
@@ -135,12 +141,14 @@ function header(t: TInfo, extra?: string): string {
 
 /** Riga del tabellone, che va all'ancora #bracket (senza anteprima); "Cuadro" solo nei tornei in spagnolo. */
 function bracketLine(t: TInfo): string {
-  return `Bracket / Tabellone${t.lang === "es" ? " / Cuadro" : ""}: <${pageUrl(t)}#bracket>`;
+  // link mascherato (Discord li accetta anche nei webhook): l'indirizzo con gli UTM non si vede, <…> toglie l'anteprima
+  return `[Bracket / Tabellone${t.lang === "es" ? " / Cuadro" : ""}](<${pageUrl(t)}#bracket>)`;
 }
 
 function links(t: TInfo): string[] {
   // il link breve apre la scheda nella lingua di chi clicca ("Torneo" vale per l'italiano e per lo spagnolo)
-  return [`Tournament / Torneo: ${tournamentShortLink(siteUrl, t.tag)}`, bracketLine(t)];
+  const short = tournamentShortLink(siteUrl, t.tag);
+  return [`Tournament / Torneo: [${short.replace(/^https?:\/\//, "")}](${short}?${UTM})`, bracketLine(t)];
 }
 
 function nameOf(names: Map<string, string>, id: string | null, fallback = "?"): string {

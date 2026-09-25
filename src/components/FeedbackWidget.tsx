@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/i18n";
 import { CONSENT_EVENT, PREFERENCES_EVENT, getConsent, type Consent } from "@/lib/consent";
 import { turnstileEnabled } from "@/lib/turnstile";
 import { Turnstile } from "@/components/Turnstile";
+import { trackEvent } from "@/lib/analytics";
 import {
   FEEDBACK_EMAIL_MAX,
   FEEDBACK_EMAIL_RE,
@@ -362,6 +363,7 @@ function Widget({ locale, labels }: Props) {
         setEmail("");
         setToken("");
         setStatus("sent");
+        trackEvent("feedback_submit", {}); // misura: nessun parametro, il testo non esce mai
         return;
       }
       const { errore: codice } = (await r.json().catch(() => ({}))) as { errore?: unknown };

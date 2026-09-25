@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
+import { trackSearch } from "@/lib/analytics";
 import { FlipCard, type FlipCardData } from "./FlipCard";
 
 /**
@@ -100,6 +101,9 @@ export function CardExplorer({
     });
     return out;
   }, [cards, haystacks, q, type, saga, alignment, rarity, showRemoved, sort]);
+  /* misura della ricerca interna (MIS-13, src/lib/analytics.ts): un evento quando si smette di scrivere; il termine
+     arrivato dall'header con ?q= lo conta già GA4, quindi quello va solo a Vercel */
+  useEffect(() => trackSearch("cards", q, list.length), [q, list.length]);
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const removedCount = cards.filter((c) => c.removed).length;

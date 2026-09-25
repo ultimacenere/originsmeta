@@ -6,6 +6,7 @@ import { CardPeek, type PeekCard } from "./CardPeek";
 import { tierTone } from "@/lib/tiercode";
 import { TIER_ORDER, type Tier } from "@/lib/tierstats";
 import type { TierCardEntry } from "@/lib/tierTypes";
+import { trackNamedEvent } from "@/lib/analytics";
 
 /*
   Carte della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB). Un solo componente per le
@@ -105,8 +106,9 @@ function byCommunity(a: TierCardEntry, b: TierCardEntry): number {
   return (b.community?.avg ?? 0) - (a.community?.avg ?? 0) || (b.community?.votes ?? 0) - (a.community?.votes ?? 0) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name);
 }
 
-function track(name: string, params: Record<string, string>) {
-  window.gtag?.("event", name, params);
+/** Eventi della scheda di una voce: a GA4 con il consenso e a Vercel senza cookie (src/lib/analytics.ts). */
+function track(name: "tier_entry_open" | "tier_entry_click", params: Record<string, string>) {
+  trackNamedEvent(name, params);
 }
 
 export function TierExplorer({

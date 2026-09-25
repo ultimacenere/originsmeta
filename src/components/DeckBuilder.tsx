@@ -7,8 +7,8 @@ import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, v
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
 import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY } from "@/lib/community/types";
 import { saveDeckPrivate, type ActionState } from "@/lib/community/actions";
-import { traccia } from "@/lib/analytics";
 import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
+import { legendaryParam, trackEvent, trackSearch } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
@@ -417,6 +417,8 @@ export function DeckBuilder({
       .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
   }, [pool, haystacks, q, typeFilter, costFilter, deck.legendary]);
   const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter !== "all";
+  /* misura della ricerca nel pool (view_search_results): parte quando si smette di scrivere, vedi trackSearch */
+  useEffect(() => trackSearch("deck_builder", q, visiblePool.length), [q, visiblePool.length]);
   const clearFilters = () => {
     setQ("");
     setTypeFilter("all");
@@ -550,9 +552,12 @@ export function DeckBuilder({
   const issues = validateDeck(deck);
   const complete = isComplete(deck);
   const deckEmpty = !deck.legendary && deck.cards.length === 0;
+  /* misura: caselle il cui mazzo è già stato contato come completo (deck_complete, più sotto) */
+  const completedSlots = useRef(new Set<number>());
   /** "Svuota il tuo mazzo" (tasto rosso in cima al pannello): toglie le carte e chiude quel che non ha più senso. */
   const clearDeck = () => {
     updateDeck((d) => ({ ...emptyDeck(d.name), customCards: [] }));
+    completedSlots.current.delete(active); // misura: un mazzo nuovo in questa casella conterà di nuovo
     // il mazzo nuovo che nascerà qui non è il mazzo privato aperto da /account
     if (draftLink.current?.slot === active) draftLink.current = null;
     setConfirmClear(false);
@@ -565,6 +570,22 @@ export function DeckBuilder({
   const conquestIssues = mode === "tournament" ? validateConquest(decks, minDifferent) : [];
   /* consegna al torneo: tutti i mazzi richiesti completi e regole Conquest rispettate */
   const submittable = mode === "tournament" ? decks.slice(0, count).every((d) => isComplete(d)) && conquestIssues.length === 0 : complete;
+
+  /* --- misura (src/lib/analytics.ts): builder del sito o di un torneo --- */
+  const placement = preset ? "tournament_builder" : "builder";
+  /* deck_complete: il mazzo attivo arriva a 25 carte per una modifica fatta qui (anche un'importazione), non al
+     ripristino dal browser né passando a un'altra casella già completa. Una volta per casella e per scheda: con 12
+     carte diverse lo scambio di una carta passa da 24 a 25 ogni volta, e contarlo farebbe di ogni ritocco un mazzo
+     nuovo. "Svuota mazzo" rimette in gioco la casella (clearDeck). */
+  const completeSeen = useRef<{ slot: number; complete: boolean } | null>(null);
+  useEffect(() => {
+    if (!hydrated) return;
+    const prev = completeSeen.current;
+    completeSeen.current = { slot: active, complete };
+    if (!prev || prev.slot !== active || prev.complete || !complete || completedSlots.current.has(active)) return;
+    completedSlots.current.add(active);
+    trackEvent("deck_complete", { placement });
+  }, [hydrated, active, complete, placement]);
 
   /* codice del gioco: servono le chiavi ufficiali di tutte le carte (dal database o insegnate dall'utente) */
   const deckSlugs = [deck.legendary, ...deck.cards].filter(Boolean) as string[];
@@ -614,6 +635,7 @@ export function DeckBuilder({
   const nativeShare = async () => {
     try {
       await navigator.share({ title: deck.name || "OriginsMeta", url: shareLink });
+      trackEvent("deck_share", { method: "native", placement });
     } catch {
       /* condivisione annullata */
     }
@@ -668,7 +690,8 @@ export function DeckBuilder({
       }
       if (r.ok) {
         setSaveResult({ code, ok: true, href: r.href ?? `/${locale}/account#private` });
-        traccia("deck_created", { locale, legendary: deck.legendary ?? "", cards: deck.cards.length });
+        // deck_created (evento GA4 già online dal 25/09/2026): nome e parametri di allora, più il posto del builder
+        trackEvent("deck_created", { locale, legendary: legendaryParam(deck.legendary), cards: deck.cards.length, placement });
         return;
       }
       if (r.error === "notLoggedIn" && canGoToLogin) {
@@ -1080,7 +1103,14 @@ export function DeckBuilder({
                     {labels.shareNative}
                   </button>
                 ) : null}
-                <ShareField id="share-link" label={labels.shareLink} value={shareLink} copy={labels.copyLink} copied={labels.copied} />
+                <ShareField
+                  id="share-link"
+                  label={labels.shareLink}
+                  value={shareLink}
+                  copy={labels.copyLink}
+                  copied={labels.copied}
+                  onCopied={() => trackEvent("deck_share", { method: "link", placement })}
+                />
                 <ShareField
                   id="share-game"
                   label={labels.shareGame}
@@ -1088,8 +1118,17 @@ export function DeckBuilder({
                   copy={labels.copyGame}
                   copied={labels.copied}
                   note={missingKeys ? fmt(labels.exportGameMissing, { n: missingKeys }) : undefined}
+                  onCopied={() => trackEvent("game_code_copy", { placement })}
                 />
-                <ShareField id="share-text" label={labels.shareText} value={textList} copy={labels.copyText} copied={labels.copied} multiline />
+                <ShareField
+                  id="share-text"
+                  label={labels.shareText}
+                  value={textList}
+                  copy={labels.copyText}
+                  copied={labels.copied}
+                  multiline
+                  onCopied={() => trackEvent("deck_share", { method: "text", placement })}
+                />
               </div>
             </div>
 
@@ -1294,13 +1333,32 @@ export function DeckBuilder({
 
 /** Una voce del pannello "Condividi": campo in sola lettura (si seleziona al tocco, se gli appunti non vanno) e il tasto
  *  che dice che cosa copia ("Copia link", "Copia codice del gioco", "Copia lista in testo"). Sul telefono il tasto va
- *  sotto il campo quando non c'è posto per entrambi. */
-function ShareField({ id, label, value, copy, copied, note, multiline = false }: { id: string; label: string; value: string | null; copy: string; copied: string; note?: string; multiline?: boolean }) {
+ *  sotto il campo quando non c'è posto per entrambi. `onCopied` (misura) scatta solo quando la copia negli appunti riesce. */
+function ShareField({
+  id,
+  label,
+  value,
+  copy,
+  copied,
+  note,
+  multiline = false,
+  onCopied,
+}: {
+  id: string;
+  label: string;
+  value: string | null;
+  copy: string;
+  copied: string;
+  note?: string;
+  multiline?: boolean;
+  onCopied?: () => void;
+}) {
   const [done, setDone] = useState(false);
   const doCopy = async () => {
     if (!value) return;
     try {
       await navigator.clipboard.writeText(value);
+      onCopied?.();
       setDone(true);
       window.setTimeout(() => setDone(false), 2000);
     } catch {

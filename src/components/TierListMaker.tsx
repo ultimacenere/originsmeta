@@ -5,7 +5,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 import Link from "next/link";
 import { initials } from "@/lib/cardArt";
 import { saveTierList, type TierActionState } from "@/lib/community/tierActions";
-import { traccia } from "@/lib/analytics";
+import { trackEvent } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import type { BuilderCard } from "@/lib/deckrules";
@@ -792,8 +792,8 @@ export function TierListMaker({
       }
       setSaveResult({ ...r, code });
       if (r.ok) {
-        traccia("tierlist_created", { locale, kind });
         say(labels.savedToProfile);
+        trackEvent("tierlist_created", { locale, kind });
       }
     });
   }
@@ -809,6 +809,7 @@ export function TierListMaker({
     setFallback(null);
     setCopied(what);
     say(what === "link" ? labels.linkCopied : labels.textCopied);
+    trackEvent("tier_list_share", { method: what, kind });
     window.clearTimeout(copiedTimer.current);
     copiedTimer.current = window.setTimeout(() => setCopied(null), 2500);
   }

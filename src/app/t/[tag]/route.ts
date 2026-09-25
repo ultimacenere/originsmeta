@@ -17,6 +17,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tag:
   const locale = preferredLocale(req.headers.get("accept-language"), locales, defaultLocale, LANGUAGE_ALIASES);
   const normalized = normalizeTag(decodeURIComponent(tag));
   const found = normalized ? await getTournamentByTag(normalized, await supabaseServer()) : null;
-  const target = found ? `/${locale}/tournaments/${found.slug}` : `/${locale}/tournaments?tag=missing`;
-  return NextResponse.redirect(new URL(target, req.url), 302);
+  const target = new URL(found ? `/${locale}/tournaments/${found.slug}` : `/${locale}/tournaments?tag=missing`, req.url);
+  // gli UTM del link (annunci in #tournaments-feed, src/lib/tournament/notify.ts) arrivano alla scheda: niente altro
+  for (const [k, v] of req.nextUrl.searchParams) if (k.startsWith("utm_")) target.searchParams.set(k, v);
+  return NextResponse.redirect(target, 302);
 }

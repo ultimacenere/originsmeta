@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Turnstile } from "@/components/Turnstile";
 import { DiscordButton } from "@/components/DiscordButton";
 import { turnstileEnabled } from "@/lib/turnstile";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Campo domanda della pagina FAQ. La risposta la costruisce il server dai dati del sito
@@ -65,6 +66,8 @@ export function AskBox({ locale, labels, suggerimenti, hrefPrefix, exits }: { lo
       }
       const dati = (await r.json()) as { risposta: string; fonti: Fonte[] };
       setRisposta({ testo: dati.risposta, fonti: dati.fonti ?? [] });
+      // misura: solo quante fonti cita la risposta, mai la domanda
+      trackEvent("faq_ask", { sources: dati.fonti?.length ?? 0 });
     } catch {
       setErrore("generico");
     } finally {

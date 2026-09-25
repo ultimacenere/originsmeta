@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie } from "next/font/google";
 import { notFound } from "next/navigation";
-import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
 import { getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
-import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { SignupTracker } from "@/components/SignupTracker";
+import { GoogleAnalytics, VercelAnalytics } from "@/components/GoogleAnalytics";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { feedbackLabels } from "@/lib/feedbackLabels";
 import { JsonLd, koinGames, organization, videoGame, website } from "@/components/JsonLd";
 import { defaultOgAlt } from "@/lib/page";
+import { newsFeedLabels, newsFeedPath } from "@/lib/newsFeedMeta";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
@@ -76,11 +75,10 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
       <body className="min-h-full flex flex-col">
-        {/* Qui va il <link rel="alternate" type="application/rss+xml"> del feed delle news nella lingua della pagina
-            (Ondata 2), che React porta nell'<head>: rotta /<lingua>/news/feed.xml, percorso e titolo del canale da
-            src/lib/newsFeed.ts del pacchetto SITEMAP (`newsFeedPath`, `newsFeedLabels`), da collegare al merge. Non passa
-            dai metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del
-            layout. */}
+        {/* Feed RSS delle news nella lingua della pagina (Ondata 2): React 19 porta i <link> nel <head>. Percorso e titolo
+            dal modulo leggero newsFeedMeta.ts (non da newsFeed.ts, che legge news, autori e file). Non passa dai
+            metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del layout. */}
+        <link rel="alternate" type="application/rss+xml" title={newsFeedLabels[l].title} href={`${siteUrl}${newsFeedPath(l)}`} />
         {/* Salta al contenuto: il <main> ha id="main" sia nella home sia nel gruppo (site). */}
         <a
           href="#main"
@@ -97,9 +95,10 @@ export default async function LocaleLayout({ children, params }: Props) {
         {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin
             Games come entità propria e il gioco, che la usa per @id come sviluppatore ed editore */}
         <JsonLd data={[website(l, d.meta.siteDescription), organization, koinGames, videoGame]} />
+        {/* GA4 col consenso, eventi, sign_up/login al ritorno dall'accesso, traffico interno: vedi src/lib/analytics.ts */}
         <GoogleAnalytics id={GA_ID} />
-        <SignupTracker />
-        <Analytics />
+        {/* Vercel Web Analytics senza il traffico interno dello staff (?staff=<codice>): vedi src/lib/analytics.ts */}
+        <VercelAnalytics />
         <SpeedInsights />
       </body>
     </html>

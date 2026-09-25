@@ -5,6 +5,7 @@ import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { deckPeekOf, sharedPeeks } from "@/lib/cardPeek";
 import { CardPeek, hasPeek } from "./CardPeek";
+import { trackEvent } from "@/lib/analytics";
 
 type DeckCard = {
   name: string;
@@ -148,6 +149,7 @@ function CopyCode({ code, labels }: { code: string; labels: Labels }) {
         e.preventDefault();
         navigator.clipboard?.writeText(code).then(
           () => {
+            trackEvent("game_code_copy", { placement: "decks_list" });
             setDone(true);
             window.setTimeout(() => setDone(false), 1600);
           },

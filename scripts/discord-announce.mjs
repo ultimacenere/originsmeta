@@ -69,6 +69,30 @@ export const CHANNELS = {
 /** Percorso delle pagine per tipo di voce. */
 const PATHS = { news: "news", guides: "guides", decks: "decks/community" };
 
+/**
+ * UTM sui link dei messaggi (Ondata 2, MIS-07): senza, chi arriva dall'app di Discord finisce fra le visite dirette
+ * (l'app non manda il referrer) e il canale che ha portato più iscritti non si vede. utm_source=discord,
+ * utm_medium=social, utm_campaign = tipo di contenuto (news, patch_notes, guide, deck), utm_content = canale in cui il
+ * messaggio esce davvero, senza "#" (announcements, site-news, guides, metashifting, community-decks), così si
+ * distinguono #announcements e #site-news; le guide, finché #guides non ha il suo webhook, escono in #site-news e
+ * portano site-news (`deliveredChannel`). Le pagine dichiarano il canonical senza parametri: a Google arriva sempre
+ * l'indirizzo pulito. GA4 legge gli UTM da sé; Vercel solo con Web Analytics Plus (per il resto vede il referrer).
+ */
+export const UTM_CAMPAIGNS = { news: "news", guides: "guide", decks: "deck" };
+
+/** Campagna di una voce: le patch notes a parte, in tutti i canali in cui escono. */
+export const utmCampaign = (item) => (item.kind === "news" && item.patch ? "patch_notes" : (UTM_CAMPAIGNS[item.kind] ?? item.kind));
+
+/** Il link con gli UTM, prima dell'eventuale frammento (#patch-…); i parametri che c'erano restano. */
+export function withUtm(url, campaign, content) {
+  const u = new URL(url);
+  u.searchParams.set("utm_source", "discord");
+  u.searchParams.set("utm_medium", "social");
+  u.searchParams.set("utm_campaign", campaign);
+  if (content) u.searchParams.set("utm_content", content);
+  return u.toString();
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------- lettura dei file del repo (testo, senza eseguire TypeScript) ---------- */
@@ -176,12 +200,15 @@ const titleOf = (html) => h1Of(html) || ogValue(html, "title").replace(/\s+·\s+
  * Messaggio per un canale: italiano per primo, poi i titoli inglese e spagnolo collegati alle loro pagine (lo spagnolo
  * dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN), copertina; su
  * #metashifting il link alla patch. Una lingua di cui non si è letta la pagina (HTML vuoto) resta fuori.
+ * Tutti i link al sito hanno gli UTM (`withUtm`); l'immagine no. `delivered` è il canale in cui il messaggio esce
+ * davvero (`deliveredChannel`), per utm_content; testo e campagna restano quelli della voce.
  */
-export function payload(channel, item, itHtml, enHtml, esHtml = "") {
+export function payload(channel, item, itHtml, enHtml, esHtml = "", delivered = channel) {
   const path = PATHS[item.kind];
-  const itUrl = `${SITE}/it/${path}/${item.slug}`;
-  const enUrl = `${SITE}/en/${path}/${item.slug}`;
-  const esUrl = `${SITE}/es/${path}/${item.slug}`;
+  const utm = (url) => withUtm(url, utmCampaign(item), (CHANNELS[delivered] ?? CHANNELS[channel]).name.replace(/^#/, ""));
+  const itUrl = utm(`${SITE}/it/${path}/${item.slug}`);
+  const enUrl = utm(`${SITE}/en/${path}/${item.slug}`);
+  const esUrl = utm(`${SITE}/es/${path}/${item.slug}`);
   const image = ogValue(itHtml, "image");
   const enTitle = titleOf(enHtml);
   const esTitle = titleOf(esHtml);
@@ -189,7 +216,7 @@ export function payload(channel, item, itHtml, enHtml, esHtml = "") {
   if (enTitle) fields.push({ name: "🇬🇧 English", value: `[${enTitle.replace(/[[\]]/g, "")}](${enUrl})`.slice(0, 1024) });
   if (esTitle) fields.push({ name: "🇪🇸 Español", value: `[${esTitle.replace(/[[\]]/g, "")}](${esUrl})`.slice(0, 1024) });
   if (channel === "metashifting" && item.patch) {
-    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${SITE}/it/metashifting#patch-${item.patch})` });
+    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${utm(`${SITE}/it/metashifting#patch-${item.patch}`)})` });
   }
   return {
     content: CHANNELS[channel].label,
@@ -217,6 +244,13 @@ export function webhookFor(channel, env = process.env) {
   const own = (env[c.env] || "").trim();
   if (own) return own;
   return c.fallback ? (env[CHANNELS[c.fallback].env] || "").trim() : "";
+}
+
+/** Canale in cui esce davvero il messaggio: il suo, oppure quello di riserva quando manca il suo webhook (per utm_content). */
+export function deliveredChannel(channel, env = process.env) {
+  const c = CHANNELS[channel];
+  if ((env[c.env] || "").trim() || !c.fallback) return channel;
+  return (env[CHANNELS[c.fallback].env] || "").trim() ? c.fallback : channel;
 }
 
 /**
@@ -366,7 +400,7 @@ async function main() {
     const enHtml = (await waitForPage(`${SITE}/en/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
     const esHtml = (await waitForPage(`${SITE}/es/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
     for (const { channel, webhook } of targets) {
-      const body = payload(channel, item, itHtml, enHtml, esHtml);
+      const body = payload(channel, item, itHtml, enHtml, esHtml, deliveredChannel(channel));
       if (DRY_RUN) {
         console.log(`[prova] ${CHANNELS[channel].name.padEnd(17)} ← ${item.kind}/${item.slug}${item.date ? ` (${item.date})` : ""} · ${body.embeds[0].title}`);
         if (process.env.DRY_RUN_JSON === "1") console.log(JSON.stringify(body, null, 2));

@@ -7,6 +7,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { joinTournament, leaveTournament } from "@/lib/tournament/actions";
+import { trackEvent } from "@/lib/analytics";
 
 type Props = {
   id: string;
@@ -78,6 +79,7 @@ export function JoinTournament(p: Props) {
         return;
       }
       setRegistered(next);
+      if (next) trackEvent("tournament_join", { size: p.size });
       router.refresh();
     });
 

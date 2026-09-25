@@ -1,13 +1,23 @@
 /**
  * Test della pubblicazione su Discord (`discord-announce.mjs`): lettura dei file del repo, canali di ogni voce,
- * archivio in ordine, messaggi. `node --test scripts/discord-announce.test.mjs` (è anche in `npm test`).
+ * archivio in ordine, messaggi e UTM dei link. `node --test scripts/discord-announce.test.mjs` (è anche in `npm test`).
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { added, backfillItems, guideDates, guideSlugs, newsChannels, newsEntries, newsSlugs, ogValue, patchNews, payload, webhookFor } from "./discord-announce.mjs";
+import { added, backfillItems, deliveredChannel, guideDates, guideSlugs, newsChannels, newsEntries, newsSlugs, ogValue, patchNews, payload, utmCampaign, webhookFor, withUtm } from "./discord-announce.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+
+/** Link di un messaggio diviso in due: l'indirizzo senza gli UTM (la pagina, frammento compreso) e gli UTM a parte. */
+const split = (href) => {
+  const u = new URL(href);
+  const utm = Object.fromEntries([...u.searchParams].filter(([k]) => k.startsWith("utm_")));
+  for (const k of Object.keys(utm)) u.searchParams.delete(k);
+  return { clean: u.toString(), utm };
+};
+/** L'indirizzo dentro un link Markdown [titolo](indirizzo). */
+const mdHref = (value) => value.match(/\]\(([^)]+)\)$/)?.[1] ?? "";
 
 describe("lettura dei file", () => {
   test("news: slug e data delle voci, non il tipo", () => {
@@ -104,24 +114,72 @@ describe("messaggi", () => {
     const body = payload("announcements", { kind: "news", slug: "prova" }, html, en);
     const [embed] = body.embeds;
     assert.equal(embed.title, "Tom & Jerry: l'ultima");
-    assert.match(embed.url, /\/it\/news\/prova$/);
+    assert.equal(split(embed.url).clean, "https://originsmeta.com/it/news/prova");
     assert.equal(embed.image.url, "https://originsmeta.com/media/x.webp");
     assert.equal(embed.fields.length, 1);
-    assert.match(embed.fields[0].value, /^\[The last one\]\(https:\/\/originsmeta\.com\/en\/news\/prova\)$/);
+    assert.match(embed.fields[0].value, /^\[The last one\]\(https:\/\/originsmeta\.com\/en\/news\/prova\?utm_/);
+    assert.equal(split(mdHref(embed.fields[0].value)).clean, "https://originsmeta.com/en/news/prova");
     assert.deepEqual(body.allowed_mentions, { parse: [] });
   });
   test("patch notes su #metashifting: link alla patch; mazzi: percorso della scheda", () => {
     const ms = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en);
-    assert.match(ms.embeds[0].fields[1].value, /\/it\/metashifting#patch-demo-0921\)$/);
+    assert.equal(split(mdHref(ms.embeds[0].fields[1].value)).clean, "https://originsmeta.com/it/metashifting#patch-demo-0921");
     assert.match(ms.content, /MetaShifting/);
     const deck = payload("decks", { kind: "decks", slug: "healing-healsing-9411" }, html, en);
-    assert.match(deck.embeds[0].url, /\/it\/decks\/community\/healing-healsing-9411$/);
+    assert.equal(split(deck.embeds[0].url).clean, "https://originsmeta.com/it/decks/community/healing-healsing-9411");
   });
   test("spagnolo: titolo collegato alla pagina /es, prima del link di MetaShifting", () => {
     const es = `<h1>La última</h1>`;
     const body = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en, es);
     assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "MetaShifting"]);
-    assert.match(body.embeds[0].fields[1].value, /^\[La última\]\(https:\/\/originsmeta\.com\/es\/news\/patch-x\)$/);
+    assert.match(body.embeds[0].fields[1].value, /^\[La última\]\(https:\/\/originsmeta\.com\/es\/news\/patch-x\?utm_/);
+    assert.equal(split(mdHref(body.embeds[0].fields[1].value)).clean, "https://originsmeta.com/es/news/patch-x");
     assert.match(payload("news", { kind: "news", slug: "x" }, html, en, es).content, /Nueva noticia/);
+  });
+  test("UTM su ogni link al sito: sorgente discord, mezzo social, campagna = tipo di contenuto, content = canale", () => {
+    const es = `<h1>La última</h1>`;
+    const news = payload("announcements", { kind: "news", slug: "prova" }, html, en, es).embeds[0];
+    for (const href of [news.url, ...news.fields.map((f) => mdHref(f.value))]) {
+      assert.deepEqual(split(href).utm, { utm_source: "discord", utm_medium: "social", utm_campaign: "news", utm_content: "announcements" }, href);
+    }
+    assert.equal(split(payload("news", { kind: "news", slug: "prova" }, html, en).embeds[0].url).utm.utm_content, "site-news");
+    // le patch notes hanno la loro campagna in tutti i canali, compreso il link a MetaShifting
+    const ms = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en).embeds[0];
+    for (const href of [ms.url, ...ms.fields.map((f) => mdHref(f.value))]) {
+      assert.deepEqual(split(href).utm, { utm_source: "discord", utm_medium: "social", utm_campaign: "patch_notes", utm_content: "metashifting" }, href);
+    }
+    assert.equal(split(payload("guides", { kind: "guides", slug: "g" }, html, en).embeds[0].url).utm.utm_campaign, "guide");
+    assert.deepEqual(split(payload("decks", { kind: "decks", slug: "d" }, html, en).embeds[0].url).utm, {
+      utm_source: "discord",
+      utm_medium: "social",
+      utm_campaign: "deck",
+      utm_content: "community-decks",
+    });
+    // l'immagine resta com'è
+    assert.equal(news.image.url, "https://originsmeta.com/media/x.webp");
+  });
+  test("utm_content dice il canale in cui il messaggio esce davvero: le guide senza webhook escono in #site-news", () => {
+    const guide = { kind: "guides", slug: "g" };
+    assert.equal(deliveredChannel("guides", { DISCORD_WEBHOOK_NEWS: "https://x" }), "news");
+    assert.equal(deliveredChannel("guides", { DISCORD_WEBHOOK_GUIDES: "https://y", DISCORD_WEBHOOK_NEWS: "https://x" }), "guides");
+    assert.equal(deliveredChannel("guides", {}), "guides", "nessun webhook (prova a secco): il canale della voce");
+    assert.equal(deliveredChannel("announcements", {}), "announcements");
+    const viaNews = payload("guides", guide, html, en, "", deliveredChannel("guides", { DISCORD_WEBHOOK_NEWS: "https://x" })).embeds[0];
+    for (const href of [viaNews.url, ...viaNews.fields.map((f) => mdHref(f.value))]) {
+      assert.deepEqual(split(href).utm, { utm_source: "discord", utm_medium: "social", utm_campaign: "guide", utm_content: "site-news" }, href);
+    }
+    // testo del messaggio: sempre quello della guida
+    assert.match(payload("guides", guide, html, en, "", "news").content, /Nuova guida/);
+    assert.equal(split(payload("guides", guide, html, en, "", "guides").embeds[0].url).utm.utm_content, "guides");
+  });
+  test("withUtm: gli UTM prima del frammento, i parametri che c'erano restano", () => {
+    assert.equal(
+      withUtm("https://originsmeta.com/it/metashifting#patch-0.6.3", "patch_notes", "metashifting"),
+      "https://originsmeta.com/it/metashifting?utm_source=discord&utm_medium=social&utm_campaign=patch_notes&utm_content=metashifting#patch-0.6.3",
+    );
+    assert.equal(withUtm("https://originsmeta.com/it/cards?q=merlin", "news"), "https://originsmeta.com/it/cards?q=merlin&utm_source=discord&utm_medium=social&utm_campaign=news");
+    assert.equal(utmCampaign({ kind: "news", slug: "x" }), "news");
+    assert.equal(utmCampaign({ kind: "news", slug: "x", patch: "0.6.3" }), "patch_notes");
+    assert.equal(utmCampaign({ kind: "decks", slug: "x" }), "deck");
   });
 });

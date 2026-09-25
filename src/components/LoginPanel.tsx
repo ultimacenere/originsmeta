@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { isCaptchaError, turnstileEnabled } from "@/lib/turnstile";
 import { authErrorKind, type AuthErrorKind, type LoginLabels } from "@/lib/loginLabels";
+import { trackEvent, type AuthMethod } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
 import { DiscordLogo } from "./DiscordButton";
 import { Turnstile } from "./Turnstile";
@@ -16,6 +17,20 @@ type Via = "discord" | "email";
 
 /** Supabase accetta un link per indirizzo al minuto (README, "Configurazione Auth su Supabase"). */
 const RESEND_AFTER_MS = 60_000;
+
+/** Tipi di errore del ritorno come parametro `kind` dell'evento login_error (snake_case, come gli altri valori). */
+const ERROR_KIND: Record<AuthErrorKind, string> = {
+  expired: "expired",
+  otherBrowser: "other_browser",
+  discordCancelled: "discord_cancelled",
+  discord: "discord",
+  generic: "generic",
+};
+
+/** Misura (MIS-11): un errore mostrato dal pannello, mandato dal punto in cui il pannello lo mostra (un invio fallito due volte conta due volte). */
+function reportLoginError(kind: string, method: AuthMethod | undefined) {
+  trackEvent("login_error", { kind, method });
+}
 
 /** Solo percorsi interni, con le stesse regole del ritorno /auth/callback. */
 function safePath(raw: string | null): string | null {
@@ -53,6 +68,17 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const fromQuery = authErrorKind(params?.get("error"));
   const fromHash = authErrorKind(hash?.get("error"), hash?.get("error_code"), params?.get("via"));
   const urlError: AuthErrorKind | null = status === "idle" && !pending ? ((fromQuery === "generic" ? fromHash : null) ?? fromQuery ?? fromHash) : null;
+
+  /* Misura del percorso di accesso (MIS-11): l'errore arrivato dal ritorno (/auth/callback, sempre con `via`) si conta
+     una volta sola per pagina, anche se ricompare tornando indietro dalla cache del browser (pageshow). Gli errori
+     di questa pagina li manda `reportLoginError` dove il pannello imposta lo stato. */
+  const urlVia = params?.get("via");
+  const urlErrorCounted = useRef(false);
+  useEffect(() => {
+    if (!urlError || urlErrorCounted.current) return;
+    urlErrorCounted.current = true;
+    reportLoginError(ERROR_KIND[urlError], urlVia === "discord" || urlVia === "email" ? urlVia : undefined);
+  }, [urlError, urlVia]);
 
   // Conto alla rovescia per "Invia di nuovo": orologio a parete, così resta giusto anche con la scheda in secondo piano.
   useEffect(() => {
@@ -96,12 +122,14 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const discord = async () => {
     const sb = supabaseBrowser();
     if (!sb) return;
+    trackEvent("login_start", { method: "discord" });
     setPending("discord");
     setStatus("idle");
     const { data, error } = await sb.auth.signInWithOAuth({ provider: "discord", options: { redirectTo: redirectTo("discord"), skipBrowserRedirect: true } });
     if (error || !data.url) {
       setPending(null);
       setStatus("providerError");
+      reportLoginError("discord_start", "discord");
       return;
     }
     // Se il provider non è attivo su Supabase l'endpoint risponde 400 (JSON) invece di rimandare a Discord:
@@ -111,6 +139,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       if (probe.status >= 400) {
         setPending(null);
         setStatus("providerError");
+        reportLoginError("discord_start", "discord");
         return;
       }
     } catch {
@@ -126,6 +155,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     if (!sb || !address || coolingDown) return;
     if (needsCaptcha && !captchaToken) {
       setStatus("captchaError");
+      reportLoginError("captcha", "email");
       return;
     }
     setPending("email");
@@ -140,6 +170,8 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       setResetSignal((n) => n + 1);
     }
     if (!error) {
+      // misura: per l'email l'accesso "parte" quando il link è spedito (l'indirizzo non va mai nei parametri)
+      trackEvent("login_start", { method: "email" });
       setSentTo(address);
       setStatus("sent");
       startCooldown();
@@ -150,9 +182,12 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       setSentTo(address);
       setStatus("rateLimited");
       startCooldown();
+      reportLoginError("rate_limited", "email");
       return;
     }
-    setStatus(isCaptchaError(error) ? "captchaError" : "error");
+    const captchaFailed = isCaptchaError(error);
+    setStatus(captchaFailed ? "captchaError" : "error");
+    reportLoginError(captchaFailed ? "captcha" : "email_send", "email");
   };
 
   if (!supabaseEnabled) return <p className="card-night p-6 text-pale-muted">{labels.disabled}</p>;

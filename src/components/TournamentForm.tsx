@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { createTournament, updateTournament, type TournamentActionState } from "
 import { useMounted } from "@/lib/useMounted";
 import { RULES } from "@/lib/deckrules";
 import { shrinkImage } from "@/lib/shrinkImage";
+import { trackEvent, type EventParams } from "@/lib/analytics";
 
 /** Valori attuali per la modifica (pagina di gestione). */
 export type TournamentInitial = {
@@ -96,6 +97,8 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
   const router = useRouter();
   const [state, formAction, pending] = useActionState<TournamentActionState, FormData>(edit ? updateTournament : createTournament, {});
   const [, startSubmit] = useTransition();
+  /* misura: il torneo inviato, per l'evento tournament_create quando l'azione risponde "fatto" (solo in creazione) */
+  const sent = useRef<EventParams["tournament_create"] | null>(null);
   const [deckMode, setDeckMode] = useState<DeckMode>(initial?.deck_mode ?? "free");
   const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
   const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
@@ -117,7 +120,11 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
   useEffect(() => {
     if (!state.ok || !state.href) return;
     if (edit) router.refresh();
-    else router.push(state.href);
+    else {
+      if (sent.current) trackEvent("tournament_create", sent.current);
+      sent.current = null;
+      router.push(state.href);
+    }
   }, [state, router, edit]);
 
   const startDate = new Date(startLocal);
@@ -178,6 +185,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
+        if (!edit) sent.current = { visibility, deck_mode: deckMode };
         startSubmit(() => formAction(fd));
       }}
       // un campo non valido dentro "Altre opzioni" chiuso non si può mettere a fuoco: prima si apre il blocco

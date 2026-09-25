@@ -16,7 +16,8 @@ export const isDiscordUrl = (url?: string | null): boolean => /discord\.(gg|com)
  * Tasto che porta su Discord, con i colori e la tipografia di Discord (classi in globals.css):
  * "blurple" = azione principale (#5865F2), "grey" = secondaria (#4E5058), come nell'app Discord.
  * Con un indirizzo esterno (il caso normale: invito o canale) si apre in una nuova scheda, con l'avviso per i
- * lettori di schermo (vedi `newTabProps` in SteamButton.tsx).
+ * lettori di schermo (vedi `newTabProps` in SteamButton.tsx). Il clic lo misura `onDocumentClick` (discord_click,
+ * con il nostro server, quello ufficiale e gli altri, come i Discord dei tornei, distinti): vedi la nota in SteamButton.tsx.
  */
 export function DiscordButton({
   href,
@@ -34,7 +35,7 @@ export function DiscordButton({
   const cls = ["btn-discord", variant === "grey" ? "btn-discord-grey" : "", size === "sm" ? "btn-discord-sm" : "", className].filter(Boolean).join(" ");
   const external = isExternalHref(href);
   return (
-    <a href={href} {...(external ? newTabProps : {})} className={cls}>
+    <a href={href} {...(external ? newTabProps : {})} className={cls} data-om-cta="button">
       <DiscordLogo className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
       <span>{children}</span>
     </a>
@@ -47,7 +48,7 @@ export function DiscordButton({
  */
 export function DiscordIconLink({ href, label, className = "" }: { href: string; label: string; className?: string }) {
   return (
-    <a href={href} {...newTabProps} aria-label={label} title={label} className={`btn-discord btn-discord-icon ${className}`}>
+    <a href={href} {...newTabProps} aria-label={label} title={label} className={`btn-discord btn-discord-icon ${className}`} data-om-cta="icon">
       <DiscordLogo className="h-4 w-4" />
     </a>
   );

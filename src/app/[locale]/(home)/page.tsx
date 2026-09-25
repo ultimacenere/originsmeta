@@ -157,7 +157,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
         */}
         <div className="mx-auto max-w-7xl px-4 pt-7 sm:px-6">
           {/* Le prime tre news "aperte" subito sotto il calendario (note 7.0 e 22/09/2026), ciascuna con il suo post-it grande */}
-          <section aria-labelledby="home-featured">
+          <section aria-labelledby="home-featured" data-om-placement="home_featured">
             <h2 id="home-featured" className="sr-only">
               {d.home.featured}
             </h2>
@@ -224,7 +224,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
             Fai la tua mossa (UX-1, 21/09/2026): la home non conteneva un solo invito a costruire, pubblicare o
             organizzare. Tre colonne (una sul telefono), ognuna con un verbo, una riga e un'azione.
           */}
-          <section className="card-night mt-8 p-5 sm:p-7" aria-labelledby="home-moves">
+          <section className="card-night mt-8 p-5 sm:p-7" aria-labelledby="home-moves" data-om-placement="home_moves">
             <p className="kicker text-mint">{mv.kicker}</p>
             {/* Il titolo resta "Fai la tua mossa" e accanto, a destra, un pezzo di scotch di carta storto con
                 "Unisciti!" scritto con la penna dei post-it (Pierluigi, 23/09/2026). Lo scotch è un segno, non un
@@ -261,7 +261,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
             (disegno di Pierluigi del 22/09/2026: "TIER" a penna, nastro adesivo in cima). È l'H2 stesso: le parole a
             penna sono decorative (aria-hidden) e il nome intero della sezione resta per i lettori di schermo.
           */}
-          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier">
+          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier" data-om-placement="home_tier">
             <h2 id="home-tier" className="strip-postit strip-postit-pink strip-postit-tape" style={{ "--tilt": "-5deg", "--scrawl": "-3deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.tierPostit1} {d.home.tierPostit2}</span>
               <span className="sr-only">{d.home.tierTitle}</span>
@@ -310,7 +310,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
 
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
-          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift">
+          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift" data-om-placement="home_metashift">
             <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               <span className="postit-smile" aria-hidden="true" />
@@ -346,7 +346,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
         </div>
 
         {/* Bacheca news (patch note comprese) */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_news">
           <SectionHead title={d.home.newsBoardTitle} sub={d.home.newsBoardSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
           <ul className="felt-panel divide-y divide-felt-line">
             {board.map((nItem) => (
@@ -369,7 +369,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
         </section>
 
         {/* Parti da qui: tre guide per chi arriva adesso, non tutte le undici (il 34% della pagina sul telefono) */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_guides">
           <SectionHead title={d.home.guidesTitle} sub={d.home.guidesStartSub} link={{ href: href(locale, "/guides"), label: d.common.viewAll }} />
           <ul className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {startGuides.map((g) => (
@@ -393,7 +393,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
         </section>
 
         {/* Stato del gioco + collezionismo */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_status">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr]">
             <div>
               <SectionHead title={d.home.statusTitle} />

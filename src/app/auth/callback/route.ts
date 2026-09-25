@@ -4,24 +4,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { defaultLocale, isLocale, locales, type Locale } from "@/lib/i18n";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 import { authErrorKind, type AuthErrorKind } from "@/lib/loginLabels";
-
-/**
- * Prima iscrizione: Supabase crea l'utente e lo fa accedere nello stesso istante, quindi `created_at` e
- * `last_sign_in_at` coincidono a meno di pochi secondi. Serve solo a mandare l'evento `sign_up` a GA4
- * (richiesta del 25/09/2026): il conteggio vero degli iscritti resta quello del database.
- */
-function primaIscrizione(user: { created_at?: string; last_sign_in_at?: string | null } | null | undefined): boolean {
-  const creato = user?.created_at ? Date.parse(user.created_at) : NaN;
-  if (!Number.isFinite(creato)) return false;
-  const accesso = user?.last_sign_in_at ? Date.parse(user.last_sign_in_at) : Date.now();
-  return Math.abs(accesso - creato) < 10_000;
-}
-
-/** Aggiunge `signup=<via>` all'indirizzo di ritorno: lo legge `SignupTracker` e manda l'evento a GA4. */
-function conSignup(next: string, nuovo: boolean, via: string): string {
-  if (!nuovo) return next;
-  return `${next}${next.includes("?") ? "&" : "?"}signup=${via}`;
-}
+import { isNewAccount, withAuthSignal } from "@/lib/analytics";
 
 /** Solo percorsi interni: niente redirect verso altri siti. */
 function safeNext(raw: string | null, locale: Locale): string {
@@ -58,9 +41,8 @@ export async function GET(request: Request) {
   const forwardedHost = request.headers.get("x-forwarded-host");
   const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
   const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : url.origin;
-  // `withVia`: solo quando il tipo non si conosce qui e lo classificherà il pannello (errore nel frammento #error=…).
-  const fail = (kind: AuthErrorKind | null, withVia = false) =>
-    NextResponse.redirect(`${origin}/${locale}/login?error=${kind ?? "generic"}${withVia ? `&via=${via}` : ""}&next=${encodeURIComponent(next)}`);
+  // `via` sempre: serve al pannello per classificare l'errore nel frammento (#error=…) e alla misura (metodo di login_error).
+  const fail = (kind: AuthErrorKind | null) => NextResponse.redirect(`${origin}/${locale}/login?error=${kind ?? "generic"}&via=${via}&next=${encodeURIComponent(next)}`);
 
   const supabase = await supabaseServer();
   if (!supabase) return NextResponse.redirect(`${origin}/${locale}`);
@@ -71,17 +53,23 @@ export async function GET(request: Request) {
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
+  // Misura (evento sign_up online dal 25/09/2026, a9400e8; login e il resto con l'Ondata 2, MIS-01): il ritorno porta
+  // ?om_auth=sign_up|login&om_method=discord|email; l'evento lo manda il browser all'arrivo e toglie il segnale
+  // dall'indirizzo (`consumeAuthSignal` in src/lib/analytics.ts, chiamata da GoogleAnalytics.tsx). Qui niente eventi.
+  // Un account nuovo lo riconosce `isNewAccount`: con l'email conta la conferma appena avvenuta, perché Supabase crea
+  // l'utente quando spedisce il link e `last_sign_in_at` arriva solo quando lo si apre (minuti dopo).
+  const done = (user: Parameters<typeof isNewAccount>[0]) => NextResponse.redirect(`${origin}${withAuthSignal(next, isNewAccount(user, via) ? "sign_up" : "login", via)}`);
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}${conSignup(next, primaIscrizione(data.user), via)}`);
+    if (!error) return done(data.user);
     return fail(authErrorKind(null, error.code ?? "exchange", via));
   }
   if (tokenHash && type) {
     const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
-    if (!error) return NextResponse.redirect(`${origin}${conSignup(next, primaIscrizione(data.user), via)}`);
+    if (!error) return done(data.user);
     return fail(authErrorKind(null, error.code ?? "otp", via));
   }
   // Nessun codice: se Supabase ha messo l'errore nel frammento (#error=…), il browser lo conserva nel redirect
   // e il pannello lo legge da lì; `via` gli serve per distinguere "Discord annullato" da "link scaduto".
-  return fail("generic", true);
+  return fail("generic");
 }

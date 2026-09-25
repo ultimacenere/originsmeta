@@ -6,6 +6,7 @@ import { getCard } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { siteUrl } from "@/lib/i18n";
 import { discordWebhookUrl, escapeDiscord, sendDiscordWebhook, type DiscordWebhookPayload } from "@/lib/discordWebhook";
+import { discordUtm } from "@/lib/analytics";
 
 /**
  * Ogni mazzo pubblicato sul sito va in diretta nel canale `#community-decks` del nostro Discord (Pierluigi,
@@ -22,6 +23,11 @@ import { discordWebhookUrl, escapeDiscord, sendDiscordWebhook, type DiscordWebho
 
 const MINT = 0x31e3bd;
 const TIMEOUT_MS = 3000;
+/**
+ * UTM dei link del messaggio (Ondata 2, MIS-07): gli stessi degli annunci di scripts/discord-announce.mjs. Senza, chi
+ * arriva dall'app di Discord finisce fra le visite dirette; le pagine hanno il canonical pulito.
+ */
+const UTM = discordUtm("deck", "community-decks");
 
 export type AnnouncedDeck = { slug: string; name: string; legendary: string; archetype: string; author: string };
 
@@ -43,7 +49,7 @@ export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
       {
         // il titolo di un embed non interpreta il Markdown: il nome resta com'è, solo accorciato
         title: d.name.slice(0, 256),
-        url: `${siteUrl}/it/decks/community/${d.slug}`,
+        url: `${siteUrl}/it/decks/community/${d.slug}?${UTM}`,
         description: [
           `**${legendary}**${arch ? ` · ${arch.it}` : ""} · di ${author}`,
           `${legendary}${arch ? ` · ${arch.en}` : ""} · by ${author}`,
@@ -51,8 +57,8 @@ export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
         ].join("\n"),
         // stesso formato dei messaggi della GitHub Action: titoli inglese e spagnolo collegati alle loro pagine
         fields: [
-          { name: "🇬🇧 English", value: `[${name}](${siteUrl}/en/decks/community/${d.slug})` },
-          { name: "🇪🇸 Español", value: `[${name}](${siteUrl}/es/decks/community/${d.slug})` },
+          { name: "🇬🇧 English", value: `[${name}](${siteUrl}/en/decks/community/${d.slug}?${UTM})` },
+          { name: "🇪🇸 Español", value: `[${name}](${siteUrl}/es/decks/community/${d.slug}?${UTM})` },
         ],
         ...(image ? { image: { url: `${siteUrl}${image}` } } : {}),
         color: MINT,

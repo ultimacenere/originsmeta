@@ -22,6 +22,10 @@ export const isSteamUrl = (url?: string | null): boolean => /steampowered\.com|s
   in ogni pagina, nel layout della lingua) e richiamato con aria-describedby: così SteamButton e DiscordButton,
   usati anche in componenti client, non hanno bisogno del dizionario. Dove il dizionario c'è (Footer,
   EventCard) il testo sta direttamente nel link, in un <span class="sr-only">.
+  Misura (Ondata 2, MIS): i clic verso Steam e Discord (steam_click, discord_click) li conta un solo ascoltatore sul
+  documento, `onDocumentClick` in src/lib/analytics.ts, che riconosce i link dall'indirizzo: tasti e link di testo,
+  anche nei componenti server, senza onClick qui. `data-om-cta` dice solo che il clic è arrivato da un tasto
+  (parametro `cta`: button, icon per il loghino Discord, link per tutti gli altri link).
 */
 export const NEW_TAB_HINT_ID = "om-new-tab-hint";
 export const NEW_TAB_REL = "noopener";
@@ -67,7 +71,7 @@ export function SteamButton({
   const cls = ["btn-steam", variant === "dark" ? "btn-steam-dark" : variant === "green" ? "btn-steam-green" : "", size === "sm" ? "btn-steam-sm" : "", className].filter(Boolean).join(" ");
   const external = isExternalHref(href);
   return (
-    <a href={href} {...(external ? newTabProps : {})} className={cls}>
+    <a href={href} {...(external ? newTabProps : {})} className={cls} data-om-cta="button">
       <SteamLogo className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
       <span>{children}</span>
     </a>

@@ -1,15 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState, useTransition, type FormEvent } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { localeNames, locales, type Dictionary } from "@/lib/i18n";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
-import { traccia } from "@/lib/analytics";
 import { BUILDER_STORAGE_KEY, GUIDE_DRAFT_KEY, PENDING_PUBLISH_KEY, deckTypes, guideSections, type Guide } from "@/lib/community/types";
 import { suggestArchetype } from "@/lib/archetype";
+import { legendaryParam, trackEvent, type EventParams } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
@@ -174,6 +174,8 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const [, startSubmit] = useTransition();
   /* "Ricomincia da capo" sulla bozza ripristinata: cambia la chiave dei campi e li rimonta vuoti */
   const [draftReset, setDraftReset] = useState(0);
+  /* misura: il mazzo inviato, per l'evento deck_published quando l'azione risponde "fatto" (solo in creazione) */
+  const sent = useRef<EventParams["deck_published"] | null>(null);
 
   /* il mazzo resta in attesa nel browser: sopravvive al giro di accesso (Discord o link via email) */
   useEffect(() => {
@@ -223,14 +225,17 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
 
   useEffect(() => {
     if (state.ok && state.href) {
-      // solo la prima pubblicazione è un evento: una modifica non crea un mazzo nuovo
+      // solo la prima pubblicazione è un evento (deck_published): una modifica non crea un mazzo nuovo
       if (mode === "create") {
         clearLocalDrafts();
-        traccia("deck_published", { locale });
+        if (sent.current) {
+          trackEvent("deck_published", sent.current);
+          sent.current = null;
+        }
       }
       router.push(state.href);
     }
-  }, [state, router, mode, locale]);
+  }, [state, router, mode]);
 
   const deck = useMemo(() => (code ? decodeOmCode(code) : null), [code]);
   /* archetipo: suggerito dalla composizione, ma l'utente può cambiarlo */
@@ -314,6 +319,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
+        if (mode === "create") sent.current = { locale, legendary: legendaryParam(deck.legendary), source: draftId ? "private_draft" : "builder" };
         startSubmit(() => formAction(fd));
       }}
       onChange={saveDraft}
