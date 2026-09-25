@@ -498,7 +498,7 @@ No puedes elegir el tablero, pero sí construir un mazo que rara vez se quede in
 
 ## Lo que todavía queremos comprobar
 
-Esta lista está transcrita de la base de datos de la comunidad y coincide con la rotación de la Demo 2.0. Todavía no hemos revisado las ubicaciones una por una dentro del juego, como hicimos con las 122 cartas el 22 de septiembre de 2026: cuando lo hagamos, la [página de ubicaciones](/es/locations) lo indicará, con la fecha y el recuento.
+Esta lista coincide con la rotación de la Demo 2.0. Todavía no hemos revisado las ubicaciones una por una dentro del juego, como hicimos con las 122 cartas el 22 de septiembre de 2026: cuando lo hagamos, la [página de ubicaciones](/es/locations) lo indicará, con la fecha y el recuento.
 `,
   },
   "on-reveal-midrange-guide": {

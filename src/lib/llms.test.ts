@@ -114,15 +114,9 @@ describe("llms-full.txt", () => {
     assert.doesNotMatch(full.split("\n## Guides\n")[0], woo);
     assert.doesNotMatch(full.split("\n## Cards\n")[1], woo);
   });
-  test(
-    "tutto il testo, guide e news comprese, non nomina World of Origins (regola del 25/09/2026)",
-    // Segnato `todo` finché il branch woo-via non è unito: la news itzbolt-wins-conquest cita ancora il sito come fonte
-    // (riassunto e `url`), e woo-via la riscrive. Dopo l'unione il test passa: allora si toglie `todo`.
-    { todo: "si chiude unendo woo-via (news itzbolt-wins-conquest)" },
-    () => {
-      assert.doesNotMatch(full, /world\s*of\s*origins|worldoforigins/i);
-    },
-  );
+  test("tutto il testo, guide e news comprese, non nomina World of Origins (regola del 25/09/2026)", () => {
+    assert.doesNotMatch(full, /world\s*of\s*origins|worldoforigins/i);
+  });
   test("una news senza url non scrive una fonte vuota", () => {
     assert.doesNotMatch(full, /Source: (?:undefined|null)?\n/);
     const n = news.find((x) => x.source === "press") ?? news[0];

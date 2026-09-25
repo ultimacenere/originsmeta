@@ -566,7 +566,7 @@ You cannot choose the board, but you can build a deck that is rarely helpless on
 
 ## What we still want to check
 
-This list is transcribed from the community database and matches the Demo 2.0 rotation. We have not yet gone through the locations one by one inside the game, as we did with the 122 cards on 22 September 2026: when we do, the [locations page](/en/locations) will say so, with the date and the count.
+This list matches the Demo 2.0 rotation. We have not yet gone through the locations one by one inside the game, as we did with the 122 cards on 22 September 2026: when we do, the [locations page](/en/locations) will say so, with the date and the count.
 `,
   },
   "on-reveal-midrange-guide": {
@@ -2046,7 +2046,7 @@ Il tabellone non lo scegli, ma puoi costruire un mazzo che quasi mai si trova se
 
 ## Che cosa ci resta da verificare
 
-Questo elenco è trascritto dal database della community e corrisponde alla rotazione della Demo 2.0. Non abbiamo ancora controllato i luoghi uno per uno dentro il gioco, come abbiamo fatto con le 122 carte il 22 settembre 2026: quando lo faremo, la [pagina dei Luoghi](/it/locations) lo dirà, con la data e il conteggio.
+Questo elenco corrisponde alla rotazione della Demo 2.0. Non abbiamo ancora controllato i luoghi uno per uno dentro il gioco, come abbiamo fatto con le 122 carte il 22 settembre 2026: quando lo faremo, la [pagina dei Luoghi](/it/locations) lo dirà, con la data e il conteggio.
 `,
   },
   "on-reveal-midrange-guide": {
