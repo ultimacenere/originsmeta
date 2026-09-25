@@ -49,6 +49,13 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
             {dict.events.guideCta}
           </Link>
         ) : null}
+        {/* Le regole stanno in un nostro articolo: link interno fisso, accanto alla guida (la fonte ufficiale resta
+            sotto); il testo, con il nome dell'evento, arriva da events.ts come quello delle iscrizioni */}
+        {event.rules ? (
+          <Link href={href(locale, `/news/${event.rules.news}`)} className="btn btn-ink text-xs">
+            {event.rules.label[locale]}
+          </Link>
+        ) : null}
         {event.signup ? (
           isSteamUrl(event.signup.url) ? (
             <SteamButton href={event.signup.url} size="sm">

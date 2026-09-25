@@ -1,4 +1,5 @@
 import type { Locale } from "../i18n";
+import type { GuideSlug } from "../content/guides";
 
 type L10n = Record<Locale, string> & { fr?: string };
 const n = (en: string, it: string, es: string, fr?: string): L10n => (fr ? { en, it, es, fr } : { en, it, es });
@@ -17,14 +18,15 @@ export type NewsItem = {
   /** titolo dell'articolo (H1 e scheda): entro 110 caratteri, il limite di Google per `headline` */
   title: L10n;
   /**
-   * Titolo per la SERP quando `title` è più lungo: `pageTitle` ci aggiunge il marchio solo se manca,
-   * quindi con "Origins TCG" dentro deve stare entro 60 caratteri, senza entro 46.
+   * Titolo per la SERP, obbligatorio in ogni lingua (dal 25/09/2026: senza, il titolo dell'articolo usciva tagliato
+   * con "…"): `pageTitle` ci aggiunge il marchio solo se manca, quindi con "Origins TCG" dentro deve stare entro
+   * 60 caratteri, senza entro 46. Lo controlla `newsMeta.test.ts` in `npm test`.
    */
-  metaTitle?: L10n;
+  metaTitle: L10n;
   /** riassunto di 2-3 frasi: scheda in /news e in home, attacco della pagina dell'articolo */
   summary: L10n;
-  /** meta description scritta apposta (120-158 caratteri); se manca si usa il riassunto accorciato */
-  description?: L10n;
+  /** meta description scritta apposta, obbligatoria in ogni lingua: 120-158 caratteri (controllo in `newsMeta.test.ts`) */
+  description: L10n;
   /**
    * Testo completo in Markdown, come le guide: sezioni `##`, elenchi, grassetti, link interni sempre con
    * il prefisso della lingua. I nomi delle carte diventano link da soli. Se manca, la pagina mostra il riassunto.
@@ -55,8 +57,11 @@ export type NewsItem = {
   image: string;
   /** slug delle carte toccate dall'annuncio (o, per i mazzi della community, le carte del mazzo) */
   cards?: string[];
-  /** slug delle guide del sito collegate alla news */
-  guides?: string[];
+  /**
+   * slug delle guide del sito collegate alla news ("Guide correlate" in fondo all'articolo): ogni news rimanda alla
+   * guida che resta valida sul suo argomento (demo → play-the-demo, Crimson Cup e Conquest → steam-next-fest-2026…)
+   */
+  guides?: GuideSlug[];
 };
 
 export const news: NewsItem[] = [
@@ -72,11 +77,13 @@ export const news: NewsItem[] = [
       "Regole della Crimson Cup: Conquest a tre mazzi, liste segrete fino alla top 4 e check-in obbligatorio",
       "Reglas de la Crimson Cup: Conquest con tres mazos, listas ocultas hasta el top 4 y check-in obligatorio",
     ),
-    metaTitle: n("Origins TCG Crimson Cup: format and check-in", "Crimson Cup di Origins TCG: formato e check-in", "Crimson Cup de Origins TCG: formato y check-in"),
+    // Pagina primaria sulla Crimson Cup (mappa delle query del 25/09/2026): il title porta regole, date, premi e check-in;
+    // le altre pagine sulla coppa (annuncio del 9/9, aggiornamento della demo) nominano la coppa ma non questi dettagli.
+    metaTitle: n("Origins TCG Crimson Cup: rules, dates, prizes, check-in", "Crimson Cup di Origins TCG: regole, date, premi, check-in", "Crimson Cup de Origins TCG: reglas, fechas y premios"),
     description: n(
-      "The Origins TCG Crimson Cup rules: three-deck Conquest, at least 8 unique cards between decks, lists hidden until the top 4, and the check-in times.",
-      "Le regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, almeno 8 carte uniche fra i mazzi, liste segrete fino alla top 4 e orari del check-in.",
-      "Reglas de la Crimson Cup de Origins TCG: Conquest con tres mazos, al menos 8 cartas únicas entre mazos, listas ocultas hasta el top 4 y horarios del check-in.",
+      "Origins TCG Crimson Cup rules: three-deck Conquest, 8 unique cards between decks, qualifiers on 20–22 October, prizes worth $10,000 and check-in times.",
+      "Regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, 8 carte uniche fra i mazzi, qualificazioni dal 20 al 22 ottobre, premi per 10.000 $ e check-in.",
+      "Crimson Cup de Origins TCG: Conquest con tres mazos, 8 cartas únicas entre mazos, clasificatorios del 20 al 22 de octubre, premios por 10.000 $ y check-in.",
     ),
     summary: n(
       "After the player survey, Koin Games has set the Crimson Cup rules: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you don't play. The tournament runs on the demo, not on the playtest.",
@@ -927,7 +934,8 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
       "Il primo grande aggiornamento della demo di Origins TCG: pacchetti di prova, classificata e Crimson Cup",
       "La primera gran actualización de la demo de Origins TCG: sobres de prueba, clasificatoria y Crimson Cup",
     ),
-    metaTitle: n("Origins TCG demo update: ranked, test packs, Crimson Cup", "Aggiornamento demo Origins TCG: classificata e Crimson Cup", "Origins TCG actualiza la demo: clasificatoria y Crimson Cup"),
+    // Senza "Crimson Cup" dal 25/09/2026: sulla coppa vince l'articolo delle regole; qui restano interfaccia, pacchetti e classificata.
+    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Aggiornamento demo di Origins TCG: nuova UI e classificata", "Origins TCG actualiza la demo: nueva UI y clasificatoria"),
     description: n(
       "Origins TCG demo update of 21 September: new UI, test packs, the Crimson Cup card list, progress kept from demo and playtest, ranked at Next Fest.",
       "Aggiornamento della demo di Origins TCG del 21/9: nuova interfaccia, pacchetti di prova, lista carte Crimson Cup, progressi salvi e classificata al Next Fest.",
@@ -1187,6 +1195,7 @@ La semana pasada circuló en redes sociales una frase sobre una "Demo Season 2" 
     // mostra le targhette con i nomi dei giocatori (da ritagliare per le condizioni di Koin) e il watermark senza didascalia.
     image: "/media/capsule-main.webp",
     cards: ["spellbook", "golden-egg", "golden-goose", "black-knight"],
+    guides: ["play-the-demo"],
     date: "2026-09-20",
     updated: "2026-09-21",
     title: n(
@@ -1205,8 +1214,28 @@ La semana pasada circuló en redes sociales una frase sobre una "Demo Season 2" 
       "Tre nuovi thread sul forum Steam tra il 19 e il 20 settembre, ancora senza risposta del team: una partita che si blocca dopo il combattimento, un Golden Egg che al Colosseum si comporta in modo strano e la richiesta di un tasto rivincita nelle partite private.",
       "Tres hilos nuevos en el foro de Steam entre el 19 y el 20 de septiembre, todavía sin respuesta del equipo: una partida que se congela después del combate, un Golden Egg que se comporta de forma extraña en el Colosseum y la petición de un botón de revancha en las partidas privadas.",
     ),
+    highlights: {
+      en: [
+        { label: "A match stuck on \"waiting\"", text: "after combat, reported on 20 September; a player tied it to Spellbook", anchor: "stuck-match" },
+        { label: "The Golden Egg at the Colosseum", text: "the Golden Goose it summoned dealt no damage in combat", anchor: "golden-egg" },
+        { label: "A rematch button", text: "requested for private matches, with a deck change inside the lobby", anchor: "rematch" },
+        { label: "What the team has said", text: "its last replies on the forum date back to 16 September", anchor: "team" },
+      ],
+      it: [
+        { label: "Una partita bloccata su \"waiting\"", text: "dopo il combattimento, segnalata il 20 settembre; un giocatore la lega a Spellbook", anchor: "partita-bloccata" },
+        { label: "Il Golden Egg al Colosseum", text: "la Golden Goose evocata non ha inflitto danni in combattimento", anchor: "golden-egg" },
+        { label: "Un tasto rivincita", text: "chiesto per le partite private, con il cambio di mazzo nella stanza", anchor: "rivincita" },
+        { label: "Cosa ha detto il team", text: "le sue ultime risposte sul forum sono del 16 settembre", anchor: "team" },
+      ],
+      es: [
+        { label: "Una partida bloqueada en \"waiting\"", text: "después del combate, reportada el 20 de septiembre; un jugador la relaciona con Spellbook", anchor: "partida-bloqueada" },
+        { label: "El Golden Egg en el Colosseum", text: "la Golden Goose que invocó no infligió daño en el combate", anchor: "golden-egg" },
+        { label: "Un botón de revancha", text: "pedido para las partidas privadas, con cambio de mazo dentro de la sala", anchor: "revancha" },
+        { label: "Lo que ha dicho el equipo", text: "sus últimas respuestas en el foro son del 16 de septiembre", anchor: "equipo" },
+      ],
+    },
     body: n(
-      `## A match stuck on "waiting"
+      `## A match stuck on "waiting" {#stuck-match}
 
 On 20 September a player reported a match that froze after the combat phase: the screen stayed on "waiting" well past the timer, while everything else was still clickable and the match could still be conceded.
 
@@ -1214,7 +1243,7 @@ Another player replied that it is a known bug tied to Spellbook and that it shou
 
 **Update, 21 September:** the [first big demo update](/en/news/demo-first-big-update) did arrive the following day. The list of fixes has not been published yet, so we cannot say whether this bug is among them.
 
-## The Golden Egg at the Colosseum
+## The Golden Egg at the Colosseum {#golden-egg}
 
 On 19 September another player described a combat at the Colosseum location:
 
@@ -1224,14 +1253,14 @@ On 19 September another player described a combat at the Colosseum location:
 
 It looks like the rule developer Fenchurch explained on the forum on 15 September: a character summoned halfway through combat, in the space it lands on, does not attack until the next round. Being summoned does not protect it from damage, which accounts for the 5/3. What the Colosseum adds is not clear yet: the thread has no answer so far.
 
-## A rematch button for private matches
+## A rematch button for private matches {#rematch}
 
 The third thread is a request: a "play again" or "rematch" button at the end of a private match, and the option to change decks without leaving the private lobby.
 
-## What the team has said so far
+## What the team has said so far {#team}
 
 The last replies from the team on the forum date back to 16 September: [faster animations and the Off With Your Head! bug](/en/news/demo-2-animations-and-fixes), and [the rework of the boss fight AI](/en/news/demo-2-boss-ai-rework).`,
-      `## Una partita bloccata su "waiting"
+      `## Una partita bloccata su "waiting" {#partita-bloccata}
 
 Il 20 settembre un giocatore ha segnalato una partita che si è fermata dopo la fase di combattimento: lo schermo è rimasto su "waiting" ben oltre il tempo del turno, mentre tutto il resto era ancora cliccabile e la partita si poteva ancora abbandonare.
 
@@ -1239,7 +1268,7 @@ Un altro giocatore ha risposto che è un bug noto legato a Spellbook e che dovre
 
 **Aggiornamento del 21 settembre:** il [primo grande aggiornamento della demo](/it/news/demo-first-big-update) è arrivato davvero il giorno dopo. L'elenco delle correzioni non è ancora stato pubblicato, quindi non possiamo dire se questo bug sia tra quelli sistemati.
 
-## Il Golden Egg al Colosseum
+## Il Golden Egg al Colosseum {#golden-egg}
 
 Il 19 settembre un altro giocatore ha descritto un combattimento al luogo Colosseum:
 
@@ -1249,14 +1278,14 @@ Il 19 settembre un altro giocatore ha descritto un combattimento al luogo Coloss
 
 Somiglia alla regola spiegata sul forum dallo sviluppatore Fenchurch il 15 settembre: un personaggio evocato a metà combattimento, nello spazio in cui compare, non attacca fino al round successivo. L'evocazione però non lo mette al riparo dai danni, e questo spiega il 5/3. Cosa aggiunga il Colosseum non è ancora chiaro: il thread per ora non ha risposte.
 
-## Un tasto rivincita per le partite private
+## Un tasto rivincita per le partite private {#rivincita}
 
 Il terzo thread è una richiesta: un tasto "gioca ancora" o "rivincita" alla fine di una partita privata, e la possibilità di cambiare mazzo senza uscire dalla stanza privata.
 
-## Cosa ha detto il team finora
+## Cosa ha detto il team finora {#team}
 
 Le ultime risposte del team sul forum risalgono al 16 settembre: [animazioni più veloci e il bug di Off With Your Head!](/it/news/demo-2-animations-and-fixes), e [il rework dell'IA delle boss fight](/it/news/demo-2-boss-ai-rework).`,
-      `## Una partida bloqueada en "waiting"
+      `## Una partida bloqueada en "waiting" {#partida-bloqueada}
 
 El 20 de septiembre un jugador informó sobre una partida que se quedó congelada después de la fase de combate: la pantalla siguió en "waiting" mucho después de agotarse el tiempo del turno, mientras todo lo demás seguía respondiendo a los clics y todavía se podía abandonar la partida.
 
@@ -1264,7 +1293,7 @@ Otro jugador respondió que es un bug conocido relacionado con Spellbook y que d
 
 **Actualización del 21 de septiembre:** la [primera gran actualización de la demo](/es/news/demo-first-big-update) sí llegó al día siguiente. La lista de correcciones todavía no se ha publicado, así que no podemos decir si este bug está entre los corregidos.
 
-## El Golden Egg en el Colosseum
+## El Golden Egg en el Colosseum {#golden-egg}
 
 El 19 de septiembre otro jugador describió un combate en la ubicación Colosseum:
 
@@ -1274,11 +1303,11 @@ El 19 de septiembre otro jugador describió un combate en la ubicación Colosseu
 
 Se parece a la regla que el desarrollador Fenchurch explicó en el foro el 15 de septiembre: un personaje invocado a mitad del combate, en el espacio en el que aparece, no ataca hasta la ronda siguiente. Ser invocado no lo protege del daño, y eso explica el 5/3. Lo que añade el Colosseum todavía no está claro: por ahora el hilo no tiene respuestas.
 
-## Un botón de revancha para las partidas privadas
+## Un botón de revancha para las partidas privadas {#revancha}
 
 El tercer hilo es una petición: un botón de "jugar de nuevo" o "revancha" al final de una partida privada, y la opción de cambiar de mazo sin salir de la sala privada.
 
-## Lo que ha dicho el equipo hasta ahora
+## Lo que ha dicho el equipo hasta ahora {#equipo}
 
 Las últimas respuestas del equipo en el foro son del 16 de septiembre: [animaciones más rápidas y el bug de Off With Your Head!](/es/news/demo-2-animations-and-fixes), y [el rework de la IA de los combates contra jefes](/es/news/demo-2-boss-ai-rework).`,
     ),
@@ -1288,6 +1317,7 @@ Las últimas respuestas del equipo en el foro son del 16 de septiembre: [animaci
   {
     slug: "demo-2-progress-carryover",
     image: "/media/ss-legendary-winnie.webp",
+    guides: ["play-the-demo", "steam-next-fest-2026"],
     date: "2026-09-16",
     updated: "2026-09-21",
     title: n(
@@ -1306,50 +1336,67 @@ Las últimas respuestas del equipo en el foro son del 16 de septiembre: [animaci
       "Il 16 settembre un membro dello staff di Koin Games ha scritto sul Discord ufficiale che la Demo 2 mantiene gli sblocchi dei mazzi e i progressi contro i boss ottenuti nella Demo 1. Il 21 settembre il team ha esteso la promessa al playtest chiuso.",
       "El 16 de septiembre un miembro del staff de Koin Games escribió en el Discord oficial que la Demo 2 conserva los desbloqueos de mazos y el progreso contra los jefes conseguidos en la Demo 1. El 21 de septiembre el equipo extendió la promesa al playtest cerrado.",
     ),
+    highlights: {
+      en: [
+        { label: "Demo 1 unlocks carry over", text: "deck unlocks and boss progress, a staff member wrote on Discord on 16 September", anchor: "staff" },
+        { label: "Why it mattered", text: "in the playtest every deck takes three ranked wins and a win against a boss", anchor: "why" },
+        { label: "The playtest counts too", text: "since 21 September you keep the progress of whichever is further ahead", anchor: "update" },
+      ],
+      it: [
+        { label: "Gli sblocchi della Demo 1 restano", text: "mazzi e progressi contro i boss, ha scritto lo staff su Discord il 16 settembre", anchor: "staff" },
+        { label: "Perché contava", text: "nel playtest ogni mazzo chiede tre vittorie in classificata e una contro un boss", anchor: "perche" },
+        { label: "Conta anche il playtest", text: "dal 21 settembre si conservano i progressi del percorso più avanzato", anchor: "aggiornamento" },
+      ],
+      es: [
+        { label: "Los desbloqueos de la Demo 1 se conservan", text: "mazos y progreso contra los jefes, escribió el staff en Discord el 16 de septiembre", anchor: "staff" },
+        { label: "Por qué importaba", text: "en el playtest cada mazo pide tres victorias en clasificatoria y una contra un jefe", anchor: "por-que" },
+        { label: "También cuenta el playtest", text: "desde el 21 de septiembre conservas el progreso del que esté más avanzado", anchor: "actualizacion" },
+      ],
+    },
     body: n(
-      `## What the staff wrote
+      `## What the staff wrote {#staff}
 
 "Demo V2 deck will carry over your V1 deck unlock/boss progress": this is the message a member of the Origins staff posted on the official Discord in the evening of 16 September, replying to players who asked whether everyone would have to start over. A screenshot of the message was shared on Reddit the next morning.
 
-## Why it mattered
+## Why it mattered {#why}
 
 In the playtest every deck is unlocked with three ranked wins plus a win against an AI boss, the path players had called punishing in the [feedback of 14 September](/en/news/playtest-feedback-deck-unlock). Having to repeat it from zero with Demo 2 was the main worry. Until that message, the answer going around in the community was the opposite one.
 
-## What was still open
+## What was still open {#open}
 
 The message spoke of Demo 1 and Demo 2 only. Whether the progress earned in the closed playtest would count as well was not written in any official post, so at the time we kept the two apart.
 
-## Update, 21 September
+## Update, 21 September {#update}
 
 The question is closed. Announcing [the first big demo update](/en/news/demo-first-big-update), the team wrote that whoever played the demo, the playtest or both keeps the progress of whichever is further ahead, "so no one will have to unlock cards again".`,
-      `## Cosa ha scritto lo staff
+      `## Cosa ha scritto lo staff {#staff}
 
 "Demo V2 deck will carry over your V1 deck unlock/boss progress", cioè la Demo 2 mantiene gli sblocchi dei mazzi e i progressi contro i boss della Demo 1: è il messaggio che un membro dello staff di Origins ha pubblicato sul Discord ufficiale la sera del 16 settembre, rispondendo ai giocatori che chiedevano se si sarebbe ricominciato da zero. Lo screenshot del messaggio è stato condiviso su Reddit la mattina dopo.
 
-## Perché contava
+## Perché contava {#perche}
 
 Nel playtest ogni mazzo si sblocca con tre vittorie in classificata più una vittoria contro un boss IA, il percorso che i giocatori avevano definito punitivo nel [feedback del 14 settembre](/it/news/playtest-feedback-deck-unlock). Doverlo rifare da capo con la Demo 2 era il timore principale. Fino a quel messaggio, nella community circolava la risposta opposta.
 
-## Cosa restava aperto
+## Cosa restava aperto {#aperto}
 
 Il messaggio parlava solo di Demo 1 e Demo 2. Se contassero anche i progressi fatti nel playtest chiuso non era scritto in nessun post ufficiale, quindi allora abbiamo tenuto le due cose separate.
 
-## Aggiornamento del 21 settembre
+## Aggiornamento del 21 settembre {#aggiornamento}
 
 La questione è chiusa. Annunciando [il primo grande aggiornamento della demo](/it/news/demo-first-big-update), il team ha scritto che chi ha giocato la demo, il playtest o entrambi conserva i progressi del percorso più avanzato, "così nessuno dovrà sbloccare di nuovo le carte".`,
-      `## Lo que escribió el staff
+      `## Lo que escribió el staff {#staff}
 
 "Demo V2 deck will carry over your V1 deck unlock/boss progress", es decir, la Demo 2 conserva los desbloqueos de mazos y el progreso contra los jefes de la Demo 1: es el mensaje que un miembro del staff de Origins publicó en el Discord oficial la noche del 16 de septiembre, en respuesta a los jugadores que preguntaban si todos tendrían que empezar de cero. Una captura del mensaje se compartió en Reddit a la mañana siguiente.
 
-## Por qué importaba
+## Por qué importaba {#por-que}
 
 En el playtest cada mazo se desbloquea con tres victorias en clasificatoria más una victoria contra un jefe controlado por la IA, el camino que los jugadores habían calificado de castigador en el [feedback del 14 de septiembre](/es/news/playtest-feedback-deck-unlock). Tener que repetirlo desde cero con la Demo 2 era la principal preocupación. Hasta ese mensaje, la respuesta que circulaba en la comunidad era la contraria.
 
-## Lo que quedaba abierto
+## Lo que quedaba abierto {#abierto}
 
 El mensaje hablaba solo de la Demo 1 y la Demo 2. Ninguna publicación oficial decía si también contaría el progreso conseguido en el playtest cerrado, así que en aquel momento mantuvimos las dos cosas separadas.
 
-## Actualización del 21 de septiembre
+## Actualización del 21 de septiembre {#actualizacion}
 
 La cuestión está cerrada. Al anunciar [la primera gran actualización de la demo](/es/news/demo-first-big-update), el equipo escribió que quien haya jugado la demo, el playtest o ambos conserva el progreso del que esté más avanzado, "así nadie tendrá que volver a desbloquear las cartas".`,
     ),
@@ -1359,6 +1406,7 @@ La cuestión está cerrada. Al anunciar [la primera gran actualización de la de
   {
     slug: "demo-2-boss-ai-rework",
     image: "/cards/cover/dracula.webp",
+    guides: ["play-the-demo"],
     date: "2026-09-16",
     updated: "2026-09-21",
     title: n(
@@ -1377,8 +1425,28 @@ La cuestión está cerrada. Al anunciar [la primera gran actualización de la de
       "Un giocatore ha raccontato un boss Dracula delle missioni che vince ogni tiro casuale. Lo sviluppatore di Koin Games Fenchurch ha risposto sul forum Steam che l'IA delle boss fight verrà rifatta per la Demo v2, e che boss e sblocco delle carte continueranno a cambiare.",
       "Un jugador describió cómo Dracula, el jefe de las misiones, ganaba todas las tiradas aleatorias. Fenchurch, desarrollador de Koin Games, respondió en el foro de Steam que la IA de los combates contra jefes se está rehaciendo para la Demo v2, y que los jefes y el desbloqueo de cartas seguirán cambiando.",
     ),
+    highlights: {
+      en: [
+        { label: "The report", text: "Dracula, the boss of the missions, seemed to win every random roll", anchor: "report" },
+        { label: "Boss AI reworked in Demo v2", text: "confirmed by developer Fenchurch on 16 September", anchor: "answer" },
+        { label: "Why it matters", text: "bosses are part of the path that unlocks decks", anchor: "why" },
+        { label: "After the 21 September update", text: "the announcement does not mention the bosses", anchor: "next" },
+      ],
+      it: [
+        { label: "La segnalazione", text: "Dracula, il boss delle missioni, sembrava vincere ogni tiro casuale", anchor: "segnalazione" },
+        { label: "IA dei boss rifatta nella Demo v2", text: "lo ha confermato lo sviluppatore Fenchurch il 16 settembre", anchor: "risposta" },
+        { label: "Perché conta", text: "i boss fanno parte del percorso che sblocca i mazzi", anchor: "perche" },
+        { label: "Dopo l'aggiornamento del 21 settembre", text: "l'annuncio non parla dei boss", anchor: "dopo" },
+      ],
+      es: [
+        { label: "El reporte", text: "Dracula, el jefe de las misiones, parecía ganar todas las tiradas aleatorias", anchor: "reporte" },
+        { label: "IA de los jefes rehecha en la Demo v2", text: "lo confirmó el desarrollador Fenchurch el 16 de septiembre", anchor: "respuesta" },
+        { label: "Por qué importa", text: "los jefes forman parte del camino que desbloquea los mazos", anchor: "por-que" },
+        { label: "Tras la actualización del 21 de septiembre", text: "el anuncio no menciona a los jefes", anchor: "despues" },
+      ],
+    },
     body: n(
-      `## The report
+      `## The report {#report}
 
 On 15 September a player posted on the Steam forum an account of four games against Dracula, the boss of the demo missions. The earlier bosses, they wrote, were strong but fair: all beaten at the first try with the premade decks unlocked just before them. Dracula, instead, seemed to get every "random" effect right:
 
@@ -1387,20 +1455,20 @@ On 15 September a player posted on the Steam forum an account of four games agai
 - random discards always taking the most dangerous card in hand;
 - random summons always in the best space.
 
-## The team's answer
+## The team's answer {#answer}
 
 Developer Fenchurch replied on 16 September: "Our boss fight AI will be getting a re-work in Demo v2". He added that the team will keep watching and changing how boss fights and card unlocking work.
 
 It is not the first change to the bosses. The playtest patch notes 0.6.3 of 27 August had already given them "new upgraded bot intelligence", asking players whether they had become smarter or dumber.
 
-## Why it matters
+## Why it matters {#why}
 
 Bosses are part of the unlock path: in the playtest a deck opens after three ranked wins and a win against an AI boss. A boss that feels unfair slows down the whole collection. It is the second time in a week that this path comes back from the feedback threads, after [the reply of 14 September](/en/news/playtest-feedback-deck-unlock) about making those matches PvE only.
 
-## What came next
+## Update, 21 September: what came next {#next}
 
 On 21 September the [first big demo update](/en/news/demo-first-big-update) arrived. The announcement does not mention the bosses: whether the new AI is already in it is not known yet.`,
-      `## La segnalazione
+      `## La segnalazione {#segnalazione}
 
 Il 15 settembre un giocatore ha raccontato sul forum Steam quattro partite contro Dracula, il boss delle missioni della demo. I boss precedenti, ha scritto, erano forti ma corretti: tutti battuti al primo tentativo con i mazzi pronti sbloccati poco prima. Dracula invece sembrava azzeccare ogni effetto "casuale":
 
@@ -1409,20 +1477,20 @@ Il 15 settembre un giocatore ha raccontato sul forum Steam quattro partite contr
 - gli scarti casuali prendevano sempre la carta più pericolosa in mano;
 - le evocazioni casuali comparivano sempre nello spazio migliore.
 
-## La risposta del team
+## La risposta del team {#risposta}
 
 Lo sviluppatore Fenchurch ha risposto il 16 settembre: "Our boss fight AI will be getting a re-work in Demo v2", cioè l'IA delle boss fight verrà rifatta nella Demo v2. Ha aggiunto che il team continuerà a osservare e a cambiare il funzionamento dei boss e dello sblocco delle carte.
 
 Non è il primo intervento sui boss. Le patch notes del playtest 0.6.3, del 27 agosto, avevano già dato ai boss una "nuova intelligenza potenziata", chiedendo ai giocatori se fossero diventati più svegli o più tonti.
 
-## Perché conta
+## Perché conta {#perche}
 
 I boss fanno parte del percorso di sblocco: nel playtest un mazzo si apre dopo tre vittorie in classificata e una vittoria contro un boss IA. Un boss che sembra scorretto rallenta tutta la collezione. È la seconda volta in una settimana che questo percorso torna dai thread di feedback, dopo [la risposta del 14 settembre](/it/news/playtest-feedback-deck-unlock) sull'idea di rendere quelle partite solo PvE.
 
-## Cosa è successo dopo
+## Aggiornamento del 21 settembre: cosa è successo dopo {#dopo}
 
 Il 21 settembre è arrivato il [primo grande aggiornamento della demo](/it/news/demo-first-big-update). L'annuncio non parla dei boss: se la nuova IA ci sia già non si sa ancora.`,
-      `## El reporte
+      `## El reporte {#reporte}
 
 El 15 de septiembre un jugador publicó en el foro de Steam el relato de cuatro partidas contra Dracula, el jefe de las misiones de la demo. Los jefes anteriores, escribió, eran fuertes pero justos: todos derrotados al primer intento con los mazos preconstruidos desbloqueados justo antes. Dracula, en cambio, parecía acertar con cada efecto "aleatorio":
 
@@ -1431,17 +1499,17 @@ El 15 de septiembre un jugador publicó en el foro de Steam el relato de cuatro 
 - los descartes aleatorios siempre se llevaban la carta más peligrosa de la mano;
 - las invocaciones aleatorias siempre aparecían en el mejor espacio.
 
-## La respuesta del equipo
+## La respuesta del equipo {#respuesta}
 
 El desarrollador Fenchurch respondió el 16 de septiembre: "Our boss fight AI will be getting a re-work in Demo v2", es decir, la IA de los combates contra jefes se rehará en la Demo v2. Añadió que el equipo seguirá observando y cambiando cómo funcionan los combates contra jefes y el desbloqueo de cartas.
 
 No es el primer cambio en los jefes. Las notas del parche 0.6.3 del playtest, del 27 de agosto, ya les habían dado una "nueva inteligencia de bot mejorada", y preguntaban a los jugadores si se habían vuelto más inteligentes o más tontos.
 
-## Por qué importa
+## Por qué importa {#por-que}
 
 Los jefes forman parte del camino de desbloqueo: en el playtest un mazo se abre tras tres victorias en clasificatoria y una victoria contra un jefe controlado por la IA. Un jefe que parece injusto frena toda la colección. Es la segunda vez en una semana que este camino vuelve a salir en los hilos de feedback, después de [la respuesta del 14 de septiembre](/es/news/playtest-feedback-deck-unlock) sobre hacer esas partidas solo PvE.
 
-## Lo que pasó después
+## Actualización del 21 de septiembre: lo que pasó después {#despues}
 
 El 21 de septiembre llegó la [primera gran actualización de la demo](/es/news/demo-first-big-update). El anuncio no menciona a los jefes: todavía no se sabe si la nueva IA ya está incluida.`,
     ),
@@ -1452,6 +1520,7 @@ El 21 de septiembre llegó la [primera gran actualización de la demo](/es/news/
     slug: "demo-2-animations-and-fixes",
     image: "/media/ss-board-draw.webp",
     cards: ["off-with-your-head", "christopher-robin"],
+    guides: ["play-the-demo"],
     date: "2026-09-16",
     updated: "2026-09-21",
     title: n(
@@ -1470,54 +1539,74 @@ El 21 de septiembre llegó la [primera gran actualización de la demo](/es/news/
       "Il 16 settembre il team ha confermato sul forum Steam che le animazioni verranno velocizzate e che le copie invisibili di Off With Your Head! sono un bug noto, corretto con la Demo v2. Intanto sui social girava un rumor su una \"Demo Season 2\".",
       "El 16 de septiembre el equipo confirmó en el foro de Steam que las animaciones se acelerarán y que las copias invisibles de Off With Your Head! son un bug conocido que se corrige con la Demo v2. Mientras tanto circulaba un rumor sobre una \"Demo Season 2\".",
     ),
+    highlights: {
+      en: [
+        { label: "Faster animations", text: "the staff says they will be sped up in an upcoming update", anchor: "animations" },
+        { label: "The Off With Your Head! bug", text: "semi-invisible copies, a known bug to be fixed with Demo v2", anchor: "off-with-your-head" },
+        { label: "Audio", text: "the reports go to the audio team", anchor: "audio" },
+        { label: "The \"Demo Season 2\" rumour", text: "it had the timing right: the demo update arrived on 21 September", anchor: "rumour" },
+      ],
+      it: [
+        { label: "Animazioni più veloci", text: "lo staff dice che arriveranno con un prossimo aggiornamento", anchor: "animazioni" },
+        { label: "Il bug di Off With Your Head!", text: "copie semi-invisibili, un bug noto da correggere con la Demo v2", anchor: "off-with-your-head" },
+        { label: "Audio", text: "le segnalazioni passano al team audio", anchor: "audio" },
+        { label: "Il rumor della \"Demo Season 2\"", text: "ci aveva preso sui tempi: l'aggiornamento della demo è arrivato il 21 settembre", anchor: "rumor" },
+      ],
+      es: [
+        { label: "Animaciones más rápidas", text: "el staff dice que llegarán con una próxima actualización", anchor: "animaciones" },
+        { label: "El bug de Off With Your Head!", text: "copias semiinvisibles, un bug conocido que se corregirá con la Demo v2", anchor: "off-with-your-head" },
+        { label: "Audio", text: "los reportes pasan al equipo de audio", anchor: "audio" },
+        { label: "El rumor de la \"Demo Season 2\"", text: "acertó con los tiempos: la actualización de la demo llegó el 21 de septiembre", anchor: "rumor" },
+      ],
+    },
     body: n(
-      `## Faster animations
+      `## Faster animations {#animations}
 
 "Animations need to be sped up 100–200%": the thread opened on 11 September got mostly agreeing replies, with one player saying the speed is fine as it is. On 16 September a member of the staff answered that the team has acknowledged the need to speed up animations and that "it'll be amended in an upcoming update".
 
-## The Off With Your Head! bug
+## The Off With Your Head! bug {#off-with-your-head}
 
 A new player described copies of Christopher Robin appearing without artwork, with only Power and Health visible. Developer Fenchurch identified the card behind it: Off With Your Head!, which destroys an ally and summons a basic copy of it in every other location. The semi-invisible copies are a known bug, and "it will be fixed when we release Demo v2 here really soon".
 
-## Audio
+## Audio {#audio}
 
 To a player who had listed several bugs, Fenchurch replied that the audio reports would be passed on to the audio team.
 
-## The "Demo Season 2" rumour
+## The "Demo Season 2" rumour {#rumour}
 
 In the same days a line went around on social media: a "Demo Season 2" coming the following week, with new decks, new rewards and a first taste of collecting. No official post on Steam, on Discord or on origins-tcg.com confirmed it, so we reported it as a rumour and kept to the official dates, Steam Next Fest from 19 to 26 October.
 
 **Update, 21 September:** the rumour had the timing right. The [first big demo update](/en/news/demo-first-big-update) arrived on 21 September with a collectors tutorial and test packs. The list of fixes has not been published yet, so we cannot say whether the Off With Your Head! bug is among them.`,
-      `## Animazioni più veloci
+      `## Animazioni più veloci {#animazioni}
 
 "Le animazioni vanno accelerate del 100–200%": il thread aperto l'11 settembre ha raccolto quasi solo risposte d'accordo, con un giocatore che trova la velocità giusta così. Il 16 settembre un membro dello staff ha risposto che il team ha preso atto della richiesta e che le animazioni saranno velocizzate "in un aggiornamento in arrivo".
 
-## Il bug di Off With Your Head!
+## Il bug di Off With Your Head! {#off-with-your-head}
 
 Un giocatore alle prime armi ha descritto copie di Christopher Robin comparse senza illustrazione, con visibili solo attacco e vita. Lo sviluppatore Fenchurch ha individuato la carta responsabile: Off With Your Head!, che distrugge un alleato ed evoca una sua copia base in ogni altro luogo. Le copie semi-invisibili sono un bug noto, che "verrà corretto con l'uscita della Demo v2, molto presto".
 
-## Audio
+## Audio {#audio}
 
 A un giocatore che aveva elencato diversi bug, Fenchurch ha risposto che le segnalazioni sull'audio sarebbero passate al team audio.
 
-## Il rumor della "Demo Season 2"
+## Il rumor della "Demo Season 2" {#rumor}
 
 Negli stessi giorni girava sui social una frase: una "Demo Season 2" in arrivo la settimana successiva, con nuovi mazzi, nuove ricompense e un primo assaggio del collezionare. Nessun post ufficiale su Steam, su Discord o su origins-tcg.com la confermava, quindi l'abbiamo riportata come rumor e siamo rimasti alle date ufficiali, lo Steam Next Fest dal 19 al 26 ottobre.
 
 **Aggiornamento del 21 settembre:** il rumor ci aveva preso sui tempi. Il [primo grande aggiornamento della demo](/it/news/demo-first-big-update) è arrivato il 21 settembre, con un tutorial per collezionisti e pacchetti di prova. L'elenco delle correzioni non è ancora stato pubblicato, quindi non possiamo dire se il bug di Off With Your Head! sia tra quelli sistemati.`,
-      `## Animaciones más rápidas
+      `## Animaciones más rápidas {#animaciones}
 
 "Hay que acelerar las animaciones un 100–200 %": el hilo abierto el 11 de septiembre recibió sobre todo respuestas a favor, con un jugador que opina que la velocidad está bien como está. El 16 de septiembre un miembro del staff respondió que el equipo ha tomado nota de la necesidad de acelerar las animaciones y que "se corregirá en una próxima actualización".
 
-## El bug de Off With Your Head!
+## El bug de Off With Your Head! {#off-with-your-head}
 
 Un jugador novato describió copias de Christopher Robin que aparecían sin ilustración, en las que solo se veían el Poder y la Salud. El desarrollador Fenchurch identificó la carta responsable: Off With Your Head!, que destruye a un aliado e invoca una copia básica suya en cada una de las demás ubicaciones. Las copias semiinvisibles son un bug conocido, que "se corregirá cuando lancemos la Demo v2, muy pronto".
 
-## Audio
+## Audio {#audio}
 
 A un jugador que había enumerado varios bugs, Fenchurch le respondió que los reportes sobre el audio se pasarían al equipo de audio.
 
-## El rumor de la "Demo Season 2"
+## El rumor de la "Demo Season 2" {#rumor}
 
 Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" para la semana siguiente, con mazos nuevos, recompensas nuevas y una primera muestra del coleccionismo. Ninguna publicación oficial en Steam, en Discord ni en origins-tcg.com la confirmaba, así que la publicamos como rumor y nos atuvimos a las fechas oficiales: el Steam Next Fest, del 19 al 26 de octubre.
 
@@ -1537,6 +1626,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "3 Pigs Mid Range: un mazzo midrange dei Three Not So Little Pigs per ladder e tornei",
       "3 Pigs Mid Range: un mazo midrange de Three Not So Little Pigs para la ladder y los torneos",
       "3 Pigs Mid Range : un deck midrange Three Not So Little Pigs pour le ladder et les tournois",
+    ),
+    // Title e description dal 25/09/2026 (prima il titolo usciva tagliato con "…"): senza il nome dell'autore, regola del
+    // 16/09. La news resta l'annuncio (mappa delle query, C34): il nome del mazzo con la Leggendaria o l'archetipo è il
+    // title della scheda del mazzo e della guida, qui c'è solo la notizia del mazzo nuovo dello staff.
+    metaTitle: n("New Origins TCG staff deck: 3 Pigs Mid Range", "Nuovo mazzo dello staff per Origins TCG: 3 Pigs Mid Range", "Nuevo mazo del staff para Origins TCG: 3 Pigs Mid Range"),
+    description: n(
+      "A midrange Origins TCG deck led by Three Not So Little Pigs, for ladder and tournaments: take the board early, win a location, close with En Passant.",
+      "Un mazzo midrange di Origins TCG guidato dai Three Not So Little Pigs, per ladder e tornei: prendi il tabellone, vinci un luogo, chiudi con En Passant.",
+      "Un mazo midrange de Origins TCG liderado por Three Not So Little Pigs, para ladder y torneos: domina el tablero, gana una ubicación y cierra con En Passant.",
     ),
     summary: n(
       "The second deck by Davdas, OriginsMeta staff, is a midrange list led by Three Not So Little Pigs, tagged for ladder and competitive play. The plan: take the board in the first rounds, win at least one location, then close with En Passant, Ellen Trechend's Trample and the Lightning Strikes that Impundulu generates. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
@@ -1559,6 +1657,13 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Healing Healsing, el primer mazo de la comunidad: una lista de control de Van Helsing para la ladder",
       "Healing Healsing, le premier deck de la communauté : une liste contrôle Van Helsing pour le ladder",
     ),
+    // l'annuncio, come per 3 Pigs (C34): "Van Helsing" e "controllo" restano ai title della scheda e della guida
+    metaTitle: n("Healing Healsing, first Origins TCG deck on OriginsMeta", "Healing Healsing, primo mazzo di Origins TCG su OriginsMeta", "Healing Healsing, primer mazo de Origins TCG en OriginsMeta"),
+    description: n(
+      "The first deck published on OriginsMeta: a Van Helsing control list for the Origins TCG ladder that heals through damage and resets the board late.",
+      "Il primo mazzo pubblicato su OriginsMeta: una lista controllo di Van Helsing per la ladder di Origins TCG che cura i danni e azzera il tabellone.",
+      "El primer mazo publicado en OriginsMeta: una lista de control de Van Helsing para la ladder de Origins TCG que cura el daño y vacía el tablero al final.",
+    ),
     summary: n(
       "The first deck published on OriginsMeta is by Davdas, OriginsMeta staff: a control list led by Van Helsing for the ranked ladder. The plan: take early value with Spellbook and Ali Baba, heal through the damage while Phuong Hoang grows with every heal, then reach round 8 or 9 and reset the board with Forbidden Knowledge. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
       "Il primo mazzo pubblicato su OriginsMeta è di Davdas, staff del sito: una lista controllo guidata da Van Helsing per la ladder classificata. Il piano: prendere valore presto con Spellbook e Ali Baba, curare i danni mentre Phuong Hoang cresce a ogni cura, poi arrivare al round 8 o 9 e azzerare il tabellone con Forbidden Knowledge. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan dell'autore, il codice del gioco e il tasto per aprirla nel deck builder, e due guide su come giocarla.",
@@ -1572,12 +1677,19 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     slug: "playtest-feedback-deck-unlock",
     image: "/media/ss-collection.webp",
     cards: ["humpty", "spellbook", "asanbosam"],
+    guides: ["play-the-demo"],
     date: "2026-09-14",
     title: n(
       "Playtest feedback: Koin reads the Steam forum and may move deck unlocks to PvE",
       "Feedback del playtest: Koin legge il forum Steam e valuta di spostare gli sblocchi dei mazzi nel PvE",
       "Feedback del playtest: Koin lee el foro de Steam y podría llevar los desbloqueos de mazos al PvE",
       "Retours du playtest : Koin lit le forum Steam et envisage de déplacer les déblocages de decks en PvE",
+    ),
+    metaTitle: n("Origins TCG playtest: Koin may move deck unlocks to PvE", "Playtest di Origins TCG: sblocco dei mazzi forse in PvE", "Playtest de Origins TCG: Koin estudia desbloqueos en PvE"),
+    description: n(
+      "Origins TCG playtest feedback: deck unlocks take three ranked wins and a boss; developer Fenchurch says Koin reads the forum and may make them PvE-only.",
+      "Feedback del playtest di Origins TCG: un mazzo si sblocca con tre vittorie in classificata e un boss; Koin valuta di rendere quelle partite solo PvE.",
+      "Feedback del playtest de Origins TCG: un mazo se desbloquea con tres victorias en clasificatoria y un jefe; Koin estudia que esas partidas sean solo PvE.",
     ),
     summary: n(
       "In the current playtest you unlock a deck by winning three ranked matches and then beating an AI boss; players call it punishing when they meet full collections with a starter deck. Developer Fenchurch replied that the team reads every Steam forum post and is considering making deck-unlock matches PvE-only. Also reported: cards that generate random cards (Humpty, Spellbook) can add extra Legendaries to a deck, requests to redesign Spellbook, and Asanbosam's On Reveal not repeating at the Cloning Lab location.",
@@ -1617,8 +1729,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "gameplay-trailer",
     image: "/media/news-trailer.webp",
+    guides: ["origins-tcg-explained"],
     date: "2026-09-03",
     title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Tráiler oficial de gameplay publicado en YouTube", "Bande-annonce de gameplay officielle sur YouTube"),
+    metaTitle: n("Origins TCG official gameplay trailer on YouTube", "Trailer di gameplay ufficiale di Origins TCG su YouTube", "Tráiler oficial de gameplay de Origins TCG en YouTube"),
+    description: n(
+      "The first official Origins TCG gameplay trailer is on YouTube: the quickest way to see the pace of a match and the interface before Demo 2.0.",
+      "Il primo trailer ufficiale di gameplay di Origins TCG è su YouTube: il modo più rapido per vedere ritmo di gioco e interfaccia prima della Demo 2.0.",
+      "El primer tráiler oficial de gameplay de Origins TCG está en YouTube: la forma más rápida de ver el ritmo de una partida y la interfaz antes de la Demo 2.0.",
+    ),
     summary: n(
       "The first trailer dedicated to gameplay is up on the official Origins TCG YouTube channel: the quickest way to see the pace of a match and the interface before Demo 2.0 arrives at Steam Next Fest.",
       "Il primo trailer dedicato al gameplay è sul canale YouTube ufficiale Origins TCG: il modo più rapido per vedere il ritmo di una partita e l'interfaccia prima che la Demo 2.0 arrivi allo Steam Next Fest.",
@@ -1631,8 +1750,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "itzbolt-wins-conquest",
     image: "/media/ss-board-hand-full.webp",
+    guides: ["steam-next-fest-2026"],
     date: "2026-08-28",
     title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt gana el Big Bob's Playtest Battle, el primer torneo Conquest", "itzBolt remporte le Big Bob's Playtest Battle, premier tournoi Conquest"),
+    metaTitle: n("Origins TCG: itzBolt wins the first Conquest tournament", "Origins TCG: itzBolt vince il primo torneo Conquest", "Origins TCG: itzBolt gana el primer torneo Conquest"),
+    description: n(
+      "itzBolt won Big Bob's Playtest Battle, the first Origins TCG tournament in Conquest format, played on the 0.6.3 playtest with best-of-three matches.",
+      "itzBolt ha vinto Big Bob's Playtest Battle, il primo torneo di Origins TCG in formato Conquest, giocato sul playtest 0.6.3 con partite al meglio delle tre.",
+      "itzBolt ganó el Big Bob's Playtest Battle, el primer torneo de Origins TCG en formato Conquest, jugado en el playtest 0.6.3 con partidas al mejor de tres.",
+    ),
     summary: n(
       "The community tournament played on the 0.6.3 playtest build with full deckbuilding and the Conquest format (several decks with different Legendaries, best-of-3) was won by itzBolt, as reported by the World of Origins community site. It was the first public test of the format that Koin has since chosen for the Crimson Cup.",
       "Il torneo community giocato sulla build 0.6.3 del playtest con deckbuilding completo e formato Conquest (più mazzi con Leggendarie diverse, al meglio delle tre) è stato vinto da itzBolt, come riportato dal sito community World of Origins. È stato il primo test pubblico del formato che Koin ha poi scelto per la Crimson Cup.",
@@ -1643,15 +1769,134 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     source: "press",
   },
   {
+    // Il primo annuncio (post Steam del 9/9). Dal 25/09/2026 ha un testo a sezioni con gli stessi fatti del riassunto,
+    // una riga in cima che porta alle regole definitive del 24/9 (`crimson-cup-format-check-in`, la pagina primaria
+    // sulla Crimson Cup, mappa delle query C12) e il paragrafo di aggiornamento in fondo. Title e sottotitoli raccontano
+    // l'annuncio: "regole, date, premi" restano a quell'articolo. Da confermare con Pierluigi prima del push: la KB
+    // (§1 p.34, 24/9) diceva che le news vecchie restano com'erano.
     slug: "biggest-tournament-ever",
     image: "/media/news-crimson-cup.webp",
+    guides: ["steam-next-fest-2026"],
     date: "2026-09-09",
+    updated: "2026-09-25",
     title: n("Crimson Cup announced: the biggest tournament ever for Steam Next Fest", "Annunciata la Crimson Cup: il torneo più grande di sempre per lo Steam Next Fest", "Anunciada la Crimson Cup: el torneo más grande de la historia para el Steam Next Fest", "La Crimson Cup annoncée : le plus grand tournoi jamais organisé pour le Steam Next Fest"),
+    metaTitle: n("Crimson Cup announced for Steam Next Fest", "Annunciata la Crimson Cup per il Next Fest", "Anunciada la Crimson Cup para el Next Fest"),
+    description: n(
+      "On 9 September Koin Games announced the Origins TCG Crimson Cup: 20–25 October, regional qualifiers, prizes worth $10,000. Updated with the final rules.",
+      "Il 9 settembre Koin Games ha annunciato la Crimson Cup di Origins TCG: 20–25 ottobre, qualificazioni per regione, premi per 10.000 $. Con le regole finali.",
+      "La Crimson Cup de Origins TCG, anunciada el 9/9: del 20 al 25 de octubre, clasificatorios por región y premios por 10.000 dólares. Con las reglas finales.",
+    ),
     summary: n(
       "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
       "Un evento su più giorni dal 20 al 25 ottobre: qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha, premi in denaro. Iscrizioni su Discord; i creator possono chiedere inviti wildcard diretti ai playoff.",
       "Un evento de varios días, del 20 al 25 de octubre: clasificatorios para cada una de las tres grandes regiones los días 20, 21 y 22, y después playoffs y finales. Premios por valor de 10.000 dólares: una carta promo 1/1 exclusiva, otras cartas promo, sobres digitales, cajas y cases Alpha y premios en efectivo. Inscripciones en Discord; los creadores de contenido pueden pedir invitaciones wildcard directas a los playoffs.",
       "Un événement sur plusieurs jours du 20 au 25 octobre : qualifications pour les trois grandes régions les 20, 21 et 22, puis playoffs et finales. Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive, d'autres cartes promo, des packs numériques, des boîtes et cases Alpha, et des prix en argent. Inscriptions sur Discord ; les créateurs peuvent demander une invitation wildcard directe pour les playoffs.",
+    ),
+    highlights: {
+      en: [
+        { label: "20–25 October", text: "qualifiers for the three major regions on the 20th, 21st and 22nd, then playoffs and finals", anchor: "dates" },
+        { label: "Prizes worth $10,000", text: "a 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, cash", anchor: "prizes" },
+        { label: "Sign-ups on Discord", text: "creators can ask for a wildcard straight into the playoffs", anchor: "sign-ups" },
+        { label: "The final rules", text: "three-deck Conquest and a mandatory check-in, set on 24 September", anchor: "update" },
+      ],
+      it: [
+        { label: "Dal 20 al 25 ottobre", text: "qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali", anchor: "date" },
+        { label: "Premi per 10.000 $", text: "una carta promo 1/1, altre carte promo, pacchetti digitali, box e case Alpha, denaro", anchor: "premi" },
+        { label: "Iscrizioni su Discord", text: "i creator possono chiedere una wildcard diretta ai playoff", anchor: "iscrizioni" },
+        { label: "Le regole definitive", text: "Conquest a tre mazzi e check-in obbligatorio, fissati il 24 settembre", anchor: "aggiornamento" },
+      ],
+      es: [
+        { label: "Del 20 al 25 de octubre", text: "clasificatorios para las tres grandes regiones los días 20, 21 y 22, y después playoffs y finales", anchor: "fechas" },
+        { label: "Premios por valor de 10.000 dólares", text: "una carta promo 1/1, otras cartas promo, sobres digitales, cajas y cases Alpha, dinero en efectivo", anchor: "premios" },
+        { label: "Inscripciones en Discord", text: "los creadores de contenido pueden pedir una wildcard directa a los playoffs", anchor: "inscripciones" },
+        { label: "Las reglas definitivas", text: "Conquest con tres mazos y check-in obligatorio, fijados el 24 de septiembre", anchor: "actualizacion" },
+      ],
+    },
+    body: n(
+      `Rules, format and check-in, as set on 24 September: [Crimson Cup rules](/en/news/crimson-cup-format-check-in).
+
+## What Koin announced on 9 September {#dates}
+
+On 9 September Koin Games announced on Steam its biggest tournament ever: a multi-day event during Steam Next Fest, from 20 to 25 October 2026.
+
+1. **Qualifiers**, one for each of the three major regions, on 20, 21 and 22 October.
+2. **Playoffs and finals** after the qualifiers.
+
+## The prizes announced {#prizes}
+
+The prizes are worth $10,000 in total and come in several forms:
+
+- an exclusive 1/1 promo card;
+- other promo cards;
+- digital packs;
+- Alpha boxes and cases;
+- cash prizes.
+
+## Sign-ups and wildcards {#sign-ups}
+
+Sign-ups are on the [official Origins TCG Discord](https://discord.gg/originstcg). Content creators can ask for a wildcard invite that takes them straight into the playoffs.
+
+## Update of 25 September 2026 {#update}
+
+This article reports the first announcement, of 9 September. On 24 September, after a survey among players, Koin Games set the format: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in is mandatory: it opens two hours before each qualifier and closes five minutes before the start, together with deck submission. The tournament is played on the main demo, and the exact prize pool was promised for the following week.
+
+The rules, the check-in times and what we don't know yet are in [our article on the Crimson Cup rules](/en/news/crimson-cup-format-check-in); dates, spots per region and how to prepare are in our [Steam Next Fest 2026 guide](/en/guides/steam-next-fest-2026).`,
+      `Regole, formato e check-in, fissati il 24 settembre: [regole della Crimson Cup](/it/news/crimson-cup-format-check-in).
+
+## Cosa ha annunciato Koin il 9 settembre {#date}
+
+Il 9 settembre Koin Games ha annunciato su Steam il suo torneo più grande di sempre: un evento su più giorni durante lo Steam Next Fest, dal 20 al 25 ottobre 2026.
+
+1. **Qualificazioni**, una per ciascuna delle tre macro-regioni, il 20, il 21 e il 22 ottobre.
+2. **Playoff e finali** dopo le qualificazioni.
+
+## I premi annunciati {#premi}
+
+I premi valgono in tutto 10.000 $ e sono di più tipi:
+
+- una carta promo 1/1 esclusiva;
+- altre carte promo;
+- pacchetti digitali;
+- box e case Alpha;
+- premi in denaro.
+
+## Iscrizioni e wildcard {#iscrizioni}
+
+Le iscrizioni sono sul [Discord ufficiale di Origins TCG](https://discord.gg/originstcg). I creator possono chiedere un invito wildcard che li porta direttamente ai playoff.
+
+## Aggiornamento del 25 settembre 2026 {#aggiornamento}
+
+Questo articolo racconta il primo annuncio, del 9 settembre. Il 24 settembre, dopo un sondaggio tra i giocatori, Koin Games ha fissato il formato: Conquest a tre mazzi, almeno 8 carte uniche fra ogni coppia di mazzi, liste segrete fino alla top 4 e niente ban nelle partite al meglio delle cinque. Il check-in è obbligatorio: apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi. Il torneo si gioca sulla demo principale, e la ripartizione esatta dei premi è stata promessa per la settimana successiva.
+
+Regole, orari del check-in e cosa non sappiamo ancora sono nel [nostro articolo sulle regole della Crimson Cup](/it/news/crimson-cup-format-check-in); date, posti per regione e come prepararsi nella nostra [guida allo Steam Next Fest 2026](/it/guides/steam-next-fest-2026).`,
+      `Reglas, formato y check-in, fijados el 24 de septiembre: [reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in).
+
+## Lo que anunció Koin el 9 de septiembre {#fechas}
+
+El 9 de septiembre Koin Games anunció en Steam su torneo más grande hasta la fecha: un evento de varios días durante el Steam Next Fest, del 20 al 25 de octubre de 2026.
+
+1. **Clasificatorios**, uno para cada una de las tres grandes regiones, los días 20, 21 y 22 de octubre.
+2. **Playoffs y finales** después de los clasificatorios.
+
+## Los premios anunciados {#premios}
+
+Los premios suman un valor de 10.000 dólares y son de varios tipos:
+
+- una carta promo 1/1 exclusiva;
+- otras cartas promo;
+- sobres digitales;
+- cajas y cases Alpha;
+- premios en efectivo.
+
+## Inscripciones y wildcards {#inscripciones}
+
+Las inscripciones están en el [Discord oficial de Origins TCG](https://discord.gg/originstcg). Los creadores de contenido pueden pedir una invitación wildcard que los lleva directamente a los playoffs.
+
+## Actualización del 25 de septiembre de 2026 {#actualizacion}
+
+Este artículo cuenta el primer anuncio, del 9 de septiembre. El 24 de septiembre, tras una encuesta entre los jugadores, Koin Games fijó el formato: Conquest con tres mazos, al menos 8 cartas únicas entre cada par de mazos, listas ocultas hasta el top 4 y ningún ban en los enfrentamientos al mejor de cinco. El check-in es obligatorio: abre dos horas antes de cada clasificatorio y cierra cinco minutos antes del inicio, junto con la entrega de mazos. El torneo se juega en la demo principal, y el reparto exacto de la bolsa de premios se prometió para la semana siguiente.
+
+Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestro artículo sobre las reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in); las fechas, las plazas por región y cómo prepararte, en nuestra [guía del Steam Next Fest 2026](/es/guides/steam-next-fest-2026).`,
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
     source: "steam",
@@ -1660,11 +1905,20 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     slug: "patch-0-6-3",
     image: "/media/ss-board-ley-line.webp",
     cards: ["king-arthur", "merlin", "lancelot", "old-macdonald", "bandersnatch", "bigfoot", "bagheera", "christopher-robin", "sandman", "scarecrow", "merlins-prophecy", "blow-the-house-down", "bridge-troll", "rumple", "thumbelina", "white-queen"],
+    // la cronologia della roadmap elenca le patch del playtest una per una; la guida del Next Fest racconta a cosa servivano
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-27",
-    title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, Re Artù a 7/7", "Parche 0.6.3 del playtest: dieciséis cartas ajustadas, King Arthur sube a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
+    // Nomi delle carte in inglese anche in italiano (docs/testi-di-gioco.md): "King Arthur", non più "Re Artù".
+    title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, King Arthur a 7/7", "Parche 0.6.3 del playtest: dieciséis cartas ajustadas, King Arthur sube a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
+    metaTitle: n("Origins TCG patch 0.6.3: King Arthur up to 7/7, 16 cards", "Patch 0.6.3 di Origins TCG: King Arthur a 7/7, 16 carte", "Parche 0.6.3 de Origins TCG: King Arthur a 7/7, 16 cartas"),
+    description: n(
+      "Origins TCG playtest patch 0.6.3, 27 August: buffs to King Arthur, Merlin and Lancelot, nerfs to Bandersnatch and Bigfoot, three reworks, smarter bosses.",
+      "Patch 0.6.3 del playtest di Origins TCG, 27 agosto: buff a King Arthur, Merlin e Lancelot, nerf a Bandersnatch e Bigfoot, tre carte riviste, boss più furbi.",
+      "Parche 0.6.3 de Origins TCG (playtest, 27 de agosto): buffs a King Arthur, Merlin y Lancelot, nerfs a Bandersnatch y Bigfoot, tres reworks, jefes más listos.",
+    ),
     summary: n(
       "A tuning-and-fixes patch, used for Big Bob's tournament two days later. Buffs to King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll and Blow the House Down; nerfs to Bandersnatch, Bigfoot, Scarecrow and Merlin's Prophecy; Bagheera, Christopher Robin and Sandman reworked. Bosses got smarter AI.",
-      "Una patch di tuning e correzioni, usata per il torneo di Big Bob due giorni dopo. Buff a Re Artù, Merlino, Lancillotto, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll e Blow the House Down; nerf a Bandersnatch, Bigfoot, Scarecrow e Merlin's Prophecy; Bagheera, Christopher Robin e Sandman rivisti. I boss hanno un'IA più intelligente.",
+      "Una patch di tuning e correzioni, usata per il torneo di Big Bob due giorni dopo. Buff a King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll e Blow the House Down; nerf a Bandersnatch, Bigfoot, Scarecrow e Merlin's Prophecy; Bagheera, Christopher Robin e Sandman rivisti. I boss hanno un'IA più intelligente.",
       "Un parche de ajustes y correcciones, usado en el torneo de Big Bob dos días después. Buffs a King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll y Blow the House Down; nerfs a Bandersnatch, Bigfoot, Scarecrow y Merlin's Prophecy; rework de Bagheera, Christopher Robin y Sandman. Los jefes tienen una IA más inteligente.",
       "Un patch d'ajustements et de correctifs, utilisé pour le tournoi de Big Bob deux jours plus tard. Buffs pour le roi Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll et Blow the House Down ; nerfs pour Bandersnatch, Bigfoot, Scarecrow et Merlin's Prophecy ; Bagheera, Christopher Robin et Sandman retravaillés. Les boss ont une IA plus maligne.",
     ),
@@ -1674,8 +1928,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "big-bobs-playtest-battle",
     image: "/media/ss-versus.webp",
+    guides: ["steam-next-fest-2026"],
     date: "2026-08-25",
     title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle trae el formato Conquest", "Big Bob's Playtest Battle inaugure le format Conquest"),
+    metaTitle: n("Big Bob's Playtest Battle brings Conquest to Origins TCG", "Big Bob's Playtest Battle: il Conquest arriva su Origins TCG", "Big Bob's Playtest Battle: el Conquest llega a Origins TCG"),
+    description: n(
+      "Big Bob's Playtest Battle, 28 August: the first Origins TCG tournament in Conquest format, best-of-three single elimination, with Next Fest wildcards.",
+      "Big Bob's Playtest Battle, 28 agosto: il primo torneo Conquest di Origins TCG, al meglio delle tre a eliminazione diretta, con wildcard per il Next Fest.",
+      "Big Bob's Playtest Battle, 28 de agosto: el primer torneo Conquest de Origins TCG, al mejor de tres y eliminación directa, con wildcards para el Next Fest.",
+    ),
     summary: n(
       "Tournament on 28 August on the playtest build with full deckbuilding. Best-of-3, single elimination, and the first use of Conquest: submit several decks with different Legendaries and at least nine different cards, ban one of your opponent's. Prizes: wildcards for the Next Fest tournament and Collector Packs.",
       "Torneo il 28 agosto sulla build del playtest con deckbuilding completo. Best-of-3, eliminazione diretta e primo uso del Conquest: si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti, si banna un mazzo avversario. Premi: wildcard per il torneo del Next Fest e Collector Pack.",
@@ -1689,11 +1950,18 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     slug: "patch-0-6-2",
     image: "/media/ss-board-reveals.webp",
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-21",
     title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Parche 0.6.2 del playtest: cambios de equilibrio en 23 cartas", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
+    metaTitle: n("Origins TCG patch 0.6.2 notes: 23 cards rebalanced", "Patch 0.6.2 di Origins TCG: 23 carte ribilanciate", "Parche 0.6.2 de Origins TCG: 23 cartas reequilibradas"),
+    description: n(
+      "Origins TCG playtest patch 0.6.2, 21 August: Mulan gains Double Attack, Queen of Hearts drops to 4 mana, Van Helsing's Tools is free. 23 cards changed.",
+      "Patch 0.6.2 del playtest di Origins TCG, 21 agosto: Mulan ottiene Doppio attacco, la Queen of Hearts scende a 4 mana, Van Helsing's Tools è gratis.",
+      "Parche 0.6.2 del playtest de Origins TCG, 21 de agosto: Mulan obtiene Ataque doble, Queen of Hearts baja a 4 de maná y Van Helsing's Tools es gratis.",
+    ),
     summary: n(
       "Eight cards changed what their ability does. Mulan gains Double Attack, the Queen of Hearts drops to 4 Mana 3/3 with First Strike, Ellen Trechend becomes an 8-Mana 3/3 that grows +3/+3 per enemy. Van Helsing's Tools is free but the Silver Bullet deals 1. The collection is now scoped to the ten playtest decks.",
-      "Otto carte hanno cambiato abilità. Mulan ottiene Doppio attacco, la Queen of Hearts scende a 4 Mana 3/3 con Primo colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma il Proiettile d'Argento fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
+      "Otto carte hanno cambiato abilità. Mulan ottiene Doppio attacco, la Queen of Hearts scende a 4 Mana 3/3 con Primo colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma la Silver Bullet fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
       "Ocho cartas cambiaron lo que hace su habilidad. Mulan obtiene Ataque doble, la Queen of Hearts baja a 4 de maná y 3/3 con Primer golpe, Ellen Trechend pasa a ser una 3/3 de 8 de maná que crece +3/+3 por enemigo. Van Helsing's Tools es gratis, pero la Silver Bullet inflige 1 de daño. La colección se limita ahora a los diez mazos del playtest.",
       "Huit cartes ont changé de capacité. Mulan gagne Double Attaque, la Reine de Cœur passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Balle d'argent inflige 1. La collection est désormais limitée aux dix decks du playtest.",
     ),
@@ -1704,8 +1972,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     slug: "patch-0-6-1-ranked",
     image: "/media/news-patch-061.webp",
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
+    guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-14",
     title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Parche 0.6.1: ladder clasificatoria, ranking Grandmaster y tres mazos reajustados", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
+    metaTitle: n("Patch 0.6.1: ranked ladder and Grandmaster", "Patch 0.6.1: classificata e Grandmaster", "Parche 0.6.1: clasificatoria y Grandmaster"),
+    description: n(
+      "Origins TCG patch 0.6.1, 14 August: ranked mode with a world leaderboard for the Grandmaster division, quality-of-life options, Huntsman at 6 mana.",
+      "Patch 0.6.1 di Origins TCG, 14 agosto: arriva la classificata con una classifica mondiale per la divisione Grandmaster, più comodità e Huntsman a 6 mana.",
+      "Parche 0.6.1 de Origins TCG, 14 de agosto: llega la clasificatoria con ranking mundial para la división Grandmaster, calidad de vida y Huntsman a 6 de maná.",
+    ),
     summary: n(
       "Ranked mode arrives with a world leaderboard for the Grandmaster division, plus quality of life: skip the tutorial, preview the opponent's Legendary during mulligan, mute emotes. Huntsman moves to 6 Mana 6/6; Swarm, Evil and Discard each swap one card.",
       "Arriva la modalità classificata con una classifica mondiale per la divisione Grandmaster, più comodità: salta il tutorial, anteprima della Leggendaria avversaria durante il mulligan, silenzia le emote. Huntsman passa a 6 Mana 6/6; Swarm, Evil e Discard cambiano una carta ciascuno.",
@@ -1718,8 +1993,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "demo-2-playtest",
     image: "/media/news-demo2-playtest.webp",
+    guides: ["play-the-demo", "steam-next-fest-2026"],
     date: "2026-08-05",
     title: n("Demo 2.0 playtest: 5 new decks, 70+ new cards, deckbuilding", "Playtest della Demo 2.0: 5 nuovi mazzi, oltre 70 carte nuove, deckbuilding", "Playtest de la Demo 2.0: 5 mazos nuevos, más de 70 cartas nuevas y construcción de mazos", "Playtest de la Démo 2.0 : 5 nouveaux decks, plus de 70 cartes, deckbuilding"),
+    metaTitle: n("Origins TCG Demo 2.0 playtest: 5 decks, 70+ cards", "Playtest della Demo 2.0 di Origins TCG: 5 mazzi, 70+ carte", "Playtest de la Demo 2.0 de Origins TCG: 5 mazos, 70+ cartas"),
+    description: n(
+      "The Origins TCG update for Steam Next Fest goes to community playtests from 7 August: 5 new decks, 70+ new cards and deckbuilding, open to all via Discord.",
+      "L'aggiornamento di Origins TCG per lo Steam Next Fest va nei playtest dal 7 agosto: 5 mazzi nuovi, oltre 70 carte e deckbuilding, aperti a tutti su Discord.",
+      "La actualización de Origins TCG para el Next Fest, en playtests abiertos por Discord desde el 7 de agosto: 5 mazos, más de 70 cartas y construcción de mazos.",
+    ),
     summary: n(
       "The update that will ship for Steam Next Fest in October goes to community playtests, starting Friday 7 August at 9pm UTC with a game night. Open to everyone through Discord.",
       "L'aggiornamento che uscirà per lo Steam Next Fest di ottobre va nei playtest della community, da venerdì 7 agosto alle 21 UTC con una game night. Aperto a tutti tramite Discord.",
@@ -1732,8 +2014,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "demo-stats-ama",
     image: "/media/news-card-party.webp",
+    guides: ["play-the-demo", "roadmap-and-dates"],
     date: "2026-07-21",
     title: n("First demo numbers: 1,000+ players, 13,000+ matches, 1h51m median", "Primi numeri della demo: oltre 1.000 giocatori, 13.000 partite, mediana 1h51m", "Primeras cifras de la demo: más de 1.000 jugadores, más de 13.000 partidas y 1h51m de mediana", "Premiers chiffres de la démo : 1 000+ joueurs, 13 000+ parties, médiane 1 h 51"),
+    metaTitle: n("Origins TCG demo numbers: 1,000+ players, 13,000+ matches", "Demo di Origins TCG: oltre 1.000 giocatori e 13.000 partite", "Demo de Origins TCG: 1.000+ jugadores y 13.000+ partidas"),
+    description: n(
+      "Six days after launch, the Origins TCG demo passed 1,000 players and 13,000 matches, with a 1h51m median. Plus an AMA, a first tournament and Card Party.",
+      "Sei giorni dopo il lancio, la demo di Origins TCG supera i 1.000 giocatori e le 13.000 partite, mediana 1h51m. In arrivo un AMA, un torneo e il Card Party.",
+      "Seis días después de salir, la demo de Origins TCG supera los 1.000 jugadores y las 13.000 partidas, mediana 1h51m. Llegan un AMA, un torneo y la Card Party.",
+    ),
     summary: n(
       "Six days after launch the team shares the demo stats and lines up an AMA with CEO Tim Jooste and head of game design Kevin Lambert (22 July), the first demo tournament (24 July) and a booth at Card Party in Fort Lauderdale (24–26 July).",
       "Sei giorni dopo il lancio il team condivide i numeri della demo e annuncia un AMA con il CEO Tim Jooste e il capo del game design Kevin Lambert (22 luglio), il primo torneo della demo (24 luglio) e uno stand al Card Party di Fort Lauderdale (24–26 luglio).",
@@ -1746,8 +2035,16 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "demo-live",
     image: "/media/news-demo-live.webp",
+    guides: ["play-the-demo", "roadmap-and-dates"],
     date: "2026-07-16",
     title: n("The Origins TCG demo is live on Steam", "La demo di Origins TCG è disponibile su Steam", "La demo de Origins TCG ya está disponible en Steam", "La démo d'Origins TCG est disponible sur Steam"),
+    // La guida play-the-demo è la pagina primaria su "demo di Origins TCG" (download, come si gioca): qui l'angolo è l'uscita.
+    metaTitle: n("Origins TCG demo launches with exclusive collectibles", "Esce la demo di Origins TCG, con collezionabili esclusivi", "Sale la demo de Origins TCG, con coleccionables exclusivos"),
+    description: n(
+      "The free Origins TCG demo is live on Steam, with exclusive collectibles that won't be available later and will become tradeable when the full game launches.",
+      "La demo gratuita di Origins TCG è su Steam, con collezionabili esclusivi che poi non saranno più disponibili e diventeranno scambiabili al lancio del gioco.",
+      "La demo gratuita de Origins TCG ya está en Steam, con coleccionables exclusivos que no volverán y que se podrán intercambiar cuando salga el juego completo.",
+    ),
     summary: n(
       "Free demo with exclusive collectibles that will not be available later and will be tradeable on the Steam marketplace once the full game launches. Launch party on Discord the same day.",
       "Demo gratuita con collezionabili esclusivi che non saranno più disponibili in seguito e saranno scambiabili sul marketplace Steam al lancio del gioco completo. Festa di lancio su Discord lo stesso giorno.",
@@ -1760,8 +2057,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "creator-program",
     image: "/media/keyart-robin-hood.webp",
+    guides: ["steam-next-fest-2026", "roadmap-and-dates"],
     date: "2026-08-19",
     title: n("Creator Program announced, details in a Discord AMA", "Annunciato il Creator Program, dettagli in un AMA su Discord", "Anunciado el Creator Program, con los detalles en un AMA en Discord", "Creator Program annoncé, détails lors d'un AMA sur Discord"),
+    metaTitle: n("Origins TCG Creator Program announced, AMA on Discord", "Creator Program di Origins TCG: annuncio e AMA su Discord", "Creator Program de Origins TCG: anuncio y AMA en Discord"),
+    description: n(
+      "Koin Games opens the Origins TCG Creator Program ahead of Steam Next Fest. Details came in an AMA on 19 August, recorded on Discord. OriginsMeta applied.",
+      "Koin Games apre il Creator Program di Origins TCG prima dello Steam Next Fest: dettagli nell'AMA del 19 agosto, su Discord. OriginsMeta ha fatto domanda.",
+      "Koin Games abre el Creator Program de Origins TCG antes del Steam Next Fest: detalles en el AMA del 19 de agosto, en Discord. OriginsMeta envió su solicitud.",
+    ),
     summary: n(
       "Koin Games opens a creator program ahead of Steam Next Fest. Details were given in an AMA on 19 August at 8pm UTC; the recording is on Discord. OriginsMeta has applied.",
       "Koin Games apre un programma per creator in vista dello Steam Next Fest. I dettagli sono stati dati in un AMA il 19 agosto alle 20 UTC; la registrazione è su Discord. OriginsMeta ha fatto richiesta.",
@@ -1774,8 +2078,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "community-open",
     image: "/media/news-community-open.webp",
+    guides: ["roadmap-and-dates", "play-the-demo"],
     date: "2026-06-03",
     title: n("Official Discord opens to everyone", "Il Discord ufficiale apre a tutti", "El Discord oficial se abre a todos", "Le Discord officiel s'ouvre à tous"),
+    metaTitle: n("Origins TCG official Discord opens to everyone", "Il Discord ufficiale di Origins TCG apre a tutti", "El Discord oficial de Origins TCG se abre a todos"),
+    description: n(
+      "The official Origins TCG Discord, home of the early alpha testers, opens to everyone, with a demo announced as coming soon and a first look at collectibles.",
+      "Il Discord ufficiale di Origins TCG, che ospitava i tester dell'alpha, apre a tutti, con una demo annunciata in arrivo e un primo sguardo ai collezionabili.",
+      "El Discord oficial de Origins TCG, que acogía a los testers de la alfa, se abre a todos, con una demo anunciada y un primer vistazo a los coleccionables.",
+    ),
     summary: n(
       "The server that hosted the early alpha testers opens up, with a demo announced as coming soon and a first look at the collectibles.",
       "Il server che ospitava i tester dell'alpha si apre a tutti, con una demo annunciata in arrivo e un primo sguardo ai collezionabili.",
@@ -1788,8 +2099,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "metal-cards-tease",
     image: "/media/ls-real-collecting.webp",
+    guides: ["collector-economy", "roadmap-and-dates"],
     date: "2026-03-13",
     title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "El CEO adelanta cartas físicas de metal", "Le CEO dévoile des cartes physiques en métal"),
+    metaTitle: n("Origins TCG physical metal cards teased by the CEO", "Carte in metallo di Origins TCG: il teaser del CEO", "Cartas de metal de Origins TCG: el adelanto del CEO"),
+    description: n(
+      "Koin Games CEO Tim Jooste was filmed with metal collectible cards based on Origins TCG. No product or date announced: a signal of intent, nothing more yet.",
+      "Il CEO di Koin Games Tim Jooste è stato filmato con carte da collezione in metallo di Origins TCG. Nessun prodotto né data: per ora solo un'intenzione.",
+      "El CEO de Koin Games, Tim Jooste, fue grabado con cartas coleccionables de metal de Origins TCG. Sin producto ni fecha: por ahora, solo una intención.",
+    ),
     summary: n(
       "Tim Jooste was filmed with metal collectible cards based on the game's IP. No product or date announced: a signal of intent from a digital-first studio.",
       "Tim Jooste è stato filmato con carte da collezione in metallo basate sull'IP del gioco. Nessun prodotto né data annunciati: un segnale di intenzione da uno studio nato digitale.",
@@ -1802,8 +2120,15 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
   {
     slug: "steam-page-live",
     image: "/media/news-steam-page.webp",
+    guides: ["roadmap-and-dates", "play-the-demo"],
     date: "2026-05-06",
     title: n("Steam page live: wishlist open, demo on the way", "Pagina Steam online: wishlist aperta, demo in arrivo", "Página de Steam publicada: lista de deseados abierta y demo en camino", "Page Steam en ligne : wishlist ouverte, démo en route"),
+    metaTitle: n("Origins TCG Steam page live: wishlist open", "Pagina Steam di Origins TCG online: wishlist aperta", "Página de Steam de Origins TCG: lista de deseados abierta"),
+    description: n(
+      "The Origins TCG Steam page goes live and the wishlist opens, with the team's first post: fast tactical matches and collecting modelled on physical TCGs.",
+      "Va online la pagina Steam di Origins TCG e si apre la wishlist, con il primo post del team: partite tattiche veloci e collezione modellata sui TCG fisici.",
+      "La página de Origins TCG en Steam ya está publicada y abre la lista de deseados: partidas tácticas rápidas y coleccionismo inspirado en los TCG físicos.",
+    ),
     summary: n(
       "First Steam post from the team: a trading card game built around fast tactical matches and a collectible system modelled on physical TCGs.",
       "Primo post su Steam del team: un gioco di carte costruito su partite tattiche veloci e un sistema da collezione modellato sui TCG fisici.",

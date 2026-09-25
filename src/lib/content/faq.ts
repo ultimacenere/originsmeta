@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n";
+import type { GuideSlug } from "./guides";
 
 /**
  * FAQ approvate: le risposte che restano. Sono testo scritto e riletto da noi, non generate al momento —
@@ -9,14 +10,17 @@ import type { Locale } from "@/lib/i18n";
  *
  * Come cresce questo file: dalle domande che arrivano davvero. Quando una domanda torna spesso e la risposta
  * regge, si scrive qui in inglese, italiano e spagnolo e smette di costare una chiamata al modello.
- * `cards` e `guides` sono gli slug da collegare sotto la risposta.
+ * `cards` e `guides` sono gli slug da collegare sotto la risposta. `news` (dal 25/09/2026, MQ-06) porta all'articolo
+ * che fa da fonte o da pagina di riferimento, con il testo del link scritto per quella lingua ("Crimson Cup rules",
+ * dalla mappa delle query): le stesse news in ogni lingua, lo controlla `newsMeta.test.ts`.
  */
 export type Faq = {
   id: string;
   q: string;
   a: string;
   cards?: string[];
-  guides?: string[];
+  guides?: GuideSlug[];
+  news?: { slug: string; label: string }[];
 };
 
 const en: Faq[] = [
@@ -37,23 +41,27 @@ const en: Faq[] = [
     q: "What is the Conquest format?",
     a: "You register more than one deck, each with a different Legendary, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, with at least nine cards of difference.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
   },
   {
     id: "crimson-cup",
     q: "When is the Crimson Cup and what do you win?",
     a: "From 20 to 25 October 2026, during Steam Next Fest: three qualifiers of 512 spots each on the 20th, 21st and 22nd, playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total — an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash; the exact prize pool was promised for the week after 24 September. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
   },
   {
     id: "kickstarter",
     q: "When does the Origins TCG Kickstarter start?",
     a: "On 25 September 2026 the demo's main menu showed the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”; Koin Games has not announced the date on Steam or on the official Discord yet. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter AMA of 10 September" }],
   },
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
     a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026, and on 25 September the Italian and Spanish texts too, which are the game's own. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    news: [{ slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" }],
   },
 ];
 
@@ -75,23 +83,27 @@ const it: Faq[] = [
     q: "Come funziona il formato Conquest?",
     a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, con almeno nove carte di differenza.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
   },
   {
     id: "crimson-cup",
     q: "Quando è la Crimson Cup e che cosa si vince?",
     a: "Dal 20 al 25 ottobre 2026, durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22, playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $ — una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro; la ripartizione esatta è promessa per la settimana dopo il 24 settembre. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
   },
   {
     id: "kickstarter",
     q: "Quando parte il Kickstarter di Origins TCG?",
     a: "Il 25 settembre 2026 il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”; Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA sul Kickstarter del 10 settembre" }],
   },
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
     a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026, e il 25 settembre anche i testi in italiano e spagnolo, che sono quelli del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    news: [{ slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" }],
   },
 ];
 
@@ -113,23 +125,27 @@ const es: Faq[] = [
     q: "¿Qué es el formato Conquest?",
     a: "Registras más de un mazo, cada uno con una Legendaria distinta, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, con al menos nueve cartas de diferencia.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
   },
   {
     id: "crimson-cup",
     q: "¿Cuándo es la Crimson Cup y qué se gana?",
     a: "Del 20 al 25 de octubre de 2026, durante el Steam Next Fest: tres clasificatorios de 512 plazas cada uno los días 20, 21 y 22, playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares: una carta promo 1/1 exclusiva del torneo, otras cartas promo, sobres digitales, cajas y cases de sobres Alpha, y dinero en efectivo; el reparto exacto de la bolsa de premios se prometió para la semana siguiente al 24 de septiembre. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar.",
     guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
   },
   {
     id: "kickstarter",
     q: "¿Cuándo empieza el Kickstarter de Origins TCG?",
     a: "El 25 de septiembre de 2026 el menú principal de la demo mostraba el Kickstarter como “Coming soon – Oct 27”, junto a “Preregister for 15% off”; Koin Games aún no ha anunciado la fecha en Steam ni en el Discord oficial. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA del Kickstarter del 10 de septiembre" }],
   },
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
     a: "De la base de datos de la comunidad World of Origins, importadas con un script y contrastadas con las notas oficiales de los parches en Steam. Son los números del parche de la demo del 21 de septiembre de 2026: los costes, las estadísticas y los textos de las 122 cartas de la demo se comprobaron uno por uno en el juego el 22 de septiembre de 2026, y el 25 de septiembre también los textos en italiano y español, que son los del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    news: [{ slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" }],
   },
 ];
 

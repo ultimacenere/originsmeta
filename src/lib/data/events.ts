@@ -1,4 +1,5 @@
 import type { Locale } from "../i18n";
+import type { GuideSlug } from "../content/guides";
 
 type L10n = Record<Locale, string> & { fr?: string };
 
@@ -13,9 +14,17 @@ export type Event = {
   prizes?: L10n;
   text: L10n;
   signup?: { label: L10n; url: string };
+  /** fonte ufficiale dell'annuncio (post Steam, pagina del festival): resta il tasto "Fonte" della scheda */
   source?: string;
   /** slug della guida dedicata all'evento */
-  guide?: string;
+  guide?: GuideSlug;
+  /**
+   * la nostra news con le regole e il formato dell'evento (`news` = slug) e il testo del link nella scheda di
+   * /tournaments, con il nome dell'evento dentro ("Crimson Cup rules"), come l'etichetta di `signup`. Dal 25/09/2026
+   * (MQ-06): un link fisso verso l'articolo sulle regole della Crimson Cup, che prima riceveva link quasi solo dal
+   * blocco "Altre news", a rotazione.
+   */
+  rules?: { news: string; label: L10n };
 };
 
 const n = (en: string, it: string, es: string, fr?: string): L10n => (fr ? { en, it, es, fr } : { en, it, es });
@@ -25,6 +34,8 @@ export const events: Event[] = [
     slug: "next-fest-tournament",
     official: true,
     guide: "steam-next-fest-2026",
+    // testo del link dalla mappa delle query (C12): "Crimson Cup rules" / "regole della Crimson Cup" / "reglas de la Crimson Cup"
+    rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup") },
     start: "2026-10-20",
     end: "2026-10-25",
     title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Torneo del Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
@@ -68,6 +79,8 @@ export const events: Event[] = [
   {
     slug: "big-bobs-playtest-battle",
     official: true,
+    // la news dell'annuncio racconta il formato (primo Conquest, al meglio delle tre, eliminazione diretta)
+    rules: { news: "big-bobs-playtest-battle", label: n("Big Bob's format", "Formato del Big Bob's", "Formato del Big Bob's") },
     start: "2026-08-28",
     title: n("Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle"),
     where: n("Playtest build; brackets on Discord", "Build del playtest; tabelloni su Discord", "Versión del playtest; cuadros en Discord", "Build du playtest ; tableaux sur Discord"),
