@@ -14,7 +14,7 @@ import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
 import { localizedGuide } from "@/lib/community/deckTranslation";
-import { communityPageLabels, editorialAuthor, indexableLocales, relatedDecks } from "@/lib/community/deckQuality";
+import { communityPageLabels, deckIndexing, dropHreflang, editorialAuthor, fillLabel, relatedDecks } from "@/lib/community/deckQuality";
 import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
@@ -91,21 +91,21 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const art: PageMetaOptions = cover ? { imageSize: { width: 1200, height: 675 }, imageAlt: star ? `${star} · ${deck.name}` : deck.name } : {};
   // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
-  // Dal 26/09/2026 (Ondata 2, RIV-08 e DECKS-02) conta anche la soglia di parole della guida (`indexableLocales` in
+  // Dal 25/09/2026 (Ondata 2, RIV-08 e DECKS-02) conta anche la soglia di parole della guida (`indexableLocales` in
   // deckQuality.ts): sotto soglia nessuna lingua si indicizza, lo stesso criterio di sitemap e ItemList di /decks.
-  const langs = indexableLocales(deck, locales);
+  const indexing = deckIndexing(deck, locales, locale);
   // Title con il nome del mazzo in testa ("Spellcast, Merlin deck", "Spellcast, mazzo di Merlin", "Spellcast, mazo de
   // Merlin"), poi il solo nome, poi il nome accorciato: regole e motivo in `deckTitle` (cardTitles.ts). Un nome che dice
   // già "deck"/"mazzo"/"mazo" non ripete la parola ("Spellcast Deck with Merlin"). Il kicker visibile resta nella pagina.
   const meta = pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
     ...art,
-    languages: langs,
-    noindex: !langs.includes(locale),
+    languages: indexing.languages,
+    noindex: indexing.noindex,
   });
   // Mazzo sotto la soglia: noindex in tutte le lingue e fuori da hreflang. `pageMeta` con un elenco di lingue vuoto le
-  // dichiarerebbe tutte (`alternatesFor`), quindi resta la sola canonical, che punta alla pagina stessa.
-  if (!langs.length) meta.alternates = { canonical: meta.alternates?.canonical };
-  return meta;
+  // dichiarerebbe tutte (`alternatesFor`), quindi resta la sola canonical, che punta alla pagina stessa (`deckIndexing`
+  // e `dropHreflang` in deckQuality.ts, con test).
+  return indexing.hreflang ? meta : dropHreflang(meta);
 }
 
 export default async function CommunityDeckPage({ params }: { params: Params }) {
@@ -130,10 +130,11 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
   // dati di Next condivide (una al minuto), invece di una query per scheda.
   const published = await listPublishedDecks();
-  // Altri mazzi con la stessa Leggendaria, poi i più recenti (DECKS-11, 26/09/2026): prima erano gli 8 più recenti, e
-  // i link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts).
+  // Altri mazzi con la stessa Leggendaria, poi altri mazzi (DECKS-11, 25/09/2026): prima erano gli 8 più recenti, e i
+  // link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts): i vicini in
+  // ordine di pubblicazione, così ogni mazzo riceve link, e prima i mazzi che si indicizzano.
   const related = relatedDecks(deck, published);
-  // L'autore editoriale dietro l'account, se authors.ts dichiara uno dei suoi mazzi (Davdas: luigidavdasragoni).
+  // L'autore editoriale dietro l'account, se authors.ts lo dichiara (nome utente o mazzi: Davdas è luigidavdasragoni).
   const editorial = editorialAuthor(
     authors,
     [deck.slug, ...published.filter((x) => x.owner === deck.owner).map((x) => x.slug)],
@@ -151,10 +152,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
 
-  // Dati strutturati costruiti in src/lib/jsonld/deck.ts (26/09/2026, DECKS-08, DECKS-10, GEO-14): l'autore è il Person
-  // del suo profilo /u (stesso `@id` della pagina profilo, `sameAs` verso /authors quando è un autore editoriale), la
-  // headline è il title della SERP, la Leggendaria e le carte rimandano alle loro schede. Il voto non si dichiara più
-  // come AggregateRating: il perché è nel commento di `deckArticle`.
+  // Dati strutturati costruiti in src/lib/jsonld/deck.ts (25/09/2026, DECKS-08, DECKS-10, GEO-14): l'autore è la stessa
+  // Person del suo profilo /u (un `@id` per tutte le lingue; per un autore editoriale quello della sua pagina autore),
+  // la headline è il title della SERP, la Leggendaria e le carte rimandano alle entità delle loro schede. Il voto non si
+  // dichiara più come AggregateRating: il perché è nel commento di `deckArticle`.
   const article = deckArticle({
     locale,
     pageUrl,
@@ -165,10 +166,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
     // `image` è obbligatoria per i rich result: la copertina della Leggendaria, altrimenti l'immagine social del sito.
     image: legendary?.cover ? `${siteUrl}${legendary.cover}` : `${siteUrl}${defaultOgImage}`,
     author: communityPerson({ locale, username: deck.profile?.username, name: author, editorial }),
-    legendary,
+    legendary: legendary ? { slug: legendary.slug, key: legendary.key, name: legendary.name } : undefined,
     cards: knownCards.flatMap((s) => {
       const card = getCard(s);
-      return card ? [{ slug: card.slug, name: card.name }] : [];
+      return card ? [{ slug: card.slug, key: card.key, name: card.name }] : [];
     }),
   });
   return (
@@ -252,7 +253,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </span>
         </div>
 
-        {/* La guida di OriginsMeta a questo mazzo, in alto e ben visibile (MQ-13 e DECKS-11, 26/09/2026): la guida porta
+        {/* La guida di OriginsMeta a questo mazzo, in alto e ben visibile (MQ-13 e DECKS-11, 25/09/2026): la guida porta
             già alla scheda con il tasto principale, e la scheda prima la citava solo in fondo, dopo l'articolo. Le due
             pagine si dividono le ricerche: la scheda il nome del mazzo, la guida "{Leggendaria} deck guide". */}
         {guides.length ? (
@@ -435,11 +436,12 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         </section>
       ) : null}
 
-      {/* Altri mazzi: prima quelli con la stessa Leggendaria, poi i più recenti (DECKS-11). Il titolo del secondo blocco
-          resta "Altri mazzi di Origins" quando il primo non c'è. */}
+      {/* Altri mazzi: prima quelli con la stessa Leggendaria, poi gli altri (DECKS-11). Il titolo del secondo blocco resta
+          "Altri mazzi di Origins" quando il primo non c'è. Il nome della Leggendaria può essere testo dell'autore (una
+          carta scritta a mano): `fillLabel` non interpreta i `$` di `replace`. */}
       {[
-        { key: "same", title: L.sameLegendary.replace("{legendary}", legendaryName(deck) ?? deck.legendary ?? ""), list: related.sameLegendary },
-        { key: "recent", title: related.sameLegendary.length ? L.recentAfter : c.others, list: related.recent },
+        { key: "same", title: fillLabel(L.sameLegendary, { legendary: legendaryName(deck) ?? deck.legendary ?? "" }), list: related.sameLegendary },
+        { key: "others", title: related.sameLegendary.length ? L.moreAfter : c.others, list: related.others },
       ].map((block) =>
         block.list.length ? (
           <section key={block.key} className="mt-10">

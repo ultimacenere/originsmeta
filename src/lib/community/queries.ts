@@ -1,8 +1,9 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { locales, type Locale } from "@/lib/i18n";
+import { locales } from "@/lib/i18n";
 import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Guide, type Profile } from "./types";
 import type { DeckTranslations } from "./deckTranslation";
-import { indexableLocales } from "./deckQuality";
+import { sitemapDecks, type SitemapDeck } from "./deckQuality";
+import type { TierKind } from "@/lib/tiercode";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -19,7 +20,7 @@ const DECK_SELECT =
   "id, slug, owner, name, legendary, cards, custom_cards, archetype, deck_types, video_url, guide, code_om, status, created_at, updated_at, profile:profiles!community_decks_owner_fkey(username, display_name, avatar_url, badge)";
 
 /*
- * "Nessun risultato" e "errore" non sono la stessa cosa (DECKS-12, Ondata 2 del piano SEO/GEO, 26/09/2026).
+ * "Nessun risultato" e "errore" non sono la stessa cosa (DECKS-12, Ondata 2 del piano SEO/GEO, 25/09/2026).
  * Prima ogni lettura trasformava un errore del database o della rete in una lista vuota o in null: durante una
  * rigenerazione ISR la scheda di un mazzo diventava una 404 (`notFound()`), /decks un hub con 0 mazzi, i voti andavano
  * a 0 e la sitemap perdeva mazzi e profili fino alla rigenerazione successiva (un minuto per le schede, un'ora per la
@@ -29,8 +30,10 @@ const DECK_SELECT =
  * Lista vuota e null restano per le letture riuscite che non trovano nulla, e per la community spenta
  * (NEXT_PUBLIC_COMMUNITY=off, `supabasePublic()` null). Vale per le letture pubbliche; il pannello privato /account
  * (`listUserDecks`, dinamico) resta com'era.
- * Effetto collaterale voluto: una build con Supabase irraggiungibile fallisce invece di mettere online un /decks vuoto,
- * e su Vercel resta attivo il deploy precedente.
+ * Effetto collaterale voluto: una build con Supabase irraggiungibile (rete assente, progetto del piano Free in pausa)
+ * fallisce invece di mettere online un /decks vuoto, e su Vercel resta attivo il deploy precedente. Per una build senza
+ * rete (worktree offline, sandbox) si spegne la community: NEXT_PUBLIC_COMMUNITY=off, `supabasePublic()` null e liste
+ * vuote come prima.
  */
 
 /** Errore di una lettura della community: interrompe la generazione della pagina invece di renderla vuota. */
@@ -119,7 +122,7 @@ export async function getCommunityDeck(slug: string): Promise<CommunityDeck | nu
 /**
  * Tutti i mazzi di un utente, anche nascosti e privati (draft): richiede il client con la sessione dell'utente.
  * È la sola lettura del pannello privato /account, renderizzato a ogni richiesta e fuori da ISR e sitemap: qui un
- * errore resta una lista vuota come prima del 26/09/2026 (la pagina di errore di Next non spiegherebbe di più).
+ * errore resta una lista vuota come prima del 25/09/2026 (la pagina di errore di Next non spiegherebbe di più).
  */
 export async function listUserDecks(client: Db, userId: string): Promise<CommunityDeck[]> {
   const { data, error } = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("owner", userId).order("updated_at", { ascending: false }));
@@ -169,7 +172,7 @@ type UserRow = { updated_at: string; profile: { username: string | null } | null
 
 /**
  * Nomi utente delle pagine profilo da mettere in sitemap: chi ha almeno un mazzo pubblicato o una tier list salvata,
- * la stessa regola del noindex della pagina (`profileIndexable` in deckQuality.ts, 26/09/2026: prima c'erano solo
+ * la stessa regola del noindex della pagina (`profileIndexable` in deckQuality.ts, 25/09/2026: prima c'erano solo
  * i profili con un mazzo, e quelli con le sole tier list restavano fuori pur essendo indicizzabili).
  * La data è la più recente fra mazzi e tier list. Con un errore lancia: la sitemap resta quella di prima.
  */
@@ -200,17 +203,39 @@ export async function listPublicProfiles(): Promise<{ username: string; updated_
 }
 
 /**
- * Slug dei mazzi da mettere in sitemap, con le lingue in cui la scheda si indicizza (`indexableLocales` in
- * deckQuality.ts): quella dell'autore più le traduzioni aggiornate (25/09/2026), e solo se la guida supera la soglia
- * di parole (26/09/2026). I mazzi sotto soglia non ci sono proprio: un elenco `locales` vuoto, nella sitemap,
- * vorrebbe dire "tutte le lingue". Le altre versioni delle schede sono noindex. Con un errore lancia.
+ * I mazzi per la sitemap (`sitemapDecks` in deckQuality.ts, con test): `decks` sono i mazzi da elencare, ognuno con le
+ * lingue in cui la scheda si indicizza (quella dell'autore più le traduzioni aggiornate, 25/09/2026, e solo se la guida
+ * supera la soglia di parole); `latest` è la data dell'ultimo mazzo pubblicato o modificato, anche sotto soglia, per il
+ * lastmod di /decks e delle tier list, che mostrano tutti i mazzi. Con un errore lancia.
  */
-export async function listPublishedSlugs(): Promise<{ slug: string; updated_at: string; locales: Locale[] }[]> {
+export async function listPublishedDeckIndex(): Promise<{ decks: SitemapDeck[]; latest?: string }> {
   const client = supabasePublic();
-  if (!client) return [];
+  if (!client) return { decks: [] };
   const res = await readWithTranslations("slug, updated_at, guide", (sel) =>
     client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(1000),
   );
-  const rows = rowsOrThrow<{ slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }>("listPublishedSlugs", res);
-  return rows.map((r) => ({ slug: r.slug, updated_at: r.updated_at, locales: indexableLocales(r, locales) })).filter((r) => r.locales.length > 0);
+  const rows = rowsOrThrow<{ slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }>("listPublishedDeckIndex", res);
+  return sitemapDecks(rows, locales);
+}
+
+/**
+ * Slug dei mazzi da mettere in sitemap, con le lingue indicizzabili: i soli `decks` di `listPublishedDeckIndex`. I mazzi
+ * sotto soglia non ci sono proprio: un elenco `locales` vuoto, nella sitemap, vorrebbe dire "tutte le lingue". Le altre
+ * versioni delle schede sono noindex. Con un errore lancia.
+ */
+export async function listPublishedSlugs(): Promise<SitemapDeck[]> {
+  return (await listPublishedDeckIndex()).decks;
+}
+
+/**
+ * I tipi delle tier list pubblicate di un utente (una per tipo), per decidere title, description e noindex del suo
+ * profilo. Con un errore lancia: la lettura completa di `listPublicTierLists` (tierlists.ts) trasforma ancora un errore
+ * in "nessuna tier list", e un profilo con le sole tier list finirebbe noindex e senza hreflang fino alla rigenerazione
+ * successiva, proprio il guasto di DECKS-12 (revisione dell'Ondata 2). Una colonna sola, una query leggera.
+ */
+export async function listPublicTierListKinds(userId: string): Promise<TierKind[]> {
+  const client = supabasePublic();
+  if (!client) return [];
+  const res = await client.from("tier_lists").select("kind").eq("owner", userId).eq("status", PUBLISHED).order("kind");
+  return rowsOrThrow<{ kind: TierKind }>("listPublicTierListKinds", res).map((r) => r.kind);
 }

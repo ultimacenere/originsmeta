@@ -4,36 +4,43 @@ import { organizationId, videoGameId } from "@/components/JsonLd";
 /**
  * Dati strutturati della community: la scheda di un mazzo (Article) e la pagina pubblica di chi lo ha pubblicato
  * (ProfilePage), con la stessa persona nei due posti (Ondata 2 del piano SEO/GEO, rilievi DECKS-08, DECKS-10 e
- * GEO-14, 26/09/2026). Convenzione degli `@id` quella di `src/components/JsonLd.tsx`: i nodi legati a una pagina si
- * chiamano `<indirizzo della pagina>#<nome>`, e alle entità del sito (organizzazione, gioco) si rimanda per `@id`.
+ * GEO-14, 25/09/2026). Il modulo legge da `src/components/JsonLd.tsx` solo gli `@id` delle entità del sito.
  *
- * Prima l'autore del mazzo era `{ "@type": "Person", name }` senza url né `@id`: nel grafo non era la persona del
- * suo profilo, e i mazzi di Davdas non erano collegati alla sua pagina autore. Ora:
- * - l'autore è un Person con `@id` stabile `<…>/u/<username>#person` e `url` del profilo, lo stesso nodo che il
- *   profilo dichiara come `mainEntity`;
- * - se `src/lib/data/authors.ts` dichiara che quei mazzi li ha pubblicati un autore editoriale (`communityDecks`), il
- *   Person ha `sameAs` verso la pagina /authors/<slug>: è la pagina che dice chi è quella persona. Nessun legame che
- *   i dati non dicano;
- * - l'Article parla del gioco e della Leggendaria (`about`) e nomina le carte del mazzo (`mentions`), con gli stessi
- *   `@id` delle schede carta (`<…>/cards/<slug>#card`).
+ * Convenzione degli `@id` quella del pacchetto LD della stessa ondata (src/lib/jsonld/entities.ts, TOOL-09): le entità
+ * reali hanno un `@id` unico per tutto il dominio e per tutte le lingue, `${siteUrl}/#<nome>`; i nodi legati a una
+ * pagina si chiamano `<indirizzo della pagina>#<nome>`.
+ * - Autore editoriale (authors.ts lo lega all'account, `editorialAuthor`): è la Person della sua pagina autore,
+ *   `${siteUrl}/#person-<slug>` (`personId` di LD), con nome e pagina autore come nel `personRef` delle news e delle
+ *   guide. Nessun `sameAs` verso /authors: `sameAs` serve per i profili fuori dal sito, e due nodi della stessa persona
+ *   si uniscono con lo stesso `@id` (verificatore di DECKS-10).
+ * - Iscritto: `${siteUrl}/#user-<nome utente>`, uno solo per le tre lingue (prima `…/<lingua>/u/<nome>#person`, tre
+ *   entità per la stessa persona), con `url` del profilo nella lingua della pagina.
+ * - Carte: lo stesso `@id` della scheda carta, unico per le tre lingue (`${siteUrl}/#card-<ID ufficiale>`, o lo slug
+ *   senza ID: `cardEntityId` del pacchetto CARDS in src/lib/jsonld/card.ts).
+ * `personId` e `cardEntityId` qui sotto ripetono le formule di quei due moduli, che su questo ramo non ci sono ancora:
+ * dopo l'integrazione si importano da lì (note del pacchetto DECKS).
  */
 
 type Json = Record<string, unknown>;
 
-/** `@id` del Person di un iscritto: lo stesso sulla scheda dei suoi mazzi e sulla sua pagina /u/<username>. */
-export function communityPersonId(locale: Locale, username: string): string {
-  return `${siteUrl}${href(locale, `/u/${username}`)}#person`;
-}
+/** `@id` della Person di un autore editoriale: stessa formula di `personId` in src/lib/jsonld/entities.ts (pacchetto LD). */
+const personId = (slug: string): string => `${siteUrl}/#person-${slug}`;
 
-/** `@id` del nodo di una scheda carta (lo dichiara la pagina /cards/<slug>). */
-export function cardNodeId(locale: Locale, slug: string): string {
-  return `${siteUrl}${href(locale, `/cards/${slug}`)}#card`;
-}
+/** `@id` di un iscritto della community senza pagina autore: uno per tutte le lingue, come le altre entità del sito. */
+const memberId = (username: string): string => `${siteUrl}/#user-${username}`;
+
+/** `@id` di una carta: stessa formula di `cardEntityId` in src/lib/jsonld/card.ts (pacchetto CARDS). */
+const cardEntityId = (card: { key?: string; slug: string }): string => `${siteUrl}/#card-${card.key ?? card.slug}`;
 
 /** Autore editoriale collegato a un account (vedi `editorialAuthor` in src/lib/community/deckQuality.ts). */
 export type EditorialLink = { slug: string; name: string };
 
-/** Person di un iscritto. Senza nome utente (profilo incompleto) resta il solo nome, senza `@id` inventato. */
+/**
+ * Person di chi ha pubblicato un mazzo, la stessa sulla scheda dei suoi mazzi e sulla sua pagina /u/<username>.
+ * Con un autore editoriale è la Person della pagina autore (`@id`, nome completo e `url` di /authors/<slug>, come il
+ * `personRef` di LD); altrimenti quella dell'iscritto, con l'`url` del suo profilo. Senza nome utente (profilo
+ * incompleto) resta il solo nome, senza `@id` inventato.
+ */
 export function communityPerson({
   locale,
   username,
@@ -48,21 +55,16 @@ export function communityPerson({
   /** campi in più della sola pagina profilo (alternateName, identifier, image…) */
   extra?: Json;
 }): Json {
+  if (editorial) {
+    return { "@type": "Person", "@id": personId(editorial.slug), name: editorial.name, url: `${siteUrl}${href(locale, `/authors/${editorial.slug}`)}`, ...extra };
+  }
   if (!username) return { "@type": "Person", name };
-  const node: Json = {
-    "@type": "Person",
-    "@id": communityPersonId(locale, username),
-    name,
-    url: `${siteUrl}${href(locale, `/u/${username}`)}`,
-    ...extra,
-  };
-  if (editorial) node.sameAs = [`${siteUrl}${href(locale, `/authors/${editorial.slug}`)}`];
-  return node;
+  return { "@type": "Person", "@id": memberId(username), name, url: `${siteUrl}${href(locale, `/u/${username}`)}`, ...extra };
 }
 
-/** Una carta citata dal mazzo: rimando al nodo della sua scheda, con nome e indirizzo per chi non segue gli `@id`. */
-function cardRef(locale: Locale, card: { slug: string; name: string }): Json {
-  return { "@type": "CreativeWork", "@id": cardNodeId(locale, card.slug), name: card.name, url: `${siteUrl}${href(locale, `/cards/${card.slug}`)}` };
+/** Una carta citata dal mazzo: rimando all'entità della sua scheda, con nome e indirizzo per chi non segue gli `@id`. */
+function cardRef(locale: Locale, card: { slug: string; key?: string; name: string }): Json {
+  return { "@type": "CreativeWork", "@id": cardEntityId(card), name: card.name, url: `${siteUrl}${href(locale, `/cards/${card.slug}`)}` };
 }
 
 /**
@@ -71,7 +73,7 @@ function cardRef(locale: Locale, card: { slug: string; name: string }): Json {
  * `headline` è il title della SERP, lo stesso testo del `<title>` (`pageTitle(deckTitle(…))`), così motori e
  * assistenti leggono lo stesso nome della pagina.
  *
- * Niente `aggregateRating`, per scelta (26/09/2026). Google mostra le stelline solo su pochi tipi (Product, Recipe,
+ * Niente `aggregateRating`, per scelta (25/09/2026). Google mostra le stelline solo su pochi tipi (Product, Recipe,
  * Game, SoftwareApplication, Book, Course, Event, LocalBusiness, Movie…): su un Article il voto non produce nessun
  * rich result. Spostarlo su Product o Game vorrebbe dire dichiarare che un elenco di carte scritto da un giocatore è un
  * prodotto o un gioco, cioè dati strutturati che non descrivono la pagina, contro le linee guida. Il voto resta dove
@@ -98,9 +100,9 @@ export function deckArticle({
   image: string;
   author: Json;
   /** la Leggendaria, quando è una carta del nostro database (una carta scritta a mano non ha una scheda) */
-  legendary?: { slug: string; name: string };
+  legendary?: { slug: string; key?: string; name: string };
   /** le carte base del mazzo che hanno una scheda, nell'ordine del mazzo */
-  cards: readonly { slug: string; name: string }[];
+  cards: readonly { slug: string; key?: string; name: string }[];
 }): Json {
   const node: Json = {
     "@context": "https://schema.org",
@@ -127,19 +129,23 @@ export function deckArticle({
 }
 
 /**
- * ProfilePage della pagina pubblica di un iscritto: `mainEntity` è lo stesso Person della firma dei suoi mazzi, con
- * immagine, data di iscrizione e numero di mazzi pubblicati (`agentInteractionStatistic`, WriteAction), i campi che
- * Google legge sui profili (documentazione "Profile page structured data").
+ * ProfilePage della pagina pubblica di un iscritto (`<indirizzo>#page`, come le pagine autore di LD): `mainEntity` è
+ * la stessa Person della firma dei suoi mazzi, con immagine, data di iscrizione e numero di mazzi pubblicati
+ * (`agentInteractionStatistic`, WriteAction), i campi che Google legge sui profili (documentazione "Profile page
+ * structured data"). Si chiama così, e non `profilePage`, per non confondersi con il `profilePage` delle pagine autore
+ * che JsonLd.tsx riesporta dal pacchetto LD.
  */
-export function profilePage({
+export function communityProfilePage({
   locale,
   pageUrl,
+  name,
   person,
   created,
   decks,
 }: {
   locale: Locale;
   pageUrl: string;
+  name: string;
   person: Json;
   created?: string;
   decks: number;
@@ -147,7 +153,8 @@ export function profilePage({
   const node: Json = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "@id": `${pageUrl}#profile`,
+    "@id": `${pageUrl}#page`,
+    name,
     url: pageUrl,
     inLanguage: locale,
     isPartOf: { "@id": `${siteUrl}/${locale}#website` },
