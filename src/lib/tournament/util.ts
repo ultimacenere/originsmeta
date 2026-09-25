@@ -1,5 +1,6 @@
 import { supabaseUrl } from "@/lib/supabase/env";
 import { isLocale } from "@/lib/i18n";
+import { RULES } from "@/lib/deckrules";
 import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
@@ -74,8 +75,9 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
   const conquest = deckMode === "conquest";
   const conquestDecks = conquest ? Number(fd.get("conquest_decks")) : CONQUEST_DECKS_RANGE.default;
   if (!Number.isInteger(conquestDecks) || conquestDecks < CONQUEST_DECKS_RANGE.min || conquestDecks > CONQUEST_DECKS_RANGE.max) return { ok: false, error: "conquestDecks" };
-  const conquestMin = conquest ? Number(fd.get("conquest_min_different")) : 9;
-  if (!Number.isInteger(conquestMin) || conquestMin < 0 || conquestMin > 25) return { ok: false, error: "conquestMin" };
+  // carte uniche fra due mazzi: un mazzo ne ha 13, quindi più di 13 non avrebbe senso
+  const conquestMin = conquest ? Number(fd.get("conquest_min_different")) : RULES.conquestMinDifferent;
+  if (!Number.isInteger(conquestMin) || conquestMin < 0 || conquestMin > 13) return { ok: false, error: "conquestMin" };
 
   const bestOf = Number(fd.get("best_of"));
   if (!(BEST_OF_OPTIONS as readonly number[]).includes(bestOf)) return { ok: false, error: "bestOf" };

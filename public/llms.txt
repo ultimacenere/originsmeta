@@ -10,6 +10,16 @@ Card data on this site follows the latest published patch — at the time of wri
 
 Community decks are written by players in their own language; the site translates each deck guide automatically into the other two languages and says so on the translated page, with a link to the author's original.
 
+## Key facts (checked on 25 September 2026)
+
+- Release: the Steam store page says "Q4 2026", with no exact date. No early access has been announced.
+- Demo: the free Demo 2.0 has been on Steam since 21 September 2026, when the first big demo update arrived (new interface and board, test packs, voice lines, balance changes). Ranked mode opens with the Steam Next Fest, 19–26 October 2026. Guide: [How to play the demo](https://originsmeta.com/en/guides/play-the-demo).
+- Crimson Cup: the official tournament of the Next Fest, from 20 to 25 October 2026, played on the demo. The format is three-deck Conquest with at least 8 unique cards between each pair of decks, and decklists stay hidden until the top 4. Rules: [Crimson Cup format and check-in](https://originsmeta.com/en/news/crimson-cup-format-check-in).
+- Kickstarter: the main menu of the demo shows it as "Coming soon – Oct 27" (read on 25 September 2026). No official post confirms the date yet. Pre-registration is open: a refundable $1 deposit gives 15% off, and the Alpha boxes are preorder-only. Guide: [Origins TCG Kickstarter](https://originsmeta.com/en/guides/origins-tcg-kickstarter).
+- Languages: Steam lists English, French, Italian and German for the interface, with full audio in English only. The demo also has the interface and the card texts in Spanish.
+- Deck rules: one Legendary plus twelve different base cards, two copies each, for 25 cards.
+- Dates and roadmap: [Roadmap and dates](https://originsmeta.com/en/guides/roadmap-and-dates). Next Fest: [Steam Next Fest 2026 guide](https://originsmeta.com/en/guides/steam-next-fest-2026).
+
 ## English pages
 
 - [Home](https://originsmeta.com/en): what is new across the site — news, calendar, tier list and MetaShifting.

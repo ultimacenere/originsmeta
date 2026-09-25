@@ -2,9 +2,11 @@
  * Regole di costruzione del mazzo di Origins TCG (playtest 2026).
  * Fonte: AMA del team Koin Games (recap pubblico): "deck construction is 13 cards, so that's 12 cards and one
  * legendary. And the 12 cards automatically get two copies... only one copy of the legendary" → 25 carte in gioco.
- * Il formato Conquest (torneo del Next Fest): più mazzi con Leggendarie diverse e "at least 9 cards have to differ
- * from deck to deck" (post Steam del 25/08/2026). Il modo esatto di contare le carte diverse va confermato con
- * il regolamento del torneo: qui si contano le carte fisiche (2 copie per carta base, 1 per la Leggendaria).
+ * Il formato Conquest: più mazzi con Leggendarie diverse. Big Bob's Playtest Battle (post Steam del 25/08/2026)
+ * chiedeva "at least 9 cards have to differ from deck to deck"; la Crimson Cup (annuncio del 24/09/2026) chiede
+ * "almeno 8 carte uniche fra ogni coppia di mazzi". Da decisione di Pierluigi (analisi del 25/09/2026) il builder e
+ * i tornei contano le carte uniche: ogni carta vale una volta a prescindere dalle copie, Leggendaria compresa,
+ * quindi con 13 carte per mazzo due mazzi possono averne al massimo 5 in comune.
  */
 export const RULES = {
   legendarySlots: 1,
@@ -13,7 +15,8 @@ export const RULES = {
   get deckSize() {
     return this.legendarySlots + this.distinctCards * this.copiesPerCard;
   },
-  conquestMinDifferent: 9,
+  /** carte uniche minime fra due mazzi (Crimson Cup); i tornei possono sceglierne un altro valore, da 0 a 13 */
+  conquestMinDifferent: 8,
   conquestDecks: 3,
 } as const;
 
@@ -78,12 +81,11 @@ export function physicalCards(deck: DeckState): Map<string, number> {
   return m;
 }
 
-/** Numero di carte fisiche di A che non compaiono in B (con le stesse copie). */
+/** Carte uniche di A (Leggendaria compresa) che non compaiono in B: ogni carta conta una volta, a prescindere dalle copie. */
 export function differentCards(a: DeckState, b: DeckState): number {
-  const pa = physicalCards(a);
-  const pb = physicalCards(b);
+  const pb = new Set(physicalCards(b).keys());
   let diff = 0;
-  for (const [slug, n] of pa) diff += Math.max(0, n - (pb.get(slug) ?? 0));
+  for (const slug of physicalCards(a).keys()) if (!pb.has(slug)) diff++;
   return diff;
 }
 

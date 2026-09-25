@@ -394,19 +394,31 @@ export default async function Home({ params }: { params: LocaleParams }) {
             <div>
               <SectionHead title={d.home.statusTitle} />
               <dl className="grid grid-cols-2 gap-3">
+                {/* Ogni dato porta alla guida che lo spiega (analisi SEO del 25/09/2026): la home è la pagina più
+                    linkata del sito e le guide evergreen avevano 2–5 link interni. L'ultima riga, se dispari, va a
+                    tutta larghezza. */}
                 {(
                   [
-                    [d.home.status.demo, d.home.status.demoValue],
+                    [d.home.status.demo, d.home.status.demoValue, "/guides/play-the-demo"],
                     [d.home.status.reviews, d.home.status.reviewsValue],
                     [d.home.status.matches, d.home.status.matchesValue],
-                    [d.home.status.launch, d.home.status.launchValue],
-                    [d.home.status.mobile, d.home.status.mobileValue],
-                    [d.home.status.languages, d.home.status.languagesValue],
-                  ] as [string, string][]
-                ).map(([k, v]) => (
-                  <div key={k} className="felt-panel p-4">
+                    [d.home.status.launch, d.home.status.launchValue, "/guides/roadmap-and-dates"],
+                    [d.home.status.mobile, d.home.status.mobileValue, "/guides/roadmap-and-dates"],
+                    [d.home.status.languages, d.home.status.languagesValue, "/guides/play-the-demo"],
+                    [d.home.status.kickstarter, d.home.status.kickstarterValue, "/guides/origins-tcg-kickstarter"],
+                  ] as [string, string, string?][]
+                ).map(([k, v, to], i, all) => (
+                  <div key={k} className={`felt-panel p-4${i === all.length - 1 && all.length % 2 ? " col-span-2" : ""}`}>
                     <dt className="kicker text-chalk-muted">{k}</dt>
-                    <dd className="mt-1 font-display text-lg font-bold text-sky">{v}</dd>
+                    <dd className="mt-1 font-display text-lg font-bold text-sky">
+                      {to ? (
+                        <Link href={href(locale, to)} className="underline decoration-mint/50 underline-offset-4 hover:text-mint">
+                          {v}
+                        </Link>
+                      ) : (
+                        v
+                      )}
+                    </dd>
                   </div>
                 ))}
               </dl>

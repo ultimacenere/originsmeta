@@ -25,11 +25,10 @@ export function generateStaticParams() {
 
 /**
  * Data di prima pubblicazione: `updated` cambia a ogni revisione, quindi da solo riscriverebbe anche
- * datePublished. Il campo `published` non esiste ancora nel tipo Guide: appena verrà aggiunto questa
- * lettura lo userà, senza altre modifiche.
+ * datePublished. `published` lo mette `getGuides` (guides.ts, tabella `publishedOn`).
  */
 function guidePublished(g: Guide): string {
-  return (g as Guide & { published?: string }).published ?? g.updated;
+  return g.published ?? g.updated;
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {

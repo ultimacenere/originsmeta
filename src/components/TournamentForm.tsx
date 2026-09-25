@@ -9,6 +9,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, bestOfLabel, fill, type DeckMode, type Visibility } from "@/lib/tournament/types";
 import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
 import { useMounted } from "@/lib/useMounted";
+import { RULES } from "@/lib/deckrules";
 import { shrinkImage } from "@/lib/shrinkImage";
 
 /** Valori attuali per la modifica (pagina di gestione). */
@@ -266,7 +267,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
               </label>
               <label className="block text-sm">
                 <span className="text-pale-muted">{c.conquestMin}</span>
-                <input type="number" name="conquest_min_different" min={0} max={25} defaultValue={initial?.conquest_min_different ?? 9} disabled={lockRules} className={inputCls} />
+                <input type="number" name="conquest_min_different" min={0} max={13} defaultValue={initial?.conquest_min_different ?? RULES.conquestMinDifferent} disabled={lockRules} className={inputCls} />
               </label>
             </div>
           ) : null}

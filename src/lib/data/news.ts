@@ -1604,6 +1604,13 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "El 10 de septiembre Koin Games respondió en el Discord oficial a las preguntas sobre el próximo Kickstarter. La fecha de la campaña aún no se ha anunciado; la página oficial de prerregistro ofrece un 15 % de descuento en el lanzamiento a cambio de un depósito de 1 dólar, reembolsable por completo antes del lanzamiento. La Origins Myths & Legends Alpha Edition se compone de sobres collector de 5 cartas (con al menos una Rara o superior garantizada), cajas de 24 sobres y cases de 6 cajas; las cajas y los cases solo se venden en preventa y la tirada no se repetirá. Las cartas se intercambian en el Mercado de la Comunidad de Steam; la apertura de sobres en dispositivos móviles está prevista para 2027.",
       "Le 10 septembre, Koin Games a répondu sur le Discord officiel aux questions sur le Kickstarter à venir. La date de la campagne n'est pas annoncée ; la page officielle de préinscription offre 15 % de réduction au lancement pour un dépôt de 1 dollar, remboursable avant le lancement. L'Alpha Edition Origins Myths & Legends se compose de packs collector de 5 cartes (au moins une Rare ou mieux garantie), de boîtes de 24 packs et de caisses de 6 boîtes ; boîtes et caisses sont en précommande uniquement, sans réimpression. Les cartes s'échangent sur le Marché de la communauté Steam ; l'ouverture de packs sur mobile est prévue pour 2027.",
     ),
+    metaTitle: n("Kickstarter AMA: Alpha boxes are preorder-only", "AMA Kickstarter: box Alpha solo in preordine", "AMA Kickstarter: cajas Alpha solo en preventa"),
+    description: n(
+      "Origins TCG Kickstarter AMA of 10 September: 15% off for a refundable 1 dollar deposit, preorder-only Alpha boxes. The date and every update are in our guide.",
+      "L'AMA sul Kickstarter di Origins TCG del 10 settembre: 15% di sconto con 1 dollaro rimborsabile e box Alpha solo in preordine. Data e novità nella guida.",
+      "AMA del Kickstarter de Origins TCG del 10 de septiembre: 15 % de descuento por 1 dólar reembolsable y cajas Alpha en preventa. Fecha y novedades, en la guía.",
+    ),
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
     url: "https://founder.origins-tcg.com/",
     source: "press",
   },
