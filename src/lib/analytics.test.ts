@@ -278,6 +278,10 @@ describe("indirizzi", () => {
     assert.equal(A.stripTrackingParams("https://originsmeta.com/it/cards?q=merlin&utm_source=discord"), "https://originsmeta.com/it/cards?q=merlin&utm_source=discord");
     assert.equal(A.stripTrackingParams("https://originsmeta.com/it/tier-list/create#TL1?staff=on"), "https://originsmeta.com/it/tier-list/create#TL1?staff=on", "un ? nel frammento non è una query");
   });
+  test("discordUtm: gli stessi UTM degli annunci della GitHub Action", () => {
+    assert.equal(A.discordUtm("deck", "community-decks"), "utm_source=discord&utm_medium=social&utm_campaign=deck&utm_content=community-decks");
+    assert.equal(A.discordUtm("tournament", "tournaments-feed"), "utm_source=discord&utm_medium=social&utm_campaign=tournament&utm_content=tournaments-feed");
+  });
   test("staffParam: off (o 0) spegne, ogni altro valore è un codice da verificare", () => {
     assert.deepEqual(A.staffParam("?staff=off"), { off: true });
     assert.deepEqual(A.staffParam("?x=1&staff=OFF"), { off: true });

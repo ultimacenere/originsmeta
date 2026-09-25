@@ -661,6 +661,18 @@ export function consumeAuthSignal(): void {
   }
 }
 
+/* ---------- UTM dei messaggi Discord mandati dal sito (MIS-07) ---------- */
+
+/**
+ * Query con gli UTM dei link che il sito manda da sé su Discord (mazzi pubblicati in #community-decks, tornei in
+ * #tournaments-feed): gli stessi valori degli annunci della GitHub Action (`withUtm` in scripts/discord-announce.mjs),
+ * utm_source=discord, utm_medium=social, campagna = tipo di contenuto, content = canale senza "#". Funzione pura:
+ * la usano anche i moduli del server (src/lib/community/discordDeck.ts, src/lib/tournament/notify.ts).
+ */
+export function discordUtm(campaign: string, content: string): string {
+  return new URLSearchParams({ utm_source: "discord", utm_medium: "social", utm_campaign: campaign, utm_content: content }).toString();
+}
+
 /* ---------- ricerca interna (MIS-13) ---------- */
 
 /**
