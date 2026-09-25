@@ -387,10 +387,13 @@
     background: #a9e6f7;
     color: #b3003c;
   }
-  /* Creator (25/09/2026): viola pieno, vicino all'Influencer ma senza gradiente; il bianco passa a 5,7:1. */
+  /* Autore (25/09/2026, rinominato da "Creator" su richiesta di Pierluigi: "Creator" era troppo vicino a
+     Influencer e suonava come una garanzia del sito sulla qualità di chi scrive). Celeste del sito (--color-sky,
+     il cristallo del mana) con il testo scuro: 9:1. Resta distinguibile dal Pro, che è celeste pallido con
+     scritta rossa, perché qui il fondo è pieno e saturo e il testo è scuro. */
   .badge-creator {
-    background: #7c3aed;
-    color: #fff;
+    background: var(--color-sky);
+    color: var(--color-ink);
   }
   /* Influencer: lo stesso gradiente dei bottoni primari, fermo sulla fascia rosso-magenta-viola dove il bianco
      passa (4,8-6,5:1); sull'arancio degli angoli non ci finisce mai, come in `.btn-primary`. */

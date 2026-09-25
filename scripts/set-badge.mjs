@@ -1,11 +1,15 @@
 // Assegna il tag autore (badge) a un profilo della community: community (default), creator, influencer, pro, staff.
+// Il tag `creator` si chiama "Autore" sul sito dal 25/09/2026: qui si può scrivere anche "autore" o "author".
 // Il tag lo assegna solo lo staff, mai l'utente (note per sito 5.0, 15/09/2026).
 // Uso: node scripts/set-badge.mjs <username|email|parte del nome> <community|creator|influencer|pro|staff>
 import { readFileSync } from "node:fs";
 import pg from "pg";
 
 const BADGES = ["community", "creator", "influencer", "pro", "staff"];
-const [needle, badge] = process.argv.slice(2);
+/** l'etichetta mostrata è cambiata, l'identificatore nel database no: si accettano entrambi i nomi */
+const ALIAS = { autore: "creator", author: "creator", autor: "creator" };
+const [needle, badgeRaw] = process.argv.slice(2);
+const badge = ALIAS[String(badgeRaw).toLowerCase()] ?? badgeRaw;
 if (!needle || !BADGES.includes(badge)) {
   console.error(`Uso: node scripts/set-badge.mjs <username|email|nome> <${BADGES.join("|")}>`);
   process.exit(1);
