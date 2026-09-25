@@ -160,7 +160,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
     : [];
 
   // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
-  const authorTypes = (["staff", "pro", "influencer", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
+  const authorTypes = (["staff", "pro", "influencer", "creator", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
 
   // Lista per i dati strutturati: i mazzi editoriali statici (oggi nessuno) e quelli della community che la pagina
   // mostra, dal più recente, ma solo dove la scheda si indicizza in questa lingua: la guida originale o una traduzione

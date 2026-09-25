@@ -43,7 +43,7 @@ export type TierDeckEntry = {
   archetype: string;
   archetypeLabel: string;
   creator: string;
-  /** tag autore (community, influencer, pro, staff) e sua etichetta */
+  /** tag autore (community, creator, influencer, pro, staff) e sua etichetta */
   badge: string;
   badgeLabel: string;
   rating: { avg: number; votes: number };

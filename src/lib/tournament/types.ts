@@ -75,8 +75,8 @@ export const DEFAULT_COVER: string = COVER_PRESETS[0];
 /** Bucket Storage delle copertine caricate (solo Influencer, Pro, Staff o admin; percorso `<user_id>/<file>`). */
 export const COVER_BUCKET = "tournament-covers";
 
-/** Tag autore che possono pubblicare un torneo sul calendario e caricare una copertina propria (decisione di Pierluigi, 16/09/2026). */
-export const LISTING_BADGES = ["influencer", "pro", "staff"] as const;
+/** Tag autore che possono pubblicare un torneo sul calendario e caricare una copertina propria (decisione di Pierluigi, 16/09/2026; Creator dal 25/09/2026). */
+export const LISTING_BADGES = ["creator", "influencer", "pro", "staff"] as const;
 
 export function canListTournaments(profile: { badge?: string | null; role?: string | null } | null | undefined): boolean {
   if (!profile) return false;

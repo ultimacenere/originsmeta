@@ -952,7 +952,7 @@ export const en = {
     deckType: "Deck type",
     deckTypeHint: "You can pick more than one.",
     deckTypes: { ladder: "Ladder", competitive: "Competitive", fun: "Fun", tournament: "Tournament" },
-    badges: { community: "Community", influencer: "Influencer", pro: "Pro", staff: "Staff" },
+    badges: { community: "Community", creator: "Creator", influencer: "Influencer", pro: "Pro", staff: "Staff" },
     archetypeSuggested: "Suggested from the list: change it if you disagree.",
     summary: "Game plan",
     summaryHint: "How the deck wins, in a few lines (20–600 characters). Shown on the deck card.",

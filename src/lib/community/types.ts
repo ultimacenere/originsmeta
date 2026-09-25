@@ -21,7 +21,7 @@ export const deckTypes = ["ladder", "competitive", "fun", "tournament"] as const
 export type DeckType = (typeof deckTypes)[number];
 
 /** Tag autore: lo assegna solo lo staff (scripts/set-badge.mjs), mai l'utente. */
-export const authorBadges = ["community", "influencer", "pro", "staff"] as const;
+export const authorBadges = ["community", "creator", "influencer", "pro", "staff"] as const;
 export type AuthorBadge = (typeof authorBadges)[number];
 
 export type Profile = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
@@ -63,7 +63,7 @@ export const MAX_PRIVATE_DECKS = 50;
 
 /**
  * Tetto ai mazzi PUBBLICATI di un utente normale (Pierluigi, 23/09/2026: "mazzi 5 massimo per utente normale,
- * per staff, influencer e pro senza limiti"). Chi ha un tag autore (Influencer, Pro, Staff) e gli admin non
+ * per staff, influencer e pro senza limiti"). Chi ha un tag autore (Creator, Influencer, Pro, Staff) e gli admin non
  * hanno tetto. Il conto tiene insieme pubblicati e nascosti; i privati hanno il loro tetto qui sopra.
  * Lo applica il trigger enforce_deck_limit di supabase/schema.sql, questa costante lo ripete al sito.
  */

@@ -1,10 +1,10 @@
-// Assegna il tag autore (badge) a un profilo della community: community (default), influencer, pro, staff.
+// Assegna il tag autore (badge) a un profilo della community: community (default), creator, influencer, pro, staff.
 // Il tag lo assegna solo lo staff, mai l'utente (note per sito 5.0, 15/09/2026).
-// Uso: node scripts/set-badge.mjs <username|email|parte del nome> <community|influencer|pro|staff>
+// Uso: node scripts/set-badge.mjs <username|email|parte del nome> <community|creator|influencer|pro|staff>
 import { readFileSync } from "node:fs";
 import pg from "pg";
 
-const BADGES = ["community", "influencer", "pro", "staff"];
+const BADGES = ["community", "creator", "influencer", "pro", "staff"];
 const [needle, badge] = process.argv.slice(2);
 if (!needle || !BADGES.includes(badge)) {
   console.error(`Uso: node scripts/set-badge.mjs <username|email|nome> <${BADGES.join("|")}>`);

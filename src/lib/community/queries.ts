@@ -88,7 +88,7 @@ export async function publishedDeckLimit(client: Db, userId: string): Promise<{ 
   const { count } = await client.from("community_decks").select("id", { count: "exact", head: true }).eq("owner", userId).neq("status", "draft");
   const { data } = await client.from("profiles").select("role, badge").eq("id", userId).maybeSingle();
   const p = data as { role: string; badge: string } | null;
-  const unlimited = p?.role === "admin" || ["influencer", "pro", "staff"].includes(p?.badge ?? "");
+  const unlimited = p?.role === "admin" || ["creator", "influencer", "pro", "staff"].includes(p?.badge ?? "");
   return { used: count ?? 0, cap: unlimited ? Infinity : MAX_PUBLISHED_DECKS };
 }
 

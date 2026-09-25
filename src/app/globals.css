@@ -387,6 +387,11 @@
     background: #a9e6f7;
     color: #b3003c;
   }
+  /* Creator (25/09/2026): viola pieno, vicino all'Influencer ma senza gradiente; il bianco passa a 5,7:1. */
+  .badge-creator {
+    background: #7c3aed;
+    color: #fff;
+  }
   /* Influencer: lo stesso gradiente dei bottoni primari, fermo sulla fascia rosso-magenta-viola dove il bianco
      passa (4,8-6,5:1); sull'arancio degli angoli non ci finisce mai, come in `.btn-primary`. */
   .badge-ig {

@@ -56,7 +56,7 @@ export type ExplorerDeck = {
   /** tipo di mazzo e tag autore (solo mazzi della community) */
   deckTypeLabels?: string[];
   creatorBadge?: string;
-  /** id del tag autore (community, influencer, pro, staff); "community" non si mostra */
+  /** id del tag autore (community, creator, influencer, pro, staff); "community" non si mostra */
   creatorBadgeId?: string;
 };
 

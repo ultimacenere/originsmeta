@@ -961,7 +961,7 @@ export const es: Dictionary = {
     deckType: "Tipo de mazo",
     deckTypeHint: "Puedes elegir más de uno.",
     deckTypes: { ladder: "Ladder", competitive: "Competitivo", fun: "Fun", tournament: "Torneo" },
-    badges: { community: "Community", influencer: "Influencer", pro: "Pro", staff: "Staff" },
+    badges: { community: "Community", creator: "Creator", influencer: "Influencer", pro: "Pro", staff: "Staff" },
     archetypeSuggested: "Sugerido a partir de la lista: cámbialo si no estás de acuerdo.",
     summary: "Plan de juego",
     summaryHint: "Cómo gana el mazo, en pocas líneas (20–600 caracteres). Aparece en la ficha del mazo.",

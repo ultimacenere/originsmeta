@@ -159,7 +159,7 @@ alter table public.community_decks drop constraint if exists community_decks_dec
 alter table public.community_decks add constraint community_decks_deck_type_check check (deck_type in ('ladder','competitive','fun','tournament'));
 alter table public.profiles add column if not exists badge text not null default 'community';
 alter table public.profiles drop constraint if exists profiles_badge_check;
-alter table public.profiles add constraint profiles_badge_check check (badge in ('community','influencer','pro','staff'));
+alter table public.profiles add constraint profiles_badge_check check (badge in ('community','creator','influencer','pro','staff'));
 
 create or replace function public.protect_profile_badge()
 returns trigger language plpgsql as $$
@@ -237,7 +237,7 @@ create or replace function public.protect_tournament_listing()
 returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   if new.listed and not exists (
-    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('influencer','pro','staff') or p.role = 'admin')
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin')
   ) then
     raise exception 'listing_not_allowed';
   end if;
@@ -427,7 +427,7 @@ begin
   create policy "badged users upload tournament covers" on storage.objects for insert to authenticated with check (
     bucket_id = 'tournament-covers'
     and (storage.foldername(name))[1] = auth.uid()::text
-    and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('influencer','pro','staff') or p.role = 'admin'))
+    and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin'))
   );
   drop policy if exists "users manage own tournament covers" on storage.objects;
   create policy "users manage own tournament covers" on storage.objects for delete to authenticated using (
@@ -865,7 +865,7 @@ begin
     raise exception 'private_not_listed';
   end if;
   if new.listed and not exists (
-    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('influencer','pro','staff') or p.role = 'admin')
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin')
   ) then
     raise exception 'listing_not_allowed';
   end if;
@@ -1198,13 +1198,13 @@ create or replace view public.tier_card_scores as
 grant select on public.tier_card_scores to anon, authenticated;
 
 -- ---------- tetto ai mazzi pubblicati (Pierluigi, 23/09/2026) ----------
--- "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti". Il conto tiene insieme
+-- "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti"; dal 25/09/2026 anche creator. Il conto tiene insieme
 -- pubblicati e nascosti (un mazzo nascosto è comunque un mazzo pubblicato dall'utente, che può rimettere online
 -- quando vuole); i mazzi privati 'draft' non c'entrano e hanno il loro tetto nel sito.
 -- Sta in un trigger e non solo nella Server Action perché il limite è una regola dei dati, non dell'interfaccia.
 create or replace function public.max_published_decks(uid uuid)
 returns int language sql stable security definer set search_path = public, pg_temp as $$
-  select case when p.role = 'admin' or p.badge in ('influencer','pro','staff') then 2147483647 else 5 end
+  select case when p.role = 'admin' or p.badge in ('creator','influencer','pro','staff') then 2147483647 else 5 end
     from public.profiles p where p.id = uid;
 $$;
 
