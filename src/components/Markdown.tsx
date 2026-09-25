@@ -1,8 +1,9 @@
 import { marked } from "marked";
 import { linkCardNames } from "@/lib/cardlinks";
-import { getCard } from "@/lib/data/cards";
-import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
-import { cardMentionHtml } from "./CardMentions";
+import { cardLinkPattern, linkMentionsInHtml } from "@/lib/cardPeek";
+import { getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
+import { mentionTarget } from "./CardMentions";
+import { CardMentionEdges } from "./CardMentionEdges";
 
 marked.setOptions({ gfm: true, breaks: false });
 
@@ -24,33 +25,23 @@ function linkCardsInMarkdown(source: string, locale: string): string {
     .join("");
 }
 
+/** Link alle schede carta nell'HTML di `marked`, nelle tre lingue (fino al 25/09/2026 solo `en|it`: RIV-03, ES-12). */
+const CARD_LINK = cardLinkPattern(locales);
+
 /**
  * Ogni link a una scheda carta (quelli appena creati e quelli scritti a mano nel testo, tabelle delle patch notes
  * comprese) diventa una menzione con l'anteprima della carta al passaggio del mouse: illustrazione, costo,
  * statistiche e testo, come nei testi della community (note del 22/09/2026: "carte linkate negli articoli, il
  * mouseover deve mostrare la carta"). Su touch il pannello non c'è e il tocco porta alla scheda.
- *
- * Nelle liste le Leggendarie sono segnate con una stella scritta DOPO il nome ("Dorothy ★"): la stella passa
- * davanti, gialla (`.legendary-star`), con il nome dello stesso colore degli altri e un testo per i lettori di
- * schermo (regola del 22/09/2026). Le intestazioni restano come sono: niente pannelli dentro un titolo.
- * `idPrefix` distingue i pannelli (`aria-describedby`) se una pagina avesse più blocchi Markdown.
+ * Nell'HTML resta solo il link (GEO-01, 25/09/2026): il pannello lo crea `CardMentionEdges` al primo passaggio del
+ * mouse o al focus, dai dati in `data-peek` (solo sulla prima menzione di ogni carta), così la frase si legge intera
+ * anche senza CSS. La trasformazione è `linkMentionsInHtml` (src/lib/cardPeek.ts, con test): intestazioni lasciate
+ * come sono e, nelle liste, la stella scritta dopo il nome di una Leggendaria ("Dorothy ★") portata davanti, gialla
+ * (regola del 22/09/2026). Qui si passa solo la ricerca della carta nel database.
  */
-function cardPreviews(html: string, locale: Locale, idPrefix: string): string {
-  const legendaryLabel = getDictionary(locale).common.legendary;
-  let n = 0;
-  return html
-    .split(/(<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)/)
-    .map((part, i) => {
-      if (i % 2 === 1) return part;
-      return part.replace(/<a href="\/(?:en|it)\/cards\/([a-z0-9-]+)">([^<]*)<\/a>(\s*★)?/g, (match, slug: string, text: string, star?: string) => {
-        const card = getCard(slug);
-        if (!card) return match;
-        const mention = cardMentionHtml(card, text, locale, `${idPrefix}-cm-${++n}`);
-        if (star && card.legendary) return `<span class="legendary-star" aria-hidden="true">★</span>${mention}<span class="sr-only"> (${legendaryLabel})</span>`;
-        return `${mention}${star ?? ""}`;
-      });
-    })
-    .join("");
+function cardPreviews(html: string, locale: Locale): { html: string; cards: number } {
+  const dict = getDictionary(locale);
+  return linkMentionsInHtml(html, CARD_LINK, (slug) => mentionTarget(slug, locale, dict), dict.common.legendary);
 }
 
 /** Ancora leggibile dal testo di un titolo: minuscole, senza accenti né tag, trattini al posto degli spazi. */
@@ -95,13 +86,18 @@ function wrapTables(html: string): string {
 }
 
 /**
- * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). La pagina che lo
- * usa deve montare `CardMentionEdges` una volta, per tenere i pannelli dentro la finestra.
+ * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). Se il testo cita
+ * almeno una carta, il blocco porta con sé `CardMentionEdges`, che crea i pannelli e li tiene dentro la finestra.
  */
-export function Markdown({ source, className = "", linkCards, idPrefix = "md" }: { source: string; className?: string; linkCards?: string; idPrefix?: string }) {
+export function Markdown({ source, className = "", linkCards }: { source: string; className?: string; linkCards?: string }) {
   const locale = linkCards && isLocale(linkCards) ? linkCards : undefined;
   const src = linkCards ? linkCardsInMarkdown(source, linkCards) : source;
-  let html = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
-  if (locale) html = cardPreviews(html, locale, idPrefix);
-  return <div className={`prose-night ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
+  const plain = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
+  const { html, cards } = locale ? cardPreviews(plain, locale) : { html: plain, cards: 0 };
+  return (
+    <>
+      <div className={`prose-night ${className}`} dangerouslySetInnerHTML={{ __html: html }} />
+      {cards ? <CardMentionEdges /> : null}
+    </>
+  );
 }

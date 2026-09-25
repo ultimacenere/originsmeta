@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { deckPeekOf, sharedPeeks } from "@/lib/cardPeek";
 import { CardPeek, hasPeek } from "./CardPeek";
 
 type DeckCard = {
@@ -111,9 +112,12 @@ function authorOf(d: ExplorerDeck): string | undefined {
  * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
  * Al passaggio del mouse si apre la carta in grande con nome, costo, statistiche e testo dell'abilità (`CardPeek`,
  * la stessa anteprima di chip e deck builder), così si legge il mazzo senza aprirlo. Su touch il pannello non
- * esiste (`hover: none`) e resta il nome nel `title`.
+ * esiste (`hover: none`) e resta il nome nel `title`. Il pannello nasce al primo passaggio del mouse (GEO-01,
+ * 25/09/2026): nell'HTML di /decks c'è solo il segnaposto con i dati in `data-peek`, non più il testo delle tredici
+ * carte di ogni mazzo, che era il 69% delle parole della pagina. `shared`: i dati di una carta ripetuta in più mazzi
+ * li porta solo la prima copia mostrata (vedi `peekShares` sotto).
  */
-function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean }) {
+function DeckCardArt({ card, size, legendary = false, shared }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean; shared?: "first" | "copy" }) {
   const isLeg = legendary || card.legendary;
   const peek = { ...card, legendary: isLeg };
   return (
@@ -130,7 +134,7 @@ function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: 
         )}
         {card.mana !== undefined ? <span className="deck-card-mana">{card.mana}</span> : null}
       </span>
-      <CardPeek card={peek} />
+      <CardPeek card={peek} shared={shared} />
     </span>
   );
 }
@@ -202,6 +206,20 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         : (b.rating?.avg ?? 0) - (a.rating?.avg ?? 0) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || when(b).localeCompare(when(a)),
     );
   }, [decks, legendary, archetype, author, creator, patch, card, sort]);
+
+  /* Anteprime delle carte base: la stessa carta torna in molti mazzi e nell'HTML i suoi dati bastano una volta (RIV-09:
+     su 16 mazzi 208 anteprime e 84 carte diverse). Si calcola sulla lista già filtrata e ordinata, perché la copia che
+     porta i dati deve essere fra quelle mostrate; le carte base ci sono in tutte e due le viste, le Leggendarie (una per
+     mazzo, con pochi dati) portano i loro. */
+  const peekShares = useMemo(
+    () =>
+      sharedPeeks(
+        list.flatMap((d) => d.cardArt),
+        (c) => c.name,
+        (c) => JSON.stringify(deckPeekOf(c)),
+      ),
+    [list],
+  );
 
   const few = decks.length < FEW_DECKS;
   // con un filtro attivo contano i risultati, non il benvenuto: e l'invito a pubblicare non deve sembrare un risultato
@@ -446,7 +464,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               </div>
               <Link href={d.href} className="mt-4 flex flex-wrap gap-1.5 border-t border-sky pt-4">
                 {d.cardArt.map((c, i) => (
-                  <DeckCardArt key={`${c.name}-${i}`} card={c} size="sm" />
+                  <DeckCardArt key={`${c.name}-${i}`} card={c} size="sm" shared={peekShares.get(c)} />
                 ))}
               </Link>
             </li>
@@ -470,7 +488,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               <Link href={d.href} className="flex min-w-0 flex-1 flex-wrap gap-1">
                 {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="xs" legendary /> : null}
                 {d.cardArt.map((c, k) => (
-                  <DeckCardArt key={`${c.name}-${k}`} card={c} size="xs" />
+                  <DeckCardArt key={`${c.name}-${k}`} card={c} size="xs" shared={peekShares.get(c)} />
                 ))}
               </Link>
               <span className="flex shrink-0 items-center gap-2 text-xs text-pale-muted">

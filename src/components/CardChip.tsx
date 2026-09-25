@@ -79,6 +79,8 @@ export function CardName({ name, legendary, legendaryLabel }: { name: string; le
  * Al passaggio del mouse apre l'anteprima della carta (`CardPeek`), come nel deck builder e nell'elenco dei
  * mazzi: così si legge una news o una guida senza aprire ogni carta. Il contenitore
  * `.deck-card-wrap` serve al posizionamento del pannello; su touch resta il tocco che porta alla scheda.
+ * Nell'HTML della chip restano nome e statistiche, non il testo della carta (GEO-01, 25/09/2026): il pannello lo crea
+ * `CardMentionEdges`, che `CardPeek` porta con sé, così funziona anche nelle pagine che non lo montano (home, FAQ).
  */
 export function CardChip({ slug, locale }: { slug: string; locale: Locale }) {
   const card = getCard(slug);
