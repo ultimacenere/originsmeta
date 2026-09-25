@@ -229,7 +229,7 @@ export const es: Dictionary = {
   },
   cards: {
     title: "Base de datos de cartas de Origins TCG",
-    intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés con traducciones al italiano y al español, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
+    intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés, italiano y español tal como aparece en el juego, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
     description: "Todas las cartas de Origins TCG de la Demo 2.0 en una base de datos: busca y filtra por tipo, saga, alineamiento y rareza, con texto oficial y estadísticas.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Nombre o texto: Merlin, On Reveal…",
@@ -238,7 +238,7 @@ export const es: Dictionary = {
     countRemoved: "retiradas en builds anteriores",
     legendNote: "Las cartas Legendarias lideran el mazo: una por mazo, marcadas con la estrella. Las sagas son una clasificación propia de OriginsMeta según la leyenda de origen; el juego no las muestra.",
     sourceBefore: "Datos de las cartas de la base de datos de la comunidad",
-    sourceAfter: "; texto de las cartas © Koin Games. Las sagas, las notas sobre el origen y las traducciones al italiano y al español son de OriginsMeta.",
+    sourceAfter: "; texto de las cartas © Koin Games, en inglés, italiano y español como en el juego. Las sagas, las notas sobre el origen y los textos en italiano y español de las cartas creadas y retiradas son de OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta coleccionable",
     changesTitle: "Historial de cambios de equilibrio",

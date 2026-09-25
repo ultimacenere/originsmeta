@@ -223,7 +223,7 @@ export const en = {
   },
   cards: {
     title: "Origins TCG card database",
-    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official English text with Italian and Spanish translations, balance history and the legend each card comes from.",
+    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian and Spanish as it reads in the game, balance history and the legend each card comes from.",
     description: "Every Origins TCG card from Demo 2.0 in one searchable database: filter by type, saga, alignment and rarity, with official text, stats and balance history.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
@@ -232,7 +232,7 @@ export const en = {
     countRemoved: "removed in earlier builds",
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     sourceBefore: "Card data from the community database",
-    sourceAfter: "; card text © Koin Games. Sagas, origin notes and the Italian and Spanish translations are by OriginsMeta.",
+    sourceAfter: "; card text © Koin Games, in English, Italian and Spanish as in the game. Sagas, origin notes and the Italian and Spanish text of created and removed cards are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",

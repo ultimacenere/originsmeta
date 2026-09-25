@@ -20,9 +20,12 @@ stessa cura SEO. Questo file raccoglie le scelte fatte per lo spagnolo, perché 
 - **Nomi delle carte, dei luoghi, dei mazzi della community, di prodotti ed eventi**: Merlin, Queen of Hearts,
   Van Helsing's Tools, Wonderland, "Healing Healsing", Steam Next Fest, Crimson Cup, Demo 2.0, MetaShifting. Il sito
   trasforma da solo i nomi delle carte in link: vanno scritti esattamente come nel database.
-- **Parole chiave del gioco**, come in italiano: On Reveal, On Death, Shield, Trample, First Strike, Deathtouch,
-  Rebirth, Defender, Stun, Double Attack, Move, Conquest. Gli allineamenti restano **Good / Evil / Neutral**
-  ("tus personajes Good").
+- **Parole chiave del gioco**: dipende dal testo. Nei **testi di gioco** (carte, carte create, luoghi) si usano i nomi
+  ufficiali spagnoli, perché il gioco è tradotto: Al revelar, Al morir, Escudo, Arrollar, Toque mortal, Defensor…
+  (glossario completo in `docs/testi-di-gioco.md`). Nei **testi editoriali** (guide, news, interfaccia) per ora restano
+  in inglese come in italiano (On Reveal, Trample, Conquest…), finché Pierluigi non decide se allinearli al gioco.
+  Le etichette di allineamento restano **Good / Evil / Neutral** come sulla carta del gioco, ma nel testo delle regole
+  il gioco scrive "tus personajes Buenos", "Malvados".
 - Segnaposto tra graffe ({n}, {lang}, {from}…), emoji e notazioni delle statistiche ("+2⚔️/+2❤️", "[5⚔️/3❤️]").
 
 ## Glossario (EN → ES)
@@ -38,7 +41,7 @@ stessa cura SEO. Questo file raccoglie le scelte fatte per lo spagnolo, perché 
 | character, ally, enemy | personaje, aliado, enemigo | |
 | barrier | barrera | |
 | location | ubicación | sezione "Ubicaciones" |
-| lane, space | carril, casilla | |
+| lane, space | carril, espacio | il gioco dice "espacio"; guide e news già scritte hanno ancora "casilla" |
 | mana, cost | maná, coste | |
 | Power, Health | Poder, Salud | |
 | round, turn, combat | ronda, turno, combate | |
@@ -68,8 +71,9 @@ Ubicaciones · Las más jugadas · Crea tu tier list · Autores.
 - Guide: solo i testi in `src/lib/content/guides-es.ts` (`title`, `metaTitle`, `excerpt`, `faq`, `body`); categoria,
   carte, lista del mazzo, copertina, data e tempo di lettura vengono dalla versione inglese in `guides.ts`.
 - Carte: `origin.es` e `es` (testo della carta) in `src/lib/data/card-lore.ts`; saghe in `cards.ts`; storico in
-  `card-history.ts` (`note.es`). **I testi spagnoli delle carte sono una traduzione nostra dal testo inglese del
-  gioco**: vanno confrontati nel gioco, come per l'inglese il 22/09/2026 (Pierluigi, 25/09/2026).
+  `card-history.ts` (`note.es`). **I testi spagnoli delle carte sono quelli ufficiali del gioco**, letti il 25/09/2026
+  (trascrizione in `docs/testi-ufficiali/es.tsv`, confronto con `node scripts/official-texts.mjs es`); carte create e
+  rimosse con il glossario ufficiale. Procedura in `docs/testi-di-gioco.md`.
 - Luoghi (`locations.ts`), eventi (`events.ts`), autori (`authors.ts`), archetipi (`decks.ts`), FAQ approvate e
   domande suggerite (`src/lib/content/faq.ts`): chiave `es` accanto a `it`.
 - Messaggi Discord dei tornei (`src/lib/tournament/notify.ts`): restano in italiano e inglese, come il nostro server.

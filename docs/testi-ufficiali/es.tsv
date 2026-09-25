@@ -1,0 +1,124 @@
+# Testi ufficiali delle carte letti nel gioco il 25/09/2026 (Demo 2.0, patch demo del 21/09): collezione con le carte non possedute.
+# Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
+Itsy Bitsy Spider
+Bagheera	Al revelar: Si estoy en un espacio central, obtengo +2⚔️/+2❤️.
+Bullseye	Inflige 3 de daño a CUALQUIER personaje.
+Defense Matrix	Da Escudo a CUALQUIER personaje.
+Freeze!	Aturde a CUALQUIER personaje.
+Mummy	Renacer
+Poison Apple	Da Toque mortal a CUALQUIER personaje.
+Reinforcements	Invoca un Merry Man [1⚔️/1❤️] en dos espacios al azar.
+Stroke of Midnight	Devuelve CUALQUIER personaje a la mano de su dueño.
+Thumbelina
+Toto	Después de que un enemigo es jugado aquí, me muevo a otra ubicación y obtengo +1⚔️.
+Trash for Treasure	Destruye a un aliado para robar 2 cartas.
+Twister Toss	Mueve a un aliado.
+Animate Object	Elige un espacio. Invoca una Broomstick allí.
+Axe Throw	Inflige 4 de daño a CUALQUIER personaje.
+Baby Bear	Cuando un enemigo daña tu barrera aquí, inflige 1 de daño a ese enemigo.\nAl morir: Añade Papa Bear [4⚔️/4❤️] a tu mano.
+Banshee	Al morir: Los aliados obtienen +1⚔️.
+Basilisk	Toque mortal
+Billy	Al morir: Inflige 2 de daño a un enemigo aleatorio aquí.
+Card Soldier	Después de moverme, invoca una copia de mí en mi espacio anterior.
+Don Quixote	Defensor\nLos enemigos aquí tienen Defensor.
+Esmeralda	Cuando soy descartado, da Escudo a un aliado aleatorio.
+First Aid	Cura 6 de daño de CUALQUIER personaje o barrera.
+Huck Finn
+Jack-in-the-Box	Al morir: Inflige 2 de daño a la barrera del oponente aquí.
+Lady of the Lake	Cuando juegas un personaje Bueno, dale Defensor.
+Lightning Strike	Inflige 3 de daño a CUALQUIER personaje o barrera.
+Merlin's Prophecy	Repite el próximo hechizo que juegues esta ronda.
+Mind Palace	Roba 2 cartas.
+Morgiana	Evita que TODAS las habilidades Al revelar ocurran aquí.
+Musketeer	Primer golpe
+Piglet	Al revelar: Da +1⚔️ a los demás aliados aquí.
+Roo	Mover
+Rumple	Al revelar: Obtienes +1 maná la próxima ronda.
+Sandman	Tus hechizos cuestan 1 menos al jugarlos.
+Scarecrow	Al revelar: Roba una carta.
+Shahrazad	Cuando una carta entra en tu mano, cura 1 de daño de tu barrera aquí.
+Three Blind Mice	Al morir: Invoca un Mouse [1⚔️/1❤️] en dos espacios al azar.
+Ugly Duckling	Cuando descartas una carta, me transformo en Beautiful Swan [4⚔️/4❤️].
+Aladdin	Cuando soy descartado, invócame en un espacio aleatorio.
+Ali Baba	Cuando daño la barrera de un oponente, roba una carta.
+Asanbosam	Al revelar: Descarta una carta aleatoria de coste par.
+Beast	Cuando juegas un aliado, obtengo +1⚔️/+1❤️.
+Big Bad Wolf	Después del combate, obtengo +1⚔️/+1❤️.
+Black Knight	Al revelar: Inflige 2 de daño al enemigo frente a mí.
+Cowardly Lion	Defensor
+Dark Omen	Destruye a CUALQUIER personaje.
+Davy Crockett	Defensor\nAl morir: El personaje superior de tu mazo obtiene +2⚔️/+2❤️.
+En Passant	Mueve a un aliado. Inflige daño igual a su ⚔️ al personaje frente a él.
+Flying Monkey	Al revelar: Mueve CUALQUIER otro personaje a un espacio aleatorio aquí.
+Frog Prince	Elige una: Al revelar: Obtengo +3⚔️ O Al revelar: Obtengo +3❤️.
+Golden Egg	Al morir: Invoca un Golden Goose [5⚔️/5❤️] en este espacio.
+Humpty	Al morir: Añade una carta aleatoria a tu mano.
+Jack	Al revelar: Destruye a un enemigo aleatorio que tenga 7 o más ⚔️.
+Jill	Cuando recibo daño, cura 2 de daño de tu barrera aquí.
+Kanga	Antes del combate, da +1⚔️/+1❤️ a los aliados que se movieron esta ronda.
+King Shahryar	Al comienzo de la ronda, roba una carta. Descártala antes del combate.
+Mary	Al revelar: Añade un Little Lamb [1⚔️/1❤️] a tu mano.\nAl morir: Tus Little Lambs en todas partes obtienen +3⚔️/+3❤️ permanentemente.
+Pegasus	Después de moverme, duplico mi ⚔️.
+Piggy Bank	Obtienes +1 maná permanentemente.
+Quasimodo	Al revelar: Descarta tu carta de menor coste. Roba una carta.
+Queen of the Night	Cuando juegas un hechizo, inflige 2 de daño a la barrera del oponente aquí.
+Shield Maiden	Escudo
+Spellbook	Durante el resto de la partida, añade un hechizo aleatorio a tu mano al comienzo de la ronda. Descártalo antes del combate.
+Wicked Stepsisters
+Wicked Witch of the West	Cuando sobrevivo a un daño, añade un Flying Monkey [4⚔️/1❤️] a tu mano y me muevo un espacio a la izquierda.
+Beauty	Cuando juegas un aliado, roba una carta.
+Blow the House Down	Elige un aliado. Inflige daño igual a su ⚔️ a TODOS los enemigos allí.
+Boogeyman	Al revelar: Destruye al aliado aquí con menor ⚔️, incluso si soy yo.
+Christopher Robin
+Dorothy	Puedo Moverme cada ronda.\nTengo +1⚔️/+1❤️ por cada vez que un aliado se movió esta partida.
+Dracula	Cuando descartas, vuelvo de tu cementerio a la mano.\nAl revelar: Invoca Brides of Dracula [2⚔️/2❤️] en un espacio aleatorio aquí.
+Glinda	Cuando juegas un hechizo, da +1⚔️ a los aliados.
+Huntsman	Al matar: Obtengo +1⚔️/+1❤️.
+Imhotep	Al morir: Inflige 2 de daño a todos los enemigos aquí.
+Jekyll	Al revelar: Cura 3 de daño de CUALQUIER otro personaje o barrera aquí.\nSi estoy en la mano después del combate, me transformo en Hyde [5⚔️/3❤️].
+Lancelot	Cuando juegas un personaje Bueno aquí, dale +2⚔️/+2❤️.
+Little John	Al revelar: Si un enemigo fue jugado aquí esta ronda, obtengo +2⚔️/+2❤️.
+Magic Carpet	Elige una: Al revelar: Mueve a los demás aliados un espacio a la izquierda O Al revelar: Mueve a los demás aliados un espacio a la derecha.
+Marian	Disparo certero 2
+Mothman	Al revelar: Arruina esta ubicación.
+Mulan	Ataque doble\nCuando ocurre una habilidad Al revelar de un aliado, repítela.
+Old MacDonald	La primera vez que CUALQUIER jugador descarta cada ronda, baraja tres Pumpkins en el mazo de tu oponente.
+Phuong Hoang	Renacer, Mover\nCuando un aliado o una barrera es curado, obtengo +1⚔️/+1❤️.
+Puck	Cuando un enemigo o la barrera del oponente recibe curación, inflige esa cantidad de daño en su lugar.
+Queen of Hearts	Primer golpe\nCuando ocurre una habilidad Al morir de un aliado, repítela.
+Searing Light	Inflige 4 de daño a un enemigo. Cura 4 de daño de tu barrera allí.
+Tweedledum	Al revelar: Invoca a Tweedledee, que es una copia de mí, en otra ubicación aleatoria.
+Underworld Flare	Inflige 6 de daño a un enemigo. Cuando esta carta es descartada, inflige 6 de daño a un enemigo aleatorio.
+Van Helsing	Antes del combate, añade Van Helsing's Tools a tu mano si no está ya allí.
+White Queen	Al revelar: Devuelve CUALQUIER personaje a la mano de su dueño.
+Wicked Stepmother	Toque mortal\nAl revelar: Da Toque mortal a tus personajes Malvados.
+Baloo
+Bigfoot	Arrollar
+Boitata	Si un hechizo o habilidad fuera a dañar alguna de tus barreras, inflige ese daño a la barrera del oponente allí en su lugar.
+Bridge Troll	Defensor
+Captain Ahab	Al revelar: Descarta tu carta de mayor coste para infligir su coste como daño a un enemigo.
+Fairy Godmother	Al revelar: Da a otro aliado +3⚔️/+3❤️.
+Galahad	Al revelar: Da a los otros aliados +1⚔️/+1❤️.
+Hare	Primer golpe, Mover
+Impundulu	Cuando ataco, añade un Lightning Strike a tu mano. Descártalo antes del combate de la próxima ronda.
+Merlin	Repite el primer hechizo que juegues cada ronda.
+Rain of Arrows	Inflige 2 de daño a todos los enemigos.
+Sorcerer's Apprentice	Cuando juegas un hechizo, invoca una Broomstick [1⚔️/1❤️] en un espacio aleatorio.
+The Green Knight	Después del combate, curo todo el daño de mí mismo.
+Three Musketeers	Primer golpe\nAl revelar: Invoca un Musketeer [2⚔️/1❤️] con Primer golpe en cada espacio aquí.
+Cockatrice	Toque mortal\nAl morir: Destruye un enemigo al azar.
+Genie	Al revelar: Descarta tu mano. Añade 3 hechizos aleatorios a tu mano.
+Guy of Gisborne	Ataque doble, Disparo certero 1
+Heroic Charge	Los aliados tienen +2⚔️ y Arrollar esta ronda.
+Koschei	Al morir o al ser descartado: vuelvo a tu mano y obtengo +2⚔️/+2❤️ permanentemente.
+Mowgli	Al revelar: Invoca a Baloo [6⚔️/6❤️] en otra ubicación aleatoria.
+Tin Woodman	Al revelar: Cura 8 de daño de CUALQUIER otro personaje o barrera aquí.
+King Arthur	Escudo\nAl revelar: Da Escudo a tus personajes Buenos.
+Legion of the Dead	Llena tu tablero de Zombies [2⚔️/2❤️].
+Paul Bunyan
+Three Not So Little Pigs	Arrollar\nAl revelar: Invoca un Not So Little Pig [3⚔️/3❤️] con Arrollar en un espacio aleatorio de cada otra ubicación.
+Bandersnatch	Arrollar
+Ellen Trechend	Arrollar\nAl revelar: Obtengo +3⚔️/+3❤️ por cada carta enemiga aquí.
+Forbidden Knowledge	Destruye a TODOS los personajes.
+Robin Hood	Disparo certero 3\nAl revelar: Inflige 2 de daño a todos los enemigos.
+Obliterate	Inflige 10 de daño a CUALQUIER personaje o barrera.

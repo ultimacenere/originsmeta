@@ -47,7 +47,7 @@ const en: Faq[] = [
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026. The illustrations are the official ones from Koin Games; the sagas, the Italian and Spanish translations and the notes on each legend are ours.",
+    a: "From the community database World of Origins, imported with a script and checked against the official patch notes on Steam. They are the numbers of the demo patch of 21 September 2026: costs, stats and texts of the 122 demo cards were checked one by one in the game on 22 September 2026, and on 25 September the Italian and Spanish texts too, which are the game's own. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
   },
 ];
 
@@ -79,7 +79,7 @@ const it: Faq[] = [
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe, le traduzioni in italiano e spagnolo e le note sulle origini delle leggende sono nostre.",
+    a: "Dal database community World of Origins, importate con uno script e confrontate con le patch notes ufficiali su Steam. Sono i numeri della patch della demo del 21 settembre 2026: costi, statistiche e testi delle 122 carte della demo sono stati verificati uno per uno nel gioco il 22 settembre 2026, e il 25 settembre anche i testi in italiano e spagnolo, che sono quelli del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
   },
 ];
 
@@ -111,7 +111,7 @@ const es: Faq[] = [
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "De la base de datos de la comunidad World of Origins, importadas con un script y contrastadas con las notas oficiales de los parches en Steam. Son los números del parche de la demo del 21 de septiembre de 2026: los costes, las estadísticas y los textos de las 122 cartas de la demo se comprobaron uno por uno en el juego el 22 de septiembre de 2026. Las ilustraciones son las oficiales de Koin Games; las sagas, las traducciones al italiano y al español y las notas sobre cada leyenda son nuestras.",
+    a: "De la base de datos de la comunidad World of Origins, importadas con un script y contrastadas con las notas oficiales de los parches en Steam. Son los números del parche de la demo del 21 de septiembre de 2026: los costes, las estadísticas y los textos de las 122 cartas de la demo se comprobaron uno por uno en el juego el 22 de septiembre de 2026, y el 25 de septiembre también los textos en italiano y español, que son los del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
   },
 ];
 
