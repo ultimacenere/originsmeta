@@ -12,8 +12,10 @@ stessa cura SEO. Questo file raccoglie le scelte fatte per lo spagnolo, perché 
   mai "coger"; niente intercalari come "vale", "guay", "chévere".
 - Stessa voce dell'inglese e dell'italiano: diretta, concreta, frasi brevi, niente enfasi. OriginsMeta parla al "nosotros".
 - Ortografia completa: accenti, ¿ e ¡ in apertura. Titoli e intestazioni con la sola iniziale maiuscola.
-- Date "25 de septiembre de 2026" (mesi minuscoli); orari a 24 ore con il fuso dell'inglese ("19:00 CEST"), senza
-  conversioni aggiunte; migliaia col punto e decimali con la virgola ("10.000", "3,5"); "98 %".
+- Date "25 de septiembre de 2026" (mesi minuscoli), anche nelle description: mai "el 9/9"; orari a 24 ore con il
+  fuso dell'inglese ("19:00 CEST"), senza conversioni aggiunte; migliaia col punto e decimali con la virgola
+  ("10.000", "3,5"); "98 %". Importi in dollari con la parola: "10.000 dólares", mai "10.000 $" (in America latina
+  "$" si legge pesos).
 
 ## Cosa non si traduce
 
@@ -76,7 +78,8 @@ Ubicaciones · Las más jugadas · Crea tu tier list · Autores.
   rimosse con il glossario ufficiale. Procedura in `docs/testi-di-gioco.md`.
 - Luoghi (`locations.ts`), eventi (`events.ts`), autori (`authors.ts`), archetipi (`decks.ts`), FAQ approvate e
   domande suggerite (`src/lib/content/faq.ts`): chiave `es` accanto a `it`.
-- Messaggi Discord dei tornei (`src/lib/tournament/notify.ts`): restano in italiano e inglese, come il nostro server.
+- Messaggi Discord dei tornei (`src/lib/tournament/notify.ts`): inglese e italiano sempre, come il nostro server;
+  dal 25/09/2026 i tornei in spagnolo hanno anche lo spagnolo, in testa (ordine ES, EN, IT).
 
 ## SEO dello spagnolo
 
@@ -86,4 +89,7 @@ Ubicaciones · Las más jugadas · Crea tu tier list · Autores.
   deve esistere nel `body` spagnolo della stessa news.
 - hreflang, sitemap e `og:locale` (`es_ES`) si generano da soli da `locales` in `src/lib/i18n.ts`; la radice `/`
   manda a `/es` i browser in spagnolo (`next.config.ts`).
+- Date di news e guide tradotte (una regola sola, `modifiedIn` in `src/lib/data/news.ts`): la pubblicazione resta
+  quella dell'articolo originale, la modifica della versione spagnola non va mai prima del 25/09/2026, il giorno in
+  cui è nata; la sitemap applica la stessa soglia con `LOCALE_SINCE` di `src/lib/lastmod.ts`.
 - Parole che cercano i giocatori: "Origins TCG", "mazos", "cartas", "guía", "tier list", "demo", "torneo", "parche".

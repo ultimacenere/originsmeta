@@ -80,7 +80,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "0.6.1",
       kind: "deck",
-      note: { en: "Added to the Evil deck while Count Orlok is out.", it: "Aggiunto al mazzo Evil mentre il Conte Orlok è fuori.", es: "Añadido al mazo Evil mientras Count Orlok está fuera.", fr: "Ajouté au deck Evil pendant l'absence du comte Orlok." },
+      note: { en: "Added to the Evil deck while Count Orlok is out.", it: "Aggiunto al mazzo Evil mentre Count Orlok è fuori.", es: "Añadido al mazo Evil mientras Count Orlok está fuera.", fr: "Ajouté au deck Evil pendant l'absence du comte Orlok." },
     },
     {
       patch: "0.6.2",
@@ -157,7 +157,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 3, power: 1, health: 4 },
       to: { mana: 3, power: 1, health: 5 },
-      note: { en: "+1 Health; her Flying Monkeys are now 4/1, up from 2/3.", it: "+1 Salute; le sue Scimmie Volanti ora sono 4/1, da 2/3.", es: "+1 de Salud; sus Flying Monkeys pasan de 2/3 a 4/1.", fr: "+1 Vie ; ses Singes volants passent de 2/3 à 4/1." },
+      note: { en: "+1 Health; her Flying Monkeys are now 4/1, up from 2/3.", it: "+1 Salute; le sue Flying Monkeys ora sono 4/1, da 2/3.", es: "+1 de Salud; sus Flying Monkeys pasan de 2/3 a 4/1.", fr: "+1 Vie ; ses Singes volants passent de 2/3 à 4/1." },
     },
   ],
   "flying-monkey": [

@@ -83,7 +83,7 @@ export const news: NewsItem[] = [
     description: n(
       "Origins TCG Crimson Cup rules: three-deck Conquest, 8 unique cards between decks, qualifiers on 20–22 October, prizes worth $10,000 and check-in times.",
       "Regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, 8 carte uniche fra i mazzi, qualificazioni dal 20 al 22 ottobre, premi per 10.000 $ e check-in.",
-      "Crimson Cup de Origins TCG: Conquest con tres mazos, 8 cartas únicas entre mazos, clasificatorios del 20 al 22 de octubre, premios por 10.000 $ y check-in.",
+      "Crimson Cup de Origins TCG: Conquest con 3 mazos, 8 cartas únicas entre mazos, clasificatorios del 20 al 22 de octubre, premios por 10.000 dólares y check-in.",
     ),
     summary: n(
       "After the player survey, Koin Games has set the Crimson Cup rules: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you don't play. The tournament runs on the demo, not on the playtest.",
@@ -594,7 +594,7 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
       "Patch notes della demo del 21 settembre: Dorothy costa 4, cambiano 14 carte e The Gallows è corretto",
       "Notas del parche de la demo del 21 de septiembre: Dorothy cuesta 4, cambian 14 cartas y se corrige The Gallows",
     ),
-    metaTitle: n("Origins TCG demo patch notes, 21 September", "Patch notes della demo di Origins TCG del 21/9", "Origins TCG: notas del parche de la demo, 21/9"),
+    metaTitle: n("Origins TCG demo patch notes, 21 September", "Patch notes della demo di Origins TCG del 21/9", "Origins TCG: notas del parche de la demo, 21 de septiembre"),
     description: n(
       "The Origins TCG demo patch of 21 September: Dorothy down to 4 mana, stat and text changes for 14 cards, two game rules and The Gallows location.",
       "La patch della demo di Origins TCG del 21 settembre: Dorothy a 4 mana, statistiche e testi di 14 carte, due regole di gioco e il luogo The Gallows.",
@@ -935,11 +935,11 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
       "La primera gran actualización de la demo de Origins TCG: sobres de prueba, clasificatoria y Crimson Cup",
     ),
     // Senza "Crimson Cup" dal 25/09/2026: sulla coppa vince l'articolo delle regole; qui restano interfaccia, pacchetti e classificata.
-    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Aggiornamento demo di Origins TCG: nuova UI e classificata", "Origins TCG actualiza la demo: nueva UI y clasificatoria"),
+    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Origins TCG aggiorna la demo: interfaccia e classificata", "Origins TCG actualiza la demo: nueva UI y clasificatoria"),
     description: n(
       "Origins TCG demo update of 21 September: new UI, test packs, the Crimson Cup card list, progress kept from demo and playtest, ranked at Next Fest.",
       "Aggiornamento della demo di Origins TCG del 21/9: nuova interfaccia, pacchetti di prova, lista carte Crimson Cup, progressi salvi e classificata al Next Fest.",
-      "La demo de Origins TCG se actualiza el 21/9: nueva interfaz, sobres de prueba, lista de la Crimson Cup, progreso guardado y clasificatoria en el Next Fest.",
+      "La demo de Origins TCG se actualiza el 21 de septiembre: nueva interfaz, sobres de prueba, lista de la Crimson Cup, progreso guardado y clasificatoria.",
     ),
     summary: n(
       "Koin Games updated the free Origins TCG demo on 21 September: a new interface and board, a collectors tutorial, test packs and the tentative Crimson Cup card list, with everyone's progress kept. Ranked mode switches on with Steam Next Fest.",
@@ -1428,19 +1428,19 @@ La cuestión está cerrada. Al anunciar [la primera gran actualización de la de
     highlights: {
       en: [
         { label: "The report", text: "Dracula, the boss of the missions, seemed to win every random roll", anchor: "report" },
-        { label: "Boss AI reworked in Demo v2", text: "confirmed by developer Fenchurch on 16 September", anchor: "answer" },
+        { label: "Boss AI rework promised for Demo v2", text: "confirmed by developer Fenchurch on 16 September", anchor: "answer" },
         { label: "Why it matters", text: "bosses are part of the path that unlocks decks", anchor: "why" },
         { label: "After the 21 September update", text: "the announcement does not mention the bosses", anchor: "next" },
       ],
       it: [
         { label: "La segnalazione", text: "Dracula, il boss delle missioni, sembrava vincere ogni tiro casuale", anchor: "segnalazione" },
-        { label: "IA dei boss rifatta nella Demo v2", text: "lo ha confermato lo sviluppatore Fenchurch il 16 settembre", anchor: "risposta" },
+        { label: "IA dei boss da rifare nella Demo v2", text: "lo ha confermato lo sviluppatore Fenchurch il 16 settembre", anchor: "risposta" },
         { label: "Perché conta", text: "i boss fanno parte del percorso che sblocca i mazzi", anchor: "perche" },
         { label: "Dopo l'aggiornamento del 21 settembre", text: "l'annuncio non parla dei boss", anchor: "dopo" },
       ],
       es: [
         { label: "El reporte", text: "Dracula, el jefe de las misiones, parecía ganar todas las tiradas aleatorias", anchor: "reporte" },
-        { label: "IA de los jefes rehecha en la Demo v2", text: "lo confirmó el desarrollador Fenchurch el 16 de septiembre", anchor: "respuesta" },
+        { label: "IA de los jefes, prometida para la Demo v2", text: "lo confirmó el desarrollador Fenchurch el 16 de septiembre", anchor: "respuesta" },
         { label: "Por qué importa", text: "los jefes forman parte del camino que desbloquea los mazos", anchor: "por-que" },
         { label: "Tras la actualización del 21 de septiembre", text: "el anuncio no menciona a los jefes", anchor: "despues" },
       ],
@@ -1622,19 +1622,20 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     guides: ["three-pigs-midrange-guide", "three-pigs-midrange-matchups"],
     date: "2026-09-15",
     title: n(
-      "3 Pigs Mid Range: a Three Not So Little Pigs midrange deck for ladder and tournaments",
-      "3 Pigs Mid Range: un mazzo midrange dei Three Not So Little Pigs per ladder e tornei",
-      "3 Pigs Mid Range: un mazo midrange de Three Not So Little Pigs para la ladder y los torneos",
-      "3 Pigs Mid Range : un deck midrange Three Not So Little Pigs pour le ladder et les tournois",
+      "3 Pigs Mid Range: a Three Not So Little Pigs midrange deck for ladder and competitive play",
+      "3 Pigs Mid Range: un mazzo midrange dei Three Not So Little Pigs per la ladder e il gioco competitivo",
+      "3 Pigs Mid Range: un mazo midrange de Three Not So Little Pigs para la ladder y el juego competitivo",
+      "3 Pigs Mid Range : un deck midrange Three Not So Little Pigs pour le ladder et le jeu compétitif",
     ),
     // Title e description dal 25/09/2026 (prima il titolo usciva tagliato con "…"): senza il nome dell'autore, regola del
     // 16/09. La news resta l'annuncio (mappa delle query, C34): il nome del mazzo con la Leggendaria o l'archetipo è il
-    // title della scheda del mazzo e della guida, qui c'è solo la notizia del mazzo nuovo dello staff.
+    // title della scheda del mazzo e della guida, qui c'è solo la notizia del mazzo nuovo dello staff. "Ladder e
+    // competitivo" sono i tipi del mazzo (Ladder, Competitive): "tornei" è un tipo a sé, che questo mazzo non ha.
     metaTitle: n("New Origins TCG staff deck: 3 Pigs Mid Range", "Nuovo mazzo dello staff per Origins TCG: 3 Pigs Mid Range", "Nuevo mazo del staff para Origins TCG: 3 Pigs Mid Range"),
     description: n(
-      "A midrange Origins TCG deck led by Three Not So Little Pigs, for ladder and tournaments: take the board early, win a location, close with En Passant.",
-      "Un mazzo midrange di Origins TCG guidato dai Three Not So Little Pigs, per ladder e tornei: prendi il tabellone, vinci un luogo, chiudi con En Passant.",
-      "Un mazo midrange de Origins TCG liderado por Three Not So Little Pigs, para ladder y torneos: domina el tablero, gana una ubicación y cierra con En Passant.",
+      "A midrange Origins TCG deck led by Three Not So Little Pigs, for ladder and competitive play: take the board early, win a location, close with En Passant.",
+      "Un mazzo midrange di Origins TCG guidato dai Three Not So Little Pigs, per ladder e competitivo: prendi il tabellone, vinci un luogo, chiudi con En Passant.",
+      "Un mazo midrange de Origins TCG con Three Not So Little Pigs, para ladder y competitivo: domina el tablero, gana una ubicación y cierra con En Passant.",
     ),
     summary: n(
       "The second deck by Davdas, OriginsMeta staff, is a midrange list led by Three Not So Little Pigs, tagged for ladder and competitive play. The plan: take the board in the first rounds, win at least one location, then close with En Passant, Ellen Trechend's Trample and the Lightning Strikes that Impundulu generates. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
@@ -1657,8 +1658,9 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Healing Healsing, el primer mazo de la comunidad: una lista de control de Van Helsing para la ladder",
       "Healing Healsing, le premier deck de la communauté : une liste contrôle Van Helsing pour le ladder",
     ),
-    // l'annuncio, come per 3 Pigs (C34): "Van Helsing" e "controllo" restano ai title della scheda e della guida
-    metaTitle: n("Healing Healsing, first Origins TCG deck on OriginsMeta", "Healing Healsing, primo mazzo di Origins TCG su OriginsMeta", "Healing Healsing, primer mazo de Origins TCG en OriginsMeta"),
+    // L'annuncio, come per 3 Pigs (C34): solo i fatti della news (primo mazzo pubblicato sul sito, Leggendaria, tipo
+    // di mazzo quando ci sta), senza l'autore e senza il nome del mazzo in testa, che spetta al title della scheda.
+    metaTitle: n("First Origins TCG deck on OriginsMeta: Van Helsing control", "Primo mazzo di Origins TCG su OriginsMeta: Van Helsing", "Primer mazo de Origins TCG en OriginsMeta: Van Helsing"),
     description: n(
       "The first deck published on OriginsMeta: a Van Helsing control list for the Origins TCG ladder that heals through damage and resets the board late.",
       "Il primo mazzo pubblicato su OriginsMeta: una lista controllo di Van Helsing per la ladder di Origins TCG che cura i danni e azzera il tabellone.",
@@ -1772,8 +1774,8 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     // Il primo annuncio (post Steam del 9/9). Dal 25/09/2026 ha un testo a sezioni con gli stessi fatti del riassunto,
     // una riga in cima che porta alle regole definitive del 24/9 (`crimson-cup-format-check-in`, la pagina primaria
     // sulla Crimson Cup, mappa delle query C12) e il paragrafo di aggiornamento in fondo. Title e sottotitoli raccontano
-    // l'annuncio: "regole, date, premi" restano a quell'articolo. Da confermare con Pierluigi prima del push: la KB
-    // (§1 p.34, 24/9) diceva che le news vecchie restano com'erano.
+    // l'annuncio: "regole, date, premi" restano a quell'articolo. L'aggiornamento, testo compreso, l'ha approvato
+    // Pierluigi il 25/09/2026, in deroga alla regola della KB (§1 p.34, 24/9) per cui le news vecchie restano com'erano.
     slug: "biggest-tournament-ever",
     image: "/media/news-crimson-cup.webp",
     guides: ["steam-next-fest-2026"],
@@ -1784,7 +1786,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     description: n(
       "On 9 September Koin Games announced the Origins TCG Crimson Cup: 20–25 October, regional qualifiers, prizes worth $10,000. Updated with the final rules.",
       "Il 9 settembre Koin Games ha annunciato la Crimson Cup di Origins TCG: 20–25 ottobre, qualificazioni per regione, premi per 10.000 $. Con le regole finali.",
-      "La Crimson Cup de Origins TCG, anunciada el 9/9: del 20 al 25 de octubre, clasificatorios por región y premios por 10.000 dólares. Con las reglas finales.",
+      "La Crimson Cup de Origins TCG, anunciada el 9 de septiembre: del 20 al 25 de octubre, clasificatorios por región y 10.000 dólares en premios. Con las reglas.",
     ),
     summary: n(
       "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
@@ -2155,4 +2157,22 @@ export function newsPath(item: NewsItem): string {
 export function newsReadTime(item: NewsItem, locale: Locale): number {
   const words = `${item.summary[locale]} ${item.body?.[locale] ?? ""}`.split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+
+/**
+ * Date delle versioni tradotte, una sola regola per news e guide (revisione dell'Ondata 1, 25/09/2026): la data di
+ * pubblicazione (`datePublished`, "Pubblicato il") resta quella originale dell'articolo in ogni lingua; la data di
+ * modifica di una lingua nata dopo gli articoli non va mai prima del giorno in cui quella lingua è andata online.
+ * Oggi vale solo per lo spagnolo, dal 25/09/2026: lo stesso giorno di `LOCALE_SINCE.es` in src/lib/lastmod.ts, che
+ * vale per la sitemap (lo controlla `newsMeta.test.ts`). Inglese e italiano sono le lingue degli originali.
+ * La usano la pagina della news (dati strutturati, Open Graph e data visibile) e `getGuides` in guides.ts.
+ * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
+ * import senza estensione.
+ */
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25" };
+
+/** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
+export function modifiedIn(locale: Locale, day: string): string {
+  const since = TRANSLATED_SINCE[locale];
+  return since && day < since ? since : day;
 }

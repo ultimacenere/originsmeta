@@ -26,7 +26,8 @@ export function generateStaticParams() {
 
 /**
  * Data di prima pubblicazione: `updated` cambia a ogni revisione, quindi da solo riscriverebbe anche
- * datePublished. `published` lo mette `getGuides` (guides.ts, tabella `publishedOn`).
+ * datePublished. `published` lo mette `getGuides` (guides.ts, tabella `publishedOn`), uguale in ogni lingua;
+ * `updated` in spagnolo non va prima del 25/09/2026 (`modifiedIn`, la stessa regola delle news).
  */
 function guidePublished(g: Guide): string {
   return g.published ?? g.updated;

@@ -4,7 +4,7 @@
  * description in una delle lingue del sito, se esce dai limiti di lunghezza (title finale via `pageTitle` entro 60,
  * description 120-158), se rimanda a guide, ancore, news o sezioni che non esistono o se è aggiornata senza il
  * paragrafo dell'aggiornamento. Controlla anche i collegamenti degli eventi (/tournaments) e delle FAQ approvate
- * (/faq), che puntano alle stesse news e guide.
+ * (/faq), che puntano alle stesse news e guide, e la regola delle date delle versioni tradotte (`modifiedIn`).
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -22,9 +22,15 @@ import {
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./newsMeta.ts";
 import {
+  TRANSLATED_SINCE,
+  modifiedIn,
   news,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./news.ts";
+import {
+  LOCALE_SINCE,
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+} from "../lastmod.ts";
 import {
   events,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -177,6 +183,23 @@ describe("news", () => {
     for (const item of news) {
       for (const l of locales) assert.ok(!guideTitles.has(item.metaTitle[l].trim().toLowerCase()), `${item.slug} [${l}]: stesso title di una guida`);
     }
+  });
+});
+
+describe("date delle versioni tradotte (news e guide)", () => {
+  test("lo spagnolo non si dichiara modificato prima di esistere; inglese e italiano restano con la data dell'articolo", () => {
+    assert.equal(modifiedIn("es", "2026-03-13"), "2026-09-25");
+    assert.equal(modifiedIn("es", "2026-09-25"), "2026-09-25");
+    assert.equal(modifiedIn("es", "2026-10-02"), "2026-10-02");
+    assert.equal(modifiedIn("en", "2026-03-13"), "2026-03-13");
+    assert.equal(modifiedIn("it", "2026-09-09"), "2026-09-09");
+  });
+  test("la soglia di ogni lingua tradotta è il giorno in cui è nata, lo stesso della sitemap", () => {
+    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es"]);
+    for (const [l, day] of Object.entries(TRANSLATED_SINCE)) assert.equal(day, LOCALE_SINCE[l as Locale], l);
+  });
+  test("nessuna news spagnola risulta modificata prima di essere pubblicata", () => {
+    for (const item of news) assert.ok(modifiedIn("es", item.updated ?? item.date) >= item.date, item.slug);
   });
 });
 

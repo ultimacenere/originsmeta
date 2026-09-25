@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { getNews, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
+import { getNews, modifiedIn, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
 import { authorOfNews } from "@/lib/data/authors";
 import { patchOrder, patches } from "@/lib/data/cards";
 import { relatedNews } from "@/lib/relatedNews";
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return pageMeta(locale, newsPath(item), title, item.description?.[locale] ?? item.summary[locale], item.image, {
     type: "article",
     published: item.date,
-    modified: item.updated ?? item.date,
+    modified: modifiedIn(locale, item.updated ?? item.date),
     imageAlt: item.title[locale],
     // Le copertine hanno misure diverse (1600×900, 1200×675…): si leggono dal file; le miniature remote no.
     imageSize: imageSizeOf(item.image),
@@ -63,7 +63,9 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
 
   const title = item.title[locale];
   const path = href(locale, newsPath(item));
-  const updated = item.updated ?? item.date;
+  // Pubblicazione: la data dell'articolo in ogni lingua. Modifica: in spagnolo mai prima del 25/09/2026, quando la
+  // versione è nata (`modifiedIn`, la stessa regola delle guide). Firma, dati strutturati e Open Graph la condividono.
+  const updated = modifiedIn(locale, item.updated ?? item.date);
   const body = item.body?.[locale];
   const faq = item.faq?.[locale] ?? [];
   const highlights = item.highlights?.[locale] ?? [];

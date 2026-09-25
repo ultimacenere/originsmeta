@@ -1,4 +1,5 @@
 import type { Locale } from "../i18n";
+import { modifiedIn } from "../data/news";
 import { esText } from "./guides-es";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
@@ -21,8 +22,11 @@ export type Guide = {
   /**
    * Titolo breve per la SERP: sostituisce `title` nei metadati della pagina quando il titolo esteso
    * verrebbe troncato dai motori di ricerca. Deve essere una frase vera, non un taglio del titolo
-   * lungo, contenere la parola chiave "Origins TCG" e stare entro 46 caratteri, perché `pageMeta`
-   * aggiunge " · OriginsMeta" (14 caratteri) e il titolo reso non deve superare i 60.
+   * lungo, e il titolo reso da `pageTitle` non deve superare i 60 caratteri: con "Origins TCG" dentro
+   * entro 60, senza entro 46 (la parola chiave la aggiunge `pageTitle`, " · Origins TCG").
+   * Guide ai mazzi (25/09/2026): puntano alla ricerca della guida, con la Leggendaria, le preposizioni
+   * ("Guida al mazzo di Mulan", "Guía del mazo de Mulan") e il nome del mazzo intero o nessuno; restano
+   * diverse dal title della scheda del mazzo, che ha il nome del mazzo in testa (test in cardTitles.test.ts).
    */
   metaTitle?: string;
   excerpt: string;
@@ -30,7 +34,7 @@ export type Guide = {
   updated: string;
   /**
    * Data di prima pubblicazione (ISO), che non cambia con le revisioni: la aggiunge `getGuides` dalla tabella
-   * `publishedOn`. Per lo spagnolo vale al più presto il 25/09/2026, il giorno in cui è nata la versione ES.
+   * `publishedOn`, uguale in tutte le lingue. È `updated` a non andare prima del 25/09/2026 nella versione spagnola.
    */
   published?: string;
   image?: string;
@@ -420,7 +424,7 @@ Ranked data is not public: this is a reading of the lists, not a win rate.
       cards: ["legion-of-the-dead", "bullseye", "flying-monkey", "golden-egg", "en-passant", "white-queen", "asanbosam", "morgiana", "mind-palace", "thumbelina", "impundulu", "bagheera", "boogeyman"],
     },
     title: "The Trick-or-Treat Legion: how to play the Legion of the Dead deck",
-    metaTitle: "Legion of the Dead deck guide: Trick-or-Treat",
+    metaTitle: "Legion of the Dead guide—Trick-or-Treat Legion",
     excerpt: "The Legion of the Dead list built to be unpredictable: how the Zombie board works, the Golden Egg and Boogeyman combo, the mulligan and the matchups.",
     readTime: 6,
     updated: "2026-09-23",
@@ -883,7 +887,7 @@ The Steam page lists the release for Q4 2026, with no more precise date. The dem
 - **20–25 October 2026.** The Crimson Cup, the Steam Next Fest tournament: regional qualifiers on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000, including an exclusive 1/1 promo card.
 - **27 October 2026.** The Kickstarter: on 25 September the demo's main menu showed it as "Coming soon – Oct 27". Koin Games has not announced the date on Steam or on the official Discord yet; our [Kickstarter guide](/en/guides/origins-tcg-kickstarter) will confirm it.
 - **Q4 2026.** Release on Steam, according to the store page, which gives no more precise date.
-- **2027.** Mobile version and pack opening on phone. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie the Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
+- **2027.** Mobile version and pack opening on phone. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
 
 Dates come from the official Steam posts, the studio's Discord and, for the Kickstarter, the demo's own menu. We update this page when they change.
 `,
@@ -1232,7 +1236,7 @@ Questo elenco è trascritto dal database della community e corrisponde alla rota
       cards: ["mulan", "bagheera", "baby-bear", "mary", "black-knight", "frog-prince", "ali-baba", "white-queen", "fairy-godmother", "mowgli", "ellen-trechend", "bullseye", "en-passant"],
     },
     title: "On Reveal Mid Range: come si gioca il mazzo midrange di Mulan",
-    metaTitle: "Guida al mazzo Mulan: On Reveal Mid Range",
+    metaTitle: "Guida al mazzo di Mulan: On Reveal Mid Range",
     excerpt: "Piano di gioco, mulligan e round per round di On Reveal Mid Range, mazzo di Mulan che ripete le abilità Alla rivelazione: classificata, competitivo e tornei.",
     readTime: 6,
     updated: "2026-09-23",
@@ -1322,7 +1326,7 @@ La scheda ne elenca due: **una buona curva è spesso essenziale** e **si rischia
       cards: ["king-arthur", "shield-maiden", "fairy-godmother", "dark-omen", "lancelot", "musketeer", "cowardly-lion", "roo", "shahrazad", "ali-baba", "spellbook", "boitata", "bagheera"],
     },
     title: "King of Value Trade: come si gioca il midrange di King Arthur",
-    metaTitle: "Mazzo King Arthur: guida a King of Value Trade",
+    metaTitle: "Guida al King of Value Trade di King Arthur",
     excerpt: "Piano di gioco, mulligan e round per round di King of Value Trade, il midrange di King Arthur costruito per vincere ogni scambio due carte contro una.",
     readTime: 6,
     updated: "2026-09-23",
@@ -1413,7 +1417,7 @@ La scheda ne elenca tre: **nessuna rimozione ad area**, **l'utilizzo di Dark Ome
       cards: ["dorothy", "flying-monkey", "pegasus", "card-soldier", "twister-toss", "wicked-witch-of-the-west", "kanga", "en-passant", "roo", "spellbook", "hare", "basilisk", "magic-carpet"],
     },
     title: "Dorothy Combo: come si gioca il mazzo move dopo la patch del 21 settembre",
-    metaTitle: "Guida al mazzo Dorothy: Dorothy Combo",
+    metaTitle: "Guida al mazzo di Dorothy: Dorothy Combo",
     excerpt: "Il mazzo move ricostruito sui potenziamenti del 21 settembre: come cresce Dorothy, quali combo cercare, il mulligan e quello che la lista ancora non sa fare.",
     readTime: 5,
     updated: "2026-09-23",
@@ -1468,19 +1472,19 @@ Sul mulligan l'autore non lascia note, quindi questa è una lettura di OriginsMe
 ## Round per round
 
 1. **Round 1–2: accendere il contatore.** Card Soldier o Roo, poi Twister Toss su di lui. Ogni movimento è un punto permanente su Dorothy, anche quando il campo sembra fermo.
-2. **Round 3: scegliere la corsia.** Pegasus, la Strega o Kanga. [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) è quella che genera da sola: un 1/5 che sopravvive quasi sempre e, ogni volta che sopravvive, ti mette in mano una Flying Monkey e si muove di uno spazio a sinistra — un altro punto per Dorothy.
+2. **Round 3: scegliere la corsia.** Pegasus, la Witch o Kanga. [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) è quella che genera da sola: un 1/5 che sopravvive quasi sempre e, ogni volta che sopravvive, ti mette in mano una Flying Monkey e si muove di uno spazio a sinistra — un altro punto per Dorothy.
 3. **Round 4: Magic Carpet.** Scegli la direzione che porta i Card Soldier verso uno spazio libero e Pegasus dentro uno scontro che adesso vince.
 4. **Dal quinto round: Dorothy, poi chiudere.** Hare ha Primo colpo e Muovere: colpisce prima della risposta e tiene acceso il contatore. [Basilisk](/it/cards/basilisk) con Tocco letale è la risposta economica al corpo troppo grosso per affrontarlo ad armi pari, ed En Passant trasforma un Pegasus raddoppiato in una rimozione.
 
 ## Quello che il mazzo non sa fare
 
-L'autore elenca due punti deboli, e sono quelli onesti: **può capitare di trovarsi incastrati male con le carte** e **alcune combo potrebbero non essere consistenti**. Vengono dallo stesso posto: [Flying Monkey](/it/cards/flying-monkey) muove un personaggio su uno spazio *casuale*, la copia di Card Soldier va sullo spazio che ha lasciato e Magic Carpet muove tutto, compresi gli alleati che volevi dov'erano. Decidi la direzione prima di giocare il Tappeto e non dare per scontato che uno spazio resti libero.
+L'autore elenca due punti deboli, e sono quelli onesti: **può capitare di trovarsi incastrati male con le carte** e **alcune combo potrebbero non essere consistenti**. Vengono dallo stesso posto: [Flying Monkey](/it/cards/flying-monkey) muove un personaggio su uno spazio *casuale*, la copia di Card Soldier va sullo spazio che ha lasciato e Magic Carpet muove tutto, compresi gli alleati che volevi dov'erano. Decidi la direzione prima di giocare Magic Carpet e non dare per scontato che uno spazio resti libero.
 
 ## Matchup
 
 I dati della classificata non sono pubblici: questa è una lettura delle liste, non un win rate.
 
-- **Contro i mazzi aggressivi.** La Strega e Roo tengono le prime corsie; il Tocco letale di Basilisk risponde al primo corpo grosso. Dorothy può aspettare: è migliore tardi, quando il contatore è alto.
+- **Contro i mazzi aggressivi.** La Witch e Roo tengono le prime corsie; il Tocco letale di Basilisk risponde al primo corpo grosso. Dorothy può aspettare: è migliore tardi, quando il contatore è alto.
 - **Contro i mazzi controllo.** È il matchup buono. Le copie di Card Soldier e le Flying Monkey continuano a tornare, quindi una sola pulizia del campo non ti svuota. Dopo una pulizia tieni in mano un Twister Toss per riaccendere il contatore.
 - **Contro gli altri mazzi move.** Vince chi muove di più, ma Flying Monkey muove *qualsiasi* personaggio: usala per trascinare un Pegasus avversario fuori dallo spazio dove stava per raddoppiare.
 
@@ -1499,7 +1503,7 @@ I dati della classificata non sono pubblici: questa è una lettura delle liste, 
       cards: ["legion-of-the-dead", "bullseye", "flying-monkey", "golden-egg", "en-passant", "white-queen", "asanbosam", "morgiana", "mind-palace", "thumbelina", "impundulu", "bagheera", "boogeyman"],
     },
     title: "The Trick-or-Treat Legion: come si gioca il mazzo di Legion of the Dead",
-    metaTitle: "Legion of the Dead: guida a Trick-or-Treat",
+    metaTitle: "Guida al mazzo di Legion of the Dead",
     excerpt: "La lista di Legion of the Dead costruita per essere imprevedibile: come funziona il campo di Zombie, la combo Golden Egg e Boogeyman, il mulligan e i matchup.",
     readTime: 6,
     updated: "2026-09-23",
@@ -1596,7 +1600,7 @@ Sono due, dalla scheda del mazzo: **Mind Palace è molto importante per non rima
       cards: ["three-not-so-little-pigs", "bagheera", "rumple", "axe-throw", "mind-palace", "piglet", "big-bad-wolf", "wicked-witch-of-the-west", "en-passant", "ali-baba", "frog-prince", "impundulu", "ellen-trechend"],
     },
     title: "3 Pigs Mid Range: come si gioca il mazzo midrange dei Three Not So Little Pigs",
-    metaTitle: "Guida al mazzo Three Not So Little Pigs",
+    metaTitle: "Guida al mazzo dei Three Not So Little Pigs",
     excerpt: "Piano di gioco, mulligan e round per round di 3 Pigs Mid Range, il mazzo midrange guidato dai Three Not So Little Pigs, per ladder e competitivo.",
     readTime: 6,
     updated: "2026-09-25",
@@ -1677,7 +1681,7 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
       cards: ["three-not-so-little-pigs", "rumple", "wicked-witch-of-the-west", "flying-monkey", "en-passant", "big-bad-wolf", "impundulu", "lightning-strike", "piglet", "ellen-trechend", "axe-throw", "frog-prince", "van-helsing", "boitata", "mulan", "robin-hood", "king-arthur"],
     },
     title: "3 Pigs Mid Range: matchup, interazioni chiave e Conquest",
-    metaTitle: "Matchup del mazzo Three Not So Little Pigs",
+    metaTitle: "Matchup del mazzo dei Three Not So Little Pigs",
     excerpt: "La seconda parte della guida a 3 Pigs Mid Range: le interazioni che vincono le partite, i matchup principali, gli errori da evitare e Conquest.",
     readTime: 5,
     updated: "2026-09-25",
@@ -1731,7 +1735,7 @@ Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Il Conquest,
       cards: ["van-helsing", "van-helsings-tools", "baby-bear", "scarecrow", "shahrazad", "ali-baba", "jill", "spellbook", "phuong-hoang", "jekyll", "searing-light", "boitata", "tin-woodman", "forbidden-knowledge"],
     },
     title: "Healing Healsing: come si gioca il mazzo controllo di Van Helsing",
-    metaTitle: "Guida al mazzo Van Helsing: Healing Healsing",
+    metaTitle: "Guida al Healing Healsing di Van Helsing",
     excerpt: "Piano di gioco, mulligan e round per round di Healing Healsing, la lista controllo di Van Helsing che cura, pesca e azzera il tabellone.",
     readTime: 6,
     updated: "2026-09-25",
@@ -1876,7 +1880,7 @@ Il mazzo è segnato solo per la ladder, ma si inserisce bene in una formazione C
     updated: "2026-09-25",
     image: "/media/ss-board-locations.webp",
     faq: [
-      { q: "Cos'è Origins TCG?", a: "Un gioco di carte collezionabili digitale di Koin Games, studio di Tampa (Florida) fondato nel 2021. I personaggi sono leggende di pubblico dominio — Robin Hood, Mulan, la Regina di Cuori, Dracula e molti altri — reinterpretate in un unico mondo originale." },
+      { q: "Cos'è Origins TCG?", a: "Un gioco di carte collezionabili digitale di Koin Games, studio di Tampa (Florida) fondato nel 2021. I personaggi sono leggende di pubblico dominio — Robin Hood, Mulan, Queen of Hearts, Dracula e molti altri — reinterpretate in un unico mondo originale." },
       { q: "Quanto dura una partita?", a: "Circa sette minuti. I due giocatori agiscono insieme su tre corsie, quindi non si aspetta mai il turno dell'avversario." },
       { q: "Da quante carte è fatto un mazzo?", a: "Venticinque nella demo attuale, costruite intorno a una Leggendaria con un'abilità caratteristica. Mulan ripete le abilità Alla rivelazione dei tuoi alleati, la Queen of Hearts ripete le loro abilità Alla morte." },
       { q: "Si può giocare gratis a Origins TCG?", a: "Sì. La demo su Steam è gratuita e comprende il tutorial, le missioni contro boss con una propria IA e il gioco online. Ogni carta che serve per giocare a livello competitivo si guadagna giocando; i soldi comprano solo versioni da collezione delle carte." },
@@ -1884,7 +1888,7 @@ Il mazzo è segnato solo per la ladder, ma si inserisce bene in una formazione C
     body: `
 ## Cos'è
 
-Origins TCG è un gioco di carte collezionabili digitale di **Koin Games**, studio di Tampa (Florida) fondato nel 2021 da veterani del settore. I personaggi sono leggende di pubblico dominio reinterpretate in un unico mondo originale: Robin Hood, Mulan, la Regina di Cuori, Winnie-the-Pooh, Re Artù, Dracula e molti altri.
+Origins TCG è un gioco di carte collezionabili digitale di **Koin Games**, studio di Tampa (Florida) fondato nel 2021 da veterani del settore. I personaggi sono leggende di pubblico dominio reinterpretate in un unico mondo originale: Robin Hood, Mulan, Queen of Hearts, Winnie-the-Pooh, King Arthur, Dracula e molti altri.
 
 La promessa è il **free-to-compete**: ogni carta che serve per giocare a livello competitivo si guadagna giocando. I soldi comprano solo versioni da collezione delle carte, che si possono far valutare, scambiare e vendere. Gli sviluppatori lo chiamano "zero pay-to-win".
 
@@ -1962,7 +1966,7 @@ La pagina Steam indica l'uscita nel quarto trimestre 2026, senza una data più p
 - **20–25 ottobre 2026.** La Crimson Cup, il torneo dello Steam Next Fest: qualificazioni regionali il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $, fra cui una carta promo 1/1 esclusiva.
 - **27 ottobre 2026.** Il Kickstarter: il 25 settembre il menu principale della demo lo mostrava come "Coming soon – Oct 27". Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale; la nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter) la confermerà.
 - **Q4 2026.** Uscita su Steam, secondo la pagina dello store, che non dà una data più precisa.
-- **2027.** Versione mobile e apertura dei pacchetti da telefono. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui Re Artù, Dracula, Winnie the Pooh, Alice, Beowulf, Cenerentola, Sweeney Todd, Frankenstein e Sherlock Holmes.
+- **2027.** Versione mobile e apertura dei pacchetti da telefono. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein e Sherlock Holmes.
 
 Le date vengono dai post ufficiali su Steam, dal Discord dello studio e, per il Kickstarter, dal menu della demo. Aggiorniamo questa pagina quando cambiano.
 `,
@@ -2265,14 +2269,12 @@ const publishedOn: Record<GuideSlug, string> = {
   "collector-economy": "2026-09-15",
 };
 
-/** Nascita della versione spagnola: una guida ES non può dichiararsi pubblicata né aggiornata prima di questa data. */
-const ES_SINCE = "2026-09-25";
-
+/**
+ * Date di una guida nella sua lingua, con la regola delle news (`modifiedIn` in news.ts): la prima pubblicazione resta
+ * quella originale in ogni lingua, l'aggiornamento di una versione nata dopo (lo spagnolo) non va prima della sua nascita.
+ */
 function withDates(locale: Locale, g: Guide): Guide {
-  const published = publishedOn[g.slug as GuideSlug];
-  if (locale !== "es") return { ...g, published };
-  const p = published < ES_SINCE ? ES_SINCE : published;
-  return { ...g, published: p, updated: g.updated < p ? p : g.updated };
+  return { ...g, published: publishedOn[g.slug as GuideSlug], updated: modifiedIn(locale, g.updated) };
 }
 
 export function getGuides(locale: Locale): Guide[] {
