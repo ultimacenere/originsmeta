@@ -13,13 +13,13 @@ import { TIERS, type Tier, type TierBoard, type TierKind } from "@/lib/tiercode"
  * (/tier-list) resta separata e aspetta i risultati dei tornei ufficiali.
  */
 
-export type PublishedTierList = { kind: TierKind; entries: unknown; updated_at: string };
+export type PublishedTierList = { owner: string; kind: TierKind; entries: unknown; updated_at: string };
 
 /** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists`). */
 export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const { data, error } = await client.from("tier_lists").select("kind, entries, updated_at").eq("status", "published").limit(5000);
+  const { data, error } = await client.from("tier_lists").select("owner, kind, entries, updated_at").eq("status", "published").limit(5000);
   if (error) {
     console.error("[community] listPublishedTierLists:", error.message);
     return [];

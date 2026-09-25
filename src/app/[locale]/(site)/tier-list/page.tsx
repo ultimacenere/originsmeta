@@ -66,7 +66,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   const legendaries = data.cards.filter((c) => c.legendary);
   const base = data.cards.filter((c) => !c.legendary);
   const lists = Math.max(data.lists.legendaries, data.lists.cards);
-  const state = tierSourceState(d, { lists, decks: data.decks.length, officialUpdated: ranked ? formatDate(locale, tierList.updated) : undefined });
+  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length, officialUpdated: ranked ? formatDate(locale, tierList.updated) : undefined });
 
   // Le voci di "In breve" e delle anteprime, le stesse: carte contate dai mazzi pubblicati, mazzi col voto pesato
   const legendaryItems = usedItems(legendaries);

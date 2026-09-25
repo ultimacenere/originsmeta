@@ -19,6 +19,32 @@ export const TIER_POINTS: Record<Tier, number> = { S: 5, A: 4, B: 3, C: 2, D: 1 
 /** Da quante tier list salvate la classifica si chiama "della community" (Pierluigi, 24/09/2026). Sotto è un'anteprima. */
 export const COMMUNITY_MIN_LISTS = 5;
 
+/** Le parole della frase sul campione della tier list della community (chiavi di `tier` nei dizionari). */
+export type SampleWords = {
+  sourceCommunityPeopleOne: string;
+  sourceCommunityPeopleMany: string;
+  sourceCommunityOne: string;
+  sourceCommunityMany: string;
+  communitySampleOne: string;
+  communitySampleMany: string;
+};
+
+/**
+ * Quante persone hanno salvato una tier list e quante liste ci sono, per scheda. Ogni persona ne salva al massimo una
+ * per scheda (Leggendarie e carte base), quindi 2 persone possono fare 4 liste: prima il sito diceva solo "2 liste"
+ * (il massimo fra le due schede) e un contatore sulle righe della tabella ne vedeva 4 (Pierluigi, 25/09/2026).
+ */
+export function communitySample(w: SampleWords, n: { legendaries: number; cards: number; people: number }): string {
+  const total = n.legendaries + n.cards;
+  const people = n.people === 1 ? w.sourceCommunityPeopleOne : w.sourceCommunityPeopleMany.replace("{n}", String(n.people));
+  const lists = total === 1 ? w.sourceCommunityOne : w.sourceCommunityMany.replace("{n}", String(total));
+  return (total === 1 ? w.communitySampleOne : w.communitySampleMany)
+    .replace("{people}", people)
+    .replace("{lists}", lists)
+    .replace("{legendaries}", String(n.legendaries))
+    .replace("{cards}", String(n.cards));
+}
+
 export type CardScore = { slug: string; avg: number; votes: number; dist: Record<Tier, number>; tier: Tier };
 
 /** La fascia di una media: 4,5 e oltre è S, sotto 1,5 è D (le stesse soglie della vista SQL `tier_card_scores`). */

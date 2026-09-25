@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cache } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
+import { COMMUNITY_MIN_LISTS, communitySample } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
@@ -42,7 +42,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
   const data = await loadData(locale);
   const labels = tierExplorerLabels(d);
   const lists = savedLists(data);
-  const state = tierSourceState(d, { lists, decks: data.decks.length });
+  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length });
   const kinds = [
     { id: "legendaries" as const, title: t.sections.legendaries.title, text: t.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary), n: data.lists.legendaries },
     { id: "cards" as const, title: t.sections.cards.title, text: t.sections.cards.text, entries: data.cards.filter((x) => !x.legendary), n: data.lists.cards },
@@ -84,7 +84,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
       <TierSourceLine
         items={[
           { label: t.lineSource, text: c.sourceText },
-          { label: t.lineSample, text: `${listsLabel(lists)}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
+          { label: t.lineSample, text: `${communitySample(t, data.lists)}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
           ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort, lists), warn: true }] : []),
         ]}
       />

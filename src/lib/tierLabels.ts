@@ -57,11 +57,12 @@ export function tierExplorerLabels(d: Dictionary): TierExplorerLabels {
 }
 
 /** Lo stato di ogni fonte sotto il suo nome, nella testata della sezione. */
-export function tierSourceState(d: Dictionary, n: { lists: number; decks: number; officialUpdated?: string }) {
+export function tierSourceState(d: Dictionary, n: { lists: number; people: number; decks: number; officialUpdated?: string }) {
   const t = d.tier;
   return {
     official: n.officialUpdated ? t.sourceOfficialUpdated.replace("{date}", n.officialUpdated) : t.sourceOfficialSoon,
-    community: n.lists === 0 ? t.sourceCommunityNone : n.lists === 1 ? t.sourceCommunityOne : t.sourceCommunityMany.replace("{n}", String(n.lists)),
+    // chi ha salvato una tier list, non il numero di liste: una persona ne salva una per scheda (Leggendarie e carte base)
+    community: n.lists === 0 ? t.sourceCommunityNone : n.people === 1 ? t.sourceCommunityPeopleOne : t.sourceCommunityPeopleMany.replace("{n}", String(n.people)),
     played: n.decks === 0 ? t.sourcePlayedNone : n.decks === 1 ? t.sourcePlayedOne : t.sourcePlayedMany.replace("{n}", String(n.decks)),
   };
 }

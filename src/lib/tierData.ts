@@ -24,7 +24,8 @@ export type TierData = {
   /** versioni del gioco dei mazzi pubblicati, dalla più recente */
   deckPatches: string[];
   /** tier list salvate per tipo e data dell'ultima */
-  lists: { legendaries: number; cards: number; updated?: string };
+  /** liste salvate per scheda (una per persona e per scheda) e persone distinte che ne hanno salvata almeno una */
+  lists: { legendaries: number; cards: number; people: number; updated?: string };
 };
 
 export async function loadTierData(locale: Locale): Promise<TierData> {
@@ -112,6 +113,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
     lists: {
       legendaries: lists.filter((l) => l.kind === "legendaries").length,
       cards: lists.filter((l) => l.kind === "cards").length,
+      people: new Set(lists.map((l) => l.owner)).size,
       updated: updated ? formatDate(locale, updated) : undefined,
     },
   };

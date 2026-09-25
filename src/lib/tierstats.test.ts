@@ -6,6 +6,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
   COMMUNITY_MIN_LISTS,
+  communitySample,
   aggregateLists,
   briefSentence,
   deckBrief,
@@ -330,5 +331,20 @@ describe("In breve con i dizionari veri", () => {
       "Hasta ahora la comunidad ha publicado en OriginsMeta 16 mazos de Origins TCG (Koin Games); el último, el 24 de septiembre de 2026. Seis Legendarias empatan en cabeza, con 2 mazos cada una: Dorothy, Dracula, King Arthur, Queen of Hearts, Three Not So Little Pigs y Van Helsing. Cartas base más jugadas: Spellbook (5 mazos), Ellen Trechend (4 mazos) y Golden Egg (4 mazos). Mazos mejor valorados: Buff (5,0/5, 3 votos) y Cure Control (4,0/5, 1 voto).",
     );
     assert.match(brief("es", sixRated), / Seis mazos empatan con la mejor valoración: Aggro \(5,0\/5, 1 voto\), Buff \(4,0\/5, 4 votos\), .* y Fairy \(4,0\/5, 4 votos\)\.$/);
+  });
+});
+
+describe("communitySample", () => {
+  test("2 persone e 4 liste: la frase dice tutte e due le cose, nelle tre lingue", () => {
+    const n = { legendaries: 2, cards: 2, people: 2 };
+    assert.equal(communitySample(en.tier, n), "2 people, 4 lists saved (2 of Legendaries and 2 of base cards)");
+    assert.equal(communitySample(it.tier, n), "2 persone, 4 liste salvate (2 di Leggendarie e 2 di carte base)");
+    assert.equal(communitySample(es.tier, n), "2 personas, 4 listas guardadas (2 de Legendarias y 2 de cartas base)");
+  });
+  test("una sola lista: singolare", () => {
+    const n = { legendaries: 1, cards: 0, people: 1 };
+    assert.equal(communitySample(it.tier, n), "1 persona, 1 lista salvata (1 di Leggendarie e 0 di carte base)");
+    assert.equal(communitySample(es.tier, n), "1 persona, 1 lista guardada (1 de Legendarias y 0 de cartas base)");
+    assert.equal(communitySample(en.tier, n), "1 person, 1 list saved (1 of Legendaries and 0 of base cards)");
   });
 });
