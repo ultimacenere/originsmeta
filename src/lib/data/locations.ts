@@ -11,7 +11,9 @@ import type { PatchId } from "./cards";
  * DA DOVE VENGONO I DATI. Nome ed effetto sono trascritti dal database della community World of Origins
  * (worldoforigins.fun/locations, sezione "Demo v2 2026"), l'eccezione autorizzata da Pierluigi il 15/09/2026 per i
  * DATI delle carte: i luoghi non sono in `woo-cards.json` e `npm run import:woo` non li porta, quindi stanno qui,
- * scritti a mano. Nessuna immagine viene da lì.
+ * scritti a mano. Nessuna immagine viene da lì. Dal 25/09/2026 (decisione di Pierluigi) la pagina non nomina né linka
+ * questa fonte: la riga in fondo a /locations dice la patch, che gli effetti italiani e spagnoli sono nostri e che i
+ * luoghi non sono ancora verificati uno per uno nel gioco (`locations.source` e `notVerified` nei dizionari).
  * `verified: false` finché non si confrontano uno per uno con il gioco, come è stato fatto per le carte il
  * 22/09/2026: quando succede, si aggiorna `locationsVerified` qui sotto e si mette `verified: true`.
  *

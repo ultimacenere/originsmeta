@@ -9,12 +9,13 @@ import { cardLabels } from "@/lib/cardPage";
  * - Le 122 carte della collezione della Demo 2.0: il testo nella lingua della pagina è quello ufficiale del gioco
  *   (letto nel gioco il 25/09/2026 in italiano e spagnolo, `card-lore.ts`).
  * - Carte create e rimosse: la collezione non le mostra, quindi in italiano e spagnolo il testo è una traduzione di
- *   OriginsMeta fatta con il glossario ufficiale del gioco (docs/testi-di-gioco.md); in inglese viene da World of
- *   Origins.
+ *   OriginsMeta fatta con il glossario ufficiale del gioco (docs/testi-di-gioco.md); in inglese è quello dei dati
+ *   importati, che nel gioco non si può verificare.
  * - Sulle pagine italiane e spagnole segue il testo inglese, con `lang="en"`: "Testo inglese del gioco" sulle carte
- *   della collezione, "Testo inglese (World of Origins)" su create e rimosse, che nel gioco non si possono verificare
- *   (la stessa fonte che la pagina inglese dichiara). Se il testo locale manca e la scheda ripiega sull'inglese, c'è
- *   solo quello, con la sua etichetta e il suo `lang`.
+ *   della collezione, "Testo inglese (non verificato nel gioco)" su create e rimosse, come dice la pagina inglese
+ *   ("Card text (not checked in the game)"). Dal 25/09/2026 l'etichetta non nomina più la fonte del testo (decisione
+ *   di Pierluigi). Se il testo locale manca e la scheda ripiega sull'inglese, c'è solo quello, con la sua etichetta e
+ *   il suo `lang`.
  * `outdated`: una patch successiva ha cambiato il testo (`textOutdated`), e la scheda lo dice invece di lasciarlo
  * credere attuale.
  */

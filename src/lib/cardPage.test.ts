@@ -9,6 +9,7 @@
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
@@ -51,7 +52,6 @@ const {
   itNei,
   legendaryPowers,
   partsText,
-  sourceNote,
 } = pageModule;
 type CardFacts = import("./cardPage").CardFacts;
 type DeckCount = import("./cardPage").DeckCount;
@@ -136,10 +136,11 @@ describe("frase d'attacco: esempi", () => {
       }
   });
 
-  test("una carta creata che nessun testo nomina: lo dice, e dice a che cosa la collega World of Origins", () => {
-    assert.match(lead("reflection", "en"), /No card text says which card creates it; World of Origins links it to Mulan\./);
-    assert.match(lead("reflection", "it"), /Nessun testo di carta dice quale carta la genera; World of Origins la collega a Mulan\./);
-    assert.match(lead("reflection", "es"), /Ningún texto de carta dice qué carta la crea; World of Origins la relaciona con Mulan\./);
+  test("una carta creata che nessun testo nomina: dice solo questo, senza legami presi dai dati importati", () => {
+    assert.match(lead("reflection", "en"), /deck builder\. No card text says which card creates it\. It costs/);
+    assert.match(lead("reflection", "it"), /deck builder\. Nessun testo di carta dice quale carta la genera\. Costa/);
+    assert.match(lead("reflection", "es"), /deck builder\. Ningún texto de carta dice qué carta la crea\. Cuesta/);
+    for (const l of locales) assert.doesNotMatch(lead("reflection", l), /Mulan/, l);
   });
 
   test("più carte la generano: verbo al plurale", () => {
@@ -248,15 +249,17 @@ describe("In breve", () => {
     assert.equal(itNei(16), "nei");
   });
 
-  test("carte create: la prima risposta dice lo stato senza ripetere chi la genera, con la fonte quando è solo World of Origins", () => {
+  test("carte create: la prima risposta dice lo stato senza ripetere chi la genera; senza una carta della demo che la generi, non si può dire", () => {
     const garlic = cardBrief(card("garlic"), facts("garlic"), "en");
     assert.equal(partsText(garlic[0].a), "Yes, as a created card: it cannot be added to a deck in the deck builder, but it comes into a match from a card in Demo 2.0.");
     assert.equal(partsText(cardBrief(card("garlic"), facts("garlic"), "it")[0].a), "Sì, come carta generata: non si può mettere nel mazzo con il deck builder, ma in partita arriva da una carta della Demo 2.0.");
     for (const slug of ["reflection", "little-pig", "off-with-your-head"]) {
       assert.equal(createdFromDemo(facts(slug)), false, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "en")[0].a), /^According to World of Origins, yes: /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "it")[0].a), /^Secondo World of Origins sì: /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "es")[0].a), /^Según World of Origins, sí: /, slug);
+      // mai un "sì" senza una base verificabile, e nessuna fonte nominata (dal 25/09/2026)
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "en")[0].a), /^We cannot say for sure: no card text in Demo 2\.0 creates it, and created cards are not in the game's collection\. /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "it")[0].a), /^Non si può dire con certezza: nessun testo delle carte della Demo 2\.0 la genera, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "es")[0].a), /^No se puede decir con certeza: ningún texto de las cartas de la Demo 2\.0 la crea, /, slug);
+      assert.equal(partsText(cardBrief(card(slug), facts(slug), "en")[2].a), "No card text says so.", slug);
     }
     for (const c of cards.filter((x) => x.type === "token"))
       for (const l of locales) for (const g of facts(c.slug).createdBy.flat()) assert.ok(!partsText(cardBrief(c, facts(c.slug), l)[0].a).includes(g.name), `${l} ${c.slug}: ${g.name}`);
@@ -326,9 +329,11 @@ describe("etichette e fonti", () => {
     assert.equal(cardLabels.es.textEnglish, "Texto en inglés del juego");
     assert.equal(cardLabels.it.textOurs, "Traduzione di OriginsMeta (glossario del gioco)");
     assert.equal(cardLabels.es.textOurs, "Traducción de OriginsMeta (glosario del juego)");
-    // carte create e rimosse: l'inglese viene da World of Origins, come dice la pagina inglese
-    assert.equal(cardLabels.it.textEnglishWoo, "Testo inglese (World of Origins)");
-    assert.equal(cardLabels.es.textEnglishWoo, "Texto en inglés (World of Origins)");
+    // carte create e rimosse: il testo non è verificabile nel gioco, e l'etichetta dice solo questo (dal 25/09/2026 non
+    // nomina più da dove viene), come la pagina inglese
+    assert.equal(cardLabels.it.textEnglishWoo, "Testo inglese (non verificato nel gioco)");
+    assert.equal(cardLabels.es.textEnglishWoo, "Texto en inglés (no verificado en el juego)");
+    assert.equal(cardLabels.en.textWoo, "Card text (not checked in the game)");
   });
 
   test("\"Spesso nello stesso mazzo\": davanti a \"suoi\" l'articolo è sempre \"dei\", davanti al numero cambia", () => {
@@ -355,10 +360,10 @@ describe("etichette e fonti", () => {
     assert.deepEqual(cardLdTexts(card("merlin"), true), []);
   });
 
-  test("stato nei dati strutturati: uguale in ogni lingua, e World of Origins come fonte per le carte create senza catena", () => {
+  test("stato nei dati strutturati: uguale in ogni lingua; le carte create senza catena dalla demo non si dicono nella demo", () => {
     assert.equal(cardStatusLd(card("merlin"), facts("merlin")), "In Demo 2.0");
     assert.equal(cardStatusLd(card("garlic"), facts("garlic")), "Created card in Demo 2.0");
-    assert.equal(cardStatusLd(card("reflection"), facts("reflection")), "Created card listed by World of Origins");
+    assert.equal(cardStatusLd(card("reflection"), facts("reflection")), "Created card, not verified in Demo 2.0");
     assert.equal(cardStatusLd(card("baker"), facts("baker")), "Not in Demo 2.0 (earlier builds)");
   });
 
@@ -372,33 +377,30 @@ describe("etichette e fonti", () => {
     for (const c of cards) for (const l of locales) assert.match(cardImageAlt(c, l), /Origins TCG.*© Koin Games$/, `${l} ${c.slug}`);
   });
 
-  test("riga sotto le statistiche: le carte create e rimosse non si dicono verificate nel gioco", () => {
+  test("riga sotto le statistiche: le carte create e rimosse non si dicono verificate nel gioco, e nessuna fonte è nominata", () => {
     assert.equal(asOfLine(card("merlin"), "it", cardSource), undefined);
+    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game|cannot be checked in the game/, it: /non sono stati verificati nel gioco|non si può verificare nel gioco/, es: /no se han verificado en el juego|no se puede verificar en el juego/ };
     for (const l of locales) {
-      for (const slug of ["garlic", "baker"]) assert.match(asOfLine(card(slug), l, cardSource) ?? "", /World of Origins/, `${l} ${slug}`);
+      for (const slug of ["garlic", "baker"]) {
+        const line = asOfLine(card(slug), l, cardSource) ?? "";
+        assert.match(line, notChecked[l], `${l} ${slug}`);
+        assert.doesNotMatch(line, /World of Origins|worldoforigins|database|base de datos|import/i, `${l} ${slug}`);
+      }
+      // le carte rimosse: gli ultimi dati noti, con la patch dei dati importati
+      assert.match(asOfLine(card("baker"), l, cardSource) ?? "", /0\.6\.3/, l);
     }
     assert.match(asOfLine(card("baker"), "en", cardSource) ?? "", /^Not in Demo 2\.0/);
   });
 
-  test("riga della fonte: import, patch di partenza e patch applicate dopo", () => {
+  test("le patch si nominano con patchLabel, mai con l'id (anche quando l'import arriverà alla demo-0921)", () => {
+    const later = { patch: "demo-0921" };
     for (const l of locales) {
-      const note = sourceNote(l, { fetched: "2026-09-21T10:00:00Z", patch: "0.6.3" });
-      assert.match(note, /0\.6\.3/, l);
-      assert.match(note, /Demo · 21/, l);
-    }
-    assert.doesNotMatch(sourceNote("en", { fetched: "2026-09-21", patch: "demo-0921" }), /applied/);
-  });
-
-  test("le patch si nominano con patchLabel, mai con l'id (anche quando World of Origins importerà la demo-0921)", () => {
-    const later = { fetched: "2026-09-30T10:00:00Z", patch: "demo-0921" };
-    for (const l of locales) {
-      for (const text of [sourceNote(l, later), asOfLine(card("baker"), l, later) ?? ""]) {
-        assert.match(text, /Demo · 21/, l);
-        assert.doesNotMatch(text, /demo-0921/, l);
-      }
+      const text = asOfLine(card("baker"), l, later) ?? "";
+      assert.match(text, /Demo · 21/, l);
+      assert.doesNotMatch(text, /demo-0921/, l);
     }
     // una patch che il sito non conosce resta com'è
-    assert.match(sourceNote("en", { fetched: "2026-09-30", patch: "0.7.0" }), /based on patch 0\.7\.0/);
+    assert.match(asOfLine(card("baker"), "en", { patch: "0.7.0" }) ?? "", /as of patch 0\.7\.0/);
   });
 
   test("fillParts: i segnaposto diventano pezzi, anche elenchi di carte", () => {
@@ -412,5 +414,73 @@ describe("etichette e fonti", () => {
       assert.ok(card(slug).legendary, slug);
       for (const l of locales) assert.ok(text?.[l]?.trim(), `${slug} ${l}`);
     }
+  });
+});
+
+/**
+ * Dal 25/09/2026, per decisione di Pierluigi, il sito non nomina e non linka World of Origins, il database della
+ * community da cui `npm run import:woo` importa i dati delle carte: l'import resta uno strumento interno. Questo test
+ * fallisce se il nome o il dominio ricompaiono nei testi pubblici scritti nel codice: etichette della scheda carta,
+ * etichette di /about e dei dati strutturati del sito, dizionari, news, etichette dei tag, luoghi ed eventi; se
+ * `cardSource` torna a portare nome o indirizzo della fonte, che le pagine potrebbero mostrare; e se `woo-cards.json`,
+ * che cards.ts importa intero e che quindi arriva anche nei chunk del browser, torna ad avere nome o dominio.
+ * Da estendere a faq.ts, guide e llms.txt quando saranno ripuliti anche loro (li sta modificando un altro lavoro).
+ */
+describe("World of Origins non si nomina nei testi pubblici", () => {
+  const woo = /world\s*of\s*origins|worldoforigins/i;
+
+  test("etichette, dizionari, news, tag, luoghi ed eventi", async () => {
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const entity: typeof import("./entityLabels") = await import("./entityLabels.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const dictEn: typeof import("./dictionaries/en") = await import("./dictionaries/en.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const dictIt: typeof import("./dictionaries/it") = await import("./dictionaries/it.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const dictEs: typeof import("./dictionaries/es") = await import("./dictionaries/es.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const newsModule: typeof import("./data/news") = await import("./data/news.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const keywords: typeof import("./keywordLabels") = await import("./keywordLabels.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const locationsModule: typeof import("./data/locations") = await import("./data/locations.ts");
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const eventsModule: typeof import("./data/events") = await import("./data/events.ts");
+    const sources: Record<string, unknown> = {
+      cardLabels,
+      entityLabels: entity.entityLabels,
+      "dictionaries/en": dictEn.en,
+      "dictionaries/it": dictIt.it,
+      "dictionaries/es": dictEs.es,
+      news: newsModule.news,
+      keywordLabels: keywords.keywordLabels,
+      locations: locationsModule.locations,
+      locationTagLabels: locationsModule.locationTagLabels,
+      events: eventsModule.events,
+    };
+    for (const [name, value] of Object.entries(sources)) assert.doesNotMatch(JSON.stringify(value), woo, name);
+    for (const l of locales) assert.doesNotMatch(entity.aboutDisclaimer(l) + entity.aboutChecks(l, { date: "D", count: 1, textsDate: "T" }).join(" "), woo, l);
+  });
+
+  test("le frasi della scheda di ogni carta, in ogni lingua", () => {
+    const bad: string[] = [];
+    for (const c of cards)
+      for (const l of locales) {
+        const f = facts(c.slug, c.status === "active" && c.type !== "token" ? { n: 1, total: 16 } : undefined);
+        const text = [partsText(cardLead(c, f, l)), ...cardBrief(c, f, l).map((i) => i.q + partsText(i.a)), asOfLine(c, l, cardSource) ?? "", cardStatusLd(c, f)].join(" ");
+        if (woo.test(text)) bad.push(`${l} ${c.slug}`);
+      }
+    assert.deepEqual(bad, []);
+  });
+
+  test("cardSource porta solo patch e data dell'import, niente nome né indirizzo della fonte", () => {
+    assert.deepEqual(Object.keys(cardSource).sort(), ["fetched", "patch"]);
+  });
+
+  test("woo-cards.json, che arriva intero nei chunk del browser, non nomina la fonte", () => {
+    const raw = readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8");
+    const json = JSON.parse(raw) as Record<string, unknown>;
+    assert.deepEqual(Object.keys(json).sort(), ["cards", "fetched", "patch"]);
+    assert.doesNotMatch(raw, woo);
   });
 });

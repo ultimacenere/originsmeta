@@ -165,9 +165,11 @@ for (const e of entries) {
 }
 entries.sort((a, b) => a.name.localeCompare(b.name, "en"));
 
+// Niente `source` né `license` nel JSON (dal 25/09/2026): cards.ts lo importa intero, quindi il file finisce anche nei
+// chunk JavaScript scaricati dal browser (deck builder, pubblicazione dei mazzi), e per decisione di Pierluigi il sito
+// non nomina e non linka la fonte. L'indirizzo resta in `SITE` qui sopra; la nota sulla licenza resta qui: dati della
+// community World of Origins, usati con il consenso implicito del sito pubblico; nessuna immagine importata.
 const out = {
-  source: SITE,
-  license: "Dati della community World of Origins, usati con il consenso implicito del sito pubblico; nessuna immagine importata.",
   patch,
   fetched: new Date().toISOString().slice(0, 10),
   cards: entries,

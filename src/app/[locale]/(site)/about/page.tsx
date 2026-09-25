@@ -4,7 +4,7 @@ import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { authors } from "@/lib/data/authors";
-import { cardSource, cardsVerified } from "@/lib/data/cards";
+import { cardsVerified } from "@/lib/data/cards";
 import { OFFICIAL_TEXTS_READ, aboutChecks, aboutDisclaimer, entityLabels } from "@/lib/entityLabels";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { SteamButton, isSteamUrl, newTabProps } from "@/components/SteamButton";
@@ -15,7 +15,8 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   const { locale, dict } = await resolveLocale(params);
   // Descrizione scritta apposta per la SERP: `p1` è il primo paragrafo della pagina, più lungo del
   // limite, e verrebbe tagliato a metà frase. Il titolo lo compone `pageMeta`, marchio compreso.
-  // Dall'Ondata 2 la description nomina le stesse fonti della pagina (World of Origins, verifica nel gioco: TOOL-13).
+  // Dall'Ondata 2 la description dice le stesse cose della pagina (fonti ufficiali, verifica nel gioco: TOOL-13); dal
+  // 25/09/2026 nessuna delle due nomina la fonte dei dati importati delle carte (decisione di Pierluigi).
   return pageMeta(locale, "/about", dict.about.title, entityLabels[locale].about.description);
 }
 
@@ -41,9 +42,10 @@ function withSlot(template: string, slot: string, node: React.ReactNode) {
 /*
   Pagina "Chi siamo" come segnale di affidabilità (Ondata 2 del piano SEO/GEO, 25/09/2026: HOME-09, TOOL-13). Oltre al
   testo di sempre: come verifichiamo i dati (sezione #how-we-check, a cui rimanda `publishingPrinciples` del nodo
-  Organization), World of Origins fra le fonti, un disclaimer senza "fair use" (il permesso di Koin Games del 19/09/2026
-  è pronto ma spento finché Pierluigi non lo approva: `KOIN_PERMISSION_PUBLIC`), il link all'elenco degli autori e i dati
-  strutturati AboutPage + BreadcrumbList. I testi nuovi stanno in entityLabels.ts.
+  Organization), un disclaimer senza "fair use" (il permesso di Koin Games del 19/09/2026 è pronto ma spento finché
+  Pierluigi non lo approva: `KOIN_PERMISSION_PUBLIC`), il link all'elenco degli autori e i dati strutturati AboutPage +
+  BreadcrumbList. I testi nuovi stanno in entityLabels.ts. Dal 25/09/2026 (decisione di Pierluigi) World of Origins non è
+  più fra le fonti né nel testo: il metodo dice solo che cosa è verificato nel gioco e che cosa viene dalle patch notes.
 */
 export default async function AboutPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
@@ -64,9 +66,6 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
     [d.about.sources.site, officialLinks.site],
     // Lo studio: solo link testuale, nessun logo né icona Koin (il materiale Koin non entra nell'identità del sito).
     [d.about.sources.koin, officialLinks.koin],
-    // Il database della community da cui importiamo i dati delle carte (eccezione decisa da Pierluigi il 15/09/2026):
-    // link seguito, è il credito che gli dobbiamo.
-    [x.worldOfOrigins, cardSource.url],
   ];
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">

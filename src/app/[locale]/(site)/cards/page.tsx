@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { activeCards, cards, cardSource, sagas, type SagaId } from "@/lib/data/cards";
+import { activeCards, cards, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
 import { RemovedCardsArchive, removedArchiveId } from "@/components/RemovedCardsArchive";
 import { flipOf } from "@/components/CardChip";
 import { keywordLabel } from "@/lib/keywordLabels";
-import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -112,13 +111,9 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       <RemovedCardsArchive locale={locale} />
 
       <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
-      <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">
-        {d.cards.sourceBefore}{" "}
-        <a href={cardSource.url} {...newTabProps} className="link-mint">
-          {cardSource.name}
-        </a>{" "}
-        ({d.common.patch} {cardSource.patch}){d.cards.sourceAfter}
-      </p>
+      {/* Da dove vengono i dati, detto per quello che è verificato (25/09/2026, decisione di Pierluigi): il sito non
+          nomina né linka la fonte dei dati importati. Prima qui c'erano il link e "(Patch 0.6.3)", la patch dell'import. */}
+      <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">{d.cards.sourceNote}</p>
       <p className="mt-2 text-xs text-chalk-muted/70">{d.common.imageCredit}</p>
     </div>
   );

@@ -53,8 +53,6 @@ export type CardFacts = {
   createdByEarlier: readonly RelCard[];
   /** che cosa genera (`createdChain`) */
   creates: readonly RelCard[][];
-  /** collegate da World of Origins senza un testo che lo spieghi (`linkedCards`) */
-  linked: readonly RelCard[];
 };
 
 // ---------- Aiuti di lingua ----------
@@ -121,7 +119,7 @@ const esMasculine = (c: Pick<Card, "type">) => c.type === "spell";
 
 /**
  * Il nome di una patch da mostrare: `patchLabel` quando la patch è fra quelle del sito ("Demo · 21 set" per
- * demo-0921), altrimenti il valore com'è (per esempio la patch dichiarata da World of Origins, se non la conosciamo).
+ * demo-0921), altrimenti il valore com'è (per esempio la patch dichiarata dall'import dei dati, se non la conosciamo).
  */
 function patchName(id: string, locale: Locale): string {
   return (patchOrder as readonly string[]).includes(id) ? patchLabel(id as PatchId, locale) : id;
@@ -161,25 +159,22 @@ const en = {
   createdByNext: "which is created by",
   createdByEarlier: "In earlier builds, also by",
   noCreator: "No card text says which card creates it.",
-  linkedBy: "World of Origins links it to",
-  linked: "Related cards (World of Origins)",
-  linkedIntro: "Links from the World of Origins community database: no card text explains them.",
   brief: "In brief",
   /** etichette dei testi della carta (SCHEDE-07, CARDS-14) */
   textOfficial: "Official game text",
   textEnglish: "English game text",
-  /** carte create e rimosse sulle pagine italiane e spagnole: l'inglese non è verificabile nel gioco */
-  textEnglishWoo: "English text (World of Origins)",
+  /**
+   * Carte create e rimosse: la collezione del gioco non le mostra, quindi il loro testo non è verificato nel gioco.
+   * Dal 25/09/2026 (decisione di Pierluigi) l'etichetta dice solo questo, senza nominare da dove viene il testo.
+   * `textEnglishWoo` sulle pagine italiane e spagnole (il testo inglese), `textWoo` sulla pagina inglese.
+   */
+  textEnglishWoo: "English text (not checked in the game)",
   textOurs: "OriginsMeta translation (game glossary)",
-  textWoo: "Card text (World of Origins)",
+  textWoo: "Card text (not checked in the game)",
   textOutdated: "A later patch changed this text: see the balance history below.",
   /** riga sotto le statistiche, per le carte che la collezione della demo non mostra (CARDS-09) */
-  asOfToken:
-    "Created card: it is not in the game's collection, so it was not checked in the game. Card data from the World of Origins community database (import of {date}), balance notes from the official patch notes.",
-  asOfRemoved: "Not in Demo 2.0: last known data from the World of Origins community database (based on patch {patch}); it cannot be checked in the game.",
-  /** tra parentesi nella riga della fonte, al posto del solo "(Patch 0.6.3)" */
-  sourceImport: "import of {date}, based on patch {patch}",
-  sourceLater: "; patch {patch} applied from the official notes",
+  asOfToken: "Created card: it is not in the game's collection, so its text and stats have not been checked in the game. Balance notes come from the official patch notes.",
+  asOfRemoved: "Not in Demo 2.0: last known data, as of patch {patch}; it cannot be checked in the game.",
   /** tier list della community sulla scheda (SCHEDE-11) */
   community: "Community tier list",
   communityScoreOne: "Tier {tier}: average {avg} out of 5 from 1 vote.",
@@ -232,21 +227,16 @@ export const cardLabels: Record<Locale, CardLabels> = {
     createdByNext: "a sua volta generata da",
     createdByEarlier: "Nelle build precedenti anche da",
     noCreator: "Nessun testo di carta dice quale carta la genera.",
-    linkedBy: "World of Origins la collega a",
-    linked: "Carte collegate (World of Origins)",
-    linkedIntro: "Collegamenti del database community World of Origins: nessun testo di carta li spiega.",
     brief: "In breve",
     textOfficial: "Testo ufficiale del gioco",
     textEnglish: "Testo inglese del gioco",
-    textEnglishWoo: "Testo inglese (World of Origins)",
+    textEnglishWoo: "Testo inglese (non verificato nel gioco)",
     textOurs: "Traduzione di OriginsMeta (glossario del gioco)",
-    textWoo: "Testo della carta (World of Origins)",
+    textWoo: "Testo della carta (non verificato nel gioco)",
     textOutdated: "Una patch successiva ha cambiato questo testo: vedi lo storico dei bilanciamenti qui sotto.",
     asOfToken:
-      "Carta generata: non è nella collezione del gioco, quindi non è stata verificata nel gioco. Dati dal database community World of Origins (import del {date}), note di bilanciamento dalle patch notes ufficiali.",
-    asOfRemoved: "Non nella Demo 2.0: ultimi dati noti del database community World of Origins (base patch {patch}); non si può verificare nel gioco.",
-    sourceImport: "import del {date}, base patch {patch}",
-    sourceLater: "; patch {patch} applicata dalle note ufficiali",
+      "Carta generata: non è nella collezione del gioco, quindi testo e statistiche non sono stati verificati nel gioco. Le note di bilanciamento vengono dalle patch notes ufficiali.",
+    asOfRemoved: "Non nella Demo 2.0: ultimi dati noti, alla patch {patch}; non si può verificare nel gioco.",
     community: "Tier list della community",
     communityScoreOne: "Fascia {tier}: media {avg} su 5 con 1 voto.",
     communityScore: "Fascia {tier}: media {avg} su 5 con {votes} voti.",
@@ -290,21 +280,16 @@ export const cardLabels: Record<Locale, CardLabels> = {
     createdByNext: "a su vez creada por",
     createdByEarlier: "En builds anteriores, también por",
     noCreator: "Ningún texto de carta dice qué carta la crea.",
-    linkedBy: "World of Origins la relaciona con",
-    linked: "Cartas relacionadas (World of Origins)",
-    linkedIntro: "Relaciones de la base de datos de la comunidad World of Origins: ningún texto de carta las explica.",
     brief: "En resumen",
     textOfficial: "Texto oficial del juego",
     textEnglish: "Texto en inglés del juego",
-    textEnglishWoo: "Texto en inglés (World of Origins)",
+    textEnglishWoo: "Texto en inglés (no verificado en el juego)",
     textOurs: "Traducción de OriginsMeta (glosario del juego)",
-    textWoo: "Texto de la carta (World of Origins)",
+    textWoo: "Texto de la carta (no verificado en el juego)",
     textOutdated: "Un parche posterior cambió este texto: mira el historial de cambios de equilibrio más abajo.",
     asOfToken:
-      "Carta creada: no está en la colección del juego, así que no se ha verificado en el juego. Datos de la base de datos de la comunidad World of Origins (importación del {date}), cambios de equilibrio según las notas oficiales de los parches.",
-    asOfRemoved: "Fuera de la Demo 2.0: últimos datos conocidos de la base de datos de la comunidad World of Origins (base parche {patch}); no se puede verificar en el juego.",
-    sourceImport: "importación del {date}, base parche {patch}",
-    sourceLater: "; parche {patch} aplicado según las notas oficiales",
+      "Carta creada: no está en la colección del juego, así que su texto y sus estadísticas no se han verificado en el juego. Los cambios de equilibrio vienen de las notas oficiales de los parches.",
+    asOfRemoved: "Fuera de la Demo 2.0: últimos datos conocidos, del parche {patch}; no se puede verificar en el juego.",
     community: "Tier list de la comunidad",
     communityScoreOne: "Tier {tier}: promedio de {avg} sobre 5 con 1 voto.",
     communityScore: "Tier {tier}: promedio de {avg} sobre 5 con {votes} votos.",
@@ -502,17 +487,17 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
     }[locale];
     return [verb, ...chainParts(facts.createdBy, locale), "."];
   }
-  const none = { en: ". No card text says which card creates it", it: ". Nessun testo di carta dice quale carta la genera", es: ". Ningún texto de carta dice qué carta la crea" }[locale];
-  if (!facts.linked.length) return [none, "."];
-  const linked = { en: "; World of Origins links it to ", it: "; World of Origins la collega a ", es: "; World of Origins la relaciona con " }[locale];
-  return [none, linked, ...cardList(facts.linked, locale), "."];
+  // Nessun testo la nomina: si dice solo questo. Fino al 25/09/2026 seguiva la carta a cui la collegava il database
+  // da cui importiamo i dati (campo `related`); tolta la fonte dalle pagine, quel legame non aveva più una base.
+  return [{ en: ". No card text says which card creates it.", it: ". Nessun testo di carta dice quale carta la genera.", es: ". Ningún texto de carta dice qué carta la crea." }[locale]];
 }
 
 /**
  * Una carta creata arriva in partita da una carta della Demo 2.0? Vero quando nella catena di chi la genera (dai
  * testi) c'è una carta della collezione della demo (Garlic ← Van Helsing's Tools ← Van Helsing). Falso per le carte
- * create che nessun testo nomina (Reflection, Little Pig, Off With Your Head!): la loro presenza nella demo viene solo
- * dallo stato di World of Origins, e le frasi lo attribuiscono a World of Origins.
+ * create che nessun testo della demo nomina (Reflection, Little Pig, Off With Your Head!): che siano nella demo lo
+ * dicono solo i dati importati, che nel gioco non si possono verificare, quindi le frasi dicono che non si può sapere
+ * con certezza.
  */
 export function createdFromDemo(facts: Pick<CardFacts, "createdBy">): boolean {
   return facts.createdBy.some((level) => level.some((c) => c.type !== "token" && c.status === "active"));
@@ -529,7 +514,7 @@ function verifiedOn(locale: Locale): string {
  * - carte della Demo 2.0 (122): tipo, gioco, statistiche, "è nella Demo 2.0 (verificata nel gioco il …)" e il conto
  *   dei mazzi pubblicati, se la lettura è riuscita;
  * - carte create: che non si aggiungono nel deck builder e chi le genera, con la catena (Garlic ← Van Helsing's Tools
- *   ← Van Helsing), oppure che nessun testo lo dice e a che cosa le collega World of Origins; poi costo e statistiche;
+ *   ← Van Helsing), oppure che nessun testo lo dice; poi costo e statistiche;
  * - carte rimosse: prima di tutto che non sono nella Demo 2.0 e quindi non entrano nel deck builder (CARDS-09), poi
  *   che cos'erano e le ultime statistiche note, al passato.
  * Il vecchio nome, quando c'è, chiude la frase.
@@ -718,7 +703,9 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       ],
     });
   } else if (card.type === "token") {
-    // Chi la genera lo dice la terza domanda: qui solo lo stato, con la sua fonte.
+    // Chi la genera lo dice la terza domanda: qui solo lo stato. Se nessun testo della demo la genera, non lo si può
+    // dire con certezza: le carte generate non sono nella collezione del gioco, e i dati importati che la danno per
+    // attuale nel gioco non si possono verificare (dal 25/09/2026 il sito non nomina la loro fonte).
     const a = createdFromDemo(facts)
       ? {
           en: `Yes, as a created card: ${notInBuilder.en}, but it comes into a match from a card in Demo 2.0.`,
@@ -726,9 +713,9 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: `Sí, como carta creada: ${notInBuilder.es}, pero llega a la partida desde una carta de la Demo 2.0.`,
         }[locale]
       : {
-          en: `According to World of Origins, yes: it lists it among the current created cards. ${cap(notInBuilder.en)}.`,
-          it: `Secondo World of Origins sì: la elenca fra le carte generate attuali. ${cap(notInBuilder.it)}.`,
-          es: `Según World of Origins, sí: la incluye entre las cartas creadas actuales. ${cap(notInBuilder.es)}.`,
+          en: `We cannot say for sure: no card text in Demo 2.0 creates it, and created cards are not in the game's collection. ${cap(notInBuilder.en)}.`,
+          it: `Non si può dire con certezza: nessun testo delle carte della Demo 2.0 la genera, e le carte generate non sono nella collezione del gioco. ${cap(notInBuilder.it)}.`,
+          es: `No se puede decir con certeza: ningún texto de las cartas de la Demo 2.0 la crea, y las cartas creadas no están en la colección del juego. ${cap(notInBuilder.es)}.`,
         }[locale];
     items.push({ q: q1, a: [a] });
   } else {
@@ -762,9 +749,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       const many = first.length > 1;
       a.push({ en: "It is created by ", it: many ? "La generano " : "La genera ", es: many ? "La crean " : "La crea " }[locale], ...chainParts(facts.createdBy, locale), fromTexts[locale]);
     } else {
-      a.push({ en: "No card text says so", it: "Nessun testo di carta lo dice", es: "Ningún texto de carta lo dice" }[locale]);
-      if (facts.linked.length) a.push({ en: "; World of Origins links it to ", it: "; World of Origins la collega a ", es: "; World of Origins la relaciona con " }[locale], ...cardList(facts.linked, locale));
-      a.push(".");
+      a.push({ en: "No card text says so.", it: "Nessun testo di carta lo dice.", es: "Ningún texto de carta lo dice." }[locale]);
     }
     if (facts.createdByEarlier.length) {
       const many = facts.createdByEarlier.length > 1;
@@ -810,19 +795,19 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
 /**
  * Stato della carta per `creativeWorkStatus` nel JSON-LD: uguale in tutte le lingue, perché la carta è una sola entità
  * per le tre pagine (`@id` comune, jsonld/card.ts); le frasi nella lingua della pagina stanno sulla pagina. Le carte
- * create che nessun testo della demo genera sono attribuite a World of Origins, come in "In breve".
+ * create che nessun testo della demo genera non si dicono nella demo: come in "In breve", non lo si può verificare.
  */
 export function cardStatusLd(card: Pick<Card, "type" | "status">, facts: Pick<CardFacts, "createdBy">): string {
   if (card.status === "removed") return "Not in Demo 2.0 (earlier builds)";
   if (card.type !== "token") return "In Demo 2.0";
-  return createdFromDemo(facts) ? "Created card in Demo 2.0" : "Created card listed by World of Origins";
+  return createdFromDemo(facts) ? "Created card in Demo 2.0" : "Created card, not verified in Demo 2.0";
 }
 
 /**
  * I testi della carta da dichiarare nel JSON-LD, ciascuno con la sua lingua e su una riga: gli stessi su tutte e tre
  * le pagine, perché stanno sull'entità comune della carta. Solo testi del gioco (SCHEDE-07): per le carte della
  * collezione della demo l'inglese, l'italiano e lo spagnolo letti nel gioco; per le carte create e rimosse il solo
- * inglese (di World of Origins), mai le nostre traduzioni. Nessun testo se una patch successiva lo ha superato
+ * inglese (quello dei dati importati), mai le nostre traduzioni. Nessun testo se una patch successiva lo ha superato
  * (`outdated`, `textOutdated` di cardTitles.ts), né una "traduzione" uguale all'inglese (testo locale mancante).
  */
 export function cardLdTexts(card: Pick<Card, "type" | "status" | "ability">, outdated: boolean): { lang: Locale; text: string }[] {
@@ -843,26 +828,18 @@ export function cardLdTexts(card: Pick<Card, "type" | "status" | "ability">, out
 /**
  * Riga sotto le statistiche per le carte che la collezione della demo non mostra (CARDS-09): carte create e rimosse
  * non sono state verificate nel gioco, e dirlo "verificata" sarebbe un dato falso. Per le 122 carte della demo resta
- * la riga del dizionario (`common.asOf`): `undefined` qui.
+ * la riga del dizionario (`common.asOf`): `undefined` qui. Dal 25/09/2026 (decisione di Pierluigi) le righe dicono
+ * solo che cosa non è verificato nel gioco e che i bilanciamenti vengono dalle patch notes ufficiali: niente nome né
+ * data dell'import da cui arrivano i dati. `source.patch` è la patch dei dati importati (`cardSource.patch`), che per
+ * le carte rimosse è quella degli ultimi dati noti.
+ * Fino a quel giorno c'era anche `sourceNote` (la data dell'import tra parentesi nella riga della fonte in fondo alla
+ * scheda): tolta insieme al nome della fonte, la riga ora è `cards.sourceNote` del dizionario.
  */
-export function asOfLine(card: Pick<Card, "type" | "status">, locale: Locale, source: { fetched: string; patch: string }): string | undefined {
+export function asOfLine(card: Pick<Card, "type" | "status">, locale: Locale, source: { patch: string }): string | undefined {
   const l = cardLabels[locale];
   if (card.status === "removed") return fill(l.asOfRemoved, { patch: patchName(source.patch, locale) });
-  if (card.type === "token") return fill(l.asOfToken, { date: formatDate(locale, source.fetched.slice(0, 10)) });
+  if (card.type === "token") return l.asOfToken;
   return undefined;
-}
-
-/**
- * Tra parentesi nella riga della fonte, in fondo alla scheda: prima diceva solo "(Patch 0.6.3)", in contrasto con la
- * riga sotto le statistiche ("patch della demo del 21 settembre"). Ora dice la data dell'import di World of Origins, la
- * patch da cui partono i suoi dati e, se c'è, la patch uscita dopo che `cards.ts` applica dalle note ufficiali.
- */
-export function sourceNote(locale: Locale, source: { fetched: string; patch: string }): string {
-  const l = cardLabels[locale];
-  const imported = patchOrder.indexOf(source.patch as PatchId);
-  const later = imported >= 0 ? patchOrder.slice(imported + 1).map((id) => patchLabel(id, locale)) : [];
-  const base = fill(l.sourceImport, { date: formatDate(locale, source.fetched.slice(0, 10)), patch: patchName(source.patch, locale) });
-  return later.length ? `${base}${fill(l.sourceLater, { patch: later.join(", ") })}` : base;
 }
 
 // ---------- Potere leggendario ----------

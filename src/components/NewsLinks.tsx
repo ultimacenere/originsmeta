@@ -36,7 +36,8 @@ function linkDomain(url: string): string {
  * (SteamButton.tsx): nuova scheda, `noopener` e l'avviso per i lettori di schermo.
  */
 export function NewsSourceLink({ item, locale, dict, className = "" }: Props & { className?: string }) {
-  if (isSiteNews(item)) return null;
+  // senza `url` (news di stampa senza una fonte pubblica citabile) non c'è nessun link "Fonte" da mostrare
+  if (isSiteNews(item) || !item.url) return null;
   if (isDeckNews(item)) {
     return (
       <Link href={href(locale, item.url)} className={className}>
@@ -58,7 +59,7 @@ export function NewsSourceLink({ item, locale, dict, className = "" }: Props & {
  * Per le altre news non rende nulla, quindi si può mettere in ogni scheda senza controlli.
  */
 export function NewsDeckButton({ item, locale, dict, className = "" }: Props & { className?: string }) {
-  if (!isDeckNews(item)) return null;
+  if (!isDeckNews(item) || !item.url) return null;
   return (
     <Link href={href(locale, item.url)} className={`btn btn-primary ${className}`}>
       {dict.common.openDeck} →
@@ -66,12 +67,17 @@ export function NewsDeckButton({ item, locale, dict, className = "" }: Props & {
   );
 }
 
-/** Etichetta della pill accanto alla data: Steam, Staff, Community, OriginsMeta o Fonte. */
+/**
+ * Etichetta della pill accanto alla data: Steam, Staff, Community, OriginsMeta, Fonte o News. Una news di stampa senza
+ * `url` non ha una fonte da mostrare: "Fonte" sarebbe una promessa vuota e "Community" la confonderebbe con le news sui
+ * mazzi della community, quindi dice solo "News" (da dove viene il fatto lo dice il riassunto).
+ */
 export function newsSourceLabel(item: NewsItem, dict: Dictionary): string {
   if (item.source === "steam") return "Steam";
   if (item.source === "site") return "OriginsMeta";
   if (item.source === "staff") return dict.community.badges.staff;
-  return item.source === "community" ? dict.common.community : dict.common.source;
+  if (item.source === "community") return dict.common.community;
+  return item.url ? dict.common.source : dict.common.news;
 }
 
 /**

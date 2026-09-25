@@ -99,8 +99,10 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   // sito (`site`) non hanno una fonte fuori dall'articolo: niente "Fonte" e niente `isBasedOn`.
   const deckNews = isDeckNews(item);
   const siteNews = isSiteNews(item);
-  const ownSource = deckNews || siteNews;
-  const sourceUrl = siteNews ? undefined : deckNews ? `${siteUrl}${href(locale, item.url)}` : item.url;
+  // Senza `url` (una news di stampa il cui fatto non ha una fonte pubblica citabile, dal 25/09/2026) come per le novità
+  // del sito: niente sezione "Fonte" e niente `isBasedOn`.
+  const ownSource = deckNews || siteNews || !item.url;
+  const sourceUrl = siteNews || !item.url ? undefined : deckNews ? `${siteUrl}${href(locale, item.url)}` : item.url;
 
   const article = {
     "@context": "https://schema.org",
@@ -220,7 +222,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
                   {d.news.sourceTitle}
                 </h2>
                 <div className="mt-3">
-                  {item.source === "steam" ? (
+                  {item.source === "steam" && item.url ? (
                     <SteamButton href={item.url} variant="dark" size="sm">
                       {d.common.steamNews}
                     </SteamButton>

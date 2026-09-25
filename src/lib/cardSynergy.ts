@@ -13,8 +13,10 @@ import { weightedRating } from "./tierstats";
  *   `DeckRef`);
  * - le carte che una carta genera, e chi genera una carta creata, dai testi delle carte, con `creatorsOf` di
  *   `cardTitles.ts`. Il campo `related` di World of Origins non basta (su Garlic, Holy Water, Wooden Stake, Silver
- *   Bullet, Mama Bear e Pumpkin salta un passaggio o dimentica la carta della demo): resta come "collegata" solo dove
- *   nessun testo spiega il legame (Merlin → Merlin's Prophecy, Mulan → Reflection).
+ *   Bullet, Mama Bear e Pumpkin salta un passaggio o dimentica la carta della demo). Fino al 25/09/2026 restava come
+ *   "carta collegata" dove nessun testo spiega il legame (Merlin → Merlin's Prophecy, Mulan → Reflection); da quel
+ *   giorno il sito non nomina più la fonte dei dati importati (decisione di Pierluigi) e un legame che nessun testo
+ *   spiega, senza fonte, non ha base: la scheda non lo mostra e il campo non si legge più.
  *
  * Funzioni pure: `node --test src/lib/cardSynergy.test.ts` le prova con mazzi finti e con il database carte vero.
  * Gli import relativi senza estensione li risolve, nel test, lo stesso hook di `cardTitles.test.ts`.
@@ -158,8 +160,8 @@ export function cardPageDeckDays(card: Pick<RelCard, "type" | "status" | "slug">
 
 // ---------- Carte generate ----------
 
-/** I campi che servono ai legami fra carte: quelli di `creatorsOf` più il campo `related` di World of Origins. */
-export type RelCard = TitleCard & { related?: string[] };
+/** I campi che servono ai legami fra carte: quelli di `creatorsOf` (nome, tipo, stato e testo). */
+export type RelCard = TitleCard;
 
 function plain(text: string): string {
   return text.replace(/[’‘]/g, "'");
@@ -242,18 +244,10 @@ export function earlierCreators<C extends RelCard>(card: C, all: readonly C[], c
 }
 
 /**
- * Le carte che World of Origins collega a questa (campo `related`, nei due versi) e che nessun testo spiega: tolte
- * quelle già nella catena di chi la genera o di ciò che genera. Merlin ↔ Merlin's Prophecy, Mulan ↔ Reflection,
- * Queen of Hearts ↔ Off With Your Head!, Three Not So Little Pigs ↔ Little Pig. Non si dice "genera": il legame
- * può venire dal potere leggendario, che non abbiamo ancora letto nel gioco (SCHEDE-13).
+ * Tutti i legami di una carta, calcolati una volta per la scheda: solo quelli che un testo di carta spiega. Fino al
+ * 25/09/2026 c'era anche `linked` (`linkedCards`: le carte collegate dal campo `related` dell'import che nessun testo
+ * spiega, come Merlin ↔ Merlin's Prophecy o Mulan ↔ Reflection), tolto insieme al nome della fonte.
  */
-export function linkedCards<C extends RelCard>(card: C, all: readonly C[], explained: readonly C[] = []): C[] {
-  const skip = new Set([card.slug, ...explained.map((c) => c.slug)]);
-  const slugs = new Set([...(card.related ?? []), ...all.filter((c) => c.related?.includes(card.slug)).map((c) => c.slug)]);
-  return all.filter((c) => slugs.has(c.slug) && !skip.has(c.slug));
-}
-
-/** Tutti i legami di una carta, calcolati una volta per la scheda. */
 export type CardRelations<C extends RelCard> = {
   /** chi la genera, a ritroso (solo carte create) */
   createdBy: C[][];
@@ -261,16 +255,13 @@ export type CardRelations<C extends RelCard> = {
   createdByEarlier: C[];
   /** che cosa genera, in avanti */
   creates: C[][];
-  /** collegate da World of Origins senza un testo che lo spieghi */
-  linked: C[];
 };
 
 export function cardRelations<C extends RelCard>(card: C, all: readonly C[]): CardRelations<C> {
   const createdBy = creationChain(card, all);
   const createdByEarlier = earlierCreators(card, all, createdBy);
   const creates = createdChain(card, all);
-  const linked = linkedCards(card, all, [...createdBy.flat(), ...createdByEarlier, ...creates.flat()]);
-  return { createdBy, createdByEarlier, creates, linked };
+  return { createdBy, createdByEarlier, creates };
 }
 
 /**

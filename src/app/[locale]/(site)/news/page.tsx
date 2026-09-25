@@ -82,7 +82,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
               </div>
             ) : null}
             <NewsGuideLinks item={n} locale={locale} dict={d} />
-            {n.source === "steam" ? (
+            {n.source === "steam" && n.url ? (
               <p className="mt-4">
                 <SteamButton href={n.url} variant="dark" size="sm">
                   {d.common.steamNews}
