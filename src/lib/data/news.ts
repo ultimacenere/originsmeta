@@ -95,7 +95,7 @@ export const news: NewsItem[] = [
         { label: "Every card, three languages", text: "the game's official Italian and Spanish text, checked on all 122 Demo 2.0 cards", anchor: "cards" },
         { label: "An overlay for everyone", text: "a game tool for every player, in the works: we'll show it when it's ready", anchor: "overlay" },
         { label: "Deck of the week", text: "chosen by your votes: our first idea to reward what you create", anchor: "deck-of-the-week" },
-        { label: "Thank you", text: "to everyone who signed up, published, voted and wrote to us", anchor: "thanks" },
+        { label: "Thank you", text: "to everyone who signed up, published decks, voted and wrote to us", anchor: "thanks" },
         { label: "Join in", text: "sign up, build a deck, make your tier list, come to our Discord", anchor: "join" },
       ],
       it: [
@@ -126,7 +126,7 @@ Community decks speak every language too: the author writes the guide in their o
 
 On 25 September we opened the demo in Spanish and in Italian and read the 122 cards of the collection one by one. The Italian and Spanish texts you now find in the [card list](/en/cards) are the game's official ones: 101 Spanish and 88 Italian texts were different from our translations, and they have been replaced.
 
-The keywords use the game's official terms too: On Reveal is "Alla rivelazione" in Italian and "Al revelar" in Spanish. On the Italian and Spanish pages you'll find the same terms in the tags under each card, in the guides and in the news. Created cards and removed cards don't appear in the game's collection, and we haven't checked the [Locations](/en/locations) in the game yet: their Italian and Spanish text is ours, written with the game's glossary.
+The keywords use the game's official terms too: On Reveal is "Alla rivelazione" in Italian and "Al revelar" in Spanish. On the Italian and Spanish pages you'll find the same terms in the keyword tags on each card's page, in the guides and in the news. Created cards and removed cards don't appear in the game's collection, and we haven't checked the [Locations](/en/locations) in the game yet: their Italian and Spanish text is ours, written with the game's glossary.
 
 ## An overlay for everyone {#overlay}
 
@@ -134,11 +134,11 @@ We're working on an overlay: a game tool for every Origins TCG player, not just 
 
 ## Deck of the week {#deck-of-the-week}
 
-We want to reward the people who create, and give more visibility to your decks, guides and tier lists. The first idea is a deck of the week, chosen by your star ratings. Every vote counts: if you try a deck from the community, rate it.
+We want to reward the people who create, and give more visibility to your decks, guides and tier lists. The first idea is a deck of the week, chosen by your star ratings. In the meantime, if you try a community deck, rate it: the top-rated decks already show up on the [tier list](/en/tier-list).
 
 ## Thank you {#thanks}
 
-OriginsMeta went online on 15 September. In ten days many of you signed up, published decks, voted, saved tier lists and wrote to us with ideas and corrections. Many of the recent changes started with your messages. Thank you: this site grows with you.
+OriginsMeta went online on 15 September. In ten days you signed up, published decks, voted and wrote to us with ideas and corrections, and several recent changes started with your messages. Thank you: this site grows with you.
 
 ## Join in {#join}
 
@@ -156,7 +156,7 @@ Anche i mazzi della community parlano tre lingue: l'autore scrive la guida nella
 
 Il 25 settembre abbiamo aperto la demo in spagnolo e in italiano e letto una per una le 122 carte della collezione. I testi italiani e spagnoli che trovi nella [lista carte](/it/cards) sono quelli ufficiali del gioco: 101 testi spagnoli e 88 italiani erano diversi dalle nostre traduzioni e sono stati sostituiti.
 
-Anche le parole chiave usano i termini ufficiali del gioco: On Reveal in italiano è "Alla rivelazione", in spagnolo "Al revelar". Gli stessi termini li trovi nelle etichette sotto ogni carta, nelle guide e nelle news. Le carte generate e le carte rimosse non compaiono nella collezione del gioco, e i [Luoghi](/it/locations) non li abbiamo ancora confrontati nel gioco: il loro testo italiano e spagnolo lo scriviamo noi, con il glossario del gioco.
+Anche le parole chiave usano i termini ufficiali del gioco: On Reveal in italiano è "Alla rivelazione", in spagnolo "Al revelar". Gli stessi termini li trovi nelle etichette delle parole chiave nella pagina di ogni carta, nelle guide e nelle news. Le carte generate e le carte rimosse non compaiono nella collezione del gioco, e i [Luoghi](/it/locations) non li abbiamo ancora confrontati nel gioco: il loro testo italiano e spagnolo lo scriviamo noi, con il glossario del gioco.
 
 ## Un overlay per tutti {#overlay}
 
@@ -164,11 +164,11 @@ Stiamo lavorando a un overlay: uno strumento di gioco per tutti i giocatori di O
 
 ## Il mazzo della settimana {#mazzo-della-settimana}
 
-Vogliamo premiare chi crea e dare più visibilità ai mazzi, alle guide e alle tier list della community. La prima idea è un mazzo della settimana, scelto in base alle stelle che ricevono i mazzi. Ogni voto conta: se provi un mazzo della community, votalo.
+Vogliamo premiare chi crea e dare più visibilità ai mazzi, alle guide e alle tier list della community. La prima idea è un mazzo della settimana, scelto in base alle stelle che ricevono i mazzi. Intanto, se provi un mazzo della community, votalo: i mazzi più votati compaiono già nella [tier list](/it/tier-list).
 
 ## Grazie {#grazie}
 
-OriginsMeta è online dal 15 settembre. In dieci giorni in tanti vi siete iscritti, avete pubblicato mazzi, votato, salvato tier list e ci avete mandato idee e correzioni. Molte novità di questi giorni sono nate dai vostri messaggi. Grazie: questo sito cresce insieme a voi.
+OriginsMeta è online dal 15 settembre. In dieci giorni vi siete iscritti, avete pubblicato mazzi, votato e ci avete mandato idee e correzioni: parecchie novità di questi giorni sono nate dai vostri messaggi. Grazie: questo sito cresce insieme a voi.
 
 ## Partecipa {#partecipa}
 
@@ -186,7 +186,7 @@ Los mazos de la comunidad también hablan tres idiomas: el autor escribe la guí
 
 El 25 de septiembre abrimos la demo en español y en italiano y leímos una por una las 122 cartas de la colección. Los textos en español y en italiano que ves en la [lista de cartas](/es/cards) son los oficiales del juego: 101 textos en español y 88 en italiano eran distintos de nuestras traducciones, y los hemos sustituido.
 
-Las palabras clave también usan los términos oficiales del juego: On Reveal es "Al revelar" en español y "Alla rivelazione" en italiano. Encontrarás los mismos términos en las etiquetas de cada carta, en las guías y en las noticias. Las cartas creadas y las retiradas no aparecen en la colección del juego, y las [Ubicaciones](/es/locations) aún no las hemos comparado en el juego: su texto en español y en italiano lo escribimos nosotros, con el glosario del juego.
+Las palabras clave también usan los términos oficiales del juego: On Reveal es "Al revelar" en español y "Alla rivelazione" en italiano. Encontrarás los mismos términos en las etiquetas de palabras clave de la página de cada carta, en las guías y en las noticias. Las cartas creadas y las retiradas no aparecen en la colección del juego, y las [Ubicaciones](/es/locations) aún no las hemos comparado en el juego: su texto en español y en italiano lo escribimos nosotros, con el glosario del juego.
 
 ## Un overlay para todos {#overlay}
 
@@ -194,11 +194,11 @@ Estamos trabajando en un overlay: una herramienta de juego para todos los jugado
 
 ## El mazo de la semana {#mazo-de-la-semana}
 
-Queremos premiar a quienes crean contenido y dar más visibilidad a los mazos, las guías y las tier lists de la comunidad. La primera idea es un mazo de la semana, elegido según las estrellas que reciben los mazos. Cada voto cuenta: si pruebas un mazo de la comunidad, valóralo.
+Queremos premiar a quienes crean contenido y dar más visibilidad a los mazos, las guías y las tier lists de la comunidad. La primera idea es un mazo de la semana, elegido según las estrellas que reciben los mazos. Mientras tanto, si pruebas un mazo de la comunidad, valóralo: los mazos mejor valorados ya aparecen en la [tier list](/es/tier-list).
 
 ## Gracias {#gracias}
 
-OriginsMeta está en línea desde el 15 de septiembre. En diez días, muchos jugadores se registraron, publicaron mazos, votaron, guardaron tier lists y nos escribieron con ideas y correcciones. Muchas novedades de estos días nacieron de esos mensajes. Gracias: este sitio crece con toda la comunidad.
+OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunidad se registró, publicó mazos, votó y nos escribió con ideas y correcciones: varias novedades de estos días nacieron de esos mensajes. Gracias: este sitio crece con toda la comunidad.
 
 ## Participa {#participa}
 
