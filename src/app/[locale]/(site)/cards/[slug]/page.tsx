@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
+import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { cards, cardSource, getCard, lastChange, patchLabel, patches, relatedFrom, sagas, statLine, type Card } from "@/lib/data/cards";
+import { cardDescription, cardTitle } from "@/lib/cardTitles";
+import { cards, cardSource, getCard, lastChange, patchLabel, patches, relatedFrom, sagas, statLine } from "@/lib/data/cards";
 import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
@@ -16,6 +17,7 @@ import { alignStyle } from "@/lib/cardArt";
 import { keywordLabel } from "@/lib/keywordLabels";
 import { SteamButton, newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
+import { RemovedArchiveLink } from "@/components/RemovedCardsArchive";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -28,77 +30,18 @@ function oneLine(text: string): string {
   return text.replace(/\s+/g, " ").trim();
 }
 
-/**
- * Taglio a parola intera, con i puntini di sospensione al posto della parola spezzata.
- * Fa quello che fa `cleanDescription` di `src/lib/page.ts`, ma il risultato sta sempre entro `max`
- * (ellissi compresa): qui i pezzi vengono incastrati uno dopo l'altro e un carattere di troppo
- * per pezzo farebbe sforare il totale.
- */
-function cut(text: string, max: number): string {
-  if (text.length <= max) return text;
-  const hard = text.slice(0, max - 1);
-  const space = hard.lastIndexOf(" ");
-  const kept = space > max * 0.6 ? hard.slice(0, space) : hard;
-  return `${kept.replace(/[\s,.;:·—–-]+$/, "")}…`;
-}
-
-const DESC_MIN = 120;
-const DESC_MAX = 158;
-const DESC_SEP = " · ";
-
-/**
- * Meta description della scheda carta: solo dati che la pagina ha già (tipo, rarità, allineamento, saga,
- * statistiche, testo di abilità, origine della leggenda, ultimo bilanciamento), con le etichette nella
- * lingua della pagina. I fatti stanno sempre in testa; i testi lunghi si aggiungono finché la
- * descrizione non arriva a 120 caratteri e non superano mai i 158.
- */
-function cardDescription(card: Card, locale: Locale, d: Dictionary): string {
-  const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
-  const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
-  const rarityLabel = { common: d.common.common, rare: d.common.rare, epic: d.common.epic, legendary: d.common.legendary } as const;
-
-  const facts = [card.name, typeLabel[card.type]];
-  if (card.legendary) facts.push(d.common.legendary);
-  else if (card.rarity) facts.push(rarityLabel[card.rarity]);
-  if (card.alignment) facts.push(alignLabel[card.alignment]);
-  facts.push(sagas[card.saga][locale]);
-  const stats = statLine(card);
-  if (stats) facts.push(`${d.common.mana} ${stats}`);
-  if (card.status === "removed") facts.push(d.common.removed);
-
-  const last = lastChange(card);
-  const extras = [
-    card.ability?.[locale],
-    card.origin?.[locale],
-    last ? `${d.common[last.kind === "deck" ? "rework" : last.kind]} ${d.common.patch.toLowerCase()} ${patchLabel(last.patch, locale)}` : undefined,
-    card.keywords?.length ? card.keywords.map((k) => keywordLabel(k, locale)).join(", ") : undefined,
-    // Riserva sempre vera per le carte senza testo: porta comunque la descrizione oltre i 120 caratteri.
-    d.common.asOf,
-  ];
-
-  let out = cut(facts.join(DESC_SEP), DESC_MAX);
-  for (const extra of extras) {
-    if (out.length >= DESC_MIN) break;
-    const piece = oneLine(extra ?? "");
-    if (!piece) continue;
-    const room = DESC_MAX - out.length - DESC_SEP.length;
-    // Sotto i 24 caratteri resterebbe un moncone: meglio fermarsi.
-    if (room < 24) break;
-    out += DESC_SEP + cut(piece, room);
-  }
-  return out;
-}
-
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale, dict } = await resolveLocale(params);
   const card = getCard(slug);
   if (!card) return {};
-  // Il titolo è il solo nome della carta: la parola chiave e il marchio li compone `pageTitle`
-  // (src/lib/page.ts), unico punto di verità. Aggiungerli qui li raddoppierebbe.
+  // Title e description per tipo di carta e per lingua (Ondata 1 SEO/GEO, 25/09/2026): "Merlin: carta Leggendaria di
+  // Origins TCG", "Garlic: carta creada de Origins TCG"… e una frase fatta dei soli dati della scheda, con "Origins TCG"
+  // e "Koin Games". Il title contiene già la parola chiave: `pageTitle` aggiunge solo " · OriginsMeta" se ci sta.
+  // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts.
   // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file.
   const opts = card.image ? { imageAlt: `${dict.cards.collectible}: ${card.name}`, imageSize: imageSizeOf(card.image) } : {};
-  return pageMeta(locale, `/cards/${card.slug}`, card.name, cardDescription(card, locale, dict), card.image, opts);
+  return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards), card.image, opts);
 }
 
 export default async function CardPage({ params }: { params: Params }) {
@@ -283,24 +226,43 @@ export default async function CardPage({ params }: { params: Params }) {
         <section className="mt-10">
           <h2 className="t-section">{d.cards.changesTitle}</h2>
           <ol className="mt-4 space-y-3">
-            {[...card.history].reverse().map((ch, i) => (
-              <li key={i} className="card-night p-5">
-                <div className="flex flex-wrap items-center gap-3">
-                  <ChangeChip kind={ch.kind} label={d.common[ch.kind === "deck" ? "rework" : ch.kind]} />
-                  <span className="font-mono text-sm text-pale-muted">
-                    {d.common.patch} {patchLabel(ch.patch, locale)} · {formatDate(locale, patches[ch.patch].date)}
-                  </span>
-                  <SteamButton href={patches[ch.patch].url} variant="dark" size="sm" className="ml-auto">
-                    {d.common.steamNews}
-                  </SteamButton>
-                </div>
-                <div className="mt-3">
-                  <StatDelta from={ch.from} to={ch.to} />
-                </div>
-                <p className="mt-2 text-pale">{ch.note[locale]}</p>
-              </li>
-            ))}
+            {[...card.history].reverse().map((ch, i) => {
+              const patch = patches[ch.patch];
+              const label = `${d.common.patch} ${patchLabel(ch.patch, locale)}`;
+              return (
+                <li key={i} className="card-night p-5">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <ChangeChip kind={ch.kind} label={d.common[ch.kind === "deck" ? "rework" : ch.kind]} />
+                    {/* La patch porta al nostro articolo, che racconta il perché delle modifiche (campo `news` della
+                        patch in cards.ts); il post Steam resta accanto come fonte ufficiale (Ondata 1, 25/09/2026). */}
+                    <span className="font-mono text-sm text-pale-muted">
+                      {patch.news ? (
+                        <Link href={href(locale, `/news/${patch.news}`)} className="link-mint">
+                          {label}
+                        </Link>
+                      ) : (
+                        label
+                      )}{" "}
+                      · {formatDate(locale, patch.date)}
+                    </span>
+                    <SteamButton href={patch.url} variant="dark" size="sm" className="ml-auto">
+                      {d.common.steamNews}
+                    </SteamButton>
+                  </div>
+                  <div className="mt-3">
+                    <StatDelta from={ch.from} to={ch.to} />
+                  </div>
+                  <p className="mt-2 text-pale">{ch.note[locale]}</p>
+                </li>
+              );
+            })}
           </ol>
+          {/* Tutte le patch in una pagina: MetaShifting non è nel menu, le schede carta sono la sua porta più frequente */}
+          <p className="mt-4 text-sm">
+            <Link href={href(locale, "/metashifting")} className="link-mint font-bold">
+              {d.metashifting.h1} →
+            </Link>
+          </p>
         </section>
       ) : null}
 
@@ -319,14 +281,21 @@ export default async function CardPage({ params }: { params: Params }) {
         </section>
       ) : null}
 
-      {/* Invito sempre presente: senza i mazzi ufficiali la scheda carta finirebbe in un vicolo cieco. */}
-      <section className="card-night mt-10 p-6 sm:p-8">
-        <h2 className="t-section">{d.cards.buildTitle}</h2>
-        <p className="mt-2 max-w-2xl text-pale">{d.cards.buildText}</p>
-        <Link href={href(locale, "/deck-builder")} className="btn btn-primary mt-5 inline-flex">
-          {d.nav.builder}
-        </Link>
-      </section>
+      {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
+          builderLabels.ts). Su carte create e fuori dalla demo prometteva una cosa che non funziona (SCHEDE-04): le
+          rimosse rimandano invece all'archivio delle carte non nella demo in fondo a /cards; le create hanno già il
+          riquadro "Richiamata da" qui sopra. */}
+      {card.status === "active" && card.type !== "token" ? (
+        <section className="card-night mt-10 p-6 sm:p-8">
+          <h2 className="t-section">{d.cards.buildTitle}</h2>
+          <p className="mt-2 max-w-2xl text-pale">{d.cards.buildText}</p>
+          <Link href={href(locale, "/deck-builder")} className="btn btn-primary mt-5 inline-flex">
+            {d.nav.builder}
+          </Link>
+        </section>
+      ) : card.status === "removed" ? (
+        <RemovedArchiveLink locale={locale} />
+      ) : null}
 
       {guides.length ? (
         <section className="mt-10">
