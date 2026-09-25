@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SteamButton } from "./SteamButton";
@@ -44,6 +44,12 @@ const getServerReducedMotion = () => false;
  * - puntini con area cliccabile di 24 px;
  * - si montano solo la slide attiva e la successiva (più quelle già viste), non tutte e cinque; la prima ha
  *   priorità alta perché è l'elemento più grande del primo schermo.
+ *
+ * Ondata 1 del piano SEO/GEO (25/09/2026, rilievi MQ-04 e HOME-04): i testi e i tasti di TUTTE le slide stanno
+ * nell'HTML renderizzato sul server, sovrapposti nella stessa cella di una griglia; prima c'era solo quello della
+ * slide attiva, quindi le guide delle altre slide (pay-to-win, economia da collezione) non ricevevano link dalla home.
+ * Le slide non attive sono trasparenti, `inert` (fuori dal Tab e dai lettori di schermo) e `aria-hidden`, ma non
+ * `display: none`. Le immagini restano montate a richiesta come prima.
  */
 export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[]; labels: SliderLabels; interval?: number }) {
   const n = slides.length;
@@ -63,7 +69,19 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
     setMounted((m) => Array.from(new Set([...m, index, next])));
   }
 
-  const go = (k: number) => setIndex(((k % n) + n) % n);
+  /* testo e tasto di ogni slide; `refocus`: il focus stava sul tasto della slide che esce (frecce da tastiera) */
+  const texts = useRef<(HTMLDivElement | null)[]>([]);
+  const refocus = useRef(false);
+  const go = (k: number) => {
+    refocus.current = Boolean(texts.current[index]?.contains(document.activeElement));
+    setIndex(((k % n) + n) % n);
+  };
+  /* la slide che esce diventa inert e perderebbe il focus: passa subito al tasto della slide che entra, prima del disegno */
+  useLayoutEffect(() => {
+    if (!refocus.current) return;
+    refocus.current = false;
+    texts.current[index]?.querySelector<HTMLElement>("a[href]")?.focus();
+  }, [index]);
   /* con "riduci il movimento" la rotazione non parte da sola, ma l'utente può avviarla con il tasto */
   const wantsRotation = choice === "play" || (choice === "auto" && !reducedMotion);
   const rotating = wantsRotation && !hovered && !focused && n > 1;
@@ -74,7 +92,6 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
     return () => window.clearInterval(id);
   }, [rotating, n, interval]);
 
-  const active = slides[index];
   const arrow = "absolute top-1/2 z-20 hidden sm:block -translate-y-1/2 rounded-full border border-chalk/40 bg-felt-deep/70 p-2 text-chalk backdrop-blur transition hover:border-mint hover:text-mint";
 
   /* Tasto pausa/riproduci + puntini: stessi controlli sul telefono (sull'immagine) e da sm (accanto al credito) */
@@ -183,22 +200,42 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
             `min-h` e non `h`: con il testo ingrandito (zoom del solo testo, caratteri grandi di Android, WCAG 1.4.4)
             il riquadro cresce invece di far uscire il contenuto sopra la striscia del calendario.
           */}
-          <div className="flex min-h-[140px] w-full max-w-2xl flex-col sm:min-h-0 sm:w-auto" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
-            <p className="kicker truncate text-mint">{active.kicker}</p>
-            {/* Non è un titolo di sezione: l'unico H1 della pagina è quello (nascosto alla vista) in cima al main della home */}
-            <p className="mt-1 line-clamp-1 font-display text-xl font-extrabold leading-tight text-sky sm:line-clamp-2 sm:text-3xl">{active.title}</p>
-            <p className="mt-1 line-clamp-2 text-sm text-chalk-muted sm:line-clamp-none">{active.text}</p>
-            <div className="mt-auto pt-2 sm:mt-0 sm:pt-3">
-              {active.external ? (
-                <SteamButton href={active.href} variant="green" size="sm">
-                  {active.cta}
-                </SteamButton>
-              ) : (
-                <Link href={active.href} className="btn btn-primary text-xs">
-                  {active.cta}
-                </Link>
-              )}
-            </div>
+          {/*
+            Tutte le slide nella stessa cella della griglia: la cella prende l'altezza della più alta, sul telefono
+            ogni slide la riempie (tasto in fondo, come prima) e da sm ognuna si appoggia in basso. `minmax(0,1fr)` e
+            `min-w-0`: il kicker su una riga (`truncate`) non allarga la colonna oltre lo schermo.
+          */}
+          <div className="grid min-h-[140px] w-full max-w-2xl grid-cols-[minmax(0,1fr)] sm:min-h-0 sm:w-auto" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+            {slides.map((s, k) => {
+              const on = k === index;
+              return (
+                <div
+                  key={s.src}
+                  ref={(el) => {
+                    texts.current[k] = el;
+                  }}
+                  className={`col-start-1 row-start-1 flex min-w-0 flex-col sm:self-end ${on ? "" : "pointer-events-none opacity-0"}`}
+                  aria-hidden={on ? undefined : true}
+                  inert={!on}
+                >
+                  <p className="kicker truncate text-mint">{s.kicker}</p>
+                  {/* Non è un titolo di sezione: l'unico H1 della pagina è quello (nascosto alla vista) in cima al main della home */}
+                  <p className="mt-1 line-clamp-1 font-display text-xl font-extrabold leading-tight text-sky sm:line-clamp-2 sm:text-3xl">{s.title}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-chalk-muted sm:line-clamp-none">{s.text}</p>
+                  <div className="mt-auto pt-2 sm:mt-0 sm:pt-3">
+                    {s.external ? (
+                      <SteamButton href={s.href} variant="green" size="sm">
+                        {s.cta}
+                      </SteamButton>
+                    ) : (
+                      <Link href={s.href} className="btn btn-primary text-xs">
+                        {s.cta}
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div className="hidden items-center gap-3 sm:flex">
             {controls}

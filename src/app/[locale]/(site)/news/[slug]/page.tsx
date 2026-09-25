@@ -6,6 +6,10 @@ import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
 import { getNews, news, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
 import { authorOfNews } from "@/lib/data/authors";
+import { patchOrder, patches } from "@/lib/data/cards";
+import { relatedNews } from "@/lib/relatedNews";
+import { linkLabels } from "@/lib/linkLabels";
+import { NewsPatchChanges, patchItems, patchOfNews } from "@/components/NewsPatchChanges";
 import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
@@ -20,6 +24,9 @@ type Params = Promise<{ locale: string; slug: string }>;
 
 /** Oltre i 110 caratteri Google ignora `headline`: se il titolo è più lungo, nei dati strutturati va il titolo per la SERP. */
 const HEADLINE_MAX = 110;
+
+/** Le news che raccontano una patch (campo `news` delle patch in cards.ts): per le news correlate sono dello stesso tipo. */
+const patchNews = new Set(patchOrder.map((id) => patches[id].news).filter((s): s is string => Boolean(s)));
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => news.map((item) => ({ locale, slug: item.slug })));
@@ -46,7 +53,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 /**
  * Pagina di un articolo: ogni news ha la sua (regola del 21/09/2026), firmata come le guide.
  * Struttura di lettura: titolo, riassunto d'attacco, firma con le date, copertina, testo a sezioni,
- * fonte, carte e guide collegate, domande frequenti, altre news.
+ * cosa cambia nella patch (solo sulle patch notes), fonte, carte e guide collegate, domande frequenti, news correlate.
  */
 export default async function NewsArticlePage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -60,7 +67,16 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const body = item.body?.[locale];
   const faq = item.faq?.[locale] ?? [];
   const highlights = item.highlights?.[locale] ?? [];
-  const more = sortedNews.filter((other) => other.slug !== item.slug).slice(0, 3);
+  const ll = linkLabels[locale];
+  // News correlate (Ondata 1, 25/09/2026, NEWS-07): prima erano sempre le ultime tre uscite, uguali per ogni articolo;
+  // ora guide e carte in comune, stesso tipo e vicinanza di data (`relatedNews`), completate con le più recenti.
+  const more = relatedNews(item, sortedNews, { patchNews });
+  // Patch notes di una patch: il blocco "Cosa cambia in questa patch" con le carte toccate e il link a MetaShifting.
+  // Le carte della news restano come pastiglie solo se il blocco non le elenca già tutte.
+  const patch = patchOfNews(item.slug);
+  const patchSlugs = new Set(patch ? patchItems(patch).map((m) => m.card.slug) : []);
+  const withPatch = patch !== undefined && patchSlugs.size > 0;
+  const cardChips = withPatch && item.cards?.every((s) => patchSlugs.has(s)) ? [] : (item.cards ?? []);
   // Chi firma lo decide `authorOfNews` e nessun altro: firma in pagina, nodo NewsArticle e pagina autore dicono la stessa cosa.
   const author = authorOfNews(item);
   const authorPath = href(locale, `/authors/${author.slug}`);
@@ -172,8 +188,11 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
         {/* I nomi delle carte nel testo diventano link alla scheda con l'anteprima della carta al passaggio del mouse */}
         {body ? <Markdown source={body} linkCards={locale} /> : null}
 
-        {ownSource && !item.cards?.length && !item.guides?.length ? null : (
-          <section className={body ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby={ownSource ? undefined : "news-source"}>
+        {/* Sulle patch notes del playtest, senza testo, il blocco porta anche la nota di ogni modifica */}
+        {withPatch ? <NewsPatchChanges patch={patch} locale={locale} dict={d} notes={!body} className={body ? "mt-8 border-t border-sky pt-6" : ""} /> : null}
+
+        {ownSource && !cardChips.length && !item.guides?.length ? null : (
+          <section className={body || withPatch ? "mt-8 border-t border-sky pt-6" : ""} aria-labelledby={ownSource ? undefined : "news-source"}>
             {/* per le news sui mazzi la "fonte" è la scheda del mazzo, già aperta dal tasto sotto la copertina;
                 per le novità del sito è l'articolo stesso */}
             {ownSource ? null : (
@@ -192,10 +211,10 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
                 </div>
               </>
             )}
-            {item.cards?.length ? (
+            {cardChips.length ? (
               <div className={ownSource ? "" : "mt-6"}>
                 <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
-                <CardChipList slugs={item.cards} locale={locale} />
+                <CardChipList slugs={cardChips} locale={locale} />
               </div>
             ) : null}
             <NewsGuideLinks item={item} locale={locale} dict={d} />
@@ -243,7 +262,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
       <section className="mt-12" aria-labelledby="more-news">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <h2 id="more-news" className="t-section">
-            {d.news.moreNews}
+            {ll.relatedNews}
           </h2>
           <Link href={href(locale, "/news")} className="text-sm text-mint hover:underline">
             {d.common.viewAll} →

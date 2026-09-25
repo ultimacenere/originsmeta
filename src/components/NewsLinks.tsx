@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { href, type Dictionary, type Locale } from "@/lib/i18n";
+import { formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getGuide } from "@/lib/content/guides";
-import type { NewsItem } from "@/lib/data/news";
+import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
+import { newsForGuide } from "@/lib/relatedNews";
+import { linkLabels } from "@/lib/linkLabels";
 import { newTabProps } from "./SteamButton";
 
 type Props = { item: NewsItem; locale: Locale; dict: Dictionary };
@@ -106,5 +108,34 @@ export function NewsGuideLinks({ item, locale, dict }: Props) {
         ))}
       </ul>
     </div>
+  );
+}
+
+/**
+ * Il collegamento inverso di `NewsGuideLinks`, in fondo a una guida (Ondata 1 del piano SEO/GEO, 25/09/2026,
+ * NEWS-03): le news che citano la guida nel campo `guides`, dalla più recente, al massimo cinque. Le guide
+ * evergreen (Kickstarter, Next Fest, demo) portano così agli articoli datati che le aggiornano. Senza news, niente blocco.
+ */
+export function GuideNewsLinks({ guideSlug, locale }: { guideSlug: string; locale: Locale }) {
+  const items = newsForGuide(guideSlug, sortedNews);
+  if (!items.length) return null;
+  return (
+    <section className="mt-10" aria-labelledby="guide-news">
+      <h2 id="guide-news" className="t-section">
+        {linkLabels[locale].guideNews}
+      </h2>
+      <ul className="mt-4 space-y-2">
+        {items.map((item) => (
+          <li key={item.slug}>
+            <Link href={href(locale, newsPath(item))} className="card-night card-night-hover flex flex-col gap-1 p-4 sm:flex-row sm:items-baseline sm:gap-4">
+              <time dateTime={item.date} className="shrink-0 font-mono text-xs text-pale-muted">
+                {formatDate(locale, item.date)}
+              </time>
+              <span className="t-item text-base leading-snug">{item.title[locale]}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

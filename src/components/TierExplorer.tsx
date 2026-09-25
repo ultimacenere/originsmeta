@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import Link from "next/link";
 import { CardPeek, type PeekCard } from "./CardPeek";
 import { tierTone } from "@/lib/tiercode";
@@ -21,6 +21,11 @@ import type { TierCardEntry } from "@/lib/tierTypes";
   browser): pannello laterale su desktop, foglio dal basso sul telefono. Il passaggio del mouse apre l'anteprima
   di sempre (`CardPeek`), solo dove il mouse esiste.
   È un componente client ma viene pre-renderizzato sul server: le carte sono nell'HTML (la pagina resta indicizzabile).
+  Dal 25/09/2026 (Ondata 1 del piano SEO/GEO, rilievi CARDS-07 e TOOL-02) ogni voce, in griglia, a righe e in
+  tabella, è un vero link alla scheda della carta: prima erano bottoni e le pagine meglio posizionate del sito non
+  passavano nessun link alle schede. Il clic semplice apre comunque il dettaglio; Ctrl/Cmd, Maiusc e il tasto
+  centrale aprono la scheda come ogni link. Le righe oltre le prime 20 di "Le più giocate" stanno nell'HTML, nascoste
+  finché non si chiede di vederle, così anche i loro link ci sono.
 */
 
 export type TierExplorerLabels = {
@@ -157,6 +162,32 @@ export function TierExplorer({
     setOpen(slug);
     track("tier_entry_open", { tier_source: source, card: slug });
   };
+  /**
+   * Proprietà di ogni voce: un link alla scheda (`e.href`) che al clic semplice apre il dettaglio nel <dialog>.
+   * Con un tasto modificatore o col tasto centrale non si ferma niente: il browser apre la scheda e l'evento GA4
+   * `tier_entry_click` lo registra come un'uscita verso la carta, come il tasto nel dettaglio.
+   */
+  const entryProps = (e: TierCardEntry) => ({
+    href: e.href,
+    "aria-haspopup": "dialog" as const,
+    onClick: (ev: MouseEvent<HTMLAnchorElement>) => {
+      if (ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) {
+        track("tier_entry_click", { tier_source: source, target: "card" });
+        return;
+      }
+      ev.preventDefault();
+      openCard(e.slug);
+    },
+    onAuxClick: (ev: MouseEvent<HTMLAnchorElement>) => {
+      if (ev.button === 1) track("tier_entry_click", { tier_source: source, target: "card" });
+    },
+    // come i bottoni di prima: anche la barra spaziatrice apre il dettaglio (Invio passa già dal clic)
+    onKeyDown: (ev: KeyboardEvent<HTMLAnchorElement>) => {
+      if (ev.key !== " ") return;
+      ev.preventDefault();
+      openCard(e.slug);
+    },
+  });
   const current = open ? entries.find((e) => e.slug === open) : undefined;
   const onDialogClick = (ev: MouseEvent<HTMLDialogElement>) => {
     // clic sul fondo scuro (fuori dal pannello): chiude
@@ -191,7 +222,7 @@ export function TierExplorer({
   const tile = (e: TierCardEntry, caption?: string) => (
     <li key={e.slug} className="min-w-0">
       <span className="deck-card-wrap has-peek tier-tile-wrap">
-        <button type="button" className={`tier-tile${e.legendary ? " is-legendary" : ""}`} aria-haspopup="dialog" onClick={() => openCard(e.slug)}>
+        <a {...entryProps(e)} className={`tier-tile${e.legendary ? " is-legendary" : ""}`}>
           {e.thumb ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={e.thumb} alt="" width={160} height={230} loading="lazy" decoding="async" />
@@ -206,7 +237,7 @@ export function TierExplorer({
             {e.legendary ? <span className="sr-only"> ({l.legendary})</span> : null}
           </span>
           {caption ? <span className="tier-tile-cap">{caption}</span> : null}
-        </button>
+        </a>
         <CardPeek card={peekOf(e)} />
       </span>
     </li>
@@ -336,14 +367,14 @@ export function TierExplorer({
     const used = sorted.filter((e) => e.used > 0);
     const unused = sorted.filter((e) => e.used === 0);
     const hidden = showAll ? 0 : Math.max(0, used.length - USAGE_LIMIT);
-    const shown = hidden ? used.slice(0, USAGE_LIMIT) : used;
     return (
       <>
-        {shown.length ? (
+        {used.length ? (
           <ol className="tier-usage">
-            {shown.map((e, i) => (
-              <li key={e.slug}>
-                <button type="button" className="tier-usage-row" aria-haspopup="dialog" onClick={() => openCard(e.slug)}>
+            {used.map((e, i) => (
+              // oltre le prime 20 la riga c'è (con il suo link) ma resta nascosta finché non si apre l'elenco intero
+              <li key={e.slug} hidden={hidden > 0 && i >= USAGE_LIMIT}>
+                <a {...entryProps(e)} className="tier-usage-row">
                   <span className="tier-usage-rank">{i + 1}</span>
                   {e.thumb ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -368,7 +399,7 @@ export function TierExplorer({
                     {decksLabel(e.used)}
                     <span className="tier-usage-pct"> · {pct(e.used)}%</span>
                   </span>
-                </button>
+                </a>
               </li>
             ))}
           </ol>
@@ -434,7 +465,7 @@ export function TierExplorer({
             {rows.map((e) => (
               <tr key={e.slug}>
                 <th scope="row">
-                  <button type="button" className="tier-table-card" aria-haspopup="dialog" onClick={() => openCard(e.slug)}>
+                  <a {...entryProps(e)} className="tier-table-card">
                     {e.thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={e.thumb} alt="" width={160} height={230} loading="lazy" decoding="async" />
@@ -443,7 +474,7 @@ export function TierExplorer({
                       {star(e)}
                       {e.name}
                     </span>
-                  </button>
+                  </a>
                 </th>
                 <td className="is-num tier-hide-sm">{e.mana ?? "—"}</td>
                 <td className="tier-hide-sm">{e.typeLabel}</td>
