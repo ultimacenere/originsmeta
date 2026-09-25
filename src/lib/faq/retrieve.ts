@@ -1,4 +1,4 @@
-import { cards, sagas, type Card } from "@/lib/data/cards";
+import { cards, cardsVerified, latestPatch, patchLabel, patches, sagas, type Card } from "@/lib/data/cards";
 import { getGuides } from "@/lib/content/guides";
 import { events } from "@/lib/data/events";
 import { RULES } from "@/lib/deckrules";
@@ -104,11 +104,14 @@ export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, 
   const prossimi = events.filter((e) => (e.end ?? e.start) >= oggi).slice(0, 3);
 
   const blocchi: string[] = [
-    `REGOLE DEL MAZZO: ${RULES.legendarySlots} Leggendaria + ${RULES.distinctCards} carte diverse in ${RULES.copiesPerCard} copie = ${RULES.deckSize} carte. Formato Conquest dei tornei: più mazzi con Leggendarie diverse e almeno ${RULES.conquestMinDifferent} carte di differenza fra un mazzo e l'altro.`,
+    // Conquest: la regola ufficiale della Crimson Cup è quella dell'annuncio del 24/09/2026 (8 carte uniche fra ogni
+    // coppia di mazzi); il controllo del deck builder usa ancora la regola di Big Bob's (RULES.conquestMinDifferent),
+    // in attesa della decisione di Pierluigi (KB §1 punto 34): l'assistente deve saperle distinguere.
+    `REGOLE DEL MAZZO: ${RULES.legendarySlots} Leggendaria + ${RULES.distinctCards} carte diverse in ${RULES.copiesPerCard} copie = ${RULES.deckSize} carte. Formato Conquest della Crimson Cup (annuncio ufficiale del 24/09/2026): tre mazzi, ognuno con una Leggendaria diversa, con almeno 8 carte uniche fra ogni coppia di mazzi; liste segrete fino alla top 4; al meglio delle cinque niente ban e si vince con tutti e tre i mazzi. Il controllo Conquest del deck builder di OriginsMeta usa ancora la regola di Big Bob's Playtest Battle (almeno ${RULES.conquestMinDifferent} carte di differenza fra un mazzo e l'altro).`,
   ];
 
   if (trovate.length) {
-    blocchi.push(`CARTE DEL DATABASE (patch 0.6.3):\n${trovate.map((t) => schedaCarta(t.c, locale)).join("\n")}`);
+    blocchi.push(`CARTE DEL DATABASE — ${patchInfo()}:\n${trovate.map((t) => schedaCarta(t.c, locale)).join("\n")}`);
     for (const t of trovate) fonti.push({ tipo: "card", slug: t.c.slug, nome: t.c.name, href: `/cards/${t.c.slug}` });
   }
   if (guide.length) {
@@ -125,9 +128,19 @@ export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, 
   return { testo: blocchi.join("\n\n"), fonti };
 }
 
+/**
+ * Versione dei dati delle carte, letta da `cards.ts` (ultima patch e ultima verifica nel gioco): prima era scritta
+ * a mano ("patch 0.6.3") ed era rimasta indietro di una patch. La usano i dati e le istruzioni dell'assistente.
+ */
+export function patchInfo(): string {
+  const p = patches[latestPatch];
+  const it = (iso: string) => iso.split("-").reverse().join("/");
+  return `patch ${patchLabel(latestPatch, "it")} (${it(p.date)}), con le carte verificate nel gioco il ${it(cardsVerified.date)}`;
+}
+
 /** Statistiche usate dalla pagina per dire su che cosa può rispondere. */
 export const copertura = () => ({
   carte: cards.filter((c) => c.status === "active").length,
   guide: getGuides("it").length,
-  patch: "21/09/2026",
+  patch: patches[latestPatch].date.split("-").reverse().join("/"),
 });

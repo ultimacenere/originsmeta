@@ -21,6 +21,13 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
  * La pagina resta statica: la domanda libera è una chiamata dal browser, non un rendering sul server.
  */
 
+/**
+ * ISR: se l'assistente è acceso lo decide `ANTHROPIC_API_KEY`, e una pagina solo statica lo decideva una volta per
+ * tutte durante la build. Il 25/09/2026 la chiave messa su Vercel funzionava già nell'API ma la pagina, generata
+ * in build, diceva ancora "spento": rigenerandosi sul server al massimo ogni 5 minuti, segue la chiave vera.
+ */
+export const revalidate = 300;
+
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
   return pageMeta(locale, "/faq", dict.faq.title, dict.faq.description);

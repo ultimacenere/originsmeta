@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { contestoPer, type Fonte } from "./retrieve";
+import { contestoPer, patchInfo, type Fonte } from "./retrieve";
 import type { Locale } from "@/lib/i18n";
 
 /**
@@ -25,7 +25,7 @@ REGOLE, in ordine di importanza:
    una risposta sbagliata su una statistica vale meno di un "non lo so".
 3. Non inventare nomi di carte. Se una carta non è nei dati, non esiste per te.
 4. Cita i nomi delle carte esattamente come sono scritti nei dati.
-5. Le statistiche sono quelle della patch 0.6.3 del playtest: dillo se la domanda riguarda numeri.
+5. Le statistiche delle carte seguono la ${patchInfo()}: dillo se la domanda riguarda numeri.
 6. Sei una fonte non ufficiale: per regolamenti, date e annunci rimanda alle fonti ufficiali di Koin.
 7. Se la domanda non riguarda Origins TCG, rispondi che ti occupi solo di questo gioco. Non sei un assistente
    generico e non scrivi testi, codice o traduzioni su richiesta.
