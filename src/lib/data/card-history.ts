@@ -218,7 +218,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 1 },
       to: { mana: 0 },
-      note: { en: "Now free; the Silver Bullet it creates deals 1 damage instead of 3.", it: "Ora gratis; il Proiettile d'Argento che crea infligge 1 danno invece di 3.", es: "Ahora es gratis; la Silver Bullet que crea inflige 1 de daño en lugar de 3.", fr: "Désormais gratuit ; la Balle d'argent créée inflige 1 dégât au lieu de 3." },
+      note: { en: "Now free; the Silver Bullet it creates deals 1 damage instead of 3.", it: "Ora gratis; la Silver Bullet che crea infligge 1 danno invece di 3.", es: "Ahora es gratis; la Silver Bullet que crea inflige 1 de daño en lugar de 3.", fr: "Désormais gratuit ; la Balle d'argent créée inflige 1 dégât au lieu de 3." },
     },
   ],
   "silver-bullet": [

@@ -85,7 +85,7 @@ describe("cardTitle", () => {
     assert.equal(cardTitle(card("aladdin"), "it"), "Aladdin: carta di Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "es"), "Aladdin: carta de Origins TCG");
     assert.equal(cardTitle(card("garlic"), "en"), "Garlic: Origins TCG created card");
-    assert.equal(cardTitle(card("garlic"), "it"), "Garlic: carta creata di Origins TCG");
+    assert.equal(cardTitle(card("garlic"), "it"), "Garlic: carta generata di Origins TCG");
     assert.equal(cardTitle(card("garlic"), "es"), "Garlic: carta creada de Origins TCG");
     assert.equal(cardTitle(card("baker"), "en"), "Baker: Origins TCG card, not in the demo");
     assert.equal(cardTitle(card("baker"), "it"), "Baker: carta di Origins TCG non nella demo");
@@ -179,12 +179,12 @@ describe("cardDescription", () => {
 
   test("le carte create dicono chi le crea solo se un testo lo dice; le rimosse che non sono nella demo", () => {
     assert.match(cardDescription(card("garlic"), "en", cards), /card created by Van Helsing's Tools in Origins TCG/);
-    assert.match(cardDescription(card("garlic"), "it", cards), /creata da Van Helsing's Tools/);
+    assert.match(cardDescription(card("garlic"), "it", cards), /generata da Van Helsing's Tools/);
     assert.match(cardDescription(card("silver-bullet"), "es", cards), /creada por Van Helsing's Tools/);
     // Reflection: World of Origins la collega a Mulan, ma nessun testo di carta dice chi la crea
     for (const locale of locales) {
       const d = cardDescription(card("reflection"), locale, cards);
-      assert.doesNotMatch(d, /created by|creata da|creada por/, d);
+      assert.doesNotMatch(d, /created by|generata da|creada por/, d);
     }
     assert.match(cardDescription(card("alice"), "en", cards), /not in the demo/);
     assert.match(cardDescription(card("alice"), "it", cards), /non nella demo/);

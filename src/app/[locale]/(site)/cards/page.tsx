@@ -4,6 +4,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { activeCards, cards, cardSource, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
+import { RemovedCardsArchive, removedArchiveId } from "@/components/RemovedCardsArchive";
 import { flipOf } from "@/components/CardChip";
 import { keywordLabel } from "@/lib/keywordLabels";
 import { newTabProps } from "@/components/SteamButton";
@@ -73,7 +74,10 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
         {inDemo} <span className="text-base font-bold text-chalk-muted">{d.cards.countLabel}</span>
       </p>
       <p className="mt-1 font-mono text-xs text-chalk-muted">
-        +{created} {d.cards.countCreated} · {removed} {d.cards.countRemoved}
+        +{created} {d.cards.countCreated} ·{" "}
+        <a href={`#${removedArchiveId}`} className="link-mint">
+          {removed} {d.cards.countRemoved}
+        </a>
       </p>
       <div className="mt-8">
         <CardExplorer
@@ -105,6 +109,8 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             }}
           />
       </div>
+      <RemovedCardsArchive locale={locale} />
+
       <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
       <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">
         {d.cards.sourceBefore}{" "}

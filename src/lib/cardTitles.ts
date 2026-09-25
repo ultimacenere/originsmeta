@@ -40,7 +40,7 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
   it: {
     legendary: "carta Leggendaria di Origins TCG",
     card: "carta di Origins TCG",
-    created: "carta creata di Origins TCG",
+    created: "carta generata di Origins TCG",
     removed: "carta di Origins TCG non nella demo",
     removedLegendary: "Leggendaria di Origins TCG non nella demo",
   },
@@ -123,8 +123,8 @@ const descWords: Record<Locale, DescWords> = {
     active: (h) => `${h.name}, ${h.spell ? "magia" : "unità"}${h.legendary ? " Leggendaria" : ""} ${h.align} di Origins TCG (Koin Games): ${h.stats}.`,
     created: (h) =>
       h.creators
-        ? `${h.name}, carta ${h.align} creata da ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
-        : `${h.name}, carta creata ${h.align} di Origins TCG (Koin Games): ${h.stats}.`,
+        ? `${h.name}, carta ${h.align} generata da ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
+        : `${h.name}, carta generata ${h.align} di Origins TCG (Koin Games): ${h.stats}.`,
     removed: (h) => `${h.name}, ${h.spell ? "magia" : "unità"}${h.legendary ? " Leggendaria" : ""} ${h.align} di Origins TCG (Koin Games) non nella demo: ${h.stats}.`,
     tail: "Statistiche e origine della leggenda su OriginsMeta.",
     shortTail: "Statistiche e leggenda su OriginsMeta.",

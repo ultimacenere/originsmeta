@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabase/server";
-import { defaultLocale, isLocale, type Locale } from "@/lib/i18n";
+import { defaultLocale, isLocale, locales, type Locale } from "@/lib/i18n";
+import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 import { authErrorKind, type AuthErrorKind } from "@/lib/loginLabels";
 
 /** Solo percorsi interni: niente redirect verso altri siti. */
@@ -11,17 +12,12 @@ function safeNext(raw: string | null, locale: Locale): string {
 }
 
 /**
- * Lingua del browser quando `next` non la dice (link vecchi, `next` mancante): prima lingua supportata in ordine
- * di preferenza nell'header accept-language, altrimenti l'inglese. Stessa idea di pickLocale in
- * src/app/t/[tag]/[code]/route.ts, ma scorre tutte le lingue indicate e non solo la prima.
+ * Lingua del browser quando `next` non la dice (link vecchi, `next` mancante): la stessa scelta dei link brevi /t
+ * (src/app/t/locale.ts), cioè la lingua supportata con il peso q più alto nell'header accept-language, con catalano,
+ * galiziano e basco portati sullo spagnolo; altrimenti l'inglese.
  */
 function pickLocale(request: Request): Locale {
-  const langs = (request.headers.get("accept-language") ?? "").split(",");
-  for (const part of langs) {
-    const base = part.split(";")[0]?.trim().toLowerCase().split("-")[0] ?? "";
-    if (isLocale(base)) return base;
-  }
-  return defaultLocale;
+  return preferredLocale(request.headers.get("accept-language"), locales, defaultLocale, LANGUAGE_ALIASES);
 }
 
 /**

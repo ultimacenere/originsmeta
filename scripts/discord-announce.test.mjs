@@ -117,4 +117,11 @@ describe("messaggi", () => {
     const deck = payload("decks", { kind: "decks", slug: "healing-healsing-9411" }, html, en);
     assert.match(deck.embeds[0].url, /\/it\/decks\/community\/healing-healsing-9411$/);
   });
+  test("spagnolo: titolo collegato alla pagina /es, prima del link di MetaShifting", () => {
+    const es = `<h1>La última</h1>`;
+    const body = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en, es);
+    assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "MetaShifting"]);
+    assert.match(body.embeds[0].fields[1].value, /^\[La última\]\(https:\/\/originsmeta\.com\/es\/news\/patch-x\)$/);
+    assert.match(payload("news", { kind: "news", slug: "x" }, html, en, es).content, /Nueva noticia/);
+  });
 });

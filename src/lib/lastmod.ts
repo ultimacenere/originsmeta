@@ -43,26 +43,26 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
  * Le pagine senza dati propri (FAQ, chi siamo, deck builder…) hanno solo questa data.
  */
 export const PAGE_UPDATED = {
-  "/": "2026-09-25", // 63fa759: Ondata 0, fatti allineati in home
-  "/news": "2026-09-24", // 6486a7c
-  "/news/[slug]": "2026-09-24", // 6486a7c: riquadro del nostro Discord in fondo a ogni news
-  "/guides": "2026-09-23", // e43d9bf: "Mandaci la tua guida"
-  "/guides/[slug]": "2026-09-25", // 63fa759
-  "/cards": "2026-09-25", // 9adea4d: parole chiave con i termini ufficiali del gioco
-  "/cards/[slug]": "2026-09-25", // 9adea4d
+  "/": "2026-09-25", // Ondata 1: title sul marchio, "In breve" in Stato del gioco, tutte le slide nell'HTML
+  "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting
+  "/news/[slug]": "2026-09-25", // Ondata 1: News correlate e "Cosa cambia in questa patch"
+  "/guides": "2026-09-25", // Ondata 1: title e description
+  "/guides/[slug]": "2026-09-25", // Ondata 1: "News su questo argomento"
+  "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse
+  "/cards/[slug]": "2026-09-25", // Ondata 1: title e description per tipo, link alle news delle patch
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco
   "/decks": "2026-09-25", // 7e3c971: guide dei mazzi tradotte
   "/decks/[slug]": "2026-09-25", // 63fa759
   "/decks/community/[slug]": "2026-09-25", // 7e3c971
-  "/deck-builder": "2026-09-24", // 6486a7c: ricerca nel testo delle carte
-  "/tier-list": "2026-09-24", // ff09d8a: tier list rifatta
-  "/tier-list/community": "2026-09-24", // ff09d8a
-  "/tier-list/most-played": "2026-09-24", // ff09d8a: nasce la pagina
-  "/tier-list/create": "2026-09-24", // ff09d8a
-  "/metashifting": "2026-09-24", // ff09d8a: nasce la pagina
-  "/tournaments": "2026-09-25", // 63fa759: calendario degli eventi (events.ts) allineato
+  "/deck-builder": "2026-09-25", // Ondata 1: title e H1
+  "/tier-list": "2026-09-25", // Ondata 1: In breve dai dati, tessere con i link alle schede
+  "/tier-list/community": "2026-09-25", // Ondata 1: anteprima dichiarata, link alle schede
+  "/tier-list/most-played": "2026-09-25", // Ondata 1: link alle schede e ai mazzi
+  "/tier-list/create": "2026-09-25", // Ondata 1: H1
+  "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
+  "/tournaments": "2026-09-25", // Ondata 1: Crimson Cup in testa con regole e iscrizione
   "/tournaments/[slug]": "2026-09-22", // a0d9f9c
-  "/faq": "2026-09-25", // 63fa759
+  "/faq": "2026-09-25", // Ondata 1: H1, pagina senza assistente, link alle news
   "/about": "2026-09-21", // 615177a
   "/authors": "2026-09-25", // 1713d26: i mazzi di Davdas nel suo profilo
   "/authors/[slug]": "2026-09-25", // 1713d26

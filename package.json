@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/tournament/bracket.test.ts src/lib/tiercode.test.ts src/lib/tierstats.test.ts src/lib/cardSearch.test.ts src/lib/community/deckTranslation.test.ts src/lib/keywordLabels.test.ts src/lib/deckrules.test.ts scripts/discord-announce.test.mjs",
+    "test": "node --test src/lib/tournament/bracket.test.ts src/lib/tiercode.test.ts src/lib/tierstats.test.ts src/lib/cardSearch.test.ts src/lib/community/deckTranslation.test.ts src/lib/keywordLabels.test.ts src/lib/deckrules.test.ts src/lib/hubMeta.test.ts src/lib/relatedNews.test.ts src/lib/cardTitles.test.ts src/lib/data/newsMeta.test.ts src/lib/lastmod.test.ts src/lib/cardPeek.test.ts src/app/t/locale.test.ts \"src/app/*/(site)/*/notFoundHtml.test.ts\" scripts/discord-announce.test.mjs",
     "import:woo": "node scripts/import-woo.mjs",
     "import:art": "node scripts/import-card-art.mjs"
   },

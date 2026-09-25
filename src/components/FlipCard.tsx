@@ -84,7 +84,7 @@ export function FlipCard({
   const star = c.legendary ? <span className="legendary-star">★</span> : null;
 
   return (
-    <Link href={c.href} className={`card-tile${c.legendary ? " is-legendary" : ""}${c.removed ? " is-removed" : ""}`}>
+    <Link href={c.href} prefetch={false} className={`card-tile${c.legendary ? " is-legendary" : ""}${c.removed ? " is-removed" : ""}`}>
       <span className="card-tile-art" aria-hidden="true" style={src ? undefined : { background: c.hue }}>
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element

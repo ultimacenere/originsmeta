@@ -104,12 +104,19 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
                 <h3 className="t-item leading-tight">{f.q}</h3>
                 <p className="mt-3 text-pale">{f.a}</p>
                 {carte.length ? <div className="mt-4">{<CardChipList slugs={carte} locale={locale} max={6} />}</div> : null}
-                {guide.length ? (
+                {guide.length || f.news?.length ? (
                   <ul className="mt-4 flex flex-wrap gap-2">
                     {guide.map((g) => (
                       <li key={g.slug}>
                         <Link href={href(locale, `/guides/${g.slug}`)} className="btn btn-ghost text-xs">
                           {g.title}
+                        </Link>
+                      </li>
+                    ))}
+                    {(f.news ?? []).map((n) => (
+                      <li key={n.slug}>
+                        <Link href={href(locale, `/news/${n.slug}`)} className="btn btn-ghost text-xs">
+                          {n.label}
                         </Link>
                       </li>
                     ))}

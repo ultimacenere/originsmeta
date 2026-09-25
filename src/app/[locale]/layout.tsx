@@ -88,7 +88,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         {/* Segnalazioni e suggerimenti dei visitatori: su ogni pagina, fuori dal <main>, prima del banner dei cookie */}
         <FeedbackWidget locale={l} labels={feedbackLabels(d)} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
-        <JsonLd data={[website(l, d.meta.description), organization, videoGame]} />
+        <JsonLd data={[website(l, d.meta.siteDescription), organization, videoGame]} />
         <GoogleAnalytics id={GA_ID} />
         <Analytics />
         <SpeedInsights />
