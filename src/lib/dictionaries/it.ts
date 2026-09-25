@@ -79,7 +79,7 @@ export const it: Dictionary = {
     viewAll: "Vedi tutto",
     search: "Cerca una carta",
     all: "Tutte",
-    /* "Tutti" per i filtri al maschile (archetipo, creator, tipo di autore): "Tutte" vale per Leggendarie e versioni */
+    /* "Tutti" per i filtri al maschile (archetipo, autore, tipo di autore): "Tutte" vale per Leggendarie e versioni */
     allMasculine: "Tutti",
     mana: "Mana",
     power: "Potenza",
@@ -145,7 +145,7 @@ export const it: Dictionary = {
     openDeck: "Apri il mazzo",
     deckCards: "Le carte del mazzo",
     decks: "Mazzi",
-    creator: "Creator",
+    creator: "Autore",
     archetype: "Archetipo",
     playtest: "Playtest",
     official: "Ufficiale",
@@ -163,7 +163,7 @@ export const it: Dictionary = {
     noDecks: "Nessun mazzo corrisponde ai filtri.",
     filterLegendary: "Leggendaria",
     filterArchetype: "Archetipo",
-    filterCreator: "Creator",
+    filterCreator: "Autore",
     /* filtro per tag autore dei mazzi (diretta Twitch del 23/09/2026) */
     filterAuthorType: "Tipo di autore",
     filterCard: "Carta",
@@ -277,7 +277,7 @@ export const it: Dictionary = {
        uscito dal titolo con la revisione dell'Ondata 1: il primario di "codice del mazzo" è /deck-builder; resta nella description */
     title: "Mazzi di Origins TCG della community",
     metaTitle: "Mazzi di Origins TCG: liste e guide della community",
-    intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e creator ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
+    intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e autore ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
     description: "Le liste dei mazzi di Origins TCG, il gioco di carte di Koin Games, con la guida, i voti e il codice del gioco. Filtra per Leggendaria, archetipo o carta.",
     conquestTitle: "Il formato Conquest, spiegato",
     conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026), dove ogni mazzo doveva avere una Leggendaria diversa, e scelto per la Crimson Cup: si registrano più mazzi, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",

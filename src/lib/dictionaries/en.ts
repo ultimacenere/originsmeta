@@ -79,7 +79,7 @@ export const en = {
     viewAll: "View all",
     search: "Search a card",
     all: "All",
-    /* Italian needs a masculine "all" for some filters (archetype, creator, author type); English does not */
+    /* Italian needs a masculine "all" for some filters (archetype, author, author type); English does not */
     allMasculine: "All",
     mana: "Mana",
     power: "Power",
@@ -146,7 +146,7 @@ export const en = {
     openDeck: "Open the deck",
     deckCards: "Cards in the deck",
     decks: "Decks",
-    creator: "Creator",
+    creator: "Author",
     archetype: "Archetype",
     playtest: "Playtest",
     official: "Official",
@@ -165,7 +165,7 @@ export const en = {
     noDecks: "No deck matches these filters.",
     filterLegendary: "Legendary",
     filterArchetype: "Archetype",
-    filterCreator: "Creator",
+    filterCreator: "Author",
     /* deck filter by author tag (Twitch live of 23/09/2026) */
     filterAuthorType: "Author type",
     filterCard: "Card",
@@ -282,7 +282,7 @@ export const en = {
        è uscito dal titolo con la revisione dell'Ondata 1: il primario di "deck code" è /deck-builder; resta nella description */
     title: "Origins TCG decks from the community",
     metaTitle: "Origins TCG decks: community decklists and guides",
-    intro: "Every deck is tagged by Legendary, archetype, deck type and creator, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
+    intro: "Every deck is tagged by Legendary, archetype, deck type and author, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
     description: "Community decklists for Origins TCG, the Koin Games card game: deck guides, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
     conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026), where each deck needed a different Legendary, and chosen for the Crimson Cup: you submit several decks that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
