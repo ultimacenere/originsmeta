@@ -2,16 +2,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
-import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
+import { pageMeta, resolveLocale } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
-import { getProfileByUsername, listDecksByOwner } from "@/lib/community/queries";
+import { authors } from "@/lib/data/authors";
+import { CommunityReadError, getProfileByUsername, listDecksByOwner, listPublicTierListKinds } from "@/lib/community/queries";
 import { countEntries, listPublicTierLists } from "@/lib/community/tierlists";
+import {
+  communityPageLabels,
+  dropHreflang,
+  editorialAuthor,
+  fillLabel,
+  profileDescription,
+  profileIndexable,
+  profileTitle,
+  type ProfileFacts,
+} from "@/lib/community/deckQuality";
 import { authorName } from "@/lib/community/util";
+import { communityPerson, communityProfilePage } from "@/lib/jsonld/deck";
 import { Avatar } from "@/components/AccountMenu";
 import { CardArt } from "@/components/CardChip";
-import { JsonLd, breadcrumbs, organizationId } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -30,18 +42,52 @@ export function generateStaticParams() {
   return [];
 }
 
+/**
+ * Profilo, mazzi e tier list di un iscritto, e i fatti che ne derivano: li usano sia i metadati sia la pagina.
+ * Le letture passano dalla cache dei dati di Next, quindi chiamarla due volte non raddoppia le query.
+ * Un errore del database si lancia (queries.ts, DECKS-12): la rigenerazione fallisce e resta la pagina di prima.
+ */
+async function loadProfile(username: string) {
+  const profile = await getProfileByUsername(username);
+  if (!profile) return null;
+  const [decks, tierLists, tierKinds] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id), listPublicTierListKinds(profile.id)]);
+  // `listPublicTierLists` (tierlists.ts) trasforma ancora un errore in una lista vuota: i fatti del profilo (title,
+  // description, noindex) vengono dalla lettura che lancia, e se le due letture non si accordano (ci sono tier list ma
+  // la lista completa è vuota) la rigenerazione fallisce, invece di mettere in cache un profilo "senza tier list".
+  if (tierKinds.length > 0 && tierLists.length === 0) throw new CommunityReadError("listPublicTierLists", "nessuna riga letta per un profilo che ha tier list pubblicate");
+  const name = authorName(profile);
+  // Le Leggendarie dei mazzi, dal più recente e senza doppioni (anche quelle scritte a mano, fuori dal database)
+  const legendaries = [
+    ...new Set(decks.flatMap((deck) => (deck.legendary ? [getCard(deck.legendary)?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? ""] : [])).filter(Boolean)),
+  ];
+  const facts: ProfileFacts = { name, decks: decks.length, legendaries, tierLists: tierKinds.length, tierKinds };
+  // L'autore editoriale dietro l'account, se authors.ts lo dichiara (nome utente o mazzi: Davdas è luigidavdasragoni)
+  const editorial = editorialAuthor(
+    authors,
+    decks.map((deck) => deck.slug),
+    profile.username,
+  );
+  return { profile, decks, tierLists, name, facts, editorial };
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { username } = await params;
-  const { locale, dict } = await resolveLocale(params);
-  const profile = await getProfileByUsername(username);
-  if (!profile) return {};
-  const name = authorName(profile);
-  return pageMeta(
-    locale,
-    `/u/${profile.username}`,
-    pageTitleWith(name, dict.community.profile.kicker),
-    dict.community.profile.description.replace("{name}", name),
-  );
+  const { locale } = await resolveLocale(params);
+  const data = await loadProfile(username);
+  if (!data) return {};
+  // Title e description dai dati (DECKS-09, 25/09/2026: prima una frase fissa di 93–104 caratteri che parlava di tier
+  // list anche a chi non ne ha). Un profilo senza mazzi né tier list è una pagina vuota: noindex e senza hreflang
+  // (`pageMeta` con `noindex` li dichiarerebbe comunque, `dropHreflang`), e resta fuori dalla sitemap (`listPublicProfiles`).
+  const indexable = profileIndexable(data.facts);
+  const meta = pageMeta(locale, `/u/${data.profile.username}`, profileTitle(data.facts, locale), profileDescription(data.facts, locale), undefined, {
+    noindex: !indexable,
+  });
+  return indexable ? meta : dropHreflang(meta);
+}
+
+/** Avatar per i dati strutturati: solo un indirizzo assoluto http(s), come lo salvano Discord e Supabase. */
+function avatarUrl(url: string | null | undefined): string | undefined {
+  return url && /^https?:\/\//.test(url) ? url : undefined;
 }
 
 export default async function PublicProfilePage({ params }: { params: Params }) {
@@ -49,13 +95,30 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const { locale, dict: d } = await resolveLocale(params);
   const c = d.community;
   const p = c.profile;
-  const profile = await getProfileByUsername(username);
-  if (!profile) notFound();
-
-  const [decks, tierLists] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id)]);
-  const name = authorName(profile);
+  const data = await loadProfile(username);
+  if (!data) notFound();
+  const { profile, decks, tierLists, name, editorial } = data;
+  const L = communityPageLabels[locale];
   const badge = profile.badge && profile.badge !== "community" ? profile.badge : null;
   const path = href(locale, `/u/${profile.username}`);
+  const pageUrl = `${siteUrl}${path}`;
+  // Stessa Person della firma dei suoi mazzi (src/lib/jsonld/deck.ts: `${siteUrl}/#user-<username>`, o per un autore
+  // editoriale la Person della sua pagina autore, `${siteUrl}/#person-<slug>`); qui con nome utente, avatar e il nome
+  // mostrato nella pagina quando è diverso da quello della Person.
+  const personName = editorial?.name ?? name;
+  const alternateNames = [...new Set([profile.username, name])].filter((n): n is string => Boolean(n) && n !== personName);
+  const image = avatarUrl(profile.avatar_url);
+  const person = communityPerson({
+    locale,
+    username: profile.username,
+    name,
+    editorial,
+    extra: {
+      ...(profile.username ? { identifier: profile.username } : {}),
+      ...(alternateNames.length ? { alternateName: alternateNames.length === 1 ? alternateNames[0] : alternateNames } : {}),
+      ...(image ? { image } : {}),
+    },
+  });
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -66,15 +129,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
             { name: d.decks.title, path: href(locale, "/decks") },
             { name, path },
           ]),
-          {
-            "@context": "https://schema.org",
-            "@type": "ProfilePage",
-            url: `${siteUrl}${path}`,
-            inLanguage: locale,
-            isPartOf: { "@id": `${siteUrl}/${locale}#website` },
-            publisher: { "@id": organizationId },
-            mainEntity: { "@type": "Person", name, identifier: profile.username ?? undefined },
-          },
+          communityProfilePage({ locale, pageUrl, name, person, created: profile.created_at, decks: decks.length }),
         ]}
       />
       <p className="kicker text-mint">{p.kicker}</p>
@@ -90,6 +145,15 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           {badge ? (
             <p className="mt-3">
               <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community}`}>{c.badges[badge as keyof typeof c.badges] ?? badge}</span>
+            </p>
+          ) : null}
+          {/* Chi pubblica mazzi ed è anche un autore del sito (DECKS-10 e MQ-13, 25/09/2026): link alla sua pagina
+              /authors, con il nome completo. Prima le due pagine non si collegavano e nel grafo erano due persone. */}
+          {editorial ? (
+            <p className="mt-3 text-sm">
+              <Link href={href(locale, `/authors/${editorial.slug}`)} className="link-mint font-bold">
+                {fillLabel(L.authorPage, { name: editorial.name })} →
+              </Link>
             </p>
           ) : null}
         </div>
@@ -170,6 +234,10 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
         <Link href={href(locale, "/decks")} className="link-mint font-bold">
           {d.tier.decksCta} →
+        </Link>
+        {/* la tier list principale, con l'ancora che la mappa delle query le assegna ("Origins TCG tier list", C14) */}
+        <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
+          {L.tierList} →
         </Link>
         <Link href={href(locale, "/tier-list/community")} className="link-mint font-bold">
           {d.tier.navCommunity} →
