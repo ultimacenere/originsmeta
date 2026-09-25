@@ -12,17 +12,29 @@ import { currentUser } from "@/lib/supabase/server";
 import { publishedDeckLimit } from "./queries";
 import { announceDeck } from "./discordDeck";
 import { translateDeckLater } from "./translate";
+import { refreshCardDecks } from "./decksByCard";
 import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 
 export type ActionState = { error?: string; ok?: boolean; href?: string };
 
-function revalidateDeckPaths(slug?: string) {
+/**
+ * Pagine da rigenerare quando cambia un mazzo pubblicato. Dall'Ondata 2 (25/09/2026) anche le schede carta, che
+ * mostrano "Mazzi con questa carta", le carte spesso nello stesso mazzo e il conto dei mazzi: `refreshCardDecks`
+ * invalida la lettura condivisa dei mazzi e con lei tutte le schede che la usano (circa 430 pagine). `gone` quando il
+ * mazzo sparisce (nascosto o eliminato): allora le schede non devono servirlo neanche una volta di più (`updateTag`).
+ * `cardPages = false` quando le schede non cambiano: nessuna riga toccata (id altrui o inesistente), oppure modifica o
+ * eliminazione di un mazzo privato o nascosto, che le schede non mostrano (leggono solo `status = 'published'`). Così
+ * una Server Action a vuoto non fa scadere la cache di tutte le schede. Limite accettato: nascondere un mazzo già
+ * nascosto le rigenera lo stesso (lo stato di prima non si legge). I voti non passano di qui: vedi `refreshCardDecks`.
+ */
+function revalidateDeckPaths(slug?: string, gone = false, cardPages = true) {
   for (const l of locales) {
     revalidatePath(`/${l}/decks`);
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/decks/community/${slug}`);
   }
   revalidatePath("/sitemap.xml");
+  if (cardPages) refreshCardDecks(gone);
 }
 
 function localeOf(fd: FormData): Locale {
@@ -213,11 +225,11 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if ("error" in p) return { error: p.error };
   const id = formData.get("id");
   if (!isUuid(id)) return { error: "forbidden" };
-  const { data, error } = await p.supabase.from("community_decks").update(p.row).eq("id", id).select("slug").maybeSingle();
+  const { data, error } = await p.supabase.from("community_decks").update(p.row).eq("id", id).select("slug, status").maybeSingle();
   if (error) return { error: "db" };
   if (!data) return { error: "forbidden" };
-  const s = (data as { slug: string }).slug;
-  revalidateDeckPaths(s);
+  const { slug: s, status } = data as { slug: string; status: string };
+  revalidateDeckPaths(s, false, status === "published");
   // guida cambiata: le traduzioni fatte sul testo vecchio non valgono più e si rifanno (solo le lingue rimaste indietro)
   translateDeckLater(p.supabase, id);
   return { ok: true, href: `/${p.locale}/decks/community/${s}` };
@@ -234,7 +246,8 @@ export async function setDeckStatus(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const status = formData.get("status") === "hidden" ? "hidden" : "published";
   const { data } = await supabase.from("community_decks").update({ status }).eq("id", id).neq("status", "draft").select("slug").maybeSingle();
-  revalidateDeckPaths((data as { slug: string } | null)?.slug);
+  // schede carta solo se una riga è cambiata davvero (un id altrui o inesistente non tocca niente)
+  revalidateDeckPaths((data as { slug: string } | null)?.slug, status === "hidden", Boolean(data));
   // un mazzo rimesso online recupera le traduzioni che gli mancano (per esempio se era nascosto prima del 25/09/2026)
   if (data && status === "published" && isUuid(id)) translateDeckLater(supabase, id);
   redirect(`/${locale}/account`);
@@ -246,8 +259,10 @@ export async function deleteDeck(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   if (!supabase || !user) redirect(`/${locale}/login`);
   const id = String(formData.get("id") ?? "");
-  const { data } = await supabase.from("community_decks").delete().eq("id", id).select("slug").maybeSingle();
-  revalidateDeckPaths((data as { slug: string } | null)?.slug);
+  const { data } = await supabase.from("community_decks").delete().eq("id", id).select("slug, status").maybeSingle();
+  const deleted = data as { slug: string; status: string } | null;
+  // un mazzo privato o nascosto non era su nessuna scheda carta: solo l'eliminazione di un mazzo pubblicato le tocca
+  revalidateDeckPaths(deleted?.slug, true, deleted?.status === "published");
   redirect(`/${locale}/account${formData.get("back") === "private" ? "#private" : ""}`);
 }
 

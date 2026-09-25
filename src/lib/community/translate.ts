@@ -7,6 +7,7 @@ import { locations } from "@/lib/data/locations";
 import type { Db } from "@/lib/supabase/public";
 import type { Guide } from "./types";
 import { guideHash, guideText, missingLocales, namesIn, translateGuideWith, type DeckTranslations } from "./deckTranslation";
+import { refreshCardDecks } from "./decksByCard";
 
 /**
  * Dopo la pubblicazione o la modifica di un mazzo, la guida si traduce nelle altre lingue del sito
@@ -82,6 +83,16 @@ export async function translateDeck(supabase: Db, deckId: string): Promise<strin
       revalidatePath(`/${l}/decks`);
     } catch {
       // fuori dalla richiesta la pagina si aggiorna comunque da sola (ISR, al massimo un minuto)
+    }
+  }
+  // Le schede carta linkano un mazzo solo nelle lingue in cui la sua pagina è indicizzabile (Ondata 2): una traduzione
+  // nuova lo aggiunge alle schede di quella lingua, che si rigenerano alla visita successiva invece che entro un'ora.
+  // Solo per i mazzi pubblicati: quelli nascosti non stanno sulle schede.
+  if (fresh.status === "published") {
+    try {
+      refreshCardDecks();
+    } catch {
+      // fuori dalla richiesta: le schede si aggiornano comunque entro un'ora
     }
   }
   return written;
