@@ -1,6 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { TierListRow } from "@/lib/supabase/database";
 import { TIERS, type Tier, type TierBoard, type TierKind } from "@/lib/tiercode";
+import { rankedCount } from "@/lib/tierstats";
 import { rowsOrThrow } from "./queries";
 
 /**
@@ -14,16 +15,45 @@ import { rowsOrThrow } from "./queries";
  * (/tier-list) resta separata e aspetta i risultati dei tornei ufficiali.
  */
 
-export type PublishedTierList = { owner: string; kind: TierKind; entries: unknown; updated_at: string };
+export type PublishedTierList = {
+  owner: string;
+  kind: TierKind;
+  entries: unknown;
+  updated_at: string;
+  /** titolo scelto dall'autore e codice TL1: le tier list firmate di /tier-list/community si aprono nel tool (Ondata 3) */
+  title: string;
+  code: string;
+  /** chi l'ha salvata: nome, nome utente e tag autore (le tier list firmate, `signedTierLists` in tierstats.ts) */
+  profile: { username: string | null; display_name: string | null; badge: string | null } | null;
+};
 
-/** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists`). */
+/** Le tier list pubblicate, di entrambi i tipi: le legge chiunque (policy di select di `tier_lists` e di `profiles`). */
 export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
   // Con un errore lancia (DECKS-12): la rigenerazione fallisce e restano le tier list di prima, non una classifica vuota.
-  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate.
-  const res = await client.from("tier_lists").select("owner, kind, entries, updated_at").eq("status", "published").limit(5000);
+  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate. Titolo, codice e profilo (Ondata 3) servono
+  // alle tier list firmate di /tier-list/community: stessa lettura, niente query in più.
+  // Limite da tenere d'occhio: la cache dei dati di Next non conserva risposte oltre i 2 MB, e con `entries` e `code` una
+  // lista di carte base pesa circa 3 KB. Verso le 650 liste la risposta non resterebbe più in cache (una lettura a ogni
+  // rigenerazione di ognuna delle tre pagine): a quel punto `title` e `code` vanno letti solo per le righe firmate.
+  const res = await client
+    .from("tier_lists")
+    .select("owner, kind, entries, updated_at, title, code, profile:profiles!tier_lists_owner_fkey(username, display_name, badge)")
+    .eq("status", "published")
+    .limit(5000);
   return rowsOrThrow<PublishedTierList>("listPublishedTierLists", res);
+}
+
+/**
+ * Solo chi ha salvato e quale scheda, per le tier list pubblicate: bastano ai conteggi dell'invito della home
+ * (`tierListCounts`, rotta /api/tier-list-counts), senza scaricare fasce, codici e profili. Con un errore lancia (DECKS-12).
+ */
+export async function listTierListOwners(): Promise<{ owner: string; kind: TierKind }[]> {
+  const client = supabasePublic();
+  if (!client) return [];
+  const res = await client.from("tier_lists").select("owner, kind").eq("status", "published").limit(5000);
+  return rowsOrThrow<{ owner: string; kind: TierKind }>("listTierListOwners", res);
 }
 
 const TIER_LIST_SELECT = "id, owner, kind, title, code, entries, status, created_at, updated_at";
@@ -51,8 +81,11 @@ export function boardEntries(board: TierBoard): Record<Tier, string[]> {
   return out;
 }
 
-/** Quante carte contiene una tier list salvata (per la riga di riepilogo nel profilo). */
+/**
+ * Quante carte contiene una tier list salvata (per la riga di riepilogo nel profilo e in /account). Stesso conto delle
+ * tier list firmate di /tier-list/community (`rankedCount`: carte distinte), così la stessa lista non ha due numeri sotto
+ * la stessa etichetta "carte classificate" (revisione dell'Ondata 3).
+ */
 export function countEntries(entries: Record<string, string[]> | null | undefined): number {
-  if (!entries) return 0;
-  return TIERS.reduce((n, t) => n + (Array.isArray(entries[t]) ? entries[t].length : 0), 0);
+  return rankedCount(entries);
 }

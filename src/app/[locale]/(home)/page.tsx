@@ -18,6 +18,9 @@ import { NewsCover } from "@/components/NewsCover";
 import { Postit, type PostitKind } from "@/components/Postit";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
 import { changeLabel } from "@/lib/linkLabels";
+import { supabaseEnabled } from "@/lib/supabase/env";
+import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
+import { TierInvite } from "@/components/TierInvite";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -119,6 +122,19 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
   /* la promessa datata resta finché nessuna sezione ha una fascia: sparisce da sola alla prima classifica */
   const nothingRanked = tierList.sections.every((s) => rankedIn(s) === 0);
+  // Invito a salvare la propria tier list (Ondata 3, TOOL-01). La home resta statica (niente letture di Supabase qui né
+  // nel layout): nell'HTML la frase senza numeri, il conteggio vero lo scrive il browser (`TierInvite`, da
+  // /api/tier-list-counts, con lo stesso conto e la stessa soglia di /tier-list/community). Con la community spenta
+  // (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
+  const ti = d.home.tierInvite;
+  const inviteWords = {
+    empty: ti.empty,
+    previewOne: ti.previewOne,
+    preview: ti.preview,
+    live: ti.live,
+    peopleOne: d.tier.sourceCommunityPeopleOne,
+    peopleMany: d.tier.sourceCommunityPeopleMany,
+  };
   const sl = d.home.slides;
   const mv = d.home.moves;
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
@@ -276,6 +292,15 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   </svg>
                   {d.home.tierStatus}
                 </p>
+              ) : null}
+              {/* Invito con il conteggio vero (Ondata 3, TOOL-01): la tier list della community parte da 5 persone */}
+              {supabaseEnabled ? (
+                <TierInvite
+                  words={inviteWords}
+                  fallback={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))}
+                  cta={ti.cta}
+                  href={href(locale, "/tier-list/create")}
+                />
               ) : null}
             </div>
             <ul className="flex flex-wrap gap-2">

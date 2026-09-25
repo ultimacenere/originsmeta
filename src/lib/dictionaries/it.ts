@@ -194,6 +194,16 @@ export const it: Dictionary = {
     tierSub: "Mazzi, Leggendarie, carte base",
     tierStatus: "Classifica di OriginsMeta dopo la Crimson Cup (20–25 ott). Intanto: le più giocate.",
     tierSoon: "Le più giocate",
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {n} persone che hanno salvato la scheda più salvata,
+       {min} la soglia, {people} "2 persone"; `intro` senza numeri per l'HTML statico (vedi en.ts) */
+    tierInvite: {
+      intro: "Tier list della community: la media delle liste salvate dagli iscritti (servono almeno {min} persone).",
+      empty: "Tier list della community: parte da {min} persone e nessuno ha ancora salvato la sua.",
+      previewOne: "Tier list della community: 1 persona delle {min} che servono per farla partire.",
+      preview: "Tier list della community: {n} persone delle {min} che servono per farla partire.",
+      live: "Tier list della community: la media delle liste salvate da {people}.",
+      cta: "Salva la tua",
+    },
     newsBoardTitle: "Bacheca news",
     newsBoardSub: "Annunci, eventi e novità dalla community, dal più recente.",
     featured: "In evidenza",
@@ -303,6 +313,29 @@ export const it: Dictionary = {
       rating: "{avg}/5, {votes}",
       numbers: ["Zero", "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", "Sette", "Otto", "Nove", "Dieci"],
     },
+    /* "I migliori mazzi di Origins TCG adesso" (Ondata 3, mappa delle query C18): la classifica dei voti della community
+       (vedi en.ts). `anchor` è l'id della sezione in italiano: /it/decks#migliori-mazzi */
+    best: {
+      anchor: "migliori-mazzi",
+      kicker: "Classifica della community",
+      title: "I migliori mazzi di Origins TCG adesso",
+      lead: "La classifica delle stelle che la community dà ai mazzi pubblicati su OriginsMeta con una guida completa, aggiornata il {date}. Non è un nostro giudizio: si muove a ogni voto.",
+      score: "voto pesato {score}",
+      by: "di {name}",
+      method: "Come si calcola: la media delle stelle di ogni mazzo pesata sul numero di voti (ogni mazzo parte da 3 stelle che valgono due voti), così un solo voto da 5 stelle non supera quattro voti con media 4,5. In classifica: i mazzi con almeno un voto e una guida completa in italiano (almeno {min} parole).",
+      excludedOne: "Un mazzo votato resta fuori: la sua guida è sotto le {min} parole o non ancora in italiano.",
+      excludedMany: "{n} mazzi votati restano fuori: la guida è sotto le {min} parole o non ancora in italiano.",
+      excludedAboveOne: "{list} ha il voto pesato per entrare in classifica ma resta fuori: la sua guida è sotto le {min} parole o non ancora in italiano.",
+      excludedAboveMany: "{list} hanno il voto pesato per entrare in classifica ma restano fuori: la guida è sotto le {min} parole o non ancora in italiano.",
+      excludedRestOne: "Per lo stesso motivo resta fuori un altro mazzo votato.",
+      excludedRestMany: "Per lo stesso motivo restano fuori altri {n} mazzi votati.",
+      tiedOne: "Un altro mazzo ha lo stesso voto pesato ed è anche lui #{rank}: lo trovi nell'elenco completo qui sotto.",
+      tiedMany: "Altri {n} mazzi hanno lo stesso voto pesato e sono anche loro #{rank}: li trovi nell'elenco completo qui sotto.",
+      moreOne: "Un altro mazzo votato è nell'elenco completo qui sotto.",
+      moreMany: "Altri {n} mazzi votati sono nell'elenco completo qui sotto.",
+      vote: "Hai giocato uno di questi mazzi? Votalo da 1 a 5 stelle nella sua pagina (serve un account): la classifica segue i voti.",
+      empty: "Nessun mazzo ha ancora voti e una guida completa in italiano: vota i mazzi che giochi e la classifica parte.",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO
@@ -400,6 +433,10 @@ export const it: Dictionary = {
       emptyCta: "Crea la tua tier list",
       officialLink: "Vedi la tier list di OriginsMeta",
       disclaimer: "È l'opinione di chi frequenta il sito, non un dato del gioco: pesa quanto le persone che l'hanno votata.",
+      /* Tier list firmate (Ondata 3, TOOL-01): vedi en.ts */
+      signedTitle: "Tier list firmate",
+      signedText: "Le hanno salvate iscritti di OriginsMeta con un tag autore (Staff, Pro, Influencer, Autore): ognuna è l'opinione di chi la firma. Nella media della community contano come tutte le altre.",
+      signedProfile: "Profilo",
     },
     /* Le più giocate (24/09/2026): in quanti mazzi pubblicati compare ogni carta */
     played: {

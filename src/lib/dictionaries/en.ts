@@ -192,6 +192,18 @@ export const en = {
     tierSub: "Decks, Legendaries, base cards",
     tierStatus: "OriginsMeta ranking after the Crimson Cup (20–25 Oct). Meanwhile: the most played cards.",
     tierSoon: "Most played",
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01), nella striscia della tier list. Conto per persone: {n} le
+       persone che hanno salvato la scheda più salvata (una lista per persona e per scheda), {min} la soglia della community
+       (COMMUNITY_MIN_LISTS), {people} "2 people". `intro` è la frase senza numeri dell'HTML statico; quella con i numeri la
+       scrive il browser (`TierInvite`, dati da /api/tier-list-counts) con `tierInviteText` di tierstats.ts */
+    tierInvite: {
+      intro: "Community tier list: the average of the lists members save (it needs at least {min} people).",
+      empty: "Community tier list: it goes live with {min} people, and nobody has saved theirs yet.",
+      previewOne: "Community tier list: 1 of the {min} people it needs to go live.",
+      preview: "Community tier list: {n} of the {min} people it needs to go live.",
+      live: "Community tier list: the average of the lists saved by {people}.",
+      cta: "Save yours",
+    },
     newsBoardTitle: "News board",
     newsBoardSub: "Announcements, events and community news, newest first.",
     featured: "Featured",
@@ -301,6 +313,31 @@ export const en = {
       rating: "{avg}/5, {votes}",
       numbers: ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"],
     },
+    /* "I migliori mazzi di Origins TCG adesso" (Ondata 3, mappa delle query C18): la classifica dei voti della community,
+       calcolata dalla pagina (ISR) con `bestDecks` di tierstats.ts, lo stesso voto pesato e lo stesso ordine di "In breve".
+       `anchor` è l'id della sezione, tradotto per lingua (/en/decks#best-decks, /it/decks#migliori-mazzi,
+       /es/decks#mejores-mazos); {min} è la soglia di parole della guida (GUIDE_MIN_WORDS in deckQuality.ts) */
+    best: {
+      anchor: "best-decks",
+      kicker: "Community ranking",
+      title: "The best Origins TCG decks right now",
+      lead: "A ranking built from the stars the community gives to decks published on OriginsMeta with a complete guide, updated on {date}. It is not our opinion: every vote moves it.",
+      score: "weighted {score}",
+      by: "by {name}",
+      method: "How it is calculated: each deck's average rating weighted by its number of votes (every deck starts from 3 stars worth two votes), so a single 5-star vote does not beat four votes that average 4.5. Ranked: decks with at least one vote and a complete guide in English (at least {min} words).",
+      excludedOne: "One rated deck stays out: its guide is under {min} words or not yet in English.",
+      excludedMany: "{n} rated decks stay out: their guide is under {min} words or not yet in English.",
+      excludedAboveOne: "{list} has the weighted score to make the ranking but stays out: its guide is under {min} words or not yet in English.",
+      excludedAboveMany: "{list} have the weighted score to make the ranking but stay out: their guide is under {min} words or not yet in English.",
+      excludedRestOne: "One more rated deck stays out for the same reason.",
+      excludedRestMany: "{n} more rated decks stay out for the same reason.",
+      tiedOne: "One more deck has the same weighted score and is also #{rank}: you'll find it in the full list below.",
+      tiedMany: "{n} more decks have the same weighted score and are also #{rank}: you'll find them in the full list below.",
+      moreOne: "One more rated deck is in the full list below.",
+      moreMany: "{n} more rated decks are in the full list below.",
+      vote: "Played one of these decks? Rate it from 1 to 5 stars on its page (you need an account): the ranking follows the votes.",
+      empty: "No deck has votes and a complete guide in English yet: rate the decks you play and the ranking starts.",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO
@@ -398,6 +435,11 @@ export const en = {
       emptyCta: "Make your tier list",
       officialLink: "See the OriginsMeta tier list",
       disclaimer: "It is the opinion of the people on this site, not a game statistic: it weighs as much as the people who voted.",
+      /* Tier list firmate (Ondata 3, TOOL-01): quelle salvate da profili con il tag Staff, Pro, Influencer o Autore
+         (`signedTierLists` in tierstats.ts). Senza liste firmate la sezione non c'è */
+      signedTitle: "Signed tier lists",
+      signedText: "Saved by OriginsMeta members with an author tag (Staff, Pro, Influencer, Author): each one is the opinion of whoever signs it. They count in the community average like every other list.",
+      signedProfile: "Profile",
     },
     /* Most played (24/09/2026): how many published decks use each card */
     played: {

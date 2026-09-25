@@ -199,6 +199,16 @@ export const es: Dictionary = {
     tierSub: "Mazos, Legendarias, cartas base",
     tierStatus: "Clasificación de OriginsMeta tras la Crimson Cup (20–25 oct.). Mientras tanto: las cartas más jugadas.",
     tierSoon: "Las más jugadas",
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {n} persone che hanno salvato la scheda più salvata,
+       {min} la soglia, {people} "2 personas"; `intro` senza numeri per l'HTML statico (vedi en.ts) */
+    tierInvite: {
+      intro: "Tier list de la comunidad: el promedio de las listas que guardan los miembros (necesita al menos {min} personas).",
+      empty: "Tier list de la comunidad: arranca con {min} personas y nadie ha guardado la suya todavía.",
+      previewOne: "Tier list de la comunidad: 1 de las {min} personas que necesita para arrancar.",
+      preview: "Tier list de la comunidad: {n} de las {min} personas que necesita para arrancar.",
+      live: "Tier list de la comunidad: el promedio de las listas guardadas por {people}.",
+      cta: "Guarda la tuya",
+    },
     newsBoardTitle: "Tablón de noticias",
     newsBoardSub: "Anuncios, eventos y novedades de la comunidad, primero lo más reciente.",
     featured: "Destacado",
@@ -310,6 +320,29 @@ export const es: Dictionary = {
       rating: "{avg}/5, {votes}",
       numbers: ["Cero", "Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete", "Ocho", "Nueve", "Diez"],
     },
+    /* "I migliori mazzi di Origins TCG adesso" (Ondata 3, mappa delle query C18): la classifica dei voti della community
+       (vedi en.ts). `anchor` è l'id della sezione in spagnolo: /es/decks#mejores-mazos */
+    best: {
+      anchor: "mejores-mazos",
+      kicker: "Clasificación de la comunidad",
+      title: "Los mejores mazos de Origins TCG ahora",
+      lead: "La clasificación de las estrellas que la comunidad da a los mazos publicados en OriginsMeta con una guía completa, actualizada el {date}. No es nuestra opinión: cambia con cada voto.",
+      score: "nota ponderada {score}",
+      by: "de {name}",
+      method: "Cómo se calcula: el promedio de estrellas de cada mazo ponderado por su número de votos (cada mazo parte de 3 estrellas que valen dos votos), así un solo voto de 5 estrellas no supera cuatro votos con un promedio de 4,5. En la clasificación: los mazos con al menos un voto y una guía completa en español (al menos {min} palabras).",
+      excludedOne: "Un mazo votado queda fuera: su guía tiene menos de {min} palabras o todavía no está en español.",
+      excludedMany: "{n} mazos votados quedan fuera: su guía tiene menos de {min} palabras o todavía no está en español.",
+      excludedAboveOne: "{list} tiene la nota ponderada para entrar en la clasificación, pero queda fuera: su guía tiene menos de {min} palabras o todavía no está en español.",
+      excludedAboveMany: "{list} tienen la nota ponderada para entrar en la clasificación, pero quedan fuera: su guía tiene menos de {min} palabras o todavía no está en español.",
+      excludedRestOne: "Por el mismo motivo queda fuera otro mazo votado.",
+      excludedRestMany: "Por el mismo motivo quedan fuera otros {n} mazos votados.",
+      tiedOne: "Otro mazo tiene la misma nota ponderada y también es el #{rank}: lo encuentras en la lista completa de abajo.",
+      tiedMany: "Otros {n} mazos tienen la misma nota ponderada y también son el #{rank}: los encuentras en la lista completa de abajo.",
+      moreOne: "Otro mazo votado está en la lista completa de abajo.",
+      moreMany: "Otros {n} mazos votados están en la lista completa de abajo.",
+      vote: "¿Jugaste uno de estos mazos? Vótalo de 1 a 5 estrellas en su página (necesitas una cuenta): la clasificación sigue los votos.",
+      empty: "Ningún mazo tiene todavía votos y una guía completa en español: vota los mazos que juegas y la clasificación arranca.",
+    },
   },
   tier: {
     /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO
@@ -407,6 +440,10 @@ export const es: Dictionary = {
       emptyCta: "Crea tu tier list",
       officialLink: "Ver la tier list de OriginsMeta",
       disclaimer: "Es la opinión de quienes usan este sitio, no una estadística del juego: pesa tanto como las personas que la votaron.",
+      /* Tier list firmate (Ondata 3, TOOL-01): vedi en.ts */
+      signedTitle: "Tier lists firmadas",
+      signedText: "Las guardaron miembros de OriginsMeta con una etiqueta de autor (Staff, Pro, Influencer, Autor): cada una es la opinión de quien la firma. En el promedio de la comunidad cuentan como todas las demás.",
+      signedProfile: "Perfil",
     },
     /* Most played (24/09/2026): how many published decks use each card */
     played: {
