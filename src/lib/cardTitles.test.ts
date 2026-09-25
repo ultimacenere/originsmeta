@@ -1,15 +1,19 @@
 /**
- * Test dei title e delle description delle schede carta e dei mazzi (`cardTitles.ts`) con il runner integrato di Node:
- * `node --test src/lib/cardTitles.test.ts`. Come per gli altri test, gli import hanno l'estensione `.ts`.
+ * Test dei title e delle description delle schede carta, dei mazzi e delle guide ai mazzi (`cardTitles.ts`) con il
+ * runner integrato di Node: `node --test src/lib/cardTitles.test.ts`. Come per gli altri test, gli import hanno
+ * l'estensione `.ts`.
  *
- * Gira su TUTTE le carte del database, nelle tre lingue. `cards.ts` non si importa in Node (importa un JSON senza
- * attributi e moduli senza estensione), quindi le carte si ricompongono qui dalle stesse tre sorgenti e nello stesso
- * modo: `woo-cards.json`, `card-lore.ts` (testo ufficiale e origine) e `card-history.ts` (le patch uscite dopo
- * l'import si applicano sopra, come fa `cards.ts`; l'ordine delle patch si legge da `cards.ts`).
+ * Gira su TUTTE le carte del database, nelle tre lingue, e usa il codice vero del sito: il database di `cards.ts`
+ * (con l'unione di woo-cards.json, card-lore.ts, card-history.ts e le patch uscite dopo l'import), `pageTitle` di
+ * `page.ts` e le guide di `guides.ts`. Quei moduli sono scritti per Next (import senza estensione, JSON senza
+ * attributi, `next/navigation`), quindi prima di caricarli il test registra un piccolo hook di risoluzione dei moduli
+ * di Node (`module.registerHooks`, Node ≥ 22.15): aggiunge `.ts` agli import relativi senza estensione, dichiara i
+ * JSON e sostituisce `next/navigation`, di cui `page.ts` usa solo `notFound` (che qui non serve). Così, se cambiano
+ * l'unione delle carte o `pageTitle`, il test lo vede.
  */
+import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import {
   CARD_DESC_MAX,
   CARD_DESC_MIN,
@@ -19,82 +23,48 @@ import {
   cardTitle,
   creatorsOf,
   deckLead,
+  deckShortTail,
   deckTitle,
   type TitleCard,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./cardTitles.ts";
-import {
-  cardLore,
-  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-} from "./data/card-lore.ts";
-import {
-  cardHistory,
-  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-} from "./data/card-history.ts";
+
+type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
+type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
+// I tipi di @types/node del progetto (20.x) non conoscono ancora `registerHooks`: la funzione c'è in Node 24.
+const { registerHooks } = nodeModule as unknown as { registerHooks: (hooks: { resolve: ResolveHook }) => void };
+registerHooks({
+  resolve(specifier, context, next) {
+    if (specifier === "next/navigation") return { url: "data:text/javascript,export function notFound(){throw new Error('notFound')}", shortCircuit: true };
+    if (/^\.\.?\//.test(specifier) && !/\.(?:[cm]?[jt]sx?|json)$/.test(specifier)) {
+      try {
+        return next(`${specifier}.ts`, context);
+      } catch {
+        // non è un modulo .ts: si risolve com'è scritto
+      }
+    }
+    const resolved = next(specifier, context);
+    return resolved.url.endsWith(".json") ? { ...resolved, importAttributes: { type: "json" } } : resolved;
+  },
+});
+
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const cardsModule: typeof import("./data/cards") = await import("./data/cards.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const pageModule: typeof import("./page") = await import("./page.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const guidesModule: typeof import("./content/guides") = await import("./content/guides.ts");
+const { pageTitle } = pageModule;
 
 type Locale = "en" | "it" | "es";
 const locales: Locale[] = ["en", "it", "es"];
+const cards: readonly TitleCard[] = cardsModule.cards;
 
-type WooCard = {
-  slug: string;
-  name: string;
-  formerName?: string;
-  type: "unit" | "spell" | "token";
-  legendary: boolean;
-  status: "active" | "removed";
-  mana?: number;
-  power?: number;
-  health?: number;
-  alignment?: "good" | "evil" | "neutral";
-  ability?: string;
-  related?: string[];
-};
-type Lore = { en?: string; it?: string; es?: string; origin?: { en: string; it: string; es: string } };
-type Change = { patch: string; to?: { mana?: number; power?: number; health?: number }; alignment?: { to: "good" | "evil" | "neutral" } };
-
-const woo = JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8")) as { patch: string; cards: WooCard[] };
-const cardsSource = readFileSync(new URL("./data/cards.ts", import.meta.url), "utf8");
-const patchOrder = JSON.parse(`[${/export const patchOrder = \[([^\]]*)\]/.exec(cardsSource)?.[1] ?? ""}]`) as string[];
-const importedIndex = patchOrder.indexOf(woo.patch.replace(/^.*:v/, ""));
-const lore = cardLore as Record<string, Lore>;
-const history = cardHistory as Record<string, Change[]>;
-
-const cards: TitleCard[] = woo.cards.map((w) => {
-  const l = lore[w.slug];
-  const card: TitleCard = { slug: w.slug, name: w.name, type: w.type, status: w.status };
-  if (w.formerName) card.formerName = w.formerName;
-  if (w.legendary) card.legendary = true;
-  if (w.mana !== undefined) card.mana = w.mana;
-  if (w.power !== undefined) card.power = w.power;
-  if (w.health !== undefined) card.health = w.health;
-  if (w.alignment) card.alignment = w.alignment;
-  for (const ch of history[w.slug] ?? []) {
-    if (!(importedIndex >= 0 && patchOrder.indexOf(ch.patch) > importedIndex)) continue;
-    if (ch.to?.mana !== undefined) card.mana = ch.to.mana;
-    if (ch.to?.power !== undefined) card.power = ch.to.power;
-    if (ch.to?.health !== undefined) card.health = ch.to.health;
-    if (ch.alignment) card.alignment = ch.alignment.to;
-  }
-  const en = l?.en ?? w.ability;
-  if (en) card.ability = { en, it: l?.it ?? en, es: l?.es ?? en };
-  if (l?.origin) card.origin = l.origin;
-  if (w.related?.length) card.related = w.related;
-  return card;
-});
-const bySlug = new Map(cards.map((c) => [c.slug, c]));
 const card = (slug: string): TitleCard => {
-  const c = bySlug.get(slug);
+  const c = cardsModule.getCard(slug);
   assert.ok(c, `carta assente dal database: ${slug}`);
   return c;
 };
-
-/** Replica di `pageTitle` (src/lib/page.ts), che importa Next e non si carica in Node: serve ai title dei mazzi. */
-function pageTitle(title: string): string {
-  const withKeyword = /origins tcg|originsmeta/i.test(title) ? title : `${title} · Origins TCG`;
-  if (/originsmeta/i.test(withKeyword)) return withKeyword;
-  const withBrand = `${withKeyword} · OriginsMeta`;
-  return withBrand.length <= 60 ? withBrand : withKeyword;
-}
 
 describe("database", () => {
   test("le carte ci sono tutte, di ogni tipo", () => {
@@ -103,7 +73,6 @@ describe("database", () => {
     assert.ok(cards.some((c) => !c.legendary && c.status === "active" && c.type !== "token"));
     assert.ok(cards.some((c) => c.type === "token"));
     assert.ok(cards.some((c) => c.status === "removed"));
-    assert.ok(patchOrder.length >= 4, "ordine delle patch non letto da cards.ts");
   });
 });
 
@@ -126,9 +95,7 @@ describe("cardTitle", () => {
     assert.equal(cardTitle(card("alice"), "es"), "Alice: Legendaria de Origins TCG fuera de la demo");
   });
 
-  test("ogni carta, in ogni lingua: nome in testa, Origins TCG dentro, entro 60 caratteri", () => {
-    // Un title che contiene "Origins TCG" `pageTitle` lo lascia com'è (aggiunge " · OriginsMeta" solo entro i 60):
-    // se sta nei 60 da solo, sta nei 60 anche il title finale.
+  test("ogni carta, in ogni lingua: nome in testa, Origins TCG dentro, title finale entro 60 caratteri", () => {
     const bad: string[] = [];
     for (const c of cards)
       for (const locale of locales) {
@@ -149,29 +116,31 @@ describe("cardTitle", () => {
 
 describe("creatorsOf", () => {
   const names = (slug: string) => creatorsOf(card(slug), cards).map((c) => c.name);
-  test("dal testo della carta che la nomina, anche quando `related` salta un passaggio", () => {
+  test("dal testo della carta che la nomina, non dal campo `related` (che a volte salta un passaggio)", () => {
     assert.deepEqual(names("garlic"), ["Van Helsing's Tools"]);
     assert.deepEqual(names("mama-bear"), ["Papa Bear"]);
     assert.deepEqual(names("van-helsings-tools"), ["Van Helsing"]);
+  });
+  test("anche dal testo italiano o spagnolo: Silver Bullet in inglese è scritta \"Silver Bolt\"", () => {
+    assert.deepEqual(names("silver-bullet"), ["Van Helsing's Tools"]);
   });
   test("al plurale, e fra più fonti solo quelle nella demo", () => {
     assert.deepEqual(names("pumpkin"), ["Old MacDonald"]);
     assert.deepEqual(names("zombie"), ["Legion of the Dead"]);
   });
   test("un nome dentro un nome più lungo non conta", () => {
-    for (const c of creatorsOf(card("little-pig"), cards)) assert.notEqual(c.slug, "not-so-little-pig");
+    for (const c of creatorsOf(card("little-pig"), cards)) assert.notEqual(c.slug, "three-not-so-little-pigs");
   });
-  test("senza testo che la nomini, vale `related`", () => {
-    assert.ok(creatorsOf(card("silver-bullet"), cards).length > 0);
-  });
-  test("ogni carta creata ha chi la crea; le altre carte no", () => {
-    for (const c of cards) {
-      const found = creatorsOf(c, cards);
-      if (c.type === "token") assert.ok(found.length > 0, c.slug);
-      else assert.equal(found.length, 0, c.slug);
-    }
+  test("se nessun testo la nomina, nessuno: le sole carte create senza chi le crea sono queste", () => {
+    // Se il database cambia e questo elenco con lui, va ricontrollato a mano che cosa dicono i testi.
+    const orphans = cards.filter((c) => c.type === "token" && !creatorsOf(c, cards).length).map((c) => c.slug);
+    assert.deepEqual(orphans.sort(), ["little-pig", "off-with-your-head", "reflection"]);
+    for (const c of cards) if (c.type !== "token") assert.equal(creatorsOf(c, cards).length, 0, c.slug);
   });
 });
+
+/** Parole vuote che non devono restare prima dei puntini (un campione per lingua). */
+const danglers = /\s(?:a|an|the|of|to|your|il|la|di|del|della|nella|e|el|los|las|de|en|y|que)…$/i;
 
 describe("cardDescription", () => {
   test("ogni carta, in ogni lingua: 120–158 caratteri, nome in testa, Origins TCG e Koin Games dentro", () => {
@@ -186,6 +155,21 @@ describe("cardDescription", () => {
     assert.deepEqual(bad, []);
   });
 
+  test("un testo tagliato non finisce con una parola vuota", () => {
+    const bad: string[] = [];
+    for (const c of cards)
+      for (const locale of locales) {
+        const d = cardDescription(c, locale, cards);
+        if (danglers.test(d)) bad.push(`${locale} ${c.slug}: ${d}`);
+      }
+    assert.deepEqual(bad, []);
+  });
+
+  test("il testo della carta, quando ci sta intero, c'è anche se l'attacco arriva già a 120", () => {
+    const d = cardDescription(card("hansel-and-gretel"), "en", cards);
+    assert.ok(d.includes(card("hansel-and-gretel").ability?.en.split(/[.\n]/)[0] ?? "?"), d);
+  });
+
   test("frase dai dati: tipo, allineamento, costo e statistiche", () => {
     assert.match(cardDescription(card("merlin"), "en", cards), /^Merlin, Neutral Legendary unit in Origins TCG by Koin Games: \d+ mana, \d+\/\d+\. /);
     assert.match(cardDescription(card("merlin"), "it", cards), /^Merlin, unità Leggendaria Neutral di Origins TCG \(Koin Games\): \d+ mana, \d+\/\d+\. /);
@@ -193,10 +177,15 @@ describe("cardDescription", () => {
     assert.match(cardDescription(card("legion-of-the-dead"), "es", cards), /^Legion of the Dead, hechizo Legendario /);
   });
 
-  test("le carte create dicono chi le crea, le rimosse che non sono nella demo", () => {
+  test("le carte create dicono chi le crea solo se un testo lo dice; le rimosse che non sono nella demo", () => {
     assert.match(cardDescription(card("garlic"), "en", cards), /card created by Van Helsing's Tools in Origins TCG/);
     assert.match(cardDescription(card("garlic"), "it", cards), /creata da Van Helsing's Tools/);
-    assert.match(cardDescription(card("garlic"), "es", cards), /creada por Van Helsing's Tools/);
+    assert.match(cardDescription(card("silver-bullet"), "es", cards), /creada por Van Helsing's Tools/);
+    // Reflection: World of Origins la collega a Mulan, ma nessun testo di carta dice chi la crea
+    for (const locale of locales) {
+      const d = cardDescription(card("reflection"), locale, cards);
+      assert.doesNotMatch(d, /created by|creata da|creada por/, d);
+    }
     assert.match(cardDescription(card("alice"), "en", cards), /not in the demo/);
     assert.match(cardDescription(card("alice"), "it", cards), /non nella demo/);
     assert.match(cardDescription(card("alice"), "es", cards), /fuera de la demo/);
@@ -216,24 +205,42 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("Spellcast", "Merlin", "es"), "Mazo de Merlin: Spellcast");
     assert.equal(pageTitle(deckTitle("Healing Healsing", "Van Helsing", "en")), "Van Helsing deck: Healing Healsing · Origins TCG");
   });
-  test("un mazzo che si chiama come la Leggendaria non la ripete; senza Leggendaria resta il nome", () => {
+  test("un nome uguale alla Leggendaria o che la contiene non la ripete; senza Leggendaria resta il nome", () => {
     assert.equal(deckTitle("merlin", "Merlin", "en"), "Merlin deck");
+    assert.equal(deckTitle("Dorothy Combo", "Dorothy", "en"), "Dorothy Combo deck");
+    assert.equal(deckTitle("Dorothy Combo", "Dorothy", "it"), "Mazzo Dorothy Combo");
+    assert.equal(deckTitle("Dracula SUPER FUN", "Dracula", "es"), "Mazo Dracula SUPER FUN");
+    assert.equal(deckTitle("Merlinator", "Merlin", "en"), "Merlin deck: Merlinator");
     assert.equal(deckTitle("Buff", undefined, "it"), "Buff");
   });
-  test("il nome lungo si accorcia a parola intera, la Leggendaria resta", () => {
+  test("se il modello lungo non ci sta, prima la forma compatta con i due nomi interi", () => {
+    for (const locale of locales) {
+      assert.equal(deckTitle("The Trick-or-Treat Legion", "Legion of the Dead", locale), "Legion of the Dead: The Trick-or-Treat Legion");
+      assert.equal(deckTitle("3 Pigs Mid Range", "Three Not So Little Pigs", locale), "Three Not So Little Pigs: 3 Pigs Mid Range");
+    }
+    assert.equal(deckTitle("Value Board", "Three Not So Little Pigs", "it"), "Mazzo di Three Not So Little Pigs: Value Board");
+  });
+  test("poi il nome accorciato a parola intera: la Leggendaria e la prima parola del nome restano", () => {
     const t = deckTitle("3 Pigs Mid Range with extra bacon and a lot of words", "Three Not So Little Pigs", "it");
-    assert.ok(t.startsWith("Mazzo di Three Not So Little Pigs: "), t);
+    assert.ok(t.startsWith("Three Not So Little Pigs: 3 Pigs"), t);
     assert.ok(t.endsWith("…"), t);
     assert.ok(t.length <= DECK_TITLE_MAX, t);
-    assert.equal(deckTitle("The Trick-or-Treat Legion", "Legion of the Dead", "en"), "Legion of the Dead deck: The Trick-or-Treat…");
+    assert.equal(deckTitle("The Trick-or-Treat Legion of Halloween", "Legion of the Dead", "en"), "Legion of the Dead: The Trick-or-Treat Legion…");
+    // Senza parole vuote in fondo, e con il taglio anche sul trattino
+    assert.equal(deckTitle("Zombie rush for the Crimson Cup finals", "Legion of the Dead", "it"), "Legion of the Dead: Zombie rush…");
+    assert.equal(deckTitle("Trick-or-Treat-Halloween-Legion-Zombies", "Three Not So Little Pigs", "es"), "Three Not So Little Pigs: Trick-or-Treat…");
   });
-  test("mai un nome spezzato a metà parola: se non ci sta abbastanza, resta la Leggendaria", () => {
-    assert.equal(deckTitle("The Trick-or-Treat Legion", "Legion of the Dead", "it"), "Mazzo di Legion of the Dead");
-    assert.equal(deckTitle("The Trick-or-Treat Legion", "Legion of the Dead", "es"), "Mazo de Legion of the Dead");
+  test("due mazzi diversi della stessa Leggendaria non hanno lo stesso title", () => {
+    const names = ["Spellcast", "The Trick-or-Treat Legion", "Trick or Treat Zombies", "Legion of the Dead", "3 Pigs Mid Range", "Value Board", "Zombie rush for the Crimson Cup finals"];
+    for (const l of ["Merlin", "Legion of the Dead", "Three Not So Little Pigs"])
+      for (const locale of locales) {
+        const titles = names.map((n) => deckTitle(n, l, locale));
+        assert.equal(new Set(titles).size, titles.length, `${locale} ${l}: ${titles.join(" | ")}`);
+      }
   });
-  test("qualunque nome: title finale entro 60 caratteri", () => {
-    const names = ["A", "Spellcast", "The Trick-or-Treat Legion", "x".repeat(80), `${"word ".repeat(30)}end`, "Dracula SUPER FUN", "Just f***in em"];
-    const legendaries = [undefined, "Merlin", "Three Not So Little Pigs", "Legion of the Dead", "A custom Legendary with a very very long name typed by hand"];
+  test("qualunque nome: title finale entro 60 caratteri, mai vuoto", () => {
+    const names = ["A", "Spellcast", "The Trick-or-Treat Legion", "x".repeat(80), `${"word ".repeat(30)}end`, "Dracula SUPER FUN", "Just f***in em", "Move/Combo/Tempo/Value/Aggro/Control"];
+    const legendaries = [undefined, "Merlin", "Dracula", "Three Not So Little Pigs", "Legion of the Dead", "A custom Legendary with a very very long name typed by hand"];
     for (const n of names)
       for (const l of legendaries)
         for (const locale of locales) {
@@ -244,11 +251,35 @@ describe("deckTitle", () => {
   });
 });
 
+describe("guide ai mazzi", () => {
+  // Le guide che trattano un mazzo della community: la prima carta dei tag è la sua Leggendaria.
+  const deckGuides = (locale: Locale) => guidesModule.getGuides(locale).filter((g) => g.tags?.communityDecks?.length);
+  test("metaTitle con la Leggendaria, title finale entro 60 caratteri, diverso da quello della scheda del mazzo", () => {
+    for (const locale of locales) {
+      const guides = deckGuides(locale);
+      assert.ok(guides.length >= 6, locale);
+      for (const g of guides) {
+        const legendary = card(g.tags?.cards?.[0] ?? "");
+        assert.ok(legendary.legendary, `${g.slug}: la prima carta dei tag non è una Leggendaria`);
+        const meta = g.metaTitle ?? g.title;
+        assert.ok(meta.includes(legendary.name), `${locale} ${g.slug}: ${meta}`);
+        assert.ok(pageTitle(meta).length <= 60, `${locale} ${pageTitle(meta)} (${pageTitle(meta).length})`);
+        const deck = g.tags?.communityDecks?.[0];
+        assert.ok(deck);
+        assert.notEqual(deckTitle(deck.name, legendary.name, locale), meta, `${locale} ${g.slug}`);
+      }
+    }
+  });
+});
+
 describe("deckLead", () => {
   test("Leggendaria, Origins TCG, autore e archetipo corto", () => {
     assert.equal(deckLead({ name: "Buff", legendary: "Robin Hood", author: "albeo", archetype: "Swarm / go wide" }, "en"), "Robin Hood deck for Origins TCG: Buff by albeo, Swarm archetype.");
     assert.equal(deckLead({ name: "Buff", legendary: "Robin Hood", author: "albeo", archetype: "Swarm / vai largo" }, "it"), "Mazzo di Robin Hood per Origins TCG: Buff di albeo, archetipo Swarm.");
     assert.equal(deckLead({ name: "Buff", legendary: "Robin Hood", author: "albeo", archetype: "Swarm / ir a lo ancho" }, "es"), "Mazo de Robin Hood para Origins TCG: Buff de albeo, arquetipo Swarm.");
     assert.equal(deckLead({ name: "Buff", author: "albeo", archetype: "Aggro" }, "en"), "Origins TCG deck: Buff by albeo, Aggro archetype.");
+  });
+  test("la coda corta c'è nelle tre lingue e dice OriginsMeta", () => {
+    for (const locale of locales) assert.match(deckShortTail[locale], /OriginsMeta\.$/);
   });
 });

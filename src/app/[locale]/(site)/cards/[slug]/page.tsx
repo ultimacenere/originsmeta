@@ -17,6 +17,7 @@ import { alignStyle } from "@/lib/cardArt";
 import { keywordLabel } from "@/lib/keywordLabels";
 import { SteamButton, newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
+import { RemovedArchiveLink } from "@/components/RemovedCardsArchive";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -281,7 +282,9 @@ export default async function CardPage({ params }: { params: Params }) {
       ) : null}
 
       {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
-          builderLabels.ts). Su carte create e fuori dalla demo prometteva una cosa che non funziona (SCHEDE-04). */}
+          builderLabels.ts). Su carte create e fuori dalla demo prometteva una cosa che non funziona (SCHEDE-04): le
+          rimosse rimandano invece all'archivio delle carte non nella demo in fondo a /cards; le create hanno già il
+          riquadro "Richiamata da" qui sopra. */}
       {card.status === "active" && card.type !== "token" ? (
         <section className="card-night mt-10 p-6 sm:p-8">
           <h2 className="t-section">{d.cards.buildTitle}</h2>
@@ -290,6 +293,8 @@ export default async function CardPage({ params }: { params: Params }) {
             {d.nav.builder}
           </Link>
         </section>
+      ) : card.status === "removed" ? (
+        <RemovedArchiveLink locale={locale} />
       ) : null}
 
       {guides.length ? (

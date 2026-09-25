@@ -355,7 +355,7 @@ Los datos de la clasificatoria no son públicos: esta es una lectura de las list
   },
   "trick-or-treat-legion-guide": {
     title: "The Trick-or-Treat Legion: cómo jugar el mazo de Legion of the Dead",
-    metaTitle: "Guía del mazo Legion of the Dead",
+    metaTitle: "Legion of the Dead: guía de Trick-or-Treat",
     excerpt: "La lista de Legion of the Dead hecha para ser impredecible: cómo funciona el tablero de Zombies, el combo Golden Egg y Boogeyman, el mulligan y los matchups.",
     faq: [
       {
@@ -676,7 +676,7 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
   },
   "healing-healsing-matchups": {
     title: "Healing Healsing: matchups, interacciones clave y errores que evitar",
-    metaTitle: "Matchups del mazo Van Helsing",
+    metaTitle: "Van Helsing: matchups de Healing Healsing",
     excerpt: "Guía de Healing Healsing, segunda parte: las interacciones de curación y robo, los principales matchups, los errores que hacen perder contra aggro y Conquest.",
     faq: [
       {

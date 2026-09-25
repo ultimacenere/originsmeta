@@ -4,36 +4,54 @@ import { cards, sagas, statLine, type Card, type SagaId } from "@/lib/data/cards
 import { CardName, legendaryFirst } from "./CardChip";
 
 /**
- * Archivio delle carte non nella demo, in fondo a /cards (Ondata 1 SEO/GEO, 25/09/2026; decisione di Pierluigi: le
- * rimosse restano indicizzabili in tutte e tre le lingue, con un archivio su /cards).
+ * Archivio delle carte non nella demo, in fondo a /cards (piano dell'Ondata 1 SEO/GEO del 25/09/2026: le schede
+ * delle rimosse restano indicizzabili nelle tre lingue e /cards le linka tutte da qui).
  *
  * Perché: il database di /cards (CardExplorer) toglie le rimosse dall'HTML finché non si spunta la casella, quindi 80
  * schede su 86 per lingua non ricevevano link da nessuna pagina della loro lingua (solo dal cambio lingua e dalla
  * sitemap), anche se una decina ha già impressioni in Search Console. Qui l'elenco è renderizzato sul server, con un
  * link per carta alla scheda nella stessa lingua, dentro un <details> chiuso: resta compatto per chi legge e i link
- * sono comunque nell'HTML per i motori.
+ * sono comunque nell'HTML per i motori. Il titolo è un H2 dentro il <summary> (su /cards l'unico titolo sopra è
+ * l'H1) e le saghe sono H3.
  *
  * Componente server senza stato; le etichette sono qui nelle tre lingue (niente dizionario da toccare), il resto
  * (saghe, "Leggendaria") viene dai dati e dai dizionari che il sito ha già.
  */
 
-const labels: Record<Locale, { title: string; text: string }> = {
+const labels: Record<Locale, { title: string; text: string; link: string }> = {
   en: {
     title: "Cards not in the demo",
     text: "These cards were removed in earlier builds and are not in Demo 2.0, so the deck builder does not accept them. Each one keeps its page, with the last known text and stats and the legend it comes from.",
+    link: "All the cards not in the demo",
   },
   it: {
     title: "Carte non nella demo",
     text: "Queste carte sono state rimosse nelle build precedenti e non sono nella Demo 2.0, quindi il deck builder non le accetta. Ognuna conserva la sua scheda, con l'ultimo testo e le ultime statistiche note e la leggenda da cui viene.",
+    link: "Tutte le carte non nella demo",
   },
   es: {
     title: "Cartas fuera de la demo",
     text: "Estas cartas se retiraron en builds anteriores y no están en la Demo 2.0, así que el deck builder no las acepta. Cada una conserva su ficha, con el último texto y las últimas estadísticas conocidas y la leyenda de la que viene.",
+    link: "Todas las cartas fuera de la demo",
   },
 };
 
-/** Ancora dell'archivio su /cards: le schede delle carte rimosse possono puntare qui. */
+/** Ancora dell'archivio su /cards: le schede delle carte rimosse puntano qui (`RemovedArchiveLink`). */
 export const removedArchiveId = "not-in-demo";
+
+/**
+ * Link all'archivio, per le schede delle carte non nella demo: al posto dell'invito al deck builder, che non le
+ * accetta, la scheda rimanda alle altre carte nella stessa situazione (SCHEDE-04).
+ */
+export function RemovedArchiveLink({ locale }: { locale: Locale }) {
+  return (
+    <p className="mt-10 text-sm">
+      <Link href={`${href(locale, "/cards")}#${removedArchiveId}`} className="link-mint font-bold">
+        {labels[locale].link} →
+      </Link>
+    </p>
+  );
+}
 
 export function RemovedCardsArchive({ locale }: { locale: Locale }) {
   const removed = cards.filter((c) => c.status === "removed");
@@ -56,8 +74,10 @@ export function RemovedCardsArchive({ locale }: { locale: Locale }) {
 
   return (
     <details id={removedArchiveId} className="card-night mt-10 p-5">
-      <summary className="t-item cursor-pointer">
-        {l.title} <span className="font-mono text-sm font-normal text-pale-muted">({removed.length})</span>
+      <summary className="cursor-pointer">
+        <h2 className="t-item inline">
+          {l.title} <span className="font-mono text-sm font-normal text-pale-muted">({removed.length})</span>
+        </h2>
       </summary>
       <p className="mt-3 max-w-3xl text-sm text-pale-muted">{l.text}</p>
       <div className="mt-4 space-y-4">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, resolveLocale, type PageMetaOptions } from "@/lib/page";
-import { deckLead, deckTitle } from "@/lib/cardTitles";
+import { deckLead, deckShortTail, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
@@ -69,8 +69,11 @@ function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, 
   const own = view.lang === locale ? cleanDescription(view.text.summary, max) : "";
   const text = cleanDescription(own ? `${lead} ${own}` : lead, max);
   // Senza il riassunto (guida in un'altra lingua, traduzione non ancora pronta) restano i soli fatti, una
-  // novantina di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina.
-  return text.length < 120 ? cleanDescription(`${text} ${dict.community.metaTail}`, max) : text;
+  // novantina di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina, ma solo
+  // intera: prima quella del dizionario, poi quella corta, altrimenti niente ("…deck code on…" non dice nulla).
+  if (text.length >= 120) return text;
+  const tail = [dict.community.metaTail, deckShortTail[locale]].find((t) => text.length + 1 + t.length <= max);
+  return tail ? `${text} ${tail}` : text;
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -87,8 +90,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
   const langs = guideLocales(deck, locales);
   // Title con la Leggendaria in testa ("Merlin deck: Spellcast", "Mazzo di Merlin: Spellcast", "Mazo de Merlin:
-  // Spellcast"): chi cerca un mazzo scrive il nome della Leggendaria. Il nome del mazzo lo sceglie l'utente e si
-  // accorcia lui se non ci sta; il kicker visibile "Origins deck" resta nella pagina, cambia solo il <title>.
+  // Spellcast"): chi cerca un mazzo scrive il nome della Leggendaria. Il nome del mazzo lo sceglie l'utente: se non ci
+  // sta si passa alla forma compatta ("Legion of the Dead: The Trick-or-Treat Legion") e solo dopo si accorcia il
+  // nome, che resta sempre (`deckTitle`); il kicker visibile "Origins deck" resta nella pagina, cambia solo il <title>.
   return pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
     ...art,
     languages: langs,
