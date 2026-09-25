@@ -12,7 +12,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { SignupTracker } from "@/components/SignupTracker";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { feedbackLabels } from "@/lib/feedbackLabels";
-import { JsonLd, organization, videoGame, website } from "@/components/JsonLd";
+import { JsonLd, koinGames, organization, videoGame, website } from "@/components/JsonLd";
 import { defaultOgAlt } from "@/lib/page";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
@@ -76,6 +76,11 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
       <body className="min-h-full flex flex-col">
+        {/* Qui va il <link rel="alternate" type="application/rss+xml"> del feed delle news nella lingua della pagina
+            (Ondata 2), che React porta nell'<head>: rotta /<lingua>/news/feed.xml, percorso e titolo del canale da
+            src/lib/newsFeed.ts del pacchetto SITEMAP (`newsFeedPath`, `newsFeedLabels`), da collegare al merge. Non passa
+            dai metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del
+            layout. */}
         {/* Salta al contenuto: il <main> ha id="main" sia nella home sia nel gruppo (site). */}
         <a
           href="#main"
@@ -89,7 +94,9 @@ export default async function LocaleLayout({ children, params }: Props) {
         {/* Segnalazioni e suggerimenti dei visitatori: su ogni pagina, fuori dal <main>, prima del banner dei cookie */}
         <FeedbackWidget locale={l} labels={feedbackLabels(d)} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
-        <JsonLd data={[website(l, d.meta.siteDescription), organization, videoGame]} />
+        {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin
+            Games come entità propria e il gioco, che la usa per @id come sviluppatore ed editore */}
+        <JsonLd data={[website(l, d.meta.siteDescription), organization, koinGames, videoGame]} />
         <GoogleAnalytics id={GA_ID} />
         <SignupTracker />
         <Analytics />

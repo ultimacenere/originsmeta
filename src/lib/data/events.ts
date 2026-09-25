@@ -25,9 +25,36 @@ export type Event = {
    * blocco "Altre news", a rotazione.
    */
   rules?: { news: string; label: L10n };
+  /**
+   * Dati strutturati dell'evento (schema.org Event, rilievo GEO-09 dell'Ondata 2, 25/09/2026), usati da
+   * src/lib/jsonld/events.ts. Tutto facoltativo:
+   * - `name`: il nome nei dati strutturati quando non è il titolo della scheda: il nome ufficiale ("Crimson Cup") o il
+   *   nome del gioco davanti, perché l'evento non si confonda con il festival di Valve; senza, vale `title`;
+   * - `alternateName`: un altro nome con cui l'evento si cerca;
+   * - `startAt`: inizio con orario e fuso (ISO 8601), solo quando la fonte ufficiale lo dà; senza, vale il giorno `start`;
+   * - `image`: immagine dell'evento dal materiale ufficiale in public/media (come contenuto), al posto di og.jpg;
+   * - `free`: partecipare non costa nulla (isAccessibleForFree, e l'iscrizione diventa un'offerta a prezzo 0);
+   * - `festival`: l'evento fa parte dello Steam Next Fest (`steamNextFest` qui sotto), che organizza Valve.
+   */
+  ld?: { name?: L10n; alternateName?: L10n; startAt?: string; image?: string; free?: boolean; festival?: boolean };
 };
 
 const n = (en: string, it: string, es: string, fr?: string): L10n => (fr ? { en, it, es, fr } : { en, it, es });
+
+/**
+ * Lo Steam Next Fest di ottobre 2026: il festival delle demo giocabili di Valve (non di Koin Games), di cui fa parte
+ * l'evento `steam-next-fest` qui sotto. Inizio con orario e fuso dal calendario ufficiale di Steam, come lo riporta la
+ * guida steam-next-fest-2026 (lunedì 19 ottobre alle 10:00 ora del Pacifico, cioè le 19:00 in Italia); la fine solo
+ * come giorno, perché la guida non ne dà l'ora. Nei dati strutturati è il `superEvent`, con Valve come organizzatore.
+ */
+export const steamNextFest = {
+  slug: "steam-next-fest-october-2026",
+  name: "Steam Next Fest: October 2026 Edition",
+  organizer: { name: "Valve", url: "https://www.valvesoftware.com/" },
+  startAt: "2026-10-19T10:00:00-07:00",
+  end: "2026-10-26",
+  url: "https://store.steampowered.com/sale/nextfest",
+} as const;
 
 export const events: Event[] = [
   {
@@ -38,13 +65,16 @@ export const events: Event[] = [
     rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup") },
     start: "2026-10-20",
     end: "2026-10-25",
+    // Titolo visibile invariato (striscia del calendario e schede): il nome ufficiale "Crimson Cup" sta in `ld.name`, nei
+    // dati strutturati. Metterlo in testa anche qui è un cambio editoriale da far decidere a Pierluigi (Ondata 2, GEO-09).
     title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Torneo del Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)"),
     where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "Online, en el juego; inscripciones en el Discord oficial", "En ligne, en jeu ; inscriptions sur le Discord officiel"),
-    // formato completato con l'annuncio sul Discord ufficiale del 24/09/2026 (news `crimson-cup-format-check-in`)
+    // formato completato con l'annuncio sul Discord ufficiale del 24/09/2026 (news `crimson-cup-format-check-in`); orari
+    // e fusi come li scrive la grafica ufficiale del calendario (media/news-crimson-cup.webp), senza conversioni nostre
     format: n(
-      "Three qualifiers of 512 spots each, open to everyone: EMEA on 20 October (32 advance), AMER on the 21st (64), APAC on the 22nd (32), plus 128 wild cards. Playoffs on the 24th with 256 spots, four of whom reach the finals on the 25th. Three-deck Conquest with at least 8 unique cards between each pair of decks, decklists hidden until the top 4 (in the ban you only see the Legendary). Best-of-3 matches, best-of-5 grand final: no ban there, you have to win with all three decks. You may enter more than one qualifier.",
-      "Tre qualificazioni da 512 posti ciascuna, aperte a tutti: EMEA il 20 ottobre (32 passano), AMER il 21 (64), APAC il 22 (32), più 128 wild card. Playoff il 24 con 256 posti, quattro dei quali arrivano alle finali del 25. Conquest a tre mazzi con almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 (nel ban si vede solo la Leggendaria). Partite al meglio delle tre, gran finale al meglio delle cinque: lì niente ban, si vince con tutti e tre i mazzi. Ci si può iscrivere a più di una qualificazione.",
-      "Tres clasificatorios de 512 plazas cada uno, abiertos a todos: EMEA el 20 de octubre (pasan 32), AMER el 21 (64), APAC el 22 (32), más 128 wild cards. Playoffs el 24 con 256 plazas; cuatro de sus jugadores llegan a las finales del 25. Conquest con tres mazos y al menos 8 cartas únicas entre cada par de mazos, listas ocultas hasta el top 4 (en el ban solo ves la Legendaria). Enfrentamientos al mejor de tres, gran final al mejor de cinco: ahí no hay ban, tienes que ganar con los tres mazos. Puedes inscribirte en más de un clasificatorio.",
+      "Three qualifiers of 512 spots each, open to everyone: EMEA on 20 October at 7pm CEST (32 advance), AMER on the 21st at 7pm EST (64), APAC on the 22nd at 7pm SGT (32), plus 128 wild cards. Playoffs on the 24th at 10am EST (4pm CEST) with 256 spots, four of whom reach the finals on the 25th at 10am EST. Three-deck Conquest with at least 8 unique cards between each pair of decks, decklists hidden until the top 4 (in the ban you only see the Legendary). Best-of-3 matches, best-of-5 grand final: no ban there, you have to win with all three decks. You may enter more than one qualifier.",
+      "Tre qualificazioni da 512 posti ciascuna, aperte a tutti: EMEA il 20 ottobre alle 19 CEST (32 passano), AMER il 21 alle 19 EST (64), APAC il 22 alle 19 SGT (32), più 128 wild card. Playoff il 24 alle 10 EST (16 CEST) con 256 posti, quattro dei quali arrivano alle finali del 25 alle 10 EST. Conquest a tre mazzi con almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 (nel ban si vede solo la Leggendaria). Partite al meglio delle tre, gran finale al meglio delle cinque: lì niente ban, si vince con tutti e tre i mazzi. Ci si può iscrivere a più di una qualificazione.",
+      "Tres clasificatorios de 512 plazas cada uno, abiertos a todos: EMEA el 20 de octubre a las 19:00 CEST (pasan 32), AMER el 21 a las 19:00 EST (64), APAC el 22 a las 19:00 SGT (32), más 128 wild cards. Playoffs el 24 a las 10:00 EST (16:00 CEST) con 256 plazas; cuatro de sus jugadores llegan a las finales del 25, a las 10:00 EST. Conquest con tres mazos y al menos 8 cartas únicas entre cada par de mazos, listas ocultas hasta el top 4 (en el ban solo ves la Legendaria). Enfrentamientos al mejor de tres, gran final al mejor de cinco: ahí no hay ban, tienes que ganar con los tres mazos. Puedes inscribirte en más de un clasificatorio.",
     ),
     prizes: n(
       "Prizes worth $10,000: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes.",
@@ -59,6 +89,18 @@ export const events: Event[] = [
     ),
     signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "Inscríbete en Discord", "S'inscrire sur Discord"), url: "https://discord.gg/originstcg" },
     source: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
+    // Inizio = qualificazione EMEA, 20 ottobre alle 19:00 CEST (UTC+2 fino al 25 ottobre): grafica ufficiale e guida
+    // steam-next-fest-2026. La fine resta un giorno: la grafica dà l'ora d'inizio delle finali, non quella di chiusura.
+    // Iscriversi è gratis (offerta a prezzo 0 verso il Discord ufficiale). È il torneo di Koin dello Steam Next Fest: il
+    // festival è il `superEvent`, come per la classificata qui sotto, e l'organizzatore resta Koin Games.
+    ld: {
+      name: n("Crimson Cup", "Crimson Cup", "Crimson Cup"),
+      alternateName: n("Origins TCG Steam Next Fest tournament", "Torneo dello Steam Next Fest di Origins TCG", "Torneo del Steam Next Fest de Origins TCG"),
+      startAt: "2026-10-20T19:00:00+02:00",
+      image: "/media/news-crimson-cup.webp",
+      free: true,
+      festival: true,
+    },
   },
   {
     slug: "steam-next-fest",
@@ -75,6 +117,19 @@ export const events: Event[] = [
     ),
     signup: { label: n("Steam page", "Pagina Steam", "Página de Steam", "Page Steam"), url: "https://store.steampowered.com/app/4429430/Origins_TCG/" },
     source: "https://store.steampowered.com/sale/nextfest",
+    // L'evento è di Koin (la classificata nella demo), dentro il festival di Valve: nei dati strutturati il nome porta
+    // il gioco davanti e il festival diventa il `superEvent`. Nessun orario: il post dice solo "con l'inizio" del festival.
+    // Niente `free`: non c'è un'iscrizione, e un'offerta a prezzo 0 verso la pagina Steam del gioco completo (non ancora
+    // uscito; la classificata è nella demo) si leggerebbe come "Origins TCG è gratis", che il sito non dice.
+    ld: {
+      name: n(
+        "Origins TCG ranked opens in the demo (Steam Next Fest)",
+        "Origins TCG: la classificata apre nella demo (Steam Next Fest)",
+        "Origins TCG: la clasificatoria se abre en la demo (Steam Next Fest)",
+      ),
+      image: "/media/keyart-queen-of-hearts.webp",
+      festival: true,
+    },
   },
   {
     slug: "big-bobs-playtest-battle",

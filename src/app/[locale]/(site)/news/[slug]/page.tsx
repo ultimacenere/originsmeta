@@ -18,7 +18,10 @@ import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, isSiteNews, newsCardsLabel, newsSourceClass, newsSourceLabel } from "@/components/NewsLinks";
-import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, organizationId, personRef, videoGameId } from "@/components/JsonLd";
+import { events } from "@/lib/data/events";
+import { entityLabels } from "@/lib/entityLabels";
+import { eventNode } from "@/lib/jsonld/events";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -92,7 +95,6 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   // Chi firma lo decide `authorOfNews` e nessun altro: firma in pagina, nodo NewsArticle e pagina autore dicono la stessa cosa.
   const author = authorOfNews(item);
   const authorPath = href(locale, `/authors/${author.slug}`);
-  const authorUrl = `${siteUrl}${authorPath}`;
   // La fonte da cui nasce l'articolo: il post ufficiale, oppure la scheda del mazzo pubblicato qui. Le novità del
   // sito (`site`) non hanno una fonte fuori dall'articolo: niente "Fonte" e niente `isBasedOn`.
   const deckNews = isDeckNews(item);
@@ -109,14 +111,18 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
     datePublished: item.date,
     dateModified: updated,
     image: item.image.startsWith("http") ? item.image : `${siteUrl}${item.image}`,
-    // Lo stesso nodo Person della pagina autore (`person()` in JsonLd.tsx): nel grafo la persona resta una sola.
-    author: { "@type": "Person", "@id": `${authorUrl}#person`, name: author.name, url: authorUrl },
+    // La Person unica dell'autore (`personRef`: @id uguale in ogni lingua, con nome e pagina autore nella lingua): la
+    // stessa della pagina autore, del `founder` di OriginsMeta e del profilo della community (Ondata 2, TOOL-09).
+    author: personRef(author, authorPath),
     publisher: { "@id": organizationId },
     mainEntityOfPage: `${siteUrl}${path}`,
     about: { "@id": videoGameId },
     articleSection: d.nav.news,
     isBasedOn: sourceUrl,
   };
+  // Gli eventi del calendario di cui questa news dà le regole (`rules.news` in events.ts): lo stesso nodo Event di
+  // /tournaments, con lo stesso @id (Ondata 2, GEO-09). Oggi solo crimson-cup-format-check-in.
+  const eventLd = events.filter((e) => e.rules?.news === item.slug && e.ld).map((e) => eventNode(e, locale));
   const faqLd = faq.length
     ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }
     : null;
@@ -124,6 +130,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       {faqLd ? <JsonLd data={faqLd} /> : null}
+      {eventLd.length ? <JsonLd data={eventLd} /> : null}
       <JsonLd
         data={[
           article,
@@ -253,6 +260,11 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
           {d.authors.writtenBy}{" "}
           <Link href={authorPath} rel="author" className="font-bold text-mint hover:underline">
             {author.name}
+          </Link>
+          {/* l'indice degli autori dalla firma in fondo (Ondata 2, TOOL-09: l'hub riceveva link quasi solo dalle pagine autore) */}
+          {" · "}
+          <Link href={href(locale, "/authors")} className="hover:text-chalk hover:underline">
+            {entityLabels[locale].author.allAuthors}
           </Link>
         </p>
         <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>

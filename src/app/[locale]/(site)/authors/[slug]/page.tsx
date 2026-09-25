@@ -3,11 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
-import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor } from "@/lib/data/authors";
+import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor, nicknameOf } from "@/lib/data/authors";
 import { newsPath } from "@/lib/data/news";
 import { fill } from "@/lib/tournament/types";
 import { isExternalHref, newTabProps } from "@/components/SteamButton";
-import { JsonLd, breadcrumbs, person } from "@/components/JsonLd";
+import { JsonLd, authorProfilePage, breadcrumbs, person } from "@/components/JsonLd";
+import { entityLabels } from "@/lib/entityLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -36,12 +37,13 @@ export default async function AuthorPage({ params }: { params: Params }) {
   const path = href(locale, `/authors/${a.slug}`);
   const email = a.links.find((l) => l.url.startsWith("mailto:"))?.url.slice("mailto:".length);
   const sameAs = a.links.filter((l) => /^https?:/.test(l.url)).map((l) => l.url);
-  // Nodo Person dall'helper condiviso (`person()` in JsonLd.tsx): l'`@id` che produce è lo stesso a
-  // cui rimanda la firma delle guide, così nel grafo la persona resta una sola.
+  // Nodo Person dall'helper condiviso (`person()` in src/lib/jsonld/entities.ts): l'`@id` è quello unico della persona
+  // (`personId`), uguale in ogni lingua e nella firma di news e guide, così nel grafo la persona resta una sola.
+  // `alternateName` è il nickname fra le virgolette del nome ("Aldry", "Davdas"), non il nome breve delle firme.
   const personLd = person({
     slug: a.slug,
     name: a.name,
-    alternateName: a.displayName,
+    alternateName: nicknameOf(a) ?? a.displayName,
     role: a.role[locale],
     url: path,
     description: a.tagline[locale],
@@ -49,10 +51,13 @@ export default async function AuthorPage({ params }: { params: Params }) {
     email,
     sameAs,
   });
+  // Il profilo pubblico della community dello stesso autore, quando ha un account noto (TOOL-09: i due profili si linkano)
+  const communityPath = a.username ? href(locale, `/u/${a.username}`) : null;
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <JsonLd
         data={[
+          authorProfilePage({ locale, path, name: a.name, slug: a.slug }),
           personLd,
           breadcrumbs([
             { name: "OriginsMeta", path: href(locale) },
@@ -75,7 +80,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
       </header>
       <article className="card-night mt-8 space-y-4 p-6 text-lg leading-relaxed text-pale sm:p-10">
         <p>{a.bio[locale]}</p>
-        {a.links.length ? (
+        {a.links.length || communityPath ? (
           <ul className="flex flex-wrap gap-2 text-base">
             {a.links.map((l) => (
               <li key={l.url}>
@@ -85,6 +90,13 @@ export default async function AuthorPage({ params }: { params: Params }) {
                 </a>
               </li>
             ))}
+            {communityPath ? (
+              <li>
+                <Link className="btn btn-ink text-xs" href={communityPath}>
+                  {entityLabels[locale].author.communityProfile} <span className="font-mono font-normal text-pale-muted">@{a.username}</span>
+                </Link>
+              </li>
+            ) : null}
           </ul>
         ) : null}
         <p className="border-t border-sky pt-4 text-xs text-pale-muted">{d.common.notAffiliated}</p>

@@ -15,7 +15,10 @@ import { Markdown } from "@/components/Markdown";
 import { CardChip, CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GuideNewsLinks } from "@/components/NewsLinks";
-import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, organizationId, personRef, videoGameId } from "@/components/JsonLd";
+import { events } from "@/lib/data/events";
+import { entityLabels } from "@/lib/entityLabels";
+import { eventNode } from "@/lib/jsonld/events";
 import { siteUrl } from "@/lib/i18n";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -86,7 +89,6 @@ export default async function GuidePage({ params }: { params: Params }) {
   // in fondo alla pagina, il nodo Article qui sotto e le pagine autore devono dire la stessa cosa.
   const author = authorOfGuide(g);
   const authorPath = href(locale, `/authors/${author.slug}`);
-  const authorUrl = `${siteUrl}${authorPath}`;
   const article = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -97,19 +99,23 @@ export default async function GuidePage({ params }: { params: Params }) {
     dateModified: g.updated,
     image: g.image ? `${siteUrl}${g.image}` : `${siteUrl}${defaultOgImage}`,
     // Un articolo lo firma una persona, non l'organizzazione: è il segnale E-E-A-T che Google cerca.
-    // L'`@id` è lo stesso nodo Person che scrive la pagina autore (`person()` in JsonLd.tsx): così i
-    // dati strutturati parlano di una persona sola, non di due omonime.
-    author: { "@type": "Person", "@id": `${authorUrl}#person`, name: author.name, url: authorUrl },
+    // La Person unica dell'autore (`personRef`: @id uguale in ogni lingua, con nome e pagina autore nella lingua): la
+    // stessa della pagina autore e delle news, così i dati strutturati parlano di una persona sola (Ondata 2, TOOL-09).
+    author: personRef(author, authorPath),
     publisher: { "@id": organizationId },
     mainEntityOfPage: `${siteUrl}${href(locale, `/guides/${g.slug}`)}`,
     about: { "@id": videoGameId },
   };
+  // Gli eventi del calendario che hanno questa guida (`guide` in events.ts): gli stessi nodi Event di /tournaments, con
+  // lo stesso @id (Ondata 2, GEO-09). Oggi la guida steam-next-fest-2026: Crimson Cup e classificata al Next Fest.
+  const eventLd = events.filter((e) => e.guide === g.slug && e.ld).map((e) => eventNode(e, locale));
   const faqLd = g.faq?.length
     ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: g.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }
     : null;
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       {faqLd ? <JsonLd data={faqLd} /> : null}
+      {eventLd.length ? <JsonLd data={eventLd} /> : null}
       <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.guides.title, path: href(locale, "/guides") }, { name: g.title, path: href(locale, `/guides/${g.slug}`) }])]} />
       {/* Una volta per pagina: tiene dentro la finestra le anteprime delle carte (lista del mazzo, nomi di carta nel
           testo, carte collegate in fondo). */}
@@ -206,6 +212,11 @@ export default async function GuidePage({ params }: { params: Params }) {
           {d.authors.writtenBy}{" "}
           <Link href={authorPath} className="font-bold text-mint hover:underline">
             {author.name}
+          </Link>
+          {/* l'indice degli autori dalla firma in fondo (Ondata 2, TOOL-09: l'hub riceveva link quasi solo dalle pagine autore) */}
+          {" · "}
+          <Link href={href(locale, "/authors")} className="hover:text-chalk hover:underline">
+            {entityLabels[locale].author.allAuthors}
           </Link>
         </p>
         <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>

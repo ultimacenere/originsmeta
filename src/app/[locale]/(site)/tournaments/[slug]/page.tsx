@@ -21,7 +21,8 @@ import { TournamentCard } from "@/components/TournamentCard";
 import { CardMentions } from "@/components/CardMentions";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { CardChip } from "@/components/CardChip";
-import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
+import { FREE_OFFER_CURRENCY, JsonLd, breadcrumbs, memberRef, personRef, videoGameId } from "@/components/JsonLd";
+import { authorByUsername } from "@/lib/data/authorsCore";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type Search = Promise<Record<string, string | string[] | undefined>>;
@@ -127,26 +128,45 @@ export default async function TournamentPage({ params, searchParams }: { params:
     });
   }
 
-  const event: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: t.name,
-    description: (t.description || x.sectionIntro).slice(0, 300),
-    startDate: t.starts_at,
-    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-    eventStatus: t.status === "cancelled" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
-    location: { "@type": "VirtualLocation", url: pageUrl },
-    organizer: { "@type": "Person", name: organizer },
-    url: pageUrl,
-    image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
-    isAccessibleForFree: true,
-    maximumAttendeeCapacity: t.size,
-    about: { "@id": videoGameId },
-  };
+  // Dati strutturati (Ondata 2, GEO-09): un Event solo per i tornei pubblici (i privati sono noindex e visibili solo a
+  // chi è invitato). L'`@id` è legato al link breve /t/<tag>, uguale in ogni lingua; iscriversi è gratis, qui sulla
+  // scheda. L'organizzatore è la persona che l'ha creato, una sola nel grafo: per un autore del sito la Person della sua
+  // pagina autore (`personRef`), per un iscritto quella del suo profilo /u (`memberRef`), le stesse della firma dei
+  // mazzi; senza nome utente resta il solo nome.
+  const username = t.profile?.username;
+  const editorial = authorByUsername(username);
+  const organizerLd = editorial
+    ? personRef(editorial, href(locale, `/authors/${editorial.slug}`))
+    : username
+      ? memberRef({ username, name: organizer }, href(locale, `/u/${username}`))
+      : { "@type": "Person", name: organizer };
+  const event: Record<string, unknown> | null =
+    t.visibility === "public"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "@id": `${shortLink}#event`,
+          name: t.name,
+          description: (t.description || x.sectionIntro).slice(0, 300),
+          startDate: t.starts_at,
+          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+          eventStatus: t.status === "cancelled" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+          location: { "@type": "VirtualLocation", url: pageUrl },
+          organizer: organizerLd,
+          url: pageUrl,
+          inLanguage: t.lang,
+          image: t.cover_url ? (t.cover_url.startsWith("/") ? `${siteUrl}${t.cover_url}` : t.cover_url) : `${siteUrl}/media/og.jpg`,
+          isAccessibleForFree: true,
+          offers: { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY, url: pageUrl },
+          maximumAttendeeCapacity: t.size,
+          about: { "@id": videoGameId },
+        }
+      : null;
+  const crumbs = breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.events.title, path: href(locale, "/tournaments") }, { name: t.name, path }]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <JsonLd data={[event, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.events.title, path: href(locale, "/tournaments") }, { name: t.name, path }])]} />
+      <JsonLd data={event ? [event, crumbs] : [crumbs]} />
       <p className="text-sm">
         <Link href={href(locale, "/tournaments")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.events.title}

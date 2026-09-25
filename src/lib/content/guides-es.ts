@@ -105,7 +105,7 @@ Esta lista está transcrita de la base de datos de la comunidad y coincide con l
     body: `
 ## El mazo en un párrafo
 
-**On Reveal Mid Range** es una lista **midrange** liderada por [Mulan](/es/cards/mulan), publicada en OriginsMeta el 22 de septiembre de 2026 por Davdas, miembro del staff del sitio, y etiquetada para **clasificatoria**, **competitivo** y **torneos**. La idea es la que el autor expone en la [página del mazo](/es/decks/community/on-reveal-mid-range-772e): Mulan "permite aprovechar al máximo las habilidades Al revelar", y la lista está construida para tener en cada ronda una que valga la pena repetir. Aguanta contra un mazo agresivo y presiona a un mazo de control, porque las mismas cartas compran tiempo y construyen tablero.
+**On Reveal Mid Range** es una lista **midrange** liderada por [Mulan](/es/cards/mulan), publicada en OriginsMeta el 22 de septiembre de 2026 por [Davdas](/es/authors/davdas), miembro del staff del sitio, y etiquetada para **clasificatoria**, **competitivo** y **torneos**. La idea es la que el autor expone en la [página del mazo](/es/decks/community/on-reveal-mid-range-772e): Mulan "permite aprovechar al máximo las habilidades Al revelar", y la lista está construida para tener en cada ronda una que valga la pena repetir. Aguanta contra un mazo agresivo y presiona a un mazo de control, porque las mismas cartas compran tiempo y construyen tablero.
 
 ## La lista
 
@@ -197,7 +197,7 @@ La página del mazo enumera dos: **una buena curva suele ser esencial** y **pued
     body: `
 ## El mazo en un párrafo
 
-**King of Value Trade** es una lista **midrange** liderada por [King Arthur](/es/cards/king-arthur), publicada en OriginsMeta el 22 de septiembre de 2026 por Davdas, miembro del staff del sitio, y etiquetada para **clasificatoria**. El nombre dice el plan: "casi todas las piezas quieren hacer un dos por uno", es decir, responder a dos cartas del rival con una tuya. Hazlo con la suficiente frecuencia y el tablero pasa a ser tuyo por sí solo, sin necesidad de un único gran turno de cierre.
+**King of Value Trade** es una lista **midrange** liderada por [King Arthur](/es/cards/king-arthur), publicada en OriginsMeta el 22 de septiembre de 2026 por [Davdas](/es/authors/davdas), miembro del staff del sitio, y etiquetada para **clasificatoria**. El nombre dice el plan: "casi todas las piezas quieren hacer un dos por uno", es decir, responder a dos cartas del rival con una tuya. Hazlo con la suficiente frecuencia y el tablero pasa a ser tuyo por sí solo, sin necesidad de un único gran turno de cierre.
 
 ## La lista
 
@@ -290,7 +290,7 @@ La página del mazo enumera tres: **ninguna eliminación de área**, **Dark Omen
     body: `
 ## El mazo en un párrafo
 
-**Dorothy Combo** es una lista **combo** liderada por [Dorothy](/es/cards/dorothy), publicada en OriginsMeta el 22 de septiembre de 2026 por Davdas, miembro del staff del sitio, y etiquetada para **clasificatoria** y **fun**. Es el mazo move, reconstruido tras el [parche de la Demo del 21 de septiembre de 2026](/es/news/demo-patch-notes-0921), que potenció, entre otras, a Dorothy, [Roo](/es/cards/roo) y [Magic Carpet](/es/cards/magic-carpet). La valoración del autor está en la [página del mazo](/es/decks/community/dorothy-combo-7503) y la mantenemos tal cual: probablemente todavía no es una lista top tier, pero algo se está moviendo.
+**Dorothy Combo** es una lista **combo** liderada por [Dorothy](/es/cards/dorothy), publicada en OriginsMeta el 22 de septiembre de 2026 por [Davdas](/es/authors/davdas), miembro del staff del sitio, y etiquetada para **clasificatoria** y **fun**. Es el mazo move, reconstruido tras el [parche de la Demo del 21 de septiembre de 2026](/es/news/demo-patch-notes-0921), que potenció, entre otras, a Dorothy, [Roo](/es/cards/roo) y [Magic Carpet](/es/cards/magic-carpet). La valoración del autor está en la [página del mazo](/es/decks/community/dorothy-combo-7503) y la mantenemos tal cual: probablemente todavía no es una lista top tier, pero algo se está moviendo.
 
 ## La lista
 
@@ -378,7 +378,7 @@ Los datos de la clasificatoria no son públicos: esta es una lectura de las list
     body: `
 ## El mazo en un párrafo
 
-**The Trick-or-Treat Legion** es una lista **evil** liderada por [Legion of the Dead](/es/cards/legion-of-the-dead), publicada en OriginsMeta el 22 de septiembre de 2026 por Davdas, miembro del staff del sitio, y etiquetada para la **ladder**, el juego **competitivo** y los **torneos**. Circulan varias versiones del mazo Legion; esta, en palabras del autor, busca aumentar su imprevisibilidad reuniendo cartas que le "hacen una travesura" al tablero rival en cada ronda. La lista completa y los gráficos están en la [ficha del mazo](/es/decks/community/the-trick-or-treat-legion-72c4).
+**The Trick-or-Treat Legion** es una lista **evil** liderada por [Legion of the Dead](/es/cards/legion-of-the-dead), publicada en OriginsMeta el 22 de septiembre de 2026 por [Davdas](/es/authors/davdas), miembro del staff del sitio, y etiquetada para la **ladder**, el juego **competitivo** y los **torneos**. Circulan varias versiones del mazo Legion; esta, en palabras del autor, busca aumentar su imprevisibilidad reuniendo cartas que le "hacen una travesura" al tablero rival en cada ronda. La lista completa y los gráficos están en la [ficha del mazo](/es/decks/community/the-trick-or-treat-legion-72c4).
 
 ## La lista
 
@@ -477,7 +477,7 @@ Son dos, según la ficha del mazo: **Mind Palace es muy importante para no queda
     body: `
 ## El mazo en un párrafo
 
-**3 Pigs Mid Range** es el segundo mazo publicado en OriginsMeta por Davdas, miembro del staff del sitio, el 15 de septiembre de 2026. Es una lista **midrange** liderada por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs), etiquetada para la **ladder** y el juego **competitivo**. La idea es sencilla: dominar el tablero en las primeras rondas, tomar ventaja en al menos una ubicación y luego cerrar con cartas que castigan al rival que se cree a salvo detrás de una barrera. La lista completa, los gráficos de composición y el código del juego están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); esta guía explica cómo pilotarlo. Una segunda guía trata los [matchups, las interacciones clave y Conquest](/es/guides/three-pigs-midrange-matchups).
+**3 Pigs Mid Range** es el segundo mazo publicado en OriginsMeta por [Davdas](/es/authors/davdas), miembro del staff del sitio, el 15 de septiembre de 2026. Es una lista **midrange** liderada por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs), etiquetada para la **ladder** y el juego **competitivo**. La idea es sencilla: dominar el tablero en las primeras rondas, tomar ventaja en al menos una ubicación y luego cerrar con cartas que castigan al rival que se cree a salvo detrás de una barrera. La lista completa, los gráficos de composición y el código del juego están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); esta guía explica cómo pilotarlo. Una segunda guía trata los [matchups, las interacciones clave y Conquest](/es/guides/three-pigs-midrange-matchups).
 
 ## La lista
 
@@ -553,7 +553,7 @@ La ficha del mazo es clara sobre el principal punto débil: "salirse de la curva
     body: `
 ## Antes de empezar
 
-Esta es la segunda parte de la guía de **3 Pigs Mid Range**, el mazo midrange liderado por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) que Davdas, del staff de OriginsMeta, publicó el 15 de septiembre de 2026. La [primera parte](/es/guides/three-pigs-midrange-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y el formato para el que está etiquetado el mazo. Las notas del autor están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
+Esta es la segunda parte de la guía de **3 Pigs Mid Range**, el mazo midrange liderado por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026. La [primera parte](/es/guides/three-pigs-midrange-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y el formato para el que está etiquetado el mazo. Las notas del autor están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
 
 ## Cinco interacciones que conviene conocer
 
@@ -610,7 +610,7 @@ El mazo está etiquetado tanto para la ladder como para el juego competitivo. El
     body: `
 ## El mazo en un párrafo
 
-**Healing Healsing** fue el primer mazo publicado en OriginsMeta, el 15 de septiembre de 2026, por Davdas, miembro del staff del sitio. Es una lista de **control** liderada por [Van Helsing](/es/cards/van-helsing), etiquetada para la **ladder**. El plan es sobrevivir a las primeras rondas sacando valor, curar el daño mientras [Phuong Hoang](/es/cards/phuong-hoang) crece con cada curación y reiniciar el tablero con [Forbidden Knowledge](/es/cards/forbidden-knowledge) cuando tengas ocho de maná. La lista completa, los gráficos de composición y el código del juego están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); esta guía explica cómo pilotarlo. Una segunda guía trata los [matchups, las interacciones clave y los errores que evitar](/es/guides/healing-healsing-matchups).
+**Healing Healsing** fue el primer mazo publicado en OriginsMeta, el 15 de septiembre de 2026, por [Davdas](/es/authors/davdas), miembro del staff del sitio. Es una lista de **control** liderada por [Van Helsing](/es/cards/van-helsing), etiquetada para la **ladder**. El plan es sobrevivir a las primeras rondas sacando valor, curar el daño mientras [Phuong Hoang](/es/cards/phuong-hoang) crece con cada curación y reiniciar el tablero con [Forbidden Knowledge](/es/cards/forbidden-knowledge) cuando tengas ocho de maná. La lista completa, los gráficos de composición y el código del juego están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); esta guía explica cómo pilotarlo. Una segunda guía trata los [matchups, las interacciones clave y los errores que evitar](/es/guides/healing-healsing-matchups).
 
 ## La lista
 
@@ -695,7 +695,7 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
     body: `
 ## Antes de empezar
 
-Esta es la segunda parte de la guía de **Healing Healsing**, el mazo de control de Van Helsing que Davdas, del staff de OriginsMeta, publicó el 15 de septiembre de 2026 como primer mazo de la comunidad del sitio. La [primera parte](/es/guides/healing-healsing-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y los errores que más caro se pagan. Las notas del autor están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
+Esta es la segunda parte de la guía de **Healing Healsing**, el mazo de control de Van Helsing que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026 como primer mazo de la comunidad del sitio. La [primera parte](/es/guides/healing-healsing-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y los errores que más caro se pagan. Las notas del autor están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
 
 ## Cinco interacciones que conviene conocer
 
