@@ -94,7 +94,7 @@ I luoghi stanno in `src/lib/data/locations.ts`: nome, effetto in inglese, italia
 
 In `src/lib/content/guides.ts` aggiungi lo slug a `guideSlugs` e la voce nelle mappe `en` e `it`, con `category` e i `tags` (mazzi e carte collegati); in `src/lib/content/guides-es.ts` aggiungi i soli testi spagnoli (`title`, `metaTitle`, `excerpt`, `faq`, `body`: il tipo non compila finché manca una guida). Il corpo è Markdown; i link interni vanno scritti con il prefisso lingua (`/en/…`, `/it/…`, `/es/…`). Per una guida a un mazzo della community usa `tags.communityDecks` (slug della scheda `/decks/community/[slug]` e nome del mazzo): la guida mostra il mazzo tra i correlati e la scheda del mazzo mostra la guida in "Guide correlate", senza leggere Supabase (la guida resta statica). Prime guide di questo tipo: le quattro sui mazzi di Davdas (16/09/2026).
 
-Dopo una guida nuova si rilancia `node scripts/llms-txt.mjs`, che la aggiunge alla sezione "## Guides" di `public/llms.txt` (lo controlla `src/lib/llms.test.ts`). Le righe di tabella con una carta (`| [Carta](/xx/cards/slug) | costo | P/S`) devono avere costo e statistiche del database: dopo una patch `src/lib/content/guides.test.ts` fallisce finché le tabelle non sono aggiornate.
+Dopo una guida nuova si rilancia `node scripts/llms-txt.mjs`, che la aggiunge alla sezione "## Guides" di `public/llms.txt` (lo controlla `src/lib/llms.test.ts`). Le righe di tabella con una carta (`| [Carta](/xx/cards/slug) | costo | P/S`) devono avere costo e statistiche del database: dopo una patch `src/lib/content/guides.test.ts` fallisce finché le tabelle non sono aggiornate. Le guide che linkano schede di mazzi della community (`/xx/decks/community/<slug>`, anche le guide alle Leggendarie e al Conquest) si controllano prima del push con `node scripts/check-guide-decks.mjs`: legge i mazzi pubblicati con la chiave pubblica di Supabase ed esce con errore se una guida linka un mazzo nascosto o cancellato; stampa anche quanti mazzi ci sono, per ricontare i numeri della community che le guide fissano a una data e un'ora.
 
 ### Aggiungere una news
 
@@ -177,11 +177,11 @@ Dal 17/09/2026 dei bot chiedevano link di accesso in continuazione: 54 account f
 
 ## Pagina FAQ e assistente (dal 20/09/2026)
 
-`/faq` (EN e IT) ha due metà: in alto si può chiedere qualunque cosa, sotto stanno le risposte approvate.
+`/faq` (EN, IT ed ES) ha due metà: in alto si può chiedere qualunque cosa, sotto stanno le risposte approvate.
 
 - **FAQ approvate: 15 in EN/IT/ES** (Ondata 3, 25/09/2026). Il campo `keywords` serve solo all'assistente (`risposteApprovate` in `retrieve.ts`: parole vuote per lingua, frasi intere, seconda risposta solo se vicina alla prima). `src/lib/content/faq.test.ts` controlla risposte, numeri delle carte, ricerca e doppioni con le FAQ di guide e news.
 - **llms.txt**: parti scritte a mano, più le sezioni Legendaries e Guides rigenerate con `node scripts/llms-txt.mjs` (`--check` non scrive). `/llms-full.txt` è la rotta statica di `src/lib/llms.ts` (text/plain, noindex). Test in `src/lib/llms.test.ts`.
-- **Le risposte approvate** (`src/lib/content/faq.ts`) sono testo scritto da noi, in HTML statico e nei dati strutturati FAQPage: le legge anche Google e non costano nulla. Quando una domanda torna spesso, si scrive lì in EN e IT e smette di passare dal modello.
+- **Le risposte approvate** (`src/lib/content/faq.ts`) sono testo scritto da noi, in HTML statico e nei dati strutturati FAQPage: le legge anche Google e non costano nulla. Quando una domanda torna spesso, si scrive lì in EN, IT ed ES e smette di passare dal modello.
 - **La domanda libera** passa da `/api/ask`. La risposta non viene dalla memoria del modello: `src/lib/faq/retrieve.ts` pesca dal nostro database le carte, le guide e gli eventi pertinenti e ne fa schede compatte; `src/lib/faq/ask.ts` le passa a `claude-opus-5` con l istruzione di usare solo quelle e di dire che non lo sa quando non bastano. Sotto la risposta compaiono le fonti come link alle nostre pagine. Vale anche qui la regola del progetto: nulla si inventa.
 - **Difese**: domanda di 300 caratteri al massimo, CAPTCHA Turnstile verificato qui con `TURNSTILE_SECRET_KEY` (a differenza dell accesso, dove lo verifica Supabase), cinque domande al minuto per indirizzo IP.
 
@@ -205,7 +205,7 @@ Richiesta di Pierluigi e Davdas dopo la demo: nei primi giorni dopo il lancio ch
 
 ## "Mandaci la tua guida" (dal 23/09/2026)
 
-Richiesta della diretta Twitch del 23/09: chi scrive una guida (o ha un mazzo da raccontare) la manda dal sito, e arriva nello **stesso canale Discord privato dello staff** dei feedback. Nessun database: lo staff la legge, la sistema e la pubblica a mano come le altre guide (EN e IT, con la firma dell'autore).
+Richiesta della diretta Twitch del 23/09: chi scrive una guida (o ha un mazzo da raccontare) la manda dal sito, e arriva nello **stesso canale Discord privato dello staff** dei feedback. Nessun database: lo staff la legge, la sistema e la pubblica a mano come le altre guide (EN, IT ed ES, con la firma dell'autore).
 
 - **Dove**: riquadro "Hai scritto una guida?" sotto l'intro di `/guides`, che porta al modulo `/guides/submit` (pagina statica, `noindex`, fuori dalla sitemap). Componente `src/components/GuideSubmitForm.tsx`, testi in `guideSubmit` dei dizionari, costanti condivise con la rotta in `src/lib/guideSubmitLabels.ts`.
 - **Campi**: titolo (5–120), testo (300–20.000 caratteri, facoltativo se c'è un link), link (http/https), codice del mazzo (codice del gioco o link del builder), firma (2–60), email e nome utente Discord facoltativi, casella obbligatoria con l'autorizzazione a pubblicare anche rivista e tradotta. La bozza si salva da sola in `localStorage` (`originsmeta.guideDraft.v1`, senza email né Discord) e si cancella dopo l'invio.

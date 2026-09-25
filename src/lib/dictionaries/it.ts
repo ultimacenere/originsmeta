@@ -42,12 +42,12 @@ export const it: Dictionary = {
        nel metaTitle solo gli argomenti che le risposte approvate coprono davvero, e non le parole di un altro primario
        ("mazzi" è di /decks: revisione dell'Ondata 1) */
     title: "Domande frequenti su Origins TCG",
-    metaTitle: "FAQ di Origins TCG: regole, Kickstarter e Crimson Cup",
+    metaTitle: "FAQ di Origins TCG: lingue, regole e risposte rapide",
     intro: "Scrivi una domanda e la risposta viene costruita con i dati di questo sito: il database carte (patch della demo del 21 settembre 2026), le nostre guide e il calendario degli eventi. Sotto, le risposte che abbiamo scritto e riletto noi.",
     /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
        collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
     introOffline: "Risposte brevi alle domande più frequenti su Origins TCG, il gioco di carte di Koin Games, con il link alla guida che approfondisce, quando c'è.",
-    description: "Risposte brevi su Origins TCG, il gioco di carte di Koin Games: regole del mazzo, pay-to-win, formato Conquest, date e premi della Crimson Cup, Kickstarter.",
+    description: "Risposte brevi su Origins TCG, il gioco di Koin Games: lingue, data di uscita, mobile, classificata, Leggendarie, codici dei mazzi, Kickstarter, Crimson Cup.",
     askTitle: "Fai una domanda",
     placeholder: "Che cosa fa Mulan? Che cosa ci sta bene con Van Helsing?",
     send: "Chiedi",
@@ -281,7 +281,7 @@ export const it: Dictionary = {
     intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e creator ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
     description: "Le liste dei mazzi di Origins TCG, il gioco di carte di Koin Games, con la guida, i voti e il codice del gioco. Filtra per Leggendaria, archetipo o carta.",
     conquestTitle: "Il formato Conquest, spiegato",
-    conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026) e scelto per la Crimson Cup: si registrano più mazzi con Leggendarie diverse, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",
+    conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026), dove ogni mazzo doveva avere una Leggendaria diversa, e scelto per la Crimson Cup: si registrano più mazzi, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",
     submitTitle: "Pubblica il tuo mazzo con la tua guida",
     submitText: "Costruiscilo nel deck builder e scrivi il tuo piano di gioco: entra in questo database a tuo nome e la community lo vota da 1 a 5 stelle.",
     submitCta: "Pubblica un mazzo",

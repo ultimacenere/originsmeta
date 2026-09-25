@@ -29,7 +29,7 @@ Community decks are written by players in their own language; the site translate
 The official Origins TCG tournament of Steam Next Fest, run by Koin Games (announcements of 9 and 24 September 2026). Full rules and times: [Crimson Cup rules](https://originsmeta.com/en/news/crimson-cup-format-check-in).
 
 - When and where: 20–25 October 2026, entirely online and in the game, on the main demo (not on the playtest). Three qualifiers of 512 spots each: EMEA on 20 October at 7pm CEST, AMER on 21 October at 7pm EST, APAC on 22 October at 7pm SGT; players can join any qualifier, wherever they live. Playoffs on 24 October (256 spots), finals on 25 October.
-- Format: Conquest with three decks, each led by a different Legendary, with at least 8 unique cards between each pair of decks. Decklists stay hidden until the top 4: in the ban you only see the Legendary.
+- Format: Conquest with three decks, with at least 8 unique cards between each pair of decks. The announcements do not say whether the three Legendaries must differ (at Big Bob's Playtest Battle in August they had to). Decklists stay hidden until the top 4: in the ban you only see the Legendary.
 - Matches: best of three, with a best-of-five grand final (announcement of 9 September). Best-of-five matches have no ban: you must win with all three decks.
 - Check-in: opens two hours before each qualifier and closes five minutes before the start, together with deck submission. Miss it and you can't play.
 - Prizes: worth $10,000 in total, not a cash pool: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. The exact prize pool was promised for the week after 24 September.
@@ -63,7 +63,7 @@ The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of th
 - [MetaShifting](https://originsmeta.com/en/metashifting): Origins TCG patch notes: every balance change, card by card and patch by patch, newest first, taken from Koin Games' official posts.
 - [Card list](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game, balance history and the legend it comes from.
 - [Locations](https://originsmeta.com/en/locations): the locations of the Demo 2.0 with their effects, searchable and filterable.
-- [Decks](https://originsmeta.com/en/decks): deck lists published by the community from the deck builder, each with a guide and 1–5 star ratings.
+- [Decks](https://originsmeta.com/en/decks): deck lists published by the community from the deck builder, each with a guide and 1–5 star ratings. At the top, the [best Origins TCG decks right now](https://originsmeta.com/en/decks#best-decks): the community ranking by weighted rating, not a win rate.
 - [Deck builder](https://originsmeta.com/en/deck-builder): build a legal deck in the browser — one Legendary plus twelve different base cards in two copies each, 25 cards — then export the game code or publish the list. Free, no account needed to build.
 - [Guides](https://originsmeta.com/en/guides): how the game works, the roadmap, the collector economy, how to play the demo, deck guides and matchups.
 - [Tournaments and events](https://originsmeta.com/en/tournaments): official and community events, plus the community tournament organizer.

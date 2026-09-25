@@ -38,14 +38,16 @@ export const en = {
     kicker: "Questions",
     /* title (H1) e metaTitle (SERP) non promettono l'assistente, che può essere spento (piano SEO del 25/09/2026);
        nel metaTitle solo gli argomenti che le risposte approvate coprono davvero, e non le parole di un altro primario
-       ("decks" è di /decks: revisione dell'Ondata 1) */
+       ("decks" è di /decks: revisione dell'Ondata 1). Con l'Ondata 3 (15 risposte) /faq è primaria solo per le lingue
+       (C30 della mappa delle query): Kickstarter, Crimson Cup, data di uscita e classificata hanno le loro pagine primarie
+       e restano fuori dal title; la description elenca gli argomenti */
     title: "Origins TCG FAQ",
-    metaTitle: "Origins TCG FAQ: rules, Kickstarter and Crimson Cup",
+    metaTitle: "Origins TCG FAQ: languages, rules and quick answers",
     intro: "Type a question and the answer is built from this site's own data: the card database (demo patch of 21 September 2026), our guides and the event calendar. Below, the answers we have written and checked.",
     /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
        collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
     introOffline: "Short answers to the most frequent questions about Origins TCG, the Koin Games card game, with a link to the guide that goes deeper when there is one.",
-    description: "Short answers about Origins TCG, the Koin Games card game: deck rules, pay-to-win, the Conquest format, Crimson Cup dates and prizes, the Kickstarter.",
+    description: "Short answers about Origins TCG, the Koin Games card game: languages, release date, mobile, ranked, Legendaries, deck codes, Kickstarter and Crimson Cup.",
     askTitle: "Ask a question",
     placeholder: "What does Mulan do? What goes well with Van Helsing?",
     send: "Ask",
@@ -281,7 +283,7 @@ export const en = {
     intro: "Every deck is tagged by Legendary, archetype, deck type and creator, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
     description: "Community decklists for Origins TCG, the Koin Games card game: deck guides, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
-    conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026) and chosen for the Crimson Cup: you submit several decks with different Legendary cards that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
+    conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026), where each deck needed a different Legendary, and chosen for the Crimson Cup: you submit several decks that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
     submitTitle: "Publish your deck with your guide",
     submitText: "Build it in the deck builder and write your game plan: it joins this database under your name and the community rates it from 1 to 5 stars.",
     submitCta: "Publish a deck",

@@ -47,12 +47,12 @@ export const es: Dictionary = {
        nel metaTitle solo gli argomenti che le risposte approvate coprono davvero, e non le parole di un altro primario
        ("mazos" è di /decks: revisione dell'Ondata 1) */
     title: "Preguntas frecuentes sobre Origins TCG",
-    metaTitle: "FAQ de Origins TCG: reglas, Kickstarter y Crimson Cup",
+    metaTitle: "FAQ de Origins TCG: idiomas, reglas y respuestas rápidas",
     intro: "Escribe una pregunta y la respuesta se construye con los datos de este sitio: la base de datos de cartas (parche de la demo del 21 de septiembre de 2026), nuestras guías y el calendario de eventos. Abajo, las respuestas que hemos escrito y revisado nosotros.",
     /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
        collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
     introOffline: "Respuestas breves a las preguntas más frecuentes sobre Origins TCG, el juego de cartas de Koin Games, con el enlace a la guía que profundiza, cuando la hay.",
-    description: "Respuestas breves sobre Origins TCG, el juego de cartas de Koin Games: reglas del mazo, pay to win, Conquest, fechas y premios de la Crimson Cup, Kickstarter.",
+    description: "Respuestas breves sobre Origins TCG, el juego de cartas de Koin Games: ¿está en español?, fecha de salida, móvil, clasificatoria, Legendarias y Kickstarter.",
     askTitle: "Haz una pregunta",
     placeholder: "¿Qué hace Mulan? ¿Qué combina bien con Van Helsing?",
     send: "Preguntar",
@@ -288,7 +288,7 @@ export const es: Dictionary = {
     intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y creador, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
     description: "Listas de mazos de Origins TCG, el juego de cartas de Koin Games: guía del mazo, valoraciones y código del juego. Filtra por Legendaria, arquetipo o carta.",
     conquestTitle: "El formato Conquest, explicado",
-    conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026) y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí y con Legendarias distintas, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
+    conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026), donde cada mazo necesitaba una Legendaria distinta, y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
     submitTitle: "Publica tu mazo con tu guía",
     submitText: "Constrúyelo en el deck builder y escribe tu plan de juego: entra en esta base de datos con tu nombre y la comunidad lo valora de 1 a 5 estrellas.",
     submitCta: "Publica un mazo",

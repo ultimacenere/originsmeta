@@ -90,8 +90,10 @@ const en: Record<GuideSlug, Guide> = {
     (C12: le regole e le date restano nella news crimson-cup-format-check-in, qui si costruiscono i mazzi). Solo fatti:
     carte, testi e patch da cards.ts, card-lore.ts e card-history.ts; classificata dai post ufficiali su Steam (patch
     0.6.1, 0.6.2, 0.6.3 e aggiornamento della demo del 21/09, letti il 25/09) e dalle nostre news; conteggi dei mazzi
-    sui 19 mazzi pubblicati al 25/09/2026 (liste lette dalle pagine pubbliche, carte uniche con `differentCards` di
-    deckrules.ts). Niente `communityDecks` nei tag: cardTitles.test.ts tratta come guida a un mazzo ogni guida che li
+    sui 20 mazzi pubblicati entro le 20:00 del 25/09/2026 (liste lette con la chiave pubblica di Supabase, carte uniche
+    con `differentCards` di deckrules.ts: il ventesimo, aggro-midrange-pigs-gm-6931, è delle 18:43). Che le Leggendarie
+    dei tre mazzi debbano essere diverse gli annunci della Crimson Cup non lo dicono (era la regola di Big Bob's): le
+    guide lo scrivono così e il deck builder segnala due mazzi con la stessa. Niente `communityDecks` nei tag: cardTitles.test.ts tratta come guida a un mazzo ogni guida che li
     ha (Leggendaria nel metaTitle); i mazzi sono linkati nel testo. Numeri da aggiornare a ogni patch e con i mazzi nuovi.
     Il sito non nomina World of Origins (regola del 25/09/2026): i dati non verificati nel gioco (carte generate, Leggendarie
     fuori dalla demo) si dicono "non verificati", senza fonte. Copertine: keyart di famiglie non usate da altre guide, news
@@ -111,8 +113,8 @@ const en: Record<GuideSlug, Guide> = {
     image: "/media/keyart-king-arthur.webp",
     faq: [
       { q: "How many Legendaries are there in Origins TCG?", a: "Eleven in the Demo 2.0 as of 25 September 2026: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs and Robin Hood. The OriginsMeta database keeps nine more that are not in the demo." },
-      { q: "How many Legendaries can a deck have?", a: "One. A deck is one Legendary plus twelve base cards played as two copies each, 25 cards in all. In the Conquest format of the Crimson Cup each of your three decks needs a different Legendary." },
-      { q: "Which Legendary is in the most decks?", a: "On 25 September 2026, Van Helsing and Three Not So Little Pigs, each leading 3 of the 19 decks published on OriginsMeta; Wicked Stepmother leads none. It measures popularity on the site, not strength." },
+      { q: "How many Legendaries can a deck have?", a: "One. A deck is one Legendary plus twelve base cards played as two copies each, 25 cards in all. In Conquest you bring more than one deck: at Big Bob's Playtest Battle each needed a different Legendary; the Crimson Cup announcements don't say, and our deck builder flags two decks with the same one." },
+      { q: "Which Legendary is in the most decks?", a: "On 25 September 2026, Three Not So Little Pigs, leading 4 of the 20 decks published on OriginsMeta; Van Helsing leads 3 and Wicked Stepmother none. It measures popularity on the site, not strength, and the live count is on the Most played page of the tier list." },
       { q: "Is there a Legendary spell?", a: "Yes, one in the Demo 2.0: Legion of the Dead, a 7-mana spell that fills your board with 2/2 Zombies." },
     ],
     body: `
@@ -122,7 +124,7 @@ const en: Record<GuideSlug, Guide> = {
 - Ten are units and one is a spell, Legion of the Dead. Five are Good, three Evil and three Neutral.
 - Four of them create other cards through their text: Dracula, Van Helsing, Legion of the Dead and Three Not So Little Pigs.
 - Seven changed in the balance patches between August and 21 September 2026; Dracula, Van Helsing, Legion of the Dead and Robin Hood did not.
-- On 25 September 2026 the 19 decks published on OriginsMeta use ten of the eleven: Van Helsing and Three Not So Little Pigs lead three decks each, Wicked Stepmother none. Six Legendaries have an OriginsMeta guide to one of their decks.
+- The 20 decks published on OriginsMeta by 20:00 CEST on 25 September 2026 use ten of the eleven: Three Not So Little Pigs leads four, Van Helsing three, Wicked Stepmother none. Six Legendaries have an OriginsMeta guide to one of their decks.
 
 The Legendaries below are in order of cost and, at the same cost, in alphabetical order. The guide describes what each card does, not how strong it is: our [Origins TCG tier list](/en/tier-list) will rank them from tournament results and the top of the [ranked ladder](/en/guides/origins-tcg-ranked), starting after the Crimson Cup.
 
@@ -139,16 +141,16 @@ The Legendaries below are in order of cost and, at the same cost, in alphabetica
 | [Merlin](/en/cards/merlin) | 5 | 5/5 | Neutral | 1 |
 | [King Arthur](/en/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/en/cards/legion-of-the-dead) | 7 | spell | Neutral | 2 |
-| [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 3 |
+| [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
 | [Robin Hood](/en/cards/robin-hood) | 8 | 4/4 | Good | 1 |
 
-The last column counts the decks each Legendary leads among the 19 published on OriginsMeta from 15 to 25 September 2026. It measures popularity on the site, not strength or win rate; the live count is on [Most played](/en/tier-list/most-played).
+The last column counts the decks each Legendary leads among the 20 published on OriginsMeta from 15 September to 20:00 CEST on 25 September 2026. It measures popularity on the site, not strength or win rate; the live count is on [Most played](/en/tier-list/most-played).
 
 ## What the Legendary does in a deck {#in-a-deck}
 
 - **One per deck.** A deck is one Legendary plus twelve base cards, and the game adds a second copy of each base card: 25 cards in play, according to the Koin Games team AMA. The [deck builder](/en/deck-builder) checks the rule.
 - **Your opponent sees it.** Patch 0.6.1 of the closed playtest (14 August 2026) added a preview of the opponent's Legendary during the mulligan, according to the [official patch notes](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
-- **In Conquest it names the deck.** At the Crimson Cup each player brings three decks with three different Legendaries, and when you ban one of your opponent's decks you only see its Legendary ([Crimson Cup rules](/en/news/crimson-cup-format-check-in)). How to put three decks together: our [Conquest guide](/en/guides/origins-tcg-conquest).
+- **In Conquest it names the deck.** At the Crimson Cup each player brings three decks, and when you ban one of your opponent's decks you only see its Legendary ([Crimson Cup rules](/en/news/crimson-cup-format-check-in)). The announcements don't say whether the three Legendaries must differ; at Big Bob's Playtest Battle they had to. How to put three decks together: our [Conquest guide](/en/guides/origins-tcg-conquest).
 
 The card texts quoted below are the official ones, read in the game; costs and stats were checked card by card on 22 September 2026. Sagas and the notes on each legend are OriginsMeta's own. The patches are those tracked in [MetaShifting](/en/metashifting): playtest updates 0.6.1, 0.6.2 and 0.6.3 (August 2026) and the demo patch of 21 September 2026. The legendary power is not covered here: we have not transcribed it from the game yet, and each card page will show it when we do.
 
@@ -174,7 +176,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 >
 > On Reveal: Summon Brides of Dracula [2⚔️/2❤️] on a random space here.
 
-- **The legend.** The Transylvanian count of Bram Stoker's 1897 novel, the vampire every other vampire copies.
+- **The legend.** The Transylvanian count of Bram Stoker's 1897 novel.
 - **Cards it creates.** [Brides of Dracula](/en/cards/brides-of-dracula), a 2/2 that, according to its text, deals 1 damage to the opponent's barrier in its location and gains +1❤️ whenever you discard a card (created card: its text is not verified in the game).
 - **Patches.** Dracula has not changed. Brides of Dracula went from 3 to 2 mana in patch 0.6.2 ([patch notes](/en/news/patch-0-6-2)).
 - **Decks on OriginsMeta, 25 September 2026.** Two: [Discard](/en/decks/community/discard-8bff) and [Dracula SUPER FUN](/en/decks/community/dracula-super-fun-d936).
@@ -216,7 +218,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 > Before combat, add Van Helsing's Tools to your hand if it is not already there.
 
 - **The legend.** Abraham Van Helsing, the Dutch professor who leads the hunt for Dracula.
-- **Cards it creates.** [Van Helsing's Tools](/en/cards/van-helsings-tools), which lets you choose and play one of four created cards: [Holy Water](/en/cards/holy-water), [Silver Bullet](/en/cards/silver-bullet), [Garlic](/en/cards/garlic) or [Wooden Stake](/en/cards/wooden-stake) (created cards: their texts are not verified in the game).
+- **Cards it creates.** [Van Helsing's Tools](/en/cards/van-helsings-tools), which lets you choose and play one of four created cards: [Holy Water](/en/cards/holy-water), [Silver Bullet](/en/cards/silver-bullet), [Garlic](/en/cards/garlic) or [Wooden Stake](/en/cards/wooden-stake) (created cards: their texts are not verified in the game, and the Silver Bullet page still shows its text from before patch 0.6.2; the changes are in its balance history).
 - **Patches.** Van Helsing himself has not changed. In patch 0.6.2 Van Helsing's Tools became free (1 → 0 mana) and the Silver Bullet it creates went from 3 damage to 1 ([patch notes](/en/news/patch-0-6-2)); with the demo patch of 21 September 2026 Silver Bullet can also target barriers, and Wooden Stake can target characters at full Health, though it still fails if the target is not damaged when it reveals ([patch notes](/en/news/demo-patch-notes-0921)).
 - **Decks on OriginsMeta, 25 September 2026.** Three: [Healing Healsing](/en/decks/community/healing-healsing-9411), [Cure Control](/en/decks/community/cure-control-b630) and [CONTROL](/en/decks/community/control-2c2b).
 - **Guides.** [Van Helsing deck guide: Healing Healsing](/en/guides/healing-healsing-guide) and [its matchups](/en/guides/healing-healsing-matchups).
@@ -232,7 +234,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 
 - **The legend.** The cruel stepmother of the fairy tales, from Cinderella's household to Snow White's court.
 - **Patches.** Demo patch of 21 September 2026: Power 3 → 4 ([patch notes](/en/news/demo-patch-notes-0921)).
-- **Decks on OriginsMeta, 25 September 2026.** None of the 19 published so far: build one in the [deck builder](/en/deck-builder) and publish it with a guide.
+- **Decks on OriginsMeta, 25 September 2026.** None of the 20 published so far: build one in the [deck builder](/en/deck-builder) and publish it with a guide.
 - **Guide.** None yet: [send us yours](/en/guides/submit).
 - **Card page.** [Wicked Stepmother, Legendary card: stats and text](/en/cards/wicked-stepmother).
 
@@ -242,7 +244,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 
 > Repeat the first spell you play each round.
 
-- **The legend.** The wizard who raised Arthur and guided his reign, from Geoffrey of Monmouth to Malory.
+- **The legend.** The wizard behind Arthur's birth and his rise to the throne, from Geoffrey of Monmouth to Malory.
 - **Patches.** Patch 0.6.3: from 3/5 to 5/5, +2 Power ([patch notes](/en/news/patch-0-6-3)).
 - **Decks on OriginsMeta, 25 September 2026.** One: [Spellcast](/en/decks/community/spellcast-250f).
 - **Guide.** None yet: [send us yours](/en/guides/submit).
@@ -287,7 +289,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 - **The legend.** The three pigs of straw, sticks and bricks, grown up and not so easy to blow down.
 - **Cards it creates.** [Not So Little Pig](/en/cards/not-so-little-pig), a 3/3 with Trample, one at each of the other two locations.
 - **Patches.** Patch 0.6.2: from 4/4 to 3/3, and the pigs it summons became 3/3 to match ([patch notes](/en/news/patch-0-6-2)).
-- **Decks on OriginsMeta, 25 September 2026.** Three: [3 Pigs Mid Range](/en/decks/community/3-pigs-mid-range-6311), [Value Board](/en/decks/community/value-board-c44a) and [VALUE MAXXING](/en/decks/community/value-maxxing-739d).
+- **Decks on OriginsMeta, 25 September 2026.** Four: [3 Pigs Mid Range](/en/decks/community/3-pigs-mid-range-6311), [Value Board](/en/decks/community/value-board-c44a), [VALUE MAXXING](/en/decks/community/value-maxxing-739d) and [AGGRO /MIDRANGE PIGS GM](/en/decks/community/aggro-midrange-pigs-gm-6931).
 - **Guides.** [Three Not So Little Pigs deck guide](/en/guides/three-pigs-midrange-guide) and [its matchups](/en/guides/three-pigs-midrange-matchups).
 - **Card page.** [Three Not So Little Pigs, Legendary card: stats and text](/en/cards/three-not-so-little-pigs).
 
@@ -314,7 +316,7 @@ Our database also keeps nine Legendaries that are not in the Demo 2.0: [Alice](/
 
 - **Cards:** the OriginsMeta [card database](/en/cards): costs, stats and English texts of the demo cards checked one by one in the game on 22 September 2026, Italian and Spanish texts read in the game on 25 September 2026.
 - **Patches:** the official patch notes on Steam, card by card in [MetaShifting](/en/metashifting).
-- **Decks:** the 19 decks published on OriginsMeta from 15 to 25 September 2026, counted on 25 September ([all the Origins TCG decks](/en/decks)).
+- **Decks:** the 20 decks published on OriginsMeta from 15 September to 20:00 CEST on 25 September 2026 ([all the Origins TCG decks](/en/decks)); the count after that is on [Most played](/en/tier-list/most-played).
 
 We will update this guide whenever a patch changes a Legendary or the demo adds a new one.
 `,
@@ -329,7 +331,7 @@ We will update this guide whenever a patch changes a Legendary or the demo adds 
     updated: "2026-09-25",
     image: "/media/keyart-puss-in-boots.webp",
     faq: [
-      { q: "When does ranked start in the Origins TCG demo?", a: "With the start of Steam Next Fest, on Monday 19 October 2026 (the festival opens at 10:00 Pacific time), according to Koin Games' Steam post of 21 September 2026. The post gives no more precise time." },
+      { q: "At what time does ranked open on 19 October?", a: "Koin Games' Steam post of 21 September 2026 only says \"with the start of Steam Next Fest\", with no time. The festival opens on Monday 19 October 2026 at 10:00 Pacific time: 13:00 Eastern, 18:00 in the UK, 19:00 in central Europe." },
       { q: "What is the highest rank in Origins TCG?", a: "Grandmaster, the top division of the ladder in the closed playtest, which has a world ranked leaderboard (official patch notes 0.6.1 and 0.6.3, August 2026)." },
       { q: "What are the ranked rewards?", a: "Koin Games has only said that ranked in the demo comes with exclusive ranked rewards; on 25 September 2026 the details had not been announced." },
       { q: "Can I play ranked before Steam Next Fest?", a: "Only in the closed playtest, where ranked has been on since patch 0.6.1 of 14 August 2026; instructions to access the playtest are on the official Discord." },
@@ -399,18 +401,18 @@ Koin Games' official posts on Steam: [patch 0.6.1](https://store.steampowered.co
     image: "/media/keyart-goldi.webp",
     faq: [
       { q: "How do I count the cards two Conquest decks share?", a: "Take the 13 different cards of each deck, the Legendary and the twelve base cards, each counted once whatever its copies: the unique cards between the two decks are 13 minus the cards they share. With a minimum of 8 unique cards, two decks can share at most 5. It is OriginsMeta's reading, since Koin Games has not spelled out how the count works; the rule itself is in our article on the Crimson Cup rules." },
-      { q: "Can two of my Conquest decks use the same Legendary?", a: "No. Each deck needs a different Legendary, at Big Bob's Playtest Battle in August as at the Crimson Cup in October 2026." },
+      { q: "Can two of my Conquest decks use the same Legendary?", a: "At Big Bob's Playtest Battle in August, no: each deck needed a different Legendary. For the Crimson Cup the announcements of 9 and 24 September 2026 don't spell it out; since in the ban you only see the Legendary, our deck builder flags two decks with the same one." },
       { q: "Do the two copies of a card count as two cards?", a: "Not in OriginsMeta's reading: a card counts once whatever its copies, so every deck has 13 cards to compare, the Legendary and the twelve base cards." },
       { q: "How do I check my three decks?", a: "In the OriginsMeta deck builder, in Tournament (3 decks) mode: the Conquest check counts the unique cards between each pair of decks, lists the shared ones and flags two decks with the same Legendary." },
     ],
     body: `
 ## In brief {#in-brief}
 
-- **Conquest** means bringing more than one deck, different enough from each other, and banning one of your opponent's decks (Koin Games, 25 August 2026); Big Bob's Playtest Battle and the Crimson Cup also require a different Legendary in each deck.
+- **Conquest** means bringing more than one deck, different enough from each other, and banning one of your opponent's decks (Koin Games, 25 August 2026); at Big Bob's Playtest Battle each deck also needed a different Legendary.
 - At the **Crimson Cup** (20–25 October 2026) you bring three decks with at least 8 unique cards between each pair. Rules, dates, prizes and check-in are in [our article on the Crimson Cup rules](/en/news/crimson-cup-format-check-in): this guide is about building the three decks.
 - Koin has not spelled out how unique cards are counted. OriginsMeta counts each card once, whatever its copies, Legendary included: two decks can then share at most 5 cards.
 - The [deck builder](/en/deck-builder) checks all of it in its "Tournament (3 decks)" mode.
-- Among the 19 decks published on OriginsMeta by 25 September 2026, 159 of the 160 pairs with different Legendaries pass the rule; the one that fails misses by one card.
+- Among the 20 decks published on OriginsMeta by 20:00 CEST on 25 September 2026, 174 of the 176 pairs with different Legendaries pass the rule; the two that fail, both with Buff, miss by one card.
 
 ## What Conquest asks for {#the-format}
 
@@ -418,7 +420,7 @@ Koin Games used Conquest for the first time at [Big Bob's Playtest Battle](/en/n
 
 For the Crimson Cup, the announcements of 9 and 24 September 2026 set these rules:
 
-- **three decks**, each with a different Legendary;
+- **three decks**; the announcements don't say whether the Legendaries must differ (at Big Bob's they had to, and in the ban you only see the Legendary);
 - **at least 8 unique cards** between each pair of decks;
 - decklists hidden until the top 4: when you ban one of your opponent's decks you only see its Legendary;
 - best-of-three matches and a best-of-five grand final; in best-of-five there is no ban and you have to win with all three decks.
@@ -430,7 +432,7 @@ The tournament is played on the main demo, with its card list. The last balance 
 Every deck has **13 different cards**: the Legendary and twelve base cards, whose second copy the game adds by itself (25 cards in play). The Crimson Cup announcement does not say how the 8 unique cards are counted. This is OriginsMeta's reading, the one our deck builder and our tournaments apply:
 
 1. each card counts **once**, however many copies it has;
-2. the **Legendary counts too**, and since the Legendaries must be different it is always one card of difference;
+2. the **Legendary counts too**: two different Legendaries are always one card of difference;
 3. the unique cards between deck A and deck B are the cards of A that B does not have: **13 minus the cards they share**.
 
 So "at least 8 unique cards" means **at most 5 cards in common** between any two of your decks.
@@ -453,13 +455,13 @@ The builder saves the three decks in your browser as you go. [Tournaments](/en/t
 
 The Crimson Cup is the tournament of Steam Next Fest, and ranked opens in the demo with the same festival: everything about the festival is in our [Steam Next Fest guide](/en/guides/steam-next-fest-2026), and [what is confirmed about ranked](/en/guides/origins-tcg-ranked) in its own guide.
 
-## Community decks that pass, and one that doesn't {#community-pairs}
+## Community decks that pass, and two that don't {#community-pairs}
 
-On 25 September 2026 OriginsMeta has 19 published decks, led by 10 different Legendaries. That makes 171 possible pairs:
+By 20:00 CEST on 25 September 2026 OriginsMeta has 20 published decks, led by 10 different Legendaries. That makes 190 possible pairs:
 
-- 11 pairs share the Legendary and cannot go in the same line-up: they are often versions of one list, like [Healing Healsing](/en/decks/community/healing-healsing-9411), [Cure Control](/en/decks/community/cure-control-b630) and [CONTROL](/en/decks/community/control-2c2b), three Van Helsing decks that share 12 of their 13 cards;
-- of the other 160, **159 pass** the 8-card rule, and 25 of them share no card at all;
-- one fails: Buff and FACE IS THE PLACE, seen above.
+- 14 pairs share the Legendary: the deck builder flags them, and at Big Bob's Playtest Battle they could not have gone in the same line-up. They are often versions of one list, like [Healing Healsing](/en/decks/community/healing-healsing-9411), [Cure Control](/en/decks/community/cure-control-b630) and [CONTROL](/en/decks/community/control-2c2b), three Van Helsing decks that share 12 of their 13 cards;
+- of the other 176, **174 pass** the 8-card rule, and 30 of them share no card at all;
+- two fail, both at 7 and both with Buff: Buff and FACE IS THE PLACE, seen above, and Buff and [AGGRO /MIDRANGE PIGS GM](/en/decks/community/aggro-midrange-pigs-gm-6931) (Three Not So Little Pigs), which share Bagheera, Mind Palace, Three Blind Mice, Beast, Glinda and Galahad.
 
 Some pairs with their real numbers:
 
@@ -473,9 +475,10 @@ Some pairs with their real numbers:
 | [Qoh](/en/decks/community/qoh-f876) + [Value Board](/en/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5: Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | yes, at the limit |
 | [Buff](/en/decks/community/buff-6f60) + [FACE IS THE PLACE](/en/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | no |
 
-Eight pairs sit exactly at 8:
+Nine pairs sit exactly at 8:
 
 - [3 Pigs Mid Range](/en/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/en/decks/community/on-reveal-mid-range-772e)
+- [AGGRO /MIDRANGE PIGS GM](/en/decks/community/aggro-midrange-pigs-gm-6931) + [FACE IS THE PLACE](/en/decks/community/face-is-the-place-b049)
 - [CONTROL](/en/decks/community/control-2c2b) + [Spellcast](/en/decks/community/spellcast-250f)
 - [Cure Control](/en/decks/community/cure-control-b630) + [Glinda Reborn](/en/decks/community/glinda-reborn-2d6d)
 - [Cure Control](/en/decks/community/cure-control-b630) + [Spellcast](/en/decks/community/spellcast-250f)
@@ -484,18 +487,19 @@ Eight pairs sit exactly at 8:
 - [Qoh](/en/decks/community/qoh-f876) + [Value Board](/en/decks/community/value-board-c44a)
 - [Qoh](/en/decks/community/qoh-f876) + [VALUE MAXXING](/en/decks/community/value-maxxing-739d)
 
-Of the 969 possible trios of published decks, 770 have three different Legendaries and pass the rule on all three pairs.
+Of the 1,140 possible trios of published decks, 867 have three different Legendaries and pass the rule on all three pairs.
 
 These are counts, not advice: they say which decks can stand together under the rule, not which line-up wins. How each deck plays is on its page, in its author's guide.
 
 ## What we don't know yet {#unknowns}
 
 - How Koin counts the 8 unique cards: the announcement of 24 September does not say.
+- Whether the three Crimson Cup decks must have different Legendaries: the announcements do not say.
 - The final card list: the tentative list has been in the game since 21 September, and the last balance patch arrives two weeks before Steam Next Fest.
 
 ## Sources {#sources}
 
-Koin Games' posts on Steam of [25 August](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle) and [9 September 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (the tournament of Steam Next Fest), the Crimson Cup announcement on the official Discord (24 September) and the decks published on OriginsMeta, counted on 25 September 2026 with the same function the deck builder uses.
+Koin Games' posts on Steam of [25 August](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle) and [9 September 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (the tournament of Steam Next Fest), the Crimson Cup announcement on the official Discord (24 September) and the decks published on OriginsMeta by 20:00 CEST on 25 September 2026, counted with the same function the deck builder uses.
 `,
   },
   "origins-tcg-locations": {
@@ -812,7 +816,7 @@ There is no note from the author on the mulligan, so this is OriginsMeta's readi
 1. **Rounds 1–2: start the counter.** Card Soldier or Roo, then Twister Toss on it. Every move is a permanent point on Dorothy, even when the board looks quiet.
 2. **Round 3: pick the lane.** Pegasus, the Witch or Kanga. [Wicked Witch of the West](/en/cards/wicked-witch-of-the-west) is the one that generates on her own: a 1/5 that survives most hits, and each time she does you get a Flying Monkey in hand and she moves one space left — another point for Dorothy.
 3. **Round 4: Magic Carpet.** Choose the direction that pushes your Card Soldiers toward a free space and takes Pegasus into a fight it will now win.
-4. **Round 5 onwards: Dorothy, then close.** Hare has First Strike and Move: it hits before the answer and keeps the counter going. [Basilisk](/en/cards/basilisk) with Deathtouch is the cheap answer to a body too big to fight fairly, and En Passant turns a doubled Pegasus into removal.
+4. **Round 5 onwards: Dorothy, then close.** She has cost 4 since the 21 September patch, but round four belongs to the Carpet, and a round later she lands with a higher counter. Hare has First Strike and Move: it hits before the answer and keeps the counter going. [Basilisk](/en/cards/basilisk) with Deathtouch is the cheap answer to a body too big to fight fairly, and En Passant turns a doubled Pegasus into removal.
 
 ## What the deck cannot do
 
@@ -1367,7 +1371,7 @@ Because collector cards are cosmetic, a tier list only has to care about the car
       { q: "When is the Origins TCG tournament?", a: "From 20 to 25 October 2026: three qualifiers on the 20th, 21st and 22nd (one per major region), then playoffs and finals." },
       { q: "Can I join a qualifier from Europe?", a: "Yes. Koin Games says you can join any of the qualifiers no matter where you live, but asks you to sign up only for the ones you can actually attend." },
       { q: "Does it cost anything?", a: "No. The demo is free on Steam and the tournament sign-up is on the official Discord. Origins TCG is free-to-compete: every competitive card is earned by playing." },
-      { q: "What is the Conquest format?", a: "At the Crimson Cup each player submits three decks, each led by a different Legendary, with at least 8 unique cards between any two of them. Decklists stay hidden until the top 4: when you ban one of your opponent's decks you only see its Legendary. In best-of-five matches there is no ban and you must win with all three decks. Koin Games first tested the format at Big Bob's Playtest Battle on 28 August." },
+      { q: "What is the Conquest format?", a: "At the Crimson Cup each player submits three decks, with at least 8 unique cards between any two of them. Decklists stay hidden until the top 4: when you ban one of your opponent's decks you only see its Legendary. In best-of-five matches there is no ban and you must win with all three decks. Koin Games first tested the format at Big Bob's Playtest Battle on 28 August." },
     ],
     body: `
 ## The two dates to remember
@@ -1398,7 +1402,7 @@ Sign-ups are on the [official Discord](https://discord.gg/originstcg).
 
 1. [Install the free demo on Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) and play the missions: they teach the three lanes and the simultaneous turns.
 2. Read [Origins TCG explained in five minutes](/en/guides/origins-tcg-explained) and the [card database](/en/cards): the stats are those of the demo patch of 21 September, checked card by card in the game.
-3. Build your three Conquest decks in our [deck builder](/en/deck-builder): it checks the different-Legendary rule and counts the cards that differ between decks. Step by step, with real community decks: [how to build a Conquest line-up](/en/guides/origins-tcg-conquest).
+3. Build your three Conquest decks in our [deck builder](/en/deck-builder): it flags two decks with the same Legendary and counts the cards that differ between decks. Step by step, with real community decks: [how to build a Conquest line-up](/en/guides/origins-tcg-conquest).
 4. Study the [decks published by the community](/en/decks): every list comes with its composition charts, the author's notes, a button that opens it in the builder and the game code to paste into Origins. Publish yours with a guide so other players can rate it.
 5. Follow the [news](/en/news): every announcement is summarized within a day, with a link to the source.
 
@@ -1589,8 +1593,8 @@ const it: Record<GuideSlug, Guide> = {
     image: "/media/keyart-king-arthur.webp",
     faq: [
       { q: "Quante Leggendarie ci sono in Origins TCG?", a: "Undici nella Demo 2.0 al 25 settembre 2026: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs e Robin Hood. Il database di OriginsMeta ne conserva altre nove che non sono nella demo." },
-      { q: "Quante Leggendarie può avere un mazzo?", a: "Una. Un mazzo è una Leggendaria più dodici carte base giocate in due copie ciascuna, 25 carte in tutto. Nel formato Conquest della Crimson Cup ognuno dei tre mazzi deve avere una Leggendaria diversa." },
-      { q: "Qual è la Leggendaria nel maggior numero di mazzi?", a: "Al 25 settembre 2026 Van Helsing e Three Not So Little Pigs, che guidano 3 dei 19 mazzi pubblicati su OriginsMeta ciascuna; Wicked Stepmother non ne guida nessuno. È una misura di popolarità sul sito, non di forza." },
+      { q: "Quante Leggendarie può avere un mazzo?", a: "Una. Un mazzo è una Leggendaria più dodici carte base giocate in due copie ciascuna, 25 carte in tutto. Nel Conquest si porta più di un mazzo: a Big Bob's Playtest Battle ognuno doveva avere una Leggendaria diversa; gli annunci della Crimson Cup non lo dicono, e il nostro deck builder segnala due mazzi con la stessa." },
+      { q: "Qual è la Leggendaria nel maggior numero di mazzi?", a: "Al 25 settembre 2026 Three Not So Little Pigs, che guida 4 dei 20 mazzi pubblicati su OriginsMeta; Van Helsing ne guida 3 e Wicked Stepmother nessuno. È una misura di popolarità sul sito, non di forza, e il conteggio aggiornato è nella pagina Le più giocate della tier list." },
       { q: "Esiste una Leggendaria magia?", a: "Sì, una sola nella Demo 2.0: Legion of the Dead, una magia da 7 mana che riempie il tuo tabellone di Zombie 2/2." },
     ],
     body: `
@@ -1600,9 +1604,9 @@ const it: Record<GuideSlug, Guide> = {
 - Dieci sono unità e una è una magia, Legion of the Dead. Cinque sono Good, tre Evil e tre Neutral.
 - Quattro generano altre carte con il loro testo: Dracula, Van Helsing, Legion of the Dead e Three Not So Little Pigs.
 - Sette sono cambiate nelle patch di bilanciamento fra agosto e il 21 settembre 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood no.
-- Al 25 settembre 2026 i 19 mazzi pubblicati su OriginsMeta ne usano dieci su undici: Van Helsing e Three Not So Little Pigs guidano tre mazzi ciascuna, Wicked Stepmother nessuno. Sei Leggendarie hanno una guida di OriginsMeta a uno dei loro mazzi.
+- I 20 mazzi pubblicati su OriginsMeta entro le 20:00 del 25 settembre 2026 ne usano dieci su undici: Three Not So Little Pigs ne guida quattro, Van Helsing tre, Wicked Stepmother nessuno. Sei Leggendarie hanno una guida di OriginsMeta a uno dei loro mazzi.
 
-Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: le classificherà la nostra [tier list di Origins TCG](/it/tier-list) sui risultati dei tornei e sulla cima della [classificata](/it/guides/origins-tcg-ranked), a partire dalla Crimson Cup.
+Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: le classificherà la nostra [tier list di Origins TCG](/it/tier-list) sui risultati dei tornei e sulla cima della [classificata](/it/guides/origins-tcg-ranked), dopo la Crimson Cup.
 
 ## Le 11 Leggendarie in una tabella {#tabella}
 
@@ -1617,16 +1621,16 @@ Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordin
 | [Merlin](/it/cards/merlin) | 5 | 5/5 | Neutral | 1 |
 | [King Arthur](/it/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/it/cards/legion-of-the-dead) | 7 | magia | Neutral | 2 |
-| [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 3 |
+| [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
 | [Robin Hood](/it/cards/robin-hood) | 8 | 4/4 | Good | 1 |
 
-L'ultima colonna conta i mazzi che ogni Leggendaria guida fra i 19 pubblicati su OriginsMeta dal 15 al 25 settembre 2026. Misura la popolarità sul sito, non la forza né il win rate; il conteggio aggiornato è in [Le più giocate](/it/tier-list/most-played).
+L'ultima colonna conta i mazzi che ogni Leggendaria guida fra i 20 pubblicati su OriginsMeta dal 15 settembre alle 20:00 del 25 settembre 2026. Misura la popolarità sul sito, non la forza né il win rate; il conteggio aggiornato è in [Le più giocate](/it/tier-list/most-played).
 
 ## Che cosa fa la Leggendaria in un mazzo {#nel-mazzo}
 
 - **Una per mazzo.** Un mazzo è una Leggendaria più dodici carte base, e il gioco aggiunge una seconda copia di ogni carta base: 25 carte in gioco, secondo l'AMA del team di Koin Games. Il [deck builder](/it/deck-builder) controlla la regola.
 - **L'avversario la vede.** La patch 0.6.1 del playtest chiuso (14 agosto 2026) ha aggiunto l'anteprima della Leggendaria avversaria durante il mulligan, secondo le [patch notes ufficiali](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
-- **Nel Conquest dà il nome al mazzo.** Alla Crimson Cup ogni giocatore porta tre mazzi con tre Leggendarie diverse, e quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria ([regole della Crimson Cup](/it/news/crimson-cup-format-check-in)). Come mettere insieme i tre mazzi: la nostra [guida al Conquest](/it/guides/origins-tcg-conquest).
+- **Nel Conquest dà il nome al mazzo.** Alla Crimson Cup ogni giocatore porta tre mazzi, e quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria ([regole della Crimson Cup](/it/news/crimson-cup-format-check-in)). Gli annunci non dicono se le tre Leggendarie devono essere diverse; a Big Bob's Playtest Battle dovevano esserlo. Come mettere insieme i tre mazzi: la nostra [guida al Conquest](/it/guides/origins-tcg-conquest).
 
 I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel gioco in italiano; costi e statistiche sono stati verificati carta per carta il 22 settembre 2026. Le saghe e le note sulle leggende sono di OriginsMeta. Le patch sono quelle seguite nel [MetaShifting](/it/metashifting): gli aggiornamenti 0.6.1, 0.6.2 e 0.6.3 del playtest (agosto 2026) e la patch della demo del 21 settembre 2026. Il potere leggendario qui non c'è: non lo abbiamo ancora trascritto dal gioco, e lo mostrerà la scheda di ogni carta quando lo avremo fatto.
 
@@ -1652,7 +1656,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 >
 > Alla rivelazione: Evoca Brides of Dracula [2⚔️/2❤️] su uno spazio casuale qui.
 
-- **La leggenda.** Il conte transilvano del romanzo di Bram Stoker del 1897, il vampiro che tutti gli altri copiano.
+- **La leggenda.** Il conte transilvano del romanzo di Bram Stoker del 1897.
 - **Carte che genera.** [Brides of Dracula](/it/cards/brides-of-dracula), una 2/2 che, secondo il suo testo, ogni volta che scarti una carta infligge 1 danno alla barriera avversaria nel suo luogo e ottiene +1❤️ (carta generata: testo non verificato nel gioco).
 - **Patch.** Dracula non è cambiato. Brides of Dracula è scesa da 3 a 2 mana con la patch 0.6.2 ([patch notes](/it/news/patch-0-6-2)).
 - **Mazzi su OriginsMeta al 25 settembre 2026.** Due: [Discard](/it/decks/community/discard-8bff) e [Dracula SUPER FUN](/it/decks/community/dracula-super-fun-d936).
@@ -1694,7 +1698,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 > Prima del combattimento, aggiungi Van Helsing's Tools alla tua mano se non c'è già.
 
 - **La leggenda.** Abraham Van Helsing, il professore olandese che guida la caccia a Dracula.
-- **Carte che genera.** [Van Helsing's Tools](/it/cards/van-helsings-tools), che ti fa scegliere e giocare una di quattro carte generate: [Holy Water](/it/cards/holy-water), [Silver Bullet](/it/cards/silver-bullet), [Garlic](/it/cards/garlic) o [Wooden Stake](/it/cards/wooden-stake) (carte generate: testi non verificati nel gioco).
+- **Carte che genera.** [Van Helsing's Tools](/it/cards/van-helsings-tools), che ti fa scegliere e giocare una di quattro carte generate: [Holy Water](/it/cards/holy-water), [Silver Bullet](/it/cards/silver-bullet), [Garlic](/it/cards/garlic) o [Wooden Stake](/it/cards/wooden-stake) (carte generate: testi non verificati nel gioco, e la scheda della Silver Bullet mostra ancora il testo di prima della patch 0.6.2; le modifiche sono nel suo storico dei bilanciamenti).
 - **Patch.** Van Helsing non è cambiato. Con la patch 0.6.2 Van Helsing's Tools è diventata gratuita (da 1 a 0 mana) e la Silver Bullet che crea è passata da 3 danni a 1 ([patch notes](/it/news/patch-0-6-2)); con la patch della demo del 21 settembre 2026 la Silver Bullet può colpire anche le barriere, e la Wooden Stake può bersagliare personaggi con la Salute piena, ma fallisce comunque se il bersaglio non è danneggiato quando si rivela ([patch notes](/it/news/demo-patch-notes-0921)).
 - **Mazzi su OriginsMeta al 25 settembre 2026.** Tre: [Healing Healsing](/it/decks/community/healing-healsing-9411), [Cure Control](/it/decks/community/cure-control-b630) e [CONTROL](/it/decks/community/control-2c2b).
 - **Guide.** [Guida a Healing Healsing, mazzo di Van Helsing](/it/guides/healing-healsing-guide) e [i suoi matchup](/it/guides/healing-healsing-matchups).
@@ -1710,7 +1714,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 
 - **La leggenda.** La matrigna crudele delle fiabe, dalla casa di Cenerentola alla corte di Biancaneve.
 - **Patch.** Patch della demo del 21 settembre 2026: Potenza da 3 a 4 ([patch notes](/it/news/demo-patch-notes-0921)).
-- **Mazzi su OriginsMeta al 25 settembre 2026.** Nessuno dei 19 pubblicati finora: costruiscine uno nel [deck builder](/it/deck-builder) e pubblicalo con una guida.
+- **Mazzi su OriginsMeta al 25 settembre 2026.** Nessuno dei 20 pubblicati finora: costruiscine uno nel [deck builder](/it/deck-builder) e pubblicalo con una guida.
 - **Guida.** Non ancora: [mandaci la tua](/it/guides/submit).
 - **Scheda.** [Wicked Stepmother, carta Leggendaria: statistiche e testo](/it/cards/wicked-stepmother).
 
@@ -1720,7 +1724,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 
 > Ripeti la prima magia che giochi ogni round.
 
-- **La leggenda.** Il mago che crebbe Artù e ne guidò il regno, da Goffredo di Monmouth a Malory.
+- **La leggenda.** Il mago dietro la nascita di Artù e la sua ascesa al trono, da Goffredo di Monmouth a Malory.
 - **Patch.** Patch 0.6.3: da 3/5 a 5/5, +2 Potenza ([patch notes](/it/news/patch-0-6-3)).
 - **Mazzi su OriginsMeta al 25 settembre 2026.** Uno: [Spellcast](/it/decks/community/spellcast-250f).
 - **Guida.** Non ancora: [mandaci la tua](/it/guides/submit).
@@ -1765,7 +1769,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 - **La leggenda.** I tre porcellini di paglia, legno e mattoni, cresciuti e non più così facili da soffiare via.
 - **Carte che genera.** [Not So Little Pig](/it/cards/not-so-little-pig), un 3/3 con Travolgere, uno in ciascuno degli altri due luoghi.
 - **Patch.** Patch 0.6.2: da 4/4 a 3/3, e i maialini che evoca sono diventati 3/3 anche loro ([patch notes](/it/news/patch-0-6-2)).
-- **Mazzi su OriginsMeta al 25 settembre 2026.** Tre: [3 Pigs Mid Range](/it/decks/community/3-pigs-mid-range-6311), [Value Board](/it/decks/community/value-board-c44a) e [VALUE MAXXING](/it/decks/community/value-maxxing-739d).
+- **Mazzi su OriginsMeta al 25 settembre 2026.** Quattro: [3 Pigs Mid Range](/it/decks/community/3-pigs-mid-range-6311), [Value Board](/it/decks/community/value-board-c44a), [VALUE MAXXING](/it/decks/community/value-maxxing-739d) e [AGGRO /MIDRANGE PIGS GM](/it/decks/community/aggro-midrange-pigs-gm-6931).
 - **Guide.** [Guida al mazzo dei Three Not So Little Pigs](/it/guides/three-pigs-midrange-guide) e [i suoi matchup](/it/guides/three-pigs-midrange-matchups).
 - **Scheda.** [Three Not So Little Pigs, carta Leggendaria: statistiche e testo](/it/cards/three-not-so-little-pigs).
 
@@ -1792,7 +1796,7 @@ Il nostro database conserva anche nove Leggendarie che non sono nella Demo 2.0: 
 
 - **Carte:** il [database carte](/it/cards) di OriginsMeta: costi, statistiche e testi inglesi delle carte della demo verificati uno per uno nel gioco il 22 settembre 2026, testi italiani e spagnoli letti nel gioco il 25 settembre 2026.
 - **Patch:** le patch notes ufficiali su Steam, carta per carta nel [MetaShifting](/it/metashifting).
-- **Mazzi:** i 19 mazzi pubblicati su OriginsMeta dal 15 al 25 settembre 2026, contati il 25 settembre ([tutti i mazzi di Origins TCG](/it/decks)).
+- **Mazzi:** i 20 mazzi pubblicati su OriginsMeta dal 15 settembre alle 20:00 del 25 settembre 2026 ([tutti i mazzi di Origins TCG](/it/decks)); il conteggio successivo è in [Le più giocate](/it/tier-list/most-played).
 
 Aggiorneremo questa guida ogni volta che una patch cambia una Leggendaria o la demo ne aggiunge una nuova.
 `,
@@ -1807,7 +1811,7 @@ Aggiorneremo questa guida ogni volta che una patch cambia una Leggendaria o la d
     updated: "2026-09-25",
     image: "/media/keyart-puss-in-boots.webp",
     faq: [
-      { q: "Quando parte la classificata nella demo di Origins TCG?", a: "Con l'inizio dello Steam Next Fest, lunedì 19 ottobre 2026 (il festival apre alle 19:00 italiane), secondo il post di Koin Games su Steam del 21 settembre 2026. Il post non dà un orario più preciso." },
+      { q: "A che ora apre la classificata il 19 ottobre?", a: "Il post di Koin Games su Steam del 21 settembre 2026 dice solo \"con l'inizio dello Steam Next Fest\", senza un orario. Il festival apre lunedì 19 ottobre 2026 alle 10:00 ora del Pacifico, le 19:00 in Italia." },
       { q: "Qual è il grado più alto della classificata di Origins TCG?", a: "Grandmaster, la divisione più alta della ladder del playtest chiuso, con una classifica mondiale (patch notes ufficiali 0.6.1 e 0.6.3, agosto 2026)." },
       { q: "Quali sono le ricompense della classificata?", a: "Koin Games ha detto solo che la classificata della demo arriva con ricompense esclusive; al 25 settembre 2026 i dettagli non erano stati annunciati." },
       { q: "Si può giocare in classificata prima dello Steam Next Fest?", a: "Solo nel playtest chiuso, dove la classificata è attiva dalla patch 0.6.1 del 14 agosto 2026; le istruzioni per accedere al playtest sono sul Discord ufficiale." },
@@ -1871,24 +1875,24 @@ I post ufficiali di Koin Games su Steam: [patch 0.6.1](https://store.steampowere
     category: "decks",
     title: "Il Conquest in Origins TCG: come costruire tre mazzi che rispettano la regola delle carte uniche",
     metaTitle: "Conquest in Origins TCG: come costruire i tre mazzi",
-    excerpt: "Come costruire una formazione Conquest per Origins TCG: come si contano le carte uniche, il controllo del deck builder e mazzi veri che passano.",
+    excerpt: "Come costruire una formazione Conquest per Origins TCG: come si contano le carte uniche, il controllo del deck builder e mazzi veri che rispettano la regola.",
     readTime: 7,
     updated: "2026-09-25",
     image: "/media/keyart-goldi.webp",
     faq: [
       { q: "Come si contano le carte in comune fra due mazzi Conquest?", a: "Si prendono le 13 carte diverse di ogni mazzo, la Leggendaria e le dodici carte base, ognuna contata una volta a prescindere dalle copie: le carte uniche fra i due mazzi sono 13 meno le carte in comune. Con un minimo di 8 carte uniche, due mazzi possono averne in comune al massimo 5. È la lettura di OriginsMeta, perché Koin Games non ha spiegato come si fa il conteggio; la regola è nel nostro articolo sulle regole della Crimson Cup." },
-      { q: "Due dei miei mazzi Conquest possono avere la stessa Leggendaria?", a: "No. Ogni mazzo deve avere una Leggendaria diversa, a Big Bob's Playtest Battle ad agosto come alla Crimson Cup di ottobre 2026." },
+      { q: "Due dei miei mazzi Conquest possono avere la stessa Leggendaria?", a: "A Big Bob's Playtest Battle, ad agosto, no: ogni mazzo doveva avere una Leggendaria diversa. Per la Crimson Cup gli annunci del 9 e del 24 settembre 2026 non lo dicono; siccome nel ban si vede solo la Leggendaria, il nostro deck builder segnala due mazzi con la stessa." },
       { q: "Le due copie di una carta contano come due carte?", a: "Non nella lettura di OriginsMeta: una carta conta una volta a prescindere dalle copie, quindi ogni mazzo ha 13 carte da confrontare, la Leggendaria e le dodici carte base." },
       { q: "Come controllo i miei tre mazzi?", a: "Nel deck builder di OriginsMeta, in modalità Torneo (3 mazzi): il Controllo Conquest conta le carte uniche fra ogni coppia di mazzi, elenca quelle in comune e segnala due mazzi con la stessa Leggendaria." },
     ],
     body: `
 ## In breve {#in-breve}
 
-- **Conquest** vuol dire portare più di un mazzo, abbastanza diversi fra loro, e bannare un mazzo dell'avversario (Koin Games, 25 agosto 2026); Big Bob's Playtest Battle e la Crimson Cup chiedono anche una Leggendaria diversa per ogni mazzo.
+- **Conquest** vuol dire portare più di un mazzo, abbastanza diversi fra loro, e bannare un mazzo dell'avversario (Koin Games, 25 agosto 2026); a Big Bob's Playtest Battle ogni mazzo doveva avere anche una Leggendaria diversa.
 - Alla **Crimson Cup** (20–25 ottobre 2026) si portano tre mazzi con almeno 8 carte uniche fra ogni coppia. Regole, date, premi e check-in sono nel [nostro articolo sulle regole della Crimson Cup](/it/news/crimson-cup-format-check-in): questa guida parla di come costruire i tre mazzi.
 - Koin non ha spiegato come si contano le carte uniche. OriginsMeta conta ogni carta una volta, a prescindere dalle copie, Leggendaria compresa: così due mazzi possono avere in comune al massimo 5 carte.
 - Il [deck builder](/it/deck-builder) controlla tutto nella modalità "Torneo (3 mazzi)".
-- Fra i 19 mazzi pubblicati su OriginsMeta al 25 settembre 2026, 159 delle 160 coppie con Leggendarie diverse rispettano la regola; l'unica che non la rispetta manca di una carta.
+- Fra i 20 mazzi pubblicati su OriginsMeta entro le 20:00 del 25 settembre 2026, 174 delle 176 coppie con Leggendarie diverse rispettano la regola; le due che non la rispettano, entrambe con Buff, mancano di una carta.
 
 ## Che cosa chiede il Conquest {#il-formato}
 
@@ -1896,7 +1900,7 @@ Koin Games ha usato il Conquest per la prima volta a [Big Bob's Playtest Battle]
 
 Per la Crimson Cup gli annunci del 9 e del 24 settembre 2026 fissano queste regole:
 
-- **tre mazzi**, ognuno con una Leggendaria diversa;
+- **tre mazzi**; gli annunci non dicono se le Leggendarie devono essere diverse (a Big Bob's dovevano esserlo, e nel ban si vede solo la Leggendaria);
 - **almeno 8 carte uniche** fra ogni coppia di mazzi;
 - liste segrete fino alla top 4: quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria;
 - partite al meglio delle tre e gran finale al meglio delle cinque; al meglio delle cinque non c'è ban e bisogna vincere con tutti e tre i mazzi.
@@ -1908,7 +1912,7 @@ Il torneo si gioca sulla demo principale, con la sua lista carte. L'ultima patch
 Ogni mazzo ha **13 carte diverse**: la Leggendaria e dodici carte base, di cui il gioco aggiunge da solo la seconda copia (25 carte in gioco). L'annuncio della Crimson Cup non dice come si contano le 8 carte uniche. Questa è la lettura di OriginsMeta, quella che applicano il nostro deck builder e i nostri tornei:
 
 1. ogni carta conta **una volta**, qualunque sia il numero di copie;
-2. conta **anche la Leggendaria**, e siccome le Leggendarie devono essere diverse è sempre una carta di differenza;
+2. conta **anche la Leggendaria**: due Leggendarie diverse sono sempre una carta di differenza;
 3. le carte uniche fra il mazzo A e il mazzo B sono le carte di A che B non ha: **13 meno le carte in comune**.
 
 Quindi "almeno 8 carte uniche" vuol dire **al massimo 5 carte in comune** fra due qualsiasi dei tuoi mazzi.
@@ -1931,13 +1935,13 @@ Il builder salva i tre mazzi nel browser mentre lavori. Anche i [tornei](/it/tou
 
 La Crimson Cup è il torneo dello Steam Next Fest, e con lo stesso festival la classificata apre nella demo: tutto sul festival è nella nostra [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026), e [quello che è confermato sulla classificata](/it/guides/origins-tcg-ranked) nella sua guida.
 
-## Mazzi della community che passano, e uno che non passa {#coppie-della-community}
+## Mazzi della community che passano, e due che non passano {#coppie-della-community}
 
-Al 25 settembre 2026 OriginsMeta ha 19 mazzi pubblicati, guidati da 10 Leggendarie diverse. Fanno 171 coppie possibili:
+Alle 20:00 del 25 settembre 2026 OriginsMeta ha 20 mazzi pubblicati, guidati da 10 Leggendarie diverse. Fanno 190 coppie possibili:
 
-- 11 coppie hanno la stessa Leggendaria e non possono stare nella stessa formazione: spesso sono versioni di una stessa lista, come [Healing Healsing](/it/decks/community/healing-healsing-9411), [Cure Control](/it/decks/community/cure-control-b630) e [CONTROL](/it/decks/community/control-2c2b), tre mazzi di Van Helsing che hanno in comune 12 carte su 13;
-- delle altre 160, **159 rispettano** la regola delle 8 carte, e 25 non hanno nessuna carta in comune;
-- una non la rispetta: Buff e FACE IS THE PLACE, visti sopra.
+- 14 coppie hanno la stessa Leggendaria: il deck builder le segnala, e a Big Bob's Playtest Battle non avrebbero potuto stare nella stessa formazione. Spesso sono versioni di una stessa lista, come [Healing Healsing](/it/decks/community/healing-healsing-9411), [Cure Control](/it/decks/community/cure-control-b630) e [CONTROL](/it/decks/community/control-2c2b), tre mazzi di Van Helsing che hanno in comune 12 carte su 13;
+- delle altre 176, **174 rispettano** la regola delle 8 carte, e 30 non hanno nessuna carta in comune;
+- due non la rispettano, entrambe a 7 ed entrambe con Buff: Buff e FACE IS THE PLACE, visti sopra, e Buff e [AGGRO /MIDRANGE PIGS GM](/it/decks/community/aggro-midrange-pigs-gm-6931) (Three Not So Little Pigs), che hanno in comune Bagheera, Mind Palace, Three Blind Mice, Beast, Glinda e Galahad.
 
 Alcune coppie con i numeri veri:
 
@@ -1951,9 +1955,10 @@ Alcune coppie con i numeri veri:
 | [Qoh](/it/decks/community/qoh-f876) + [Value Board](/it/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5: Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | sì, al limite |
 | [Buff](/it/decks/community/buff-6f60) + [FACE IS THE PLACE](/it/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | no |
 
-Otto coppie stanno esattamente a 8:
+Nove coppie stanno esattamente a 8:
 
 - [3 Pigs Mid Range](/it/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/it/decks/community/on-reveal-mid-range-772e)
+- [AGGRO /MIDRANGE PIGS GM](/it/decks/community/aggro-midrange-pigs-gm-6931) + [FACE IS THE PLACE](/it/decks/community/face-is-the-place-b049)
 - [CONTROL](/it/decks/community/control-2c2b) + [Spellcast](/it/decks/community/spellcast-250f)
 - [Cure Control](/it/decks/community/cure-control-b630) + [Glinda Reborn](/it/decks/community/glinda-reborn-2d6d)
 - [Cure Control](/it/decks/community/cure-control-b630) + [Spellcast](/it/decks/community/spellcast-250f)
@@ -1962,18 +1967,19 @@ Otto coppie stanno esattamente a 8:
 - [Qoh](/it/decks/community/qoh-f876) + [Value Board](/it/decks/community/value-board-c44a)
 - [Qoh](/it/decks/community/qoh-f876) + [VALUE MAXXING](/it/decks/community/value-maxxing-739d)
 
-Delle 969 terne possibili di mazzi pubblicati, 770 hanno tre Leggendarie diverse e rispettano la regola su tutte e tre le coppie.
+Delle 1.140 terne possibili di mazzi pubblicati, 867 hanno tre Leggendarie diverse e rispettano la regola su tutte e tre le coppie.
 
 Sono conteggi, non consigli: dicono quali mazzi possono stare insieme secondo la regola, non quale formazione vince. Come si gioca ogni mazzo è scritto sulla sua pagina, nella guida del suo autore.
 
 ## Cosa non sappiamo ancora {#da-sapere}
 
 - Come Koin conta le 8 carte uniche: l'annuncio del 24 settembre non lo dice.
+- Se i tre mazzi della Crimson Cup devono avere Leggendarie diverse: gli annunci non lo dicono.
 - La lista carte definitiva: quella provvisoria è nel gioco dal 21 settembre, e l'ultima patch di bilanciamento arriva due settimane prima dello Steam Next Fest.
 
 ## Fonti {#fonti}
 
-I post di Koin Games su Steam del [25 agosto](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle) e del [9 settembre 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (il torneo dello Steam Next Fest), l'annuncio della Crimson Cup sul Discord ufficiale (24 settembre) e i mazzi pubblicati su OriginsMeta, contati il 25 settembre 2026 con la stessa funzione che usa il deck builder.
+I post di Koin Games su Steam del [25 agosto](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle) e del [9 settembre 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (il torneo dello Steam Next Fest), l'annuncio della Crimson Cup sul Discord ufficiale (24 settembre) e i mazzi pubblicati su OriginsMeta entro le 20:00 del 25 settembre 2026, contati con la stessa funzione che usa il deck builder.
 `,
   },
   "origins-tcg-locations": {
@@ -2290,7 +2296,7 @@ Sul mulligan l'autore non lascia note, quindi questa è una lettura di OriginsMe
 1. **Round 1–2: accendere il contatore.** Card Soldier o Roo, poi Twister Toss su di lui. Ogni movimento è un punto permanente su Dorothy, anche quando il campo sembra fermo.
 2. **Round 3: scegliere la corsia.** Pegasus, la Witch o Kanga. [Wicked Witch of the West](/it/cards/wicked-witch-of-the-west) è quella che genera da sola: un 1/5 che sopravvive quasi sempre e, ogni volta che sopravvive, ti mette in mano una Flying Monkey e si muove di uno spazio a sinistra — un altro punto per Dorothy.
 3. **Round 4: Magic Carpet.** Scegli la direzione che porta i Card Soldier verso uno spazio libero e Pegasus dentro uno scontro che adesso vince.
-4. **Dal quinto round: Dorothy, poi chiudere.** Hare ha Primo colpo e Muovere: colpisce prima della risposta e tiene acceso il contatore. [Basilisk](/it/cards/basilisk) con Tocco letale è la risposta economica al corpo troppo grosso per affrontarlo ad armi pari, ed En Passant trasforma un Pegasus raddoppiato in una rimozione.
+4. **Dal quinto round: Dorothy, poi chiudere.** Dalla patch del 21 settembre costa 4, ma il quarto round è di Magic Carpet, e un round dopo lei arriva con il contatore più alto. Hare ha Primo colpo e Muovere: colpisce prima della risposta e tiene acceso il contatore. [Basilisk](/it/cards/basilisk) con Tocco letale è la risposta economica al corpo troppo grosso per affrontarlo ad armi pari, ed En Passant trasforma un Pegasus raddoppiato in una rimozione.
 
 ## Quello che il mazzo non sa fare
 
@@ -2845,7 +2851,7 @@ Siccome le carte da collezione sono cosmetiche, una tier list deve occuparsi sol
       { q: "Quando c'è il torneo di Origins TCG?", a: "Dal 20 al 25 ottobre 2026: tre qualificazioni il 20, 21 e 22 (una per macro-regione), poi playoff e finali." },
       { q: "Posso partecipare a una qualificazione dall'Italia?", a: "Sì. Koin Games dice che ci si può iscrivere a qualsiasi qualificazione a prescindere da dove si vive, ma chiede di iscriversi solo a quelle a cui si può davvero partecipare." },
       { q: "Costa qualcosa?", a: "No. La demo è gratuita su Steam e l'iscrizione al torneo si fa sul Discord ufficiale. Origins TCG è free-to-compete: ogni carta competitiva si guadagna giocando." },
-      { q: "Cos'è il formato Conquest?", a: "Alla Crimson Cup ogni giocatore registra tre mazzi, ognuno guidato da una Leggendaria diversa, con almeno 8 carte uniche fra due mazzi qualsiasi. Le liste restano segrete fino alla top 4: quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria. Al meglio delle cinque non c'è ban e si vince con tutti e tre i mazzi. Koin Games ha provato il formato la prima volta a Big Bob's Playtest Battle il 28 agosto." },
+      { q: "Cos'è il formato Conquest?", a: "Alla Crimson Cup ogni giocatore registra tre mazzi, con almeno 8 carte uniche fra due mazzi qualsiasi. Le liste restano segrete fino alla top 4: quando si banna un mazzo dell'avversario se ne vede solo la Leggendaria. Al meglio delle cinque non c'è ban e si vince con tutti e tre i mazzi. Koin Games ha provato il formato la prima volta a Big Bob's Playtest Battle il 28 agosto." },
     ],
     body: `
 ## Le due date da segnare
@@ -2876,7 +2882,7 @@ Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg).
 
 1. [Installa la demo gratuita su Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) e gioca le missioni: insegnano le tre corsie e i turni simultanei.
 2. Leggi [Origins TCG spiegato in cinque minuti](/it/guides/origins-tcg-explained) e il [database carte](/it/cards): le statistiche sono quelle della patch della demo del 21 settembre, verificate carta per carta nel gioco.
-3. Costruisci i tuoi tre mazzi Conquest nel nostro [deck builder](/it/deck-builder): controlla la regola delle Leggendarie diverse e conta le carte che cambiano tra un mazzo e l'altro. Passo per passo, con mazzi veri della community: [come costruire una formazione Conquest](/it/guides/origins-tcg-conquest).
+3. Costruisci i tuoi tre mazzi Conquest nel nostro [deck builder](/it/deck-builder): segnala due mazzi con la stessa Leggendaria e conta le carte che cambiano tra un mazzo e l'altro. Passo per passo, con mazzi veri della community: [come costruire una formazione Conquest](/it/guides/origins-tcg-conquest).
 4. Studia i [mazzi pubblicati dalla community](/it/decks): ogni lista ha i grafici di composizione, le note dell'autore, un tasto per aprirla nel builder e il codice del gioco da incollare in Origins. Pubblica la tua con una guida, così gli altri possono votarla.
 5. Segui le [news](/it/news): ogni annuncio è riassunto entro un giorno, con il link alla fonte.
 

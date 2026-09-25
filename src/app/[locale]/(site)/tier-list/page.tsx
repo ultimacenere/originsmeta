@@ -193,7 +193,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
             <div className="mt-3">
               <TierDeckList decks={topDecks} dict={d} locale={locale} />
             </div>
-            <Link href={href(locale, "/decks")} className="tier-more inline-block">
+            <Link href={`${href(locale, "/decks")}#${d.decks.best.anchor}`} className="tier-more inline-block">
               {t.allDecks.replace("{n}", String(data.decks.length))} →
             </Link>
           </div>

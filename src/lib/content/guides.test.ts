@@ -267,9 +267,14 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
         else assert.doesNotMatch(m[4], /\d/, `${l} ${c.slug}: una magia non ha statistiche`);
         assert.equal(m[5], align[c.alignment ?? ""], `${l} ${c.slug}: allineamento`);
       });
-      // la somma dei mazzi è quella dichiarata nel testo (19 mazzi pubblicati al 25/09/2026)
+      // la somma dei mazzi è quella dichiarata nel testo (20 mazzi pubblicati entro le 20:00 del 25/09/2026); coppie e
+      // terne della guida al Conquest non hanno un test: si ricontano a mano dai mazzi pubblicati, insieme a questo numero
       const total = rows.reduce((n, m) => n + Number(m[6]), 0);
-      assert.equal(total, 19, `${l}: totale dei mazzi`);
+      assert.equal(total, 20, `${l}: totale dei mazzi`);
+      // e la FAQ "quale Leggendaria è nel maggior numero di mazzi" dice lo stesso totale
+      const declared = new RegExp(`\\b${total}\\b`);
+      for (const f of guide(l, SLUG).faq ?? [])
+        if (/most decks|maggior numero di mazzi|más mazos/.test(f.q)) assert.match(f.a, declared, `${l}: FAQ sui mazzi`);
     }
   });
   test("una sezione per Leggendaria, nell'ordine dichiarato, con la riga dei dati e il testo ufficiale nella lingua della pagina", () => {

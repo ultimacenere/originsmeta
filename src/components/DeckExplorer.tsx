@@ -207,10 +207,11 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     return filtered.sort((a, b) =>
       sort === "new"
         ? when(b).localeCompare(when(a))
-        : // prima i mazzi votati, poi il voto pesato; a pari voto pesato l'ordine è per nome, come briefOrder (tierstats.ts)
+        : // prima i mazzi votati, poi il voto pesato; a pari voto pesato l'ordine è per nome, come briefOrder (tierstats.ts);
+          // i mazzi senza voti restano dal più recente, come in loadTierData (tierData.ts)
           Number((b.rating?.votes ?? 0) > 0) - Number((a.rating?.votes ?? 0) > 0) ||
           (Math.abs((b.score ?? 0) - (a.score ?? 0)) > 1e-9 ? (b.score ?? 0) - (a.score ?? 0) : 0) ||
-          a.name.localeCompare(b.name, "en") ||
+          ((a.rating?.votes ?? 0) > 0 ? a.name.localeCompare(b.name, "en") : 0) ||
           when(b).localeCompare(when(a)),
     );
   }, [decks, legendary, archetype, author, creator, patch, card, sort]);

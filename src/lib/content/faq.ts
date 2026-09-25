@@ -96,7 +96,7 @@ const en: Faq[] = [
   {
     id: "free-to-compete",
     q: "Is Origins TCG pay-to-win?",
-    a: "No, and the design says so explicitly: every player gets every card for free, and what you buy are collectible versions — graded, limited, tradable on the Steam Market. Money changes what you own, not what you can play. The full argument, with what is still unconfirmed, is in our guide.",
+    a: "Koin Games says no: every player gets every card for free, and what you buy are collectible versions — graded, limited, tradable on the Steam Market — so money changes what you own, not what you can play. The game is not out yet: what is still unconfirmed is in our guide.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "free-to-play", "free to play", "free-to-compete", "microtransactions"],
   },
@@ -141,7 +141,7 @@ const en: Faq[] = [
   {
     id: "conquest",
     q: "How does the Conquest format work?",
-    a: "You register more than one deck, each with a different Legendary, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, with at least nine cards of difference.",
+    a: "You register more than one deck, and the decks must differ from each other. Your opponent bans one of your decks, and you win the match by beating them with each of the decks that are left. At the Crimson Cup there are three decks with at least 8 unique cards between each pair, decklists stay hidden until the top 4 (in the ban you only see the Legendary), and best-of-five matches have no ban: you must win with all three. Koin first ran it at Big Bob's Playtest Battle, where each deck needed a different Legendary and at least nine cards of difference.",
     guides: ["origins-tcg-conquest", "steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
     keywords: ["conquest", "three decks", "ban", "unique cards"],
@@ -220,7 +220,7 @@ const it: Faq[] = [
   {
     id: "free-to-compete",
     q: "Origins TCG è pay-to-win?",
-    a: "No, ed è una scelta dichiarata: tutte le carte si ottengono gratis, e quello che si compra sono le versioni da collezione — gradate, limitate, scambiabili sul Mercato Steam. I soldi cambiano quello che possiedi, non quello che puoi giocare. Il ragionamento completo, con quello che non è ancora confermato, è nella nostra guida.",
+    a: "Koin Games dice di no: tutte le carte si ottengono gratis, e quello che si compra sono le versioni da collezione — gradate, limitate, scambiabili sul Mercato Steam — quindi i soldi cambiano quello che possiedi, non quello che puoi giocare. Il gioco non è ancora uscito: quello che non è ancora confermato è nella nostra guida.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "gratis", "gratuito", "free-to-play", "free to play", "free-to-compete", "microtransazioni"],
   },
@@ -265,7 +265,7 @@ const it: Faq[] = [
   {
     id: "conquest",
     q: "Come funziona il formato Conquest?",
-    a: "Si registrano più mazzi, ognuno con una Leggendaria diversa, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, con almeno nove carte di differenza.",
+    a: "Si registrano più mazzi, e i mazzi devono essere diversi fra loro. L'avversario ne banna uno, e il match si vince battendolo con tutti i mazzi che restano. Alla Crimson Cup i mazzi sono tre, con almeno 8 carte uniche fra ogni coppia, le liste restano segrete fino alla top 4 (nel ban si vede solo la Leggendaria) e al meglio delle cinque non c'è ban: si vince con tutti e tre. Koin lo ha provato la prima volta a Big Bob's Playtest Battle, dove ogni mazzo doveva avere una Leggendaria diversa e almeno nove carte di differenza.",
     guides: ["origins-tcg-conquest", "steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
     keywords: ["conquest", "tre mazzi", "ban", "carte uniche"],
@@ -344,7 +344,7 @@ const es: Faq[] = [
   {
     id: "free-to-compete",
     q: "¿Origins TCG es pay-to-win?",
-    a: "No, y el diseño lo dice explícitamente: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—. El dinero cambia lo que posees, no lo que puedes jugar. El razonamiento completo, con lo que aún no está confirmado, está en nuestra guía.",
+    a: "Koin Games dice que no: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—, así que el dinero cambia lo que posees, no lo que puedes jugar. El juego aún no ha salido: lo que todavía no está confirmado está en nuestra guía.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "gratis", "gratuito", "free-to-play", "free to play", "free-to-compete", "microtransacciones"],
   },
@@ -389,7 +389,7 @@ const es: Faq[] = [
   {
     id: "conquest",
     q: "¿Cómo funciona el formato Conquest?",
-    a: "Registras más de un mazo, cada uno con una Legendaria distinta, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, con al menos nueve cartas de diferencia.",
+    a: "Registras más de un mazo, y los mazos tienen que ser diferentes entre sí. Tu oponente banea uno de tus mazos, y ganas el enfrentamiento si lo vences con cada uno de los mazos que quedan. En la Crimson Cup hay tres mazos con al menos 8 cartas únicas entre cada par, las listas se mantienen ocultas hasta el top 4 (en el ban solo ves la Legendaria) y en los enfrentamientos al mejor de cinco no hay ban: tienes que ganar con los tres. Koin lo estrenó en Big Bob's Playtest Battle, donde cada mazo necesitaba una Legendaria distinta y al menos nueve cartas de diferencia.",
     guides: ["origins-tcg-conquest", "steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
     keywords: ["conquest", "tres mazos", "ban", "cartas unicas"],

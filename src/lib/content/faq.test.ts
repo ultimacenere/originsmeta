@@ -126,6 +126,24 @@ describe("FAQPage: una domanda marcata una volta sola nel sito", () => {
       for (const f of faqs[l]) assert.ok(!altrove.has(norm(f.q)), `[${l}] ${f.id}: "${f.q}" è già nelle FAQ della ${altrove.get(norm(f.q))}`);
     }
   });
+  test("nessuna domanda delle FAQ di una guida è uguale a una domanda delle FAQ di una news, nella stessa lingua", () => {
+    // Revisione dell'Ondata 3: la guida alla classificata ripeteva la domanda della news demo-first-big-update, con quasi
+    // la stessa risposta. Una FAQ di una pagina nuova si scrive su un altro aspetto (la guida: a che ora apre). Fra
+    // guide dei mazzi le domande generiche ("What do you keep in the mulligan?") si ripetono con risposte diverse:
+    // quelle non contano.
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    for (const l of locales) {
+      const inNews = new Map<string, string>();
+      for (const n of newsModule.news) for (const f of n.faq?.[l] ?? []) inNews.set(norm(f.q), n.slug);
+      const problems: string[] = [];
+      for (const g of guidesModule.getGuides(l))
+        for (const f of g.faq ?? []) {
+          const slug = inNews.get(norm(f.q));
+          if (slug) problems.push(`[${l}] guida ${g.slug}: "${f.q}" è già nelle FAQ della news ${slug}`);
+        }
+      assert.deepEqual(problems, []);
+    }
+  });
 });
 
 describe("numeri che cambiano con una patch", () => {
