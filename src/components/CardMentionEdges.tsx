@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { buildDeckPeek, buildMentionPreview, readPeek, type DeckPeek, type MentionPeek } from "@/lib/cardPeek";
+import { buildDeckPeek, buildMentionPreview, mentionDescription, readPeek, type DeckPeek, type MentionPeek } from "@/lib/cardPeek";
 
 /** Copie montate del componente e funzione che toglie gli eventi quando si smonta l'ultima. */
 let hosts = 0;
@@ -10,6 +10,11 @@ let uninstall: (() => void) | null = null;
 let panels = 0;
 /** Segnaposto di `CardPeek` già riempiti, con i dati usati: se React cambia la carta, il pannello si rifà. */
 const filled = new WeakMap<Element, string>();
+/** Menzioni con il pannello già creato e link già descritti, con l'indirizzo della carta: se cambia, si rifanno. */
+const built = new WeakMap<Element, string>();
+const described = new WeakMap<Element, string>();
+/** Una sola passata delle descrizioni per render, anche con cento copie montate. */
+let describing = false;
 
 /**
  * Pannelli delle anteprime delle carte: li crea al primo passaggio del mouse (o al focus) e li tiene dentro la finestra.
@@ -22,14 +27,20 @@ const filled = new WeakMap<Element, string>();
  *   (note del 22/09/2026).
  * Dal 25/09/2026 (GEO-01) il server manda solo il link o il segnaposto, con i dati in `data-peek`: il pannello nasce
  * qui, nello stesso punto e con le stesse classi di prima (src/lib/cardPeek.ts), così il testo della pagina letto
- * senza CSS (assistenti AI, estrattori) resta la frase dell'autore. Il nome nel testo apre il pannello anche col focus
- * da tastiera, e allora il link riceve `aria-describedby`; l'anteprima di `CardPeek` resta solo del mouse, come prima.
- * Apertura e chiusura restano al CSS (:hover / :focus-within) e su touch il pannello non si vede, come prima.
+ * senza CSS (assistenti AI, estrattori) resta la frase dell'autore. Una volta creato, a mostrarlo e nasconderlo è il
+ * CSS di sempre (:hover / :focus-within) e su touch non si vede, come prima.
+ * Il nome nel testo apre il pannello anche col focus da tastiera, e allora il link riceve `aria-describedby`; prima
+ * ancora, a ogni render, ogni nome di carta riceve la stessa descrizione in `aria-description` (un attributo, non
+ * testo della pagina), così i lettori di schermo la leggono anche in modalità lettura e su touch, dove il focus non
+ * si sposta. L'anteprima di `CardPeek` resta solo del mouse e nascosta ai lettori di schermo, come prima.
+ * Senza JavaScript, o finché la pagina non è idratata, le anteprime non ci sono: resta il link alla scheda della carta.
  * I pannelli in `position: fixed` (in tabella e nel deck builder) hanno coordinate della finestra: se la pagina o la
  * lista scorrono col mouse fermo sul nome, si ricalcolano (evento scroll in cattura), così restano attaccati.
  *
- * Si può montare più volte (la pagina, `Markdown`, `CardMentions`, `CardChip`): gli eventi delegati sul documento si
- * registrano una volta sola, finché resta montata almeno una copia.
+ * Si può montare più volte (la pagina, `Markdown`, `CardMentions`, `CardPeek`): gli eventi delegati sul documento si
+ * registrano una volta sola, finché resta montata almeno una copia. Pannelli e descrizioni si aggiungono solo a nodi
+ * già idratati da React (`hydrated`): se un giorno le carte finissero in un `<Suspense>` che si idrata dopo il resto,
+ * un figlio in più in un nodo non ancora idratato farebbe rifare a React tutto il blocco.
  */
 export function CardMentionEdges() {
   useEffect(() => {
@@ -41,40 +52,102 @@ export function CardMentionEdges() {
       }
     };
   }, []);
+  // dopo ogni render: i nomi di carta arrivati nel frattempo (navigazione lato client, testi cambiati) si descrivono
+  useEffect(() => {
+    if (describing) return;
+    describing = true;
+    queueMicrotask(() => {
+      describing = false;
+      describeMentions();
+    });
+  });
   return null;
 }
 
+/** Proprietà con cui React segna i nodi che ha idratato o creato (`__reactFiber$…`), letta una volta da <body>. */
+let reactMark: string | null | undefined;
+
 /**
- * Dati dell'anteprima di un nome di carta. Solo la prima menzione di una carta in un testo li porta: le altre li
- * prendono dalla menzione con lo stesso link, che sta nello stesso testo e quindi nella pagina.
+ * Il nodo si può toccare: React l'ha già idratato, o è HTML del Markdown (che React non idrata nodo per nodo) dentro
+ * un contenitore idratato. Se la proprietà non si trova nemmeno su <body> (interni di React cambiati), non si blocca
+ * niente: meglio il rischio di prima che anteprime spente in tutto il sito.
  */
-function mentionData(mention: HTMLElement, link: HTMLElement): string | null {
-  const own = mention.getAttribute("data-peek");
+function hydrated(node: Element): boolean {
+  if (reactMark === undefined) reactMark = Object.keys(document.body).find((k) => k.startsWith("__reactFiber$")) ?? null;
+  if (!reactMark || reactMark in node) return true;
+  const markdown = node.closest(".prose-night");
+  return Boolean(markdown && reactMark in markdown);
+}
+
+/**
+ * Dati delle anteprime dei nomi di carta per indirizzo della scheda. Solo la prima menzione di una carta in un testo
+ * li porta: le altre li prendono dalla menzione con lo stesso link, che sta nello stesso testo e quindi nella pagina.
+ */
+function peeksByHref(): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const mention of document.querySelectorAll<HTMLElement>(".card-mention[data-peek]")) {
+    const target = mention.querySelector(".card-mention-link")?.getAttribute("href");
+    if (target && !map.has(target)) map.set(target, mention.getAttribute("data-peek") ?? "");
+  }
+  return map;
+}
+
+/** Dati dell'anteprima di un nome di carta: i suoi, o quelli della menzione con lo stesso link. */
+function mentionData(mention: HTMLElement, target: string, byHref?: Map<string, string>): MentionPeek | null {
+  return readPeek<MentionPeek>(mention.getAttribute("data-peek") || (byHref ?? peeksByHref()).get(target));
+}
+
+/** `aria-description` su ogni nome di carta che non ha ancora il pannello (quello porta `aria-describedby`). */
+function describeMentions() {
+  let byHref: Map<string, string> | undefined;
+  for (const link of document.querySelectorAll<HTMLElement>(".card-mention > .card-mention-link")) {
+    const target = link.getAttribute("href") ?? "";
+    if (described.get(link) === target || link.hasAttribute("aria-describedby")) continue;
+    const mention = link.parentElement;
+    if (!mention || !hydrated(mention)) continue;
+    byHref ??= peeksByHref();
+    const data = mentionData(mention, target, byHref);
+    if (data) link.setAttribute("aria-description", mentionDescription(data));
+    else link.removeAttribute("aria-description");
+    described.set(link, target);
+  }
+}
+
+/** Pannello del nome di carta: quello già creato per la stessa carta, o uno nuovo dai dati di `data-peek`. */
+function mentionPanel(mention: HTMLElement, link: HTMLElement): HTMLElement | null {
+  const target = link.getAttribute("href") ?? "";
+  const existing = mention.querySelector<HTMLElement>(":scope > .card-mention-preview");
+  if (existing && built.get(mention) === target) return existing;
+  if (!hydrated(mention)) return null;
+  const data = mentionData(mention, target);
+  if (!data) return null;
+  const id = `card-peek-${++panels}`;
+  const panel = buildMentionPreview(document, data, id);
+  if (existing) existing.replaceWith(panel);
+  else mention.append(panel);
+  built.set(mention, target);
+  // il pannello è la descrizione: `aria-describedby` prende il posto di `aria-description`
+  link.setAttribute("aria-describedby", id);
+  link.removeAttribute("aria-description");
+  return panel;
+}
+
+/** Dati del segnaposto di `CardPeek`: i suoi, o quelli della prima copia della stessa carta (`data-peek-ref`). */
+function peekData(slot: HTMLElement): string | null {
+  const own = slot.getAttribute("data-peek");
   if (own) return own;
-  const target = link.getAttribute("href");
-  for (const other of document.querySelectorAll<HTMLElement>(".card-mention[data-peek]")) {
-    if (other.querySelector(".card-mention-link")?.getAttribute("href") === target) return other.getAttribute("data-peek");
+  const ref = slot.getAttribute("data-peek-ref");
+  if (!ref) return null;
+  for (const source of document.querySelectorAll<HTMLElement>(".deck-peek[data-peek-key]")) {
+    if (source.getAttribute("data-peek-key") === ref) return source.getAttribute("data-peek");
   }
   return null;
 }
 
-/** Pannello del nome di carta: quello già creato, o uno nuovo dai dati di `data-peek`. */
-function mentionPanel(mention: HTMLElement, link: HTMLElement): HTMLElement | null {
-  const existing = mention.querySelector<HTMLElement>(".card-mention-preview");
-  if (existing) return existing;
-  const data = readPeek<MentionPeek>(mentionData(mention, link));
-  if (!data) return null;
-  const id = `card-peek-${++panels}`;
-  const panel = buildMentionPreview(document, data, id);
-  mention.append(panel);
-  link.setAttribute("aria-describedby", id);
-  return panel;
-}
-
 /** Riempie il segnaposto di `CardPeek` (vuoto nell'HTML) con il pannello, o lo rifà se i dati sono cambiati. */
 function fillPeek(slot: HTMLElement) {
-  const raw = slot.getAttribute("data-peek");
-  if (!raw || filled.get(slot) === raw) return;
+  const raw = peekData(slot);
+  if (!raw || filled.get(slot) === raw || !hydrated(slot)) return;
   const data = readPeek<DeckPeek>(raw);
   if (!data) return;
   slot.replaceChildren(buildDeckPeek(document, data));

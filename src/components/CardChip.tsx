@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { getCard, statLine, type Card } from "@/lib/data/cards";
 import { initials, sagaHue } from "@/lib/cardArt";
-import { CardMentionEdges } from "./CardMentionEdges";
 import { CardPeek, hasPeek, type PeekCard } from "./CardPeek";
 import { FlipCard, type FlipCardData, type FlipCardLabels } from "./FlipCard";
 
@@ -80,23 +79,12 @@ export function CardName({ name, legendary, legendaryLabel }: { name: string; le
  * Al passaggio del mouse apre l'anteprima della carta (`CardPeek`), come nel deck builder e nell'elenco dei
  * mazzi: così si legge una news o una guida senza aprire ogni carta. Il contenitore
  * `.deck-card-wrap` serve al posizionamento del pannello; su touch resta il tocco che porta alla scheda.
- * Il pannello lo crea `CardMentionEdges` al primo passaggio (GEO-01, 25/09/2026: nell'HTML della chip restano nome e
- * statistiche, non il testo della carta), e la chip lo porta con sé: funziona anche nelle pagine che non lo montano
- * (home, FAQ, partite dei tornei).
+ * Nell'HTML della chip restano nome e statistiche, non il testo della carta (GEO-01, 25/09/2026): il pannello lo crea
+ * `CardMentionEdges`, che `CardPeek` porta con sé, così funziona anche nelle pagine che non lo montano (home, FAQ).
  */
 export function CardChip({ slug, locale }: { slug: string; locale: Locale }) {
   const card = getCard(slug);
   if (!card) return null;
-  return (
-    <>
-      <Chip card={card} locale={locale} />
-      <CardMentionEdges />
-    </>
-  );
-}
-
-/** La chip senza `CardMentionEdges`, per le liste che lo montano una volta sola. */
-function Chip({ card, locale }: { card: Card; locale: Locale }) {
   const stats = statLine(card);
   const peek = peekOf(card, locale);
   const withPeek = hasPeek(peek);
@@ -119,19 +107,16 @@ function Chip({ card, locale }: { card: Card; locale: Locale }) {
 /** Lista di chip: ogni nome porta alla scheda della carta, Leggendarie per prime. */
 export function CardChipList({ slugs, locale, max }: { slugs: string[]; locale: Locale; max?: number }) {
   const sorted = legendaryFirst(slugs, (s) => Boolean(getCard(s)?.legendary));
-  const list = (max ? sorted.slice(0, max) : sorted).map((s) => getCard(s)).filter((c): c is Card => c !== undefined);
+  const list = max ? sorted.slice(0, max) : sorted;
   return (
-    <>
-      <ul className="flex flex-wrap gap-2">
-        {list.map((card) => (
-          <li key={card.slug} className="max-w-full">
-            <Chip card={card} locale={locale} />
-          </li>
-        ))}
-        {max && slugs.length > max ? <li className="self-center font-mono text-xs text-chalk-muted">+{slugs.length - max}</li> : null}
-      </ul>
-      {list.length ? <CardMentionEdges /> : null}
-    </>
+    <ul className="flex flex-wrap gap-2">
+      {list.map((s) => (
+        <li key={s} className="max-w-full">
+          <CardChip slug={s} locale={locale} />
+        </li>
+      ))}
+      {max && slugs.length > max ? <li className="self-center font-mono text-xs text-chalk-muted">+{slugs.length - max}</li> : null}
+    </ul>
   );
 }
 

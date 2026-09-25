@@ -3,10 +3,11 @@
  * `node --test src/lib/cardPeek.test.ts`. Come per gli altri test, l'import ha l'estensione `.ts`.
  *
  * Controlla che i pannelli costruiti nel browser siano identici a quelli che fino al 25/09/2026 arrivavano dal server
- * (stesse classi, stesso annidamento: gli stili di globals.css non cambiano), che nell'HTML di una menzione resti solo
- * il nome della carta, e misura su un paragrafo quante parole erano anteprime prima e quante ora.
+ * (stesse classi, stesso annidamento: gli stili di globals.css non cambiano), che le trasformazioni usate davvero da
+ * `Markdown.tsx` (`linkMentionsInHtml`) e da `CardMentions.tsx` (`mentionParts`) lascino nel testo, nelle tre lingue,
+ * la frase dell'autore parola per parola, e misura su un paragrafo quante parole erano anteprime prima e quante ora.
  * Niente jsdom (nessuna dipendenza nuova): basta un documento finto che sa creare elementi e scriverli in HTML.
- * Dati delle carte: quelli del database del sito al 25/09/2026 (Robin Hood, En Passant, Barry).
+ * Dati delle carte: quelli del database del sito al 25/09/2026 (Robin Hood, En Passant, Barry, Mulan).
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -16,9 +17,14 @@ import {
   cardLinkPattern,
   deckPeekOf,
   hasPeek,
+  linkMentionsInHtml,
+  mentionDescription,
   mentionHtml,
+  mentionParts,
   readPeek,
+  sharedPeeks,
   type MentionPeek,
+  type MentionTarget,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./cardPeek.ts";
 
@@ -184,11 +190,122 @@ describe("cardLinkPattern: i link alle schede carta del Markdown nelle tre lingu
   });
 });
 
+
+describe("mentionDescription: la descrizione per i lettori di schermo", () => {
+  test("dice quello che dice il pannello, in una frase", () => {
+    assert.equal(mentionDescription(robinHood), "Card preview: Robin Hood. Unit · Legendary · Sherwood. 8 Mana, 4/4 Power/Health. Snipe 3 On Reveal: Deal 2 damage to all enemies.");
+  });
+  test("magia senza potenza e carta senza statistiche", () => {
+    assert.equal(mentionDescription(enPassant), "Card preview: En Passant. Spell · Other. 3 Mana. Move an ally. Deal damage equal to its ⚔️ to the character across from it.");
+    const bare: MentionPeek = { name: "Carta di prova", kicker: "Unità", labels: { preview: "Anteprima della carta", unknown: "statistiche non ancora pubblicate" } };
+    assert.equal(mentionDescription(bare), "Anteprima della carta: Carta di prova. Unità. statistiche non ancora pubblicate");
+  });
+});
+
+describe("sharedPeeks: su /decks i dati di una carta ripetuta una volta sola", () => {
+  const card = (name: string, ability = "x") => ({ name, ability });
+  test("la prima copia porta i dati, le altre identiche li citano; le carte senza doppioni restano fuori", () => {
+    const a1 = card("Mulan");
+    const b = card("Barry");
+    const a2 = card("Mulan");
+    const a3 = card("Mulan");
+    const shares = sharedPeeks([a1, b, a2, a3], (c) => c.name, (c) => JSON.stringify(c));
+    assert.equal(shares.get(a1), "first");
+    assert.equal(shares.get(a2), "copy");
+    assert.equal(shares.get(a3), "copy");
+    assert.equal(shares.has(b), false);
+  });
+  test("stessa carta con dati diversi: porta i suoi; lo stesso oggetto due volte non si cita da solo", () => {
+    const a1 = card("Mulan");
+    const other = card("Mulan", "altro testo");
+    const shares = sharedPeeks([a1, other, a1], (c) => c.name, (c) => JSON.stringify(c));
+    assert.equal(shares.size, 0);
+  });
+});
+
+/* Menzioni del Markdown (`linkMentionsInHtml`) e dei testi della community (`mentionParts`) con una ricerca finta al
+   posto del database: le stesse funzioni che usano `Markdown.tsx` e `CardMentions.tsx`. */
+const mulan: MentionPeek = { name: "Mulan", kicker: "Unit · Myth & folklore", mana: 4, stats: "2/4", labels: { preview: "Card preview", mana: "Mana", stats: "Power/Health" } };
+const fixtures: Record<string, { legendary?: boolean; peek: MentionPeek }> = {
+  "robin-hood": { legendary: true, peek: robinHood },
+  mulan: { peek: mulan },
+  "en-passant": { peek: enPassant },
+};
+function finder(locale: string) {
+  const asked: string[] = [];
+  const find = (slug: string): MentionTarget | undefined => {
+    const f = fixtures[slug];
+    if (!f) return undefined;
+    const peek = () => {
+      asked.push(slug);
+      return JSON.stringify(f.peek);
+    };
+    return { slug, legendary: f.legendary, href: `/${locale}/cards/${slug}`, peek };
+  };
+  return { find, asked };
+}
+const LINKS = cardLinkPattern(["en", "it", "es"]);
+const textOf = (s: string) => s.replace(/<[^>]+>/g, "");
+const dataCount = (s: string) => (s.match(/data-peek=/g) ?? []).length;
+
+/* La frase che definisce il gioco nella guida "Origins TCG explained", nelle tre lingue, come la scrive `marked`. */
+const definition: Record<string, string> = {
+  en: '<p>Its cast is made of public-domain legends reimagined in one original world: <a href="/en/cards/robin-hood">Robin Hood</a>, <a href="/en/cards/mulan">Mulan</a>, the Queen of Hearts and many more.</p>',
+  it: '<p>I personaggi sono leggende di pubblico dominio reinterpretate in un unico mondo originale: <a href="/it/cards/robin-hood">Robin Hood</a>, <a href="/it/cards/mulan">Mulan</a>, la Regina di Cuori e molti altri.</p>',
+  es: '<p>Sus personajes son leyendas de dominio público reinventadas en un único mundo original: <a href="/es/cards/robin-hood">Robin Hood</a>, <a href="/es/cards/mulan">Mulan</a>, Queen of Hearts y muchas más.</p>',
+};
+
+describe("linkMentionsInHtml: le menzioni del Markdown di news e guide", () => {
+  for (const locale of ["en", "it", "es"]) {
+    test(`${locale}: nel testo resta la frase dell'autore, i link diventano menzioni con i dati`, () => {
+      const { find } = finder(locale);
+      const out = linkMentionsInHtml(definition[locale], LINKS, find, "Legendary");
+      assert.equal(textOf(out.html), textOf(definition[locale]));
+      assert.equal(out.cards, 2);
+      assert.equal(dataCount(out.html), 2);
+      assert.match(out.html, new RegExp(`<span class="card-mention" data-peek="[^"]*"><a href="/${locale}/cards/robin-hood" class="card-mention-link">Robin Hood</a></span>`));
+    });
+  }
+  test("i dati solo alla prima menzione, i titoli e le carte sconosciute restano come sono", () => {
+    const { find, asked } = finder("en");
+    const src =
+      '<h2 id="x"><a href="/en/cards/robin-hood">Robin Hood</a></h2>' +
+      '<p><a href="/en/cards/robin-hood">Robin Hood</a> first, <a href="/en/cards/robin-hood">Robin Hood</a> again and <a href="/en/cards/nessuna">Nessuna</a>.</p>' +
+      '<table><tr><td><a href="/en/cards/en-passant">En Passant</a></td></tr></table>';
+    const out = linkMentionsInHtml(src, LINKS, find, "Legendary");
+    assert.ok(out.html.startsWith('<h2 id="x"><a href="/en/cards/robin-hood">Robin Hood</a></h2>'), "il titolo non cambia");
+    assert.match(out.html, /<a href="\/en\/cards\/nessuna">Nessuna<\/a>/);
+    assert.equal(dataCount(out.html), 2);
+    assert.deepEqual(asked, ["robin-hood", "en-passant"], "i dati si calcolano una volta per carta");
+    assert.equal(out.cards, 2);
+    assert.equal(textOf(out.html), textOf(src));
+  });
+  test("la stella scritta dopo una Leggendaria passa davanti, con il testo per i lettori di schermo", () => {
+    const { find } = finder("it");
+    const out = linkMentionsInHtml('<ul><li><a href="/it/cards/robin-hood">Robin Hood</a> ★</li><li><a href="/it/cards/mulan">Mulan</a> ★</li></ul>', LINKS, find, "Leggendaria");
+    assert.match(out.html, /^<ul><li><span class="legendary-star" aria-hidden="true">★<\/span><span class="card-mention" data-peek="[^"]*"><a href="\/it\/cards\/robin-hood"/);
+    assert.match(out.html, /<\/a><\/span><span class="sr-only"> \(Leggendaria\)<\/span><\/li>/);
+    assert.equal(textOf(out.html), "★Robin Hood (Leggendaria)Mulan ★", "una stella dopo una carta non Leggendaria resta dov'è");
+  });
+});
+
+describe("mentionParts: le menzioni dei testi della community", () => {
+  test("i pezzi rifanno il testo, i dati solo alla prima menzione, le carte sconosciute tornano testo", () => {
+    const { find, asked } = finder("es");
+    const segments = ["Juega ", { slug: "robin-hood", text: "Robin Hood" }, " y luego ", { slug: "robin-hood", text: "Robin Hood" }, " con ", { slug: "nessuna", text: "Nessuna" }, "."];
+    const parts = mentionParts(segments, find);
+    assert.equal(parts.map((p) => (typeof p === "string" ? p : p.text)).join(""), "Juega Robin Hood y luego Robin Hood con Nessuna.");
+    const mentions = parts.filter((p) => typeof p !== "string");
+    assert.equal(mentions.length, 2);
+    assert.equal(mentions[0].href, "/es/cards/robin-hood");
+    assert.ok(mentions[0].peek && !mentions[1].peek);
+    assert.deepEqual(asked, ["robin-hood"]);
+  });
+});
+
 describe("quota di parole delle anteprime in un paragrafo (misura di GEO-01)", () => {
-  // Paragrafo tipico di una guida, con due carte citate. Prima: link + pannello nell'HTML (il pannello di prima è
-  // quello di buildMentionPreview, identico per il primo test). Ora: solo il link, i dati nell'attributo.
-  const parts = ["The deck closes games with ", "Robin Hood", ", and ", "En Passant", " moves an ally into the lane where it hits hardest."];
-  const peeks = [robinHood, enPassant];
+  // Prima: link + pannello nell'HTML (il pannello di prima è quello di buildMentionPreview, identico per il primo test
+  // di questo file). Ora: l'HTML che esce davvero da linkMentionsInHtml, la funzione del Markdown.
   // parole = pezzi con almeno una lettera o una cifra (la virgola dopo un link non è una parola)
   const words = (s: string) =>
     s
@@ -196,15 +313,20 @@ describe("quota di parole delle anteprime in un paragrafo (misura di GEO-01)", (
       .replace(/&[a-z#0-9]+;/gi, " ")
       .split(/\s+/)
       .filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
-  const plain = parts.join("");
-  const before = parts.map((p, i) => (i % 2 ? `<span class="card-mention"><a href="/en/cards/x" class="card-mention-link">${p}</a>${html(buildMentionPreview(doc, peeks[(i - 1) / 2], `m${i}`))}</span>` : p)).join("");
-  const after = parts.map((p, i) => (i % 2 ? mentionHtml("/en/cards/x", p, JSON.stringify(peeks[(i - 1) / 2])) : p)).join("");
-
-  test("ora il testo del paragrafo è la frase dell'autore, parola per parola", (t) => {
-    const share = (html: string) => 1 - words(plain) / words(html);
-    t.diagnostic(`parole: prima ${words(before)} (anteprime ${Math.round(share(before) * 100)}%), ora ${words(after)} (anteprime ${Math.round(share(after) * 100)}%)`);
-    assert.ok(share(before) > 0.5, "prima più di metà delle parole erano anteprime");
-    assert.equal(after.replace(/<[^>]+>/g, ""), plain);
-    assert.equal(words(after), words(plain));
-  });
+  for (const locale of ["en", "it", "es"]) {
+    test(`${locale}: la frase che definisce il gioco`, (t) => {
+      const src = definition[locale];
+      let n = 0;
+      const before = src.replace(
+        LINKS,
+        (_m, slug: string, text: string) =>
+          `<span class="card-mention"><a href="/${locale}/cards/${slug}" class="card-mention-link">${text}</a>${html(buildMentionPreview(doc, fixtures[slug].peek, `m${++n}`))}</span>`,
+      );
+      const after = linkMentionsInHtml(src, LINKS, finder(locale).find, "Legendary").html;
+      const share = (s: string) => 1 - words(src) / words(s);
+      t.diagnostic(`parole: prima ${words(before)} (anteprime ${Math.round(share(before) * 100)}%), ora ${words(after)} (anteprime ${Math.round(share(after) * 100)}%)`);
+      assert.ok(share(before) > 0.5, "prima più di metà delle parole erano anteprime");
+      assert.equal(words(after), words(src));
+    });
+  }
 });

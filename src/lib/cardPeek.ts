@@ -4,22 +4,27 @@
  * Fino al 25/09/2026 il pannello dell'anteprima (illustrazione, tipo, costo, statistiche e testo della carta) stava
  * nell'HTML in mezzo alla frase, nascosto dal CSS. Chi legge l'HTML senza CSS (GPTBot, ClaudeBot, PerplexityBot, gli
  * estrattori di testo, in parte Google) leggeva "…legends reimagined: Robin Hood Card preview: ★ Robin Hood Unit ·
- * Legendary · Sherwood 8 Mana…": fino al 47% delle parole di una guida e il 69% di /decks erano testi di carte ripetuti.
+ * Legendary · Sherwood 8 Mana…": fino al 64% delle parole di una guida (healing-healsing, misurato sui componenti) e
+ * il 69% delle parole della pagina /decks erano testi di carte ripetuti.
  * Ora nell'HTML resta solo il link con il nome della carta (il collegamento interno non cambia); i dati del pannello
  * stanno in un attributo `data-peek` (JSON: un attributo non è testo della pagina) e il pannello lo crea il browser la
  * prima volta che il mouse passa sulla carta o il nome riceve il focus (`CardMentionEdges`), nello stesso posto e con
  * le stesse classi di prima: CSS di globals.css, correzione ai bordi e comportamento su touch restano quelli di sempre.
+ * Per i lettori di schermo il link riceve dal browser la descrizione della carta in `aria-description` (anche questo
+ * un attributo), così la sentono anche in modalità lettura e su touch, dove il focus non arriva.
+ * Il prezzo: senza JavaScript (o prima che la pagina sia idratata) le anteprime non ci sono, resta il link alla scheda.
  *
  * Perché un attributo per elemento e non un JSON unico per pagina: vale allo stesso modo per l'HTML del Markdown (news
  * e guide), per i componenti server (`CardMentions`, `CardChip`) e per quelli client (`DeckExplorer`, `DeckBuilder`,
  * `TierExplorer`, `TierListMaker`), resta attaccato all'elemento con la navigazione lato client e i rimontaggi di
  * React, e non c'è un registro di pagina da tenere allineato. Nei testi (Markdown e `CardMentions`) i dati stanno solo
- * sulla prima menzione di ogni carta; le anteprime di `CardPeek` li portano ognuna, perché le liste dei componenti
- * client si filtrano e la prima copia può sparire.
+ * sulla prima menzione di ogni carta, le altre li prendono da quella con lo stesso link; nelle liste con la stessa
+ * carta ripetuta (/decks) solo la prima copia mostrata li porta (`sharedPeeks`), le altre la citano per nome.
  *
  * Qui ci sono solo parti pure, condivise fra server e browser e provate da `cardPeek.test.ts`: i dati dei due
- * pannelli, la menzione in HTML per il Markdown, l'espressione dei link alle carte e i costruttori dei pannelli.
- * Nessun import: il database carte resta fuori dal bundle client.
+ * pannelli, le menzioni del Markdown e dei testi della community, la descrizione per i lettori di schermo,
+ * l'espressione dei link alle carte e i costruttori dei pannelli. Nessun import: il database carte resta fuori dal
+ * bundle client (chi chiama passa la ricerca della carta).
  */
 
 /** Il minimo che serve all'anteprima di `CardPeek`: `BuilderCard` lo soddisfa già, `CardChip` lo ricava dalla carta. */
@@ -93,6 +98,43 @@ export type MentionPeek = {
   labels: { preview: string; mana?: string; stats?: string; unknown?: string };
 };
 
+/**
+ * Quale copia porta i dati nelle liste con la stessa carta ripetuta: su /decks 16 mazzi davano 208 anteprime di sole
+ * 84 carte diverse, cioè circa 41 KB di dati doppi nell'HTML (RIV-09). La prima copia di un nome porta i dati
+ * (`first`, con la chiave), le altre con dati identici li prendono da quella (`copy`); le carte senza doppioni e le
+ * copie con dati diversi (stessa carta, campi diversi) non sono nella mappa e portano i loro.
+ * `items` va dato nell'ordine della pagina già filtrata, a ogni render: ogni copia ha la sua fonte fra le carte mostrate.
+ */
+export function sharedPeeks<T>(items: readonly T[], nameOf: (item: T) => string, dataOf: (item: T) => string): Map<T, "first" | "copy"> {
+  const firstOf = new Map<string, { item: T; data: string }>();
+  const out = new Map<T, "first" | "copy">();
+  for (const item of items) {
+    const name = nameOf(item);
+    const data = dataOf(item);
+    const first = firstOf.get(name);
+    if (!first) firstOf.set(name, { item, data });
+    else if (first.item !== item && first.data === data) {
+      out.set(first.item, "first");
+      out.set(item, "copy");
+    }
+  }
+  return out;
+}
+
+/**
+ * Descrizione della carta per i lettori di schermo, in `aria-description` sul link (un attributo: non entra nel testo
+ * della pagina). Dice quello che dice il pannello, in una frase: "Card preview: Robin Hood. Unit · Legendary ·
+ * Sherwood. 8 Mana, 4/4 Power/Health. Snipe 3 On Reveal: Deal 2 damage to all enemies."
+ */
+export function mentionDescription(d: MentionPeek): string {
+  const l = d.labels;
+  const pill = (value: string | number | undefined, label?: string) => (value === undefined ? "" : `${value} ${label ?? ""}`.trim());
+  const stats = [pill(d.mana, l.mana), pill(d.stats, l.stats)].filter(Boolean).join(", ");
+  const parts = [`${l.preview}: ${d.name}`, d.kicker, stats || l.unknown || "", d.ability ?? ""].map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
+  // punto fra le parti, senza raddoppiarlo quando una parte finisce già con un segno
+  return parts.map((p, i) => (i < parts.length - 1 ? p.replace(/[.:;,]$/, "") : p)).join(". ");
+}
+
 /** Legge `data-peek`; `null` se manca o non è un JSON con un nome (il pannello allora non si apre, il link resta). */
 export function readPeek<T extends { name: string }>(raw: string | null | undefined): T | null {
   if (!raw) return null;
@@ -114,8 +156,8 @@ export function escapeHtml(s: string): string {
  * nell'attributo. `linkHtml` è il testo del link già convertito da `marked` (quindi già escapato), `peekJson` il
  * JSON di `MentionPeek`: si scrive solo alla prima menzione di una carta in un testo (una guida cita la stessa carta
  * anche dieci volte), le altre lo prendono da quella con lo stesso `href` (`CardMentionEdges`).
- * `aria-describedby` lo aggiunge il browser quando crea il pannello: un riferimento a un id che non esiste ancora
- * sarebbe un errore di accessibilità.
+ * `aria-description` e `aria-describedby` li aggiunge il browser (il secondo quando crea il pannello: un riferimento a
+ * un id che non esiste ancora sarebbe un errore di accessibilità).
  */
 export function mentionHtml(href: string, linkHtml: string, peekJson?: string): string {
   const data = peekJson ? ` data-peek="${escapeHtml(peekJson)}"` : "";
@@ -129,6 +171,68 @@ export function mentionHtml(href: string, linkHtml: string, peekJson?: string): 
  */
 export function cardLinkPattern(locales: readonly string[]): RegExp {
   return new RegExp(`<a href="/(?:${locales.join("|")})/cards/([a-z0-9-]+)">([^<]*)</a>(\\s*★)?`, "g");
+}
+
+/** Una carta citata in un testo, come la trova chi chiama (il database carte resta suo). */
+export type MentionTarget = {
+  /** slug della scheda: le menzioni della stessa carta portano i dati una volta sola */
+  slug: string;
+  legendary?: boolean;
+  /** scheda della carta nella lingua della pagina */
+  href: string;
+  /** JSON di `MentionPeek`, chiesto solo per la prima menzione */
+  peek: () => string;
+};
+
+/**
+ * Link alle schede carta nell'HTML di `marked` → menzioni (`mentionHtml`), per `Markdown.tsx`: nel testo resta il
+ * nome, i dati del pannello vanno sulla prima menzione di ogni carta. Le intestazioni restano come sono (niente
+ * pannelli dentro un titolo); i link a slug che `find` non conosce restano link semplici. Nelle liste le Leggendarie
+ * hanno la stella scritta DOPO il nome ("Dorothy ★"): passa davanti, gialla (`.legendary-star`), con un testo per i
+ * lettori di schermo (regola del 22/09/2026). Restituisce l'HTML e quante carte diverse cita (zero: niente
+ * `CardMentionEdges`).
+ */
+export function linkMentionsInHtml(
+  html: string,
+  pattern: RegExp,
+  find: (slug: string) => MentionTarget | undefined,
+  legendaryLabel: string,
+): { html: string; cards: number } {
+  const seen = new Set<string>();
+  const out = html
+    .split(/(<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)/)
+    .map((part, i) => {
+      if (i % 2 === 1) return part;
+      return part.replace(pattern, (match, slug: string, text: string, star?: string) => {
+        const card = find(slug);
+        if (!card) return match;
+        const mention = mentionHtml(card.href, text, seen.has(card.slug) ? undefined : card.peek());
+        seen.add(card.slug);
+        if (star && card.legendary) return `<span class="legendary-star" aria-hidden="true">★</span>${mention}<span class="sr-only"> (${escapeHtml(legendaryLabel)})</span>`;
+        return `${mention}${star ?? ""}`;
+      });
+    })
+    .join("");
+  return { html: out, cards: seen.size };
+}
+
+/** Pezzo di un testo della community: testo semplice, o nome di carta con link e (solo la prima volta) i dati. */
+export type MentionPart = string | { slug: string; href: string; text: string; peek?: string };
+
+/**
+ * Lo stesso per i testi semplici della community (`CardMentions`), a partire dai pezzi di `linkCardNames`: i nomi di
+ * carte che `find` non conosce tornano testo, la prima menzione di ogni carta porta i dati del pannello.
+ */
+export function mentionParts(segments: readonly (string | { slug: string; text: string })[], find: (slug: string) => MentionTarget | undefined): MentionPart[] {
+  const seen = new Set<string>();
+  return segments.map((seg) => {
+    if (typeof seg === "string") return seg;
+    const card = find(seg.slug);
+    if (!card) return seg.text;
+    const peek = seen.has(card.slug) ? undefined : card.peek();
+    seen.add(card.slug);
+    return { slug: card.slug, href: card.href, text: seg.text, peek };
+  });
 }
 
 /*

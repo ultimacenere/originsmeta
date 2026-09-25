@@ -4,7 +4,7 @@ import { getDictionary, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { getCard, sagas, type Card } from "@/lib/data/cards";
 import { linkCardNames } from "@/lib/cardlinks";
 import { initials } from "@/lib/cardArt";
-import { mentionHtml, type MentionPeek } from "@/lib/cardPeek";
+import { mentionParts, type MentionPeek, type MentionTarget } from "@/lib/cardPeek";
 import { CardMentionEdges } from "./CardMentionEdges";
 
 /** `id` non serve più (gli id dei pannelli li dà il browser quando li crea): resta facoltativo perché le pagine lo passano. */
@@ -18,21 +18,15 @@ type Props = { text: string; locale: Locale; dict: Dictionary; id?: string };
  * il riconoscimento usa il database carte, che non deve finire nel bundle client.
  *
  * Nel testo della pagina resta solo il link con il nome (GEO-01, 25/09/2026): i dati dell'anteprima stanno in
- * `data-peek` (sulla prima menzione di ogni carta, le altre li prendono da lì) e il pannello lo crea
- * `CardMentionEdges` al primo passaggio del mouse o al focus, e lo tiene dentro la finestra. Se il testo cita almeno
- * una carta, `CardMentionEdges` arriva insieme ai nodi (non disegna niente).
+ * `data-peek` (sulla prima menzione di ogni carta, le altre li prendono da lì: `mentionParts` in src/lib/cardPeek.ts)
+ * e il pannello lo crea `CardMentionEdges` al primo passaggio del mouse o al focus, e lo tiene dentro la finestra;
+ * la descrizione per i lettori di schermo la mette lui sul link. Se il testo cita almeno una carta,
+ * `CardMentionEdges` arriva insieme ai nodi (non disegna niente).
  */
 export function CardMentions({ text, locale, dict }: Props): ReactNode {
-  const seen = new Set<string>();
-  const nodes: ReactNode[] = linkCardNames(text).map((seg, i) => {
-    if (typeof seg === "string") return seg;
-    const card = getCard(seg.slug);
-    if (!card) return seg.text;
-    const first = !seen.has(card.slug);
-    seen.add(card.slug);
-    return <CardMention key={i} card={card} text={seg.text} locale={locale} peek={first ? peekJson(card, locale, dict) : undefined} />;
-  });
-  return seen.size ? [...nodes, <CardMentionEdges key="edges" />] : nodes;
+  const parts = mentionParts(linkCardNames(text), (slug) => mentionTarget(slug, locale, dict));
+  const nodes: ReactNode[] = parts.map((part, i) => (typeof part === "string" ? part : <CardMention key={i} href={part.href} text={part.text} peek={part.peek} />));
+  return parts.some((part) => typeof part !== "string") ? [...nodes, <CardMentionEdges key="edges" />] : nodes;
 }
 
 /** Dati dell'anteprima (JSON per `data-peek`), per carta e lingua: una guida cita la stessa carta anche dieci volte. */
@@ -74,26 +68,26 @@ function peekJson(card: Card, locale: Locale, dict: Dictionary): string {
 }
 
 /**
- * Link con il nome della carta; il pannello lo aggiunge il browser (su touch non si vede e il tocco porta alla scheda).
- * `peek` = dati dell'anteprima, solo sulla prima menzione della carta nel testo.
+ * La carta citata con quel `slug`, per le menzioni dei testi della community e del Markdown di news e guide
+ * (`linkMentionsInHtml` in `Markdown.tsx`): scheda nella lingua della pagina e dati del pannello, calcolati solo
+ * quando servono. Solo lato server, come il resto del file.
  */
-function CardMention({ card, text, locale, peek }: { card: Card; text: string; locale: Locale; peek?: string }) {
+export function mentionTarget(slug: string, locale: Locale, dict: Dictionary = getDictionary(locale)): MentionTarget | undefined {
+  const card = getCard(slug);
+  if (!card) return undefined;
+  return { slug: card.slug, legendary: card.legendary, href: href(locale, `/cards/${card.slug}`), peek: () => peekJson(card, locale, dict) };
+}
+
+/**
+ * Link con il nome della carta; il pannello lo aggiunge il browser (su touch non si vede e il tocco porta alla scheda).
+ * `peek` = dati dell'anteprima, solo sulla prima menzione della carta nel testo. Stesso markup di `mentionHtml`.
+ */
+function CardMention({ href, text, peek }: { href: string; text: string; peek?: string }) {
   return (
     <span className="card-mention" data-peek={peek}>
-      <Link href={href(locale, `/cards/${card.slug}`)} className="card-mention-link" prefetch={false}>
+      <Link href={href} className="card-mention-link" prefetch={false}>
         {text}
       </Link>
     </span>
   );
-}
-
-/**
- * La stessa menzione di `CardMention` come stringa HTML, per il Markdown di news e guide (che arriva come HTML e non
- * può ospitare componenti React in mezzo a paragrafi, elenchi e tabelle). `linkHtml` è il testo del link già
- * convertito da `marked` (quindi già escapato); i dati dell'anteprima vengono dal nostro database e li escapa
- * `mentionHtml`. `withData`: è la prima menzione della carta nel testo, quella che porta i dati. Solo lato server,
- * come il resto del file.
- */
-export function cardMentionHtml(card: Card, linkHtml: string, locale: Locale, withData = true): string {
-  return mentionHtml(href(locale, `/cards/${card.slug}`), linkHtml, withData ? peekJson(card, locale, getDictionary(locale)) : undefined);
 }
