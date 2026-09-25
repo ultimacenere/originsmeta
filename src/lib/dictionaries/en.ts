@@ -936,7 +936,7 @@ export const en = {
     langNames: { en: "English", it: "Italian", es: "Spanish" },
     /** "from <language>", after "Translated automatically" */
     langFrom: { en: "from English", it: "from Italian", es: "from Spanish" },
-    translatedNote: "Translated automatically {from}: card names and game keywords stay in English, as in the game.",
+    translatedNote: "Translated automatically {from}: card names stay in English, as in the game.",
     originalText: "Original text by the author ({lang})",
     metaTail: "Full list, charts and the game's deck code on OriginsMeta.",
     by: "by",

@@ -11,6 +11,8 @@
 //   node scripts/translate-decks.mjs --only <slug>        solo quel mazzo
 //   node scripts/translate-decks.mjs --export <file>      scrive in un JSON i testi da tradurre (per tradurli fuori)
 //   node scripts/translate-decks.mjs --from <file>        salva traduzioni già pronte: { "<slug>": { "<lingua>": { summary, … } } }
+//   --redo <lingue>                                       rifà anche le traduzioni ancora valide in quelle lingue (es. "it,es"),
+//                                                         dopo un cambio del prompt; con --export aggiunge la traduzione attuale
 //   --env <file>                                          .env.local da usare (di default quello del repo principale)
 // Le traduzioni si scrivono solo se il testo della guida è ancora quello da cui sono state fatte (impronta).
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -72,7 +74,11 @@ const { rows } = await db.query(
     where status in ('published','hidden') ${only ? "and slug = $1" : ""} order by created_at`,
   only ? [only] : [],
 );
-const todo = rows.map((r) => ({ ...r, missing: missingLocales(r, LOCALES) })).filter((r) => r.missing.length && r.guide?.summary);
+// --redo: lingue da rifare anche se la traduzione c'è ed è valida (mai la lingua in cui l'autore ha scritto)
+const redo = (opt("--redo") ?? "").split(",").map((s) => s.trim()).filter((l) => LOCALES.includes(l));
+const todo = rows
+  .map((r) => ({ ...r, missing: [...new Set([...missingLocales(r, LOCALES), ...redo.filter((l) => l !== r.guide?.lang)])] }))
+  .filter((r) => r.missing.length && r.guide?.summary);
 console.log(`${rows.length} mazzi letti, ${todo.length} con traduzioni da fare (lingue del sito: ${LOCALES.join(", ")})`);
 for (const r of todo) console.log(`- ${r.slug} (${r.guide.lang} → ${r.missing.join(", ")})`);
 
@@ -102,7 +108,10 @@ async function save(deck, locale, text, model) {
 if (flag("--dry-run")) {
   await db.end();
 } else if (opt("--export")) {
-  const out = Object.fromEntries(todo.map((r) => [r.slug, { name: r.name, lang: r.guide.lang, missing: r.missing, names: namesIn(guideText(r.guide), NAMES), guide: guideText(r.guide) }]));
+  const current = (r) => Object.fromEntries(r.missing.filter((l) => r.translations?.[l]?.guide).map((l) => [l, r.translations[l].guide]));
+  const out = Object.fromEntries(
+    todo.map((r) => [r.slug, { name: r.name, lang: r.guide.lang, missing: r.missing, names: namesIn(guideText(r.guide), NAMES), guide: guideText(r.guide), ...(redo.length ? { current: current(r) } : {}) }]),
+  );
   writeFileSync(opt("--export"), JSON.stringify(out, null, 1));
   console.log(`testi da tradurre scritti in ${opt("--export")}`);
   await db.end();

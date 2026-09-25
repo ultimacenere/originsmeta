@@ -3,6 +3,7 @@ import { getGuides } from "@/lib/content/guides";
 import { events } from "@/lib/data/events";
 import { RULES } from "@/lib/deckrules";
 import type { Locale } from "@/lib/i18n";
+import { keywordLabel } from "@/lib/keywordLabels";
 
 /**
  * Raccolta dei fatti che rispondono a una domanda: carte, guide ed eventi del nostro database.
@@ -34,8 +35,12 @@ function punteggio(card: Card, domanda: string, parole: string[], locale: Locale
   if (nome.length > 3 && domanda.includes(nome)) p += 100;
   const paroleNome = nome.split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
   for (const w of paroleNome) if (parole.includes(w)) p += 25;
-  // parole chiave del gioco (On Reveal, Trample…) e saga
-  for (const k of card.keywords ?? []) if (parole.includes(normalizza(k).split(/\s+/)[0])) p += 8;
+  // parole chiave del gioco e saga: il tag inglese (On Reveal, Trample…) e il suo nome nella lingua della domanda
+  // (Alla rivelazione, Travolgere…); contano le parole significative, non "on" o "alla"
+  for (const k of card.keywords ?? []) {
+    const termini = normalizza(`${k} ${keywordLabel(k, locale)}`).split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
+    if (termini.some((w) => parole.includes(w))) p += 8;
+  }
   if (parole.some((w) => normalizza(sagas[card.saga][locale]).includes(w))) p += 6;
   // termini del testo dell'abilità
   const testo = normalizza(`${card.ability?.[locale] ?? ""} ${card.ability?.en ?? ""}`);
@@ -55,7 +60,7 @@ function schedaCarta(card: Card, locale: Locale): string {
     card.alignment,
     `saga: ${sagas[card.saga][locale]}`,
     card.status === "removed" ? "NON nella Demo 2.0" : undefined,
-    card.keywords?.length ? `parole chiave: ${card.keywords.join(", ")}` : undefined,
+    card.keywords?.length ? `parole chiave: ${card.keywords.map((k) => keywordLabel(k, locale)).join(", ")}` : undefined,
     card.ability?.[locale] ? `testo: ${card.ability[locale].replace(/\s*\n\s*/g, " ")}` : undefined,
   ].filter(Boolean);
   const storia = card.history.length ? ` | bilanciamenti: ${card.history.map((h) => `${h.patch} ${h.kind}`).join(", ")}` : "";

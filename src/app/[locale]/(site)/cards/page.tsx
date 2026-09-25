@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { activeCards, cards, cardSource, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
 import { flipOf } from "@/components/CardChip";
+import { keywordLabel } from "@/lib/keywordLabels";
 import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
@@ -25,7 +26,8 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
     sagaId: c.saga,
     sagaLabel: sagas[c.saga][locale],
     rarity: c.rarity,
-    keywords: c.keywords ?? [],
+    // tag nella lingua della pagina e, sulle pagine tradotte, anche in inglese: "Trample" e "Travolgere" trovano le stesse carte
+    keywords: [...(c.keywords ?? []), ...(locale === "en" ? [] : (c.keywords ?? []).map((k) => keywordLabel(k, locale)))],
     // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
     abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
     removed: c.status === "removed",

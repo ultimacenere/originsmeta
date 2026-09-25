@@ -6,6 +6,7 @@
 import { getCard, sagas, type Card, type SagaId } from "@/lib/data/cards";
 import { RULES } from "@/lib/deckrules";
 import type { Locale } from "@/lib/i18n";
+import { keywordLabel } from "@/lib/keywordLabels";
 
 export type DeckStats = {
   /** carte fisiche totali considerate (note + sconosciute) */
@@ -131,7 +132,7 @@ export function deckStats(deck: DeckInput, locale: Locale, opts: { expectedTotal
       .map(([id, count]) => ({ saga: id, label: sagas[id][locale], count }))
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
     keywords: [...kw.entries()]
-      .map(([keyword, count]) => ({ keyword, count }))
+      .map(([keyword, count]) => ({ keyword: keywordLabel(keyword, locale), count }))
       .sort((a, b) => b.count - a.count || a.keyword.localeCompare(b.keyword)),
     sameSagaAsLegendary: sameSaga,
     topEnd,

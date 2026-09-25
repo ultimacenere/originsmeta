@@ -13,6 +13,7 @@ import { CardArt, CardChipList, CardName, legendaryFirst } from "@/components/Ca
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GameCard } from "@/components/GameCard";
 import { alignStyle } from "@/lib/cardArt";
+import { keywordLabel } from "@/lib/keywordLabels";
 import { SteamButton, newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, videoGameId } from "@/components/JsonLd";
 
@@ -70,7 +71,7 @@ function cardDescription(card: Card, locale: Locale, d: Dictionary): string {
     card.ability?.[locale],
     card.origin?.[locale],
     last ? `${d.common[last.kind === "deck" ? "rework" : last.kind]} ${d.common.patch.toLowerCase()} ${patchLabel(last.patch, locale)}` : undefined,
-    card.keywords?.length ? card.keywords.join(", ") : undefined,
+    card.keywords?.length ? card.keywords.map((k) => keywordLabel(k, locale)).join(", ") : undefined,
     // Riserva sempre vera per le carte senza testo: porta comunque la descrizione oltre i 120 caratteri.
     d.common.asOf,
   ];
@@ -219,7 +220,7 @@ export default async function CardPage({ params }: { params: Params }) {
             <div className="mt-4 flex flex-wrap gap-1.5">
               {card.keywords.map((k) => (
                 <span key={k} className="rounded border-2 border-sky px-2 py-0.5 text-[11px] text-pale-muted">
-                  {k}
+                  {keywordLabel(k, locale)}
                 </span>
               ))}
             </div>

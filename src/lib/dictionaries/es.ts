@@ -942,7 +942,7 @@ export const es: Dictionary = {
     langNames: { en: "inglés", it: "italiano", es: "español" },
     /** "from <language>", after "Translated automatically" */
     langFrom: { en: "del inglés", it: "del italiano", es: "del español" },
-    translatedNote: "Traducida automáticamente {from}: los nombres de las cartas y las palabras clave se mantienen en inglés, como en el juego.",
+    translatedNote: "Traducida automáticamente {from}: los nombres de las cartas se mantienen en inglés, como en el juego.",
     originalText: "Texto original del autor ({lang})",
     metaTail: "Lista completa, gráficos y código del juego en OriginsMeta.",
     by: "por",

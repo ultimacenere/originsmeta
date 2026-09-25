@@ -20,9 +20,12 @@ ora sono quelli del sito. Questo file dice cosa ne segue e come rifare la verifi
   chi ha giocato il playtest le conosce in inglese. Restano in inglese i nomi di carte, luoghi e mazzi (anche "On
   Reveal Mid Range"), le citazioni in inglese e le etichette Good / Evil / Neutral. "Casella" resta solo quando è
   quella dell'interfaccia (la casella di ricerca).
-- **Ancora in inglese**: le pastiglie sotto le schede carta (sono i tag di World of Origins: On Reveal, Trample,
-  Summon…) e le guide dei mazzi della community tradotte in automatico (il prompt di `deckTranslation.ts` tiene le
-  parole chiave in inglese). Cambiarle è una scelta da fare con Pierluigi.
+- **Pastiglie e guide dei mazzi** (25/09/2026, "traduci anche le pastiglie e le guide dei mazzi"): i tag di World of
+  Origins sotto le schede carta e nei grafici dei mazzi hanno le etichette di `src/lib/keywordLabels.ts` (nomi
+  ufficiali per le parole chiave del gioco, il verbo della carta per le categorie: Evoca / Invoca, Pesca / Roba…);
+  il traduttore automatico delle guide dei mazzi usa lo stesso glossario (`GAME_KEYWORDS` in `deckTranslation.ts`,
+  un test controlla che coincida con le etichette). Il testo che l'autore scrive nella sua lingua resta com'è.
+- **Resta in inglese** solo il gergo: "mazzo move" / "mazo move" e l'etichetta d'archetipo Move/Combo, come midrange.
 
 ## Glossario ufficiale
 
