@@ -84,7 +84,7 @@ export const es: Dictionary = {
     viewAll: "Ver todo",
     search: "Buscar una carta",
     all: "Todas",
-    /* Italian needs a masculine "all" for some filters (archetype, creator, author type); English does not */
+    /* Italian needs a masculine "all" for some filters (archetype, author, author type); English does not */
     allMasculine: "Todos",
     mana: "Maná",
     power: "Poder",
@@ -150,7 +150,7 @@ export const es: Dictionary = {
     openDeck: "Abrir el mazo",
     deckCards: "Cartas del mazo",
     decks: "Mazos",
-    creator: "Creador",
+    creator: "Autor",
     archetype: "Arquetipo",
     playtest: "Playtest",
     official: "Oficial",
@@ -168,7 +168,7 @@ export const es: Dictionary = {
     noDecks: "Ningún mazo coincide con estos filtros.",
     filterLegendary: "Legendaria",
     filterArchetype: "Arquetipo",
-    filterCreator: "Creador",
+    filterCreator: "Autor",
     /* deck filter by author tag (Twitch live of 23/09/2026) */
     filterAuthorType: "Tipo de autor",
     filterCard: "Carta",
@@ -284,7 +284,7 @@ export const es: Dictionary = {
        del mazo" è /deck-builder; resta nella description */
     title: "Mazos de Origins TCG de la comunidad",
     metaTitle: "Mazos de Origins TCG (Koin Games): listas y guías",
-    intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y creador, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
+    intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y autor, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
     description: "Listas de mazos de Origins TCG, el juego de cartas de Koin Games: guía del mazo, valoraciones y código del juego. Filtra por Legendaria, arquetipo o carta.",
     conquestTitle: "El formato Conquest, explicado",
     conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026), donde cada mazo necesitaba una Legendaria distinta, y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
