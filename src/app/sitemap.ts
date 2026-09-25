@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales, siteUrl, href, type Locale } from "@/lib/i18n";
-import { cards, cardsVerified, latestPatch, patches, type Card } from "@/lib/data/cards";
-import { cardLore } from "@/lib/data/card-lore";
-import { decks, decksWithCard } from "@/lib/data/decks";
+import { cards, cardsVerified, latestPatch, patches } from "@/lib/data/cards";
+import { decks } from "@/lib/data/decks";
 import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
-import { tierList, tierOf } from "@/lib/data/tierlist";
+import { tierList } from "@/lib/data/tierlist";
 import { locationsPatch, locationsVerified } from "@/lib/data/locations";
 import { getGuides, type Guide } from "@/lib/content/guides";
 import { authors, guidesByAuthor, newsByAuthor } from "@/lib/data/authors";
@@ -12,6 +11,7 @@ import { listPublicProfiles, listPublishedSlugs } from "@/lib/community/queries"
 import { supabasePublic } from "@/lib/supabase/public";
 import { listTournamentSlugs } from "@/lib/tournament/queries";
 import { NEWS_PAGES_SINCE, latestDay, pageLastmod, todayUtc, type PageRoute } from "@/lib/lastmod";
+import { cardDates } from "@/lib/cardDates";
 
 /** I mazzi della community cambiano: la sitemap si rigenera al massimo ogni ora (e dopo ogni pubblicazione). */
 export const revalidate = 3600;
@@ -34,23 +34,6 @@ type Entry = {
 
 /** Data di una news: l'ultima revisione, altrimenti la pubblicazione. */
 const newsDay = (n: NewsItem) => n.updated ?? n.date;
-
-/**
- * Date che cambiano una scheda carta: le patch che l'hanno toccata, la verifica sul gioco quando ne ha corretto
- * testo o parole chiave (`card-lore.ts`, campi `en` e `keywords`), i mazzi editoriali che la contengono, le guide
- * della lingua che la citano (il riquadro "Guide correlate") e la tier list di OriginsMeta quando la scheda ne
- * mostra la fascia: le stesse fonti che legge la pagina.
- */
-function cardDates(c: Card, guides: readonly Guide[]): Dates {
-  const lore = cardLore[c.slug];
-  return [
-    ...c.history.map((h) => patches[h.patch].date),
-    lore?.en || lore?.keywords ? cardsVerified.date : undefined,
-    ...decksWithCard(c.slug).map((d) => d.updated),
-    ...guides.filter((g) => g.tags?.cards?.includes(c.slug)).map((g) => g.updated),
-    tierOf(c.legendary ? "legendaries" : "cards", c.slug) ? tierList.updated : undefined,
-  ];
-}
 
 /**
  * Date delle tier list salvate dagli iscritti: la più recente (per /tier-list/community e /tier-list) e quella di
@@ -89,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Le guide hanno date per lingua: la versione spagnola non è più vecchia del 25/09/2026 (`getGuides`).
   const guidesBy = Object.fromEntries(locales.map((l) => [l, getGuides(l)])) as Record<Locale, Guide[]>;
   const guideDay = (l: Locale, slug: string) => guidesBy[l].find((g) => g.slug === slug)?.updated;
-  const cardDatesBy = (l: Locale) => cards.map((c) => cardDates(c, guidesBy[l]));
+  const cardDatesBy = (l: Locale) => cards.map((c) => cardDates(c, l, guidesBy[l]));
 
   const entries: Entry[] = [
     // La home mostra le ultime news, i movimenti dell'ultima patch e la tier list.
@@ -129,7 +112,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     })),
     // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
-    ...cards.map((c) => ({ path: `/cards/${c.slug}`, route: "/cards/[slug]" as const, dates: (l: Locale) => cardDates(c, guidesBy[l]), changeFrequency: "weekly" as const, priority: 0.6 })),
+    // Stesse date del `dateModified` della scheda (`cardDates` in src/lib/cardDates.ts, con `pageLastmod` qui sotto).
+    ...cards.map((c) => ({ path: `/cards/${c.slug}`, route: "/cards/[slug]" as const, dates: (l: Locale) => cardDates(c, l, guidesBy[l]), changeFrequency: "weekly" as const, priority: 0.6 })),
     ...decks.map((d) => ({ path: `/decks/${d.slug}`, route: "/decks/[slug]" as const, dates: [d.updated], changeFrequency: "weekly" as const, priority: 0.7 })),
     ...guidesBy.en.map((g) => ({ path: `/guides/${g.slug}`, route: "/guides/[slug]" as const, dates: (l: Locale) => [guideDay(l, g.slug)], changeFrequency: "weekly" as const, priority: 0.8 })),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.

@@ -22,7 +22,44 @@ export const CARD_DESC_MIN = 120;
 export const CARD_DESC_MAX = 158;
 
 /** I campi della carta che servono a title e description (le schede passano la `Card` intera). */
-export type TitleCard = Pick<Card, "slug" | "name" | "type" | "status" | "legendary" | "formerName" | "mana" | "power" | "health" | "alignment" | "ability" | "origin">;
+export type TitleCard = Pick<Card, "slug" | "name" | "type" | "status" | "legendary" | "formerName" | "mana" | "power" | "health" | "alignment" | "ability" | "origin" | "history">;
+
+/**
+ * Da quando vale il testo delle carte nei nostri dati, per capire se una modifica dello storico lo ha superato
+ * (`textOutdated`). I valori sono quelli di `cards.ts` (li raccoglie `cardTextSource` in `cardDates.ts`) e arrivano
+ * da fuori perché questo modulo importa solo tipi.
+ */
+export type TextSource = {
+  /** patch in ordine di uscita (`patchOrder`) */
+  order: readonly string[];
+  /** giorno di uscita di ogni patch */
+  dates: Readonly<Record<string, string>>;
+  /** patch dei dati importati da World of Origins (`cardSource.patch`) */
+  imported: string;
+  /** giorno della verifica sul gioco (`cardsVerified.date`): vale per le carte della collezione della demo */
+  verified: string;
+};
+
+/**
+ * Il testo della carta nei nostri dati è superato da una modifica dello storico? Contano le sole modifiche del testo
+ * (senza statistiche prima/dopo, senza allineamento e senza scambi nei mazzi: per esempio il danno di una magia, che
+ * sta nel testo) uscite dopo la fonte del testo:
+ * - carte della collezione della demo (attive e non create): il testo è stato letto nel gioco (`verified`), quindi
+ *   conta solo una patch uscita dopo quel giorno;
+ * - carte create e rimosse: non stanno nella collezione e il testo è quello importato da World of Origins, quindi
+ *   conta una patch successiva all'import.
+ * Esempio: Silver Bullet, carta creata, nel database dice "Deal 3 damage to ANY character.", ma dopo l'import della
+ * 0.6.3 la patch della demo del 21/09/2026 le fa colpire anche le barriere (e la 0.6.2 aveva già portato il danno a 1).
+ * Il testo resta sulla scheda, con lo storico sotto; la description e i dati strutturati non lo citano.
+ */
+export function textOutdated(card: Pick<Card, "status" | "type" | "history">, src: TextSource): boolean {
+  const inCollection = card.status === "active" && card.type !== "token";
+  const imported = src.order.indexOf(src.imported);
+  return card.history.some((h) => {
+    if (h.kind === "deck" || (h.from && h.to) || h.alignment) return false;
+    return inCollection ? (src.dates[h.patch] ?? "") > src.verified : imported >= 0 && src.order.indexOf(h.patch) > imported;
+  });
+}
 
 /**
  * Coda del title per tipo di carta: il nome viene prima, poi il tipo di pagina nella lingua della ricerca
@@ -251,15 +288,17 @@ function withoutDanglers(text: string): string {
 /**
  * Nome accorciato entro `max` caratteri, ellissi compresa: all'ultimo confine di parola (spazio, trattino o barra,
  * così "The Trick-or-Treat Legion" può diventare "The Trick-or-Treat…"), senza lasciare in fondo una parola vuota
- * ("Zombie rush for…", non "Zombie rush for the…"), e solo se non c'è nessun confine con un taglio netto. Resta
- * sempre almeno la prima parola quando ci sta.
+ * ("Zombie rush for…", non "Zombie rush for the…", e "…-Zombies…", non "…-Zombies-and…"), e solo se non c'è nessun
+ * confine con un taglio netto. Resta sempre almeno la prima parola quando ci sta.
  */
 function fitName(name: string, max: number): string {
   if (name.length <= max) return name;
   for (let i = Math.min(max - 1, name.length - 1); i > 0; i--) {
     if (!/[\s\-/]/.test(name[i])) continue;
     const kept = withoutDanglers(name.slice(0, i).trim()).replace(/[\s,.;:·—–\-/]+$/, "");
-    if (kept) return `${kept}…`;
+    // Una parola vuota attaccata col trattino o la barra ("Zombies-and") si toglie al confine prima
+    const last = kept.split(/[\s\-/]/).pop() ?? "";
+    if (kept && (kept === last || !stopWords.has(last.toLowerCase()))) return `${kept}…`;
   }
   return `${name.slice(0, max - 1).trim()}…`;
 }
@@ -302,9 +341,10 @@ function compose(lead: string, ability: string, origin: string, tails: readonly 
  * Meta description della scheda carta, 120–158 caratteri: l'attacco per tipo ("Merlin, Neutral Legendary unit in
  * Origins TCG by Koin Games: 5 mana, 5/5."), poi il testo della carta nella lingua della pagina, poi, se la frase è
  * ancora corta, l'origine della leggenda e infine la riga su che cosa c'è nella pagina (`compose`). `all` è il
- * database carte: serve a dire chi crea le carte create.
+ * database carte: serve a dire chi crea le carte create. Un testo superato da una patch (`textOutdated`, con `src`)
+ * non si cita: restano gli altri pezzi (tipo, chi crea la carta, stato, statistiche, origine).
  */
-export function cardDescription(card: TitleCard, locale: Locale, all: readonly TitleCard[]): string {
+export function cardDescription(card: TitleCard, locale: Locale, all: readonly TitleCard[], src: TextSource): string {
   const w = descWords[locale];
   const creators = creatorsOf(card, all)
     .slice(0, 2)
@@ -320,7 +360,7 @@ export function cardDescription(card: TitleCard, locale: Locale, all: readonly T
   };
   const lead = card.status === "removed" ? w.removed(head) : card.type === "token" ? w.created(head) : w.active(head);
   // Senza allineamento resterebbe un doppio spazio: il database oggi lo ha per tutte le carte, ma non costa niente.
-  const ability = card.ability?.[locale] ?? card.ability?.en;
+  const ability = textOutdated(card, src) ? undefined : (card.ability?.[locale] ?? card.ability?.en);
   const origin = card.origin?.[locale];
   return compose(lead.replace(/ {2,}/g, " ").trim(), ability ? oneLine(ability) : "", origin ? oneLine(origin) : "", [w.tail, w.shortTail]);
 }
@@ -328,43 +368,53 @@ export function cardDescription(card: TitleCard, locale: Locale, all: readonly T
 // ---------- Mazzi della community ----------
 
 /**
- * Il title di un mazzo non contiene "Origins TCG": `pageTitle` gli aggiunge " · Origins TCG" (14 caratteri), quindi
- * il title nudo deve stare entro 46 perché quello finale resti entro 60.
+ * Un title di mazzo senza "Origins TCG" riceve da `pageTitle` " · Origins TCG" (14 caratteri), quindi il title nudo
+ * deve stare entro 46 perché quello finale resti entro 60. Un title che contiene già "Origins TCG" (la forma `named`
+ * in italiano e spagnolo) deve starci da solo, entro 60.
  */
 export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
 
+/**
+ * Modelli dei title dei mazzi, con il nome del mazzo in testa (mappa delle query, §3 e C34):
+ * - `with`: nome e Leggendaria ("Spellcast, Merlin deck");
+ * - `only`: il mazzo senza nome proprio, o con il nome uguale alla Leggendaria ("Merlin deck");
+ * - `named`: il nome contiene già la Leggendaria e non la ripete. In inglese basta "deck" ("Dorothy Combo deck"); in
+ *   italiano e spagnolo "Dorothy Combo, mazzo" non si legge, quindi al posto della Leggendaria va il gioco ("Dorothy
+ *   Combo, mazzo di Origins TCG"), così le tre lingue restano diverse.
+ */
 const deckTitles: Record<Locale, { with: (legendary: string, name: string) => string; only: (legendary: string) => string; named: (name: string) => string }> = {
-  en: { with: (l, n) => `${l} deck: ${n}`, only: (l) => `${l} deck`, named: (n) => `${n} deck` },
-  it: { with: (l, n) => `Mazzo di ${l}: ${n}`, only: (l) => `Mazzo di ${l}`, named: (n) => `Mazzo ${n}` },
-  es: { with: (l, n) => `Mazo de ${l}: ${n}`, only: (l) => `Mazo de ${l}`, named: (n) => `Mazo ${n}` },
+  en: { with: (l, n) => `${n}, ${l} deck`, only: (l) => `${l} deck`, named: (n) => `${n} deck` },
+  it: { with: (l, n) => `${n}, mazzo di ${l}`, only: (l) => `Mazzo di ${l}`, named: (n) => `${n}, mazzo di Origins TCG` },
+  es: { with: (l, n) => `${n}, mazo de ${l}`, only: (l) => `Mazo de ${l}`, named: (n) => `${n}, mazo de Origins TCG` },
 };
 
 /**
- * Title di un mazzo della community: "Merlin deck: Spellcast", "Mazzo di Merlin: Spellcast", "Mazo de Merlin: Spellcast".
- * Chi cerca un mazzo scrive il nome della Leggendaria, non quello inventato dall'autore; il nome dell'autore non va
- * mai nel title (regola del 16/09/2026). Il nome del mazzo lo sceglie l'utente e può essere lungo quanto vuole: come
- * in `pageTitleWith`, prima si sacrificano le parole di contorno e solo dopo il nome, che resta sempre (almeno la sua
- * prima parola), così due mazzi della stessa Leggendaria non prendono lo stesso title:
- * 1. "Legion of the Dead deck: The Trick-or-Treat Legion" se ci sta;
- * 2. altrimenti la forma compatta "Legion of the Dead: The Trick-or-Treat Legion";
- * 3. altrimenti la forma compatta con il nome accorciato all'ultima parola intera ("…: 3 Pigs Mid…").
- * Un nome che contiene già la Leggendaria non la ripete ("Dorothy Combo deck", "Mazzo Dorothy Combo"); uno uguale
- * alla Leggendaria dà "Merlin deck". Senza Leggendaria nota resta il nome del mazzo.
+ * Title di un mazzo della community: "Spellcast, Merlin deck", "Spellcast, mazzo di Merlin", "Spellcast, mazo de Merlin".
+ * Il nome del mazzo sta in testa perché la scheda del mazzo risponde alla ricerca del suo nome, mentre "{Leggendaria}
+ * deck" è la ricerca della guida al mazzo (mappa delle query, decisione 4, C22 e C34). Il piano dell'Ondata 1 metteva
+ * invece la Leggendaria in testa ("Merlin deck: Spellcast"): così scheda del mazzo, guida e pagina dei matchup si contendevano
+ * la stessa ricerca, e il 25/09/2026, dopo la revisione, si è deciso che vale la mappa. Il nome dell'autore non va mai
+ * nel title (regola del 16/09/2026).
+ * Il nome lo sceglie l'utente e può essere lungo quanto vuole: come in `pageTitleWith`, prima si sacrifica il contorno
+ * e solo dopo il nome, che resta sempre (almeno la sua prima parola):
+ * 1. il modello con la Leggendaria, se ci sta;
+ * 2. altrimenti il solo nome ("3 Pigs Mid Range": uguale nelle tre lingue, ma ogni pagina ha l'hreflang giusto);
+ * 3. altrimenti il nome accorciato all'ultima parola intera, con i puntini ("The Trick-or-Treat Legion of Halloween…").
+ * Un nome che contiene già la Leggendaria non la ripete (`named`); uno uguale alla Leggendaria, o nessun nome, dà
+ * "Merlin deck". Senza Leggendaria nota resta il nome del mazzo.
  */
 export function deckTitle(name: string, legendary: string | undefined, locale: Locale): string {
   const n = name.replace(/\s+/g, " ").trim();
   const l = legendary?.replace(/\s+/g, " ").trim();
   const t = deckTitles[locale];
-  const fits = (s: string) => s.length <= DECK_TITLE_MAX;
-  // Leggendaria assente, o scritta a mano dall'utente e lunghissima: resta il nome del mazzo
-  if (!l || !fits(t.only(l))) return fitName(n || l || "", DECK_TITLE_MAX);
-  if (!n || n.toLowerCase() === l.toLowerCase()) return t.only(l);
-  if (new RegExp(`(?<!\\p{L})${escapeRe(l)}(?!\\p{L})`, "iu").test(n)) return [t.named(n), n].find(fits) ?? fitName(n, DECK_TITLE_MAX);
-  const full = [t.with(l, n), `${l}: ${n}`].find(fits);
-  if (full) return full;
-  // Con una Leggendaria scritta a mano quasi lunga quanto il title non resterebbe spazio utile per il nome
-  const room = DECK_TITLE_MAX - `${l}: `.length;
-  return room >= 8 ? `${l}: ${fitName(n, room)}` : t.only(l);
+  // Lo stesso conto di `pageTitle`: con "Origins TCG" dentro il title deve stare da solo entro 60, senza entro 46.
+  const fits = (s: string) => s.length <= (/origins tcg|originsmeta/i.test(s) ? CARD_TITLE_MAX : DECK_TITLE_MAX);
+  const orName = (title: string) => [title, n].find(fits) ?? fitName(n, DECK_TITLE_MAX);
+  if (!l) return fitName(n, DECK_TITLE_MAX);
+  // Nessun nome, o uguale alla Leggendaria; una Leggendaria scritta a mano e lunghissima si accorcia come un nome
+  if (!n || n.toLowerCase() === l.toLowerCase()) return fits(t.only(l)) ? t.only(l) : fitName(l, DECK_TITLE_MAX);
+  if (new RegExp(`(?<!\\p{L})${escapeRe(l)}(?!\\p{L})`, "iu").test(n)) return orName(t.named(n));
+  return orName(t.with(l, n));
 }
 
 /**

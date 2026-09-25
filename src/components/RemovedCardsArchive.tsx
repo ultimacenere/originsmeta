@@ -36,19 +36,34 @@ const labels: Record<Locale, { title: string; text: string; link: string }> = {
   },
 };
 
-/** Ancora dell'archivio su /cards: le schede delle carte rimosse puntano qui (`RemovedArchiveLink`). */
+/**
+ * Ancora dell'archivio su /cards: ci puntano il contatore delle carte fuori dalla demo in cima a /cards e le schede
+ * delle carte rimosse (`RemovedArchiveLink`).
+ *
+ * L'id NON sta sul <details> ma sul contenitore dell'elenco, DENTRO il <details> e fuori dal <summary>: così chi arriva
+ * sull'ancora trova l'archivio già aperto, senza JavaScript. Quando il browser naviga verso un frammento esegue
+ * l'"ancestor revealing algorithm" dello standard HTML (lo stesso della ricerca nella pagina): per ogni antenato del
+ * bersaglio che sta nel secondo slot di un <details> chiuso, cioè nel contenuto e non nel <summary>, apre quel
+ * <details>, e poi scorre fino al bersaglio. Un <details> che è lui stesso il bersaglio non è "dentro" un <details>,
+ * quindi resta chiuso: era il difetto della prima versione. Chrome e Firefox lo applicano; un browser che non lo fa
+ * mostra il riquadro chiuso, come prima. `scroll-mt-40` lascia visibili sopra l'elenco l'header fisso e il titolo
+ * dell'archivio (il <summary>).
+ */
 export const removedArchiveId = "not-in-demo";
 
 /**
  * Link all'archivio, per le schede delle carte non nella demo: al posto dell'invito al deck builder, che non le
  * accetta, la scheda rimanda alle altre carte nella stessa situazione (SCHEDE-04).
+ * È un <a> semplice e non un `Link` di Next: con `Link` la navigazione resta nel browser e Next scorre da sé fino
+ * all'ancora con `scrollIntoView()`, che non apre i <details> (l'apertura la fa solo la navigazione del browser verso il
+ * frammento). Il contatore su /cards è già un <a> semplice sulla stessa pagina.
  */
 export function RemovedArchiveLink({ locale }: { locale: Locale }) {
   return (
     <p className="mt-10 text-sm">
-      <Link href={`${href(locale, "/cards")}#${removedArchiveId}`} className="link-mint font-bold">
+      <a href={`${href(locale, "/cards")}#${removedArchiveId}`} className="link-mint font-bold">
         {labels[locale].link} →
-      </Link>
+      </a>
     </p>
   );
 }
@@ -73,32 +88,35 @@ export function RemovedCardsArchive({ locale }: { locale: Locale }) {
     .sort((a, b) => a.label.localeCompare(b.label, locale));
 
   return (
-    <details id={removedArchiveId} className="card-night mt-10 p-5">
+    <details className="card-night mt-10 p-5">
       <summary className="cursor-pointer">
         <h2 className="t-item inline">
           {l.title} <span className="font-mono text-sm font-normal text-pale-muted">({removed.length})</span>
         </h2>
       </summary>
-      <p className="mt-3 max-w-3xl text-sm text-pale-muted">{l.text}</p>
-      <div className="mt-4 space-y-4">
-        {groups.map((g) => (
-          <section key={g.saga}>
-            <h3 className="kicker text-chalk-muted">{g.label}</h3>
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {g.list.map((c) => (
-                <li key={c.slug}>
-                  {/* prefetch spento: 86 link in un riquadro chiuso non devono scaricare 86 pagine */}
-                  <Link href={href(locale, `/cards/${c.slug}`)} prefetch={false} className="btn btn-ghost text-xs">
-                    <span>
-                      <CardName name={c.name} legendary={c.legendary} legendaryLabel={legendaryLabel} />
-                    </span>
-                    {statLine(c) ? <span className="font-mono text-chalk-muted">{statLine(c)}</span> : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+      {/* L'ancora sta qui, dentro il contenuto del <details>: vedi `removedArchiveId` */}
+      <div id={removedArchiveId} className="scroll-mt-40">
+        <p className="mt-3 max-w-3xl text-sm text-pale-muted">{l.text}</p>
+        <div className="mt-4 space-y-4">
+          {groups.map((g) => (
+            <section key={g.saga}>
+              <h3 className="kicker text-chalk-muted">{g.label}</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {g.list.map((c) => (
+                  <li key={c.slug}>
+                    {/* prefetch spento: 86 link in un riquadro chiuso non devono scaricare 86 pagine */}
+                    <Link href={href(locale, `/cards/${c.slug}`)} prefetch={false} className="btn btn-ghost text-xs">
+                      <span>
+                        <CardName name={c.name} legendary={c.legendary} legendaryLabel={legendaryLabel} />
+                      </span>
+                      {statLine(c) ? <span className="font-mono text-chalk-muted">{statLine(c)}</span> : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
     </details>
   );

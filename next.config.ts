@@ -10,15 +10,70 @@ import type { NextConfig } from "next";
  */
 const spamKeys = ["r", "channel"] as const;
 
+/**
+ * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
+ * galiziano e basco, che leggono lo spagnolo; altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
+ * solo la prima lingua dell'header (è un'espressione regolare); i link brevi dei tornei pesano tutto l'elenco
+ * (`preferredLocale` in src/app/t/locale.ts).
+ */
+const browserLocales = [
+  { locale: "it", acceptLanguage: "^it.*" },
+  { locale: "es", acceptLanguage: "^(?:es|ca|gl|eu).*" },
+] as const;
+
+const acceptLanguage = (value: string) => [{ type: "header" as const, key: "accept-language", value }];
+
 /** Un redirect temporaneo della radice, in due copie: scatta se manca `r` oppure se manca `channel`. */
-function rootRedirect(destination: string, acceptLanguage?: string) {
+function rootRedirect(destination: string, language?: string) {
   return spamKeys.map((key) => ({
     source: "/",
-    ...(acceptLanguage ? { has: [{ type: "header" as const, key: "accept-language", value: acceptLanguage }] } : {}),
+    ...(language ? { has: acceptLanguage(language) } : {}),
     missing: [{ type: "query" as const, key }],
     destination,
     permanent: false,
   }));
+}
+
+/**
+ * Le sezioni del sito, cioè le cartelle di src/app/[locale]/(site) tranne `[...rest]` (il test in
+ * `[...rest]/notFoundHtml.test.ts` controlla che l'elenco sia uguale alle cartelle: una sezione nuova va aggiunta qui).
+ * Un indirizzo senza lingua con una sezione vera (/cards/merlin, /news/<slug>, /guides/<slug>, /cards, /faq), per
+ * esempio un link incollato a mano, prima rispondeva 404 con i soli tasti verso le tre home, o con il guscio
+ * `__next_error__` senza titolo (/cards, /decks, /faq): ora porta alla stessa pagina nella lingua del visitatore
+ * (Ondata 1, correzione del 25/09/2026). Il resto del percorso e la query passano come sono; se la pagina non esiste
+ * nemmeno con la lingua, risponde la 404 di quella lingua. Un primo segmento che non è né una lingua né una sezione
+ * (/xx/pagina) resta alla 404 di `[...rest]/route.ts`.
+ */
+const sections = [
+  "about",
+  "account",
+  "authors",
+  "cards",
+  "deck-builder",
+  "decks",
+  "faq",
+  "guides",
+  "locations",
+  "login",
+  "metashifting",
+  "news",
+  "privacy",
+  "style",
+  "tier-list",
+  "tournaments",
+  "u",
+] as const;
+
+/**
+ * Redirect temporanei (307) delle sezioni senza lingua, con le stesse regole della radice. `:path*` prende anche il
+ * percorso vuoto (/cards). Nessun giro: le destinazioni cominciano con una lingua, che non è mai una sezione.
+ */
+function sectionRedirects() {
+  const source = `/:section(${sections.join("|")})/:path*`;
+  return [
+    ...browserLocales.map(({ locale, acceptLanguage: language }) => ({ source, has: acceptLanguage(language), destination: `/${locale}/:section/:path*`, permanent: false })),
+    { source, destination: "/en/:section/:path*", permanent: false },
+  ];
 }
 
 const nextConfig: NextConfig = {
@@ -35,13 +90,12 @@ const nextConfig: NextConfig = {
         destination: "https://originsmeta.com/:path*",
         permanent: true,
       },
-      // Radice del sito: manda alla lingua del browser (it; es anche per catalano, galiziano e basco, che leggono lo
-      // spagnolo), altrimenti inglese. Redirect temporanei (307), mai permanenti: la radice deve poter cambiare lingua
-      // a ogni visita, e x-default resta /en. Si guarda solo la prima lingua dell'header (è un'espressione regolare);
-      // i link brevi dei tornei pesano tutto l'elenco (`preferredLocale` in src/app/t/locale.ts).
-      ...rootRedirect("/it", "^it.*"),
-      ...rootRedirect("/es", "^(?:es|ca|gl|eu).*"),
+      // Radice del sito: manda alla lingua del browser (`browserLocales`). Redirect temporanei (307), mai permanenti:
+      // la radice deve poter cambiare lingua a ogni visita, e x-default resta /en.
+      ...browserLocales.flatMap(({ locale, acceptLanguage: language }) => rootRedirect(`/${locale}`, language)),
       ...rootRedirect("/en"),
+      // Sezioni senza lingua (/cards/merlin, /news/<slug>…): la stessa pagina nella lingua del browser.
+      ...sectionRedirects(),
       // Il francese è stato ritirato dal sito: chi arriva da vecchi link va sulla versione inglese.
       { source: "/fr", destination: "/en", permanent: true },
       { source: "/fr/:path*", destination: "/en/:path*", permanent: true },

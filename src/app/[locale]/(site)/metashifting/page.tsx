@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { latestPatch, patchChanges, patchLabel, patches, sagas } from "@/lib/data/cards";
+import { changeDetail, changeLabel } from "@/lib/linkLabels";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardName } from "@/components/CardChip";
 import { newTabProps } from "@/components/SteamButton";
@@ -15,6 +16,9 @@ import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/J
   Sul telefono la tabella diventa una scheda per modifica: prima era larga 640 px in 356 e il valore nuovo e il tipo
   di modifica restavano fuori schermo, senza segnale che la tabella scorresse di lato.
   Pagina statica: i dati sono quelli di cards.ts (card-history.ts e patch).
+  Gli scambi nei mazzi preimpostati del playtest (modifiche di tipo "deck", 0.6.1) hanno la pastiglia "Cambio di
+  mazzo" e solo la nota, senza "abilità" nella colonna delle statistiche: la carta non cambia (`changeLabel` e
+  `changeDetail` in linkLabels.ts, gli stessi della scheda carta e del blocco della patch nelle news).
 */
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -125,7 +129,7 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
                   </th>
                   <td className="px-4 py-3 text-pale-muted max-md:order-3 max-md:p-0 max-md:text-xs">{sagas[card.saga][locale]}</td>
                   <td className="whitespace-nowrap px-4 py-3 max-md:order-4 max-md:p-0 max-md:text-right">
-                    {change.from && change.to ? (
+                    {changeDetail(change) === "none" ? null : changeDetail(change) === "stats" ? (
                       <StatDelta from={change.from} to={change.to} />
                     ) : change.alignment ? (
                       <span className="font-mono text-sm">
@@ -139,7 +143,7 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
                   </td>
                   <td className="px-4 py-3 max-md:contents">
                     <span className="max-md:order-2 max-md:self-start max-md:justify-self-end">
-                      <ChangeChip kind={change.kind} label={d.common[change.kind === "deck" ? "rework" : change.kind]} />
+                      <ChangeChip kind={change.kind} label={changeLabel(change.kind, locale, d.common)} />
                     </span>
                     <span className="mt-1 block text-xs text-pale-muted max-md:order-5 max-md:col-span-2 max-md:mt-0">{change.note[locale]}</span>
                   </td>
