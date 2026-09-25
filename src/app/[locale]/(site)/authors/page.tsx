@@ -7,7 +7,8 @@ import { JsonLd, breadcrumbs, collectionPage } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/authors", dict.authors.metaTitle, dict.authors.intro);
+  // Description scritta per la SERP, con il nome del gioco: l'intro della pagina non lo dice (piano SEO del 25/09/2026)
+  return pageMeta(locale, "/authors", dict.authors.metaTitle, dict.authors.description);
 }
 
 export default async function AuthorsPage({ params }: { params: LocaleParams }) {

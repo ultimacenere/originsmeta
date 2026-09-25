@@ -8,9 +8,14 @@ export const es: Dictionary = {
   meta: {
     siteName: "OriginsMeta",
     tagline: "El meta, sobre la mesa.",
-    homeTitle: "Origins TCG: tier list, mazos y cartas · OriginsMeta",
+    /* Home sul marchio e su Koin Games, che distingue il gioco da Riftbound Origins (piano SEO del 25/09/2026):
+       "tier list", "mazos" e "cartas" sono delle loro pagine */
+    homeTitle: "Origins TCG, el juego de cartas de Koin Games · OriginsMeta",
     description:
-      "Sitio no oficial sobre Origins TCG: noticias, tier list, guías, base de datos de cartas, mazos y calendario de torneos. En inglés, italiano y español.",
+      "Origins TCG es el juego de cartas free-to-compete de Koin Games. Sitio no oficial en español, inglés e italiano: cartas, mazos, deck builder, guías, noticias.",
+    /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
+    siteDescription:
+      "Sitio de fans no oficial sobre Origins TCG, el juego de cartas de Koin Games, en español, inglés e italiano: cartas, mazos, deck builder, tier list, guías y noticias.",
   },
   nav: {
     news: "Noticias",
@@ -38,9 +43,15 @@ export const es: Dictionary = {
   },
   faq: {
     kicker: "Preguntas",
-    title: "Pregunta lo que quieras sobre Origins TCG",
+    /* title (H1) e metaTitle (SERP) non promettono l'assistente, che può essere spento (piano SEO del 25/09/2026);
+       nel metaTitle solo gli argomenti che le risposte approvate coprono davvero */
+    title: "Preguntas frecuentes sobre Origins TCG",
+    metaTitle: "FAQ de Origins TCG: mazos, Kickstarter y Crimson Cup",
     intro: "Escribe una pregunta y la respuesta se construye con los datos de este sitio: la base de datos de cartas (parche de la demo del 21 de septiembre de 2026), nuestras guías y el calendario de eventos. Abajo, las respuestas que hemos escrito y revisado nosotros.",
-    description: "Pregunta sobre Origins TCG: la respuesta sale de nuestra base de datos de cartas de la Demo 2.0, las guías y el calendario, más respuestas escritas a mano.",
+    /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
+       collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
+    introOffline: "Respuestas breves a las preguntas más frecuentes sobre Origins TCG, el juego de cartas de Koin Games, con el enlace a la guía que profundiza, cuando la hay.",
+    description: "Respuestas breves sobre Origins TCG, el juego de cartas de Koin Games: reglas del mazo, pay to win, Conquest, fechas y premios de la Crimson Cup, Kickstarter.",
     askTitle: "Haz una pregunta",
     placeholder: "¿Qué hace Mulan? ¿Qué combina bien con Van Helsing?",
     send: "Preguntar",
@@ -48,8 +59,10 @@ export const es: Dictionary = {
     suggestions: "Prueba con una de estas",
     sources: "De dónde sale",
     disclaimer: "Respuesta construida por un asistente con los datos de este sitio. No somos Koin Games: para reglas, fechas y anuncios, prevalecen las fuentes oficiales.",
-    coverage: "Puede leer {cards} cartas de la Demo 2.0, {guides} guías y el calendario de eventos. Las estadísticas siguen el parche de la demo del {patch}.",
-    offline: "El asistente está apagado en este momento. Las respuestas de abajo siguen aquí, y la base de datos de cartas responde por sí sola a la mayoría de las preguntas.",
+    coverage: "Puede leer las {cards} cartas de la Demo 2.0 y las {created} cartas que crean, {guides} guías y el calendario de eventos. Las estadísticas siguen el parche de la demo del {patch}.",
+    /* riquadro sotto le risposte quando l'assistente è spento: due strade che rispondono comunque, senza parlare dell'assistente */
+    offlineTitle: "¿No encontraste la respuesta?",
+    offline: "Para una carta, la base de datos de cartas tiene su texto oficial, sus estadísticas y su historial de cambios. Para todo lo demás, pregunta a la comunidad en el Discord oficial.",
     offlineCards: "Busca en la base de datos de cartas",
     offlineDiscord: "Pregunta en Discord",
     approvedTitle: "Las respuestas que se quedan",
@@ -174,7 +187,7 @@ export const es: Dictionary = {
     tomorrow: "mañana",
   },
   home: {
-    h1: "Origins TCG: noticias, tier list, mazos, cartas y torneos",
+    h1: "Origins TCG: un sitio de fans no oficial sobre el juego de cartas de Koin Games",
     metashiftSub: "Los cambios más grandes del último parche",
     tierTitle: "Tier list",
     /** Post-it grande della striscia: il nome su due righe, lettere tutte della stessa misura (Pierluigi, 22/09/2026). */
@@ -203,6 +216,9 @@ export const es: Dictionary = {
     guidesTitle: "Empieza aquí",
     guidesStartSub: "¿Acabas de descubrir Origins TCG? Tres lecturas breves: qué es el juego, cómo se juega la demo y qué pasa en el Steam Next Fest.",
     statusTitle: "Estado del juego",
+    /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
+       solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
+    inBrief: "Origins TCG es el juego de cartas digital free-to-compete de Koin Games: la demo es gratuita en Steam y el lanzamiento está previsto para el cuarto trimestre de 2026, según la página de Steam. OriginsMeta es un sitio de fans no oficial en español, inglés e italiano, sin afiliación con Koin Games.",
     status: {
       demo: "Demo de Steam",
       demoValue: "Disponible desde el 15 de julio de 2026",
@@ -230,9 +246,12 @@ export const es: Dictionary = {
     },
   },
   cards: {
-    title: "Base de datos de cartas de Origins TCG",
+    /* title = H1 (e briciole); metaTitle = titolo in SERP con "Koin Games", che distingue il gioco da Riftbound Origins
+       (piano SEO del 25/09/2026) */
+    title: "Lista de cartas de Origins TCG",
+    metaTitle: "Cartas de Origins TCG (Koin Games): lista completa",
     intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés, italiano y español tal como aparece en el juego, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
-    description: "Todas las cartas de Origins TCG de la Demo 2.0 en una base de datos: busca y filtra por tipo, saga, alineamiento y rareza, con texto oficial y estadísticas.",
+    description: "Todas las cartas de la Demo 2.0 de Origins TCG, el juego de cartas de Koin Games: texto oficial, estadísticas y cambios, con filtros por tipo, saga y rareza.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Nombre o texto: Merlin, Al revelar…",
     countLabel: "cartas en la Demo 2.0",
@@ -250,9 +269,12 @@ export const es: Dictionary = {
     buildText: "Una Legendaria más 12 cartas base distintas, dos copias de cada una: 25 cartas. El deck builder es gratuito y no necesita cuenta.",
   },
   decks: {
-    title: "Base de datos de mazos de Origins TCG",
+    /* title = H1 (e briciole); metaTitle = titolo in SERP con "Koin Games", che distingue il gioco da Riftbound Origins
+       (piano SEO del 25/09/2026) */
+    title: "Mazos de Origins TCG de la comunidad",
+    metaTitle: "Mazos de Origins TCG (Koin Games): listas y códigos",
     intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y creador, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
-    description: "Mazos de Origins TCG publicados por la comunidad, cada uno con guía y valoración en estrellas: filtra por Legendaria, arquetipo y creador o busca por carta.",
+    description: "Listas de mazos de Origins TCG, el juego de cartas de Koin Games: plan de juego, valoraciones y código del juego. Filtra por Legendaria, arquetipo o carta.",
     conquestTitle: "El formato Conquest, explicado",
     conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026) y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí y con Legendarias distintas, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
     submitTitle: "Publica tu mazo con tu guía",
@@ -267,11 +289,29 @@ export const es: Dictionary = {
     legendariesText: "La Demo 2.0 tiene {n} Legendarias jugables, una al frente de cada mazo. Aquí están todas: cada nombre abre la página de la carta con su texto, sus estadísticas y sus cambios de equilibrio. Las del playtest que no están en la demo siguen en la base de datos de cartas, marcadas como retiradas.",
     detailKicker: "Mazo",
     otherDecks: "Otros mazos",
+    /* "In breve" di /decks e di /tier-list (piano SEO/GEO del 25/09/2026): frasi costruite sul server con i dati dei mazzi
+       pubblicati, mai numeri scritti a mano. {list} è un elenco "Nome (n mazos)" o "Mazo (4,8/5, 5 votos)" */
+    brief: {
+      count: "Hasta ahora la comunidad ha publicado en OriginsMeta {n} mazos de Origins TCG (Koin Games); el último, el {date}.",
+      countOne: "Hasta ahora la comunidad ha publicado en OriginsMeta un mazo de Origins TCG (Koin Games), el {date}.",
+      legendaries: "Legendarias más jugadas: {list}.",
+      cards: "Cartas base más jugadas: {list}.",
+      rated: "Mazos mejor valorados: {list}.",
+      ratedOne: "Mazo mejor valorado: {list}.",
+      rating: "{avg}/5, {votes}",
+    },
   },
   tier: {
+    /* title = H1 (invariato); metaTitle = titolo in SERP: la pagina primaria per "origins tcg tier list" e "meta" (piano SEO del 25/09/2026) */
     title: "Tier list de Origins TCG",
+    metaTitle: "Tier list y meta de Origins TCG: mazos y cartas",
     intro: "Mazos, Legendarias y cartas base. Nuestra clasificación se basa en resultados de torneos, nunca en corazonadas, y empieza después de la Crimson Cup. Hasta entonces: las cartas más jugadas y la tier list de la comunidad.",
-    description: "Tier list de Origins TCG: mazos, Legendarias y cartas base. Nuestra clasificación llega tras la Crimson Cup; mientras, las más jugadas y la de la comunidad.",
+    description: "Tier list de Origins TCG (Koin Games): nuestra clasificación empieza tras la Crimson Cup. Mientras, los mazos mejor valorados y las cartas más jugadas.",
+    /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
+    mainText: "Para la clasificación basada en resultados de torneos:",
+    mainAnchor: "tier list de Origins TCG",
+    decksText: "Para las listas completas:",
+    decksAnchor: "todos los mazos de Origins TCG",
     sections: {
       decks: { title: "Mazos", text: "La lista principal. Cada entrada lleva a la página del mazo y a sus guías." },
       legendaries: { title: "Legendarias", text: "La carta que lidera el mazo, clasificada por separado." },
@@ -334,9 +374,12 @@ export const es: Dictionary = {
     inDecksOne: "1 mazo",
     inDecksMany: "{n} mazos",
     community: {
-      title: "Tier list de la comunidad de Origins TCG",
-      description: "La tier list de la comunidad de Origins TCG: promedio de las clasificaciones de los miembros de OriginsMeta, Legendarias y cartas base, al día con cada lista.",
+      /* sotto COMMUNITY_MIN_LISTS liste la pagina è un'anteprima e lo dicono anche titolo in SERP e H1 (decisione del 24/09/2026) */
+      title: "Tier list de la comunidad de Origins TCG: los votos",
+      titlePreview: "Tier list de la comunidad de Origins TCG (vista previa)",
+      description: "La tier list de la comunidad de Origins TCG: el promedio de las listas de los miembros de OriginsMeta, Legendarias y cartas base, con los votos de cada carta.",
       h1: "Tier list de la comunidad",
+      h1Preview: "Tier list de la comunidad (vista previa)",
       intro: "Esta clasificación no sale de resultados de torneos: es el promedio de las tier lists que los miembros guardan con nuestra herramienta. Cada tier vale puntos (S=5 … D=1); una carta queda en el tier de su promedio.",
       sourceText: "tier lists guardadas por los miembros",
       updatedText: "la última del {date}",
@@ -406,6 +449,7 @@ export const es: Dictionary = {
   tierMaker: {
     title: "Crea tu tier list de Origins TCG",
     description: "Crea gratis tu tier list de Origins TCG: arrastra las cartas de la Demo 2.0 a los tiers de S a D, con las Legendarias aparte, y compártela con un enlace.",
+    /* l'H1 della pagina è `title` (piano SEO del 25/09/2026); `h1` resta il nome di riserva di una lista salvata senza titolo */
     h1: "Crea tu tier list",
     intro: "Clasifica a tu manera las cartas de la Demo 2.0, de S a D: Legendarias y cartas base son dos listas separadas. No hace falta cuenta: tu lista se guarda en este navegador y viaja con un enlace, preparada para Discord.",
     officialLink: "Ver la tier list de OriginsMeta",
@@ -467,10 +511,18 @@ export const es: Dictionary = {
   },
   /* MetaShifting on its own page (24/09/2026, Pierluigi: "a dedicated URL /metashifting") */
   metashifting: {
-    title: "MetaShifting: cambios de equilibrio de Origins TCG",
+    /* la pagina primaria per "origins tcg patch notes" (piano SEO del 25/09/2026): /news non le ha più nel titolo */
+    title: "Notas del parche de Origins TCG: todos los cambios",
     h1: "MetaShifting: todos los cambios de equilibrio",
-    description: "Los cambios de equilibrio de Origins TCG según los parches oficiales, del más reciente: estadísticas, habilidades y alineamientos, como buff, nerf o rework.",
+    description: "Los cambios de equilibrio de Origins TCG según las notas del parche, del más reciente: estadísticas, habilidades y alineamientos, como buff, nerf o rework.",
     intro: "Cada cambio de los parches oficiales, del más reciente al más antiguo: estadísticas, habilidades y alineamientos, marcados como buff, nerf o rework. Cada carta lleva a su página con todo su historial de cambios de equilibrio.",
+    /* l'ultima patch in una frase (latestPatch di cards.ts): col numero di versione `latest`, senza (patch della demo,
+       la cui etichetta è già una data) `latestDated`; {changes} è una delle tre forme qui sotto */
+    latest: "El último parche de Origins TCG es el {patch}, publicado el {date}: {changes}.",
+    latestDated: "El último parche de Origins TCG se publicó el {date}: {changes}.",
+    changesMany: "{n} cambios en las cartas",
+    changesOne: "un cambio en las cartas",
+    changesNone: "ningún cambio en las cartas",
     source: "De las notas oficiales del parche en Steam y, cuando es más completo, del Discord oficial.",
     patchesLabel: "Parches",
     tierLink: "Ver la tier list",
@@ -478,7 +530,9 @@ export const es: Dictionary = {
   locations: {
     title: "Ubicaciones de Origins TCG y sus efectos",
     description: "Todas las ubicaciones de Origins TCG con su efecto: busca, filtra por tipo de efecto y salta a las cartas que invocan. Actualizadas a la Demo 2.0.",
+    /* nome breve della sezione (link da /cards); l'H1 della pagina è `headline`, con il gioco e quante sono ({n}) */
     h1: "Ubicaciones",
+    headline: "Las {n} ubicaciones de Origins TCG y sus efectos",
     intro: "Cada partida de Origins TCG se juega en tres ubicaciones, y son ellas las que deciden qué partida será: duplican el daño, cambian los costes, mueven personajes, invocan otros nuevos. En la Demo 2.0 rotan {n}; el juego completo tendrá más de cien. Aquí están todas, con su efecto.",
     facts: [
       "Las tres ubicaciones de una partida se revelan una por ronda durante las tres primeras rondas: desde la cuarta ronda se juega con todo el tablero a la vista.",
@@ -498,6 +552,7 @@ export const es: Dictionary = {
   },
   guides: {
     title: "Guías de Origins TCG",
+    metaTitle: "Guías de Origins TCG: cómo jugar, mazos y eventos",
     intro: "Breves, precisas y con fecha. Guías de mazos, cómo subir en la clasificatoria, arquetipos, entrevistas y crónicas de eventos. Solo publicamos lo que podemos verificar en los canales oficiales o en la mesa.",
     description: "Guías de Origins TCG: mazos, clasificatoria, arquetipos, economía de coleccionismo, entrevistas y eventos, todas con fecha y verificadas en fuentes oficiales.",
     readTime: "min de lectura",
@@ -581,9 +636,16 @@ export const es: Dictionary = {
   },
   events: {
     title: "Torneos y eventos de Origins TCG",
+    metaTitle: "Torneos y eventos de Origins TCG: calendario",
     intro: "Eventos oficiales y de la comunidad, con formatos, premios y enlaces de inscripción. Si organizas un evento, envíanoslo y lo añadimos.",
     lead: "El calendario de los eventos oficiales de Origins TCG y los torneos organizados por la comunidad: crea el tuyo, comparte el enlace en tu Discord y juega el cuadro aquí.",
     description: "Torneos y eventos de Origins TCG: el calendario de fechas oficiales con formatos y premios, y los torneos de la comunidad para organizar o inscribirte aquí.",
+    /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
+       con i fatti dell'evento e della news delle regole; il titolo resta generico (la Crimson Cup è della sua news) */
+    descriptionCup: "Torneos de Origins TCG: Crimson Cup del 20 al 25 de octubre de 2026 (Steam Next Fest), 10.000 dólares en premios. Calendario y torneos de la comunidad.",
+    cupLead: "La Crimson Cup, el torneo oficial de Origins TCG organizado por Koin Games, se juega del 20 al 25 de octubre de 2026 durante el Steam Next Fest: tres clasificatorios de 512 plazas el 20, 21 y 22 de octubre, playoffs el 24, finales el 25 y premios por un valor de 10.000 dólares.",
+    cupRules: "Reglas, formato y check-in de la Crimson Cup",
+    cupSignup: "Inscríbete en el Discord oficial",
     submitCta: "Envía tu evento",
     submitLead: "¿Organizas un evento fuera de OriginsMeta?",
     guideCta: "Guía del evento",
@@ -592,9 +654,13 @@ export const es: Dictionary = {
     calendarTitle: "Calendario",
   },
   news: {
-    title: "Noticias y notas del parche de Origins TCG",
+    /* "patch notes" è di /metashifting (piano SEO del 25/09/2026): qui il titolo punta a news, aggiornamenti ed eventi */
+    title: "Noticias de Origins TCG",
+    metaTitle: "Noticias de Origins TCG: actualizaciones y eventos",
     intro: "Cada anuncio oficial, resumido y con fecha, con el enlace a la fuente y las cartas a las que afecta.",
-    description: "Noticias y notas del parche de Origins TCG, resumidas y con fecha, con el enlace a la fuente oficial y las cartas afectadas por cada cambio de equilibrio.",
+    description: "Noticias de Origins TCG, de Koin Games y la comunidad, resumidas y fechadas: novedades de la demo, eventos y mazos nuevos, con la fuente oficial si la hay.",
+    patchNotesText: "Cada cambio de equilibrio, carta por carta y parche por parche:",
+    patchNotesLink: "notas del parche de Origins TCG en MetaShifting",
     readArticle: "Leer el artículo",
     inBrief: "En resumen",
     moreNews: "Más noticias",
@@ -631,6 +697,8 @@ export const es: Dictionary = {
     title: "Autores",
     metaTitle: "Quién escribe aquí sobre Origins TCG",
     intro: "Las personas detrás de las guías, las noticias y las notas de las cartas de OriginsMeta: cada perfil muestra su rol y todo lo que ha publicado.",
+    /* description per la SERP: l'intro non nomina il gioco */
+    description: "Quién escribe las guías, noticias y notas de cartas de Origins TCG en OriginsMeta: la página de cada autor muestra su rol y todo lo que ha publicado.",
     role: "Rol",
     writtenBy: "Escrito por",
     profileCta: "Ver su perfil",
@@ -697,7 +765,8 @@ export const es: Dictionary = {
     },
   },
   footer: {
-    disclaimer: "OriginsMeta es un proyecto independiente y no oficial, y no está afiliado a Koin Games. Origins TCG y todos los nombres e ilustraciones relacionados pertenecen a sus respectivos titulares.",
+    /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
+    disclaimer: "OriginsMeta es un sitio de fans independiente y no oficial sobre Origins TCG, el juego de cartas digital de Koin Games, y no está afiliado a Koin Games. Origins TCG y todos los nombres e ilustraciones relacionados pertenecen a sus respectivos titulares.",
     built: "Construido sobre la mesa, en tres idiomas.",
     links: "Enlaces",
     official: "Oficiales",
@@ -711,7 +780,8 @@ export const es: Dictionary = {
     ctaDiscord: "Únete al Discord",
   },
   builder: {
-    title: "Deck builder de Origins TCG",
+    /* H1 e titolo in SERP insieme (piano SEO del 25/09/2026): i codici del gioco sono una funzione del builder */
+    title: "Deck builder de Origins TCG y códigos de mazos",
     intro: "Construye un mazo legal de Origins: una Legendaria más doce cartas distintas, cada una con dos copias (25 cartas). El mazo se guarda en este navegador mientras lo construyes: compártelo con un enlace o un código del juego, guárdalo en privado en tu perfil o publícalo con una guía, y comprueba tres mazos a la vez para el formato de torneo Conquest.",
     description: "Deck builder gratuito de Origins TCG: 1 Legendaria más 12 cartas base, control de legalidad, modo Conquest para tres mazos, enlaces y códigos del juego.",
     dataKicker: "Datos de las cartas",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Fragment, type ReactNode } from "react";
 import { formatDate, href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import type { Dictionary } from "@/lib/i18n";
@@ -12,9 +13,25 @@ import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 import { localizedGuide } from "@/lib/community/deckTranslation";
 import { deckGameCode } from "@/lib/deckGameCode";
+import { weightedRating } from "@/lib/tierstats";
 
 /** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
 const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
+
+/** Riempie i segnaposto `{nome}` di una frase del dizionario con testo o link. */
+function fillNodes(template: string, values: Record<string, ReactNode>): ReactNode[] {
+  return template.split(/(\{\w+\})/).map((part, i) => {
+    const key = /^\{(\w+)\}$/.exec(part)?.[1];
+    return key && key in values ? <Fragment key={i}>{values[key]}</Fragment> : part;
+  });
+}
+
+/** Elenco con le virgole e la congiunzione della lingua ("A, B and C", "A, B e C", "A, B y C"), anche con dei link dentro. */
+function listNodes(locale: Locale, items: ReactNode[]): ReactNode[] {
+  return new Intl.ListFormat(locale, { type: "conjunction" })
+    .formatToParts(items.map((_, i) => String(i)))
+    .map((p, i) => (p.type === "element" ? <Fragment key={i}>{items[Number(p.value)]}</Fragment> : p.value));
+}
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
@@ -64,7 +81,8 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/decks", dict.decks.title, dict.decks.description);
+  // In SERP "decklists and codes" (piano SEO del 25/09/2026); l'H1 resta `title`, più leggibile sulla pagina
+  return pageMeta(locale, "/decks", dict.decks.metaTitle, dict.decks.description);
 }
 
 export default async function DecksPage({ params }: { params: LocaleParams }) {
@@ -133,6 +151,30 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
     };
   });
 
+  // In breve (piano SEO/GEO del 25/09/2026, DECKS-05): quanti mazzi, le Leggendarie più giocate e i mazzi più votati,
+  // calcolati qui a ogni rigenerazione (ISR), mai scritti a mano. I voti si ordinano col voto pesato sul numero di voti,
+  // come nella tier list; accanto a ogni nome il suo numero, così i pari merito si vedono.
+  const br = d.decks.brief;
+  const lastDeck = community.map((deck) => deck.created_at.slice(0, 10)).sort().at(-1);
+  const legendaryUse = new Map<string, number>();
+  for (const deck of community) {
+    const leg = deck.legendary ? getCard(deck.legendary) : undefined;
+    if (leg?.legendary) legendaryUse.set(leg.slug, (legendaryUse.get(leg.slug) ?? 0) + 1);
+  }
+  const topLegendaries = [...legendaryUse]
+    .map(([slug, n]) => ({ card: getCard(slug)!, n }))
+    .sort((a, b) => b.n - a.n || a.card.name.localeCompare(b.card.name))
+    .slice(0, 3);
+  const ratingOf = (deck: (typeof community)[number]) => deck.rating ?? { avg: 0, votes: 0 };
+  const topRated = community
+    .filter((deck) => ratingOf(deck).votes > 0)
+    .map((deck) => ({ deck, rating: ratingOf(deck), score: weightedRating(ratingOf(deck).avg, ratingOf(deck).votes) }))
+    .sort((a, b) => b.score - a.score || b.rating.votes - a.rating.votes || b.deck.created_at.localeCompare(a.deck.created_at))
+    .slice(0, 3);
+  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const inDecks = (n: number) => (n === 1 ? d.tier.inDecksOne : d.tier.inDecksMany.replace("{n}", String(n)));
+  const votesOf = (n: number) => (n === 1 ? d.tier.explorer.votesOne : d.tier.explorer.votesMany.replace("{n}", String(n)));
+
   // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
   const authorTypes = (["staff", "pro", "influencer", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
 
@@ -162,6 +204,48 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="t-page mt-2">{d.decks.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
+      {lastDeck ? (
+        <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
+          <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
+          {fillNodes(community.length === 1 ? br.countOne : br.count, { n: String(community.length), date: formatDate(locale, lastDeck) })}
+          {topLegendaries.length ? (
+            <>
+              {" "}
+              {fillNodes(br.legendaries, {
+                list: listNodes(
+                  locale,
+                  topLegendaries.map(({ card, n }) => (
+                    <Fragment key={card.slug}>
+                      <Link href={href(locale, `/cards/${card.slug}`)} className="link-mint">
+                        {card.name}
+                      </Link>{" "}
+                      ({inDecks(n)})
+                    </Fragment>
+                  )),
+                ),
+              })}
+            </>
+          ) : null}
+          {topRated.length ? (
+            <>
+              {" "}
+              {fillNodes(topRated.length === 1 ? br.ratedOne : br.rated, {
+                list: listNodes(
+                  locale,
+                  topRated.map(({ deck, rating }) => (
+                    <Fragment key={deck.slug}>
+                      <Link href={href(locale, `/decks/community/${deck.slug}`)} className="link-mint">
+                        {deck.name}
+                      </Link>{" "}
+                      ({fillNodes(br.rating, { avg: oneDecimal.format(rating.avg), votes: votesOf(rating.votes) })})
+                    </Fragment>
+                  )),
+                ),
+              })}
+            </>
+          ) : null}
+        </p>
+      ) : null}
 
       {/* UX-13: l'invito a pubblicare sta subito sotto l'intro (prima era in fondo alla pagina, dopo tutto il resto) */}
       <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">

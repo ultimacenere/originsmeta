@@ -8,7 +8,8 @@ import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/J
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/guides", dict.guides.title, dict.guides.description);
+  // In SERP anche che cosa si trova nelle guide (piano SEO del 25/09/2026); l'H1 resta `title`
+  return pageMeta(locale, "/guides", dict.guides.metaTitle, dict.guides.description);
 }
 
 export default async function GuidesPage({ params }: { params: LocaleParams }) {

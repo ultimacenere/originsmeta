@@ -76,6 +76,22 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
           { label: t.lineMeasure, text: p.measureText },
         ]}
       />
+      {/* Link nel testo verso le due pagine primarie vicine (piano SEO del 25/09/2026): la tier list per "origins tcg
+          tier list" e /decks per "origins tcg mazzi", ricerca su cui questa pagina usciva al posto dei mazzi */}
+      <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-chalk-muted">
+        <span>
+          {t.mainText}{" "}
+          <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
+            {t.mainAnchor} →
+          </Link>
+        </span>
+        <span>
+          {t.decksText}{" "}
+          <Link href={href(locale, "/decks")} className="link-mint font-bold">
+            {t.decksAnchor} →
+          </Link>
+        </span>
+      </p>
 
       {n === 0 ? (
         <div className="felt-panel-mint mt-8 flex max-w-3xl flex-wrap items-center gap-4 p-6">

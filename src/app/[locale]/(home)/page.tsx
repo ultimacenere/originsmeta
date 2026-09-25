@@ -22,7 +22,10 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   const { locale, dict } = await resolveLocale(params);
   // Nessun `title` da sovrascrivere: `pageMeta` restituisce già il titolo finale come `absolute`
   // (homeTitle contiene sia "Origins TCG" sia "OriginsMeta", quindi resta esattamente com'è nel dizionario).
-  return pageMeta(locale, "", dict.meta.homeTitle, dict.meta.description, "/media/og.jpg");
+  // Dal 25/09/2026 il titolo punta al marchio e a Koin Games (piano SEO): tier list, mazzi e carte hanno le loro pagine.
+  // Niente immagine passata a mano: è già quella di riserva, e così il testo alternativo resta quello che descrive
+  // l'immagine (`defaultOgAlt`) e non il titolo della pagina.
+  return pageMeta(locale, "", dict.meta.homeTitle, dict.meta.description);
 }
 
 /**
@@ -393,6 +396,13 @@ export default async function Home({ params }: { params: LocaleParams }) {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr]">
             <div>
               <SectionHead title={d.home.statusTitle} />
+              {/* In breve (decisione di Pierluigi del 25/09/2026, piano SEO/GEO): due frasi visibili su che cos'è il gioco
+                  e che cos'è il sito, per chi arriva cercando "origins tcg" e per le risposte degli assistenti. Sta
+                  dentro Stato del gioco, piccolo, così l'ordine della home non cambia. */}
+              <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-pale">
+                <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
+                {d.home.inBrief}
+              </p>
               <dl className="grid grid-cols-2 gap-3">
                 {/* Ogni dato porta alla guida che lo spiega (analisi SEO del 25/09/2026): la home è la pagina più
                     linkata del sito e le guide evergreen avevano 2–5 link interni. L'ultima riga, se dispari, va a

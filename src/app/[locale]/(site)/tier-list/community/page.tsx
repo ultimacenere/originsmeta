@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cache } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
-import { loadTierData } from "@/lib/tierData";
+import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
 import { TierExplorer } from "@/components/TierExplorer";
@@ -20,18 +21,27 @@ import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/J
 */
 export const revalidate = 300;
 
+/**
+ * Una sola lettura di Supabase per metadati e pagina nella stessa generazione: il titolo in SERP dipende da quante
+ * tier list sono state salvate (sotto COMMUNITY_MIN_LISTS è un'anteprima e lo dice, piano SEO del 25/09/2026).
+ */
+const loadData = cache(loadTierData);
+const savedLists = (data: TierData) => Math.max(data.lists.legendaries, data.lists.cards);
+
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
-  return pageMeta(locale, "/tier-list/community", dict.tier.community.title, dict.tier.community.description);
+  const c = dict.tier.community;
+  const preview = savedLists(await loadData(locale)) < COMMUNITY_MIN_LISTS;
+  return pageMeta(locale, "/tier-list/community", preview ? c.titlePreview : c.title, c.description);
 }
 
 export default async function CommunityTierListPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const t = d.tier;
   const c = t.community;
-  const data = await loadTierData(locale);
+  const data = await loadData(locale);
   const labels = tierExplorerLabels(d);
-  const lists = Math.max(data.lists.legendaries, data.lists.cards);
+  const lists = savedLists(data);
   const state = tierSourceState(d, { lists, decks: data.decks.length });
   const kinds = [
     { id: "legendaries" as const, title: t.sections.legendaries.title, text: t.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary), n: data.lists.legendaries },
@@ -53,7 +63,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
           collectionPage({
             locale,
             path: href(locale, "/tier-list/community"),
-            name: c.title,
+            name: lists < COMMUNITY_MIN_LISTS ? c.titlePreview : c.title,
             description: c.description,
             items: kinds.map((k) => ({ name: k.title, path: `${href(locale, "/tier-list/community")}#${k.id}` })),
             about: videoGameId,
@@ -61,11 +71,12 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         ]}
       />
       <CardMentionEdges />
+      {/* Sotto la soglia anche l'H1 dice che è un'anteprima, come il titolo in SERP (decisione del 24/09/2026) */}
       <TierListHeader
         locale={locale}
         dict={d}
         current="community"
-        title={c.h1}
+        title={lists < COMMUNITY_MIN_LISTS ? c.h1Preview : c.h1}
         intro={c.intro}
         state={state}
         sections={lists ? kinds.map((k) => ({ id: k.id, label: k.title, count: k.entries.length })) : undefined}
@@ -77,6 +88,14 @@ export default async function CommunityTierListPage({ params }: { params: Locale
           ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort, lists), warn: true }] : []),
         ]}
       />
+      {/* Link nel testo verso la tier list principale, con il suo nome come ancora (piano SEO del 25/09/2026): su
+          "origins tcg tier list" deve uscire /tier-list, non questa pagina */}
+      <p className="mt-3 text-sm text-chalk-muted">
+        {t.mainText}{" "}
+        <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
+          {t.mainAnchor} →
+        </Link>
+      </p>
 
       {lists === 0 ? (
         /* Nessuna tier list salvata: una pagina vuota non serve a nessuno, l'invito sì. */

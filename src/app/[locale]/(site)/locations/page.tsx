@@ -57,7 +57,8 @@ export default async function LocationsPage({ params }: { params: LocaleParams }
         ]}
       />
       <p className="kicker text-mint">{d.nav.cards}</p>
-      <h1 className="t-page mt-2">{t.h1}</h1>
+      {/* H1 con il nome del gioco e il numero dei luoghi, dai dati (piano SEO del 25/09/2026: prima era solo "Locations") */}
+      <h1 className="t-page mt-2">{t.headline.replace("{n}", String(locationsByName.length))}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{t.intro.replace("{n}", String(locationsByName.length))}</p>
 
       {/* Come funzionano, in tre righe: chi arriva da una ricerca deve capirlo senza aprire la guida */}
