@@ -111,7 +111,9 @@ function authorOf(d: ExplorerDeck): string | undefined {
  * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
  * Al passaggio del mouse si apre la carta in grande con nome, costo, statistiche e testo dell'abilità (`CardPeek`,
  * la stessa anteprima di chip e deck builder), così si legge il mazzo senza aprirlo. Su touch il pannello non
- * esiste (`hover: none`) e resta il nome nel `title`.
+ * esiste (`hover: none`) e resta il nome nel `title`. Il pannello nasce al primo passaggio del mouse (GEO-01,
+ * 25/09/2026): nell'HTML di /decks c'è solo il segnaposto con i dati in `data-peek`, non più il testo delle tredici
+ * carte di ogni mazzo, che era il 69% delle parole della pagina. La pagina monta `CardMentionEdges`.
  */
 function DeckCardArt({ card, size, legendary = false }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean }) {
   const isLeg = legendary || card.legendary;
