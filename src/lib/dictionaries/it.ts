@@ -734,7 +734,8 @@ export const it: Dictionary = {
     },
   },
   footer: {
-    disclaimer: "OriginsMeta è un progetto indipendente e non ufficiale, non affiliato a Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
+    /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
+    disclaimer: "OriginsMeta è un sito di fan indipendente e non ufficiale su Origins TCG, il gioco di carte digitale di Koin Games, non affiliato a Koin Games. Origins TCG e tutti i nomi e le illustrazioni collegati appartengono ai rispettivi titolari.",
     built: "Costruito al tavolo, in tre lingue.",
     links: "Link",
     official: "Ufficiali",
