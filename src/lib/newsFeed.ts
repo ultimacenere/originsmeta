@@ -5,12 +5,16 @@ import { newsPath, sortedNews, type NewsItem } from "./data/news";
 import { authorOfNews } from "./data/authors";
 import { imageSizeOf } from "./imageSize";
 import { imageMime, rssXml, type RssImage, type RssItem } from "./seoXml";
+import { newsFeedLabels, newsFeedPath } from "./newsFeedMeta";
 
 /**
  * Feed RSS delle news, uno per lingua: /en/news/feed.xml, /it/news/feed.xml, /es/news/feed.xml (Ondata 2 del piano
  * SEO/GEO, 25/09/2026: NEWS-08, TECH-15, GEO-15). Prima le news si scoprivano solo dalla sitemap e da Discord: il feed
- * le porta ai lettori RSS, ai bot RSS dei server Discord di altri giocatori e ai motori che leggono i feed (Google e
- * Bing li accettano anche come sitemap, e robots.txt li dichiara).
+ * le porta ai lettori RSS, ai bot RSS dei server Discord di altri giocatori e ai motori che leggono i feed. Le pagine
+ * lo dichiarano con `<link rel="alternate">` (percorso ed etichette in `newsFeedMeta.ts`, modulo leggero per il
+ * layout). robots.txt non lo elenca fra le sitemap: lì la data è quella di uscita (`pubDate`, quella che i lettori
+ * vogliono), mentre la sitemap delle news dà quella dell'ultima revisione, e due date diverse per lo stesso URL
+ * sarebbero un segnale contraddittorio.
  *
  * Ogni voce: titolo dell'articolo (H1), link e guid (la pagina), data di pubblicazione, la meta description scritta
  * apposta, chi firma e la copertina. Il feed si genera alla build (le news cambiano solo con un deploy): lì `public/`
@@ -19,31 +23,6 @@ import { imageMime, rssXml, type RssImage, type RssItem } from "./seoXml";
 
 /** Quante news tiene il feed: le più recenti. */
 export const NEWS_FEED_ITEMS = 30;
-
-/** Percorso del feed di una lingua. */
-export function newsFeedPath(locale: Locale): string {
-  return `/${locale}/news/feed.xml`;
-}
-
-/**
- * Titolo e descrizione del canale nelle tre lingue ("patch notes" in italiano, "notas del parche" in spagnolo, come
- * in docs/spagnolo.md). La descrizione dice sempre che il sito non è affiliato a Koin Games. Il titolo serve anche al
- * `<link rel="alternate">` delle pagine.
- */
-export const newsFeedLabels: Record<Locale, { title: string; description: string }> = {
-  en: {
-    title: "Origins TCG news · OriginsMeta",
-    description: "Origins TCG news from OriginsMeta: patch notes, events, demo updates and new features on the site. Unofficial fan site, not affiliated with Koin Games.",
-  },
-  it: {
-    title: "News su Origins TCG · OriginsMeta",
-    description: "Le news su Origins TCG di OriginsMeta: patch notes, eventi, novità della demo e del sito. Sito fan non ufficiale, non affiliato a Koin Games.",
-  },
-  es: {
-    title: "Noticias de Origins TCG · OriginsMeta",
-    description: "Noticias de Origins TCG en OriginsMeta: notas del parche, eventos, novedades de la demo y del sitio. Sitio fan no oficial, no afiliado a Koin Games.",
-  },
-};
 
 /**
  * Data di pubblicazione di una news per il feed. Le news hanno solo il giorno: vale mezzogiorno UTC (come `formatDate`

@@ -52,11 +52,15 @@ export type CommunityData = {
   tournaments: { slug: string; updated_at: string }[];
   /** iscritti con almeno un mazzo pubblicato (/u/<nome>) */
   profiles: { username: string; updated_at: string }[];
-  /** tier list salvate: la più recente e quella di ogni utente */
-  tierLists: { latest?: string; byUser: Record<string, string> };
+  /**
+   * tier list salvate: la più recente e quella di ogni utente, come coppie [nome, data]. Non un oggetto: la cache dei
+   * dati lo serializza in JSON e lo restituisce come oggetto normale, dove un nome utente come "constructor" (possibile:
+   * il nome nasce dal nome Discord o dall'email) leggerebbe una proprietà di Object.prototype invece di una data.
+   */
+  tierLists: { latest?: string; byUser: [username: string, updatedAt: string][] };
 };
 
-export const EMPTY_COMMUNITY: CommunityData = { decks: [], tournaments: [], profiles: [], tierLists: { byUser: {} } };
+export const EMPTY_COMMUNITY: CommunityData = { decks: [], tournaments: [], profiles: [], tierLists: { byUser: [] } };
 
 /** Sezione di una scheda carta: prima le rimosse (anche le Leggendarie e le create), poi le create, poi le attive. */
 export function cardSection(card: Pick<Card, "status" | "type">): "cards" | "cards-created" | "cards-removed" {
@@ -101,6 +105,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
   const latestCommunity = latestDay(data.decks.map((c) => c.updated_at));
   const latestTournament = latestDay(data.tournaments.map((t) => t.updated_at));
   const patchDay = patches[latestPatch].date;
+  const tierListOf = new Map(data.tierLists.byUser);
   // Le guide hanno date per lingua: la versione spagnola non è più vecchia del 25/09/2026 (`getGuides`).
   const guidesBy = Object.fromEntries(locales.map((l) => [l, getGuides(l)])) as Record<Locale, Guide[]>;
   const guideOf = (l: Locale, slug: string) => guidesBy[l].find((g) => g.slug === slug);
@@ -178,7 +183,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ),
     // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026): i loro mazzi e le loro tier list.
     ...data.profiles.map(
-      (p): SitemapPage => ({ path: `/u/${p.username}`, section: "community", route: "/u/[username]", dates: [p.updated_at, data.tierLists.byUser[p.username]] }),
+      (p): SitemapPage => ({ path: `/u/${p.username}`, section: "community", route: "/u/[username]", dates: [p.updated_at, tierListOf.get(p.username)] }),
     ),
     ...data.tournaments.map((t): SitemapPage => ({ path: `/tournaments/${t.slug}`, section: "community", route: "/tournaments/[slug]", dates: [t.updated_at] })),
   ];

@@ -6,6 +6,7 @@
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
@@ -28,8 +29,11 @@ registerHooks({
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const feed: typeof import("./newsFeed") = await import("./newsFeed.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const meta: typeof import("./newsFeedMeta") = await import("./newsFeedMeta.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const newsModule: typeof import("./data/news") = await import("./data/news.ts");
-const { NEWS_FEED_ITEMS, newsFeedItems, newsFeedLabels, newsFeedPath, newsFeedXml, newsPubDate } = feed;
+const { NEWS_FEED_ITEMS, newsFeedItems, newsFeedXml, newsPubDate } = feed;
+const { newsFeedLabels, newsFeedPath } = meta;
 const { sortedNews } = newsModule;
 
 type Locale = "en" | "it" | "es";
@@ -46,6 +50,15 @@ describe("etichette", () => {
   });
   test("percorso del feed dentro /<lingua>/news/", () => {
     assert.equal(newsFeedPath("es"), "/es/news/feed.xml");
+  });
+  test("il modulo delle etichette non importa dati: lo carica il layout di ogni pagina", () => {
+    const src = readFileSync(new URL("./newsFeedMeta.ts", import.meta.url), "utf8");
+    const imports = [...src.matchAll(/^import\s.*$/gm)].map((m) => m[0]);
+    assert.deepEqual(imports, [`import type { Locale } from "./i18n";`]);
+  });
+  test("la formula dei dizionari: sito di fan, sitio de fans", () => {
+    assert.match(newsFeedLabels.it.description, /Sito di fan non ufficiale/);
+    assert.match(newsFeedLabels.es.description, /Sitio de fans no oficial/);
   });
 });
 

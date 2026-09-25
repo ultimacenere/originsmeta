@@ -5,12 +5,15 @@
  * stanno in src/lib/indexnow.ts; qui c'è solo il giro: quali URL, quando e con quali controlli.
  *
  * Due modi:
- *   1. push (la GitHub Action degli annunci, a ogni push su main che tocca news, guide o carte): confronta fra BEFORE e
- *      AFTER, letti da GitHub, news.ts, guides.ts, card-history.ts e card-lore.ts:
+ *   1. push (il job "indexnow" del workflow degli annunci, a ogni push su main che tocca news, guide, carte o luoghi):
+ *      confronta fra BEFORE e AFTER, letti da GitHub, i file di `FILES`:
  *        - news e guide nuove: le pagine nelle tre lingue, più /news o /guides e le home che le mostrano;
  *        - news e guide con le date cambiate (`updated`: un articolo rivisto);
+ *        - guide con il testo spagnolo cambiato (guides-es.ts): la sola pagina /es;
  *        - carte con lo storico o i testi cambiati (una patch, una rilettura nel gioco): le schede, più /metashifting
- *          quando cambia lo storico.
+ *          quando cambia lo storico. Un testo cambiato in una lingua sola segnala solo quella (`changedLocales`): il
+ *          protocollo chiede gli URL cambiati, e le schede nelle altre lingue non cambiano né di contenuto né di data;
+ *        - luoghi con gli effetti cambiati: /locations nelle lingue toccate.
  *      Prima aspetta che il deploy di produzione di AFTER sia pronto (l'API "deployments" di GitHub, che Vercel
  *      aggiorna): un avviso partito prima farebbe leggere a Bing la versione vecchia.
  *   2. a mano: INDEXNOW_TARGETS (il campo "indexnow" del lancio a mano del workflow) e SLUGS (il campo "slugs", lo
@@ -47,11 +50,14 @@ const FALLBACK_PAUSE_MS = 5 * 60_000;
 /** Pagine controllate in parallelo. */
 const CONCURRENCY = 6;
 
+/** I file confrontati dopo un push: gli stessi `paths` del workflow .github/workflows/discord-announce.yml. */
 export const FILES = {
   news: "src/lib/data/news.ts",
   guides: "src/lib/content/guides.ts",
+  guidesEs: "src/lib/content/guides-es.ts",
   history: "src/lib/data/card-history.ts",
   lore: "src/lib/data/card-lore.ts",
+  locations: "src/lib/data/locations.ts",
 };
 
 /** Percorso delle pagine per tipo di voce ("news:<slug>"…). */
@@ -101,6 +107,104 @@ export function recordChunks(source) {
   return out;
 }
 
+/** I pezzi del JavaScript che contano per `localeFields`: stringhe, nomi, numeri e segni. Spazi e commenti no. */
+function jsTokens(text) {
+  const out = [];
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (/\s/.test(ch)) {
+      i++;
+    } else if (ch === "/" && text[i + 1] === "/") {
+      const end = text.indexOf("\n", i);
+      i = end < 0 ? text.length : end;
+    } else if (ch === "/" && text[i + 1] === "*") {
+      const end = text.indexOf("*/", i + 2);
+      i = end < 0 ? text.length : end + 2;
+    } else if (ch === '"' || ch === "'" || ch === "`") {
+      let j = i + 1;
+      while (j < text.length && text[j] !== ch) j += text[j] === "\\" ? 2 : 1;
+      out.push({ type: "str", text: text.slice(i, j + 1) });
+      i = j + 1;
+    } else if (/[\w$]/.test(ch)) {
+      const m = text.slice(i).match(/^[\w$]+/)[0];
+      out.push({ type: "id", text: m });
+      i += m.length;
+    } else {
+      out.push({ type: "punct", text: ch });
+      i++;
+    }
+  }
+  return out;
+}
+
+const LOCALE_KEYS = new Set(LOCALES);
+
+/**
+ * Divide il testo di una voce (o di un file di dati) nei testi per lingua e nel resto, leggendo il JavaScript come
+ * testo. Una coppia `en: "…"`, `it: "…"` o `es: "…"` con una stringa per valore, a qualunque livello (`origin: { … }`,
+ * `effect: { … }`), va in `fields` con la lingua, il percorso delle chiavi e la profondità (1 = campo della voce);
+ * tutto il resto, senza spazi né commenti e senza quelle coppie, va in `neutral`. Così un testo aggiunto, tolto o
+ * cambiato in una lingua tocca solo quella lingua.
+ */
+export function localeFields(source) {
+  const toks = jsTokens(source.replace(/\r\n/g, "\n"));
+  const fields = [];
+  const stack = [];
+  let pending = null;
+  let neutral = "";
+  for (let t = 0; t < toks.length; t++) {
+    const tok = toks[t];
+    const isKey = (tok.type === "id" || tok.type === "str") && toks[t + 1]?.text === ":";
+    if (isKey) {
+      const key = tok.type === "str" ? tok.text.slice(1, -1) : tok.text;
+      if (LOCALE_KEYS.has(key) && toks[t + 2]?.type === "str") {
+        fields.push({ lang: key, path: [...stack, key].filter(Boolean).join("."), depth: stack.length, value: toks[t + 2].text });
+        t += toks[t + 3]?.text === "," ? 3 : 2;
+        continue;
+      }
+      pending = key;
+      neutral += `${tok.text}:`;
+      t += 1;
+      continue;
+    }
+    if (tok.text === "{" || tok.text === "[") {
+      stack.push(pending);
+      pending = null;
+    } else if (tok.text === "}" || tok.text === "]") {
+      stack.pop();
+      pending = null;
+    } else if (tok.text === ",") {
+      pending = null;
+    }
+    neutral += tok.text;
+  }
+  // la virgola rimasta prima di una parentesi, quando la coppia tolta era l'ultima
+  return { fields, neutral: neutral.replace(/,(?=[}\]])/g, "") };
+}
+
+/**
+ * Le lingue in cui cambia una pagina fra due versioni di un testo: tutte se cambia il resto (statistiche, parole
+ * chiave, saga, una voce nuova o tolta) o un campo che `everywhere` indica come visibile in tutte le lingue,
+ * altrimenti solo quelle i cui testi sono cambiati.
+ */
+export function changedLocales(before = "", after = "", everywhere = () => false) {
+  if (before.replace(/\r\n/g, "\n") === after.replace(/\r\n/g, "\n")) return [];
+  const a = localeFields(before);
+  const b = localeFields(after);
+  if (!before.trim() || !after.trim() || a.neutral !== b.neutral) return [...LOCALES];
+  const pick = (parts, test) => JSON.stringify(parts.fields.filter(test).map((f) => [f.path, f.value]));
+  if (pick(a, everywhere) !== pick(b, everywhere)) return [...LOCALES];
+  return LOCALES.filter((l) => pick(a, (f) => f.lang === l) !== pick(b, (f) => f.lang === l));
+}
+
+/**
+ * Il testo inglese di una carta letto nel gioco (`en` al primo livello della voce di card-lore.ts) si vede in tutte
+ * le lingue: sotto il testo tradotto nella scheda e al posto di una traduzione che manca (`cards.ts`). Le origini
+ * (`origin.en`…) e i testi `it` ed `es` solo nella loro.
+ */
+export const loreEverywhere = (f) => f.lang === "en" && f.depth === 1;
+
 /** Chiavi aggiunte, tolte o cambiate fra due versioni di un file (Map chiave → testo). */
 export function changedKeys(before, after) {
   const keys = new Set([...before.keys(), ...after.keys()]);
@@ -116,7 +220,20 @@ export function addedKeys(before, after) {
  * Percorsi da segnalare dopo un push, divisi in pagine nuove (`fresh`: rispondono 404 fino al deploy) e cambiate
  * (`changed`). Un file che manca vale testo vuoto.
  */
-export function pushPaths({ newsA = "", newsB = "", guidesA = "", guidesB = "", historyA = "", historyB = "", loreA = "", loreB = "" }) {
+export function pushPaths({
+  newsA = "",
+  newsB = "",
+  guidesA = "",
+  guidesB = "",
+  guidesEsA = "",
+  guidesEsB = "",
+  historyA = "",
+  historyB = "",
+  loreA = "",
+  loreB = "",
+  locationsA = "",
+  locationsB = "",
+}) {
   const fresh = [];
   const changed = [];
   const at = (path) => localizedPaths(path, LOCALES);
@@ -136,11 +253,24 @@ export function pushPaths({ newsA = "", newsB = "", guidesA = "", guidesB = "", 
   const guideDatesB = itemDates(guidesB);
   for (const slug of guidesAfter) if (guidesBefore.has(slug) && guideDatesA.get(slug) !== guideDatesB.get(slug)) changed.push(...at(`/guides/${slug}`));
   if (addedGuides.length) changed.push(...at("/guides"));
+  // I testi spagnoli stanno in un file loro (la data resta quella della versione inglese): cambia solo la pagina /es.
+  const esBefore = recordChunks(guidesEsA);
+  const esAfter = recordChunks(guidesEsB);
+  for (const slug of changedKeys(esBefore, esAfter)) if (guidesAfter.has(slug) && !addedGuides.includes(slug)) changed.push(`/es/guides/${slug}`);
 
-  const historyChanged = changedKeys(recordChunks(historyA), recordChunks(historyB));
-  const loreChanged = changedKeys(recordChunks(loreA), recordChunks(loreB));
-  for (const slug of new Set([...historyChanged, ...loreChanged])) changed.push(...at(`/cards/${slug}`));
-  if (historyChanged.length) changed.push(...at("/metashifting"));
+  // Carte: lo storico (una patch) cambia la scheda in tutte le lingue; i testi di card-lore.ts solo nelle lingue toccate.
+  const historyChanged = new Set(changedKeys(recordChunks(historyA), recordChunks(historyB)));
+  const loreBefore = recordChunks(loreA);
+  const loreAfter = recordChunks(loreB);
+  const loreChanged = changedKeys(loreBefore, loreAfter);
+  for (const slug of new Set([...historyChanged, ...loreChanged])) {
+    const langs = historyChanged.has(slug) ? LOCALES : changedLocales(loreBefore.get(slug), loreAfter.get(slug), loreEverywhere);
+    changed.push(...langs.map((l) => `/${l}/cards/${slug}`));
+  }
+  if (historyChanged.size) changed.push(...at("/metashifting"));
+
+  // Luoghi: una pagina sola, /locations, nelle lingue i cui effetti sono cambiati.
+  changed.push(...changedLocales(locationsA, locationsB).map((l) => `/${l}/locations`));
   return { fresh: [...new Set(fresh)], changed: [...new Set(changed)] };
 }
 

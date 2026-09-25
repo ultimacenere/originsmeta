@@ -51,7 +51,7 @@ const community = {
   ],
   tournaments: [{ slug: "crimson-cup-om-ab12", updated_at: "2026-09-25T09:00:00+00:00" }],
   profiles: [{ username: "davdas", updated_at: "2026-09-22T12:00:00+00:00" }],
-  tierLists: { latest: "2026-09-25T07:00:00+00:00", byUser: { davdas: "2026-09-30T07:00:00+00:00" } },
+  tierLists: { latest: "2026-09-25T07:00:00+00:00", byUser: [["davdas", "2026-09-30T07:00:00+00:00"]] as [string, string][] },
 };
 
 const pages = sitemapPages(community);
@@ -150,6 +150,28 @@ describe("date", () => {
     }
     // la tier list di davdas porta una data del 30/09: il profilo si ferma a oggi
     assert.equal(bySection("community", "it").find((e) => e.url.endsWith("/u/davdas"))?.lastmod, TODAY);
+  });
+});
+
+describe("nomi utente", () => {
+  test("un nome come le proprietà di Object.prototype non rompe le sitemap, anche dopo il JSON della cache", () => {
+    // i nomi nascono dal nome Discord o dall'email, in minuscolo: "constructor" è possibile
+    const odd = ["constructor", "__proto__", "tostring", "valueof"];
+    const data = JSON.parse(
+      JSON.stringify({
+        ...EMPTY_COMMUNITY,
+        profiles: odd.map((username) => ({ username, updated_at: "2026-09-24T10:00:00Z" })),
+        tierLists: { latest: "2026-09-24T11:00:00Z", byUser: [["constructor", "2026-09-24T12:00:00Z"]] },
+      }),
+    );
+    const oddPages = sitemapPages(data);
+    const entries = sectionEntries(oddPages, "community", "en", TODAY);
+    assert.deepEqual(
+      entries.map((e) => e.url),
+      odd.map((u) => `${SITE}/en/u/${u}`),
+    );
+    for (const e of entries) assert.match(e.lastmod ?? "", ISO_DAY, e.url);
+    assert.ok(sitemapIndexEntries(oddPages, TODAY).some((i) => i.url === `${SITE}/en/sitemap-community.xml`));
   });
 });
 
