@@ -5,6 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { isCaptchaError, turnstileEnabled } from "@/lib/turnstile";
 import { authErrorKind, type AuthErrorKind, type LoginLabels } from "@/lib/loginLabels";
+import { trackEvent } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
 import { DiscordLogo } from "./DiscordButton";
 import { Turnstile } from "./Turnstile";
@@ -16,6 +17,15 @@ type Via = "discord" | "email";
 
 /** Supabase accetta un link per indirizzo al minuto (README, "Configurazione Auth su Supabase"). */
 const RESEND_AFTER_MS = 60_000;
+
+/** Tipi di errore del ritorno come parametro `kind` dell'evento login_error (snake_case, come gli altri valori). */
+const ERROR_KIND: Record<AuthErrorKind, string> = {
+  expired: "expired",
+  otherBrowser: "other_browser",
+  discordCancelled: "discord_cancelled",
+  discord: "discord",
+  generic: "generic",
+};
 
 /** Solo percorsi interni, con le stesse regole del ritorno /auth/callback. */
 function safePath(raw: string | null): string | null {
@@ -53,6 +63,15 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const fromQuery = authErrorKind(params?.get("error"));
   const fromHash = authErrorKind(hash?.get("error"), hash?.get("error_code"), params?.get("via"));
   const urlError: AuthErrorKind | null = status === "idle" && !pending ? ((fromQuery === "generic" ? fromHash : null) ?? fromQuery ?? fromHash) : null;
+
+  /* Misura del percorso di accesso (MIS-11): l'errore che il pannello mostra, una volta per errore. Il metodo lo sa
+     il pannello per gli errori di questa pagina; per quelli del ritorno lo dice `via`, se c'è. */
+  const errorKind =
+    status === "providerError" ? "discord_start" : status === "error" ? "email_send" : status === "captchaError" ? "captcha" : status === "rateLimited" ? "rate_limited" : urlError ? ERROR_KIND[urlError] : null;
+  const errorVia = status === "providerError" ? "discord" : status !== "idle" ? "email" : params?.get("via");
+  useEffect(() => {
+    if (errorKind) trackEvent("login_error", { kind: errorKind, method: errorVia === "discord" || errorVia === "email" ? errorVia : undefined });
+  }, [errorKind, errorVia]);
 
   // Conto alla rovescia per "Invia di nuovo": orologio a parete, così resta giusto anche con la scheda in secondo piano.
   useEffect(() => {
@@ -96,6 +115,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const discord = async () => {
     const sb = supabaseBrowser();
     if (!sb) return;
+    trackEvent("login_start", { method: "discord" });
     setPending("discord");
     setStatus("idle");
     const { data, error } = await sb.auth.signInWithOAuth({ provider: "discord", options: { redirectTo: redirectTo("discord"), skipBrowserRedirect: true } });
@@ -140,6 +160,8 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       setResetSignal((n) => n + 1);
     }
     if (!error) {
+      // misura: per l'email l'accesso "parte" quando il link è spedito (l'indirizzo non va mai nei parametri)
+      trackEvent("login_start", { method: "email" });
       setSentTo(address);
       setStatus("sent");
       startCooldown();

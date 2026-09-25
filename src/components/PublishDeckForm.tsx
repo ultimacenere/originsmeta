@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState, useTransition, type FormEvent } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { localeNames, locales, type Dictionary } from "@/lib/i18n";
@@ -9,6 +9,7 @@ import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
 import { BUILDER_STORAGE_KEY, GUIDE_DRAFT_KEY, PENDING_PUBLISH_KEY, deckTypes, guideSections, type Guide } from "@/lib/community/types";
 import { suggestArchetype } from "@/lib/archetype";
+import { legendaryParam, trackEvent, type EventParams } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
@@ -173,6 +174,8 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const [, startSubmit] = useTransition();
   /* "Ricomincia da capo" sulla bozza ripristinata: cambia la chiave dei campi e li rimonta vuoti */
   const [draftReset, setDraftReset] = useState(0);
+  /* misura: il mazzo inviato, per l'evento deck_publish quando l'azione risponde "fatto" (solo in creazione) */
+  const sent = useRef<EventParams["deck_publish"] | null>(null);
 
   /* il mazzo resta in attesa nel browser: sopravvive al giro di accesso (Discord o link via email) */
   useEffect(() => {
@@ -223,6 +226,10 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   useEffect(() => {
     if (state.ok && state.href) {
       if (mode === "create") clearLocalDrafts();
+      if (mode === "create" && sent.current) {
+        trackEvent("deck_publish", sent.current);
+        sent.current = null;
+      }
       router.push(state.href);
     }
   }, [state, router, mode]);
@@ -309,6 +316,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
+        if (mode === "create") sent.current = { legendary: legendaryParam(deck.legendary), source: draftId ? "private_draft" : "builder" };
         startSubmit(() => formAction(fd));
       }}
       onChange={saveDraft}

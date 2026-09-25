@@ -69,6 +69,30 @@ export const CHANNELS = {
 /** Percorso delle pagine per tipo di voce. */
 const PATHS = { news: "news", guides: "guides", decks: "decks/community" };
 
+/**
+ * UTM sui link dei messaggi (Ondata 2, MIS-07): senza, chi arriva dall'app di Discord finisce fra le visite dirette
+ * (l'app non manda il referrer) e il canale che ha portato più iscritti non si vede. utm_source=discord,
+ * utm_medium=social, utm_campaign = tipo di contenuto (news, patch_notes, guide, deck), utm_content = canale del
+ * messaggio senza "#" (announcements, site-news, guides, metashifting, community-decks), così si distinguono
+ * #announcements e #site-news (le guide restano "guides" anche quando, senza il loro webhook, escono in #site-news). Le
+ * pagine dichiarano il canonical senza parametri: a Google arriva sempre l'indirizzo pulito. GA4 legge gli UTM da sé;
+ * Vercel solo con Web Analytics Plus (per il resto vede il referrer, quando c'è).
+ */
+export const UTM_CAMPAIGNS = { news: "news", guides: "guide", decks: "deck" };
+
+/** Campagna di una voce: le patch notes a parte, in tutti i canali in cui escono. */
+export const utmCampaign = (item) => (item.kind === "news" && item.patch ? "patch_notes" : (UTM_CAMPAIGNS[item.kind] ?? item.kind));
+
+/** Il link con gli UTM, prima dell'eventuale frammento (#patch-…); i parametri che c'erano restano. */
+export function withUtm(url, campaign, content) {
+  const u = new URL(url);
+  u.searchParams.set("utm_source", "discord");
+  u.searchParams.set("utm_medium", "social");
+  u.searchParams.set("utm_campaign", campaign);
+  if (content) u.searchParams.set("utm_content", content);
+  return u.toString();
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------- lettura dei file del repo (testo, senza eseguire TypeScript) ---------- */
@@ -176,12 +200,14 @@ const titleOf = (html) => h1Of(html) || ogValue(html, "title").replace(/\s+·\s+
  * Messaggio per un canale: italiano per primo, poi i titoli inglese e spagnolo collegati alle loro pagine (lo spagnolo
  * dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN), copertina; su
  * #metashifting il link alla patch. Una lingua di cui non si è letta la pagina (HTML vuoto) resta fuori.
+ * Tutti i link al sito hanno gli UTM (`withUtm`); l'immagine no.
  */
 export function payload(channel, item, itHtml, enHtml, esHtml = "") {
   const path = PATHS[item.kind];
-  const itUrl = `${SITE}/it/${path}/${item.slug}`;
-  const enUrl = `${SITE}/en/${path}/${item.slug}`;
-  const esUrl = `${SITE}/es/${path}/${item.slug}`;
+  const utm = (url) => withUtm(url, utmCampaign(item), CHANNELS[channel].name.replace(/^#/, ""));
+  const itUrl = utm(`${SITE}/it/${path}/${item.slug}`);
+  const enUrl = utm(`${SITE}/en/${path}/${item.slug}`);
+  const esUrl = utm(`${SITE}/es/${path}/${item.slug}`);
   const image = ogValue(itHtml, "image");
   const enTitle = titleOf(enHtml);
   const esTitle = titleOf(esHtml);
@@ -189,7 +215,7 @@ export function payload(channel, item, itHtml, enHtml, esHtml = "") {
   if (enTitle) fields.push({ name: "🇬🇧 English", value: `[${enTitle.replace(/[[\]]/g, "")}](${enUrl})`.slice(0, 1024) });
   if (esTitle) fields.push({ name: "🇪🇸 Español", value: `[${esTitle.replace(/[[\]]/g, "")}](${esUrl})`.slice(0, 1024) });
   if (channel === "metashifting" && item.patch) {
-    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${SITE}/it/metashifting#patch-${item.patch})` });
+    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${utm(`${SITE}/it/metashifting#patch-${item.patch}`)})` });
   }
   return {
     content: CHANNELS[channel].label,

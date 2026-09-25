@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { voteDeck } from "@/lib/community/actions";
+import { trackEvent } from "@/lib/analytics";
 
 export type RatingLabels = {
   rating: string;
@@ -74,6 +75,8 @@ export function StarRating({
       const r = await voteDeck(deckId, n, path);
       if (r.error) setMsg({ kind: "err", text: r.error === "ownDeck" ? labels.ownDeck : labels.voteError });
       else {
+        // misura: voto nuovo o cambiato (`mine` è ancora quello di prima del clic)
+        trackEvent("deck_vote", { stars: n, vote_type: mine ? "update" : "new" });
         setMine(n);
         if (r.avg !== undefined && r.votes !== undefined) setStats({ avg: r.avg, votes: r.votes });
         setMsg({ kind: "ok", text: labels.voted });
