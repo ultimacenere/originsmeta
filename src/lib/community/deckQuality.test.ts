@@ -7,7 +7,7 @@
  * I moduli sono scritti per Next (import senza estensione, alias `@/`): prima di caricarli il test registra un piccolo
  * hook di risoluzione dei moduli di Node (`module.registerHooks`, Node ≥ 22.15, come cardTitles.test.ts), che traduce
  * `@/` nella cartella src e aggiunge `.ts` agli import senza estensione. `@/components/JsonLd` è un file .tsx, che Node
- * non esegue: il test lo sostituisce con i soli due `@id` che jsonld/deck.ts ne legge, costruiti con lo stesso
+ * non esegue: il test lo sostituisce con i soli `@id` che jsonld/deck.ts ne legge (più `breadcrumbs`), con lo stesso
  * `siteUrl`. Nessuna chiamata a Supabase: di queries.ts si provano solo le funzioni pure.
  */
 import * as nodeModule from "node:module";
@@ -24,7 +24,8 @@ let stubSite = "";
 registerHooks({
   resolve(specifier, context, next) {
     if (specifier === "@/components/JsonLd") {
-      const code = `export const organizationId = ${JSON.stringify(`${stubSite}/#organization`)}; export const videoGameId = ${JSON.stringify(`${stubSite}/#origins-tcg`)};`;
+      // `breadcrumbs` serve a src/lib/jsonld/card.ts (pacchetto CARDS), se jsonld/deck.ts ne importerà `cardEntityId`
+      const code = `export const organizationId = ${JSON.stringify(`${stubSite}/#organization`)}; export const videoGameId = ${JSON.stringify(`${stubSite}/#origins-tcg`)}; export function breadcrumbs() { return {}; }`;
       return { url: `data:text/javascript,${encodeURIComponent(code)}`, shortCircuit: true };
     }
     const spec = specifier.startsWith("@/") ? new URL(specifier.slice(2), srcUrl).href : specifier;
