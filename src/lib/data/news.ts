@@ -935,11 +935,12 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
       "La primera gran actualización de la demo de Origins TCG: sobres de prueba, clasificatoria y Crimson Cup",
     ),
     // Senza "Crimson Cup" dal 25/09/2026: sulla coppa vince l'articolo delle regole; qui restano interfaccia, pacchetti e classificata.
-    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Origins TCG aggiorna la demo: interfaccia e classificata", "Origins TCG actualiza la demo: nueva UI y clasificatoria"),
+    // "Interfaccia"/"interfaz" come nelle description; in ogni lingua la classificata arriva col Next Fest, non il 21/9.
+    metaTitle: n("Origins TCG demo update: new UI, test packs, ranked", "Origins TCG aggiorna la demo: interfaccia e classificata", "Origins TCG actualiza la demo: interfaz y clasificatoria"),
     description: n(
       "Origins TCG demo update of 21 September: new UI, test packs, the Crimson Cup card list, progress kept from demo and playtest, ranked at Next Fest.",
       "Aggiornamento della demo di Origins TCG del 21/9: nuova interfaccia, pacchetti di prova, lista carte Crimson Cup, progressi salvi e classificata al Next Fest.",
-      "La demo de Origins TCG se actualiza el 21 de septiembre: nueva interfaz, sobres de prueba, lista de la Crimson Cup, progreso guardado y clasificatoria.",
+      "Demo de Origins TCG, 21 de septiembre: nueva interfaz, sobres de prueba, lista de la Crimson Cup, progreso guardado y clasificatoria en el Next Fest.",
     ),
     summary: n(
       "Koin Games updated the free Origins TCG demo on 21 September: a new interface and board, a collectors tutorial, test packs and the tentative Crimson Cup card list, with everyone's progress kept. Ranked mode switches on with Steam Next Fest.",
@@ -1414,7 +1415,8 @@ La cuestión está cerrada. Al anunciar [la primera gran actualización de la de
       "Koin rifarà l'IA delle boss fight nella Demo 2.0",
       "Koin rehará la IA de los combates contra jefes en la Demo 2.0",
     ),
-    metaTitle: n("Origins TCG: Koin reworks the boss AI for Demo 2.0", "Origins TCG: Koin rifà l'IA dei boss nella Demo 2.0", "Origins TCG: Koin rehace la IA de los jefes en la Demo 2.0"),
+    // Al futuro, come il titolo e i punti "In breve": il rifacimento dell'IA è promesso per la Demo v2, non ancora fatto.
+    metaTitle: n("Origins TCG: Koin will rework the boss AI for Demo 2.0", "Origins TCG: Koin rifarà l'IA dei boss nella Demo 2.0", "Origins TCG: Koin rehará la IA de los jefes en la Demo 2.0"),
     description: n(
       "Developer Fenchurch confirms on the Steam forum a rework of the Origins TCG boss fight AI in Demo v2, after a report on the Dracula mission boss.",
       "Lo sviluppatore Fenchurch conferma sul forum Steam il rework dell'IA delle boss fight di Origins TCG nella Demo v2, dopo una segnalazione sul boss Dracula.",
@@ -1786,7 +1788,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     description: n(
       "On 9 September Koin Games announced the Origins TCG Crimson Cup: 20–25 October, regional qualifiers, prizes worth $10,000. Updated with the final rules.",
       "Il 9 settembre Koin Games ha annunciato la Crimson Cup di Origins TCG: 20–25 ottobre, qualificazioni per regione, premi per 10.000 $. Con le regole finali.",
-      "La Crimson Cup de Origins TCG, anunciada el 9 de septiembre: del 20 al 25 de octubre, clasificatorios por región y 10.000 dólares en premios. Con las reglas.",
+      "Crimson Cup de Origins TCG, anunciada el 9 de septiembre: del 20 al 25 de octubre, clasificatorios por región, 10.000 dólares en premios y las reglas finales.",
     ),
     summary: n(
       "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
@@ -2165,7 +2167,7 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * modifica di una lingua nata dopo gli articoli non va mai prima del giorno in cui quella lingua è andata online.
  * Oggi vale solo per lo spagnolo, dal 25/09/2026: lo stesso giorno di `LOCALE_SINCE.es` in src/lib/lastmod.ts, che
  * vale per la sitemap (lo controlla `newsMeta.test.ts`). Inglese e italiano sono le lingue degli originali.
- * La usano la pagina della news (dati strutturati, Open Graph e data visibile) e `getGuides` in guides.ts.
+ * La usano la pagina della news (con `newsDates`: dati strutturati, Open Graph e firma) e `getGuides` in guides.ts.
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
@@ -2175,4 +2177,16 @@ export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-
 export function modifiedIn(locale: Locale, day: string): string {
   const since = TRANSLATED_SINCE[locale];
   return since && day < since ? since : day;
+}
+
+/**
+ * Date di una news nella lingua `locale`, come le usa la sua pagina (firma, dati strutturati, Open Graph): `published`
+ * è la data dell'articolo, `modified` segue `modifiedIn`. `translated` dice che `modified` è solo il giorno in cui è
+ * nata la traduzione, senza un aggiornamento del testo: la firma scrive "Traducido el …" e non "Actualizado", che per
+ * la regola delle news rimanda al paragrafo "Actualización del …" (revisione dell'Ondata 1, 25/09/2026).
+ */
+export function newsDates(item: NewsItem, locale: Locale): { published: string; modified: string; translated: boolean } {
+  const own = item.updated ?? item.date;
+  const modified = modifiedIn(locale, own);
+  return { published: item.date, modified, translated: modified !== own };
 }

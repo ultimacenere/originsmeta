@@ -4,8 +4,11 @@
  * description in una delle lingue del sito, se esce dai limiti di lunghezza (title finale via `pageTitle` entro 60,
  * description 120-158), se rimanda a guide, ancore, news o sezioni che non esistono o se è aggiornata senza il
  * paragrafo dell'aggiornamento. Controlla anche i collegamenti degli eventi (/tournaments) e delle FAQ approvate
- * (/faq), che puntano alle stesse news e guide, e la regola delle date delle versioni tradotte (`modifiedIn`).
+ * (/faq), che puntano alle stesse news e guide, la regola delle date delle versioni tradotte (`modifiedIn`, come la
+ * usano la pagina della news con `newsDates` e le guide con `getGuides`) e che il title per la SERP di una news su un
+ * mazzo non cominci col nome del mazzo.
  */
+import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
@@ -25,6 +28,7 @@ import {
   TRANSLATED_SINCE,
   modifiedIn,
   news,
+  newsDates,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./news.ts";
 import {
@@ -41,10 +45,32 @@ import {
 } from "../content/faq.ts";
 import type { Locale } from "../i18n";
 
+type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
+type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
+// Le date delle guide si provano con il codice vero di `getGuides`: guides.ts importa news.ts e guides-es.ts senza
+// estensione, quindi, come in cardTitles.test.ts, un hook di risoluzione dei moduli di Node (`module.registerHooks`,
+// Node ≥ 22.15) aggiunge `.ts` agli import relativi. I tipi di @types/node del progetto (20.x) non conoscono ancora
+// `registerHooks`: la funzione c'è in Node 24.
+const { registerHooks } = nodeModule as unknown as { registerHooks: (hooks: { resolve: ResolveHook }) => void };
+registerHooks({
+  resolve(specifier, context, next) {
+    if (/^\.\.?\//.test(specifier) && !/\.(?:[cm]?[jt]sx?|json)$/.test(specifier)) {
+      try {
+        return next(`${specifier}.ts`, context);
+      } catch {
+        // non è un modulo .ts: si risolve com'è scritto
+      }
+    }
+    return next(specifier, context);
+  },
+});
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const guidesModule: typeof import("../content/guides") = await import("../content/guides.ts");
+
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
-// Lingue del sito e guide esistenti si leggono dai sorgenti (i18n.ts e guides.ts importano file senza estensione,
-// che Node non carica): così una lingua o una guida nuova entra da sola nei controlli.
+// Lingue del sito e guide esistenti si leggono dai sorgenti (i18n.ts importa file senza estensione, che Node non
+// carica senza l'hook qui sopra): così una lingua o una guida nuova entra da sola nei controlli.
 const locales = [...(read("../i18n.ts").match(/export const locales = \[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([a-z]{2})"/g)].map((m) => m[1]) as Locale[];
 const guideList = read("../content/guides.ts").match(/export const guideSlugs = \[([^\]]*)\]/)?.[1] ?? "";
 const guides = new Set([...guideList.matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]));
@@ -167,6 +193,18 @@ describe("news", () => {
   test("uno slug per news", () => {
     assert.equal(newsSlugs.size, news.length);
   });
+  test("il title per la SERP di una news su un mazzo è l'annuncio: non comincia col nome del mazzo, che spetta alla scheda", () => {
+    // Il nome del mazzo è la parte del titolo dell'articolo prima dei primi ":" o "," ("3 Pigs Mid Range: …").
+    const deckNews = news.filter((item) => item.source === "community" || item.source === "staff");
+    assert.ok(deckNews.length >= 2, `solo ${deckNews.length} news sui mazzi`);
+    for (const item of deckNews) {
+      for (const l of locales) {
+        const deck = item.title[l].split(/[:,]/)[0].trim().toLowerCase();
+        const meta = item.metaTitle[l];
+        assert.ok(deck.length > 0 && !meta.toLowerCase().startsWith(deck), `${l} ${item.slug}: "${meta}" comincia con "${deck}"`);
+      }
+    }
+  });
   test("metaTitle, description, testi, collegamenti e aggiornamenti in ogni lingua, entro i limiti", () => {
     const problems = news.flatMap((item) => newsProblems(item, locales, checks));
     assert.deepEqual(problems, []);
@@ -198,8 +236,42 @@ describe("date delle versioni tradotte (news e guide)", () => {
     assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es"]);
     for (const [l, day] of Object.entries(TRANSLATED_SINCE)) assert.equal(day, LOCALE_SINCE[l as Locale], l);
   });
-  test("nessuna news spagnola risulta modificata prima di essere pubblicata", () => {
-    for (const item of news) assert.ok(modifiedIn("es", item.updated ?? item.date) >= item.date, item.slug);
+  test("news: pubblicata alla data dell'articolo in ogni lingua; la modifica spagnola non va prima del 25/09/2026 e, se è solo la traduzione, la firma lo dice", () => {
+    for (const item of news) {
+      const own = item.updated ?? item.date;
+      for (const l of locales) {
+        const d = newsDates(item, l);
+        assert.equal(d.published, item.date, `${l} ${item.slug}`);
+        assert.equal(d.translated, d.modified !== own, `${l} ${item.slug}`);
+        const since = TRANSLATED_SINCE[l];
+        if (since) assert.ok(d.modified >= since && d.modified >= own, `${l} ${item.slug}: ${d.modified}`);
+        else assert.equal(d.modified, own, `${l} ${item.slug}`);
+      }
+    }
+    // Un aggiornamento vero dopo la nascita dello spagnolo resta "Actualizado"; prima, in spagnolo, conta la traduzione.
+    const base = news[0];
+    assert.deepEqual(newsDates({ ...base, date: "2026-09-09", updated: "2026-10-02" }, "es"), { published: "2026-09-09", modified: "2026-10-02", translated: false });
+    assert.deepEqual(newsDates({ ...base, date: "2026-09-09", updated: "2026-09-09" }, "es"), { published: "2026-09-09", modified: "2026-09-25", translated: true });
+    assert.deepEqual(newsDates({ ...base, date: "2026-09-09", updated: "2026-09-24" }, "it"), { published: "2026-09-09", modified: "2026-09-24", translated: false });
+  });
+  test("guide: stessa data di pubblicazione in ogni lingua, aggiornamento spagnolo mai prima del 25/09/2026", () => {
+    const en = guidesModule.getGuides("en");
+    assert.ok(en.length >= 10, `solo ${en.length} guide`);
+    for (const l of locales) {
+      const list = guidesModule.getGuides(l);
+      assert.deepEqual(
+        list.map((g) => g.slug),
+        en.map((g) => g.slug),
+        l,
+      );
+      list.forEach((g, i) => {
+        assert.ok(g.published, `${l} ${g.slug}: manca la data di pubblicazione`);
+        assert.equal(g.published, en[i].published, `${l} ${g.slug}: pubblicata in un giorno diverso dall'inglese`);
+        assert.ok(g.updated >= g.published, `${l} ${g.slug}: aggiornata il ${g.updated}, prima di uscire (${g.published})`);
+        const since = TRANSLATED_SINCE[l];
+        if (since) assert.ok(g.updated >= since, `${l} ${g.slug}: aggiornata il ${g.updated}, prima che la lingua esistesse`);
+      });
+    }
   });
 });
 

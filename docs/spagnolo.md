@@ -91,5 +91,8 @@ Ubicaciones · Las más jugadas · Crea tu tier list · Autores.
   manda a `/es` i browser in spagnolo (`next.config.ts`).
 - Date di news e guide tradotte (una regola sola, `modifiedIn` in `src/lib/data/news.ts`): la pubblicazione resta
   quella dell'articolo originale, la modifica della versione spagnola non va mai prima del 25/09/2026, il giorno in
-  cui è nata; la sitemap applica la stessa soglia con `LOCALE_SINCE` di `src/lib/lastmod.ts`.
+  cui è nata; la sitemap applica la stessa soglia con `LOCALE_SINCE` di `src/lib/lastmod.ts`. Nella firma di una news,
+  quando la data di modifica spagnola è solo quella soglia (`newsDates`, campo `translated`), si legge "Traducido el
+  25 de septiembre de 2026" e non "Actualizado": nessun paragrafo "Actualización del …", che resta per gli
+  aggiornamenti veri (campo `updated`).
 - Parole che cercano i giocatori: "Origins TCG", "mazos", "cartas", "guía", "tier list", "demo", "torneo", "parche".
