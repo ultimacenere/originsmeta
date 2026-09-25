@@ -3,7 +3,9 @@
 //   node scripts/llms-txt.mjs          aggiorna il file
 //   node scripts/llms-txt.mjs --check  non scrive: esce con 1 se il file non è allineato ai dati
 // Va lanciato dopo una patch che tocca una Leggendaria o dopo una guida nuova; se ce ne si dimentica, lo dice
-// src/lib/llms.test.ts (in npm test). Il codice che scrive le sezioni è in src/lib/llms.ts (Ondata 3, 25/09/2026).
+// src/lib/llms.test.ts (`node --test src/lib/llms.test.ts`; entra in `npm test` quando è elencato nello script "test"
+// di package.json, che nomina i file uno per uno). Il codice che scrive le sezioni è in src/lib/llms.ts (Ondata 3,
+// 25/09/2026).
 //
 // llms.ts e il database carte sono scritti per Next (import senza estensione, JSON senza attributi): come nei test,
 // un hook di risoluzione dei moduli di Node (`module.registerHooks`, Node >= 22.15) aggiunge `.ts` agli import

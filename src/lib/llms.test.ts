@@ -40,7 +40,7 @@ const newsModule: typeof import("./data/news") = await import("./data/news.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const guidesModule: typeof import("./content/guides") = await import("./content/guides.ts");
 
-const { cleanMarkdown, plainCardText, replaceSection, syncLlmsTxt, llmsFull, activeLegendaries, LLMS_GENERATED, LLMS_FULL_PATH } = llms;
+const { cleanMarkdown, plainCardText, replaceSection, syncLlmsTxt, llmsFull, activeLegendaries, LLMS_GENERATED, LLMS_FULL_PATH, CREATED_TITLE } = llms;
 const { cards, getCard } = cardsModule;
 const SITE = "https://originsmeta.com";
 
@@ -92,8 +92,38 @@ describe("llms-full.txt", () => {
     );
     assert.deepEqual(
       lines.filter((l) => /^## /.test(l)),
-      ["## Guides", "## News", "## Cards of the Demo 2.0"],
+      ["## Guides", "## News", "## Cards"],
     );
+  });
+  test("le carte create stanno a parte, dette non verificate nel gioco, e non fra le carte della Demo 2.0", () => {
+    const created = cards.filter((c) => c.status === "active" && c.type === "token");
+    const cardsPart = full.split("\n## Cards\n")[1];
+    const [demoPart, createdPart] = cardsPart.split(`\n### ${CREATED_TITLE} (`);
+    assert.ok(createdPart, "manca la sezione delle carte create");
+    for (const c of created) {
+      const line = `- [${c.name}](${SITE}/en/cards/${c.slug}): `;
+      assert.ok(createdPart.includes(line), `carta creata fuori posto: ${c.slug}`);
+      assert.ok(!demoPart.includes(line), `carta creata fra quelle della Demo 2.0: ${c.slug}`);
+    }
+    assert.match(full.split("\n## Guides\n")[0], /created cards \(not checked in the game\)/);
+    assert.match(createdPart, /have not been checked in the game/);
+  });
+  test("le parti scritte da llms.ts non nominano la fonte dell'import delle carte", () => {
+    // intestazione e carte; guide e news sono i testi del sito, controllati dai loro test
+    const woo = /world\s*of\s*origins|worldoforigins/i;
+    assert.doesNotMatch(full.split("\n## Guides\n")[0], woo);
+    assert.doesNotMatch(full.split("\n## Cards\n")[1], woo);
+  });
+  test("una news senza url non scrive una fonte vuota", () => {
+    assert.doesNotMatch(full, /Source: (?:undefined|null)?\n/);
+    const n = news.find((x) => x.source === "press") ?? news[0];
+    const text = llms.llmsFullText({ guides: [], news: [{ ...n, url: undefined as unknown as string }], cards: [] });
+    assert.doesNotMatch(text, /Source:|Deck page:/);
+    assert.ok(text.includes(`### ${n.title.en}\n\nURL: ${SITE}/en/news/${n.slug}\n`));
+  });
+  test("la patch dei dati è detta senza ripetere la data", () => {
+    assert.equal(llms.patchLine("demo-0921"), "demo patch of 21 September 2026");
+    assert.equal(llms.patchLine("0.6.3"), "patch 0.6.3 of 27 August 2026");
   });
   test("ogni guida e ogni news in inglese, con titolo e indirizzo", () => {
     for (const g of guides) {
@@ -106,7 +136,7 @@ describe("llms-full.txt", () => {
     assert.ok(full.includes(`${guides.length} guides, ${news.length} news articles`));
   });
   test("i titoli dei testi stanno sotto quelli del documento: nessun ## o ### dentro guide e news", () => {
-    const titles = new Set([...guides.map((g) => g.title), ...news.map((n) => n.title.en), "Legendaries", "Units", "Spells", "Created cards"]);
+    const titles = new Set([...guides.map((g) => g.title), ...news.map((n) => n.title.en), "Demo 2.0 Legendaries", "Demo 2.0 units", "Demo 2.0 spells", CREATED_TITLE]);
     for (const line of full.split("\n").filter((l) => /^### /.test(l))) {
       const title = line.slice(4).replace(/ \(\d+\)$/, "");
       assert.ok(titles.has(title), `titolo di terzo livello inatteso: ${line}`);
@@ -126,7 +156,7 @@ describe("llms-full.txt", () => {
     }
     const legendaries = activeLegendaries();
     assert.ok(legendaries.length >= 1);
-    assert.ok(full.includes(`### Legendaries (${legendaries.length})`));
+    assert.ok(full.includes(`### Demo 2.0 Legendaries (${legendaries.length})`));
     assert.ok(full.includes("- [Mulan](https://originsmeta.com/en/cards/mulan): Legendary unit, "));
   });
 });
@@ -149,6 +179,13 @@ describe("public/llms.txt", () => {
   test("rimanda a llms-full.txt e non toglie la dicitura su Koin Games", () => {
     assert.ok(text.includes(`${SITE}${LLMS_FULL_PATH}`));
     assert.match(text, /not affiliated with Koin Games/);
+  });
+  test("la sezione delle Leggendarie rimanda alle schede in italiano e in spagnolo", () => {
+    const section = lf(text).split("\n## Legendaries\n")[1].split("\n## ")[0];
+    assert.match(section, /\/it\/cards\/.*\/es\/cards\//);
+  });
+  test("non nomina la fonte dell'import delle carte (decisione di Pierluigi del 25/09/2026)", () => {
+    assert.doesNotMatch(text, /world\s*of\s*origins|worldoforigins/i);
   });
   test("ogni link verso originsmeta.com porta a una pagina che esiste", () => {
     const guideSlugs = new Set<string>(guidesModule.guideSlugs);

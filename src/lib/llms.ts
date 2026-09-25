@@ -1,5 +1,5 @@
 import { siteUrl } from "./i18n";
-import { cards, cardsVerified, latestPatch, patchLabel, patches, type Card } from "./data/cards";
+import { cards, cardsVerified, latestPatch, patchLabel, patches, type Card, type PatchId } from "./data/cards";
 import { newsPath, sortedNews, type NewsItem } from "./data/news";
 import { getGuides, type Guide } from "./content/guides";
 import { authorOfGuide, authorOfNews } from "./data/authors";
@@ -10,13 +10,16 @@ import { authorOfGuide, authorOfNews } from "./data/authors";
  * - `/llms.txt` (public/llms.txt) è l'indice scritto a mano: che cos'è il sito, i fatti chiave con la data, le pagine
  *   nelle tre lingue. Due sue sezioni però vengono dai dati, perché non restino indietro dopo una patch o una guida
  *   nuova: "## Legendaries" (una riga per Leggendaria: costo, Potenza/Salute, allineamento, testo, link alla scheda) e
- *   "## Guides" (tutte le guide in inglese con l'estratto). Le scrive `node scripts/llms-txt.mjs`, e `llms.test.ts`
- *   fallisce se il file non è allineato ai dati.
+ *   "## Guides" (tutte le guide in inglese con l'estratto). Le scrive `node scripts/llms-txt.mjs` (con `--check` non
+ *   scrive e dice solo se il file è allineato), e `llms.test.ts` fallisce se il file non è allineato ai dati (il test
+ *   gira in `npm test` solo se è elencato nello script "test" di package.json, che nomina i file uno per uno): va
+ *   rilanciato dopo ogni patch che tocca una Leggendaria e dopo ogni guida nuova.
  * - `/llms-full.txt` (src/app/llms-full.txt/route.ts) è il testo completo, generato alla build: tutte le guide e le news
- *   in inglese (titolo, date, firma, indirizzo, Markdown pulito) e l'elenco delle carte della Demo 2.0 con il testo
- *   ufficiale. "Pulito" vuol dire: niente ancore `{#…}`, titoli abbassati sotto quelli del documento, link interni
- *   assoluti. Le anteprime delle carte non ci sono perché il Markdown dei testi non le contiene: le aggiunge solo la
- *   pagina (Markdown.tsx), nell'HTML.
+ *   in inglese (titolo, date, firma, indirizzo, Markdown pulito), le carte della collezione della Demo 2.0 con il testo
+ *   ufficiale e, a parte, le carte create, dette non verificate nel gioco (decisione di Pierluigi del 25/09/2026: il
+ *   sito dice che cosa è verificato nel gioco e non nomina la fonte dell'import). "Pulito" vuol dire: niente ancore
+ *   `{#…}`, titoli abbassati sotto quelli del documento, link interni assoluti. Le anteprime delle carte non ci sono
+ *   perché il Markdown dei testi non le contiene: le aggiunge solo la pagina (Markdown.tsx), nell'HTML.
  *
  * Solo inglese: è la lingua di riferimento del sito, e i modelli la leggono comunque; ogni pagina esiste anche in
  * italiano e spagnolo con lo stesso slug, e il file lo dice. Import relativi, per `node --test`.
@@ -87,9 +90,15 @@ export function activeLegendaries(list: readonly Card[] = cards): Card[] {
   return list.filter((c) => c.status === "active" && c.legendary && c.type !== "token").sort(byName);
 }
 
-/** Patch dei dati delle carte, detta per esteso: "Demo · 21 Sep, 21 September 2026". */
-function patchLine(): string {
-  return `${patchLabel(latestPatch, "en")}, ${longDate(patches[latestPatch].date)}`;
+/**
+ * Patch dei dati delle carte, detta per esteso e senza ripetere la data: "demo patch of 21 September 2026" per le patch
+ * della demo senza numero di versione (id `demo-…`, etichetta "Demo · 21 Sep"), "patch 0.6.3 of 27 August 2026" per
+ * quelle con il numero.
+ */
+export function patchLine(id: PatchId = latestPatch): string {
+  const date = longDate(patches[id].date);
+  if (/^\d+(?:\.\d+)+$/.test(id)) return `patch ${id} of ${date}`;
+  return id.startsWith("demo-") ? `demo patch of ${date}` : `patch of ${date} (${patchLabel(id, "en")})`;
 }
 
 /**
@@ -133,12 +142,16 @@ function guideBlock(g: Guide): string {
 
 function newsBlock(n: NewsItem): string {
   const dates = [`Published: ${longDate(n.date)}`, n.updated && n.updated !== n.date ? `Updated: ${longDate(n.updated)}` : undefined, `By ${authorOfNews(n).name}`];
-  // la fonte come la mostra la pagina: post ufficiale o stampa; per un mazzo la sua scheda; le novità del sito nessuna
-  const source =
-    n.source === "steam" || n.source === "press"
-      ? `Source: ${n.url}`
-      : (n.source === "community" || n.source === "staff") && n.url.startsWith("/")
-        ? `Deck page: ${siteUrl}/en${n.url}`
+  // la fonte come la mostra la pagina: post ufficiale o stampa; per un mazzo la sua scheda; le novità del sito nessuna.
+  // `url` può mancare (con il ritiro della fonte dell'import, 25/09/2026, una news di stampa è rimasta senza fonte
+  // pubblica da citare): allora niente riga "Source", come sulla pagina, che non mostra nessun link "Fonte".
+  const url: string | undefined = n.url;
+  const source = !url
+    ? undefined
+    : n.source === "steam" || n.source === "press"
+      ? `Source: ${url}`
+      : (n.source === "community" || n.source === "staff") && url.startsWith("/")
+        ? `Deck page: ${siteUrl}/en${url}`
         : undefined;
   const body = n.body?.en ? cleanMarkdown(n.body.en) : "";
   return [
@@ -159,6 +172,9 @@ function newsBlock(n: NewsItem): string {
 
 export type LlmsFullData = { guides: Guide[]; news: NewsItem[]; cards: readonly Card[] };
 
+/** Titolo della sezione delle carte create in llms-full.txt: fuori dalle carte della Demo 2.0, dette non verificate. */
+export const CREATED_TITLE = "Created cards, not checked in the game";
+
 /** Il testo completo di llms-full.txt. Funzione pura sui dati passati: la rotta le dà quelli veri. */
 export function llmsFullText(data: LlmsFullData): string {
   const inPlay = data.cards.filter((c) => c.status === "active" && c.type !== "token");
@@ -171,11 +187,11 @@ export function llmsFullText(data: LlmsFullData): string {
   const lines = [
     "# OriginsMeta: full text",
     "",
-    "> Every guide and news article of OriginsMeta in English, as plain Markdown, followed by every card of the Origins TCG Demo 2.0 with its official English text. OriginsMeta is an unofficial fan site about Origins TCG, the digital trading card game by Koin Games, and is not affiliated with Koin Games.",
+    "> Every guide and news article of OriginsMeta in English, as plain Markdown, followed by every card of the Origins TCG Demo 2.0 collection with its official English text, plus the created cards (not checked in the game). OriginsMeta is an unofficial fan site about Origins TCG, the digital trading card game by Koin Games, and is not affiliated with Koin Games.",
     "",
     `- Short index: ${siteUrl}/llms.txt`,
-    `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards and ${created.length} created cards.`,
-    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} Demo 2.0 cards were checked one by one in the game on ${longDate(cardsVerified.date)}.`,
+    `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the Demo 2.0 collection and ${created.length} created cards.`,
+    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the Demo 2.0 collection were checked one by one in the game on ${longDate(cardsVerified.date)}. Created cards are not in the game's collection, so they have not been checked in the game.`,
     "- Every guide and article is also on the site in Italian (/it/) and Spanish (/es/), with the same slug.",
     "- For rules, dates and announcements the official sources win: the Steam pages of Origins TCG, Koin Games' posts and the official Discord.",
     "- Card art and card text © Koin Games.",
@@ -186,17 +202,17 @@ export function llmsFullText(data: LlmsFullData): string {
     "## News",
     "",
     ...data.news.flatMap((n) => [newsBlock(n), ""]),
-    "## Cards of the Demo 2.0",
+    "## Cards",
     "",
-    "One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.",
+    `The ${inPlay.length} cards of the Demo 2.0 collection, checked in the game on ${longDate(cardsVerified.date)}, then the created cards. One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.`,
     "",
-    ...cardSection("Legendaries", legendaries),
-    ...cardSection("Units", units),
-    ...cardSection("Spells", spells),
+    ...cardSection("Demo 2.0 Legendaries", legendaries),
+    ...cardSection("Demo 2.0 units", units),
+    ...cardSection("Demo 2.0 spells", spells),
     ...cardSection(
-      "Created cards",
+      CREATED_TITLE,
       created,
-      "Cards that other cards create during a match (Van Helsing's Tools, Zombie…). They are not in the game's collection screen, so their text was not checked there.",
+      "Cards that other cards create during a match (Van Helsing's Tools, Zombie…). They are not in the game's collection, so their stats and texts have not been checked in the game, and they are not counted among the Demo 2.0 cards above.",
     ),
   ];
   // statistiche in parole anche in riassunti, estratti e risposte, non solo nel Markdown dei testi
@@ -214,7 +230,7 @@ export function llmsFull(): string {
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}); each card page has the official text in English, Italian and Spanish and the balance history.`,
+    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");

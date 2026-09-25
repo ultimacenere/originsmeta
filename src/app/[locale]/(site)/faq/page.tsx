@@ -54,6 +54,8 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
             { name: "OriginsMeta", path: href(locale) },
             { name: d.faq.title, path: href(locale, "/faq") },
           ]),
+          // solo domanda e risposta: le `keywords` servono all'assistente e restano fuori. Le domande sono scritte in modo
+          // diverso da quelle delle FAQ delle guide, così lo stesso FAQ non è marcato due volte nel sito (vedi faq.ts)
           { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: lista.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
         ]}
       />

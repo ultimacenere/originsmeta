@@ -17,9 +17,9 @@ Community decks are written by players in their own language; the site translate
 - Crimson Cup: the official tournament of the Next Fest, from 20 to 25 October 2026, played on the demo. The format is three-deck Conquest with at least 8 unique cards between each pair of decks, and decklists stay hidden until the top 4. Summary in the next section; rules: [Crimson Cup format and check-in](https://originsmeta.com/en/news/crimson-cup-format-check-in).
 - Kickstarter: the main menu of the demo shows it as "Coming soon – Oct 27" (read on 25 September 2026). No official post confirms the date yet. Pre-registration is open: a refundable $1 deposit gives 15% off, and the Alpha boxes are preorder-only. Guide: [Origins TCG Kickstarter](https://originsmeta.com/en/guides/origins-tcg-kickstarter).
 - Languages: Steam lists English, French, Italian and German for the interface, with full audio in English only. The demo also has the interface and the card texts in Spanish (checked in the game on 25 September 2026), which Steam does not list yet.
-- Platforms: the Steam page lists Windows and macOS. Mobile is not out: on its pre-registration page (founder.origins-tcg.com) Koin Games writes "Mobile pack opening is coming! We have our sights set on 2027 for Origins on Mobile." (read on 25 September 2026).
+- Platforms: the Steam page lists Windows and macOS. Mobile is not out: on its pre-registration page (founder.origins-tcg.com) Koin Games writes "Mobile pack opening is coming! We have our sights set on 2027 for Origins on Mobile." (read on 25 September 2026). Neither page says whether that means Android, iOS or both.
 - Demo progress: according to the Steam post of 21 September 2026, whoever played the demo, the playtest or both keeps whichever progress is further ahead. The exclusive demo collectibles become tradeable on the Steam marketplace when the full game launches (Steam post of 16 July 2026).
-- Not Riftbound: "Riftbound Origins" cards are the ones in the booster packs of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026). Origins TCG by Koin Games is a different game.
+- Not Riftbound: "Riftbound Origins" is a card set of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026). Origins TCG by Koin Games is a different game.
 - Deck rules: one Legendary plus twelve different base cards, two copies each, for 25 cards. Deck codes of the game start with KGBLDC: the deck builder imports them and exports them.
 - Answers to the most common questions, each with its source and date: [FAQ](https://originsmeta.com/en/faq).
 - Dates and roadmap: [Roadmap and dates](https://originsmeta.com/en/guides/roadmap-and-dates). Next Fest: [Steam Next Fest 2026 guide](https://originsmeta.com/en/guides/steam-next-fest-2026).
@@ -38,7 +38,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (Demo · 21 Sep, 21 September 2026); each card page has the official text in English, Italian and Spanish and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (demo patch of 21 September 2026). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -132,7 +132,7 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 
 ## Feeds, sitemaps and full text
 
-- [Full text (llms-full.txt)](https://originsmeta.com/llms-full.txt): every guide and news article in English as plain Markdown, plus every Demo 2.0 card with its official English text. Generated from the site's data at every deploy.
+- [Full text (llms-full.txt)](https://originsmeta.com/llms-full.txt): every guide and news article in English as plain Markdown, plus every card of the Demo 2.0 collection with its official English text and, apart, the created cards (not checked in the game). Generated from the site's data at every deploy.
 - [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml) and Spanish (/es/news/feed.xml).
 - [Sitemap index](https://originsmeta.com/sitemap.xml): one sitemap per section and language.
 
@@ -143,7 +143,7 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Steam news and patch notes](https://steamcommunity.com/app/4429430/allnews/): the source of every balance note on this site.
 - [Official Discord](https://discord.gg/originstcg): announcements, AMAs and tournament sign-ups.
 - [origins-tcg.com](https://origins-tcg.com/): the official game site by Koin Games.
-- [World of Origins](https://worldoforigins.fun): community card database; card names, stats, official text, tags and official IDs on OriginsMeta are imported from it, never the images.
+- The game itself: costs, stats, alignments and English texts of the cards of the Demo 2.0 collection were checked one by one in the game on 22 September 2026, the Italian and Spanish texts on 25 September 2026. Created and removed cards are not in the game's collection and have not been checked there.
 
 ## Optional
 
