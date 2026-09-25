@@ -1,0 +1,106 @@
+import type { Locale } from "./i18n";
+
+/**
+ * Date `lastmod` della sitemap (Ondata 1 del piano SEO/GEO, 25/09/2026: TECH-06, SCHEDE-09, RIV-01, GEO-11).
+ *
+ * Google usa `lastmod` solo se lo trova "costantemente e verificabilmente preciso": prima la sitemap dava a 406
+ * pagine la stessa data fissa (SITE_UPDATED) e alle schede spagnole, nate il 25/09, date di agosto. Da qui ogni URL
+ * dichiara il giorno più recente fra quelli che ne hanno cambiato davvero il contenuto:
+ *   - il modello della pagina (`PAGE_UPDATED`, dalla storia del repository);
+ *   - i suoi dati (data della news, `updated` della guida, patch che hanno toccato la carta, `updated_at` di un mazzo…),
+ *     che raccoglie `src/app/sitemap.ts`;
+ *   - due soglie: il giorno in cui la lingua è nata (`LOCALE_SINCE`) e l'ultimo cambio che ha toccato i link di
+ *     tutte le pagine (`SITE_WIDE_CHANGE`).
+ * Mai nel futuro (si taglia a oggi) e mai con un orario: solo il giorno (aaaa-mm-gg), perché "2026-09-25T12:00Z"
+ * letto alle 9 del mattino sarebbe una data che non è ancora arrivata.
+ * Funzioni pure, senza import di dati, così si provano con `node --test src/lib/lastmod.test.ts`.
+ */
+
+/** Un giorno in formato ISO, senza orario: "2026-09-25". */
+export type Day = string;
+
+/** Primo giorno online di ogni lingua: nessuna pagina può dichiararsi cambiata prima di esistere. */
+export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25" };
+
+/**
+ * Ultimo cambio che ha toccato i link di TUTTE le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni pagina
+ * l'hreflang `es` e la voce del selettore della lingua (per Google una modifica dei link è significativa).
+ * Si sposta solo per un cambio di questo tipo (una lingua nuova, link nuovi nell'header o nel footer di ogni
+ * pagina), mai per comodità: per il resto contano le date delle singole pagine.
+ */
+export const SITE_WIDE_CHANGE: Day = "2026-09-25";
+
+/** Ogni news ha una pagina propria dal 21/09/2026: prima esisteva solo la scheda nell'elenco. */
+export const NEWS_PAGES_SINCE: Day = "2026-09-21";
+
+/**
+ * Ultimo cambio del modello di ogni pagina (testi fissi, sezioni, link, dati mostrati), letto dalla storia del
+ * repository. Da aggiornare nello stesso commit che cambia il modello; i ritocchi solo grafici non contano.
+ * Le pagine senza dati propri (FAQ, chi siamo, deck builder…) hanno solo questa data.
+ */
+export const PAGE_UPDATED = {
+  "/": "2026-09-25", // 63fa759: Ondata 0, fatti allineati in home
+  "/news": "2026-09-24", // 6486a7c
+  "/news/[slug]": "2026-09-24", // 6486a7c: riquadro del nostro Discord in fondo a ogni news
+  "/guides": "2026-09-23", // e43d9bf: "Mandaci la tua guida"
+  "/guides/[slug]": "2026-09-25", // 63fa759
+  "/cards": "2026-09-25", // 9adea4d: parole chiave con i termini ufficiali del gioco
+  "/cards/[slug]": "2026-09-25", // 9adea4d
+  "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco
+  "/decks": "2026-09-25", // 7e3c971: guide dei mazzi tradotte
+  "/decks/[slug]": "2026-09-25", // 63fa759
+  "/decks/community/[slug]": "2026-09-25", // 7e3c971
+  "/deck-builder": "2026-09-24", // 6486a7c: ricerca nel testo delle carte
+  "/tier-list": "2026-09-24", // ff09d8a: tier list rifatta
+  "/tier-list/community": "2026-09-24", // ff09d8a
+  "/tier-list/most-played": "2026-09-24", // ff09d8a: nasce la pagina
+  "/tier-list/create": "2026-09-24", // ff09d8a
+  "/metashifting": "2026-09-24", // ff09d8a: nasce la pagina
+  "/tournaments": "2026-09-25", // 63fa759: calendario degli eventi (events.ts) allineato
+  "/tournaments/[slug]": "2026-09-22", // a0d9f9c
+  "/faq": "2026-09-25", // 63fa759
+  "/about": "2026-09-21", // 615177a
+  "/authors": "2026-09-25", // 1713d26: i mazzi di Davdas nel suo profilo
+  "/authors/[slug]": "2026-09-25", // 1713d26
+  "/u/[username]": "2026-09-23", // e0d0ad4: nasce il profilo pubblico
+} as const satisfies Record<string, Day>;
+
+export type PageRoute = keyof typeof PAGE_UPDATED;
+
+const DAY = /^(\d{4}-\d{2}-\d{2})/;
+
+/** Il giorno di una data ISO o di un timestamp ("2026-09-24T16:59:00+02:00" → "2026-09-24"); undefined se non è una data. */
+export function toDay(value: string | null | undefined): Day | undefined {
+  const m = value ? DAY.exec(value.trim()) : null;
+  return m && !Number.isNaN(Date.parse(`${m[1]}T00:00:00Z`)) ? m[1] : undefined;
+}
+
+/** Il giorno più recente fra quelli validi (le date ISO si confrontano come stringhe); undefined se non ce n'è nessuno. */
+export function latestDay(values: Iterable<string | null | undefined>): Day | undefined {
+  let best: Day | undefined;
+  for (const v of values) {
+    const d = toDay(v);
+    if (d && (!best || d > best)) best = d;
+  }
+  return best;
+}
+
+/** Oggi in UTC, senza orario: il limite oltre il quale nessuna data può andare. */
+export function todayUtc(now: Date = new Date()): Day {
+  return now.toISOString().slice(0, 10);
+}
+
+/**
+ * Il `lastmod` di un URL: il giorno più recente fra le date del contenuto, il giorno in cui la lingua è nata e
+ * l'ultimo cambio di tutto il sito; poi tagliato a oggi, così una data scritta in anticipo non esce mai nel futuro.
+ */
+export function lastmodFor(locale: Locale, dates: Iterable<string | null | undefined>, today: Day): Day {
+  const best = latestDay([...dates, LOCALE_SINCE[locale], SITE_WIDE_CHANGE]) ?? LOCALE_SINCE[locale];
+  const limit = toDay(today) ?? best;
+  return best > limit ? limit : best;
+}
+
+/** Il `lastmod` di una pagina: data del suo modello più le date dei dati che mostra. */
+export function pageLastmod(route: PageRoute, locale: Locale, dates: Iterable<string | null | undefined>, today: Day): Day {
+  return lastmodFor(locale, [PAGE_UPDATED[route], ...dates], today);
+}

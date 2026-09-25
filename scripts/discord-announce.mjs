@@ -23,8 +23,8 @@
  *      le news da quella data, tutte le patch notes (solo in #metashifting quelle più vecchie), tutte le guide, i
  *      mazzi pubblicati da quella data; tutto in ordine cronologico, dal più vecchio.
  *   3. a mano, SLUGS="news:<slug>,guides:<slug>,decks:<slug>".
- * Titolo, descrizione e copertina vengono dai meta Open Graph delle pagine italiana e inglese: esattamente quello
- * che vede chi apre il link. Nessuna menzione (allowed_mentions vuoto).
+ * Titolo, descrizione e copertina vengono dai meta Open Graph delle pagine italiana, inglese e spagnola: esattamente
+ * quello che vede chi apre il link. Nessuna menzione (allowed_mentions vuoto).
  *
  * Altre variabili: REPO ("proprietario/nome") e AFTER per leggere i file da GitHub (senza REPO si leggono dalla
  * cartella del repo, per le prove in locale); SITE_URL (predefinito https://originsmeta.com); WAIT_MINUTES
@@ -166,15 +166,22 @@ export function h1Of(html) {
 /** Titolo per il messaggio: l'H1, oppure il titolo dei meta senza il marchio in coda. */
 const titleOf = (html) => h1Of(html) || ogValue(html, "title").replace(/\s+·\s+(?:OriginsMeta|Origins TCG)$/, "");
 
-/** Messaggio per un canale: italiano per primo, titolo inglese collegato, copertina; su #metashifting il link alla patch. */
-export function payload(channel, item, itHtml, enHtml) {
+/**
+ * Messaggio per un canale: italiano per primo, poi i titoli inglese e spagnolo collegati alle loro pagine (lo spagnolo
+ * dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN), copertina; su
+ * #metashifting il link alla patch. Una lingua di cui non si è letta la pagina (HTML vuoto) resta fuori.
+ */
+export function payload(channel, item, itHtml, enHtml, esHtml = "") {
   const path = PATHS[item.kind];
   const itUrl = `${SITE}/it/${path}/${item.slug}`;
   const enUrl = `${SITE}/en/${path}/${item.slug}`;
+  const esUrl = `${SITE}/es/${path}/${item.slug}`;
   const image = ogValue(itHtml, "image");
   const enTitle = titleOf(enHtml);
+  const esTitle = titleOf(esHtml);
   const fields = [];
   if (enTitle) fields.push({ name: "🇬🇧 English", value: `[${enTitle.replace(/[[\]]/g, "")}](${enUrl})`.slice(0, 1024) });
+  if (esTitle) fields.push({ name: "🇪🇸 Español", value: `[${esTitle.replace(/[[\]]/g, "")}](${esUrl})`.slice(0, 1024) });
   if (channel === "metashifting" && item.patch) {
     fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes](${SITE}/it/metashifting#patch-${item.patch})` });
   }
@@ -351,8 +358,9 @@ async function main() {
       continue;
     }
     const enHtml = (await waitForPage(`${SITE}/en/${path}/${item.slug}`)) ?? "";
+    const esHtml = (await waitForPage(`${SITE}/es/${path}/${item.slug}`)) ?? "";
     for (const { channel, webhook } of targets) {
-      const body = payload(channel, item, itHtml, enHtml);
+      const body = payload(channel, item, itHtml, enHtml, esHtml);
       if (DRY_RUN) {
         console.log(`[prova] ${CHANNELS[channel].name.padEnd(17)} ← ${item.kind}/${item.slug}${item.date ? ` (${item.date})` : ""} · ${body.embeds[0].title}`);
         if (process.env.DRY_RUN_JSON === "1") console.log(JSON.stringify(body, null, 2));
