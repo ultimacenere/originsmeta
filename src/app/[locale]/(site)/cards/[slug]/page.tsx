@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { cardDescription, cardTitle } from "@/lib/cardTitles";
-import { cards, cardSource, getCard, lastChange, patchLabel, patches, relatedFrom, sagas, statLine } from "@/lib/data/cards";
+import { cardDescription, cardTitle, textOutdated } from "@/lib/cardTitles";
+import { cardLastmod, cardTextSource } from "@/lib/cardDates";
+import { todayUtc } from "@/lib/lastmod";
+import { changeLabel } from "@/lib/linkLabels";
+import { cards, cardSource, getCard, patchLabel, patches, relatedFrom, sagas, statLine } from "@/lib/data/cards";
 import { archetypeLabels, decksWithCard } from "@/lib/data/decks";
 import { tierOf } from "@/lib/data/tierlist";
 import { getGuides } from "@/lib/content/guides";
@@ -38,10 +41,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Title e description per tipo di carta e per lingua (Ondata 1 SEO/GEO, 25/09/2026): "Merlin: carta Leggendaria di
   // Origins TCG", "Garlic: carta creada de Origins TCG"… e una frase fatta dei soli dati della scheda, con "Origins TCG"
   // e "Koin Games". Il title contiene già la parola chiave: `pageTitle` aggiunge solo " · OriginsMeta" se ci sta.
-  // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts.
+  // L'H1 resta il nome della carta. Modelli e test in src/lib/cardTitles.ts. Un testo che una patch ha superato
+  // (`textOutdated`, come Silver Bullet: il database dice ancora 3 danni, la 0.6.2 li ha portati a 1) non va nella
+  // description.
   // Le carte ufficiali non hanno tutte la stessa altezza (480×690, 480×660, 480×650): si legge dal file.
   const opts = card.image ? { imageAlt: `${dict.cards.collectible}: ${card.name}`, imageSize: imageSizeOf(card.image) } : {};
-  return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards), card.image, opts);
+  return pageMeta(locale, `/cards/${card.slug}`, cardTitle(card, locale), cardDescription(card, locale, cards, cardTextSource), card.image, opts);
 }
 
 export default async function CardPage({ params }: { params: Params }) {
@@ -66,7 +71,6 @@ export default async function CardPage({ params }: { params: Params }) {
   // Nodo della carta per i motori e per le risposte generative: solo campi che la scheda mostra davvero.
   const path = href(locale, `/cards/${card.slug}`);
   const url = `${siteUrl}${path}`;
-  const last = lastChange(card);
   const cardLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -78,12 +82,15 @@ export default async function CardPage({ params }: { params: Params }) {
     isPartOf: { "@id": `${siteUrl}${href(locale, "/cards")}#collection` },
     about: { "@id": videoGameId },
   };
-  const ldText = card.ability?.[locale] ?? card.origin?.[locale];
+  // Come nella description: un testo superato da una patch non si dichiara, resta l'origine della leggenda.
+  const ldText = (textOutdated(card, cardTextSource) ? undefined : card.ability?.[locale]) ?? card.origin?.[locale];
   if (ldText) cardLd.description = oneLine(ldText);
   if (card.image) cardLd.image = `${siteUrl}${card.image}`;
   // L'illustratore è stampato sulla carta ufficiale: va reso anche nei dati strutturati.
   if (card.credit?.illus) cardLd.creator = { "@type": "Person", name: card.credit.illus };
-  if (last) cardLd.dateModified = patches[last.patch].date;
+  // Lo stesso giorno del `lastmod` della sitemap (`cardLastmod`): patch, verifica sul gioco, testi italiani e spagnoli
+  // letti nel gioco, guide e tier list; prima qui c'era solo l'ultima patch e le due date non coincidevano.
+  cardLd.dateModified = cardLastmod(card, locale, todayUtc());
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -232,7 +239,8 @@ export default async function CardPage({ params }: { params: Params }) {
               return (
                 <li key={i} className="card-night p-5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <ChangeChip kind={ch.kind} label={d.common[ch.kind === "deck" ? "rework" : ch.kind]} />
+                    {/* "Cambio di mazzo" per gli scambi nei mazzi del playtest: la carta non cambia (`changeLabel`) */}
+                    <ChangeChip kind={ch.kind} label={changeLabel(ch.kind, locale, d.common)} />
                     {/* La patch porta al nostro articolo, che racconta il perché delle modifiche (campo `news` della
                         patch in cards.ts); il post Steam resta accanto come fonte ufficiale (Ondata 1, 25/09/2026). */}
                     <span className="font-mono text-sm text-pale-muted">

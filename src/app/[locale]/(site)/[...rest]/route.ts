@@ -9,7 +9,9 @@ import { NOT_FOUND_TITLE, notFoundHtml, notFoundTitle, type NotFoundPage } from 
  * da sé una riga di navigazione e la dicitura del footer.
  * Le 404 delle pagine di dettaglio (una carta, una news, un mazzo che non esistono) passano ancora da notFound():
  * restano col guscio, ma con i metadati puliti di `../not-found.tsx` (limite noto di Next 16.3).
- * Una lingua sconosciuta (/xx/pagina) riceve il testo nelle tre lingue, come la 404 globale.
+ * Una lingua sconosciuta (/xx/pagina) riceve il testo nelle tre lingue, come la 404 globale. Una sezione vera senza
+ * lingua (/cards/merlin, /news/<slug>, /faq) qui non arriva: dal 25/09/2026 next.config.ts la porta alla stessa pagina
+ * nella lingua del browser (`sectionRedirects`), prima di ogni rotta.
  */
 
 function pageFor(locale: Locale): NotFoundPage {
