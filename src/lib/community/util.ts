@@ -93,38 +93,12 @@ export function parseGuide(fd: FormData, fallbackLang: GuideLang): { ok: true; g
   return { ok: true, guide };
 }
 
-export function cleanVideo(raw: string): { ok: true; value: string | null } | { ok: false } {
-  const v = raw.trim().slice(0, 300);
-  if (!v) return { ok: true, value: null };
-  try {
-    const u = new URL(v);
-    if (u.protocol !== "https:" && u.protocol !== "http:") return { ok: false };
-    return { ok: true, value: u.toString() };
-  } catch {
-    return { ok: false };
-  }
-}
-
-/** ID di un video YouTube (watch, youtu.be, shorts, live, embed), altrimenti null. */
-export function youtubeId(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^(www|m)\./, "");
-    let id: string | null = null;
-    if (host === "youtu.be") id = u.pathname.slice(1).split("/")[0] || null;
-    else if (host === "youtube.com" || host === "youtube-nocookie.com") {
-      id = u.searchParams.get("v");
-      if (!id) {
-        const m = u.pathname.match(/^\/(?:embed|shorts|live)\/([\w-]+)/);
-        id = m ? m[1] : null;
-      }
-    }
-    return id && /^[\w-]{6,20}$/.test(id) ? id : null;
-  } catch {
-    return null;
-  }
-}
+/*
+ * Video e link dei mazzi (26/09/2026): `cleanVideo` (un link qualsiasi, solo http/https) e il vecchio `youtubeId` sono
+ * diventati il riconoscimento di YouTube e Twitch in src/lib/videos.ts (`readDeckMedia`, `parseVideoUrl`, con test).
+ * `youtubeId` resta esportato da qui per chi lo importava.
+ */
+export { youtubeId } from "@/lib/videos";
 
 export function authorName(p: Profile | null | undefined): string {
   return (p?.display_name || p?.username || "player").trim();

@@ -39,7 +39,11 @@
  *     deck_share          link, lista in testo o "Condividi con…" dal builder      method (link | text | native), placement
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
- *   ★ deck_vote           voto a un mazzo della community                         stars (1-5), vote_type (new | update)
+ *     video_play          "riproduci" su un video a clic (VideoEmbed, 26/09/2026): provider (youtube | twitch),
+ *                         solo da qui si carica il lettore di YouTube o Twitch      placement (deck_page | guide)
+ *     deck_link_click     link delle Risorse di un mazzo (attributi); uno verso     host, placement (deck_resources)
+ *                         Discord o Steam manda anche discord_click / steam_click
+ *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
  *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
@@ -64,7 +68,8 @@
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars,
- *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang;
+ *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, provider,
+ *     host;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
  * non rompere i rapporti già impostati: hanno lo stesso valore.
@@ -134,6 +139,8 @@ export type EventParams = {
   deck_share: { method: "link" | "text" | "native"; placement: string };
   deck_open_builder: { placement: string };
   deck_original_open: { guide_lang: string };
+  video_play: { provider: string; placement: string };
+  deck_link_click: { host: string; placement: string };
   deck_vote: { stars: number; vote_type: "new" | "update" };
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
@@ -164,6 +171,8 @@ export const VERCEL_PROPS = {
   deck_share: ["method", "placement"],
   deck_open_builder: ["placement"],
   deck_original_open: ["guide_lang"],
+  video_play: ["provider", "placement"],
+  deck_link_click: ["host", "placement"],
   deck_vote: ["stars", "vote_type"],
   tierlist_created: ["kind"],
   tier_list_share: ["method", "kind"],

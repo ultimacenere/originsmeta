@@ -17,14 +17,22 @@ import { announceDeck } from "./discordDeck";
 import { translateDeckLater } from "./translate";
 import { refreshCardDecks } from "./decksByCard";
 import { deckIndexable } from "./deckQuality";
-import { checkDeck, cleanDeckName, cleanVideo, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
+import { checkDeck, cleanDeckName, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
+import { mediaErrorField, mediaNeedsColumns, readDeckMedia } from "@/lib/videos";
 
 /**
  * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
  * aggiornare il mazzo privato riaperto (?draft=<id>) o risalvare lo stesso mazzo sono `ok` ma non `created`, e il
  * browser manda l'evento chiave deck_created solo nel primo caso (revisione dell'integrazione dell'Ondata 2).
  */
-export type ActionState = { error?: string; ok?: boolean; href?: string; created?: boolean };
+export type ActionState = {
+  error?: string;
+  ok?: boolean;
+  href?: string;
+  created?: boolean;
+  /** campo del modulo da correggere (errori di video e link, pacchetto VIDEO): il modulo lo apre e gli dà il fuoco */
+  field?: string;
+};
 
 /**
  * Pagine da rigenerare quando cambia un mazzo pubblicato. Dall'Ondata 2 (25/09/2026) anche le schede carta, che
@@ -83,8 +91,9 @@ async function parseSubmission(formData: FormData) {
   if (!chosenTypes.length) return { error: "deckType" } as const;
   const guide = parseGuide(formData, locale);
   if (!guide.ok) return { error: guide.code } as const;
-  const video = cleanVideo(String(formData.get("video") ?? ""));
-  if (!video.ok) return { error: "video" } as const;
+  // fino a 3 video (YouTube, Twitch) e 5 risorse, con le stesse regole dei vincoli SQL (src/lib/videos.ts)
+  const media = readDeckMedia((k) => formData.get(k));
+  if (!media.ok) return { error: media.code, field: mediaErrorField(media.code, media.index) } as const;
   const state = { name, legendary: checked.deck.legendary, cards: checked.deck.cards, customCards: checked.deck.customCards };
   return {
     supabase,
@@ -97,11 +106,29 @@ async function parseSubmission(formData: FormData) {
       custom_cards: checked.deck.customCards,
       archetype,
       deck_types: chosenTypes,
-      video_url: video.value,
+      // la colonna storica tiene il primo video: una versione del sito di prima lo mostra ancora
+      video_url: media.videos[0]?.url ?? null,
+      videos: media.videos,
+      links: media.links,
       guide: guide.guide,
       code_om: encodeOmCode(state),
     },
   };
+}
+
+/**
+ * Colonne `videos` e `links` non ancora nel database (supabase/creator-VIDEO.sql non applicato): PostgREST risponde
+ * PGRST204 ("Could not find the 'links' column…") o 42703. Allora si salva senza, con il solo primo video in
+ * `video_url` come prima, ma SOLO se non si perde nulla (`mediaNeedsColumns`: un video semplice, senza minuto, titolo
+ * né risorse); altrimenti la Server Action risponde `mediaUnavailable` e il modulo spiega che cosa togliere. La
+ * migrazione va comunque applicata prima di mandare online il pacchetto.
+ */
+function missingMediaColumn(error: { code?: string; message?: string } | null): boolean {
+  return Boolean(error && (error.code === "PGRST204" || error.code === "42703") && /\b(?:videos|links)\b/.test(error.message ?? ""));
+}
+
+function withoutMedia<T extends Record<string, unknown>>(row: T): Omit<T, "videos" | "links"> {
+  return Object.fromEntries(Object.entries(row).filter(([k]) => k !== "videos" && k !== "links")) as Omit<T, "videos" | "links">;
 }
 
 /**
@@ -112,7 +139,7 @@ async function parseSubmission(formData: FormData) {
  */
 export async function publishDeck(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const p = await parseSubmission(formData);
-  if ("error" in p) return { error: p.error };
+  if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
   // Tetto ai mazzi pubblicati (Pierluigi, 23/09/2026): 5 per un utente normale, nessuno per Influencer, Pro,
   // Staff e admin. Il controllo vero sta nel trigger `enforce_deck_limit` dello schema; qui si guarda prima,
   // per dire di no con un messaggio chiaro invece di un errore del database.
@@ -120,12 +147,18 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
   if (limit.used >= limit.cap) return { error: "deckLimit" };
   const draftId = formData.get("draft");
   let slug = newSlug(p.row.name);
-  for (let attempt = 0; attempt < 3; attempt++) {
+  let row: Omit<typeof p.row, "videos" | "links"> = p.row;
+  for (let attempt = 0; attempt < 4; attempt++) {
     const { data, error } = await p.supabase
       .from("community_decks")
-      .insert({ ...p.row, slug, owner: p.user.id, status: "published" })
+      .insert({ ...row, slug, owner: p.user.id, status: "published" })
       .select("id, slug")
       .single();
+    if (missingMediaColumn(error) && row === p.row) {
+      if (mediaNeedsColumns(p.row)) return { error: "mediaUnavailable" };
+      row = withoutMedia(p.row);
+      continue;
+    }
     if (!error && data) {
       const { id, slug: s } = data as { id: string; slug: string };
       // solo una riga dell'utente e solo se è ancora privata: un id qualunque non cancella niente
@@ -248,10 +281,15 @@ function revalidateAccount() {
 /** Aggiorna carte, nome e guida di un mazzo dell'utente (le policy RLS bloccano i mazzi altrui). */
 export async function updateDeck(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const p = await parseSubmission(formData);
-  if ("error" in p) return { error: p.error };
+  if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
   const id = formData.get("id");
   if (!isUuid(id)) return { error: "forbidden" };
-  const { data, error } = await p.supabase.from("community_decks").update(p.row).eq("id", id).select("slug, status").maybeSingle();
+  let res = await p.supabase.from("community_decks").update(p.row).eq("id", id).select("slug, status").maybeSingle();
+  if (missingMediaColumn(res.error)) {
+    if (mediaNeedsColumns(p.row)) return { error: "mediaUnavailable" };
+    res = await p.supabase.from("community_decks").update(withoutMedia(p.row)).eq("id", id).select("slug, status").maybeSingle();
+  }
+  const { data, error } = res;
   if (error) return { error: "db" };
   if (!data) return { error: "forbidden" };
   const { slug: s, status } = data as { slug: string; status: string };

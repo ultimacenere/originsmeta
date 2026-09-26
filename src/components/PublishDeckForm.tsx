@@ -16,10 +16,14 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { LoginPanel } from "./LoginPanel";
 import type { LoginLabels } from "@/lib/loginLabels";
+import { MEDIA_FIELD_NAMES, fillVideoLabel, mediaFieldRow, type DeckLink, type StoredVideo } from "@/lib/videos";
+import type { VideoFormLabels } from "@/lib/videoLabels";
+import { DeckMediaFields } from "./DeckMediaFields";
 
 /** Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). */
 export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string };
-export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; video: string; guide: Guide };
+/** Mazzo da modificare. `videos` e `links` dal 26/09/2026 (pacchetto VIDEO): al posto del vecchio campo `video`. */
+export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; videos?: StoredVideo[]; links?: DeckLink[]; guide: Guide };
 
 type Labels = Dictionary["community"];
 
@@ -30,6 +34,8 @@ type Props = {
   archetypes: [string, string][];
   initial?: InitialDeck;
   labels: Labels;
+  /** etichette di video e risorse nella lingua della pagina (`videoFormLabels`, pacchetto VIDEO del 26/09/2026) */
+  mediaLabels: VideoFormLabels;
   loginLabels: LoginLabels;
   builderHref: string;
   /** percorso della pagina di pubblicazione, usato come ritorno dopo l'accesso */
@@ -39,7 +45,7 @@ type Props = {
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale placeholder:text-pale-muted/80 focus:border-mint";
 
 /** Campi di testo salvati nella bozza locale della guida (le caselle e i menu si rifanno in un attimo). */
-const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, "video"] as const;
+const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, ...MEDIA_FIELD_NAMES] as const;
 type DraftValues = Partial<Record<(typeof DRAFT_FIELDS)[number], string>>;
 
 /**
@@ -129,8 +135,8 @@ function readGuideDraft(legendary: string | null): DraftValues | null {
     if (!raw) return null;
     const p = JSON.parse(raw) as { legendary?: string | null; values?: DraftValues };
     if (!p || p.legendary !== legendary || !p.values || typeof p.values !== "object") return null;
-    // nome e lingua hanno sempre un valore: la bozza conta solo se c'è del testo della guida o un video
-    const written = (["summary", ...guideSections, "video"] as const).some((k) => {
+    // nome e lingua hanno sempre un valore: la bozza conta solo se c'è del testo della guida, un video o un link
+    const written = (["summary", ...guideSections, ...MEDIA_FIELD_NAMES] as const).some((k) => {
       const v = p.values?.[k];
       return typeof v === "string" && v.trim().length > 0;
     });
@@ -155,7 +161,7 @@ function clearLocalDrafts() {
  * Il modulo è volutamente corto: in vista c'è solo il piano di gioco (obbligatorio); le sezioni facoltative
  * stanno in un <details> chiuso, e il testo scritto resta in una bozza locale finché non si pubblica.
  */
-export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, loginLabels, builderHref, publishPath }: Props) {
+export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, loginLabels, builderHref, publishPath }: Props) {
   const router = useRouter();
   const mounted = useMounted();
   // ?deck e ?draft dal router: sempre quelli della pagina che si sta aprendo, anche con un <Link>
@@ -180,6 +186,17 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const [guideWords, setGuideWords] = useState<number | null>(() => (initial ? guideFormWords((k) => initial.guide[k]) : null));
   /* misura: il mazzo inviato, per l'evento deck_published quando l'azione risponde "fatto" (solo in creazione) */
   const sent = useRef<EventParams["deck_published"] | null>(null);
+  /* il modulo, per risalvare la bozza quando si toglie una riga di video o di link (DeckMediaFields) */
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /* errore su un video o un link: la Server Action dice quale campo (`field`), che si apre e riceve il fuoco */
+  useEffect(() => {
+    if (!state.field) return;
+    const el = document.getElementById(`pub-${state.field}`);
+    const det = el?.closest("details");
+    if (det) det.open = true;
+    el?.focus();
+  }, [state]);
 
   /* il mazzo resta in attesa nel browser: sopravvive al giro di accesso (Discord o link via email) */
   useEffect(() => {
@@ -294,17 +311,24 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const g = initial?.guide;
   const meter = guideWords === null ? null : guideMeter(guideWords, isLocale(locale) ? locale : "en");
   const v = (k: (typeof DRAFT_FIELDS)[number], fallback?: string) => restored?.[k] ?? fallback;
-  /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative */
-  const hasOptional = [...guideSections, "video" as const].some((k) => Boolean(restored?.[k] || (k === "video" ? initial?.video : g?.[k])));
-  const errorText = state.error ? ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db) : null;
+  /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative, nei video o nei link */
+  const hasOptional =
+    guideSections.some((k) => Boolean(restored?.[k] || g?.[k])) || MEDIA_FIELD_NAMES.some((k) => Boolean(restored?.[k])) || Boolean(initial?.videos?.length || initial?.links?.length);
+  /* errori di video e link (videoLabels.ts, con il numero della riga) prima di quelli del dizionario */
+  const mediaError = state.error ? (mediaLabels.errors as Record<string, string>)[state.error] : undefined;
+  const errorText = state.error
+    ? mediaError
+      ? fillVideoLabel(mediaError, { n: mediaFieldRow(state.field) })
+      : ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
+    : null;
   const busyLabel = mode === "edit" ? labels.updating : labels.submitting;
   const submitLabel = mode === "edit" ? labels.update : labels.submit;
   const ph = labels.placeholders;
 
   /* bozza della guida a ogni modifica: un'interruzione (accesso, telefono che si blocca) non cancella il testo */
-  const saveDraft = (e: FormEvent<HTMLFormElement>) => {
+  const saveDraftOf = (form: HTMLFormElement) => {
     if (mode !== "create") return;
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const values: DraftValues = {};
     for (const k of DRAFT_FIELDS) {
       const val = fd.get(k);
@@ -316,9 +340,11 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       /* ignore */
     }
   };
+  const saveDraft = (e: FormEvent<HTMLFormElement>) => saveDraftOf(e.currentTarget);
 
   return (
     <form
+      ref={formRef}
       // invio a mano invece di <form action>: React 19 svuota i campi non controllati quando l'azione finisce,
       // anche se torna un errore, e chi ha scritto la guida la perderebbe. La validazione del browser resta.
       onSubmit={(e) => {
@@ -437,11 +463,16 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           <Field id="combos" label={labels.combos} placeholder={ph.combos} rows={3} defaultValue={v("combos", g?.combos)} />
           <Field id="matchups" label={labels.matchups} hint={labels.matchupsHint} placeholder={ph.matchups} rows={3} defaultValue={v("matchups", g?.matchups)} />
           <Field id="notes" label={labels.notes} placeholder={ph.notes} rows={2} defaultValue={v("notes", g?.notes)} />
-          <label className="mt-4 block pb-1">
-            <span className="kicker text-pale-muted">{labels.video}</span>
-            <input id="pub-video" name="video" type="url" maxLength={300} placeholder="https://www.youtube.com/watch?v=…" defaultValue={v("video", initial?.video)} className={inputCls} />
-            <span className="mt-1 block text-xs text-pale-muted">{labels.videoHint}</span>
-          </label>
+          {/* fino a 3 video (YouTube, Twitch) e 5 risorse, con l'anteprima di ciò che il sito riconosce (26/09/2026) */}
+          <DeckMediaFields
+            labels={mediaLabels}
+            initialVideos={initial?.videos}
+            initialLinks={initial?.links}
+            draft={restored}
+            onRowsChange={() => {
+              if (formRef.current) saveDraftOf(formRef.current);
+            }}
+          />
         </details>
 
         <p className="mt-5 text-xs text-pale-muted">{labels.consent}</p>

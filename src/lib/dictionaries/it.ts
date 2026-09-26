@@ -754,7 +754,7 @@ export const it: Dictionary = {
     accounts:
       "Se crei un account (accesso con Discord o link via email), conserviamo su Supabase (server in Irlanda, UE) email, nome utente, avatar e ID Discord, oltre ai mazzi che pubblichi e ai voti che dai. Mazzi e voti sono pubblici con il tuo nome utente; l'email no. Un cookie di sessione ti tiene connesso. Scrivi a staff@originsmeta.com per cancellare l'account e tutto ciò che vi è collegato.",
     cookies:
-      "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Quando crei un account, il browser salva nella stessa memoria locale anche l'ora della creazione, solo perché le statistiche non la contino due volte; non viene mai inviata. Vercel Web Analytics misura le visite e alcune azioni sul sito (per esempio la copia del codice di un mazzo, un clic verso Steam o le ricerche fra le carte, con il testo cercato) senza cookie e senza identificarti. I video nelle pagine dei mazzi della community sono incorporati tramite youtube-nocookie.com, la modalità a privacy potenziata di YouTube, che non imposta nulla finché non premi play. Se scegli “Accetta tutto” parte anche Google Analytics 4 (Google Ireland Ltd): imposta cookie che iniziano con _ga per un massimo di 2 anni per contare visite, pagine e le stesse azioni, con anonimizzazione dell'IP e senza funzioni pubblicitarie; Google può trattare questi dati negli Stati Uniti in base alle clausole contrattuali standard. Con “Solo necessari” non viene caricato nulla di Google; se ritiri il consenso, Google Analytics si ferma subito e i cookie _ga vengono cancellati. Nessun cookie pubblicitario o di profilazione, nessun altro tracciante di terze parti. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
+      "Cookie: il sito imposta solo cookie tecnici, e solo dopo l'accesso (la sessione Supabase, nomi che iniziano con sb-, conservata per la durata della sessione e rinnovata mentre usi il sito). La tua scelta sui cookie è salvata nella memoria locale del browser. Quando crei un account, il browser salva nella stessa memoria locale anche l'ora della creazione, solo perché le statistiche non la contino due volte; non viene mai inviata. Vercel Web Analytics misura le visite e alcune azioni sul sito (per esempio la copia del codice di un mazzo, un clic verso Steam o le ricerche fra le carte, con il testo cercato) senza cookie e senza identificarti. I video di YouTube e Twitch nelle schede dei mazzi e nelle guide si caricano solo quando premi play: fino ad allora la pagina non contatta nessuno dei due servizi (dettagli più sotto, “Video di YouTube e Twitch”). Se scegli “Accetta tutto” parte anche Google Analytics 4 (Google Ireland Ltd): imposta cookie che iniziano con _ga per un massimo di 2 anni per contare visite, pagine e le stesse azioni, con anonimizzazione dell'IP e senza funzioni pubblicitarie; Google può trattare questi dati negli Stati Uniti in base alle clausole contrattuali standard. Con “Solo necessari” non viene caricato nulla di Google; se ritiri il consenso, Google Analytics si ferma subito e i cookie _ga vengono cancellati. Nessun cookie pubblicitario o di profilazione, nessun altro tracciante di terze parti se non avvii un video. Puoi cambiare la scelta in qualsiasi momento da “Preferenze cookie” nel footer.",
     feedback:
       "Feedback: se usi il riquadro “Dicci la tua”, riceviamo il tuo messaggio, il tuo nome o nickname e il tuo indirizzo email se decidi di aggiungerli (entrambi facoltativi), la pagina in cui ti trovavi e la lingua del sito. Arrivano tramite webhook in un canale privato del server Discord dello staff, quindi sono trattati da Discord Inc. (Stati Uniti), e li legge solo lo staff di OriginsMeta. Li usiamo per correggere i problemi e migliorare il sito nelle prime settimane online, l'unico periodo in cui il riquadro resta attivo; il nome ci dice chi ci ha scritto e non lo pubblichiamo mai senza chiedertelo; l'email serve solo a risponderti e non la usiamo mai per newsletter né per nient'altro. Il tuo indirizzo IP serve solo a limitare lo spam: resta per poco nella memoria del server e non viene mai inviato con il messaggio. Il controllo anti-bot, quando è attivo, è fornito da Cloudflare (Turnstile). Per far cancellare un messaggio scrivi a staff@originsmeta.com.",
     guides:
@@ -995,7 +995,7 @@ export const it: Dictionary = {
     summary: "Piano di gioco",
     summaryHint: "Come vince il mazzo, in poche righe (20–600 caratteri). Compare sulla scheda del mazzo.",
     moreDetails: "Aggiungi dettagli (facoltativo)",
-    moreDetailsHint: "Punti di forza, punti deboli, mulligan, combo, matchup, note e un video. Puoi aggiungerli anche dopo.",
+    moreDetailsHint: "Punti di forza, punti deboli, mulligan, combo, matchup, note, video e link. Puoi aggiungerli anche dopo.",
     placeholders: {
       summary: "Es. Riempi il campo di unità economiche nei primi round, poi chiudi la partita con la Leggendaria prima che l'avversario si stabilizzi.",
       strengths: "Es. Partenza rapida, tanti modi per ricaricare la mano.",
@@ -1013,8 +1013,6 @@ export const it: Dictionary = {
     matchups: "Matchup",
     matchupsHint: "Matchup favorevoli e sfavorevoli e come giocarli.",
     notes: "Note e modifiche",
-    video: "Video (facoltativo)",
-    videoHint: "Un link YouTube viene incorporato nella pagina del mazzo; qualsiasi altro link compare come collegamento.",
     consent: "Pubblicando accetti che il mazzo e la guida siano pubblici con il tuo nome utente.",
     draftRestored: "Abbiamo ripristinato la guida che stavi scrivendo.",
     draftClear: "Ricomincia da capo",
@@ -1031,7 +1029,6 @@ export const it: Dictionary = {
       archetype: "Scegli un archetipo.",
       deckType: "Scegli almeno un tipo di mazzo.",
       summary: "Scrivi il piano di gioco (almeno 20 caratteri).",
-      video: "Il link del video deve iniziare con http(s).",
       db: "Non siamo riusciti a salvare il mazzo. Riprova tra un momento.",
       forbidden: "Puoi modificare solo i tuoi mazzi.",
       draftLimit: "Hai 50 mazzi privati, il massimo: eliminane uno dal profilo per salvarne uno nuovo.",

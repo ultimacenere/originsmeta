@@ -61,17 +61,31 @@ export function rowOrThrow<T>(what: string, res: ReadResult): T | null {
  * Traduzioni automatiche delle guide (colonna `translations`, 25/09/2026). Finché la migrazione non è applicata
  * la colonna non esiste e PostgREST risponde 42703: allora si rifà la lettura senza, una volta per istanza, così
  * il sito non resta senza mazzi se il codice arriva online prima dello schema.
+ * Lo stesso per video e risorse dei mazzi (colonne `videos` e `links`, supabase/creator-VIDEO.sql, 26/09/2026): senza,
+ * la scheda legge il vecchio `video_url` come primo video (`deckVideos` in src/lib/videos.ts) e non mostra risorse.
+ * `groups`: i gruppi di colonne facoltative che la lettura vuole. Video e risorse ("media") li chiede solo la scheda di
+ * un mazzo: le liste (/decks, tier list, profili, sitemap) non li mostrano e non li scaricano.
  */
-let hasTranslations = true;
+type OptionalGroup = "translations" | "media";
+const optionalColumns: { id: OptionalGroup; columns: string[]; on: boolean }[] = [
+  { id: "translations", columns: ["translations"], on: true },
+  { id: "media", columns: ["videos", "links"], on: true },
+];
 
-async function readWithTranslations(base: string, run: (select: string) => PromiseLike<ReadResult>): Promise<ReadResult> {
-  const res = await run(hasTranslations ? `${base}, translations` : base);
-  if (res.error && hasTranslations && (res.error.code === "42703" || res.error.message.includes("translations"))) {
-    hasTranslations = false;
-    console.error("[community] manca la colonna community_decks.translations: va applicato supabase/schema.sql");
-    return run(base);
+async function readWithTranslations(
+  base: string,
+  run: (select: string) => PromiseLike<ReadResult>,
+  groups: readonly OptionalGroup[] = ["translations"],
+): Promise<ReadResult> {
+  for (;;) {
+    const active = optionalColumns.filter((g) => g.on && groups.includes(g.id));
+    const res = await run([base, ...active.flatMap((g) => g.columns)].join(", "));
+    const err = res.error;
+    const missing = err ? active.find((g) => g.columns.some((c) => err.message.includes(c)) && (err.code === "42703" || err.message.includes("does not exist"))) : undefined;
+    if (!missing) return res;
+    missing.on = false;
+    console.error(`[community] manca la colonna community_decks.${missing.columns.join("/")}: va applicato supabase/schema.sql`);
   }
-  return res;
 }
 
 /**
@@ -111,7 +125,10 @@ export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> 
 export async function getCommunityDeck(slug: string): Promise<CommunityDeck | null> {
   const client = supabasePublic();
   if (!client) return null;
-  const res = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("slug", slug).eq("status", PUBLISHED).maybeSingle());
+  const res = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("slug", slug).eq("status", PUBLISHED).maybeSingle(), [
+    "translations",
+    "media",
+  ]);
   const deck = rowOrThrow<CommunityDeck>("getCommunityDeck", res);
   if (!deck) return null;
   const [rated] = await withRatings(client, [deck]);

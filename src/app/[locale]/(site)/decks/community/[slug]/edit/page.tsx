@@ -11,6 +11,8 @@ import type { CommunityDeck } from "@/lib/community/types";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
 import { withCarriedParams } from "@/lib/analytics";
+import { deckResources, deckVideos } from "@/lib/videos";
+import { videoFormLabels } from "@/lib/videoLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -63,8 +65,20 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
           mode="edit"
           pool={pool}
           archetypes={archetypes}
-          initial={{ id: deck.id, code, name: deck.name, archetype: deck.archetype, deckTypes: deck.deck_types, video: deck.video_url ?? "", guide: deck.guide }}
+          initial={{
+            id: deck.id,
+            code,
+            name: deck.name,
+            archetype: deck.archetype,
+            deckTypes: deck.deck_types,
+            // video e risorse riletti con le regole della scheda: il vecchio video_url è il primo video se riconosciuto,
+            // altrimenti la prima risorsa (se su un host ammesso), così salvando non si perde in silenzio
+            videos: deckVideos(deck).map((v) => ({ url: v.url, ...(v.start ? { start: v.start } : {}), ...(v.title ? { title: v.title } : {}) })),
+            links: deckResources(deck, d.common.video).map((l) => ({ label: l.label, url: l.url })),
+            guide: deck.guide,
+          }}
           labels={d.community}
+          mediaLabels={videoFormLabels(locale)}
           builderHref={`${href(locale, "/deck-builder")}#${code}`}
           publishPath={path}
           loginLabels={loginLabels(d)}

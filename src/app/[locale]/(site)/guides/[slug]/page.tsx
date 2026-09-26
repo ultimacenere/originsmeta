@@ -11,7 +11,8 @@ import { getCard } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { encodeOmCode } from "@/lib/deckcode";
 import { RULES } from "@/lib/deckrules";
-import { Markdown } from "@/components/Markdown";
+import { GuideBody, GuideVideoList } from "@/components/GuideVideos";
+import { guideVideoLayout, guideVideosLd } from "@/lib/videos";
 import { CardChip, CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { GuideNewsLinks } from "@/components/NewsLinks";
@@ -105,7 +106,11 @@ export default async function GuidePage({ params }: { params: Params }) {
     publisher: { "@id": organizationId },
     mainEntityOfPage: `${siteUrl}${href(locale, `/guides/${g.slug}`)}`,
     about: { "@id": videoGameId },
+    // video della guida: VideoObject solo con titolo, miniatura e data di caricamento veri (src/lib/videos.ts)
+    ...guideVideosLd(g.videos, siteUrl),
   };
+  // Dove vanno i video della guida nella lingua della pagina: in cima, in fondo o prima di un titolo (26/09/2026)
+  const media = guideVideoLayout(g.body, g.videos, locale);
   // Gli eventi del calendario che hanno questa guida (`guide` in events.ts): gli stessi nodi Event di /tournaments, con
   // lo stesso @id (Ondata 2, GEO-09). Oggi la guida steam-next-fest-2026: Crimson Cup e classificata al Next Fest.
   const eventLd = events.filter((e) => e.guide === g.slug && e.ld).map((e) => eventNode(e, locale));
@@ -154,6 +159,8 @@ export default async function GuidePage({ params }: { params: Params }) {
         </div>
       ) : null}
 
+      <GuideVideoList items={media.top} title={g.title} locale={locale} className="mt-8" />
+
       {deckLegendary && deckCards.length ? (
         <section className="card-night mt-8 p-5 sm:p-6" aria-labelledby="guide-deck">
           {/* L'anteprima al passaggio del mouse sulle carte la porta CardChip (CardMentionEdges in cima la corregge ai bordi). */}
@@ -192,7 +199,7 @@ export default async function GuidePage({ params }: { params: Params }) {
       ) : null}
 
       <article className="card-night mt-8 p-6 sm:p-10">
-        <Markdown source={g.body} linkCards={locale} />
+        <GuideBody segments={media.segments} end={media.end} title={g.title} locale={locale} />
         {g.faq?.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="guide-faq">
             <h2 id="guide-faq" className="t-section">

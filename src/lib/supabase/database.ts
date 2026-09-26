@@ -6,6 +6,7 @@ import type { BuilderCard } from "@/lib/deckrules";
 import type { DeckStatus, Guide } from "@/lib/community/types";
 import type { DeckTranslations } from "@/lib/community/deckTranslation";
 import type { Locale } from "@/lib/i18n";
+import type { DeckLink, StoredVideo } from "@/lib/videos";
 
 export type ProfileRow = {
   id: string;
@@ -36,6 +37,9 @@ export type CommunityDeckRow = {
   archetype: string;
   deck_types: string[];
   video_url: string | null;
+  /** video e risorse del mazzo (supabase/creator-VIDEO.sql, 26/09/2026): forme e host controllati da vincoli SQL */
+  videos: StoredVideo[];
+  links: DeckLink[];
   guide: Guide;
   /** traduzioni automatiche della guida (25/09/2026): le scrive il sito dopo la pubblicazione, non l'autore */
   translations: DeckTranslations;
@@ -45,8 +49,10 @@ export type CommunityDeckRow = {
   updated_at: string;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations" | "videos" | "links"> & {
   id?: string;
+  videos?: StoredVideo[];
+  links?: DeckLink[];
   translations?: DeckTranslations;
   deck_types?: string[];
   status?: DeckStatus;
@@ -362,6 +368,12 @@ export type Database = {
       invite_player: { Args: { tid: string; uname: string }; Returns: undefined };
       revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
       rotate_invite_code: { Args: { tid: string }; Returns: string };
+      /** vincoli di video e risorse dei mazzi (creator-VIDEO.sql): funzioni pure, il sito non le chiama */
+      deck_text_ok: { Args: { t: string; maxlen: number }; Returns: boolean };
+      deck_video_url_ok: { Args: { u: string }; Returns: boolean };
+      deck_link_host_ok: { Args: { u: string }; Returns: boolean };
+      deck_videos_ok: { Args: { v: StoredVideo[] }; Returns: boolean };
+      deck_links_ok: { Args: { v: DeckLink[] }; Returns: boolean };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
