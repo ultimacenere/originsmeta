@@ -17,7 +17,7 @@ export type ProfileRow = {
   role: "user" | "admin";
   badge: string;
   created_at: string;
-  /* profilo pubblico (pacchetto CREATOR, supabase/creator-CREATOR.sql): le sole colonne che l'utente può cambiare */
+  /* profilo pubblico (pacchetto CREATOR, supabase/schema.sql, blocco CREATOR): le sole colonne che l'utente può cambiare */
   bio: string | null;
   /** canali, [{kind, url}] nella forma canonica di src/lib/community/profileLinks.ts */
   links: { kind: string; url: string }[];
@@ -37,7 +37,7 @@ export type CommunityDeckRow = {
   archetype: string;
   deck_types: string[];
   video_url: string | null;
-  /** video e risorse del mazzo (supabase/creator-VIDEO.sql, 26/09/2026): forme e host controllati da vincoli SQL */
+  /** video e risorse del mazzo (supabase/schema.sql, blocco VIDEO, 26/09/2026): forme e host controllati da vincoli SQL */
   videos: StoredVideo[];
   links: DeckLink[];
   guide: Guide;
@@ -83,7 +83,7 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
 };
 
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; created_at: string; updated_at: string };
-/** Statistiche dei mazzi per gli autori (26/09/2026, supabase/creator-STATS.sql): totali per mazzo e giorno UTC. */
+/** Statistiche dei mazzi per gli autori (26/09/2026, supabase/schema.sql, blocco STATS): totali per mazzo e giorno UTC. */
 export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
 
@@ -156,7 +156,7 @@ export type TournamentMatchRow = {
   updated_at: string;
 };
 
-/* ---------- casella messaggi utente ↔ staff (26/09/2026, supabase/creator-INBOX.sql) ---------- */
+/* ---------- casella messaggi utente ↔ staff (26/09/2026, supabase/schema.sql, blocco INBOX) ---------- */
 export type ConversationRow = {
   id: string;
   /** l'utente della conversazione: l'altra parte è sempre lo staff */
@@ -452,7 +452,7 @@ export type Database = {
       invite_player: { Args: { tid: string; uname: string }; Returns: undefined };
       revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
       rotate_invite_code: { Args: { tid: string }; Returns: string };
-      /** vincoli di video e risorse dei mazzi (creator-VIDEO.sql): funzioni pure, il sito non le chiama */
+      /** vincoli di video e risorse dei mazzi (schema.sql, blocco VIDEO): funzioni pure, il sito non le chiama */
       deck_text_ok: { Args: { t: string; maxlen: number }; Returns: boolean };
       deck_video_url_ok: { Args: { u: string }; Returns: boolean };
       deck_link_host_ok: { Args: { u: string }; Returns: boolean };
@@ -462,7 +462,7 @@ export type Database = {
       bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
       deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
       deck_stats_owns: { Args: { did: string }; Returns: boolean };
-      /* casella messaggi (supabase/creator-INBOX.sql): scritture solo da qui, errori con raise exception '<codice>' */
+      /* casella messaggi (supabase/schema.sql, blocco INBOX): scritture solo da qui, errori con raise exception '<codice>' */
       is_staff: { Args: Record<string, never>; Returns: boolean };
       inbox_status: { Args: Record<string, never>; Returns: { unread: number; staff: boolean; staff_unread: number } };
       inbox_start: { Args: { topic: string; content: string; via_feedback?: boolean }; Returns: string };

@@ -1,13 +1,13 @@
 /**
  * Test di video e risorse dei mazzi e delle guide (`videos.ts`, etichette in `videoLabels.ts`) con il runner integrato
  * di Node: `node --test src/lib/videos.test.ts`. Come per tierstats.test.ts, l'import ha l'estensione `.ts`.
- * In fondo un controllo incrociato con l'SQL (supabase/creator-VIDEO.sql, poi accodato a schema.sql): host ammessi ed
+ * In fondo un controllo incrociato con l'SQL (blocco VIDEO di supabase/schema.sql, accodato il 26/09/2026): host ammessi ed
  * esclusi, percorsi di reindirizzamento, caratteri vietati e forme canoniche dei video devono essere gli stessi nel sito
  * e nei vincoli del database.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import {
   LINK_BLOCKED_HOSTS,
   LINK_BLOCKED_PATH,
@@ -465,12 +465,8 @@ describe("video nelle guide", () => {
 });
 
 describe("allineamento con l'SQL", () => {
-  // Dopo l'integrazione l'SQL sta in schema.sql; finché non c'è, nel file del pacchetto.
-  const sql = ["../../supabase/creator-VIDEO.sql", "../../supabase/schema.sql"]
-    .map((p) => new URL(p, import.meta.url))
-    .filter((u) => existsSync(u))
-    .map((u) => readFileSync(u, "utf8"))
-    .join("\n");
+  // L'SQL del pacchetto sta in schema.sql (accodato il 26/09/2026, prima era supabase/creator-VIDEO.sql).
+  const sql = readFileSync(new URL("../../supabase/schema.sql", import.meta.url), "utf8");
   /** Il primo array['…']::text[] dopo un segnaposto `/* NOME *\/` dell'SQL. */
   const listAfter = (marker: string) => {
     const at = sql.indexOf(`/* ${marker} */`);

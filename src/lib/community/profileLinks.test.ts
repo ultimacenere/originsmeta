@@ -2,13 +2,13 @@
  * Test delle regole del profilo pubblico (`profileLinks.ts`): `node --test src/lib/community/profileLinks.test.ts`.
  * Canali nella forma canonica di ogni piattaforma, https e host ammessi, bio in testo semplice, lingue dei contenuti,
  * modulo di /account. Controlla anche che le espressioni del database siano le stesse del codice: il vincolo
- * `profile_link_ok` è la vera difesa contro chi scrive la riga via API saltando il sito. Il blocco SQL sta in
- * supabase/creator-CREATOR.sql finché l'integrazione non lo accoda a supabase/schema.sql; dopo, il test lo legge lì
- * (e controlla che venga dopo la `revoke update on public.profiles`, che toglierebbe i grant per colonna).
+ * `profile_link_ok` è la vera difesa contro chi scrive la riga via API saltando il sito. Il blocco SQL sta in fondo a
+ * supabase/schema.sql (accodato il 26/09/2026, prima era supabase/creator-CREATOR.sql): il test lo legge lì e
+ * controlla che venga dopo la `revoke update on public.profiles`, che toglierebbe i grant per colonna.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import {
   BIO_MAX,
   CANONICAL,
@@ -319,20 +319,18 @@ describe("modulo di /account", () => {
   });
 });
 
-/** Il blocco SQL del pacchetto: in schema.sql se l'integrazione ce l'ha già accodato, altrimenti nel suo file. */
+/** Il blocco SQL del pacchetto, in fondo a schema.sql (accodato il 26/09/2026): dal suo titolo alla fine del file. */
 const MARKER = "Profilo del creator (pacchetto CREATOR";
 const schemaUrl = new URL("../../../supabase/schema.sql", import.meta.url);
-const separateUrl = new URL("../../../supabase/creator-CREATOR.sql", import.meta.url);
 const schema = readFileSync(schemaUrl, "utf8");
-const inSchema = schema.includes(MARKER);
-const sql = inSchema ? schema.slice(schema.indexOf(MARKER)) : existsSync(separateUrl) ? readFileSync(separateUrl, "utf8") : "";
+const sql = schema.includes(MARKER) ? schema.slice(schema.indexOf(MARKER)) : "";
 
 /** Righe che aprono o chiudono il corpo di una funzione con un dollaro solo (`as $`, `end $;`): errore di sintassi. */
 const singleDollar = (text: string) => text.split(/\r?\n/).filter((l) => /\bas \$\s*$|^\s*end \$;\s*$|^\s*\$;\s*$/i.test(l));
 
-describe(`database: stesse regole nel vincolo (${inSchema ? "supabase/schema.sql" : "supabase/creator-CREATOR.sql"})`, () => {
+describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
   test("il blocco SQL c'è", () => {
-    assert.ok(sql.includes(MARKER), "manca il blocco SQL del profilo pubblico (né in schema.sql né in creator-CREATOR.sql)");
+    assert.ok(sql.includes(MARKER), "manca il blocco SQL del profilo pubblico in schema.sql");
   });
   test("ogni piattaforma ha la sua espressione, identica a quella del codice", () => {
     for (const kind of LINK_KINDS) {
@@ -356,26 +354,35 @@ describe(`database: stesse regole nel vincolo (${inSchema ? "supabase/schema.sql
   });
   test("grant per colonna, mai sull'intera tabella", () => {
     assert.match(sql, /grant update \(bio, links, content_langs\) on public\.profiles to authenticated;/);
-    assert.doesNotMatch(sql, /grant update on public\.profiles/);
+    // in tutto schema.sql, fuori dai commenti: nessun grant di update, insert, delete o all sull'intera tabella
+    const code = schema.split(/\r?\n/).filter((l) => !/^\s*--/.test(l)).join("\n");
+    assert.doesNotMatch(code, /^\s*grant\b[^;(]*\b(update|insert|delete|all)\b[^;(]*\bon (table )?[^;]*\bpublic\.profiles\b/im);
     assert.doesNotMatch(sql, /grant all/i);
   });
   test("corpi delle funzioni con i doppi dollari", () => {
     assert.deepEqual(singleDollar(sql), []);
   });
-  test("accodato a schema.sql: dopo la revoke sulla tabella, che toglierebbe i grant per colonna", { skip: inSchema ? false : "blocco ancora in supabase/creator-CREATOR.sql" }, () => {
-    const revoke = schema.lastIndexOf("revoke update on public.profiles from anon, authenticated;");
+  test("in schema.sql dopo la revoke sulla tabella, che toglierebbe i grant per colonna, e nessuna revoke dopo", () => {
     const grant = schema.indexOf("grant update (bio, links, content_langs) on public.profiles to authenticated;");
+    const revoke = schema.lastIndexOf("revoke update on public.profiles from anon, authenticated;");
     assert.ok(revoke >= 0 && grant > revoke, "la grant per colonna deve venire dopo l'ultima revoke update su public.profiles");
+    // anche le altre forme (revoke all, revoke update (colonne), su più tabelle insieme), fuori dai commenti
+    const later = schema
+      .slice(grant)
+      .split(/\r?\n/)
+      .filter((l) => !/^\s*--/.test(l) && /^\s*revoke\b[^;]*\bon (table )?[^;]*\bpublic\.profiles\b/i.test(l));
+    assert.deepEqual(later, [], "una revoke su public.profiles dopo la grant per colonna la cancellerebbe a ogni migrazione");
   });
 });
 
 /*
-  schema.sql (commit 6c6756d): il corpo di protect_profile_badge ha perso un dollaro ("as $" … "end $;") e
-  scripts/db-migrate.mjs, che manda tutto il file in una query sola, fallisce per intero. Il pacchetto CREATOR non può
-  toccare schema.sql: finché l'integrazione non lo corregge il controllo resta "da fare" (non blocca `npm test`), poi
-  diventa un test normale che impedisce di ricadere nell'errore.
+  schema.sql: il 26/09/2026 (commit 6c6756d) il corpo di protect_profile_badge aveva perso un dollaro ("as $" …
+  "end $;") e scripts/db-migrate.mjs, che manda tutto il file in una query sola, falliva per intero. Corretto
+  nell'integrazione dei pacchetti creator: da allora è un test normale, che impedisce di ricadere nell'errore.
 */
-const schemaSingle = singleDollar(schema);
-test("schema.sql: nessun corpo di funzione con un dollaro solo", { todo: schemaSingle.length ? `da correggere in integrazione: ${schemaSingle.map((l) => l.trim()).join(" | ")}` : undefined }, () => {
-  assert.deepEqual(schemaSingle, []);
+test("schema.sql: nessun corpo di funzione con un dollaro solo", () => {
+  assert.deepEqual(
+    singleDollar(schema).map((l) => l.trim()),
+    [],
+  );
 });

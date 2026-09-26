@@ -5,7 +5,7 @@ import { SEEN_KEY, addSeen, isLikelyBot, parseSeen, rpcIsMissing, seenKey, type 
 /*
  * Invio dei contatori dei mazzi dal browser (pacchetto STATS, 26/09/2026): lo usano la scheda del mazzo
  * (DeckStatsBeacon) e il tasto di copia del codice nell'elenco /decks (CopyCode di DeckExplorer). Regole in
- * deckStats.ts e supabase/creator-STATS.sql. Solo browser: sul server `supabaseBrowser()` è null e non parte nulla.
+ * deckStats.ts e supabase/schema.sql, blocco STATS. Solo browser: sul server `supabaseBrowser()` è null e non parte nulla.
  * Il client Supabase è quello che l'header carica già su ogni pagina (AccountMenu), così la funzione SQL riconosce
  * l'autore con l'accesso fatto e non lo conta sul proprio mazzo.
  */

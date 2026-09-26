@@ -7,7 +7,7 @@ import { bumpDeckStat } from "@/lib/community/deckStatsClient";
 
 /**
  * Contatori della scheda di un mazzo per il suo autore (pacchetto STATS, 26/09/2026; regole in
- * src/lib/community/deckStats.ts e supabase/creator-STATS.sql). Non disegna nulla e non cambia l'HTML della pagina,
+ * src/lib/community/deckStats.ts e supabase/schema.sql, blocco STATS). Non disegna nulla e non cambia l'HTML della pagina,
  * che resta ISR: lavora solo nel browser e manda i contatori con `bumpDeckStat` (una volta per scheda, per mazzo e per
  * tipo; niente bot né browser dello staff; l'autore con l'accesso fatto non conta sul proprio mazzo). Sono stime.
  * - visita: dopo `VIEW_DELAY_MS` di pagina visibile (il tempo in una scheda nascosta non conta);

@@ -3,7 +3,7 @@
  * influencer iscritto è coachcrono). Funzioni pure, senza import a runtime: `node --test` le esegue senza il resto
  * del sito (test in deckStats.test.ts), e le usano sia il browser (DeckStatsBeacon) sia il server (DeckStatsPanel).
  *
- * Come si conta (tabella `deck_stats_daily` e funzione `bump_deck_stat` in supabase/creator-STATS.sql):
+ * Come si conta (tabella `deck_stats_daily` e funzione `bump_deck_stat` in supabase/schema.sql, blocco STATS):
  * - per ogni mazzo pubblicato e ogni giorno UTC, quattro contatori: visite, copie del codice del gioco, clic sui link
  *   esterni (risorse, canali, link del video) e video avviati; solo totali, nessun dato personale;
  * - nel browser una volta per scheda, per mazzo e per tipo (sessionStorage è per scheda), la visita dopo qualche secondo

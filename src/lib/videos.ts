@@ -5,7 +5,7 @@
  *
  * - Video: YouTube (watch, youtu.be, Shorts, dirette, embed) e Twitch (VOD twitch.tv/videos/<id>, clip
  *   clips.twitch.tv/<slug> o twitch.tv/<canale>/clip/<slug>), fino a tre per mazzo, con il minuto di partenza e il
- *   titolo facoltativi. Nel database (`community_decks.videos`, supabase/creator-VIDEO.sql) si salva l'indirizzo
+ *   titolo facoltativi. Nel database (`community_decks.videos`, supabase/schema.sql, blocco VIDEO) si salva l'indirizzo
  *   CANONICO (`parseVideoUrl(...).url`) più `start` in secondi e `title`: il vincolo del database accetta solo quelle
  *   forme, e la pagina rilegge comunque tutto con `deckVideos`, che scarta quello che non riconosce.
  * - La vecchia colonna `video_url` (un solo link, anche non YouTube) resta: `deckVideos` la legge come primo video se
@@ -67,7 +67,7 @@ const TWITCH_CHANNEL = /^[A-Za-z0-9_]{1,25}$/;
  * Caratteri tolti dai testi degli utenti (etichette dei link, titoli dei video): controllo C0/C1, trattino morbido,
  * segni di direzione del testo (ALM U+061C, LRM, RLM, LRE…RLO, LRI…PDI: con quelli un nome si legge al contrario) e
  * invisibili (spazio a larghezza zero, BOM). Scritti con gli escape, mai come caratteri letterali invisibili. Il
- * vincolo SQL rifiuta gli stessi (`deck_text_ok` in supabase/creator-VIDEO.sql).
+ * vincolo SQL rifiuta gli stessi (`deck_text_ok` in supabase/schema.sql, blocco VIDEO).
  */
 const HIDDEN_CHARS = /[\u0000-\u001f\u007f-\u009f­؜​‎‏‪-‮⁦-⁩﻿]/g;
 
@@ -324,7 +324,7 @@ export function deckVideos(d: { videos?: unknown; video_url?: string | null }): 
  * prudente del 26/09/2026: le piattaforme dei creator e della community, il gioco (sito ufficiale, Koin Games, Steam)
  * e OriginsMeta stesso. Fuori: accorciatori (bit.ly, redd.it…), siti personali, raccolte fondi (Patreon, Ko-fi) e
  * documenti condivisi (Google Docs), da decidere con Pierluigi. La stessa lista sta nel vincolo SQL
- * `deck_link_host_ok` (supabase/creator-VIDEO.sql): un test in videos.test.ts controlla che coincidano.
+ * `deck_link_host_ok` (supabase/schema.sql, blocco VIDEO): un test in videos.test.ts controlla che coincidano.
  */
 export const LINK_HOSTS = [
   "youtube.com",

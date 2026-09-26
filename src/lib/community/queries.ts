@@ -61,7 +61,7 @@ export function rowOrThrow<T>(what: string, res: ReadResult): T | null {
  * Traduzioni automatiche delle guide (colonna `translations`, 25/09/2026). Finché la migrazione non è applicata
  * la colonna non esiste e PostgREST risponde 42703: allora si rifà la lettura senza, una volta per istanza, così
  * il sito non resta senza mazzi se il codice arriva online prima dello schema.
- * Lo stesso per video e risorse dei mazzi (colonne `videos` e `links`, supabase/creator-VIDEO.sql, 26/09/2026): senza,
+ * Lo stesso per video e risorse dei mazzi (colonne `videos` e `links`, supabase/schema.sql, blocco VIDEO, 26/09/2026): senza,
  * la scheda legge il vecchio `video_url` come primo video (`deckVideos` in src/lib/videos.ts) e non mostra risorse.
  * `groups`: i gruppi di colonne facoltative che la lettura vuole. Video e risorse ("media") li chiede solo la scheda di
  * un mazzo: le liste (/decks, tier list, profili, sitemap) non li mostrano e non li scaricano.

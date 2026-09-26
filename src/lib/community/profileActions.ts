@@ -11,7 +11,7 @@ import { isCreatorBadge, parseProfileForm, sameShowcase, SAVE_MIN_INTERVAL_MS, t
  * contenuti, per ogni iscritto. Il server non si fida del modulo: rilegge e riscrive tutto con `parseProfileForm`
  * (forme canoniche, https, host ammessi, niente accorciatori né redirector, al massimo 8 canali, bio in testo
  * semplice) e salva con la sessione dell'utente. Il database ripete le stesse regole (vincoli di
- * supabase/creator-CREATOR.sql) e lascia cambiare solo queste tre colonne della propria riga (grant per colonna +
+ * supabase/schema.sql, blocco CREATOR) e lascia cambiare solo queste tre colonne della propria riga (grant per colonna +
  * policy "users edit own profile").
  *
  * Ogni salvataggio rigenera fino a nove pagine e la sitemap: un salvataggio identico a quello che c'è non scrive e non

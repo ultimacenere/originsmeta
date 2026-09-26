@@ -25,8 +25,8 @@ type Props = {
  * grafico delle visite e delle copie al giorno; per admin e tag Staff anche la classifica di tutti i mazzi per visite.
  * Componente server: /account è dinamica e lo monta dentro un <Suspense>, così il resto della pagina non lo aspetta.
  * Grafici in SVG inline come DeckCharts, senza librerie; le scritte dei grafici sono HTML, leggibili anche sul
- * telefono. Non compare a chi non ha mazzi (e non è dello staff). La riga "Clic sui link" compare dal primo clic: oggi
- * nella scheda di un mazzo non ci sono link esterni dell'autore oltre al video, e una riga sempre a zero confonde.
+ * telefono. Non compare a chi non ha mazzi (e non è dello staff). La riga "Clic sui link" compare dal primo clic (le
+ * Risorse del mazzo e i canali dell'autore accanto al nome, pacchetti VIDEO e CREATOR): una riga sempre a zero confonde.
  */
 export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props) {
   const L = deckStatsLabels[locale];

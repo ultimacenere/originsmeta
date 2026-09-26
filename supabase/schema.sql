@@ -1277,3 +1277,728 @@ create trigger community_decks_touch before update on public.community_decks
 -- database nuovo, su quello esistente si sostituisce qui (il nome è quello che Postgres dà ai check di colonna).
 alter table public.tournaments drop constraint if exists tournaments_lang_check;
 alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es'));
+
+-- ===== 26/09/2026: CREATOR =====
+-- =====================================================================================================
+-- Profilo del creator (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi: "funzioni per i creator")
+-- =====================================================================================================
+-- Ogni iscritto può scrivere nella sua pagina pubblica /u/<nome> una bio (testo semplice, 280 caratteri), fino a
+-- otto canali (Twitch, YouTube, X, TikTok, Instagram, Kick, Bluesky, Discord, sito web) e le lingue in cui fa
+-- contenuti. Per chi ha un tag autore (creator = "Autore", influencer, pro, staff) gli stessi dati fanno la scheda
+-- della directory /creators, le icone accanto al nome nei mazzi, lo stato "in diretta" su Twitch e i `sameAs`
+-- della Person nei dati strutturati. Regole e forme canoniche in src/lib/community/profileLinks.ts (con test, che
+-- controllano anche che le espressioni qui sotto siano uguali a quelle del codice).
+--
+-- ORDINE (da leggere prima di spostare questo blocco): sta DOPO la riga
+--   revoke update on public.profiles from anon, authenticated;
+-- (commit 6c6756d, più in alto in questo file). In Postgres un REVOKE sulla tabella toglie anche i grant per colonna:
+-- se questo blocco girasse prima, il grant di bio/links/content_langs sparirebbe a ogni migrazione e il modulo di
+-- /account risponderebbe "permission denied". Nessun blocco accodato dopo questo deve fare una revoke su profiles.
+-- Non si lancia a pezzi nell'editor SQL: scripts/db-migrate.mjs applica tutto schema.sql ogni volta. Il test
+-- src/lib/community/profileLinks.test.ts segue questo blocco dentro schema.sql e ne controlla la posizione.
+--
+-- Sicurezza (dopo la falla chiusa da 6c6756d): nessun grant di UPDATE sull'intera tabella. Gli utenti possono
+-- cambiare SOLO bio, links e content_langs della propria riga (grant per colonna + policy "users edit own profile",
+-- che resta com'è in schema.sql: using/with check auth.uid() = id); role, username, badge, discord_id, id e
+-- created_at restano protetti anche dal trigger protect_profile_badge. showcase_updated_at la scrive solo il trigger.
+-- Idempotente: si può rilanciare.
+
+alter table public.profiles add column if not exists bio text;
+alter table public.profiles add column if not exists links jsonb not null default '[]'::jsonb;
+alter table public.profiles add column if not exists content_langs text[] not null default '{}'::text[];
+-- ultima modifica di bio, canali, lingue o tag: il lastmod di /u/<nome> e di /creators nella sitemap
+alter table public.profiles add column if not exists showcase_updated_at timestamptz;
+
+-- Un canale: esattamente {kind, url}, tipo noto, indirizzo https nella forma canonica della piattaforma (quella che
+-- scrive il sito), al massimo 200 caratteri. Il sito web accetta qualsiasi dominio, ma non gli accorciatori di link, i
+-- redirector e gli host delle piattaforme che hanno un tipo loro.
+-- Niente sottoquery nei rami: ogni ramo del CASE si valuta solo se ci si arriva.
+create or replace function public.profile_link_ok(link jsonb)
+returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
+  select case
+    when jsonb_typeof(link) is distinct from 'object' then false
+    when jsonb_typeof(link->'kind') is distinct from 'string' or jsonb_typeof(link->'url') is distinct from 'string' then false
+    when (link - 'kind' - 'url') <> '{}'::jsonb then false
+    when char_length(link->>'url') > 200 then false
+    else case link->>'kind'
+      when 'twitch' then (link->>'url') ~ '^https://www\.twitch\.tv/[a-z0-9_]{3,25}$'
+      when 'youtube' then (link->>'url') ~ '^https://www\.youtube\.com/(@[A-Za-z0-9._-]{3,30}|channel/UC[A-Za-z0-9_-]{22}|c/[A-Za-z0-9._-]{1,100}|user/[A-Za-z0-9._-]{1,100})$'
+      when 'x' then (link->>'url') ~ '^https://x\.com/[A-Za-z0-9_]{1,15}$'
+      when 'tiktok' then (link->>'url') ~ '^https://www\.tiktok\.com/@[a-z0-9_.]{2,24}$'
+      when 'instagram' then (link->>'url') ~ '^https://www\.instagram\.com/[a-z0-9_.]{1,30}$'
+      when 'kick' then (link->>'url') ~ '^https://kick\.com/[a-z0-9_-]{3,25}$'
+      when 'bluesky' then (link->>'url') ~ '^https://bsky\.app/profile/([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+|did:plc:[a-z0-9]{24})$'
+      when 'discord' then (link->>'url') ~ '^https://discord\.gg/[A-Za-z0-9-]{2,32}$'
+      -- sito web: qualsiasi dominio, ma non gli host delle piattaforme che hanno un tipo loro (sottodomini compresi),
+      -- gli accorciatori e i redirector (per suffisso), né google.<tld>/url e /amp: WEBSITE_BLOCKED_HOST e
+      -- GOOGLE_REDIRECT di profileLinks.ts, identiche (le controlla il test)
+      when 'website' then (link->>'url') ~ '^https://[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,63}(/[^\s"<>\\^`{|}]*)?$'
+        and coalesce(substring(link->>'url' from '^https://([^/?#]+)'), '') !~ '(^|\.)(twitch\.tv|youtube\.com|youtu\.be|x\.com|twitter\.com|tiktok\.com|instagram\.com|kick\.com|bsky\.app|discord\.com|discord\.gg|discordapp\.com|bit\.ly|bitly\.com|j\.mp|tinyurl\.com|tiny\.one|rotf\.lol|t\.co|goo\.gl|ow\.ly|is\.gd|v\.gd|buff\.ly|cutt\.ly|cutt\.us|rebrand\.ly|bl\.ink|shorturl\.at|shorturl\.com|tiny\.cc|rb\.gy|s\.id|lnkd\.in|t\.ly|adf\.ly|shorte\.st|ouo\.io|l\.facebook\.com|lm\.facebook\.com|l\.messenger\.com|out\.reddit\.com|href\.li|t\.umblr\.com|away\.vk\.com)$'
+        and (link->>'url') !~ '^https://(www\.)?google(\.[a-z]{2,3}){1,2}/(url|amp)([/?#]|$)'
+      else false
+    end
+  end
+$$;
+
+-- L'elenco dei canali: un array di al massimo otto canali validi (vuoto = nessun canale). Un canale che desse null
+-- conta come non valido: bool_and ignora i null e un CHECK con risultato null passerebbe.
+create or replace function public.profile_links_ok(links jsonb)
+returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
+  select case
+    when jsonb_typeof(links) is distinct from 'array' then false
+    when jsonb_array_length(links) > 8 then false
+    else coalesce((select bool_and(coalesce(public.profile_link_ok(t.e), false)) from jsonb_array_elements(links) as t(e)), true)
+  end
+$$;
+
+-- Le due funzioni girano dentro i vincoli, quindi con i privilegi di chi scrive la riga: serve EXECUTE per
+-- authenticated (il modulo di /account) e service_role; anon non scrive mai i profili.
+revoke all on function public.profile_link_ok(jsonb) from public, anon;
+revoke all on function public.profile_links_ok(jsonb) from public, anon;
+grant execute on function public.profile_link_ok(jsonb) to authenticated, service_role;
+grant execute on function public.profile_links_ok(jsonb) to authenticated, service_role;
+
+-- Vincoli: bio in testo semplice (a capo ammessi, nessun altro carattere di controllo), 1–280 caratteri o null;
+-- canali validi; lingue dei contenuti fra quelle del sito, senza null.
+alter table public.profiles drop constraint if exists profiles_bio_check;
+alter table public.profiles add constraint profiles_bio_check
+  check (bio is null or (char_length(bio) between 1 and 280 and replace(bio, chr(10), '') !~ '[[:cntrl:]]'));
+alter table public.profiles drop constraint if exists profiles_links_check;
+alter table public.profiles add constraint profiles_links_check check (public.profile_links_ok(links));
+alter table public.profiles drop constraint if exists profiles_content_langs_check;
+alter table public.profiles add constraint profiles_content_langs_check
+  check (content_langs <@ array['en','it','es']::text[] and cardinality(content_langs) <= 3 and array_position(content_langs, null) is null);
+
+-- Data dell'ultima modifica della vetrina (bio, canali, lingue, tag): la scrive solo questo trigger, gli utenti non
+-- hanno grant sulla colonna. Scatta anche quando lo staff cambia il tag con scripts/set-badge.mjs.
+create or replace function public.touch_profile_showcase()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if (new.bio, new.links, new.content_langs, new.badge) is distinct from (old.bio, old.links, old.content_langs, old.badge) then
+    new.showcase_updated_at := now();
+  end if;
+  return new;
+end $$;
+drop trigger if exists profiles_touch_showcase on public.profiles;
+create trigger profiles_touch_showcase before update on public.profiles
+  for each row execute function public.touch_profile_showcase();
+
+-- L'unica scrittura concessa agli utenti sui profili: tre colonne, sulla propria riga (policy "users edit own profile").
+-- MAI un grant di UPDATE sull'intera tabella: riaprirebbe role e badge (vedi 6c6756d).
+grant update (bio, links, content_langs) on public.profiles to authenticated;
+
+-- Directory /creators e rotta /api/live: leggono solo i profili con un tag autore.
+create index if not exists profiles_creator_badge_idx on public.profiles (badge) where badge <> 'community';
+
+-- ===== 26/09/2026: VIDEO =====
+-- =====================================================================================================
+-- 26/09/2026 — VIDEO E RISORSE NEI MAZZI (pacchetto VIDEO delle funzioni per i creator, richiesta di Pierluigi)
+-- Idempotente: si può rilanciare.
+--
+-- community_decks.videos: fino a 3 video {url, start?, title?}. `url` è l'indirizzo CANONICO scritto dal sito
+--   (src/lib/videos.ts, `parseVideoUrl`): https://www.youtube.com/watch?v=<id>, https://www.youtube.com/shorts/<id>,
+--   https://www.twitch.tv/videos/<numero>, https://clips.twitch.tv/<slug>; `start` = secondi dall'inizio (intero,
+--   da 1 a 48 ore), facoltativo; `title` = titolo scritto dall'autore (testo semplice, 1-100 caratteri), facoltativo.
+--   La vecchia colonna video_url resta: il sito la legge come primo video quando `videos` è vuota e ci scrive ancora
+--   il primo video (compatibilità). Nessuna copia dei dati: il 26/09/2026 nessun mazzo pubblicato aveva un video.
+-- community_decks.links: fino a 5 risorse {label, url}: etichetta di testo semplice (1-40 caratteri, niente caratteri
+--   di controllo, segni di direzione del testo né invisibili), indirizzo https su un host ammesso (lista uguale a
+--   LINK_HOSTS in src/lib/videos.ts, meno i sottodomini e i percorsi che reindirizzano altrove: un test di
+--   videos.test.ts le confronta), niente credenziali né porte, al massimo 300 caratteri.
+--
+-- Permessi: community_decks ha già i grant di tabella (select ad anon e authenticated; insert, update, delete ad
+-- authenticated) e le policy "users insert own decks", "owners update decks", "owners delete decks": un grant di
+-- tabella vale per tutte le colonne, anche per quelle aggiunte dopo, quindi le due colonne nuove le scrive solo il
+-- proprietario del mazzo (o un admin), come il resto della riga. Nessun grant nuovo. I vincoli e il trigger qui sotto
+-- valgono anche per chi scrive direttamente via API con la chiave pubblica, saltando la Server Action; la pagina
+-- rilegge comunque ogni voce con le regole di src/lib/videos.ts e scarta quelle che non riconosce.
+-- =====================================================================================================
+
+alter table public.community_decks add column if not exists videos jsonb not null default '[]'::jsonb;
+alter table public.community_decks add column if not exists links jsonb not null default '[]'::jsonb;
+
+-- Testo semplice di un utente (etichetta di un link, titolo di un video): da 1 a `maxlen` caratteri, niente caratteri
+-- di controllo, trattino morbido, segni di direzione del testo (ALM, LRM, RLM, LRE…RLO, LRI…PDI: con quelli un nome
+-- si legge al contrario) né invisibili (spazio a larghezza zero, BOM). Gli stessi che toglie `cleanText` nel sito.
+create or replace function public.deck_text_ok(t text, maxlen integer)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select t is not null
+     and char_length(t) between 1 and maxlen
+     and t !~ '[[:cntrl:]]'
+     and translate(t, U&'\00AD\061C\200B\200E\200F\202A\202B\202C\202D\202E\2066\2067\2068\2069\FEFF', '') = t;
+$$;
+
+-- Indirizzo canonico di un video (le forme che scrive parseVideoUrl in src/lib/videos.ts; un test le confronta).
+-- VIDEO_URL_RE
+create or replace function public.deck_video_url_ok(u text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select u is not null
+     and char_length(u) <= 300
+     and u ~ '^https://(www\.youtube\.com/(watch\?v=|shorts/)[A-Za-z0-9_-]{11}|www\.twitch\.tv/videos/[0-9]{1,15}|clips\.twitch\.tv/[A-Za-z0-9_-]{1,100})$';
+$$;
+
+-- Host ammessi per le risorse, sottodomini compresi (www., m., old.reddit.com, store.steampowered.com…), meno i
+-- sottodomini che reindirizzano (LINK_BLOCKED_HOSTS) e i percorsi di reindirizzamento (LINK_BLOCKED_PATH, sul
+-- percorso in minuscolo); su discord.com solo inviti, canali ed eventi. Funzione pura (immutable, niente security
+-- definer); `u` deve iniziare con https:// e l'host finire con / ? # o con la fine dell'indirizzo: così una porta
+-- (":8080") o delle credenziali ("utente@") non passano. Liste e percorso uguali a src/lib/videos.ts.
+create or replace function public.deck_link_host_ok(u text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select coalesce((
+    select exists (
+             select 1
+               from unnest(/* LINK_HOSTS */ array[
+                 'youtube.com', 'youtu.be', 'twitch.tv', 'x.com', 'twitter.com', 'reddit.com', 'discord.gg', 'discord.com',
+                 'origins-tcg.com', 'koingames.io', 'steampowered.com', 'steamcommunity.com', 'originsmeta.com',
+                 'tiktok.com', 'instagram.com', 'bsky.app', 'kick.com'
+               ]::text[]) as a(d)
+              where s.host = a.d or right(s.host, char_length(a.d) + 1) = '.' || a.d)
+       and s.host <> all (/* LINK_BLOCKED_HOSTS */ array[
+             'l.instagram.com', 'out.reddit.com', 'vm.tiktok.com', 'vt.tiktok.com', 'go.bsky.app'
+           ]::text[])
+       and s.path !~ /* LINK_BLOCKED_PATH */ '^/(?:redirect|attribution_link|linkfilter|i/redirect)(?:/|$)|^/link/'
+       and (not (s.host = 'discord.com' or right(s.host, 12) = '.discord.com') or s.path ~ '^/(invite|channels|events)/')
+      from (select lower(substring(u from '^https://([A-Za-z0-9.-]+)(?:[/?#]|$)')) as host,
+                   lower(coalesce(substring(u from '^https://[A-Za-z0-9.-]+(/[^?#]*)'), '/')) as path) as s
+     where s.host is not null
+  ), false);
+$$;
+
+-- Video di un mazzo: array di al massimo 3 oggetti con le sole chiavi url, start e title. I CASE fissano l'ordine dei
+-- controlli (Postgres non garantisce quello di AND/OR), così un valore del tipo sbagliato non arriva mai a un cast.
+create or replace function public.deck_videos_ok(v jsonb)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when v is null or jsonb_typeof(v) <> 'array' then false
+    when jsonb_array_length(v) > 3 then false
+    else not exists (
+      select 1 from jsonb_array_elements(v) as e(x)
+       where case
+         when jsonb_typeof(x) <> 'object' then true
+         when (x - 'url' - 'start' - 'title') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'url') is distinct from 'string' then true
+         when not public.deck_video_url_ok(x ->> 'url') then true
+         when (x ? 'title') and jsonb_typeof(x -> 'title') <> 'string' then true
+         when (x ? 'title') and not public.deck_text_ok(x ->> 'title', 100) then true
+         when not (x ? 'start') then false
+         when jsonb_typeof(x -> 'start') <> 'number' then true
+         when (x -> 'start')::numeric <> trunc((x -> 'start')::numeric) then true
+         else (x -> 'start')::numeric not between 1 and 172800
+       end)
+  end;
+$$;
+
+-- Risorse di un mazzo: array di al massimo 5 oggetti con le sole chiavi label e url.
+create or replace function public.deck_links_ok(v jsonb)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when v is null or jsonb_typeof(v) <> 'array' then false
+    when jsonb_array_length(v) > 5 then false
+    else not exists (
+      select 1 from jsonb_array_elements(v) as e(x)
+       where case
+         when jsonb_typeof(x) <> 'object' then true
+         when (x - 'label' - 'url') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'label') is distinct from 'string' then true
+         when jsonb_typeof(x -> 'url') is distinct from 'string' then true
+         when not public.deck_text_ok(x ->> 'label', 40) then true
+         when char_length(x ->> 'url') > 300 then true
+         else not public.deck_link_host_ok(x ->> 'url')
+       end)
+  end;
+$$;
+
+-- Il vecchio video_url: il sito ci scrive solo l'indirizzo canonico del primo video (o null). Un trigger e non un
+-- vincolo: controlla il valore solo quando cambia (o alla creazione del mazzo), così una riga vecchia con un link
+-- qualsiasi non blocca gli altri aggiornamenti (traduzioni, nascondi/ripubblica), ma via API non se ne scrive uno nuovo
+-- verso un sito qualunque. La pagina mostra comunque un vecchio link solo se è su un host ammesso (`legacyResource`).
+create or replace function public.guard_deck_video_url()
+returns trigger language plpgsql set search_path = pg_catalog as $$
+begin
+  if new.video_url is null then
+    return new;
+  end if;
+  if tg_op = 'UPDATE' then
+    if new.video_url is not distinct from old.video_url then
+      return new;
+    end if;
+  end if;
+  if not public.deck_video_url_ok(new.video_url) then
+    raise exception 'video_url must be the canonical address of a YouTube or Twitch video' using errcode = '23514';
+  end if;
+  return new;
+end $$;
+
+-- Funzioni pure, ma esposte da PostgREST come /rpc/…: niente esecuzione per anon (non scrive mazzi). authenticated
+-- deve poterle eseguire, perché Postgres controlla i vincoli con i permessi di chi scrive la riga.
+revoke all on function public.deck_text_ok(text, integer) from public, anon;
+revoke all on function public.deck_video_url_ok(text) from public, anon;
+revoke all on function public.deck_link_host_ok(text) from public, anon;
+revoke all on function public.deck_videos_ok(jsonb) from public, anon;
+revoke all on function public.deck_links_ok(jsonb) from public, anon;
+revoke all on function public.guard_deck_video_url() from public, anon, authenticated;
+grant execute on function public.deck_text_ok(text, integer) to authenticated, service_role;
+grant execute on function public.deck_video_url_ok(text) to authenticated, service_role;
+grant execute on function public.deck_link_host_ok(text) to authenticated, service_role;
+grant execute on function public.deck_videos_ok(jsonb) to authenticated, service_role;
+grant execute on function public.deck_links_ok(jsonb) to authenticated, service_role;
+
+alter table public.community_decks drop constraint if exists community_decks_videos_check;
+alter table public.community_decks add constraint community_decks_videos_check check (public.deck_videos_ok(videos));
+alter table public.community_decks drop constraint if exists community_decks_links_check;
+alter table public.community_decks add constraint community_decks_links_check check (public.deck_links_ok(links));
+
+-- Una versione precedente di questo file aveva un vincolo lasco su video_url (^https?://): al suo posto il trigger.
+alter table public.community_decks drop constraint if exists community_decks_video_url_check;
+drop trigger if exists community_decks_video_url_guard on public.community_decks;
+create trigger community_decks_video_url_guard before insert or update of video_url on public.community_decks
+  for each row execute function public.guard_deck_video_url();
+
+-- ===== 26/09/2026: STREAM =====
+-- Nessuna modifica al database: il pacchetto STREAM (link breve /d/<slug>, comando di chat, overlay per OBS,
+-- immagine del mazzo) non ha tabelle, colonne né funzioni nuove. Il codice corto del link è lo slug del mazzo.
+
+-- ===== 26/09/2026: STATS =====
+-- =====================================================================================================
+-- 26/09/2026 — STATISTICHE DEI MAZZI PER GLI AUTORI (pacchetto STATS; Pierluigi, funzioni per i creator)
+--   Per ogni mazzo pubblicato e per ogni giorno (UTC): visite, copie del codice del gioco, clic sui link e video
+--   avviati. Solo totali: nessun indirizzo IP, nessun id utente, nessun identificativo. Li legge l'autore del mazzo
+--   (pannello "Le tue statistiche" in /account) e lo staff (admin o tag Staff, classifica dei mazzi per visite).
+--   Si scrivono SOLO con la funzione bump_deck_stat (security definer), chiamata dal browser nella scheda del mazzo
+--   (src/components/DeckStatsBeacon.tsx) e dal tasto di copia del codice nell'elenco /decks
+--   (src/lib/community/deckStatsClient.ts): una volta per scheda del browser, per mazzo e per tipo, dopo qualche
+--   secondo di pagina visibile per la visita; niente bot, niente browser dello staff, niente autore con l'accesso fatto
+--   sul proprio mazzo. Sono stime: chi volesse gonfiarle con uno script può farlo fino al tetto giornaliero qui sotto.
+--   Tutto è idempotente.
+-- =====================================================================================================
+
+create table if not exists public.deck_stats_daily (
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  day date not null,
+  views int not null default 0 check (views >= 0),
+  code_copies int not null default 0 check (code_copies >= 0),
+  link_clicks int not null default 0 check (link_clicks >= 0),
+  video_plays int not null default 0 check (video_plays >= 0),
+  primary key (deck_id, day)
+);
+-- la classifica dello staff legge gli ultimi 30 giorni di tutti i mazzi
+create index if not exists deck_stats_daily_day_idx on public.deck_stats_daily (day);
+
+alter table public.deck_stats_daily enable row level security;
+
+-- Chi chiama può leggere i numeri di tutti i mazzi: admin (profiles.role) o tag autore Staff (profiles.badge).
+create or replace function public.deck_stats_is_staff()
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.profiles p where p.id = auth.uid() and (p.role = 'admin' or p.badge = 'staff')
+  );
+$$;
+
+-- Il mazzo è di chi chiama (anche nascosto: le statistiche restano all'autore quando lo toglie dalla vista).
+create or replace function public.deck_stats_owns(did uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (select 1 from public.community_decks d where d.id = did and d.owner = auth.uid());
+$$;
+
+-- Le usano le policy qui sotto, valutate solo per authenticated (anon non ha grant sulla tabella).
+revoke all on function public.deck_stats_is_staff() from public, anon;
+grant execute on function public.deck_stats_is_staff() to authenticated;
+revoke all on function public.deck_stats_owns(uuid) from public, anon;
+grant execute on function public.deck_stats_owns(uuid) to authenticated;
+
+-- Lettura: l'autore del mazzo, gli admin e lo Staff. `(select …)` fa valutare il controllo dello staff una volta
+-- per query invece che per riga.
+drop policy if exists "deck stats: owners and staff read" on public.deck_stats_daily;
+create policy "deck stats: owners and staff read" on public.deck_stats_daily for select to authenticated
+  using ((select public.deck_stats_is_staff()) or public.deck_stats_owns(deck_id));
+-- Scrittura: nessuna policy di insert, update e delete, di proposito. Con RLS attiva anon e authenticated non
+-- scrivono nulla; le righe le crea e le aggiorna solo bump_deck_stat, che gira come proprietario della tabella.
+
+-- Supabase dà di default tutti i privilegi ad anon e authenticated sulle tabelle nuove: si tolgono e resta la sola
+-- lettura per chi ha fatto l'accesso (filtrata dalla policy).
+revoke all on public.deck_stats_daily from anon, authenticated;
+grant select on public.deck_stats_daily to authenticated;
+
+-- ---------- contatore: +1 al giorno di oggi (UTC) ----------
+-- p_kind: 'view' (visita), 'code' (copia del codice del gioco), 'link' (clic su un link esterno o una risorsa),
+-- 'video' (video avviato). Un tipo sconosciuto, uno slug lungo o un mazzo non pubblicato non fanno nulla (niente
+-- errore: il browser non deve sapere perché). L'autore che guarda il proprio mazzo con l'accesso fatto non conta.
+-- Tetto per contatore, mazzo e giorno: limita quanto uno script con la chiave pubblica può gonfiare un mazzo (e la
+-- classifica dello staff). 2.000 è ben sopra il traffico vero di oggi, anche con una diretta Twitch che rimanda al
+-- mazzo; il numero lo decide Pierluigi. Arrivato al tetto il contatore non si riscrive più: si esce prima di scrivere
+-- (niente riga aggiornata a vuoto a ogni chiamata), e la clausola `where` del `do update` tiene il limite anche con due
+-- chiamate nello stesso istante.
+create or replace function public.bump_deck_stat(p_slug text, p_kind text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  did uuid;
+  downer uuid;
+  today date := (now() at time zone 'utc')::date;
+  cap constant int := 2000;
+begin
+  if p_kind is null or p_kind not in ('view', 'code', 'link', 'video') then return; end if;
+  if p_slug is null or char_length(p_slug) not between 1 and 120 then return; end if;
+  select d.id, d.owner into did, downer from public.community_decks d where d.slug = p_slug and d.status = 'published';
+  if did is null then return; end if;
+  -- con auth.uid() nullo (visitatore anonimo) il confronto è nullo e si conta
+  if downer = auth.uid() then return; end if;
+  if exists (
+    select 1 from public.deck_stats_daily s
+    where s.deck_id = did and s.day = today
+      and case p_kind when 'view' then s.views when 'code' then s.code_copies when 'link' then s.link_clicks else s.video_plays end >= cap
+  ) then return; end if;
+  insert into public.deck_stats_daily as s (deck_id, day, views, code_copies, link_clicks, video_plays)
+  values (did, today, (p_kind = 'view')::int, (p_kind = 'code')::int, (p_kind = 'link')::int, (p_kind = 'video')::int)
+  on conflict (deck_id, day) do update set
+    views = s.views + excluded.views,
+    code_copies = s.code_copies + excluded.code_copies,
+    link_clicks = s.link_clicks + excluded.link_clicks,
+    video_plays = s.video_plays + excluded.video_plays
+  where case p_kind when 'view' then s.views when 'code' then s.code_copies when 'link' then s.link_clicks else s.video_plays end < cap;
+end $$;
+revoke all on function public.bump_deck_stat(text, text) from public;
+grant execute on function public.bump_deck_stat(text, text) to anon, authenticated;
+
+-- ===== 26/09/2026: INBOX =====
+-- =====================================================================================================
+-- 26/09/2026 — CASELLA MESSAGGI utente ↔ staff (pacchetto INBOX).
+-- Richiesta di Pierluigi: "nella sezione profilo per ogni utente una casella messaggi, così possiamo scrivere ai
+-- nostri utenti nel sito e possiamo rispondere a chi ci dà i feedback direttamente da lì".
+-- Scelte prudenti (annunciate a Pierluigi):
+--   - solo utente ↔ staff, niente messaggi fra utenti; l'utente può anche scrivere per primo allo staff;
+--   - staff = profilo con role 'admin' o tag autore 'staff' (`is_staff()`); la casella dello staff è condivisa:
+--     quello che legge uno dello staff risulta letto per tutti;
+--   - avvisi solo sul sito (numero dei non letti accanto al menu dell'account); email più avanti;
+--   - i messaggi restano finché esiste l'account e si cancellano con lui (on delete cascade dal profilo).
+-- Sicurezza (stessa lezione del commit 6c6756d sui profili):
+--   - le due tabelle si LEGGONO con le policy RLS (l'utente le sue conversazioni, lo staff tutte) e si SCRIVONO
+--     solo con le RPC security definer qui sotto: niente grant di insert/update/delete ad anon e authenticated, e
+--     policy restrittive che negano comunque ogni scrittura diretta, anche se un grant tornasse per sbaglio;
+--   - `from_staff` lo decide il database: chi scrive è l'utente della conversazione → false, uno dello staff → true;
+--   - limite di frequenza nel database: 20 messaggi l'ora per utente (200 per lo staff) e 10 conversazioni nuove al
+--     giorno per utente, con un lock per utente così le richieste in parallelo non passano insieme;
+--   - testo semplice: il database toglie caratteri di controllo e caratteri invisibili, rifiuta i testi senza nemmeno
+--     un carattere visibile e tiene le lunghezze (oggetto 1..120 su una riga, messaggio 1..4000), con un tetto al testo
+--     grezzo prima delle regex; il sito lo mostra sempre come testo, mai come HTML.
+-- Idempotente: si può rilanciare (create ... if not exists, create or replace, drop policy if exists).
+-- =====================================================================================================
+
+-- ---------- chi è dello staff ----------
+-- Admin (profiles.role) o tag autore 'staff' (profiles.badge): due colonne che l'utente non può cambiare
+-- (revoke update on profiles e trigger protect_profile_badge, commit 6c6756d).
+create or replace function public.is_staff()
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.profiles p where p.id = auth.uid() and (p.role = 'admin' or p.badge = 'staff')
+  );
+$$;
+-- La usano le policy delle tabelle qui sotto, lette solo da `authenticated`. Se un giorno una policy su una tabella
+-- leggibile da anon la usasse, va aggiunto anche anon (per anon restituisce comunque false).
+revoke all on function public.is_staff() from public, anon;
+grant execute on function public.is_staff() to authenticated;
+
+-- ---------- conversazioni ----------
+create table if not exists public.conversations (
+  id uuid primary key default gen_random_uuid(),
+  -- l'utente della conversazione; l'altra parte è sempre lo staff
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  subject text not null check (char_length(subject) between 1 and 120),
+  -- chi l'ha aperta: l'utente ('user'), lo staff ('staff') o il riquadro dei feedback con l'accesso fatto ('feedback')
+  origin text not null default 'user' check (origin in ('user','staff','feedback')),
+  status text not null default 'open' check (status in ('open','closed')),
+  -- chi ha scritto il primo messaggio (l'utente stesso o un membro dello staff); serve al limite di frequenza
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  last_message_at timestamptz not null default now(),
+  -- ultimo messaggio di ciascuna parte: da qui si ricavano i non letti senza contare i messaggi
+  last_user_message_at timestamptz,
+  last_staff_message_at timestamptz,
+  last_from_staff boolean not null default false,
+  -- inizio dell'ultimo messaggio su una riga, per gli elenchi
+  last_preview text not null default '' check (char_length(last_preview) <= 160),
+  -- stato di lettura: fin dove ha letto l'utente, fin dove ha letto lo staff (uno qualsiasi dello staff)
+  read_by_user_at timestamptz,
+  read_by_staff_at timestamptz,
+  -- colonne calcolate: PostgREST non confronta due colonne, così gli elenchi e i conteggi filtrano su un booleano
+  unread_by_user boolean generated always as (
+    last_staff_message_at is not null and (read_by_user_at is null or read_by_user_at < last_staff_message_at)
+  ) stored,
+  unread_by_staff boolean generated always as (
+    last_user_message_at is not null and (read_by_staff_at is null or read_by_staff_at < last_user_message_at)
+  ) stored
+);
+create index if not exists conversations_user_idx on public.conversations (user_id, last_message_at desc);
+create index if not exists conversations_status_idx on public.conversations (status, last_message_at desc);
+create index if not exists conversations_created_by_idx on public.conversations (created_by, created_at desc);
+create index if not exists conversations_staff_unread_idx on public.conversations (last_message_at desc) where unread_by_staff;
+
+-- ---------- messaggi ----------
+create table if not exists public.messages (
+  id bigint generated always as identity primary key,
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  -- chi ha scritto; null se l'account dello staff che l'aveva scritto non c'è più
+  author_id uuid references public.profiles(id) on delete set null,
+  from_staff boolean not null default false,
+  body text not null check (char_length(body) between 1 and 4000),
+  created_at timestamptz not null default now()
+);
+create index if not exists messages_conversation_idx on public.messages (conversation_id, created_at, id);
+create index if not exists messages_author_idx on public.messages (author_id, created_at desc);
+
+-- ---------- RLS: letture ----------
+-- auth.uid() e is_staff() dentro una (select …): Postgres li calcola una volta per richiesta, non per riga (consiglio
+-- di Supabase sulle prestazioni delle policy).
+alter table public.conversations enable row level security;
+alter table public.messages enable row level security;
+
+drop policy if exists "inbox users read own conversations, staff all" on public.conversations;
+create policy "inbox users read own conversations, staff all" on public.conversations for select to authenticated
+  using (user_id = (select auth.uid()) or (select public.is_staff()));
+
+drop policy if exists "inbox read messages of own conversations, staff all" on public.messages;
+create policy "inbox read messages of own conversations, staff all" on public.messages for select to authenticated
+  using (
+    (select public.is_staff())
+    or exists (select 1 from public.conversations c where c.id = conversation_id and c.user_id = (select auth.uid()))
+  );
+
+-- ---------- RLS: nessuna scrittura diretta (si scrive solo con le RPC qui sotto) ----------
+-- Policy restrittive: una riga deve passarle tutte, quindi con `false` nessuna scrittura passa, qualunque policy
+-- permissiva venga aggiunta in futuro. Le RPC security definer girano come proprietario delle tabelle e non le vedono.
+drop policy if exists "inbox no direct insert" on public.conversations;
+create policy "inbox no direct insert" on public.conversations as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "inbox no direct update" on public.conversations;
+create policy "inbox no direct update" on public.conversations as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "inbox no direct delete" on public.conversations;
+create policy "inbox no direct delete" on public.conversations as restrictive for delete to anon, authenticated using (false);
+drop policy if exists "inbox no direct insert" on public.messages;
+create policy "inbox no direct insert" on public.messages as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "inbox no direct update" on public.messages;
+create policy "inbox no direct update" on public.messages as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "inbox no direct delete" on public.messages;
+create policy "inbox no direct delete" on public.messages as restrictive for delete to anon, authenticated using (false);
+
+-- Grant minimi: Supabase dà di default ALL ad anon e authenticated sulle tabelle nuove, qui si toglie tutto e si
+-- ridà la sola lettura a chi ha fatto l'accesso (le righe le filtra la policy di select).
+revoke all on public.conversations, public.messages from anon, authenticated;
+grant select on public.conversations, public.messages to authenticated;
+
+-- ---------- funzioni interne (nessun client le esegue direttamente) ----------
+
+-- Testo semplice: a capo uniformi, niente caratteri di controllo (tranne a capo e tabulazione) né caratteri invisibili
+-- senza uso; una riga sola per l'oggetto, al massimo una riga vuota di fila per il messaggio. Il tetto al testo
+-- grezzo (480 caratteri per l'oggetto, 16.000 per il messaggio) viene prima di ogni regex.
+-- Il sito pulisce già il testo (src/lib/community/messages.ts, `plainMessage`): questa è la seconda linea, per chi
+-- chiamasse le RPC direttamente con la chiave pubblica.
+create or replace function public.inbox_clean(t text, single_line boolean default false)
+returns text language plpgsql immutable set search_path = public, pg_temp as $$
+declare
+  s text := coalesce(t, '');
+begin
+  -- tetto al testo grezzo prima di ogni regex (quattro volte il massimo, come RAW_*_MAX di messages.ts): chi chiama la
+  -- RPC direttamente non fa girare le regex su megabyte di testo
+  if single_line and char_length(s) > 480 then raise exception 'subject_too_long'; end if;
+  if not single_line and char_length(s) > 16000 then raise exception 'message_too_long'; end if;
+  s := replace(replace(s, E'\r\n', E'\n'), E'\r', E'\n');
+  -- controlli (tranne a capo e tabulazione), segni di direzione, spazio a larghezza zero, word joiner e operatori
+  -- invisibili, BOM, separatore mongolo, trattino morbido (la stessa classe STRIP di messages.ts; i joiner
+  -- U+200C/U+200D restano per le emoji composte)
+  s := regexp_replace(s, '[\x01-\x08\x0B\x0C\x0E-\x1F\x7F\u00AD\u061C\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]', '', 'g');
+  if single_line then
+    s := regexp_replace(s, '\s+', ' ', 'g');
+  else
+    s := regexp_replace(s, '[ \t]+\n', E'\n', 'g');
+    s := regexp_replace(s, '\n{3,}', E'\n\n', 'g');
+  end if;
+  return btrim(s, E' \t\n');
+end $$;
+revoke all on function public.inbox_clean(text, boolean) from public, anon, authenticated;
+
+-- Un testo senza nemmeno un carattere visibile (solo spazi di ogni tipo, joiner, riempitivi hangul, braille vuoto…) è
+-- vuoto: stesso elenco di VISIBLE in messages.ts (`hasVisibleText`).
+create or replace function public.inbox_blank(t text)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select coalesce(t, '') !~ '[^[:space:]\u00A0\u00AD\u034F\u061C\u115F\u1160\u1680\u17B4\u17B5\u180E\u2000-\u200F\u2028\u2029\u202A-\u202F\u205F-\u2064\u2066-\u2069\u2800\u3000\u3164\uFEFF\uFFA0]';
+$$;
+revoke all on function public.inbox_blank(text) from public, anon, authenticated;
+
+-- Limite di frequenza di chi scrive: 20 messaggi l'ora (200 per lo staff, che risponde a molti) e, per le
+-- conversazioni nuove aperte da un utente, 10 al giorno. Il lock per utente (fino alla fine della transazione)
+-- mette in fila le richieste parallele dello stesso utente, così non passano il limite tutte insieme.
+create or replace function public.inbox_rate_check(uid uuid, staff boolean, new_thread boolean)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n int;
+begin
+  perform pg_advisory_xact_lock(hashtext('om_inbox:' || uid::text));
+  select count(*) into n from public.messages where author_id = uid and created_at > now() - interval '1 hour';
+  if n >= (case when staff then 200 else 20 end) then raise exception 'too_many_messages'; end if;
+  if new_thread and not staff then
+    select count(*) into n from public.conversations where created_by = uid and created_at > now() - interval '1 day';
+    if n >= 10 then raise exception 'too_many_conversations'; end if;
+  end if;
+end $$;
+revoke all on function public.inbox_rate_check(uuid, boolean, boolean) from public, anon, authenticated;
+
+-- ---------- RPC per il sito (solo authenticated) ----------
+-- Errori con raise exception '<codice>': li traduce `inboxErrorCode` in src/lib/community/messages.ts.
+
+-- Un utente scrive allo staff (conversazione nuova). `via_feedback` = arriva dal riquadro dei feedback con l'accesso
+-- fatto (/api/feedback): stessa cosa, con origin 'feedback'. Restituisce l'id della conversazione.
+create or replace function public.inbox_start(topic text, content text, via_feedback boolean default false)
+returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  subj text := public.inbox_clean(topic, true);
+  clean text := public.inbox_clean(content);
+  cid uuid;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if public.inbox_blank(subj) then raise exception 'empty_subject'; end if;
+  if char_length(subj) > 120 then raise exception 'subject_too_long'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
+  if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
+  perform public.inbox_rate_check(me, false, true);
+  insert into public.conversations (user_id, subject, origin, created_by, last_message_at, last_user_message_at, last_from_staff, last_preview)
+    values (me, subj, case when coalesce(via_feedback, false) then 'feedback' else 'user' end, me, now(), now(), false,
+            left(regexp_replace(clean, '\s+', ' ', 'g'), 160))
+    returning id into cid;
+  insert into public.messages (conversation_id, author_id, from_staff, body) values (cid, me, false, clean);
+  return cid;
+end $$;
+revoke all on function public.inbox_start(text, text, boolean) from public, anon;
+grant execute on function public.inbox_start(text, text, boolean) to authenticated;
+
+-- Lo staff scrive per primo a un utente, cercato per nome utente (senza @, maiuscole indifferenti).
+create or replace function public.inbox_staff_start(uname text, topic text, content text)
+returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  subj text := public.inbox_clean(topic, true);
+  clean text := public.inbox_clean(content);
+  target uuid;
+  cid uuid;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if not public.is_staff() then raise exception 'forbidden'; end if;
+  if public.inbox_blank(subj) then raise exception 'empty_subject'; end if;
+  if char_length(subj) > 120 then raise exception 'subject_too_long'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
+  if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
+  if char_length(coalesce(uname, '')) > 200 then raise exception 'user_not_found'; end if;
+  select p.id into target from public.profiles p where lower(p.username) = lower(btrim(replace(coalesce(uname, ''), '@', ''))) limit 1;
+  if target is null then raise exception 'user_not_found'; end if;
+  if target = me then raise exception 'self'; end if;
+  perform public.inbox_rate_check(me, true, true);
+  insert into public.conversations (user_id, subject, origin, created_by, last_message_at, last_staff_message_at, last_from_staff, last_preview)
+    values (target, subj, 'staff', me, now(), now(), true, left(regexp_replace(clean, '\s+', ' ', 'g'), 160))
+    returning id into cid;
+  insert into public.messages (conversation_id, author_id, from_staff, body) values (cid, me, true, clean);
+  return cid;
+end $$;
+revoke all on function public.inbox_staff_start(text, text, text) from public, anon;
+grant execute on function public.inbox_staff_start(text, text, text) to authenticated;
+
+-- Risposta in una conversazione. from_staff lo decide il database: l'utente della conversazione scrive come utente,
+-- uno dello staff come staff, chiunque altro riceve 'not_found' (non si rivela che la conversazione esiste).
+-- Un messaggio nuovo riapre una conversazione chiusa. Restituisce from_staff (il sito avvisa lo staff su Discord solo
+-- per i messaggi degli utenti).
+create or replace function public.inbox_send(cid uuid, content text)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  clean text := public.inbox_clean(content);
+  c public.conversations%rowtype;
+  staff boolean;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
+  if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
+  select * into c from public.conversations where id = cid for update;
+  if not found then raise exception 'not_found'; end if;
+  if c.user_id = me then
+    staff := false;
+  elsif public.is_staff() then
+    staff := true;
+  else
+    raise exception 'not_found';
+  end if;
+  perform public.inbox_rate_check(me, staff, false);
+  insert into public.messages (conversation_id, author_id, from_staff, body) values (cid, me, staff, clean);
+  update public.conversations set
+    status = 'open',
+    updated_at = now(),
+    last_message_at = greatest(last_message_at, now()),
+    last_user_message_at = case when staff then last_user_message_at else greatest(last_user_message_at, now()) end,
+    last_staff_message_at = case when staff then greatest(last_staff_message_at, now()) else last_staff_message_at end,
+    last_from_staff = staff,
+    last_preview = left(regexp_replace(clean, '\s+', ' ', 'g'), 160)
+  where id = cid;
+  return staff;
+end $$;
+revoke all on function public.inbox_send(uuid, text) from public, anon;
+grant execute on function public.inbox_send(uuid, text) to authenticated;
+
+-- Segna come letta una conversazione fino a `seen`, la data dell'ultimo messaggio mostrato nella pagina: un messaggio
+-- arrivato dopo (mentre la pagina era aperta) resta da leggere. L'utente segna la sua lettura, lo staff quella dello
+-- staff. Restituisce true solo se la conversazione era da leggere e DOPO risulta letta: se `seen` è precedente
+-- all'ultimo messaggio, resta da leggere e la risposta è false (il sito non conta una lettura che non c'è stata).
+create or replace function public.inbox_mark_read(cid uuid, seen timestamptz default null)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  c public.conversations%rowtype;
+  upto timestamptz := least(coalesce(seen, now()), now());
+  done boolean;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into c from public.conversations where id = cid for update;
+  if not found then raise exception 'not_found'; end if;
+  if c.user_id = me then
+    if not c.unread_by_user then return false; end if;
+    update public.conversations set read_by_user_at = greatest(read_by_user_at, upto) where id = cid
+      returning not unread_by_user into done;
+  elsif public.is_staff() then
+    if not c.unread_by_staff then return false; end if;
+    update public.conversations set read_by_staff_at = greatest(read_by_staff_at, upto) where id = cid
+      returning not unread_by_staff into done;
+  else
+    raise exception 'not_found';
+  end if;
+  return coalesce(done, false);
+end $$;
+revoke all on function public.inbox_mark_read(uuid, timestamptz) from public, anon;
+grant execute on function public.inbox_mark_read(uuid, timestamptz) to authenticated;
+
+-- Chiusura e riapertura: solo lo staff.
+create or replace function public.inbox_set_status(cid uuid, new_status text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  if not public.is_staff() then raise exception 'forbidden'; end if;
+  if new_status is null or new_status not in ('open', 'closed') then raise exception 'bad_status'; end if;
+  update public.conversations set status = new_status, updated_at = now() where id = cid;
+  if not found then raise exception 'not_found'; end if;
+end $$;
+revoke all on function public.inbox_set_status(uuid, text) from public, anon;
+grant execute on function public.inbox_set_status(uuid, text) to authenticated;
+
+-- Numero dei non letti per il menu dell'account (rotta /api/inbox/status): conversazioni con messaggi dello staff da
+-- leggere per l'utente; per lo staff anche le conversazioni degli altri con messaggi degli utenti da leggere.
+create or replace function public.inbox_status()
+returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  staff boolean;
+begin
+  if me is null then return jsonb_build_object('unread', 0, 'staff', false, 'staff_unread', 0); end if;
+  staff := public.is_staff();
+  return jsonb_build_object(
+    'unread', (select count(*) from public.conversations c where c.user_id = me and c.unread_by_user),
+    'staff', staff,
+    'staff_unread', case when staff then (select count(*) from public.conversations c where c.unread_by_staff and c.user_id <> me) else 0 end
+  );
+end $$;
+revoke all on function public.inbox_status() from public, anon;
+grant execute on function public.inbox_status() to authenticated;

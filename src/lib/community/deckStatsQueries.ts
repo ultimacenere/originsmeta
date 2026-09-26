@@ -6,7 +6,7 @@ import { canSeeAllStats, normalizeStatRow, rankDecks, shiftDay, type DeckStatRow
  * Letture delle statistiche dei mazzi (pacchetto STATS, 26/09/2026) per il pannello privato di /account, che è
  * dinamico: tutte con il client della sessione dell'utente, così la policy di `deck_stats_daily` fa vedere all'autore i
  * suoi mazzi e allo staff (admin o tag Staff) tutti. Un errore non rompe /account: il pannello dice che le statistiche
- * non sono disponibili (per esempio prima che Pierluigi applichi supabase/creator-STATS.sql).
+ * non sono disponibili (per esempio prima che Pierluigi applichi supabase/schema.sql, blocco STATS).
  *
  * PostgREST restituisce al massimo 1000 righe per richiesta: si legge a pagine, con un tetto. Con i numeri di oggi
  * (decine di mazzi) basta e avanza; quando le righe di un autore o dello staff saranno decine di migliaia, meglio una

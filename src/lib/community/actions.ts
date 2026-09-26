@@ -117,7 +117,7 @@ async function parseSubmission(formData: FormData) {
 }
 
 /**
- * Colonne `videos` e `links` non ancora nel database (supabase/creator-VIDEO.sql non applicato): PostgREST risponde
+ * Colonne `videos` e `links` non ancora nel database (supabase/schema.sql, blocco VIDEO non applicato): PostgREST risponde
  * PGRST204 ("Could not find the 'links' column…") o 42703. Allora si salva senza, con il solo primo video in
  * `video_url` come prima, ma SOLO se non si perde nulla (`mediaNeedsColumns`: un video semplice, senza minuto, titolo
  * né risorse); altrimenti la Server Action risponde `mediaUnavailable` e il modulo spiega che cosa togliere. La

@@ -6,7 +6,7 @@ import { CREATOR_BADGES, cleanContentLangs, isCreatorBadge, mainChannels, parseS
 
 /**
  * Letture del profilo pubblico e dei creator (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei contenuti di un
- * iscritto (colonne di supabase/creator-CREATOR.sql), l'elenco dei profili con un tag autore (directory /creators,
+ * iscritto (colonne di supabase/schema.sql, blocco CREATOR), l'elenco dei profili con un tag autore (directory /creators,
  * icone accanto al nome in /decks, rotta /api/live) e i tornei pubblici che un creator organizza (vetrina su /u).
  *
  * Errori come nel resto della community (queries.ts, DECKS-12): nelle pagine ISR una lettura fallita lancia, così

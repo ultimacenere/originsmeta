@@ -1,7 +1,7 @@
 /**
  * Casella messaggi utente ↔ staff (26/09/2026, richiesta di Pierluigi: "nella sezione profilo per ogni utente una
  * casella messaggi, così possiamo scrivere ai nostri utenti nel sito e possiamo rispondere a chi ci dà i feedback
- * direttamente da lì"). Schema e RPC in `supabase/creator-INBOX.sql`.
+ * direttamente da lì"). Schema e RPC in `supabase/schema.sql` (blocco INBOX).
  *
  * Qui solo funzioni pure, senza import a runtime: le esegue `node --test` (messages.test.ts) e le usano sia il server
  * (Server Action, rotte, pagine) sia il browser (moduli, numero dei non letti). Le regole vere stanno nel database
@@ -45,7 +45,7 @@ export const RAW_SUBJECT_MAX = SUBJECT_MAX * 4;
  * (U+200E/F, U+202A-E, U+2066-9, U+061C), spazio a larghezza zero U+200B, word joiner e operatori invisibili
  * U+2060-4, BOM U+FEFF in mezzo al testo, separatore mongolo U+180E, trattino morbido U+00AD. Restano i due
  * "joiner" U+200C/U+200D: servono alle emoji composte (famiglie, bandiere) e ad alcune scritture.
- * La stessa classe sta nella regex di `inbox_clean` (supabase/creator-INBOX.sql).
+ * La stessa classe sta nella regex di `inbox_clean` (supabase/schema.sql, blocco INBOX).
  */
 const STRIP = /[\u0000-\u0008\u000b-\u001f\u007f\u00ad\u061c\u180e\u200b\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g;
 
@@ -177,7 +177,7 @@ export function excerpt(text: string, max = DISCORD_EXCERPT_MAX): string {
 
 /**
  * Codici d'errore mostrati dall'interfaccia. Le RPC del database rispondono con `raise exception '<codice>'`
- * (supabase/creator-INBOX.sql): `inboxErrorCode` li traduce. `unavailable` = tabelle o funzioni che non esistono
+ * (supabase/schema.sql, blocco INBOX): `inboxErrorCode` li traduce. `unavailable` = tabelle o funzioni che non esistono
  * ancora (migrazione non applicata) o community spenta; `db` = ogni altro errore.
  */
 export type InboxErrorCode =

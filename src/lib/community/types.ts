@@ -41,7 +41,7 @@ export type CommunityDeck = {
   deck_types: string[];
   /** primo video (colonna storica): dal 26/09/2026 la scrive il sito con l'indirizzo canonico di `videos[0]` */
   video_url: string | null;
-  /** fino a 3 video YouTube/Twitch e 5 risorse (supabase/creator-VIDEO.sql); assenti finché la migrazione non c'è */
+  /** fino a 3 video YouTube/Twitch e 5 risorse (supabase/schema.sql, blocco VIDEO); assenti finché la migrazione non c'è */
   videos?: StoredVideo[] | null;
   links?: DeckLink[] | null;
   guide: Guide;

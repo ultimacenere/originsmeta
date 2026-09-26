@@ -10,7 +10,7 @@ import { checkMessage, checkSubject, cleanUsername, inboxErrorCode, staffThreadP
 import { notifyStaff, staffNoticeEnabled } from "./inboxNotify";
 
 /**
- * Server Action della casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX, supabase/creator-INBOX.sql).
+ * Server Action della casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX, supabase/schema.sql, blocco INBOX).
  *
  * Tutte le scritture passano dalle RPC security definer del database, con la sessione di chi scrive: è il database
  * che decide se la conversazione è sua o se è dello staff, se il messaggio è "dello staff" (from_staff), e che tiene

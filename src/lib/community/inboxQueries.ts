@@ -4,7 +4,7 @@ import type { Profile } from "./types";
 import { CONVERSATIONS_PAGE, THREAD_MESSAGES_MAX, inboxErrorCode, parseInboxStatus, type InboxErrorCode, type InboxStatus, type StaffFilter } from "./messages";
 
 /**
- * Letture della casella messaggi (26/09/2026, supabase/creator-INBOX.sql), solo lato server e sempre con la sessione
+ * Letture della casella messaggi (26/09/2026, supabase/schema.sql, blocco INBOX), solo lato server e sempre con la sessione
  * di chi guarda (`currentUser()`): le policy RLS fanno vedere all'utente le sue conversazioni e allo staff tutte.
  * Le pagine che le usano sono private e dinamiche (/account, /account/messages/<id>, /account/staff/messages).
  *

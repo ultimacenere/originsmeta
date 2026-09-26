@@ -7,7 +7,7 @@
  * Qui stanno le regole, in funzioni pure (nessun import: `node --test src/lib/community/profileLinks.test.ts`):
  * - ogni canale ha un tipo (twitch, youtube, x, tiktok, instagram, kick, bluesky, discord, website) e un indirizzo
  *   https riscritto nella forma canonica di quella piattaforma (`normalizeLink`); il sito salva solo la forma
- *   canonica, così le stesse regole si possono ripetere nel database (supabase/creator-CREATOR.sql,
+ *   canonica, così le stesse regole si possono ripetere nel database (supabase/schema.sql, blocco CREATOR,
  *   `profile_link_ok`) e un indirizzo scritto a mano via API che non le rispetta viene rifiutato anche lì;
  * - `website` accetta qualsiasi host, ma solo https, niente credenziali, porte, indirizzi IP, accorciatori di link,
  *   redirector (l.facebook.com, google.<tld>/url…) né host delle piattaforme che hanno un tipo loro (twitch.tv,
@@ -62,7 +62,7 @@ export function isLinkKind(value: unknown): value is LinkKind {
 }
 
 /**
- * Forma canonica di ogni piattaforma. Sono le stesse espressioni del database (supabase/creator-CREATOR.sql): se se ne
+ * Forma canonica di ogni piattaforma. Sono le stesse espressioni del database (supabase/schema.sql, blocco CREATOR): se se ne
  * cambia una, va cambiata anche lì (il test controlla che ogni indirizzo prodotto da `normalizeLink` le rispetti).
  */
 export const CANONICAL: Readonly<Record<LinkKind, RegExp>> = {
