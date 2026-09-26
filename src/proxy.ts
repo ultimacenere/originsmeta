@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
-import { SHORT_LINK_LOCALES, shortLinkTarget } from "@/lib/community/shortLink";
+import { SHORT_LINK_LOCALES, profileShortLinkTarget } from "@/lib/community/shortLink";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 
 /**
@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
   // Link breve dei creator (26/09/2026): /@coachcrono → /<lingua del browser>/u/coachcrono con gli UTM (shortLink.ts)
   if (pathname.startsWith("/@")) {
     const locale = preferredLocale(request.headers.get("accept-language"), SHORT_LINK_LOCALES, "en", LANGUAGE_ALIASES);
-    return NextResponse.redirect(new URL(shortLinkTarget(pathname.slice(2), locale, searchParams), request.url), 302);
+    return NextResponse.redirect(new URL(profileShortLinkTarget(pathname.slice(2), locale, searchParams), request.url), 302);
   }
   if (pathname === "/" && searchParams.has("r") && searchParams.has("channel")) {
     return new NextResponse("410 Gone", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "x-robots-tag": "noindex" } });

@@ -41,7 +41,7 @@ export function shortLinkUsername(raw: string): string | null {
  * Dove porta il link breve: il profilo nella lingua scelta, con gli UTM; un nome impossibile porta alla directory
  * dei creator (un nome valido ma inesistente dà la 404 del profilo, nella lingua giusta).
  */
-export function shortLinkTarget(rawName: string, locale: ShortLinkLocale, incoming: URLSearchParams): string {
+export function profileShortLinkTarget(rawName: string, locale: ShortLinkLocale, incoming: URLSearchParams): string {
   const name = shortLinkUsername(rawName);
   if (!name) return `/${locale}/creators`;
   const query = new URLSearchParams();

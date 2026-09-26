@@ -7,8 +7,8 @@ import { DeckOverlay, OverlayMessage } from "@/components/stream/DeckOverlay";
 
 /**
  * Overlay per OBS di un mazzo preciso (pacchetto STREAM, 26/09/2026): /overlay/deck/<slug>?layout=vertical|horizontal
- * &lang=en|it|es. Pagina dinamica (legge i parametri): legge il mazzo senza cache dei dati, e `OverlayRefresh` del
- * layout la rifà ogni minuto. Lo slug vale anche con le maiuscole, come nel link breve. Un mazzo che non c'è, o il
+ * &lang=en|it|es. Pagina dinamica (legge i parametri): legge il mazzo senza cache dei dati (copia in memoria di 5 s),
+ * e `OverlayRefresh` del layout la rifà ogni minuto. Lo slug vale anche con le maiuscole, come nel link breve. Un mazzo che non c'è, o il
  * database irraggiungibile, danno un messaggio dentro l'overlay (lo streamer lo vede in OBS) invece della 404 del
  * sito, che non è trasparente.
  */

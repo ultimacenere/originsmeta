@@ -74,7 +74,7 @@ export const STREAM_UTM = { utm_source: "stream", utm_medium: "shortlink" } as c
  * scritti nel link vincono su quelli di default e passano tutti (un creator può scrivere /d/<slug>?utm_source=youtube
  * nella descrizione di un video); gli altri parametri si scartano. Di ogni parametro vale il primo valore.
  */
-export function shortLinkTarget(locale: string, slug: string, incoming: URLSearchParams): string {
+export function deckShortLinkTarget(locale: string, slug: string, incoming: URLSearchParams): string {
   const utm = new Map<string, string>(Object.entries(STREAM_UTM));
   const seen = new Set<string>();
   for (const [k, v] of incoming) {

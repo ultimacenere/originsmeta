@@ -23,8 +23,9 @@ import { streamLabels } from "@/lib/streamLabels";
  * Ogni risposta è 200 con una frase da leggere, anche gli errori (utente o mazzo inesistente, niente mazzi, parametri
  * mancanti o scritti male, database irraggiungibile): con un altro stato i bot mostrano in chat un errore generico al
  * posto della frase che spiega come correggere il comando. Il database irraggiungibile non va in cache. Solo dati
- * pubblici (mazzi pubblicati, nome dell'autore). Lettura senza cache dei dati e 20 s di CDN, senza copie scadute: un
- * mazzo appena pubblicato arriva in chat entro mezzo minuto.
+ * pubblici (mazzi pubblicati, nome dell'autore). Lettura senza cache dei dati (solo una copia in memoria di 5 s,
+ * `memoFetch` in streamDecks.ts) e 20 s di CDN, senza copie scadute: un mazzo appena pubblicato arriva in chat entro
+ * mezzo minuto.
  */
 const TEXT_HEADERS = { "content-type": "text/plain; charset=utf-8", "x-robots-tag": "noindex", "x-content-type-options": "nosniff" };
 const CACHE_OK = "public, max-age=0, s-maxage=20";

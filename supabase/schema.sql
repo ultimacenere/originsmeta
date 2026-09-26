@@ -1360,9 +1360,19 @@ grant execute on function public.profile_links_ok(jsonb) to authenticated, servi
 
 -- Vincoli: bio in testo semplice (a capo ammessi, nessun altro carattere di controllo), 1–280 caratteri o null;
 -- canali validi; lingue dei contenuti fra quelle del sito, senza null.
+-- La bio come la scrive `cleanBio` (profileLinks.ts), anche per chi salta il sito e scrive la riga via API: niente
+-- caratteri a larghezza zero, segni di direzione del testo (con quelli un testo si legge al contrario) né BOM (la
+-- classe INVISIBLE del codice, scritta con gli escape), almeno un carattere che non sia uno spazio, e mai più di una
+-- riga vuota di fila (tre a capo, anche con degli spazi in mezzo, allungherebbero la pagina a piacere). La colonna è
+-- nuova: nessuna riga già scritta viene toccata.
 alter table public.profiles drop constraint if exists profiles_bio_check;
 alter table public.profiles add constraint profiles_bio_check
-  check (bio is null or (char_length(bio) between 1 and 280 and replace(bio, chr(10), '') !~ '[[:cntrl:]]'));
+  check (bio is null or (
+    char_length(bio) between 1 and 280
+    and replace(bio, chr(10), '') !~ '[[:cntrl:]]'
+    and bio !~ '[\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]'
+    and bio ~ '[^[:space:]]'
+    and strpos(replace(bio, ' ', ''), repeat(chr(10), 3)) = 0));
 alter table public.profiles drop constraint if exists profiles_links_check;
 alter table public.profiles add constraint profiles_links_check check (public.profile_links_ok(links));
 alter table public.profiles drop constraint if exists profiles_content_langs_check;
@@ -1780,9 +1790,18 @@ drop policy if exists "inbox no direct delete" on public.messages;
 create policy "inbox no direct delete" on public.messages as restrictive for delete to anon, authenticated using (false);
 
 -- Grant minimi: Supabase dà di default ALL ad anon e authenticated sulle tabelle nuove, qui si toglie tutto e si
--- ridà la sola lettura a chi ha fatto l'accesso (le righe le filtra la policy di select).
+-- ridà la sola lettura a chi ha fatto l'accesso (le righe le filtra la policy di select), PER COLONNA: fuori restano
+-- chi dello staff ha scritto (messages.author_id), chi ha aperto la conversazione (conversations.created_by) e le date
+-- di lettura e dell'ultimo messaggio di ciascuna parte (read_by_user_at, read_by_staff_at, last_user_message_at,
+-- last_staff_message_at). L'utente vede le risposte firmate "Staff di OriginsMeta" e via API non può ricavare quale
+-- account dello staff gli ha scritto (i profili sono pubblici) né quando lo staff ha letto. Lo staff legge gli autori
+-- con la RPC inbox_message_authors qui sotto. La revoke sulla tabella toglie anche i grant per colonna, quindi il blocco
+-- si può rilanciare. Le colonne concesse sono quelle che il sito legge (CONVERSATION_COLUMNS e listMessages in
+-- src/lib/community/inboxQueries.ts); la policy dei messaggi legge conversations.id e user_id, concesse.
 revoke all on public.conversations, public.messages from anon, authenticated;
-grant select on public.conversations, public.messages to authenticated;
+grant select (id, user_id, subject, origin, status, created_at, updated_at, last_message_at, last_from_staff, last_preview, unread_by_user, unread_by_staff)
+  on public.conversations to authenticated;
+grant select (id, conversation_id, from_staff, body, created_at) on public.messages to authenticated;
 
 -- ---------- funzioni interne (nessun client le esegue direttamente) ----------
 
@@ -2002,3 +2021,16 @@ begin
 end $$;
 revoke all on function public.inbox_status() from public, anon;
 grant execute on function public.inbox_status() to authenticated;
+
+-- Chi ha scritto i messaggi di una conversazione, SOLO per lo staff (vista dello staff: nome di chi ha risposto, "Tu"
+-- sui propri messaggi). Gli utenti non hanno la colonna author_id (grant per colonna qui sopra) e qui ricevono zero
+-- righe. Il sito legge poi i profili pubblici degli autori (`listMessages` in src/lib/community/inboxQueries.ts).
+create or replace function public.inbox_message_authors(cid uuid)
+returns table (message_id bigint, author_id uuid)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select m.id, m.author_id
+    from public.messages m
+   where m.conversation_id = cid and m.author_id is not null and public.is_staff();
+$$;
+revoke all on function public.inbox_message_authors(uuid) from public, anon;
+grant execute on function public.inbox_message_authors(uuid) to authenticated;

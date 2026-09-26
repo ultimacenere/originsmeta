@@ -197,8 +197,9 @@ type Normalized = { ok: true; link: ProfileLink | null } | { ok: false; error: L
  * Caratteri invisibili che non devono finire in un indirizzo o nella bio: larghezza zero e marcatori di direzione
  * (U+200B–U+200F), incorporamenti e sostituzioni di direzione (U+202A–U+202E), U+2060–U+2069, BOM (U+FEFF). Scritti
  * con gli escape, mai come caratteri letterali: un editor o una sostituzione li perderebbe senza che si veda.
+ * La stessa classe sta nel vincolo `profiles_bio_check` di supabase/schema.sql (il test lo controlla).
  */
-const INVISIBLE = "\\u200B-\\u200F\\u202A-\\u202E\\u2060-\\u2069\\uFEFF";
+export const INVISIBLE = "\\u200B-\\u200F\\u202A-\\u202E\\u2060-\\u2069\\uFEFF";
 const SQUEEZE = new RegExp(`[\\s${INVISIBLE}]+`, "g");
 
 /** Toglie spazi, a capo e caratteri invisibili (larghezza zero, controlli di direzione) da un valore incollato. */

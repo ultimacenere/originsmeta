@@ -8,7 +8,7 @@ import { listCreators } from "@/lib/community/creators";
 import { directoryIndexable, listedInDirectory, orderCreators } from "@/lib/community/creatorDirectory";
 import { twitchLogin } from "@/lib/community/profileLinks";
 import { authorName } from "@/lib/community/util";
-import { dropHreflang, editorialAuthor } from "@/lib/community/deckQuality";
+import { dropHreflang, editorialAuthor, profileIndexable } from "@/lib/community/deckQuality";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { contactEmail } from "@/components/Footer";
 import { CreatorDirectory, type DirectoryEntry } from "@/components/CreatorDirectory";
@@ -78,6 +78,11 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
     locale,
   );
   const indexable = directoryIndexable(entries.length);
+  // Voci della lista nei dati strutturati: solo i profili /u che si indicizzano (`profileIndexable`, la regola della
+  // pagina del profilo e della sitemap). Qui si conoscono i mazzi pubblicati, non le tier list: un profilo con le sole
+  // tier list resta fuori dalla lista per prudenza (nella pagina c'è comunque). Senza, la directory dichiarava come
+  // voci anche pagine noindex (un autore con bio e canali ma senza mazzi).
+  const listItems = entries.filter((e) => profileIndexable({ decks: e.decks, tierLists: 0 }));
   const path = href(locale, "/creators");
   const mail = `mailto:${contactEmail}?subject=${encodeURIComponent(L.inviteMailSubject)}`;
 
@@ -90,14 +95,15 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
             { name: L.h1, path },
           ]),
           // la lista nei dati strutturati solo quando la pagina si indicizza: le voci sono le Person dei profili /u
-          ...(indexable
+          // indicizzabili (`listItems`)
+          ...(indexable && listItems.length
             ? [
                 collectionPage({
                   locale,
                   path,
                   name: L.listName,
                   description: L.description,
-                  items: entries.map((e) => ({ name: e.personName, path: e.href, id: e.personRef })),
+                  items: listItems.map((e) => ({ name: e.personName, path: e.href, id: e.personRef })),
                   about: videoGameId,
                 }),
               ]

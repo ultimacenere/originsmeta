@@ -94,15 +94,28 @@ const nextConfig: NextConfig = {
   },
   // Miniature dei video YouTube dei mazzi e delle guide (pacchetto VIDEO, 26/09/2026): le scarica l'ottimizzatore del
   // sito, così il browser chiede solo /_next/image a originsmeta.com e non contatta Google prima del clic sul video
-  // (`youtubeThumb` in src/lib/videos.ts, lettore `VideoEmbed`). Solo i.ytimg.com/vi/…, senza query.
+  // (`youtubeThumb` in src/lib/videos.ts, lettore `VideoEmbed`). Solo il file che il sito usa, i.ytimg.com/vi/<id>/
+  // hqdefault.jpg, senza query: con "/vi/**" /_next/image faceva da proxy per ogni file di ogni video di YouTube, a
+  // qualsiasi larghezza (ogni combinazione una trasformazione nuova, pagata sul piano di Vercel).
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**", search: "" }],
+    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/*/hqdefault.jpg", search: "" }],
   },
-  // Overlay per OBS (pacchetto STREAM, 26/09/2026, src/app/overlay): mai indicizzato, e usabile anche dentro un iframe
-  // (frame-ancestors aperto: la pagina mostra un mazzo pubblico e non ha azioni). La sorgente browser di OBS non è un
-  // iframe e funzionerebbe comunque; questa riga resta valida anche se un giorno il sito chiuderà gli iframe altrove.
   async headers() {
     return [
+      // Le pagine del sito non si mostrano dentro un iframe di un altro sito (clickjacking): /account ha azioni vere
+      // (profilo pubblico, "Scrivi allo staff", nascondi ed elimina mazzo), l'area staff pure. Nessuna pagina del sito
+      // viene incorniciata altrove; il sito incornicia altri (YouTube, Twitch, Turnstile), e questo non cambia.
+      // X-Frame-Options per i browser che non leggono frame-ancestors. L'overlay (/overlay/…) non rientra nel percorso.
+      {
+        source: "/:locale(en|it|es)/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+      // Overlay per OBS (pacchetto STREAM, 26/09/2026, src/app/overlay): mai indicizzato, e usabile anche dentro un
+      // iframe (frame-ancestors aperto: la pagina mostra un mazzo pubblico e non ha azioni). La sorgente browser di OBS
+      // non è un iframe e funzionerebbe comunque.
       {
         source: "/overlay/:path*",
         headers: [

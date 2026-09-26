@@ -1,14 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, locales } from "@/lib/i18n";
 import { publishedDeckExists } from "@/lib/community/streamDecks";
-import { isDeckSlug, shortLinkTarget } from "@/lib/stream";
+import { deckShortLinkTarget, isDeckSlug } from "@/lib/stream";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 
 /**
  * Link breve di un mazzo della community (pacchetto STREAM, 26/09/2026): originsmeta.com/d/<slug>, da dire in diretta,
  * da scrivere in chat (lo scrive anche il comando !deck) e da mettere nelle descrizioni dei video. Porta alla scheda
  * nella lingua del browser (`preferredLocale`, come /t/<tag>) con gli UTM delle dirette (utm_source=stream,
- * utm_medium=shortlink; quelli scritti nel link vincono: `shortLinkTarget` in src/lib/stream.ts). Fuori da [locale]
+ * utm_medium=shortlink; quelli scritti nel link vincono: `deckShortLinkTarget` in src/lib/stream.ts). Fuori da [locale]
  * perché non ha la lingua nel percorso; "d" non è una sezione di next.config.ts, quindi nessun redirect la intercetta.
  *
  * Mazzo inesistente, nascosto o privato → /<lingua>/decks. Se la lettura fallisce (Supabase irraggiungibile) si va
@@ -32,5 +32,5 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   } catch (e) {
     console.error("[stream] /d:", e instanceof Error ? e.message : e);
   }
-  return go(exists ? shortLinkTarget(locale, slug, req.nextUrl.searchParams) : `/${locale}/decks`);
+  return go(exists ? deckShortLinkTarget(locale, slug, req.nextUrl.searchParams) : `/${locale}/decks`);
 }

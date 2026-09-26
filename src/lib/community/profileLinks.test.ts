@@ -9,11 +9,13 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { schemaProblems, sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
   BIO_MAX,
   CANONICAL,
   CONTENT_LANGS,
   GOOGLE_REDIRECT,
+  INVISIBLE,
   LINK_KINDS,
   MAX_LINKS,
   PLATFORM_HOSTS,
@@ -349,29 +351,35 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
   test("limiti uguali: canali, bio, indirizzo, lingue", () => {
     assert.match(sql, new RegExp(`jsonb_array_length\\(links\\) > ${MAX_LINKS}`));
     assert.match(sql, new RegExp(`char_length\\(bio\\) between 1 and ${BIO_MAX}`));
+    // bio: stessi caratteri invisibili tolti da cleanBio, almeno un carattere visibile, niente tre a capo di fila
+    assert.ok(sql.includes(`and bio !~ '[${INVISIBLE}]'`), "caratteri invisibili della bio diversi fra codice e database");
+    assert.ok(sql.includes("and bio ~ '[^[:space:]]'"));
+    assert.ok(sql.includes("and strpos(replace(bio, ' ', ''), repeat(chr(10), 3)) = 0"));
     assert.match(sql, /char_length\(link->>'url'\) > 200/);
     assert.match(sql, new RegExp(`array\\[${CONTENT_LANGS.map((l) => `'${l}'`).join(",")}\\]::text\\[\\]`));
   });
-  test("grant per colonna, mai sull'intera tabella", () => {
+  test("grant per colonna nel blocco del pacchetto", () => {
     assert.match(sql, /grant update \(bio, links, content_langs\) on public\.profiles to authenticated;/);
-    // in tutto schema.sql, fuori dai commenti: nessun grant di update, insert, delete o all sull'intera tabella
-    const code = schema.split(/\r?\n/).filter((l) => !/^\s*--/.test(l)).join("\n");
-    assert.doesNotMatch(code, /^\s*grant\b[^;(]*\b(update|insert|delete|all)\b[^;(]*\bon (table )?[^;]*\bpublic\.profiles\b/im);
     assert.doesNotMatch(sql, /grant all/i);
   });
   test("corpi delle funzioni con i doppi dollari", () => {
     assert.deepEqual(singleDollar(sql), []);
   });
-  test("in schema.sql dopo la revoke sulla tabella, che toglierebbe i grant per colonna, e nessuna revoke dopo", () => {
-    const grant = schema.indexOf("grant update (bio, links, content_langs) on public.profiles to authenticated;");
-    const revoke = schema.lastIndexOf("revoke update on public.profiles from anon, authenticated;");
-    assert.ok(revoke >= 0 && grant > revoke, "la grant per colonna deve venire dopo l'ultima revoke update su public.profiles");
-    // anche le altre forme (revoke all, revoke update (colonne), su più tabelle insieme), fuori dai commenti
-    const later = schema
-      .slice(grant)
-      .split(/\r?\n/)
-      .filter((l) => !/^\s*--/.test(l) && /^\s*revoke\b[^;]*\bon (table )?[^;]*\bpublic\.profiles\b/i.test(l));
-    assert.deepEqual(later, [], "una revoke su public.profiles dopo la grant per colonna la cancellerebbe a ogni migrazione");
+  /*
+    Permessi su public.profiles in tutto schema.sql, con lo stesso controllo che fa scripts/db-migrate.mjs prima di
+    collegarsi (scripts/schema-guard.mjs, casi rifiutati in schema-guard.test.mjs): istruzioni lette fuori dai commenti
+    anche su più righe; le sole grant ammesse sono quella di lettura e quella per colonna (niente `grant update (role)`,
+    niente grant su tutte le tabelle dello schema); la revoke di 6c6756d prima della grant per colonna e nessuna revoke
+    dopo (neppure `on all tables in schema public`); protect_profile_badge che protegge tag, ruolo, nome utente, id
+    Discord, id e data del profilo.
+  */
+  test("permessi di public.profiles: solo le grant ammesse, revoke prima, trigger con i campi riservati", () => {
+    assert.deepEqual(schemaProblems(schema), []);
+    const onProfiles = sqlStatements(schema).filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
+    assert.deepEqual(onProfiles, [
+      "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
+      "grant update (bio, links, content_langs) on public.profiles to authenticated",
+    ]);
   });
 });
 

@@ -2,7 +2,7 @@ import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { Tournament } from "@/lib/tournament/types";
 import { TOURNAMENT_SELECT } from "@/lib/tournament/queries";
 import { CommunityReadError } from "./queries";
-import { CREATOR_BADGES, cleanContentLangs, isCreatorBadge, mainChannels, parseStoredLinks, twitchLogin, type ContentLang, type ProfileLink } from "./profileLinks";
+import { CREATOR_BADGES, cleanBio, cleanContentLangs, isCreatorBadge, mainChannels, parseStoredLinks, twitchLogin, type ContentLang, type ProfileLink } from "./profileLinks";
 
 /**
  * Letture del profilo pubblico e dei creator (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei contenuti di un
@@ -57,10 +57,16 @@ function missingColumns(error: ReadError): boolean {
   return missing;
 }
 
-/** Dalla riga del database ai dati mostrati: canali e lingue ricontrollati (difesa in lettura, `parseStoredLinks`). */
+/**
+ * Dalla riga del database ai dati mostrati: canali, lingue e bio ricontrollati (difesa in lettura). La bio passa da
+ * `cleanBio` come nel modulo di /account: una riga scritta via API saltando il sito (segni di direzione, caratteri a
+ * larghezza zero, righe vuote a catena) si mostra ripulita, anche prima che il vincolo del database la rifiuti; una bio
+ * che nemmeno così rientra nei limiti non si mostra.
+ */
 export function toShowcase(row: ShowcaseRow): Showcase {
+  const bio = typeof row.bio === "string" ? cleanBio(row.bio) : null;
   return {
-    bio: typeof row.bio === "string" && row.bio.trim() ? row.bio : null,
+    bio: bio && bio.ok ? bio.value : null,
     links: parseStoredLinks(row.links),
     contentLangs: cleanContentLangs(row.content_langs),
     updatedAt: row.showcase_updated_at ?? null,

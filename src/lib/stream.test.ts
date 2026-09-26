@@ -31,7 +31,7 @@ import {
   overlayLayout,
   overlayUrl,
   pickLang,
-  shortLinkTarget,
+  deckShortLinkTarget,
   shortLinkUrl,
   sortByCost,
   splitColumns,
@@ -105,14 +105,14 @@ describe("indirizzi", () => {
 
   test("link breve: scheda nella lingua data, con gli UTM delle dirette", () => {
     assert.equal(shortLinkUrl(SITE, "control-2c2b"), "https://originsmeta.com/d/control-2c2b");
-    assert.equal(shortLinkTarget("it", "control-2c2b", new URLSearchParams()), "/it/decks/community/control-2c2b?utm_source=stream&utm_medium=shortlink");
+    assert.equal(deckShortLinkTarget("it", "control-2c2b", new URLSearchParams()), "/it/decks/community/control-2c2b?utm_source=stream&utm_medium=shortlink");
   });
 
   test("link breve: gli UTM del link vincono e passano, gli altri parametri no", () => {
-    const target = shortLinkTarget("es", "control-2c2b", new URLSearchParams("utm_source=youtube&utm_campaign=deck-tech&utm_source=x&ref=spam&om_auth=signup"));
+    const target = deckShortLinkTarget("es", "control-2c2b", new URLSearchParams("utm_source=youtube&utm_campaign=deck-tech&utm_source=x&ref=spam&om_auth=signup"));
     assert.equal(target, "/es/decks/community/control-2c2b?utm_source=youtube&utm_medium=shortlink&utm_campaign=deck-tech");
     // un UTM vuoto non cancella quello di default
-    assert.equal(shortLinkTarget("en", "a", new URLSearchParams("utm_medium=")), "/en/decks/community/a?utm_source=stream&utm_medium=shortlink");
+    assert.equal(deckShortLinkTarget("en", "a", new URLSearchParams("utm_medium=")), "/en/decks/community/a?utm_source=stream&utm_medium=shortlink");
   });
 });
 

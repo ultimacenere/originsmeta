@@ -80,20 +80,39 @@ export async function getConversation(client: Db, id: string): Promise<Result<St
 }
 
 /**
- * Gli ultimi messaggi di una conversazione, in ordine di invio. `withAuthors` (vista dello staff) aggiunge il profilo di
- * chi ha scritto; nella vista dell'utente non serve, perché lì lo staff firma sempre "Staff di OriginsMeta".
+ * Gli ultimi messaggi di una conversazione, in ordine di invio. `withAuthors` (vista dello staff) aggiunge chi ha scritto
+ * (`author_id` e il profilo); nella vista dell'utente non serve, perché lì lo staff firma sempre "Staff di OriginsMeta",
+ * e l'utente non ha nemmeno la colonna `author_id` (grant per colonna in supabase/schema.sql, blocco INBOX): lì
+ * `author_id` resta null e `authorKind` distingue le due parti con `from_staff`.
+ * Gli autori li dà solo la RPC `inbox_message_authors` (security definer, righe solo allo staff); i profili sono
+ * pubblici e si leggono in una query sola.
  */
 export async function listMessages(client: Db, conversationId: string, withAuthors = false): Promise<Result<{ messages: ThreadMessage[]; truncated: boolean }>> {
-  const columns = "id, conversation_id, author_id, from_staff, body, created_at";
   const { data, error } = await client
     .from("messages")
-    .select(withAuthors ? `${columns}, author:profiles!messages_author_id_fkey(username, display_name, avatar_url, badge)` : columns)
+    .select("id, conversation_id, from_staff, body, created_at")
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: false })
     .order("id", { ascending: false })
     .limit(THREAD_MESSAGES_MAX + 1);
   if (error) return fail("messages", error);
-  const rows = ((data ?? []) as unknown as ThreadMessage[]).map((m) => ({ ...m, author: m.author ?? null }));
+  const authorOf = new Map<number, string>();
+  const profiles = new Map<string, InboxProfile>();
+  if (withAuthors) {
+    const authors = await client.rpc("inbox_message_authors", { cid: conversationId });
+    if (authors.error) return fail("inbox_message_authors", authors.error);
+    for (const a of authors.data ?? []) authorOf.set(Number(a.message_id), a.author_id);
+    const ids = [...new Set(authorOf.values())];
+    if (ids.length) {
+      const res = await client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", ids);
+      if (res.error) return fail("profiles (autori dei messaggi)", res.error);
+      for (const p of (res.data ?? []) as (InboxProfile & { id: string })[]) profiles.set(p.id, p);
+    }
+  }
+  const rows: ThreadMessage[] = ((data ?? []) as Omit<MessageRow, "author_id">[]).map((m) => {
+    const author_id = authorOf.get(Number(m.id)) ?? null;
+    return { ...m, author_id, author: author_id ? (profiles.get(author_id) ?? null) : null };
+  });
   return { ok: true, data: { messages: rows.slice(0, THREAD_MESSAGES_MAX).reverse(), truncated: rows.length > THREAD_MESSAGES_MAX } };
 }
 

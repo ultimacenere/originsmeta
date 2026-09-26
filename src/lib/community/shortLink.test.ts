@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import {
   SHORT_LINK_LOCALES,
   shortLinkLabel,
-  shortLinkTarget,
+  profileShortLinkTarget,
   shortLinkUsername,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in src/lib/tierstats.test.ts.
@@ -31,17 +31,17 @@ describe("link breve dei creator", () => {
     assert.equal(shortLinkUsername("a".repeat(65)), null);
   });
   test("porta al profilo nella lingua scelta, con gli UTM del creator", () => {
-    assert.equal(shortLinkTarget("CoachCrono", "it", q("")), "/it/u/coachcrono?utm_source=creator&utm_medium=shortlink&utm_campaign=coachcrono");
-    assert.equal(shortLinkTarget("coachcrono", "es", q("")), "/es/u/coachcrono?utm_source=creator&utm_medium=shortlink&utm_campaign=coachcrono");
+    assert.equal(profileShortLinkTarget("CoachCrono", "it", q("")), "/it/u/coachcrono?utm_source=creator&utm_medium=shortlink&utm_campaign=coachcrono");
+    assert.equal(profileShortLinkTarget("coachcrono", "es", q("")), "/es/u/coachcrono?utm_source=creator&utm_medium=shortlink&utm_campaign=coachcrono");
   });
   test("gli UTM già nel link vincono; gli altri parametri non passano", () => {
     assert.equal(
-      shortLinkTarget("coachcrono", "en", q("utm_source=youtube&utm_content=video-12&ref=x&staff=abc")),
+      profileShortLinkTarget("coachcrono", "en", q("utm_source=youtube&utm_content=video-12&ref=x&staff=abc")),
       "/en/u/coachcrono?utm_source=youtube&utm_content=video-12&utm_medium=shortlink&utm_campaign=coachcrono",
     );
   });
   test("un nome impossibile porta alla directory dei creator", () => {
-    assert.equal(shortLinkTarget("coach crono", "it", q("")), "/it/creators");
+    assert.equal(profileShortLinkTarget("coach crono", "it", q("")), "/it/creators");
   });
   test("etichetta da copiare", () => {
     assert.equal(shortLinkLabel("coachcrono"), "originsmeta.com/@coachcrono");

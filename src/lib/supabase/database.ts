@@ -183,7 +183,11 @@ export type MessageRow = { id: number; conversation_id: string; author_id: strin
 export type Database = {
   public: {
     Tables: {
-      /** si scrivono solo con le RPC inbox_* (nessuna scrittura diretta: policy restrittive e nessun grant) */
+      /**
+       * si scrivono solo con le RPC inbox_* (nessuna scrittura diretta: policy restrittive e nessun grant); authenticated
+       * legge solo alcune colonne (grant per colonna): non created_by, read_by_*_at, last_user/staff_message_at di
+       * conversations né author_id di messages, che lo staff riceve da inbox_message_authors
+       */
       conversations: {
         Row: ConversationRow;
         Insert: Record<string, never>;
@@ -471,6 +475,8 @@ export type Database = {
       inbox_send: { Args: { cid: string; content: string }; Returns: boolean };
       inbox_mark_read: { Args: { cid: string; seen?: string | null }; Returns: boolean };
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
+      /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
+      inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
