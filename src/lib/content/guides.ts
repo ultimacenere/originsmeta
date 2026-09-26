@@ -1,6 +1,7 @@
 import type { Locale } from "../i18n";
 import { modifiedIn } from "../data/news";
 import { esText } from "./guides-es";
+import type { GuideVideo } from "../videos";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
 
@@ -38,6 +39,14 @@ export type Guide = {
    */
   published?: string;
   image?: string;
+  /**
+   * Video della guida (pacchetto VIDEO, 26/09/2026): YouTube (anche Shorts) o Twitch (VOD, clip), con il lettore a clic
+   * che non contatta nessuno prima del clic. In cima di default, in fondo con `at: "end"`, oppure prima di un titolo con
+   * `before` (l'ancora {#…} per lingua: lo spagnolo eredita i video dall'inglese ma ha ancore sue). Solo video ufficiali
+   * o di creator citati, mai inventati; con titolo, miniatura salvata in public/media e data di caricamento veri diventa
+   * anche VideoObject nei dati strutturati. Tipo e regole in src/lib/videos.ts (`GuideVideo`, test in videos.test.ts).
+   */
+  videos?: GuideVideo[];
   /** domande e risposte in fondo alla guida (anche come dati strutturati FAQPage) */
   faq?: { q: string; a: string }[];
   body: string; // markdown

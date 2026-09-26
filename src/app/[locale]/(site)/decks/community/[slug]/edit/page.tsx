@@ -11,6 +11,7 @@ import type { CommunityDeck } from "@/lib/community/types";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
 import { withCarriedParams } from "@/lib/analytics";
+import { deckLinks, deckVideos } from "@/lib/videos";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -63,7 +64,17 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
           mode="edit"
           pool={pool}
           archetypes={archetypes}
-          initial={{ id: deck.id, code, name: deck.name, archetype: deck.archetype, deckTypes: deck.deck_types, video: deck.video_url ?? "", guide: deck.guide }}
+          initial={{
+            id: deck.id,
+            code,
+            name: deck.name,
+            archetype: deck.archetype,
+            deckTypes: deck.deck_types,
+            // video e risorse riletti con le regole della scheda (il vecchio video_url come primo video, se riconosciuto)
+            videos: deckVideos(deck).map((v) => (v.start ? { url: v.url, start: v.start } : { url: v.url })),
+            links: deckLinks(deck).map((l) => ({ label: l.label, url: l.url })),
+            guide: deck.guide,
+          }}
           labels={d.community}
           builderHref={`${href(locale, "/deck-builder")}#${code}`}
           publishPath={path}

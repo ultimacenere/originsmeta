@@ -1,6 +1,7 @@
 import type { BuilderCard } from "@/lib/deckrules";
 import type { Locale } from "@/lib/i18n";
 import { guideSections, type DeckTranslations } from "./deckTranslation";
+import type { DeckLink, StoredVideo } from "@/lib/videos";
 
 /** Lingua in cui l'autore ha scritto la guida: una delle lingue del sito (dal 25/09/2026 anche lo spagnolo). */
 export type GuideLang = Locale;
@@ -38,7 +39,11 @@ export type CommunityDeck = {
   archetype: string;
   /** uno o più tipi: ladder, competitive, fun, tournament */
   deck_types: string[];
+  /** primo video (colonna storica): dal 26/09/2026 la scrive il sito con l'indirizzo canonico di `videos[0]` */
   video_url: string | null;
+  /** fino a 3 video YouTube/Twitch e 5 risorse (supabase/creator-VIDEO.sql); assenti finché la migrazione non c'è */
+  videos?: StoredVideo[] | null;
+  links?: DeckLink[] | null;
   guide: Guide;
   /** traduzioni automatiche della guida nelle altre lingue del sito (colonna `translations`, dal 25/09/2026) */
   translations?: DeckTranslations | null;

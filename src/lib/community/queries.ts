@@ -61,17 +61,24 @@ export function rowOrThrow<T>(what: string, res: ReadResult): T | null {
  * Traduzioni automatiche delle guide (colonna `translations`, 25/09/2026). Finché la migrazione non è applicata
  * la colonna non esiste e PostgREST risponde 42703: allora si rifà la lettura senza, una volta per istanza, così
  * il sito non resta senza mazzi se il codice arriva online prima dello schema.
+ * Lo stesso per video e risorse dei mazzi (colonne `videos` e `links`, supabase/creator-VIDEO.sql, 26/09/2026): senza,
+ * la scheda legge il vecchio `video_url` come primo video (`deckVideos` in src/lib/videos.ts) e non mostra risorse.
  */
-let hasTranslations = true;
+const optionalColumns = [
+  { columns: ["translations"], on: true },
+  { columns: ["videos", "links"], on: true },
+];
 
 async function readWithTranslations(base: string, run: (select: string) => PromiseLike<ReadResult>): Promise<ReadResult> {
-  const res = await run(hasTranslations ? `${base}, translations` : base);
-  if (res.error && hasTranslations && (res.error.code === "42703" || res.error.message.includes("translations"))) {
-    hasTranslations = false;
-    console.error("[community] manca la colonna community_decks.translations: va applicato supabase/schema.sql");
-    return run(base);
+  for (;;) {
+    const active = optionalColumns.filter((g) => g.on);
+    const res = await run([base, ...active.flatMap((g) => g.columns)].join(", "));
+    const err = res.error;
+    const missing = err ? active.find((g) => g.columns.some((c) => err.message.includes(c)) && (err.code === "42703" || err.message.includes("does not exist"))) : undefined;
+    if (!missing) return res;
+    missing.on = false;
+    console.error(`[community] manca la colonna community_decks.${missing.columns.join("/")}: va applicato supabase/schema.sql`);
   }
-  return res;
 }
 
 /**

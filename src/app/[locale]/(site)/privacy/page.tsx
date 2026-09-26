@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import { videoLabels } from "@/lib/videoLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -7,7 +8,7 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 }
 
 export default async function PrivacyPage({ params }: { params: LocaleParams }) {
-  const { dict: d } = await resolveLocale(params);
+  const { locale, dict: d } = await resolveLocale(params);
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.footer.legal}</p>
@@ -16,6 +17,11 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p>{d.privacy.body}</p>
         <p className="mt-6">{d.privacy.accounts}</p>
         <p className="mt-6">{d.privacy.cookies}</p>
+        {/* Video a clic di YouTube e Twitch e risorse dei mazzi (26/09/2026): l'ancora #video è il link "Privacy" sotto
+            ogni lettore (VideoEmbed). Il testo sta in src/lib/videoLabels.ts. */}
+        <p id="video" className="mt-6 scroll-mt-24">
+          {videoLabels[locale].privacy}
+        </p>
         {/* Pop-up dei feedback (22/09/2026): l'ancora #feedback è il link "Privacy" del pannello. Resta anche a
             widget spento, perché i messaggi già ricevuti stanno nel canale Discord dello staff. */}
         <p id="feedback" className="mt-6 scroll-mt-24">

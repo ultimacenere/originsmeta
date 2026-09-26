@@ -16,10 +16,14 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { LoginPanel } from "./LoginPanel";
 import type { LoginLabels } from "@/lib/loginLabels";
+import { MEDIA_FIELD_NAMES, type DeckLink, type StoredVideo } from "@/lib/videos";
+import { videoLabels } from "@/lib/videoLabels";
+import { DeckMediaFields } from "./DeckMediaFields";
 
 /** Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). */
 export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string };
-export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; video: string; guide: Guide };
+/** Mazzo da modificare. `videos` e `links` dal 26/09/2026 (pacchetto VIDEO): al posto del vecchio campo `video`. */
+export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; videos?: StoredVideo[]; links?: DeckLink[]; guide: Guide };
 
 type Labels = Dictionary["community"];
 
@@ -39,7 +43,7 @@ type Props = {
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale placeholder:text-pale-muted/80 focus:border-mint";
 
 /** Campi di testo salvati nella bozza locale della guida (le caselle e i menu si rifanno in un attimo). */
-const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, "video"] as const;
+const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, ...MEDIA_FIELD_NAMES] as const;
 type DraftValues = Partial<Record<(typeof DRAFT_FIELDS)[number], string>>;
 
 /**
@@ -129,8 +133,8 @@ function readGuideDraft(legendary: string | null): DraftValues | null {
     if (!raw) return null;
     const p = JSON.parse(raw) as { legendary?: string | null; values?: DraftValues };
     if (!p || p.legendary !== legendary || !p.values || typeof p.values !== "object") return null;
-    // nome e lingua hanno sempre un valore: la bozza conta solo se c'è del testo della guida o un video
-    const written = (["summary", ...guideSections, "video"] as const).some((k) => {
+    // nome e lingua hanno sempre un valore: la bozza conta solo se c'è del testo della guida, un video o un link
+    const written = (["summary", ...guideSections, ...MEDIA_FIELD_NAMES] as const).some((k) => {
       const v = p.values?.[k];
       return typeof v === "string" && v.trim().length > 0;
     });
@@ -294,9 +298,14 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const g = initial?.guide;
   const meter = guideWords === null ? null : guideMeter(guideWords, isLocale(locale) ? locale : "en");
   const v = (k: (typeof DRAFT_FIELDS)[number], fallback?: string) => restored?.[k] ?? fallback;
-  /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative */
-  const hasOptional = [...guideSections, "video" as const].some((k) => Boolean(restored?.[k] || (k === "video" ? initial?.video : g?.[k])));
-  const errorText = state.error ? ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db) : null;
+  /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative, nei video o nei link */
+  const hasOptional =
+    guideSections.some((k) => Boolean(restored?.[k] || g?.[k])) || MEDIA_FIELD_NAMES.some((k) => Boolean(restored?.[k])) || Boolean(initial?.videos?.length || initial?.links?.length);
+  const loc = isLocale(locale) ? locale : "en";
+  /* errori di video e link (videoLabels.ts) prima di quelli del dizionario: il vecchio "video" parlava di http(s) */
+  const errorText = state.error
+    ? ((videoLabels[loc].errors as Record<string, string>)[state.error] ?? (labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
+    : null;
   const busyLabel = mode === "edit" ? labels.updating : labels.submitting;
   const submitLabel = mode === "edit" ? labels.update : labels.submit;
   const ph = labels.placeholders;
@@ -437,11 +446,8 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           <Field id="combos" label={labels.combos} placeholder={ph.combos} rows={3} defaultValue={v("combos", g?.combos)} />
           <Field id="matchups" label={labels.matchups} hint={labels.matchupsHint} placeholder={ph.matchups} rows={3} defaultValue={v("matchups", g?.matchups)} />
           <Field id="notes" label={labels.notes} placeholder={ph.notes} rows={2} defaultValue={v("notes", g?.notes)} />
-          <label className="mt-4 block pb-1">
-            <span className="kicker text-pale-muted">{labels.video}</span>
-            <input id="pub-video" name="video" type="url" maxLength={300} placeholder="https://www.youtube.com/watch?v=…" defaultValue={v("video", initial?.video)} className={inputCls} />
-            <span className="mt-1 block text-xs text-pale-muted">{labels.videoHint}</span>
-          </label>
+          {/* fino a 3 video (YouTube, Twitch) e 5 risorse, con l'anteprima di ciò che il sito riconosce (26/09/2026) */}
+          <DeckMediaFields locale={loc} initialVideos={initial?.videos} initialLinks={initial?.links} draft={restored} />
         </details>
 
         <p className="mt-5 text-xs text-pale-muted">{labels.consent}</p>

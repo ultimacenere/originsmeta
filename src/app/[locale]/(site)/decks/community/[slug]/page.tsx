@@ -17,7 +17,9 @@ import { localizedGuide } from "@/lib/community/deckTranslation";
 import { communityPageLabels, deckIndexing, dropHreflang, editorialAuthor, fillLabel, relatedDecks } from "@/lib/community/deckQuality";
 import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
 import { getGuides } from "@/lib/content/guides";
-import { authorHandle, authorName, youtubeId } from "@/lib/community/util";
+import { authorHandle, authorName } from "@/lib/community/util";
+import { deckLinks, deckVideos, legacyVideoLink } from "@/lib/videos";
+import { DeckResources, DeckVideos } from "@/components/DeckMedia";
 import { CardArt, DeckCardGrid } from "@/components/CardChip";
 import { CardMentions } from "@/components/CardMentions";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
@@ -119,7 +121,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const customLegendary = !legendary ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
   const knownCards = deck.cards.filter((s) => getCard(s));
   const customCards = deck.cards.filter((s) => !getCard(s)).map((s) => deck.custom_cards.find((x) => x.slug === s)?.name ?? s);
-  const yt = youtubeId(deck.video_url);
+  // fino a tre video (YouTube, Twitch) e le risorse dell'autore; il vecchio video_url vale come primo video (videos.ts)
+  const videos = deckVideos(deck);
   const path = href(locale, `/decks/community/${deck.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const author = authorName(deck.profile);
@@ -333,25 +336,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           labels={{ edit: c.edit, hide: c.hide, unhide: c.unhide, delete: c.delete, confirmDelete: c.confirmDelete }}
         />
 
-        {yt ? (
-          <div className="mt-8 overflow-hidden rounded-xl border border-sky bg-felt-deep" style={{ aspectRatio: "16 / 9" }}>
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${yt}`}
-              title={deck.name}
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          </div>
-        ) : deck.video_url ? (
-          <p className="mt-6">
-            <a className="btn btn-ink text-xs" href={deck.video_url} rel="noopener nofollow" target="_blank">
-              ▶ {d.common.video}
-            </a>
-          </p>
-        ) : null}
+        {/* Video a clic (pacchetto VIDEO, 26/09/2026): prima del clic nessuna richiesta a YouTube o Twitch; l'anteprima
+            è l'illustrazione della Leggendaria. Niente VideoObject: senza la data di caricamento non si dichiara. */}
+        <DeckVideos videos={videos} deckName={deck.name} poster={legendary?.cover} locale={locale} legacyHref={legacyVideoLink(deck)} legacyLabel={d.common.video} />
 
         {/* Carte intere che si girano al passaggio del mouse, come nel database /cards (FlipCard, richiesta di
             Pierluigi del 22/09/2026): la Leggendaria per prima, poi le 12 carte per costo, con il mana sempre in vista. */}
@@ -429,6 +416,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </div>
           </>
         ) : null}
+        {/* Risorse dell'autore: link strutturati, mai nel testo della guida (che il sito traduce) */}
+        <DeckResources links={deckLinks(deck)} locale={locale} />
         <CardMentionEdges />
       </article>
 
