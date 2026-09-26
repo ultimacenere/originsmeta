@@ -11,17 +11,22 @@ import {
   chatEndpoint,
   chatLine,
   chatSafe,
+  cleanDeckSlug,
+  clip,
   deckImageAlt,
   deckImageCacheControl,
   deckImageFilename,
   deckImageFormat,
   deckImagePath,
+  deckImageRedirect,
   deckOgImage,
   displayHost,
   fill,
   firstParam,
+  imageSafe,
   imageVersion,
   isDeckSlug,
+  isNewerVersion,
   normalizeUsername,
   overlayLayout,
   overlayUrl,
@@ -57,14 +62,26 @@ describe("indirizzi", () => {
     assert.equal(isDeckSlug(undefined), false);
   });
 
-  test("nome utente: senza @, in minuscolo, solo la forma dei nomi del sito", () => {
+  test("nome utente: ridotto come lo riduce handle_new_user (trattini al posto degli altri segni, minuscolo)", () => {
     assert.equal(normalizeUsername("coachcrono"), "coachcrono");
     assert.equal(normalizeUsername(" @CoachCrono "), "coachcrono");
     assert.equal(normalizeUsername("robip-origins"), "robip-origins");
-    assert.equal(normalizeUsername("coach crono"), null);
-    assert.equal(normalizeUsername("coach_crono"), null);
+    // il nome di Discord o di Twitch scritto com'è trova il profilo (caso vero: display_name albeo_o, username albeo-o)
+    assert.equal(normalizeUsername("albeo_o"), "albeo-o");
+    assert.equal(normalizeUsername("Albeo.O"), "albeo-o");
+    assert.equal(normalizeUsername("coach crono"), "coach-crono");
+    assert.equal(normalizeUsername("_coach__crono_"), "coach-crono");
+    assert.equal(normalizeUsername("Zoë"), "zo");
+    // niente di utile: la rotta risponde con la frase d'uso
+    assert.equal(normalizeUsername("___"), null);
     assert.equal(normalizeUsername(""), null);
     assert.equal(normalizeUsername(null), null);
+    assert.equal(normalizeUsername("a".repeat(81)), null);
+  });
+
+  test("slug scritto a mano: spazi ai bordi via e minuscolo", () => {
+    assert.equal(cleanDeckSlug(" Control-2C2B "), "control-2c2b");
+    assert.equal(cleanDeckSlug(undefined), "");
   });
 
   test("lingua dal parametro, con ripiego", () => {
@@ -105,11 +122,39 @@ describe("comando di chat", () => {
     assert.equal(chatSafe("/ban someone"), "ban someone");
     assert.equal(chatSafe(".timeout x 600"), "timeout x 600");
     assert.equal(chatSafe("!deck"), "deck");
-    assert.equal(chatSafe("Pay $(urlfetch https://evil) now"), "Pay $ urlfetch https://evil) now");
-    assert.equal(chatSafe("${customapi.x}"), "$ customapi.x}");
+    // il comando nascosto dietro un altro segno o uno spazio
+    assert.equal(chatSafe(". /me x"), "me x");
+    assert.equal(chatSafe("  ! . \\ /ban x"), "ban x");
+    assert.equal(chatSafe("Pay $(urlfetch https://evil) now"), "Pay $ urlfetch evil) now");
+    assert.equal(chatSafe("${customapi.x}"), "$ customapi x}");
     assert.equal(chatSafe(`a${String.fromCharCode(0x200b)}b${String.fromCharCode(0x202e)}c${String.fromCharCode(0x2028)}d`), "a b c d");
     assert.equal(chatSafe("x".repeat(70), 60).length, 60);
     assert.ok(chatSafe("x".repeat(70), 60).endsWith("…"));
+  });
+
+  test("testo degli utenti: niente link cliccabili né menzioni (il bot è moderatore)", () => {
+    assert.equal(chatSafe("free nitro https://discord.gift/xyz"), "free nitro discord gift/xyz");
+    assert.equal(chatSafe("Visit evil-phish.com now"), "Visit evil-phish com now");
+    assert.equal(chatSafe("HTTP://Evil.COM"), "Evil COM");
+    assert.equal(chatSafe("evil．com e evil。com"), "evil com e evil com");
+    assert.equal(chatSafe("go to 10.0.0.1/x"), "go to 10 0 0 1/x");
+    assert.equal(chatSafe("@everyone @coach ＠x"), "everyone coach x");
+    // i numeri con il punto e i punti di fine frase restano
+    assert.equal(chatSafe("Control 2.0"), "Control 2.0");
+    assert.equal(chatSafe("Aggro. Fast"), "Aggro. Fast");
+  });
+
+  test("taglio senza spezzare le emoji (niente metà di coppia surrogata)", () => {
+    const lone = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
+    const cut = chatSafe("😀".repeat(40), 60);
+    assert.ok(cut.length <= 60);
+    assert.ok(cut.endsWith("…"));
+    assert.doesNotMatch(cut, lone);
+    assert.equal(clip("ab😀cd", 4), "ab…");
+    assert.equal(clip("abc", 3), "abc");
+    const line = chatLine({ name: "😀".repeat(60), author: "😀".repeat(40), slug: "x-ab12", legendary: "😀".repeat(40) }, streamLabels.it.chat, "originsmeta.com", 50);
+    assert.ok(line.length <= 50);
+    assert.doesNotMatch(line, lone);
   });
 
   test("segnaposto senza interpretare i $ del testo", () => {
@@ -129,7 +174,7 @@ describe("comando di chat", () => {
   test("il codice resta fuori se la riga supera il limite, o se non ha la forma del gioco", () => {
     const deck = { name: "Spellcast", author: "coachcrono", slug: "spellcast-ab12", legendary: "Merlin", gameCode: GAME_CODE };
     const short = chatLine(deck, streamLabels.en.chat, "originsmeta.com", 150);
-    assert.equal(short, "coachcrono's deck: Spellcast (Legendary: Merlin) → originsmeta.com/d/spellcast-ab12");
+    assert.equal(short, "Deck by coachcrono: Spellcast (Legendary: Merlin) → originsmeta.com/d/spellcast-ab12");
     const bad = chatLine({ ...deck, gameCode: "KGBLDC not a code" }, streamLabels.en.chat, "originsmeta.com");
     assert.ok(!bad.includes("KGBLDC"));
     const none = chatLine({ ...deck, legendary: null, gameCode: null }, streamLabels.es.chat, "originsmeta.com");
@@ -145,6 +190,15 @@ describe("comando di chat", () => {
       );
       assert.ok(line.length <= CHAT_MAX, `${l}: ${line.length}`);
       assert.ok(!line.startsWith("/") && !line.startsWith("."));
+    }
+  });
+
+  test("la riga comincia sempre col testo fisso, mai con il nome scritto dall'autore", () => {
+    for (const l of locales) {
+      assert.ok(!streamLabels[l].chat.line.startsWith("{"), `${l}: ${streamLabels[l].chat.line}`);
+      const line = chatLine({ name: "x", author: ". /me hello", slug: "x-ab12" }, streamLabels[l].chat, "originsmeta.com");
+      assert.ok(!/^[/.!]/.test(line), line);
+      assert.ok(!line.includes("/me"), line);
     }
   });
 
@@ -220,9 +274,64 @@ describe("immagine del mazzo", () => {
     assert.match(og.url, /^\/api\/deck-image\/control-2c2b\?format=og&lang=it&v=[0-9a-z]+$/);
     assert.equal(
       deckImageAlt(streamLabels.it.image, { deck: "CONTROL", author: "magicofhandss", legendary: "Van Helsing" }),
-      "Lista del mazzo CONTROL, mazzo di Van Helsing di magicofhandss: le dodici carte con il costo in mana.",
+      "Lista del mazzo CONTROL di magicofhandss, con la Leggendaria Van Helsing: le dodici carte con il costo in mana.",
     );
-    assert.equal(deckImageAlt(streamLabels.en.image, { deck: "X", author: "y", legendary: null }), "Deck list of X by y: the cards with their mana cost.");
+    assert.equal(
+      deckImageAlt(streamLabels.es.image, { deck: "CONTROL", author: "magicofhandss", legendary: "Van Helsing" }),
+      "Lista del mazo CONTROL de magicofhandss, con la Legendaria Van Helsing: las doce cartas con su coste de maná.",
+    );
+    assert.equal(deckImageAlt(streamLabels.en.image, { deck: "X", author: "y", legendary: null }), "Deck list of X by y: the cards and their mana cost.");
+  });
+
+  test("versione più nuova: solo base 36 valida e maggiore della corrente", () => {
+    const cur = imageVersion("2026-09-25T12:07:40Z");
+    const next = imageVersion("2026-09-25T12:07:41Z");
+    assert.equal(isNewerVersion(next, cur), true);
+    assert.equal(isNewerVersion(cur, cur), false);
+    assert.equal(isNewerVersion(cur, next), false);
+    assert.equal(isNewerVersion(null, cur), false);
+    assert.equal(isNewerVersion("NON-VALIDA!", cur), false);
+    assert.equal(isNewerVersion("zzzzzzzzzzzzz", cur), false);
+    assert.equal(isNewerVersion("abc", ""), true);
+  });
+
+  test("indirizzo canonico dell'immagine: rimanda versioni vecchie o inventate, parametri in più e maiuscole", () => {
+    const cur = { slug: "control-2c2b", version: "t3abc" };
+    const langs = ["en", "it", "es"] as const;
+    const sp = (q: string) => new URLSearchParams(q);
+    // già canonico: si disegna
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it&v=t3abc"), cur, langs, "en"), null);
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=16x9&lang=es&v=t3abc&download=1"), cur, langs, "en"), null);
+    // stesso contenuto in un altro ordine: nessun rimando
+    assert.equal(deckImageRedirect("control-2c2b", sp("v=t3abc&lang=it&format=og"), cur, langs, "en"), null);
+    // versione vecchia, inventata o assente, parametri in più o doppi, slug con le maiuscole
+    const canon = "/api/deck-image/control-2c2b?format=og&lang=it&v=t3abc";
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it&v=old"), cur, langs, "en"), canon);
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it&v=zzz999"), cur, langs, "en"), canon);
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it"), cur, langs, "en"), canon);
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it&v=t3abc&x=1"), cur, langs, "en"), canon);
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=it&v=t3abc&v=t3abc"), cur, langs, "en"), canon);
+    assert.equal(deckImageRedirect("Control-2C2B", sp("format=og&lang=it&v=t3abc"), cur, langs, "en"), canon);
+    // valori riconosciuti ma scritti in un'altra forma
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=16:9&lang=it-IT&v=t3abc"), cur, langs, "en"), "/api/deck-image/control-2c2b?format=16x9&lang=it&v=t3abc");
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=fr&v=t3abc&download=0"), cur, langs, "en"), "/api/deck-image/control-2c2b?format=og&lang=en&v=t3abc");
+    // un mazzo senza data valida: il canonico non ha la versione
+    assert.equal(deckImageRedirect("control-2c2b", sp("format=og&lang=en"), { slug: "control-2c2b", version: "" }, langs, "en"), null);
+    // il rimando porta a un indirizzo che non rimanda più
+    const target = new URL(canon, "https://originsmeta.com");
+    assert.equal(deckImageRedirect("control-2c2b", target.searchParams, cur, langs, "en"), null);
+  });
+
+  test("testi dell'immagine: solo i caratteri del font, con il ripiego se non resta niente", () => {
+    assert.equal(imageSafe("🔥 Aggro 火 Deck 🔥", "slug"), "Aggro Deck");
+    assert.equal(imageSafe("火火", "control-2c2b"), "control-2c2b");
+    assert.equal(imageSafe("😀", "player"), "player");
+    assert.equal(imageSafe("Zoë – Ćwiek™ · Niño", "x"), "Zoë – Ćwiek™ · Niño");
+    assert.equal(imageSafe("Колода", "x"), "Колода");
+    assert.equal(imageSafe("  a\tb\nc ", "x"), "a b c");
+    assert.equal(imageSafe(null, "x"), "x");
+    // le etichette nostre dell'immagine stanno tutte nel font
+    for (const l of locales) for (const v of Object.values(streamLabels[l].image) as string[]) assert.equal(imageSafe(v, "?"), v.replace(/\s+/g, " ").trim(), `${l}: ${v}`);
   });
 
   test("indirizzo, nome del file e cache", () => {

@@ -14,8 +14,9 @@
  *                                                della scheda del mazzo (src/app/api/deck-image/[slug]/route.tsx)
  *
  * Il "codice corto" del mazzo è lo slug (niente tabelle nuove). Qui stanno le regole, in funzioni pure senza import a
- * runtime (solo tipi): le prova `node --test src/lib/stream.test.ts`. Le etichette nelle tre lingue sono in
- * `streamLabels.ts`, le letture del database in `src/lib/community/streamDecks.ts`.
+ * runtime (solo tipi): le prova `src/lib/stream.test.ts` (`node --test src/lib/stream.test.ts`, e `npm test` quando
+ * l'integratore lo aggiunge all'elenco di package.json). Le etichette nelle tre lingue sono in `streamLabels.ts`, le
+ * letture del database in `src/lib/community/streamDecks.ts`.
  */
 
 /* ---------- indirizzi ---------- */
@@ -34,12 +35,24 @@ export function isDeckSlug(raw: unknown): raw is string {
 }
 
 /**
- * Nome utente di OriginsMeta scritto da uno streamer nel link del comando o dell'overlay: senza "@", in minuscolo
- * (il trigger `handle_new_user` li crea così: lettere minuscole, cifre e trattini). null se la forma non torna.
+ * Nome utente di OriginsMeta scritto da uno streamer nel link del comando o dell'overlay, ridotto come lo riduce il
+ * trigger `handle_new_user` di supabase/schema.sql quando crea il profilo: ogni gruppo di caratteri che non sono
+ * lettere o cifre ASCII diventa un trattino, poi minuscolo, senza trattini ai bordi. Così il nome di Discord o di
+ * Twitch scritto com'è ("albeo_o", "@Albeo.O") trova il profilo ("albeo-o"). null se non resta niente o è troppo lungo.
  */
 export function normalizeUsername(raw: string | null | undefined): string | null {
-  const u = (raw ?? "").trim().replace(/^@+/, "").toLowerCase();
-  return u.length <= 80 && /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(u) ? u : null;
+  const u = (raw ?? "")
+    .trim()
+    .replace(/^@+/, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .toLowerCase()
+    .replace(/^-+|-+$/g, "");
+  return u.length > 0 && u.length <= 80 ? u : null;
+}
+
+/** Slug di un mazzo scritto a mano in un indirizzo: spazi ai bordi via e minuscolo (lo slug vero è sempre minuscolo). */
+export function cleanDeckSlug(raw: string | null | undefined): string {
+  return (raw ?? "").trim().toLowerCase();
 }
 
 /** Una lingua del sito dal parametro `lang` (en, it, es; anche "it-IT"); altrimenti `fallback`. */
@@ -84,22 +97,46 @@ export function shortLinkUrl(site: string, slug: string): string {
 export const CHAT_MAX = 400;
 
 /**
- * Testo scritto da un utente (nome del mazzo, nome dell'autore) pronto per la chat di Twitch: una riga, niente
- * caratteri di controllo né invisibili, niente variabili dei bot (`$(…)`, `${…}`) e niente comandi in testa (una
- * risposta che comincia con "/" o "." Twitch la leggerebbe come un comando del bot, che è moderatore), al massimo
- * `max` caratteri con l'ellissi.
+ * Accorcia un testo a `max` unità (la lunghezza di JavaScript, la misura più prudente per i limiti dei bot) con
+ * l'ellissi, senza spezzare un carattere fuori dal piano base (emoji, ideogrammi rari): una metà di coppia surrogata
+ * arriverebbe in chat come "�".
+ */
+export function clip(text: string, max: number): string {
+  if (text.length <= max) return text;
+  let out = "";
+  for (const ch of text) {
+    if (out.length + ch.length > Math.max(1, max - 1)) break;
+    out += ch;
+  }
+  return `${out.trimEnd()}…`;
+}
+
+/**
+ * Testo scritto da un utente (nome del mazzo, nome dell'autore, carta inserita a mano) pronto per la chat di Twitch,
+ * dove lo scrive un bot che è moderatore e quindi scavalca AutoMod e il blocco dei link del canale:
+ * - una riga, niente caratteri di controllo né invisibili;
+ * - niente variabili dei bot (`$(…)`, `${…}`);
+ * - niente link: via gli schemi (https://) e il punto fra un nome e un dominio diventa uno spazio ("evil.com" →
+ *   "evil com", anche con i punti a larghezza piena e gli indirizzi IP), così Twitch non lo rende cliccabile; i numeri
+ *   con la virgola decimale ("2.0") restano;
+ * - niente menzioni ("@nome" pinga una persona);
+ * - niente comandi in testa (una risposta che comincia con "/" o "." Twitch la leggerebbe come un comando del bot,
+ *   "!" la leggerebbe un altro bot), anche se nascosti dietro spazi o altri segni (". /me");
+ * - al massimo `max` caratteri con l'ellissi (`clip`).
  */
 export function chatSafe(text: string, max = 60): string {
-  let t = String(text ?? "")
+  const t = String(text ?? "")
     // controlli (Cc) e formato (Cf: a capo invisibili, direzione del testo, spazi larghi zero, trattino morbido)
     .replace(/[\p{Cc}\p{Cf}]/gu, " ")
     .replace(/\$\s*[({]/g, "$ ")
+    .replace(/[a-z][a-z0-9+.-]*:\/\//gi, "")
+    .replace(/\b(\d{1,3})[.。．｡](\d{1,3})[.。．｡](\d{1,3})[.。．｡](\d{1,3})\b/g, "$1 $2 $3 $4")
+    .replace(/(?<=[\p{L}\p{N}])[.。．｡](?=\p{L})/gu, " ")
+    .replace(/[@＠]/g, "")
     .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^[/.\\!]+\s*/, "")
+    .replace(/^[\s/.\\!]+/, "")
     .trim();
-  if (t.length > max) t = `${t.slice(0, Math.max(1, max - 1)).trimEnd()}…`;
-  return t;
+  return clip(t, max);
 }
 
 /** Sostituisce i segnaposto {nome} senza interpretare i `$` del testo (i nomi li scrivono gli utenti). */
@@ -112,8 +149,9 @@ export type ChatLabels = { line: string; legendary: string; code: string };
 
 /**
  * La riga del comando !deck: "Mazzo di coachcrono: Spellcast (Leggendaria: Merlin) → originsmeta.com/d/spellcast-ab12
- * · Codice del gioco: KGBLDC…". Il codice del gioco c'è solo se tutto sta in `max` caratteri (un codice di 13 carte è
- * lungo circa 190); altrimenti resta il link, che porta al tasto "Copia codice del gioco" della scheda.
+ * · Codice del gioco: KGBLDC…". Comincia sempre con il testo fisso dell'etichetta ("Deck by", "Mazzo di", "Mazo de"),
+ * mai con un testo scritto da un utente. Il codice del gioco c'è solo se tutto sta in `max` caratteri (un codice di
+ * 13 carte è lungo circa 190); altrimenti resta il link, che porta al tasto "Copia codice del gioco" della scheda.
  */
 export function chatLine(deck: ChatDeck, labels: ChatLabels, host: string, max = CHAT_MAX): string {
   const head = fill(labels.line, { author: chatSafe(deck.author, 40) || "player", deck: chatSafe(deck.name, 60) || deck.slug });
@@ -122,7 +160,7 @@ export function chatLine(deck: ChatDeck, labels: ChatLabels, host: string, max =
   const code = deck.gameCode && /^KGBLDC[A-Za-z0-9+/=]+:[0-9a-f]{8}$/.test(deck.gameCode) ? deck.gameCode : null;
   const full = code ? `${base} · ${labels.code}: ${code}` : base;
   if (full.length <= max) return full;
-  return base.length <= max ? base : `${base.slice(0, max - 1)}…`;
+  return clip(base, max);
 }
 
 /** Indirizzo del comando di chat: per un utente (il suo ultimo mazzo) o per un mazzo preciso. */
@@ -134,7 +172,7 @@ export function chatEndpoint(site: string, target: { user: string } | { deck: st
 /**
  * I comandi pronti da incollare nella chat (da proprietario del canale o moderatore) o nella dashboard del bot.
  * Nightbot: `$(urlfetch URL)`; StreamElements: `${customapi.URL}`; Fossabot: `$(customapi URL)` come risposta di un
- * comando creato dalla dashboard.
+ * comando creato dalla dashboard. Se il comando esiste già, al posto di "add" va "edit" (lo dicono le istruzioni).
  */
 export function botCommands(url: string, trigger = "!deck"): { nightbot: string; streamelements: string; fossabot: string } {
   return {
@@ -215,12 +253,69 @@ export function imageVersion(updatedAt: string | null | undefined): string {
   return Number.isFinite(t) ? Math.floor(t / 1000).toString(36) : "";
 }
 
+/** true se la versione chiesta (`v` dell'indirizzo) è più recente di `current` (base 36 dei secondi, `imageVersion`). */
+export function isNewerVersion(requested: string | null | undefined, current: string): boolean {
+  if (!requested || !/^[0-9a-z]{1,12}$/.test(requested)) return false;
+  const a = parseInt(requested, 36);
+  const b = current ? parseInt(current, 36) : 0;
+  return Number.isFinite(a) && a > b;
+}
+
 /** Indirizzo (relativo al sito) dell'immagine del mazzo; `download` la fa scaricare con un nome di file. */
 export function deckImagePath(slug: string, format: DeckImageFormat, lang: string, version?: string, download = false): string {
   const q = new URLSearchParams({ format, lang });
   if (version) q.set("v", version);
   if (download) q.set("download", "1");
   return `/api/deck-image/${slug}?${q.toString()}`;
+}
+
+/**
+ * L'indirizzo canonico dell'immagine per una richiesta: formato e lingua riconosciuti, la versione VERA del mazzo
+ * (`version`, da `imageVersion`) e `download=1` solo se chiesto. La rotta risponde con l'immagine solo a questo
+ * indirizzo e rimanda lì ogni altra forma (versione vecchia o inventata, parametri in più, slug con le maiuscole):
+ * la cache lunga copre un solo indirizzo per mazzo, formato e lingua, e un `?v=<a caso>` non fa ridisegnare il PNG.
+ * null se la richiesta è già canonica.
+ */
+export function deckImageRedirect(
+  requestedSlug: string,
+  sp: URLSearchParams,
+  current: { slug: string; version: string },
+  supportedLangs: readonly string[],
+  fallbackLang: string,
+): string | null {
+  const format = deckImageFormat(sp.get("format"));
+  const lang = pickLang(sp.get("lang"), supportedLangs, fallbackLang);
+  const canonical = deckImagePath(current.slug, format, lang, current.version, sp.get("download") === "1");
+  const want = new URLSearchParams(canonical.split("?")[1]);
+  const keys = [...sp.keys()];
+  const same =
+    requestedSlug === current.slug &&
+    keys.length === [...want.keys()].length &&
+    [...want].every(([k, v]) => sp.getAll(k).length === 1 && sp.get(k) === v);
+  return same ? null : canonical;
+}
+
+/**
+ * Caratteri che il font dell'immagine (Geist Regular, incluso in next/og) sa disegnare: latino con gli accenti
+ * (europeo e vietnamita), cirillico, la punteggiatura tipografica e le frecce. Letti dalla tabella cmap del file
+ * node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf il 26/09/2026.
+ */
+const IMAGE_GLYPHS =
+  /[^ -~ -¬®-ēĖ-īĮ-ķĹ-ľŁ-ňŊ-ōŐ-žƏƒƠơƯưǍǎǤ-ǩȘ-țȷəЀ-џẀ-ẅẞẠ-ỹ–—‘-‚“-„†-•…‰′″‹›€™←-↙]/gu;
+
+/**
+ * Testo scritto da un utente (nome del mazzo, dell'autore, carta inserita a mano) pronto per l'immagine: solo i
+ * caratteri del font. Un carattere che il font non ha (emoji, ideogrammi, arabo…) farebbe scaricare a next/og, dal
+ * server e a ogni disegno, un font da Google Fonts o un'emoji da jsDelivr, mandando fuori pezzi del testo (anche del
+ * nome di una persona); così invece sparisce. Se non resta niente vale `fallback` (lo slug, il nome utente).
+ */
+export function imageSafe(text: string | null | undefined, fallback: string): string {
+  const t = String(text ?? "")
+    .normalize("NFC")
+    .replace(IMAGE_GLYPHS, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return /[\p{L}\p{N}]/u.test(t) ? t : fallback;
 }
 
 /**
@@ -242,9 +337,10 @@ export function deckImageFilename(slug: string, format: DeckImageFormat): string
 }
 
 /**
- * Le intestazioni di cache dell'immagine. Con la versione nell'indirizzo l'immagine non cambia più: cache lunga (un
- * giorno in CDN, una settimana servita mentre si rigenera). Senza versione (un link scritto a mano) solo dieci minuti,
- * perché il mazzo può cambiare. Sostituiscono quelle di default di next/og (un anno, "immutable").
+ * Le intestazioni di cache dell'immagine. Con la versione nell'indirizzo (quella vera: le altre forme le rimanda
+ * `deckImageRedirect`) l'immagine non cambia più: cache lunga (un giorno in CDN, una settimana servita mentre si
+ * rigenera). Senza versione (un mazzo senza data valida) solo dieci minuti. Sostituiscono quelle di default di next/og
+ * (un anno, "immutable").
  */
 export function deckImageCacheControl(versioned: boolean): string {
   return versioned ? "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" : "public, max-age=300, s-maxage=600, stale-while-revalidate=3600";

@@ -13,7 +13,10 @@ import { OVERLAY_REFRESH_SECONDS } from "@/lib/stream";
  *
  * Mai indicizzato: robots noindex qui e X-Robots-Tag da next.config.ts (anche Content-Security-Policy
  * `frame-ancestors *`, così l'overlay si può anche incorporare in un iframe: la pagina non ha azioni). Stessi font e
- * colori del sito; nessun materiale Koin come interfaccia (le carte sono contenuto, intere e con i crediti).
+ * colori del sito; nessun materiale Koin come interfaccia (le carte sono contenuto, intere e con i crediti), e la
+ * dicitura "non affiliato a Koin Games" in ogni overlay e messaggio (`DeckOverlay`). `lang="en"` sull'html vale per
+ * il titolo della scheda, che è in inglese: la lingua del contenuto (?lang=) la dichiara il <main>, che la sovrascrive
+ * (il layout non legge i parametri dell'indirizzo).
  */
 const unbounded = Unbounded({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-unbounded", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-manrope", display: "swap" });

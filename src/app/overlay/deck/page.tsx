@@ -8,8 +8,10 @@ import { DeckOverlay, OverlayMessage } from "@/components/stream/DeckOverlay";
 /**
  * Overlay per OBS con l'ultimo mazzo pubblicato di un creator (pacchetto STREAM, 26/09/2026):
  * /overlay/deck?u=<nome utente>&layout=vertical|horizontal&lang=en|it|es. È il link da mettere una volta in OBS: il
- * creator pubblica o aggiorna un mazzo e l'overlay lo segue entro un minuto (`OverlayRefresh` nel layout), come il
- * comando !deck. Utente inesistente, nessun mazzo o database irraggiungibile: un messaggio dentro l'overlay.
+ * creator pubblica un mazzo nuovo e l'overlay passa a quello entro un minuto (`OverlayRefresh` nel layout, lettura
+ * senza cache in `latestDeckOfUser`), come il comando !deck. Il nome utente si riduce come quello del profilo
+ * ("albeo_o" → "albeo-o"). Nome mancante, utente inesistente, nessun mazzo o database irraggiungibile: un messaggio
+ * dentro l'overlay.
  */
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -17,17 +19,18 @@ export default async function LatestDeckOverlayPage({ searchParams }: Props) {
   const sp = await searchParams;
   const lang = pickLang(firstParam(sp.lang), locales, defaultLocale);
   const labels = streamLabels[lang].overlay;
-  const user = normalizeUsername(firstParam(sp.u) ?? firstParam(sp.user));
-  if (!user) return <OverlayMessage text={labels.usage} lang={lang} />;
+  const message = (text: string) => <OverlayMessage text={text} lang={lang} note={labels.unofficial} />;
+  const user = normalizeUsername(firstParam(sp.u) ?? firstParam(sp.user) ?? firstParam(sp.username));
+  if (!user) return message(labels.usage);
   let found: LatestDeck;
   try {
     found = await latestDeckOfUser(user);
   } catch (e) {
     console.error("[stream] overlay ?u=:", e instanceof Error ? e.message : e);
-    return <OverlayMessage text={labels.unavailable} lang={lang} />;
+    return message(labels.unavailable);
   }
-  if (found.user === "missing") return <OverlayMessage text={fill(labels.noUser, { user })} lang={lang} />;
-  if (!found.deck) return <OverlayMessage text={fill(labels.noDecks, { user })} lang={lang} />;
+  if (found.user === "missing") return message(fill(labels.noUser, { user }));
+  if (!found.deck) return message(fill(labels.noDecks, { user }));
   return (
     <DeckOverlay
       view={streamDeckView(found.deck)}

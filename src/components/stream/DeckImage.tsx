@@ -11,8 +11,11 @@ import { splitColumns, type DeckImageFormat } from "@/lib/stream";
  * carte del sito sono tutte WebP; convertirle servirebbe sharp, una dipendenza che il progetto non dichiara. Resta
  * così fuori anche ogni materiale Koin: l'immagine è una lista, con i colori del sito e la dicitura "non affiliato".
  * Font: quello incluso in next/og (Geist Regular), finché i file TTF di Unbounded e Manrope non sono nel repo; il
- * titolo prende corpo con un contorno dello stesso colore. Niente simboli fuori dal latino (★, →): un glifo che il
- * font non ha farebbe scaricare a next/og un font da Google durante la richiesta. La stella è un SVG.
+ * titolo prende corpo con un contorno dello stesso colore. Un glifo che il font non ha farebbe scaricare a next/og,
+ * dal server e a ogni disegno, un font da Google Fonts o un'emoji da jsDelivr con il testo dentro l'indirizzo: per
+ * questo i testi scritti dagli utenti (nome del mazzo, dell'autore, carte inserite a mano) arrivano qui già passati
+ * da `imageSafe` (src/lib/stream.ts, nella rotta), e le etichette nostre usano solo caratteri del font. La stella è
+ * un SVG. Righe delle carte senza cornice (niente righette sottili), su blu notte più chiaro.
  */
 
 const C = {
@@ -88,7 +91,6 @@ function CardRow({ card, u, height, font, gem }: { card: StreamCard; u: number; 
         padding: `0 ${Math.round(14 * u)}px`,
         borderRadius: Math.round(12 * u),
         backgroundColor: C.night3,
-        border: `${Math.max(2, Math.round(2 * u))}px solid rgba(63, 196, 232, 0.35)`,
       }}
     >
       <Gem mana={card.mana} size={gem} />

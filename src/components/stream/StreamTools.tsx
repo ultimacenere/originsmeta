@@ -23,6 +23,14 @@ import { CopyButton } from "@/components/CopyButton";
  * un mazzo (`DeckStreamTools`) e le istruzioni del pannello /account (`AccountStreamGuide`). Tutto in un <details>
  * chiuso, così la scheda del mazzo non si riempie di comandi per chi non fa dirette; si apre da solo per il
  * proprietario del mazzo (sessione letta nel browser: la scheda è ISR) e in /account per chi ha già un mazzo pubblicato.
+ * Il contenuto si disegna solo alla prima apertura: nell'HTML della scheda (ISR, indicizzata) resta il solo titolo,
+ * niente testo ripetuto su ogni mazzo né link verso l'overlay e le immagini da far seguire a Googlebot (quelli che
+ * compaiono dopo hanno comunque nofollow, e robots.txt chiude /overlay/ e i download).
+ *
+ * Comando di chat e overlay di un mazzo preciso si offrono solo al suo proprietario: mettono in onda (e fanno scrivere
+ * al bot, che è moderatore) il nome del mazzo e delle carte inserite a mano, testi che l'autore può cambiare quando
+ * vuole. Agli altri restano link breve e immagini (una fotografia del mazzo), più il rimando agli strumenti del
+ * proprio account, che seguono i propri mazzi.
  *
  * Indirizzi: quelli del sito (`site`, originsmeta.com) nel primo disegno; nel browser si passa all'indirizzo della
  * pagina, così nelle anteprime di Vercel e in locale i link copiati e le anteprime puntano allo stesso sito della demo.
@@ -66,9 +74,16 @@ function CopyRow({
       <span className="text-xs font-semibold text-pale-muted">{label}</span>
       <code className="min-w-0 break-all rounded-md bg-night-3 px-2 py-1 font-mono text-xs text-chalk">{value}</code>
       <span className="flex flex-wrap items-center gap-2">
-        <CopyButton text={value} label={copy} copied={copied} className="btn btn-ink text-xs" event={{ name: "stream_tool_copy", params: { tool, placement } }} />
+        <CopyButton
+          text={value}
+          label={copy}
+          copied={copied}
+          ariaLabel={`${copy}: ${label}`}
+          className="btn btn-ink text-xs"
+          event={{ name: "stream_tool_copy", params: { tool, placement } }}
+        />
         {preview ? (
-          <a href={preview.href} target="_blank" rel="noopener" className="text-xs font-semibold text-mint underline-offset-2 hover:underline">
+          <a href={preview.href} target="_blank" rel="nofollow noopener" className="text-xs font-semibold text-mint underline-offset-2 hover:underline">
             {preview.label} ↗
           </a>
         ) : null}
@@ -87,7 +102,10 @@ function Block({ title, hint, children }: { title: string; hint?: string; childr
   );
 }
 
-/** Il <details> dei due pannelli: conta l'apertura fatta a mano (non quella automatica). */
+/**
+ * Il <details> dei due pannelli: conta l'apertura fatta a mano (non quella automatica) e disegna il contenuto solo
+ * dalla prima apertura in poi (poi resta, così chiudere e riaprire non rifà niente).
+ */
 function StreamDetails({
   summary,
   placement,
@@ -104,6 +122,7 @@ function StreamDetails({
   const ref = useRef<HTMLDetailsElement>(null);
   const automatic = useRef(false);
   const counted = useRef(false);
+  const [opened, setOpened] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (autoOpen && el && !el.open) {
@@ -117,6 +136,7 @@ function StreamDetails({
       className={className}
       onToggle={(e) => {
         if (!e.currentTarget.open) return;
+        setOpened(true);
         if (automatic.current) {
           automatic.current = false;
           return;
@@ -127,7 +147,7 @@ function StreamDetails({
       }}
     >
       {summary}
-      {children}
+      {opened ? children : null}
     </details>
   );
 }
@@ -139,8 +159,9 @@ function overlayHint(labels: StreamLabels["tools"]): string {
 }
 
 /**
- * Menu "Per le dirette" nella scheda di un mazzo pubblicato: link breve, comando di chat per questo mazzo, overlay per
- * OBS (verticale e orizzontale) e le due immagini da scaricare. Per tutti, chiuso; aperto per il proprietario.
+ * Menu "Per le dirette" nella scheda di un mazzo pubblicato: link breve e le due immagini da scaricare per tutti; per il
+ * proprietario anche il comando di chat per questo mazzo e l'overlay per OBS (verticale e orizzontale), agli altri il
+ * rimando agli strumenti del loro account. Chiuso per tutti, aperto da solo per il proprietario.
  */
 export function DeckStreamTools({
   slug,
@@ -185,30 +206,38 @@ export function DeckStreamTools({
     <StreamDetails
       placement={placement}
       autoOpen={isOwner}
-      className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-4 text-sm"
-      summary={<summary className="cursor-pointer font-semibold text-pale marker:text-mint">{labels.summary}</summary>}
+      className="card-night mt-6 p-4 text-sm"
+      summary={
+        <summary className="cursor-pointer marker:text-mint">
+          <h2 className="inline font-body text-sm font-semibold text-pale">{labels.summary}</h2>
+        </summary>
+      }
     >
       <div className="mt-3 space-y-5">
         <p className="max-w-2xl text-xs text-pale-muted">{labels.intro}</p>
         <Block title={labels.shortLink} hint={labels.shortLinkHint}>
           <CopyRow {...row} label={labels.shortLink} value={shortLinkUrl(origin, slug)} tool="short_link" />
         </Block>
-        <Block title={labels.chat} hint={labels.chatHint}>
-          <CopyRow {...row} label={labels.nightbot} value={chat.nightbot} tool="chat_nightbot" />
-          <CopyRow {...row} label={labels.streamelements} value={chat.streamelements} tool="chat_streamelements" />
-        </Block>
-        <Block title={labels.overlay} hint={overlayHint(labels)}>
-          {(["vertical", "horizontal"] as const).map((layout) => (
-            <CopyRow
-              {...row}
-              key={layout}
-              label={labels[layout]}
-              value={overlay(layout)}
-              tool={`overlay_${layout}`}
-              preview={{ href: overlay(layout), label: labels.open }}
-            />
-          ))}
-        </Block>
+        {isOwner ? (
+          <>
+            <Block title={labels.chat} hint={labels.chatHint}>
+              <CopyRow {...row} label={labels.nightbot} value={chat.nightbot} tool="chat_nightbot" />
+              <CopyRow {...row} label={labels.streamelements} value={chat.streamelements} tool="chat_streamelements" />
+            </Block>
+            <Block title={labels.overlay} hint={overlayHint(labels)}>
+              {(["vertical", "horizontal"] as const).map((layout) => (
+                <CopyRow
+                  {...row}
+                  key={layout}
+                  label={labels[layout]}
+                  value={overlay(layout)}
+                  tool={`overlay_${layout}`}
+                  preview={{ href: overlay(layout), label: labels.open }}
+                />
+              ))}
+            </Block>
+          </>
+        ) : null}
         <Block title={labels.image} hint={labels.imageHint}>
           <div className="flex flex-wrap gap-2">
             {images.map(({ format, label }) => (
@@ -216,6 +245,7 @@ export function DeckStreamTools({
                 key={format}
                 href={deckImagePath(slug, format, locale, version, true)}
                 download
+                rel="nofollow"
                 className="btn btn-ink text-xs"
                 onClick={() => trackEvent("deck_image_download", { format, placement })}
               >
@@ -224,6 +254,14 @@ export function DeckStreamTools({
             ))}
           </div>
         </Block>
+        {isOwner ? null : (
+          <p className="max-w-2xl text-xs text-pale-muted">
+            {labels.ownerOnly}{" "}
+            <a href={`/${locale}/account`} className="font-semibold text-mint underline-offset-2 hover:underline">
+              {labels.accountLink}
+            </a>
+          </p>
+        )}
       </div>
     </StreamDetails>
   );
@@ -260,7 +298,7 @@ export function AccountStreamGuide({
       className="card-night mt-12 p-5 sm:p-6"
       summary={
         <summary className="cursor-pointer">
-          <span className="t-section">{labels.title}</span>
+          <h2 className="t-section inline">{labels.title}</h2>
         </summary>
       }
     >
