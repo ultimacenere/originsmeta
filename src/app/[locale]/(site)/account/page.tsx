@@ -23,6 +23,7 @@ import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { InboxSection } from "@/components/inbox/InboxSection";
+import { ShowStatsSetting } from "@/components/achievements/ShowStatsSetting";
 
 export const dynamic = "force-dynamic";
 
@@ -174,6 +175,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       <Suspense fallback={null}>
         <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
       </Suspense>
+      {/* "Mostra i numeri sulla vetrina": solo Creator, Autore, Pro e Staff (pacchetto TRAGUARDI, 27/09/2026) */}
+      <ShowStatsSetting supabase={supabase} userId={user.id} locale={locale} />
 
       {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
       <section id="private" className="mt-12 scroll-mt-24">

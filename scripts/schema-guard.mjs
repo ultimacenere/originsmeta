@@ -16,11 +16,30 @@
 /** Il titolo del primo blocco dei pacchetti creator: prima c'è lo schema di sempre, con la correzione 6c6756d. */
 export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
 
-/** Le sole grant ammesse su public.profiles (istruzioni normalizzate: spazi singoli, minuscole, senza `;`). */
+/**
+ * Le sole grant ammesse su public.profiles (istruzioni normalizzate: spazi singoli, minuscole, senza `;`).
+ * La terza (27/09/2026, pacchetto TRAGUARDI, supabase/wave2-TRAGUARDI.sql da accodare a schema.sql) apre la sola colonna
+ * `show_stats`: la casella "Mostra i numeri sulla vetrina" di /account, che il creator cambia con la propria sessione.
+ * È un booleano senza effetti sui permessi, e il trigger profiles_guard_show_stats lo rifiuta a chi non ha un ruolo con
+ * vetrina. Ogni altra grant, anche per colonna, resta rifiutata.
+ */
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
   "grant update (bio, links, content_langs) on public.profiles to authenticated",
+  "grant update (show_stats) on public.profiles to authenticated",
 ];
+
+/**
+ * schema.sql più i file dei pacchetti dell'ondata 2 (supabase/wave2-<PACCHETTO>.sql, 27/09/2026) che l'integratore
+ * accoda in fondo e che non ci sono ancora dentro: lo schema che db-migrate applicherà. Un file già accodato (il suo
+ * testo, a meno degli spazi e dei fine riga, sta in schema.sql) non si conta due volte. Solo per i test: db-migrate
+ * applica schema.sql e basta.
+ */
+export function withPendingBlocks(schema, pending) {
+  const flat = (s) => s.replace(/\s+/g, " ").trim();
+  const inSchema = flat(schema);
+  return [schema, ...pending.filter((p) => flat(p) && !inSchema.includes(flat(p)))].join("\n");
+}
 
 /** La revoke che chiude la falla (6c6756d): deve esserci, e prima della grant per colonna. */
 export const PROFILES_REVOKE = "revoke update on public.profiles from anon, authenticated";

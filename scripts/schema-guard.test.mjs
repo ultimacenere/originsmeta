@@ -5,10 +5,21 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements } from "./schema-guard.mjs";
+import { readFileSync, readdirSync } from "node:fs";
+import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
+/*
+  I pacchetti dell'ondata 2 (27/09/2026) portano il loro SQL in supabase/wave2-<PACCHETTO>.sql, che l'integratore accoda a
+  schema.sql. La grant per colonna di TRAGUARDI (show_stats) sta già in PROFILES_GRANTS: le prove sullo schema "vero" si
+  fanno su schema.sql più i file non ancora accodati, cioè su quello che db-migrate applicherà.
+*/
+const supabaseDir = new URL("../supabase/", import.meta.url);
+const pending = readdirSync(supabaseDir)
+  .filter((f) => /^wave2-.+\.sql$/.test(f))
+  .sort()
+  .map((f) => readFileSync(new URL(f, supabaseDir), "utf8"));
+const full = withPendingBlocks(schema, pending);
 const COLUMN_GRANT = "grant update (bio, links, content_langs) on public.profiles to authenticated;";
 
 /** Lo schema vero con una riga accodata in fondo. */
@@ -41,11 +52,12 @@ describe("lettura delle istruzioni", () => {
 });
 
 describe("schema.sql vero", () => {
-  test("si può applicare: nessun problema", () => {
+  test("si può applicare: nessun problema, da solo e con i file dell'ondata 2 accodati", () => {
     assert.deepEqual(schemaProblems(schema), []);
+    assert.deepEqual(schemaProblems(full), []);
   });
   test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima della grant per colonna", () => {
-    const stmts = sqlStatements(schema);
+    const stmts = sqlStatements(full);
     const onProfiles = stmts.filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
     assert.deepEqual(onProfiles, PROFILES_GRANTS);
     assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) >= 0);
@@ -68,6 +80,8 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
     "grant di update su più righe": withTail("grant\n  update\n  on table public.profiles\n  to authenticated;"),
     "grant per colonna su role e badge": withTail("grant update (role, badge) on public.profiles to authenticated;"),
     "grant per colonna su display_name": withTail("grant update (display_name) on public.profiles to authenticated;"),
+    "grant per colonna su show_stats insieme al ruolo": withTail("grant update (show_stats, role) on public.profiles to authenticated;"),
+    "grant per colonna su show_stats ad anon": withTail("grant update (show_stats) on public.profiles to anon;"),
     "grant di insert o delete": withTail("grant insert, delete on public.profiles to authenticated;"),
     "grant all su più tabelle insieme": withTail("grant all on public.tier_lists, public.profiles to authenticated;"),
     "grant su tutte le tabelle dello schema": withTail("grant update on all tables in schema public to authenticated;"),
@@ -89,6 +103,13 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
       assert.notDeepEqual(schemaProblems(sql), [], "db-migrate lo applicherebbe");
     });
   }
+  test("i file dell'ondata 2 già accodati a schema.sql non si contano due volte", () => {
+    const block = "-- blocco\ngrant update (show_stats) on public.profiles to authenticated;\n";
+    const appended = `${schema}\r\n${block.replace(/\n/g, "\r\n")}`;
+    assert.equal(withPendingBlocks(appended, [block]), appended);
+    assert.equal(withPendingBlocks(schema, [block]), `${schema}\n${block}`);
+    assert.equal(withPendingBlocks(schema, ["  \n"]), schema);
+  });
   test("la grant per colonna nella prima parte non basta a far passare la grant sull'intera tabella", () => {
     const sql = replaced(COLUMN_GRANT, `${COLUMN_GRANT}\ngrant update on public.profiles to authenticated;`);
     assert.ok(schemaProblems(sql).some((p) => p.startsWith("grant non prevista")));

@@ -30,6 +30,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
 import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
+import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -181,6 +182,10 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         </p>
       </section>
 
+      {/* Traguardi (ogni profilo) e numeri pubblici della vetrina, poi i tornei in evidenza (pacchetto TRAGUARDI, 27/09/2026) */}
+      <ProfileHighlights profileId={profile.id} memberSince={profile.created_at} badge={profile.badge} name={name} decks={decks} tierLists={tierLists} locale={locale} />
+      {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
+
       {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
       <section className="mt-10">
         <h2 className="t-section">{p.decksTitle}</h2>
@@ -249,9 +254,6 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           </ul>
         )}
       </section>
-
-      {/* Vetrina (pacchetto CREATOR, 26/09/2026; Creator, Autore, Pro e Staff dal 27/09): i tornei pubblici che organizza */}
-      {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (

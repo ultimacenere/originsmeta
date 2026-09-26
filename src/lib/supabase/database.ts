@@ -24,6 +24,8 @@ export type ProfileRow = {
   content_langs: string[];
   /** ultima modifica di bio, canali, lingue o tag: la scrive solo il trigger profiles_touch_showcase */
   showcase_updated_at: string | null;
+  /** numeri pubblici sulla vetrina /u (pacchetto TRAGUARDI, supabase/wave2-TRAGUARDI.sql): solo ruoli con vetrina, difesa da trigger */
+  show_stats: boolean;
 };
 
 export type CommunityDeckRow = {
@@ -477,6 +479,9 @@ export type Database = {
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
       /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
       inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
+      /* traguardi e numeri pubblici del profilo /u (supabase/wave2-TRAGUARDI.sql); risposte ricontrollate da achievements.ts */
+      profile_achievement_facts: { Args: { pid: string }; Returns: unknown };
+      profile_public_stats: { Args: { pid: string }; Returns: { decks: number; views: number; code_copies: number; votes: number; since: string | null }[] };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
