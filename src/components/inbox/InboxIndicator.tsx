@@ -153,9 +153,20 @@ export function InboxMenuLinks({ locale, status }: { locale: string; status: Inb
 
 /**
  * "Scrivi a questo utente" sulla pagina pubblica di un iscritto (/u/<nome>, ISR): compare solo allo staff, quindi si
- * decide nel browser. Porta al modulo "Nuovo messaggio a un utente" dell'area staff con il nome già scritto.
+ * decide nel browser. Porta al modulo "Nuovo messaggio a un utente" dell'area staff con il nome già scritto. Non compare
+ * sul proprio profilo (`profileId` uguale a chi guarda): scrivere a se stessi finirebbe nell'errore `self`.
  */
-export function StaffMessageLink({ locale, username, className = "mt-3" }: { locale: string; username: string | null | undefined; className?: string }) {
+export function StaffMessageLink({
+  locale,
+  username,
+  profileId,
+  className = "mt-3",
+}: {
+  locale: string;
+  username: string | null | undefined;
+  profileId?: string | null;
+  className?: string;
+}) {
   const [uid, setUid] = useState<string | null>(null);
   useEffect(() => {
     const sb = supabaseBrowser();
@@ -169,7 +180,7 @@ export function StaffMessageLink({ locale, username, className = "mt-3" }: { loc
     };
   }, []);
   const status = useInboxStatus(uid);
-  if (!username || !status?.staff) return null;
+  if (!username || !status?.staff || (profileId && uid === profileId)) return null;
   // il paragrafo (con il suo margine, `className`) c'è solo quando c'è il link: niente spazio vuoto per chi non è dello staff
   return (
     <p className={className}>

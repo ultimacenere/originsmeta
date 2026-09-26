@@ -2,7 +2,7 @@ import Link from "next/link";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { inboxLabels } from "@/lib/inboxLabels";
-import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath } from "@/lib/community/messages";
+import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath, withSafeAvatar } from "@/lib/community/messages";
 import type { InboxProfile, StaffConversation, ThreadMessage } from "@/lib/community/inboxQueries";
 import { setConversationStatus } from "@/lib/community/inboxActions";
 import { Avatar } from "@/components/AccountMenu";
@@ -56,7 +56,8 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
 
       {staffView ? (
         <section className="card-night mt-6 flex flex-wrap items-center gap-4 p-5" aria-label={L.thread.user}>
-          <Avatar profile={c.user} name={userName} size={48} />
+          {/* foto solo da Discord (safeAvatarUrl): un indirizzo qualsiasi direbbe a chi scrive l'IP dello staff */}
+          <Avatar profile={withSafeAvatar(c.user)} name={userName} size={48} />
           <div className="min-w-0 flex-1 basis-48">
             <p className="kicker text-pale-muted">{L.thread.user}</p>
             <p className="t-item break-words">{userName}</p>
@@ -102,7 +103,7 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
                   : L.thread.staff
                 : userName;
           return (
-            <li key={m.id} className={`max-w-[92%] rounded-xl border-2 px-4 py-3 sm:max-w-[80%] ${ours ? "self-end border-mint/60 bg-mint/10" : "self-start border-sky bg-night-2"}`}>
+            <li key={m.id} className={`max-w-[92%] rounded-xl border-2 px-4 py-3 sm:max-w-[80%] ${ours ? "self-end border-mint bg-night-2" : "self-start border-sky bg-night-2"}`}>
               <p className="font-mono text-[11px] text-pale-muted">
                 <span className="font-bold text-pale">{who}</span> · <InboxTime iso={m.created_at} locale={locale} utcLabel={L.thread.utcLabel} />
               </p>

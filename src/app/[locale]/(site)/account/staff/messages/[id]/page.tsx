@@ -9,12 +9,14 @@ import { userThreadPath } from "@/lib/community/messages";
 import { getConversation, listMessages, viewerIsStaff } from "@/lib/community/inboxQueries";
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { ConversationView } from "@/components/inbox/ConversationView";
+import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 
 /**
  * Una conversazione vista dallo staff (26/09/2026, pacchetto INBOX): chi è l'utente, tutte le risposte con il nome di
  * chi dello staff le ha scritte, risposta, chiusura e riapertura. È la pagina a cui porta il link dell'avviso Discord.
  * Solo staff (admin o tag Staff): chi ha fatto l'accesso e non è dello staff riceve un 404; chi non ha fatto l'accesso
  * va alla pagina di accesso e poi torna qui (è il caso dello staff che apre il link da Discord su un altro dispositivo).
+ * Senza la migrazione o con il database giù: "messaggi non disponibili", non un 404.
  */
 export const dynamic = "force-dynamic";
 
@@ -33,26 +35,17 @@ export default async function StaffConversationPage({ params }: { params: Params
   const { supabase, user } = await currentUser();
   if (!supabase) notFound();
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, `/account/staff/messages/${isUuid(id) ? id : ""}`))}`);
-  if (!isUuid(id) || !(await viewerIsStaff(supabase))) notFound();
+  if (!isUuid(id)) notFound();
+  const staff = await viewerIsStaff(supabase);
+  if (!staff.ok) return <InboxUnavailable text={L.section.unavailable} />;
+  if (!staff.data) notFound();
 
   const conv = await getConversation(supabase, id);
-  if (!conv.ok) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-night p-6 text-pale-muted">{L.section.unavailable}</p>
-      </div>
-    );
-  }
+  if (!conv.ok) return <InboxUnavailable text={L.section.unavailable} />;
   if (!conv.data) notFound();
   // la propria conversazione (un membro dello staff che ha scritto allo staff) si legge dalla propria casella
   if (conv.data.user_id === user.id) redirect(userThreadPath(locale, id));
   const thread = await listMessages(supabase, id, true);
-  if (!thread.ok) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-night p-6 text-pale-muted">{L.section.unavailable}</p>
-      </div>
-    );
-  }
+  if (!thread.ok) return <InboxUnavailable text={L.section.unavailable} />;
   return <ConversationView locale={locale} view="staff" viewerId={user.id} conversation={conv.data} messages={thread.data.messages} truncated={thread.data.truncated} />;
 }

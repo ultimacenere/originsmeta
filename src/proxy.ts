@@ -36,7 +36,8 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/:locale(en|it|es)/account",
-    // casella messaggi (26/09/2026, pacchetto INBOX): conversazione dell'utente e area staff, pagine renderizzate sul server
+    // casella messaggi (26/09/2026, pacchetto INBOX): elenco e conversazione dell'utente, area staff, pagine renderizzate sul server
+    "/:locale(en|it|es)/account/messages",
     "/:locale(en|it|es)/account/messages/:id",
     "/:locale(en|it|es)/account/staff/messages",
     "/:locale(en|it|es)/account/staff/messages/:id",

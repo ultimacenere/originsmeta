@@ -10,6 +10,7 @@ import { listStaffConversations, viewerIsStaff } from "@/lib/community/inboxQuer
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { StaffConversationList } from "@/components/inbox/StaffConversationList";
 import { NewConversationForm } from "@/components/inbox/InboxForms";
+import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 
 /**
  * Area staff della casella messaggi (26/09/2026, pacchetto INBOX): tutte le conversazioni fra gli utenti e lo staff,
@@ -45,7 +46,10 @@ export default async function StaffInboxPage({ params, searchParams }: { params:
   const { supabase, user } = await currentUser();
   if (!supabase) notFound();
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/account/staff/messages"))}`);
-  if (!(await viewerIsStaff(supabase))) notFound();
+  const staff = await viewerIsStaff(supabase);
+  // senza la migrazione o con il database giù non si sa chi è dello staff: avviso invece di un 404 (anche allo staff)
+  if (!staff.ok) return <InboxUnavailable text={L.section.unavailable} />;
+  if (!staff.data) notFound();
 
   const filter = staffFilter(sp.filter);
   const page = pageNumber(sp.page);

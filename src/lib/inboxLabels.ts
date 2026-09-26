@@ -20,6 +20,8 @@ const en = {
     threadDescription: "A private conversation between you and the OriginsMeta staff: only you and the staff can read it.",
     staffTitle: "Staff inbox",
     staffDescription: "Every conversation between users and the OriginsMeta staff. Only the staff can see this page.",
+    listTitle: "Your conversations with the staff",
+    listDescription: "All your private conversations with the OriginsMeta staff: only you and the staff can read them.",
   },
   section: {
     title: "Messages",
@@ -32,6 +34,10 @@ const en = {
     staffArea: "Staff inbox",
     unavailable: "Messages aren't available right now. Try again in a few minutes.",
     newBadge: "New reply",
+    /** link da /account all'elenco completo, quando le conversazioni sono più di una pagina */
+    older: "Older conversations",
+    /** H1 di /account/messages */
+    allTitle: "All your conversations",
   },
   /** chi ha aperto la conversazione, visto dall'utente */
   origin: { user: "Your message", staff: "From the staff", feedback: "Your feedback" },
@@ -112,6 +118,10 @@ const en = {
   } satisfies Record<InboxErrorCode, string>,
   /** oggetto della conversazione che nasce da un feedback mandato con l'accesso fatto */
   feedbackSubject: "Your feedback",
+  /** in coda al paragrafo #feedback della privacy, con il link al paragrafo #messages */
+  privacyFeedback:
+    "If you're signed in when you send feedback, it is linked to your account: the staff sees your username (in the Discord channel too) and we also save it in your inbox for as long as your account exists",
+  privacyFeedbackLink: "see Messages",
   /** paragrafo della privacy (#messages) */
   privacy:
     "Messages: if you have an account, your profile has an inbox to write to the OriginsMeta staff and read our replies. We store your conversations on Supabase (servers in Ireland, EU), with the text, the date and who wrote each message; only you and the staff can read them, and they are never published. If you send feedback from the “Feedback” box while signed in, we also save it here as a conversation, so we can reply to you on the site. When you write to us, a notice with your username, the subject and the start of the message reaches a private channel of the staff's Discord server (Discord Inc., United States). We don't send you emails or notifications outside the site: new replies only show up in your profile. Messages are kept as long as your account exists and are deleted with it; to have a conversation deleted earlier, write to staff@originsmeta.com.",
@@ -127,6 +137,8 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       threadDescription: "Una conversazione privata tra te e lo staff di OriginsMeta: la potete leggere solo tu e lo staff.",
       staffTitle: "Messaggi dello staff",
       staffDescription: "Tutte le conversazioni tra gli utenti e lo staff di OriginsMeta. Questa pagina la vede solo lo staff.",
+      listTitle: "Le tue conversazioni con lo staff",
+      listDescription: "Tutte le tue conversazioni private con lo staff di OriginsMeta: le potete leggere solo tu e lo staff.",
     },
     section: {
       title: "Messaggi",
@@ -139,8 +151,10 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       staffArea: "Messaggi dello staff",
       unavailable: "I messaggi non sono disponibili in questo momento. Riprova tra qualche minuto.",
       newBadge: "Risposta nuova",
+      older: "Conversazioni meno recenti",
+      allTitle: "Tutte le tue conversazioni",
     },
-    origin: { user: "Tuo messaggio", staff: "Dallo staff", feedback: "Il tuo feedback" },
+    origin: { user: "Il tuo messaggio", staff: "Dallo staff", feedback: "Il tuo feedback" },
     originStaff: { user: "Dall'utente", staff: "Aperta dallo staff", feedback: "Feedback" },
     status: { open: "Aperta", closed: "Chiusa" },
     thread: {
@@ -209,6 +223,9 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       db: "Qualcosa è andato storto. Il tuo testo è ancora qui: riprova.",
     },
     feedbackSubject: "Il tuo feedback",
+    privacyFeedback:
+      "Se hai fatto l'accesso quando mandi un feedback, il messaggio è collegato al tuo account: lo staff vede il tuo nome utente (anche nel canale Discord) e lo salviamo anche nella tua casella messaggi finché esiste il tuo account",
+    privacyFeedbackLink: "vedi Messaggi",
     privacy:
       "Messaggi: se hai un account, nel tuo profilo c'è una casella messaggi per scrivere allo staff di OriginsMeta e leggere le nostre risposte. Conserviamo le tue conversazioni su Supabase (server in Irlanda, UE), con il testo, la data e chi ha scritto ogni messaggio; le potete leggere solo tu e lo staff e non vengono mai pubblicate. Se mandi un feedback dal riquadro “Dicci la tua” dopo aver fatto l'accesso, lo salviamo anche qui come conversazione, così possiamo risponderti sul sito. Quando ci scrivi, un avviso con il tuo nome utente, l'oggetto e l'inizio del messaggio arriva in un canale privato del server Discord dello staff (Discord Inc., Stati Uniti). Non ti mandiamo email né notifiche fuori dal sito: le risposte nuove compaiono solo nel tuo profilo. I messaggi restano finché esiste il tuo account e si cancellano con lui; per far cancellare prima una conversazione scrivi a staff@originsmeta.com.",
   },
@@ -218,6 +235,8 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       threadDescription: "Una conversación privada entre tú y el staff de OriginsMeta: solo pueden leerla tú y el staff.",
       staffTitle: "Mensajes del staff",
       staffDescription: "Todas las conversaciones entre los usuarios y el staff de OriginsMeta. Solo el staff ve esta página.",
+      listTitle: "Tus conversaciones con el staff",
+      listDescription: "Todas tus conversaciones privadas con el staff de OriginsMeta: solo pueden leerlas tú y el staff.",
     },
     section: {
       title: "Mensajes",
@@ -230,6 +249,8 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       staffArea: "Mensajes del staff",
       unavailable: "Los mensajes no están disponibles en este momento. Inténtalo de nuevo en unos minutos.",
       newBadge: "Respuesta nueva",
+      older: "Conversaciones más antiguas",
+      allTitle: "Todas tus conversaciones",
     },
     origin: { user: "Tu mensaje", staff: "Del staff", feedback: "Tu comentario" },
     originStaff: { user: "Del usuario", staff: "Iniciada por el staff", feedback: "Comentario" },
@@ -300,6 +321,9 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
       db: "Algo salió mal. Tu texto sigue aquí: vuelve a intentarlo.",
     },
     feedbackSubject: "Tu comentario",
+    privacyFeedback:
+      "Si has iniciado sesión cuando envías un comentario, queda vinculado a tu cuenta: el staff ve tu nombre de usuario (también en el canal de Discord) y además lo guardamos en tu bandeja de mensajes mientras exista tu cuenta",
+    privacyFeedbackLink: "consulta Mensajes",
     privacy:
       "Mensajes: si tienes una cuenta, tu perfil tiene una bandeja de mensajes para escribir al staff de OriginsMeta y leer nuestras respuestas. Guardamos tus conversaciones en Supabase (servidores en Irlanda, UE), con el texto, la fecha y quién escribió cada mensaje; solo pueden leerlas tú y el staff, y nunca se publican. Si envías un comentario desde el recuadro “Tu opinión” con la sesión iniciada, también lo guardamos aquí como conversación, para poder responderte en el sitio. Cuando nos escribes, un aviso con tu nombre de usuario, el asunto y el comienzo del mensaje llega a un canal privado del servidor de Discord del staff (Discord Inc., Estados Unidos). No te enviamos correos electrónicos ni notificaciones fuera del sitio: las respuestas nuevas solo aparecen en tu perfil. Los mensajes se conservan mientras exista tu cuenta y se eliminan con ella; para que eliminemos antes una conversación, escribe a staff@originsmeta.com.",
   },

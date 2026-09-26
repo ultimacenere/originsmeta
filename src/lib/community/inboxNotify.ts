@@ -33,7 +33,11 @@ export type StaffNotice = {
 
 /** L'avviso, pronto per il webhook. Esportato per chiarezza; i testi sono in italiano come gli altri messaggi dello staff. */
 export function staffNoticePayload(n: StaffNotice) {
-  const who = n.username ? `@${n.username}` : n.displayName || "utente";
+  // il nome mostrato non ha un limite nel database (arriva dai metadati dell'iscrizione): tagliato, così con l'escape
+  // di escapeDiscord il campo "Da" resta sotto i 1024 caratteri di Discord e l'avviso non viene rifiutato
+  const displayName = n.displayName ? excerpt(n.displayName, 80) : null;
+  const username = n.username ? excerpt(n.username, 100) : null;
+  const who = username ? `@${username}` : displayName || "utente";
   const link = `${siteUrl}${staffThreadPath("it", n.conversationId)}`;
   const text = excerpt(n.body, DISCORD_EXCERPT_MAX);
   return {
@@ -45,7 +49,7 @@ export function staffNoticePayload(n: StaffNotice) {
         description: escapeDiscord(text),
         color: COLORE_CELESTE,
         fields: [
-          { name: "Da", value: escapeDiscord(n.displayName && n.username && n.displayName !== n.username ? `${n.displayName} (${who})` : who) },
+          { name: "Da", value: escapeDiscord(displayName && username && displayName !== username ? `${displayName} (${who})` : who) },
           { name: "Oggetto", value: escapeDiscord(excerpt(n.subject, 200)) },
           // il link porta alla conversazione nell'area staff: il testo completo si legge lì, dopo l'accesso
           { name: "Rispondi sul sito", value: link },

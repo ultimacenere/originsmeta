@@ -159,7 +159,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
             </p>
           ) : null}
           {/* "Scrivi a questo utente": solo per lo staff, deciso nel browser (la pagina è ISR); casella messaggi, pacchetto INBOX */}
-          <StaffMessageLink locale={locale} username={profile.username} />
+          <StaffMessageLink locale={locale} username={profile.username} profileId={profile.id} />
         </div>
         <p className="font-mono text-xs text-pale-muted">
           {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}

@@ -15,10 +15,12 @@ const navEn = {
   unreadMany: "{n} unread conversations",
   /** link visibile solo allo staff sulla pagina pubblica di un iscritto */
   writeToUser: "Write to this user",
-  /** riquadro dei feedback, sotto il modulo, a chi ha fatto l'accesso */
-  feedbackNote: "You're signed in: we'll reply in your inbox on OriginsMeta.",
+  /** riquadro dei feedback, sotto il modulo, a chi ha fatto l'accesso (solo se la casella risponde) */
+  feedbackNote: "You're signed in: your feedback will be linked to your account and we'll reply in your inbox on OriginsMeta.",
   /** riquadro dei feedback, dopo l'invio, se il messaggio è stato salvato anche nella casella */
   feedbackSaved: "We also saved it in your inbox: you'll find our reply there.",
+  /** riquadro dei feedback, dopo l'invio, se la nota prometteva la casella ma il salvataggio non è riuscito */
+  feedbackNotSaved: "This time we couldn't save it in your inbox: if you'd like a reply, write to the staff from there.",
   openInbox: "Open your inbox",
 };
 
@@ -32,8 +34,9 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     unreadOne: "1 conversazione da leggere",
     unreadMany: "{n} conversazioni da leggere",
     writeToUser: "Scrivi a questo utente",
-    feedbackNote: "Hai fatto l'accesso: ti risponderemo nella tua casella messaggi su OriginsMeta.",
+    feedbackNote: "Hai fatto l'accesso: il feedback sarà collegato al tuo account e ti risponderemo nella tua casella messaggi su OriginsMeta.",
     feedbackSaved: "L'abbiamo salvato anche nella tua casella messaggi: la nostra risposta arriverà lì.",
+    feedbackNotSaved: "Questa volta non siamo riusciti a salvarlo nella tua casella messaggi: se vuoi una risposta, scrivi allo staff da lì.",
     openInbox: "Apri la casella messaggi",
   },
   es: {
@@ -42,8 +45,9 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     unreadOne: "1 conversación sin leer",
     unreadMany: "{n} conversaciones sin leer",
     writeToUser: "Escribir a este usuario",
-    feedbackNote: "Has iniciado sesión: te responderemos en tu bandeja de mensajes de OriginsMeta.",
+    feedbackNote: "Has iniciado sesión: tu comentario quedará vinculado a tu cuenta y te responderemos en tu bandeja de mensajes de OriginsMeta.",
     feedbackSaved: "También lo guardamos en tu bandeja de mensajes: allí encontrarás nuestra respuesta.",
+    feedbackNotSaved: "Esta vez no pudimos guardarlo en tu bandeja de mensajes: si quieres una respuesta, escribe al staff desde allí.",
     openInbox: "Abrir la bandeja de mensajes",
   },
 };

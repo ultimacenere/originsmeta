@@ -3,7 +3,7 @@
 import { useActionState, useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { replyToConversation, staffStartConversation, startConversation, type InboxActionState } from "@/lib/community/inboxActions";
-import { CONVERSATIONS_PER_DAY, MESSAGES_PER_HOUR, MESSAGE_MAX, SUBJECT_MAX, fillInbox, textLength, type InboxErrorCode } from "@/lib/community/messages";
+import { CONVERSATIONS_PER_DAY, MESSAGES_PER_HOUR, MESSAGE_MAX, SUBJECT_MAX, USERNAME_MAX, fillInbox, textLength, type InboxErrorCode } from "@/lib/community/messages";
 import { trackEvent } from "@/lib/analytics";
 import type { InboxLabels } from "@/lib/inboxLabels";
 import { announceInboxChange } from "./InboxIndicator";
@@ -163,7 +163,7 @@ export function NewConversationForm({ mode, locale, defaultTo = "", labels, send
             name="to"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            maxLength={61}
+            maxLength={USERNAME_MAX + 1}
             autoComplete="off"
             autoCapitalize="none"
             spellCheck={false}

@@ -33,16 +33,55 @@ export type ConversationStatus = "open" | "closed";
 export const textLength = (s: string) => Array.from(s).length;
 
 /**
- * Testo semplice, come `testoSemplice` di formGuard.ts (qui ricopiata: questo modulo non importa nulla): a capo
- * uniformi, niente caratteri di controllo né caratteri invisibili di direzione, niente tag HTML, niente spazi prima
- * di un a capo, al massimo una riga vuota di fila. Il resto resta com'è: il sito lo mostra sempre come testo.
+ * Tetto al testo GREZZO, prima di qualsiasi pulizia: quattro volte il massimo (in unità UTF-16 un'emoji ne vale due, e
+ * la pulizia toglie spazi e invisibili). Le Server Action accettano fino a 1 MB: senza questo tetto la pulizia girerebbe
+ * su tutto il megabyte prima di dire "troppo lungo". Lo stesso tetto c'è nel database (`inbox_clean`).
+ */
+export const RAW_MESSAGE_MAX = MESSAGE_MAX * 4;
+export const RAW_SUBJECT_MAX = SUBJECT_MAX * 4;
+
+/**
+ * Caratteri invisibili che si TOLGONO dal testo: controlli (tranne a capo e tabulazione), segni di direzione
+ * (U+200E/F, U+202A-E, U+2066-9, U+061C), spazio a larghezza zero U+200B, word joiner e operatori invisibili
+ * U+2060-4, BOM U+FEFF in mezzo al testo, separatore mongolo U+180E, trattino morbido U+00AD. Restano i due
+ * "joiner" U+200C/U+200D: servono alle emoji composte (famiglie, bandiere) e ad alcune scritture.
+ * La stessa classe sta nella regex di `inbox_clean` (supabase/creator-INBOX.sql).
+ */
+const STRIP = /[\u0000-\u0008\u000b-\u001f\u007f\u00ad\u061c\u180e\u200b\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g;
+
+/**
+ * Un carattere che si vede: niente spazi di ogni tipo, joiner, riempitivi hangul (U+115F, U+1160, U+3164, U+FFA0),
+ * braille vuoto (U+2800) né gli invisibili di `STRIP`. Un testo fatto solo di questi è vuoto. Stesso elenco nel
+ * database (`inbox_blank`).
+ */
+const VISIBLE = /[^\s\u00a0\u00ad\u034f\u061c\u115f\u1160\u1680\u17b4\u17b5\u180e\u2000-\u200f\u2028\u2029\u202a-\u202f\u205f-\u2064\u2066-\u2069\u2800\u3000\u3164\ufeff\uffa0]/u;
+
+/** C'è almeno un carattere visibile? */
+export const hasVisibleText = (s: string) => VISIBLE.test(s);
+
+/**
+ * Toglie spazi e tabulazioni alla fine di una riga, con un ciclo: una regex come `/[ \t]+\n/g` o `/[ \t]+$/`
+ * ripartirebbe da ogni spazio di una fila lunga senza a capo (costo quadratico, rilievo di sicurezza del 26/09/2026).
+ */
+function trimLineEnd(line: string): string {
+  let i = line.length;
+  while (i > 0 && (line[i - 1] === " " || line[i - 1] === "\t")) i--;
+  return line.slice(0, i);
+}
+
+/**
+ * Testo semplice: a capo uniformi, niente caratteri di controllo né caratteri invisibili (`STRIP`), niente spazi prima
+ * di un a capo, al massimo una riga vuota di fila. Tutto in tempo lineare. I simboli < e > restano (anche "<Merlin>" o
+ * un codice fra parentesi angolari): il sito mostra il testo sempre come testo, mai come HTML, e togliere i "tag"
+ * cancellerebbe parole dell'utente senza avvisarlo.
  */
 export function plainMessage(raw: string): string {
   return raw
     .replace(/\r\n?/g, "\n")
-    .replace(/[\u0000-\u0008\u000b-\u001f\u007f\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "")
-    .replace(/<\/?[a-z][a-z0-9-]*(?:\s[^<>]*)?\/?>/gi, "")
-    .replace(/[ \t]+\n/g, "\n")
+    .replace(STRIP, "")
+    .split("\n")
+    .map(trimLineEnd)
+    .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
@@ -56,27 +95,60 @@ export type MessageCheck = { ok: true; body: string } | { ok: false; error: "emp
 export type SubjectCheck = { ok: true; subject: string } | { ok: false; error: "emptySubject" | "subjectTooLong" };
 
 export function checkMessage(raw: unknown): MessageCheck {
+  // prima il tetto al testo grezzo, poi la pulizia: un megabyte di spazi non arriva mai alle regex
+  if (typeof raw === "string" && raw.length > RAW_MESSAGE_MAX) return { ok: false, error: "tooLong" };
   const body = typeof raw === "string" ? plainMessage(raw) : "";
-  if (!body) return { ok: false, error: "empty" };
+  if (!body || !hasVisibleText(body)) return { ok: false, error: "empty" };
   if (textLength(body) > MESSAGE_MAX) return { ok: false, error: "tooLong" };
   return { ok: true, body };
 }
 
 export function checkSubject(raw: unknown): SubjectCheck {
+  if (typeof raw === "string" && raw.length > RAW_SUBJECT_MAX) return { ok: false, error: "subjectTooLong" };
   const subject = typeof raw === "string" ? plainSubject(raw) : "";
-  if (!subject) return { ok: false, error: "emptySubject" };
+  if (!subject || !hasVisibleText(subject)) return { ok: false, error: "emptySubject" };
   if (textLength(subject) > SUBJECT_MAX) return { ok: false, error: "subjectTooLong" };
   return { ok: true, subject };
 }
+
+/**
+ * Lunghezza massima di un nome utente nel modulo dello staff: `handle_new_user` può superare i 60 caratteri (parte
+ * locale dell'email fino a 64, più il suffisso "-n").
+ */
+export const USERNAME_MAX = 100;
 
 /**
  * Nome utente scritto dallo staff in "Nuovo messaggio a un utente": senza @ e spazi, nella forma dei nomi utente
  * del sito (lettere, cifre e trattini, come li crea `handle_new_user`). null se non può essere un nome utente.
  */
 export function cleanUsername(raw: unknown): string | null {
-  if (typeof raw !== "string") return null;
+  if (typeof raw !== "string" || raw.length > USERNAME_MAX * 2) return null;
   const u = raw.trim().replace(/^@+/, "").trim();
-  return /^[a-z0-9][a-z0-9-]{0,59}$/i.test(u) ? u : null;
+  return /^[a-z0-9][a-z0-9-]{0,99}$/i.test(u) ? u : null;
+}
+
+/** Host ammessi per le foto profilo mostrate allo staff: quelli di Discord (accesso con Discord). */
+const AVATAR_HOSTS = new Set(["cdn.discordapp.com", "media.discordapp.net"]);
+
+/**
+ * Foto profilo da mostrare nell'area staff: solo https e solo dagli host di Discord. `avatar_url` viene dai metadati
+ * dell'iscrizione, e chi si iscrive chiamando direttamente l'API di Supabase può metterci un indirizzo qualsiasi:
+ * un'immagine su un server suo gli direbbe l'IP dello staff e l'ora in cui legge. Con un altro indirizzo, null (si
+ * vede l'iniziale).
+ */
+export function safeAvatarUrl(url: string | null | undefined): string | null {
+  if (typeof url !== "string" || url.length > 500) return null;
+  try {
+    const u = new URL(url);
+    return u.protocol === "https:" && !u.username && !u.password && !u.port && AVATAR_HOSTS.has(u.hostname) ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Lo stesso profilo con la foto passata da `safeAvatarUrl` (per `Avatar` nelle viste dello staff). */
+export function withSafeAvatar<T extends { avatar_url?: string | null }>(profile: T | null | undefined): T | null {
+  return profile ? { ...profile, avatar_url: safeAvatarUrl(profile.avatar_url) } : null;
 }
 
 /**
@@ -225,6 +297,8 @@ export function lastSeen(messages: readonly { created_at: string }[]): string | 
 export const userThreadPath = (locale: string, id: string) => `/${locale}/account/messages/${id}`;
 export const staffThreadPath = (locale: string, id: string) => `/${locale}/account/staff/messages/${id}`;
 export const staffInboxPath = (locale: string) => `/${locale}/account/staff/messages`;
+/** Elenco completo delle conversazioni dell'utente, a pagine (/account mostra solo la prima). */
+export const userInboxPath = (locale: string, page = 1) => `/${locale}/account/messages${page > 1 ? `?page=${page}` : ""}`;
 
 /** Riempie i segnaposto {nome} di un'etichetta. */
 export function fillInbox(template: string, values: Record<string, string | number>): string {

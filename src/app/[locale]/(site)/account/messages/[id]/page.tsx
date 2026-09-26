@@ -9,6 +9,7 @@ import { staffThreadPath } from "@/lib/community/messages";
 import { getConversation, listMessages, viewerIsStaff } from "@/lib/community/inboxQueries";
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { ConversationView } from "@/components/inbox/ConversationView";
+import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 
 /**
  * Una conversazione dell'utente con lo staff (26/09/2026, pacchetto INBOX): pagina privata, dinamica, noindex. La
@@ -30,37 +31,20 @@ export default async function ConversationPage({ params }: { params: Params }) {
   const { id } = await params;
   const L = inboxLabels[locale];
   const { supabase, user } = await currentUser();
-  if (!supabase) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-night p-6 text-pale-muted">{L.section.unavailable}</p>
-      </div>
-    );
-  }
+  if (!supabase) return <InboxUnavailable text={L.section.unavailable} />;
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, `/account/messages/${isUuid(id) ? id : ""}`))}`);
   if (!isUuid(id)) notFound();
 
   const conv = await getConversation(supabase, id);
-  if (!conv.ok) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-night p-6 text-pale-muted">{L.section.unavailable}</p>
-      </div>
-    );
-  }
+  if (!conv.ok) return <InboxUnavailable text={L.section.unavailable} />;
   if (!conv.data) notFound();
   if (conv.data.user_id !== user.id) {
     // la policy la mostra a chi è dello staff: la sua vista è quella dell'area staff
-    if (await viewerIsStaff(supabase)) redirect(staffThreadPath(locale, id));
+    const staff = await viewerIsStaff(supabase);
+    if (staff.ok && staff.data) redirect(staffThreadPath(locale, id));
     notFound();
   }
   const thread = await listMessages(supabase, id);
-  if (!thread.ok) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        <p className="card-night p-6 text-pale-muted">{L.section.unavailable}</p>
-      </div>
-    );
-  }
+  if (!thread.ok) return <InboxUnavailable text={L.section.unavailable} />;
   return <ConversationView locale={locale} view="user" viewerId={user.id} conversation={conv.data} messages={thread.data.messages} truncated={thread.data.truncated} />;
 }

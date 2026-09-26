@@ -20,7 +20,13 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Pop-up dei feedback (22/09/2026): l'ancora #feedback è il link "Privacy" del pannello. Resta anche a
             widget spento, perché i messaggi già ricevuti stanno nel canale Discord dello staff. */}
         <p id="feedback" className="mt-6 scroll-mt-24">
-          {d.privacy.feedback}
+          {d.privacy.feedback}{" "}
+          {/* casella messaggi (pacchetto INBOX): il feedback mandato con l'accesso fatto è collegato all'account */}
+          {inboxLabels[locale].privacyFeedback} (
+          <a href="#messages" className="link-mint">
+            {inboxLabels[locale].privacyFeedbackLink}
+          </a>
+          ).
         </p>
         {/* Modulo "Mandaci la tua guida" (23/09/2026): l'ancora #guide è il link "Informativa privacy" del modulo. */}
         <p id="guide" className="mt-6 scroll-mt-24">

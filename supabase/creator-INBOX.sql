@@ -15,8 +15,9 @@
 --   - `from_staff` lo decide il database: chi scrive è l'utente della conversazione → false, uno dello staff → true;
 --   - limite di frequenza nel database: 20 messaggi l'ora per utente (200 per lo staff) e 10 conversazioni nuove al
 --     giorno per utente, con un lock per utente così le richieste in parallelo non passano insieme;
---   - testo semplice: il database toglie caratteri di controllo e caratteri invisibili di direzione, e tiene le
---     lunghezze (oggetto 1..120 su una riga, messaggio 1..4000); il sito lo mostra sempre come testo, mai come HTML.
+--   - testo semplice: il database toglie caratteri di controllo e caratteri invisibili, rifiuta i testi senza nemmeno
+--     un carattere visibile e tiene le lunghezze (oggetto 1..120 su una riga, messaggio 1..4000), con un tetto al testo
+--     grezzo prima delle regex; il sito lo mostra sempre come testo, mai come HTML.
 -- Idempotente: si può rilanciare (create ... if not exists, create or replace, drop policy if exists).
 -- =====================================================================================================
 
@@ -124,7 +125,8 @@ grant select on public.conversations, public.messages to authenticated;
 -- ---------- funzioni interne (nessun client le esegue direttamente) ----------
 
 -- Testo semplice: a capo uniformi, niente caratteri di controllo (tranne a capo e tabulazione) né caratteri invisibili
--- di direzione del testo; una riga sola per l'oggetto, al massimo una riga vuota di fila per il messaggio.
+-- senza uso; una riga sola per l'oggetto, al massimo una riga vuota di fila per il messaggio. Il tetto al testo
+-- grezzo (480 caratteri per l'oggetto, 16.000 per il messaggio) viene prima di ogni regex.
 -- Il sito pulisce già il testo (src/lib/community/messages.ts, `plainMessage`): questa è la seconda linea, per chi
 -- chiamasse le RPC direttamente con la chiave pubblica.
 create or replace function public.inbox_clean(t text, single_line boolean default false)
@@ -132,8 +134,15 @@ returns text language plpgsql immutable set search_path = public, pg_temp as $$
 declare
   s text := coalesce(t, '');
 begin
+  -- tetto al testo grezzo prima di ogni regex (quattro volte il massimo, come RAW_*_MAX di messages.ts): chi chiama la
+  -- RPC direttamente non fa girare le regex su megabyte di testo
+  if single_line and char_length(s) > 480 then raise exception 'subject_too_long'; end if;
+  if not single_line and char_length(s) > 16000 then raise exception 'message_too_long'; end if;
   s := replace(replace(s, E'\r\n', E'\n'), E'\r', E'\n');
-  s := regexp_replace(s, '[\x01-\x08\x0B\x0C\x0E-\x1F\x7F\u200E\u200F\u202A-\u202E\u2066-\u2069]', '', 'g');
+  -- controlli (tranne a capo e tabulazione), segni di direzione, spazio a larghezza zero, word joiner e operatori
+  -- invisibili, BOM, separatore mongolo, trattino morbido (la stessa classe STRIP di messages.ts; i joiner
+  -- U+200C/U+200D restano per le emoji composte)
+  s := regexp_replace(s, '[\x01-\x08\x0B\x0C\x0E-\x1F\x7F\u00AD\u061C\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]', '', 'g');
   if single_line then
     s := regexp_replace(s, '\s+', ' ', 'g');
   else
@@ -143,6 +152,14 @@ begin
   return btrim(s, E' \t\n');
 end $$;
 revoke all on function public.inbox_clean(text, boolean) from public, anon, authenticated;
+
+-- Un testo senza nemmeno un carattere visibile (solo spazi di ogni tipo, joiner, riempitivi hangul, braille vuoto…) è
+-- vuoto: stesso elenco di VISIBLE in messages.ts (`hasVisibleText`).
+create or replace function public.inbox_blank(t text)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select coalesce(t, '') !~ '[^[:space:]\u00A0\u00AD\u034F\u061C\u115F\u1160\u1680\u17B4\u17B5\u180E\u2000-\u200F\u2028\u2029\u202A-\u202F\u205F-\u2064\u2066-\u2069\u2800\u3000\u3164\uFEFF\uFFA0]';
+$$;
+revoke all on function public.inbox_blank(text) from public, anon, authenticated;
 
 -- Limite di frequenza di chi scrive: 20 messaggi l'ora (200 per lo staff, che risponde a molti) e, per le
 -- conversazioni nuove aperte da un utente, 10 al giorno. Il lock per utente (fino alla fine della transazione)
@@ -176,9 +193,9 @@ declare
   cid uuid;
 begin
   if me is null then raise exception 'not_logged_in'; end if;
-  if char_length(subj) < 1 then raise exception 'empty_subject'; end if;
+  if public.inbox_blank(subj) then raise exception 'empty_subject'; end if;
   if char_length(subj) > 120 then raise exception 'subject_too_long'; end if;
-  if char_length(clean) < 1 then raise exception 'empty_message'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
   if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
   perform public.inbox_rate_check(me, false, true);
   insert into public.conversations (user_id, subject, origin, created_by, last_message_at, last_user_message_at, last_from_staff, last_preview)
@@ -203,10 +220,11 @@ declare
 begin
   if me is null then raise exception 'not_logged_in'; end if;
   if not public.is_staff() then raise exception 'forbidden'; end if;
-  if char_length(subj) < 1 then raise exception 'empty_subject'; end if;
+  if public.inbox_blank(subj) then raise exception 'empty_subject'; end if;
   if char_length(subj) > 120 then raise exception 'subject_too_long'; end if;
-  if char_length(clean) < 1 then raise exception 'empty_message'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
   if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
+  if char_length(coalesce(uname, '')) > 200 then raise exception 'user_not_found'; end if;
   select p.id into target from public.profiles p where lower(p.username) = lower(btrim(replace(coalesce(uname, ''), '@', ''))) limit 1;
   if target is null then raise exception 'user_not_found'; end if;
   if target = me then raise exception 'self'; end if;
@@ -233,7 +251,7 @@ declare
   staff boolean;
 begin
   if me is null then raise exception 'not_logged_in'; end if;
-  if char_length(clean) < 1 then raise exception 'empty_message'; end if;
+  if public.inbox_blank(clean) then raise exception 'empty_message'; end if;
   if char_length(clean) > 4000 then raise exception 'message_too_long'; end if;
   select * into c from public.conversations where id = cid for update;
   if not found then raise exception 'not_found'; end if;
@@ -262,27 +280,31 @@ grant execute on function public.inbox_send(uuid, text) to authenticated;
 
 -- Segna come letta una conversazione fino a `seen`, la data dell'ultimo messaggio mostrato nella pagina: un messaggio
 -- arrivato dopo (mentre la pagina era aperta) resta da leggere. L'utente segna la sua lettura, lo staff quella dello
--- staff. Restituisce true se c'era qualcosa da leggere.
+-- staff. Restituisce true solo se la conversazione era da leggere e DOPO risulta letta: se `seen` è precedente
+-- all'ultimo messaggio, resta da leggere e la risposta è false (il sito non conta una lettura che non c'è stata).
 create or replace function public.inbox_mark_read(cid uuid, seen timestamptz default null)
 returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   me uuid := auth.uid();
   c public.conversations%rowtype;
   upto timestamptz := least(coalesce(seen, now()), now());
+  done boolean;
 begin
   if me is null then raise exception 'not_logged_in'; end if;
   select * into c from public.conversations where id = cid for update;
   if not found then raise exception 'not_found'; end if;
   if c.user_id = me then
     if not c.unread_by_user then return false; end if;
-    update public.conversations set read_by_user_at = greatest(read_by_user_at, upto) where id = cid;
+    update public.conversations set read_by_user_at = greatest(read_by_user_at, upto) where id = cid
+      returning not unread_by_user into done;
   elsif public.is_staff() then
     if not c.unread_by_staff then return false; end if;
-    update public.conversations set read_by_staff_at = greatest(read_by_staff_at, upto) where id = cid;
+    update public.conversations set read_by_staff_at = greatest(read_by_staff_at, upto) where id = cid
+      returning not unread_by_staff into done;
   else
     raise exception 'not_found';
   end if;
-  return true;
+  return coalesce(done, false);
 end $$;
 revoke all on function public.inbox_mark_read(uuid, timestamptz) from public, anon;
 grant execute on function public.inbox_mark_read(uuid, timestamptz) to authenticated;

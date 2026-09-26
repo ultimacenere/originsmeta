@@ -40,29 +40,32 @@ export async function readInboxStatus(client: Db): Promise<Result<InboxStatus>> 
   return { ok: true, data: parseInboxStatus(data) ?? { unread: 0, staff: false, staffUnread: 0 } };
 }
 
-/** Chi guarda è dello staff (admin o tag Staff)? Con un errore, no. */
-export async function viewerIsStaff(client: Db): Promise<boolean> {
+/**
+ * Chi guarda è dello staff (admin o tag Staff)? Un errore torna come errore: senza la migrazione (`unavailable`) o con
+ * il database giù le pagine dello staff dicono "messaggi non disponibili" invece di un 404 anche allo staff.
+ */
+export async function viewerIsStaff(client: Db): Promise<Result<boolean>> {
   const { data, error } = await client.rpc("is_staff");
-  if (error) {
-    console.error("[inbox] is_staff:", error.code ?? "", error.message);
-    return false;
-  }
-  return data === true;
+  if (error) return fail("is_staff", error);
+  return { ok: true, data: data === true };
 }
 
 /**
- * Le conversazioni dell'utente, dall'ultima con movimento. Il filtro su user_id è esplicito: lo staff vede per policy
- * tutte le conversazioni, e nella sua casella personale devono comparire solo le sue.
+ * Le conversazioni dell'utente, dall'ultima con movimento, a pagine da CONVERSATIONS_PAGE (`more` = c'è un'altra
+ * pagina). Il filtro su user_id è esplicito: lo staff vede per policy tutte le conversazioni, e nella sua casella
+ * personale devono comparire solo le sue.
  */
-export async function listUserConversations(client: Db, userId: string, limit = CONVERSATIONS_PAGE): Promise<Result<ConversationSummary[]>> {
+export async function listUserConversations(client: Db, userId: string, page = 1): Promise<Result<{ rows: ConversationSummary[]; more: boolean }>> {
+  const from = (Math.max(1, page) - 1) * CONVERSATIONS_PAGE;
   const { data, error } = await client
     .from("conversations")
     .select(CONVERSATION_COLUMNS)
     .eq("user_id", userId)
     .order("last_message_at", { ascending: false })
-    .limit(limit);
+    .range(from, from + CONVERSATIONS_PAGE);
   if (error) return fail("conversations (utente)", error);
-  return { ok: true, data: (data ?? []) as ConversationSummary[] };
+  const rows = (data ?? []) as ConversationSummary[];
+  return { ok: true, data: { rows: rows.slice(0, CONVERSATIONS_PAGE), more: rows.length > CONVERSATIONS_PAGE } };
 }
 
 /** Una conversazione con il profilo del suo utente; null se non c'è o chi guarda non la può vedere (RLS). */

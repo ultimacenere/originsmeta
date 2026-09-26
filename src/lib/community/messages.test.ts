@@ -6,7 +6,9 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
   MESSAGE_MAX,
+  RAW_MESSAGE_MAX,
   SUBJECT_MAX,
+  USERNAME_MAX,
   authorKind,
   badgeCount,
   badgeText,
@@ -16,31 +18,62 @@ import {
   excerpt,
   feedbackSubject,
   fillInbox,
+  hasVisibleText,
   inboxErrorCode,
   lastSeen,
   pageNumber,
   parseInboxStatus,
   plainMessage,
   plainSubject,
+  safeAvatarUrl,
   staffFilter,
   staffThreadPath,
   textLength,
+  userInboxPath,
   userThreadPath,
+  withSafeAvatar,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come negli altri test.
   // @ts-expect-error TS5097
 } from "./messages.ts";
 
 describe("testo semplice", () => {
-  test("a capo uniformi, niente controlli né caratteri di direzione, niente tag, una riga vuota al massimo", () => {
+  test("a capo uniformi, niente controlli né caratteri di direzione, una riga vuota al massimo", () => {
     assert.equal(plainMessage("  ciao\r\nstaff\r\r\n\n\n\nfine  "), "ciao\nstaff\n\nfine");
     assert.equal(plainMessage("a\u0000b\u0007c\u202ed\u2066e"), "abcde");
-    assert.equal(plainMessage("<b>grassetto</b> e <script src=x>alert(1)</script>"), "grassetto e alert(1)");
     assert.equal(plainMessage("riga   \nsotto"), "riga\nsotto");
-    // "<3" e "a < b" non sono tag: restano
+    assert.equal(plainMessage("riga\t \t\nsotto  "), "riga\nsotto");
+    // "<3" e "a < b" restano
     assert.equal(plainMessage("ti voglio bene <3 e a < b"), "ti voglio bene <3 e a < b");
     // le tabulazioni in mezzo restano (codici, elenchi)
     assert.equal(plainMessage("a\tb"), "a\tb");
+  });
+  test("le parentesi angolari restano: il testo si mostra sempre come testo, mai come HTML", () => {
+    assert.equal(plainMessage("Combo: <Merlin> + <Excalibur> poi gioca"), "Combo: <Merlin> + <Excalibur> poi gioca");
+    assert.equal(plainMessage("Il mio codice <KGBLDC abc>"), "Il mio codice <KGBLDC abc>");
+    assert.equal(plainMessage("<script>alert(1)</script>"), "<script>alert(1)</script>");
+  });
+  test("caratteri invisibili: tolti quelli senza uso, restano i joiner delle emoji composte", () => {
+    const cp = (...codes: number[]) => String.fromCodePoint(...codes);
+    // spazio a larghezza zero, word joiner, BOM, segno arabo di direzione, separatore mongolo, trattino morbido
+    assert.equal(plainMessage(`a${cp(0x200b)}b${cp(0x2060)}c${cp(0xfeff)}d${cp(0x061c)}e${cp(0x180e)}f${cp(0xad)}g`), "abcdefg");
+    const family = cp(0x1f468, 0x200d, 0x1f469, 0x200d, 0x1f467);
+    assert.equal(plainMessage(`ciao ${family}`), `ciao ${family}`);
+  });
+  test("tempo lineare anche su file lunghissime di spazi o tabulazioni (niente ReDoS)", () => {
+    const spaces = " ".repeat(200_000);
+    let t = performance.now();
+    assert.equal(plainMessage(`x${spaces}y`), `x${spaces}y`);
+    assert.equal(plainMessage(`x${"\t".repeat(200_000)}\ny`), "x\ny");
+    assert.ok(performance.now() - t < 200, `plainMessage lenta: ${performance.now() - t} ms`);
+    // i controlli rifiutano il testo grezzo troppo lungo prima di pulirlo
+    t = performance.now();
+    assert.deepEqual(checkMessage(`x${spaces}y`), { ok: false, error: "tooLong" });
+    assert.deepEqual(checkSubject(`x${"\t".repeat(200_000)}y`), { ok: false, error: "subjectTooLong" });
+    assert.deepEqual(checkMessage("x".repeat(1_000_000)), { ok: false, error: "tooLong" });
+    assert.ok(performance.now() - t < 50, `controlli lenti: ${performance.now() - t} ms`);
+    // sotto il tetto grezzo, gli spazi in coda si tolgono e il messaggio passa
+    assert.deepEqual(checkMessage(`ok${" ".repeat(RAW_MESSAGE_MAX - 2)}`), { ok: true, body: "ok" });
   });
   test("oggetto su una riga sola", () => {
     assert.equal(plainSubject("  Problema\n con   il   deck builder \t"), "Problema con il deck builder");
@@ -64,9 +97,20 @@ describe("controlli di messaggio e oggetto", () => {
   });
   test("oggetto vuoto, troppo lungo, giusto", () => {
     assert.deepEqual(checkSubject(""), { ok: false, error: "emptySubject" });
-    assert.deepEqual(checkSubject("<i></i>"), { ok: false, error: "emptySubject" });
     assert.deepEqual(checkSubject("y".repeat(SUBJECT_MAX + 1)), { ok: false, error: "subjectTooLong" });
     assert.deepEqual(checkSubject(" Un mazzo\nda rivedere "), { ok: true, subject: "Un mazzo da rivedere" });
+    assert.deepEqual(checkSubject("<Merlin> nerfata?"), { ok: true, subject: "<Merlin> nerfata?" });
+  });
+  test("solo caratteri invisibili = vuoto (oggetto e messaggio)", () => {
+    const cp = (...codes: number[]) => String.fromCodePoint(...codes);
+    assert.deepEqual(checkSubject(cp(0x200b, 0x200b)), { ok: false, error: "emptySubject" });
+    assert.deepEqual(checkSubject(cp(0x3164, 0x20, 0x3164)), { ok: false, error: "emptySubject" }, "riempitivo hangul");
+    assert.deepEqual(checkMessage(cp(0x3164)), { ok: false, error: "empty" });
+    assert.deepEqual(checkMessage(cp(0x061c)), { ok: false, error: "empty" });
+    assert.deepEqual(checkMessage(cp(0x200d, 0x200c, 0xa0, 0x2800, 0x115f, 0x1160, 0xffa0)), { ok: false, error: "empty" });
+    assert.equal(hasVisibleText(`${cp(0x200b)}a`), true);
+    assert.equal(hasVisibleText("🃏"), true);
+    assert.deepEqual(checkMessage(`${cp(0x3164)} ciao`), { ok: true, body: `${cp(0x3164)} ciao` });
   });
   test("nome utente per lo staff: senza @, solo lettere, cifre e trattini", () => {
     assert.equal(cleanUsername("@coachcrono"), "coachcrono");
@@ -74,7 +118,11 @@ describe("controlli di messaggio e oggetto", () => {
     assert.equal(cleanUsername("luigi-davdas-2"), "luigi-davdas-2");
     assert.equal(cleanUsername("con spazio"), null);
     assert.equal(cleanUsername("-trattino"), null);
-    assert.equal(cleanUsername("a".repeat(61)), null);
+    // handle_new_user può fare nomi lunghi: parte locale dell'email fino a 64 caratteri più "-n"
+    assert.equal(cleanUsername("a".repeat(64)), "a".repeat(64));
+    assert.equal(cleanUsername(`${"a".repeat(64)}-12`), `${"a".repeat(64)}-12`);
+    assert.equal(cleanUsername("a".repeat(USERNAME_MAX + 1)), null);
+    assert.equal(cleanUsername(" ".repeat(100_000)), null);
     assert.equal(cleanUsername(""), null);
     assert.equal(cleanUsername(null), null);
     assert.equal(cleanUsername("x' or 1=1"), null);
@@ -186,6 +234,32 @@ describe("area staff e conversazioni", () => {
   test("indirizzi e segnaposto", () => {
     assert.equal(userThreadPath("it", "abc"), "/it/account/messages/abc");
     assert.equal(staffThreadPath("es", "abc"), "/es/account/staff/messages/abc");
+    assert.equal(userInboxPath("en"), "/en/account/messages");
+    assert.equal(userInboxPath("it", 1), "/it/account/messages");
+    assert.equal(userInboxPath("it", 3), "/it/account/messages?page=3");
     assert.equal(fillInbox("{n} da leggere, {x}", { n: 3 }), "3 da leggere, {x}");
+  });
+});
+
+describe("foto profilo nell'area staff", () => {
+  test("solo https e solo dagli host di Discord", () => {
+    const discord = "https://cdn.discordapp.com/avatars/123/abc.png";
+    assert.equal(safeAvatarUrl(discord), discord);
+    assert.equal(safeAvatarUrl("https://media.discordapp.net/avatars/1/a.webp?size=64"), "https://media.discordapp.net/avatars/1/a.webp?size=64");
+    assert.equal(safeAvatarUrl("http://cdn.discordapp.com/avatars/123/abc.png"), null, "niente http");
+    assert.equal(safeAvatarUrl("https://tracker.example/pixel.png"), null, "host qualsiasi: no");
+    assert.equal(safeAvatarUrl("https://cdn.discordapp.com.evil.example/a.png"), null);
+    assert.equal(safeAvatarUrl("https://user:pw@cdn.discordapp.com/a.png"), null);
+    assert.equal(safeAvatarUrl("https://cdn.discordapp.com:8443/a.png"), null);
+    assert.equal(safeAvatarUrl("javascript:alert(1)"), null);
+    assert.equal(safeAvatarUrl("non è un indirizzo"), null);
+    assert.equal(safeAvatarUrl(`https://cdn.discordapp.com/${"a".repeat(600)}`), null);
+    assert.equal(safeAvatarUrl(null), null);
+    assert.equal(safeAvatarUrl(undefined), null);
+  });
+  test("withSafeAvatar tiene il resto del profilo", () => {
+    assert.deepEqual(withSafeAvatar({ username: "x", avatar_url: "https://evil.example/p.png" }), { username: "x", avatar_url: null });
+    assert.deepEqual(withSafeAvatar({ username: "y", avatar_url: "https://cdn.discordapp.com/a.png" }), { username: "y", avatar_url: "https://cdn.discordapp.com/a.png" });
+    assert.equal(withSafeAvatar(null), null);
   });
 });
