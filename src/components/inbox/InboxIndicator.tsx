@@ -12,17 +12,23 @@ import { navLabelsFor } from "@/lib/inboxNavLabels";
  * pagine statiche e il layout non legge Supabase, quindi lo stato arriva da `/api/inbox/status`.
  *
  * Una sola lettura condivisa da tutti i componenti della pagina (busta e menu dell'account, link dello staff su /u): al
- * primo montaggio, al cambio di pagina, al ritorno sulla scheda e ogni minuto circa mentre la scheda è visibile (dal
- * 27/09/2026, per la busta dell'header), mai più di una volta ogni `MIN_GAP_MS`; subito dopo un messaggio mandato o letto
+ * primo montaggio, al cambio di pagina e al ritorno sulla scheda (se l'ultima lettura ha più di `NAV_GAP_MS`: una raffica
+ * di clic non fa una raffica di richieste) e, mentre la scheda è visibile, `POLL_MS` dopo l'ultima lettura, chiunque
+ * l'abbia fatta (dal 27/09/2026, per la busta dell'header: il giro si riallinea all'ultima lettura, quindi chi resta
+ * fermo su una pagina vede il numero aggiornarsi ogni minuto circa); subito dopo un messaggio mandato o letto
  * (`announceInboxChange`, evento `originsmeta:inbox`). Legata all'utente: se cambia account nella stessa scheda, il
  * numero di prima sparisce.
  */
 
 const EVENT = "originsmeta:inbox";
-/** Distanza minima fra due letture non forzate: un po' meno del giro del timer, così il giro non salta per pochi ms. */
-const MIN_GAP_MS = 55_000;
-/** Ogni quanto si rilegge lo stato mentre la scheda è visibile (busta dell'header, 27/09/2026). */
+/** Cambio di pagina o ritorno sulla scheda: si rilegge se l'ultima lettura ha più di 10 s. */
+const NAV_GAP_MS = 10_000;
+/** Mentre la scheda è visibile si rilegge un minuto dopo l'ultima lettura (busta dell'header, 27/09/2026). */
 const POLL_MS = 60_000;
+/** Margine del giro: un timer che scatta qualche ms prima del minuto non salta la lettura. */
+const POLL_SLACK_MS = 1_000;
+/** Il giro non scatta mai prima di così (per esempio mentre la prima lettura non è ancora partita). */
+const POLL_MIN_DELAY_MS = 5_000;
 
 let owner: string | null = null;
 let current: InboxStatus | null = null;
@@ -42,7 +48,9 @@ function subscribe(cb: () => void) {
   };
 }
 
-async function load(uid: string, force: boolean): Promise<void> {
+/** Legge lo stato se l'ultima lettura ha più di `minGap` ms; `minGap` 0 = subito (messaggio mandato o letto). */
+async function load(uid: string, minGap: number): Promise<void> {
+  const force = minGap <= 0;
   if (owner !== uid) {
     owner = uid;
     current = null;
@@ -54,7 +62,7 @@ async function load(uid: string, force: boolean): Promise<void> {
     if (force) again = true;
     return inflight;
   }
-  if (!force && Date.now() - lastAt < MIN_GAP_MS) return;
+  if (!force && Date.now() - lastAt < minGap) return;
   lastAt = Date.now();
   inflight = (async () => {
     try {
@@ -71,7 +79,7 @@ async function load(uid: string, force: boolean): Promise<void> {
       inflight = null;
       if (again) {
         again = false;
-        void load(uid, true);
+        void load(uid, 0);
       }
     }
   })();
@@ -96,20 +104,31 @@ export function useInboxStatus(uid: string | null | undefined): InboxStatus | nu
     () => null,
   );
   useEffect(() => {
-    if (uid) void load(uid, false);
+    if (uid) void load(uid, NAV_GAP_MS);
   }, [uid, pathname]);
   useEffect(() => {
     if (!uid) return;
-    const now = () => void load(uid, true);
+    const now = () => void load(uid, 0);
     const visible = () => {
-      if (document.visibilityState === "visible") void load(uid, false);
+      if (document.visibilityState === "visible") void load(uid, NAV_GAP_MS);
     };
-    // ogni minuto circa, solo con la scheda in primo piano: una scheda dimenticata aperta non interroga il server
-    const timer = window.setInterval(visible, POLL_MS);
+    // Giro legato all'ultima lettura (anche a quella del cambio pagina), non un intervallo fisso: con setInterval una
+    // lettura fatta poco prima del giro lo faceva saltare, e il numero poteva restare fermo quasi due minuti. Solo con la
+    // scheda in primo piano: una scheda dimenticata aperta non interroga il server (al ritorno ci pensa `visible`).
+    let timer = 0;
+    const schedule = (delay: number) => {
+      timer = window.setTimeout(tick, delay);
+    };
+    const tick = () => {
+      if (document.visibilityState !== "visible") return schedule(POLL_MS);
+      void load(uid, POLL_MS - POLL_SLACK_MS);
+      schedule(Math.max(POLL_MIN_DELAY_MS, lastAt + POLL_MS - Date.now()));
+    };
+    schedule(Math.max(POLL_MIN_DELAY_MS, lastAt + POLL_MS - Date.now()));
     window.addEventListener(EVENT, now);
     document.addEventListener("visibilitychange", visible);
     return () => {
-      window.clearInterval(timer);
+      window.clearTimeout(timer);
       window.removeEventListener(EVENT, now);
       document.removeEventListener("visibilitychange", visible);
     };
@@ -122,10 +141,10 @@ export function useInboxStatus(uid: string | null | undefined): InboxStatus | nu
  * un tasto in alto a sinistra di fianco al nome giocatore, che se hanno un messaggio avranno una notifica… la classica
  * cassetta delle lettere o una lettera con una notifica rossa"). Solo per chi ha fatto l'accesso (la monta AccountMenu).
  * Porta alla casella (`envelopeHref`: per lo staff quella dello staff se le novità sono solo lì). Con messaggi da leggere,
- * un pallino crimson con il numero (1–9, poi "9+"): testo bianco su crimson 5,3:1 (il gesso si fermava a 4:1, troppo poco
- * per 10 px; come il gradiente del Creator e dei bottoni primari è un'eccezione alla regola "niente bianco pieno"), e il
- * pallino contro il fondo dell'header fa 3,5:1. Il nome per i lettori di schermo ha il numero intero ("Messaggi, 2 non
- * letti"). Icona SVG disegnata qui, niente librerie.
+ * un pallino rosso con il numero (1–9, poi "9+"): testo gesso su crimson scuro 6,1:1 (sul crimson pieno il gesso si
+ * fermava a 4:1, troppo poco per 10 px, e il bianco pieno è vietato dalle regole del sito) con un anello crimson che lo
+ * stacca dal fondo dell'header (3,5:1). Il nome per i lettori di schermo ha il numero intero ("Messaggi, 2 non letti").
+ * Icona SVG disegnata qui, niente librerie.
  */
 export function InboxEnvelope({ locale, status }: { locale: string; status: InboxStatus | null }) {
   const L = navLabelsFor(locale);
@@ -147,7 +166,7 @@ export function InboxEnvelope({ locale, status }: { locale: string; status: Inbo
       {text ? (
         <span
           aria-hidden="true"
-          className="absolute -right-1.5 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-crimson px-1 font-mono text-[10px] font-bold leading-none text-white ring-2 ring-felt"
+          className="absolute -right-1.5 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-crimson-deep px-1 font-mono text-[10px] font-bold leading-none text-chalk ring-2 ring-crimson"
         >
           {text}
         </span>

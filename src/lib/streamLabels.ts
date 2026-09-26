@@ -68,7 +68,7 @@ const en = {
     download16x9: "Download 16:9 (1280 × 720)",
     download9x16: "Download 9:16 (1080 × 1920)",
     ownerOnly:
-      "The chat command and the OBS overlay show text written by the deck's author, so they are offered on your own decks only. Your account has the ones that always follow your latest deck.",
+      "The chat command and the OBS overlay show text written by whoever published the deck, so they are offered on your own decks only. Your account has the ones that always follow your latest deck.",
     accountLink: "Stream tools in your account",
     copy: "Copy",
     copied: "Copied",
@@ -142,7 +142,7 @@ const it: StreamLabels = {
     download16x9: "Scarica 16:9 (1280 × 720)",
     download9x16: "Scarica 9:16 (1080 × 1920)",
     ownerOnly:
-      "Il comando di chat e l'overlay per OBS mostrano i testi scritti dall'autore del mazzo, per questo compaiono solo sui tuoi mazzi. Nel tuo account trovi quelli che seguono sempre il tuo ultimo mazzo.",
+      "Il comando di chat e l'overlay per OBS mostrano i testi scritti da chi ha pubblicato il mazzo, per questo compaiono solo sui tuoi mazzi. Nel tuo account trovi quelli che seguono sempre il tuo ultimo mazzo.",
     accountLink: "Strumenti per le dirette nel tuo account",
     copy: "Copia",
     copied: "Copiato",
@@ -213,7 +213,7 @@ const es: StreamLabels = {
     download16x9: "Descargar 16:9 (1280 × 720)",
     download9x16: "Descargar 9:16 (1080 × 1920)",
     ownerOnly:
-      "El comando de chat y el overlay para OBS muestran los textos que escribe el autor del mazo, por eso solo aparecen en tus mazos. En tu cuenta tienes los que siguen siempre tu último mazo.",
+      "El comando de chat y el overlay para OBS muestran los textos que escribe quien publicó el mazo, por eso solo aparecen en tus mazos. En tu cuenta tienes los que siguen siempre tu último mazo.",
     accountLink: "Herramientas para directos en tu cuenta",
     copy: "Copiar",
     copied: "Copiado",

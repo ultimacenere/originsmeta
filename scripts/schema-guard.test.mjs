@@ -82,7 +82,7 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
       "create or replace function public.protect_profile_badge()\nreturns trigger language plpgsql as $$\nbegin\n  if new.badge is distinct from old.badge and auth.uid() is not null and not public.is_admin() then\n    raise exception 'badge is assigned by staff';\n  end if;\n  return new;\nend $$;",
     ),
     "trigger tolto e non rimesso": withTail("drop trigger if exists profiles_protect_badge on public.profiles;"),
-    "corpo di funzione con un dollaro solo (6c6756d)": replaced("returns trigger language plpgsql as $$\nbegin\n  -- il tag autore".replace(/\n/g, schema.includes("\r\n") ? "\r\n" : "\n"), "returns trigger language plpgsql as $\nbegin\n  -- il tag autore"),
+    "corpo di funzione con un dollaro solo (6c6756d)": replaced("returns trigger language plpgsql as $$\nbegin\n  -- il ruolo (badge)".replace(/\n/g, schema.includes("\r\n") ? "\r\n" : "\n"), "returns trigger language plpgsql as $\nbegin\n  -- il ruolo (badge)"),
   };
   for (const [name, sql] of Object.entries(cases)) {
     test(name, () => {

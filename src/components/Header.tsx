@@ -23,7 +23,8 @@ export function navItems(dict: Dictionary): { label: string; path: string }[] {
 
 /**
  * Header fisso. Sotto 640 px la riga deve stare nei 343 px di un telefono da 375: logo alla misura base del
- * Wordmark (1.15 rem, come in produzione), selettore lingua dentro il menu a tendina (torna nella riga da `sm`),
+ * Wordmark (1.15 rem, come in produzione), Accedi (con l'accesso fatto: busta dei messaggi e avatar, dal 27/09/2026) e
+ * Menu, selettore lingua dentro il menu a tendina (torna nella riga da `sm`),
  * menu che si chiude da solo al cambio pagina (AutoCloseDetails: l'header sopravvive alla navigazione lato client).
  * L'header resta un server component statico: solo le voci di menu (NavLink) e lo stato di accesso (AccountMenu)
  * leggono il percorso nel browser, per segnare la pagina corrente e portare "Accedi" con il ritorno.

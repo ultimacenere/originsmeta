@@ -416,14 +416,12 @@ function capBreaks(text: string): string {
 }
 
 /**
- * Bio del modulo: testo semplice, a capo ammessi (al massimo una riga vuota di fila e `BIO_MAX_BREAKS` a capo in tutto:
- * le righe in più si uniscono alla tredicesima con uno spazio), spazi in fondo alle righe tolti.
- * I separatori di riga Unicode (U+2028, U+2029, U+0085) diventano a capo: con alcuni locale del database contano come
- * caratteri di controllo e il salvataggio fallirebbe. Vuota: nessuna bio (`null`). Troppo lunga: errore, non un taglio
- * a metà frase.
+ * La bio pulita, prima del tetto agli a capo: spazi in fondo alle righe tolti, al massimo una riga vuota di fila,
+ * niente invisibili. I separatori di riga Unicode (U+2028, U+2029, U+0085) diventano a capo: con alcuni locale del
+ * database contano come caratteri di controllo e il salvataggio fallirebbe.
  */
-export function cleanBio(raw: string): { ok: true; value: string | null } | { ok: false; error: "long" } {
-  const text = String(raw ?? "")
+function normalizeBio(raw: string): string {
+  return String(raw ?? "")
     .replace(/\r\n?|[\u2028\u2029\u0085]/g, "\n")
     .replace(/\t/g, " ")
     .replace(BIO_STRIP, "")
@@ -432,7 +430,24 @@ export function cleanBio(raw: string): { ok: true; value: string | null } | { ok
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
-  const bio = capBreaks(text);
+}
+
+/**
+ * Righe che la bio avrebbe dopo la pulizia, prima che `cleanBio` unisca quelle oltre la tredicesima (0 se è vuota): il
+ * modulo avvisa quando sono di più (27/09/2026), così l'unione delle righe non arriva a sorpresa al salvataggio.
+ */
+export function bioLineCount(raw: string): number {
+  const text = normalizeBio(raw);
+  return text ? text.split("\n").length : 0;
+}
+
+/**
+ * Bio del modulo: testo semplice, a capo ammessi (al massimo una riga vuota di fila e `BIO_MAX_BREAKS` a capo in tutto:
+ * le righe in più si uniscono alla tredicesima con uno spazio), spazi in fondo alle righe tolti (`normalizeBio`).
+ * Vuota: nessuna bio (`null`). Troppo lunga: errore, non un taglio a metà frase.
+ */
+export function cleanBio(raw: string): { ok: true; value: string | null } | { ok: false; error: "long" } {
+  const bio = capBreaks(normalizeBio(raw));
   if (!bio) return { ok: true, value: null };
   return [...bio].length > BIO_MAX ? { ok: false, error: "long" } : { ok: true, value: bio };
 }

@@ -163,7 +163,7 @@ grant insert, select on public.deck_reports to authenticated;
 -- le colonne che l'utente potrà cambiare (per esempio bio e link) avranno un grant per colonna.
 revoke update on public.profiles from anon, authenticated;
 
--- 15/09/2026 (note per sito 5.0): tipo di mazzo dichiarato da chi pubblica e tag autore assegnato dallo staff
+-- 15/09/2026 (note per sito 5.0): tipo di mazzo dichiarato da chi pubblica e ruolo (badge) assegnato dallo staff
 alter table public.community_decks add column if not exists deck_type text not null default 'ladder';
 alter table public.community_decks drop constraint if exists community_decks_deck_type_check;
 alter table public.community_decks add constraint community_decks_deck_type_check check (deck_type in ('ladder','competitive','fun','tournament'));
@@ -179,7 +179,7 @@ alter table public.profiles add constraint profiles_badge_check check (badge in 
 create or replace function public.protect_profile_badge()
 returns trigger language plpgsql as $$
 begin
-  -- il tag autore lo cambia solo un admin dal sito o uno script con connessione diretta (auth.uid() nullo)
+  -- il ruolo (badge) lo cambia solo un admin dal sito o uno script con connessione diretta (auth.uid() nullo)
   if new.badge is distinct from old.badge and auth.uid() is not null and not public.is_admin() then
     raise exception 'badge is assigned by staff';
   end if;
@@ -1417,7 +1417,7 @@ create trigger profiles_touch_showcase before update on public.profiles
 -- MAI un grant di UPDATE sull'intera tabella: riaprirebbe role e badge (vedi 6c6756d).
 grant update (bio, links, content_langs) on public.profiles to authenticated;
 
--- Directory /creators e rotta /api/live: leggono solo i profili con un tag autore.
+-- Directory /creators e rotta /api/live: leggono solo i profili con un ruolo (badge) Creator, Autore, Pro o Staff.
 create index if not exists profiles_creator_badge_idx on public.profiles (badge) where badge <> 'community';
 
 -- ===== 26/09/2026: VIDEO =====
@@ -1616,7 +1616,7 @@ create index if not exists deck_stats_daily_day_idx on public.deck_stats_daily (
 
 alter table public.deck_stats_daily enable row level security;
 
--- Chi chiama può leggere i numeri di tutti i mazzi: admin (profiles.role) o tag autore Staff (profiles.badge).
+-- Chi chiama può leggere i numeri di tutti i mazzi: admin (profiles.role) o ruolo Staff (profiles.badge).
 create or replace function public.deck_stats_is_staff()
 returns boolean language sql stable security definer set search_path = public, pg_temp as $$
   select auth.uid() is not null and exists (
@@ -1696,7 +1696,7 @@ grant execute on function public.bump_deck_stat(text, text) to anon, authenticat
 -- nostri utenti nel sito e possiamo rispondere a chi ci dà i feedback direttamente da lì".
 -- Scelte prudenti (annunciate a Pierluigi):
 --   - solo utente ↔ staff, niente messaggi fra utenti; l'utente può anche scrivere per primo allo staff;
---   - staff = profilo con role 'admin' o tag autore 'staff' (`is_staff()`); la casella dello staff è condivisa:
+--   - staff = profilo con role 'admin' o ruolo (badge) 'staff' (`is_staff()`); la casella dello staff è condivisa:
 --     quello che legge uno dello staff risulta letto per tutti;
 --   - avvisi solo sul sito (numero dei non letti accanto al menu dell'account); email più avanti;
 --   - i messaggi restano finché esiste l'account e si cancellano con lui (on delete cascade dal profilo).
@@ -1714,7 +1714,7 @@ grant execute on function public.bump_deck_stat(text, text) to anon, authenticat
 -- =====================================================================================================
 
 -- ---------- chi è dello staff ----------
--- Admin (profiles.role) o tag autore 'staff' (profiles.badge): due colonne che l'utente non può cambiare
+-- Admin (profiles.role) o ruolo (badge) 'staff' (profiles.badge): due colonne che l'utente non può cambiare
 -- (revoke update on profiles e trigger protect_profile_badge, commit 6c6756d).
 create or replace function public.is_staff()
 returns boolean language sql stable security definer set search_path = public, pg_temp as $$

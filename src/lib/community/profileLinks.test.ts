@@ -24,6 +24,7 @@ import {
   SAVE_MIN_INTERVAL_MS,
   SHORTENER_HOSTS,
   WEBSITE_BLOCKED_HOST,
+  bioLineCount,
   cleanBio,
   cleanContentLangs,
   isCanonicalLink,
@@ -272,6 +273,23 @@ describe("bio e lingue", () => {
     // la colonna di righe da una lettera (quella che il limite ferma) resta nei 600 caratteri e dentro il vincolo
     const column = cleanBio("a\n".repeat(300));
     assert.ok(column.ok && breaks(column.value) === BIO_MAX_BREAKS);
+  });
+  test("bio: bioLineCount conta le righe come cleanBio prima di unirle (l'avviso del modulo)", () => {
+    assert.equal(bioLineCount(""), 0);
+    assert.equal(bioLineCount(" \n "), 0);
+    assert.equal(bioLineCount("una riga"), 1);
+    // le righe vuote in più e gli a capo in fondo non contano, come nel salvataggio
+    assert.equal(bioLineCount("a\r\n\r\n\r\n\r\nb\n\n"), 3);
+    const thirteen = Array.from({ length: BIO_MAX_BREAKS + 1 }, (_, i) => `r${i}`).join("\n");
+    assert.equal(bioLineCount(thirteen), BIO_MAX_BREAKS + 1);
+    const long = Array.from({ length: 20 }, (_, i) => `r${i}`).join("\n");
+    assert.equal(bioLineCount(long), 20);
+    // quello che bioLineCount dice oltre il tetto è quello che cleanBio unisce
+    for (const text of [thirteen, long, "a\n".repeat(300)]) {
+      const r = cleanBio(text);
+      assert.ok(r.ok);
+      assert.equal((r.value ?? "").split("\n").length, Math.min(bioLineCount(text), BIO_MAX_BREAKS + 1));
+    }
   });
   test("lingue dei contenuti: solo quelle del sito, senza doppioni, nell'ordine del sito", () => {
     assert.deepEqual(cleanContentLangs(["it", "fr", "en", "it", 3]), ["en", "it"]);

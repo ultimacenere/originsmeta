@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveProfile, type ProfileActionState } from "@/lib/community/profileActions";
-import { BIO_MAX, BIO_MAX_BREAKS, CONTENT_LANGS, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
+import { BIO_MAX, BIO_MAX_BREAKS, CONTENT_LANGS, bioLineCount, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
 import { fillCreator, type ProfileFormLabels } from "@/lib/creatorLabels";
 
 /**
@@ -117,6 +117,8 @@ export function ProfileForm({
         />
         <span id="profile-bio-hint" className={`mt-1 block text-xs ${errors?.bio || [...bio].length > BIO_MAX ? "text-bad" : "text-pale-muted"}`}>
           {fillCreator(errors?.bio ? labels.errors.bioLong : labels.bioHint, bioLimits)} ({[...bio].length}/{BIO_MAX})
+          {/* oltre le 13 righe il salvataggio unisce quelle in più all'ultima (cleanBio): si dice prima, non dopo */}
+          {bioLineCount(bio) > bioLimits.lines ? <span className="mt-0.5 block text-pale">{fillCreator(labels.bioLinesOver, bioLimits)}</span> : null}
         </span>
       </label>
 

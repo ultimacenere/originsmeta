@@ -41,11 +41,14 @@ export function coverPublicUrl(path: string): string {
 /**
  * Accetta una copertina del media kit (tutti) oppure, per Creator/Pro/Staff e admin, una copertina
  * caricata dal browser nella propria cartella dello Storage. Qualsiasi altro valore è rifiutato.
+ * `keep` è la copertina che il torneo ha già (solo nella modifica): resta valida anche per chi nel frattempo non può
+ * più caricarne (27/09/2026: un Creator che diventa Autore modifica un suo torneo senza l'errore "copertina").
  */
-export function checkCover(raw: string, userId: string, canUpload: boolean): string | null {
+export function checkCover(raw: string, userId: string, canUpload: boolean, keep?: string | null): string | null {
   const v = raw.trim();
   if (!v) return DEFAULT_COVER;
   if ((COVER_PRESETS as readonly string[]).includes(v)) return v;
+  if (keep && v === keep) return v;
   if (!canUpload) return null;
   const prefix = coverPublicUrl(`${userId}/`);
   if (v.startsWith(prefix) && /^[A-Za-z0-9._-]{1,80}$/.test(v.slice(prefix.length))) return v;
@@ -54,8 +57,14 @@ export function checkCover(raw: string, userId: string, canUpload: boolean): str
 
 export type ParsedTournament = { ok: true; row: Omit<TournamentInsert, "organizer" | "slug"> } | { ok: false; error: TournamentFormError };
 
-/** Legge e valida i campi del modulo; `starts_at` arriva già in ISO (il browser converte l'ora locale). */
-export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile: { badge?: string | null; role?: string | null } | null; allowPast?: boolean }): ParsedTournament {
+/**
+ * Legge e valida i campi del modulo; `starts_at` arriva già in ISO (il browser converte l'ora locale). Nella modifica
+ * `currentCover` è la copertina già salvata sul torneo (vedi `checkCover`).
+ */
+export function parseTournamentForm(
+  fd: FormData,
+  ctx: { userId: string; profile: { badge?: string | null; role?: string | null } | null; allowPast?: boolean; currentCover?: string | null },
+): ParsedTournament {
   const name = String(fd.get("name") ?? "")
     .replace(/\s+/g, " ")
     .trim()
@@ -91,7 +100,7 @@ export function parseTournamentForm(fd: FormData, ctx: { userId: string; profile
   if (!discord.ok) return { ok: false, error: "discord" };
 
   const canList = canListTournaments(ctx.profile);
-  const cover = checkCover(String(fd.get("cover_url") ?? ""), ctx.userId, canList);
+  const cover = checkCover(String(fd.get("cover_url") ?? ""), ctx.userId, canList, ctx.currentCover);
   if (!cover) return { ok: false, error: "cover" };
   const visibilityRaw = String(fd.get("visibility") ?? "public");
   if (!(VISIBILITIES as readonly string[]).includes(visibilityRaw)) return { ok: false, error: "visibility" };

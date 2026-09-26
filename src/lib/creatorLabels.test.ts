@@ -20,6 +20,12 @@ import { en as dictEn } from "./dictionaries/en.ts";
 import { it as dictIt } from "./dictionaries/it.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { es as dictEs } from "./dictionaries/es.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { videoLabels, videoPrivacyText } from "./videoLabels.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { streamLabels } from "./streamLabels.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { deckStatsPrivacy } from "./deckStatsLabels.ts";
 
 const dictionaries = { en: dictEn, it: dictIt, es: dictEs } as const;
 
@@ -93,6 +99,22 @@ describe("etichette dei creator", () => {
       assert.equal(d.common.filterRole, role, locale);
       assert.doesNotMatch(d.common.publishedBy, /creat|autor|author/i, locale);
       for (const label of Object.values(d.community.badges) as string[]) assert.notEqual(d.common.publishedBy, label, locale);
+    }
+  });
+  test("chi ha pubblicato un mazzo non è l'Autore nemmeno nelle note della scheda, dei tool per le dirette e della privacy", () => {
+    // 27/09/2026: "Autore" è un ruolo; le note che parlavano dell'"autore del mazzo" ora dicono "chi ha pubblicato il mazzo"
+    const role = /\b(autore|autori|autor|autores|author|authors|creator|creators)\b|author's/i;
+    for (const locale of ["en", "it", "es"] as const) {
+      const d = dictionaries[locale];
+      const texts: Record<string, string> = {
+        "community.guideLangNote": d.community.guideLangNote,
+        "community.originalText": d.community.originalText,
+        "video.deck.resourcesNote": videoLabels[locale].deck.resourcesNote,
+        videoPrivacyText: videoPrivacyText[locale],
+        "stream.tools.ownerOnly": streamLabels[locale].tools.ownerOnly,
+        deckStatsPrivacy: deckStatsPrivacy[locale],
+      };
+      for (const [key, text] of Object.entries(texts)) assert.doesNotMatch(text, role, `${locale} ${key}`);
     }
   });
   test("spagnolo col tú, mai vosotros", () => {

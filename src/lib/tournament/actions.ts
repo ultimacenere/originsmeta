@@ -315,11 +315,12 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
   const locale = localeOf(formData);
   const id = String(formData.get("id") ?? "");
   if (!UUID.test(id)) return { error: "not_found" };
-  const parsed = parseTournamentForm(formData, { userId: ctx.user.id, profile: ctx.profile, allowPast: true });
-  if (!parsed.ok) return { error: parsed.error };
-  const { data: cur } = await ctx.supabase.from("tournaments").select("slug, status, organizer, players:tournament_players(count)").eq("id", id).maybeSingle();
-  const current = cur as { slug: string; status: string; organizer: string; players: { count: number }[] | null } | null;
+  const { data: cur } = await ctx.supabase.from("tournaments").select("slug, status, organizer, cover_url, players:tournament_players(count)").eq("id", id).maybeSingle();
+  const current = cur as { slug: string; status: string; organizer: string; cover_url: string | null; players: { count: number }[] | null } | null;
   if (!current) return { error: "not_found" };
+  // la copertina già salvata resta valida anche per chi non può più caricarne (per esempio un Creator diventato Autore)
+  const parsed = parseTournamentForm(formData, { userId: ctx.user.id, profile: ctx.profile, allowPast: true, currentCover: current.cover_url });
+  if (!parsed.ok) return { error: parsed.error };
   const registered = Number(current.players?.[0]?.count ?? 0);
   const { name, cover_url, description, rules, discord_url, listed, lang, visibility } = parsed.row;
   const patch =

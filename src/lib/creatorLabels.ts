@@ -41,6 +41,8 @@ export type ProfileFormLabels = {
   intro: string;
   bio: string;
   bioHint: string;
+  /** avviso sotto la bio quando supera le righe ammesse (27/09/2026) */
+  bioLinesOver: string;
   bioPlaceholder: string;
   langs: string;
   langsHint: string;
@@ -152,6 +154,7 @@ const en: CreatorLabels = {
       "Your bio, channels and languages appear on your public page. If you have the Creator, Author, Pro or Staff role they also appear on the Creators and authors page, and your first three channels next to your name on your decks.",
     bio: "Bio",
     bioHint: "Plain text, up to {max} characters and {lines} lines. No links here: channels go below.",
+    bioLinesOver: "More than {lines} lines: when you save, the extra lines are joined to the last one.",
     bioPlaceholder: "E.g. Italian streamer, control decks and Crimson Cup prep every Tuesday night.",
     langs: "Languages of your content",
     langsHint: "Used by the language filter on the Creators and authors page.",
@@ -242,6 +245,7 @@ const it: CreatorLabels = {
       "Bio, canali e lingue compaiono sulla tua pagina pubblica. Se hai il ruolo Creator, Autore, Pro o Staff anche nella pagina Creator e autori, e i primi tre canali accanto al tuo nome nei tuoi mazzi.",
     bio: "Bio",
     bioHint: "Testo semplice, al massimo {max} caratteri e {lines} righe. Niente link qui: i canali vanno sotto.",
+    bioLinesOver: "Più di {lines} righe: quando salvi, quelle in più si uniscono all'ultima.",
     bioPlaceholder: "Es. Streamer italiano, mazzi control e preparazione alla Crimson Cup il martedì sera.",
     langs: "Lingue dei tuoi contenuti",
     langsHint: "Servono al filtro per lingua della pagina Creator e autori.",
@@ -332,6 +336,7 @@ const es: CreatorLabels = {
       "Tu bio, tus canales y tus idiomas aparecen en tu página pública. Si tienes el rol Creator, Autor, Pro o Staff, también en la página Creadores y autores, y tus tres primeros canales junto a tu nombre en tus mazos.",
     bio: "Bio",
     bioHint: "Texto simple, hasta {max} caracteres y {lines} líneas. Sin enlaces aquí: los canales van abajo.",
+    bioLinesOver: "Más de {lines} líneas: al guardar, las que sobran se unen a la última.",
     bioPlaceholder: "Ej.: streamer en español, mazos de control y preparación para la Crimson Cup los martes por la noche.",
     langs: "Idiomas de tu contenido",
     langsHint: "Sirven para el filtro por idioma de la página Creadores y autores.",
