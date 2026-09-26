@@ -17,6 +17,7 @@ import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -157,6 +158,9 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica */}
+      <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
 
       {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
       <section id="private" className="mt-12 scroll-mt-24">

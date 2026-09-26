@@ -86,6 +86,13 @@
  *   3. i link verso Steam e Discord e i link della home non hanno bisogno di niente: `onDocumentClick` li riconosce.
  * `onDocumentClick` lo registra GoogleAnalytics.tsx, montato nel layout della lingua su ogni pagina.
  *
+ * CONTATORI DEI MAZZI PER GLI AUTORI (pacchetto STATS, 26/09/2026): non sono eventi di questo catalogo e non vanno né
+ * a GA4 né a Vercel, ma totali per mazzo e giorno su Supabase (src/lib/community/deckStats.ts, DeckStatsBeacon.tsx).
+ * Si agganciano ai punti che già misurano: la copia del codice del gioco è `game_code_copy` con placement `deck_page`,
+ * ricevuto con `onTrackedEvent` (quindi mai nel browser dello staff); i link esterni della scheda contano da soli;
+ * `data-om-deck-stat="video"|"link"` su un elemento dice il contatore dove l'indirizzo non basta (il tasto che avvia
+ * un video incorporato). Quell'attributo non diventa un parametro degli eventi (`datasetEvent` lo salta).
+ *
  * TRAFFICO INTERNO (MIS-03): visitando una volta https://originsmeta.com/?staff=<codice dello staff> (oppure
  * /it?staff=…) da ogni browser e dispositivo dello staff, il browser si segna come interno (localStorage
  * `originsmeta.internal.v1` = "1"): GA4 non parte, gli eventi non vanno da nessuna parte (si leggono nella console,
@@ -247,6 +254,24 @@ function ensureVercelQueue() {
   };
 }
 
+/* ---------- ascoltatori degli eventi (contatori dei mazzi, pacchetto STATS) ---------- */
+
+/** Chi ascolta riceve nome e parametri già puliti di ogni evento che parte davvero da questa pagina. */
+export type TrackedEventListener = (name: EventName, params: Readonly<Record<string, string | number | boolean>>) => void;
+const eventListeners = new Set<TrackedEventListener>();
+
+/**
+ * Iscrizione agli eventi del catalogo mandati da questa pagina (trackEvent, attributi data-om-*, clic riconosciuti):
+ * DeckStatsBeacon conta così le copie del codice del gioco nella scheda di un mazzo senza un secondo punto di misura.
+ * Non arriva nulla nel browser dello staff (traffico interno), come a Vercel e GA4. Restituisce la disiscrizione.
+ */
+export function onTrackedEvent(fn: TrackedEventListener): () => void {
+  eventListeners.add(fn);
+  return () => {
+    eventListeners.delete(fn);
+  };
+}
+
 /** Opzioni di `send`: `ga: false` quando l'evento lo conta già la misurazione avanzata di GA4. */
 function send(name: EventName, raw: Record<string, unknown>, opts: { ga?: boolean } = {}) {
   if (typeof window === "undefined") return;
@@ -255,6 +280,13 @@ function send(name: EventName, raw: Record<string, unknown>, opts: { ga?: boolea
     if (isInternalTraffic()) {
       console.info("[OriginsMeta · traffico interno] evento non inviato:", name, params);
       return;
+    }
+    for (const fn of eventListeners) {
+      try {
+        fn(name, params);
+      } catch {
+        /* un ascoltatore rotto non ferma la misura */
+      }
     }
     try {
       ensureVercelQueue();
@@ -948,7 +980,8 @@ export function datasetEvent(dataset: Record<string, string | undefined>): { nam
   if (!isEventName(name)) return null;
   const raw: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(dataset)) {
-    if (k === "omEvent" || k === "omCta") continue;
+    // omDeckStat: il contatore del mazzo (DeckStatsBeacon), non un parametro dell'evento
+    if (k === "omEvent" || k === "omCta" || k === "omDeckStat") continue;
     const param = datasetKeyToParam(k);
     if (param && v !== undefined) raw[param] = v;
   }

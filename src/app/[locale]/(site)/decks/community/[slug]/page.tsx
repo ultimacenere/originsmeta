@@ -30,6 +30,7 @@ import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { DeckStatsBeacon } from "@/components/DeckStatsBeacon";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -430,6 +431,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </>
         ) : null}
         <CardMentionEdges />
+        {/* statistiche per l'autore (pacchetto STATS): visite, copie del codice, clic e video, solo nel browser */}
+        <DeckStatsBeacon slug={deck.slug} />
       </article>
 
       {guides.length ? (

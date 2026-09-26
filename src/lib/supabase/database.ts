@@ -70,6 +70,8 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
 };
 
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; created_at: string; updated_at: string };
+/** Statistiche dei mazzi per gli autori (26/09/2026, supabase/creator-STATS.sql): totali per mazzo e giorno UTC. */
+export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
 
 /* ---------- Tournament Organizer (16/09/2026) ---------- */
@@ -195,6 +197,21 @@ export type Database = {
             columns: ["owner"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** la leggono l'autore del mazzo e lo staff; nessuna scrittura diretta: solo la RPC bump_deck_stat */
+      deck_stats_daily: {
+        Row: DeckStatsDailyRow;
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "deck_stats_daily_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
             referencedColumns: ["id"];
           },
         ];
@@ -355,6 +372,10 @@ export type Database = {
       invite_player: { Args: { tid: string; uname: string }; Returns: undefined };
       revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
       rotate_invite_code: { Args: { tid: string }; Returns: string };
+      /** +1 al contatore di oggi di un mazzo pubblicato (p_kind: view, code, link, video); anon e authenticated */
+      bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
+      deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
+      deck_stats_owns: { Args: { did: string }; Returns: boolean };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
