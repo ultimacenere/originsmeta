@@ -137,8 +137,11 @@ drop policy if exists "users vote once" on public.deck_votes;
 create policy "users vote once" on public.deck_votes for insert
   with check (user_id = auth.uid() and not exists (select 1 from public.community_decks d where d.id = deck_id and d.owner = auth.uid()));
 drop policy if exists "users change own vote" on public.deck_votes;
+-- 26/09/2026: anche cambiando il voto (l'upsert di castVote passa da qui) non si finisce su un mazzo proprio;
+-- prima il controllo c'era solo nell'inserimento e un voto già dato si poteva spostare sul proprio mazzo
 create policy "users change own vote" on public.deck_votes for update
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid() and not exists (select 1 from public.community_decks d where d.id = deck_id and d.owner = auth.uid()));
 drop policy if exists "users remove own vote" on public.deck_votes;
 create policy "users remove own vote" on public.deck_votes for delete using (user_id = auth.uid());
 
@@ -151,7 +154,14 @@ grant usage on schema public to anon, authenticated;
 grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated;
 grant insert, update, delete on public.community_decks, public.deck_votes to authenticated;
 grant insert, select on public.deck_reports to authenticated;
-grant update on public.profiles to authenticated;
+-- 26/09/2026, sicurezza: fino a oggi qui c'era "grant update on public.profiles to authenticated" e, con la policy
+-- "users edit own profile", ogni iscritto poteva cambiare QUALSIASI colonna della propria riga via API con la chiave
+-- pubblica, `role` compreso (cioè farsi admin, e da admin cambiare i tag, modificare o eliminare i mazzi di tutti,
+-- leggere privati e segnalazioni). Verificato sul database vivo il 26/9: nessun abuso (admin solo aldrymus e
+-- luigidavdasragoni). Il sito non modifica mai i profili con la sessione dell'utente: li crea handle_new_user e il tag
+-- lo cambia lo staff con scripts/set-badge.mjs (connessione diretta). Quindi nessun UPDATE per anon e authenticated;
+-- le colonne che l'utente potrà cambiare (per esempio bio e link) avranno un grant per colonna.
+revoke update on public.profiles from anon, authenticated;
 
 -- 15/09/2026 (note per sito 5.0): tipo di mazzo dichiarato da chi pubblica e tag autore assegnato dallo staff
 alter table public.community_decks add column if not exists deck_type text not null default 'ladder';
@@ -162,14 +172,24 @@ alter table public.profiles drop constraint if exists profiles_badge_check;
 alter table public.profiles add constraint profiles_badge_check check (badge in ('community','creator','influencer','pro','staff'));
 
 create or replace function public.protect_profile_badge()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql as $
 begin
   -- il tag autore lo cambia solo un admin dal sito o uno script con connessione diretta (auth.uid() nullo)
   if new.badge is distinct from old.badge and auth.uid() is not null and not public.is_admin() then
     raise exception 'badge is assigned by staff';
   end if;
+  -- 26/09/2026: lo stesso per le altre colonne riservate (ruolo, nome utente, id Discord, id, data di nascita del
+  -- profilo), anche se un grant per colonna le riaprisse per sbaglio. is_admin() legge la riga com'era prima.
+  if auth.uid() is not null and not public.is_admin() and (
+       new.role is distinct from old.role
+    or new.username is distinct from old.username
+    or new.discord_id is distinct from old.discord_id
+    or new.id is distinct from old.id
+    or new.created_at is distinct from old.created_at) then
+    raise exception 'reserved profile fields are managed by staff';
+  end if;
   return new;
-end $$;
+end $;
 drop trigger if exists profiles_protect_badge on public.profiles;
 create trigger profiles_protect_badge before update on public.profiles
   for each row execute function public.protect_profile_badge();
