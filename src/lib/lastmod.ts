@@ -53,7 +53,7 @@ export const PAGE_UPDATED = {
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco; 25/09: riga della fonte senza World of Origins
   "/decks": "2026-09-26", // CREATOR: tag autore, canali e LIVE accanto al nome; Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
   "/decks/[slug]": "2026-09-25", // 63fa759
-  "/decks/community/[slug]": "2026-09-26", // CREATOR: tag autore, canali e LIVE accanto al nome; Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
+  "/decks/community/[slug]": "2026-09-26", // CREATOR: tag autore, canali e LIVE accanto al nome; VIDEO: lettore a clic e risorse; STREAM: menu "Per le dirette" e og:image dalla lista del mazzo; Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
   "/deck-builder": "2026-09-25", // Ondata 2: WebApplication nei dati strutturati
   "/tier-list": "2026-09-25", // Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
   "/tier-list/community": "2026-09-25", // Ondata 3: tier list firmate; Ondata 2: ItemList delle carte

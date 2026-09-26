@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatDate, href } from "@/lib/i18n";
+import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { getCard } from "@/lib/data/cards";
@@ -18,6 +18,8 @@ import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ProfileEditor } from "@/components/ProfileEditor";
+import { AccountStreamGuide } from "@/components/stream/StreamTools";
+import { streamLabels } from "@/lib/streamLabels";
 
 export const dynamic = "force-dynamic";
 
@@ -262,6 +264,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
+      {profile?.username ? (
+        <AccountStreamGuide username={profile.username} locale={locale} site={siteUrl} hasDecks={decks.some((deck) => deck.status === "published")} labels={streamLabels[locale].account} tools={streamLabels[locale].tools} />
+      ) : null}
 
       {/* Tournament Organizer: tornei organizzati e giocati */}
       <section className="mt-12">
