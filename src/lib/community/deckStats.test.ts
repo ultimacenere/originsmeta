@@ -8,11 +8,13 @@ import {
   DECK_STAT_KINDS,
   SEEN_MAX,
   STAT_COLUMN,
+  TAB_FOCUS_MS,
   addSeen,
   averageStars,
   canSeeAllStats,
   combineSummaries,
   daysBetween,
+  embedFocusIsPlay,
   isDeckStatKind,
   isLikelyBot,
   isVideoEmbedSrc,
@@ -20,6 +22,7 @@ import {
   normalizeStatRow,
   parseSeen,
   rankDecks,
+  rpcIsMissing,
   seenKey,
   shiftDay,
   statKindForEvent,
@@ -135,6 +138,22 @@ describe("eventi e link della scheda", () => {
     assert.equal(isVideoEmbedSrc("https://challenges.cloudflare.com/turnstile"), false);
     assert.equal(isVideoEmbedSrc(""), false);
     assert.equal(isVideoEmbedSrc(null), false);
+  });
+  test("focus nel lettore: un clic sì, il Tab no", () => {
+    const yt = "https://www.youtube-nocookie.com/embed/abcdefghijk";
+    assert.equal(embedFocusIsPlay(yt, null), true);
+    assert.equal(embedFocusIsPlay(yt, TAB_FOCUS_MS + 1), true);
+    assert.equal(embedFocusIsPlay(yt, 5), false);
+    assert.equal(embedFocusIsPlay(yt, TAB_FOCUS_MS), false);
+    assert.equal(embedFocusIsPlay("https://challenges.cloudflare.com/turnstile", null), false);
+  });
+  test("funzione del contatore mancante (migrazione non applicata)", () => {
+    assert.equal(rpcIsMissing({ status: 404, error: { code: "PGRST202" } }), true);
+    assert.equal(rpcIsMissing({ status: 400, error: { code: "PGRST202" } }), true);
+    assert.equal(rpcIsMissing({ status: 404, error: null }), true);
+    assert.equal(rpcIsMissing({ status: 204, error: null }), false);
+    assert.equal(rpcIsMissing({ status: 500, error: { code: "57014" } }), false);
+    assert.equal(rpcIsMissing(null), false);
   });
 });
 

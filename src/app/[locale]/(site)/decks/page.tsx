@@ -92,6 +92,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       const legCustom = !leg ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
       return {
         slug: `community-${deck.slug}`,
+        // copie del codice dall'elenco nelle statistiche dell'autore (pacchetto STATS)
+        statsSlug: deck.slug,
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
         // riassunto nella lingua della pagina quando la traduzione del sito c'è (25/09/2026), altrimenti quello dell'autore

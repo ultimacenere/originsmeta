@@ -1,77 +1,27 @@
 "use client";
 
 import { useEffect } from "react";
-import { supabaseBrowser } from "@/lib/supabase/client";
-import { isInternalTraffic, onTrackedEvent } from "@/lib/analytics";
-import {
-  SEEN_KEY,
-  VIEW_DELAY_MS,
-  addSeen,
-  isDeckStatKind,
-  isLikelyBot,
-  isVideoEmbedSrc,
-  parseSeen,
-  seenKey,
-  statKindForEvent,
-  statKindForHref,
-  type DeckStatKind,
-} from "@/lib/community/deckStats";
-
-/** Contatori già mandati da questa scheda del browser: basta questo quando sessionStorage è bloccato. */
-const sentHere = new Set<string>();
-
-/** Primo invio di questo contatore nella sessione? Se sì lo segna (sessionStorage), così non riparte. */
-function claim(key: string): boolean {
-  if (sentHere.has(key)) return false;
-  sentHere.add(key);
-  try {
-    const next = addSeen(parseSeen(sessionStorage.getItem(SEEN_KEY)), key);
-    if (!next) return false;
-    sessionStorage.setItem(SEEN_KEY, JSON.stringify(next));
-  } catch {
-    /* storage bloccato: vale la memoria della pagina */
-  }
-  return true;
-}
+import { onTrackedEvent } from "@/lib/analytics";
+import { VIEW_DELAY_MS, embedFocusIsPlay, isDeckStatKind, statKindForEvent, statKindForHref } from "@/lib/community/deckStats";
+import { bumpDeckStat } from "@/lib/community/deckStatsClient";
 
 /**
  * Contatori della scheda di un mazzo per il suo autore (pacchetto STATS, 26/09/2026; regole in
  * src/lib/community/deckStats.ts e supabase/creator-STATS.sql). Non disegna nulla e non cambia l'HTML della pagina,
- * che resta ISR: lavora solo nel browser e chiama la funzione `bump_deck_stat` di Supabase con il client che la scheda
- * carica già (StarRating), così un autore con l'accesso fatto non conta sul proprio mazzo.
+ * che resta ISR: lavora solo nel browser e manda i contatori con `bumpDeckStat` (una volta per scheda, per mazzo e per
+ * tipo; niente bot né browser dello staff; l'autore con l'accesso fatto non conta sul proprio mazzo). Sono stime.
  * - visita: dopo `VIEW_DELAY_MS` di pagina visibile (il tempo in una scheda nascosta non conta);
  * - copia del codice del gioco: l'evento `game_code_copy` della scheda, ricevuto da analytics.ts (`onTrackedEvent`);
  * - clic su un link esterno dentro <main>: "video" per un video di YouTube o Twitch, "link" per gli altri (risorse e
- *   canali); `data-om-deck-stat="video"|"link"` su un elemento o un contenitore decide da sé, "off" lo esclude;
- * - video incorporato: il primo clic dentro il lettore (la finestra perde il focus e l'elemento attivo è l'iframe).
- * Una volta per sessione, per mazzo e per tipo; niente bot né browser dello staff. Sono stime.
+ *   canali); `data-om-deck-stat="video"|"link"` su un elemento o un contenitore decide da sé (il tasto "▶ Video" della
+ *   scheda è sempre "video", anche quando porta a un canale), "off" lo esclude;
+ * - video incorporato: il primo clic dentro il lettore (la finestra perde il focus e l'elemento attivo è l'iframe),
+ *   ma non quando ci si arriva col Tab.
  */
 export function DeckStatsBeacon({ slug }: { slug: string }) {
   useEffect(() => {
-    const sb = supabaseBrowser();
-    if (!sb || !slug) return;
-    try {
-      if (isLikelyBot(navigator.userAgent, navigator.webdriver === true)) return;
-    } catch {
-      return;
-    }
-
-    const bump = (kind: DeckStatKind) => {
-      try {
-        if (isInternalTraffic()) {
-          console.info("[OriginsMeta · traffico interno] contatore del mazzo non inviato:", slug, kind);
-          return;
-        }
-        if (!claim(seenKey(slug, kind))) return;
-        // niente riprova: se la funzione non c'è ancora (migrazione non applicata) o la rete cade, il dato si perde
-        void sb.rpc("bump_deck_stat", { p_slug: slug, p_kind: kind }).then(
-          () => undefined,
-          () => undefined,
-        );
-      } catch {
-        /* il contatore non deve mai rompere la pagina */
-      }
-    };
+    if (!slug) return;
+    const bump = (kind: Parameters<typeof bumpDeckStat>[1]) => bumpDeckStat(slug, kind);
 
     // Visita: tempo di pagina visibile, sommato fra una scheda nascosta e l'altra.
     let visibleFor = 0;
@@ -119,14 +69,21 @@ export function DeckStatsBeacon({ slug }: { slug: string }) {
     document.addEventListener("auxclick", onClick, true);
 
     // Clic dentro un lettore incorporato: la pagina perde il focus a favore dell'iframe (un clic nell'iframe non arriva
-    // al documento). Il controllo aspetta un giro, perché activeElement si aggiorna dopo l'evento blur.
+    // al documento). Il controllo aspetta un giro, perché activeElement si aggiorna dopo l'evento blur. Col Tab il
+    // focus entra nell'iframe allo stesso modo: l'ultimo Tab premuto nella pagina lo distingue.
+    let tabAt: number | null = null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab") tabAt = performance.now();
+    };
+    document.addEventListener("keydown", onKey, true);
     let blurTimer: ReturnType<typeof setTimeout> | undefined;
     const onBlur = () => {
       clearTimeout(blurTimer);
+      const since = tabAt === null ? null : performance.now() - tabAt;
       blurTimer = setTimeout(() => {
         try {
           const el = document.activeElement;
-          if (el instanceof HTMLIFrameElement && el.closest("main") && isVideoEmbedSrc(el.src)) bump("video");
+          if (el instanceof HTMLIFrameElement && el.closest("main") && embedFocusIsPlay(el.src, since)) bump("video");
         } catch {
           /* niente */
         }
@@ -140,6 +97,7 @@ export function DeckStatsBeacon({ slug }: { slug: string }) {
       document.removeEventListener("visibilitychange", onVisibility);
       document.removeEventListener("click", onClick, true);
       document.removeEventListener("auxclick", onClick, true);
+      document.removeEventListener("keydown", onKey, true);
       window.removeEventListener("blur", onBlur);
       off();
     };

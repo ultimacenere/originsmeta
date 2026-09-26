@@ -8,7 +8,7 @@ import { readOwnDeckStats, readStaffRanking, readStatsViewer, type RankedDeckInf
 import { deckStatsLabels, fillStats, type DeckStatsLabels } from "@/lib/deckStatsLabels";
 
 /* Colori dei grafici come DeckCharts: menta per le visite, celeste per le copie (sempre con legenda, mai solo colore) */
-const C = { views: "#31e3bd", code: "#3fc4e8", muted: "#8e9bb1", grid: "rgba(216,222,231,0.14)" };
+const C = { views: "#31e3bd", code: "#3fc4e8", grid: "rgba(216,222,231,0.14)" };
 
 type Props = {
   /** client con la sessione dell'utente (quello di /account): la policy SQL decide che cosa vede */
@@ -22,19 +22,23 @@ type Props = {
 /**
  * "Le tue statistiche" in /account (pacchetto STATS, 26/09/2026): per ogni mazzo pubblicato dell'utente visite, copie
  * del codice del gioco, voti e media, clic sui link e video avviati negli ultimi 7 e 30 giorni e in totale, con il
- * grafico delle visite al giorno; per admin e tag Staff anche la classifica di tutti i mazzi per visite. Componente
- * server: /account è dinamica, niente dati nel browser. Grafici in SVG inline come DeckCharts, senza librerie. Non
- * compare a chi non ha mazzi (e non è dello staff).
+ * grafico delle visite e delle copie al giorno; per admin e tag Staff anche la classifica di tutti i mazzi per visite.
+ * Componente server: /account è dinamica e lo monta dentro un <Suspense>, così il resto della pagina non lo aspetta.
+ * Grafici in SVG inline come DeckCharts, senza librerie; le scritte dei grafici sono HTML, leggibili anche sul
+ * telefono. Non compare a chi non ha mazzi (e non è dello staff). La riga "Clic sui link" compare dal primo clic: oggi
+ * nella scheda di un mazzo non ci sono link esterni dell'autore oltre al video, e una riga sempre a zero confonde.
  */
 export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props) {
   const L = deckStatsLabels[locale];
-  const viewer = await readStatsViewer(supabase, userId);
+  const ids = decks.map((d) => d.id);
+  // profilo e numeri dei mazzi insieme: la classifica dello staff, se serve, dopo
+  const [viewer, own] = await Promise.all([readStatsViewer(supabase, userId), readOwnDeckStats(supabase, ids)]);
   if (!decks.length && !viewer.staff) return null;
   const today = utcDay(new Date());
-  const ids = decks.map((d) => d.id);
-  const [own, staff] = await Promise.all([readOwnDeckStats(supabase, ids), viewer.staff ? readStaffRanking(supabase, today) : Promise.resolve(null)]);
+  const staff = viewer.staff ? await readStaffRanking(supabase, today) : null;
   const per = summarizeDecks(ids, own.rows, own.votes, today);
   const all = combineSummaries([...per.values()]);
+  const showLinks = all.link.total > 0;
   const nf = new Intl.NumberFormat(locale);
   const n = (v: number) => nf.format(v);
   const avg = (stars: number, votes: number) => {
@@ -61,11 +65,11 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
 
           {/* Tutti i mazzi insieme: 30 giorni in grande, 7 giorni e totale sotto */}
           <h3 className="kicker mt-5 text-pale-muted">{L.allDecks}</h3>
-          <ul className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <ul className={`mt-2 grid grid-cols-2 gap-3 ${showLinks ? "sm:grid-cols-3 lg:grid-cols-5" : "lg:grid-cols-4"}`}>
             <Tile label={L.views} counts={all.views} L={L} n={n} />
             <Tile label={L.codeCopies} counts={all.code} L={L} n={n} />
             <Tile label={L.votes} counts={all.votes} L={L} n={n} extra={avg(all.stars.total, all.votes.total)} />
-            <Tile label={L.linkClicks} counts={all.link} L={L} n={n} />
+            {showLinks ? <Tile label={L.linkClicks} counts={all.link} L={L} n={n} /> : null}
             <Tile label={L.videoPlays} counts={all.video} L={L} n={n} />
           </ul>
 
@@ -80,7 +84,7 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
                 { label: L.codeCopies, c: s.code },
                 { label: L.votes, c: s.votes },
                 { label: L.average, c: s.votes, fmt: (k) => avg(s.stars[k], s.votes[k]) },
-                { label: L.linkClicks, c: s.link },
+                ...(showLinks ? [{ label: L.linkClicks, c: s.link }] : []),
                 { label: L.videoPlays, c: s.video },
               ];
               return (
@@ -88,7 +92,7 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       {deck.status === "hidden" ? <span className="stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{L.hidden}</span> : null}
-                      <p className="t-item mt-1 leading-tight">
+                      <h3 className="t-item mt-1 leading-tight">
                         {deck.status === "published" ? (
                           <Link href={href(locale, `/decks/community/${deck.slug}`)} className="text-sky hover:underline">
                             {deck.name}
@@ -96,11 +100,12 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
                         ) : (
                           deck.name
                         )}
-                      </p>
+                      </h3>
                     </div>
                     <Sparkline values={s.series.views} />
                   </div>
                   <table className="mt-3 w-full text-xs">
+                    <caption className="sr-only">{deck.name}</caption>
                     <thead>
                       <tr className="text-right">
                         <th scope="col" className="kicker py-1 text-left text-chalk-muted">
@@ -165,8 +170,8 @@ function Tile({ label, counts, L, n, extra }: { label: string; counts: Counts; L
 
 /**
  * Visite e copie del codice per giorno, ultimi 30 giorni: due strisce con la loro scala (le copie sono poche rispetto
- * alle visite e su una scala sola sparirebbero), l'asse dei giorni sotto la seconda. I numeri esatti stanno nelle
- * tessere e nelle tabelle; per i lettori di schermo la figura ha i totali in `aria-label`.
+ * alle visite e su una scala sola sparirebbero), le date sotto la seconda. I numeri esatti stanno nelle tessere e nelle
+ * tabelle; per i lettori di schermo la figura ha i totali in `aria-label`.
  */
 function DailyBars({ summary, today, locale, L, n }: { summary: DeckStatSummary; today: string; locale: Locale; L: DeckStatsLabels; n: (v: number) => string }) {
   const { views, code } = summary.series;
@@ -176,50 +181,48 @@ function DailyBars({ summary, today, locale, L, n }: { summary: DeckStatSummary;
   return (
     <figure className="mt-4 rounded-xl border-2 border-sky bg-night-2/60 p-4">
       <figcaption className="kicker text-pale-muted">{L.chartTitle}</figcaption>
-      <div role="img" aria-label={fillStats(L.chartAria, { views: n(sum(views)), copies: n(sum(code)) })} className="mt-2">
-        <Bars values={views} color={C.views} label={L.views} height={120} n={n} />
-        <Bars values={code} color={C.code} label={L.codeCopies} height={78} n={n} dates={{ first, locale }} />
+      <div role="img" aria-label={fillStats(L.chartAria, { views: n(sum(views)), copies: n(sum(code)) })}>
+        <Bars values={views} color={C.views} label={L.views} heightClass="h-24" n={n} />
+        <Bars values={code} color={C.code} label={L.codeCopies} heightClass="h-14" n={n} dates={{ first, locale }} />
       </div>
     </figure>
   );
 }
 
-/** Una striscia di barre giornaliere con la sua scala; `dates` aggiunge sotto primo, mezzo e ultimo giorno. */
-function Bars({ values, color, label, height, n, dates }: { values: number[]; color: string; label: string; height: number; n: (v: number) => string; dates?: { first: string; locale: Locale } }) {
-  const days = values.length;
+/**
+ * Una striscia di barre giornaliere con la sua scala; `dates` aggiunge sotto primo, mezzo e ultimo giorno. Le barre
+ * sono un SVG che si allarga con la figura (`preserveAspectRatio="none"`, linee sempre da 1 px), mentre scala e date
+ * sono testo HTML a 11 px: restano leggibili a 375 px come su uno schermo largo.
+ */
+function Bars({ values, color, label, heightClass, n, dates }: { values: number[]; color: string; label: string; heightClass: string; n: (v: number) => string; dates?: { first: string; locale: Locale } }) {
+  const days = Math.max(1, values.length);
   const max = niceCeil(Math.max(0, ...values));
-  const W = 600;
-  const padL = 30;
-  const padR = 6;
-  const padT = 16;
-  const padB = dates ? 22 : 6;
-  const H = height + (dates ? 16 : 0);
-  const colW = (W - padL - padR) / Math.max(1, days);
-  const plotH = H - padT - padB;
-  const y = (v: number) => padT + plotH - (v / max) * plotH;
-  const ticks = [0, Math.floor((days - 1) / 2), days - 1];
+  const mid = Math.floor((days - 1) / 2);
+  const day = (i: number) => (dates ? formatDateShort(dates.locale, shiftDay(dates.first, i)) : "");
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" aria-hidden="true" focusable="false">
-      <text x={padL} y={10} fontSize={11} fontFamily="var(--font-mono)" fill={color}>
+    <div className="mt-3">
+      <p className="font-mono text-[11px] font-semibold" style={{ color }}>
         {label}
-      </text>
-      {[0, max].map((v) => (
-        <g key={v}>
-          <line x1={padL} x2={W - padR} y1={y(v)} y2={y(v)} stroke={C.grid} strokeWidth={1} />
-          <text x={padL - 5} y={y(v) + 4} textAnchor="end" fontSize={10} fontFamily="var(--font-mono)" fill={C.muted}>
-            {n(v)}
-          </text>
-        </g>
-      ))}
-      {values.map((v, i) => (v ? <rect key={i} x={padL + i * colW + colW * 0.15} y={y(v)} width={colW * 0.7} height={y(0) - y(v)} fill={color} rx={2} /> : null))}
-      {dates
-        ? ticks.map((i) => (
-            <text key={i} x={padL + i * colW + colW / 2} y={H - 6} textAnchor={i === 0 ? "start" : i === days - 1 ? "end" : "middle"} fontSize={10} fontFamily="var(--font-mono)" fill={C.muted}>
-              {formatDateShort(dates.locale, shiftDay(dates.first, i))}
-            </text>
-          ))
-        : null}
-    </svg>
+      </p>
+      <div className="mt-1 flex gap-2">
+        <div className={`flex ${heightClass} w-9 shrink-0 flex-col justify-between text-right font-mono text-[11px] leading-none text-pale-muted`}>
+          <span>{n(max)}</span>
+          <span>0</span>
+        </div>
+        <svg viewBox={`0 0 ${days} 100`} preserveAspectRatio="none" className={`${heightClass} min-w-0 flex-1`} aria-hidden="true" focusable="false">
+          <line x1={0} x2={days} y1={0.5} y2={0.5} stroke={C.grid} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+          <line x1={0} x2={days} y1={99.5} y2={99.5} stroke={C.grid} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+          {values.map((v, i) => (v ? <rect key={i} x={i + 0.15} y={100 - (v / max) * 100} width={0.7} height={(v / max) * 100} fill={color} /> : null))}
+        </svg>
+      </div>
+      {dates ? (
+        <div className="ml-11 mt-1 flex justify-between font-mono text-[11px] text-pale-muted">
+          <span>{day(0)}</span>
+          <span>{day(mid)}</span>
+          <span>{day(days - 1)}</span>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -239,7 +242,7 @@ function Sparkline({ values }: { values: number[] }) {
 }
 
 /** Classifica dello staff: i mazzi più visti negli ultimi 30 giorni, fra tutti quelli pubblicati. */
-function StaffRanking({ ranking, locale, L, n }: { ranking: { available: boolean; ranked: RankedDeckInfo[] }; locale: Locale; L: DeckStatsLabels; n: (v: number) => string }) {
+function StaffRanking({ ranking, locale, L, n }: { ranking: { available: boolean; complete: boolean; ranked: RankedDeckInfo[] }; locale: Locale; L: DeckStatsLabels; n: (v: number) => string }) {
   return (
     <div className="card-night mt-8 p-5 sm:p-6">
       <h3 className="t-item text-sky">{L.staffTitle}</h3>
@@ -281,6 +284,7 @@ function StaffRanking({ ranking, locale, L, n }: { ranking: { available: boolean
           ))}
         </ol>
       )}
+      {ranking.available && !ranking.complete ? <p className="mt-3 text-xs text-pale-muted">{L.partial}</p> : null}
     </div>
   );
 }

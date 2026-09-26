@@ -6,9 +6,12 @@
  * Come si conta (tabella `deck_stats_daily` e funzione `bump_deck_stat` in supabase/creator-STATS.sql):
  * - per ogni mazzo pubblicato e ogni giorno UTC, quattro contatori: visite, copie del codice del gioco, clic sui link
  *   esterni (risorse, canali, link del video) e video avviati; solo totali, nessun dato personale;
- * - nel browser una volta per sessione, per mazzo e per tipo (sessionStorage), la visita dopo qualche secondo di pagina
- *   visibile; niente bot (user agent, `navigator.webdriver`), niente browser dello staff (flag di analytics.ts), niente
- *   autore sul proprio mazzo (lo esclude la funzione SQL con la sessione). Sono stime, e le pagine lo dicono.
+ * - nel browser una volta per scheda, per mazzo e per tipo (sessionStorage è per scheda), la visita dopo qualche secondo
+ *   di pagina visibile; niente bot (user agent, `navigator.webdriver`), niente browser dello staff (flag di
+ *   analytics.ts), niente autore sul proprio mazzo quando ha fatto l'accesso (lo esclude la funzione SQL con la
+ *   sessione: da disconnesso conta come chiunque). Sono stime, e le pagine lo dicono.
+ * - le copie del codice arrivano dalla scheda (evento `game_code_copy` ascoltato da DeckStatsBeacon) e dall'elenco
+ *   /decks (tasto CopyCode di DeckExplorer, che chiama `bumpDeckStat` di deckStatsClient.ts con lo slug).
  * - i voti non si contano qui: arrivano da `deck_votes`, che c'era già (conteggio per data del voto, media delle stelle).
  */
 
@@ -111,6 +114,32 @@ export function isVideoEmbedSrc(src: string | null | undefined): boolean {
   }
   const host = bareHost(url);
   return host === "youtube.com" || host === "youtube-nocookie.com" || host === "player.twitch.tv" || host === "clips.twitch.tv";
+}
+
+/**
+ * Millisecondi dopo un Tab entro cui la perdita del focus della pagina è la tastiera che entra nel lettore, non un clic:
+ * chi scorre la pagina col Tab e passa sull'iframe del video non ha avviato nulla.
+ */
+export const TAB_FOCUS_MS = 800;
+
+/**
+ * La pagina ha perso il focus a favore di un iframe (`activeElement` dopo l'evento blur): conta come video avviato se
+ * l'iframe è un lettore video e il focus non ci è arrivato col Tab (`msSinceTab`: tempo dall'ultimo Tab premuto nella
+ * pagina, null se non c'è stato). È il primo clic sul lettore, che di solito è il play; un clic dentro l'iframe non
+ * arriva mai alla pagina, quindi non si può sapere di più.
+ */
+export function embedFocusIsPlay(src: string | null | undefined, msSinceTab: number | null): boolean {
+  if (!isVideoEmbedSrc(src)) return false;
+  return msSinceTab === null || msSinceTab < 0 || msSinceTab > TAB_FOCUS_MS;
+}
+
+/**
+ * La risposta di Supabase dice che la funzione `bump_deck_stat` non esiste (migrazione non ancora applicata): 404 di
+ * PostgREST, codice PGRST202. Il browser smette di chiamarla fino al prossimo caricamento, per non riempire la console.
+ */
+export function rpcIsMissing(res: { status?: number | null; error?: { code?: string | null } | null } | null | undefined): boolean {
+  if (!res) return false;
+  return res.status === 404 || res.error?.code === "PGRST202";
 }
 
 /**

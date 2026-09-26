@@ -18,6 +18,7 @@ import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -159,8 +160,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
         )}
       </section>
 
-      {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica */}
-      <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
+      {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica.
+          Dentro <Suspense>: il resto della pagina non aspetta le sue letture. */}
+      <Suspense fallback={null}>
+        <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
+      </Suspense>
 
       {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
       <section id="private" className="mt-12 scroll-mt-24">

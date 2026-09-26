@@ -89,9 +89,11 @@
  * CONTATORI DEI MAZZI PER GLI AUTORI (pacchetto STATS, 26/09/2026): non sono eventi di questo catalogo e non vanno né
  * a GA4 né a Vercel, ma totali per mazzo e giorno su Supabase (src/lib/community/deckStats.ts, DeckStatsBeacon.tsx).
  * Si agganciano ai punti che già misurano: la copia del codice del gioco è `game_code_copy` con placement `deck_page`,
- * ricevuto con `onTrackedEvent` (quindi mai nel browser dello staff); i link esterni della scheda contano da soli;
- * `data-om-deck-stat="video"|"link"` su un elemento dice il contatore dove l'indirizzo non basta (il tasto che avvia
- * un video incorporato). Quell'attributo non diventa un parametro degli eventi (`datasetEvent` lo salta).
+ * ricevuto con `onTrackedEvent` (quindi mai nel browser dello staff); nell'elenco /decks, dove l'evento non ha lo slug
+ * (e non deve averlo: andrebbe a GA4), la conta CopyCode con `bumpDeckStat` (src/lib/community/deckStatsClient.ts);
+ * i link esterni della scheda contano da soli; `data-om-deck-stat="video"|"link"` su un elemento dice il contatore dove
+ * l'indirizzo non basta (il tasto "▶ Video" della scheda, il tasto che carica un video incorporato). Quell'attributo
+ * non diventa un parametro degli eventi (`datasetEvent` lo salta).
  *
  * TRAFFICO INTERNO (MIS-03): visitando una volta https://originsmeta.com/?staff=<codice dello staff> (oppure
  * /it?staff=…) da ogni browser e dispositivo dello staff, il browser si segna come interno (localStorage

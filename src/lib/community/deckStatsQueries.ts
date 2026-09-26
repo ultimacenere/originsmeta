@@ -18,17 +18,20 @@ const MAX_PAGES = 20;
 
 type PageResult = { data: unknown; error: { message: string } | null };
 
-/** Tutte le righe di una lettura a pagine (`range`), fino a MAX_PAGES; al primo errore restituisce l'errore. */
-async function readPages(page: (from: number, to: number) => PromiseLike<PageResult>): Promise<{ rows: unknown[]; error: string | null }> {
+/**
+ * Tutte le righe di una lettura a pagine (`range`), fino a MAX_PAGES; al primo errore restituisce l'errore.
+ * `complete: false` quando si è fermata al tetto con altre righe ancora da leggere (il pannello lo dice).
+ */
+async function readPages(page: (from: number, to: number) => PromiseLike<PageResult>): Promise<{ rows: unknown[]; error: string | null; complete: boolean }> {
   const rows: unknown[] = [];
   for (let i = 0; i < MAX_PAGES; i++) {
     const res = await page(i * PAGE, i * PAGE + PAGE - 1);
-    if (res.error) return { rows, error: res.error.message };
+    if (res.error) return { rows, error: res.error.message, complete: false };
     const data = Array.isArray(res.data) ? res.data : [];
     rows.push(...data);
-    if (data.length < PAGE) break;
+    if (data.length < PAGE) return { rows, error: null, complete: true };
   }
-  return { rows, error: null };
+  return { rows, error: null, complete: false };
 }
 
 const STAT_SELECT = "deck_id, day, views, code_copies, link_clicks, video_plays";
@@ -68,17 +71,18 @@ export type RankedDeckInfo = RankedDeck & { deck: { slug: string; name: string; 
 /**
  * Classifica dello staff: i mazzi più visti negli ultimi 30 giorni (`rankDecks`), con nome, slug e autore. Le righe di
  * tutti i mazzi le vede solo lo staff (policy SQL): per un altro utente la classifica conterrebbe i soli suoi mazzi, e
- * il pannello non la chiede.
+ * il pannello non la chiede. `complete: false` se le righe dei 30 giorni erano più di quelle lette (la classifica è
+ * parziale e il pannello lo dice): allora conviene una funzione SQL che sommi sul database.
  */
-export async function readStaffRanking(client: Db, today: string, limit = 20): Promise<{ available: boolean; ranked: RankedDeckInfo[] }> {
+export async function readStaffRanking(client: Db, today: string, limit = 20): Promise<{ available: boolean; complete: boolean; ranked: RankedDeckInfo[] }> {
   const since = shiftDay(today, -29);
   const stats = await readPages((from, to) => client.from("deck_stats_daily").select(STAT_SELECT).gte("day", since).order("deck_id").order("day").range(from, to));
   if (stats.error) {
     console.error("[deck stats] classifica:", stats.error);
-    return { available: false, ranked: [] };
+    return { available: false, complete: false, ranked: [] };
   }
   const ranked = rankDecks(toStatRows(stats.rows), today, limit);
-  if (!ranked.length) return { available: true, ranked: [] };
+  if (!ranked.length) return { available: true, complete: stats.complete, ranked: [] };
   const { data, error } = await client
     .from("community_decks")
     .select("id, slug, name, status, profile:profiles!community_decks_owner_fkey(username, display_name, avatar_url, badge)")
@@ -91,6 +95,7 @@ export async function readStaffRanking(client: Db, today: string, limit = 20): P
   const info = new Map(((data ?? []) as DeckInfoRow[]).map((d) => [d.id, d]));
   return {
     available: true,
+    complete: stats.complete,
     ranked: ranked.map((r) => {
       const d = info.get(r.deck_id);
       return { ...r, deck: d ? { slug: d.slug, name: d.name, status: d.status, profile: d.profile } : null };

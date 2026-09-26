@@ -348,7 +348,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </div>
         ) : deck.video_url ? (
           <p className="mt-6">
-            <a className="btn btn-ink text-xs" href={deck.video_url} rel="noopener nofollow" target="_blank">
+            <a className="btn btn-ink text-xs" href={deck.video_url} rel="noopener nofollow" target="_blank" data-om-deck-stat="video">
               ▶ {d.common.video}
             </a>
           </p>
