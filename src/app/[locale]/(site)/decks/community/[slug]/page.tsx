@@ -30,6 +30,9 @@ import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
 import { deckStats } from "@/lib/deckstats";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { DeckStreamTools } from "@/components/stream/StreamTools";
+import { deckImageAlt, deckOgImage } from "@/lib/stream";
+import { streamLabels } from "@/lib/streamLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -84,11 +87,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const deck = await getCommunityDeck(slug);
   if (!deck) return {};
-  // Copertina del mazzo: l'illustrazione della sua Leggendaria, senza che l'autore debba sceglierne una.
-  const cover = deck.legendary ? getCard(deck.legendary)?.cover : undefined;
   const star = legendaryName(deck);
-  // Le copertine in public/cards/cover sono 1200×675: lo dichiariamo perché l'anteprima social non venga ritagliata a caso.
-  const art: PageMetaOptions = cover ? { imageSize: { width: 1200, height: 675 }, imageAlt: star ? `${star} · ${deck.name}` : deck.name } : {};
+  // Immagine social: la lista del mazzo disegnata da /api/deck-image (pacchetto STREAM, 26/09/2026: anteprima quando il
+  // link è incollato su Discord o X), 1200×630, con la versione dalla data di modifica. Prima era la copertina della
+  // Leggendaria, che resta l'immagine dei dati strutturati (`deckArticle` qui sotto).
+  const og = deckOgImage(deck.slug, deck.updated_at, locale);
+  const art: PageMetaOptions = {
+    imageSize: { width: og.width, height: og.height },
+    imageAlt: deckImageAlt(streamLabels[locale].image, { deck: deck.name, legendary: star, author: authorName(deck.profile) }),
+  };
   // hreflang solo verso le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate); la versione
   // in una lingua non ancora tradotta resta navigabile ma non si indicizza: sarebbe una pagina nella lingua sbagliata.
   // Dal 25/09/2026 (Ondata 2, RIV-08 e DECKS-02) conta anche la soglia di parole della guida (`indexableLocales` in
@@ -97,7 +104,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Title con il nome del mazzo in testa ("Spellcast, Merlin deck", "Spellcast, mazzo di Merlin", "Spellcast, mazo de
   // Merlin"), poi il solo nome, poi il nome accorciato: regole e motivo in `deckTitle` (cardTitles.ts). Un nome che dice
   // già "deck"/"mazzo"/"mazo" non ripete la parola ("Spellcast Deck with Merlin"). Il kicker visibile resta nella pagina.
-  const meta = pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), cover, {
+  const meta = pageMeta(locale, `/decks/community/${deck.slug}`, deckTitle(deck.name, star, locale), deckDescription(deck, locale, dict), og.url, {
     ...art,
     languages: indexing.languages,
     noindex: indexing.noindex,
@@ -413,6 +420,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             <p className="text-xs text-pale-muted">{c.gameCodeMissing}</p>
           )}
         </div>
+        {/* Per le dirette (pacchetto STREAM): link breve, comando di chat, overlay per OBS e immagine del mazzo */}
+        <DeckStreamTools slug={deck.slug} ownerId={deck.owner} updatedAt={deck.updated_at} locale={locale} site={siteUrl} labels={streamLabels[locale].tools} />
 
         {sections.length ? (
           <>

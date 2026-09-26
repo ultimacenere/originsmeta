@@ -91,6 +91,20 @@ const nextConfig: NextConfig = {
   experimental: {
     globalNotFound: true,
   },
+  // Overlay per OBS (pacchetto STREAM, 26/09/2026, src/app/overlay): mai indicizzato, e usabile anche dentro un iframe
+  // (frame-ancestors aperto: la pagina mostra un mazzo pubblico e non ha azioni). La sorgente browser di OBS non è un
+  // iframe e funzionerebbe comunque; questa riga resta valida anche se un giorno il sito chiuderà gli iframe altrove.
+  async headers() {
+    return [
+      {
+        source: "/overlay/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Content-Security-Policy", value: "frame-ancestors *" },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       // La copia di Vercel (originsmeta.vercel.app) porta al dominio vero con lo stesso percorso, in modo permanente

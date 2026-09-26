@@ -17,6 +17,9 @@ import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { AccountStreamGuide } from "@/components/stream/StreamTools";
+import { streamLabels } from "@/lib/streamLabels";
+import { siteUrl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -258,6 +261,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
+      {profile?.username ? (
+        <AccountStreamGuide username={profile.username} locale={locale} site={siteUrl} hasDecks={decks.some((deck) => deck.status === "published")} labels={streamLabels[locale].account} tools={streamLabels[locale].tools} />
+      ) : null}
 
       {/* Tournament Organizer: tornei organizzati e giocati */}
       <section className="mt-12">
