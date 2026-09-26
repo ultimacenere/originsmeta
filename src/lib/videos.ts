@@ -4,15 +4,16 @@
  * `node --test` (test in videos.test.ts).
  *
  * - Video: YouTube (watch, youtu.be, Shorts, dirette, embed) e Twitch (VOD twitch.tv/videos/<id>, clip
- *   clips.twitch.tv/<slug> o twitch.tv/<canale>/clip/<slug>), fino a tre per mazzo, con il minuto di partenza
- *   facoltativo. Nel database (`community_decks.videos`, supabase/creator-VIDEO.sql) si salva l'indirizzo CANONICO
- *   (`parseVideoUrl(...).url`) più `start` in secondi: il vincolo del database accetta solo quelle forme, e la pagina
- *   rilegge comunque tutto con `deckVideos`, che scarta quello che non riconosce.
+ *   clips.twitch.tv/<slug> o twitch.tv/<canale>/clip/<slug>), fino a tre per mazzo, con il minuto di partenza e il
+ *   titolo facoltativi. Nel database (`community_decks.videos`, supabase/creator-VIDEO.sql) si salva l'indirizzo
+ *   CANONICO (`parseVideoUrl(...).url`) più `start` in secondi e `title`: il vincolo del database accetta solo quelle
+ *   forme, e la pagina rilegge comunque tutto con `deckVideos`, che scarta quello che non riconosce.
  * - La vecchia colonna `video_url` (un solo link, anche non YouTube) resta: `deckVideos` la legge come primo video se
  *   `videos` è vuota, e il sito continua a scriverci il primo video, così una versione vecchia del sito vede ancora
- *   qualcosa. Nessuna migrazione dei dati: il 26/09/2026 nessun mazzo pubblicato aveva un video.
- * - Risorse: fino a cinque link {label, url} per mazzo, solo https e solo dagli host di `LINK_HOSTS`; mai dentro il
- *   testo della guida, che il sito traduce in automatico.
+ *   qualcosa. Un vecchio link che non è un video diventa una risorsa, ma solo su un host ammesso (`legacyResource`).
+ *   Nessuna migrazione dei dati: il 26/09/2026 nessun mazzo pubblicato aveva un video.
+ * - Risorse: fino a cinque link {label, url} per mazzo, solo https e solo dagli host di `LINK_HOSTS`, esclusi i
+ *   reindirizzamenti noti di quelle piattaforme; mai dentro il testo della guida, che il sito traduce in automatico.
  */
 
 export type VideoProvider = "youtube" | "twitch";
@@ -28,10 +29,12 @@ export type ParsedVideo = {
   url: string;
   /** secondi dall'inizio (mai per le clip di Twitch, che non lo prevedono) */
   start?: number;
+  /** titolo scritto da chi ha pubblicato il video (mazzi) o dalla redazione (guide), già ripulito */
+  title?: string;
 };
 
 /** Una voce della colonna `community_decks.videos`. */
-export type StoredVideo = { url: string; start?: number };
+export type StoredVideo = { url: string; start?: number; title?: string };
 /** Una voce della colonna `community_decks.links`. */
 export type DeckLink = { label: string; url: string };
 /** Un link pronto da mostrare: etichetta ripulita e dominio visibile accanto (niente sorprese su dove porta). */
@@ -43,12 +46,15 @@ export const MAX_DECK_LINKS = 5;
 export const URL_MAX = 300;
 /** etichetta di un link, in caratteri (punti di codice, come `char_length` di Postgres) */
 export const LINK_LABEL_MAX = 40;
+/** titolo di un video: il massimo di YouTube (100 caratteri), lo stesso nel vincolo SQL */
+export const VIDEO_TITLE_MAX = 100;
 /** minuto di partenza massimo: 48 ore (i VOD di Twitch più lunghi) */
 export const START_MAX = 48 * 3600;
 /** un indirizzo incollato può avere parametri di tracciamento lunghi: si accetta fino a qui, poi si canonicalizza */
 const INPUT_MAX = 2048;
-/** Twitch non riproduce un embed più stretto di così (documentazione dell'embed: almeno 400×300) */
+/** Twitch non riproduce un embed più piccolo di 400×300 (documentazione dell'embed): sotto, il video si apre su Twitch */
 export const TWITCH_MIN_WIDTH = 400;
+export const TWITCH_MIN_HEIGHT = 300;
 /** i domini del sito, sempre fra i `parent` dell'embed di Twitch (più quello della pagina: anteprime e localhost) */
 export const SITE_HOSTS = ["originsmeta.com", "www.originsmeta.com"] as const;
 
@@ -56,6 +62,19 @@ const YT_ID = /^[A-Za-z0-9_-]{11}$/;
 const TWITCH_VOD = /^\d{1,15}$/;
 const TWITCH_SLUG = /^[A-Za-z0-9_-]{1,100}$/;
 const TWITCH_CHANNEL = /^[A-Za-z0-9_]{1,25}$/;
+
+/**
+ * Caratteri tolti dai testi degli utenti (etichette dei link, titoli dei video): controllo C0/C1, trattino morbido,
+ * segni di direzione del testo (ALM U+061C, LRM, RLM, LRE…RLO, LRI…PDI: con quelli un nome si legge al contrario) e
+ * invisibili (spazio a larghezza zero, BOM). Scritti con gli escape, mai come caratteri letterali invisibili. Il
+ * vincolo SQL rifiuta gli stessi (`deck_text_ok` in supabase/creator-VIDEO.sql).
+ */
+const HIDDEN_CHARS = /[\u0000-\u001f\u007f-\u009f­؜​‎‏‪-‮⁦-⁩﻿]/g;
+
+/** Sostituisce i segnaposto {chiave} di un testo; i valori non passano da `replace` (niente `$&` interpretati). */
+export function fillVideoLabel(text: string, values: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in values ? String(values[k]) : m));
+}
 
 /**
  * Indirizzo scritto a mano → URL, oppure null. Senza schema si assume https ("youtu.be/abc"); http passa (lo si
@@ -150,7 +169,8 @@ function twitchClip(slug: string | null | undefined): ParsedVideo | null {
  *   YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID, youtube.com/live/ID, /embed/ID, /v/ID,
  *            anche m. e youtube-nocookie.com;
  *   Twitch:  twitch.tv/videos/<numero> (VOD), clips.twitch.tv/<slug>, twitch.tv/<canale>/clip/<slug>,
- *            clips.twitch.tv/embed?clip=<slug>, player.twitch.tv/?video=v<numero>.
+ *            m.twitch.tv/clip/<slug> (la condivisione dal telefono), clips.twitch.tv/embed?clip=<slug>,
+ *            player.twitch.tv/?video=v<numero>.
  * Un canale Twitch (twitch.tv/<canale>) non è un video: va fra le risorse.
  */
 export function parseVideoUrl(raw: string | null | undefined): ParsedVideo | null {
@@ -169,6 +189,7 @@ export function parseVideoUrl(raw: string | null | undefined): ParsedVideo | nul
   }
   if (host === "twitch.tv") {
     if (parts.length === 2 && parts[0] === "videos") return twitchVod(parts[1], start);
+    if (parts.length === 2 && parts[0] === "clip") return twitchClip(parts[1]);
     if (parts.length === 3 && parts[1] === "clip" && TWITCH_CHANNEL.test(parts[0])) return twitchClip(parts[2]);
     return null;
   }
@@ -188,6 +209,21 @@ export function parseVideoUrl(raw: string | null | undefined): ParsedVideo | nul
 export function youtubeId(url: string | null | undefined): string | null {
   const p = parseVideoUrl(url);
   return p?.provider === "youtube" ? p.id : null;
+}
+
+/**
+ * Miniatura di un video YouTube (hqdefault, 480×360, c'è sempre), null per Twitch (le sue miniature chiedono l'API).
+ * La pagina la mostra SOLO attraverso l'ottimizzatore di immagini del sito (next/image, `images.remotePatterns` in
+ * next.config.ts): il browser chiede /_next/image a originsmeta.com e l'immagine la scarica il server, quindi prima
+ * del clic nessuna richiesta del visitatore arriva a Google.
+ */
+export function youtubeThumb(v: Pick<ParsedVideo, "provider" | "id">): string | null {
+  return v.provider === "youtube" && YT_ID.test(v.id) ? `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg` : null;
+}
+
+/** Il riquadro è abbastanza grande per l'embed di Twitch? (almeno 400×300, altrimenti il lettore non parte) */
+export function twitchFits(width: number, height: number): boolean {
+  return width >= TWITCH_MIN_WIDTH && height >= TWITCH_MIN_HEIGHT;
 }
 
 /** I `parent` dell'embed di Twitch: i domini del sito più quello della pagina (anteprime Vercel, localhost). */
@@ -224,16 +260,39 @@ export function publicEmbedUrl(v: ParsedVideo): string {
   return `https://player.twitch.tv/?video=v${v.id}&parent=${SITE_HOSTS[0]}`;
 }
 
+/**
+ * Testo semplice di un utente: niente caratteri di controllo né invisibili (`HIDDEN_CHARS`), spazi compattati, al
+ * massimo `max` caratteri (punti di codice: un'emoji conta uno, come `char_length` di Postgres).
+ */
+export function cleanText(raw: string | null | undefined, max: number): string {
+  const s = String(raw ?? "")
+    .replace(HIDDEN_CHARS, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return Array.from(s).slice(0, max).join("").trim();
+}
+
+/** Etichetta di un link delle risorse: testo semplice, al massimo 40 caratteri. */
+export function cleanLabel(raw: string | null | undefined): string {
+  return cleanText(raw, LINK_LABEL_MAX);
+}
+
+/** Titolo di un video: testo semplice, al massimo 100 caratteri. */
+export function cleanVideoTitle(raw: string | null | undefined): string {
+  return cleanText(raw, VIDEO_TITLE_MAX);
+}
+
 /** Una voce salvata (o scritta a mano in guides.ts) → video riconosciuto; il minuto salvato vince su quello dell'indirizzo. */
 function storedToParsed(item: unknown): ParsedVideo | null {
   if (!item || typeof item !== "object") return null;
-  const { url, start } = item as Record<string, unknown>;
+  const { url, start, title } = item as Record<string, unknown>;
   if (typeof url !== "string") return null;
   const p = parseVideoUrl(url);
   if (!p) return null;
-  if (p.kind === "clip") return p;
+  const t = typeof title === "string" ? cleanVideoTitle(title) : "";
+  const base: ParsedVideo = { provider: p.provider, kind: p.kind, id: p.id, url: p.url, ...(t ? { title: t } : {}) };
+  if (p.kind === "clip") return base;
   const chosen = (typeof start === "number" ? inRange(start) : undefined) ?? p.start;
-  const base: ParsedVideo = { provider: p.provider, kind: p.kind, id: p.id, url: p.url };
   return chosen ? { ...base, start: chosen } : base;
 }
 
@@ -256,16 +315,6 @@ export function deckVideos(d: { videos?: unknown; video_url?: string | null }): 
     if (p) out.push(p);
   }
   return out;
-}
-
-/**
- * Il vecchio `video_url` che non è un video riconosciuto (fino al 26/09/2026 il modulo accettava qualsiasi link):
- * la scheda lo mostra ancora come tasto "Guarda il video", come prima. Null se c'è almeno un video riconosciuto.
- */
-export function legacyVideoLink(d: { videos?: unknown; video_url?: string | null }): string | null {
-  if (!d.video_url || deckVideos(d).length) return null;
-  const u = toUrl(d.video_url);
-  return u ? u.toString() : null;
 }
 
 /* ---------- risorse (link) ---------- */
@@ -297,6 +346,21 @@ export const LINK_HOSTS = [
   "kick.com",
 ] as const;
 
+/**
+ * Sottodomini delle piattaforme ammesse che servono solo a reindirizzare altrove (link esterni di Instagram e Reddit,
+ * accorciatori di TikTok e Bluesky): la scheda mostrerebbe un dominio fidato e porterebbe su un sito qualsiasi.
+ * Stessa lista nel vincolo SQL.
+ */
+export const LINK_BLOCKED_HOSTS = ["l.instagram.com", "out.reddit.com", "vm.tiktok.com", "vt.tiktok.com", "go.bsky.app"] as const;
+
+/**
+ * Percorsi di reindirizzamento delle piattaforme ammesse (youtube.com/redirect, /attribution_link,
+ * steamcommunity.com/linkfilter, x.com/i/redirect, tiktok.com/link/…), sul percorso in minuscolo. Espressione
+ * regolare scritta uguale nel vincolo SQL (sintassi comune a JavaScript e alle ARE di Postgres; un test le confronta).
+ */
+export const LINK_BLOCKED_PATH = "^/(?:redirect|attribution_link|linkfilter|i/redirect)(?:/|$)|^/link/";
+const BLOCKED_PATH_RE = new RegExp(LINK_BLOCKED_PATH);
+
 /** Nomi da mostrare nell'aiuto del modulo, nello stesso ordine (i domini senza un nome noto restano domini). */
 export const LINK_HOST_NAMES: Record<(typeof LINK_HOSTS)[number], string> = {
   "youtube.com": "YouTube",
@@ -326,42 +390,39 @@ export function allowedSiteNames(): string[] {
 /** Il dominio ammesso a cui appartiene un host (con i sottodomini), oppure null. */
 export function allowedHost(host: string): (typeof LINK_HOSTS)[number] | null {
   const h = host.toLowerCase();
+  if ((LINK_BLOCKED_HOSTS as readonly string[]).includes(h)) return null;
   return LINK_HOSTS.find((d) => h === d || h.endsWith(`.${d}`)) ?? null;
 }
 
 /**
- * Sul dominio discord.com passano solo inviti, canali ed eventi: il resto (autorizzazioni OAuth di app e bot, pagine
- * del sito) non è una risorsa di un mazzo e può servire a ingannare ("aggiungi questo bot").
+ * Percorso ammesso: mai un reindirizzamento (`LINK_BLOCKED_PATH`); sul dominio discord.com (sottodomini compresi) solo
+ * inviti, canali ed eventi: il resto (autorizzazioni OAuth di app e bot, pagine del sito) non è una risorsa di un
+ * mazzo e può servire a ingannare ("aggiungi questo bot").
  */
 function pathAllowed(domain: string, pathname: string): boolean {
-  if (domain === "discord.com") return /^\/(?:invite|channels|events)\//.test(pathname);
+  const path = pathname.toLowerCase();
+  if (BLOCKED_PATH_RE.test(path)) return false;
+  if (domain === "discord.com") return /^\/(?:invite|channels|events)\//.test(path);
   return true;
 }
 
 export type ParsedLink = { ok: true; url: string; host: string } | { ok: false; reason: "invalid" | "host" };
 
-/** Un link delle risorse: https (un http si riscrive), host ammesso, niente credenziali né porte, al massimo 300 caratteri. */
+/**
+ * Un link delle risorse: https (un http si riscrive), host fatto solo di lettere, cifre, punti e trattini (come vuole
+ * il vincolo SQL: niente trattino basso), host ammesso e percorso che non reindirizza, niente credenziali né porte, al
+ * massimo 300 caratteri.
+ */
 export function parseLink(raw: string | null | undefined): ParsedLink {
   const u = toUrl(raw ?? "");
   if (!u) return { ok: false, reason: "invalid" };
+  if (!/^[a-z0-9.-]+$/.test(u.hostname)) return { ok: false, reason: "invalid" };
   const domain = allowedHost(u.hostname);
   if (!domain || !pathAllowed(domain, u.pathname)) return { ok: false, reason: "host" };
   u.protocol = "https:";
   const url = u.toString();
   if (url.length > URL_MAX) return { ok: false, reason: "invalid" };
   return { ok: true, url, host: u.hostname.replace(/^www\./, "") };
-}
-
-/**
- * Etichetta di un link: testo semplice, niente caratteri di controllo né segni di direzione del testo (con quelli un
- * nome si può far leggere al contrario), spazi compattati, al massimo 40 caratteri.
- */
-export function cleanLabel(raw: string | null | undefined): string {
-  const s = String(raw ?? "")
-    .replace(/[\u0000-\u001f\u007f-\u009f‎‏‪-‮⁦-⁩]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  return Array.from(s).slice(0, LINK_LABEL_MAX).join("").trim();
 }
 
 /** I link di un mazzo da mostrare, riletti con le stesse regole del modulo (una riga scritta via API non passa). */
@@ -376,21 +437,42 @@ export function deckLinks(d: { links?: unknown }): ShownLink[] {
     const p = parseLink(url);
     if (!p.ok || seen.has(p.url)) continue;
     seen.add(p.url);
-    out.push({ label: cleanLabel(typeof label === "string" ? label : "") || p.host, url: p.url, host: p.host });
+    out.push({ label: cleanLabel(typeof label === "string" ? label : "") || cleanLabel(p.host), url: p.url, host: p.host });
   }
   return out;
 }
 
+/**
+ * Il vecchio `video_url` che non è un video riconosciuto (fino al 26/09/2026 il modulo accettava qualsiasi link): diventa
+ * una risorsa con l'etichetta data ("Guarda il video"), ma solo se è su un host ammesso; un link verso un sito qualsiasi
+ * non si mostra più. Null anche se il mazzo ha almeno un video riconosciuto.
+ */
+export function legacyResource(d: { videos?: unknown; video_url?: string | null }, label: string): ShownLink | null {
+  if (!d.video_url || deckVideos(d).length) return null;
+  const p = parseLink(d.video_url);
+  return p.ok ? { label: cleanLabel(label) || cleanLabel(p.host), url: p.url, host: p.host } : null;
+}
+
+/** Le risorse della scheda di un mazzo: il vecchio link (`legacyResource`), se c'è, poi i link salvati; al massimo cinque. */
+export function deckResources(d: { videos?: unknown; video_url?: string | null; links?: unknown }, legacyLabel: string): ShownLink[] {
+  const links = deckLinks(d);
+  const legacy = legacyResource(d, legacyLabel);
+  return legacy && !links.some((l) => l.url === legacy.url) ? [legacy, ...links].slice(0, MAX_DECK_LINKS) : links;
+}
+
 /* ---------- modulo di pubblicazione ---------- */
 
-/** Nomi dei campi del modulo: tre righe di video (indirizzo e minuto) e cinque di link (etichetta e indirizzo). */
+/** Nomi dei campi del modulo: tre righe di video (indirizzo, minuto e titolo) e cinque di link (etichetta e indirizzo). */
 export const MEDIA_FIELD_NAMES = [
   "video_url_0",
   "video_start_0",
+  "video_title_0",
   "video_url_1",
   "video_start_1",
+  "video_title_1",
   "video_url_2",
   "video_start_2",
+  "video_title_2",
   "link_label_0",
   "link_url_0",
   "link_label_1",
@@ -404,13 +486,27 @@ export const MEDIA_FIELD_NAMES = [
 ] as const;
 export type MediaFieldName = (typeof MEDIA_FIELD_NAMES)[number];
 
-export const videoFields = (i: number) => ({ url: `video_url_${i}`, start: `video_start_${i}` }) as { url: MediaFieldName; start: MediaFieldName };
+export const videoFields = (i: number) =>
+  ({ url: `video_url_${i}`, start: `video_start_${i}`, title: `video_title_${i}` }) as { url: MediaFieldName; start: MediaFieldName; title: MediaFieldName };
 export const linkFields = (i: number) => ({ label: `link_label_${i}`, url: `link_url_${i}` }) as { label: MediaFieldName; url: MediaFieldName };
 
-/** Errori del modulo: video non riconosciuto, minuto non valido, link non valido, sito non ammesso. */
+/** Errori del modulo: video non riconosciuto (o titolo senza link), minuto non valido, link non valido, sito non ammesso. */
 export type MediaError = "video" | "videoStart" | "link" | "linkHost";
 
 export type DeckMedia = { videos: StoredVideo[]; links: DeckLink[] };
+
+/** Il campo del modulo da correggere per un errore di `readDeckMedia` (la Server Action lo rimanda al modulo). */
+export function mediaErrorField(code: MediaError, index: number): MediaFieldName {
+  if (code === "videoStart") return videoFields(index).start;
+  if (code === "video") return videoFields(index).url;
+  return linkFields(index).url;
+}
+
+/** Numero della riga (da 1) di un campo del modulo ("link_url_2" → 3); 1 se il nome non ne ha. */
+export function mediaFieldRow(field: string | undefined): number {
+  const m = field?.match(/_(\d)$/);
+  return m ? Number(m[1]) + 1 : 1;
+}
 
 /**
  * Legge video e link dal modulo (`get` = `formData.get`) e li controlla come fa il database. Righe vuote saltate,
@@ -427,14 +523,15 @@ export function readDeckMedia(get: (name: string) => unknown): ({ ok: true } & D
   for (let i = 0; i < MAX_DECK_VIDEOS; i++) {
     const f = videoFields(i);
     const raw = i === 0 && get(f.url) === null ? str("video") : str(f.url);
-    if (!raw) continue;
+    const title = cleanVideoTitle(str(f.title));
+    if (!raw && !title) continue;
     const p = parseVideoUrl(raw);
     if (!p) return { ok: false, code: "video", index: i };
     const typed = parseStartInput(str(f.start));
     if (!typed.ok) return { ok: false, code: "videoStart", index: i };
     if (videos.some((v) => v.url === p.url)) continue;
     const start = p.kind === "clip" ? undefined : (typed.value ?? p.start);
-    videos.push(start ? { url: p.url, start } : { url: p.url });
+    videos.push({ url: p.url, ...(start ? { start } : {}), ...(title ? { title } : {}) });
   }
   const links: DeckLink[] = [];
   for (let i = 0; i < MAX_DECK_LINKS; i++) {
@@ -446,9 +543,18 @@ export function readDeckMedia(get: (name: string) => unknown): ({ ok: true } & D
     const p = parseLink(raw);
     if (!p.ok) return { ok: false, code: p.reason === "host" ? "linkHost" : "link", index: i };
     if (links.some((l) => l.url === p.url)) continue;
-    links.push({ label: label || p.host, url: p.url });
+    links.push({ label: label || cleanLabel(p.host), url: p.url });
   }
   return { ok: true, videos, links };
+}
+
+/**
+ * Quello che si perderebbe salvando senza le colonne `videos` e `links` (migrazione non ancora applicata): la colonna
+ * storica tiene un solo indirizzo, senza minuto né titolo. Se c'è altro, la Server Action risponde con un errore invece
+ * di salvare a metà.
+ */
+export function mediaNeedsColumns(m: DeckMedia): boolean {
+  return m.videos.length > 1 || m.links.length > 0 || m.videos.some((v) => v.start || v.title);
 }
 
 /* ---------- guide editoriali ---------- */

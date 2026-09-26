@@ -91,6 +91,12 @@ const nextConfig: NextConfig = {
   experimental: {
     globalNotFound: true,
   },
+  // Miniature dei video YouTube dei mazzi e delle guide (pacchetto VIDEO, 26/09/2026): le scarica l'ottimizzatore del
+  // sito, così il browser chiede solo /_next/image a originsmeta.com e non contatta Google prima del clic sul video
+  // (`youtubeThumb` in src/lib/videos.ts, lettore `VideoEmbed`). Solo i.ytimg.com/vi/…, senza query.
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**", search: "" }],
+  },
   async redirects() {
     return [
       // La copia di Vercel (originsmeta.vercel.app) porta al dominio vero con lo stesso percorso, in modo permanente

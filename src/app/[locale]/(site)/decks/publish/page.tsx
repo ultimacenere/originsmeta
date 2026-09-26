@@ -6,6 +6,7 @@ import { cards } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
+import { videoFormLabels } from "@/lib/videoLabels";
 
 /**
  * Durata massima delle Server Action di questa pagina: dopo la pubblicazione la guida si traduce nelle altre
@@ -50,6 +51,7 @@ export default async function PublishPage({ params }: { params: LocaleParams }) 
             pool={pool}
             archetypes={archetypes}
             labels={d.community}
+            mediaLabels={videoFormLabels(locale)}
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/publish")}
             loginLabels={loginLabels(d)}

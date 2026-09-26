@@ -159,7 +159,7 @@ export default async function GuidePage({ params }: { params: Params }) {
         </div>
       ) : null}
 
-      <GuideVideoList items={media.top} poster={g.image} title={g.title} locale={locale} className="mt-8" />
+      <GuideVideoList items={media.top} title={g.title} locale={locale} className="mt-8" />
 
       {deckLegendary && deckCards.length ? (
         <section className="card-night mt-8 p-5 sm:p-6" aria-labelledby="guide-deck">
@@ -199,7 +199,7 @@ export default async function GuidePage({ params }: { params: Params }) {
       ) : null}
 
       <article className="card-night mt-8 p-6 sm:p-10">
-        <GuideBody segments={media.segments} end={media.end} poster={g.image} title={g.title} locale={locale} />
+        <GuideBody segments={media.segments} end={media.end} title={g.title} locale={locale} />
         {g.faq?.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="guide-faq">
             <h2 id="guide-faq" className="t-section">

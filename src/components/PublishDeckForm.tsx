@@ -16,8 +16,8 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { LoginPanel } from "./LoginPanel";
 import type { LoginLabels } from "@/lib/loginLabels";
-import { MEDIA_FIELD_NAMES, type DeckLink, type StoredVideo } from "@/lib/videos";
-import { videoLabels } from "@/lib/videoLabels";
+import { MEDIA_FIELD_NAMES, fillVideoLabel, mediaFieldRow, type DeckLink, type StoredVideo } from "@/lib/videos";
+import type { VideoFormLabels } from "@/lib/videoLabels";
 import { DeckMediaFields } from "./DeckMediaFields";
 
 /** Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). */
@@ -34,6 +34,8 @@ type Props = {
   archetypes: [string, string][];
   initial?: InitialDeck;
   labels: Labels;
+  /** etichette di video e risorse nella lingua della pagina (`videoFormLabels`, pacchetto VIDEO del 26/09/2026) */
+  mediaLabels: VideoFormLabels;
   loginLabels: LoginLabels;
   builderHref: string;
   /** percorso della pagina di pubblicazione, usato come ritorno dopo l'accesso */
@@ -159,7 +161,7 @@ function clearLocalDrafts() {
  * Il modulo è volutamente corto: in vista c'è solo il piano di gioco (obbligatorio); le sezioni facoltative
  * stanno in un <details> chiuso, e il testo scritto resta in una bozza locale finché non si pubblica.
  */
-export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, loginLabels, builderHref, publishPath }: Props) {
+export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, loginLabels, builderHref, publishPath }: Props) {
   const router = useRouter();
   const mounted = useMounted();
   // ?deck e ?draft dal router: sempre quelli della pagina che si sta aprendo, anche con un <Link>
@@ -184,6 +186,17 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const [guideWords, setGuideWords] = useState<number | null>(() => (initial ? guideFormWords((k) => initial.guide[k]) : null));
   /* misura: il mazzo inviato, per l'evento deck_published quando l'azione risponde "fatto" (solo in creazione) */
   const sent = useRef<EventParams["deck_published"] | null>(null);
+  /* il modulo, per risalvare la bozza quando si toglie una riga di video o di link (DeckMediaFields) */
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /* errore su un video o un link: la Server Action dice quale campo (`field`), che si apre e riceve il fuoco */
+  useEffect(() => {
+    if (!state.field) return;
+    const el = document.getElementById(`pub-${state.field}`);
+    const det = el?.closest("details");
+    if (det) det.open = true;
+    el?.focus();
+  }, [state]);
 
   /* il mazzo resta in attesa nel browser: sopravvive al giro di accesso (Discord o link via email) */
   useEffect(() => {
@@ -301,19 +314,21 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   /* il <details> parte aperto se c'è già qualcosa di scritto nelle sezioni facoltative, nei video o nei link */
   const hasOptional =
     guideSections.some((k) => Boolean(restored?.[k] || g?.[k])) || MEDIA_FIELD_NAMES.some((k) => Boolean(restored?.[k])) || Boolean(initial?.videos?.length || initial?.links?.length);
-  const loc = isLocale(locale) ? locale : "en";
-  /* errori di video e link (videoLabels.ts) prima di quelli del dizionario: il vecchio "video" parlava di http(s) */
+  /* errori di video e link (videoLabels.ts, con il numero della riga) prima di quelli del dizionario */
+  const mediaError = state.error ? (mediaLabels.errors as Record<string, string>)[state.error] : undefined;
   const errorText = state.error
-    ? ((videoLabels[loc].errors as Record<string, string>)[state.error] ?? (labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
+    ? mediaError
+      ? fillVideoLabel(mediaError, { n: mediaFieldRow(state.field) })
+      : ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
     : null;
   const busyLabel = mode === "edit" ? labels.updating : labels.submitting;
   const submitLabel = mode === "edit" ? labels.update : labels.submit;
   const ph = labels.placeholders;
 
   /* bozza della guida a ogni modifica: un'interruzione (accesso, telefono che si blocca) non cancella il testo */
-  const saveDraft = (e: FormEvent<HTMLFormElement>) => {
+  const saveDraftOf = (form: HTMLFormElement) => {
     if (mode !== "create") return;
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const values: DraftValues = {};
     for (const k of DRAFT_FIELDS) {
       const val = fd.get(k);
@@ -325,9 +340,11 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       /* ignore */
     }
   };
+  const saveDraft = (e: FormEvent<HTMLFormElement>) => saveDraftOf(e.currentTarget);
 
   return (
     <form
+      ref={formRef}
       // invio a mano invece di <form action>: React 19 svuota i campi non controllati quando l'azione finisce,
       // anche se torna un errore, e chi ha scritto la guida la perderebbe. La validazione del browser resta.
       onSubmit={(e) => {
@@ -447,7 +464,15 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           <Field id="matchups" label={labels.matchups} hint={labels.matchupsHint} placeholder={ph.matchups} rows={3} defaultValue={v("matchups", g?.matchups)} />
           <Field id="notes" label={labels.notes} placeholder={ph.notes} rows={2} defaultValue={v("notes", g?.notes)} />
           {/* fino a 3 video (YouTube, Twitch) e 5 risorse, con l'anteprima di ciò che il sito riconosce (26/09/2026) */}
-          <DeckMediaFields locale={loc} initialVideos={initial?.videos} initialLinks={initial?.links} draft={restored} />
+          <DeckMediaFields
+            labels={mediaLabels}
+            initialVideos={initial?.videos}
+            initialLinks={initial?.links}
+            draft={restored}
+            onRowsChange={() => {
+              if (formRef.current) saveDraftOf(formRef.current);
+            }}
+          />
         </details>
 
         <p className="mt-5 text-xs text-pale-muted">{labels.consent}</p>

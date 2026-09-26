@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { videoLabels } from "@/lib/videoLabels";
+import { videoPrivacyText } from "@/lib/videoLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -20,7 +20,7 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Video a clic di YouTube e Twitch e risorse dei mazzi (26/09/2026): l'ancora #video è il link "Privacy" sotto
             ogni lettore (VideoEmbed). Il testo sta in src/lib/videoLabels.ts. */}
         <p id="video" className="mt-6 scroll-mt-24">
-          {videoLabels[locale].privacy}
+          {videoPrivacyText[locale]}
         </p>
         {/* Pop-up dei feedback (22/09/2026): l'ancora #feedback è il link "Privacy" del pannello. Resta anche a
             widget spento, perché i messaggi già ricevuti stanno nel canale Discord dello staff. */}

@@ -1,54 +1,32 @@
 import { href, type Locale } from "@/lib/i18n";
-import { fillVideoLabel, videoLabels } from "@/lib/videoLabels";
-import type { ParsedVideo, ShownLink } from "@/lib/videos";
+import { videoLabels } from "@/lib/videoLabels";
+import { fillVideoLabel, type ParsedVideo, type ShownLink } from "@/lib/videos";
 import { NEW_TAB_HINT_ID, NewTabIcon } from "./SteamButton";
 import { VideoEmbed } from "./VideoEmbed";
 
 /**
  * Video della scheda di un mazzo della community (pacchetto VIDEO, 26/09/2026): fino a tre, ognuno col lettore a
- * clic (`VideoEmbed`), con l'illustrazione della Leggendaria come anteprima. Uno solo: a tutta larghezza; due: affiancati
- * da 1024 px; tre: il primo grande e gli altri due sotto. `legacyHref` è il vecchio `video_url` che non è un video
- * riconosciuto (`legacyVideoLink`): resta il tasto di prima, con i rel dei link degli utenti.
+ * clic (`VideoEmbed`) con la miniatura di YouTube (dall'ottimizzatore del sito) o un riquadro con piattaforma e titolo.
+ * Titolo: quello scritto dall'autore; senza, "Video 2" se sono più d'uno, altrimenti il nome del mazzo.
+ * Affiancati da 1024 px solo se sono tutti di YouTube (tre: il primo grande e gli altri due sotto): mezza colonna è più
+ * piccola dei 400×300 che l'embed di Twitch chiede, e un video di Twitch si aprirebbe fuori dal sito.
  */
-export function DeckVideos({
-  videos,
-  deckName,
-  poster,
-  locale,
-  legacyHref,
-  legacyLabel,
-}: {
-  videos: ParsedVideo[];
-  deckName: string;
-  poster?: string;
-  locale: Locale;
-  legacyHref?: string | null;
-  legacyLabel: string;
-}) {
-  if (!videos.length) {
-    return legacyHref ? (
-      <p className="mt-6">
-        <a className="btn btn-ink text-xs" href={legacyHref} rel="ugc nofollow noopener" target="_blank" aria-describedby={NEW_TAB_HINT_ID}>
-          ▶ {legacyLabel}
-        </a>
-      </p>
-    ) : null;
-  }
+export function DeckVideos({ videos, deckName, locale }: { videos: ParsedVideo[]; deckName: string; locale: Locale }) {
+  if (!videos.length) return null;
   const L = videoLabels[locale];
   const many = videos.length > 1;
+  const sideBySide = many && videos.every((v) => v.provider === "youtube");
   return (
     <section className="mt-8" aria-labelledby="deck-videos">
       <h2 id="deck-videos" className="t-section">
         {many ? L.deck.videoMany : L.deck.videoOne}
       </h2>
-      {/* affiancati solo da 1024 px: sotto, mezza colonna sarebbe più stretta dei 400 px minimi dell'embed di Twitch */}
-      <div className={`mt-3 grid grid-cols-1 gap-6 ${many ? "lg:grid-cols-2" : ""}`}>
+      <div className={`mt-3 grid grid-cols-1 gap-6 ${sideBySide ? "lg:grid-cols-2" : ""}`}>
         {videos.map((v, i) => (
-          <div key={v.url} className={`min-w-0 ${videos.length === 3 && i === 0 ? "lg:col-span-2" : ""}`}>
+          <div key={v.url} className={`min-w-0 ${sideBySide && videos.length === 3 && i === 0 ? "lg:col-span-2" : ""}`}>
             <VideoEmbed
               video={v}
-              title={many ? `${deckName} · ${fillVideoLabel(L.player.videoN, { n: i + 1 })}` : deckName}
-              poster={poster}
+              title={v.title || (many ? fillVideoLabel(L.player.videoN, { n: i + 1 }) : deckName)}
               labels={L.player}
               privacyHref={`${href(locale, "/privacy")}#video`}
               placement="deck_page"
@@ -61,7 +39,7 @@ export function DeckVideos({
 }
 
 /**
- * Risorse di un mazzo: i link scelti dall'autore (al massimo cinque, host ammessi, `deckLinks`), in un riquadro a
+ * Risorse di un mazzo: i link scelti dall'autore (al massimo cinque, host ammessi, `deckResources`), in un riquadro a
  * parte e mai dentro il testo della guida, che il sito traduce. Dominio sempre visibile accanto all'etichetta, rel dei
  * link degli utenti (ugc nofollow) e nuova scheda. Misura: `deck_link_click` con il dominio (attributi data-om-*).
  */

@@ -362,6 +362,8 @@ export type Database = {
       revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
       rotate_invite_code: { Args: { tid: string }; Returns: string };
       /** vincoli di video e risorse dei mazzi (creator-VIDEO.sql): funzioni pure, il sito non le chiama */
+      deck_text_ok: { Args: { t: string; maxlen: number }; Returns: boolean };
+      deck_video_url_ok: { Args: { u: string }; Returns: boolean };
       deck_link_host_ok: { Args: { u: string }; Returns: boolean };
       deck_videos_ok: { Args: { v: StoredVideo[] }; Returns: boolean };
       deck_links_ok: { Args: { v: DeckLink[] }; Returns: boolean };

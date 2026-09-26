@@ -18,7 +18,7 @@ import { communityPageLabels, deckIndexing, dropHreflang, editorialAuthor, fillL
 import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
 import { getGuides } from "@/lib/content/guides";
 import { authorHandle, authorName } from "@/lib/community/util";
-import { deckLinks, deckVideos, legacyVideoLink } from "@/lib/videos";
+import { deckResources, deckVideos } from "@/lib/videos";
 import { DeckResources, DeckVideos } from "@/components/DeckMedia";
 import { CardArt, DeckCardGrid } from "@/components/CardChip";
 import { CardMentions } from "@/components/CardMentions";
@@ -337,8 +337,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         />
 
         {/* Video a clic (pacchetto VIDEO, 26/09/2026): prima del clic nessuna richiesta a YouTube o Twitch; l'anteprima
-            è l'illustrazione della Leggendaria. Niente VideoObject: senza la data di caricamento non si dichiara. */}
-        <DeckVideos videos={videos} deckName={deck.name} poster={legendary?.cover} locale={locale} legacyHref={legacyVideoLink(deck)} legacyLabel={d.common.video} />
+            è la miniatura di YouTube servita dal sito o un riquadro neutro. Niente VideoObject: senza la data di
+            caricamento non si dichiara. */}
+        <DeckVideos videos={videos} deckName={deck.name} locale={locale} />
 
         {/* Carte intere che si girano al passaggio del mouse, come nel database /cards (FlipCard, richiesta di
             Pierluigi del 22/09/2026): la Leggendaria per prima, poi le 12 carte per costo, con il mana sempre in vista. */}
@@ -416,8 +417,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </div>
           </>
         ) : null}
-        {/* Risorse dell'autore: link strutturati, mai nel testo della guida (che il sito traduce) */}
-        <DeckResources links={deckLinks(deck)} locale={locale} />
+        {/* Risorse dell'autore (più un vecchio link video non riconosciuto, se su un host ammesso): link strutturati,
+            mai nel testo della guida (che il sito traduce) */}
+        <DeckResources links={deckResources(deck, d.common.video)} locale={locale} />
         <CardMentionEdges />
       </article>
 
