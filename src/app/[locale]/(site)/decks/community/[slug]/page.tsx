@@ -5,7 +5,6 @@ import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { deckLead, deckShortTail, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
-import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
@@ -25,6 +24,7 @@ import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
 import { Avatar } from "@/components/AccountMenu";
+import { AuthorChannels } from "@/components/AuthorChannels";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
@@ -208,7 +208,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {deck.updated_at.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, deck.updated_at.slice(0, 10))}` : ""}
             </p>
             <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
-            <p className="mt-3 flex items-center gap-2 text-pale-muted">
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
               <Avatar profile={deck.profile} name={author} size={32} />
               <span>
                 {c.by}{" "}
@@ -222,13 +222,20 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 )}
                 {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
               </span>
+              {/* tag autore, badge LIVE e canali principali accanto al nome (pacchetto CREATOR, 26/09/2026) */}
+              <AuthorChannels
+                ownerId={deck.owner}
+                username={deck.profile?.username}
+                name={author}
+                badge={deck.profile?.badge}
+                badgeLabel={deck.profile?.badge ? c.badges[deck.profile.badge as keyof typeof c.badges] : undefined}
+                locale={locale}
+              />
             </p>
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          {deck.profile?.badge && deck.profile.badge !== "community" ? (
-            <span className={`${badgePill} ${badgeStyle[deck.profile.badge] ?? badgeStyle.community}`}>{c.badges[deck.profile.badge as keyof typeof c.badges] ?? deck.profile.badge}</span>
-          ) : null}
+          {/* il tag autore sta accanto al nome, in AuthorChannels (pacchetto CREATOR) */}
           {/* pastiglie a fondo pieno con testo ink scuro (prima menta scuro con testo chiaro, 2,3:1) */}
           {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{d.common.community}</span>}
           <span className="stat-pill bg-sky text-ink">

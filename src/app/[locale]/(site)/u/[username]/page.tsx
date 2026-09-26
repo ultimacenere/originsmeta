@@ -24,6 +24,11 @@ import { communityPerson, communityProfilePage } from "@/lib/jsonld/deck";
 import { Avatar } from "@/components/AccountMenu";
 import { CardArt } from "@/components/CardChip";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
+import { getProfileShowcase } from "@/lib/community/creators";
+import { isCreatorBadge } from "@/lib/community/profileLinks";
+import { creatorLabels } from "@/lib/creatorLabels";
+import { ProfileShowcase } from "@/components/ProfileShowcase";
+import { CreatorTournaments } from "@/components/CreatorTournaments";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -109,6 +114,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const personName = editorial?.name ?? name;
   const alternateNames = [...new Set([profile.username, name])].filter((n): n is string => Boolean(n) && n !== personName);
   const image = avatarUrl(profile.avatar_url);
+  // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per chi ha un tag autore i canali sono i sameAs della Person.
+  // Non per un autore editoriale: la sua Person è quella di /authors, con i contatti verificati di authors.ts, e i link
+  // scritti dall'utente la cambierebbero da una pagina all'altra.
+  const showcase = await getProfileShowcase(profile.id);
+  const creator = isCreatorBadge(profile.badge);
+  const sameAs = creator && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
   const person = communityPerson({
     locale,
     username: profile.username,
@@ -118,6 +129,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       ...(profile.username ? { identifier: profile.username } : {}),
       ...(alternateNames.length ? { alternateName: alternateNames.length === 1 ? alternateNames[0] : alternateNames } : {}),
       ...(image ? { image } : {}),
+      ...(sameAs.length ? { sameAs } : {}),
     },
   });
 
@@ -157,6 +169,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               </Link>
             </p>
           ) : null}
+          <ProfileShowcase showcase={showcase} username={profile.username ?? ""} name={name} badge={profile.badge} locale={locale} />
         </div>
         <p className="font-mono text-xs text-pale-muted">
           {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}
@@ -232,7 +245,15 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         )}
       </section>
 
+      {/* Vetrina del creator (pacchetto CREATOR, 26/09/2026): i tornei pubblici che organizza */}
+      {creator ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
+
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
+        {creator ? (
+          <Link href={href(locale, "/creators")} className="link-mint font-bold">
+            {creatorLabels[locale].profile.directoryLink} →
+          </Link>
+        ) : null}
         <Link href={href(locale, "/decks")} className="link-mint font-bold">
           {d.tier.decksCta} →
         </Link>

@@ -10,6 +10,8 @@ import { activeCards, getCard, patchAt, patchLabel, statLine } from "@/lib/data/
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { listPublishedDecks } from "@/lib/community/queries";
+import { creatorExtras, creatorIndex, listCreators } from "@/lib/community/creators";
+import { creatorLabels } from "@/lib/creatorLabels";
 import { authorName } from "@/lib/community/util";
 import { localizedGuide } from "@/lib/community/deckTranslation";
 import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/deckQuality";
@@ -80,6 +82,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Solo le Leggendarie giocabili nella demo (le rimosse del playtest restano nel database carte)
   const legendaries = activeCards.filter((c) => c.legendary);
   const community = await listPublishedDecks();
+  // canali e badge LIVE accanto agli autori con un tag (pacchetto CREATOR, 26/09/2026)
+  const creators = creatorIndex(await listCreators());
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
   const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
@@ -122,6 +126,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
         creatorBadge: d.community.badges[(deck.profile?.badge ?? "community") as keyof typeof d.community.badges] ?? deck.profile?.badge ?? undefined,
         creatorBadgeId: deck.profile?.badge ?? "community",
+        ...creatorExtras(creators, deck.owner),
       };
     });
   const list: ExplorerDeck[] = decks.map((deck) => {
@@ -382,6 +387,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             sortNewest: d.common.sortNewest,
             sortRated: d.common.sortRated,
             createdOn: d.common.createdOn,
+            channels: creatorLabels[locale].channels,
+            live: creatorLabels[locale].live,
           }}
           invite={{ href: href(locale, "/deck-builder"), title: d.decks.inviteTitle, text: d.decks.inviteText, cta: d.decks.inviteCta }}
         />

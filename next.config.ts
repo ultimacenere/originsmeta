@@ -49,6 +49,7 @@ const sections = [
   "account",
   "authors",
   "cards",
+  "creators",
   "deck-builder",
   "decks",
   "faq",

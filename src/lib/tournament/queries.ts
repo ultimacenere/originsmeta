@@ -9,7 +9,8 @@ import { LISTING_BADGES, type Tournament, type TournamentInvite, type Tournament
  */
 
 const ORGANIZER = "profile:profiles!tournaments_organizer_fkey(username, display_name, avatar_url, badge, role)";
-const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
+/** Colonne di una scheda torneo (`TournamentCard`); esportata per la vetrina dei creator (src/lib/community/creators.ts). */
+export const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
 const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
 const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, created_at, updated_at";
 
