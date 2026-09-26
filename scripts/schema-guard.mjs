@@ -16,10 +16,18 @@
 /** Il titolo del primo blocco dei pacchetti creator: prima c'è lo schema di sempre, con la correzione 6c6756d. */
 export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
 
-/** Le sole grant ammesse su public.profiles (istruzioni normalizzate: spazi singoli, minuscole, senza `;`). */
+/**
+ * Le sole grant ammesse su public.profiles (istruzioni normalizzate: spazi singoli, minuscole, senza `;`). Dopo la prima
+ * (lettura) solo grant di UPDATE per colonna, mai sull'intera tabella:
+ * - bio, canali e lingue del profilo pubblico (pacchetto CREATOR, 26/09/2026);
+ * - foto profilo caricata e campi della vetrina (pacchetto VETRINA, 27/09/2026, supabase/wave2-VETRINA.sql da accodare a
+ *   schema.sql): `avatar_path` per tutti, gli altri li difende il trigger `guard_profile_vetrina`, che li rifiuta a chi
+ *   non ha un ruolo con vetrina. Nessuna di queste colonne dà permessi: ruolo, tag, nome utente e id restano chiusi.
+ */
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
   "grant update (bio, links, content_langs) on public.profiles to authenticated",
+  "grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated",
 ];
 
 /** La revoke che chiude la falla (6c6756d): deve esserci, e prima della grant per colonna. */
@@ -142,7 +150,11 @@ export function schemaProblems(sql) {
   });
 
   const revokeAt = stmts.lastIndexOf(PROFILES_REVOKE);
-  const grantAt = stmts.indexOf(PROFILES_GRANTS[1]);
+  // la prima grant per colonna (bio e canali, poi quella della vetrina): la revoke deve venire prima di tutte
+  const columnGrants = PROFILES_GRANTS.slice(1)
+    .map((g) => stmts.indexOf(g))
+    .filter((i) => i >= 0);
+  const grantAt = columnGrants.length ? Math.min(...columnGrants) : -1;
   if (revokeAt < 0) problems.push(`manca "${PROFILES_REVOKE};" (commit 6c6756d)`);
   if (grantAt >= 0 && revokeAt > grantAt) problems.push("la revoke su public.profiles viene dopo la grant per colonna e la cancellerebbe");
   if (grantAt >= 0) {

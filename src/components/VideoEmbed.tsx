@@ -16,8 +16,8 @@ type Props = {
   labels: VideoLabels["player"];
   /** percorso della privacy nella lingua della pagina, con l'ancora del paragrafo sui video */
   privacyHref: string;
-  /** misura (`video_play`): dove sta il lettore */
-  placement: "deck_page" | "guide";
+  /** misura (`video_play`): dove sta il lettore (`profile`: video in evidenza della vetrina su /u, pacchetto VETRINA) */
+  placement: "deck_page" | "guide" | "profile";
 };
 
 /**

@@ -24,6 +24,20 @@ export type ProfileRow = {
   content_langs: string[];
   /** ultima modifica di bio, canali, lingue o tag: la scrive solo il trigger profiles_touch_showcase */
   showcase_updated_at: string | null;
+  /* vetrina (pacchetto VETRINA, supabase/wave2-VETRINA.sql; regole in src/lib/community/showcase.ts): foto caricata per tutti,
+     il resto solo per i ruoli con vetrina (trigger guard_profile_vetrina). Prima della migrazione le colonne non ci sono:
+     le letture lo riconoscono (errore 42703) */
+  avatar_path?: string | null;
+  cover_preset?: string | null;
+  cover_path?: string | null;
+  accent?: string | null;
+  tagline?: string | null;
+  favorite_legendary?: string | null;
+  featured_deck?: string | null;
+  featured_video?: string | null;
+  /** [{day 0-6 (0 = lunedì), time "HH:MM", minutes?}] nel fuso schedule_tz */
+  schedule?: { day: number; time: string; minutes?: number }[];
+  schedule_tz?: string | null;
 };
 
 export type CommunityDeckRow = {

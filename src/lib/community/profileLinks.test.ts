@@ -9,7 +9,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { schemaProblems, sqlStatements } from "../../../scripts/schema-guard.mjs";
+import { PROFILES_GRANTS, schemaProblems, sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
   BIO_MAX,
   BIO_MAX_BREAKS,
@@ -426,10 +426,12 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
   test("permessi di public.profiles: solo le grant ammesse, revoke prima, trigger con i campi riservati", () => {
     assert.deepEqual(schemaProblems(schema), []);
     const onProfiles = sqlStatements(schema).filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
-    assert.deepEqual(onProfiles, [
+    assert.deepEqual(onProfiles.slice(0, 2), [
       "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
       "grant update (bio, links, content_langs) on public.profiles to authenticated",
     ]);
+    // dopo, solo le grant per colonna dei blocchi accodati (VETRINA, 27/09/2026) che schema-guard conosce
+    assert.ok(onProfiles.every((s) => PROFILES_GRANTS.includes(s)), onProfiles.join("\n"));
   });
 });
 

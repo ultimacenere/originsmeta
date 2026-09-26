@@ -4,7 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { supabaseEnabled } from "@/lib/supabase/env";
+import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
+// foto profilo caricata dal sito prima di quella di Discord (pacchetto VETRINA, 27/09/2026)
+import { avatarSrc } from "@/lib/community/profileMedia";
 import type { Profile } from "@/lib/community/types";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
@@ -174,9 +176,12 @@ function AccountDetails({
 
 export function Avatar({ profile, name, size = 28 }: { profile: Profile | null | undefined; name: string; size?: number }) {
   const initial = name.trim().charAt(0).toUpperCase() || "?";
-  return profile?.avatar_url ? (
+  // prima la foto caricata dal sito (`avatar_path`, quando la lettura la porta), poi `avatar_url`, che il database tiene
+  // comunque allineata alla foto caricata (trigger guard_profile_vetrina): pacchetto VETRINA, 27/09/2026
+  const src = avatarSrc(profile, supabaseUrl);
+  return src ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={profile.avatar_url} alt="" width={size} height={size} className="shrink-0 rounded-full bg-felt-soft object-cover" style={{ width: size, height: size }} referrerPolicy="no-referrer" />
+    <img src={src} alt="" width={size} height={size} className="shrink-0 rounded-full bg-felt-soft object-cover" style={{ width: size, height: size }} referrerPolicy="no-referrer" />
   ) : (
     <span className="flex shrink-0 items-center justify-center rounded-full bg-mint font-display text-[11px] font-bold text-ink" style={{ width: size, height: size }} aria-hidden="true">
       {initial}

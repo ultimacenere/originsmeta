@@ -23,6 +23,7 @@ import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { InboxSection } from "@/components/inbox/InboxSection";
+import { ShowcaseEditor } from "@/components/showcase/ShowcaseEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
 
       {/* Profilo pubblico (pacchetto CREATOR, 26/09/2026): bio, canali, lingue e link breve /@nome */}
       <ProfileEditor supabase={supabase} userId={user.id} locale={locale} />
+      {/* Foto profilo (tutti) e "Personalizza la vetrina" (Creator, Autore, Pro, Staff): pacchetto VETRINA, 27/09/2026; ancore #avatar e #showcase */}
+      <ShowcaseEditor supabase={supabase} userId={user.id} locale={locale} name={name} />
       {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): conversazioni, "Scrivi allo staff"; ancora #messages */}
       <InboxSection locale={locale} supabase={supabase} userId={user.id} />
 

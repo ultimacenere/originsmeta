@@ -30,6 +30,12 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
 import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
+// vetrina dei profili (pacchetto VETRINA, 27/09/2026): copertina, colore d'accento, frase, Leggendaria del cuore, mazzo e video in evidenza, orari
+import { getProfileVetrina } from "@/lib/community/showcaseQueries";
+import { accentBorder, accentText } from "@/lib/community/showcase";
+import { ProfileCover } from "@/components/showcase/ProfileCover";
+import { FavoriteLegendary } from "@/components/showcase/FavoriteLegendary";
+import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -122,6 +128,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   // authors.ts, e i link scritti dall'utente la cambierebbero da una pagina all'altra.
   const showcase = await getProfileShowcase(profile.id);
   const showcaseRole = isShowcaseBadge(role);
+  // Vetrina (pacchetto VETRINA): solo per Creator, Autore, Pro e Staff; null prima della migrazione (la pagina resta com'era)
+  const vetrina = showcaseRole ? await getProfileVetrina(profile.id) : null;
   const sameAs = showcaseRole && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
   const person = communityPerson({
     locale,
@@ -149,11 +157,16 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         ]}
       />
       <p className="kicker text-mint">{p.kicker}</p>
+      {vetrina ? <ProfileCover vetrina={vetrina} /> : null}
 
-      <section className="card-night mt-4 flex flex-wrap items-center gap-4 p-6">
-        <Avatar profile={profile} name={name} size={64} />
+      <section className="card-night mt-4 flex flex-wrap items-center gap-4 p-6" style={accentBorder(vetrina?.accent)}>
+        {/* sulla vetrina la foto è più grande (e prima quella caricata dal sito) */}
+        <Avatar profile={vetrina ? { ...profile, avatar_path: vetrina.avatarPath } : profile} name={name} size={vetrina ? 112 : 64} />
         <div className="min-w-0 flex-1 basis-56">
-          <h1 className="t-page leading-tight">{name}</h1>
+          <h1 className="t-page break-words leading-tight" style={accentText(vetrina?.accent)}>
+            {name}
+          </h1>
+          {vetrina?.tagline ? <p className="mt-2 max-w-2xl break-words text-lg text-chalk">{vetrina.tagline}</p> : null}
           <p className="mt-1 font-mono text-xs text-pale-muted">
             {profile.username ? `@${profile.username}` : ""}
             {profile.created_at ? ` · ${p.memberSince} ${formatDate(locale, profile.created_at.slice(0, 10))}` : ""}
@@ -176,10 +189,14 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           {/* "Scrivi a questo utente": solo per lo staff, deciso nel browser (la pagina è ISR); casella messaggi, pacchetto INBOX */}
           <StaffMessageLink locale={locale} username={profile.username} profileId={profile.id} />
         </div>
+        {vetrina ? <FavoriteLegendary slug={vetrina.favoriteLegendary} locale={locale} legendaryLabel={d.common.legendary} /> : null}
         <p className="font-mono text-xs text-pale-muted">
           {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}
         </p>
       </section>
+
+      {/* Vetrina: mazzo e video in evidenza, orari delle dirette nel fuso di chi guarda */}
+      {vetrina ? <ShowcaseFeatured vetrina={vetrina} decks={decks} locale={locale} dict={d} name={name} username={profile.username ?? ""} links={showcase?.links ?? []} /> : null}
 
       {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
       <section className="mt-10">
