@@ -14,6 +14,7 @@ import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
 import { revalidateSitemaps } from "@/lib/sitemapData";
 import { publishedDeckLimit } from "./queries";
 import { announceDeck } from "./discordDeck";
+import { notifyFollowers } from "./notify";
 import { translateDeckLater } from "./translate";
 import { refreshCardDecks } from "./decksByCard";
 import { deckIndexable } from "./deckQuality";
@@ -167,6 +168,8 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
       revalidateDeckPaths(s);
       // in diretta nel canale #community-decks del nostro Discord, dopo la risposta (senza webhook non fa nulla)
       announceDeck(s);
+      // un avviso a chi segue l'autore (pacchetto SEGUI, 27/09/2026), dopo la risposta: solo i profili vetrina hanno follower
+      notifyFollowers(p.user.id, "deck_published", s, p.supabase);
       // la scheda nella lingua della guida, l'unica indicizzabile finché la traduzione non c'è; sotto la soglia di DECKS è noindex
       if (deckIndexable(p.row)) pingIndexNow([`/${p.row.guide.lang}/decks/community/${s}`]);
       // la guida si traduce nelle altre lingue del sito, dopo la risposta (senza ANTHROPIC_API_KEY non fa nulla)

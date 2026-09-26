@@ -132,6 +132,9 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         has: [{ type: "host", value: "originsmeta.vercel.app" }],
+        // tranne il cron di Vercel (pacchetto SEGUI, /api/cron/live): chiama l'indirizzo *.vercel.app della produzione e
+        // non segue i redirect, quindi con il 308 gli avvisi di diretta non partirebbero mai
+        missing: [{ type: "header", key: "user-agent", value: "vercel-cron/.*" }],
         destination: "https://originsmeta.com/:path*",
         permanent: true,
       },

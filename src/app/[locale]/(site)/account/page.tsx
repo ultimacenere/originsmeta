@@ -23,6 +23,7 @@ import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { InboxSection } from "@/components/inbox/InboxSection";
+import { FollowingSection } from "@/components/follow/FollowingSection";
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +100,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       <ProfileEditor supabase={supabase} userId={user.id} locale={locale} />
       {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): conversazioni, "Scrivi allo staff"; ancora #messages */}
       <InboxSection locale={locale} supabase={supabase} userId={user.id} />
+      {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
+      <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">

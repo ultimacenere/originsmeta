@@ -6,6 +6,9 @@ import { usePathname } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { badgeCount, badgeText, envelopeHref, envelopeLabel, fillInbox, parseInboxStatus, staffInboxPath, type InboxStatus } from "@/lib/community/messages";
 import { navLabelsFor } from "@/lib/inboxNavLabels";
+// avvisi per chi segue (pacchetto SEGUI, 27/09/2026): la busta conta anche le notifiche non lette
+import { envelopeAria, envelopeTarget, notificationCount, withNotificationCount, type NotifiedInboxStatus } from "@/lib/community/notifications";
+import { followNavLabelsFor } from "@/lib/followNavLabels";
 
 /**
  * Numero dei non letti della casella messaggi (26/09/2026, pacchetto INBOX) nel browser: l'header è lo stesso delle
@@ -31,7 +34,7 @@ const POLL_SLACK_MS = 1_000;
 const POLL_MIN_DELAY_MS = 5_000;
 
 let owner: string | null = null;
-let current: InboxStatus | null = null;
+let current: NotifiedInboxStatus | null = null;
 let lastAt = 0;
 let inflight: Promise<void> | null = null;
 let again = false;
@@ -70,7 +73,7 @@ async function load(uid: string, minGap: number): Promise<void> {
       if (!r.ok) return; // migrazione non applicata o database giù: niente numero, niente errore
       const json = (await r.json()) as { loggedIn?: boolean };
       if (owner === uid) {
-        current = json.loggedIn ? parseInboxStatus(json) : null;
+        current = json.loggedIn ? withNotificationCount(parseInboxStatus(json), json) : null;
         emit();
       }
     } catch {
@@ -96,7 +99,7 @@ export function announceInboxChange() {
 }
 
 /** Stato della casella dell'utente `uid` (null finché non si sa, o senza accesso). */
-export function useInboxStatus(uid: string | null | undefined): InboxStatus | null {
+export function useInboxStatus(uid: string | null | undefined): NotifiedInboxStatus | null {
   const pathname = usePathname();
   const status = useSyncExternalStore(
     subscribe,
@@ -146,14 +149,16 @@ export function useInboxStatus(uid: string | null | undefined): InboxStatus | nu
  * stacca dal fondo dell'header (3,5:1). Il nome per i lettori di schermo ha il numero intero ("Messaggi, 2 non letti").
  * Icona SVG disegnata qui, niente librerie.
  */
-export function InboxEnvelope({ locale, status }: { locale: string; status: InboxStatus | null }) {
+export function InboxEnvelope({ locale, status }: { locale: string; status: NotifiedInboxStatus | null }) {
   const L = navLabelsFor(locale);
-  const n = badgeCount(status);
-  const text = badgeText(n);
-  const label = envelopeLabel(L, n);
+  const messages = badgeCount(status);
+  // pacchetto SEGUI: il pallino conta messaggi e notifiche; con le sole notifiche la busta porta alla loro sezione
+  const notifications = notificationCount(status);
+  const text = badgeText(messages + notifications);
+  const label = envelopeAria(envelopeLabel(L, messages), notifications, followNavLabelsFor(locale));
   return (
     <Link
-      href={envelopeHref(status, locale)}
+      href={envelopeTarget(envelopeHref(status, locale), messages, notifications, locale)}
       prefetch={false}
       aria-label={label}
       title={label}

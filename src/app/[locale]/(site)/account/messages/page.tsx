@@ -10,6 +10,7 @@ import { listUserConversations, readInboxStatus } from "@/lib/community/inboxQue
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { UnreadLine, UserConversationList } from "@/components/inbox/InboxSection";
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
+import { NotificationsJump, NotificationsSection } from "@/components/follow/NotificationsSection";
 
 /**
  * Tutte le conversazioni dell'utente con lo staff, a pagine da 30 (26/09/2026, pacchetto INBOX): /account mostra solo
@@ -47,6 +48,7 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
       </p>
       <p className="kicker mt-6 text-mint">{L.section.title}</p>
       <h1 className="t-page mt-2">{L.section.allTitle}</h1>
+      {page === 1 ? <NotificationsJump locale={locale} supabase={supabase} userId={user.id} /> : null}
 
       {!list.ok ? (
         <div className="card-night mt-6 p-6">
@@ -79,6 +81,8 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
           ) : null}
         </>
       )}
+      {/* Notifiche dei profili seguiti (pacchetto SEGUI, 27/09/2026), solo sulla prima pagina; ancora #notifications */}
+      {page === 1 ? <NotificationsSection locale={locale} supabase={supabase} userId={user.id} /> : null}
     </div>
   );
 }

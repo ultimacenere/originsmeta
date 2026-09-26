@@ -55,6 +55,12 @@
  *                         feedback_submit anche quando finisce nella casella)
  *     message_read        conversazione con messaggi nuovi aperta e segnata come   placement (account | staff_area)
  *                         letta (una volta per messaggi nuovi, non a ogni visita)
+ *     follow              "Segui" su un profilo vetrina (pacchetto SEGUI,           placement (profile | deck_page)
+ *                         27/09/2026), solo se il database l'ha registrato
+ *     unfollow            "Segui già" premuto per smettere, o "Smetti di seguire"  placement (profile | deck_page | account)
+ *                         nell'elenco "Chi segui" di /account
+ *     notification_open   clic su un avviso nella sezione "Notifiche" di           kind (deck_published | live |
+ *                         /account/messages (pacchetto SEGUI)                      guide_published)
  *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
  *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest |
  *                                                                                 community | other), placement, cta
@@ -174,6 +180,9 @@ export type EventParams = {
   feedback_submit: Record<string, never>;
   message_sent: { placement: "account" | "staff_area"; kind: "new" | "reply" };
   message_read: { placement: "account" | "staff_area" };
+  follow: { placement: "profile" | "deck_page" };
+  unfollow: { placement: "profile" | "deck_page" | "account" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -211,6 +220,9 @@ export const VERCEL_PROPS = {
   feedback_submit: [],
   message_sent: ["placement", "kind"],
   message_read: ["placement"],
+  follow: ["placement"],
+  unfollow: ["placement"],
+  notification_open: ["kind"],
   faq_ask: ["sources"],
   steam_click: ["target", "placement"],
   discord_click: ["server", "placement"],

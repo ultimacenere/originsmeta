@@ -28,6 +28,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
 import { Avatar } from "@/components/AccountMenu";
 import { AuthorChannels } from "@/components/AuthorChannels";
+import { FollowButton } from "@/components/follow/FollowButton";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
@@ -243,6 +244,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 badgeLabel={c.badges[normalizeBadge(deck.profile?.badge)]}
                 locale={locale}
               />
+              {/* "Segui" accanto al nome (pacchetto SEGUI, 27/09/2026): solo i ruoli con vetrina, caricato nel browser */}
+              <FollowButton profileId={deck.owner} name={author} badge={deck.profile?.badge} locale={locale} placement="deck_page" compact />
             </p>
           </div>
         </div>

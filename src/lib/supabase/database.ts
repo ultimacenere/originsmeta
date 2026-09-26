@@ -180,6 +180,20 @@ export type ConversationRow = {
 };
 export type MessageRow = { id: number; conversation_id: string; author_id: string | null; from_staff: boolean; body: string; created_at: string };
 
+/* ---------- "Segui" e avvisi (27/09/2026, supabase/wave2-SEGUI.sql, blocco SEGUI) ---------- */
+export type FollowRow = { follower: string; followed: string; created_at: string };
+/** authenticated legge solo queste colonne (grant per colonna): `event_key` resta fuori */
+export type NotificationRow = {
+  id: number;
+  user_id: string;
+  kind: "deck_published" | "live" | "guide_published";
+  actor_id: string;
+  /** percorso interno senza lingua: /decks/community/<slug>, /guides/<slug>, /u/<nome utente> */
+  target: string;
+  created_at: string;
+  read_at: string | null;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -424,6 +438,50 @@ export type Database = {
           },
         ];
       };
+      /** "Segui" (blocco SEGUI): ognuno legge, aggiunge e toglie solo i propri; si seguono solo i profili vetrina */
+      follows: {
+        Row: FollowRow;
+        Insert: { follower: string; followed: string };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_fkey";
+            columns: ["follower"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "follows_followed_fkey";
+            columns: ["followed"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** avvisi (blocco SEGUI): si scrivono solo con notify_followers e notify_live, si segnano come letti con notifications_mark_read */
+      notifications: {
+        Row: NotificationRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       deck_ratings: {
@@ -477,6 +535,15 @@ export type Database = {
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
       /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
       inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
+      /* "Segui" e avvisi (blocco SEGUI): errori con raise exception '<codice>' (notificationErrorCode, followErrorCode) */
+      /** follower del profilo (solo il numero), se chi guarda lo segue, se si può seguire; anon e authenticated */
+      follow_state: { Args: { p_profile: string }; Returns: { followers: number; following: boolean; followable: boolean } };
+      /** avviso ai follower di chi chiama (auth.uid()) per un mazzo o una guida appena pubblicati; restituisce i destinatari */
+      notify_followers: { Args: { p_kind: "deck_published" | "guide_published"; p_target: string }; Returns: number };
+      /** avviso di diretta, dal cron (anon) con il segreto CRON_SECRET; restituisce i destinatari */
+      notify_live: { Args: { p_key: string; p_actor: string; p_stream_id: string }; Returns: number };
+      /** segna come letti i propri avvisi: tutti (p_ids assente) o quelli indicati; restituisce quanti */
+      notifications_mark_read: { Args: { p_ids?: number[] | null }; Returns: number };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
