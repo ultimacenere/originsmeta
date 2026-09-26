@@ -10,6 +10,7 @@ import { NEWS_PAGES_SINCE, latestDay, pageLastmod, type Day, type PageRoute } fr
 import { cardDates, cardLastmod } from "./cardDates";
 import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
 import type { IndexEntry, UrlEntry } from "./seoXml";
+import { directoryIndexable } from "./community/creatorDirectory";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -71,6 +72,13 @@ export type CommunityData = {
    * il nome nasce dal nome Discord o dall'email) leggerebbe una proprietà di Object.prototype invece di una data.
    */
   tierLists: { latest?: string; byUser: [username: string, updatedAt: string][] };
+  /**
+   * Profilo pubblico (pacchetto CREATOR, 26/09/2026): quanti profili hanno un tag autore (la directory /creators entra in
+   * sitemap solo da `CREATORS_MIN_INDEX` in su), la loro modifica più recente e, per ogni profilo modificato, il giorno
+   * dell'ultima modifica di bio, canali, lingue o tag (`showcase_updated_at`), come coppie [nome, data] per lo stesso
+   * motivo delle tier list. Assente: niente directory in sitemap e date dei profili come prima.
+   */
+  showcase?: { creators: number; latest?: string; byUser: [username: string, updatedAt: string][] };
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -119,6 +127,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
   const latestTournament = latestDay(data.tournaments.map((t) => t.updated_at));
   const patchDay = patches[latestPatch].date;
   const tierListOf = new Map(data.tierLists.byUser);
+  const showcaseOf = new Map(data.showcase?.byUser ?? []);
   // Le guide hanno date per lingua: la versione spagnola non è più vecchia del 25/09/2026 (`getGuides`).
   const guidesBy = Object.fromEntries(locales.map((l) => [l, getGuides(l)])) as Record<Locale, Guide[]>;
   const guideOf = (l: Locale, slug: string) => guidesBy[l].find((g) => g.slug === slug);
@@ -152,6 +161,11 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/faq", section: "pages", route: "/faq", dates: [] },
     { path: "/about", section: "pages", route: "/about", dates: [] },
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
+    // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
+    // e con i mazzi pubblicati, che mostra contati per autore.
+    ...(directoryIndexable(data.showcase?.creators ?? 0)
+      ? [{ path: "/creators", section: "pages", route: "/creators", dates: [data.showcase?.latest, latestCommunity] } satisfies SitemapPage]
+      : []),
     // Pagine autore: l'elenco arriva da `src/lib/data/authors.ts` (file puro, non legge Supabase), così un autore
     // nuovo entra in sitemap senza che nessuno debba ricopiarne lo slug qui. Cambiano con le sue news e guide.
     ...authors.map(
@@ -197,7 +211,13 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ),
     // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026): i loro mazzi e le loro tier list.
     ...data.profiles.map(
-      (p): SitemapPage => ({ path: `/u/${p.username}`, section: "community", route: "/u/[username]", dates: [p.updated_at, tierListOf.get(p.username)] }),
+      (p): SitemapPage => ({
+        path: `/u/${p.username}`,
+        section: "community",
+        route: "/u/[username]",
+        // anche la modifica di bio, canali e lingue (pacchetto CREATOR) cambia la pagina
+        dates: [p.updated_at, tierListOf.get(p.username), showcaseOf.get(p.username)],
+      }),
     ),
     ...data.tournaments.map((t): SitemapPage => ({ path: `/tournaments/${t.slug}`, section: "community", route: "/tournaments/[slug]", dates: [t.updated_at] })),
   ];

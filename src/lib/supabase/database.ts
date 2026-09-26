@@ -16,6 +16,13 @@ export type ProfileRow = {
   role: "user" | "admin";
   badge: string;
   created_at: string;
+  /* profilo pubblico (pacchetto CREATOR, supabase/creator-CREATOR.sql): le sole colonne che l'utente può cambiare */
+  bio: string | null;
+  /** canali, [{kind, url}] nella forma canonica di src/lib/community/profileLinks.ts */
+  links: { kind: string; url: string }[];
+  content_langs: string[];
+  /** ultima modifica di bio, canali, lingue o tag: la scrive solo il trigger profiles_touch_showcase */
+  showcase_updated_at: string | null;
 };
 
 export type CommunityDeckRow = {

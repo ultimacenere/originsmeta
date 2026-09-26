@@ -3,6 +3,7 @@ import { isLocale } from "@/lib/i18n";
 import { listPublicProfiles, listPublishedDeckIndex } from "@/lib/community/queries";
 import { loadDeckRefs } from "@/lib/community/decksByCard";
 import { supabasePublic } from "@/lib/supabase/public";
+import { CREATOR_BADGES, isCreatorBadge } from "@/lib/community/profileLinks";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -60,7 +61,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 3;
+export const SITEMAP_DATA_VERSION = 4;
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -116,7 +117,30 @@ async function tierListDates(): Promise<CommunityData["tierLists"]> {
 }
 
 /**
- * Le cinque letture, in parallelo. Il risultato è JSON puro (niente Map): la cache lo serializza.
+ * Profilo pubblico (pacchetto CREATOR, 26/09/2026): i profili con un tag autore (quanti sono decide se /creators entra
+ * in sitemap) e il giorno dell'ultima modifica di bio, canali, lingue o tag di ogni profilo modificato (lastmod di
+ * /u/<nome>). Una lettura sola: i profili con un tag o con `showcase_updated_at`. Colonne non ancora nel database
+ * (errore 42703, migrazione non applicata): nessun dato, come se la funzione non ci fosse; ogni altro errore lancia.
+ */
+async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> {
+  const client = supabasePublic();
+  if (!client) return { creators: 0, byUser: [] };
+  const { data, error } = await client
+    .from("profiles")
+    .select("username, badge, showcase_updated_at")
+    .or(`badge.in.(${CREATOR_BADGES.join(",")}),showcase_updated_at.not.is.null`)
+    .limit(2000);
+  if (error?.code === "42703") return { creators: 0, byUser: [] };
+  if (error) throw new SitemapReadError("profiles (vetrina)", error.message);
+  const rows = (data ?? []) as { username: string | null; badge: string | null; showcase_updated_at: string | null }[];
+  const creators = rows.filter((r) => r.username && isCreatorBadge(r.badge));
+  const latest = creators.map((r) => r.showcase_updated_at ?? "").sort().pop() || undefined;
+  const byUser = rows.flatMap((r): [string, string][] => (r.username && r.showcase_updated_at ? [[r.username, r.showcase_updated_at]] : []));
+  return { creators: creators.length, latest, byUser };
+}
+
+/**
+ * Le sei letture, in parallelo. Il risultato è JSON puro (niente Map): la cache lo serializza.
  *
  * `loadDeckRefs` (i mazzi come li vede la scheda carta, per il lastmod delle schede: lo stesso giorno del loro
  * `dateModified`) si chiama QUI DENTRO, apposta (revisione dell'integrazione dell'Ondata 2). Una `unstable_cache`
@@ -130,14 +154,15 @@ async function tierListDates(): Promise<CommunityData["tierLists"]> {
  * sito acceso come le altre letture.
  */
 async function readCommunity(): Promise<CommunityData> {
-  const [deckIndex, tournaments, profiles, tierLists, deckRefs] = await Promise.all([
+  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase] = await Promise.all([
     listPublishedDeckIndex(),
     tournamentSlugs(),
     listPublicProfiles(),
     tierListDates(),
     loadDeckRefs(),
+    showcaseDates(),
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

@@ -25,6 +25,7 @@ import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
 import { OwnerActions } from "@/components/OwnerActions";
 import { Avatar } from "@/components/AccountMenu";
+import { AuthorChannels } from "@/components/AuthorChannels";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { NewDeckBanner } from "@/components/NewDeckBanner";
 import { DeckCharts } from "@/components/DeckCharts";
@@ -208,7 +209,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {deck.updated_at.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, deck.updated_at.slice(0, 10))}` : ""}
             </p>
             <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
-            <p className="mt-3 flex items-center gap-2 text-pale-muted">
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
               <Avatar profile={deck.profile} name={author} size={32} />
               <span>
                 {c.by}{" "}
@@ -222,6 +223,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 )}
                 {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
               </span>
+              {/* canali principali e badge LIVE dell'autore (pacchetto CREATOR, 26/09/2026) */}
+              <AuthorChannels ownerId={deck.owner} username={deck.profile?.username} name={author} badge={deck.profile?.badge} locale={locale} />
             </p>
           </div>
         </div>

@@ -56,6 +56,10 @@
  *     home_route          clic dalla home verso una sezione o fuori dal sito      destination, section
  *     tier_entry_open     scheda di una voce aperta nelle tier list (TierExplorer) tier_source, card
  *     tier_entry_click    clic dalla scheda di una voce                           tier_source, target
+ *     creator_link_click  clic su un canale di un iscritto o sul badge LIVE      kind (twitch | youtube | x | tiktok |
+ *                         (pacchetto CREATOR, 26/09/2026; attributi sul link,     instagram | kick | bluesky | discord |
+ *                         ChannelLinks e LiveBadge): il traffico che il sito      website | twitch_live), placement
+ *                         porta ai creator                                        (profile | deck_page | decks_list | creators)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -143,6 +147,7 @@ export type EventParams = {
   home_route: { destination: string; section: string };
   tier_entry_open: { tier_source: string; card: string };
   tier_entry_click: { tier_source: string; target: string };
+  creator_link_click: { kind: string; placement: string };
 };
 export type EventName = keyof EventParams;
 
@@ -172,6 +177,7 @@ export const VERCEL_PROPS = {
   home_route: ["destination", "section"],
   tier_entry_open: ["tier_source", "card"],
   tier_entry_click: ["tier_source", "target"],
+  creator_link_click: ["kind", "placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

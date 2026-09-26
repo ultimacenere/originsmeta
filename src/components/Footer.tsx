@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { linkLabels } from "@/lib/linkLabels";
+import { creatorLabels } from "@/lib/creatorLabels";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { NEW_TAB_HINT_ID, NEW_TAB_REL, NewTabIcon, SteamLogo } from "./SteamButton";
@@ -40,6 +41,8 @@ function exploreItems(locale: Locale): { label: string; path: string }[] {
     { label: x.communityTierList, path: "/tier-list/community" },
     { label: x.makeTierList, path: "/tier-list/create" },
     { label: x.authors, path: "/authors" },
+    // directory dei creator (pacchetto CREATOR, 26/09/2026)
+    { label: creatorLabels[locale].footer, path: "/creators" },
   ];
 }
 

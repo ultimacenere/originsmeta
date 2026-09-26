@@ -6,6 +6,10 @@ import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { deckPeekOf, sharedPeeks } from "@/lib/cardPeek";
 import { CardPeek, hasPeek } from "./CardPeek";
 import { trackEvent } from "@/lib/analytics";
+import type { ProfileLink } from "@/lib/community/profileLinks";
+import type { ChannelLabels, LiveLabels } from "@/lib/creatorLabels";
+import { ChannelLinks } from "./ChannelLinks";
+import { LiveBadge } from "./LiveBadge";
 
 type DeckCard = {
   name: string;
@@ -61,6 +65,10 @@ export type ExplorerDeck = {
   creatorBadge?: string;
   /** id del tag autore (community, creator, influencer, pro, staff); "community" non si mostra */
   creatorBadgeId?: string;
+  /** canali principali dell'autore, solo per chi ha un tag autore (pacchetto CREATOR, 26/09/2026) */
+  channels?: ProfileLink[];
+  /** nome utente dell'autore per il badge LIVE, solo se ha un tag autore e un canale Twitch */
+  liveUser?: string;
 };
 
 type Labels = {
@@ -93,6 +101,9 @@ type Labels = {
   sortNewest: string;
   sortRated: string;
   createdOn: string;
+  /** canali e badge LIVE accanto all'autore (pacchetto CREATOR): senza, non si mostrano */
+  channels?: ChannelLabels;
+  live?: LiveLabels;
 };
 
 /** Tessera "il tuo mazzo qui": primo elemento della griglia finché i mazzi sono pochi. */
@@ -247,6 +258,19 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const viewBtn = (active: boolean) => `rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition ${active ? "bg-mint text-ink" : "text-pale hover:bg-night-3"}`;
+
+  /** Badge LIVE e canali principali accanto al nome dell'autore: solo chi ha un tag autore (pacchetto CREATOR, 26/09/2026). */
+  const authorExtras = (d: ExplorerDeck) => {
+    const live = Boolean(d.liveUser && labels.live);
+    const channels = Boolean(d.channels && d.channels.length > 0 && labels.channels);
+    if (!live && !channels) return null;
+    return (
+      <span className="inline-flex flex-wrap items-center gap-1">
+        {live && d.liveUser && labels.live ? <LiveBadge username={d.liveUser} labels={labels.live} placement="decks_list" /> : null}
+        {channels && d.channels && labels.channels ? <ChannelLinks links={d.channels} labels={labels.channels} ownerName={d.creator} placement="decks_list" variant="compact" /> : null}
+      </span>
+    );
+  };
 
   /** Riga dei tag comune alle due viste: tag autore, provenienza, archetipo, tipi di mazzo, voto. */
   const tags = (d: ExplorerDeck) => (
@@ -455,6 +479,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                     <span>
                       {labels.creator}: <strong className="text-pale">{d.creator}</strong>
                     </span>
+                    {authorExtras(d)}
                     {/* Quando è stato costruito e con quale versione del gioco: un mazzo di tre patch fa vale
                         un'altra cosa, e chi legge deve poterlo capire senza aprire la scheda. */}
                     {d.createdLabel ? (
@@ -502,6 +527,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               </Link>
               <span className="flex shrink-0 items-center gap-2 text-xs text-pale-muted">
                 <span className="truncate">{d.creator}</span>
+                {authorExtras(d)}
                 {d.createdLabel ? <time dateTime={d.created}>{d.createdLabel}</time> : null}
                 {d.patchLabel ? <span className="stat-pill bg-night-3 text-[11px] text-pale">{d.patchLabel}</span> : null}
                 {d.code ? <CopyCode code={d.code} labels={labels} /> : null}

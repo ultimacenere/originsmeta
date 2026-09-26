@@ -66,7 +66,8 @@ export const PAGE_UPDATED = {
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas
-  "/u/[username]": "2026-09-25", // Ondata 2: noindex senza contenuti, title e description dai dati, ProfilePage
+  "/u/[username]": "2026-09-26", // CREATOR: bio, canali e lingue, sameAs, tornei organizzati; Ondata 2: noindex senza contenuti, ProfilePage
+  "/creators": "2026-09-26", // CREATOR: nascita della directory dei creator
 } as const satisfies Record<string, Day>;
 
 export type PageRoute = keyof typeof PAGE_UPDATED;

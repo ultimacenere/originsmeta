@@ -17,6 +17,7 @@ import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { ProfileEditor } from "@/components/ProfileEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,9 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           <SignOutButton locale={locale} label={d.nav.logout} className="btn btn-ink text-xs" />
         </div>
       </section>
+
+      {/* Profilo pubblico (pacchetto CREATOR, 26/09/2026): bio, canali, lingue e link breve /@nome */}
+      <ProfileEditor supabase={supabase} userId={user.id} locale={locale} />
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
