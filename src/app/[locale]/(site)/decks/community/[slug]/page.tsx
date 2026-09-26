@@ -35,6 +35,7 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { DeckStreamTools } from "@/components/stream/StreamTools";
 import { deckImageAlt, deckOgImage } from "@/lib/stream";
 import { streamLabels } from "@/lib/streamLabels";
+import { DeckStatsBeacon } from "@/components/DeckStatsBeacon";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -437,6 +438,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             mai nel testo della guida (che il sito traduce) */}
         <DeckResources links={deckResources(deck, d.common.video)} locale={locale} />
         <CardMentionEdges />
+        {/* statistiche per l'autore (pacchetto STATS): visite, copie del codice, clic e video, solo nel browser */}
+        <DeckStatsBeacon slug={deck.slug} />
       </article>
 
       {guides.length ? (

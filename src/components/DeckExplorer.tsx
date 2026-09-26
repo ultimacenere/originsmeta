@@ -10,6 +10,7 @@ import type { ProfileLink } from "@/lib/community/profileLinks";
 import type { ChannelLabels, LiveLabels } from "@/lib/creatorLabels";
 import { ChannelLinks } from "./ChannelLinks";
 import { LiveBadge } from "./LiveBadge";
+import { bumpDeckStat } from "@/lib/community/deckStatsClient";
 
 type DeckCard = {
   name: string;
@@ -29,6 +30,8 @@ type DeckCard = {
 
 export type ExplorerDeck = {
   slug: string;
+  /** slug del mazzo della community in Supabase: la copia del codice conta anche nelle statistiche dell'autore (pacchetto STATS) */
+  statsSlug?: string;
   name: string;
   href: string;
   tagline: string;
@@ -153,7 +156,7 @@ function DeckCardArt({ card, size, legendary = false, shared }: { card: DeckCard
   );
 }
 
-function CopyCode({ code, labels }: { code: string; labels: Labels }) {
+function CopyCode({ code, labels, statsSlug }: { code: string; labels: Labels; statsSlug?: string }) {
   const [done, setDone] = useState(false);
   return (
     <button
@@ -163,6 +166,8 @@ function CopyCode({ code, labels }: { code: string; labels: Labels }) {
         navigator.clipboard?.writeText(code).then(
           () => {
             trackEvent("game_code_copy", { placement: "decks_list" });
+            // statistiche dell'autore (pacchetto STATS): lo slug non va nei parametri di GA4
+            if (statsSlug) bumpDeckStat(statsSlug, "code");
             setDone(true);
             window.setTimeout(() => setDone(false), 1600);
           },
@@ -497,7 +502,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                         {labels.patch} {d.patchLabel}
                       </span>
                     ) : null}
-                    {d.code ? <CopyCode code={d.code} labels={labels} /> : null}
+                    {d.code ? <CopyCode code={d.code} labels={labels} statsSlug={d.statsSlug} /> : null}
                   </p>
                 </div>
               </div>
@@ -536,7 +541,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                 {authorExtras(d, "icon")}
                 {d.createdLabel ? <time dateTime={d.created}>{d.createdLabel}</time> : null}
                 {d.patchLabel ? <span className="stat-pill bg-night-3 text-[11px] text-pale">{d.patchLabel}</span> : null}
-                {d.code ? <CopyCode code={d.code} labels={labels} /> : null}
+                {d.code ? <CopyCode code={d.code} labels={labels} statsSlug={d.statsSlug} /> : null}
               </span>
             </li>
           ))}

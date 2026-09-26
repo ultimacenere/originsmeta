@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
+import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -35,6 +36,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Profilo pubblico e stato in diretta (pacchetto CREATOR, 26/09/2026) */}
         <p id="profile" className="mt-6 scroll-mt-24">
           {creatorLabels[locale].privacy}
+        </p>
+        {/* Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026): totali per mazzo, senza dati personali. */}
+        <p id="deck-stats" className="mt-6 scroll-mt-24">
+          {deckStatsPrivacy[locale]}
         </p>
       </article>
     </div>
