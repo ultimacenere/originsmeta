@@ -3,7 +3,8 @@ import { fillCreator, type ChannelLabels } from "@/lib/creatorLabels";
 
 /**
  * Canali di un iscritto (pacchetto CREATOR, 26/09/2026): profilo /u (`full`, tutti, con il nome del canale), accanto
- * al nome dell'autore nella scheda del mazzo e in /decks (`compact`, i canali principali), directory /creators.
+ * al nome dell'autore nella scheda del mazzo e in /decks (`compact` o, nella riga stretta della vista elenco, `icon`:
+ * i canali principali), directory /creators. Un dominio lungo si taglia con i puntini, l'indirizzo intero sta nel title.
  * Nessun hook: va bene nei componenti server e in quelli del browser (DeckExplorer).
  *
  * Icone semplici e generiche (diretta, video, @, chat, globo), mai i loghi delle piattaforme: sono marchi di terzi e
@@ -87,29 +88,42 @@ export function ChannelLinks({
   ownerName: string;
   /** `data-om-placement` della misura: profile, deck_page, decks_list, creators */
   placement: string;
-  variant?: "full" | "compact";
+  /**
+   * `full`: icona, piattaforma e nome del canale (profilo, directory); `compact`: icona e piattaforma, dentro una riga
+   * di testo (scheda del mazzo, griglia di /decks); `icon`: la sola icona, con piattaforma e canale nel `title` e per i
+   * lettori di schermo (riga stretta della vista elenco di /decks).
+   */
+  variant?: "full" | "compact" | "icon";
   /** rel="me": solo sulla pagina del profilo */
   me?: boolean;
   className?: string;
 }) {
   if (!links.length) return null;
   const rel = me ? "me ugc nofollow noopener" : "ugc nofollow noopener";
-  const compact = variant === "compact";
-  // La versione compatta sta dentro una riga di testo (<p> dell'autore): elenco fatto di <span> con i ruoli ARIA,
+  const inline = variant !== "full";
+  // Le versioni compatte stanno dentro una riga di testo (<p> dell'autore): elenco fatto di <span> con i ruoli ARIA,
   // perché un <ul> dentro un <p> è HTML non valido (il browser chiuderebbe il paragrafo e l'idratazione fallirebbe).
-  const List = compact ? "span" : "ul";
-  const Item = compact ? "span" : "li";
+  const List = inline ? "span" : "ul";
+  const Item = inline ? "span" : "li";
+  const chip =
+    variant === "full"
+      ? "inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-lg border-2 border-sky bg-night-2 px-2.5 py-1 text-xs font-semibold text-pale hover:border-mint hover:text-mint"
+      : variant === "compact"
+        ? "inline-flex min-w-0 max-w-full items-center gap-1 rounded-md border-2 border-sky px-1.5 py-0.5 text-[11px] font-semibold text-pale hover:border-mint hover:text-mint"
+        : "inline-flex items-center rounded-md border-2 border-sky p-1 text-pale hover:border-mint hover:text-mint";
   return (
     <List
-      role={compact ? "list" : undefined}
+      role={inline ? "list" : undefined}
       aria-label={fillCreator(labels.listOf, { name: ownerName })}
-      className={`${compact ? "inline-flex" : "flex"} flex-wrap items-center ${compact ? "gap-1" : "gap-2"} ${className}`}
+      className={`${inline ? "inline-flex min-w-0 max-w-full" : "flex"} flex-wrap items-center ${inline ? "gap-1" : "gap-2"} ${className}`}
     >
       {links.map((link) => {
         const name = channelName(link);
         const handle = link.kind === "website" ? "" : linkHandle(link);
+        // nel title l'indirizzo completo del sito (il dominio visibile può essere tagliato) o il nome del canale
+        const title = link.kind === "website" ? link.url : variant === "full" ? undefined : `${name}: ${handle}`;
         return (
-          <Item key={link.url} role={compact ? "listitem" : undefined}>
+          <Item key={link.url} role={inline ? "listitem" : undefined} className="min-w-0 max-w-full">
             <a
               href={link.url}
               target="_blank"
@@ -117,16 +131,12 @@ export function ChannelLinks({
               data-om-event="creator_link_click"
               data-om-kind={link.kind}
               data-om-placement={placement}
-              title={compact && handle ? `${name}: ${handle}` : undefined}
-              className={
-                compact
-                  ? "inline-flex items-center gap-1 rounded-md border border-sky/70 px-1.5 py-0.5 text-[11px] font-semibold text-pale hover:border-mint hover:text-mint"
-                  : "inline-flex max-w-full items-center gap-1.5 rounded-lg border-2 border-sky bg-night-2 px-2.5 py-1 text-xs font-semibold text-pale hover:border-mint hover:text-mint"
-              }
+              title={title}
+              className={chip}
             >
-              <ChannelIcon kind={link.kind} className={compact ? "h-3 w-3 shrink-0" : "h-3.5 w-3.5 shrink-0"} />
-              <span>{name}</span>
-              {!compact && handle ? <span className="truncate font-mono font-normal text-pale-muted">{handle}</span> : null}
+              <ChannelIcon kind={link.kind} className={variant === "full" ? "h-3.5 w-3.5 shrink-0" : "h-3 w-3 shrink-0"} />
+              {variant === "icon" ? <span className="sr-only">{handle ? `${name}: ${handle}` : name}</span> : <span className="min-w-0 truncate">{name}</span>}
+              {variant === "full" && handle ? <span className="min-w-0 truncate font-mono font-normal text-pale-muted">{handle}</span> : null}
               <span className="sr-only"> {labels.newTab}</span>
             </a>
           </Item>

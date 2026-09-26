@@ -24,9 +24,13 @@ export function ProfileShowcase({ showcase, username, name, badge, locale }: { s
           {showcase.contentLangs.length ? (
             <>
               <span>{L.profile.langs}</span>
+              {/* codice della lingua a vista, nome per esteso (nella sua lingua) per i lettori di schermo */}
               {showcase.contentLangs.map((l) => (
                 <span key={l} className="stat-pill bg-night-3 font-mono text-[11px] uppercase text-pale" title={L.langNames[l]}>
-                  {l}
+                  <span aria-hidden="true">{l}</span>
+                  <span className="sr-only" lang={l}>
+                    {L.langNames[l]}
+                  </span>
                 </span>
               ))}
             </>

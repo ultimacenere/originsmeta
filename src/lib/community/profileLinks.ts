@@ -9,7 +9,10 @@
  *   https riscritto nella forma canonica di quella piattaforma (`normalizeLink`); il sito salva solo la forma
  *   canonica, così le stesse regole si possono ripetere nel database (supabase/creator-CREATOR.sql,
  *   `profile_link_ok`) e un indirizzo scritto a mano via API che non le rispetta viene rifiutato anche lì;
- * - `website` accetta qualsiasi host, ma solo https, niente credenziali, porte, indirizzi IP né accorciatori di link;
+ * - `website` accetta qualsiasi host, ma solo https, niente credenziali, porte, indirizzi IP, accorciatori di link,
+ *   redirector (l.facebook.com, google.<tld>/url…) né host delle piattaforme che hanno un tipo loro (twitch.tv,
+ *   discord.com…, sottodomini compresi): con il dominio di una piattaforma nota come etichetta, un link di
+ *   reindirizzamento o di autorizzazione di un bot sembrerebbe fidato (`websiteBlock`);
  * - la bio è testo semplice (niente Markdown né HTML: React la scrive come testo), al massimo `BIO_MAX` caratteri
  *   contati come `char_length` di Postgres (punti di codice, non unità UTF-16);
  * - al massimo `MAX_LINKS` canali, senza doppioni, nell'ordine scelto dall'utente: i primi sono i "canali principali"
@@ -75,27 +78,91 @@ export const CANONICAL: Readonly<Record<LinkKind, RegExp>> = {
 };
 
 /**
- * Accorciatori di link: nascondono la destinazione, quindi niente (spam e phishing). Anche nel database
- * (`profile_link_ok`): se si aggiunge un dominio qui, va aggiunto anche lì.
+ * Accorciatori di link: nascondono la destinazione, quindi niente (spam e phishing). Si confrontano per suffisso
+ * (anche m.bit.ly, www.tinyurl.com…). Anche nel database (`profile_link_ok`, espressione `WEBSITE_BLOCKED_HOST`):
+ * il test controlla che l'espressione del database sia quella costruita da questi elenchi.
  */
 export const SHORTENER_HOSTS: readonly string[] = [
   "bit.ly",
+  "bitly.com",
+  "j.mp",
   "tinyurl.com",
+  "tiny.one",
+  "rotf.lol",
   "t.co",
   "goo.gl",
   "ow.ly",
   "is.gd",
+  "v.gd",
   "buff.ly",
   "cutt.ly",
+  "cutt.us",
   "rebrand.ly",
+  "bl.ink",
   "shorturl.at",
+  "shorturl.com",
   "tiny.cc",
   "rb.gy",
   "s.id",
   "lnkd.in",
   "t.ly",
-  "shorturl.com",
+  "adf.ly",
+  "shorte.st",
+  "ouo.io",
 ];
+
+/**
+ * Redirector noti: pagine che portano altrove con la destinazione nell'indirizzo (l.facebook.com/?u=…). Come gli
+ * accorciatori, per suffisso. google.<tld>/url e /amp/ stanno in `GOOGLE_REDIRECT`.
+ */
+export const REDIRECTOR_HOSTS: readonly string[] = ["l.facebook.com", "lm.facebook.com", "l.messenger.com", "out.reddit.com", "href.li", "t.umblr.com", "away.vk.com"];
+
+/**
+ * Host delle piattaforme che hanno un tipo loro, con i sottodomini: come "sito web" non valgono (il modulo dice di
+ * scegliere la piattaforma). Così un indirizzo come discord.com/oauth2/authorize… o youtube.com/redirect?q=… non passa
+ * con l'etichetta di un dominio che ispira fiducia.
+ */
+export const PLATFORM_HOSTS: Readonly<Record<string, Exclude<LinkKind, "website">>> = {
+  "twitch.tv": "twitch",
+  "youtube.com": "youtube",
+  "youtu.be": "youtube",
+  "x.com": "x",
+  "twitter.com": "x",
+  "tiktok.com": "tiktok",
+  "instagram.com": "instagram",
+  "kick.com": "kick",
+  "bsky.app": "bluesky",
+  "discord.com": "discord",
+  "discord.gg": "discord",
+  "discordapp.com": "discord",
+};
+
+/** Google usato come redirector: google.<tld>/url?q=… e le pagine /amp/. Uguale nel database. */
+export const GOOGLE_REDIRECT = /^https:\/\/(www\.)?google(\.[a-z]{2,3}){1,2}\/(url|amp)([/?#]|$)/;
+
+const escapeHost = (h: string) => h.replace(/\./g, "\\.");
+
+/**
+ * Un'espressione sola con tutti gli host che il sito web non accetta (piattaforme, accorciatori, redirector), per
+ * suffisso: è quella del vincolo del database, identica carattere per carattere (lo controlla il test).
+ */
+export const WEBSITE_BLOCKED_HOST = new RegExp(`(^|\\.)(${[...Object.keys(PLATFORM_HOSTS), ...SHORTENER_HOSTS, ...REDIRECTOR_HOSTS].map(escapeHost).join("|")})$`);
+
+/** `host` è `base` o un suo sottodominio? */
+const onHost = (host: string, base: string) => host === base || host.endsWith(`.${base}`);
+
+/**
+ * Perché un indirizzo non vale come sito web: `platform` (host di una piattaforma con un tipo suo, `kind` dice quale),
+ * `shortener`, `redirect`; null se va bene. Stessa regola del database (`WEBSITE_BLOCKED_HOST`, `GOOGLE_REDIRECT`).
+ */
+export function websiteBlock(url: string): { error: "platform"; kind: Exclude<LinkKind, "website"> } | { error: "shortener" | "redirect" } | null {
+  const host = hostOf(url);
+  const platform = Object.keys(PLATFORM_HOSTS).find((h) => onHost(host, h));
+  if (platform) return { error: "platform", kind: PLATFORM_HOSTS[platform] };
+  if (SHORTENER_HOSTS.some((h) => onHost(host, h))) return { error: "shortener" };
+  if (REDIRECTOR_HOSTS.some((h) => onHost(host, h)) || GOOGLE_REDIRECT.test(url)) return { error: "redirect" };
+  return null;
+}
 
 /** Primi segmenti di percorso che sulle piattaforme non sono un canale (pagine del sito, video, ricerca…). */
 const RESERVED: Readonly<Partial<Record<LinkKind, readonly string[]>>> = {
@@ -119,15 +186,24 @@ const HOSTS: Readonly<Partial<Record<LinkKind, readonly string[]>>> = {
 
 /**
  * Perché un indirizzo è stato rifiutato: `invalid` (non è un indirizzo di quella piattaforma), `http` (serve https),
- * `shortener` (accorciatore), `long` (oltre `LINK_URL_MAX`).
+ * `shortener` (accorciatore), `redirect` (redirector), `platform` (sito web su un host di una piattaforma che ha un
+ * tipo suo: `platform` nella risposta dice quale), `long` (oltre `LINK_URL_MAX`).
  */
-export type LinkError = "invalid" | "http" | "shortener" | "long";
+export type LinkError = "invalid" | "http" | "shortener" | "redirect" | "platform" | "long";
 
-type Normalized = { ok: true; link: ProfileLink | null } | { ok: false; error: LinkError };
+type Normalized = { ok: true; link: ProfileLink | null } | { ok: false; error: LinkError; platform?: Exclude<LinkKind, "website"> };
+
+/**
+ * Caratteri invisibili che non devono finire in un indirizzo o nella bio: larghezza zero e marcatori di direzione
+ * (U+200B–U+200F), incorporamenti e sostituzioni di direzione (U+202A–U+202E), U+2060–U+2069, BOM (U+FEFF). Scritti
+ * con gli escape, mai come caratteri letterali: un editor o una sostituzione li perderebbe senza che si veda.
+ */
+const INVISIBLE = "\\u200B-\\u200F\\u202A-\\u202E\\u2060-\\u2069\\uFEFF";
+const SQUEEZE = new RegExp(`[\\s${INVISIBLE}]+`, "g");
 
 /** Toglie spazi, a capo e caratteri invisibili (larghezza zero, controlli di direzione) da un valore incollato. */
 function squeeze(raw: string): string {
-  return raw.replace(/[\s​-‏‪-‮⁠-⁩﻿]+/g, "");
+  return raw.replace(SQUEEZE, "");
 }
 
 /** Il primo segmento del percorso ("/coachcrono/videos" → "coachcrono"), già decodificato; "" se non c'è. */
@@ -175,12 +251,17 @@ function channelUrl(kind: Exclude<LinkKind, "website">, url: URL): string | null
 /**
  * Nome scritto da solo, senza indirizzo ("coachcrono", "@coachcrono"): comodo per le piattaforme dove il canale è
  * un nome. Non per il sito web né per Discord (serve l'invito intero); per Bluesky vale il nome completo
- * ("nome.bsky.social"). Con un punto o una barra si tratta come indirizzo.
+ * ("nome.bsky.social"). Con una barra o i due punti si tratta come indirizzo; con un punto anche, tranne su YouTube,
+ * TikTok e Instagram, dove i nomi con il punto sono comuni ("coach.crono"): lì è un indirizzo solo se è l'host della
+ * piattaforma ("instagram.com").
  */
+const DOTTED_HANDLES: readonly LinkKind[] = ["youtube", "tiktok", "instagram"];
+
 function fromHandle(kind: LinkKind, value: string): string | null {
   const handle = value.replace(/^@/, "");
   if (kind === "bluesky") return /^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(handle) && !value.includes("/") ? `https://bsky.app/profile/${handle.toLowerCase()}` : null;
-  if (kind === "website" || kind === "discord" || /[./:]/.test(handle) || !handle) return null;
+  if (kind === "website" || kind === "discord" || !handle || /[/:]/.test(handle)) return null;
+  if (handle.includes(".") && (!DOTTED_HANDLES.includes(kind) || (HOSTS[kind] ?? []).includes(handle.toLowerCase()))) return null;
   switch (kind) {
     case "twitch":
       return `https://www.twitch.tv/${handle.toLowerCase()}`;
@@ -197,14 +278,18 @@ function fromHandle(kind: LinkKind, value: string): string | null {
   }
 }
 
-/** Sito web: https, host con un dominio vero (niente IP, porte, credenziali), niente accorciatori. */
+/**
+ * Sito web: https, host con un dominio vero (niente IP, porte, credenziali), niente accorciatori, redirector né host
+ * delle piattaforme che hanno un tipo loro (`websiteBlock`).
+ */
 function websiteUrl(url: URL): Normalized {
   if (url.username || url.password || url.port) return { ok: false, error: "invalid" };
   const host = url.hostname.toLowerCase();
   if (/^[\d.]+$/.test(host) || host.startsWith("[")) return { ok: false, error: "invalid" };
-  if (SHORTENER_HOSTS.includes(host.replace(/^www\./, ""))) return { ok: false, error: "shortener" };
   url.hash = "";
   const out = url.toString();
+  const blocked = websiteBlock(out);
+  if (blocked) return blocked.error === "platform" ? { ok: false, error: "platform", platform: blocked.kind } : { ok: false, error: blocked.error };
   if ([...out].length > LINK_URL_MAX) return { ok: false, error: "long" };
   return CANONICAL.website.test(out) ? { ok: true, link: { kind: "website", url: out } } : { ok: false, error: "invalid" };
 }
@@ -230,7 +315,7 @@ export function normalizeLink(kind: LinkKind, raw: string): Normalized {
   if (url.protocol !== "https:") return { ok: false, error: "invalid" };
   if (kind === "website") return websiteUrl(url);
   const host = url.hostname.toLowerCase();
-  if (SHORTENER_HOSTS.includes(host.replace(/^www\./, ""))) return { ok: false, error: "shortener" };
+  if (SHORTENER_HOSTS.some((h) => onHost(host, h))) return { ok: false, error: "shortener" };
   if (url.username || url.password || url.port || !(HOSTS[kind] ?? []).includes(host)) return { ok: false, error: "invalid" };
   const out = channelUrl(kind, url);
   if (!out) return { ok: false, error: "invalid" };
@@ -244,7 +329,7 @@ export function isCanonicalLink(value: unknown): value is ProfileLink {
   const v = value as Record<string, unknown>;
   if (Object.keys(v).length !== 2 || !isLinkKind(v.kind) || typeof v.url !== "string") return false;
   if ([...v.url].length > LINK_URL_MAX || !CANONICAL[v.kind].test(v.url)) return false;
-  if (v.kind === "website" && SHORTENER_HOSTS.includes(hostOf(v.url).replace(/^www\./, ""))) return false;
+  if (v.kind === "website" && websiteBlock(v.url)) return false;
   return true;
 }
 
@@ -303,16 +388,21 @@ export function twitchLogin(links: readonly ProfileLink[]): string | null {
   return t ? t.url.slice("https://www.twitch.tv/".length) : null;
 }
 
-/** Caratteri che nella bio non devono finire: controlli (tranne l'a capo), larghezza zero, controlli di direzione. */
-const BIO_STRIP = /[\u0000-\u0008\u000B-\u001F\u007F-\u009F​-‏‪-‮⁠-⁩﻿]/g;
+/**
+ * Caratteri che nella bio non devono finire: controlli (tranne l'a capo), larghezza zero, controlli di direzione.
+ * Il vincolo del database rifiuta ogni carattere di controllo tranne l'a capo (`[[:cntrl:]]`).
+ */
+const BIO_STRIP = new RegExp(`[\\u0000-\\u0008\\u000B-\\u001F\\u007F-\\u009F${INVISIBLE}]`, "g");
 
 /**
  * Bio del modulo: testo semplice, a capo ammessi (al massimo una riga vuota di fila), spazi in fondo alle righe tolti.
- * Vuota: nessuna bio (`null`). Troppo lunga: errore, non un taglio a metà frase.
+ * I separatori di riga Unicode (U+2028, U+2029, U+0085) diventano a capo: con alcuni locale del database contano come
+ * caratteri di controllo e il salvataggio fallirebbe. Vuota: nessuna bio (`null`). Troppo lunga: errore, non un taglio
+ * a metà frase.
  */
 export function cleanBio(raw: string): { ok: true; value: string | null } | { ok: false; error: "long" } {
   const text = String(raw ?? "")
-    .replace(/\r\n?/g, "\n")
+    .replace(/\r\n?|[\u2028\u2029\u0085]/g, "\n")
     .replace(/\t/g, " ")
     .replace(BIO_STRIP, "")
     .split("\n")
@@ -324,10 +414,28 @@ export function cleanBio(raw: string): { ok: true; value: string | null } | { ok
   return [...text].length > BIO_MAX ? { ok: false, error: "long" } : { ok: true, value: text };
 }
 
+/** Intervallo minimo fra due salvataggi del profilo che cambiano qualcosa (ogni salvataggio rigenera pagine e sitemap). */
+export const SAVE_MIN_INTERVAL_MS = 10_000;
+
+/**
+ * Il profilo salvato nel database è già uguale a quello del modulo? Allora il salvataggio non scrive e non rigenera
+ * nulla. Confronto esatto: canali nello stesso ordine (l'ordine decide i canali principali), lingue nell'ordine del sito
+ * (come le scrive `cleanContentLangs`).
+ */
+export function sameShowcase(row: { bio: string | null; links: unknown; content_langs: unknown }, value: ProfileFormValue): boolean {
+  const links = Array.isArray(row.links) ? row.links.map((l) => ({ kind: (l as ProfileLink | null)?.kind, url: (l as ProfileLink | null)?.url })) : null;
+  return (row.bio ?? null) === value.bio && JSON.stringify(links) === JSON.stringify(value.links) && JSON.stringify(row.content_langs ?? null) === JSON.stringify(value.content_langs);
+}
+
 export type ProfileFormInput = { bio: string; langs: readonly string[]; kinds: readonly string[]; urls: readonly string[] };
 export type ProfileFormValue = { bio: string | null; links: ProfileLink[]; content_langs: ContentLang[] };
 /** Errori del modulo: la bio, e per ogni riga dei canali (indice nel modulo) il motivo; `tooMany` oltre `MAX_LINKS`. */
-export type ProfileFormErrors = { bio?: "long"; links?: { index: number; error: LinkError | "kind" }[]; tooMany?: boolean };
+export type ProfileFormErrors = {
+  bio?: "long";
+  /** `platform`: con l'errore omonimo, la piattaforma da scegliere al posto di "sito web" */
+  links?: { index: number; error: LinkError | "kind"; platform?: Exclude<LinkKind, "website"> }[];
+  tooMany?: boolean;
+};
 
 /**
  * Il modulo "Il tuo profilo" di /account: bio, lingue (caselle), righe dei canali (tipo + indirizzo, nell'ordine del
@@ -350,7 +458,7 @@ export function parseProfileForm(input: ProfileFormInput): { ok: true; value: Pr
       continue;
     }
     const res = normalizeLink(kind, url);
-    if (!res.ok) rowErrors.push({ index: i, error: res.error });
+    if (!res.ok) rowErrors.push({ index: i, error: res.error, ...(res.platform ? { platform: res.platform } : {}) });
     else if (res.link && !links.some((l) => l.url === res.link!.url)) links.push(res.link);
   }
   if (rowErrors.length) errors.links = rowErrors;

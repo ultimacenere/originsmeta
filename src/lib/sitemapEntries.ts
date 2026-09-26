@@ -73,8 +73,9 @@ export type CommunityData = {
    */
   tierLists: { latest?: string; byUser: [username: string, updatedAt: string][] };
   /**
-   * Profilo pubblico (pacchetto CREATOR, 26/09/2026): quanti profili hanno un tag autore (la directory /creators entra in
-   * sitemap solo da `CREATORS_MIN_INDEX` in su), la loro modifica più recente e, per ogni profilo modificato, il giorno
+   * Profilo pubblico (pacchetto CREATOR, 26/09/2026): quante schede ha la directory /creators (profili con un tag autore
+   * e il profilo compilato, `listedInDirectory`: entra in sitemap solo da `CREATORS_MIN_INDEX` in su, come la pagina
+   * decide il suo noindex), la loro modifica più recente e, per ogni profilo modificato, il giorno
    * dell'ultima modifica di bio, canali, lingue o tag (`showcase_updated_at`), come coppie [nome, data] per lo stesso
    * motivo delle tier list. Assente: niente directory in sitemap e date dei profili come prima.
    */

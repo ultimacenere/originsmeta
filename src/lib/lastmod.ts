@@ -51,9 +51,9 @@ export const PAGE_UPDATED = {
   "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
   "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco; 25/09: riga della fonte senza World of Origins
-  "/decks": "2026-09-25", // Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
+  "/decks": "2026-09-26", // CREATOR: tag autore, canali e LIVE accanto al nome; Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
   "/decks/[slug]": "2026-09-25", // 63fa759
-  "/decks/community/[slug]": "2026-09-25", // Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
+  "/decks/community/[slug]": "2026-09-26", // CREATOR: tag autore, canali e LIVE accanto al nome; Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
   "/deck-builder": "2026-09-25", // Ondata 2: WebApplication nei dati strutturati
   "/tier-list": "2026-09-25", // Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
   "/tier-list/community": "2026-09-25", // Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
@@ -67,7 +67,7 @@ export const PAGE_UPDATED = {
   "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas
   "/u/[username]": "2026-09-26", // CREATOR: bio, canali e lingue, sameAs, tornei organizzati; Ondata 2: noindex senza contenuti, ProfilePage
-  "/creators": "2026-09-26", // CREATOR: nascita della directory dei creator
+  "/creators": "2026-09-26", // CREATOR: nascita della directory Autori e streamer
 } as const satisfies Record<string, Day>;
 
 export type PageRoute = keyof typeof PAGE_UPDATED;

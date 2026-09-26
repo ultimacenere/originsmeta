@@ -1,19 +1,26 @@
 /**
  * Test delle regole del profilo pubblico (`profileLinks.ts`): `node --test src/lib/community/profileLinks.test.ts`.
  * Canali nella forma canonica di ogni piattaforma, https e host ammessi, bio in testo semplice, lingue dei contenuti,
- * modulo di /account. Controlla anche che le espressioni del database (supabase/creator-CREATOR.sql) siano le stesse
- * del codice: il vincolo `profile_link_ok` è la vera difesa contro chi scrive la riga via API saltando il sito.
+ * modulo di /account. Controlla anche che le espressioni del database siano le stesse del codice: il vincolo
+ * `profile_link_ok` è la vera difesa contro chi scrive la riga via API saltando il sito. Il blocco SQL sta in
+ * supabase/creator-CREATOR.sql finché l'integrazione non lo accoda a supabase/schema.sql; dopo, il test lo legge lì
+ * (e controlla che venga dopo la `revoke update on public.profiles`, che toglierebbe i grant per colonna).
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import {
   BIO_MAX,
   CANONICAL,
   CONTENT_LANGS,
+  GOOGLE_REDIRECT,
   LINK_KINDS,
   MAX_LINKS,
+  PLATFORM_HOSTS,
+  REDIRECTOR_HOSTS,
+  SAVE_MIN_INTERVAL_MS,
   SHORTENER_HOSTS,
+  WEBSITE_BLOCKED_HOST,
   cleanBio,
   cleanContentLangs,
   isCanonicalLink,
@@ -23,7 +30,9 @@ import {
   normalizeLink,
   parseProfileForm,
   parseStoredLinks,
+  sameShowcase,
   twitchLogin,
+  websiteBlock,
   type LinkKind,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in src/lib/tierstats.test.ts.
@@ -35,6 +44,14 @@ const url = (kind: LinkKind, raw: string) => {
   return r.ok ? (r.link?.url ?? null) : `!${r.error}`;
 };
 
+/** Caratteri invisibili costruiti dal codice: scritti letterali nel file si perderebbero senza che si veda. */
+const ch = (code: number) => String.fromCharCode(code);
+const RLO = ch(0x202e);
+const ZWSP = ch(0x200b);
+const BEL = ch(0x07);
+const LINE_SEP = ch(0x2028);
+const PARA_SEP = ch(0x2029);
+
 describe("canali: forma canonica di ogni piattaforma", () => {
   test("Twitch: indirizzo intero, senza https, mobile, con pagine dopo il canale, o il solo nome", () => {
     assert.equal(url("twitch", "https://www.twitch.tv/CoachCrono"), "https://www.twitch.tv/coachcrono");
@@ -43,6 +60,7 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     assert.equal(url("twitch", "coachcrono"), "https://www.twitch.tv/coachcrono");
     assert.equal(url("twitch", "@coachcrono"), "https://www.twitch.tv/coachcrono");
     assert.equal(url("twitch", "  https://www.twitch.tv/coachcrono \n"), "https://www.twitch.tv/coachcrono");
+    assert.equal(url("twitch", `coach${ZWSP}crono`), "https://www.twitch.tv/coachcrono", "caratteri invisibili incollati");
   });
   test("Twitch: pagine che non sono un canale, altri siti, nomi impossibili", () => {
     assert.equal(url("twitch", "https://www.twitch.tv/directory/category/origins-tcg"), "!invalid");
@@ -52,6 +70,7 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     assert.equal(url("twitch", "https://user:pass@www.twitch.tv/coachcrono"), "!invalid");
     assert.equal(url("twitch", "ab"), "!invalid");
     assert.equal(url("twitch", "nome-con-trattino"), "!invalid");
+    assert.equal(url("twitch", "coach.crono"), "!invalid", "su Twitch i nomi non hanno il punto");
   });
   test("YouTube: handle, canale, vecchi indirizzi c/ e user/; niente video", () => {
     assert.equal(url("youtube", "https://www.youtube.com/@CoachCrono/videos"), "https://www.youtube.com/@CoachCrono");
@@ -62,6 +81,18 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     assert.equal(url("youtube", "https://www.youtube.com/user/someone"), "https://www.youtube.com/user/someone");
     assert.equal(url("youtube", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"), "!invalid");
     assert.equal(url("youtube", "https://youtu.be/dQw4w9WgXcQ"), "!invalid");
+  });
+  test("nomi con il punto, scritti da soli, su YouTube, TikTok e Instagram (il suggerimento del modulo li promette)", () => {
+    assert.equal(url("youtube", "@Coach.Crono"), "https://www.youtube.com/@Coach.Crono");
+    assert.equal(url("youtube", "Coach.Crono"), "https://www.youtube.com/@Coach.Crono");
+    assert.equal(url("tiktok", "@coach.crono"), "https://www.tiktok.com/@coach.crono");
+    assert.equal(url("tiktok", "Coach.Crono"), "https://www.tiktok.com/@coach.crono");
+    assert.equal(url("instagram", "coach.crono"), "https://www.instagram.com/coach.crono");
+    assert.equal(url("instagram", "@coach.crono"), "https://www.instagram.com/coach.crono");
+    assert.equal(url("instagram", "instagram.com"), "!invalid", "l'host da solo non è un nome");
+    assert.equal(url("youtube", "www.youtube.com"), "!invalid");
+    assert.equal(url("x", "coach.crono"), "!invalid", "su X i nomi non hanno il punto: è un indirizzo di un altro sito");
+    assert.equal(url("kick", "coach.crono"), "!invalid");
   });
   test("X (anche twitter.com), TikTok, Instagram, Kick", () => {
     assert.equal(url("x", "https://twitter.com/Origins_TCG"), "https://x.com/Origins_TCG");
@@ -84,14 +115,16 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     assert.equal(url("discord", "https://discord.gg/AbC-123"), "https://discord.gg/AbC-123");
     assert.equal(url("discord", "discord.com/invite/AbC123"), "https://discord.gg/AbC123");
     assert.equal(url("discord", "https://discord.com/channels/1/2"), "!invalid");
+    assert.equal(url("discord", "https://discord.com/oauth2/authorize?client_id=123&scope=bot&permissions=8"), "!invalid");
     assert.equal(url("discord", "AbC123"), "!invalid", "il solo codice non basta: serve l'invito");
   });
   test("sito web: solo https, dominio vero, niente accorciatori, credenziali, porte o IP", () => {
     assert.equal(url("website", "https://Example.com/Chi-Sono#top"), "https://example.com/Chi-Sono");
     assert.equal(url("website", "coachcrono.it"), "https://coachcrono.it/");
+    assert.equal(url("website", "https://sites.google.com/view/coachcrono"), "https://sites.google.com/view/coachcrono");
+    assert.equal(url("website", "https://www.facebook.com/coachcrono"), "https://www.facebook.com/coachcrono", "Facebook non ha un tipo suo");
+    assert.equal(url("website", "https://notbit.ly/x"), "https://notbit.ly/x", "il suffisso vale solo dopo un punto");
     assert.equal(url("website", "http://example.com"), "!http");
-    assert.equal(url("website", "https://bit.ly/abc"), "!shortener");
-    assert.equal(url("website", "https://www.tinyurl.com/abc"), "!shortener");
     assert.equal(url("website", "https://user:pw@example.com/"), "!invalid");
     assert.equal(url("website", "https://example.com:8443/"), "!invalid");
     assert.equal(url("website", "https://192.168.1.1/"), "!invalid");
@@ -100,6 +133,25 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     assert.equal(url("website", "data:text/html,<b>x</b>"), "!invalid");
     assert.equal(url("website", `https://example.com/${"a".repeat(220)}`), "!long");
   });
+  test("sito web: accorciatori anche nei sottodomini e con i nomi meno noti", () => {
+    for (const raw of ["https://bit.ly/abc", "https://www.tinyurl.com/abc", "https://m.bit.ly/abc", "https://j.mp/abc", "https://bitly.com/abc", "https://v.gd/abc", "https://bl.ink/abc", "https://tiny.one/abc", "https://rotf.lol/abc", "https://cutt.us/abc"]) {
+      assert.equal(url("website", raw), "!shortener", raw);
+    }
+  });
+  test("sito web: redirector e host delle piattaforme rifiutati, anche con un dominio che ispira fiducia", () => {
+    assert.equal(url("website", "https://www.google.com/url?q=https://evil.example/"), "!redirect");
+    assert.equal(url("website", "https://google.co.uk/url?q=https://evil.example/"), "!redirect");
+    assert.equal(url("website", "https://www.google.it/amp/s/evil.example/"), "!redirect");
+    assert.equal(url("website", "https://l.facebook.com/l.php?u=https%3A%2F%2Fevil.example%2F"), "!redirect");
+    assert.equal(url("website", "https://lm.facebook.com/l.php?u=x"), "!redirect");
+    assert.deepEqual(normalizeLink("website", "https://l.instagram.com/?u=https%3A%2F%2Fevil.example%2F"), { ok: false, error: "platform", platform: "instagram" });
+    assert.deepEqual(normalizeLink("website", "https://www.youtube.com/redirect?q=https://evil.example/"), { ok: false, error: "platform", platform: "youtube" });
+    assert.deepEqual(normalizeLink("website", "https://discord.com/oauth2/authorize?client_id=123&scope=bot&permissions=8"), { ok: false, error: "platform", platform: "discord" });
+    assert.deepEqual(normalizeLink("website", "https://www.twitch.tv/directory"), { ok: false, error: "platform", platform: "twitch" });
+    assert.deepEqual(normalizeLink("website", "https://youtu.be/dQw4w9WgXcQ"), { ok: false, error: "platform", platform: "youtube" });
+    assert.deepEqual(normalizeLink("website", "twitter.com/coach"), { ok: false, error: "platform", platform: "x" });
+    assert.equal(websiteBlock("https://example.com/"), null);
+  });
   test("schemi diversi da https rifiutati su tutte le piattaforme, accorciatori compresi", () => {
     for (const kind of LINK_KINDS) {
       assert.equal(url(kind, "javascript:alert(1)"), "!invalid", kind);
@@ -107,6 +159,7 @@ describe("canali: forma canonica di ogni piattaforma", () => {
     }
     assert.equal(url("twitch", "http://www.twitch.tv/coachcrono"), "!http");
     assert.equal(url("youtube", "https://bit.ly/abc"), "!shortener");
+    assert.equal(url("youtube", "https://m.bit.ly/abc"), "!shortener");
   });
   test("valore vuoto: nessun canale", () => {
     assert.deepEqual(normalizeLink("twitch", "   "), { ok: true, link: null });
@@ -129,6 +182,13 @@ describe("canali: forma canonica di ogni piattaforma", () => {
       assert.ok(isCanonicalLink(r.link), `${kind}: ${r.link.url}`);
     }
   });
+  test("elenchi degli host: minuscoli, senza doppioni, senza www", () => {
+    const all = [...Object.keys(PLATFORM_HOSTS), ...SHORTENER_HOSTS, ...REDIRECTOR_HOSTS];
+    assert.equal(new Set(all).size, all.length);
+    for (const h of all) assert.match(h, /^[a-z0-9-]+(\.[a-z0-9-]+)+$/, h);
+    for (const h of all) assert.ok(!h.startsWith("www."), h);
+    assert.ok(WEBSITE_BLOCKED_HOST.test("m.bit.ly") && !WEBSITE_BLOCKED_HOST.test("notbit.ly"));
+  });
 });
 
 describe("canali salvati", () => {
@@ -139,6 +199,8 @@ describe("canali salvati", () => {
     assert.deepEqual(parseStoredLinks([{ ...good, extra: 1 }]), [], "niente campi in più");
     assert.equal(parseStoredLinks(Array.from({ length: 12 }, () => good)).length, MAX_LINKS);
     assert.deepEqual(parseStoredLinks([{ kind: "website", url: "https://bit.ly/x" }]), [], "accorciatore scritto a mano");
+    assert.deepEqual(parseStoredLinks([{ kind: "website", url: "https://discord.com/oauth2/authorize" }]), [], "host di una piattaforma");
+    assert.deepEqual(parseStoredLinks([{ kind: "website", url: "https://www.google.com/url?q=x" }]), [], "redirector");
   });
   test("etichette visibili: il nome del canale o il dominio del sito", () => {
     assert.equal(linkHandle({ kind: "twitch", url: "https://www.twitch.tv/coachcrono" }), "coachcrono");
@@ -174,9 +236,12 @@ describe("canali salvati", () => {
 describe("bio e lingue", () => {
   test("bio: testo semplice, a capo ammessi, controlli e caratteri invisibili tolti", () => {
     assert.deepEqual(cleanBio("  Ciao!\r\n\r\n\r\n\r\nStreamer   di Origins\t TCG  "), { ok: true, value: "Ciao!\n\nStreamer di Origins TCG" });
-    assert.deepEqual(cleanBio("a‮b​c\u0007d"), { ok: true, value: "abcd" });
+    assert.deepEqual(cleanBio(`a${RLO}b${ZWSP}c${BEL}d`), { ok: true, value: "abcd" });
     assert.deepEqual(cleanBio(" \n "), { ok: true, value: null });
     assert.deepEqual(cleanBio("<b>ciao</b>"), { ok: true, value: "<b>ciao</b>" }, "l'HTML resta testo: React lo scrive così com'è");
+  });
+  test("bio: i separatori di riga Unicode diventano a capo (il vincolo del database li rifiuterebbe)", () => {
+    assert.deepEqual(cleanBio(`riga uno${LINE_SEP}riga due${PARA_SEP}${PARA_SEP}${PARA_SEP}tre`), { ok: true, value: "riga uno\nriga due\n\ntre" });
   });
   test("bio: il limite conta i caratteri come Postgres (un'emoji vale uno)", () => {
     assert.ok(cleanBio("x".repeat(BIO_MAX)).ok);
@@ -196,6 +261,11 @@ describe("bio e lingue", () => {
       [...CONTENT_LANGS],
     );
   });
+  test("il modulo non contiene caratteri invisibili o separatori di riga scritti letterali", () => {
+    const src = readFileSync(new URL("./profileLinks.ts", import.meta.url), "utf8");
+    const invisible = new RegExp(`[${ch(0x200b)}-${ch(0x200f)}${ch(0x202a)}-${ch(0x202e)}${ch(0x2060)}-${ch(0x2069)}${ch(0xfeff)}${LINE_SEP}${PARA_SEP}]`);
+    assert.doesNotMatch(src, invisible);
+  });
 });
 
 describe("modulo di /account", () => {
@@ -209,7 +279,12 @@ describe("modulo di /account", () => {
     assert.deepEqual(r, { ok: true, value: { bio: "Streamer italiano", links: [{ kind: "twitch", url: "https://www.twitch.tv/coachcrono" }], content_langs: ["en", "it"] } });
   });
   test("errori riga per riga, con l'indice della riga nel modulo; niente salvataggio parziale", () => {
-    const r = parseProfileForm({ bio: "x".repeat(BIO_MAX + 5), langs: [], kinds: ["twitch", "website", "myspace"], urls: ["https://evil.com/x", "https://bit.ly/x", "https://myspace.com/x"] });
+    const r = parseProfileForm({
+      bio: "x".repeat(BIO_MAX + 5),
+      langs: [],
+      kinds: ["twitch", "website", "myspace", "website"],
+      urls: ["https://evil.com/x", "https://bit.ly/x", "https://myspace.com/x", "https://www.twitch.tv/coachcrono"],
+    });
     assert.deepEqual(r, {
       ok: false,
       errors: {
@@ -218,9 +293,22 @@ describe("modulo di /account", () => {
           { index: 0, error: "invalid" },
           { index: 1, error: "shortener" },
           { index: 2, error: "kind" },
+          { index: 3, error: "platform", platform: "twitch" },
         ],
       },
     });
+  });
+  test("salvataggio identico a quello che c'è: niente scrittura (sameShowcase)", () => {
+    const value = { bio: "Streamer", links: [{ kind: "twitch" as const, url: "https://www.twitch.tv/coachcrono" }], content_langs: ["en" as const, "it" as const] };
+    const row = { bio: "Streamer", links: [{ kind: "twitch", url: "https://www.twitch.tv/coachcrono" }], content_langs: ["en", "it"] };
+    assert.ok(sameShowcase(row, value));
+    assert.ok(!sameShowcase({ ...row, bio: null }, value), "bio diversa");
+    assert.ok(!sameShowcase({ ...row, content_langs: ["it"] }, value), "lingue diverse");
+    assert.ok(!sameShowcase({ ...row, links: [] }, value), "canali diversi");
+    const two = { ...value, links: [...value.links, { kind: "x" as const, url: "https://x.com/coach" }] };
+    assert.ok(!sameShowcase({ ...row, links: [...two.links].reverse() }, two), "l'ordine dei canali conta");
+    assert.ok(sameShowcase({ bio: null, links: [], content_langs: [] }, { bio: null, links: [], content_langs: [] }));
+    assert.ok(SAVE_MIN_INTERVAL_MS >= 5_000);
   });
   test("oltre otto canali: errore anche se il modulo è stato manomesso", () => {
     const kinds = Array.from({ length: 9 }, () => "twitch");
@@ -231,8 +319,21 @@ describe("modulo di /account", () => {
   });
 });
 
-describe("database: stesse regole nel vincolo (supabase/creator-CREATOR.sql)", () => {
-  const sql = readFileSync(new URL("../../../supabase/creator-CREATOR.sql", import.meta.url), "utf8");
+/** Il blocco SQL del pacchetto: in schema.sql se l'integrazione ce l'ha già accodato, altrimenti nel suo file. */
+const MARKER = "Profilo del creator (pacchetto CREATOR";
+const schemaUrl = new URL("../../../supabase/schema.sql", import.meta.url);
+const separateUrl = new URL("../../../supabase/creator-CREATOR.sql", import.meta.url);
+const schema = readFileSync(schemaUrl, "utf8");
+const inSchema = schema.includes(MARKER);
+const sql = inSchema ? schema.slice(schema.indexOf(MARKER)) : existsSync(separateUrl) ? readFileSync(separateUrl, "utf8") : "";
+
+/** Righe che aprono o chiudono il corpo di una funzione con un dollaro solo (`as $`, `end $;`): errore di sintassi. */
+const singleDollar = (text: string) => text.split(/\r?\n/).filter((l) => /\bas \$\s*$|^\s*end \$;\s*$|^\s*\$;\s*$/i.test(l));
+
+describe(`database: stesse regole nel vincolo (${inSchema ? "supabase/schema.sql" : "supabase/creator-CREATOR.sql"})`, () => {
+  test("il blocco SQL c'è", () => {
+    assert.ok(sql.includes(MARKER), "manca il blocco SQL del profilo pubblico (né in schema.sql né in creator-CREATOR.sql)");
+  });
   test("ogni piattaforma ha la sua espressione, identica a quella del codice", () => {
     for (const kind of LINK_KINDS) {
       const m = new RegExp(`when '${kind}' then \\(link->>'url'\\) ~ '([^']+)'`).exec(sql);
@@ -240,8 +341,12 @@ describe("database: stesse regole nel vincolo (supabase/creator-CREATOR.sql)", (
       assert.equal(m[1], CANONICAL[kind].source.replace(/\\\//g, "/"), `${kind}: espressione diversa fra codice e database`);
     }
   });
-  test("gli accorciatori rifiutati sono gli stessi", () => {
-    for (const host of SHORTENER_HOSTS) assert.ok(sql.includes(`'${host}'`), `${host} manca nel database`);
+  test("sito web: stessi host rifiutati (piattaforme, accorciatori, redirector) e stesso controllo su Google", () => {
+    assert.ok(sql.includes(`!~ '${WEBSITE_BLOCKED_HOST.source}'`), "espressione degli host rifiutati diversa fra codice e database");
+    assert.ok(sql.includes(`!~ '${GOOGLE_REDIRECT.source.replace(/\\\//g, "/")}'`), "controllo di google.<tld>/url diverso fra codice e database");
+  });
+  test("un canale che desse null conta come non valido", () => {
+    assert.match(sql, /bool_and\(coalesce\(public\.profile_link_ok\(t\.e\), false\)\)/);
   });
   test("limiti uguali: canali, bio, indirizzo, lingue", () => {
     assert.match(sql, new RegExp(`jsonb_array_length\\(links\\) > ${MAX_LINKS}`));
@@ -254,4 +359,23 @@ describe("database: stesse regole nel vincolo (supabase/creator-CREATOR.sql)", (
     assert.doesNotMatch(sql, /grant update on public\.profiles/);
     assert.doesNotMatch(sql, /grant all/i);
   });
+  test("corpi delle funzioni con i doppi dollari", () => {
+    assert.deepEqual(singleDollar(sql), []);
+  });
+  test("accodato a schema.sql: dopo la revoke sulla tabella, che toglierebbe i grant per colonna", { skip: inSchema ? false : "blocco ancora in supabase/creator-CREATOR.sql" }, () => {
+    const revoke = schema.lastIndexOf("revoke update on public.profiles from anon, authenticated;");
+    const grant = schema.indexOf("grant update (bio, links, content_langs) on public.profiles to authenticated;");
+    assert.ok(revoke >= 0 && grant > revoke, "la grant per colonna deve venire dopo l'ultima revoke update su public.profiles");
+  });
+});
+
+/*
+  schema.sql (commit 6c6756d): il corpo di protect_profile_badge ha perso un dollaro ("as $" … "end $;") e
+  scripts/db-migrate.mjs, che manda tutto il file in una query sola, fallisce per intero. Il pacchetto CREATOR non può
+  toccare schema.sql: finché l'integrazione non lo corregge il controllo resta "da fare" (non blocca `npm test`), poi
+  diventa un test normale che impedisce di ricadere nell'errore.
+*/
+const schemaSingle = singleDollar(schema);
+test("schema.sql: nessun corpo di funzione con un dollaro solo", { todo: schemaSingle.length ? `da correggere in integrazione: ${schemaSingle.map((l) => l.trim()).join(" | ")}` : undefined }, () => {
+  assert.deepEqual(schemaSingle, []);
 });

@@ -59,7 +59,7 @@ export function CreatorDirectory({
         <label className="flex flex-col gap-1">
           <span className="kicker text-chalk-muted">{labels.lang}</span>
           <select value={lang} onChange={(e) => setLang(e.target.value)} className={selectCls}>
-            <option value="all">{labels.all}</option>
+            <option value="all">{labels.allLangs}</option>
             {CONTENT_LANGS.map((l) => (
               <option key={l} value={l}>
                 {langNames[l]}
@@ -70,7 +70,7 @@ export function CreatorDirectory({
         <label className="flex flex-col gap-1">
           <span className="kicker text-chalk-muted">{labels.platform}</span>
           <select value={platform} onChange={(e) => setPlatform(e.target.value)} className={selectCls}>
-            <option value="all">{labels.all}</option>
+            <option value="all">{labels.allPlatforms}</option>
             {platforms.map((k) => (
               <option key={k} value={k}>
                 {kindName(k)}
@@ -79,7 +79,7 @@ export function CreatorDirectory({
           </select>
         </label>
         <p className="kicker self-end text-chalk-muted lg:text-right" aria-live="polite">
-          {fillCreator(labels.results, { n: shown.length })}
+          {shown.length === 1 ? labels.resultsOne : fillCreator(labels.results, { n: shown.length })}
         </p>
       </div>
 
@@ -100,9 +100,13 @@ export function CreatorDirectory({
                   </p>
                   <p className="mt-2 flex flex-wrap items-center gap-2">
                     <span className={`${badgePill} ${badgeStyle[c.badge] ?? badgeStyle.community}`}>{c.badgeLabel}</span>
+                    {/* codice della lingua a vista, nome per esteso (nella sua lingua) per i lettori di schermo */}
                     {c.langs.map((l) => (
                       <span key={l} className="stat-pill bg-night-3 font-mono text-[11px] uppercase text-pale" title={langNames[l]}>
-                        {l}
+                        <span aria-hidden="true">{l}</span>
+                        <span className="sr-only" lang={l}>
+                          {langNames[l]}
+                        </span>
                       </span>
                     ))}
                   </p>

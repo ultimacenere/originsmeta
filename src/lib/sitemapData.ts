@@ -3,7 +3,8 @@ import { isLocale } from "@/lib/i18n";
 import { listPublicProfiles, listPublishedDeckIndex } from "@/lib/community/queries";
 import { loadDeckRefs } from "@/lib/community/decksByCard";
 import { supabasePublic } from "@/lib/supabase/public";
-import { CREATOR_BADGES, isCreatorBadge } from "@/lib/community/profileLinks";
+import { CREATOR_BADGES, isCreatorBadge, parseStoredLinks } from "@/lib/community/profileLinks";
+import { listedInDirectory } from "@/lib/community/creatorDirectory";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -117,23 +118,24 @@ async function tierListDates(): Promise<CommunityData["tierLists"]> {
 }
 
 /**
- * Profilo pubblico (pacchetto CREATOR, 26/09/2026): i profili con un tag autore (quanti sono decide se /creators entra
- * in sitemap) e il giorno dell'ultima modifica di bio, canali, lingue o tag di ogni profilo modificato (lastmod di
- * /u/<nome>). Una lettura sola: i profili con un tag o con `showcase_updated_at`. Colonne non ancora nel database
- * (errore 42703, migrazione non applicata): nessun dato, come se la funzione non ci fosse; ogni altro errore lancia.
+ * Profilo pubblico (pacchetto CREATOR, 26/09/2026): le schede della directory /creators (profili con un tag autore e
+ * il profilo compilato, `listedInDirectory` come la pagina: quante sono decide se /creators entra in sitemap) e il
+ * giorno dell'ultima modifica di bio, canali, lingue o tag di ogni profilo modificato (lastmod di /u/<nome>). Una
+ * lettura sola: i profili con un tag o con `showcase_updated_at`. Colonne non ancora nel database (errore 42703,
+ * migrazione non applicata): nessun dato, come se la funzione non ci fosse; ogni altro errore lancia.
  */
 async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> {
   const client = supabasePublic();
   if (!client) return { creators: 0, byUser: [] };
   const { data, error } = await client
     .from("profiles")
-    .select("username, badge, showcase_updated_at")
+    .select("username, badge, bio, links, showcase_updated_at")
     .or(`badge.in.(${CREATOR_BADGES.join(",")}),showcase_updated_at.not.is.null`)
     .limit(2000);
   if (error?.code === "42703") return { creators: 0, byUser: [] };
   if (error) throw new SitemapReadError("profiles (vetrina)", error.message);
-  const rows = (data ?? []) as { username: string | null; badge: string | null; showcase_updated_at: string | null }[];
-  const creators = rows.filter((r) => r.username && isCreatorBadge(r.badge));
+  const rows = (data ?? []) as { username: string | null; badge: string | null; bio: string | null; links: unknown; showcase_updated_at: string | null }[];
+  const creators = rows.filter((r) => r.username && isCreatorBadge(r.badge) && listedInDirectory({ bio: r.bio, links: parseStoredLinks(r.links) }));
   const latest = creators.map((r) => r.showcase_updated_at ?? "").sort().pop() || undefined;
   const byUser = rows.flatMap((r): [string, string][] => (r.username && r.showcase_updated_at ? [[r.username, r.showcase_updated_at]] : []));
   return { creators: creators.length, latest, byUser };

@@ -114,10 +114,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const personName = editorial?.name ?? name;
   const alternateNames = [...new Set([profile.username, name])].filter((n): n is string => Boolean(n) && n !== personName);
   const image = avatarUrl(profile.avatar_url);
-  // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per chi ha un tag autore i canali sono i sameAs della Person
+  // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per chi ha un tag autore i canali sono i sameAs della Person.
+  // Non per un autore editoriale: la sua Person è quella di /authors, con i contatti verificati di authors.ts, e i link
+  // scritti dall'utente la cambierebbero da una pagina all'altra.
   const showcase = await getProfileShowcase(profile.id);
   const creator = isCreatorBadge(profile.badge);
-  const sameAs = creator && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
+  const sameAs = creator && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
   const person = communityPerson({
     locale,
     username: profile.username,

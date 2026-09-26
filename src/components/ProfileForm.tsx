@@ -71,10 +71,25 @@ export function ProfileForm({
     setErrors(null);
     setDirty(true);
   };
-  const rowError = (i: number) => errors?.links?.find((e) => e.index === i)?.error;
-  const errorText = (code: string, kind: LinkKind) => {
+  const rowError = (i: number) => errors?.links?.find((e) => e.index === i);
+  const errorText = (err: NonNullable<ReturnType<typeof rowError>>, kind: LinkKind) => {
     const e = labels.errors;
-    return code === "http" ? e.http : code === "shortener" ? e.shortener : code === "long" ? e.long : code === "kind" ? e.kind : fillCreator(e.invalid, { platform: kindName(kind) });
+    switch (err.error) {
+      case "http":
+        return e.http;
+      case "shortener":
+        return e.shortener;
+      case "redirect":
+        return e.redirect;
+      case "long":
+        return e.long;
+      case "kind":
+        return e.kind;
+      case "platform":
+        return fillCreator(e.platform, { platform: err.platform ? LINK_KIND_NAMES[err.platform] : kindName(kind) });
+      default:
+        return kind === "website" ? e.invalidWebsite : fillCreator(e.invalid, { platform: kindName(kind) });
+    }
   };
   const topError = state.error && state.error !== "invalid" ? labels.errors[state.error] : errors?.tooMany ? labels.errors.tooMany : null;
 
@@ -181,7 +196,12 @@ export function ProfileForm({
                       ↑
                     </button>
                   ) : null}
-                  <button type="button" onClick={() => edit(rows.length > 1 ? rows.filter((r) => r.key !== row.key) : toRows([]))} className="btn btn-ink text-xs">
+                  <button
+                    type="button"
+                    onClick={() => edit(rows.length > 1 ? rows.filter((r) => r.key !== row.key) : toRows([]))}
+                    className="btn btn-ink text-xs"
+                    aria-label={`${labels.remove} (${i + 1})`}
+                  >
                     {labels.remove}
                   </button>
                 </span>

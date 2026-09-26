@@ -48,6 +48,11 @@ describe("etichette dei creator", () => {
       assert.ok(d.description.length >= 120 && d.description.length <= 158, `${locale}: description di ${d.description.length} caratteri`);
     }
   });
+  test("nessuna etichetta dice \"creator\": si confonderebbe con il tag Autore (commit f22e427)", () => {
+    for (const [locale, l] of Object.entries(creatorLabels)) {
+      for (const [key, text] of leaves(l as unknown as Tree)) assert.doesNotMatch(text, /\bcreators?\b/i, `${locale} ${key}`);
+    }
+  });
   test("spagnolo col tú, mai vosotros", () => {
     for (const text of leaves(creatorLabels.es as unknown as Tree).values()) assert.doesNotMatch(text, /\b(vosotros|os|vuestro|vuestra|podéis|tenéis)\b/i, text);
   });

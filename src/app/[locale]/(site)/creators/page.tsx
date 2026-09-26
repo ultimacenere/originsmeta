@@ -2,33 +2,40 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import { authors } from "@/lib/data/authors";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { listCreators } from "@/lib/community/creators";
-import { directoryIndexable, orderCreators } from "@/lib/community/creatorDirectory";
+import { directoryIndexable, listedInDirectory, orderCreators } from "@/lib/community/creatorDirectory";
 import { twitchLogin } from "@/lib/community/profileLinks";
 import { authorName } from "@/lib/community/util";
-import { dropHreflang } from "@/lib/community/deckQuality";
+import { dropHreflang, editorialAuthor } from "@/lib/community/deckQuality";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { contactEmail } from "@/components/Footer";
 import { CreatorDirectory, type DirectoryEntry } from "@/components/CreatorDirectory";
-import { JsonLd, breadcrumbs, collectionPage, memberId, videoGameId } from "@/components/JsonLd";
+import { JsonLd, breadcrumbs, collectionPage, memberId, personId, videoGameId } from "@/components/JsonLd";
 
 /*
-  Directory dei creator (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi): i profili con un tag autore (Autore,
-  Influencer, Pro, Staff), con bio, lingue dei contenuti, canali, mazzi pubblicati e il badge LIVE di chi è in diretta
-  su Origins TCG (caricato nel browser da /api/live). Nessun elenco scritto a mano: entra chi ha il tag, lo assegna lo
-  staff (scripts/set-badge.mjs). Filtri per lingua e piattaforma; l'ordine è dichiarato nella pagina.
-  ISR come /decks. Sotto i tre creator (`directoryIndexable`) la pagina è noindex, senza hreflang e fuori dalla sitemap.
+  Directory "Autori e streamer" (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi; indirizzo /creators): i profili
+  con un tag autore (Autore, Influencer, Pro, Staff) che hanno compilato il profilo pubblico (una bio o un canale), con
+  bio, lingue dei contenuti, canali, mazzi pubblicati e il badge LIVE di chi è in diretta su Origins TCG (caricato nel
+  browser da /api/live). Nessun elenco scritto a mano: entra chi ha il tag, lo assegna lo staff (scripts/set-badge.mjs).
+  Filtri per lingua e piattaforma; l'ordine è dichiarato nella pagina.
+  ISR come /decks. Sotto le tre schede (`directoryIndexable`) la pagina è noindex, senza hreflang e fuori dalla sitemap
+  (che conta con la stessa `listedInDirectory`, in sitemapData.ts).
   In fondo l'invito a chiedere il tag Autore (email dello staff o il modulo "Mandaci la tua guida").
 */
 export const revalidate = 300;
 
-/** Profili e mazzi: le due letture sono quelle di /decks e della rotta /api/live, condivise dalla cache dei dati. */
+/**
+ * Profili e mazzi: le due letture sono quelle di /decks e della rotta /api/live, condivise dalla cache dei dati. Per
+ * ogni autore anche gli slug dei suoi mazzi: servono a riconoscere l'autore editoriale dietro l'account (Davdas), come
+ * fa la pagina /u, così i dati strutturati puntano alla stessa Person.
+ */
 async function loadCreators() {
   const [creators, decks] = await Promise.all([listCreators(), listPublishedDecks()]);
-  const deckCount = new Map<string, number>();
-  for (const deck of decks) deckCount.set(deck.owner, (deckCount.get(deck.owner) ?? 0) + 1);
-  return { creators, deckCount };
+  const slugsOf = new Map<string, string[]>();
+  for (const deck of decks) slugsOf.set(deck.owner, [...(slugsOf.get(deck.owner) ?? []), deck.slug]);
+  return { creators: creators.filter(listedInDirectory), slugsOf };
 }
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -44,10 +51,13 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
   const { locale, dict: d } = await resolveLocale(params);
   const C = creatorLabels[locale];
   const L = C.directory;
-  const { creators, deckCount } = await loadCreators();
-  const entries: DirectoryEntry[] = orderCreators(
+  const { creators, slugsOf } = await loadCreators();
+  const entries: (DirectoryEntry & { personRef: string; personName: string })[] = orderCreators(
     creators.map((c) => {
       const name = authorName(c);
+      const slugs = slugsOf.get(c.id) ?? [];
+      // stessa Person della pagina /u e delle schede dei mazzi: per un autore editoriale quella della sua pagina autore
+      const editorial = editorialAuthor(authors, slugs, c.username);
       return {
         username: c.username,
         name,
@@ -58,9 +68,11 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
         links: c.links,
         langs: c.contentLangs,
         kinds: [...new Set(c.links.map((l) => l.kind))],
-        decks: deckCount.get(c.id) ?? 0,
+        decks: slugs.length,
         href: href(locale, `/u/${c.username}`),
         ...(twitchLogin(c.links) ? { liveUser: c.username } : {}),
+        personRef: editorial ? personId(editorial.slug) : memberId(c.username),
+        personName: editorial?.name ?? name,
       };
     }),
     locale,
@@ -85,7 +97,7 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
                   path,
                   name: L.listName,
                   description: L.description,
-                  items: entries.map((e) => ({ name: e.name, path: e.href, id: memberId(e.username) })),
+                  items: entries.map((e) => ({ name: e.personName, path: e.href, id: e.personRef })),
                   about: videoGameId,
                 }),
               ]

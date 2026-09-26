@@ -10,6 +10,8 @@ import { fillCreator, type LiveLabels } from "@/lib/creatorLabels";
  * secondi, come la cache della rotta): le pagine restano ISR. Finché la risposta non arriva, o senza le chiavi di
  * Twitch, o se nessuno è in diretta, non c'è nulla (niente segnaposto che sposta il testo). Il link porta al canale
  * Twitch, in una nuova scheda; il puntino pulsa solo se il sistema non chiede di ridurre le animazioni.
+ * Colori della palette: magenta scuro (`crimson-deep`, avvisi) con testo `chalk`, contrasto 6:1; `ink` resta per i fondi
+ * menta e oro. Il colore definitivo lo sceglie Pierluigi.
  */
 
 const TTL_MS = 90_000;
@@ -51,9 +53,9 @@ export function LiveBadge({ username, labels, placement, className = "" }: { use
       data-om-event="creator_link_click"
       data-om-kind="twitch_live"
       data-om-placement={placement}
-      className={`inline-flex items-center gap-1 rounded-md bg-bad px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-ink hover:brightness-110 ${className}`}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-md bg-crimson-deep px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-chalk hover:bg-crimson ${className}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-ink motion-safe:animate-pulse" aria-hidden="true" />
+      <span className="h-1.5 w-1.5 rounded-full bg-crimson-soft motion-safe:animate-pulse" aria-hidden="true" />
       {labels.badge}
     </a>
   );

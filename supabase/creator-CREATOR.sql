@@ -13,6 +13,11 @@
 -- di schema.sql (commit 6c6756d). In Postgres un REVOKE sulla tabella toglie anche i grant per colonna: se questo
 -- file girasse prima, il grant di bio/links/content_langs sparirebbe a ogni migrazione e il modulo di /account
 -- risponderebbe "permission denied". Accodato in fondo a schema.sql va bene.
+-- MAI lanciarlo da solo (editor SQL): scripts/db-migrate.mjs legge solo schema.sql, e il suo `revoke` al giro dopo
+-- toglierebbe di nuovo il grant per colonna. Prima di accodarlo, in schema.sql protect_profile_badge deve avere di
+-- nuovo i doppi dollari ("as $$" … "end $$;"): in 6c6756d sono rimasti con un dollaro solo e la migrazione intera
+-- fallisce. Il test src/lib/community/profileLinks.test.ts segue questo blocco anche dentro schema.sql e ne controlla
+-- la posizione.
 --
 -- Sicurezza (dopo la falla chiusa da 6c6756d): nessun grant di UPDATE sull'intera tabella. Gli utenti possono
 -- cambiare SOLO bio, links e content_langs della propria riga (grant per colonna + policy "users edit own profile",
@@ -27,7 +32,8 @@ alter table public.profiles add column if not exists content_langs text[] not nu
 alter table public.profiles add column if not exists showcase_updated_at timestamptz;
 
 -- Un canale: esattamente {kind, url}, tipo noto, indirizzo https nella forma canonica della piattaforma (quella che
--- scrive il sito), al massimo 200 caratteri. Il sito web accetta qualsiasi dominio, ma non gli accorciatori di link.
+-- scrive il sito), al massimo 200 caratteri. Il sito web accetta qualsiasi dominio, ma non gli accorciatori di link, i
+-- redirector e gli host delle piattaforme che hanno un tipo loro.
 -- Niente sottoquery nei rami: ogni ramo del CASE si valuta solo se ci si arriva.
 create or replace function public.profile_link_ok(link jsonb)
 returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
@@ -45,22 +51,25 @@ returns boolean language sql immutable set search_path = pg_catalog, pg_temp as 
       when 'kick' then (link->>'url') ~ '^https://kick\.com/[a-z0-9_-]{3,25}$'
       when 'bluesky' then (link->>'url') ~ '^https://bsky\.app/profile/([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+|did:plc:[a-z0-9]{24})$'
       when 'discord' then (link->>'url') ~ '^https://discord\.gg/[A-Za-z0-9-]{2,32}$'
+      -- sito web: qualsiasi dominio, ma non gli host delle piattaforme che hanno un tipo loro (sottodomini compresi),
+      -- gli accorciatori e i redirector (per suffisso), né google.<tld>/url e /amp: WEBSITE_BLOCKED_HOST e
+      -- GOOGLE_REDIRECT di profileLinks.ts, identiche (le controlla il test)
       when 'website' then (link->>'url') ~ '^https://[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,63}(/[^\s"<>\\^`{|}]*)?$'
-        and regexp_replace(substring(link->>'url' from '^https://([^/?#]+)'), '^www\.', '') not in (
-          'bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'rebrand.ly',
-          'shorturl.at', 'tiny.cc', 'rb.gy', 's.id', 'lnkd.in', 't.ly', 'shorturl.com')
+        and coalesce(substring(link->>'url' from '^https://([^/?#]+)'), '') !~ '(^|\.)(twitch\.tv|youtube\.com|youtu\.be|x\.com|twitter\.com|tiktok\.com|instagram\.com|kick\.com|bsky\.app|discord\.com|discord\.gg|discordapp\.com|bit\.ly|bitly\.com|j\.mp|tinyurl\.com|tiny\.one|rotf\.lol|t\.co|goo\.gl|ow\.ly|is\.gd|v\.gd|buff\.ly|cutt\.ly|cutt\.us|rebrand\.ly|bl\.ink|shorturl\.at|shorturl\.com|tiny\.cc|rb\.gy|s\.id|lnkd\.in|t\.ly|adf\.ly|shorte\.st|ouo\.io|l\.facebook\.com|lm\.facebook\.com|l\.messenger\.com|out\.reddit\.com|href\.li|t\.umblr\.com|away\.vk\.com)$'
+        and (link->>'url') !~ '^https://(www\.)?google(\.[a-z]{2,3}){1,2}/(url|amp)([/?#]|$)'
       else false
     end
   end
 $$;
 
--- L'elenco dei canali: un array di al massimo otto canali validi (vuoto = nessun canale).
+-- L'elenco dei canali: un array di al massimo otto canali validi (vuoto = nessun canale). Un canale che desse null
+-- conta come non valido: bool_and ignora i null e un CHECK con risultato null passerebbe.
 create or replace function public.profile_links_ok(links jsonb)
 returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
   select case
     when jsonb_typeof(links) is distinct from 'array' then false
     when jsonb_array_length(links) > 8 then false
-    else coalesce((select bool_and(public.profile_link_ok(t.e)) from jsonb_array_elements(links) as t(e)), true)
+    else coalesce((select bool_and(coalesce(public.profile_link_ok(t.e), false)) from jsonb_array_elements(links) as t(e)), true)
   end
 $$;
 

@@ -1,6 +1,7 @@
 /**
  * Test della directory dei creator (`creatorDirectory.ts`): `node --test src/lib/community/creatorDirectory.test.ts`.
- * Ordine dichiarato (lingua della pagina, mazzi, nome), filtri per lingua e piattaforma, soglia di indicizzazione.
+ * Ordine dichiarato (lingua della pagina, mazzi, nome), filtri per lingua e piattaforma, chi entra, soglia di
+ * indicizzazione.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -8,6 +9,7 @@ import {
   CREATORS_MIN_INDEX,
   directoryIndexable,
   filterCreators,
+  listedInDirectory,
   orderCreators,
   platformsInUse,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
@@ -56,10 +58,17 @@ describe("directory dei creator", () => {
   test("solo le piattaforme usate, nell'ordine dato", () => {
     assert.deepEqual(platformsInUse(list, ["twitch", "youtube", "x", "website"]), ["twitch", "youtube"]);
   });
-  test("indicizzata da tre creator in su", () => {
+  test("indicizzata da tre schede in su", () => {
     assert.equal(CREATORS_MIN_INDEX, 3);
     assert.ok(!directoryIndexable(0));
     assert.ok(!directoryIndexable(2));
     assert.ok(directoryIndexable(3));
+  });
+  test("in directory solo i profili compilati: una bio o almeno un canale", () => {
+    assert.ok(listedInDirectory({ bio: "Streamer", links: [] }));
+    assert.ok(listedInDirectory({ bio: null, links: [{ kind: "twitch", url: "https://www.twitch.tv/coachcrono" }] }));
+    assert.ok(!listedInDirectory({ bio: null, links: [] }), "il solo nome non basta");
+    assert.ok(!listedInDirectory({ bio: "   ", links: [] }));
+    assert.ok(!listedInDirectory({ bio: undefined, links: [] }));
   });
 });
