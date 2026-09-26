@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import { inboxLabels } from "@/lib/inboxLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -7,7 +8,7 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 }
 
 export default async function PrivacyPage({ params }: { params: LocaleParams }) {
-  const { dict: d } = await resolveLocale(params);
+  const { locale, dict: d } = await resolveLocale(params);
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="kicker text-mint">{d.footer.legal}</p>
@@ -24,6 +25,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Modulo "Mandaci la tua guida" (23/09/2026): l'ancora #guide è il link "Informativa privacy" del modulo. */}
         <p id="guide" className="mt-6 scroll-mt-24">
           {d.privacy.guides}
+        </p>
+        {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): testo in src/lib/inboxLabels.ts, ancora #messages */}
+        <p id="messages" className="mt-6 scroll-mt-24">
+          {inboxLabels[locale].privacy}
         </p>
       </article>
     </div>

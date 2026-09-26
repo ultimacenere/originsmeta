@@ -8,6 +8,8 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import type { Profile } from "@/lib/community/types";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
+// casella messaggi (26/09/2026, pacchetto INBOX): numero dei non letti e voci del menu, caricati nel browser
+import { InboxCount, InboxMenuLinks, inboxAriaSuffix, useInboxStatus } from "./inbox/InboxIndicator";
 
 export type AccountLabels = { login: string; account: string; builder: string; logout: string; player: string };
 
@@ -100,6 +102,8 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
     };
   }, []);
 
+  const inbox = useInboxStatus(user ? user.id : null);
+
   if (!supabaseEnabled) return null;
   if (user === undefined) return <SessionPlaceholder />;
   if (!user) {
@@ -114,12 +118,13 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
     <AutoCloseDetails
       className="relative"
       summaryClassName="flex cursor-pointer list-none items-center gap-2 rounded-full border border-felt-line py-0.5 pl-0.5 pr-3 text-xs text-chalk hover:border-mint [&::-webkit-details-marker]:hidden"
-      summaryLabel={`${labels.account}: ${name}`}
+      summaryLabel={`${labels.account}: ${name}${inboxAriaSuffix(inbox, locale)}`}
       summary={
         <>
           <Avatar profile={profile} name={name} />
           {/* il nome si nasconde tra 1280 e 1535 px, dove la riga ospita anche il menu completo e la ricerca */}
           <span className="hidden max-w-[9rem] truncate font-display font-medium sm:inline xl:hidden 2xl:inline">{name}</span>
+          <InboxCount status={inbox} />
         </>
       }
     >
@@ -128,6 +133,7 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
         <NavLink href={`/${locale}/account`} className="nav-link-block">
           {labels.account}
         </NavLink>
+        <InboxMenuLinks locale={locale} status={inbox} />
         <NavLink href={`/${locale}/deck-builder`} className="nav-link-block">
           {labels.builder}
         </NavLink>

@@ -46,6 +46,11 @@
  *   ★ tournament_create   torneo creato (non le modifiche)                        visibility (public | private), deck_mode
  *     tournament_join     iscrizione a un torneo                                  size (posti del torneo)
  *     feedback_submit     messaggio mandato dal riquadro dei feedback             (nessun parametro)
+ *     message_sent        messaggio mandato nella casella messaggi utente ↔ staff  placement (account | staff_area),
+ *                         (dal 26/09/2026, pacchetto INBOX; non il feedback, che è  kind (new | reply)
+ *                         feedback_submit anche quando finisce nella casella)
+ *     message_read        conversazione con messaggi nuovi aperta e segnata come   placement (account | staff_area)
+ *                         letta (una volta per messaggi nuovi, non a ogni visita)
  *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
  *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest |
  *                                                                                 community | other), placement, cta
@@ -136,6 +141,8 @@ export type EventParams = {
   tournament_create: { visibility: string; deck_mode: string };
   tournament_join: { size: number };
   feedback_submit: Record<string, never>;
+  message_sent: { placement: "account" | "staff_area"; kind: "new" | "reply" };
+  message_read: { placement: "account" | "staff_area" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -165,6 +172,8 @@ export const VERCEL_PROPS = {
   tournament_create: ["visibility", "deck_mode"],
   tournament_join: ["size"],
   feedback_submit: [],
+  message_sent: ["placement", "kind"],
+  message_read: ["placement"],
   faq_ask: ["sources"],
   steam_click: ["target", "placement"],
   discord_click: ["server", "placement"],

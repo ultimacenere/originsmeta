@@ -8,6 +8,8 @@ import { CONSENT_EVENT, PREFERENCES_EVENT, getConsent, type Consent } from "@/li
 import { turnstileEnabled } from "@/lib/turnstile";
 import { Turnstile } from "@/components/Turnstile";
 import { trackEvent } from "@/lib/analytics";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { navLabelsFor } from "@/lib/inboxNavLabels";
 import {
   FEEDBACK_EMAIL_MAX,
   FEEDBACK_EMAIL_RE,
@@ -47,6 +49,8 @@ import {
  *   errori in un contenitore `role="alert"`, entrambi sempre presenti nel pannello. L'animazione d'ingresso si
  *   spegne con "riduci animazioni".
  * - Interruttore: NEXT_PUBLIC_FEEDBACK=off (vedi `src/lib/feedbackLabels.ts`) e il componente non disegna nulla.
+ * - Casella messaggi (26/09/2026, pacchetto INBOX): a chi ha fatto l'accesso il pannello dice che la risposta arriverà
+ *   nella sua casella messaggi (la rotta salva il feedback anche lì) e, dopo l'invio, porta alla casella.
  */
 
 const SEEN_KEY = "originsmeta.feedback.v1";
@@ -162,6 +166,9 @@ function Widget({ locale, labels }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [sentWithEmail, setSentWithEmail] = useState(false);
+  /* casella messaggi (pacchetto INBOX): chi ha fatto l'accesso riceve la risposta nel suo profilo */
+  const [signedIn, setSignedIn] = useState(false);
+  const [savedToInbox, setSavedToInbox] = useState(false);
   const [token, setToken] = useState("");
   const [captchaBroken, setCaptchaBroken] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
@@ -333,6 +340,21 @@ function Widget({ locale, labels }: Props) {
     };
   }, [open, close]);
 
+  // Chi ha fatto l'accesso (sessione letta nel browser, nessuna richiesta di rete) legge che la risposta arriverà nella
+  // sua casella messaggi: /api/feedback salva il feedback anche lì (pacchetto INBOX)
+  useEffect(() => {
+    if (!open) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    let alive = true;
+    sb.auth.getSession().then(({ data }) => {
+      if (alive) setSignedIn(Boolean(data.session));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open]);
+
   const fail = (code: Errore, focus?: HTMLElement | null) => {
     setErrore(code);
     focus?.focus();
@@ -358,6 +380,8 @@ function Widget({ locale, labels }: Props) {
         body: JSON.stringify({ message: text, name: name.trim() || undefined, email: mail || undefined, page: pathname, locale, token: token || undefined }),
       });
       if (r.ok) {
+        const esito = (await r.json().catch(() => ({}))) as { inbox?: boolean };
+        setSavedToInbox(esito.inbox === true);
         setSentWithEmail(Boolean(mail));
         setMessage("");
         setEmail("");
@@ -393,6 +417,7 @@ function Widget({ locale, labels }: Props) {
   if (!hydrated) return null;
 
   const fill = (s: string) => s.replace("{min}", String(FEEDBACK_MIN)).replace("{max}", String(FEEDBACK_MAX));
+  const inbox = navLabelsFor(locale);
   const hasText = message.trim().length > 0;
   const showForm = status !== "sent" && (service !== "off" || hasText);
   const withExits = errore === "generico" || errore === "bloccato";
@@ -493,6 +518,14 @@ function Widget({ locale, labels }: Props) {
                 {labels.thanksText}
                 {sentWithEmail ? ` ${labels.thanksEmail}` : ""}
               </p>
+              {savedToInbox ? (
+                <p className="mt-2 text-sm">
+                  {inbox.feedbackSaved}{" "}
+                  <Link href={`/${locale}/account#messages`} onClick={() => close(false)} className="link-mint font-bold">
+                    {inbox.openInbox}
+                  </Link>
+                </p>
+              ) : null}
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -582,6 +615,7 @@ function Widget({ locale, labels }: Props) {
             <p id={emailHintId} className="mt-1 text-xs text-chalk-muted">
               {labels.emailHint}
             </p>
+            {signedIn ? <p className="mt-3 text-xs font-bold text-mint">{inbox.feedbackNote}</p> : null}
 
             {turnstileEnabled && open && service !== "off" ? (
               <Turnstile

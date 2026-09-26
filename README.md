@@ -215,6 +215,18 @@ Richiesta della diretta Twitch del 23/09: chi scrive una guida (o ha un mazzo da
 - **Variabili**: la stessa `DISCORD_FEEDBACK_WEBHOOK_URL` del feedback, quindi **non va tolta quando si spegne il feedback**. `NEXT_PUBLIC_FEEDBACK=off` non spegne il modulo delle guide. Senza webhook il modulo lo dice subito e propone staff@originsmeta.com.
 - Informativa: voce `privacy.guides`, ancora `/privacy#guide`.
 
+## Casella messaggi utente ↔ staff (dal 26/09/2026)
+
+Richiesta di Pierluigi: "nella sezione profilo per ogni utente una casella messaggi, così possiamo scrivere ai nostri utenti nel sito e possiamo rispondere a chi ci dà i feedback direttamente da lì". Solo utente ↔ staff (niente messaggi fra utenti); l'utente può scrivere per primo; avvisi solo sul sito (email più avanti); i messaggi si cancellano con l'account.
+
+- **Database** (`supabase/creator-INBOX.sql`, da accodare a `schema.sql`): tabelle `conversations` (utente, oggetto, origine user/staff/feedback, stato aperta/chiusa, ultimo messaggio di ciascuna parte, lettura dell'utente e dello staff, colonne calcolate `unread_by_user` e `unread_by_staff`) e `messages` (testo semplice 1–4000, `from_staff` deciso dal database). Si leggono con le policy RLS (l'utente le sue, lo staff tutte: `is_staff()` = admin o tag Staff) e si scrivono **solo** con le RPC security definer `inbox_start`, `inbox_staff_start`, `inbox_send`, `inbox_mark_read`, `inbox_set_status` (nessun grant di scrittura, policy restrittive che negano la scrittura diretta). Limiti nel database: 20 messaggi l'ora per utente (200 per lo staff), 10 conversazioni nuove al giorno. Il numero dei non letti: `inbox_status()`.
+- **Utente**: sezione "Messaggi" in `/account` (`InboxSection`, ancora `#messages`) con le conversazioni e "Scrivi allo staff"; conversazione in `/account/messages/<id>`. Lo staff vi firma sempre "Staff di OriginsMeta".
+- **Staff**: `/account/staff/messages` (filtri Da leggere, Aperte, Chiuse, Tutte; "Nuovo messaggio a un utente" per nome utente) e `/account/staff/messages/<id>` (chi è l'utente, risposta, chiusura e riapertura). Per chi non è dello staff 404; senza accesso si passa dalla pagina di accesso. Su `/u/<nome>` il tasto "Scrivi a questo utente" compare solo allo staff (deciso nel browser).
+- **Menu dell'account**: numero delle conversazioni da leggere accanto all'avatar e voci "Messaggi" / "Messaggi dello staff", da `/api/inbox/status` (privata, mai in cache) letta nel browser (`src/components/inbox/InboxIndicator.tsx`), perché l'header è lo stesso delle pagine statiche.
+- **Feedback**: se chi scrive dal riquadro ha fatto l'accesso, `/api/feedback` salva il feedback anche come conversazione `feedback` (`src/lib/community/inboxFeedback.ts`) e il messaggio su Discord porta nome utente e link alla conversazione nell'area staff; il riquadro dice "ti risponderemo nella tua casella messaggi". Senza accesso tutto come prima.
+- **Avviso allo staff**: un messaggio nuovo di un utente arriva nel canale Discord privato dello staff (stessa `DISCORD_FEEDBACK_WEBHOOK_URL`, `src/lib/community/inboxNotify.ts`) con nome utente, oggetto, inizio del messaggio (300 caratteri al massimo) e link; mai il testo completo di un messaggio lungo, mai avvisi agli utenti fuori dal sito. Senza la variabile la casella funziona lo stesso.
+- Codice: funzioni pure e test in `src/lib/community/messages.ts` (+ `messages.test.ts`), letture in `inboxQueries.ts`, Server Action in `inboxActions.ts`, etichette EN/IT/ES in `src/lib/inboxLabels.ts` (pagine private) e `src/lib/inboxNavLabels.ts` (menu, riquadro dei feedback, /u: vanno in ogni pagina), componenti in `src/components/inbox/`. Informativa: `/privacy#messages`.
+
 ## Discord: contenuti automatici (dal 24/09/2026)
 
 OriginsMeta ha un suo server Discord, distinto da quello ufficiale del gioco (`officialLinks.discord`, discord.gg/originstcg, è di Koin Games). Piano del server (ruoli, canali, regole e benvenuto EN/IT, annuncio di apertura, guida del server, automazioni): doc "Discord OriginsMeta", https://claude.ai/artifact/LxMD8MqyuHe4NEHioDV2x5. Regola di Pierluigi: **quello che si pubblica sul sito arriva da solo su Discord**, ogni cosa nel suo canale.
@@ -263,6 +275,8 @@ I primi quattro (online con a9400e8) hanno tenuto nome e parametri quando è arr
 | ★ `tournament_create` | torneo creato (non le modifiche) | `visibility`, `deck_mode` |
 | `tournament_join` | iscrizione a un torneo | `size` |
 | `feedback_submit` | messaggio mandato dal riquadro dei feedback | nessuno |
+| `message_sent` | messaggio mandato nella casella messaggi utente ↔ staff (non il feedback, anche quando finisce nella casella) | `placement` (account \| staff_area), `kind` (new \| reply) |
+| `message_read` | conversazione con messaggi nuovi aperta e segnata come letta | `placement` (account \| staff_area) |
 | `faq_ask` | domanda all'assistente della FAQ, risposta arrivata | `sources` |
 | ★ `steam_click` | clic su un link verso Steam | `target`, `placement`, `cta` |
 | ★ `discord_click` | clic su un link verso Discord | `server` (originsmeta \| official \| other), `placement`, `cta` |

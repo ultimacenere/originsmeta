@@ -36,6 +36,10 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/:locale(en|it|es)/account",
+    // casella messaggi (26/09/2026, pacchetto INBOX): conversazione dell'utente e area staff, pagine renderizzate sul server
+    "/:locale(en|it|es)/account/messages/:id",
+    "/:locale(en|it|es)/account/staff/messages",
+    "/:locale(en|it|es)/account/staff/messages/:id",
     "/:locale(en|it|es)/decks/community/:slug/edit",
     // Tournament Organizer: pagine renderizzate sul server (la scheda è dinamica dal 16/09: i tornei privati dipendono dalla sessione)
     "/:locale(en|it|es)/tournaments/new",
