@@ -38,7 +38,7 @@ export function fillLabel(template: string, values: Readonly<Record<string, stri
  * sottili dei rilievi arrivano al massimo a 56 parole e le guide vere partono da 78: value-maxxing (78) e
  * face-is-the-place (81) sono due piani di gioco dello stesso autore, scritti allo stesso modo, e una soglia a 80 li
  * avrebbe divisi per due parole. Con 75 la divisione cade nel vuoto fra le due famiglie. Il verificatore di DECKS-02
- * proponeva una regola più severa (80 parole con almeno una sezione, 40 per Staff, Pro e Influencer): la decide
+ * proponeva una regola più severa (80 parole con almeno una sezione, 40 per Staff, Pro e Influencer, oggi Creator): la decide
  * Pierluigi. Se si cambia, i test dicono quali guide di esempio cambiano lato.
  */
 export const GUIDE_MIN_WORDS = 75;

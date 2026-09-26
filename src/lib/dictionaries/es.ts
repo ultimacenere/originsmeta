@@ -84,7 +84,7 @@ export const es: Dictionary = {
     viewAll: "Ver todo",
     search: "Buscar una carta",
     all: "Todas",
-    /* Italian needs a masculine "all" for some filters (archetype, author, author type); English does not */
+    /* Italian needs a masculine "all" for some filters (archetype, publisher, role); English does not */
     allMasculine: "Todos",
     mana: "Maná",
     power: "Poder",
@@ -150,7 +150,8 @@ export const es: Dictionary = {
     openDeck: "Abrir el mazo",
     deckCards: "Cartas del mazo",
     decks: "Mazos",
-    creator: "Autor",
+    /* chi ha pubblicato un mazzo (27/09/2026: né Creator né Autore, che sono ruoli): filtro di /decks e schede */
+    publishedBy: "Publicado por",
     archetype: "Arquetipo",
     playtest: "Playtest",
     official: "Oficial",
@@ -168,9 +169,8 @@ export const es: Dictionary = {
     noDecks: "Ningún mazo coincide con estos filtros.",
     filterLegendary: "Legendaria",
     filterArchetype: "Arquetipo",
-    filterCreator: "Autor",
-    /* deck filter by author tag (Twitch live of 23/09/2026) */
-    filterAuthorType: "Tipo de autor",
+    /* deck filter by role, the profile tag (Twitch live of 23/09/2026; "Rol" since 27/09/2026) */
+    filterRole: "Rol",
     filterCard: "Carta",
     clearFilters: "Borrar filtros",
     /* deck filtering and sorting by date and game version (Pierluigi, 23/09/2026) */
@@ -284,7 +284,7 @@ export const es: Dictionary = {
        del mazo" è /deck-builder; resta nella description */
     title: "Mazos de Origins TCG de la comunidad",
     metaTitle: "Mazos de Origins TCG (Koin Games): listas y guías",
-    intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y autor, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
+    intro: "Cada mazo lleva etiquetas de Legendaria, arquetipo, tipo de mazo y rol de quien lo publica, y se puede buscar por carta. Las listas las publica la comunidad desde el deck builder, con una guía y valoraciones con estrellas.",
     description: "Listas de mazos de Origins TCG, el juego de cartas de Koin Games: guía del mazo, valoraciones y código del juego. Filtra por Legendaria, arquetipo o carta.",
     conquestTitle: "El formato Conquest, explicado",
     conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026), donde cada mazo necesitaba una Legendaria distinta, y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
@@ -441,7 +441,7 @@ export const es: Dictionary = {
       disclaimer: "Es la opinión de quienes usan este sitio, no una estadística del juego: pesa tanto como las personas que la votaron.",
       /* Tier list firmate (Ondata 3, TOOL-01): vedi en.ts */
       signedTitle: "Tier lists firmadas",
-      signedText: "Las guardaron miembros de OriginsMeta con una etiqueta de autor (Staff, Pro, Influencer, Autor): cada una es la opinión de quien la firma. En el promedio de la comunidad cuentan como todas las demás.",
+      signedText: "Las guardaron miembros de OriginsMeta con el rol Staff, Creator, Autor o Pro: cada una es la opinión de quien la firma. En el promedio de la comunidad cuentan como todas las demás.",
       signedProfile: "Perfil",
     },
     /* Most played (24/09/2026): how many published decks use each card */
@@ -997,7 +997,7 @@ export const es: Dictionary = {
     deckType: "Tipo de mazo",
     deckTypeHint: "Puedes elegir más de uno.",
     deckTypes: { ladder: "Ladder", competitive: "Competitivo", fun: "Fun", tournament: "Torneo" },
-    badges: { community: "Community", creator: "Autor", influencer: "Influencer", pro: "Pro", staff: "Staff" },
+    badges: { community: "Community", creator: "Creator", author: "Autor", pro: "Pro", staff: "Staff" },
     archetypeSuggested: "Sugerido a partir de la lista: cámbialo si no estás de acuerdo.",
     summary: "Plan de juego",
     summaryHint: "Cómo gana el mazo, en pocas líneas (20–600 caracteres). Aparece en la ficha del mazo.",
@@ -1040,6 +1040,7 @@ export const es: Dictionary = {
       forbidden: "Solo puedes editar tus propios mazos.",
       draftLimit: "Tienes 50 mazos privados, el máximo: elimina uno desde tu perfil para guardar uno nuevo.",
       deckLimit: "Ya tienes 5 mazos publicados, el máximo para una cuenta de la comunidad: elimina u oculta uno desde tu perfil, o escríbenos si publicas mazos para una comunidad.",
+      deckLimitAuthor: "Ya tienes 20 mazos publicados, el máximo para una cuenta de Autor: elimina u oculta uno desde tu perfil, o escríbenos si necesitas más.",
     },
     profile: {
       kicker: "Perfil de la comunidad",
@@ -1107,7 +1108,7 @@ export const es: Dictionary = {
       confirmDeletePrivate: "¿Eliminar este mazo privado? No se puede deshacer.",
       /* published-deck cap and saved tier lists (23/09/2026) */
       deckQuota: "{used} de {cap} mazos publicados.",
-      deckQuotaUnlimited: "{used} mazos publicados. Tu etiqueta de autor no tiene límite.",
+      deckQuotaUnlimited: "{used} mazos publicados. Tu rol no tiene límite.",
       publicPage: "Tu página pública",
       myTierLists: "Mis tier lists",
       newTierList: "Crear una tier list",
@@ -1212,7 +1213,7 @@ export const es: Dictionary = {
     },
     create: {
       title: "Organiza un torneo",
-      intro: "Cualquier persona con una cuenta puede crear un torneo: los jugadores se inscriben en el sitio, entregan sus mazos y juegan aquí el cuadro. Las cuentas Influencer, Pro y Staff también pueden publicarlo en el calendario del sitio.",
+      intro: "Cualquier persona con una cuenta puede crear un torneo: los jugadores se inscriben en el sitio, entregan sus mazos y juegan aquí el cuadro. Las cuentas Creator, Pro y Staff también pueden publicarlo en el calendario del sitio.",
       loginFirst: "Inicia sesión para organizar un torneo.",
       essentials: "Lo esencial",
       essentialsHint: "Esto es todo lo que necesitas para crear el torneo: el resto puedes cambiarlo más tarde desde la página de gestión.",
@@ -1223,7 +1224,7 @@ export const es: Dictionary = {
       coverSpecs: "Recomendado 16:7, por ejemplo 1600×700 px, con al menos 1200 px de ancho; JPG, PNG o WebP de hasta 1 MB. La imagen se reduce a 1600 px y se convierte a WebP en tu navegador antes de subirla.",
       coverUploadButton: "Elegir una imagen…",
       coverRemove: "Usar una imagen del media kit",
-      coverLocked: "Subir una portada propia está reservado a las cuentas Influencer, Pro y Staff.",
+      coverLocked: "Subir una portada propia está reservado a las cuentas Creator, Pro y Staff.",
       coverUploading: "Subiendo…",
       coverUploaded: "Portada subida",
       showAllCovers: "Mostrar las {n} portadas",
@@ -1249,9 +1250,9 @@ export const es: Dictionary = {
       listed: "Publicar en el calendario del sitio",
       listedHint: "El torneo aparece en la franja del calendario y en la página de torneos.",
       listedPrivate: "Un torneo privado nunca se publica en el calendario.",
-      listedLocked: "Solo las cuentas Influencer, Pro y Staff pueden publicar en el calendario. Tu torneo sigue siendo accesible por enlace y por tag.",
+      listedLocked: "Solo las cuentas Creator, Pro y Staff pueden publicar en el calendario. Tu torneo sigue siendo accesible por enlace y por tag.",
       listedDefault: "Se publicará en el calendario del sitio: puedes cambiarlo en “Más opciones”.",
-      listedHowTo: "Para pedir la etiqueta de autor, escribe a {email}.",
+      listedHowTo: "Para pedir el rol Creator, escribe a {email}.",
       consent: "Al crear el torneo aceptas que sus textos sean públicos con tu nombre de usuario y te comprometes a gestionarlo.",
       submit: "Crear torneo",
       submitting: "Creando…",
@@ -1413,7 +1414,7 @@ export const es: Dictionary = {
       lang: "Elige el idioma.",
       discord: "El enlace de Discord debe apuntar a discord.gg o discord.com.",
       cover: "Elige una portada del media kit o sube la tuya.",
-      listing: "Solo las cuentas Influencer, Pro y Staff pueden publicar en el calendario.",
+      listing: "Solo las cuentas Creator, Pro y Staff pueden publicar en el calendario.",
       uploadFailed: "No se pudo subir la imagen (máx. 1 MB, JPG/PNG/WebP).",
       db: "No se pudo guardar. Vuelve a intentarlo en un momento.",
       forbidden: "Solo puedes gestionar tus propios torneos.",
@@ -1425,7 +1426,7 @@ export const es: Dictionary = {
       decks_count: "Entrega exactamente el número de mazos requerido.",
       decks_invalid: "Uno de los códigos no es un mazo legal: revisa la Legendaria y las 12 cartas base.",
       conquest_invalid: "No se cumplen las reglas de Conquest: Legendarias distintas y suficientes cartas distintas entre los mazos.",
-      listing_not_allowed: "Solo las cuentas Influencer, Pro y Staff pueden publicar en el calendario.",
+      listing_not_allowed: "Solo las cuentas Creator, Pro y Staff pueden publicar en el calendario.",
     },
   },
   stats: {
@@ -1491,7 +1492,7 @@ export const es: Dictionary = {
       "mint-soft": "Relleno de la pastilla Good, con texto ink.",
       sky: "El cristal de maná: marcos, títulos de página y títulos de elemento.",
       "sky-deep": "Celeste más oscuro de reserva: hoy ninguna clase lo usa.",
-      pink: "La etiqueta de autor Pro y las fechas de los eventos.",
+      pink: "El rol Pro y las fechas de los eventos.",
       good: "Puntos fuertes, confirmaciones (.alert-good).",
       bad: "Puntos débiles, errores (.alert-bad, .text-error, .btn-danger).",
     },
@@ -1554,7 +1555,7 @@ export const es: Dictionary = {
       sub: "Rellenos sólidos con texto por encima de 4,5:1. Un solo mapa por significado, igual en todas las páginas.",
       changes: "Cambios de equilibrio (changeStyle)",
       deckNote: "\"deck\" marca un cambio en las reglas de construcción del mazo: relleno neutro, misma etiqueta que Rework.",
-      badges: "Etiquetas de autor",
+      badges: "Roles",
       stats: "Estadísticas y rareza",
       chip: "Minicarta (card-chip): marco de 2 px, dorado para las Legendarias.",
       chipName: "Nombre de la carta",

@@ -169,7 +169,12 @@ alter table public.community_decks drop constraint if exists community_decks_dec
 alter table public.community_decks add constraint community_decks_deck_type_check check (deck_type in ('ladder','competitive','fun','tournament'));
 alter table public.profiles add column if not exists badge text not null default 'community';
 alter table public.profiles drop constraint if exists profiles_badge_check;
-alter table public.profiles add constraint profiles_badge_check check (badge in ('community','creator','influencer','pro','staff'));
+-- 27/09/2026 (Pierluigi: "Ti ripeto i ruoli e tag: Staff, Creator, Autore, Community"; "Pro rimane, Influencer
+-- scompare"): chi era Influencer diventa Creator, che ne prende colore e permessi; `author` (Autore) è nuovo. Il
+-- passaggio sta qui, prima del vincolo nuovo che altrimenti fallirebbe, e non fa nulla quando non c'è più nessun
+-- Influencer (idempotente). Il resto delle regole dei tag sta nel blocco "27/09/2026: TAG E BIO" in fondo al file.
+update public.profiles set badge = 'creator' where badge = 'influencer';
+alter table public.profiles add constraint profiles_badge_check check (badge in ('community','creator','author','pro','staff'));
 
 create or replace function public.protect_profile_badge()
 returns trigger language plpgsql as $$
@@ -252,12 +257,12 @@ drop trigger if exists tournaments_touch on public.tournaments;
 create trigger tournaments_touch before update on public.tournaments
   for each row execute function public.touch_updated_at();
 
--- Sul calendario del sito finiscono solo i tornei di Influencer, Pro e Staff (o di un admin).
+-- Sul calendario del sito finiscono solo i tornei di Creator, Pro e Staff (o di un admin); dal 27/09/2026 l'Autore no.
 create or replace function public.protect_tournament_listing()
 returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   if new.listed and not exists (
-    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin')
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','pro','staff') or p.role = 'admin')
   ) then
     raise exception 'listing_not_allowed';
   end if;
@@ -434,7 +439,7 @@ grant select on public.tournaments, public.tournament_players, public.tournament
 grant insert, update, delete on public.tournaments to authenticated;
 -- tournament_players, tournament_decks e tournament_matches si scrivono solo tramite le RPC (security definer).
 
--- ---------- Storage: copertine dei tornei (upload dal browser, solo Influencer/Pro/Staff o admin, nella propria cartella) ----------
+-- ---------- Storage: copertine dei tornei (upload dal browser, solo Creator/Pro/Staff o admin, nella propria cartella) ----------
 do $$
 begin
   insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -447,7 +452,7 @@ begin
   create policy "badged users upload tournament covers" on storage.objects for insert to authenticated with check (
     bucket_id = 'tournament-covers'
     and (storage.foldername(name))[1] = auth.uid()::text
-    and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin'))
+    and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator','pro','staff') or p.role = 'admin'))
   );
   drop policy if exists "users manage own tournament covers" on storage.objects;
   create policy "users manage own tournament covers" on storage.objects for delete to authenticated using (
@@ -885,7 +890,7 @@ begin
     raise exception 'private_not_listed';
   end if;
   if new.listed and not exists (
-    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','influencer','pro','staff') or p.role = 'admin')
+    select 1 from public.profiles p where p.id = new.organizer and (p.badge in ('creator','pro','staff') or p.role = 'admin')
   ) then
     raise exception 'listing_not_allowed';
   end if;
@@ -1156,8 +1161,8 @@ grant execute on function public.submit_tournament_decks(uuid, jsonb) to authent
 -- 23/09/2026 — PROFILO CON UNA SUA UTILITÀ (richieste di Pierluigi, §1 punto 27.5 della KB):
 --   1) le tier list create dagli utenti si salvano sul server, una per utente e per tipo, e alimentano la
 --      tier list della community (/tier-list/community);
---   2) i mazzi pubblicati hanno un tetto: 5 per un utente normale, nessun tetto per Influencer, Pro, Staff
---      e admin. I mazzi privati ('draft') hanno già il loro tetto nel codice (MAX_PRIVATE_DECKS).
+--   2) i mazzi pubblicati hanno un tetto: 5 per un utente normale, nessun tetto per Creator, Pro, Staff
+--      e admin, 20 per l'Autore (27/09/2026). I mazzi privati ('draft') hanno già il loro tetto nel codice (MAX_PRIVATE_DECKS).
 -- =====================================================================================================
 
 create table if not exists public.tier_lists (
@@ -1218,13 +1223,18 @@ create or replace view public.tier_card_scores as
 grant select on public.tier_card_scores to anon, authenticated;
 
 -- ---------- tetto ai mazzi pubblicati (Pierluigi, 23/09/2026) ----------
--- "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti"; dal 25/09/2026 anche creator. Il conto tiene insieme
+-- "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti". Dal 27/09/2026 (ruoli nuovi):
+-- nessun tetto per Creator (che prende il posto dell'Influencer), Pro, Staff e admin; 20 per l'Autore ("più deck
+-- pubblicabili"); 5 per la community. Gli stessi numeri stanno in src/lib/community/badges.ts (AUTHOR_DECK_LIMIT,
+-- COMMUNITY_DECK_LIMIT: il test badges.test.ts li confronta). Il conto tiene insieme
 -- pubblicati e nascosti (un mazzo nascosto è comunque un mazzo pubblicato dall'utente, che può rimettere online
 -- quando vuole); i mazzi privati 'draft' non c'entrano e hanno il loro tetto nel sito.
 -- Sta in un trigger e non solo nella Server Action perché il limite è una regola dei dati, non dell'interfaccia.
 create or replace function public.max_published_decks(uid uuid)
 returns int language sql stable security definer set search_path = public, pg_temp as $$
-  select case when p.role = 'admin' or p.badge in ('creator','influencer','pro','staff') then 2147483647 else 5 end
+  select case when p.role = 'admin' or p.badge in ('creator','pro','staff') then 2147483647
+              when p.badge = 'author' then 20
+              else 5 end
     from public.profiles p where p.id = uid;
 $$;
 
@@ -1282,9 +1292,9 @@ alter table public.tournaments add constraint tournaments_lang_check check (lang
 -- =====================================================================================================
 -- Profilo del creator (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi: "funzioni per i creator")
 -- =====================================================================================================
--- Ogni iscritto può scrivere nella sua pagina pubblica /u/<nome> una bio (testo semplice, 280 caratteri), fino a
--- otto canali (Twitch, YouTube, X, TikTok, Instagram, Kick, Bluesky, Discord, sito web) e le lingue in cui fa
--- contenuti. Per chi ha un tag autore (creator = "Autore", influencer, pro, staff) gli stessi dati fanno la scheda
+-- Ogni iscritto può scrivere nella sua pagina pubblica /u/<nome> una bio (testo semplice, 600 caratteri dal
+-- 27/09/2026, prima 280), fino a otto canali (Twitch, YouTube, X, TikTok, Instagram, Kick, Bluesky, Discord, sito web)
+-- e le lingue in cui fa contenuti. Per chi ha il ruolo Creator, Autore, Pro o Staff (27/09/2026) gli stessi dati fanno la scheda
 -- della directory /creators, le icone accanto al nome nei mazzi, lo stato "in diretta" su Twitch e i `sameAs`
 -- della Person nei dati strutturati. Regole e forme canoniche in src/lib/community/profileLinks.ts (con test, che
 -- controllano anche che le espressioni qui sotto siano uguali a quelle del codice).
@@ -1358,21 +1368,31 @@ revoke all on function public.profile_links_ok(jsonb) from public, anon;
 grant execute on function public.profile_link_ok(jsonb) to authenticated, service_role;
 grant execute on function public.profile_links_ok(jsonb) to authenticated, service_role;
 
--- Vincoli: bio in testo semplice (a capo ammessi, nessun altro carattere di controllo), 1–280 caratteri o null;
+-- Vincoli: bio in testo semplice (a capo ammessi, nessun altro carattere di controllo), 1–600 caratteri o null;
 -- canali validi; lingue dei contenuti fra quelle del sito, senza null.
 -- La bio come la scrive `cleanBio` (profileLinks.ts), anche per chi salta il sito e scrive la riga via API: niente
 -- caratteri a larghezza zero, segni di direzione del testo (con quelli un testo si legge al contrario) né BOM (la
--- classe INVISIBLE del codice, scritta con gli escape), almeno un carattere che non sia uno spazio, e mai più di una
--- riga vuota di fila (tre a capo, anche con degli spazi in mezzo, allungherebbero la pagina a piacere). La colonna è
--- nuova: nessuna riga già scritta viene toccata.
+-- classe INVISIBLE del codice, scritta con gli escape), almeno un carattere che non sia uno spazio, mai più di una
+-- riga vuota di fila (tre a capo, anche con degli spazi in mezzo, allungherebbero la pagina a piacere) e, dal
+-- 27/09/2026, al massimo 12 a capo in tutto (BIO_MAX_BREAKS: con 600 caratteri una colonna di righe corte sarebbe
+-- lunga quanto la pagina; `cleanBio` unisce con uno spazio le righe oltre la tredicesima, quindi il sito non ne
+-- scrive mai di più).
+-- 27/09/2026, richiesta di Pierluigi: bio da 280 a 600 caratteri. Il limite sta QUI e non in un blocco più in basso:
+-- il vincolo si toglie e si rimette a ogni migrazione, e se qui restasse 280 una bio più lunga, salvata dopo la
+-- migrazione, farebbe fallire quella successiva. Le bio già scritte (al massimo 280 caratteri) rispettano il limite
+-- nuovo; una bio con più di 12 a capo (possibile solo il 26-27/09, con il modulo di prima) diventa una riga sola
+-- prima del vincolo, altrimenti la migrazione fallirebbe. Quando nessuna bio lo supera l'update non tocca nulla.
 alter table public.profiles drop constraint if exists profiles_bio_check;
+update public.profiles set bio = regexp_replace(bio, '[ \n]*\n[ \n]*', ' ', 'g')
+  where bio is not null and char_length(bio) - char_length(replace(bio, chr(10), '')) > 12;
 alter table public.profiles add constraint profiles_bio_check
   check (bio is null or (
-    char_length(bio) between 1 and 280
+    char_length(bio) between 1 and 600
     and replace(bio, chr(10), '') !~ '[[:cntrl:]]'
     and bio !~ '[\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]'
     and bio ~ '[^[:space:]]'
-    and strpos(replace(bio, ' ', ''), repeat(chr(10), 3)) = 0));
+    and strpos(replace(bio, ' ', ''), repeat(chr(10), 3)) = 0
+    and char_length(bio) - char_length(replace(bio, chr(10), '')) <= 12));
 alter table public.profiles drop constraint if exists profiles_links_check;
 alter table public.profiles add constraint profiles_links_check check (public.profile_links_ok(links));
 alter table public.profiles drop constraint if exists profiles_content_langs_check;
@@ -2034,3 +2054,36 @@ language sql stable security definer set search_path = public, pg_temp as $$
 $$;
 revoke all on function public.inbox_message_authors(uuid) from public, anon;
 grant execute on function public.inbox_message_authors(uuid) to authenticated;
+
+-- ===== 27/09/2026: TAG E BIO =====
+-- =====================================================================================================
+-- Ruoli e tag dei profili, bio più lunga (27/09/2026, decisioni di Pierluigi)
+-- =====================================================================================================
+-- "Ti ripeto i ruoli e tag: 1) Staff → tag Staff; 2) Creator → tag Creator; 3) Autore → tag Autore; 4) Community →
+-- tag Community"; "Pro rimane, Influencer scompare"; l'Autore ha "più deck pubblicabili e se vuole può creare guide".
+-- Il 25/09 l'id `creator` era stato rinominato "Autore" sul sito: da oggi `creator` è il Creator (gradiente stile
+-- Instagram, i permessi che erano dell'Influencer) e l'Autore ha un id suo, `author`.
+--
+--   tag         tetto ai mazzi pubblicati   calendario e copertina dei tornei   vetrina /u e directory /creators
+--   staff       nessuno                     sì                                  sì
+--   creator     nessuno                     sì                                  sì
+--   pro         nessuno                     sì                                  sì
+--   author      20                          no                                  sì
+--   community   5                           no                                  no
+--   (un admin, role = 'admin', ha i permessi dello Staff qualunque sia il suo tag)
+--
+-- Le modifiche NON stanno tutte qui, e di proposito: il vincolo del tag (`profiles_badge_check`, con il passaggio
+-- degli Influencer a Creator subito prima) e quello della bio (`profiles_bio_check`, 600 caratteri e al massimo
+-- 12 a capo) si tolgono e si rimettono a ogni migrazione nel punto in cui sono nati: se lì restasse la versione
+-- vecchia, un profilo scritto con le regole nuove farebbe fallire la migrazione successiva. Per coerenza sono
+-- aggiornate nel loro punto anche le funzioni che elencano i tag: `protect_tournament_listing` (due definizioni,
+-- vale la seconda), la policy "badged users upload tournament covers" e `max_published_decks`. Tutto idempotente.
+-- Le stesse regole stanno nel codice in src/lib/community/badges.ts (tetti, permessi, `canPublishGuides` per la
+-- pubblicazione diretta delle guide, prevista e non ancora costruita) e in profileLinks.ts (BIO_MAX, BIO_MAX_BREAKS):
+-- badges.test.ts e profileLinks.test.ts controllano che coincidano con questo file.
+-- Il tag lo cambia solo lo staff con `node scripts/set-badge.mjs <utente> <community|creator|author|pro|staff>`.
+
+-- Le regole scritte anche nel catalogo del database, per chi lo apre dalla dashboard di Supabase.
+comment on column public.profiles.badge is 'Tag assegnato dallo staff (scripts/set-badge.mjs): community, creator, author (Autore), pro, staff. Influencer tolto il 27/09/2026 (diventato creator). Permessi in src/lib/community/badges.ts.';
+comment on column public.profiles.bio is 'Bio del profilo pubblico: testo semplice, 1-600 caratteri, al massimo 12 a capo (27/09/2026; regole in src/lib/community/profileLinks.ts).';
+comment on function public.max_published_decks(uuid) is 'Tetto ai mazzi pubblicati: nessuno per creator, pro, staff e admin, 20 per author, 5 per community (27/09/2026).';

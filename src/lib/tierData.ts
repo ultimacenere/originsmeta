@@ -6,6 +6,7 @@ import { listPublishedDecks } from "@/lib/community/queries";
 import { listPublishedTierLists } from "@/lib/community/tierlists";
 import { authorName } from "@/lib/community/util";
 import { indexableLocales } from "@/lib/community/deckQuality";
+import { normalizeBadge } from "@/lib/community/badges";
 import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 
@@ -34,7 +35,7 @@ export type TierData = {
   /** tier list salvate per tipo e data dell'ultima */
   /** liste salvate per scheda (una per persona e per scheda) e persone distinte che ne hanno salvata almeno una */
   lists: { legendaries: number; cards: number; people: number; updated?: string };
-  /** tier list firmate da Staff, Pro, Influencer e Autori, per autore (Ondata 3, TOOL-01): dalla stessa lettura */
+  /** tier list firmate da Staff, Creator, Autori e Pro, per autore (Ondata 3, TOOL-01; ruoli del 27/09): dalla stessa lettura */
   signed: SignedAuthor[];
 };
 
@@ -47,7 +48,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
     .map((deck) => {
       const leg = deck.legendary ? activeCards.find((c) => c.slug === deck.legendary) : undefined;
       const rating = deck.rating ?? { avg: 0, votes: 0 };
-      const badge = deck.profile?.badge ?? "community";
+      const badge = normalizeBadge(deck.profile?.badge);
       const created = deck.created_at.slice(0, 10);
       const patch = patchAt(deck.created_at);
       return {
@@ -57,9 +58,9 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
         legendary: leg ? { slug: leg.slug, name: leg.name, thumb: leg.thumb } : undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
-        creator: authorName(deck.profile),
+        publisher: authorName(deck.profile),
         badge,
-        badgeLabel: d.community.badges[badge as keyof typeof d.community.badges] ?? badge,
+        badgeLabel: d.community.badges[badge],
         rating,
         score: weightedRating(rating.avg, rating.votes),
         created,

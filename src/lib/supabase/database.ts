@@ -439,7 +439,7 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
-      /** tetto ai mazzi pubblicati: 5 per un utente normale, nessuno per Influencer, Pro, Staff e admin */
+      /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };
       leave_tournament: { Args: { tid: string }; Returns: undefined };

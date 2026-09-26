@@ -9,20 +9,21 @@ import { directoryIndexable, listedInDirectory, orderCreators } from "@/lib/comm
 import { twitchLogin } from "@/lib/community/profileLinks";
 import { authorName } from "@/lib/community/util";
 import { dropHreflang, editorialAuthor, profileIndexable } from "@/lib/community/deckQuality";
-import { creatorLabels } from "@/lib/creatorLabels";
+import { creatorLabels, fillCreator } from "@/lib/creatorLabels";
+import { AUTHOR_DECK_LIMIT } from "@/lib/community/badges";
 import { contactEmail } from "@/components/Footer";
 import { CreatorDirectory, type DirectoryEntry } from "@/components/CreatorDirectory";
 import { JsonLd, breadcrumbs, collectionPage, memberId, personId, videoGameId } from "@/components/JsonLd";
 
 /*
-  Directory "Autori e streamer" (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi; indirizzo /creators): i profili
-  con un tag autore (Autore, Influencer, Pro, Staff) che hanno compilato il profilo pubblico (una bio o un canale), con
-  bio, lingue dei contenuti, canali, mazzi pubblicati e il badge LIVE di chi è in diretta su Origins TCG (caricato nel
-  browser da /api/live). Nessun elenco scritto a mano: entra chi ha il tag, lo assegna lo staff (scripts/set-badge.mjs).
-  Filtri per lingua e piattaforma; l'ordine è dichiarato nella pagina.
+  Directory "Creator e autori" (pacchetto CREATOR, 26/09/2026, richiesta di Pierluigi; indirizzo /creators; nome e
+  ruoli del 27/09/2026): i profili con il ruolo Creator, Autore, Pro o Staff che hanno compilato il profilo pubblico
+  (una bio o un canale), con bio, lingue dei contenuti, canali, mazzi pubblicati e il badge LIVE di chi è in diretta su
+  Origins TCG (caricato nel browser da /api/live). Nessun elenco scritto a mano: entra chi ha il ruolo, lo assegna lo
+  staff (scripts/set-badge.mjs). Filtri per ruolo, lingua e piattaforma; l'ordine è dichiarato nella pagina.
   ISR come /decks. Sotto le tre schede (`directoryIndexable`) la pagina è noindex, senza hreflang e fuori dalla sitemap
   (che conta con la stessa `listedInDirectory`, in sitemapData.ts).
-  In fondo l'invito a chiedere il tag Autore (email dello staff o il modulo "Mandaci la tua guida").
+  In fondo l'invito a chiedere il ruolo Creator o Autore (email dello staff o il modulo "Mandaci la tua guida").
 */
 export const revalidate = 300;
 
@@ -63,7 +64,7 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
         name,
         avatar: c.avatar_url,
         badge: c.badge,
-        badgeLabel: d.community.badges[c.badge as keyof typeof d.community.badges] ?? c.badge,
+        badgeLabel: d.community.badges[c.badge],
         bio: c.bio,
         links: c.links,
         langs: c.contentLangs,
@@ -123,13 +124,13 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
         )}
       </div>
 
-      {/* Invito a diventare Autore: il tag lo assegna lo staff, si chiede per email o mandando una guida */}
+      {/* Invito a diventare Creator o Autore: il ruolo lo assegna lo staff, si chiede per email o mandando una guida */}
       <section aria-labelledby="creators-invite" className="card-night mt-12 flex flex-wrap items-center gap-x-8 gap-y-5 border-dashed p-5 sm:p-7">
         <div className="min-w-0 flex-1 basis-72">
           <h2 id="creators-invite" className="t-section">
             {L.inviteTitle}
           </h2>
-          <p className="mt-2 max-w-2xl text-sm text-pale">{L.inviteText}</p>
+          <p className="mt-2 max-w-2xl text-sm text-pale">{fillCreator(L.inviteText, { authorDecks: AUTHOR_DECK_LIMIT })}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <a href={mail} className="btn btn-primary">

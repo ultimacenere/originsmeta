@@ -12,6 +12,7 @@ import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
+import { normalizeBadge } from "@/lib/community/badges";
 import { localizedGuide } from "@/lib/community/deckTranslation";
 import { communityPageLabels, deckIndexing, dropHreflang, editorialAuthor, fillLabel, relatedDecks } from "@/lib/community/deckQuality";
 import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
@@ -233,20 +234,20 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 )}
                 {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
               </span>
-              {/* tag autore, badge LIVE e canali principali accanto al nome (pacchetto CREATOR, 26/09/2026) */}
+              {/* ruolo, badge LIVE e canali principali accanto al nome (pacchetto CREATOR, 26/09/2026; ruoli del 27/09) */}
               <AuthorChannels
                 ownerId={deck.owner}
                 username={deck.profile?.username}
                 name={author}
                 badge={deck.profile?.badge}
-                badgeLabel={deck.profile?.badge ? c.badges[deck.profile.badge as keyof typeof c.badges] : undefined}
+                badgeLabel={c.badges[normalizeBadge(deck.profile?.badge)]}
                 locale={locale}
               />
             </p>
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          {/* il tag autore sta accanto al nome, in AuthorChannels (pacchetto CREATOR) */}
+          {/* il ruolo sta accanto al nome, in AuthorChannels (pacchetto CREATOR) */}
           {/* pastiglie a fondo pieno con testo ink scuro (prima menta scuro con testo chiaro, 2,3:1) */}
           {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{d.common.community}</span>}
           <span className="stat-pill bg-sky text-ink">

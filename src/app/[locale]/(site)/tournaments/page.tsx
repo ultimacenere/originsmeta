@@ -126,7 +126,7 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
         </ol>
       </section>
 
-      {/* Tournament Organizer: tornei creati dagli utenti e pubblicati sul calendario (solo Influencer/Pro/Staff) */}
+      {/* Tournament Organizer: tornei creati dagli utenti e pubblicati sul calendario (solo Creator/Pro/Staff) */}
       <section className="mt-12" id="community">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">

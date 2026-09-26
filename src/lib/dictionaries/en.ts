@@ -79,7 +79,7 @@ export const en = {
     viewAll: "View all",
     search: "Search a card",
     all: "All",
-    /* Italian needs a masculine "all" for some filters (archetype, author, author type); English does not */
+    /* Italian needs a masculine "all" for some filters (archetype, publisher, role); English does not */
     allMasculine: "All",
     mana: "Mana",
     power: "Power",
@@ -146,7 +146,8 @@ export const en = {
     openDeck: "Open the deck",
     deckCards: "Cards in the deck",
     decks: "Decks",
-    creator: "Author",
+    /* chi ha pubblicato un mazzo (27/09/2026: né Creator né Autore, che sono ruoli): filtro di /decks e schede */
+    publishedBy: "Published by",
     archetype: "Archetype",
     playtest: "Playtest",
     official: "Official",
@@ -165,9 +166,8 @@ export const en = {
     noDecks: "No deck matches these filters.",
     filterLegendary: "Legendary",
     filterArchetype: "Archetype",
-    filterCreator: "Author",
-    /* deck filter by author tag (Twitch live of 23/09/2026) */
-    filterAuthorType: "Author type",
+    /* deck filter by role, the profile tag (Twitch live of 23/09/2026; "Role" since 27/09/2026) */
+    filterRole: "Role",
     filterCard: "Card",
     clearFilters: "Clear filters",
     /* deck filtering and sorting by date and game version (Pierluigi, 23/09/2026) */
@@ -282,7 +282,7 @@ export const en = {
        è uscito dal titolo con la revisione dell'Ondata 1: il primario di "deck code" è /deck-builder; resta nella description */
     title: "Origins TCG decks from the community",
     metaTitle: "Origins TCG decks: community decklists and guides",
-    intro: "Every deck is tagged by Legendary, archetype, deck type and author, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
+    intro: "Every deck is tagged by Legendary, archetype, deck type and the publisher's role, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
     description: "Community decklists for Origins TCG, the Koin Games card game: deck guides, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
     conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026), where each deck needed a different Legendary, and chosen for the Crimson Cup: you submit several decks that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
@@ -439,10 +439,10 @@ export const en = {
       emptyCta: "Make your tier list",
       officialLink: "See the OriginsMeta tier list",
       disclaimer: "It is the opinion of the people on this site, not a game statistic: it weighs as much as the people who voted.",
-      /* Tier list firmate (Ondata 3, TOOL-01): quelle salvate da profili con il tag Staff, Pro, Influencer o Autore
-         (`signedTierLists` in tierstats.ts). Senza liste firmate la sezione non c'è */
+      /* Tier list firmate (Ondata 3, TOOL-01): quelle salvate da profili con il ruolo Staff, Creator, Autore o Pro
+         (`signedTierLists` in tierstats.ts, ruoli del 27/09/2026). Senza liste firmate la sezione non c'è */
       signedTitle: "Signed tier lists",
-      signedText: "Saved by OriginsMeta members with an author tag (Staff, Pro, Influencer, Author): each one is the opinion of whoever signs it. They count in the community average like every other list.",
+      signedText: "Saved by OriginsMeta members with the Staff, Creator, Author or Pro role: each one is the opinion of whoever signs it. They count in the community average like every other list.",
       signedProfile: "Profile",
     },
     /* Most played (24/09/2026): how many published decks use each card */
@@ -999,7 +999,7 @@ export const en = {
     deckType: "Deck type",
     deckTypeHint: "You can pick more than one.",
     deckTypes: { ladder: "Ladder", competitive: "Competitive", fun: "Fun", tournament: "Tournament" },
-    badges: { community: "Community", creator: "Author", influencer: "Influencer", pro: "Pro", staff: "Staff" },
+    badges: { community: "Community", creator: "Creator", author: "Author", pro: "Pro", staff: "Staff" },
     archetypeSuggested: "Suggested from the list: change it if you disagree.",
     summary: "Game plan",
     summaryHint: "How the deck wins, in a few lines (20–600 characters). Shown on the deck card.",
@@ -1042,6 +1042,7 @@ export const en = {
       forbidden: "You can only edit your own decks.",
       draftLimit: "You have 50 private decks, the maximum: delete one from your profile to save a new one.",
       deckLimit: "You already have 5 published decks, the maximum for a community account: delete or hide one from your profile, or write to us if you publish decks for a community.",
+      deckLimitAuthor: "You already have 20 published decks, the maximum for an Author account: delete or hide one from your profile, or write to us if you need more.",
     },
     profile: {
       kicker: "Community profile",
@@ -1109,7 +1110,7 @@ export const en = {
       confirmDeletePrivate: "Delete this private deck? This cannot be undone.",
       /* published-deck cap and saved tier lists (23/09/2026) */
       deckQuota: "{used} of {cap} published decks.",
-      deckQuotaUnlimited: "{used} published decks. Your author tag has no cap.",
+      deckQuotaUnlimited: "{used} published decks. Your role has no cap.",
       publicPage: "Your public page",
       myTierLists: "My tier lists",
       newTierList: "Make a tier list",
@@ -1214,7 +1215,7 @@ export const en = {
     },
     create: {
       title: "Organize a tournament",
-      intro: "Anyone with an account can create a tournament: players sign up on the site, submit their decks and play the bracket here. Influencers, pros and staff can also publish it on the site calendar.",
+      intro: "Anyone with an account can create a tournament: players sign up on the site, submit their decks and play the bracket here. Creator, Pro and Staff accounts can also publish it on the site calendar.",
       loginFirst: "Sign in to organize a tournament.",
       essentials: "The essentials",
       essentialsHint: "This is all you need to create the tournament: you can change the rest later from the management page.",
@@ -1225,7 +1226,7 @@ export const en = {
       coverSpecs: "Recommended 16:7, for example 1600×700 px, at least 1200 px wide; JPG, PNG or WebP up to 1 MB. The image is resized to 1600 px and converted to WebP in your browser before upload.",
       coverUploadButton: "Choose an image…",
       coverRemove: "Use a media kit image instead",
-      coverLocked: "Uploading a custom cover is reserved to Influencer, Pro and Staff accounts.",
+      coverLocked: "Uploading a custom cover is reserved to Creator, Pro and Staff accounts.",
       coverUploading: "Uploading…",
       coverUploaded: "Cover uploaded",
       showAllCovers: "Show all {n} covers",
@@ -1251,9 +1252,9 @@ export const en = {
       listed: "Publish on the site calendar",
       listedHint: "The tournament appears in the calendar strip and in the tournaments page.",
       listedPrivate: "A private tournament is never published on the calendar.",
-      listedLocked: "Only Influencer, Pro and Staff accounts can publish on the calendar. Your tournament is still reachable by link and tag.",
+      listedLocked: "Only Creator, Pro and Staff accounts can publish on the calendar. Your tournament is still reachable by link and tag.",
       listedDefault: "It will be published on the site calendar: you can change this in “More options”.",
-      listedHowTo: "To ask for the tag, write to {email}.",
+      listedHowTo: "To ask for the Creator role, write to {email}.",
       consent: "By creating the tournament you agree that its texts are public under your username and you commit to running it.",
       submit: "Create tournament",
       submitting: "Creating…",
@@ -1415,7 +1416,7 @@ export const en = {
       lang: "Pick the language.",
       discord: "The Discord link must point to discord.gg or discord.com.",
       cover: "Pick a cover from the media kit or upload your own.",
-      listing: "Only Influencer, Pro and Staff accounts can publish on the calendar.",
+      listing: "Only Creator, Pro and Staff accounts can publish on the calendar.",
       uploadFailed: "Could not upload the image (max 1 MB, JPG/PNG/WebP).",
       db: "Could not save. Try again in a moment.",
       forbidden: "You can only manage your own tournaments.",
@@ -1427,7 +1428,7 @@ export const en = {
       decks_count: "Submit exactly the required number of decks.",
       decks_invalid: "One of the codes is not a legal deck: check the Legendary and the 12 base cards.",
       conquest_invalid: "Conquest rules not met: different Legendaries and enough different cards between decks.",
-      listing_not_allowed: "Only Influencer, Pro and Staff accounts can publish on the calendar.",
+      listing_not_allowed: "Only Creator, Pro and Staff accounts can publish on the calendar.",
     },
   },
   stats: {
@@ -1493,7 +1494,7 @@ export const en = {
       "mint-soft": "Fill of the Good pill, with ink text.",
       sky: "The mana crystal: frames, page titles and item titles.",
       "sky-deep": "Darker sky in reserve: no class uses it today.",
-      pink: "The Pro author tag and event dates.",
+      pink: "The Pro role and event dates.",
       good: "Strengths, confirmations (.alert-good).",
       bad: "Weaknesses, errors (.alert-bad, .text-error, .btn-danger).",
     },
@@ -1556,7 +1557,7 @@ export const en = {
       sub: "Solid fills with text above 4.5:1. One map per meaning, the same on every page.",
       changes: "Balance changes (changeStyle)",
       deckNote: "\"deck\" marks a change to the deck-building rules: neutral fill, same label as Rework.",
-      badges: "Author tags",
+      badges: "Roles",
       stats: "Stats and rarity",
       chip: "Mini card (card-chip): 2 px frame, gold for Legendaries.",
       chipName: "Card name",

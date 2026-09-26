@@ -469,12 +469,13 @@ describe("signedTierLists (tier list firmate di /tier-list/community)", () => {
     ...extra,
   });
 
-  test("firmano Staff, Pro, Influencer e Autore; community e profili senza tag no", () => {
+  test("firmano Staff, Creator, Autore e Pro; community, tag sconosciuti (influencer, tolto il 27/09) e profili senza tag no", () => {
     const out = signedTierLists([
       row("s", "cards", "2026-09-20", profile("staffer", "staff")),
       row("p", "cards", "2026-09-21", profile("pro1", "pro")),
-      row("i", "cards", "2026-09-22", profile("infl", "influencer")),
-      row("a", "cards", "2026-09-23", profile("magicofhandss", "creator")),
+      row("r", "cards", "2026-09-22", profile("coachcrono", "creator")),
+      row("a", "cards", "2026-09-23", profile("magicofhandss", "author")),
+      row("i", "cards", "2026-09-24", profile("infl", "influencer")),
       row("c", "cards", "2026-09-24", profile("sbardi", "community")),
       row("n", "cards", "2026-09-24", profile("nobadge", null)),
       row("x", "cards", "2026-09-24", null),
@@ -482,8 +483,8 @@ describe("signedTierLists (tier list firmate di /tier-list/community)", () => {
     assert.deepEqual(
       out.map((a) => [a.username, a.badge]),
       [
-        ["magicofhandss", "creator"],
-        ["infl", "influencer"],
+        ["magicofhandss", "author"],
+        ["coachcrono", "creator"],
         ["pro1", "pro"],
         ["staffer", "staff"],
       ],
@@ -496,8 +497,8 @@ describe("signedTierLists (tier list firmate di /tier-list/community)", () => {
 
   test("un autore con due liste: una voce sola, Leggendarie prima, data dell'ultima e carte classificate", () => {
     const [a, ...rest] = signedTierLists([
-      row("m", "cards", "2026-09-25", profile("magicofhandss", "creator", "Magic of Hands"), { title: " Tier List Carte " }),
-      row("m", "legendaries", "2026-09-24", profile("magicofhandss", "creator", "Magic of Hands"), { title: null, code: null }),
+      row("m", "cards", "2026-09-25", profile("magicofhandss", "author", "Magic of Hands"), { title: " Tier List Carte " }),
+      row("m", "legendaries", "2026-09-24", profile("magicofhandss", "author", "Magic of Hands"), { title: null, code: null }),
     ]);
     assert.equal(rest.length, 0);
     assert.equal(a.name, "Magic of Hands");

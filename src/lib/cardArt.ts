@@ -31,21 +31,24 @@ export function initials(name: string): string {
 }
 
 /**
- * Tag autore dei mazzi community, colori forti da memorizzare. Mappa nuova, dettata da Pierluigi il 23/09/2026
- * (supera quella di Davdas del 15/09: Staff menta, Pro rosa, Influencer oro):
+ * Ruoli (tag) dei profili, colori forti da memorizzare. Mappa dettata da Pierluigi il 23/09/2026 (supera quella di
+ * Davdas del 15/09: Staff menta, Pro rosa, Influencer oro) e ritoccata il 27/09/2026 con i ruoli nuovi ("Influencer
+ * scompare"; il Creator prende il suo gradiente; l'Autore ha un id suo, `author`):
  * Staff scritta nera su giallo (12,3:1), Community com'era (gesso su night-3, 8,6:1), Pro rosso su azzurro
- * (`.badge-pro`, 5,2:1), Influencer gradiente stile Instagram con scritta bianca (`.badge-ig`, come i bottoni
- * primari), Autore celeste con scritta scura (`.badge-creator`, id `creator`, 25/09/2026: chi pubblica contenuti sul sito). Le due varianti con gradiente e con colori fuori palette stanno in globals.css, non in utility.
- * Chi è Staff non mostra anche "Community"; il tag community di default non si mostra affatto.
+ * (`.badge-pro`, 5,2:1), Creator gradiente stile Instagram con scritta bianca (`.badge-creator`, come i bottoni
+ * primari), Autore celeste con scritta scura (`.badge-author`, 9:1). Le varianti con gradiente e con colori fuori
+ * palette stanno in globals.css, non in utility. Chi è Staff non mostra anche "Community"; il tag community di default
+ * non si mostra affatto. Un tag che il codice non conosce si legge come community (`normalizeBadge` in
+ * src/lib/community/badges.ts): chi usa la mappa ripiega su `badgeStyle.community`.
  */
 export const badgeStyle: Record<string, string> = {
   staff: "bg-gold text-ink",
-  pro: "badge-pro",
-  influencer: "badge-ig",
   creator: "badge-creator",
+  author: "badge-author",
+  pro: "badge-pro",
   community: "bg-night-3 text-pale",
 };
-/** Tag autore più grandi e marcati (richiesta di Davdas). */
+/** Pastiglie dei ruoli più grandi e marcate (richiesta di Davdas). */
 export const badgePill = "stat-pill px-3 py-1 text-xs font-extrabold uppercase tracking-wider";
 
 /**

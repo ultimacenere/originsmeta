@@ -61,7 +61,7 @@ async function streamsOf(creds: { id: string; secret: string }, logins: readonly
 }
 
 /**
- * Chi fra i creator (tag autore + canale Twitch nel profilo) è in diretta su Origins TCG adesso. Senza chiavi:
+ * Chi fra i profili vetrina (ruolo Creator, Autore, Pro o Staff + canale Twitch nel profilo) è in diretta su Origins TCG adesso. Senza chiavi:
  * `enabled: false` e nessuna chiamata. Un errore di Twitch o del database sale: la rotta lo trasforma in "nessuno".
  */
 export async function liveStatus(): Promise<LiveResponse> {

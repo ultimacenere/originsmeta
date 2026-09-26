@@ -12,6 +12,8 @@ import {
   authorKind,
   badgeCount,
   badgeText,
+  envelopeHref,
+  envelopeLabel,
   checkMessage,
   checkSubject,
   cleanUsername,
@@ -197,6 +199,21 @@ describe("numero dei non letti", () => {
     assert.equal(badgeText(1), "1");
     assert.equal(badgeText(9), "9");
     assert.equal(badgeText(10), "9+");
+  });
+  test("busta dell'header (27/09/2026): la propria casella; per lo staff quella dello staff se le novità sono solo lì", () => {
+    assert.equal(envelopeHref(null, "it"), "/it/account/messages");
+    assert.equal(envelopeHref({ unread: 2, staff: false, staffUnread: 0 }, "en"), "/en/account/messages");
+    assert.equal(envelopeHref({ unread: 1, staff: true, staffUnread: 4 }, "es"), "/es/account/messages", "prima i propri messaggi");
+    assert.equal(envelopeHref({ unread: 0, staff: true, staffUnread: 4 }, "it"), "/it/account/staff/messages");
+    assert.equal(envelopeHref({ unread: 0, staff: true, staffUnread: 0 }, "it"), "/it/account/messages");
+  });
+  test("nome della busta per i lettori di schermo, con il numero intero", () => {
+    const L = { messages: "Messaggi", envelopeOne: "Messaggi, 1 non letto", envelopeMany: "Messaggi, {n} non letti" };
+    assert.equal(envelopeLabel(L, 0), "Messaggi");
+    assert.equal(envelopeLabel(L, NaN), "Messaggi");
+    assert.equal(envelopeLabel(L, 1), "Messaggi, 1 non letto");
+    assert.equal(envelopeLabel(L, 2), "Messaggi, 2 non letti");
+    assert.equal(envelopeLabel(L, 14), "Messaggi, 14 non letti", "il pallino dice 9+, il nome il numero vero");
   });
 });
 

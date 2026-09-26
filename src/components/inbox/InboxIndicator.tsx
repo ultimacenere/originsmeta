@@ -4,21 +4,25 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { badgeCount, badgeText, fillInbox, parseInboxStatus, staffInboxPath, type InboxStatus } from "@/lib/community/messages";
+import { badgeCount, badgeText, envelopeHref, envelopeLabel, fillInbox, parseInboxStatus, staffInboxPath, type InboxStatus } from "@/lib/community/messages";
 import { navLabelsFor } from "@/lib/inboxNavLabels";
 
 /**
  * Numero dei non letti della casella messaggi (26/09/2026, pacchetto INBOX) nel browser: l'header è lo stesso delle
  * pagine statiche e il layout non legge Supabase, quindi lo stato arriva da `/api/inbox/status`.
  *
- * Una sola lettura condivisa da tutti i componenti della pagina (menu dell'account, link dello staff su /u): al primo
- * montaggio, al cambio di pagina e al ritorno sulla scheda, al massimo una volta al minuto; subito dopo un messaggio
- * mandato o letto (`announceInboxChange`, evento `originsmeta:inbox`). Legata all'utente: se cambia account nella
- * stessa scheda, il numero di prima sparisce.
+ * Una sola lettura condivisa da tutti i componenti della pagina (busta e menu dell'account, link dello staff su /u): al
+ * primo montaggio, al cambio di pagina, al ritorno sulla scheda e ogni minuto circa mentre la scheda è visibile (dal
+ * 27/09/2026, per la busta dell'header), mai più di una volta ogni `MIN_GAP_MS`; subito dopo un messaggio mandato o letto
+ * (`announceInboxChange`, evento `originsmeta:inbox`). Legata all'utente: se cambia account nella stessa scheda, il
+ * numero di prima sparisce.
  */
 
 const EVENT = "originsmeta:inbox";
-const MIN_GAP_MS = 60_000;
+/** Distanza minima fra due letture non forzate: un po' meno del giro del timer, così il giro non salta per pochi ms. */
+const MIN_GAP_MS = 55_000;
+/** Ogni quanto si rilegge lo stato mentre la scheda è visibile (busta dell'header, 27/09/2026). */
+const POLL_MS = 60_000;
 
 let owner: string | null = null;
 let current: InboxStatus | null = null;
@@ -100,9 +104,12 @@ export function useInboxStatus(uid: string | null | undefined): InboxStatus | nu
     const visible = () => {
       if (document.visibilityState === "visible") void load(uid, false);
     };
+    // ogni minuto circa, solo con la scheda in primo piano: una scheda dimenticata aperta non interroga il server
+    const timer = window.setInterval(visible, POLL_MS);
     window.addEventListener(EVENT, now);
     document.addEventListener("visibilitychange", visible);
     return () => {
+      window.clearInterval(timer);
       window.removeEventListener(EVENT, now);
       document.removeEventListener("visibilitychange", visible);
     };
@@ -110,15 +117,50 @@ export function useInboxStatus(uid: string | null | undefined): InboxStatus | nu
   return status;
 }
 
-/** Testo per i lettori di schermo: ", 2 conversazioni da leggere", oppure niente. */
-export function inboxAriaSuffix(status: InboxStatus | null, locale: string): string {
-  const n = badgeCount(status);
-  if (n < 1) return "";
+/**
+ * Busta dei messaggi nell'header, subito a sinistra dell'avatar (27/09/2026, richiesta di Pierluigi: "la posta deve essere
+ * un tasto in alto a sinistra di fianco al nome giocatore, che se hanno un messaggio avranno una notifica… la classica
+ * cassetta delle lettere o una lettera con una notifica rossa"). Solo per chi ha fatto l'accesso (la monta AccountMenu).
+ * Porta alla casella (`envelopeHref`: per lo staff quella dello staff se le novità sono solo lì). Con messaggi da leggere,
+ * un pallino crimson con il numero (1–9, poi "9+"): testo bianco su crimson 5,3:1 (il gesso si fermava a 4:1, troppo poco
+ * per 10 px; come il gradiente del Creator e dei bottoni primari è un'eccezione alla regola "niente bianco pieno"), e il
+ * pallino contro il fondo dell'header fa 3,5:1. Il nome per i lettori di schermo ha il numero intero ("Messaggi, 2 non
+ * letti"). Icona SVG disegnata qui, niente librerie.
+ */
+export function InboxEnvelope({ locale, status }: { locale: string; status: InboxStatus | null }) {
   const L = navLabelsFor(locale);
-  return `, ${n === 1 ? L.unreadOne : fillInbox(L.unreadMany, { n })}`;
+  const n = badgeCount(status);
+  const text = badgeText(n);
+  const label = envelopeLabel(L, n);
+  return (
+    <Link
+      href={envelopeHref(status, locale)}
+      prefetch={false}
+      aria-label={label}
+      title={label}
+      className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-felt-line text-chalk transition hover:border-mint hover:text-mint"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="5.5" width="18" height="13" rx="2" />
+        <path d="m3.5 7 8.5 6.5L20.5 7" />
+      </svg>
+      {text ? (
+        <span
+          aria-hidden="true"
+          className="absolute -right-1.5 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-crimson px-1 font-mono text-[10px] font-bold leading-none text-white ring-2 ring-felt"
+        >
+          {text}
+        </span>
+      ) : null}
+    </Link>
+  );
 }
 
-/** Pallino menta con il numero, accanto all'avatar (il numero intero lo legge `inboxAriaSuffix`). */
+/**
+ * Pallino menta con il numero, nelle voci del menu dell'account (il numero intero lo dice l'`aria-label` della voce).
+ * Accanto all'avatar non c'è più dal 27/09/2026: il numero lo porta la busta (`InboxEnvelope`), e due numeri uguali
+ * a pochi pixel l'uno dall'altro sarebbero stati un doppione.
+ */
 export function InboxCount({ status, className = "" }: { status: InboxStatus | null; className?: string }) {
   const text = badgeText(badgeCount(status));
   if (!text) return null;

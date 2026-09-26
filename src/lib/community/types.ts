@@ -21,10 +21,11 @@ export type DeckStatus = "published" | "hidden" | "draft";
 export const deckTypes = ["ladder", "competitive", "fun", "tournament"] as const;
 export type DeckType = (typeof deckTypes)[number];
 
-/** Tag autore: lo assegna solo lo staff (scripts/set-badge.mjs), mai l'utente. */
-export const authorBadges = ["community", "creator", "influencer", "pro", "staff"] as const;
-export type AuthorBadge = (typeof authorBadges)[number];
-
+/**
+ * Ruolo (tag) del profilo: lo assegna solo lo staff (scripts/set-badge.mjs), mai l'utente. I cinque tag e i permessi
+ * che ne dipendono stanno in badges.ts (27/09/2026); `badge` qui resta una stringa perché arriva dal database così
+ * com'è: si legge con `normalizeBadge`.
+ */
 export type Profile = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
 
 /** Riga di public.community_decks (vedi supabase/schema.sql) con autore e media voti. */
@@ -66,10 +67,7 @@ export const GUIDE_DRAFT_KEY = "originsmeta.publish.guide.v1";
  */
 export const MAX_PRIVATE_DECKS = 50;
 
-/**
- * Tetto ai mazzi PUBBLICATI di un utente normale (Pierluigi, 23/09/2026: "mazzi 5 massimo per utente normale,
- * per staff, influencer e pro senza limiti"). Chi ha un tag autore (Creator, Influencer, Pro, Staff) e gli admin non
- * hanno tetto. Il conto tiene insieme pubblicati e nascosti; i privati hanno il loro tetto qui sopra.
- * Lo applica il trigger enforce_deck_limit di supabase/schema.sql, questa costante lo ripete al sito.
+/*
+ * Il tetto ai mazzi PUBBLICATI (5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin) sta in
+ * badges.ts dal 27/09/2026: `publishedDeckCap`, `COMMUNITY_DECK_LIMIT`, `AUTHOR_DECK_LIMIT`.
  */
-export const MAX_PUBLISHED_DECKS = 5;

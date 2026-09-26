@@ -23,7 +23,7 @@ export type PublishedTierList = {
   /** titolo scelto dall'autore e codice TL1: le tier list firmate di /tier-list/community si aprono nel tool (Ondata 3) */
   title: string;
   code: string;
-  /** chi l'ha salvata: nome, nome utente e tag autore (le tier list firmate, `signedTierLists` in tierstats.ts) */
+  /** chi l'ha salvata: nome, nome utente e ruolo (le tier list firmate, `signedTierLists` in tierstats.ts) */
   profile: { username: string | null; display_name: string | null; badge: string | null } | null;
 };
 

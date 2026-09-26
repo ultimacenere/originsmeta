@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { normalizeBadge } from "@/lib/community/badges";
 import { inboxLabels } from "@/lib/inboxLabels";
 import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath, withSafeAvatar } from "@/lib/community/messages";
 import type { InboxProfile, StaffConversation, ThreadMessage } from "@/lib/community/inboxQueries";
@@ -36,7 +37,9 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
   const userName = nameOf(c.user) || L.thread.deletedUser;
   const closed = c.status === "closed";
   const origin = staffView ? L.originStaff[c.origin] : L.origin[c.origin];
-  const badge = c.user?.badge && c.user.badge !== "community" ? c.user.badge : null;
+  // ruolo (27/09/2026): un tag che il codice non conosce vale community e non si mostra
+  const role = normalizeBadge(c.user?.badge);
+  const badge = role !== "community" ? role : null;
   const unread = staffView ? c.unread_by_staff : c.unread_by_user;
 
   return (
@@ -64,7 +67,7 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
             {c.user?.username ? <p className="break-all font-mono text-xs text-pale-muted">@{c.user.username}</p> : null}
             {badge ? (
               <p className="mt-2">
-                <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community}`}>{d.community.badges[badge as keyof typeof d.community.badges] ?? badge}</span>
+                <span className={`${badgePill} ${badgeStyle[badge]}`}>{d.community.badges[badge]}</span>
               </p>
             ) : null}
           </div>

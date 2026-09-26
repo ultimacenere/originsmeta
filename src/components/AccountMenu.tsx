@@ -8,8 +8,8 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import type { Profile } from "@/lib/community/types";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
-// casella messaggi (26/09/2026, pacchetto INBOX): numero dei non letti e voci del menu, caricati nel browser
-import { InboxCount, InboxMenuLinks, inboxAriaSuffix, useInboxStatus } from "./inbox/InboxIndicator";
+// casella messaggi (26/09/2026, pacchetto INBOX): busta con i non letti (27/09/2026) e voci del menu, caricati nel browser
+import { InboxEnvelope, InboxMenuLinks, useInboxStatus } from "./inbox/InboxIndicator";
 
 export type AccountLabels = { login: string; account: string; builder: string; logout: string; player: string };
 
@@ -115,16 +115,45 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
   }
   const name = profile?.display_name || profile?.username || (profileReady ? user.email?.split("@")[0] : "") || labels.player;
   return (
+    // Busta dei messaggi subito a sinistra dell'avatar (27/09/2026, richiesta di Pierluigi), a ogni larghezza: sotto 640 px
+    // la riga è logo, busta, avatar e Menu. Senza accesso non c'è (qui si arriva solo con una sessione).
+    // min-w-0 qui, sul menu e nella riga dell'header: se lo spazio manca si tronca il nome, busta e avatar restano interi
+    <span className="flex min-w-0 items-center gap-2 max-[359px]:gap-1">
+      <InboxEnvelope locale={locale} status={inbox} />
+      <AccountDetails locale={locale} labels={labels} user={user} profile={profile} profileReady={profileReady} name={name} inbox={inbox} />
+    </span>
+  );
+}
+
+/** Avatar (e nome, dove c'è spazio) con il menu dell'account. */
+function AccountDetails({
+  locale,
+  labels,
+  user,
+  profile,
+  profileReady,
+  name,
+  inbox,
+}: {
+  locale: string;
+  labels: AccountLabels;
+  user: { id: string; email?: string };
+  profile: Profile | null;
+  profileReady: boolean;
+  name: string;
+  inbox: ReturnType<typeof useInboxStatus>;
+}) {
+  return (
     <AutoCloseDetails
-      className="relative"
-      summaryClassName="flex cursor-pointer list-none items-center gap-2 rounded-full border border-felt-line py-0.5 pl-0.5 pr-3 text-xs text-chalk hover:border-mint [&::-webkit-details-marker]:hidden"
-      summaryLabel={`${labels.account}: ${name}${inboxAriaSuffix(inbox, locale)}`}
+      className="relative min-w-0"
+      // con il solo avatar (sotto 640 px e fra 1280 e 1535, dove il nome si nasconde) la pastiglia resta un cerchio
+      summaryClassName="flex cursor-pointer list-none items-center gap-2 rounded-full border border-felt-line py-0.5 pl-0.5 pr-0.5 text-xs text-chalk hover:border-mint sm:pr-3 xl:pr-0.5 2xl:pr-3 [&::-webkit-details-marker]:hidden"
+      summaryLabel={`${labels.account}: ${name}`}
       summary={
         <>
           <Avatar profile={profile} name={name} />
           {/* il nome si nasconde tra 1280 e 1535 px, dove la riga ospita anche il menu completo e la ricerca */}
           <span className="hidden max-w-[9rem] truncate font-display font-medium sm:inline xl:hidden 2xl:inline">{name}</span>
-          <InboxCount status={inbox} />
         </>
       }
     >
@@ -147,9 +176,9 @@ export function Avatar({ profile, name, size = 28 }: { profile: Profile | null |
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   return profile?.avatar_url ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={profile.avatar_url} alt="" width={size} height={size} className="rounded-full bg-felt-soft object-cover" style={{ width: size, height: size }} referrerPolicy="no-referrer" />
+    <img src={profile.avatar_url} alt="" width={size} height={size} className="shrink-0 rounded-full bg-felt-soft object-cover" style={{ width: size, height: size }} referrerPolicy="no-referrer" />
   ) : (
-    <span className="flex items-center justify-center rounded-full bg-mint font-display text-[11px] font-bold text-ink" style={{ width: size, height: size }} aria-hidden="true">
+    <span className="flex shrink-0 items-center justify-center rounded-full bg-mint font-display text-[11px] font-bold text-ink" style={{ width: size, height: size }} aria-hidden="true">
       {initial}
     </span>
   );

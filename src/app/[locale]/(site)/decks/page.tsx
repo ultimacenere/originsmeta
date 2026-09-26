@@ -17,6 +17,7 @@ import { localizedGuide } from "@/lib/community/deckTranslation";
 import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/deckQuality";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { badgeStyle } from "@/lib/cardArt";
+import { BADGE_ORDER, normalizeBadge } from "@/lib/community/badges";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
 import { CardName } from "@/components/CardChip";
@@ -82,7 +83,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Solo le Leggendarie giocabili nella demo (le rimosse del playtest restano nel database carte)
   const legendaries = activeCards.filter((c) => c.legendary);
   const community = await listPublishedDecks();
-  // canali e badge LIVE accanto agli autori con un tag (pacchetto CREATOR, 26/09/2026)
+  // canali e badge LIVE accanto a chi ha pubblicato, se ha il ruolo Creator, Autore, Pro o Staff (pacchetto CREATOR)
   const creators = creatorIndex(await listCreators());
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
@@ -109,7 +110,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             : undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
-        creator: authorName(deck.profile),
+        publisher: authorName(deck.profile),
         source: "community",
         sourceLabel: d.common.community,
         cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
@@ -126,8 +127,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         // mazzi (Ondata 3): con la media semplice un solo voto da 5 stelle passava davanti al #1 della classifica
         score: deck.rating?.votes ? weightedRating(deck.rating.avg, deck.rating.votes) : 0,
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
-        creatorBadge: d.community.badges[(deck.profile?.badge ?? "community") as keyof typeof d.community.badges] ?? deck.profile?.badge ?? undefined,
-        creatorBadgeId: deck.profile?.badge ?? "community",
+        // ruolo di chi l'ha pubblicato (27/09/2026): un tag che il codice non conosce vale community
+        publisherBadge: d.community.badges[normalizeBadge(deck.profile?.badge)],
+        publisherBadgeId: normalizeBadge(deck.profile?.badge),
         ...creatorExtras(creators, deck.owner),
       };
     });
@@ -141,7 +143,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       legendary: leg ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana } : undefined,
       archetype: deck.archetype,
       archetypeLabel: archetypeLabels[deck.archetype][locale],
-      creator: deck.creator.name,
+      publisher: deck.creator.name,
       source: deck.source,
       sourceLabel: d.common[deck.source],
       cardNames: deck.cards.map((s) => getCard(s)?.name ?? s),
@@ -231,8 +233,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       ),
     );
 
-  // Voci del filtro per tag autore, dal tag dello staff al più comune: i nomi sono quelli dei tag sui mazzi
-  const authorTypes = (["staff", "pro", "influencer", "creator", "community"] as const).map((id): [string, string] => [id, d.community.badges[id]]);
+  // Voci del filtro "Ruolo" (27/09/2026: Staff, Creator, Autore, Pro, Community), dallo staff al più comune: i nomi
+  // sono quelli delle pastiglie sui mazzi
+  const roles = BADGE_ORDER.map((id): [string, string] => [id, d.community.badges[id]]);
 
   // Lista per i dati strutturati: i mazzi editoriali statici (oggi nessuno) e quelli della community che la pagina
   // mostra, dal più recente, ma solo dove la scheda si indicizza in questa lingua: la guida originale o una traduzione
@@ -304,7 +307,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
                 const deck = item.deck;
                 const leg = deck.legendary ? getCard(deck.legendary) : undefined;
                 const legName = leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name;
-                const badge = deck.profile?.badge ?? "community";
+                const badge = normalizeBadge(deck.profile?.badge);
                 return (
                   <li key={deck.slug} className="flex min-w-0 items-center gap-2.5 rounded-xl border-2 border-sky/50 bg-night-2/80 p-3 sm:gap-3">
                     <span className="w-8 shrink-0 text-center font-display text-lg font-bold text-sky tabular sm:w-11 sm:text-xl">#{rank}</span>
@@ -330,9 +333,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
                         {legName ? " · " : ""}
                         {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype} · {fillLabel(bestLabels.by, { name: authorName(deck.profile) })}
                         {badge !== "community" ? (
-                          <span className={`stat-pill ml-1.5 px-1.5 py-0 text-[10px] font-extrabold uppercase ${badgeStyle[badge] ?? ""}`}>
-                            {d.community.badges[badge as keyof typeof d.community.badges] ?? badge}
-                          </span>
+                          <span className={`stat-pill ml-1.5 px-1.5 py-0 text-[10px] font-extrabold uppercase ${badgeStyle[badge]}`}>{d.community.badges[badge]}</span>
                         ) : null}
                       </p>
                       <p className="mt-1 font-mono text-xs text-pale">
@@ -367,9 +368,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           labels={{
             legendary: d.common.filterLegendary,
             archetype: d.common.filterArchetype,
-            creator: d.common.filterCreator,
-            authorType: d.common.filterAuthorType,
-            authorTypes,
+            publishedBy: d.common.publishedBy,
+            role: d.common.filterRole,
+            roles,
             clear: d.common.clearFilters,
             card: d.common.filterCard,
             all: d.common.all,

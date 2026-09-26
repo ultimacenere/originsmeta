@@ -10,6 +10,7 @@ import { bestOfLabel, fill, tournamentInviteLink, tournamentShortLink, type Tour
 import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { shownBadge } from "@/lib/community/badges";
 import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
 import { Avatar } from "@/components/AccountMenu";
@@ -50,12 +51,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 function PlayerRow({ p, dict }: { p: TournamentPlayer; dict: Awaited<ReturnType<typeof resolveLocale>>["dict"] }) {
   const name = authorName(p.profile);
-  const badge = p.profile?.badge && p.profile.badge !== "community" ? p.profile.badge : null;
+  const badge = shownBadge(p.profile?.badge);
   return (
     <li className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
       <Avatar profile={p.profile} name={name} size={24} />
       <span className={`min-w-0 truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{name}</span>
-      {badge ? <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community} !px-2 !py-0.5 !text-[10px]`}>{dict.community.badges[badge as keyof typeof dict.community.badges] ?? badge}</span> : null}
+      {badge ? <span className={`${badgePill} ${badgeStyle[badge]} !px-2 !py-0.5 !text-[10px]`}>{dict.community.badges[badge]}</span> : null}
       {p.decks_submitted ? <span className="ml-auto font-mono text-[11px] text-good">✓</span> : null}
     </li>
   );
@@ -97,7 +98,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
   const organizer = authorName(t.profile);
   const handle = authorHandle(t.profile);
-  const badge = t.profile?.badge && t.profile.badge !== "community" ? t.profile.badge : null;
+  const badge = shownBadge(t.profile?.badge);
   const path = href(locale, `/tournaments/${t.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const shortLink = tournamentShortLink(siteUrl, t.tag);
@@ -239,7 +240,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
               {x.organizedBy} <strong className="text-pale">{organizer}</strong>
               {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
             </span>
-            {badge ? <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community}`}>{d.community.badges[badge as keyof typeof d.community.badges] ?? badge}</span> : null}
+            {badge ? <span className={`${badgePill} ${badgeStyle[badge]}`}>{d.community.badges[badge]}</span> : null}
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2 text-sm">

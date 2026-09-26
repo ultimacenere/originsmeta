@@ -3,7 +3,7 @@
  * così si provano con `node --test src/lib/twitchLive.test.ts`. Le chiamate a Twitch stanno in src/lib/twitch.ts, la
  * rotta in src/app/api/live/route.ts, il badge nel browser in src/components/LiveBadge.tsx.
  *
- * Si guarda solo chi ha un tag autore e un canale Twitch nel profilo. Una diretta conta se è su Origins TCG: la
+ * Si guarda solo chi ha il ruolo Creator, Autore, Pro o Staff e un canale Twitch nel profilo. Una diretta conta se è su Origins TCG: la
  * categoria del gioco su Twitch oppure il titolo che lo nomina ("Origins TCG", "#originstcg", "OriginsMeta"). Chi è in
  * diretta su un altro gioco non riceve il badge: il sito parla di Origins, e il badge promette una diretta di Origins.
  */

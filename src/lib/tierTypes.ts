@@ -42,8 +42,9 @@ export type TierDeckEntry = {
   legendary?: { slug: string; name: string; thumb?: string };
   archetype: string;
   archetypeLabel: string;
-  creator: string;
-  /** tag autore (community, creator, influencer, pro, staff) e sua etichetta */
+  /** chi ha pubblicato il mazzo (nome mostrato) */
+  publisher: string;
+  /** ruolo di chi l'ha pubblicato (community, creator, author, pro, staff: `normalizeBadge`) e sua etichetta */
   badge: string;
   badgeLabel: string;
   rating: { avg: number; votes: number };

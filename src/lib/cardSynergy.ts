@@ -42,7 +42,7 @@ export type DeckRef = {
   updated: string;
   /** nome dell'autore, come lo mostra il sito (`authorName`) */
   author: string;
-  /** tag autore: community, influencer, pro, staff */
+  /** ruolo di chi ha pubblicato, così come arriva dal database (community, creator, author, pro, staff): si legge con `normalizeBadge` */
   badge: string;
   /**
    * Lingue in cui la pagina del mazzo è indicizzabile: quella della guida più le traduzioni aggiornate

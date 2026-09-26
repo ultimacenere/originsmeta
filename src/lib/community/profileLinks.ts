@@ -1,8 +1,8 @@
 /**
  * Profilo pubblico di un iscritto: bio, canali e lingue dei contenuti (pacchetto CREATOR, 26/09/2026, richiesta di
  * Pierluigi: "funzioni per i creator"). Chiunque abbia un account li scrive in /account; la pagina /u/<nome> li mostra
- * a tutti, e per chi ha un tag autore (Autore, Influencer, Pro, Staff) diventano anche la scheda della directory
- * /creators, le icone accanto al nome nei mazzi e i `sameAs` della Person nei dati strutturati.
+ * a tutti, e per chi ha il ruolo Creator, Autore, Pro o Staff (`isShowcaseBadge` in badges.ts, 27/09/2026) diventano
+ * anche la scheda della directory /creators, le icone accanto al nome nei mazzi e i `sameAs` della Person.
  *
  * Qui stanno le regole, in funzioni pure (nessun import: `node --test src/lib/community/profileLinks.test.ts`):
  * - ogni canale ha un tipo (twitch, youtube, x, tiktok, instagram, kick, bluesky, discord, website) e un indirizzo
@@ -14,7 +14,7 @@
  *   discord.com…, sottodomini compresi): con il dominio di una piattaforma nota come etichetta, un link di
  *   reindirizzamento o di autorizzazione di un bot sembrerebbe fidato (`websiteBlock`);
  * - la bio è testo semplice (niente Markdown né HTML: React la scrive come testo), al massimo `BIO_MAX` caratteri
- *   contati come `char_length` di Postgres (punti di codice, non unità UTF-16);
+ *   contati come `char_length` di Postgres (punti di codice, non unità UTF-16) e `BIO_MAX_BREAKS` a capo;
  * - al massimo `MAX_LINKS` canali, senza doppioni, nell'ordine scelto dall'utente: i primi sono i "canali principali"
  *   che compaiono accanto al nome (`mainChannels`).
  */
@@ -25,8 +25,17 @@ export type ProfileLink = { kind: LinkKind; url: string };
 
 /** Quanti canali per profilo (lo ripete il vincolo `profiles_links_check` del database). */
 export const MAX_LINKS = 8;
-/** Lunghezza massima della bio, in caratteri (punti di codice, come `char_length` di Postgres). */
-export const BIO_MAX = 280;
+/**
+ * Lunghezza massima della bio, in caratteri (punti di codice, come `char_length` di Postgres). 600 dal 27/09/2026
+ * (richiesta di Pierluigi; prima 280). Lo ripete il vincolo `profiles_bio_check` del database (il test li confronta).
+ */
+export const BIO_MAX = 600;
+/**
+ * A capo al massimo nella bio (27/09/2026, con i 600 caratteri): tredici righe bastano per qualche paragrafo o un
+ * elenco, ma una colonna di righe da una parola non allunga più la pagina a piacere. Oltre, `cleanBio` unisce le
+ * righe in più con uno spazio (nessun errore, il testo resta). Lo ripete il vincolo del database.
+ */
+export const BIO_MAX_BREAKS = 12;
 /** Lunghezza massima di un indirizzo salvato. */
 export const LINK_URL_MAX = 200;
 /** Quante icone accanto al nome dell'autore (scheda del mazzo, elenco /decks). */
@@ -35,12 +44,6 @@ export const MAIN_CHANNELS = 3;
 /** Lingue in cui un iscritto dichiara di fare contenuti: le lingue del sito (il test lo confronta con `locales`). */
 export const CONTENT_LANGS = ["en", "it", "es"] as const;
 export type ContentLang = (typeof CONTENT_LANGS)[number];
-
-/** Tag autore che fanno di un profilo un "creator": vetrina su /u, directory /creators, stato in diretta. */
-export const CREATOR_BADGES = ["creator", "influencer", "pro", "staff"] as const;
-export function isCreatorBadge(badge: string | null | undefined): boolean {
-  return (CREATOR_BADGES as readonly string[]).includes(badge ?? "");
-}
 
 /**
  * Nome della piattaforma, uguale in tutte le lingue (sono marchi: si scrivono come testo, senza loghi). `website` non ha
@@ -396,7 +399,25 @@ export function twitchLogin(links: readonly ProfileLink[]): string | null {
 const BIO_STRIP = new RegExp(`[\\u0000-\\u0008\\u000B-\\u001F\\u007F-\\u009F${INVISIBLE}]`, "g");
 
 /**
- * Bio del modulo: testo semplice, a capo ammessi (al massimo una riga vuota di fila), spazi in fondo alle righe tolti.
+ * Unisce con uno spazio le righe oltre la tredicesima (`BIO_MAX_BREAKS` a capo): il testo resta tutto, solo su meno
+ * righe. Si applica dopo `\n{3,}` → `\n\n`, quindi una riga vuota conta come due a capo.
+ */
+function capBreaks(text: string): string {
+  const parts = text.split("\n");
+  if (parts.length - 1 <= BIO_MAX_BREAKS) return text;
+  // trimEnd: se la tredicesima riga è vuota, il resto si unisce alla dodicesima (niente riga che comincia con uno spazio)
+  const head = parts.slice(0, BIO_MAX_BREAKS + 1).join("\n").trimEnd();
+  const rest = parts
+    .slice(BIO_MAX_BREAKS + 1)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ");
+  return rest ? `${head} ${rest}` : head;
+}
+
+/**
+ * Bio del modulo: testo semplice, a capo ammessi (al massimo una riga vuota di fila e `BIO_MAX_BREAKS` a capo in tutto:
+ * le righe in più si uniscono alla tredicesima con uno spazio), spazi in fondo alle righe tolti.
  * I separatori di riga Unicode (U+2028, U+2029, U+0085) diventano a capo: con alcuni locale del database contano come
  * caratteri di controllo e il salvataggio fallirebbe. Vuota: nessuna bio (`null`). Troppo lunga: errore, non un taglio
  * a metà frase.
@@ -411,8 +432,9 @@ export function cleanBio(raw: string): { ok: true; value: string | null } | { ok
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
-  if (!text) return { ok: true, value: null };
-  return [...text].length > BIO_MAX ? { ok: false, error: "long" } : { ok: true, value: text };
+  const bio = capBreaks(text);
+  if (!bio) return { ok: true, value: null };
+  return [...bio].length > BIO_MAX ? { ok: false, error: "long" } : { ok: true, value: bio };
 }
 
 /** Intervallo minimo fra due salvataggi del profilo che cambiano qualcosa (ogni salvataggio rigenera pagine e sitemap). */

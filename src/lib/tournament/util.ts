@@ -39,7 +39,7 @@ export function coverPublicUrl(path: string): string {
 }
 
 /**
- * Accetta una copertina del media kit (tutti) oppure, per Influencer/Pro/Staff e admin, una copertina
+ * Accetta una copertina del media kit (tutti) oppure, per Creator/Pro/Staff e admin, una copertina
  * caricata dal browser nella propria cartella dello Storage. Qualsiasi altro valore è rifiutato.
  */
 export function checkCover(raw: string, userId: string, canUpload: boolean): string | null {

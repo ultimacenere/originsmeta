@@ -59,14 +59,15 @@ export default async function DeckPage({ params }: { params: Params }) {
           <span className="stat-pill border-2 border-sky text-pale">
             {d.common.archetype}: {archetypeLabels[deck.archetype][locale]}
           </span>
-          {/* creator su Discord: il tasto ufficiale (il blurple come colore del testo faceva 3,4:1 sul blu notte) */}
+          {/* chi l'ha pubblicato ("Pubblicato da", 27/09/2026: Creator e Autore sono ruoli), su Discord con il tasto
+              ufficiale (il blurple come colore del testo faceva 3,4:1 sul blu notte) */}
           {deck.creator.url && isDiscordUrl(deck.creator.url) ? (
             <DiscordButton href={deck.creator.url} size="sm">
-              {d.common.creator}: {deck.creator.name}
+              {d.common.publishedBy}: {deck.creator.name}
             </DiscordButton>
           ) : (
             <span className="stat-pill border-2 border-sky text-pale">
-              {d.common.creator}:{" "}
+              {d.common.publishedBy}:{" "}
               {deck.creator.url ? (
                 <a className="link-mint" href={deck.creator.url} {...newTabProps}>
                   {deck.creator.name}

@@ -1,6 +1,6 @@
 /**
- * Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026: Pierluigi, funzioni per i creator; il primo
- * influencer iscritto è coachcrono). Funzioni pure, senza import a runtime: `node --test` le esegue senza il resto
+ * Statistiche dei mazzi per chi li pubblica (pacchetto STATS, 26/09/2026: Pierluigi, funzioni per i creator; il primo
+ * creator iscritto è coachcrono). Funzioni pure, senza import a runtime: `node --test` le esegue senza il resto
  * del sito (test in deckStats.test.ts), e le usano sia il browser (DeckStatsBeacon) sia il server (DeckStatsPanel).
  *
  * Come si conta (tabella `deck_stats_daily` e funzione `bump_deck_stat` in supabase/schema.sql, blocco STATS):

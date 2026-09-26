@@ -12,6 +12,7 @@ import { readFileSync } from "node:fs";
 import { schemaProblems, sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
   BIO_MAX,
+  BIO_MAX_BREAKS,
   CANONICAL,
   CONTENT_LANGS,
   GOOGLE_REDIRECT,
@@ -26,7 +27,6 @@ import {
   cleanBio,
   cleanContentLangs,
   isCanonicalLink,
-  isCreatorBadge,
   linkHandle,
   mainChannels,
   normalizeLink,
@@ -229,10 +229,7 @@ describe("canali salvati", () => {
     assert.equal(twitchLogin(links), "coach_live");
     assert.equal(twitchLogin([]), null);
   });
-  test("tag che fanno di un profilo un creator", () => {
-    for (const b of ["creator", "influencer", "pro", "staff"]) assert.ok(isCreatorBadge(b), b);
-    for (const b of ["community", "", null, undefined, "admin"]) assert.ok(!isCreatorBadge(b), String(b));
-  });
+  // i tag con il profilo vetrina (prima `isCreatorBadge` qui) stanno in badges.ts dal 27/09/2026: test in badges.test.ts
 });
 
 describe("bio e lingue", () => {
@@ -246,9 +243,35 @@ describe("bio e lingue", () => {
     assert.deepEqual(cleanBio(`riga uno${LINE_SEP}riga due${PARA_SEP}${PARA_SEP}${PARA_SEP}tre`), { ok: true, value: "riga uno\nriga due\n\ntre" });
   });
   test("bio: il limite conta i caratteri come Postgres (un'emoji vale uno)", () => {
+    assert.equal(BIO_MAX, 600, "600 caratteri dal 27/09/2026 (prima 280)");
     assert.ok(cleanBio("x".repeat(BIO_MAX)).ok);
     assert.deepEqual(cleanBio("x".repeat(BIO_MAX + 1)), { ok: false, error: "long" });
-    assert.ok(cleanBio("🎴".repeat(BIO_MAX)).ok, "280 emoji: 560 unità UTF-16, 280 caratteri");
+    assert.ok(cleanBio("🎴".repeat(BIO_MAX)).ok, `${BIO_MAX} emoji: ${BIO_MAX * 2} unità UTF-16, ${BIO_MAX} caratteri`);
+  });
+  test("bio: al massimo dodici a capo; le righe in più si uniscono alla tredicesima, il testo resta", () => {
+    const breaks = (s: string | null) => (s ?? "").split("\n").length - 1;
+    assert.equal(BIO_MAX_BREAKS, 12);
+    const twelve = Array.from({ length: 13 }, (_, i) => `r${i}`).join("\n");
+    assert.deepEqual(cleanBio(twelve), { ok: true, value: twelve }, "tredici righe restano come sono");
+    const r = cleanBio(Array.from({ length: 20 }, (_, i) => `r${i}`).join("\n"));
+    assert.ok(r.ok);
+    assert.equal(breaks(r.value), BIO_MAX_BREAKS);
+    assert.ok(r.value?.endsWith("r12 r13 r14 r15 r16 r17 r18 r19"), r.value ?? "");
+    // paragrafi: una riga vuota conta come due a capo
+    const tenParagraphs = Array.from({ length: 10 }, (_, i) => `p${i}`).join("\n\n");
+    const paras = cleanBio(tenParagraphs);
+    assert.ok(paras.ok);
+    assert.equal(breaks(paras.value), BIO_MAX_BREAKS);
+    assert.ok(paras.value?.endsWith("\n\np6 p7 p8 p9"), paras.value ?? "");
+    // se la tredicesima riga è vuota il resto va sulla dodicesima: nessuna riga comincia con uno spazio
+    const shifted = cleanBio(`titolo\n${tenParagraphs}`);
+    assert.ok(shifted.ok);
+    assert.equal(breaks(shifted.value), BIO_MAX_BREAKS - 1);
+    assert.ok(shifted.value?.endsWith("\n\np5 p6 p7 p8 p9"), shifted.value ?? "");
+    assert.doesNotMatch(shifted.value ?? "", /\n /);
+    // la colonna di righe da una lettera (quella che il limite ferma) resta nei 600 caratteri e dentro il vincolo
+    const column = cleanBio("a\n".repeat(300));
+    assert.ok(column.ok && breaks(column.value) === BIO_MAX_BREAKS);
   });
   test("lingue dei contenuti: solo quelle del sito, senza doppioni, nell'ordine del sito", () => {
     assert.deepEqual(cleanContentLangs(["it", "fr", "en", "it", 3]), ["en", "it"]);
@@ -355,6 +378,15 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
     assert.ok(sql.includes(`and bio !~ '[${INVISIBLE}]'`), "caratteri invisibili della bio diversi fra codice e database");
     assert.ok(sql.includes("and bio ~ '[^[:space:]]'"));
     assert.ok(sql.includes("and strpos(replace(bio, ' ', ''), repeat(chr(10), 3)) = 0"));
+    // a capo in tutto (27/09/2026): stesso numero del codice, e le bio che lo superano diventano una riga sola PRIMA del
+    // vincolo nuovo (altrimenti la migrazione fallirebbe su una bio scritta con il modulo di prima)
+    const breaksCheck = `and char_length(bio) - char_length(replace(bio, chr(10), '')) <= ${BIO_MAX_BREAKS}));`;
+    assert.ok(sql.includes(breaksCheck), "limite degli a capo diverso fra codice e database");
+    const heal = sql.indexOf(`where bio is not null and char_length(bio) - char_length(replace(bio, chr(10), '')) > ${BIO_MAX_BREAKS};`);
+    const drop = sql.indexOf("alter table public.profiles drop constraint if exists profiles_bio_check;");
+    const add = sql.indexOf("alter table public.profiles add constraint profiles_bio_check");
+    assert.ok(drop >= 0 && heal > drop && add > heal, "ordine: via il vincolo, bio sistemate, vincolo nuovo");
+    assert.equal(sql.split("add constraint profiles_bio_check").length, 2, "un solo vincolo della bio: niente 280 rimasto più in alto");
     assert.match(sql, /char_length\(link->>'url'\) > 200/);
     assert.match(sql, new RegExp(`array\\[${CONTENT_LANGS.map((l) => `'${l}'`).join(",")}\\]::text\\[\\]`));
   });

@@ -79,7 +79,7 @@ export const it: Dictionary = {
     viewAll: "Vedi tutto",
     search: "Cerca una carta",
     all: "Tutte",
-    /* "Tutti" per i filtri al maschile (archetipo, autore, tipo di autore): "Tutte" vale per Leggendarie e versioni */
+    /* "Tutti" per i filtri al maschile (archetipo, pubblicato da, ruolo): "Tutte" vale per Leggendarie e versioni */
     allMasculine: "Tutti",
     mana: "Mana",
     power: "Potenza",
@@ -145,7 +145,8 @@ export const it: Dictionary = {
     openDeck: "Apri il mazzo",
     deckCards: "Le carte del mazzo",
     decks: "Mazzi",
-    creator: "Autore",
+    /* chi ha pubblicato un mazzo (27/09/2026: né Creator né Autore, che sono ruoli): filtro di /decks e schede */
+    publishedBy: "Pubblicato da",
     archetype: "Archetipo",
     playtest: "Playtest",
     official: "Ufficiale",
@@ -163,9 +164,8 @@ export const it: Dictionary = {
     noDecks: "Nessun mazzo corrisponde ai filtri.",
     filterLegendary: "Leggendaria",
     filterArchetype: "Archetipo",
-    filterCreator: "Autore",
-    /* filtro per tag autore dei mazzi (diretta Twitch del 23/09/2026) */
-    filterAuthorType: "Tipo di autore",
+    /* filtro per ruolo, il tag del profilo (diretta Twitch del 23/09/2026; "Ruolo" dal 27/09/2026) */
+    filterRole: "Ruolo",
     filterCard: "Carta",
     clearFilters: "Azzera i filtri",
     /* filtro e ordinamento dei mazzi per data e per versione del gioco (Pierluigi, 23/09/2026) */
@@ -277,7 +277,7 @@ export const it: Dictionary = {
        uscito dal titolo con la revisione dell'Ondata 1: il primario di "codice del mazzo" è /deck-builder; resta nella description */
     title: "Mazzi di Origins TCG della community",
     metaTitle: "Mazzi di Origins TCG: liste e guide della community",
-    intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e autore ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
+    intro: "Ogni mazzo ha i tag Leggendaria, archetipo, tipo di mazzo e ruolo di chi lo pubblica ed è cercabile per carta. Le liste le pubblica la community dal deck builder, con guida e voti a stelle.",
     description: "Le liste dei mazzi di Origins TCG, il gioco di carte di Koin Games, con la guida, i voti e il codice del gioco. Filtra per Leggendaria, archetipo o carta.",
     conquestTitle: "Il formato Conquest, spiegato",
     conquestText: "Usato per la prima volta a Big Bob's Playtest Battle (28 agosto 2026), dove ogni mazzo doveva avere una Leggendaria diversa, e scelto per la Crimson Cup: si registrano più mazzi, che devono essere diversi fra loro, e prima della partita si banna un mazzo dell'avversario. Alla Crimson Cup: tre mazzi, almeno 8 carte uniche fra ogni coppia, liste segrete fino alla top 4 e niente ban al meglio delle cinque, dove si vince con tutti e tre i mazzi.",
@@ -434,7 +434,7 @@ export const it: Dictionary = {
       disclaimer: "È l'opinione di chi frequenta il sito, non un dato del gioco: pesa quanto le persone che l'hanno votata.",
       /* Tier list firmate (Ondata 3, TOOL-01): vedi en.ts */
       signedTitle: "Tier list firmate",
-      signedText: "Le hanno salvate iscritti di OriginsMeta con un tag autore (Staff, Pro, Influencer, Autore): ognuna è l'opinione di chi la firma. Nella media della community contano come tutte le altre.",
+      signedText: "Le hanno salvate iscritti di OriginsMeta con il ruolo Staff, Creator, Autore o Pro: ognuna è l'opinione di chi la firma. Nella media della community contano come tutte le altre.",
       signedProfile: "Profilo",
     },
     /* Le più giocate (24/09/2026): in quanti mazzi pubblicati compare ogni carta */
@@ -990,7 +990,7 @@ export const it: Dictionary = {
     deckType: "Tipo di mazzo",
     deckTypeHint: "Puoi sceglierne più di uno.",
     deckTypes: { ladder: "Ladder", competitive: "Competitivo", fun: "Fun", tournament: "Torneo" },
-    badges: { community: "Community", creator: "Autore", influencer: "Influencer", pro: "Pro", staff: "Staff" },
+    badges: { community: "Community", creator: "Creator", author: "Autore", pro: "Pro", staff: "Staff" },
     archetypeSuggested: "Suggerito dalla lista: cambialo se non sei d'accordo.",
     summary: "Piano di gioco",
     summaryHint: "Come vince il mazzo, in poche righe (20–600 caratteri). Compare sulla scheda del mazzo.",
@@ -1033,6 +1033,7 @@ export const it: Dictionary = {
       forbidden: "Puoi modificare solo i tuoi mazzi.",
       draftLimit: "Hai 50 mazzi privati, il massimo: eliminane uno dal profilo per salvarne uno nuovo.",
       deckLimit: "Hai già 5 mazzi pubblicati, il massimo per un account della community: eliminane o nascondine uno dal profilo, oppure scrivici se pubblichi mazzi per una community.",
+      deckLimitAuthor: "Hai già 20 mazzi pubblicati, il massimo per un account Autore: eliminane o nascondine uno dal profilo, oppure scrivici se te ne servono di più.",
     },
     profile: {
       kicker: "Profilo della community",
@@ -1100,7 +1101,7 @@ export const it: Dictionary = {
       confirmDeletePrivate: "Eliminare questo mazzo privato? Non si può annullare.",
       /* tetto ai mazzi pubblicati e tier list salvate (23/09/2026) */
       deckQuota: "{used} mazzi pubblicati su {cap}.",
-      deckQuotaUnlimited: "{used} mazzi pubblicati. Con il tuo tag autore non hai un tetto.",
+      deckQuotaUnlimited: "{used} mazzi pubblicati. Con il tuo ruolo non hai un tetto.",
       publicPage: "La tua pagina pubblica",
       myTierLists: "Le mie tier list",
       newTierList: "Crea una tier list",
@@ -1205,7 +1206,7 @@ export const it: Dictionary = {
     },
     create: {
       title: "Organizza un torneo",
-      intro: "Chiunque abbia un account può creare un torneo: i giocatori si iscrivono sul sito, consegnano i mazzi e giocano il tabellone qui. Influencer, pro e staff possono anche pubblicarlo sul calendario del sito.",
+      intro: "Chiunque abbia un account può creare un torneo: i giocatori si iscrivono sul sito, consegnano i mazzi e giocano il tabellone qui. Gli account Creator, Pro e Staff possono anche pubblicarlo sul calendario del sito.",
       loginFirst: "Accedi per organizzare un torneo.",
       essentials: "L'essenziale",
       essentialsHint: "Basta questo per creare il torneo: il resto si cambia anche dopo, dalla pagina di gestione.",
@@ -1216,7 +1217,7 @@ export const it: Dictionary = {
       coverSpecs: "Consigliato 16:7, ad esempio 1600×700 px, almeno 1200 px di larghezza; JPG, PNG o WebP fino a 1 MB. L'immagine viene ridotta a 1600 px e convertita in WebP nel browser prima del caricamento.",
       coverUploadButton: "Scegli un'immagine…",
       coverRemove: "Torna a un'immagine del media kit",
-      coverLocked: "Il caricamento di una copertina propria è riservato agli account Influencer, Pro e Staff.",
+      coverLocked: "Il caricamento di una copertina propria è riservato agli account Creator, Pro e Staff.",
       coverUploading: "Caricamento…",
       coverUploaded: "Copertina caricata",
       showAllCovers: "Mostra tutte le {n} copertine",
@@ -1242,9 +1243,9 @@ export const it: Dictionary = {
       listed: "Pubblica sul calendario del sito",
       listedHint: "Il torneo compare nella striscia del calendario e nella pagina dei tornei.",
       listedPrivate: "Un torneo privato non viene mai pubblicato sul calendario.",
-      listedLocked: "Solo gli account Influencer, Pro e Staff pubblicano sul calendario. Il torneo resta raggiungibile da link e tag.",
+      listedLocked: "Solo gli account Creator, Pro e Staff pubblicano sul calendario. Il torneo resta raggiungibile da link e tag.",
       listedDefault: "Verrà pubblicato sul calendario del sito: puoi cambiarlo in “Altre opzioni”.",
-      listedHowTo: "Per chiedere il tag scrivi a {email}.",
+      listedHowTo: "Per chiedere il ruolo Creator scrivi a {email}.",
       consent: "Creando il torneo accetti che i suoi testi siano pubblici con il tuo nome utente e ti impegni a gestirlo.",
       submit: "Crea il torneo",
       submitting: "Creazione…",
@@ -1406,7 +1407,7 @@ export const it: Dictionary = {
       lang: "Scegli la lingua.",
       discord: "Il link Discord deve puntare a discord.gg o discord.com.",
       cover: "Scegli una copertina del media kit o caricane una tua.",
-      listing: "Solo gli account Influencer, Pro e Staff pubblicano sul calendario.",
+      listing: "Solo gli account Creator, Pro e Staff pubblicano sul calendario.",
       uploadFailed: "Immagine non caricata (max 1 MB, JPG/PNG/WebP).",
       db: "Salvataggio non riuscito. Riprova tra un momento.",
       forbidden: "Puoi gestire solo i tuoi tornei.",
@@ -1418,7 +1419,7 @@ export const it: Dictionary = {
       decks_count: "Consegna esattamente il numero di mazzi richiesto.",
       decks_invalid: "Uno dei codici non è un mazzo legale: controlla la Leggendaria e le 12 carte base.",
       conquest_invalid: "Regole Conquest non rispettate: Leggendarie diverse e abbastanza carte diverse tra i mazzi.",
-      listing_not_allowed: "Solo gli account Influencer, Pro e Staff pubblicano sul calendario.",
+      listing_not_allowed: "Solo gli account Creator, Pro e Staff pubblicano sul calendario.",
     },
   },
   stats: {
@@ -1484,7 +1485,7 @@ export const it: Dictionary = {
       "mint-soft": "Fondo della pastiglia Good, con testo ink.",
       sky: "Il cristallo del mana: cornici, titoli di pagina e di elemento.",
       "sky-deep": "Celeste scuro di riserva: oggi nessuna classe lo usa.",
-      pink: "Il tag autore Pro e le date degli eventi.",
+      pink: "Il ruolo Pro e le date degli eventi.",
       good: "Punti di forza, conferme (.alert-good).",
       bad: "Punti deboli, errori (.alert-bad, .text-error, .btn-danger).",
     },
@@ -1547,7 +1548,7 @@ export const it: Dictionary = {
       sub: "Fondi pieni con testo sopra i 4,5:1. Una sola mappa per significato, uguale su tutte le pagine.",
       changes: "Cambi di bilanciamento (changeStyle)",
       deckNote: "\"deck\" indica un cambio alle regole di costruzione del mazzo: fondo neutro, stessa etichetta di Rework.",
-      badges: "Tag autore",
+      badges: "Ruoli",
       stats: "Statistiche e rarità",
       chip: "Mini carta (card-chip): cornice da 2 px, oro per le Leggendarie.",
       chipName: "Nome della carta",

@@ -4,6 +4,7 @@ import { cache } from "react";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { normalizeBadge } from "@/lib/community/badges";
 import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communitySample, communityStage } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
@@ -117,7 +118,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
       </p>
 
       {/*
-        Tier list firmate (Ondata 3, TOOL-01): quelle salvate da Staff, Pro, Influencer e Autori, con nome, tag, data e
+        Tier list firmate (Ondata 3, TOOL-01): quelle salvate da Staff, Creator, Autori e Pro (ruoli del 27/09/2026), con nome, ruolo, data e
         link al profilo pubblico e al tool. Stanno prima della media perché, mentre la media è un'anteprima, sono il
         contenuto firmato della pagina; senza liste firmate la sezione non c'è.
       */}
@@ -134,9 +135,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
                   <Link href={href(locale, `/u/${a.username}`)} className="t-item min-w-0 break-words hover:text-mint">
                     {a.name}
                   </Link>
-                  <span className={`${badgePill} ${badgeStyle[a.badge] ?? badgeStyle.community} !px-2 !py-0.5 !text-[10px]`}>
-                    {d.community.badges[a.badge as keyof typeof d.community.badges] ?? a.badge}
-                  </span>
+                  <span className={`${badgePill} ${badgeStyle[normalizeBadge(a.badge)]} !px-2 !py-0.5 !text-[10px]`}>{d.community.badges[normalizeBadge(a.badge)]}</span>
                 </p>
                 <ul className="mt-3 space-y-3">
                   {a.lists.map((l) => (

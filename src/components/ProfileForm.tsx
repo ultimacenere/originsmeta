@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveProfile, type ProfileActionState } from "@/lib/community/profileActions";
-import { BIO_MAX, CONTENT_LANGS, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
+import { BIO_MAX, BIO_MAX_BREAKS, CONTENT_LANGS, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
 import { fillCreator, type ProfileFormLabels } from "@/lib/creatorLabels";
 
 /**
@@ -28,6 +28,9 @@ const PLACEHOLDER: Record<LinkKind, string> = {
 };
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale placeholder:text-pale-muted/80 focus:border-mint";
+
+/** I limiti della bio nei testi del modulo (600 caratteri e 13 righe dal 27/09/2026): i numeri vengono dal codice, non dalle etichette. */
+const bioLimits = { max: BIO_MAX, lines: BIO_MAX_BREAKS + 1 };
 
 let nextKey = 1;
 const toRows = (links: readonly ProfileLink[]): Row[] => (links.length ? links : [{ kind: "twitch" as LinkKind, url: "" }]).map((l) => ({ key: nextKey++, kind: l.kind, url: l.url }));
@@ -99,7 +102,7 @@ export function ProfileForm({
         <span className="kicker text-chalk-muted">{labels.bio}</span>
         <textarea
           name="bio"
-          rows={3}
+          rows={5}
           maxLength={BIO_MAX * 2}
           value={bio}
           onChange={(e) => {
@@ -113,7 +116,7 @@ export function ProfileForm({
           className={inputCls}
         />
         <span id="profile-bio-hint" className={`mt-1 block text-xs ${errors?.bio || [...bio].length > BIO_MAX ? "text-bad" : "text-pale-muted"}`}>
-          {errors?.bio ? labels.errors.bioLong : labels.bioHint} ({[...bio].length}/{BIO_MAX})
+          {fillCreator(errors?.bio ? labels.errors.bioLong : labels.bioHint, bioLimits)} ({[...bio].length}/{BIO_MAX})
         </span>
       </label>
 

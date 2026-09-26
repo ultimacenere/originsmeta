@@ -36,7 +36,7 @@ export type TournamentInitial = {
 type Props = {
   locale: Locale;
   userId: string;
-  /** Influencer, Pro, Staff o admin: possono pubblicare sul calendario e caricare una copertina propria */
+  /** Creator, Pro, Staff o admin (`canListTournaments`, ruoli del 27/09/2026): possono pubblicare sul calendario e caricare una copertina propria */
   canList: boolean;
   labels: Dictionary["tournaments"];
   loginHref: string;

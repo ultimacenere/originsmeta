@@ -89,14 +89,18 @@ export function tierInviteText(w: InviteWords, n: { legendaries: number; cards: 
 }
 
 /*
- * Tier list firmate (Ondata 3 del piano SEO/GEO, TOOL-01): le tier list salvate da chi ha un tag autore assegnato dallo
- * staff compaiono con nome e tag su /tier-list/community, così durante il Next Fest la sezione ha qualcosa di firmato
+ * Tier list firmate (Ondata 3 del piano SEO/GEO, TOOL-01): le tier list salvate da chi ha un ruolo assegnato dallo
+ * staff compaiono con nome e ruolo su /tier-list/community, così durante il Next Fest la sezione ha qualcosa di firmato
  * anche mentre la media della community è un'anteprima. Restano opinioni dei loro autori: contano nella media come le
  * altre, niente peso in più.
  */
 
-/** I tag che firmano una tier list: Staff, Pro, Influencer e Autore (`creator`, mostrato come "Autore" dal 25/09/2026). */
-export const SIGNED_BADGES: readonly string[] = ["staff", "pro", "influencer", "creator"];
+/**
+ * I ruoli che firmano una tier list (27/09/2026): Staff, Creator, Autore e Pro, gli stessi del profilo vetrina
+ * (`SHOWCASE_BADGES` di src/lib/community/badges.ts; questo file non importa nulla, quindi li ripete e badges.test.ts
+ * controlla che coincidano).
+ */
+export const SIGNED_BADGES: readonly string[] = ["staff", "creator", "author", "pro"];
 
 /** Ordine delle schede del tool: prima le Leggendarie, poi le carte base (come le schede di /tier-list/create). */
 const KIND_ORDER = ["legendaries", "cards"];

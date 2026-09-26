@@ -67,7 +67,9 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             {dict.nav.searchButton}
           </button>
         </form>
-        <div className="ml-auto flex items-center gap-2 md:ml-2">
+        {/* min-w-0 (27/09/2026, busta dei messaggi accanto all'avatar): quando la riga è piena (768–850 px con la ricerca)
+            si accorcia il nome dell'account, che si tronca, invece di far sforare la riga */}
+        <div className="ml-auto flex min-w-0 items-center gap-2 md:ml-2">
           {/* Loghino del NOSTRO Discord (Pierluigi, 24/09/2026); sotto 640 px la riga è piena e il tasto sta nel menu */}
           <DiscordIconLink href={ORIGINSMETA_DISCORD} label={dict.nav.discord} className="max-sm:!hidden" />
           <AccountMenu

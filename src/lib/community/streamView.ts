@@ -1,6 +1,7 @@
 import { getCard } from "@/lib/data/cards";
 import { sortByCost } from "@/lib/stream";
 import { authorName } from "./util";
+import { shownBadge } from "./badges";
 import type { StreamDeck } from "./streamDecks";
 
 /**
@@ -46,7 +47,8 @@ export function streamDeckView(deck: StreamDeck): StreamDeckView {
     name: deck.name,
     author: authorName(deck.profile),
     username: deck.profile?.username ?? null,
-    badge: deck.profile?.badge ?? null,
+    // ruolo da mostrare (27/09/2026): null per la community e per un tag che il codice non conosce
+    badge: shownBadge(deck.profile?.badge),
     archetype: deck.archetype,
     legendary: deck.legendary ? cardOf(deck.legendary, deck) : null,
     cards: sortByCost(deck.cards.map((s) => cardOf(s, deck))),

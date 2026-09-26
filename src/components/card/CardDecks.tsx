@@ -3,6 +3,7 @@ import { formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { getCard, patchAt, patchLabel, type Card } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { weightedRating } from "@/lib/tierstats";
+import { normalizeBadge } from "@/lib/community/badges";
 import type { TierDeckEntry } from "@/lib/tierTypes";
 import type { Companion, DeckRef } from "@/lib/cardSynergy";
 import { cardLabels, cardList, fill, fillParts, itDei } from "@/lib/cardPage";
@@ -14,7 +15,7 @@ import { CardParts } from "./CardParts";
  * Mazzi pubblicati sulla scheda carta (SCHEDE-02, DECKS-04, COMP-03): "Mazzi guidati da Merlin", "Mazzi con Spellbook".
  * Prima la sezione leggeva `decks.ts`, vuoto dal 15/09/2026, e puntava alla rotta vecchia dei mazzi: non compariva
  * mai, e nessuna delle 690 schede linkava un mazzo della community.
- * Le voci sono quelle della tier list (`TierDeckList`: Leggendaria, nome, archetipo, autore con il tag, voto), nello
+ * Le voci sono quelle della tier list (`TierDeckList`: Leggendaria, nome, archetipo, chi l'ha pubblicato con il ruolo, voto), nello
  * stesso ordine (voto pesato, poi i più recenti). Si linkano solo i mazzi la cui pagina è indicizzabile nella lingua
  * della scheda, al massimo `MAX_DECKS` (`listedDecks` di cardSynergy.ts, la stessa funzione del JSON-LD e delle date);
  * quanti restano fuori lo dice una riga, con il link all'elenco di tutti i mazzi. Il conto "in n dei N mazzi" sta
@@ -25,6 +26,8 @@ import { CardParts } from "./CardParts";
 /** Un `DeckRef` nella forma delle voci della tier list, nella lingua della pagina. */
 export function deckEntry(deck: DeckRef, locale: Locale, d: Dictionary): TierDeckEntry {
   const leg = deck.legendary ? getCard(deck.legendary) : undefined;
+  // un tag che il codice non conosce (per esempio `influencer` prima della migrazione del 27/09) vale community
+  const badge = normalizeBadge(deck.badge);
   const created = deck.created.slice(0, 10);
   const patch = patchAt(deck.created);
   return {
@@ -34,9 +37,9 @@ export function deckEntry(deck: DeckRef, locale: Locale, d: Dictionary): TierDec
     legendary: leg ? { slug: leg.slug, name: leg.name, thumb: leg.thumb } : undefined,
     archetype: deck.archetype,
     archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
-    creator: deck.author,
-    badge: deck.badge,
-    badgeLabel: d.community.badges[deck.badge as keyof typeof d.community.badges] ?? deck.badge,
+    publisher: deck.author,
+    badge,
+    badgeLabel: d.community.badges[badge],
     rating: deck.rating,
     score: weightedRating(deck.rating.avg, deck.rating.votes),
     created,

@@ -25,7 +25,7 @@ import { Avatar } from "@/components/AccountMenu";
 import { CardArt } from "@/components/CardChip";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { getProfileShowcase } from "@/lib/community/creators";
-import { isCreatorBadge } from "@/lib/community/profileLinks";
+import { isShowcaseBadge, normalizeBadge } from "@/lib/community/badges";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
@@ -106,7 +106,9 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   if (!data) notFound();
   const { profile, decks, tierLists, name, editorial } = data;
   const L = communityPageLabels[locale];
-  const badge = profile.badge && profile.badge !== "community" ? profile.badge : null;
+  // ruolo del profilo (27/09/2026): un tag che il codice non conosce, come `influencer` prima della migrazione, vale community e non si mostra
+  const role = normalizeBadge(profile.badge);
+  const badge = role !== "community" ? role : null;
   const path = href(locale, `/u/${profile.username}`);
   const pageUrl = `${siteUrl}${path}`;
   // Stessa Person della firma dei suoi mazzi (src/lib/jsonld/deck.ts: `${siteUrl}/#user-<username>`, o per un autore
@@ -115,12 +117,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const personName = editorial?.name ?? name;
   const alternateNames = [...new Set([profile.username, name])].filter((n): n is string => Boolean(n) && n !== personName);
   const image = avatarUrl(profile.avatar_url);
-  // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per chi ha un tag autore i canali sono i sameAs della Person.
-  // Non per un autore editoriale: la sua Person è quella di /authors, con i contatti verificati di authors.ts, e i link
-  // scritti dall'utente la cambierebbero da una pagina all'altra.
+  // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per il ruolo Creator, Autore, Pro o Staff i canali sono i
+  // sameAs della Person. Non per un autore editoriale: la sua Person è quella di /authors, con i contatti verificati di
+  // authors.ts, e i link scritti dall'utente la cambierebbero da una pagina all'altra.
   const showcase = await getProfileShowcase(profile.id);
-  const creator = isCreatorBadge(profile.badge);
-  const sameAs = creator && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
+  const showcaseRole = isShowcaseBadge(role);
+  const sameAs = showcaseRole && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
   const person = communityPerson({
     locale,
     username: profile.username,
@@ -158,7 +160,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           </p>
           {badge ? (
             <p className="mt-3">
-              <span className={`${badgePill} ${badgeStyle[badge] ?? badgeStyle.community}`}>{c.badges[badge as keyof typeof c.badges] ?? badge}</span>
+              <span className={`${badgePill} ${badgeStyle[badge]}`}>{c.badges[badge]}</span>
             </p>
           ) : null}
           {/* Chi pubblica mazzi ed è anche un autore del sito (DECKS-10 e MQ-13, 25/09/2026): link alla sua pagina
@@ -248,11 +250,11 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         )}
       </section>
 
-      {/* Vetrina del creator (pacchetto CREATOR, 26/09/2026): i tornei pubblici che organizza */}
-      {creator ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
+      {/* Vetrina (pacchetto CREATOR, 26/09/2026; Creator, Autore, Pro e Staff dal 27/09): i tornei pubblici che organizza */}
+      {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
-        {creator ? (
+        {showcaseRole ? (
           <Link href={href(locale, "/creators")} className="link-mint font-bold">
             {creatorLabels[locale].profile.directoryLink} →
           </Link>

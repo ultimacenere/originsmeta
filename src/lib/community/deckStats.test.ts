@@ -166,7 +166,7 @@ describe("chi vede tutto", () => {
   test("admin o tag Staff, come la policy SQL", () => {
     assert.equal(canSeeAllStats({ role: "admin", badge: "community" }), true);
     assert.equal(canSeeAllStats({ role: "user", badge: "staff" }), true);
-    assert.equal(canSeeAllStats({ role: "user", badge: "influencer" }), false);
+    for (const badge of ["creator", "author", "pro", "influencer"]) assert.equal(canSeeAllStats({ role: "user", badge }), false, badge);
     assert.equal(canSeeAllStats(null), false);
   });
 });

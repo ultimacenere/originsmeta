@@ -41,7 +41,7 @@ function exploreItems(locale: Locale): { label: string; path: string }[] {
     { label: x.communityTierList, path: "/tier-list/community" },
     { label: x.makeTierList, path: "/tier-list/create" },
     { label: x.authors, path: "/authors" },
-    // directory dei creator (pacchetto CREATOR, 26/09/2026)
+    // directory "Creator e autori" (pacchetto CREATOR, 26/09/2026; nome del 27/09/2026)
     { label: creatorLabels[locale].footer, path: "/creators" },
   ];
 }

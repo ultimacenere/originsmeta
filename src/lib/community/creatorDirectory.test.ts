@@ -12,19 +12,20 @@ import {
   listedInDirectory,
   orderCreators,
   platformsInUse,
+  rolesInUse,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in src/lib/tierstats.test.ts.
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./creatorDirectory.ts";
 
 const list = [
-  { name: "Zeta", langs: ["en"], kinds: ["youtube"], decks: 9 },
-  { name: "coachcrono", langs: ["it"], kinds: ["twitch", "youtube"], decks: 2 },
-  { name: "Alfa", langs: ["it", "es"], kinds: [], decks: 2 },
-  { name: "Razor", langs: ["es"], kinds: ["twitch"], decks: 0 },
+  { name: "Zeta", langs: ["en"], kinds: ["youtube"], decks: 9, badge: "pro" },
+  { name: "coachcrono", langs: ["it"], kinds: ["twitch", "youtube"], decks: 2, badge: "creator" },
+  { name: "Alfa", langs: ["it", "es"], kinds: [], decks: 2, badge: "author" },
+  { name: "Razor", langs: ["es"], kinds: ["twitch"], decks: 0, badge: "creator" },
 ];
 
-describe("directory dei creator", () => {
+describe("directory di creator e autori", () => {
   test("prima la lingua della pagina, poi i mazzi, poi il nome", () => {
     assert.deepEqual(
       orderCreators(list, "it").map((c) => c.name),
@@ -54,6 +55,21 @@ describe("directory dei creator", () => {
       ["Razor"],
     );
     assert.equal(filterCreators(list, "all", "all").length, list.length);
+  });
+  test("filtro per ruolo (27/09/2026), anche insieme agli altri; senza ruolo scelto non filtra", () => {
+    assert.deepEqual(
+      filterCreators(list, "all", "all", "creator").map((c) => c.name),
+      ["coachcrono", "Razor"],
+    );
+    assert.deepEqual(
+      filterCreators(list, "it", "all", "author").map((c) => c.name),
+      ["Alfa"],
+    );
+    assert.deepEqual(filterCreators(list, "es", "twitch", "pro"), []);
+    assert.equal(filterCreators(list, "all", "all", "all").length, list.length);
+  });
+  test("solo i ruoli presenti, nell'ordine dato", () => {
+    assert.deepEqual(rolesInUse(list, ["staff", "creator", "author", "pro", "community"]), ["creator", "author", "pro"]);
   });
   test("solo le piattaforme usate, nell'ordine dato", () => {
     assert.deepEqual(platformsInUse(list, ["twitch", "youtube", "x", "website"]), ["twitch", "youtube"]);

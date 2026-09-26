@@ -300,6 +300,22 @@ export const staffInboxPath = (locale: string) => `/${locale}/account/staff/mess
 /** Elenco completo delle conversazioni dell'utente, a pagine (/account mostra solo la prima). */
 export const userInboxPath = (locale: string, page = 1) => `/${locale}/account/messages${page > 1 ? `?page=${page}` : ""}`;
 
+/**
+ * Dove porta la busta dell'header (27/09/2026, richiesta di Pierluigi: "la classica cassetta delle lettere o una lettera
+ * con una notifica rossa"): la casella dell'utente; per lo staff, la casella dello staff quando i soli messaggi da
+ * leggere sono lì, così il clic non porta a una casella senza novità.
+ */
+export function envelopeHref(status: InboxStatus | null | undefined, locale: string): string {
+  if (status?.staff && status.unread === 0 && status.staffUnread > 0) return staffInboxPath(locale);
+  return userInboxPath(locale);
+}
+
+/** Nome della busta per i lettori di schermo: "Messaggi" oppure "Messaggi, 2 non letti" (il numero intero, anche oltre 9). */
+export function envelopeLabel(labels: { messages: string; envelopeOne: string; envelopeMany: string }, n: number): string {
+  if (!Number.isFinite(n) || n < 1) return labels.messages;
+  return n === 1 ? labels.envelopeOne : fillInbox(labels.envelopeMany, { n: Math.floor(n) });
+}
+
 /** Riempie i segnaposto {nome} di un'etichetta. */
 export function fillInbox(template: string, values: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (all, key: string) => (Object.hasOwn(values, key) ? String(values[key]) : all));

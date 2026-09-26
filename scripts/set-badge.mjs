@@ -1,17 +1,27 @@
-// Assegna il tag autore (badge) a un profilo della community: community (default), creator, influencer, pro, staff.
-// Il tag `creator` si chiama "Autore" sul sito dal 25/09/2026: qui si può scrivere anche "autore" o "author".
-// Il tag lo assegna solo lo staff, mai l'utente (note per sito 5.0, 15/09/2026).
-// Uso: node scripts/set-badge.mjs <username|email|parte del nome> <community|creator|influencer|pro|staff>
+// Assegna il ruolo (tag, colonna `badge`) a un profilo della community: community (default), creator, author, pro, staff.
+// Ruoli del 27/09/2026 (Pierluigi: "Staff → tag Staff; Creator → tag Creator; Autore → tag Autore; Community → tag
+// Community"; "Pro rimane, Influencer scompare"). L'Autore si può scrivere anche "autore", "autor" o "author".
+// "influencer" non esiste più: la migrazione del 27/09 l'ha trasformato in creator, e qui si rifiuta con un messaggio.
+// Il ruolo lo assegna solo lo staff, mai l'utente (note per sito 5.0, 15/09/2026). Permessi in src/lib/community/badges.ts
+// (lo stesso elenco di tag: badges.test.ts lo confronta con questo file).
+// Uso: node scripts/set-badge.mjs <username|email|parte del nome> <community|creator|author|pro|staff>
 import { readFileSync } from "node:fs";
 import pg from "pg";
 
-const BADGES = ["community", "creator", "influencer", "pro", "staff"];
-/** l'etichetta mostrata è cambiata, l'identificatore nel database no: si accettano entrambi i nomi */
-const ALIAS = { autore: "creator", author: "creator", autor: "creator" };
+const BADGES = ["community", "creator", "author", "pro", "staff"];
+/** nomi del ruolo Autore nelle lingue del sito */
+const ALIAS = { autore: "author", autor: "author" };
+/** chi pubblica sul calendario e carica una copertina propria dei tornei (con gli admin): LISTING_BADGES di badges.ts */
+const LISTING = ["creator", "pro", "staff"];
 const [needle, badgeRaw] = process.argv.slice(2);
-const badge = ALIAS[String(badgeRaw).toLowerCase()] ?? badgeRaw;
+const typed = String(badgeRaw ?? "").trim().toLowerCase();
+if (typed === "influencer") {
+  console.error('Il ruolo "influencer" non esiste più dal 27/09/2026: usa "creator" (stesso colore e stessi permessi).');
+  process.exit(1);
+}
+const badge = ALIAS[typed] ?? typed;
 if (!needle || !BADGES.includes(badge)) {
-  console.error(`Uso: node scripts/set-badge.mjs <username|email|nome> <${BADGES.join("|")}>`);
+  console.error(`Uso: node scripts/set-badge.mjs <username|email|nome> <${BADGES.join("|")}>  (per l'Autore vale anche "autore")`);
   process.exit(1);
 }
 
@@ -37,10 +47,19 @@ if (!r.rows.length) {
 }
 if (r.rows.length > 1) console.log("Più profili corrispondono, uso il primo:", r.rows.map((x) => `${x.username} (${x.email})`).join(", "));
 const target = r.rows[0];
-await db.query("update public.profiles set badge = $1 where id = $2", [badge, target.id]);
+try {
+  await db.query("update public.profiles set badge = $1 where id = $2", [badge, target.id]);
+} catch (e) {
+  // prima della migrazione del 27/09/2026 il vincolo profiles_badge_check non conosce ancora "author"
+  if (e.code === "23514") console.error(`Il database rifiuta "${badge}": applica prima la migrazione (supabase/schema.sql, blocco "27/09/2026: TAG E BIO").`);
+  else console.error(e.message);
+  await db.end();
+  process.exit(3);
+}
 console.log(`${target.display_name ?? target.username} (@${target.username}, ${target.email}): tag ${target.badge} → ${badge}`);
-// Tournament Organizer: sul calendario restano solo i tornei di Influencer/Pro/Staff. Chi torna community esce dal calendario.
-if (badge === "community") {
+// Tournament Organizer: sul calendario restano solo i tornei di Creator/Pro/Staff (o di un admin). Chi passa a Autore o
+// Community esce dal calendario (il trigger protect_tournament_listing guarda solo i tornei che si modificano).
+if (!LISTING.includes(badge)) {
   const t = await db.query("update public.tournaments set listed = false where organizer = $1 and listed and not exists (select 1 from public.profiles p where p.id = $1 and p.role = 'admin')", [target.id]);
   if (t.rowCount) console.log(`Tornei tolti dal calendario: ${t.rowCount}`);
 }

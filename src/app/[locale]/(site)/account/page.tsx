@@ -107,8 +107,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {d.nav.builder} →
           </Link>
         </div>
-        {/* Quanti mazzi pubblicati si possono avere (Pierluigi, 23/09/2026): 5 per un account della community,
-            senza tetto per Influencer, Pro e Staff. Scritto qui, non solo nell'errore al momento di pubblicare. */}
+        {/* Quanti mazzi pubblicati si possono avere (Pierluigi, 23/09/2026; ruoli del 27/09/2026): 5 per un account della
+            community, 20 per l'Autore, senza tetto per Creator, Pro e Staff. Scritto qui, non solo nell'errore al momento di pubblicare. */}
         <p className="mt-2 font-mono text-xs text-pale-muted">
           {Number.isFinite(deckLimit.cap)
             ? c.account.deckQuota.replace("{used}", String(deckLimit.used)).replace("{cap}", String(deckLimit.cap))

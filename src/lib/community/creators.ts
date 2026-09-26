@@ -2,12 +2,14 @@ import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { Tournament } from "@/lib/tournament/types";
 import { TOURNAMENT_SELECT } from "@/lib/tournament/queries";
 import { CommunityReadError } from "./queries";
-import { CREATOR_BADGES, cleanBio, cleanContentLangs, isCreatorBadge, mainChannels, parseStoredLinks, twitchLogin, type ContentLang, type ProfileLink } from "./profileLinks";
+import { cleanBio, cleanContentLangs, mainChannels, parseStoredLinks, twitchLogin, type ContentLang, type ProfileLink } from "./profileLinks";
+import { SHOWCASE_BADGES, isShowcaseBadge, normalizeBadge, type Badge } from "./badges";
 
 /**
- * Letture del profilo pubblico e dei creator (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei contenuti di un
- * iscritto (colonne di supabase/schema.sql, blocco CREATOR), l'elenco dei profili con un tag autore (directory /creators,
- * icone accanto al nome in /decks, rotta /api/live) e i tornei pubblici che un creator organizza (vetrina su /u).
+ * Letture del profilo pubblico e dei profili vetrina (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei contenuti
+ * di un iscritto (colonne di supabase/schema.sql, blocco CREATOR), l'elenco dei profili con il ruolo Creator, Autore,
+ * Pro o Staff (ruoli del 27/09/2026: directory /creators, icone accanto al nome in /decks, rotta /api/live) e i tornei
+ * pubblici che organizzano (vetrina su /u).
  *
  * Errori come nel resto della community (queries.ts, DECKS-12): nelle pagine ISR una lettura fallita lancia, così
  * Next tiene la pagina di prima invece di metterne in cache una senza canali. Unica eccezione, voluta: le colonne
@@ -24,7 +26,8 @@ export type CreatorProfile = Showcase & {
   username: string;
   display_name: string | null;
   avatar_url: string | null;
-  badge: string;
+  /** Creator, Autore, Pro o Staff (`SHOWCASE_BADGES`) */
+  badge: Badge;
   created_at: string;
 };
 
@@ -108,8 +111,10 @@ export async function getOwnShowcase(
 }
 
 /**
- * I profili con un tag autore (Autore, Influencer, Pro, Staff): la directory /creators, le icone accanto ai nomi in
- * /decks e i canali Twitch da controllare per lo stato in diretta. Vuoto con la community spenta o le colonne mancanti.
+ * I profili con il ruolo Creator, Autore, Pro o Staff (`SHOWCASE_BADGES`, 27/09/2026): la directory /creators, le
+ * icone accanto ai nomi in /decks e i canali Twitch da controllare per lo stato in diretta. Un tag che il codice non
+ * conosce (per esempio `influencer` prima della migrazione) resta fuori. Vuoto con la community spenta o le colonne
+ * mancanti.
  */
 export async function listCreators(): Promise<CreatorProfile[]> {
   const client = supabasePublic();
@@ -117,29 +122,29 @@ export async function listCreators(): Promise<CreatorProfile[]> {
   const res = await client
     .from("profiles")
     .select(`id, username, display_name, avatar_url, badge, created_at, ${SHOWCASE_COLUMNS}`)
-    .in("badge", [...CREATOR_BADGES])
+    .in("badge", [...SHOWCASE_BADGES])
     .order("created_at", { ascending: true })
     .limit(500);
   if (missingColumns(res.error)) return [];
   if (res.error) throw new CommunityReadError("listCreators", res.error.message);
   type Row = ShowcaseRow & { id: string; username: string | null; display_name: string | null; avatar_url: string | null; badge: string; created_at: string };
   return ((res.data ?? []) as Row[])
-    .filter((r): r is Row & { username: string } => Boolean(r.username))
-    .map((r) => ({ id: r.id, username: r.username, display_name: r.display_name, avatar_url: r.avatar_url, badge: r.badge, created_at: r.created_at, ...toShowcase(r) }));
+    .filter((r): r is Row & { username: string } => Boolean(r.username) && isShowcaseBadge(r.badge))
+    .map((r) => ({ id: r.id, username: r.username, display_name: r.display_name, avatar_url: r.avatar_url, badge: normalizeBadge(r.badge), created_at: r.created_at, ...toShowcase(r) }));
 }
 
-/** I creator per id del profilo, per trovare in fretta quelli degli autori di una lista di mazzi. */
+/** I profili vetrina per id del profilo, per trovare in fretta quelli di chi ha pubblicato una lista di mazzi. */
 export function creatorIndex(creators: readonly CreatorProfile[]): ReadonlyMap<string, CreatorProfile> {
   return new Map(creators.map((c) => [c.id, c]));
 }
 
 /**
- * Quello che l'elenco /decks mostra accanto al nome di un autore con un tag (`ExplorerDeck.channels` e `liveUser`):
- * i canali principali e, se ha un canale Twitch, il nome utente per il badge LIVE. Niente per gli altri autori.
+ * Quello che l'elenco /decks mostra accanto al nome di chi ha pubblicato, se ha un ruolo vetrina (`ExplorerDeck.channels`
+ * e `liveUser`): i canali principali e, se ha un canale Twitch, il nome utente per il badge LIVE. Niente per gli altri.
  */
 export function creatorExtras(index: ReadonlyMap<string, CreatorProfile>, ownerId: string): { channels?: ProfileLink[]; liveUser?: string } {
   const c = index.get(ownerId);
-  if (!c || !isCreatorBadge(c.badge)) return {};
+  if (!c || !isShowcaseBadge(c.badge)) return {};
   const channels = mainChannels(c.links);
   return { ...(channels.length ? { channels } : {}), ...(twitchLogin(c.links) ? { liveUser: c.username } : {}) };
 }

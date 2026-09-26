@@ -140,11 +140,12 @@ function withoutMedia<T extends Record<string, unknown>>(row: T): Omit<T, "video
 export async function publishDeck(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const p = await parseSubmission(formData);
   if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
-  // Tetto ai mazzi pubblicati (Pierluigi, 23/09/2026): 5 per un utente normale, nessuno per Influencer, Pro,
-  // Staff e admin. Il controllo vero sta nel trigger `enforce_deck_limit` dello schema; qui si guarda prima,
-  // per dire di no con un messaggio chiaro invece di un errore del database.
+  // Tetto ai mazzi pubblicati (Pierluigi, 23/09/2026; ruoli del 27/09/2026): 5 per la community, 20 per l'Autore,
+  // nessuno per Creator, Pro, Staff e admin. Il controllo vero sta nel trigger `enforce_deck_limit` dello schema; qui
+  // si guarda prima, per dire di no con un messaggio chiaro (quello dell'Autore dice il suo tetto) invece di un errore
+  // del database.
   const limit = await publishedDeckLimit(p.supabase, p.user.id);
-  if (limit.used >= limit.cap) return { error: "deckLimit" };
+  if (limit.used >= limit.cap) return { error: limit.badge === "author" ? "deckLimitAuthor" : "deckLimit" };
   const draftId = formData.get("draft");
   let slug = newSlug(p.row.name);
   let row: Omit<typeof p.row, "videos" | "links"> = p.row;

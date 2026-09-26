@@ -72,16 +72,15 @@ export const COVER_PRESETS = [
 ] as const;
 export const DEFAULT_COVER: string = COVER_PRESETS[0];
 
-/** Bucket Storage delle copertine caricate (solo Influencer, Pro, Staff o admin; percorso `<user_id>/<file>`). */
+/** Bucket Storage delle copertine caricate (solo Creator, Pro, Staff o admin; percorso `<user_id>/<file>`). */
 export const COVER_BUCKET = "tournament-covers";
 
-/** Tag autore che possono pubblicare un torneo sul calendario e caricare una copertina propria (decisione di Pierluigi, 16/09/2026; Creator dal 25/09/2026). */
-export const LISTING_BADGES = ["creator", "influencer", "pro", "staff"] as const;
-
-export function canListTournaments(profile: { badge?: string | null; role?: string | null } | null | undefined): boolean {
-  if (!profile) return false;
-  return profile.role === "admin" || (LISTING_BADGES as readonly string[]).includes(profile.badge ?? "");
-}
+/**
+ * Chi pubblica un torneo sul calendario e carica una copertina propria (decisione di Pierluigi del 16/09/2026; ruoli
+ * del 27/09/2026): Creator, Pro, Staff e admin, non l'Autore. La regola sta in src/lib/community/badges.ts, uguale al
+ * trigger protect_tournament_listing e alla policy delle copertine di supabase/schema.sql.
+ */
+export { LISTING_BADGES, canListTournaments } from "@/lib/community/badges";
 
 /** Tag del torneo: OM- più 4 caratteri di un alfabeto senza 0/O e 1/I (vedi gen_tournament_tag in schema.sql). */
 export const TAG_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";

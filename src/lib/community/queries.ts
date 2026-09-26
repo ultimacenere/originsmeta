@@ -1,6 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import { locales } from "@/lib/i18n";
-import { MAX_PUBLISHED_DECKS, type CommunityDeck, type Guide, type Profile } from "./types";
+import type { CommunityDeck, Guide, Profile } from "./types";
+import { normalizeBadge, publishedDeckCap, type Badge } from "./badges";
 import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
 
@@ -155,18 +156,18 @@ export async function listUserDecks(client: Db, userId: string): Promise<Communi
 }
 
 /**
- * Quanti mazzi pubblicati (compresi i nascosti) ha un utente e quanti ne può avere (Pierluigi, 23/09/2026:
- * "mazzi 5 massimo per utente normale, per staff, influencer e pro senza limiti"). Il tetto vero lo impone il
- * trigger `enforce_deck_limit` di supabase/schema.sql: questa lettura serve al sito, per fermarsi prima e
- * spiegare il perché invece di mostrare un errore del database. I mazzi privati ('draft') non entrano nel
- * conto: hanno il loro tetto (MAX_PRIVATE_DECKS). Richiede il client con la sessione dell'utente.
+ * Quanti mazzi pubblicati (compresi i nascosti) ha un utente e quanti ne può avere: 5 per la community, 20 per
+ * l'Autore, nessun tetto per Creator, Pro, Staff e admin (`publishedDeckCap` in badges.ts, ruoli del 27/09/2026). Il
+ * tetto vero lo impone il trigger `enforce_deck_limit` di supabase/schema.sql: questa lettura serve al sito, per
+ * fermarsi prima e spiegare il perché invece di mostrare un errore del database. I mazzi privati ('draft') non entrano
+ * nel conto: hanno il loro tetto (MAX_PRIVATE_DECKS). `badge` è il tag già normalizzato, per scegliere il messaggio.
+ * Richiede il client con la sessione dell'utente.
  */
-export async function publishedDeckLimit(client: Db, userId: string): Promise<{ used: number; cap: number }> {
+export async function publishedDeckLimit(client: Db, userId: string): Promise<{ used: number; cap: number; badge: Badge }> {
   const { count } = await client.from("community_decks").select("id", { count: "exact", head: true }).eq("owner", userId).neq("status", "draft");
   const { data } = await client.from("profiles").select("role, badge").eq("id", userId).maybeSingle();
-  const p = data as { role: string; badge: string } | null;
-  const unlimited = p?.role === "admin" || ["creator", "influencer", "pro", "staff"].includes(p?.badge ?? "");
-  return { used: count ?? 0, cap: unlimited ? Infinity : MAX_PUBLISHED_DECKS };
+  const p = data as { role: string | null; badge: string | null } | null;
+  return { used: count ?? 0, cap: publishedDeckCap(p), badge: normalizeBadge(p?.badge) };
 }
 
 /**

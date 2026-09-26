@@ -2,13 +2,16 @@ import type { Locale } from "./i18n";
 
 /**
  * Etichette piccole della casella messaggi (26/09/2026, pacchetto INBOX) per i componenti che stanno su ogni pagina:
- * numero dei non letti e voci del menu dell'account (header), nota del riquadro dei feedback, link "Scrivi a questo
+ * busta dell'header con i non letti (27/09/2026), voci del menu dell'account, nota del riquadro dei feedback, link "Scrivi a questo
  * utente" dello staff su /u/<nome>. In un file a parte da `inboxLabels.ts` perché finiscono nel bundle di tutte le
  * pagine: qui solo poche righe nelle tre lingue. `en` è il tipo di riferimento; il file importa solo un tipo.
  */
 
 const navEn = {
   messages: "Messages",
+  /** busta dell'header (27/09/2026), nome per i lettori di schermo con i non letti ({n} = conversazioni da leggere) */
+  envelopeOne: "Messages, 1 unread",
+  envelopeMany: "Messages, {n} unread",
   staffInbox: "Staff inbox",
   unreadOne: "1 unread conversation",
   /** {n} = conversazioni con messaggi da leggere */
@@ -30,6 +33,8 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
   en: navEn,
   it: {
     messages: "Messaggi",
+    envelopeOne: "Messaggi, 1 non letto",
+    envelopeMany: "Messaggi, {n} non letti",
     staffInbox: "Messaggi dello staff",
     unreadOne: "1 conversazione da leggere",
     unreadMany: "{n} conversazioni da leggere",
@@ -41,6 +46,8 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
   },
   es: {
     messages: "Mensajes",
+    envelopeOne: "Mensajes, 1 sin leer",
+    envelopeMany: "Mensajes, {n} sin leer",
     staffInbox: "Mensajes del staff",
     unreadOne: "1 conversación sin leer",
     unreadMany: "{n} conversaciones sin leer",

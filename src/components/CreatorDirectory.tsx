@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
-import { filterCreators, platformsInUse } from "@/lib/community/creatorDirectory";
+import { filterCreators, platformsInUse, rolesInUse } from "@/lib/community/creatorDirectory";
+import { BADGE_ORDER, type Badge } from "@/lib/community/badges";
 import { CONTENT_LANGS, LINK_KINDS, LINK_KIND_NAMES, type ContentLang, type LinkKind, type ProfileLink } from "@/lib/community/profileLinks";
 import { fillCreator, type ChannelLabels, type DirectoryLabels, type LiveLabels } from "@/lib/creatorLabels";
 import { Avatar } from "./AccountMenu";
@@ -11,16 +12,18 @@ import { ChannelLinks } from "./ChannelLinks";
 import { LiveBadge } from "./LiveBadge";
 
 /**
- * Directory dei creator (/creators, pacchetto CREATOR, 26/09/2026): le schede sono già nell'HTML (la pagina è ISR e il
- * componente si pre-renderizza), qui ci sono solo i filtri per lingua dei contenuti e piattaforma, come in
- * LocationExplorer. L'ordine arriva già fatto dalla pagina (`orderCreators`, dichiarato nel testo della pagina).
+ * Directory "Creator e autori" (/creators, pacchetto CREATOR, 26/09/2026; ruoli del 27/09/2026): le schede sono già
+ * nell'HTML (la pagina è ISR e il componente si pre-renderizza), qui ci sono solo i filtri per lingua dei contenuti,
+ * piattaforma e ruolo, come in LocationExplorer. L'ordine arriva già fatto dalla pagina (`orderCreators`, dichiarato
+ * nel testo della pagina). Il filtro per ruolo elenca solo i ruoli presenti.
  */
 
 export type DirectoryEntry = {
   username: string;
   name: string;
   avatar: string | null;
-  badge: string;
+  /** Creator, Autore, Pro o Staff */
+  badge: Badge;
   badgeLabel: string;
   bio: string | null;
   links: ProfileLink[];
@@ -48,14 +51,28 @@ export function CreatorDirectory({
 }) {
   const [lang, setLang] = useState("all");
   const [platform, setPlatform] = useState("all");
+  const [role, setRole] = useState("all");
   const platforms = useMemo(() => platformsInUse(entries, LINK_KINDS), [entries]);
-  const shown = useMemo(() => filterCreators(entries, lang, platform), [entries, lang, platform]);
+  const roles = useMemo(() => rolesInUse(entries, BADGE_ORDER), [entries]);
+  const roleLabel = useMemo(() => new Map(entries.map((e) => [e.badge, e.badgeLabel])), [entries]);
+  const shown = useMemo(() => filterCreators(entries, lang, platform, role), [entries, lang, platform, role]);
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const kindName = (k: LinkKind) => (k === "website" ? channelLabels.website : LINK_KIND_NAMES[k]);
 
   return (
     <div>
-      <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.role}</span>
+          <select value={role} onChange={(e) => setRole(e.target.value)} className={selectCls}>
+            <option value="all">{labels.allRoles}</option>
+            {roles.map((r) => (
+              <option key={r} value={r}>
+                {roleLabel.get(r) ?? r}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="flex flex-col gap-1">
           <span className="kicker text-chalk-muted">{labels.lang}</span>
           <select value={lang} onChange={(e) => setLang(e.target.value)} className={selectCls}>
@@ -99,7 +116,7 @@ export function CreatorDirectory({
                     {c.liveUser ? <LiveBadge username={c.liveUser} labels={liveLabels} placement="creators" /> : null}
                   </p>
                   <p className="mt-2 flex flex-wrap items-center gap-2">
-                    <span className={`${badgePill} ${badgeStyle[c.badge] ?? badgeStyle.community}`}>{c.badgeLabel}</span>
+                    <span className={`${badgePill} ${badgeStyle[c.badge]}`}>{c.badgeLabel}</span>
                     {/* codice della lingua a vista, nome per esteso (nella sua lingua) per i lettori di schermo */}
                     {c.langs.map((l) => (
                       <span key={l} className="stat-pill bg-night-3 font-mono text-[11px] uppercase text-pale" title={langNames[l]}>

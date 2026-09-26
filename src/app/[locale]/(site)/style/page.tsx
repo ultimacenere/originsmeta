@@ -5,6 +5,7 @@ import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { alignStyle, badgePill, badgeStyle, sagaHue } from "@/lib/cardArt";
+import { BADGE_ORDER } from "@/lib/community/badges";
 import { activeCards, cards, sagas, type Card, type ChangeKind } from "@/lib/data/cards";
 import { news } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
@@ -428,9 +429,11 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
           <div className="card-night p-5">
             <p className="t-item text-base">{s.pills.badges}</p>
             <ul className="mt-3 flex flex-wrap gap-3">
-              {Object.entries(badgeStyle).map(([k, cls]) => (
-                <li key={k}>
-                  <span className={`${badgePill} ${cls}`}>{d.community.badges[k as keyof typeof d.community.badges] ?? k}</span>
+              {/* i cinque ruoli del 27/09/2026, nell'ordine dei filtri: Staff, Creator, Autore, Pro, Community */}
+              {BADGE_ORDER.map((k) => (
+                <li key={k} className="flex flex-col items-start gap-1">
+                  <span className={`${badgePill} ${badgeStyle[k]}`}>{d.community.badges[k]}</span>
+                  <Code>{k}</Code>
                 </li>
               ))}
             </ul>

@@ -39,7 +39,8 @@ export type ExplorerDeck = {
   legendary?: { slug: string; name: string; href?: string; cover?: string; thumb?: string; image?: string; mana?: number };
   archetype: string;
   archetypeLabel: string;
-  creator: string;
+  /** chi ha pubblicato il mazzo (nome mostrato): mai "creator" né "autore", che dal 27/09/2026 sono ruoli */
+  publisher: string;
   source: string;
   sourceLabel: string;
   /** nomi delle carte, per la ricerca */
@@ -63,29 +64,30 @@ export type ExplorerDeck = {
   rating?: { avg: number; votes: number };
   /** voto pesato sul numero di voti (weightedRating): l'ordine "Più votati", lo stesso della classifica di /decks */
   score?: number;
-  /** tipo di mazzo e tag autore (solo mazzi della community) */
+  /** tipo di mazzo e ruolo di chi l'ha pubblicato (solo mazzi della community) */
   deckTypeLabels?: string[];
-  creatorBadge?: string;
-  /** id del tag autore (community, creator, influencer, pro, staff); "community" non si mostra */
-  creatorBadgeId?: string;
-  /** canali principali dell'autore, solo per chi ha un tag autore (pacchetto CREATOR, 26/09/2026) */
+  publisherBadge?: string;
+  /** ruolo di chi l'ha pubblicato (community, creator, author, pro, staff, già normalizzato); "community" non si mostra */
+  publisherBadgeId?: string;
+  /** canali principali di chi l'ha pubblicato, solo per Creator, Autore, Pro e Staff (pacchetto CREATOR, 26/09/2026) */
   channels?: ProfileLink[];
-  /** nome utente dell'autore per il badge LIVE, solo se ha un tag autore e un canale Twitch */
+  /** nome utente di chi l'ha pubblicato per il badge LIVE, solo per quei ruoli e con un canale Twitch */
   liveUser?: string;
 };
 
 type Labels = {
   legendary: string;
   archetype: string;
-  creator: string;
-  /** filtro per tag autore (diretta del 23/09/2026): etichetta e voci [id, nome] nell'ordine in cui compaiono */
-  authorType: string;
-  authorTypes: [string, string][];
+  /** "Pubblicato da": filtro sulla persona e riga delle schede (27/09/2026, prima "Autore") */
+  publishedBy: string;
+  /** filtro per ruolo, il tag del profilo (diretta del 23/09/2026; "Ruolo" dal 27/09): etichetta e voci [id, nome] nell'ordine in cui compaiono */
+  role: string;
+  roles: [string, string][];
   /** tasto che rimette tutti i filtri su "Tutti" */
   clear: string;
   card: string;
   all: string;
-  /** "Tutti" in italiano, per archetipo, tipo di autore e creator ("Tutte" resta a Leggendaria e versione) */
+  /** "Tutti" in italiano, per archetipo, ruolo e pubblicato da ("Tutte" resta a Leggendaria e versione) */
   allMasculine: string;
   results: string;
   noResults: string;
@@ -104,7 +106,7 @@ type Labels = {
   sortNewest: string;
   sortRated: string;
   createdOn: string;
-  /** canali e badge LIVE accanto all'autore (pacchetto CREATOR): senza, non si mostrano */
+  /** canali e badge LIVE accanto a chi ha pubblicato (pacchetto CREATOR): senza, non si mostrano */
   channels?: ChannelLabels;
   live?: LiveLabels;
 };
@@ -120,9 +122,9 @@ export type ExplorerInvite = { href: string; title: string; text: string; cta: s
  */
 const FEW_DECKS = 12;
 
-/** Tag autore di un mazzo per il filtro: i mazzi della community senza tag sono "community", quelli editoriali non ne hanno. */
-function authorOf(d: ExplorerDeck): string | undefined {
-  return d.creatorBadgeId ?? (d.source === "community" ? "community" : undefined);
+/** Ruolo di chi ha pubblicato un mazzo, per il filtro: i mazzi della community senza ruolo sono "community", quelli editoriali non ne hanno. */
+function roleOf(d: ExplorerDeck): string | undefined {
+  return d.publisherBadgeId ?? (d.source === "community" ? "community" : undefined);
 }
 
 /**
@@ -185,8 +187,8 @@ function CopyCode({ code, labels, statsSlug }: { code: string; labels: Labels; s
 export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[]; labels: Labels; invite?: ExplorerInvite }) {
   const [legendary, setLegendary] = useState("all");
   const [archetype, setArchetype] = useState("all");
-  const [author, setAuthor] = useState("all");
-  const [creator, setCreator] = useState("all");
+  const [role, setRole] = useState("all");
+  const [publisher, setPublisher] = useState("all");
   const [patch, setPatch] = useState("all");
   const [card, setCard] = useState("");
   const [view, setView] = useState<"blocks" | "list">("blocks");
@@ -197,7 +199,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
 
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);
   const archetypes = useMemo(() => Array.from(new Map(decks.map((d) => [d.archetype, d.archetypeLabel])).entries()), [decks]);
-  const creators = useMemo(() => Array.from(new Set(decks.map((d) => d.creator))), [decks]);
+  const publishers = useMemo(() => Array.from(new Set(decks.map((d) => d.publisher))), [decks]);
   /* versioni presenti nei mazzi, dalla più recente: l'ordine è quello delle date, non quello alfabetico degli id */
   const patchesInUse = useMemo(
     () =>
@@ -212,8 +214,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     const filtered = decks.filter((d) => {
       if (legendary !== "all" && d.legendary?.slug !== legendary) return false;
       if (archetype !== "all" && d.archetype !== archetype) return false;
-      if (author !== "all" && authorOf(d) !== author) return false;
-      if (creator !== "all" && d.creator !== creator) return false;
+      if (role !== "all" && roleOf(d) !== role) return false;
+      if (publisher !== "all" && d.publisher !== publisher) return false;
       if (patch !== "all" && d.patchId !== patch) return false;
       if (needle && !d.cardNames.some((c) => c.toLowerCase().includes(needle)) && !d.name.toLowerCase().includes(needle)) return false;
       return true;
@@ -230,7 +232,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
           ((a.rating?.votes ?? 0) > 0 ? a.name.localeCompare(b.name, "en") : 0) ||
           when(b).localeCompare(when(a)),
     );
-  }, [decks, legendary, archetype, author, creator, patch, card, sort]);
+  }, [decks, legendary, archetype, role, publisher, patch, card, sort]);
 
   /* Anteprime delle carte base: la stessa carta torna in molti mazzi e nell'HTML i suoi dati bastano una volta (RIV-09:
      su 16 mazzi 208 anteprime e 84 carte diverse). Si calcola sulla lista già filtrata e ordinata, perché la copia che
@@ -248,13 +250,13 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
 
   const few = decks.length < FEW_DECKS;
   // con un filtro attivo contano i risultati, non il benvenuto: e l'invito a pubblicare non deve sembrare un risultato
-  const filtering = legendary !== "all" || archetype !== "all" || author !== "all" || creator !== "all" || patch !== "all" || card.trim() !== "";
+  const filtering = legendary !== "all" || archetype !== "all" || role !== "all" || publisher !== "all" || patch !== "all" || card.trim() !== "";
   const showInvite = Boolean(invite) && few && !filtering;
   const clearFilters = () => {
     setLegendary("all");
     setArchetype("all");
-    setAuthor("all");
-    setCreator("all");
+    setRole("all");
+    setPublisher("all");
     setPatch("all");
     setCard("");
     // il tasto sparisce con i filtri: il focus va sul primo filtro, non si perde in cima alla pagina
@@ -265,28 +267,28 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   const viewBtn = (active: boolean) => `rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition ${active ? "bg-mint text-ink" : "text-pale hover:bg-night-3"}`;
 
   /**
-   * Accanto al nome dell'autore (pacchetto CREATOR, 26/09/2026): il tag autore ("Community" non si mostra), il badge LIVE
-   * e i canali principali, questi ultimi solo per chi ha un tag. `icon`: nella riga stretta della vista elenco i canali
+   * Accanto al nome di chi ha pubblicato (pacchetto CREATOR, 26/09/2026): il ruolo ("Community" non si mostra), il badge LIVE
+   * e i canali principali, questi ultimi solo per Creator, Autore, Pro e Staff. `icon`: nella riga stretta della vista elenco i canali
    * sono solo icone (piattaforma e canale nel title e per i lettori di schermo).
    */
-  const authorExtras = (d: ExplorerDeck, variant: "compact" | "icon" = "compact") => {
-    const badge = d.creatorBadgeId && d.creatorBadgeId !== "community" && d.creatorBadge ? d.creatorBadge : null;
+  const publisherExtras = (d: ExplorerDeck, variant: "compact" | "icon" = "compact") => {
+    const badge = d.publisherBadgeId && d.publisherBadgeId !== "community" && d.publisherBadge ? d.publisherBadge : null;
     const live = Boolean(d.liveUser && labels.live);
     const channels = Boolean(d.channels && d.channels.length > 0 && labels.channels);
     if (!badge && !live && !channels) return null;
     return (
       <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-1">
-        {badge && d.creatorBadgeId ? <span className={`${badgePill} ${badgeStyle[d.creatorBadgeId] ?? badgeStyle.community}`}>{badge}</span> : null}
+        {badge && d.publisherBadgeId ? <span className={`${badgePill} ${badgeStyle[d.publisherBadgeId] ?? badgeStyle.community}`}>{badge}</span> : null}
         {live && d.liveUser && labels.live ? <LiveBadge username={d.liveUser} labels={labels.live} placement="decks_list" /> : null}
-        {channels && d.channels && labels.channels ? <ChannelLinks links={d.channels} labels={labels.channels} ownerName={d.creator} placement="decks_list" variant={variant} /> : null}
+        {channels && d.channels && labels.channels ? <ChannelLinks links={d.channels} labels={labels.channels} ownerName={d.publisher} placement="decks_list" variant={variant} /> : null}
       </span>
     );
   };
 
-  /** Riga dei tag comune alle due viste: provenienza, archetipo, tipi di mazzo, voto (il tag autore sta accanto al nome). */
+  /** Riga dei tag comune alle due viste: provenienza, archetipo, tipi di mazzo, voto (il ruolo sta accanto al nome). */
   const tags = (d: ExplorerDeck) => (
     <>
-      {d.source === "community" && d.creatorBadgeId === "staff" ? null : (
+      {d.source === "community" && d.publisherBadgeId === "staff" ? null : (
         <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint text-ink" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
       )}
       {/* pastiglie a fondo pieno con testo ink scuro: menta scuro + testo chiaro faceva 2,3:1 */}
@@ -365,13 +367,13 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
             ))}
           </select>
         </label>
-        {/* Tutti i tag, anche quelli che oggi non hanno mazzi: in diretta sono stati chiesti Staff, Influencer e
-            Community, e la voce vuota dice "Nessun mazzo" invece di sparire. */}
+        {/* Tutti i ruoli, anche quelli che oggi non hanno mazzi: in diretta (23/09) sono stati chiesti Staff, Influencer
+            (dal 27/09 Creator) e Community, e la voce vuota dice "Nessun mazzo" invece di sparire. */}
         <label className="flex flex-col gap-1">
-          <span className="kicker text-chalk-muted">{labels.authorType}</span>
-          <select id="deck-author" value={author} onChange={(e) => setAuthor(e.target.value)} className={selectCls}>
+          <span className="kicker text-chalk-muted">{labels.role}</span>
+          <select id="deck-role" value={role} onChange={(e) => setRole(e.target.value)} className={selectCls}>
             <option value="all">{labels.allMasculine}</option>
-            {labels.authorTypes.map(([id, label]) => (
+            {labels.roles.map(([id, label]) => (
               <option key={id} value={id}>
                 {label}
               </option>
@@ -379,10 +381,10 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="kicker text-chalk-muted">{labels.creator}</span>
-          <select id="deck-creator" value={creator} onChange={(e) => setCreator(e.target.value)} className={selectCls}>
+          <span className="kicker text-chalk-muted">{labels.publishedBy}</span>
+          <select id="deck-publisher" value={publisher} onChange={(e) => setPublisher(e.target.value)} className={selectCls}>
             <option value="all">{labels.allMasculine}</option>
-            {creators.map((c) => (
+            {publishers.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -487,9 +489,9 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                   <p className="mt-1 line-clamp-2 text-sm text-pale-muted">{d.tagline}</p>
                   <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-pale-muted">
                     <span>
-                      {labels.creator}: <strong className="text-pale">{d.creator}</strong>
+                      {labels.publishedBy}: <strong className="text-pale">{d.publisher}</strong>
                     </span>
-                    {authorExtras(d)}
+                    {publisherExtras(d)}
                     {/* Quando è stato costruito e con quale versione del gioco: un mazzo di tre patch fa vale
                         un'altra cosa, e chi legge deve poterlo capire senza aprire la scheda. */}
                     {d.createdLabel ? (
@@ -537,8 +539,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               </Link>
               {/* va a capo invece di allargare la riga (a 375 px il nome dell'autore con tag, LIVE e canali non ci sta) */}
               <span className="flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 text-xs text-pale-muted sm:max-w-md sm:shrink-0">
-                <span className="truncate">{d.creator}</span>
-                {authorExtras(d, "icon")}
+                <span className="truncate">{d.publisher}</span>
+                {publisherExtras(d, "icon")}
                 {d.createdLabel ? <time dateTime={d.created}>{d.createdLabel}</time> : null}
                 {d.patchLabel ? <span className="stat-pill bg-night-3 text-[11px] text-pale">{d.patchLabel}</span> : null}
                 {d.code ? <CopyCode code={d.code} labels={labels} statsSlug={d.statsSlug} /> : null}

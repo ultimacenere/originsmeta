@@ -32,12 +32,15 @@ const C = {
   ink: "#16102a",
 };
 
-/** Tag autore sull'immagine: gli stessi colori di `badgeStyle` (cardArt.ts); la community non si mostra. */
+/**
+ * Ruolo sull'immagine: gli stessi colori di `badgeStyle` (cardArt.ts, ruoli del 27/09/2026: Creator col gradiente,
+ * Autore in celeste); la community non si mostra, e nemmeno un tag che il codice non conosce.
+ */
 const BADGE: Record<string, { background: string; color: string }> = {
   staff: { background: C.gold, color: C.ink },
+  creator: { background: "linear-gradient(45deg, #dc2743 0%, #cc2366 50%, #bc1888 100%)", color: "#ffffff" },
+  author: { background: C.sky, color: C.ink },
   pro: { background: "#a9e6f7", color: "#b3003c" },
-  influencer: { background: "linear-gradient(45deg, #dc2743 0%, #cc2366 50%, #bc1888 100%)", color: "#ffffff" },
-  creator: { background: C.sky, color: C.ink },
 };
 
 export type DeckImageLabels = {

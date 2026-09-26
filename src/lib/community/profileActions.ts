@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { locales } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { revalidateSitemaps } from "@/lib/sitemapData";
-import { isCreatorBadge, parseProfileForm, sameShowcase, SAVE_MIN_INTERVAL_MS, type ProfileFormErrors, type ProfileFormValue } from "./profileLinks";
+import { parseProfileForm, sameShowcase, SAVE_MIN_INTERVAL_MS, type ProfileFormErrors, type ProfileFormValue } from "./profileLinks";
+import { isShowcaseBadge } from "./badges";
 
 /**
  * Salvataggio del profilo pubblico dal modulo di /account (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei
@@ -28,12 +29,12 @@ export type ProfileActionState = {
   value?: ProfileFormValue;
 };
 
-/** Pagine che mostrano il profilo: la sua pagina /u e, per chi ha un tag autore, la directory e l'elenco dei mazzi. */
-function revalidateProfile(username: string | null, creator: boolean) {
+/** Pagine che mostrano il profilo: la sua pagina /u e, per un ruolo vetrina (Creator, Autore, Pro, Staff), la directory e l'elenco dei mazzi. */
+function revalidateProfile(username: string | null, showcase: boolean) {
   for (const l of locales) {
     revalidatePath(`/${l}/account`);
     if (username) revalidatePath(`/${l}/u/${username}`);
-    if (creator) {
+    if (showcase) {
       revalidatePath(`/${l}/creators`);
       revalidatePath(`/${l}/decks`);
     }
@@ -78,6 +79,6 @@ export async function saveProfile(_prev: ProfileActionState, formData: FormData)
     console.error("[community] saveProfile:", error.message);
     return { error: "db" };
   }
-  revalidateProfile(row.username, isCreatorBadge(row.badge));
+  revalidateProfile(row.username, isShowcaseBadge(row.badge));
   return { ok: true, value: parsed.value };
 }

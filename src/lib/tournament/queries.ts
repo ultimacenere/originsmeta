@@ -1,6 +1,6 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { Locale } from "@/lib/i18n";
-import { LISTING_BADGES, type Tournament, type TournamentInvite, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
+import { canListTournaments, type Tournament, type TournamentInvite, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
 
 /**
  * Letture dei tornei. Con il client anonimo (`supabasePublic`, pagine ISR) si vede quello che le policy
@@ -22,9 +22,9 @@ function shape(r: RawTournament): Tournament {
   return { ...r, players };
 }
 
-/** Sul calendario e nella lista pubblica solo i tornei `listed` di Influencer/Pro/Staff o admin (doppio controllo, oltre al trigger). */
+/** Sul calendario e nella lista pubblica solo i tornei `listed` di Creator/Pro/Staff o admin (doppio controllo, oltre al trigger). */
 function listable(t: Tournament): boolean {
-  return t.profile?.role === "admin" || (LISTING_BADGES as readonly string[]).includes(t.profile?.badge ?? "");
+  return canListTournaments(t.profile);
 }
 
 export async function listListedTournaments(limit = 60): Promise<Tournament[]> {
