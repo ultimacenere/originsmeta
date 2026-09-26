@@ -156,9 +156,76 @@ export type TournamentMatchRow = {
   updated_at: string;
 };
 
+/* ---------- casella messaggi utente ↔ staff (26/09/2026, supabase/creator-INBOX.sql) ---------- */
+export type ConversationRow = {
+  id: string;
+  /** l'utente della conversazione: l'altra parte è sempre lo staff */
+  user_id: string;
+  subject: string;
+  origin: "user" | "staff" | "feedback";
+  status: "open" | "closed";
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  last_message_at: string;
+  last_user_message_at: string | null;
+  last_staff_message_at: string | null;
+  last_from_staff: boolean;
+  last_preview: string;
+  read_by_user_at: string | null;
+  read_by_staff_at: string | null;
+  /** colonne calcolate dal database (generated always as … stored) */
+  unread_by_user: boolean;
+  unread_by_staff: boolean;
+};
+export type MessageRow = { id: number; conversation_id: string; author_id: string | null; from_staff: boolean; body: string; created_at: string };
+
 export type Database = {
   public: {
     Tables: {
+      /** si scrivono solo con le RPC inbox_* (nessuna scrittura diretta: policy restrittive e nessun grant) */
+      conversations: {
+        Row: ConversationRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "conversations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      messages: {
+        Row: MessageRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: ProfileRow;
         Insert: Partial<ProfileRow> & { id: string };
@@ -395,6 +462,15 @@ export type Database = {
       bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
       deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
       deck_stats_owns: { Args: { did: string }; Returns: boolean };
+      /* casella messaggi (supabase/creator-INBOX.sql): scritture solo da qui, errori con raise exception '<codice>' */
+      is_staff: { Args: Record<string, never>; Returns: boolean };
+      inbox_status: { Args: Record<string, never>; Returns: { unread: number; staff: boolean; staff_unread: number } };
+      inbox_start: { Args: { topic: string; content: string; via_feedback?: boolean }; Returns: string };
+      inbox_staff_start: { Args: { uname: string; topic: string; content: string }; Returns: string };
+      /** restituisce from_staff del messaggio scritto */
+      inbox_send: { Args: { cid: string; content: string }; Returns: boolean };
+      inbox_mark_read: { Args: { cid: string; seen?: string | null }; Returns: boolean };
+      inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

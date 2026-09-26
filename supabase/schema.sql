@@ -172,7 +172,7 @@ alter table public.profiles drop constraint if exists profiles_badge_check;
 alter table public.profiles add constraint profiles_badge_check check (badge in ('community','creator','influencer','pro','staff'));
 
 create or replace function public.protect_profile_badge()
-returns trigger language plpgsql as $
+returns trigger language plpgsql as $$
 begin
   -- il tag autore lo cambia solo un admin dal sito o uno script con connessione diretta (auth.uid() nullo)
   if new.badge is distinct from old.badge and auth.uid() is not null and not public.is_admin() then
@@ -189,7 +189,7 @@ begin
     raise exception 'reserved profile fields are managed by staff';
   end if;
   return new;
-end $;
+end $$;
 drop trigger if exists profiles_protect_badge on public.profiles;
 create trigger profiles_protect_badge before update on public.profiles
   for each row execute function public.protect_profile_badge();

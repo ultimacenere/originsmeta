@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { locales, siteUrl } from "@/lib/i18n";
+import { locales, siteUrl, type Locale } from "@/lib/i18n";
 import { discordWebhookUrl, escapeDiscord, sendDiscordWebhook, type DiscordEmbedField } from "@/lib/discordWebhook";
 import { captchaValido, indirizzoIp, limiteInvii, lunghezza, stessaOrigine, testoSemplice } from "@/lib/formGuard";
 import { FEEDBACK_EMAIL_MAX, FEEDBACK_EMAIL_RE, FEEDBACK_MAX, FEEDBACK_MIN, FEEDBACK_NAME_MAX, feedbackEnabled, type FeedbackApiError } from "@/lib/feedbackLabels";
+import { saveFeedbackToInbox } from "@/lib/community/inboxFeedback";
+import { staffThreadPath } from "@/lib/community/messages";
 
 /**
  * Messaggi del pop-up dei feedback (`src/components/FeedbackWidget.tsx`, richiesta del 22/09/2026).
@@ -20,6 +22,11 @@ import { FEEDBACK_EMAIL_MAX, FEEDBACK_EMAIL_RE, FEEDBACK_MAX, FEEDBACK_MIN, FEED
  * TURNSTILE_SECRET_KEY se configurata (stessa verifica di `/api/ask`). Il testo arriva a Discord come testo
  * semplice: tag HTML tolti, formattazione e menzioni annullate (`escapeDiscord`) e `allowed_mentions` vuoto.
  * Limite, CAPTCHA, origine e testo semplice stanno in `src/lib/formGuard.ts`, condivisi con il modulo delle guide.
+ *
+ * Casella messaggi (26/09/2026, pacchetto INBOX): se chi scrive ha fatto l'accesso (sessione Supabase nei cookie), il
+ * feedback si salva anche come conversazione con origin 'feedback' nella sua casella (`saveFeedbackToInbox`), il
+ * messaggio su Discord porta il nome utente e il link alla conversazione nell'area staff, e la risposta dice
+ * `inbox: true` (il riquadro scrive "ti risponderemo nella tua casella messaggi"). Senza accesso tutto come prima.
  *
  * Variabili d'ambiente (Vercel → Settings → Environment Variables, poi un nuovo deploy):
  * - DISCORD_FEEDBACK_WEBHOOK_URL (solo server, segreto): URL del webhook del canale privato. Senza, la rotta
@@ -123,6 +130,13 @@ export async function POST(req: Request) {
   // <t:…:F> è la data nel formato di Discord: ognuno la vede nel proprio fuso orario
   campi.push({ name: "Data", value: `<t:${Math.floor(adesso.getTime() / 1000)}:F>`, inline: true });
 
+  // Chi ha fatto l'accesso ritrova il feedback nella sua casella messaggi e lo staff gli risponde da lì (pacchetto INBOX)
+  const inbox = await saveFeedbackToInbox(messaggio, pagina, locale as Locale);
+  if (inbox) {
+    campi.push({ name: "Account", value: inbox.username ? escapeDiscord(`@${inbox.username}`) : "(senza nome utente)", inline: true });
+    campi.push({ name: "Rispondi nella casella messaggi", value: `${siteUrl}${staffThreadPath("it", inbox.id)}` });
+  }
+
   const esito = await sendDiscordWebhook(url, {
     username: "OriginsMeta · feedback",
     embeds: [
@@ -137,9 +151,12 @@ export async function POST(req: Request) {
     ],
   });
   if (!esito.ok) {
+    // salvato nella casella messaggi: il feedback è arrivato lo stesso (lo staff lo vede nell'area staff), e un "riprova"
+    // lo raddoppierebbe
+    if (inbox) return NextResponse.json({ ok: true, inbox: true }, { headers: { "cache-control": "no-store" } });
     limite.annulla(ip, inviato);
     return errore("invio", 502);
   }
 
-  return NextResponse.json({ ok: true }, { headers: { "cache-control": "no-store" } });
+  return NextResponse.json({ ok: true, inbox: Boolean(inbox) }, { headers: { "cache-control": "no-store" } });
 }

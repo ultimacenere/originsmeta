@@ -3,6 +3,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
+import { inboxLabels } from "@/lib/inboxLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -27,7 +28,13 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Pop-up dei feedback (22/09/2026): l'ancora #feedback è il link "Privacy" del pannello. Resta anche a
             widget spento, perché i messaggi già ricevuti stanno nel canale Discord dello staff. */}
         <p id="feedback" className="mt-6 scroll-mt-24">
-          {d.privacy.feedback}
+          {d.privacy.feedback}{" "}
+          {/* casella messaggi (pacchetto INBOX): il feedback mandato con l'accesso fatto è collegato all'account */}
+          {inboxLabels[locale].privacyFeedback} (
+          <a href="#messages" className="link-mint">
+            {inboxLabels[locale].privacyFeedbackLink}
+          </a>
+          ).
         </p>
         {/* Modulo "Mandaci la tua guida" (23/09/2026): l'ancora #guide è il link "Informativa privacy" del modulo. */}
         <p id="guide" className="mt-6 scroll-mt-24">
@@ -40,6 +47,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026): totali per mazzo, senza dati personali. */}
         <p id="deck-stats" className="mt-6 scroll-mt-24">
           {deckStatsPrivacy[locale]}
+        </p>
+        {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): testo in src/lib/inboxLabels.ts, ancora #messages */}
+        <p id="messages" className="mt-6 scroll-mt-24">
+          {inboxLabels[locale].privacy}
         </p>
       </article>
     </div>

@@ -8,6 +8,9 @@ import { CONSENT_EVENT, PREFERENCES_EVENT, getConsent, type Consent } from "@/li
 import { turnstileEnabled } from "@/lib/turnstile";
 import { Turnstile } from "@/components/Turnstile";
 import { trackEvent } from "@/lib/analytics";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { navLabelsFor } from "@/lib/inboxNavLabels";
+import { useInboxStatus } from "@/components/inbox/InboxIndicator";
 import {
   FEEDBACK_EMAIL_MAX,
   FEEDBACK_EMAIL_RE,
@@ -47,6 +50,10 @@ import {
  *   errori in un contenitore `role="alert"`, entrambi sempre presenti nel pannello. L'animazione d'ingresso si
  *   spegne con "riduci animazioni".
  * - Interruttore: NEXT_PUBLIC_FEEDBACK=off (vedi `src/lib/feedbackLabels.ts`) e il componente non disegna nulla.
+ * - Casella messaggi (26/09/2026, pacchetto INBOX): a chi ha fatto l'accesso, e solo se la casella risponde
+ *   (/api/inbox/status), il pannello dice che il feedback sarà collegato all'account e che la risposta arriverà nella
+ *   casella messaggi (la rotta salva il feedback anche lì); dopo l'invio porta alla casella, o dice che questa volta
+ *   il salvataggio non è riuscito.
  */
 
 const SEEN_KEY = "originsmeta.feedback.v1";
@@ -162,6 +169,11 @@ function Widget({ locale, labels }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [sentWithEmail, setSentWithEmail] = useState(false);
+  /* casella messaggi (pacchetto INBOX): chi ha fatto l'accesso riceve la risposta nel suo profilo */
+  const [uid, setUid] = useState<string | null>(null);
+  const [savedToInbox, setSavedToInbox] = useState(false);
+  /* la nota "ti risponderemo nella tua casella" era visibile al momento dell'invio */
+  const [promisedInbox, setPromisedInbox] = useState(false);
   const [token, setToken] = useState("");
   const [captchaBroken, setCaptchaBroken] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
@@ -333,6 +345,24 @@ function Widget({ locale, labels }: Props) {
     };
   }, [open, close]);
 
+  // Chi ha fatto l'accesso legge che la risposta arriverà nella sua casella messaggi: /api/feedback salva il feedback
+  // anche lì (pacchetto INBOX). La nota compare solo se la casella risponde davvero (/api/inbox/status in 200, stato
+  // condiviso con il menu dell'account, quindi di solito nessuna richiesta in più): senza la migrazione o con il
+  // database giù la rotta non potrebbe salvarlo, e la promessa sarebbe falsa.
+  useEffect(() => {
+    if (!open) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    let alive = true;
+    sb.auth.getSession().then(({ data }) => {
+      if (alive) setUid(data.session?.user.id ?? null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open]);
+  const inboxStatus = useInboxStatus(open ? uid : null);
+
   const fail = (code: Errore, focus?: HTMLElement | null) => {
     setErrore(code);
     focus?.focus();
@@ -358,6 +388,9 @@ function Widget({ locale, labels }: Props) {
         body: JSON.stringify({ message: text, name: name.trim() || undefined, email: mail || undefined, page: pathname, locale, token: token || undefined }),
       });
       if (r.ok) {
+        const esito = (await r.json().catch(() => ({}))) as { inbox?: boolean };
+        setSavedToInbox(esito.inbox === true);
+        setPromisedInbox(Boolean(inboxStatus));
         setSentWithEmail(Boolean(mail));
         setMessage("");
         setEmail("");
@@ -393,6 +426,7 @@ function Widget({ locale, labels }: Props) {
   if (!hydrated) return null;
 
   const fill = (s: string) => s.replace("{min}", String(FEEDBACK_MIN)).replace("{max}", String(FEEDBACK_MAX));
+  const inbox = navLabelsFor(locale);
   const hasText = message.trim().length > 0;
   const showForm = status !== "sent" && (service !== "off" || hasText);
   const withExits = errore === "generico" || errore === "bloccato";
@@ -493,6 +527,22 @@ function Widget({ locale, labels }: Props) {
                 {labels.thanksText}
                 {sentWithEmail ? ` ${labels.thanksEmail}` : ""}
               </p>
+              {savedToInbox ? (
+                <p className="mt-2 text-sm">
+                  {inbox.feedbackSaved}{" "}
+                  <Link href={`/${locale}/account#messages`} onClick={() => close(false)} className="link-mint font-bold">
+                    {inbox.openInbox}
+                  </Link>
+                </p>
+              ) : promisedInbox ? (
+                // la nota prometteva la casella, ma il salvataggio non è riuscito (limite giornaliero, database)
+                <p className="mt-2 text-sm">
+                  {inbox.feedbackNotSaved}{" "}
+                  <Link href={`/${locale}/account#messages`} onClick={() => close(false)} className="link-mint font-bold">
+                    {inbox.openInbox}
+                  </Link>
+                </p>
+              ) : null}
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -582,6 +632,7 @@ function Widget({ locale, labels }: Props) {
             <p id={emailHintId} className="mt-1 text-xs text-chalk-muted">
               {labels.emailHint}
             </p>
+            {inboxStatus ? <p className="mt-3 text-xs font-bold text-mint">{inbox.feedbackNote}</p> : null}
 
             {turnstileEnabled && open && service !== "off" ? (
               <Turnstile
