@@ -26,7 +26,7 @@ const en = {
   section: {
     title: "Messages",
     intro:
-      "Your conversations with the OriginsMeta staff: only you and the staff can read them. We don't send notifications outside the site: new replies show up here and next to your profile menu.",
+      "Your conversations with the OriginsMeta staff: only you and the staff can read them. We don't send notifications outside the site: new replies show up here and on the envelope at the top, next to your name.",
     unreadOne: "1 conversation with a new reply.",
     unreadMany: "{n} conversations with new replies.",
     empty: "No messages yet. Write to us if you need help, have an idea or want to report a problem.",
@@ -46,6 +46,8 @@ const en = {
   status: { open: "Open", closed: "Closed" },
   thread: {
     back: "Back to your profile",
+    /** da una conversazione e dall'area staff alla casella dell'utente */
+    backInbox: "Back to your messages",
     backStaff: "Back to the staff inbox",
     you: "You",
     staff: "OriginsMeta staff",
@@ -143,7 +145,7 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
     section: {
       title: "Messaggi",
       intro:
-        "Le tue conversazioni con lo staff di OriginsMeta: le potete leggere solo tu e lo staff. Non mandiamo avvisi fuori dal sito: le risposte nuove compaiono qui e accanto al menu del tuo profilo.",
+        "Le tue conversazioni con lo staff di OriginsMeta: le potete leggere solo tu e lo staff. Non mandiamo avvisi fuori dal sito: le risposte nuove compaiono qui e sulla busta in alto, accanto al tuo nome.",
       unreadOne: "1 conversazione con una risposta nuova.",
       unreadMany: "{n} conversazioni con risposte nuove.",
       empty: "Ancora nessun messaggio. Scrivici se ti serve aiuto, se hai un'idea o se vuoi segnalarci un problema.",
@@ -159,6 +161,7 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
     status: { open: "Aperta", closed: "Chiusa" },
     thread: {
       back: "Torna al tuo profilo",
+      backInbox: "Torna ai tuoi messaggi",
       backStaff: "Torna ai messaggi dello staff",
       you: "Tu",
       staff: "Staff di OriginsMeta",
@@ -241,7 +244,7 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
     section: {
       title: "Mensajes",
       intro:
-        "Tus conversaciones con el staff de OriginsMeta: solo pueden leerlas tú y el staff. No enviamos avisos fuera del sitio: las respuestas nuevas aparecen aquí y junto al menú de tu perfil.",
+        "Tus conversaciones con el staff de OriginsMeta: solo pueden leerlas tú y el staff. No enviamos avisos fuera del sitio: las respuestas nuevas aparecen aquí y en el sobre de arriba, junto a tu nombre.",
       unreadOne: "1 conversación con una respuesta nueva.",
       unreadMany: "{n} conversaciones con respuestas nuevas.",
       empty: "Todavía no hay mensajes. Escríbenos si necesitas ayuda, si tienes una idea o si quieres avisarnos de un problema.",
@@ -257,6 +260,7 @@ export const inboxLabels: Record<Locale, InboxLabels> = {
     status: { open: "Abierta", closed: "Cerrada" },
     thread: {
       back: "Volver a tu perfil",
+      backInbox: "Volver a tus mensajes",
       backStaff: "Volver a los mensajes del staff",
       you: "Tú",
       staff: "Staff de OriginsMeta",

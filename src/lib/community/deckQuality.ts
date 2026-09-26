@@ -457,7 +457,7 @@ const en = {
   /** riquadro in alto quando una guida di OriginsMeta tratta questo mazzo (tags.communityDecks in guides.ts) */
   guideCallout: "OriginsMeta guide to this deck",
   /** profilo di un autore editoriale: link alla sua pagina /authors ({name} = nome completo) */
-  authorPage: "Author page on OriginsMeta: {name}",
+  authorPage: "OriginsMeta editorial team: {name}",
   /** link dal profilo alla tier list principale, con l'ancora che la mappa delle query assegna a /tier-list (C14) */
   tierList: "Origins TCG tier list",
 };
@@ -470,14 +470,14 @@ export const communityPageLabels: Record<Locale, CommunityPageLabels> = {
     sameLegendary: "Altri mazzi con {legendary}",
     moreAfter: "Altri mazzi",
     guideCallout: "La guida di OriginsMeta a questo mazzo",
-    authorPage: "Pagina autore su OriginsMeta: {name}",
+    authorPage: "Redazione di OriginsMeta: {name}",
     tierList: "Tier list di Origins TCG",
   },
   es: {
     sameLegendary: "Más mazos de {legendary}",
     moreAfter: "Otros mazos",
     guideCallout: "La guía de OriginsMeta sobre este mazo",
-    authorPage: "Página de autor en OriginsMeta: {name}",
+    authorPage: "Redacción de OriginsMeta: {name}",
     tierList: "Tier list de Origins TCG",
   },
 };

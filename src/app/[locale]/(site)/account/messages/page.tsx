@@ -8,13 +8,14 @@ import { inboxLabels } from "@/lib/inboxLabels";
 import { pageNumber, userInboxPath } from "@/lib/community/messages";
 import { listUserConversations, readInboxStatus } from "@/lib/community/inboxQueries";
 import { privateInboxMeta } from "@/lib/community/inboxPage";
-import { UnreadLine, UserConversationList } from "@/components/inbox/InboxSection";
+import { InboxSectionView, UnreadLine, UserConversationList } from "@/components/inbox/InboxSection";
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 
 /**
- * Tutte le conversazioni dell'utente con lo staff, a pagine da 30 (26/09/2026, pacchetto INBOX): /account mostra solo
- * la prima pagina e da lì porta qui per le più vecchie. Pagina privata, dinamica, noindex; fuori da sitemap e hreflang.
- * Chi non ha fatto l'accesso va alla pagina di accesso e poi torna qui.
+ * La casella messaggi dell'utente con lo staff (26/09/2026, pacchetto INBOX). Dal 27/09/2026 vive tutta qui, dove
+ * porta la busta dell'header, e non più dentro /account: la prima pagina ha l'elenco, il tasto dell'area staff e il
+ * modulo "Scrivi allo staff"; le conversazioni più vecchie stanno nelle pagine successive, da 30. Pagina privata,
+ * dinamica, noindex; fuori da sitemap e hreflang. Chi non ha fatto l'accesso va alla pagina di accesso e poi torna qui.
  */
 export const dynamic = "force-dynamic";
 
@@ -41,10 +42,21 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="text-sm">
-        <Link href={`${href(locale, "/account")}#messages`} prefetch={false} className="link-mint font-bold">
+        <Link href={href(locale, "/account")} prefetch={false} className="link-mint font-bold">
           ← {L.thread.back}
         </Link>
       </p>
+      {page === 1 ? (
+        <div className="mt-6">
+          <InboxSectionView
+            locale={locale}
+            list={list}
+            unread={status.ok ? status.data.unread : null}
+            staffUnread={status.ok && status.data.staff ? status.data.staffUnread : null}
+          />
+        </div>
+      ) : (
+        <>
       <p className="kicker mt-6 text-mint">{L.section.title}</p>
       <h1 className="t-page mt-2">{L.section.allTitle}</h1>
 
@@ -77,6 +89,8 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
               ) : null}
             </nav>
           ) : null}
+        </>
+      )}
         </>
       )}
     </div>

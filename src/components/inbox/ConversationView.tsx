@@ -3,7 +3,7 @@ import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { normalizeBadge } from "@/lib/community/badges";
 import { inboxLabels } from "@/lib/inboxLabels";
-import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath, withSafeAvatar } from "@/lib/community/messages";
+import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath, userInboxPath, withSafeAvatar } from "@/lib/community/messages";
 import type { InboxProfile, StaffConversation, ThreadMessage } from "@/lib/community/inboxQueries";
 import { setConversationStatus } from "@/lib/community/inboxActions";
 import { Avatar } from "@/components/AccountMenu";
@@ -45,8 +45,8 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <p className="text-sm">
-        <Link href={staffView ? staffInboxPath(locale) : `${href(locale, "/account")}#messages`} prefetch={false} className="link-mint font-bold">
-          ← {staffView ? L.thread.backStaff : L.thread.back}
+        <Link href={staffView ? staffInboxPath(locale) : userInboxPath(locale)} prefetch={false} className="link-mint font-bold">
+          ← {staffView ? L.thread.backStaff : L.thread.backInbox}
         </Link>
       </p>
       <p className="kicker mt-6 text-mint">{staffView ? L.staff.kicker : L.section.title}</p>

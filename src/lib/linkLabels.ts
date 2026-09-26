@@ -21,7 +21,7 @@ const en = {
     mostPlayed: "Most played",
     communityTierList: "Community tier list",
     makeTierList: "Make your tier list",
-    authors: "Authors",
+    authors: "Editorial team",
   },
   /** titolo del blocco in fondo a una news (prima era "More news", sempre le ultime tre) */
   relatedNews: "Related news",
@@ -66,7 +66,7 @@ export const linkLabels: Record<Locale, LinkLabels> = {
       mostPlayed: "Le più giocate",
       communityTierList: "Tier list della community",
       makeTierList: "Crea la tua tier list",
-      authors: "Autori",
+      authors: "Redazione",
     },
     relatedNews: "News correlate",
     patch: {
@@ -91,7 +91,7 @@ export const linkLabels: Record<Locale, LinkLabels> = {
       mostPlayed: "Las más jugadas",
       communityTierList: "Tier list de la comunidad",
       makeTierList: "Crea tu tier list",
-      authors: "Autores",
+      authors: "Redacción",
     },
     relatedNews: "Noticias relacionadas",
     patch: {

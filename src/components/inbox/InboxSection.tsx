@@ -8,16 +8,17 @@ import { InboxTime } from "./InboxTime";
 import { NewConversationForm } from "./InboxForms";
 
 /**
- * Sezione "Messaggi" di /account (26/09/2026, pacchetto INBOX): le conversazioni dell'utente con lo staff, dalla più
- * recente, con quelle che hanno una risposta nuova in evidenza, e il modulo "Scrivi allo staff". Allo staff mostra
- * anche il tasto per l'area staff con il numero delle conversazioni degli utenti da leggere.
+ * La casella "Messaggi" (26/09/2026, pacchetto INBOX; dal 27/09/2026 è la prima pagina di /account/messages, dove porta
+ * la busta dell'header, e non sta più dentro /account): le conversazioni dell'utente con lo staff, dalla più recente,
+ * con quelle che hanno una risposta nuova in evidenza, e il modulo "Scrivi allo staff". Allo staff mostra anche il tasto
+ * per l'area staff con il numero delle conversazioni degli utenti da leggere.
  *
- * Qui c'è la prima pagina dell'elenco; le più vecchie stanno in /account/messages (`?page=`). Il numero delle
+ * Qui c'è la prima pagina dell'elenco; le più vecchie stanno nelle pagine successive (`?page=`). Il numero delle
  * conversazioni con risposte nuove viene da `inbox_status`, come il pallino del menu: conta tutte le conversazioni,
  * non solo quelle della prima pagina.
  *
- * Server component con la sessione dell'utente (/account è dinamica). Se le tabelle non ci sono ancora (migrazione non
- * applicata) o il database non risponde, la sezione lo dice e il resto del profilo resta com'è.
+ * Server component con la sessione dell'utente (la pagina è dinamica). Se le tabelle non ci sono ancora o il database
+ * non risponde, la casella lo dice.
  */
 export async function InboxSection({ locale, supabase, userId }: { locale: Locale; supabase: Db; userId: string }) {
   const [list, status] = await Promise.all([listUserConversations(supabase, userId), readInboxStatus(supabase)]);
@@ -43,9 +44,9 @@ export function InboxSectionView({ locale, list, unread, staffUnread }: { locale
   const unreadCount = unread ?? rows.filter((c) => c.unread_by_user).length;
 
   return (
-    <section id="messages" className="mt-10 scroll-mt-24">
+    <section id="messages" className="mt-2 scroll-mt-24">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="t-section">{L.section.title}</h2>
+        <h1 className="t-page">{L.section.title}</h1>
         {staffUnread !== null ? (
           <Link href={staffInboxPath(locale)} prefetch={false} className="btn btn-ink text-xs">
             {L.section.staffArea}

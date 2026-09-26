@@ -5,7 +5,7 @@ import { href, type Locale } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { inboxLabels } from "@/lib/inboxLabels";
-import { STAFF_FILTERS, cleanUsername, pageNumber, staffFilter, staffInboxPath, type StaffFilter } from "@/lib/community/messages";
+import { STAFF_FILTERS, cleanUsername, pageNumber, staffFilter, staffInboxPath, userInboxPath, type StaffFilter } from "@/lib/community/messages";
 import { listStaffConversations, viewerIsStaff } from "@/lib/community/inboxQueries";
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { StaffConversationList } from "@/components/inbox/StaffConversationList";
@@ -59,8 +59,8 @@ export default async function StaffInboxPage({ params, searchParams }: { params:
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <p className="text-sm">
-        <Link href={`${href(locale, "/account")}#messages`} prefetch={false} className="link-mint font-bold">
-          ← {L.thread.back}
+        <Link href={userInboxPath(locale)} prefetch={false} className="link-mint font-bold">
+          ← {L.thread.backInbox}
         </Link>
       </p>
       <p className="kicker mt-6 text-mint">{L.staff.kicker}</p>

@@ -530,7 +530,7 @@ function Widget({ locale, labels }: Props) {
               {savedToInbox ? (
                 <p className="mt-2 text-sm">
                   {inbox.feedbackSaved}{" "}
-                  <Link href={`/${locale}/account#messages`} onClick={() => close(false)} className="link-mint font-bold">
+                  <Link href={`/${locale}/account/messages`} onClick={() => close(false)} className="link-mint font-bold">
                     {inbox.openInbox}
                   </Link>
                 </p>
@@ -538,7 +538,7 @@ function Widget({ locale, labels }: Props) {
                 // la nota prometteva la casella, ma il salvataggio non è riuscito (limite giornaliero, database)
                 <p className="mt-2 text-sm">
                   {inbox.feedbackNotSaved}{" "}
-                  <Link href={`/${locale}/account#messages`} onClick={() => close(false)} className="link-mint font-bold">
+                  <Link href={`/${locale}/account/messages`} onClick={() => close(false)} className="link-mint font-bold">
                     {inbox.openInbox}
                   </Link>
                 </p>

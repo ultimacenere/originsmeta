@@ -745,7 +745,7 @@ export const en = {
     authorsText: "Every guide and every news post is signed: each author has a page with their role and everything they have written.",
   },
   authors: {
-    title: "Authors",
+    title: "Editorial team",
     metaTitle: "Who writes about Origins TCG here",
     intro: "The people behind the guides, the news and the card notes on OriginsMeta: each profile shows their role and everything they have published.",
     /* description per la SERP: l'intro non nomina il gioco */
@@ -755,7 +755,7 @@ export const en = {
     profileCta: "Read their profile",
     guidesBy: "Guides by {name}",
     newsBy: "News by {name}",
-    backTo: "All authors",
+    backTo: "The whole editorial team",
   },
   privacy: {
     title: "Privacy",

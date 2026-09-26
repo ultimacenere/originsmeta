@@ -521,6 +521,9 @@ La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y
     image: "/media/keyart-mulan-wide.webp",
     guides: ["on-reveal-midrange-guide", "king-of-value-trade-guide", "dorothy-combo-guide", "trick-or-treat-legion-guide", "origins-tcg-locations"],
     date: "2026-09-24",
+    // 27/09/2026: i ruoli rifatti (Staff, Creator, Autore, Pro, Community) cambiano il filtro raccontato qui; paragrafo
+    // "Aggiornamento del 27 settembre" in fondo alla sezione dei mazzi (decisione di Pierluigi del 27/09)
+    updated: "2026-09-27",
     title: n(
       "Upgrade Meta: card text search, a rebuilt tier list, Locations and our own Discord",
       "Upgrade Meta: la ricerca nel testo delle carte, la tier list rifatta, i Luoghi e il nostro Discord",
@@ -608,6 +611,8 @@ A new [Locations](/en/locations) page: the 44 locations of Demo 2.0, with search
 - Four new guides to the decks Davdas published: [On Reveal Mid Range](/en/guides/on-reveal-midrange-guide) with Mulan, [King of Value Trade](/en/guides/king-of-value-trade-guide), [Dorothy Combo](/en/guides/dorothy-combo-guide) and [The Trick-or-Treat Legion](/en/guides/trick-or-treat-legion-guide).
 - Wrote a guide yourself? [Send it to us](/en/guides/submit): we read it and, with your permission, publish it under your name.
 
+**Update, 27 September:** the filter is now called **Role**, and the roles are Staff, Creator, Author, Pro and Community: the Influencer tag no longer exists. The person who published a deck is under **Published by**.
+
 ## Cards checked in the game {#cards}
 
 On 22 September we compared all 122 cards of Demo 2.0 with the game's collection, one by one: costs, stats and alignments all matched, 16 texts did not, and now they are the game's. The database also has the [21 September demo patch](/en/news/demo-patch-notes-0921) with the 14 cards it changes, and the top of the deck builder says which game version the cards are up to date with. Today we also fixed the keywords of Queen of Hearts and Bagheera, which had fallen behind their text.
@@ -659,6 +664,8 @@ Nuova pagina [Luoghi](/it/locations): i 44 luoghi della Demo 2.0, con la ricerca
 - Quattro nuove guide ai mazzi pubblicati da Davdas: [On Reveal Mid Range](/it/guides/on-reveal-midrange-guide) con Mulan, [King of Value Trade](/it/guides/king-of-value-trade-guide), [Dorothy Combo](/it/guides/dorothy-combo-guide) e [The Trick-or-Treat Legion](/it/guides/trick-or-treat-legion-guide).
 - Hai scritto una guida? [Mandacela](/it/guides/submit): la leggiamo e, con il tuo permesso, la pubblichiamo con la tua firma.
 
+**Aggiornamento del 27 settembre:** il filtro ora si chiama **Ruolo**, e i ruoli sono Staff, Creator, Autore, Pro e Community: il tag Influencer non esiste più. Chi ha pubblicato un mazzo si cerca con **Pubblicato da**.
+
 ## Carte verificate sul gioco {#carte}
 
 Il 22 settembre abbiamo confrontato una per una tutte le 122 carte della Demo 2.0 con la collezione del gioco: costi, statistiche e allineamenti coincidevano, 16 testi no, e ora sono quelli del gioco. Nel database c'è anche la [patch della demo del 21 settembre](/it/news/demo-patch-notes-0921) con le 14 carte che cambiano, e in testa al deck builder c'è scritto a che versione del gioco sono aggiornate le carte. Oggi abbiamo sistemato anche le parole chiave di Queen of Hearts e Bagheera, rimaste indietro rispetto al testo.
@@ -708,6 +715,8 @@ Nueva página [Ubicaciones](/es/locations): las 44 ubicaciones de la Demo 2.0, c
 - El deck builder tiene cuatro botones: Publicar en el sitio, Guardar en privado (el mazo se queda en tu perfil y solo lo ves tú), Compartir, Vaciar el mazo. El mazo que estás construyendo se guarda automáticamente en tu navegador.
 - Cuatro guías nuevas de los mazos que publicó Davdas: [On Reveal Mid Range](/es/guides/on-reveal-midrange-guide) con Mulan, [King of Value Trade](/es/guides/king-of-value-trade-guide), [Dorothy Combo](/es/guides/dorothy-combo-guide) y [The Trick-or-Treat Legion](/es/guides/trick-or-treat-legion-guide).
 - ¿Escribiste una guía? [Envíanosla](/es/guides/submit): la leemos y, con tu permiso, la publicamos con tu firma.
+
+**Actualización del 27 de septiembre:** el filtro ahora se llama **Rol**, y los roles son Staff, Creator, Autor, Pro y Community: la etiqueta Influencer ya no existe. Quien publicó un mazo se busca con **Publicado por**.
 
 ## Cartas verificadas en el juego {#cartas}
 

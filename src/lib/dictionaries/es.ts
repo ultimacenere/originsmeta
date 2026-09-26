@@ -743,7 +743,7 @@ export const es: Dictionary = {
     authorsText: "Cada guía y cada noticia van firmadas: cada autor tiene una página con su rol y todo lo que ha escrito.",
   },
   authors: {
-    title: "Autores",
+    title: "Redacción",
     metaTitle: "Quién escribe aquí sobre Origins TCG",
     intro: "Las personas detrás de las guías, las noticias y las notas de las cartas de OriginsMeta: cada perfil muestra su rol y todo lo que ha publicado.",
     /* description per la SERP: l'intro non nomina il gioco */
@@ -753,7 +753,7 @@ export const es: Dictionary = {
     profileCta: "Ver su perfil",
     guidesBy: "Guías de {name}",
     newsBy: "Noticias de {name}",
-    backTo: "Todos los autores",
+    backTo: "Toda la redacción",
   },
   privacy: {
     title: "Privacidad",

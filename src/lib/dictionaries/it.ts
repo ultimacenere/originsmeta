@@ -736,7 +736,7 @@ export const it: Dictionary = {
     authorsText: "Guide e news sono sempre firmate: ogni autore ha una pagina con il suo ruolo e tutto quello che ha scritto.",
   },
   authors: {
-    title: "Autori",
+    title: "Redazione",
     metaTitle: "Chi scrive di Origins TCG su OriginsMeta",
     intro: "Le persone che scrivono guide, news e schede delle carte su OriginsMeta: per ognuna il ruolo e l'elenco completo di quello che ha pubblicato.",
     /* description per la SERP: l'intro non nomina il gioco */
@@ -746,7 +746,7 @@ export const it: Dictionary = {
     profileCta: "Leggi il profilo",
     guidesBy: "Guide di {name}",
     newsBy: "News di {name}",
-    backTo: "Tutti gli autori",
+    backTo: "Tutta la redazione",
   },
   privacy: {
     title: "Privacy",

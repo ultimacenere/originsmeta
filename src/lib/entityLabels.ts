@@ -62,7 +62,7 @@ const en = {
      * link all'indice /authors (TOOL-09: l'hub riceveva link quasi solo dalle pagine autore): su /about e, con le note di
      * integrazione del pacchetto, accanto alla firma in fondo a news e guide
      */
-    allAuthors: "All authors",
+    allAuthors: "The whole editorial team",
   },
   builder: {
     /** descrizione del WebApplication del deck builder: i numeri arrivano da RULES (deckrules.ts) */
@@ -107,7 +107,7 @@ export const entityLabels: Record<Locale, EntityLabels> = {
     },
     author: {
       communityProfile: "Profilo nella community",
-      allAuthors: "Tutti gli autori",
+      allAuthors: "Tutta la redazione",
     },
     builder: {
       appDescription:
@@ -145,7 +145,7 @@ export const entityLabels: Record<Locale, EntityLabels> = {
     },
     author: {
       communityProfile: "Perfil en la comunidad",
-      allAuthors: "Todos los autores",
+      allAuthors: "Toda la redacción",
     },
     builder: {
       appDescription:

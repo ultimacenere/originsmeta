@@ -198,7 +198,7 @@ export function InboxMenuLinks({ locale, status }: { locale: string; status: Inb
   const label = (text: string, n: number) => (n > 0 ? `${text}, ${n === 1 ? L.unreadOne : fillInbox(L.unreadMany, { n })}` : undefined);
   return (
     <>
-      <Link href={`/${locale}/account#messages`} prefetch={false} className="nav-link nav-link-block flex items-center justify-between gap-2" aria-label={label(L.messages, mine)}>
+      <Link href={`/${locale}/account/messages`} prefetch={false} className="nav-link nav-link-block flex items-center justify-between gap-2" aria-label={label(L.messages, mine)}>
         <span>{L.messages}</span>
         <InboxCount status={mine ? { unread: mine, staff: false, staffUnread: 0 } : null} />
       </Link>
