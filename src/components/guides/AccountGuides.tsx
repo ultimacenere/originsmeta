@@ -86,11 +86,11 @@ export function UserGuides({ locale, guides }: { locale: Locale; guides: readonl
   const L = communityGuideLabels[locale];
   const d = getDictionary(locale);
   return (
-    <section className="mt-12" aria-labelledby="user-guides-title">
-      <h2 id="user-guides-title" className="t-section">
+    <section className="profile-panel card-night mt-2.5 p-4 sm:p-5" aria-labelledby="user-guides-title">
+      <h2 id="user-guides-title" className="t-panel">
         {L.profile.title}
       </h2>
-      <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <ul className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
         {guides.map((g) => (
           <li key={g.id} className="min-w-0">
             <CommunityGuideCard guide={g} locale={locale} categoryLabel={d.guides.categories[g.category]} showAuthor={false} />

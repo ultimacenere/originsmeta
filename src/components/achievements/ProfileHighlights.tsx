@@ -98,24 +98,24 @@ export async function ProfileHighlights({
     <>
       {medals.length ? (
         showcase ? (
-          <section className="mt-10" aria-labelledby="achievements-title">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 id="achievements-title" className="t-section">
+          <section className="card-night mt-2.5 p-4 sm:p-5" aria-labelledby="achievements-title">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 id="achievements-title" className="t-panel">
                 {L.achievements.title}
               </h2>
-              <p className="font-mono text-xs text-pale-muted">{counter}</p>
+              <p className="font-mono text-[11px] text-pale-muted">{counter}</p>
             </div>
-            <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{L.achievements.intro}</p>
-            <div className="card-night mt-4 p-5">
+            <p className="mt-0.5 max-w-2xl text-[11px] text-chalk-muted">{L.achievements.intro}</p>
+            <div className="mt-2.5">
               <AchievementMedals medals={medals} size="large" hint={L.achievements.hint} listLabel={fillAchievement(L.achievements.listOf, { name })} />
             </div>
           </section>
         ) : (
-          <section className="mt-8" aria-labelledby="achievements-title">
-            <h2 id="achievements-title" className="kicker text-pale-muted">
-              {L.achievements.title} · <span className="font-mono">{counter}</span>
+          <section className="card-night mt-2.5 p-4 sm:p-5" aria-labelledby="achievements-title">
+            <h2 id="achievements-title" className="t-panel">
+              {L.achievements.title} · <span className="font-mono text-[11px] font-normal text-pale-muted">{counter}</span>
             </h2>
-            <div className="mt-3">
+            <div className="mt-2.5">
               <AchievementMedals medals={medals} size="small" hint={L.achievements.hint} listLabel={fillAchievement(L.achievements.listOf, { name })} />
             </div>
           </section>
@@ -123,14 +123,14 @@ export async function ProfileHighlights({
       ) : null}
 
       {stats ? (
-        <section className="mt-10" aria-labelledby="profile-stats-title">
+        <section className="card-night mt-2.5 p-4 sm:p-5" aria-labelledby="profile-stats-title">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 id="profile-stats-title" className="t-section">
+            <h2 id="profile-stats-title" className="t-panel">
               {L.stats.title}
             </h2>
             <span className="stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{L.stats.estimates}</span>
           </div>
-          <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <dl className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             {(
               [
                 [L.stats.decks, stats.decks],
@@ -139,13 +139,13 @@ export async function ProfileHighlights({
                 [L.stats.votes, stats.votes],
               ] as const
             ).map(([label, value]) => (
-              <div key={label} className="card-night flex flex-col-reverse justify-end p-4">
+              <div key={label} className="card-inset flex flex-col-reverse justify-end p-3">
                 <dt className="mt-1 text-xs text-pale-muted">{label}</dt>
                 <dd className="font-mono text-2xl font-bold text-sky">{number.format(value)}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-2 max-w-3xl text-xs text-pale-muted">
+          <p className="mt-2 max-w-3xl text-[11px] text-pale-muted">
             {stats.since ? fillAchievement(L.stats.note, { name, date: formatDate(locale, stats.since) }) : fillAchievement(L.stats.noteNoDate, { name })}
           </p>
         </section>

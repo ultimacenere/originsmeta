@@ -186,7 +186,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       {vetrina ? <ProfileBackground vetrina={vetrina} /> : null}
       {vetrina ? <ProfileCover vetrina={vetrina} /> : null}
 
-      <section className="card-night mt-4 flex flex-wrap items-center gap-4 p-6" style={accentBorder(vetrina?.accent)}>
+      <section className="card-night mt-2.5 flex flex-wrap items-center gap-4 p-6" style={accentBorder(vetrina?.accent)}>
         {/* sulla vetrina la foto è più grande (e prima quella caricata dal sito) */}
         <Avatar profile={vetrina ? { ...profile, avatar_path: vetrina.avatarPath } : profile} name={name} size={vetrina ? 112 : 64} />
         <div className="min-w-0 flex-1 basis-56">
@@ -237,17 +237,17 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
 
       {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
       {decks.length === 0 && hideEmpty ? null : (
-        <section className="mt-10">
-          <h2 className="t-section">{p.decksTitle}</h2>
+        <section className="card-night mt-2.5 p-4 sm:p-5">
+          <h2 className="t-panel">{p.decksTitle}</h2>
           {decks.length === 0 ? (
-            <p className="card-night mt-4 p-6 text-pale-muted">{p.noDecks}</p>
+            <p className="mt-1.5 text-sm text-pale-muted">{p.noDecks}</p>
           ) : (
-            <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <ul className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
               {decks.map((deck) => {
                 const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
                 const patch = patchAt(deck.created_at);
                 return (
-                  <li key={deck.id} className="card-night flex gap-4 p-5">
+                  <li key={deck.id} className="card-inset flex gap-4 p-4">
                     {legendary ? (
                       <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
                         <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
@@ -280,14 +280,14 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
 
       {/* Le tier list salvate: una per tipo, aperte nello strumento con il loro codice */}
       {tierLists.length === 0 && hideEmpty ? null : (
-        <section className="mt-12">
-          <h2 className="t-section">{p.tierListsTitle}</h2>
+        <section className="card-night mt-2.5 p-4 sm:p-5">
+          <h2 className="t-panel">{p.tierListsTitle}</h2>
           {tierLists.length === 0 ? (
-            <p className="card-night mt-4 p-6 text-pale-muted">{p.noTierLists}</p>
+            <p className="mt-1.5 text-sm text-pale-muted">{p.noTierLists}</p>
           ) : (
-            <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <ul className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
               {tierLists.map((tl) => (
-                <li key={tl.id} className="card-night flex flex-col p-5">
+                <li key={tl.id} className="card-inset flex flex-col p-4">
                   <span className="stat-pill w-fit bg-sky text-[11px] font-semibold uppercase text-ink">
                     {tl.kind === "legendaries" ? d.tierMaker.tabLegendaries : d.tierMaker.tabCards}
                   </span>
@@ -313,7 +313,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           (pacchetto TRAGUARDI) */}
       <UserGuides locale={locale} guides={guides} />
 
-      <div className="mt-12 flex flex-wrap gap-4 text-sm">
+      <div className="mt-4 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (
           <Link href={href(locale, "/creators")} className="link-mint font-bold">
             {creatorLabels[locale].profile.directoryLink} →

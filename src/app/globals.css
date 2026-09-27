@@ -223,6 +223,24 @@
       font-size: 1.25rem;
     }
   }
+  /* Pannelli del profilo /u (Pierluigi, 27/09/2026: "i titoli e sottotitoli inseriscili negli elementi, riduci anche
+     la grandezza degli stessi almeno del 50%, poi riduci a 10px lo spazio tra i vari elementi"): il titolo sta dentro
+     il riquadro, a metà di .t-section (0,9375rem contro 1,875rem); gli elementi di una lista dentro un pannello sono
+     riquadri senza cornice (.card-inset), e le schede condivise (tornei, guide) annidate in un pannello hanno la cornice
+     da 2 px invece di 3. */
+  .t-panel {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--color-chalk);
+  }
+  .card-inset {
+    background: var(--color-night-2);
+    border-radius: 10px;
+  }
+  .profile-panel .card-night {
+    border-width: 2px;
+  }
   .lane-rule {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--color-mint) 20%, var(--color-mint) 80%, transparent);

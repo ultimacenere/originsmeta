@@ -28,17 +28,17 @@ export async function CreatorTournaments({ organizerId, locale, dict }: { organi
   const T = achievementLabels[locale].tournaments;
   const [before, after = ""] = T.wonBy.split("{name}");
   return (
-    <section className="mt-12" aria-labelledby="organized-title">
-      <h2 id="organized-title" className="t-section">
+    <section className="profile-panel card-night mt-2.5 p-4 sm:p-5" aria-labelledby="organized-title">
+      <h2 id="organized-title" className="t-panel">
         {L.organizedTitle}
       </h2>
-      <p className="mt-2 text-sm text-chalk-muted">{T.intro}</p>
+      <p className="mt-0.5 text-[11px] text-chalk-muted">{T.intro}</p>
       {upcoming.length ? (
         <>
-          <p id="organized-upcoming" className="kicker mt-5 text-mint">
+          <p id="organized-upcoming" className="kicker mt-3 text-mint">
             {T.upcoming}
           </p>
-          <ul aria-labelledby="organized-upcoming" className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ul aria-labelledby="organized-upcoming" className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
             {upcoming.map((t) => (
               <li key={t.id}>
                 <TournamentCard t={withSafeCover(t)} locale={locale} dict={dict} />
@@ -49,10 +49,10 @@ export async function CreatorTournaments({ organizerId, locale, dict }: { organi
       ) : null}
       {finished.length ? (
         <>
-          <p id="organized-finished" className="kicker mt-6 text-pale-muted">
+          <p id="organized-finished" className="kicker mt-3 text-pale-muted">
             {T.finished}
           </p>
-          <ul aria-labelledby="organized-finished" className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ul aria-labelledby="organized-finished" className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
             {finished.map((t) => {
               const winner = winners.get(t.id);
               return (

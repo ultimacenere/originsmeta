@@ -8,7 +8,7 @@ import { DEFAULT_COVER_PRESET, accentBorder, coverStyle, mediaPublicUrl, type Ve
  * Koin come sfondo: le illustrazioni delle carte stanno nella vetrina solo come contenuto (Leggendaria del cuore).
  */
 export function ProfileCover({ vetrina }: { vetrina: Vetrina }) {
-  const frame = "mt-4 block h-28 w-full overflow-hidden rounded-[14px] border-[3px] border-sky sm:h-40 md:h-48";
+  const frame = "mt-2.5 block h-28 w-full overflow-hidden rounded-[14px] border-[3px] border-sky sm:h-40 md:h-48";
   if (vetrina.coverPath) {
     return (
       <div className={frame} style={accentBorder(vetrina.accent)} aria-hidden="true">

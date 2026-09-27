@@ -102,7 +102,7 @@ export async function ShowcaseFeatured({
     </div>
   ) : null;
   return (
-    <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <section className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
       {player ? (
         side ? (
           <>
