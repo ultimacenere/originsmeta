@@ -5,44 +5,43 @@ import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { videoLabels } from "@/lib/videoLabels";
 import { showcaseLabels } from "@/lib/showcaseLabels";
 import { accentBorder, accentText, type Vetrina } from "@/lib/community/showcase";
+import { getFeaturedDeck, type FeaturedDeck } from "@/lib/community/showcaseQueries";
 import type { CommunityDeck } from "@/lib/community/types";
-import { twitchLogin, type ProfileLink } from "@/lib/community/profileLinks";
 import { CardArt } from "@/components/CardChip";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { ScheduleView } from "./ScheduleView";
 
 /**
  * In cima alla vetrina /u, subito sotto la testata (pacchetto VETRINA, 27/09/2026): il mazzo in evidenza (uno dei suoi
- * mazzi pubblicati: si cerca fra quelli che la pagina ha già letto, quindi un mazzo nascosto o eliminato sparisce da
- * solo), gli orari delle dirette e il video in evidenza (lettore a clic `VideoEmbed`: nessuna richiesta a YouTube o
- * Twitch prima del clic). Senza nessuno dei tre non mostra nulla.
+ * mazzi pubblicati: prima fra quelli che la pagina ha già letto, i 50 più recenti, altrimenti letto da solo con
+ * `getFeaturedDeck`, così un mazzo vecchio di chi non ha tetto ai mazzi non sparisce; un mazzo nascosto o eliminato
+ * sparisce da solo), gli orari delle dirette e il video in evidenza (lettore a clic `VideoEmbed`: nessuna richiesta a
+ * YouTube o Twitch prima del clic). Senza nessuno dei tre non mostra nulla.
  */
-export function ShowcaseFeatured({
+export async function ShowcaseFeatured({
   vetrina,
   decks,
+  ownerId,
   locale,
   dict,
   name,
-  username,
-  links,
 }: {
   vetrina: Vetrina;
   decks: readonly CommunityDeck[];
+  /** il proprietario del profilo: il mazzo in evidenza dev'essere suo */
+  ownerId: string;
   locale: Locale;
   dict: Dictionary;
   name: string;
-  username: string;
-  /** canali del profilo: con un canale Twitch gli orari mostrano "In diretta ora" (badge LIVE) */
-  links: readonly ProfileLink[];
 }) {
   const L = showcaseLabels[locale].view;
-  const deck = vetrina.featuredDeck ? decks.find((d) => d.id === vetrina.featuredDeck && d.status === "published") : undefined;
+  const id = vetrina.featuredDeck;
+  const deck: FeaturedDeck | null = id ? (decks.find((d) => d.id === id && d.status === "published") ?? (await getFeaturedDeck(ownerId, id))) : null;
   const video = vetrina.featuredVideo;
   const hasSchedule = vetrina.schedule.length > 0 && vetrina.scheduleTz !== null;
   if (!deck && !video && !hasSchedule) return null;
   const frame = accentBorder(vetrina.accent);
   const title = accentText(vetrina.accent);
-  const live = twitchLogin(links) !== null;
 
   const deckCard = deck
     ? (() => {
@@ -82,7 +81,7 @@ export function ShowcaseFeatured({
 
   const schedule = hasSchedule ? (
     <div className="card-night p-5" style={frame}>
-      <ScheduleView entries={vetrina.schedule} tz={vetrina.scheduleTz!} locale={locale} labels={L} username={username} live={live} titleStyle={title} />
+      <ScheduleView entries={vetrina.schedule} tz={vetrina.scheduleTz!} locale={locale} labels={L} titleStyle={title} />
     </div>
   ) : null;
 

@@ -3,7 +3,6 @@
 import { useMounted } from "@/lib/useMounted";
 import { timeZoneName, upcomingSlots, weekdayName, type ScheduleEntry } from "@/lib/community/showcase";
 import { fillShowcase, type ShowcaseViewLabels } from "@/lib/showcaseLabels";
-import { LiveBadge } from "@/components/LiveBadge";
 
 type Row = { key: string; day: string; time: string; end?: string; ongoing: boolean };
 
@@ -36,16 +35,15 @@ function viewerRows(entries: readonly ScheduleEntry[], tz: string, locale: strin
 /**
  * Orari delle dirette sulla vetrina /u (pacchetto VETRINA, 27/09/2026). Il creator li scrive nel suo fuso; qui, come
  * `LocalTime` per i tornei, il server e il primo render mostrano l'ora del creator con il nome del fuso, poi il browser
- * passa al fuso di chi guarda (giorno e ora della prossima diretta di ogni voce, calcolati con `upcomingSlots`). Con il
- * badge LIVE (Twitch, /api/live) compare "In diretta ora", che porta al canale.
+ * passa al fuso di chi guarda (giorno e ora della prossima diretta di ogni voce, calcolati con `upcomingSlots`). Una voce
+ * in corso secondo gli orari ha la pastiglia "in programma ora"; lo stato in diretta vero resta il badge LIVE accanto
+ * alla bio (`ProfileShowcase`): qui non si ripete, era un doppione che portava allo stesso canale.
  */
 export function ScheduleView({
   entries,
   tz,
   locale,
   labels,
-  username,
-  live,
   titleStyle,
 }: {
   entries: ScheduleEntry[];
@@ -53,9 +51,6 @@ export function ScheduleView({
   tz: string;
   locale: string;
   labels: ShowcaseViewLabels;
-  username: string;
-  /** il profilo ha un canale Twitch: si chiede lo stato in diretta */
-  live: boolean;
   titleStyle?: { color: string };
 }) {
   const mounted = useMounted();
@@ -73,12 +68,9 @@ export function ScheduleView({
   if (!entries.length) return null;
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="kicker text-mint" style={titleStyle}>
-          {labels.schedule}
-        </h2>
-        {live ? <LiveBadge username={username} labels={{ badge: labels.liveNow, title: labels.liveNowTitle }} placement="profile" /> : null}
-      </div>
+      <h2 className="kicker text-mint" style={titleStyle}>
+        {labels.schedule}
+      </h2>
       <ul className="mt-3 space-y-1.5">
         {rows.map((r) => (
           <li key={r.key} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm">

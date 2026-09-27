@@ -347,6 +347,9 @@ describe("modulo \"Personalizza la vetrina\"", () => {
         favoriteLegendary: "wolf",
         featuredDeck: "3c9a6f7e-0b1d-4e2f-9a3b-000000000000",
         featuredVideo: "https://www.twitch.tv/coachcrono",
+        days: ["1"],
+        times: ["21:00"],
+        durations: [""],
         timezone: "Mars/Olympus",
       },
       ctx,
@@ -356,6 +359,21 @@ describe("modulo \"Personalizza la vetrina\"", () => {
   test("orari senza fuso: il fuso serve", () => {
     const res = S.parseShowcaseForm({ ...base, days: ["1"], times: ["21:00"], durations: [""] }, ctx);
     assert.deepEqual(!res.ok && res.errors, { timezone: "required" });
+    // anche con una riga sbagliata: l'errore della riga e quello del fuso insieme
+    const bad = S.parseShowcaseForm({ ...base, days: ["1"], times: ["25:00"], durations: [""] }, ctx);
+    assert.deepEqual(!bad.ok && bad.errors, { schedule: [{ index: 0, error: "time" }], timezone: "required" });
+  });
+  test("fuso senza orari: non si salva (è pubblico e direbbe solo dove vive chi salva)", () => {
+    // il modulo manda sempre il fuso del browser: senza orari va ignorato, anche se è nell'elenco o non lo è
+    for (const timezone of ["America/Bogota", "Europe/Rome", "Mars/Olympus", ""]) {
+      const res = S.parseShowcaseForm({ ...base, cover: "aurora", accent: "sky", timezone }, ctx);
+      assert.ok(res.ok, timezone);
+      assert.equal(res.value.schedule_tz, null, timezone);
+      assert.deepEqual(res.value.schedule, [], timezone);
+    }
+    // righe tutte vuote (nessuna ora scritta) = nessun orario
+    const empty = S.parseShowcaseForm({ ...base, days: ["0", "3"], times: ["", " "], durations: ["", ""], timezone: "Europe/Madrid" }, ctx);
+    assert.ok(empty.ok && empty.value.schedule_tz === null && empty.value.schedule.length === 0);
   });
   test("salvataggio identico a quello che c'è: si riconosce", () => {
     const res = S.parseShowcaseForm({ ...base, cover: "aurora", days: ["1"], times: ["21:00"], durations: ["90"], timezone: "Europe/Madrid" }, ctx);
@@ -365,6 +383,27 @@ describe("modulo \"Personalizza la vetrina\"", () => {
     assert.ok(!S.sameShowcaseValue({ ...row, accent: "gold" }, res.value));
     assert.ok(!S.sameShowcaseValue({ ...row, schedule: [] }, res.value));
     assert.ok(!S.sameShowcaseValue({ ...row, schedule: [{ day: 1, time: "21:00", minutes: 90 }, { day: 9, time: "x" }] }, res.value), "una voce non valida nel database va riscritta");
+  });
+  test("vetrina vuota e dati rimasti (chi perde il ruolo li può togliere)", () => {
+    // la vetrina vuota tocca tutte le colonne della vetrina tranne la foto, che è di tutti
+    assert.deepEqual(Object.keys(S.EMPTY_SHOWCASE).sort(), S.VETRINA_COLUMNS.split(", ").filter((c) => c !== "avatar_path").sort());
+    assert.deepEqual(S.EMPTY_SHOWCASE.schedule, []);
+    assert.ok(Object.entries(S.EMPTY_SHOWCASE).every(([k, v]) => (k === "schedule" ? Array.isArray(v) : v === null)));
+    assert.equal(S.hasShowcaseData(null), false);
+    assert.equal(S.hasShowcaseData({ ...S.EMPTY_SHOWCASE, avatar_path: `${USER}/avatar/abcdefgh.webp` }), false, "la foto non conta");
+    assert.equal(S.hasShowcaseData({ ...S.EMPTY_SHOWCASE, tagline: "ciao" }), true);
+    assert.equal(S.hasShowcaseData({ ...S.EMPTY_SHOWCASE, schedule_tz: "Europe/Rome" }), true, "anche un valore che la pagina non mostrerebbe");
+    assert.equal(S.hasShowcaseData({ ...S.EMPTY_SHOWCASE, schedule: [{ day: 9 }] }), true);
+    assert.equal(S.hasShowcaseData({ ...S.EMPTY_SHOWCASE, cover_preset: "keyart" }), true);
+  });
+  test("limite di frequenza: secondi che mancano, arrotondati in su", () => {
+    const now = ms("2026-09-27T10:00:10.000Z");
+    assert.equal(S.retryAfterSeconds(null, 10_000, now), 0);
+    assert.equal(S.retryAfterSeconds("non una data", 10_000, now), 0);
+    assert.equal(S.retryAfterSeconds("2026-09-27T10:00:00.000Z", 10_000, now), 0, "passati 10 s esatti");
+    assert.equal(S.retryAfterSeconds("2026-09-27T10:00:01.000Z", 10_000, now), 1);
+    assert.equal(S.retryAfterSeconds("2026-09-27T10:00:05.500Z", 10_000, now), 6);
+    assert.equal(S.retryAfterSeconds("2026-09-27T10:00:10.000Z", 10_000, now), 10);
   });
 });
 
@@ -511,8 +550,11 @@ describe("database: supabase/wave2-VETRINA.sql", () => {
     const bucket = one(/insert into storage\.buckets/);
     assert.ok(bucket.includes(`'profile-media', 'profile-media', true, ${S.COVER_MAX_BYTES}, array[${S.MEDIA_TYPES.map((t) => `'${t}'`).join(",")}]`));
     const upload = one(/create policy "profile media upload"/);
-    assert.ok(upload.includes(`<= ${S.AVATAR_MAX_BYTES})`) && upload.includes(`<= ${S.COVER_MAX_BYTES}`));
+    // niente peso nella policy: lo Storage la prova prima di ricevere il file, senza metadati (sarebbe sempre 0)
+    assert.doesNotMatch(upload, /metadata/);
     assert.ok(upload.includes(`public.profile_media_count() < ${S.MEDIA_FILES_MAX}`));
+    // il fuso c'è se e solo se ci sono orari (è pubblico)
+    assert.ok(one(/add constraint profiles_schedule_check/).includes("((schedule = '[]'::jsonb) = (schedule_tz is null))"));
     const guard = one(/^create or replace function public\.guard_profile_vetrina\(/);
     assert.ok(guard.includes(`profile_media_ok(new.avatar_path, ${S.AVATAR_MAX_BYTES})`));
     assert.ok(guard.includes(`profile_media_ok(new.cover_path, ${S.COVER_MAX_BYTES})`));
@@ -534,6 +576,46 @@ describe("database: supabase/wave2-VETRINA.sql", () => {
     const inPolicy = /p\.badge in \(([^)]*)\) or p\.role = 'admin'/.exec(one(/create policy "profile media upload"/));
     assert.ok(inPolicy);
     assert.deepEqual(quoted(inPolicy[1]).sort(), [...B.SHOWCASE_BADGES].sort());
+    // la foto aggiorna il lastmod di /u solo per i ruoli con vetrina
+    const inLastmod = /if new\.badge in \(([^)]*)\) then new\.showcase_updated_at := now\(\)/.exec(guard);
+    assert.ok(inLastmod);
+    assert.deepEqual(quoted(inLastmod[1]).sort(), [...B.SHOWCASE_BADGES].sort());
+  });
+  test("date delle modifiche: le scrive solo il trigger, separate per foto e vetrina", () => {
+    const guard = one(/^create or replace function public\.guard_profile_vetrina\(/);
+    for (const c of ["avatar_updated_at", "vetrina_updated_at"]) {
+      one(new RegExp(`^alter table public\\.profiles add column if not exists ${c} timestamptz$`));
+      assert.ok(guard.includes(`new.${c} := now()`), c);
+      // nessuna grant: l'utente non le scrive (la grant per colonna è esattamente VETRINA_COLUMNS)
+      assert.ok(!S.VETRINA_COLUMNS.includes(c), c);
+    }
+    assert.ok(guard.includes("if new.avatar_path is distinct from old.avatar_path then new.avatar_updated_at := now()"));
+    // la vetrina (tutte le colonne tranne la foto) scrive vetrina_updated_at e il lastmod
+    const tuple = /if \(new\.([a-z_, .]+)\) is distinct from \(old\.[a-z_, .]+\) then new\.vetrina_updated_at := now\(\); new\.showcase_updated_at := now\(\)/.exec(guard);
+    assert.ok(tuple, "tupla della vetrina");
+    assert.deepEqual(
+      tuple[1].split(", new.").sort(),
+      S.VETRINA_COLUMNS.split(", ").filter((c) => c !== "avatar_path").sort(),
+    );
+  });
+  test("bucket: lettura e cancellazione per cartella (e admin), mai il file in uso del proprietario della cartella", () => {
+    const readPolicy = one(/create policy "profile media owners read"/);
+    assert.ok(readPolicy.includes("((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())"));
+    const del = one(/create policy "profile media owners delete"/);
+    assert.ok(del.includes("((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())"));
+    assert.ok(del.includes("p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name)"));
+    assert.ok(!stmts.some((s) => /^create policy .* on storage\.objects for update/.test(s) && s.includes("profile-media")), "niente update");
+  });
+  test("lo strumento dello staff svuota le stesse colonne (scripts/clear-profile-media.mjs)", () => {
+    const script = read("../../../scripts/clear-profile-media.mjs");
+    for (const c of S.VETRINA_COLUMNS.split(", ")) assert.match(script, new RegExp(`"${c} = (null|'\\[\\]'::jsonb)"`), c);
+    assert.match(script, /\/storage\/v1\/object\/\$\{BUCKET\}/);
+    // i file si tolgono con l'API dello Storage: una delete sulla tabella lascerebbe l'oggetto (i commenti lo spiegano)
+    const code = script
+      .split(/\r?\n/)
+      .filter((l) => !l.trimStart().startsWith("//"))
+      .join("\n");
+    assert.doesNotMatch(code, /delete from storage\.objects/i);
   });
   test("il trigger difende ogni campo della vetrina tranne la foto, che è di tutti", () => {
     const guard = one(/^create or replace function public\.guard_profile_vetrina\(/);

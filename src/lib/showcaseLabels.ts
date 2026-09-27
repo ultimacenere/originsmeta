@@ -6,11 +6,12 @@ import type { Accent, CoverPreset } from "./community/showcase";
  * /account, copertina, Leggendaria del cuore, mazzo e video in evidenza e orari delle dirette su /u, paragrafo della
  * privacy (#profile-media). Stesso schema di creatorLabels.ts: l'inglese è il tipo di riferimento, italiano e spagnolo
  * si scrivono insieme; spagnolo neutro con il tú (docs/spagnolo.md: "Legendaria", "mazo", "en directo" come nel
- * badge LIVE). Il file importa solo tipi: si può passare ai componenti del browser.
+ * badge LIVE), tasti all'infinito come nel resto di /account ("Guardar el perfil", "Añadir un canal"). Il file importa
+ * solo tipi: si può passare ai componenti del browser. Il credito della Leggendaria del cuore usa la formula delle schede
+ * carta (`cardLabels[locale].creditText` in cardPage.ts).
  *
  * I nomi dei ruoli nei testi (Creator, Autore/Author/Autor, Pro, Staff) sono quelli di `community.badges` dei
- * dizionari: il test showcase.test.ts lo controlla. Segnaposto fra graffe: {max}, {min}, {tz}, {illus}, {viewers},
- * {size}.
+ * dizionari: il test showcase.test.ts lo controlla. Segnaposto fra graffe: {max}, {min}, {tz}, {size}, {seconds}.
  */
 
 export type AvatarLabels = {
@@ -24,6 +25,8 @@ export type AvatarLabels = {
   uploading: string;
   remove: string;
   hint: string;
+  /** testo del link al paragrafo della privacy (#profile-media) */
+  privacyLink: string;
   saved: string;
   removed: string;
   /** colonne non ancora nel database (prima della migrazione) */
@@ -33,6 +36,7 @@ export type AvatarLabels = {
     type: string;
     tooBig: string;
     upload: string;
+    limit: string;
     db: string;
     tooFast: string;
     notLoggedIn: string;
@@ -45,8 +49,15 @@ export type AvatarLabels = {
 export type ShowcaseEditorLabels = {
   title: string;
   intro: string;
-  /** la riga per chi non ha un ruolo con vetrina */
+  /** la riga per chi non ha un ruolo con vetrina, seguita dal link alla casella messaggi (`askRole`) */
   notForRole: string;
+  askRole: string;
+  /** chi ha perso il ruolo e ha ancora dati della vetrina nella riga */
+  clearIntro: string;
+  clear: string;
+  clearing: string;
+  cleared: string;
+  clearError: string;
   missing: string;
   readError: string;
   cover: string;
@@ -55,6 +66,7 @@ export type ShowcaseEditorLabels = {
   coverUpload: string;
   coverUploading: string;
   coverImageHint: string;
+  privacyLink: string;
   accent: string;
   accentHint: string;
   tagline: string;
@@ -108,13 +120,12 @@ export type ShowcaseEditorLabels = {
     type: string;
     tooBig: string;
     upload: string;
+    limit: string;
   };
 };
 
 export type ShowcaseViewLabels = {
   favorite: string;
-  illustration: string;
-  copyright: string;
   featuredDeck: string;
   featuredVideo: string;
   schedule: string;
@@ -122,9 +133,7 @@ export type ShowcaseViewLabels = {
   inYourTz: string;
   /** prima del montaggio (HTML statico): orari nel fuso del creator */
   creatorTz: string;
-  liveNow: string;
-  liveNowTitle: string;
-  /** diretta in corso secondo gli orari */
+  /** diretta in corso secondo gli orari (lo stato LIVE vero resta il badge accanto alla bio) */
   onNow: string;
 };
 
@@ -141,7 +150,7 @@ export type ShowcaseLabels = {
 const en: ShowcaseLabels = {
   avatar: {
     title: "Profile photo",
-    intro: "Your photo on your public page, next to your name on your decks and in the menu at the top. Whoever signs in with the email link has their initial until they upload a photo.",
+    intro: "Your photo on your public page, next to your name on your decks and in the menu at the top. If you sign in with the email link, you'll see your initial until you upload a photo.",
     fromSite: "Now: the photo you uploaded.",
     fromDiscord: "Now: your Discord photo.",
     none: "Now: your initial.",
@@ -149,6 +158,7 @@ const en: ShowcaseLabels = {
     uploading: "Uploading…",
     remove: "Remove the photo",
     hint: "PNG, JPEG or WebP. Your browser crops it square and shrinks it to {size} px before uploading it (removing data such as the location), up to 1 MB.",
+    privacyLink: "Privacy",
     saved: "Photo saved.",
     removed: "Photo removed: you have the Discord photo or your initial back.",
     missing: "Uploading a profile photo is coming soon: it will be available after the next site update.",
@@ -157,8 +167,9 @@ const en: ShowcaseLabels = {
       type: "Choose a PNG, JPEG or WebP image.",
       tooBig: "The image is still over 1 MB after shrinking it: try another one.",
       upload: "The upload didn't work. Try again in a moment.",
+      limit: "The site didn't accept the image. Reload the page and try again; if it keeps happening, write to the staff.",
       db: "We couldn't save the photo. Try again in a moment.",
-      tooFast: "Wait a few seconds before changing it again.",
+      tooFast: "You changed it a moment ago: try again in {seconds} s.",
       notLoggedIn: "Sign in to change your photo.",
       disabled: "Accounts are switched off right now.",
       missing: "Uploading a profile photo is coming soon.",
@@ -167,8 +178,14 @@ const en: ShowcaseLabels = {
   },
   editor: {
     title: "Customize your showcase",
-    intro: "Your public page becomes a showcase: cover, accent colour, a line under your name, favorite Legendary, featured deck and video, stream schedule.",
-    notForRole: "Customizing the showcase is for the Creator, Author, Pro and Staff roles. Do you make Origins TCG content? Write to the staff to ask for a role.",
+    intro: "Your public page becomes a showcase: cover, accent color, a line under your name, favorite Legendary, featured deck and video, stream schedule.",
+    notForRole: "Customizing the showcase is for the Creator, Author, Pro and Staff roles. Do you make Origins TCG content?",
+    askRole: "Write to the staff to ask for a role.",
+    clearIntro: "Your showcase settings (cover, tagline, schedule…) are still saved, even though your role no longer shows them. You can remove them.",
+    clear: "Remove the showcase data",
+    clearing: "Removing…",
+    cleared: "Showcase data removed.",
+    clearError: "We couldn't remove the data. Try again in a moment.",
     missing: "The showcase is coming soon: it will be available after the next site update.",
     readError: "We can't read your showcase right now. Reload the page in a moment.",
     cover: "Cover",
@@ -177,7 +194,8 @@ const en: ShowcaseLabels = {
     coverUpload: "Upload an image",
     coverUploading: "Uploading…",
     coverImageHint: "PNG, JPEG or WebP up to 2 MB, shrunk in your browser to {size} px. Use your own image, or one you have the rights to.",
-    accent: "Accent colour",
+    privacyLink: "Privacy",
+    accent: "Accent color",
     accentHint: "For the frames and your name on the showcase.",
     tagline: "Tagline",
     taglineHint: "A line under your name, plain text, up to {max} characters.",
@@ -201,7 +219,7 @@ const en: ShowcaseLabels = {
     addSlot: "Add a time slot",
     removeSlot: "Remove",
     timezone: "Your time zone",
-    timezoneHint: "The one of the times you write above.",
+    timezoneHint: "The time zone of the times above. It's saved only with a schedule.",
     save: "Save the showcase",
     saving: "Saving…",
     saved: "Showcase saved.",
@@ -209,7 +227,7 @@ const en: ShowcaseLabels = {
     errors: {
       cover: "Choose one of the backgrounds.",
       coverImage: "Upload the image again, or choose one of the backgrounds.",
-      accent: "Choose one of the colours.",
+      accent: "Choose one of the colors.",
       tagline: "The tagline is too long.",
       legendary: "Choose a Legendary from the list.",
       deck: "Choose one of your published decks.",
@@ -223,26 +241,23 @@ const en: ShowcaseLabels = {
       notLoggedIn: "Sign in to customize your showcase.",
       disabled: "Accounts are switched off right now.",
       db: "We couldn't save the showcase. Try again in a moment.",
-      tooFast: "Wait a few seconds before saving again.",
+      tooFast: "You saved a moment ago: try again in {seconds} s.",
       missing: "The showcase is coming soon.",
       notAllowed: "The showcase is for the Creator, Author, Pro and Staff roles.",
       invalid: "Check the fields marked in red.",
       type: "Choose a PNG, JPEG or WebP image.",
       tooBig: "The image is still over 2 MB after shrinking it: try another one.",
       upload: "The upload didn't work. Try again in a moment.",
+      limit: "The site didn't accept the image. Reload the page and try again; if it keeps happening, write to the staff.",
     },
   },
   view: {
     favorite: "Favorite Legendary",
-    illustration: "Illustration: {illus}",
-    copyright: "© Koin Games",
     featuredDeck: "Featured deck",
     featuredVideo: "Featured video",
     schedule: "Stream schedule",
     inYourTz: "In your time zone ({tz})",
     creatorTz: "{tz} time",
-    liveNow: "Live now",
-    liveNowTitle: "Live on Twitch now: {viewers} viewers",
     onNow: "scheduled now",
   },
   presets: {
@@ -266,13 +281,13 @@ const en: ShowcaseLabels = {
     peach: "Peach",
   },
   privacy:
-    "Photos and showcase. If you upload a profile photo (any member) or a cover (Creator, Author, Pro and Staff roles), your browser crops and shrinks it and re-encodes it, which removes data such as the location, and then stores it in our Supabase storage, in a folder of your account: it is public and appears on your /u page, next to your name on your decks and tournaments and in the site menu. When you replace or remove it the site deletes the old file. The showcase settings (cover, accent colour, tagline, favorite Legendary, featured deck and video, stream schedule with your time zone) are public on your /u page; each visitor sees the schedule in their own time zone, computed in their browser. You can change or remove everything from My profile at any time.",
+    "Photos and showcase. If you upload a profile photo (any member) or a cover (Creator, Author, Pro and Staff roles), your browser crops and shrinks it and re-encodes it, which removes data such as the location, and then stores it in our Supabase storage, in a folder of your account: it is public and appears on your /u page, next to your name on your decks and tournaments and in the site menu. When you replace or remove it the site deletes the old file; copies already downloaded may stay in caches for up to an hour. The staff can remove a photo, cover or tagline that breaks the site rules. The showcase settings (cover, accent color, tagline, favorite Legendary, featured deck and video, stream schedule with your time zone, which is saved only together with a schedule) are public on your /u page; each visitor sees the schedule in their own time zone, computed in their browser. You can change or remove everything from My profile at any time, even if you no longer have the role.",
 };
 
 const it: ShowcaseLabels = {
   avatar: {
     title: "Foto profilo",
-    intro: "La tua foto sulla pagina pubblica, accanto al tuo nome nei mazzi e nel menu in alto. Chi entra con il link via email ha l'iniziale finché non carica una foto.",
+    intro: "La tua foto sulla pagina pubblica, accanto al tuo nome nei mazzi e nel menu in alto. Se entri con il link via email, vedi la tua iniziale finché non carichi una foto.",
     fromSite: "Adesso: la foto che hai caricato.",
     fromDiscord: "Adesso: la foto di Discord.",
     none: "Adesso: la tua iniziale.",
@@ -280,6 +295,7 @@ const it: ShowcaseLabels = {
     uploading: "Caricamento…",
     remove: "Togli la foto",
     hint: "PNG, JPEG o WebP. Il browser la ritaglia quadrata e la riduce a {size} px prima di caricarla (togliendo dati come la posizione), fino a 1 MB.",
+    privacyLink: "Privacy",
     saved: "Foto salvata.",
     removed: "Foto tolta: torna quella di Discord, o la tua iniziale.",
     missing: "La foto profilo caricata dal sito arriva presto: sarà disponibile dopo il prossimo aggiornamento del sito.",
@@ -288,8 +304,9 @@ const it: ShowcaseLabels = {
       type: "Scegli un'immagine PNG, JPEG o WebP.",
       tooBig: "Anche ridotta, l'immagine supera 1 MB: provane un'altra.",
       upload: "Il caricamento non è riuscito. Riprova fra poco.",
+      limit: "Il sito non ha accettato l'immagine. Ricarica la pagina e riprova; se succede ancora, scrivi allo staff.",
       db: "Non siamo riusciti a salvare la foto. Riprova fra poco.",
-      tooFast: "Aspetta qualche secondo prima di cambiarla di nuovo.",
+      tooFast: "L'hai appena cambiata: riprova fra {seconds} s.",
       notLoggedIn: "Accedi per cambiare la tua foto.",
       disabled: "Gli account sono spenti in questo momento.",
       missing: "La foto profilo caricata dal sito arriva presto.",
@@ -299,7 +316,13 @@ const it: ShowcaseLabels = {
   editor: {
     title: "Personalizza la vetrina",
     intro: "La tua pagina pubblica diventa una vetrina: copertina, colore d'accento, una frase sotto il nome, Leggendaria del cuore, mazzo e video in evidenza, orari delle dirette.",
-    notForRole: "La personalizzazione della vetrina è per i ruoli Creator, Autore, Pro e Staff. Fai contenuti su Origins TCG? Scrivi allo staff per chiedere un ruolo.",
+    notForRole: "La personalizzazione della vetrina è per i ruoli Creator, Autore, Pro e Staff. Fai contenuti su Origins TCG?",
+    askRole: "Scrivi allo staff per chiedere un ruolo.",
+    clearIntro: "Le impostazioni della tua vetrina (copertina, frase, orari…) sono ancora salvate, anche se il tuo ruolo non le mostra più. Puoi toglierle.",
+    clear: "Togli i dati della vetrina",
+    clearing: "Rimozione…",
+    cleared: "Dati della vetrina tolti.",
+    clearError: "Non siamo riusciti a togliere i dati. Riprova fra poco.",
     missing: "La vetrina arriva presto: sarà disponibile dopo il prossimo aggiornamento del sito.",
     readError: "Non riusciamo a leggere la tua vetrina in questo momento. Ricarica la pagina fra poco.",
     cover: "Copertina",
@@ -308,6 +331,7 @@ const it: ShowcaseLabels = {
     coverUpload: "Carica un'immagine",
     coverUploading: "Caricamento…",
     coverImageHint: "PNG, JPEG o WebP fino a 2 MB, ridotta dal browser a {size} px. Usa un'immagine tua o di cui hai i diritti.",
+    privacyLink: "Privacy",
     accent: "Colore d'accento",
     accentHint: "Per le cornici e il tuo nome nella vetrina.",
     tagline: "Frase di presentazione",
@@ -332,7 +356,7 @@ const it: ShowcaseLabels = {
     addSlot: "Aggiungi un orario",
     removeSlot: "Togli",
     timezone: "Il tuo fuso orario",
-    timezoneHint: "Quello degli orari che scrivi qui sopra.",
+    timezoneHint: "Quello degli orari che scrivi qui sopra. Si salva solo insieme agli orari.",
     save: "Salva la vetrina",
     saving: "Salvataggio…",
     saved: "Vetrina salvata.",
@@ -354,26 +378,23 @@ const it: ShowcaseLabels = {
       notLoggedIn: "Accedi per personalizzare la vetrina.",
       disabled: "Gli account sono spenti in questo momento.",
       db: "Non siamo riusciti a salvare la vetrina. Riprova fra poco.",
-      tooFast: "Aspetta qualche secondo prima di salvare di nuovo.",
+      tooFast: "Hai appena salvato: riprova fra {seconds} s.",
       missing: "La vetrina arriva presto.",
       notAllowed: "La vetrina è per i ruoli Creator, Autore, Pro e Staff.",
       invalid: "Controlla i campi segnati in rosso.",
       type: "Scegli un'immagine PNG, JPEG o WebP.",
       tooBig: "Anche ridotta, l'immagine supera 2 MB: provane un'altra.",
       upload: "Il caricamento non è riuscito. Riprova fra poco.",
+      limit: "Il sito non ha accettato l'immagine. Ricarica la pagina e riprova; se succede ancora, scrivi allo staff.",
     },
   },
   view: {
     favorite: "Leggendaria del cuore",
-    illustration: "Illustrazione: {illus}",
-    copyright: "© Koin Games",
     featuredDeck: "Mazzo in evidenza",
     featuredVideo: "Video in evidenza",
     schedule: "Orari delle dirette",
     inYourTz: "Nel tuo fuso orario ({tz})",
     creatorTz: "Ora di {tz}",
-    liveNow: "In diretta ora",
-    liveNowTitle: "In diretta su Twitch adesso: {viewers} spettatori",
     onNow: "in programma ora",
   },
   presets: {
@@ -397,20 +418,21 @@ const it: ShowcaseLabels = {
     peach: "Pesca",
   },
   privacy:
-    "Foto e vetrina. Se carichi una foto profilo (ogni iscritto) o una copertina (ruoli Creator, Autore, Pro e Staff), il tuo browser la ritaglia, la riduce e la ricodifica, togliendo dati come la posizione, e poi la salva nello spazio Supabase del sito, in una cartella del tuo account: è pubblica e compare sulla tua pagina /u, accanto al tuo nome nei mazzi e nei tornei e nel menu del sito. Quando la sostituisci o la togli, il sito cancella il file vecchio. Le impostazioni della vetrina (copertina, colore d'accento, frase di presentazione, Leggendaria del cuore, mazzo e video in evidenza, orari delle dirette con il tuo fuso orario) sono pubbliche sulla tua pagina /u; ogni visitatore vede gli orari nel suo fuso, calcolato nel suo browser. Puoi cambiare o togliere tutto da Il mio profilo quando vuoi.",
+    "Foto e vetrina. Se carichi una foto profilo (ogni iscritto) o una copertina (ruoli Creator, Autore, Pro e Staff), il tuo browser la ritaglia, la riduce e la ricodifica, togliendo dati come la posizione, e poi la salva nello spazio Supabase del sito, in una cartella del tuo account: è pubblica e compare sulla tua pagina /u, accanto al tuo nome nei mazzi e nei tornei e nel menu del sito. Quando la sostituisci o la togli, il sito cancella il file vecchio; le copie già scaricate possono restare nelle cache fino a un'ora. Lo staff può togliere una foto, una copertina o una frase che non rispetta le regole del sito. Le impostazioni della vetrina (copertina, colore d'accento, frase di presentazione, Leggendaria del cuore, mazzo e video in evidenza, orari delle dirette con il tuo fuso orario, che si salva solo insieme agli orari) sono pubbliche sulla tua pagina /u; ogni visitatore vede gli orari nel suo fuso, calcolato nel suo browser. Puoi cambiare o togliere tutto da Il mio profilo quando vuoi, anche se non hai più il ruolo.",
 };
 
 const es: ShowcaseLabels = {
   avatar: {
     title: "Foto de perfil",
-    intro: "Tu foto en tu página pública, junto a tu nombre en tus mazos y en el menú de arriba. Quien entra con el enlace por correo tiene su inicial hasta que sube una foto.",
+    intro: "Tu foto en tu página pública, junto a tu nombre en tus mazos y en el menú de arriba. Si entras con el enlace por correo, verás tu inicial hasta que subas una foto.",
     fromSite: "Ahora: la foto que subiste.",
     fromDiscord: "Ahora: tu foto de Discord.",
     none: "Ahora: tu inicial.",
-    upload: "Sube una foto",
+    upload: "Subir una foto",
     uploading: "Subiendo…",
-    remove: "Quita la foto",
+    remove: "Quitar la foto",
     hint: "PNG, JPEG o WebP. Tu navegador la recorta cuadrada y la reduce a {size} px antes de subirla (quitando datos como la ubicación), hasta 1 MB.",
+    privacyLink: "Privacidad",
     saved: "Foto guardada.",
     removed: "Foto quitada: vuelves a tener la foto de Discord o tu inicial.",
     missing: "Subir una foto de perfil desde el sitio llega pronto: estará disponible después de la próxima actualización del sitio.",
@@ -419,8 +441,9 @@ const es: ShowcaseLabels = {
       type: "Elige una imagen PNG, JPEG o WebP.",
       tooBig: "Incluso reducida, la imagen pasa de 1 MB: prueba con otra.",
       upload: "No se pudo subir. Vuelve a intentarlo en un rato.",
+      limit: "El sitio no aceptó la imagen. Vuelve a cargar la página e inténtalo otra vez; si sigue pasando, escribe al staff.",
       db: "No pudimos guardar la foto. Vuelve a intentarlo en un rato.",
-      tooFast: "Espera unos segundos antes de cambiarla otra vez.",
+      tooFast: "La acabas de cambiar: vuelve a intentarlo en {seconds} s.",
       notLoggedIn: "Inicia sesión para cambiar tu foto.",
       disabled: "Las cuentas están desactivadas en este momento.",
       missing: "Subir una foto de perfil desde el sitio llega pronto.",
@@ -430,15 +453,22 @@ const es: ShowcaseLabels = {
   editor: {
     title: "Personaliza tu vitrina",
     intro: "Tu página pública se convierte en una vitrina: portada, color de acento, una frase bajo tu nombre, Legendaria favorita, mazo y video destacados, horarios de tus directos.",
-    notForRole: "Personalizar la vitrina es para los roles Creator, Autor, Pro y Staff. ¿Haces contenido sobre Origins TCG? Escribe al staff para pedir un rol.",
+    notForRole: "Personalizar la vitrina es para los roles Creator, Autor, Pro y Staff. ¿Haces contenido sobre Origins TCG?",
+    askRole: "Escribe al staff para pedir un rol.",
+    clearIntro: "Los ajustes de tu vitrina (portada, frase, horarios…) siguen guardados, aunque tu rol ya no los muestra. Puedes quitarlos.",
+    clear: "Quitar los datos de la vitrina",
+    clearing: "Quitando…",
+    cleared: "Datos de la vitrina quitados.",
+    clearError: "No pudimos quitar los datos. Vuelve a intentarlo en un rato.",
     missing: "La vitrina llega pronto: estará disponible después de la próxima actualización del sitio.",
     readError: "No podemos leer tu vitrina en este momento. Vuelve a cargar la página en un rato.",
     cover: "Portada",
     coverHint: "Uno de nuestros fondos o una imagen tuya. Mejor una imagen ancha: la página la recorta para la parte de arriba de tu perfil.",
     coverImage: "Tu imagen",
-    coverUpload: "Sube una imagen",
+    coverUpload: "Subir una imagen",
     coverUploading: "Subiendo…",
     coverImageHint: "PNG, JPEG o WebP hasta 2 MB, reducida por tu navegador a {size} px. Usa una imagen tuya o de la que tengas los derechos.",
+    privacyLink: "Privacidad",
     accent: "Color de acento",
     accentHint: "Para los marcos y tu nombre en la vitrina.",
     tagline: "Frase de presentación",
@@ -460,14 +490,14 @@ const es: ShowcaseLabels = {
     time: "Hora",
     duration: "Minutos",
     durationHint: "opcional, {min}-{max}",
-    addSlot: "Añade un horario",
+    addSlot: "Añadir un horario",
     removeSlot: "Quitar",
     timezone: "Tu zona horaria",
-    timezoneHint: "La de los horarios que escribes arriba.",
-    save: "Guarda la vitrina",
+    timezoneHint: "La de los horarios que escribes arriba. Solo se guarda junto con los horarios.",
+    save: "Guardar la vitrina",
     saving: "Guardando…",
     saved: "Vitrina guardada.",
-    viewPage: "Ve tu página",
+    viewPage: "Ver tu página",
     errors: {
       cover: "Elige uno de los fondos.",
       coverImage: "Vuelve a subir la imagen o elige uno de los fondos.",
@@ -485,26 +515,23 @@ const es: ShowcaseLabels = {
       notLoggedIn: "Inicia sesión para personalizar tu vitrina.",
       disabled: "Las cuentas están desactivadas en este momento.",
       db: "No pudimos guardar la vitrina. Vuelve a intentarlo en un rato.",
-      tooFast: "Espera unos segundos antes de guardar otra vez.",
+      tooFast: "Acabas de guardar: vuelve a intentarlo en {seconds} s.",
       missing: "La vitrina llega pronto.",
       notAllowed: "La vitrina es para los roles Creator, Autor, Pro y Staff.",
       invalid: "Revisa los campos marcados en rojo.",
       type: "Elige una imagen PNG, JPEG o WebP.",
       tooBig: "Incluso reducida, la imagen pasa de 2 MB: prueba con otra.",
       upload: "No se pudo subir. Vuelve a intentarlo en un rato.",
+      limit: "El sitio no aceptó la imagen. Vuelve a cargar la página e inténtalo otra vez; si sigue pasando, escribe al staff.",
     },
   },
   view: {
     favorite: "Legendaria favorita",
-    illustration: "Ilustración: {illus}",
-    copyright: "© Koin Games",
     featuredDeck: "Mazo destacado",
     featuredVideo: "Video destacado",
     schedule: "Horarios de los directos",
     inYourTz: "En tu zona horaria ({tz})",
     creatorTz: "Hora de {tz}",
-    liveNow: "En directo ahora",
-    liveNowTitle: "En directo en Twitch ahora: {viewers} espectadores",
     onNow: "programado ahora",
   },
   presets: {
@@ -525,10 +552,10 @@ const es: ShowcaseLabels = {
     violet: "Violeta",
     coral: "Coral",
     green: "Verde",
-    peach: "Durazno",
+    peach: "Salmón",
   },
   privacy:
-    "Fotos y vitrina. Si subes una foto de perfil (cualquier miembro) o una portada (roles Creator, Autor, Pro y Staff), tu navegador la recorta, la reduce y la vuelve a codificar, quitando datos como la ubicación, y luego se guarda en el almacenamiento Supabase del sitio, en una carpeta de tu cuenta: es pública y aparece en tu página /u, junto a tu nombre en tus mazos y torneos y en el menú del sitio. Cuando la cambias o la quitas, el sitio borra el archivo anterior. Los ajustes de la vitrina (portada, color de acento, frase de presentación, Legendaria favorita, mazo y video destacados, horarios de los directos con tu zona horaria) son públicos en tu página /u; cada visitante ve los horarios en su zona horaria, calculada en su navegador. Puedes cambiar o quitar todo desde Mi perfil cuando quieras.",
+    "Fotos y vitrina. Si subes una foto de perfil (cualquier miembro) o una portada (roles Creator, Autor, Pro y Staff), tu navegador la recorta, la reduce y la vuelve a codificar, quitando datos como la ubicación, y luego se guarda en el almacenamiento Supabase del sitio, en una carpeta de tu cuenta: es pública y aparece en tu página /u, junto a tu nombre en tus mazos y torneos y en el menú del sitio. Cuando la cambias o la quitas, el sitio borra el archivo anterior; las copias ya descargadas pueden quedar en caché hasta una hora. El staff puede quitar una foto, una portada o una frase que no respete las reglas del sitio. Los ajustes de la vitrina (portada, color de acento, frase de presentación, Legendaria favorita, mazo y video destacados, horarios de los directos con tu zona horaria, que solo se guarda junto con los horarios) son públicos en tu página /u; cada visitante ve los horarios en su zona horaria, calculada en su navegador. Puedes cambiar o quitar todo desde Mi perfil cuando quieras, aunque ya no tengas el rol.",
 };
 
 export const showcaseLabels: Record<Locale, ShowcaseLabels> = { en, it, es };

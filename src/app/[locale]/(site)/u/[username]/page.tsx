@@ -196,7 +196,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       </section>
 
       {/* Vetrina: mazzo e video in evidenza, orari delle dirette nel fuso di chi guarda */}
-      {vetrina ? <ShowcaseFeatured vetrina={vetrina} decks={decks} locale={locale} dict={d} name={name} username={profile.username ?? ""} links={showcase?.links ?? []} /> : null}
+      {vetrina ? <ShowcaseFeatured vetrina={vetrina} decks={decks} ownerId={profile.id} locale={locale} dict={d} name={name} /> : null}
 
       {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
       <section className="mt-10">

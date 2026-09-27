@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import { getCard } from "@/lib/data/cards";
-import { cardImageAlt } from "@/lib/cardPage";
+import { cardImageAlt, cardLabels } from "@/lib/cardPage";
 import { fillShowcase, showcaseLabels } from "@/lib/showcaseLabels";
 import { CardName } from "@/components/CardChip";
 
 /**
  * Leggendaria del cuore accanto al nome sulla vetrina /u (pacchetto VETRINA, 27/09/2026): la carta ufficiale intera, con
- * i crediti impressi intatti (mai ritagliata né coperta), più il credito scritto sotto ("Illustrazione: …", "© Koin
- * Games"). È contenuto, come le carte delle schede: il materiale Koin non si usa per l'interfaccia. Solo una Leggendaria
- * attiva del database; con uno slug che non torna (carta rimossa, dato scritto a mano) non mostra nulla. La cornice resta
- * oro, il colore delle Leggendarie, anche con un altro colore d'accento.
+ * i crediti impressi intatti (mai ritagliata né coperta), più il credito scritto sotto con la formula delle schede carta
+ * (`cardLabels[locale].creditText`: "Art by … · © Koin Games", "Illustrazione di … · © Koin Games"). È contenuto, come le
+ * carte delle schede: il materiale Koin non si usa per l'interfaccia. Solo una Leggendaria attiva del database; con uno
+ * slug che non torna (carta rimossa, dato scritto a mano) non mostra nulla. La cornice resta oro, il colore delle
+ * Leggendarie, anche con un altro colore d'accento.
  */
 export function FavoriteLegendary({ slug, locale, legendaryLabel }: { slug: string | null; locale: Locale; legendaryLabel: string }) {
   const card = slug ? getCard(slug) : undefined;
@@ -36,10 +37,7 @@ export function FavoriteLegendary({ slug, locale, legendaryLabel }: { slug: stri
         <Link href={cardHref} prefetch={false} className="t-item mt-1 block text-sm leading-tight hover:text-mint">
           <CardName name={card.name} legendary legendaryLabel={legendaryLabel} />
         </Link>
-        <span className="mt-1 block text-pale-muted">
-          {card.credit ? `${fillShowcase(L.illustration, { illus: card.credit.illus })} · ` : ""}
-          {L.copyright}
-        </span>
+        <span className="mt-1 block text-pale-muted">{card.credit?.illus ? fillShowcase(cardLabels[locale].creditText, { illus: card.credit.illus }) : "© Koin Games"}</span>
       </figcaption>
     </figure>
   );

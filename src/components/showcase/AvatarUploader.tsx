@@ -4,8 +4,8 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseUrl } from "@/lib/supabase/env";
-import { AVATAR_MAX_BYTES, AVATAR_SIZE, mediaPublicUrl } from "@/lib/community/showcase";
-import { saveAvatar } from "@/lib/community/showcaseActions";
+import { AVATAR_MAX_BYTES, AVATAR_SIZE, PROFILE_UPDATED_EVENT, mediaPublicUrl } from "@/lib/community/showcase";
+import { saveAvatar, type AvatarActionState } from "@/lib/community/showcaseActions";
 import { fillShowcase, type AvatarLabels } from "@/lib/showcaseLabels";
 import { MediaError, cleanupMedia, encodeImage, uploadMedia } from "./mediaUpload";
 
@@ -14,7 +14,9 @@ import { MediaError, cleanupMedia, encodeImage, uploadMedia } from "./mediaUploa
  * Discord e chi entra con l'email ha la lettera. Il browser ritaglia l'immagine quadrata (512 px), la ricodifica e la
  * carica nella propria cartella del bucket; la Server Action `saveAvatar` salva il percorso e il database aggiorna
  * `avatar_url`, così la foto nuova compare ovunque (mazzi, tornei, directory, menu). Dopo il salvataggio si cancellano
- * i file vecchi della cartella. "Togli la foto" riporta quella di Discord, o la lettera.
+ * i file vecchi della cartella (le pagine ISR che puntano ancora al file tolto mostrano l'iniziale per qualche minuto:
+ * `Avatar` ripiega da solo) e si avvisa il menu dell'account, che rilegge la foto. "Togli la foto" riporta quella di
+ * Discord, o la lettera.
  */
 export function AvatarUploader({
   userId,
@@ -22,6 +24,7 @@ export function AvatarUploader({
   initialPath,
   initialUrl,
   labels,
+  privacyHref,
 }: {
   userId: string;
   name: string;
@@ -30,6 +33,8 @@ export function AvatarUploader({
   /** foto mostrata adesso (`avatar_url`) */
   initialUrl: string | null;
   labels: AvatarLabels;
+  /** paragrafo della privacy sulle immagini caricate (/privacy#profile-media) */
+  privacyHref: string;
 }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
@@ -40,6 +45,12 @@ export function AvatarUploader({
   const src = path ? mediaPublicUrl(supabaseUrl, path) : url;
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   const e = labels.errors;
+  const failure = (res: AvatarActionState) => (res.error === "tooFast" ? fillShowcase(e.tooFast, { seconds: res.retryIn ?? 10 }) : e[res.error ?? "db"]);
+  const saved = () => {
+    // il menu dell'account nell'header legge il profilo solo al montaggio: così rilegge la foto
+    window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
+    router.refresh();
+  };
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
@@ -51,9 +62,15 @@ export function AvatarUploader({
       if (!sb) throw new MediaError("upload");
       const blob = await encodeImage(file, { square: AVATAR_SIZE, maxBytes: AVATAR_MAX_BYTES });
       uploaded = await uploadMedia(sb, userId, "avatar", blob);
-      const res = await saveAvatar(uploaded);
+      let res: AvatarActionState;
+      try {
+        res = await saveAvatar(uploaded);
+      } catch {
+        // Server Action non raggiunta (rete, deploy in corso)
+        res = { error: "db" };
+      }
       if (!res.ok) {
-        setMessage({ kind: "error", text: e[res.error ?? "db"] });
+        setMessage({ kind: "error", text: failure(res) });
         await cleanupMedia(sb, userId, "avatar", path);
         return;
       }
@@ -61,7 +78,7 @@ export function AvatarUploader({
       setUrl(res.avatarUrl ?? null);
       setMessage({ kind: "ok", text: labels.saved });
       await cleanupMedia(sb, userId, "avatar", res.path ?? null);
-      router.refresh();
+      saved();
     } catch (err) {
       const code = err instanceof MediaError ? err.code : "upload";
       setMessage({ kind: "error", text: e[code] });
@@ -78,7 +95,7 @@ export function AvatarUploader({
     try {
       const res = await saveAvatar(null);
       if (!res.ok) {
-        setMessage({ kind: "error", text: e[res.error ?? "db"] });
+        setMessage({ kind: "error", text: failure(res) });
         return;
       }
       setPath(null);
@@ -86,7 +103,9 @@ export function AvatarUploader({
       setMessage({ kind: "ok", text: labels.removed });
       const sb = supabaseBrowser();
       if (sb) await cleanupMedia(sb, userId, "avatar", null);
-      router.refresh();
+      saved();
+    } catch {
+      setMessage({ kind: "error", text: e.db });
     } finally {
       setBusy(false);
     }
@@ -104,7 +123,12 @@ export function AvatarUploader({
       )}
       <div className="min-w-0 flex-1 basis-60">
         <p className="text-sm text-pale">{path ? labels.fromSite : url ? labels.fromDiscord : labels.none}</p>
-        <p className="mt-1 text-xs text-pale-muted">{fillShowcase(labels.hint, { size: AVATAR_SIZE })}</p>
+        <p className="mt-1 text-xs text-pale-muted">
+          {fillShowcase(labels.hint, { size: AVATAR_SIZE })}{" "}
+          <a href={privacyHref} className="link-mint">
+            {labels.privacyLink}
+          </a>
+        </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <label className={`btn btn-primary text-xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mint ${busy ? "opacity-60" : "cursor-pointer"}`}>
             <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={busy} onChange={(ev) => onFile(ev.target.files?.[0])} />

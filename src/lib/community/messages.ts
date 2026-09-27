@@ -135,20 +135,31 @@ const AVATAR_HOSTS = new Set(["cdn.discordapp.com", "media.discordapp.net"]);
  * dell'iscrizione, e chi si iscrive chiamando direttamente l'API di Supabase può metterci un indirizzo qualsiasi:
  * un'immagine su un server suo gli direbbe l'IP dello staff e l'ora in cui legge. Con un altro indirizzo, null (si
  * vede l'iniziale).
+ *
+ * Dal 27/09/2026 (pacchetto VETRINA) anche la foto caricata dal sito: `mediaBase` è l'URL del nostro progetto Supabase
+ * (`supabaseUrl` di src/lib/supabase/env.ts) e vale solo il percorso pubblico delle foto profilo del bucket
+ * `profile-media` (`<id>/avatar/<file>`, stesso nome di file di `MEDIA_FILE_RE` in profileMedia.ts), senza query. È il
+ * nostro Storage: nessun IP dello staff a terzi.
  */
-export function safeAvatarUrl(url: string | null | undefined): string | null {
+const OWN_AVATAR_PATH =
+  /^\/storage\/v1\/object\/public\/profile-media\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/avatar\/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$/;
+
+export function safeAvatarUrl(url: string | null | undefined, mediaBase?: string): string | null {
   if (typeof url !== "string" || url.length > 500) return null;
   try {
     const u = new URL(url);
-    return u.protocol === "https:" && !u.username && !u.password && !u.port && AVATAR_HOSTS.has(u.hostname) ? u.href : null;
+    if (u.protocol !== "https:" || u.username || u.password || u.port) return null;
+    if (AVATAR_HOSTS.has(u.hostname)) return u.href;
+    if (mediaBase && !u.search && !u.hash && u.hostname === new URL(mediaBase).hostname && OWN_AVATAR_PATH.test(u.pathname)) return u.href;
+    return null;
   } catch {
     return null;
   }
 }
 
 /** Lo stesso profilo con la foto passata da `safeAvatarUrl` (per `Avatar` nelle viste dello staff). */
-export function withSafeAvatar<T extends { avatar_url?: string | null }>(profile: T | null | undefined): T | null {
-  return profile ? { ...profile, avatar_url: safeAvatarUrl(profile.avatar_url) } : null;
+export function withSafeAvatar<T extends { avatar_url?: string | null }>(profile: T | null | undefined, mediaBase?: string): T | null {
+  return profile ? { ...profile, avatar_url: safeAvatarUrl(profile.avatar_url, mediaBase) } : null;
 }
 
 /**

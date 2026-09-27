@@ -35,6 +35,7 @@ export {
   MEDIA_FILE_RE,
   MEDIA_TYPES,
   PROFILE_MEDIA_BUCKET,
+  PROFILE_UPDATED_EVENT,
   anyMediaPathOk,
   avatarSrc,
   mediaExtension,
@@ -532,10 +533,13 @@ export function parseShowcaseForm(input: ShowcaseFormInput, ctx: ShowcaseContext
     if (schedule.errors.length) errors.schedule = schedule.errors;
     if (schedule.tooMany) errors.scheduleTooMany = true;
   }
+  // il fuso solo con degli orari: la colonna è pubblica, e un fuso salvato senza orari direbbe soltanto dove vive chi
+  // salva (il modulo lo manderebbe comunque, partendo dal fuso del browser). Righe con errori contano come orari.
+  const hasRows = schedule.ok ? schedule.value.length > 0 : true;
   const tzRaw = input.timezone.trim();
-  const schedule_tz = isTimeZone(tzRaw) ? tzRaw : null;
-  if (tzRaw && !schedule_tz) errors.timezone = "invalid";
-  else if (schedule.ok && schedule.value.length && !schedule_tz) errors.timezone = "required";
+  const schedule_tz = hasRows && isTimeZone(tzRaw) ? tzRaw : null;
+  if (hasRows && tzRaw && !isTimeZone(tzRaw)) errors.timezone = "invalid";
+  else if (hasRows && !tzRaw) errors.timezone = "required";
   if (Object.keys(errors).length) return { ok: false, errors };
   return {
     ok: true,
@@ -558,4 +562,38 @@ export function sameShowcaseValue(row: Partial<VetrinaRow>, value: ShowcaseValue
   const keys = ["cover_preset", "cover_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
   if (keys.some((k) => (row[k] ?? null) !== value[k])) return false;
   return JSON.stringify(storedSchedule(row.schedule)) === JSON.stringify(value.schedule) && Array.isArray(row.schedule) && row.schedule.length === value.schedule.length;
+}
+
+/** La vetrina vuota: quello che scrive "Togli i dati della vetrina" (anche a chi ha perso il ruolo; il trigger lo ammette). */
+export const EMPTY_SHOWCASE: ShowcaseValue = {
+  cover_preset: null,
+  cover_path: null,
+  accent: null,
+  tagline: null,
+  favorite_legendary: null,
+  featured_deck: null,
+  featured_video: null,
+  schedule: [],
+  schedule_tz: null,
+};
+
+/**
+ * Nella riga c'è qualcosa della vetrina (foto esclusa, che è di tutti)? Guarda i valori grezzi, anche quelli che la pagina
+ * non mostrerebbe: chi ha perso il ruolo deve poter togliere tutto quello che l'API rende ancora leggibile.
+ */
+export function hasShowcaseData(row: Partial<VetrinaRow> | null | undefined): boolean {
+  if (!row) return false;
+  const keys = ["cover_preset", "cover_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
+  return keys.some((k) => row[k] !== null && row[k] !== undefined) || (Array.isArray(row.schedule) && row.schedule.length > 0);
+}
+
+/**
+ * Secondi che mancano prima di poter salvare di nuovo (0: si può), dall'ultima modifica `updatedAt` e dall'intervallo
+ * minimo `minMs`. Arrotondati in su: "aspetta 3 secondi" non deve diventare un secondo rifiuto.
+ */
+export function retryAfterSeconds(updatedAt: string | null | undefined, minMs: number, now: number): number {
+  const last = updatedAt ? Date.parse(updatedAt) : NaN;
+  if (!Number.isFinite(last)) return 0;
+  const left = last + minMs - now;
+  return left > 0 ? Math.ceil(left / 1000) : 0;
 }

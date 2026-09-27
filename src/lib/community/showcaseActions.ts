@@ -7,7 +7,18 @@ import { revalidateSitemaps } from "@/lib/sitemapData";
 import { getCard } from "@/lib/data/cards";
 import { SAVE_MIN_INTERVAL_MS } from "./profileLinks";
 import { isShowcaseBadge } from "./badges";
-import { VETRINA_COLUMNS, mediaPathOk, parseShowcaseForm, sameShowcaseValue, type ShowcaseFormErrors, type ShowcaseValue, type VetrinaRow } from "./showcase";
+import {
+  EMPTY_SHOWCASE,
+  VETRINA_COLUMNS,
+  hasShowcaseData,
+  mediaPathOk,
+  parseShowcaseForm,
+  retryAfterSeconds,
+  sameShowcaseValue,
+  type ShowcaseFormErrors,
+  type ShowcaseValue,
+  type VetrinaRow,
+} from "./showcase";
 import { vetrinaMissing } from "./showcaseQueries";
 
 /**
@@ -19,6 +30,8 @@ import { vetrinaMissing } from "./showcaseQueries";
  *
  * Un salvataggio identico a quello che c'è non scrive e non rigenera nulla; due salvataggi che cambiano qualcosa a meno
  * di `SAVE_MIN_INTERVAL_MS` non passano (stessa regola del profilo pubblico: ogni salvataggio rigenera pagine e sitemap).
+ * Foto e vetrina hanno ciascuna la sua data (`avatar_updated_at`, `vetrina_updated_at`, scritte dal trigger): caricare
+ * la foto e subito dopo salvare la vetrina, o la bio, non fa scattare il limite dell'altro modulo.
  */
 
 export type ShowcaseActionState = {
@@ -27,6 +40,8 @@ export type ShowcaseActionState = {
   fields?: ShowcaseFormErrors;
   /** i valori salvati, nella forma canonica (il modulo li mostra al posto di quelli scritti) */
   value?: ShowcaseValue;
+  /** con `tooFast`: fra quanti secondi si può salvare */
+  retryIn?: number;
 };
 
 export type AvatarActionState = {
@@ -35,7 +50,10 @@ export type AvatarActionState = {
   /** percorso salvato (null: foto tolta) e foto mostrata adesso */
   path?: string | null;
   avatarUrl?: string | null;
+  retryIn?: number;
 };
+
+export type ClearShowcaseState = { ok?: boolean; error?: "notLoggedIn" | "disabled" | "db" | "missing" };
 
 /** Pagine che mostrano la vetrina o la foto: la pagina /u, /account e, per un ruolo vetrina, la directory. */
 function revalidateProfile(username: string | null, showcase: boolean) {
@@ -48,24 +66,19 @@ function revalidateProfile(username: string | null, showcase: boolean) {
   revalidateSitemaps();
 }
 
-const tooSoon = (updatedAt: string | null | undefined) => {
-  const last = updatedAt ? Date.parse(updatedAt) : NaN;
-  return Number.isFinite(last) && Date.now() - last < SAVE_MIN_INTERVAL_MS;
-};
-
 /** La carta è una Leggendaria attiva del database (non rimossa, non creata)? */
 function isActiveLegendary(slug: string): boolean {
   const card = getCard(slug);
   return Boolean(card && card.legendary && card.status === "active" && card.type !== "token");
 }
 
-type CurrentRow = Partial<VetrinaRow> & { username: string | null; badge: string | null; showcase_updated_at: string | null };
+type CurrentRow = Partial<VetrinaRow> & { username: string | null; badge: string | null; vetrina_updated_at: string | null };
 
 export async function saveShowcase(_prev: ShowcaseActionState, formData: FormData): Promise<ShowcaseActionState> {
   const { supabase, user } = await currentUser();
   if (!supabase) return { error: "disabled" };
   if (!user) return { error: "notLoggedIn" };
-  const current = await supabase.from("profiles").select(`username, badge, showcase_updated_at, ${VETRINA_COLUMNS}`).eq("id", user.id).maybeSingle();
+  const current = await supabase.from("profiles").select(`username, badge, vetrina_updated_at, ${VETRINA_COLUMNS}`).eq("id", user.id).maybeSingle();
   if (vetrinaMissing(current.error)) return { error: "missing" };
   if (current.error || !current.data) {
     console.error("[community] saveShowcase (lettura):", current.error?.message ?? "profilo assente");
@@ -98,7 +111,8 @@ export async function saveShowcase(_prev: ShowcaseActionState, formData: FormDat
   );
   if (!parsed.ok) return { error: "invalid", fields: parsed.errors };
   if (sameShowcaseValue(row, parsed.value)) return { ok: true, value: parsed.value };
-  if (tooSoon(row.showcase_updated_at)) return { error: "tooFast" };
+  const wait = retryAfterSeconds(row.vetrina_updated_at, SAVE_MIN_INTERVAL_MS, Date.now());
+  if (wait) return { error: "tooFast", retryIn: wait };
   const { error } = await supabase.from("profiles").update(parsed.value).eq("id", user.id);
   if (error) {
     console.error("[community] saveShowcase:", error.message);
@@ -106,6 +120,34 @@ export async function saveShowcase(_prev: ShowcaseActionState, formData: FormDat
   }
   revalidateProfile(row.username, true);
   return { ok: true, value: parsed.value };
+}
+
+/**
+ * "Togli i dati della vetrina": svuota tutti i campi della vetrina (non la foto). Serve soprattutto a chi ha perso il
+ * ruolo, che non vede più il modulo ma ha ancora i dati nella riga, leggibili via API: il trigger ammette sempre di
+ * svuotare. Idempotente (senza dati non scrive nulla), quindi senza limite di frequenza. La copertina caricata la
+ * cancella poi il browser (policy del bucket: il file non più in uso).
+ */
+export async function clearShowcase(): Promise<ClearShowcaseState> {
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const current = await supabase.from("profiles").select(`username, badge, ${VETRINA_COLUMNS}`).eq("id", user.id).maybeSingle();
+  if (vetrinaMissing(current.error)) return { error: "missing" };
+  if (current.error || !current.data) {
+    console.error("[community] clearShowcase (lettura):", current.error?.message ?? "profilo assente");
+    return { error: "db" };
+  }
+  const row = current.data as unknown as Partial<VetrinaRow> & { username: string | null; badge: string | null };
+  if (!hasShowcaseData(row)) return { ok: true };
+  const { error } = await supabase.from("profiles").update(EMPTY_SHOWCASE).eq("id", user.id);
+  if (error) {
+    console.error("[community] clearShowcase:", error.message);
+    return { error: "db" };
+  }
+  // anche /creators: chi ha perso il ruolo poteva esserci ancora nella versione in cache
+  revalidateProfile(row.username, true);
+  return { ok: true };
 }
 
 /**
@@ -118,15 +160,16 @@ export async function saveAvatar(path: string | null): Promise<AvatarActionState
   if (!supabase) return { error: "disabled" };
   if (!user) return { error: "notLoggedIn" };
   if (path !== null && !mediaPathOk(user.id, "avatar", path)) return { error: "invalid" };
-  const current = await supabase.from("profiles").select("username, badge, avatar_url, avatar_path, showcase_updated_at").eq("id", user.id).maybeSingle();
+  const current = await supabase.from("profiles").select("username, badge, avatar_url, avatar_path, avatar_updated_at").eq("id", user.id).maybeSingle();
   if (vetrinaMissing(current.error)) return { error: "missing" };
   if (current.error || !current.data) {
     console.error("[community] saveAvatar (lettura):", current.error?.message ?? "profilo assente");
     return { error: "db" };
   }
-  const row = current.data as { username: string | null; badge: string | null; avatar_url: string | null; avatar_path?: string | null; showcase_updated_at: string | null };
+  const row = current.data as { username: string | null; badge: string | null; avatar_url: string | null; avatar_path?: string | null; avatar_updated_at?: string | null };
   if ((row.avatar_path ?? null) === path) return { ok: true, path, avatarUrl: row.avatar_url };
-  if (tooSoon(row.showcase_updated_at)) return { error: "tooFast" };
+  const wait = retryAfterSeconds(row.avatar_updated_at, SAVE_MIN_INTERVAL_MS, Date.now());
+  if (wait) return { error: "tooFast", retryIn: wait };
   const res = await supabase.from("profiles").update({ avatar_path: path }).eq("id", user.id).select("avatar_url").maybeSingle();
   if (res.error) {
     console.error("[community] saveAvatar:", res.error.message);

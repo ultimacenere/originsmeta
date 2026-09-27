@@ -7,9 +7,12 @@
 
 /** Bucket pubblico dello Storage con foto profilo e copertine, una cartella per utente: `<id>/avatar/…`, `<id>/cover/…`. */
 export const PROFILE_MEDIA_BUCKET = "profile-media";
-/** Peso massimo della foto profilo (1 MB), uguale nella policy del bucket e nel trigger. */
+/**
+ * Peso massimo della foto profilo (1 MB): lo impone il trigger quando si salva la foto. Il caricamento lo limita solo il
+ * bucket (2 MB): lo Storage prova la policy prima di conoscere il peso del file.
+ */
 export const AVATAR_MAX_BYTES = 1024 * 1024;
-/** Peso massimo della copertina (2 MB): anche il limite del bucket. */
+/** Peso massimo della copertina (2 MB): il limite del bucket, e il trigger quando si salva la vetrina. */
 export const COVER_MAX_BYTES = 2 * 1024 * 1024;
 /** Lato della foto profilo caricata (quadrata, ritagliata al centro nel browser). */
 export const AVATAR_SIZE = 512;
@@ -17,8 +20,16 @@ export const AVATAR_SIZE = 512;
 export const COVER_MAX_SIDE = 1920;
 /** Tipi ammessi, uguali a `allowed_mime_types` del bucket. */
 export const MEDIA_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
-/** File che un utente può tenere nel bucket (la policy di caricamento lo impone): i vecchi si cancellano dopo il salvataggio. */
+/**
+ * File che un utente può tenere nel bucket (la policy di caricamento lo controlla, a ogni caricamento: tetto morbido,
+ * non ferma i caricamenti lanciati tutti insieme). Il sito cancella i file vecchi dopo il salvataggio e prima di caricare.
+ */
 export const MEDIA_FILES_MAX = 12;
+/**
+ * Evento della finestra lanciato dopo il cambio della foto profilo: il menu dell'account (header, che sopravvive alla
+ * navigazione e legge il profilo solo al montaggio) lo ascolta e rilegge la foto.
+ */
+export const PROFILE_UPDATED_EVENT = "om:profile-updated";
 /** Nome di un file caricato (lo sceglie il sito: un uuid) con l'estensione del tipo. Uguale nei vincoli SQL. */
 export const MEDIA_FILE_RE = "[A-Za-z0-9_-]{8,64}\\.(png|jpg|jpeg|webp)";
 

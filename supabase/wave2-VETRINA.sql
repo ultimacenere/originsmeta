@@ -30,8 +30,12 @@
 --     dev'essere suo e pubblicato, le immagini devono esistere nella sua cartella del bucket con tipo e peso giusti.
 --     L'unica funzione security definer è `profile_discord_avatar` (legge auth.users), limitata al proprio profilo;
 --   - bucket `profile-media` pubblico in lettura (indirizzi pubblici), scrittura solo nella propria cartella, solo
---     png/jpeg/webp, 1 MB la foto e 2 MB la copertina (anche nella policy), la copertina solo per i ruoli con vetrina,
---     al massimo 12 file per utente, e il file in uso non si cancella (niente immagini rotte sul profilo).
+--     png/jpeg/webp fino a 2 MB (limite del bucket: lo Storage prova la policy di caricamento PRIMA di conoscere il
+--     peso del file, quindi il peso per tipo, 1 MB per la foto, lo controlla il trigger quando si salva), la copertina
+--     solo per i ruoli con vetrina, un tetto di 12 file per utente (morbido: vale al momento della prova, non contro
+--     caricamenti lanciati tutti insieme), e il file in uso non si cancella (niente immagini rotte sul profilo);
+--   - lo staff toglie foto, copertina e frase di un utente con `node scripts/clear-profile-media.mjs` (README, "Vetrina
+--     dei profili e foto caricate"); un admin vede e cancella dal sito i file di tutti, mai quelli in uso.
 -- =====================================================================================================
 
 alter table public.profiles add column if not exists avatar_path text;
@@ -46,6 +50,10 @@ alter table public.profiles add column if not exists featured_video text;
 -- orari delle dirette: [{"day": 0-6 (0 = lunedì), "time": "HH:MM", "minutes": 15-720 facoltativo}], ora del fuso schedule_tz
 alter table public.profiles add column if not exists schedule jsonb not null default '[]'::jsonb;
 alter table public.profiles add column if not exists schedule_tz text;
+-- ultime modifiche della foto e della vetrina: le scrive solo il trigger qui sotto (nessun grant). Servono ai limiti di
+-- frequenza dei due moduli di /account, separati fra loro e da quello di bio e canali (showcase_updated_at)
+alter table public.profiles add column if not exists avatar_updated_at timestamptz;
+alter table public.profiles add column if not exists vetrina_updated_at timestamptz;
 
 create index if not exists profiles_featured_deck_idx on public.profiles (featured_deck) where featured_deck is not null;
 
@@ -108,10 +116,11 @@ alter table public.profiles add constraint profiles_favorite_legendary_check
 alter table public.profiles drop constraint if exists profiles_featured_video_check;
 alter table public.profiles add constraint profiles_featured_video_check
   check (featured_video is null or public.deck_video_url_ok(featured_video));
--- orari validi e, se ci sono, il fuso (un nome IANA ben formato: l'elenco fra cui scegliere lo tiene il sito)
+-- orari validi, e il fuso se e solo se ci sono orari (un nome IANA ben formato: l'elenco fra cui scegliere lo tiene il
+-- sito). Senza orari niente fuso: la colonna è pubblica e il fuso direbbe dove vive chi non pubblica nessun orario.
 alter table public.profiles drop constraint if exists profiles_schedule_check;
 alter table public.profiles add constraint profiles_schedule_check
-  check (public.profile_schedule_ok(schedule) and (schedule = '[]'::jsonb or schedule_tz is not null));
+  check (public.profile_schedule_ok(schedule) and ((schedule = '[]'::jsonb) = (schedule_tz is null)));
 alter table public.profiles drop constraint if exists profiles_schedule_tz_check;
 alter table public.profiles add constraint profiles_schedule_tz_check
   check (schedule_tz is null or (char_length(schedule_tz) <= 64 and schedule_tz ~ '^(UTC|[A-Z][A-Za-z_]+(/[A-Za-z0-9_+-]+){1,2})$'));
@@ -137,7 +146,10 @@ returns boolean language sql stable set search_path = public, pg_temp as $$
 $$;
 
 -- Quanti file ha l'utente collegato nel bucket (policy di caricamento: al massimo 12). Anche questa con i privilegi di
--- chi carica: conta solo quello che la sua policy di lettura gli fa vedere, cioè la sua cartella.
+-- chi carica, e solo la sua cartella. Tetto morbido: lo Storage prova la policy in una transazione che annulla subito e
+-- scrive poi il file con i suoi privilegi, quindi caricamenti lanciati tutti insieme vedono lo stesso conteggio (un
+-- lucchetto qui non servirebbe: finirebbe con la transazione di prova). Il sito carica un file alla volta e pulisce la
+-- cartella; i file mai usati li trova e li toglie `node scripts/clear-profile-media.mjs --orphans`.
 create or replace function public.profile_media_count()
 returns integer language sql stable set search_path = public, pg_temp as $$
   select count(*)::integer from storage.objects o
@@ -212,12 +224,22 @@ begin
     end if;
   end if;
 
-  -- 5) lastmod di /u/<nome> nella sitemap (come touch_profile_showcase del blocco CREATOR)
-  if (new.avatar_path, new.cover_preset, new.cover_path, new.accent, new.tagline, new.favorite_legendary, new.featured_deck,
-      new.featured_video, new.schedule, new.schedule_tz)
+  -- 5) date delle modifiche: avatar_updated_at e vetrina_updated_at per i limiti di frequenza dei due moduli di /account;
+  --    showcase_updated_at (lastmod di /u/<nome> nella sitemap, come touch_profile_showcase del blocco CREATOR) per la
+  --    vetrina e, solo per i ruoli con vetrina, per la foto: le foto degli iscritti community non riempiono la lettura
+  --    delle date della sitemap.
+  if new.avatar_path is distinct from old.avatar_path then
+    new.avatar_updated_at := now();
+    if new.badge in ('creator', 'author', 'pro', 'staff') then
+      new.showcase_updated_at := now();
+    end if;
+  end if;
+  if (new.cover_preset, new.cover_path, new.accent, new.tagline, new.favorite_legendary, new.featured_deck, new.featured_video,
+      new.schedule, new.schedule_tz)
      is distinct from
-     (old.avatar_path, old.cover_preset, old.cover_path, old.accent, old.tagline, old.favorite_legendary, old.featured_deck,
-      old.featured_video, old.schedule, old.schedule_tz) then
+     (old.cover_preset, old.cover_path, old.accent, old.tagline, old.favorite_legendary, old.featured_deck, old.featured_video,
+      old.schedule, old.schedule_tz) then
+    new.vetrina_updated_at := now();
     new.showcase_updated_at := now();
   end if;
   return new;
@@ -235,7 +257,9 @@ grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_l
 comment on column public.profiles.avatar_path is 'Foto profilo caricata dal sito (bucket profile-media, <id>/avatar/<file>, 1 MB): il trigger guard_profile_vetrina tiene avatar_url allineata (27/09/2026).';
 comment on column public.profiles.cover_preset is 'Vetrina: sfondo preimpostato della copertina (src/lib/community/showcase.ts, COVER_PRESETS). Solo ruoli con vetrina.';
 comment on column public.profiles.cover_path is 'Vetrina: copertina caricata (bucket profile-media, <id>/cover/<file>, 2 MB). Solo ruoli con vetrina.';
-comment on column public.profiles.schedule is 'Vetrina: orari delle dirette, al massimo 7 voci {day 0-6 (0 = lunedì), time HH:MM, minutes 15-720 facoltativo} nel fuso schedule_tz.';
+comment on column public.profiles.schedule is 'Vetrina: orari delle dirette, al massimo 7 voci {day 0-6 (0 = lunedì), time HH:MM, minutes 15-720 facoltativo} nel fuso schedule_tz (che c''è solo con degli orari).';
+comment on column public.profiles.avatar_updated_at is 'Ultimo cambio della foto caricata: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveAvatar).';
+comment on column public.profiles.vetrina_updated_at is 'Ultimo cambio della vetrina: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveShowcase).';
 
 -- ---------- Storage: foto profilo e copertine (caricate dal browser, ognuno nella sua cartella) ----------
 do $$
@@ -244,13 +268,15 @@ begin
   values ('profile-media', 'profile-media', true, 2097152, array['image/png','image/jpeg','image/webp'])
   on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 
-  -- gli indirizzi pubblici funzionano senza policy (bucket pubblico); l'elenco dei file lo vede solo il proprietario
+  -- gli indirizzi pubblici funzionano senza policy (bucket pubblico); l'elenco dei file lo vede solo il proprietario (e
+  -- un admin, che senza lettura non potrebbe nemmeno cancellare)
   drop policy if exists "profile media owners read" on storage.objects;
   create policy "profile media owners read" on storage.objects for select to authenticated using (
-    bucket_id = 'profile-media' and (storage.foldername(name))[1] = auth.uid()::text
+    bucket_id = 'profile-media' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
   );
-  -- <id>/avatar/<file> (tutti, 1 MB) e <id>/cover/<file> (ruoli con vetrina o admin, 2 MB); peso letto dai metadati
-  -- quando lo Storage li ha già scritti (altrimenti vale il limite del bucket), al massimo 12 file per utente
+  -- <id>/avatar/<file> (tutti) e <id>/cover/<file> (ruoli con vetrina o admin), al massimo 12 file per utente. Niente
+  -- peso qui: lo Storage prova questa policy prima di ricevere il file, quando i metadati (size, mimetype) non ci sono
+  -- ancora. Il caricamento lo limita il bucket (2 MB, tre tipi); 1 MB per la foto lo impone il trigger al salvataggio.
   drop policy if exists "profile media upload" on storage.objects;
   create policy "profile media upload" on storage.objects for insert to authenticated with check (
     bucket_id = 'profile-media'
@@ -259,18 +285,19 @@ begin
     and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp')
     and public.profile_media_count() < 12
     and (
-      ((storage.foldername(name))[2] = 'avatar' and coalesce((metadata->>'size')::bigint, 0) <= 1048576)
-      or ((storage.foldername(name))[2] = 'cover' and coalesce((metadata->>'size')::bigint, 0) <= 2097152
+      (storage.foldername(name))[2] = 'avatar'
+      or ((storage.foldername(name))[2] = 'cover'
           and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')))
     )
   );
-  -- niente update (i nomi sono sempre nuovi); si cancellano i propri file, tranne quelli in uso sul profilo
+  -- niente update (i nomi sono sempre nuovi); si cancellano i propri file (un admin anche quelli degli altri), mai un file
+  -- in uso sul profilo del proprietario della cartella: prima si svuota il campo, poi si toglie il file
   drop policy if exists "profile media owners delete" on storage.objects;
   create policy "profile media owners delete" on storage.objects for delete to authenticated using (
     bucket_id = 'profile-media'
-    and (storage.foldername(name))[1] = auth.uid()::text
-    and not exists (select 1 from public.profiles p where p.id = auth.uid() and (p.avatar_path = name or p.cover_path = name))
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and not exists (select 1 from public.profiles p where p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name))
   );
 exception when others then
-  raise notice 'Storage profile-media non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README.', sqlerrm;
+  raise notice 'Storage profile-media non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README ("Vetrina dei profili e foto caricate").', sqlerrm;
 end $$;

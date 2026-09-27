@@ -4,6 +4,8 @@ import { inboxLabels } from "@/lib/inboxLabels";
 import { staffThreadPath, withSafeAvatar } from "@/lib/community/messages";
 import type { StaffConversation } from "@/lib/community/inboxQueries";
 import { Avatar } from "@/components/AccountMenu";
+// foto caricata dal sito (pacchetto VETRINA): ammessa da safeAvatarUrl solo dal nostro Storage
+import { supabaseUrl } from "@/lib/supabase/env";
 import { InboxTime } from "./InboxTime";
 
 /**
@@ -19,7 +21,7 @@ export function StaffConversationList({ locale, rows }: { locale: Locale; rows: 
         return (
           <li key={c.id}>
             <Link href={staffThreadPath(locale, c.id)} prefetch={false} className="card-night card-night-hover flex gap-4 p-4">
-              <Avatar profile={withSafeAvatar(c.user)} name={name} size={40} />
+              <Avatar profile={withSafeAvatar(c.user, supabaseUrl)} name={name} size={40} />
               <span className="flex min-w-0 flex-1 flex-col gap-1.5">
                 <span className="flex flex-wrap items-center gap-2">
                   {c.unread_by_staff ? <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{L.staff.filters.unread}</span> : null}

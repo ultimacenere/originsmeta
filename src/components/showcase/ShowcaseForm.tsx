@@ -86,12 +86,16 @@ type Props = {
   legendaries: { slug: string; name: string }[];
   decks: { id: string; name: string }[];
   publicHref?: string;
+  /** paragrafo della privacy sulle immagini caricate (/privacy#profile-media) */
+  privacyHref: string;
 };
 
-function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, initial, legendaries, decks, publicHref }: Props) {
+function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, initial, legendaries, decks, publicHref, privacyHref }: Props) {
   const L = labels;
   const [cover, setCover] = useState<string>(initial.coverPath ? "image" : (initial.coverPreset ?? DEFAULT_COVER_PRESET));
   const [coverPath, setCoverPath] = useState<string | null>(initial.coverPath);
+  // la copertina salvata nel database: l'unica da tenere quando se ne carica un'altra (le prove non salvate si tolgono)
+  const savedCoverPath = useRef<string | null>(initial.coverPath);
   const [accent, setAccent] = useState<Accent>(initial.accent ?? "sky");
   const [tagline, setTagline] = useState(initial.tagline ?? "");
   const [legendary, setLegendary] = useState(initial.favoriteLegendary ?? "");
@@ -106,7 +110,13 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [state, formAction, pending] = useActionState<ShowcaseActionState, FormData>(async (prev, fd) => {
-    const res = await saveShowcase(prev, fd);
+    let res: ShowcaseActionState;
+    try {
+      res = await saveShowcase(prev, fd);
+    } catch {
+      // Server Action non raggiunta (rete, deploy in corso): un messaggio, non l'errore della pagina
+      res = { error: "db" };
+    }
     setErrors(res.fields ?? null);
     if (res.ok && res.value) {
       const v = res.value;
@@ -120,6 +130,7 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
       setRows(toRows(v.schedule));
       if (v.schedule_tz) setTz(v.schedule_tz);
       setDirty(false);
+      savedCoverPath.current = v.cover_path;
       // le copertine caricate e non più in uso (o mai salvate) si cancellano
       const sb = supabaseBrowser();
       if (sb) await cleanupMedia(sb, userId, "cover", v.cover_path);
@@ -135,10 +146,14 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
     if (!file) return;
     setUploadError(null);
     setUploading(true);
+    let cleaned = false;
     try {
       const sb = supabaseBrowser();
       if (!sb) throw new MediaError("upload");
       const blob = await encodeImage(file, { maxSide: COVER_MAX_SIDE, maxBytes: COVER_MAX_BYTES });
+      // le immagini provate e non salvate non si accumulano fino al tetto dei file: resta solo quella salvata
+      await cleanupMedia(sb, userId, "cover", savedCoverPath.current);
+      cleaned = true;
       const path = await uploadMedia(sb, userId, "cover", blob);
       setCoverPath(path);
       setCover("image");
@@ -146,6 +161,11 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
     } catch (err) {
       const code = err instanceof MediaError ? err.code : "upload";
       setUploadError(L.errors[code]);
+      // la prova di prima non c'è più: si torna alla copertina salvata (o allo sfondo predefinito)
+      if (cleaned && coverPath !== savedCoverPath.current) {
+        setCoverPath(savedCoverPath.current);
+        if (!savedCoverPath.current && cover === "image") setCover(DEFAULT_COVER_PRESET);
+      }
     } finally {
       setUploading(false);
       if (fileInput.current) fileInput.current.value = "";
@@ -156,7 +176,14 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
   const rowError = (i: number) => errors?.schedule?.find((x) => x.index === i)?.error;
   const rowErrorText = (code: "day" | "time" | "duration") =>
     code === "day" ? L.errors.scheduleDay : code === "time" ? L.errors.scheduleTime : fillShowcase(L.errors.scheduleDuration, { min: DURATION_MIN, max: DURATION_MAX });
-  const topError = state.error && state.error !== "invalid" ? L.errors[state.error] : errors ? L.errors.invalid : null;
+  const topError =
+    state.error === "tooFast"
+      ? fillShowcase(L.errors.tooFast, { seconds: state.retryIn ?? 10 })
+      : state.error && state.error !== "invalid"
+        ? L.errors[state.error]
+        : errors
+          ? L.errors.invalid
+          : null;
   const fieldError = (text: string | null) => (text ? <span className="mt-1 block text-xs text-bad">{text}</span> : null);
 
   return (
@@ -188,7 +215,12 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
             <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploading} onChange={(e) => onCoverFile(e.target.files?.[0])} />
             {uploading ? L.coverUploading : L.coverUpload}
           </label>
-          <span className="text-xs text-pale-muted">{fillShowcase(L.coverImageHint, { size: COVER_MAX_SIDE })}</span>
+          <span className="min-w-0 flex-1 basis-56 text-xs text-pale-muted">
+            {fillShowcase(L.coverImageHint, { size: COVER_MAX_SIDE })}{" "}
+            <a href={privacyHref} className="link-mint">
+              {L.privacyLink}
+            </a>
+          </span>
         </div>
         {fieldError(uploadError ?? (errors?.cover === "image" ? L.errors.coverImage : errors?.cover ? L.errors.cover : null))}
       </fieldset>
@@ -317,9 +349,9 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
                     value={row.minutes}
                     min={DURATION_MIN}
                     max={DURATION_MAX}
-                    step={15}
+                    step={1}
                     inputMode="numeric"
-                    placeholder="—"
+                    placeholder="90"
                     onChange={(e) => set({ minutes: e.target.value })}
                     className={inputCls}
                   />
@@ -355,18 +387,21 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
           </button>
         ) : null}
         {fieldError(errors?.scheduleTooMany ? fillShowcase(L.errors.scheduleTooMany, { max: SCHEDULE_MAX }) : null)}
-        <label className="mt-4 block max-w-sm">
-          <span className="text-xs text-pale-muted">{L.timezone}</span>
-          <select name="timezone" value={tz} onChange={(e) => setTz(e.target.value)} className={inputCls} aria-invalid={errors?.timezone ? true : undefined}>
-            {TIMEZONES.map((z) => (
-              <option key={z} value={z}>
-                {timeZoneName(z)}
-              </option>
-            ))}
-          </select>
-          <span className="mt-1 block text-xs text-pale-muted">{L.timezoneHint}</span>
-          {fieldError(errors?.timezone === "required" ? L.errors.timezoneRequired : errors?.timezone ? L.errors.timezone : null)}
-        </label>
+        {/* il fuso solo con degli orari: senza, non si manda (e il server non lo salverebbe comunque: è pubblico) */}
+        {rows.length ? (
+          <label className="mt-4 block max-w-sm">
+            <span className="text-xs text-pale-muted">{L.timezone}</span>
+            <select name="timezone" value={tz} onChange={(e) => setTz(e.target.value)} className={inputCls} aria-invalid={errors?.timezone ? true : undefined}>
+              {TIMEZONES.map((z) => (
+                <option key={z} value={z}>
+                  {timeZoneName(z)}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-xs text-pale-muted">{L.timezoneHint}</span>
+            {fieldError(errors?.timezone === "required" ? L.errors.timezoneRequired : errors?.timezone ? L.errors.timezone : null)}
+          </label>
+        ) : null}
       </fieldset>
 
       <div className="flex flex-wrap items-center gap-3">

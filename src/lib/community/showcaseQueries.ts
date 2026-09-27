@@ -1,6 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { CommunityReadError } from "./queries";
-import { VETRINA_COLUMNS, toVetrina, type Vetrina, type VetrinaRow } from "./showcase";
+import { CommunityReadError, rowOrThrow } from "./queries";
+import type { CommunityDeck } from "./types";
+import { VETRINA_COLUMNS, hasShowcaseData, toVetrina, type Vetrina, type VetrinaRow } from "./showcase";
 
 /**
  * Letture della vetrina dei profili (pacchetto VETRINA, 27/09/2026; regole in showcase.ts, SQL in
@@ -54,6 +55,8 @@ export type OwnVetrina = {
   role: string | null;
   /** la foto mostrata adesso (quella caricata, o quella di Discord, o nessuna) */
   avatarUrl: string | null;
+  /** nella riga c'è qualcosa della vetrina (anche per chi ha perso il ruolo: allora si offre di toglierlo) */
+  hasData: boolean;
 };
 
 /**
@@ -67,11 +70,45 @@ export async function getOwnVetrina(client: Db, userId: string): Promise<OwnVetr
     if (!missing) console.error("[community] getOwnVetrina:", res.error.message);
     const base = await client.from("profiles").select("username, badge, role, avatar_url").eq("id", userId).maybeSingle();
     const row = base.data as { username: string | null; badge: string | null; role: string | null; avatar_url: string | null } | null;
-    return { status: missing ? "missing" : "error", vetrina: null, username: row?.username ?? null, badge: row?.badge ?? null, role: row?.role ?? null, avatarUrl: row?.avatar_url ?? null };
+    return {
+      status: missing ? "missing" : "error",
+      vetrina: null,
+      username: row?.username ?? null,
+      badge: row?.badge ?? null,
+      role: row?.role ?? null,
+      avatarUrl: row?.avatar_url ?? null,
+      hasData: false,
+    };
   }
   const row = res.data as unknown as (Partial<VetrinaRow> & { username: string | null; badge: string | null; role: string | null; avatar_url: string | null }) | null;
-  if (!row) return { status: "error", vetrina: null, username: null, badge: null, role: null, avatarUrl: null };
-  return { status: "ok", vetrina: toVetrina(row, userId), username: row.username, badge: row.badge, role: row.role, avatarUrl: row.avatar_url };
+  if (!row) return { status: "error", vetrina: null, username: null, badge: null, role: null, avatarUrl: null, hasData: false };
+  return { status: "ok", vetrina: toVetrina(row, userId), username: row.username, badge: row.badge, role: row.role, avatarUrl: row.avatar_url, hasData: hasShowcaseData(row) };
+}
+
+/** Il mazzo in evidenza come lo mostra la vetrina. */
+export type FeaturedDeck = Pick<CommunityDeck, "id" | "slug" | "name" | "legendary" | "archetype" | "created_at"> & { rating?: { avg: number; votes: number } };
+
+/**
+ * Il mazzo in evidenza letto da solo, quando non è fra quelli che la pagina /u ha già letto (i 50 più recenti): un
+ * Creator, un Pro o lo Staff non hanno tetto ai mazzi e possono mettere in evidenza uno vecchio. Solo se è ancora suo e
+ * pubblicato (un mazzo nascosto sparisce dalla vetrina); null se non lo è. Con un errore lancia, come le altre letture
+ * delle pagine ISR (Next tiene la pagina di prima).
+ */
+export async function getFeaturedDeck(ownerId: string, deckId: string): Promise<FeaturedDeck | null> {
+  const client = supabasePublic();
+  if (!client) return null;
+  const res = await client
+    .from("community_decks")
+    .select("id, slug, name, legendary, archetype, created_at")
+    .eq("id", deckId)
+    .eq("owner", ownerId)
+    .eq("status", "published")
+    .maybeSingle();
+  const deck = rowOrThrow<Omit<FeaturedDeck, "rating">>("getFeaturedDeck", res);
+  if (!deck) return null;
+  const votes = await client.from("deck_ratings").select("avg_stars, votes").eq("deck_id", deck.id).maybeSingle();
+  const rating = rowOrThrow<{ avg_stars: number | string; votes: number | string }>("getFeaturedDeck (voti)", votes);
+  return { ...deck, rating: rating ? { avg: Number(rating.avg_stars), votes: Number(rating.votes) } : { avg: 0, votes: 0 } };
 }
 
 /** I mazzi pubblicati dell'utente, per scegliere quello in evidenza (dal più recente). Vuoto con un errore. */
