@@ -6,6 +6,7 @@ import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
 import { showcaseLabels } from "@/lib/showcaseLabels";
+import { achievementLabels } from "@/lib/achievementLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -53,6 +54,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026): totali per mazzo, senza dati personali. */}
         <p id="deck-stats" className="mt-6 scroll-mt-24">
           {deckStatsPrivacy[locale]}
+        </p>
+        {/* Traguardi e numeri pubblici della vetrina (pacchetto TRAGUARDI, 27/09/2026): testo in src/lib/achievementLabels.ts */}
+        <p id="profile-stats" className="mt-6 scroll-mt-24">
+          {achievementLabels[locale].privacy}
         </p>
         {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): testo in src/lib/inboxLabels.ts, ancora #messages */}
         <p id="messages" className="mt-6 scroll-mt-24">

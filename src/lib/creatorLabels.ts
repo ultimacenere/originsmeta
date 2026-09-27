@@ -132,7 +132,6 @@ export type CreatorLabels = {
     /** "Contenuti in" + lingue */
     langs: string;
     organizedTitle: string;
-    organizedIntro: string;
     /** link alla directory */
     directoryLink: string;
   };
@@ -196,7 +195,6 @@ const en: CreatorLabels = {
   profile: {
     langs: "Content in",
     organizedTitle: "Organized tournaments",
-    organizedIntro: "Public tournaments run on OriginsMeta, most recent first.",
     directoryLink: "All creators and authors",
   },
   directory: {
@@ -287,7 +285,6 @@ const it: CreatorLabels = {
   profile: {
     langs: "Contenuti in",
     organizedTitle: "Tornei organizzati",
-    organizedIntro: "I tornei pubblici organizzati su OriginsMeta, dal più recente.",
     directoryLink: "Tutti i creator e gli autori",
   },
   directory: {
@@ -378,7 +375,6 @@ const es: CreatorLabels = {
   profile: {
     langs: "Contenido en",
     organizedTitle: "Torneos organizados",
-    organizedIntro: "Los torneos públicos organizados en OriginsMeta, del más reciente al más antiguo.",
     directoryLink: "Todos los creadores y autores",
   },
   directory: {

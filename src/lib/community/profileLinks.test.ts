@@ -8,8 +8,8 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { PROFILES_GRANTS, schemaProblems, sqlStatements } from "../../../scripts/schema-guard.mjs";
+import { readFileSync, readdirSync } from "node:fs";
+import { PROFILES_GRANTS, schemaProblems, sqlStatements, withPendingBlocks } from "../../../scripts/schema-guard.mjs";
 import {
   BIO_MAX,
   BIO_MAX_BREAKS,
@@ -425,12 +425,24 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
   */
   test("permessi di public.profiles: solo le grant ammesse, revoke prima, trigger con i campi riservati", () => {
     assert.deepEqual(schemaProblems(schema), []);
-    const onProfiles = sqlStatements(schema).filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
-    assert.deepEqual(onProfiles.slice(0, 2), [
+    // 27/09/2026: con i file dell'ondata 2 da accodare (supabase/wave2-*.sql) c'è anche la grant di show_stats
+    // (pacchetto TRAGUARDI); l'elenco ammesso è uno solo, PROFILES_GRANTS di scripts/schema-guard.mjs
+    const dir = new URL("../../../supabase/", import.meta.url);
+    const pending = readdirSync(dir)
+      .filter((f) => /^wave2-.+\.sql$/.test(f))
+      .sort()
+      .map((f) => readFileSync(new URL(f, dir), "utf8"));
+    const full = withPendingBlocks(schema, pending);
+    assert.deepEqual(schemaProblems(full), []);
+    const onProfiles = sqlStatements(full).filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
+    // come insiemi: l'ordine dipende da come si accodano i blocchi dell'ondata 2; le prime due restano quelle di sempre
+    assert.deepEqual([...onProfiles].sort(), [...PROFILES_GRANTS].sort());
+    assert.deepEqual(onProfiles.slice(0, 2), PROFILES_GRANTS.slice(0, 2));
+    assert.deepEqual(PROFILES_GRANTS.slice(0, 2), [
       "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
       "grant update (bio, links, content_langs) on public.profiles to authenticated",
     ]);
-    // dopo, solo le grant per colonna dei blocchi accodati (VETRINA, 27/09/2026) che schema-guard conosce
+    // dopo, solo le grant per colonna dei blocchi accodati (VETRINA e TRAGUARDI, 27/09/2026) che schema-guard conosce
     assert.ok(onProfiles.every((s) => PROFILES_GRANTS.includes(s)), onProfiles.join("\n"));
   });
 });

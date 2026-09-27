@@ -5,21 +5,30 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements } from "./schema-guard.mjs";
+import { readFileSync, readdirSync } from "node:fs";
+import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
+/*
+  I pacchetti dell'ondata 2 (27/09/2026) portano il loro SQL in supabase/wave2-<PACCHETTO>.sql, che l'integratore accoda a
+  schema.sql. La grant per colonna di TRAGUARDI (show_stats) sta già in PROFILES_GRANTS: le prove sullo schema "vero" si
+  fanno su schema.sql più i file non ancora accodati, cioè su quello che db-migrate applicherà.
+*/
+const supabaseDir = new URL("../supabase/", import.meta.url);
+const pending = readdirSync(supabaseDir)
+  .filter((f) => /^wave2-.+\.sql$/.test(f))
+  .sort()
+  .map((f) => readFileSync(new URL(f, supabaseDir), "utf8"));
+const full = withPendingBlocks(schema, pending);
 const COLUMN_GRANT = "grant update (bio, links, content_langs) on public.profiles to authenticated;";
 
 /*
-  Pacchetto VETRINA (27/09/2026): il suo SQL nasce in supabase/wave2-VETRINA.sql e l'integrazione lo accoda in fondo a
-  schema.sql. Lo schema "completo" è schema.sql con il blocco già dentro oppure, finché non c'è, con il file accodato:
-  così i test valgono prima e dopo l'integrazione. Il grant per colonna della vetrina sta in PROFILES_GRANTS.
+  Pacchetto VETRINA (27/09/2026): il suo SQL è nato in supabase/wave2-VETRINA.sql e l'integrazione lo ha accodato in fondo
+  a schema.sql; `full` qui sopra lo comprende in tutti e due i casi. Il grant per colonna della vetrina sta in
+  PROFILES_GRANTS: lo si cerca per contenuto (la colonna avatar_path), così l'ordine dell'elenco non conta.
 */
 const VETRINA_MARKER = "-- ===== 27/09/2026: VETRINA =====";
-const vetrinaFile = new URL("../supabase/wave2-VETRINA.sql", import.meta.url);
-const full = schema.includes(VETRINA_MARKER) || !existsSync(vetrinaFile) ? schema : `${schema}\n${readFileSync(vetrinaFile, "utf8")}`;
-const VETRINA_GRANT = `${PROFILES_GRANTS[2]};`;
+const VETRINA_GRANT = `${PROFILES_GRANTS.find((g) => g.startsWith("grant update (avatar_path,")) ?? PROFILES_GRANTS[2]};`;
 
 /** Lo schema vero con una riga accodata in fondo. */
 const withTail = (extra) => `${schema}\n${extra}\n`;
@@ -51,22 +60,25 @@ describe("lettura delle istruzioni", () => {
 });
 
 describe("schema.sql vero", () => {
-  test("si può applicare: nessun problema", () => {
+  test("si può applicare: nessun problema, da solo e con i file dell'ondata 2 accodati", () => {
     assert.deepEqual(schemaProblems(schema), []);
+    assert.deepEqual(schemaProblems(full), []);
   });
   test("con il blocco della vetrina accodato si può ancora applicare", () => {
     assert.ok(full.includes(VETRINA_MARKER), "manca il blocco VETRINA (supabase/wave2-VETRINA.sql o in fondo a schema.sql)");
     assert.deepEqual(schemaProblems(full), []);
   });
-  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima delle grant per colonna", () => {
+  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima di ogni grant per colonna", () => {
     const stmts = sqlStatements(full);
     const onProfiles = stmts.filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
-    assert.deepEqual(onProfiles, PROFILES_GRANTS);
+    // come insiemi: l'ordine dipende da come l'integratore accoda i blocchi dell'ondata 2 (TRAGUARDI, VETRINA, …)
+    assert.deepEqual([...onProfiles].sort(), [...PROFILES_GRANTS].sort());
+    assert.equal(new Set(onProfiles).size, onProfiles.length, "grant ripetute");
     assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) >= 0);
     for (const g of PROFILES_GRANTS.slice(1)) assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) < stmts.indexOf(g), g);
   });
   test("la grant della vetrina è per colonna e non tocca ruolo, tag, nome utente né id", () => {
-    const cols = /^grant update \(([^)]+)\) on public\.profiles to authenticated$/.exec(PROFILES_GRANTS[2])?.[1].split(", ") ?? [];
+    const cols = /^grant update \(([^)]+)\) on public\.profiles to authenticated;$/.exec(VETRINA_GRANT)?.[1].split(", ") ?? [];
     assert.ok(cols.length > 0);
     for (const reserved of ["role", "badge", "username", "discord_id", "id", "created_at", "avatar_url", "showcase_updated_at"]) assert.ok(!cols.includes(reserved), reserved);
   });
@@ -87,6 +99,8 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
     "grant di update su più righe": withTail("grant\n  update\n  on table public.profiles\n  to authenticated;"),
     "grant per colonna su role e badge": withTail("grant update (role, badge) on public.profiles to authenticated;"),
     "grant per colonna su display_name": withTail("grant update (display_name) on public.profiles to authenticated;"),
+    "grant per colonna su show_stats insieme al ruolo": withTail("grant update (show_stats, role) on public.profiles to authenticated;"),
+    "grant per colonna su show_stats ad anon": withTail("grant update (show_stats) on public.profiles to anon;"),
     "grant di insert o delete": withTail("grant insert, delete on public.profiles to authenticated;"),
     "grant all su più tabelle insieme": withTail("grant all on public.tier_lists, public.profiles to authenticated;"),
     "grant su tutte le tabelle dello schema": withTail("grant update on all tables in schema public to authenticated;"),
@@ -123,5 +137,22 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
   test("la grant per colonna nella prima parte non basta a far passare la grant sull'intera tabella", () => {
     const sql = replaced(COLUMN_GRANT, `${COLUMN_GRANT}\ngrant update on public.profiles to authenticated;`);
     assert.ok(schemaProblems(sql).some((p) => p.startsWith("grant non prevista")));
+  });
+  test("revoke su profiles accodata dopo i file dell'ondata 2 (cancellerebbe anche la grant di show_stats)", () => {
+    assert.notDeepEqual(schemaProblems(`${full}\nrevoke update on public.profiles from authenticated;\n`), []);
+  });
+  test("grant di show_stats prima della revoke di 6c6756d", () => {
+    const sql = replaced(`${PROFILES_REVOKE};`, `grant update (show_stats) on public.profiles to authenticated;\n${PROFILES_REVOKE};`);
+    assert.ok(schemaProblems(sql).some((p) => p.includes("revoke")));
+  });
+});
+
+describe("file dell'ondata 2 (supabase/wave2-*.sql)", () => {
+  test("già accodati a schema.sql non si contano due volte", () => {
+    const block = "-- blocco\ngrant update (show_stats) on public.profiles to authenticated;\n";
+    const appended = `${schema}\r\n${block.replace(/\n/g, "\r\n")}`;
+    assert.equal(withPendingBlocks(appended, [block]), appended);
+    assert.equal(withPendingBlocks(schema, [block]), `${schema}\n${block}`);
+    assert.equal(withPendingBlocks(schema, ["  \n"]), schema);
   });
 });

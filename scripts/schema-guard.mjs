@@ -20,15 +20,34 @@ export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
  * Le sole grant ammesse su public.profiles (istruzioni normalizzate: spazi singoli, minuscole, senza `;`). Dopo la prima
  * (lettura) solo grant di UPDATE per colonna, mai sull'intera tabella:
  * - bio, canali e lingue del profilo pubblico (pacchetto CREATOR, 26/09/2026);
- * - foto profilo caricata e campi della vetrina (pacchetto VETRINA, 27/09/2026, supabase/wave2-VETRINA.sql da accodare a
+ * - foto profilo caricata e campi della vetrina (pacchetto VETRINA, 27/09/2026, blocco "27/09/2026: VETRINA" di
  *   schema.sql): `avatar_path` per tutti, gli altri li difende il trigger `guard_profile_vetrina`, che li rifiuta a chi
- *   non ha un ruolo con vetrina. Nessuna di queste colonne dà permessi: ruolo, tag, nome utente e id restano chiusi.
+ *   non ha un ruolo con vetrina;
+ * - `show_stats` (pacchetto TRAGUARDI, 27/09/2026, blocco "27/09/2026: TRAGUARDI"): la casella "Mostra i numeri sulla
+ *   vetrina" di /account, un booleano che il trigger profiles_guard_show_stats rifiuta a chi non ha un ruolo con vetrina.
+ * Nessuna di queste colonne dà permessi: ruolo, tag, nome utente e id restano chiusi, e ogni altra grant, anche per
+ * colonna, resta rifiutata. I test di TRAGUARDI confrontano gli insiemi, quelli della vetrina cercano la sua grant in
+ * posizione 2: l'ordine resta questo (lo stesso dei blocchi in schema.sql). `schemaProblems` vuole la revoke di 6c6756d
+ * prima di OGNI grant per colonna.
  */
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
   "grant update (bio, links, content_langs) on public.profiles to authenticated",
   "grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated",
+  "grant update (show_stats) on public.profiles to authenticated",
 ];
+
+/**
+ * schema.sql più i file dei pacchetti dell'ondata 2 (supabase/wave2-<PACCHETTO>.sql, 27/09/2026) che l'integratore
+ * accoda in fondo e che non ci sono ancora dentro: lo schema che db-migrate applicherà. Un file già accodato (il suo
+ * testo, a meno degli spazi e dei fine riga, sta in schema.sql) non si conta due volte. Solo per i test: db-migrate
+ * applica schema.sql e basta.
+ */
+export function withPendingBlocks(schema, pending) {
+  const flat = (s) => s.replace(/\s+/g, " ").trim();
+  const inSchema = flat(schema);
+  return [schema, ...pending.filter((p) => flat(p) && !inSchema.includes(flat(p)))].join("\n");
+}
 
 /** La revoke che chiude la falla (6c6756d): deve esserci, e prima della grant per colonna. */
 export const PROFILES_REVOKE = "revoke update on public.profiles from anon, authenticated";

@@ -41,6 +41,8 @@ export type ProfileRow = {
   /** ultime modifiche di foto e vetrina: le scrive solo il trigger guard_profile_vetrina (limiti di frequenza) */
   avatar_updated_at?: string | null;
   vetrina_updated_at?: string | null;
+  /** numeri pubblici sulla vetrina /u (pacchetto TRAGUARDI, supabase/wave2-TRAGUARDI.sql): solo ruoli con vetrina, difesa da trigger */
+  show_stats: boolean;
 };
 
 export type CommunityDeckRow = {
@@ -578,6 +580,9 @@ export type Database = {
       profile_media_count: { Args: Record<string, never>; Returns: number };
       /** foto di Discord dai metadati dell'accesso (security definer): solo il proprio profilo o un admin, solo host Discord */
       profile_discord_avatar: { Args: { uid: string }; Returns: string | null };
+      /* traguardi e numeri pubblici del profilo /u (supabase/wave2-TRAGUARDI.sql); risposte ricontrollate da achievements.ts */
+      profile_achievement_facts: { Args: { pid: string }; Returns: unknown };
+      profile_public_stats: { Args: { pid: string }; Returns: { decks: number; views: number; code_copies: number; votes: number; since: string | null }[] };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
