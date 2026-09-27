@@ -20,7 +20,7 @@ import { authorName } from "./util";
 
 /**
  * Letture del pacchetto TRAGUARDI (27/09/2026): fatti dei traguardi e numeri pubblici della vetrina (funzioni SQL di
- * supabase/wave2-TRAGUARDI.sql), tornei in evidenza con i loro vincitori, impostazione `show_stats` in /account.
+ * blocco TRAGUARDI di supabase/schema.sql), tornei in evidenza con i loro vincitori, impostazione `show_stats` in /account.
  *
  * Errori come nel resto della community (queries.ts, DECKS-12; `getProfileShowcase` in creators.ts): nella pagina /u,
  * ISR, una lettura pubblica fallita LANCIA `CommunityReadError`, così Next tiene la pagina di prima invece di metterne
@@ -47,7 +47,7 @@ function markMissing(gate: Gate, res: Parameters<typeof isMissing>[0], what: str
   gate.missingUntil = Date.now() + MISSING_RETRY_MS;
   if (!gate.logged) {
     gate.logged = true;
-    console.error(`[achievements] manca ${what}: va applicato supabase/wave2-TRAGUARDI.sql (pacchetto TRAGUARDI)`);
+    console.error(`[achievements] manca ${what}: va applicata la migrazione del pacchetto TRAGUARDI (blocco TRAGUARDI di supabase/schema.sql)`);
   }
   return true;
 }

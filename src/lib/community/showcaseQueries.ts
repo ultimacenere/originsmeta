@@ -5,7 +5,7 @@ import { VETRINA_COLUMNS, hasShowcaseData, toVetrina, type Vetrina, type Vetrina
 
 /**
  * Letture della vetrina dei profili (pacchetto VETRINA, 27/09/2026; regole in showcase.ts, SQL in
- * supabase/wave2-VETRINA.sql). Come creators.ts: nelle pagine ISR un errore del database lancia (Next tiene la pagina di
+ * blocco VETRINA di supabase/schema.sql). Come creators.ts: nelle pagine ISR un errore del database lancia (Next tiene la pagina di
  * prima), tranne le colonne che ancora non esistono (codice online prima della migrazione: errore 42703, o 42P01 se
  * mancasse la tabella). Allora si risponde "nessuna vetrina" e /u resta com'era; lo stato vale `MISSING_RETRY_MS`, poi si
  * riprova, così dopo la migrazione un'istanza accesa torna a leggere da sola.
@@ -27,7 +27,7 @@ export function vetrinaMissing(error: ReadError): boolean {
     state.missingUntil = Date.now() + MISSING_RETRY_MS;
     if (!state.logged) {
       state.logged = true;
-      console.error("[community] mancano le colonne della vetrina dei profili: va applicata la migrazione del pacchetto VETRINA (supabase/wave2-VETRINA.sql)");
+      console.error("[community] mancano le colonne della vetrina dei profili: va applicata la migrazione del pacchetto VETRINA (blocco VETRINA di supabase/schema.sql)");
     }
   }
   return missing;

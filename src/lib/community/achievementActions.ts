@@ -10,7 +10,7 @@ import { isShowcaseBadge } from "./badges";
  * "Mostra i numeri sulla vetrina" in /account (pacchetto TRAGUARDI, 27/09/2026): accende o spegne `profiles.show_stats`
  * del proprio profilo, con la sessione dell'utente. Il database lascia cambiare solo questa colonna della propria riga
  * (grant per colonna + policy "users edit own profile") e un trigger rifiuta l'accensione a chi non ha un ruolo con
- * vetrina (supabase/wave2-TRAGUARDI.sql): qui lo stesso controllo arriva prima, con un messaggio chiaro. Spegnere è
+ * vetrina (blocco TRAGUARDI di supabase/schema.sql): qui lo stesso controllo arriva prima, con un messaggio chiaro. Spegnere è
  * sempre permesso. Un salvataggio identico a quello che c'è non scrive e non rigenera nulla.
  */
 

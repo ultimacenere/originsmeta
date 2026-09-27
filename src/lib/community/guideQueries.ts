@@ -59,7 +59,7 @@ function missing(error: { code?: string; message: string } | null): boolean {
   tableState.missingUntil = Date.now() + MISSING_RETRY_MS;
   if (!tableState.logged) {
     tableState.logged = true;
-    console.error("[community] manca la tabella community_guides (o una sua colonna): va applicata la migrazione del pacchetto GUIDE (supabase/wave2-GUIDE.sql)");
+    console.error("[community] manca la tabella community_guides (o una sua colonna): va applicata la migrazione del pacchetto GUIDE (blocco GUIDE di supabase/schema.sql)");
   }
   return true;
 }

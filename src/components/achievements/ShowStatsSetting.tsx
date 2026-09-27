@@ -10,7 +10,7 @@ import { ShowStatsToggle } from "./ShowStatsToggle";
  * Autore, Pro, Staff), che possono mostrare sulla pagina pubblica i totali dei mazzi pubblicati. Legge l'impostazione
  * con la sessione che la pagina ha già aperto. Prima della migrazione (colonna `show_stats` assente) al posto della
  * casella c'è una riga che lo dice; per gli altri ruoli non c'è nulla (a meno che il numero fosse acceso da prima di un
- * cambio di ruolo: il database lo spegne da sé, vedi supabase/wave2-TRAGUARDI.sql).
+ * cambio di ruolo: il database lo spegne da sé, vedi il blocco TRAGUARDI di supabase/schema.sql).
  */
 export async function ShowStatsSetting({ supabase, userId, locale }: { supabase: Db; userId: string; locale: Locale }) {
   const own = await readOwnShowStats(supabase, userId);

@@ -34,7 +34,7 @@ import { translateCommunityGuideLater } from "./guideTranslate";
  * Server Action delle guide della community (pacchetto GUIDE, 27/09/2026): salvataggio (bozza o pubblicazione, creazione
  * o modifica), stato (riportare tra le bozze; nascondere e rimettere online per lo staff), eliminazione, segnalazione.
  *
- * Il controllo vero sta nel database (supabase/wave2-GUIDE.sql): policy con `can_publish_guides`, grant per colonna,
+ * Il controllo vero sta nel database (blocco GUIDE di supabase/schema.sql): policy con `can_publish_guides`, grant per colonna,
  * vincoli del testo e trigger con i tetti (contati su un registro che eliminare una guida non azzera) e lo stato
  * riservato allo staff. Qui si controlla prima, con le stesse regole (`readGuideForm`, `canPublishGuides`), per
  * rispondere con un messaggio chiaro; gli errori del database diventano un codice con `guideErrorCode`. Niente file
@@ -108,7 +108,7 @@ function afterSave(
   if (g.status !== "published") return;
   if (g.first) {
     announceGuide(g.slug);
-    notifyGuideFollowers({ ownerId: g.ownerId, slug: g.slug, title: g.value.title, lang: g.value.lang });
+    notifyGuideFollowers({ ownerId: g.ownerId, slug: g.slug, title: g.value.title, lang: g.value.lang }, supabase);
   }
   if (communityGuideIndexable(g.value)) pingIndexNow([`/${g.value.lang}/guides/community/${g.slug}`]);
   translateCommunityGuideLater(supabase, g.id);

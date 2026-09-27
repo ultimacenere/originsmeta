@@ -16,6 +16,7 @@ import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { JsonLd, breadcrumbs } from "../JsonLd";
 import { Avatar } from "../AccountMenu";
 import { AuthorChannels } from "../AuthorChannels";
+import { FollowButton } from "../follow/FollowButton";
 import { CardChipList } from "../CardChip";
 import { CardMentions } from "../CardMentions";
 import { CardMentionEdges } from "../CardMentionEdges";
@@ -140,9 +141,11 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
             )}
             {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
           </span>
-          {/* ruolo, badge LIVE e canali principali accanto al nome, come nei mazzi (pacchetto CREATOR). Il tasto "Segui" del
-              pacchetto SEGUI va qui, accanto al nome dell'autore, quando c'è. */}
+          {/* ruolo, badge LIVE e canali principali accanto al nome, come nei mazzi (pacchetto CREATOR) */}
           <AuthorChannels ownerId={guide.owner} username={guide.profile?.username} name={author} badge={guide.profile?.badge} badgeLabel={c.badges[normalizeBadge(guide.profile?.badge)]} locale={locale} />
+          {/* "Segui" (pacchetto SEGUI, collegato all'integrazione del 27/09/2026) accanto al nome, come nella scheda del mazzo:
+              solo per i ruoli con vetrina, stato letto nel browser (la pagina è ISR) */}
+          <FollowButton profileId={guide.owner} name={author} badge={guide.profile?.badge} locale={locale} placement="guide_page" compact />
           <span className="stat-pill bg-night-3 font-mono text-pale">{view.translated ? `${guide.lang.toUpperCase()} → ${locale.toUpperCase()}` : guide.lang.toUpperCase()}</span>
         </div>
 

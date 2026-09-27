@@ -41,7 +41,7 @@ export function FollowButton({
   name: string;
   badge: string | null | undefined;
   locale: string;
-  placement: "profile" | "deck_page";
+  placement: "profile" | "deck_page" | "guide_page";
   compact?: boolean;
   className?: string;
 }) {

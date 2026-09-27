@@ -8,7 +8,7 @@ import { textHash, type TranslationDoc } from "./deckTranslation";
  * TUTTO, OTTIMO!!" alle proposte per i profili): Autore, Creator, Pro e Staff (`canPublishGuides` di badges.ts)
  * scrivono e pubblicano le loro guide senza passare dallo staff; gli altri continuano con "Mandaci la tua guida".
  *
- * Qui stanno le regole pure, uguali a quelle del database (supabase/wave2-GUIDE.sql, da accodare a schema.sql; il test
+ * Qui stanno le regole pure, uguali a quelle del database (blocco GUIDE di supabase/schema.sql; il test
  * guides.test.ts le confronta): limiti del testo, categorie, copertine preimpostate, pulizia del testo semplice, lettura
  * del modulo, parole e soglia di indicizzazione, lingue in cui la guida si legge (originale più traduzioni aggiornate),
  * elenchi leggeri e righe della sitemap, piano della traduzione a pezzi. Nessun import a runtime che non sia puro
@@ -19,7 +19,7 @@ import { textHash, type TranslationDoc } from "./deckTranslation";
  * trasformati in link (`CardMentions`), come le guide dei mazzi.
  */
 
-// ——— Limiti (uguali ai vincoli di supabase/wave2-GUIDE.sql) ———
+// ——— Limiti (uguali ai vincoli del blocco GUIDE di supabase/schema.sql) ———
 
 export const GUIDE_LIMITS = {
   /** titolo: una riga, 10-110 caratteri per pubblicare (una bozza da 1) */
@@ -301,7 +301,7 @@ export function readGuideForm(fd: FormReader, intent: GuideIntent, knownCard: (s
 const TRIGGER_CODES = ["guide_hidden_recent", "guide_daily_limit", "guide_limit", "guide_rate", "guide_hidden", "guide_status", "guide_translation", "report_rate"] as const;
 
 /**
- * Errore del database → codice del modulo: i tetti e le regole del trigger `guard_community_guide` (supabase/wave2-GUIDE.sql,
+ * Errore del database → codice del modulo: i tetti e le regole del trigger `guard_community_guide` (blocco GUIDE di supabase/schema.sql,
  * `raise exception '<codice>'`), le policy (42501: ruolo mancante o riga altrui) e la tabella che non c'è ancora.
  */
 export function guideErrorCode(error: { code?: string; message?: string } | null | undefined): string {

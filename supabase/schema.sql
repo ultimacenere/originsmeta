@@ -2087,3 +2087,1282 @@ grant execute on function public.inbox_message_authors(uuid) to authenticated;
 comment on column public.profiles.badge is 'Tag assegnato dallo staff (scripts/set-badge.mjs): community, creator, author (Autore), pro, staff. Influencer tolto il 27/09/2026 (diventato creator). Permessi in src/lib/community/badges.ts.';
 comment on column public.profiles.bio is 'Bio del profilo pubblico: testo semplice, 1-600 caratteri, al massimo 12 a capo (27/09/2026; regole in src/lib/community/profileLinks.ts).';
 comment on function public.max_published_decks(uuid) is 'Tetto ai mazzi pubblicati: nessuno per creator, pro, staff e admin, 20 per author, 5 per community (27/09/2026).';
+
+-- ===== 27/09/2026: VETRINA =====
+-- =====================================================================================================
+-- Vetrina dei profili (pacchetto VETRINA, 27/09/2026; Pierluigi: "OK A TUTTO, OTTIMO!!" alle proposte per i profili)
+-- =====================================================================================================
+-- Da accodare in fondo a supabase/schema.sql (scripts/db-migrate.mjs applica tutto il file ogni volta: ogni riga qui
+-- sotto è idempotente). Regole e test nel codice: src/lib/community/showcase.ts e showcase.test.ts, che confronta
+-- questo blocco con il codice (elenchi, limiti, espressioni).
+--
+-- Che cosa aggiunge:
+--   - per TUTTI gli iscritti la foto profilo caricata dal sito (`avatar_path`, file nel bucket `profile-media`,
+--     cartella <id>/avatar, 1 MB, png/jpeg/webp). Un trigger tiene `avatar_url` allineata: con una foto caricata diventa
+--     l'indirizzo pubblico del file, togliendola torna quella di Discord (dai metadati dell'accesso, solo se è davvero
+--     un indirizzo di Discord). Così ogni lettura che già chiede `avatar_url` (mazzi, tornei, header, directory) mostra
+--     la foto nuova senza cambiare le query, e prima della migrazione nulla cambia;
+--   - per i ruoli con vetrina (Creator, Autore, Pro, Staff: SHOWCASE_BADGES in src/lib/community/badges.ts) i campi
+--     della vetrina su /u/<nome>: copertina (uno degli 8 sfondi preimpostati del sito oppure un'immagine caricata in
+--     <id>/cover, 2 MB), colore d'accento, frase di presentazione (80 caratteri), Leggendaria del cuore (slug controllato
+--     dal sito contro i dati delle carte), mazzo in evidenza (uno dei SUOI mazzi pubblicati), video in evidenza (le
+--     forme canoniche di deck_video_url_ok, blocco VIDEO), orari delle dirette (fino a 7 voci) con il fuso IANA.
+--
+-- ORDINE: questo blocco sta DOPO `revoke update on public.profiles from anon, authenticated;` (commit 6c6756d) e dopo il
+-- blocco CREATOR. Il grant qui sotto è per colonna, come quello di bio/links/content_langs: un REVOKE sulla tabella lo
+-- cancellerebbe, quindi nessun blocco accodato dopo questo deve fare una revoke su profiles. scripts/schema-guard.mjs
+-- conosce questo grant (PROFILES_GRANTS) e rifiuta qualsiasi altra grant su public.profiles.
+--
+-- Sicurezza:
+--   - grant di UPDATE solo sulle colonne nuove che l'utente cambia dal sito (mai sull'intera tabella);
+--   - trigger `guard_profile_vetrina` (con i privilegi di chi salva, search_path fissato): i campi della vetrina li
+--     imposta solo chi ha un ruolo con vetrina (svuotarli si può sempre; script e admin passano), il mazzo in evidenza
+--     dev'essere suo e pubblicato, le immagini devono esistere nella sua cartella del bucket con tipo e peso giusti.
+--     L'unica funzione security definer è `profile_discord_avatar` (legge auth.users), limitata al proprio profilo;
+--   - bucket `profile-media` pubblico in lettura (indirizzi pubblici), scrittura solo nella propria cartella, solo
+--     png/jpeg/webp fino a 2 MB (limite del bucket: lo Storage prova la policy di caricamento PRIMA di conoscere il
+--     peso del file, quindi il peso per tipo, 1 MB per la foto, lo controlla il trigger quando si salva), la copertina
+--     solo per i ruoli con vetrina, un tetto di 12 file per utente (morbido: vale al momento della prova, non contro
+--     caricamenti lanciati tutti insieme), e il file in uso non si cancella (niente immagini rotte sul profilo);
+--   - lo staff toglie foto, copertina e frase di un utente con `node scripts/clear-profile-media.mjs` (README, "Vetrina
+--     dei profili e foto caricate"); un admin vede e cancella dal sito i file di tutti, mai quelli in uso.
+-- =====================================================================================================
+
+alter table public.profiles add column if not exists avatar_path text;
+alter table public.profiles add column if not exists cover_preset text;
+alter table public.profiles add column if not exists cover_path text;
+alter table public.profiles add column if not exists accent text;
+alter table public.profiles add column if not exists tagline text;
+alter table public.profiles add column if not exists favorite_legendary text;
+-- uno dei suoi mazzi pubblicati; se il mazzo viene eliminato il campo si svuota da solo
+alter table public.profiles add column if not exists featured_deck uuid references public.community_decks(id) on delete set null;
+alter table public.profiles add column if not exists featured_video text;
+-- orari delle dirette: [{"day": 0-6 (0 = lunedì), "time": "HH:MM", "minutes": 15-720 facoltativo}], ora del fuso schedule_tz
+alter table public.profiles add column if not exists schedule jsonb not null default '[]'::jsonb;
+alter table public.profiles add column if not exists schedule_tz text;
+-- ultime modifiche della foto e della vetrina: le scrive solo il trigger qui sotto (nessun grant). Servono ai limiti di
+-- frequenza dei due moduli di /account, separati fra loro e da quello di bio e canali (showcase_updated_at)
+alter table public.profiles add column if not exists avatar_updated_at timestamptz;
+alter table public.profiles add column if not exists vetrina_updated_at timestamptz;
+
+create index if not exists profiles_featured_deck_idx on public.profiles (featured_deck) where featured_deck is not null;
+
+-- Una voce degli orari: esattamente {day, time} più minutes facoltativo. I CASE fissano l'ordine dei controlli (Postgres
+-- non garantisce quello di AND/OR): un valore del tipo sbagliato non arriva mai a un cast.
+create or replace function public.profile_schedule_entry_ok(e jsonb)
+returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
+  select case
+    when jsonb_typeof(e) is distinct from 'object' then false
+    when (e - 'day' - 'time' - 'minutes') <> '{}'::jsonb then false
+    when jsonb_typeof(e->'day') is distinct from 'number' or jsonb_typeof(e->'time') is distinct from 'string' then false
+    when (e->>'day') !~ '^[0-6]$' then false
+    when (e->>'time') !~ '^([01][0-9]|2[0-3]):[0-5][0-9]$' then false
+    when not (e ? 'minutes') then true
+    when jsonb_typeof(e->'minutes') is distinct from 'number' then false
+    when (e->>'minutes') !~ '^[0-9]{1,3}$' then false
+    else (e->>'minutes')::integer between 15 and 720
+  end
+$$;
+
+-- Gli orari: un array di al massimo 7 voci valide (vuoto = nessun orario). Una voce che desse null conta come non
+-- valida: bool_and ignora i null e un CHECK con risultato null passerebbe.
+create or replace function public.profile_schedule_ok(s jsonb)
+returns boolean language sql immutable set search_path = pg_catalog, pg_temp as $$
+  select case
+    when jsonb_typeof(s) is distinct from 'array' then false
+    when jsonb_array_length(s) > 7 then false
+    else coalesce((select bool_and(coalesce(public.profile_schedule_entry_ok(t.e), false)) from jsonb_array_elements(s) as t(e)), true)
+  end
+$$;
+
+-- Girano dentro i vincoli, con i privilegi di chi scrive la riga: EXECUTE per authenticated e service_role.
+revoke all on function public.profile_schedule_entry_ok(jsonb) from public, anon;
+revoke all on function public.profile_schedule_ok(jsonb) from public, anon;
+grant execute on function public.profile_schedule_entry_ok(jsonb) to authenticated, service_role;
+grant execute on function public.profile_schedule_ok(jsonb) to authenticated, service_role;
+
+-- Vincoli (tolti e rimessi: idempotenti). Le espressioni sono quelle di showcase.ts (MEDIA_FILE_RE, COVER_PRESETS,
+-- ACCENTS, TAGLINE_MAX, SCHEDULE_MAX…): il test le confronta.
+alter table public.profiles drop constraint if exists profiles_avatar_path_check;
+alter table public.profiles add constraint profiles_avatar_path_check
+  check (avatar_path is null or avatar_path ~ ('^' || id::text || '/avatar/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$'));
+alter table public.profiles drop constraint if exists profiles_cover_path_check;
+alter table public.profiles add constraint profiles_cover_path_check
+  check (cover_path is null or cover_path ~ ('^' || id::text || '/cover/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$'));
+alter table public.profiles drop constraint if exists profiles_cover_preset_check;
+alter table public.profiles add constraint profiles_cover_preset_check
+  check (cover_preset is null or cover_preset in ('aurora', 'mint-tide', 'sky-crystal', 'gold-stars', 'crimson-rays', 'violet-nebula', 'night-grid', 'sunset'));
+alter table public.profiles drop constraint if exists profiles_accent_check;
+alter table public.profiles add constraint profiles_accent_check
+  check (accent is null or accent in ('sky', 'mint', 'gold', 'crimson', 'violet', 'coral', 'green', 'peach'));
+-- frase di presentazione: testo semplice su una riga (deck_text_ok del blocco VIDEO: niente caratteri di controllo, a
+-- capo compresi, né invisibili), 1-80 caratteri, senza spazi in testa o in coda
+alter table public.profiles drop constraint if exists profiles_tagline_check;
+alter table public.profiles add constraint profiles_tagline_check
+  check (tagline is null or (public.deck_text_ok(tagline, 80) and tagline ~ '[^[:space:]]' and tagline = btrim(tagline)));
+alter table public.profiles drop constraint if exists profiles_favorite_legendary_check;
+alter table public.profiles add constraint profiles_favorite_legendary_check
+  check (favorite_legendary is null or (char_length(favorite_legendary) <= 60 and favorite_legendary ~ '^[a-z0-9]+(-[a-z0-9]+)*$'));
+alter table public.profiles drop constraint if exists profiles_featured_video_check;
+alter table public.profiles add constraint profiles_featured_video_check
+  check (featured_video is null or public.deck_video_url_ok(featured_video));
+-- orari validi, e il fuso se e solo se ci sono orari (un nome IANA ben formato: l'elenco fra cui scegliere lo tiene il
+-- sito). Senza orari niente fuso: la colonna è pubblica e il fuso direbbe dove vive chi non pubblica nessun orario.
+alter table public.profiles drop constraint if exists profiles_schedule_check;
+alter table public.profiles add constraint profiles_schedule_check
+  check (public.profile_schedule_ok(schedule) and ((schedule = '[]'::jsonb) = (schedule_tz is null)));
+alter table public.profiles drop constraint if exists profiles_schedule_tz_check;
+alter table public.profiles add constraint profiles_schedule_tz_check
+  check (schedule_tz is null or (char_length(schedule_tz) <= 64 and schedule_tz ~ '^(UTC|[A-Z][A-Za-z_]+(/[A-Za-z0-9_+-]+){1,2})$'));
+
+-- Indirizzo pubblico di un file del bucket profile-media: lo stesso di `mediaPublicUrl` in showcase.ts con l'URL del
+-- progetto di src/lib/supabase/env.ts (il test li confronta). Se un giorno il progetto Supabase cambia, cambia qui.
+create or replace function public.profile_media_url(p text)
+returns text language sql immutable set search_path = pg_catalog, pg_temp as $$
+  select 'https://obpnprlzxrlbvncpqlpq.supabase.co/storage/v1/object/public/profile-media/' || p
+$$;
+
+-- Il file c'è nel bucket, con un tipo ammesso e al massimo `max_bytes` (quando lo Storage li ha scritti nei metadati).
+-- Gira con i privilegi di chi chiama (il trigger qui sotto, cioè l'utente che salva): vede i file della sua cartella
+-- grazie alla policy "profile media owners read", nessun altro. Niente security definer: non serve saltare la RLS.
+create or replace function public.profile_media_ok(p text, max_bytes bigint)
+returns boolean language sql stable set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from storage.objects o
+     where o.bucket_id = 'profile-media'
+       and o.name = p
+       and (o.metadata->>'size' is null or (o.metadata->>'size')::bigint <= max_bytes)
+       and (o.metadata->>'mimetype' is null or o.metadata->>'mimetype' in ('image/png', 'image/jpeg', 'image/webp')))
+$$;
+
+-- Quanti file ha l'utente collegato nel bucket (policy di caricamento: al massimo 12). Anche questa con i privilegi di
+-- chi carica, e solo la sua cartella. Tetto morbido: lo Storage prova la policy in una transazione che annulla subito e
+-- scrive poi il file con i suoi privilegi, quindi caricamenti lanciati tutti insieme vedono lo stesso conteggio (un
+-- lucchetto qui non servirebbe: finirebbe con la transazione di prova). Il sito carica un file alla volta e pulisce la
+-- cartella; i file mai usati li trova e li toglie `node scripts/clear-profile-media.mjs --orphans`.
+create or replace function public.profile_media_count()
+returns integer language sql stable set search_path = public, pg_temp as $$
+  select count(*)::integer from storage.objects o
+   where o.bucket_id = 'profile-media' and (storage.foldername(o.name))[1] = auth.uid()::text
+$$;
+
+-- La foto di Discord di un profilo, dai metadati dell'accesso (auth.users, che l'utente non legge: per questo è l'unica
+-- security definer del blocco). Solo per il proprio profilo (o per un admin, o per uno script con connessione diretta),
+-- e solo se è davvero un indirizzo di Discord: quei metadati l'utente li può cambiare via API.
+create or replace function public.profile_discord_avatar(uid uuid)
+returns text language sql stable security definer set search_path = public, pg_temp as $$
+  select case
+    when auth.uid() is not null and auth.uid() <> uid and not public.is_admin() then null
+    else (select case when m ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$' then m end
+            from (select u.raw_user_meta_data->>'avatar_url' as m from auth.users u where u.id = uid) as x)
+  end
+$$;
+
+-- Le chiamano il trigger (con i privilegi dell'utente che salva) e la policy di caricamento: EXECUTE per authenticated.
+revoke all on function public.profile_media_url(text) from public, anon;
+revoke all on function public.profile_media_ok(text, bigint) from public, anon;
+revoke all on function public.profile_media_count() from public, anon;
+revoke all on function public.profile_discord_avatar(uuid) from public, anon;
+grant execute on function public.profile_media_url(text) to authenticated, service_role;
+grant execute on function public.profile_media_ok(text, bigint) to authenticated, service_role;
+grant execute on function public.profile_media_count() to authenticated, service_role;
+grant execute on function public.profile_discord_avatar(uuid) to authenticated, service_role;
+
+-- I controlli che un vincolo non può fare, con i privilegi di chi salva (niente security definer: legge i mazzi pubblicati
+-- e i file della propria cartella, che vede già). Script con connessione diretta (auth.uid() nullo) e admin passano il
+-- controllo del ruolo; mazzo e immagini si controllano per tutti.
+create or replace function public.guard_profile_vetrina()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  -- 1) i campi della vetrina li imposta solo chi ha un ruolo con vetrina; svuotarli si può sempre (anche dopo aver
+  --    perso il ruolo). avatar_path no: la foto profilo è di tutti.
+  if auth.uid() is not null and not public.is_admin()
+     and old.badge not in ('creator', 'author', 'pro', 'staff') and (
+          (new.cover_preset is not null and new.cover_preset is distinct from old.cover_preset)
+       or (new.cover_path is not null and new.cover_path is distinct from old.cover_path)
+       or (new.accent is not null and new.accent is distinct from old.accent)
+       or (new.tagline is not null and new.tagline is distinct from old.tagline)
+       or (new.favorite_legendary is not null and new.favorite_legendary is distinct from old.favorite_legendary)
+       or (new.featured_deck is not null and new.featured_deck is distinct from old.featured_deck)
+       or (new.featured_video is not null and new.featured_video is distinct from old.featured_video)
+       or (new.schedule <> '[]'::jsonb and new.schedule is distinct from old.schedule)
+       or (new.schedule_tz is not null and new.schedule_tz is distinct from old.schedule_tz)) then
+    raise exception 'showcase fields are reserved to showcase roles';
+  end if;
+
+  -- 2) mazzo in evidenza: uno dei SUOI mazzi pubblicati
+  if new.featured_deck is not null and new.featured_deck is distinct from old.featured_deck
+     and not exists (select 1 from public.community_decks d where d.id = new.featured_deck and d.owner = new.id and d.status = 'published') then
+    raise exception 'featured deck must be one of your published decks';
+  end if;
+
+  -- 3) copertina caricata: il file c'è, nella sua cartella (vincolo), con tipo e peso ammessi
+  if new.cover_path is not null and new.cover_path is distinct from old.cover_path
+     and not public.profile_media_ok(new.cover_path, 2097152) then
+    raise exception 'cover image not found or not allowed';
+  end if;
+
+  -- 4) foto profilo: controllo del file e avatar_url allineata (caricata → indirizzo del file; tolta → Discord, o nessuna)
+  if new.avatar_path is distinct from old.avatar_path then
+    if new.avatar_path is not null then
+      if not public.profile_media_ok(new.avatar_path, 1048576) then
+        raise exception 'avatar image not found or not allowed';
+      end if;
+      new.avatar_url := public.profile_media_url(new.avatar_path);
+    else
+      new.avatar_url := public.profile_discord_avatar(new.id);
+    end if;
+  end if;
+
+  -- 5) date delle modifiche: avatar_updated_at e vetrina_updated_at per i limiti di frequenza dei due moduli di /account;
+  --    showcase_updated_at (lastmod di /u/<nome> nella sitemap, come touch_profile_showcase del blocco CREATOR) per la
+  --    vetrina e, solo per i ruoli con vetrina, per la foto: le foto degli iscritti community non riempiono la lettura
+  --    delle date della sitemap.
+  if new.avatar_path is distinct from old.avatar_path then
+    new.avatar_updated_at := now();
+    if new.badge in ('creator', 'author', 'pro', 'staff') then
+      new.showcase_updated_at := now();
+    end if;
+  end if;
+  if (new.cover_preset, new.cover_path, new.accent, new.tagline, new.favorite_legendary, new.featured_deck, new.featured_video,
+      new.schedule, new.schedule_tz)
+     is distinct from
+     (old.cover_preset, old.cover_path, old.accent, old.tagline, old.favorite_legendary, old.featured_deck, old.featured_video,
+      old.schedule, old.schedule_tz) then
+    new.vetrina_updated_at := now();
+    new.showcase_updated_at := now();
+  end if;
+  return new;
+end $$;
+-- la funzione di un trigger non si chiama da sola: niente EXECUTE per nessuno (il trigger scatta lo stesso)
+revoke all on function public.guard_profile_vetrina() from public, anon, authenticated;
+drop trigger if exists profiles_guard_vetrina on public.profiles;
+create trigger profiles_guard_vetrina before update on public.profiles
+  for each row execute function public.guard_profile_vetrina();
+
+-- Le sole colonne nuove che l'utente cambia dal sito, sulla propria riga (policy "users edit own profile"). MAI un grant
+-- di UPDATE sull'intera tabella: riaprirebbe role e badge (6c6756d).
+grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated;
+
+comment on column public.profiles.avatar_path is 'Foto profilo caricata dal sito (bucket profile-media, <id>/avatar/<file>, 1 MB): il trigger guard_profile_vetrina tiene avatar_url allineata (27/09/2026).';
+comment on column public.profiles.cover_preset is 'Vetrina: sfondo preimpostato della copertina (src/lib/community/showcase.ts, COVER_PRESETS). Solo ruoli con vetrina.';
+comment on column public.profiles.cover_path is 'Vetrina: copertina caricata (bucket profile-media, <id>/cover/<file>, 2 MB). Solo ruoli con vetrina.';
+comment on column public.profiles.schedule is 'Vetrina: orari delle dirette, al massimo 7 voci {day 0-6 (0 = lunedì), time HH:MM, minutes 15-720 facoltativo} nel fuso schedule_tz (che c''è solo con degli orari).';
+comment on column public.profiles.avatar_updated_at is 'Ultimo cambio della foto caricata: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveAvatar).';
+comment on column public.profiles.vetrina_updated_at is 'Ultimo cambio della vetrina: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveShowcase).';
+
+-- ---------- Storage: foto profilo e copertine (caricate dal browser, ognuno nella sua cartella) ----------
+do $$
+begin
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('profile-media', 'profile-media', true, 2097152, array['image/png','image/jpeg','image/webp'])
+  on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+  -- gli indirizzi pubblici funzionano senza policy (bucket pubblico); l'elenco dei file lo vede solo il proprietario (e
+  -- un admin, che senza lettura non potrebbe nemmeno cancellare)
+  drop policy if exists "profile media owners read" on storage.objects;
+  create policy "profile media owners read" on storage.objects for select to authenticated using (
+    bucket_id = 'profile-media' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+  );
+  -- <id>/avatar/<file> (tutti) e <id>/cover/<file> (ruoli con vetrina o admin), al massimo 12 file per utente. Niente
+  -- peso qui: lo Storage prova questa policy prima di ricevere il file, quando i metadati (size, mimetype) non ci sono
+  -- ancora. Il caricamento lo limita il bucket (2 MB, tre tipi); 1 MB per la foto lo impone il trigger al salvataggio.
+  drop policy if exists "profile media upload" on storage.objects;
+  create policy "profile media upload" on storage.objects for insert to authenticated with check (
+    bucket_id = 'profile-media'
+    and array_length(storage.foldername(name), 1) = 2
+    and (storage.foldername(name))[1] = auth.uid()::text
+    and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp')
+    and public.profile_media_count() < 12
+    and (
+      (storage.foldername(name))[2] = 'avatar'
+      or ((storage.foldername(name))[2] = 'cover'
+          and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')))
+    )
+  );
+  -- niente update (i nomi sono sempre nuovi); si cancellano i propri file (un admin anche quelli degli altri), mai un file
+  -- in uso sul profilo del proprietario della cartella: prima si svuota il campo, poi si toglie il file
+  drop policy if exists "profile media owners delete" on storage.objects;
+  create policy "profile media owners delete" on storage.objects for delete to authenticated using (
+    bucket_id = 'profile-media'
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and not exists (select 1 from public.profiles p where p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name))
+  );
+exception when others then
+  raise notice 'Storage profile-media non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README ("Vetrina dei profili e foto caricate").', sqlerrm;
+end $$;
+
+-- ===== 27/09/2026: SEGUI =====
+-- =====================================================================================================
+-- "Segui" e notifiche (pacchetto SEGUI, 27/09/2026). Pierluigi, 27/09/2026, alle proposte per i profili dei ruoli con
+-- vetrina: "OK A TUTTO, OTTIMO!!", fra cui "Segui" con un avviso quando un creator pubblica un mazzo o va in diretta.
+--
+--   follows              chi segue chi. Si seguono solo i profili vetrina (tag creator, author, pro, staff: SHOWCASE_BADGES
+--                        di src/lib/community/badges.ts, follows.test.ts confronta gli elenchi), mai se stessi, al massimo
+--                        FOLLOW_MAX (500) profili a testa. Ognuno legge, aggiunge e toglie SOLO i propri "segui" (RLS):
+--                        nessuno vede chi segue un altro. Il numero dei follower di un profilo è pubblico solo come
+--                        conteggio, con la RPC follow_state.
+--   notifications        gli avvisi di un utente: mazzo pubblicato ('deck_published'), diretta su Twitch ('live'), guida
+--                        pubblicata ('guide_published', per il pacchetto GUIDE). L'utente legge solo i suoi (policy) e li
+--                        segna come letti con la RPC notifications_mark_read; nessuna scrittura diretta degli utenti
+--                        (policy restrittive e nessun grant di scrittura): le righe le scrivono solo le funzioni security
+--                        definer qui sotto (notify_followers dalla Server Action di chi pubblica, notify_live dalla rotta
+--                        del cron). `event_key` (uno per evento: il percorso del mazzo o della guida, `twitch:<id della
+--                        diretta>`) con il vincolo unico fa arrivare ogni avviso una volta sola a ogni utente (chi segue
+--                        due profili sullo stesso canale Twitch riceve un avviso solo); il sito non la legge.
+--   notification_events  registro degli invii, uno per autore ed evento (chiave kind, actor_id, event_key: l'evento di un
+--                        autore non blocca mai quello di un altro), con il numero dei destinatari e `sent` (false: diretta
+--                        soppressa dalla pausa, nessun avviso partito), senza i nomi di chi riceve. Serve alla dedupe, al
+--                        tetto giornaliero per autore (NOTIFY_DAILY_MAX, 10 mazzi o guide al giorno) e alla pausa fra due
+--                        dirette della stessa persona (LIVE_COOLDOWN_HOURS, 3 ore dall'ultimo avviso partito davvero: una
+--                        diretta interrotta e ripresa ha un id nuovo). Nessun client la legge.
+--   notify_keys          impronta SHA-256 (esadecimale) del segreto della rotta /api/cron/live (variabile CRON_SECRET),
+--                        scritta da `node scripts/set-cron-key.mjs` con la connessione diretta; nessun client la legge.
+--                        notify_live e notifications_cleanup girano per `anon` (il cron non ha una sessione) e partono
+--                        solo con il segreto giusto (notify_key_ok).
+--
+-- Conservazione: gli avvisi durano NOTIFICATION_RETENTION_DAYS (90 giorni), il registro degli invii
+-- NOTIFICATION_EVENT_RETENTION_DAYS (180). La pulizia (notifications_prune) gira a ogni giro del cron
+-- (notifications_cleanup, ogni 10 minuti), a ogni invio e a ogni "segna come letti"; il sito comunque non mostra né
+-- conta gli avvisi più vecchi di 90 giorni. Tutto si cancella con l'account (on delete cascade dal profilo, anche per chi
+-- segue e per chi è seguito).
+--
+-- Sicurezza (stesse regole del blocco INBOX): tabelle nuove con RLS e policy esplicite; `revoke all` da anon e
+-- authenticated (Supabase dà ALL di default) e poi i soli grant che servono, per colonna; funzioni security definer con
+-- search_path fissato ed execute tolto a public e anon quando non serve. Nessun grant né revoke su public.profiles:
+-- questo blocco non tocca le colonne dei profili (scripts/schema-guard.mjs resta com'è).
+-- Idempotente: si può rilanciare (create ... if not exists, create or replace, drop policy/trigger if exists).
+-- =====================================================================================================
+
+-- ---------- chi segue chi ----------
+create table if not exists public.follows (
+  -- chi segue
+  follower uuid not null references public.profiles(id) on delete cascade,
+  -- chi è seguito: un profilo vetrina (controllo nella policy e nel trigger qui sotto)
+  followed uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (follower, followed),
+  constraint follows_not_self check (follower <> followed)
+);
+-- il numero dei follower di un profilo (follow_state) e l'invio degli avvisi leggono per `followed`
+create index if not exists follows_followed_idx on public.follows (followed, created_at desc);
+comment on table public.follows is 'Chi segue chi (pacchetto SEGUI, 27/09/2026): solo profili vetrina (creator, author, pro, staff), mai se stessi, al massimo 500 a testa. Ognuno vede solo i propri; il conteggio pubblico sta in follow_state.';
+
+-- Controllo di chi si segue, anche per chi scrive la riga via API saltando il sito: la data la mette il database, si
+-- seguono solo i profili vetrina, mai se stessi, al massimo 500 profili (FOLLOW_MAX di src/lib/community/follows.ts).
+-- Il lock per utente mette in fila le richieste parallele, così il tetto non si supera con dieci clic insieme.
+create or replace function public.guard_follow()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n integer;
+begin
+  new.created_at := now();
+  if new.follower = new.followed then raise exception 'follow_self'; end if;
+  if not exists (select 1 from public.profiles p where p.id = new.followed and p.badge in ('creator', 'author', 'pro', 'staff')) then
+    raise exception 'not_followable';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('om_follow:' || new.follower::text));
+  select count(*) into n from public.follows f where f.follower = new.follower;
+  if n >= 500 then raise exception 'too_many_follows'; end if;
+  return new;
+end $$;
+drop trigger if exists follows_guard on public.follows;
+create trigger follows_guard before insert on public.follows
+  for each row execute function public.guard_follow();
+
+alter table public.follows enable row level security;
+
+-- auth.uid() dentro una (select …): calcolato una volta per richiesta, non per riga (come nel blocco INBOX)
+drop policy if exists "follows read own" on public.follows;
+create policy "follows read own" on public.follows for select to authenticated
+  using (follower = (select auth.uid()));
+drop policy if exists "follows insert own" on public.follows;
+create policy "follows insert own" on public.follows for insert to authenticated
+  with check (
+    follower = (select auth.uid())
+    and followed <> follower
+    and exists (select 1 from public.profiles p where p.id = follows.followed and p.badge in ('creator', 'author', 'pro', 'staff'))
+  );
+drop policy if exists "follows delete own" on public.follows;
+create policy "follows delete own" on public.follows for delete to authenticated
+  using (follower = (select auth.uid()));
+-- un "segui" non si modifica: si toglie e si rimette
+drop policy if exists "follows no update" on public.follows;
+create policy "follows no update" on public.follows as restrictive for update to anon, authenticated using (false) with check (false);
+
+revoke all on public.follows from anon, authenticated;
+grant select (follower, followed, created_at) on public.follows to authenticated;
+grant insert (follower, followed) on public.follows to authenticated;
+grant delete on public.follows to authenticated;
+
+-- Stato del tasto "Segui" (letto nel browser: le pagine /u e le schede dei mazzi restano ISR): quanti follower ha il
+-- profilo (solo il numero, mai chi sono), se chi guarda lo segue già (false per chi non ha fatto l'accesso) e se il
+-- profilo si può seguire (ruolo con vetrina).
+create or replace function public.follow_state(p_profile uuid)
+returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
+  select jsonb_build_object(
+    'followers', (select count(*) from public.follows f where f.followed = p_profile),
+    'following', (select auth.uid()) is not null
+      and exists (select 1 from public.follows f where f.followed = p_profile and f.follower = (select auth.uid())),
+    'followable', exists (select 1 from public.profiles p where p.id = p_profile and p.badge in ('creator', 'author', 'pro', 'staff'))
+  );
+$$;
+revoke all on function public.follow_state(uuid) from public;
+grant execute on function public.follow_state(uuid) to anon, authenticated;
+
+-- ---------- avvisi ----------
+create table if not exists public.notifications (
+  id bigint generated always as identity primary key,
+  -- chi riceve l'avviso
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  kind text not null check (kind in ('deck_published', 'live', 'guide_published')),
+  -- chi ha fatto la cosa (pubblicato il mazzo o la guida, avviato la diretta)
+  actor_id uuid not null references public.profiles(id) on delete cascade,
+  -- percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente>
+  target text not null check (char_length(target) between 2 and 160 and target ~ '^/[a-z0-9][a-z0-9/_-]*$'),
+  -- l'evento (percorso del mazzo o della guida, twitch:<id della diretta>): un avviso per evento e per utente
+  event_key text not null check (char_length(event_key) between 1 and 200),
+  created_at timestamptz not null default now(),
+  read_at timestamptz,
+  constraint notifications_once unique (user_id, kind, event_key)
+);
+create index if not exists notifications_user_idx on public.notifications (user_id, created_at desc);
+create index if not exists notifications_unread_idx on public.notifications (user_id) where read_at is null;
+create index if not exists notifications_created_idx on public.notifications (created_at);
+create index if not exists notifications_actor_idx on public.notifications (actor_id);
+comment on table public.notifications is 'Avvisi per chi segue (pacchetto SEGUI, 27/09/2026): mazzo pubblicato, diretta su Twitch, guida pubblicata. Scritti solo da notify_followers e notify_live, letti e segnati come letti solo dal destinatario. Durano 90 giorni.';
+
+create table if not exists public.notification_events (
+  kind text not null check (kind in ('deck_published', 'live', 'guide_published')),
+  event_key text not null check (char_length(event_key) between 1 and 200),
+  actor_id uuid not null references public.profiles(id) on delete cascade,
+  recipients integer not null default 0,
+  -- false: diretta soppressa dalla pausa di 3 ore (nessun avviso partito); non conta per la pausa successiva
+  sent boolean not null default true,
+  created_at timestamptz not null default now(),
+  -- l'autore nella chiave: due profili sullo stesso canale Twitch hanno ognuno il suo evento, e nessuno può "prenotare"
+  -- il percorso del mazzo o della guida di un altro
+  primary key (kind, actor_id, event_key)
+);
+create index if not exists notification_events_actor_idx on public.notification_events (actor_id, kind, created_at desc);
+create index if not exists notification_events_created_idx on public.notification_events (created_at);
+comment on table public.notification_events is 'Registro degli invii di avvisi (pacchetto SEGUI), uno per autore ed evento, senza i nomi dei destinatari: dedupe, tetto di 10 al giorno per autore e tipo, 3 ore fra due avvisi di diretta partiti davvero (sent). Dura 180 giorni. Nessun client la legge.';
+
+create table if not exists public.notify_keys (
+  name text primary key check (name in ('live')),
+  key_hash text not null check (key_hash ~ '^[0-9a-f]{64}$'),
+  updated_at timestamptz not null default now()
+);
+comment on table public.notify_keys is 'Impronta SHA-256 del segreto CRON_SECRET della rotta /api/cron/live (scripts/set-cron-key.mjs). Nessun client la legge.';
+
+alter table public.notifications enable row level security;
+alter table public.notification_events enable row level security;
+alter table public.notify_keys enable row level security;
+
+drop policy if exists "notifications read own" on public.notifications;
+create policy "notifications read own" on public.notifications for select to authenticated
+  using (user_id = (select auth.uid()));
+-- Nessuna scrittura diretta: policy restrittive (una riga deve passarle tutte), come nel blocco INBOX. Le funzioni
+-- security definer girano come proprietario delle tabelle e non le vedono.
+drop policy if exists "notifications no direct insert" on public.notifications;
+create policy "notifications no direct insert" on public.notifications as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "notifications no direct update" on public.notifications;
+create policy "notifications no direct update" on public.notifications as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "notifications no direct delete" on public.notifications;
+create policy "notifications no direct delete" on public.notifications as restrictive for delete to anon, authenticated using (false);
+-- notification_events e notify_keys: RLS senza policy (nessuna riga per anon e authenticated) e nessun grant
+drop policy if exists "notification events no direct access" on public.notification_events;
+create policy "notification events no direct access" on public.notification_events as restrictive for all to anon, authenticated using (false) with check (false);
+drop policy if exists "notify keys no direct access" on public.notify_keys;
+create policy "notify keys no direct access" on public.notify_keys as restrictive for all to anon, authenticated using (false) with check (false);
+
+revoke all on public.notifications, public.notification_events, public.notify_keys from anon, authenticated;
+-- la sola lettura, per colonna: fuori `event_key`, che al sito non serve
+grant select (id, user_id, kind, actor_id, target, created_at, read_at) on public.notifications to authenticated;
+
+-- ---------- funzioni interne (nessun client le esegue direttamente) ----------
+
+-- Pulizia: avvisi oltre i 90 giorni, registro degli invii oltre i 180 (indici su created_at). Gira dal cron
+-- (notifications_cleanup), a ogni invio (notify_fanout) e a ogni "segna come letti".
+create or replace function public.notifications_prune()
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  delete from public.notifications where created_at < now() - interval '90 days';
+  delete from public.notification_events where created_at < now() - interval '180 days';
+end $$;
+revoke all on function public.notifications_prune() from public, anon, authenticated;
+
+-- Il segreto del cron è quello registrato? (`p_key` = CRON_SECRET, almeno 32 caratteri, confrontato con la sua impronta
+-- SHA-256 in notify_keys.) La usano notify_live e notifications_cleanup, che girano per anon.
+create or replace function public.notify_key_ok(p_key text)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select p_key is not null and char_length(p_key) between 32 and 256
+    and exists (select 1 from public.notify_keys k where k.name = 'live' and k.key_hash = encode(sha256(convert_to(p_key, 'UTF8')), 'hex'));
+$$;
+revoke all on function public.notify_key_ok(text) from public, anon, authenticated;
+
+-- Un avviso per ogni follower di `actor`, una volta per evento (`event_key`); registra l'evento dell'autore con i
+-- destinatari (sent = true). Chi chiama ha già fatto i controlli (chi è l'autore, che cosa ha pubblicato, che l'evento
+-- non ci sia già) e tiene il lock dell'autore.
+create or replace function public.notify_fanout(p_actor uuid, p_kind text, p_target text, p_event text)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n integer;
+begin
+  insert into public.notifications (user_id, kind, actor_id, target, event_key)
+    select f.follower, p_kind, p_actor, p_target, p_event from public.follows f where f.followed = p_actor
+    on conflict (user_id, kind, event_key) do nothing;
+  get diagnostics n = row_count;
+  insert into public.notification_events (kind, event_key, actor_id, recipients) values (p_kind, p_event, p_actor, n)
+    on conflict (kind, actor_id, event_key) do nothing;
+  perform public.notifications_prune();
+  return n;
+end $$;
+revoke all on function public.notify_fanout(uuid, text, text, text) from public, anon, authenticated;
+
+-- ---------- RPC per il sito ----------
+-- Errori con raise exception '<codice>': li traduce `notificationErrorCode` in src/lib/community/notifications.ts.
+
+-- Avviso ai follower di chi ha appena pubblicato un mazzo o una guida. Lo chiama la Server Action di pubblicazione con
+-- la sessione di chi ha agito (dentro after(), `notifyFollowers` in src/lib/community/notify.ts). L'autore dell'avviso è
+-- SEMPRE il proprietario della riga pubblicata, verificato qui, mai solo un nome passato da chi chiama:
+--   - un mazzo: `/decks/community/<slug>`, riga di community_decks pubblicata;
+--   - una guida (pacchetto GUIDE): `/guides/community/<slug>` (slug di 3-60 caratteri, come community_guides_slug_check),
+--     riga di community_guides pubblicata. Finché la tabella del pacchetto GUIDE non c'è (to_regclass nullo) nessuna guida
+--     esiste e la risposta è 'not_found'; la lettura è dinamica (execute), così la funzione si crea anche senza tabella.
+-- `p_actor` è l'autore atteso (assente = chi chiama) e deve essere il proprietario della riga ('not_found' se no). Chi
+-- chiama deve essere l'autore stesso, oppure lo staff (is_staff(): admin o ruolo Staff) quando pubblica per conto suo;
+-- chiunque altro riceve 'forbidden'. Solo i ruoli con vetrina hanno follower: per gli altri non succede nulla (0). Una
+-- volta per autore e per mazzo o guida; al massimo 10 invii al giorno per autore e tipo (poi 0, senza errore: la
+-- pubblicazione è già riuscita). Restituisce quanti avvisi sono partiti.
+-- La firma a due argomenti della prima versione (mai applicata al database vivo) si toglie, se c'è: con tutte e due le
+-- firme una chiamata con due argomenti sarebbe ambigua.
+drop function if exists public.notify_followers(text, text);
+create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_actor uuid := coalesce(p_actor, auth.uid());
+  v_target text := btrim(coalesce(p_target, ''));
+  v_owner uuid;
+  v_badge text;
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if p_kind is null or p_kind not in ('deck_published', 'guide_published') then raise exception 'bad_kind'; end if;
+  if char_length(v_target) > 160 then raise exception 'bad_target'; end if;
+  if v_actor <> me and not public.is_staff() then raise exception 'forbidden'; end if;
+  if p_kind = 'deck_published' then
+    if v_target !~ '^/decks/community/[a-z0-9-]{1,80}$' then raise exception 'bad_target'; end if;
+    -- '/decks/community/' sono 17 caratteri: lo slug comincia dal diciottesimo
+    select d.owner into v_owner from public.community_decks d where d.slug = substr(v_target, 18) and d.status = 'published';
+  else
+    -- '/guides/community/' sono 18 caratteri: lo slug (3-60) comincia dal diciannovesimo
+    if v_target !~ '^/guides/community/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 21 and 78 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_guides') is null then raise exception 'not_found'; end if;
+    execute 'select g.owner from public.community_guides g where g.slug = $1 and g.status = ''published'''
+      into v_owner using substr(v_target, 19);
+  end if;
+  if v_owner is null or v_owner <> v_actor then raise exception 'not_found'; end if;
+  select p.badge into v_badge from public.profiles p where p.id = v_actor;
+  if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
+  perform pg_advisory_xact_lock(hashtext('om_notify:' || v_actor::text));
+  if exists (select 1 from public.notification_events e where e.kind = p_kind and e.actor_id = v_actor and e.event_key = v_target) then return 0; end if;
+  select count(*) into n from public.notification_events e
+   where e.actor_id = v_actor and e.kind = p_kind and e.created_at > now() - interval '1 day';
+  if n >= 10 then return 0; end if;
+  return public.notify_fanout(v_actor, p_kind, v_target, v_target);
+end $$;
+revoke all on function public.notify_followers(text, text, uuid) from public, anon;
+grant execute on function public.notify_followers(text, text, uuid) to authenticated;
+
+-- Avviso ai follower di chi è appena andato in diretta su Twitch con Origins TCG. Lo chiama la rotta /api/cron/live (cron
+-- di Vercel ogni 10 minuti, src/app/api/cron/live/route.ts) senza sessione, quindi come anon: parte solo con il segreto
+-- giusto (`p_key` = CRON_SECRET, notify_key_ok). Chi sia in diretta lo decide la rotta con le API di Twitch; qui si
+-- controlla che il profilo sia vetrina e abbia un canale Twitch. Una volta per persona e per diretta (id della diretta di
+-- Twitch: due profili sullo stesso canale hanno ognuno il suo avviso) e al massimo un avviso ogni 3 ore per persona: una
+-- diretta interrotta e ripresa ha un id nuovo, e se l'ultimo avviso PARTITO è di meno di 3 ore fa non ne parte un altro
+-- (l'evento resta segnato con sent = false, che non sposta la finestra: conta solo l'ultimo avviso partito davvero).
+-- L'avviso porta alla pagina /u/<nome utente>, con il badge LIVE e il link al canale.
+create or replace function public.notify_live(p_key text, p_actor uuid, p_stream_id text)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_event text;
+  v_username text;
+  v_badge text;
+  v_links jsonb;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  if p_stream_id is null or p_stream_id !~ '^[0-9]{1,40}$' then raise exception 'bad_target'; end if;
+  select p.username, p.badge, p.links into v_username, v_badge, v_links from public.profiles p where p.id = p_actor;
+  if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
+  if v_username is null or v_username !~ '^[a-z0-9_-]{1,60}$' then return 0; end if;
+  if jsonb_typeof(v_links) is distinct from 'array'
+     or not exists (select 1 from jsonb_array_elements(v_links) as t(e) where t.e->>'kind' = 'twitch') then
+    return 0;
+  end if;
+  v_event := 'twitch:' || p_stream_id;
+  perform pg_advisory_xact_lock(hashtext('om_notify:' || p_actor::text));
+  -- questa diretta di questa persona c'è già (annunciata o soppressa)
+  if exists (select 1 from public.notification_events e where e.kind = 'live' and e.actor_id = p_actor and e.event_key = v_event) then return 0; end if;
+  -- pausa dall'ultimo avviso di diretta partito davvero (sent): una diretta soppressa non sposta la finestra
+  if exists (select 1 from public.notification_events e where e.actor_id = p_actor and e.kind = 'live' and e.sent and e.created_at > now() - interval '3 hours') then
+    insert into public.notification_events (kind, event_key, actor_id, recipients, sent) values ('live', v_event, p_actor, 0, false)
+      on conflict (kind, actor_id, event_key) do nothing;
+    return 0;
+  end if;
+  return public.notify_fanout(p_actor, 'live', '/u/' || v_username, v_event);
+end $$;
+revoke all on function public.notify_live(text, uuid, text) from public;
+grant execute on function public.notify_live(text, uuid, text) to anon, authenticated;
+
+-- Pulizia periodica dal cron (/api/cron/live, ogni 10 minuti, anche senza dirette e senza le chiavi di Twitch), con lo
+-- stesso segreto di notify_live: gli avvisi oltre i 90 giorni e il registro oltre i 180 si cancellano anche quando per
+-- settimane non parte nessun avviso.
+create or replace function public.notifications_cleanup(p_key text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  perform public.notifications_prune();
+end $$;
+revoke all on function public.notifications_cleanup(text) from public;
+grant execute on function public.notifications_cleanup(text) to anon, authenticated;
+
+-- Segna come letti i propri avvisi: tutti (`p_ids` nullo, "Segna tutte come lette") o quelli indicati (al massimo 200:
+-- il clic su un avviso). Restituisce quanti ne ha segnati. Passa anche la pulizia (notifications_prune).
+create or replace function public.notifications_mark_read(p_ids bigint[] default null)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if p_ids is not null and cardinality(p_ids) > 200 then raise exception 'too_many'; end if;
+  update public.notifications set read_at = now()
+   where user_id = me and read_at is null and (p_ids is null or id = any (p_ids));
+  get diagnostics n = row_count;
+  perform public.notifications_prune();
+  return n;
+end $$;
+revoke all on function public.notifications_mark_read(bigint[]) from public, anon;
+grant execute on function public.notifications_mark_read(bigint[]) to authenticated;
+
+-- ===== 27/09/2026: TRAGUARDI =====
+-- =====================================================================================================
+-- Traguardi, numeri pubblici e tornei in evidenza sul profilo /u (pacchetto TRAGUARDI, ondata 2 dei profili).
+-- Pierluigi, 27/09/2026: "OK A TUTTO, OTTIMO!!" alle proposte per i profili (traguardi, numeri pubblici del creator
+-- "se lui vuole", tornei del creator in evidenza).
+-- =====================================================================================================
+-- DA ACCODARE IN FONDO A supabase/schema.sql (lo fa l'integratore): scripts/db-migrate.mjs applica il file intero a
+-- ogni migrazione, quindi tutto qui è idempotente (add column if not exists, create or replace, drop ... if exists).
+-- ORDINE: questo blocco sta DOPO `revoke update on public.profiles from anon, authenticated;` (commit 6c6756d) e dopo
+-- i blocchi CREATOR e STATS di schema.sql: usa `profiles.badge`, `deck_stats_daily`, `is_admin()`. Nessuna revoke su
+-- public.profiles qui dentro (cancellerebbe le grant per colonna, vedi scripts/schema-guard.mjs).
+--
+-- Cosa c'è:
+--   1) profiles.show_stats: il creator sceglie da /account se mostrare i suoi numeri sulla vetrina. Solo i ruoli con
+--      vetrina (Creator, Autore, Pro, Staff: SHOWCASE_BADGES in src/lib/community/badges.ts). Grant di UPDATE sulla sola
+--      colonna (mai sull'intera tabella) e un trigger che la difende: un profilo della community non può accenderla, e
+--      chi perde il ruolo con vetrina la ritrova spenta.
+--   2) profile_public_stats(pid): i totali dei mazzi pubblicati (mazzi, visite, copie del codice del gioco, voti
+--      ricevuti) di un profilo con show_stats acceso; per tutti gli altri nessuna riga. Security definer perché
+--      deck_stats_daily è privata: la funzione restituisce SOLO somme, mai le righe per giorno o per mazzo.
+--   3) profile_achievement_facts(pid): i fatti dei traguardi che il sito non ha già in pagina (tornei giocati,
+--      organizzati e vinti, mesi da "mazzo del mese"). Security INVOKER: legge con i permessi di chi chiama, quindi
+--      per la pagina /u (client anonimo) vede solo quello che è già pubblico (mazzi pubblicati, voti, tornei pubblici,
+--      policy can_view_tournament), e in più filtra da sé su tornei pubblici con una finale valida e mazzi pubblicati.
+--      Più un indice su deck_votes(created_at) per il "mazzo del mese".
+-- Nessuna tabella nuova: i traguardi si calcolano dai dati che ci sono (regole e soglie in
+-- src/lib/community/achievements.ts, con test che confrontano i numeri e i ruoli di questo file con il codice).
+
+-- ---------- 1) numeri pubblici della vetrina: la scelta del creator ----------
+alter table public.profiles add column if not exists show_stats boolean not null default false;
+comment on column public.profiles.show_stats is 'Il profilo mostra sulla vetrina /u i totali dei suoi mazzi pubblicati (visite, copie del codice, voti, mazzi). Solo Creator, Autore, Pro e Staff; la sceglie l''utente da /account (27/09/2026, pacchetto TRAGUARDI).';
+
+-- Difesa della colonna: un utente senza ruolo con vetrina non la accende (errore esplicito, anche via API con la chiave
+-- pubblica); qualsiasi aggiornamento di un profilo senza ruolo con vetrina la rimette a false, così chi perde il ruolo
+-- (scripts/set-badge.mjs, connessione diretta) non continua a mostrare i numeri. Un admin (is_admin()) non riceve
+-- l'errore, ma anche per lui vale la regola del ruolo. Stesso elenco di SHOWCASE_BADGES (achievements.test.ts).
+create or replace function public.guard_profile_show_stats()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if new.show_stats and new.badge not in ('creator', 'author', 'pro', 'staff') then
+    if old.show_stats is distinct from new.show_stats and auth.uid() is not null and not public.is_admin() then
+      raise exception 'show_stats_not_allowed';
+    end if;
+    new.show_stats := false;
+  end if;
+  return new;
+end $$;
+drop trigger if exists profiles_guard_show_stats on public.profiles;
+create trigger profiles_guard_show_stats before update on public.profiles
+  for each row execute function public.guard_profile_show_stats();
+
+-- La scrittura concessa: la sola colonna show_stats della propria riga (policy "users edit own profile" di schema.sql).
+-- MAI un grant di UPDATE sull'intera tabella (6c6756d). La stessa istruzione sta in PROFILES_GRANTS di
+-- scripts/schema-guard.mjs, che rifiuta ogni altra grant su public.profiles.
+grant update (show_stats) on public.profiles to authenticated;
+
+-- ---------- 2) i numeri pubblici: solo aggregati, solo con show_stats ----------
+-- Una riga per un profilo con show_stats acceso e un ruolo con vetrina, nessuna per tutti gli altri. Solo i mazzi
+-- pubblicati (non i nascosti né i privati); voti = voti ricevuti su quei mazzi; `since` = primo giorno con un dato
+-- (le statistiche esistono dal 26/09/2026). Sono stime, come nel pannello "Le tue statistiche" (blocco STATS).
+create or replace function public.profile_public_stats(pid uuid)
+returns table (decks integer, views bigint, code_copies bigint, votes bigint, since date)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with shown as (
+    select p.id from public.profiles p
+    where p.id = pid and p.show_stats and p.badge in ('creator', 'author', 'pro', 'staff')
+  ),
+  d as (
+    select cd.id from public.community_decks cd join shown s on s.id = cd.owner where cd.status = 'published'
+  ),
+  totals as (
+    select coalesce(sum(x.views), 0)::bigint as views, coalesce(sum(x.code_copies), 0)::bigint as code_copies, min(x.day) as since
+    from public.deck_stats_daily x where x.deck_id in (select d.id from d)
+  )
+  select
+    (select count(*) from d)::integer,
+    t.views,
+    t.code_copies,
+    (select count(*) from public.deck_votes v where v.deck_id in (select d.id from d))::bigint,
+    t.since
+  from totals t
+  where exists (select 1 from shown);
+$$;
+-- La legge la pagina /u, ISR con il client anonimo: serve anche ad anon.
+revoke all on function public.profile_public_stats(uuid) from public;
+grant execute on function public.profile_public_stats(uuid) to anon, authenticated;
+
+-- ---------- 3) i fatti dei traguardi che la pagina non ha già ----------
+-- Tornei (revisione del 27/09/2026): contano solo i tornei pubblici finiti con una FINALE VALIDA, la stessa condizione
+-- di finish_tournament (partita in posizione 0 dell'ultimo turno, confermata o bye, con un vincitore). `status` da solo
+-- non basta: l'organizzatore lo può scrivere via API (grant update sull'intera tabella tournaments), mentre le partite
+-- si scrivono solo con le RPC. "Giocato": il profilo è in una partita del tabellone. "Vinto": vincitore della finale (la
+-- regola di `standings` in src/lib/tournament/bracket.ts). `first` = la prima finale (ultima modifica della partita di
+-- finale, scritta solo dalle RPC), non `starts_at`, che l'organizzatore può spostare anche nel futuro.
+-- Restano fuori i tornei di prova dello staff con i bot di scripts/seed-bots.mjs (nome utente bot-<n>, o bot-<n>-<k> se
+-- il nome era preso: SEED_BOT_USERNAME in src/lib/community/achievements.ts, il test controlla che coincida).
+-- Si parte dai tornei del profilo (organizzati o giocati), non da tutti quelli del sito: anon può chiamare la funzione
+-- con qualsiasi pid, e il costo non deve crescere con il sito.
+-- Mazzo del mese: per ogni mese UTC già chiuso, i mazzi pubblicati con più voti POSITIVI (4 o 5 stelle) ricevuti in quel
+-- mese, almeno 3, pari merito compresi: un mazzo con tre voti da una stella non è "del mese". Il massimo del sito si
+-- calcola solo nei mesi in cui un mazzo del profilo ha almeno 3 voti positivi. `top_months` = quei mesi, 'YYYY-MM'.
+create or replace function public.profile_achievement_facts(pid uuid)
+returns jsonb language sql stable security invoker set search_path = public, pg_temp as $$
+  with played_ids as (
+    select m.tournament_id as id from public.tournament_matches m where m.player_a = pid
+    union
+    select m.tournament_id from public.tournament_matches m where m.player_b = pid
+  ),
+  mine as (
+    select p.id from played_ids p
+    union
+    select t.id from public.tournaments t where t.organizer = pid
+  ),
+  pub as (
+    select t.id, t.organizer, f.winner, f.updated_at as done_at
+    from mine
+    join public.tournaments t on t.id = mine.id
+    join public.tournament_matches f on f.tournament_id = t.id
+    where t.status = 'finished' and t.visibility = 'public'
+      and f.position = 0 and f.status in ('confirmed', 'bye') and f.winner is not null
+      and f.round = (select max(r.round) from public.tournament_matches r where r.tournament_id = t.id)
+      and not exists (
+        select 1 from public.tournament_players tp join public.profiles bp on bp.id = tp.user_id
+        where tp.tournament_id = t.id and bp.username ~ '^bot-[0-9]+(-[0-9]+)?$'
+      )
+  ),
+  my_months as (
+    select date_trunc('month', v.created_at at time zone 'utc') as month, v.deck_id, count(*) as n
+    from public.community_decks d join public.deck_votes v on v.deck_id = d.id
+    where d.owner = pid and d.status = 'published' and v.stars >= 4
+      and v.created_at < date_trunc('month', now() at time zone 'utc') at time zone 'utc'
+    group by 1, 2
+    having count(*) >= 3
+  ),
+  rivals as (
+    select mm.month, max(x.n) as best
+    from (select distinct my.month from my_months my) mm
+    cross join lateral (
+      select count(*) as n
+      from public.deck_votes v join public.community_decks d on d.id = v.deck_id and d.status = 'published'
+      where v.stars >= 4 and v.created_at >= mm.month at time zone 'utc' and v.created_at < (mm.month + interval '1 month') at time zone 'utc'
+      group by v.deck_id
+    ) x
+    group by mm.month
+  )
+  select jsonb_build_object(
+    'played', (select jsonb_build_object('count', count(*), 'first', min(pub.done_at)) from pub join played_ids p on p.id = pub.id),
+    'organized', (select jsonb_build_object('count', count(*), 'first', min(pub.done_at)) from pub where pub.organizer = pid),
+    'won', (select jsonb_build_object('count', count(*), 'first', min(pub.done_at)) from pub where pub.winner = pid),
+    'top_months', coalesce((
+      select jsonb_agg(distinct to_char(mm.month, 'YYYY-MM'))
+      from my_months mm join rivals r on r.month = mm.month
+      where mm.n >= r.best
+    ), '[]'::jsonb)
+  );
+$$;
+-- Il massimo di un mese legge solo i voti di quel mese.
+create index if not exists deck_votes_created_idx on public.deck_votes (created_at);
+revoke all on function public.profile_achievement_facts(uuid) from public;
+grant execute on function public.profile_achievement_facts(uuid) to anon, authenticated;
+
+comment on function public.profile_public_stats(uuid) is 'Totali dei mazzi pubblicati di un profilo con show_stats (vetrina /u): mazzi, visite, copie del codice, voti ricevuti. Solo aggregati; le righe di deck_stats_daily restano private (27/09/2026).';
+comment on function public.profile_achievement_facts(uuid) is 'Fatti pubblici per i traguardi di /u: tornei pubblici finiti con una finale valida (senza i bot di prova) giocati, organizzati e vinti, mesi da mazzo del mese (voti da 4 o 5 stelle). Security invoker (27/09/2026).';
+
+-- ===== 27/09/2026: GUIDE =====
+-- =====================================================================================================
+-- GUIDE DELLA COMMUNITY PUBBLICATE DIRETTAMENTE DAI RUOLI (pacchetto GUIDE, 27/09/2026)
+-- Richiesta di Pierluigi ("OK A TUTTO, OTTIMO!!" alle proposte per i profili del 27/09/2026): chi ha il ruolo Autore,
+-- Creator, Pro o Staff (o è admin) pubblica le sue guide sul sito senza passare dallo staff; gli altri continuano con
+-- il modulo "Mandaci la tua guida" (/guides/submit). Codice: src/lib/community/guides.ts (regole pure, con test in
+-- guides.test.ts che confrontano limiti, categorie, copertine e ruoli con questo file), guideQueries.ts (letture),
+-- guideActions.ts (Server Action), guideTranslate.ts e guideTranslateCore.ts (traduzione automatica), pagine
+-- /guides/new, /guides/community, /guides/community/[slug] e /guides/community/[slug]/edit. Documentazione:
+-- docs/guide-community.md.
+--
+-- File da accodare IN FONDO a supabase/schema.sql (lo fa l'integratore): usa funzioni definite prima là dentro
+-- (is_staff del blocco INBOX, deck_videos_ok e deck_links_ok del blocco VIDEO; touch non serve: il trigger qui sotto
+-- scrive da solo le date). NON tocca public.profiles: nessuna grant, nessuna revoke (schema-guard.mjs resta com'è).
+-- Idempotente: create ... if not exists, add column if not exists, create or replace, drop policy/constraint if exists.
+--
+-- Sicurezza, in breve:
+--   - il permesso di scrivere sta in UNA funzione, can_publish_guides(uid), uguale a canPublishGuides di
+--     src/lib/community/badges.ts (Autore, Creator, Pro, Staff e admin; guides.test.ts e badges.test.ts li confrontano);
+--   - RLS: le guide pubblicate le legge chiunque; bozze e nascoste solo il proprietario e lo staff (is_staff());
+--     insert e update solo con can_publish_guides(auth.uid()), sulla propria riga (lo staff anche sulle altre, per
+--     nasconderle); delete del proprietario e dello staff;
+--   - grant minime e PER COLONNA per insert e update: slug, owner, date e published_at non si cambiano mai via API;
+--   - il trigger guard_community_guide scrive le date, tiene i tetti (100 guide per account; 10 nuove e 3 prime
+--     pubblicazioni al giorno contate su un REGISTRO che l'utente non può cancellare, community_guide_events: eliminare
+--     e ricreare una guida non azzera nulla), riserva lo stato 'hidden' allo staff e, dopo che lo staff ha nascosto una
+--     guida, per 24 ore non lascia pubblicare altro al proprietario (una guida nascosta non torna online eliminandola e
+--     ripubblicandola identica); controlla le traduzioni scritte (testo semplice, stesse sezioni dell'originale);
+--   - testo semplice: niente caratteri di controllo (a capo ammessi solo in riassunto e corpo delle sezioni), niente
+--     invisibili, riempitivi (Hangul, Braille vuoto) né segni di direzione del testo, al massimo una riga vuota di fila
+--     (anche se "vuota" di spazi Unicode); il sito lo mostra come testo;
+--   - copertina caricata (cover_path) solo nella cartella del proprietario e solo per i ruoli con vetrina; il bucket
+--     lo porta il pacchetto VETRINA (finché non c'è, il sito usa solo le copertine preimpostate del media kit).
+-- =====================================================================================================
+
+-- ---------- chi può pubblicare le guide ----------
+-- Stessi ruoli di GUIDE_BADGES in src/lib/community/badges.ts (più gli admin): due colonne che l'utente non cambia
+-- (revoke update on profiles e trigger protect_profile_badge). Security definer: legge profiles con i privilegi del
+-- proprietario, ma dice solo sì o no (e i ruoli sono comunque pubblici).
+create or replace function public.can_publish_guides(uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select uid is not null and exists (
+    select 1 from public.profiles p
+     where p.id = uid and (p.role = 'admin' or p.badge in ('author','creator','pro','staff'))
+  );
+$$;
+-- La usano le policy di insert e update (solo authenticated).
+revoke all on function public.can_publish_guides(uuid) from public, anon;
+grant execute on function public.can_publish_guides(uuid) to authenticated, service_role;
+
+-- ---------- testo semplice ----------
+-- Da `minlen` a `maxlen` caratteri (punti di codice, come `char_length`), almeno un carattere che non sia uno spazio
+-- (nemmeno uno spazio Unicode: NBSP, spazio ideografico…), niente caratteri di controllo (con `multiline` l'a capo è
+-- ammesso), niente separatori di riga Unicode, niente trattino morbido, segni di direzione del testo, invisibili e
+-- riempitivi (U+115F, U+1160, U+2060-2064, U+2800, U+3164, U+FFA0: con quelli un titolo sembra vuoto), al massimo una
+-- riga vuota di fila (le righe fatte solo di spazi Unicode contano come vuote), niente spazi in testa o in coda.
+-- Gli stessi controlli di `plainTextOk` in src/lib/community/guides.ts (il sito pulisce prima di scrivere; il test
+-- guides.test.ts confronta la lista degli invisibili con quella del codice).
+create or replace function public.community_guide_text_ok(t text, minlen integer, maxlen integer, multiline boolean)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select t is not null
+     and char_length(t) between minlen and maxlen
+     and (char_length(t) = 0 or (regexp_replace(t, '[[:space:]\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]', '', 'g') <> '' and t = btrim(t, E' \n')))
+     and (case when multiline then replace(t, chr(10), '') else t end) !~ '[[:cntrl:]]'
+     and t !~ '[\u2028\u2029]'
+     and translate(t, U&'\00AD\061C\115F\1160\200B\200E\200F\202A\202B\202C\202D\202E\2060\2061\2062\2063\2064\2066\2067\2068\2069\2800\3164\FEFF\FFA0', '') = t
+     and strpos(regexp_replace(t, '[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]', '', 'g'), repeat(chr(10), 3)) = 0;
+$$;
+
+-- Le sezioni: un array di oggetti con le sole chiavi heading e body. Una guida pubblicata (o nascosta) ha da 1 a 12
+-- sezioni con titolo (1-80, una riga) e testo (1-4000) pieni; una bozza da 0 a 12, con titolo e testo anche vuoti.
+-- I CASE fissano l'ordine dei controlli (Postgres non garantisce quello di AND/OR).
+create or replace function public.community_guide_sections_ok(s jsonb, complete boolean)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when s is null or jsonb_typeof(s) <> 'array' then false
+    when jsonb_array_length(s) > 12 then false
+    when complete and jsonb_array_length(s) < 1 then false
+    else not exists (
+      select 1 from jsonb_array_elements(s) as e(x)
+       where case
+         when jsonb_typeof(x) <> 'object' then true
+         when (x - 'heading' - 'body') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'heading') is distinct from 'string' then true
+         when jsonb_typeof(x -> 'body') is distinct from 'string' then true
+         when not public.community_guide_text_ok(x ->> 'heading', case when complete then 1 else 0 end, 80, false) then true
+         else not public.community_guide_text_ok(x ->> 'body', case when complete then 1 else 0 end, 4000, true)
+       end)
+  end;
+$$;
+
+-- Una traduzione salvata in `translations` (una lingua): {hash, at, model, parts, guide: {summary, sections}} con il
+-- testo che rispetta le regole del testo semplice, lo stesso numero di sezioni dell'originale (`n`) e lunghezze fino a
+-- 2,5 volte i massimi dell'originale più 200 (la tolleranza di `parseTranslation`; in guides.ts TRANSLATION_LIMITS e
+-- `translationTextOk`, confrontati dal test: una traduzione è più lunga dell'originale, non a piacere). Le traduzioni le
+-- scrive il sito con la sessione del proprietario: senza questo controllo chi ha il ruolo potrebbe metterci via API
+-- testo che le regole vietano.
+create or replace function public.community_guide_translation_ok(t jsonb, n integer)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when t is null or jsonb_typeof(t) is distinct from 'object' then false
+    when octet_length(t::text) > 190000 then false
+    when (t - 'hash' - 'at' - 'model' - 'parts' - 'guide') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'hash') is distinct from 'string' or char_length(t ->> 'hash') > 32 then false
+    when t ? 'at' and (jsonb_typeof(t -> 'at') is distinct from 'string' or char_length(t ->> 'at') > 40) then false
+    when t ? 'model' and (jsonb_typeof(t -> 'model') is distinct from 'string' or char_length(t ->> 'model') > 80) then false
+    when t ? 'parts' and (jsonb_typeof(t -> 'parts') is distinct from 'array' or jsonb_array_length(t -> 'parts') > 13) then false
+    when t ? 'parts' and exists (select 1 from jsonb_array_elements(t -> 'parts') as p(x) where jsonb_typeof(x) is distinct from 'string' or char_length(x #>> '{}') > 32) then false
+    when jsonb_typeof(t -> 'guide') is distinct from 'object' then false
+    when ((t -> 'guide') - 'summary' - 'sections') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'guide' -> 'summary') is distinct from 'string' then false
+    when not public.community_guide_text_ok(t -> 'guide' ->> 'summary', 1, 950, true) then false
+    when jsonb_typeof(t -> 'guide' -> 'sections') is distinct from 'array' then false
+    when jsonb_array_length(t -> 'guide' -> 'sections') <> n then false
+    else not exists (
+      select 1 from jsonb_array_elements(t -> 'guide' -> 'sections') as e(x)
+       where case
+         when jsonb_typeof(x) is distinct from 'object' then true
+         when (x - 'heading' - 'body') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'heading') is distinct from 'string' then true
+         when jsonb_typeof(x -> 'body') is distinct from 'string' then true
+         when not public.community_guide_text_ok(x ->> 'heading', 1, 400, false) then true
+         else not public.community_guide_text_ok(x ->> 'body', 1, 10200, true)
+       end)
+  end;
+$$;
+
+-- Le carte citate: slug del database carte del sito (il sito controlla che esistano), al massimo 24, senza doppioni.
+create or replace function public.community_guide_cards_ok(c text[])
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select c is not null
+     and cardinality(c) <= 24
+     and not exists (select 1 from unnest(c) as u(x) where x is null or x !~ '^[a-z0-9]([a-z0-9-]{0,78}[a-z0-9])?$')
+     and cardinality(c) = (select count(distinct x) from unnest(c) as u(x));
+$$;
+
+-- Funzioni pure dentro i vincoli e nel trigger: girano con i privilegi di chi scrive la riga (authenticated), niente anon.
+revoke all on function public.community_guide_text_ok(text, integer, integer, boolean) from public, anon;
+revoke all on function public.community_guide_sections_ok(jsonb, boolean) from public, anon;
+revoke all on function public.community_guide_translation_ok(jsonb, integer) from public, anon;
+revoke all on function public.community_guide_cards_ok(text[]) from public, anon;
+grant execute on function public.community_guide_text_ok(text, integer, integer, boolean) to authenticated, service_role;
+grant execute on function public.community_guide_sections_ok(jsonb, boolean) to authenticated, service_role;
+grant execute on function public.community_guide_translation_ok(jsonb, integer) to authenticated, service_role;
+grant execute on function public.community_guide_cards_ok(text[]) to authenticated, service_role;
+
+-- ---------- la tabella ----------
+create table if not exists public.community_guides (
+  id uuid primary key default gen_random_uuid(),
+  -- slug leggibile dal titolo più 4 caratteri casuali (newSlug, come i mazzi); non si cambia mai
+  slug text unique not null,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  -- lingua in cui l'autore ha scritto la guida; il sito la traduce nelle altre due (colonna translations)
+  lang text not null default 'en',
+  -- il titolo non si traduce (come il nome di un mazzo)
+  title text not null,
+  summary text not null default '',
+  sections jsonb not null default '[]'::jsonb,
+  category text not null default 'decks',
+  cards text[] not null default '{}'::text[],
+  -- video e risorse con le regole dei mazzi (blocco VIDEO: deck_videos_ok, deck_links_ok)
+  videos jsonb not null default '[]'::jsonb,
+  links jsonb not null default '[]'::jsonb,
+  -- copertina: un'immagine del media kit ufficiale in public/media (contenuto, come le copertine delle guide del sito;
+  -- GUIDE_COVERS in guides.ts) o un'immagine caricata dal proprietario (cover_path, pacchetto VETRINA)
+  cover_preset text not null default 'keyart-king-arthur',
+  cover_path text,
+  status text not null default 'draft',
+  -- traduzioni automatiche: {"it": {"hash": "…", "at": "…", "model": "…", "parts": [...], "guide": {"summary": "…", "sections": [...]}}}
+  translations jsonb not null default '{}'::jsonb,
+  -- parole del testo originale e impronta del testo (communityGuideWords e communityGuideHash di guides.ts), scritte dal
+  -- sito insieme al testo: servono agli elenchi e alla sitemap, che così non leggono sezioni e traduzioni intere
+  words integer,
+  text_hash text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  -- prima pubblicazione: la scrive solo il trigger; serve alla data dell'articolo
+  published_at timestamptz
+);
+alter table public.community_guides add column if not exists words integer;
+alter table public.community_guides add column if not exists text_hash text;
+alter table public.community_guides alter column cover_preset set default 'keyart-king-arthur';
+create index if not exists community_guides_status_idx on public.community_guides (status, published_at desc);
+create index if not exists community_guides_owner_idx on public.community_guides (owner, updated_at desc);
+
+-- Vincoli (tolti e rimessi: si possono cambiare in una migrazione successiva). Le regole dipendono dallo stato: una
+-- bozza si salva anche a metà, una guida pubblicata (o nascosta dallo staff) ha i minimi della pagina pubblica.
+alter table public.community_guides drop constraint if exists community_guides_slug_check;
+alter table public.community_guides add constraint community_guides_slug_check
+  check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+alter table public.community_guides drop constraint if exists community_guides_lang_check;
+alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es'));
+alter table public.community_guides drop constraint if exists community_guides_status_check;
+alter table public.community_guides add constraint community_guides_status_check check (status in ('draft','published','hidden'));
+alter table public.community_guides drop constraint if exists community_guides_title_check;
+alter table public.community_guides add constraint community_guides_title_check
+  check (public.community_guide_text_ok(title, case when status = 'draft' then 1 else 10 end, 110, false));
+alter table public.community_guides drop constraint if exists community_guides_summary_check;
+alter table public.community_guides add constraint community_guides_summary_check
+  check (public.community_guide_text_ok(summary, case when status = 'draft' then 0 else 120 end, 300, true));
+alter table public.community_guides drop constraint if exists community_guides_sections_check;
+alter table public.community_guides add constraint community_guides_sections_check
+  check (public.community_guide_sections_ok(sections, status <> 'draft'));
+alter table public.community_guides drop constraint if exists community_guides_category_check;
+alter table public.community_guides add constraint community_guides_category_check
+  check (category in ('game','decks','rank','archetypes','interviews','events','economy'));
+alter table public.community_guides drop constraint if exists community_guides_cards_check;
+alter table public.community_guides add constraint community_guides_cards_check check (public.community_guide_cards_ok(cards));
+alter table public.community_guides drop constraint if exists community_guides_videos_check;
+alter table public.community_guides add constraint community_guides_videos_check check (public.deck_videos_ok(videos));
+alter table public.community_guides drop constraint if exists community_guides_links_check;
+alter table public.community_guides add constraint community_guides_links_check check (public.deck_links_ok(links));
+-- GUIDE_COVER_PRESETS di guides.ts (il test li confronta, e controlla che i file esistano in public/media)
+alter table public.community_guides drop constraint if exists community_guides_cover_preset_check;
+alter table public.community_guides add constraint community_guides_cover_preset_check
+  check (cover_preset in ('keyart-king-arthur','keyart-mulan','keyart-queen-of-hearts','keyart-robin-hood','keyart-winnie-the-pooh','keyart-puss-in-boots','keyart-goldi','keyart-queen-of-hearts-cyber','keyart-red-wide','hero-1920','ls-two-ways','ls-zero-pay-to-win','ls-real-collecting','ls-collect-them-all','ls-collector-pack'));
+alter table public.community_guides drop constraint if exists community_guides_cover_path_check;
+alter table public.community_guides add constraint community_guides_cover_path_check
+  check (cover_path is null or (char_length(cover_path) <= 200
+    and cover_path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/([A-Za-z0-9_-]{1,60}/)?[A-Za-z0-9_-]{1,80}\.(png|jpg|jpeg|webp)$'));
+alter table public.community_guides drop constraint if exists community_guides_translations_check;
+alter table public.community_guides add constraint community_guides_translations_check
+  check (jsonb_typeof(translations) = 'object' and octet_length(translations::text) <= 400000);
+alter table public.community_guides drop constraint if exists community_guides_words_check;
+alter table public.community_guides add constraint community_guides_words_check check (words is null or words between 0 and 100000);
+alter table public.community_guides drop constraint if exists community_guides_text_hash_check;
+alter table public.community_guides add constraint community_guides_text_hash_check check (text_hash is null or text_hash ~ '^[0-9a-z]{1,16}$');
+
+-- ---------- registro per i tetti giornalieri ----------
+-- Una riga per ogni guida creata ('create'), per ogni prima pubblicazione ('publish') e per ogni guida nascosta dallo
+-- staff ('hide'). La scrive solo il trigger guard_community_guide (security definer); nessuno la legge o la cancella via
+-- API (RLS senza policy, nessuna grant): eliminare una guida non toglie le sue righe, quindi i tetti non si aggirano con
+-- pubblica → elimina → ricrea. Le righe più vecchie di una settimana le toglie il trigger stesso.
+create table if not exists public.community_guide_events (
+  id bigint generated always as identity primary key,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  kind text not null,
+  at timestamptz not null default now()
+);
+alter table public.community_guide_events drop constraint if exists community_guide_events_kind_check;
+alter table public.community_guide_events add constraint community_guide_events_kind_check check (kind in ('create','publish','hide'));
+create index if not exists community_guide_events_owner_idx on public.community_guide_events (owner, kind, at desc);
+alter table public.community_guide_events enable row level security;
+revoke all on public.community_guide_events from anon, authenticated;
+
+-- ---------- trigger: date, tetti, stato riservato allo staff, traduzioni, copertina ----------
+-- Privilegiato = lo staff (is_staff: admin o tag Staff) o una connessione diretta (auth.uid() nullo: script dello staff,
+-- traduzioni degli arretrati). Errori con codici letti da `guideErrorCode` in src/lib/community/guides.ts.
+create or replace function public.guard_community_guide()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  privileged boolean := me is null or public.is_staff();
+  n int;
+  k text;
+  v jsonb;
+begin
+  if tg_op = 'INSERT' then
+    new.created_at := now();
+    new.updated_at := now();
+    new.published_at := case when new.status = 'published' then now() else null end;
+    -- le richieste parallele dello stesso utente passano una alla volta: i tetti valgono anche così
+    perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
+    if not privileged then
+      if new.status not in ('draft', 'published') then raise exception 'guide_status' using errcode = '42501'; end if;
+      select count(*) into n from public.community_guides where owner = new.owner;
+      if n >= 100 then raise exception 'guide_limit' using errcode = '23514'; end if;
+      -- i tetti giornalieri contano il registro, non le guide ancora presenti
+      select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'create' and at > now() - interval '1 day';
+      if n >= 10 then raise exception 'guide_rate' using errcode = '23514'; end if;
+      if new.status = 'published' then
+        if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+          raise exception 'guide_hidden_recent' using errcode = '42501';
+        end if;
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    delete from public.community_guide_events where owner = new.owner and at < now() - interval '7 days';
+    insert into public.community_guide_events (owner, kind) values (new.owner, 'create');
+    if new.status = 'published' then insert into public.community_guide_events (owner, kind) values (new.owner, 'publish'); end if;
+  else
+    -- id, proprietario, slug e nascita non cambiano mai (le grant per colonna non li danno; questo vale anche per lo staff)
+    if me is not null and (new.id is distinct from old.id or new.owner is distinct from old.owner
+        or new.slug is distinct from old.slug or new.created_at is distinct from old.created_at) then
+      raise exception 'guide_reserved_fields' using errcode = '42501';
+    end if;
+    -- 'hidden' è la moderazione dello staff: il proprietario non la toglie e non la mette
+    if not privileged and (old.status = 'hidden' or new.status = 'hidden') then
+      raise exception 'guide_hidden' using errcode = '42501';
+    end if;
+    new.published_at := old.published_at;
+    -- una guida che va (o torna) online: niente per 24 ore dopo una guida nascosta dallo staff; la prima pubblicazione
+    -- conta nel tetto giornaliero
+    if new.status = 'published' and old.status is distinct from 'published' and not privileged then
+      perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
+      if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+        raise exception 'guide_hidden_recent' using errcode = '42501';
+      end if;
+      if old.published_at is null then
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    if new.status = 'published' and old.published_at is null then
+      new.published_at := now();
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'publish');
+    end if;
+    if new.status = 'hidden' and old.status is distinct from 'hidden' then
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'hide');
+    end if;
+    -- parole e impronta le scrive il sito insieme al testo: se il testo cambia senza una nuova impronta (una scrittura
+    -- via API che non passa dal sito), si azzerano e gli elenchi trattano la guida come da ricontare (non indicizzabile)
+    if (new.lang, new.summary, new.sections) is distinct from (old.lang, old.summary, old.sections)
+       and new.text_hash is not distinct from old.text_hash then
+      new.words := null;
+      new.text_hash := null;
+    end if;
+    -- traduzioni: ogni lingua cambiata deve essere un'altra lingua del sito e rispettare le regole del testo semplice,
+    -- con le stesse sezioni del testo attuale (vale per tutti, staff e script compresi)
+    if new.translations is distinct from old.translations then
+      for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
+        if v is distinct from (old.translations -> k) then
+          if k not in ('en', 'it', 'es') or k = new.lang
+             or not public.community_guide_translation_ok(v, jsonb_array_length(new.sections)) then
+            raise exception 'guide_translation' using errcode = '23514';
+          end if;
+        end if;
+      end loop;
+    end if;
+    -- la data di aggiornamento è quella dell'autore: scrivere le traduzioni non la sposta (come i mazzi)
+    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash')
+        is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash') then
+      new.updated_at := now();
+    else
+      new.updated_at := old.updated_at;
+    end if;
+  end if;
+  -- copertina caricata: solo nella cartella del proprietario e solo per i ruoli con vetrina (SHOWCASE_BADGES di badges.ts)
+  if new.cover_path is not null and (tg_op = 'INSERT' or new.cover_path is distinct from old.cover_path) then
+    if split_part(new.cover_path, '/', 1) <> new.owner::text then raise exception 'guide_cover_path' using errcode = '42501'; end if;
+    if not exists (select 1 from public.profiles p where p.id = new.owner and (p.role = 'admin' or p.badge in ('creator','author','pro','staff'))) then
+      raise exception 'guide_cover_role' using errcode = '42501';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_community_guide() from public, anon, authenticated;
+drop trigger if exists community_guides_guard on public.community_guides;
+create trigger community_guides_guard before insert or update on public.community_guides
+  for each row execute function public.guard_community_guide();
+
+-- ---------- RLS ----------
+alter table public.community_guides enable row level security;
+
+-- Le pubblicate le legge chiunque. Una policy a parte per le altre: is_staff() non si esegue come anon.
+drop policy if exists "community guides: published are public" on public.community_guides;
+create policy "community guides: published are public" on public.community_guides for select to anon, authenticated
+  using (status = 'published');
+drop policy if exists "community guides: owners and staff read all" on public.community_guides;
+create policy "community guides: owners and staff read all" on public.community_guides for select to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()));
+drop policy if exists "community guides: roles insert own" on public.community_guides;
+create policy "community guides: roles insert own" on public.community_guides for insert to authenticated
+  with check (owner = (select auth.uid()) and public.can_publish_guides((select auth.uid())));
+drop policy if exists "community guides: owners and staff update" on public.community_guides;
+create policy "community guides: owners and staff update" on public.community_guides for update to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()))
+  with check (public.can_publish_guides((select auth.uid())) and (owner = (select auth.uid()) or (select public.is_staff())));
+drop policy if exists "community guides: owners and staff delete" on public.community_guides;
+create policy "community guides: owners and staff delete" on public.community_guides for delete to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()));
+
+-- Grant minime (Supabase dà ALL di default ad anon e authenticated sulle tabelle nuove): lettura per tutti, scrittura
+-- per chi ha fatto l'accesso e solo sulle colonne che il sito scrive. La revoke sulla tabella toglie anche le grant per
+-- colonna, quindi il blocco si può rilanciare.
+revoke all on public.community_guides from anon, authenticated;
+grant select on public.community_guides to anon, authenticated;
+grant insert (slug, owner, lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status, words, text_hash)
+  on public.community_guides to authenticated;
+grant update (lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status, translations, words, text_hash)
+  on public.community_guides to authenticated;
+grant delete on public.community_guides to authenticated;
+
+-- ---------- segnalazioni (gemella di deck_reports) ----------
+-- Una per utente e per guida; solo sulle guide pubblicate e mai sulla propria; le legge lo staff (e ognuno le sue).
+-- Il sito avvisa il canale privato dello staff su Discord (DISCORD_FEEDBACK_WEBHOOK_URL) solo alla prima segnalazione
+-- di una guida nelle 24 ore (`first_in_day`, scritta dal trigger): una raffica di segnalazioni non riempie il canale.
+-- Si cancellano con l'account di chi le ha fatte (on delete cascade, come dice l'informativa).
+create table if not exists public.community_guide_reports (
+  id bigint generated always as identity primary key,
+  guide_id uuid not null references public.community_guides(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  reason text not null,
+  created_at timestamptz not null default now(),
+  first_in_day boolean not null default false,
+  unique (guide_id, user_id)
+);
+alter table public.community_guide_reports add column if not exists first_in_day boolean not null default false;
+alter table public.community_guide_reports drop constraint if exists community_guide_reports_user_id_fkey;
+alter table public.community_guide_reports add constraint community_guide_reports_user_id_fkey
+  foreign key (user_id) references public.profiles(id) on delete cascade;
+create index if not exists community_guide_reports_user_idx on public.community_guide_reports (user_id, created_at desc);
+create index if not exists community_guide_reports_guide_idx on public.community_guide_reports (guide_id, created_at desc);
+alter table public.community_guide_reports drop constraint if exists community_guide_reports_reason_check;
+alter table public.community_guide_reports add constraint community_guide_reports_reason_check
+  check (public.community_guide_text_ok(reason, 3, 500, true));
+
+-- Al massimo 5 segnalazioni al giorno per utente (lo staff no); data e `first_in_day` le scrive il database.
+create or replace function public.guard_community_guide_report()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n int;
+begin
+  new.created_at := now();
+  if auth.uid() is not null and not public.is_staff() then
+    perform pg_advisory_xact_lock(hashtext('om_guide_reports:' || auth.uid()::text));
+    select count(*) into n from public.community_guide_reports where user_id = auth.uid() and created_at > now() - interval '1 day';
+    if n >= 5 then raise exception 'report_rate' using errcode = '23514'; end if;
+  end if;
+  perform pg_advisory_xact_lock(hashtext('om_guide_report_g:' || new.guide_id::text));
+  new.first_in_day := not exists (
+    select 1 from public.community_guide_reports r where r.guide_id = new.guide_id and r.created_at > now() - interval '1 day'
+  );
+  return new;
+end $$;
+revoke all on function public.guard_community_guide_report() from public, anon, authenticated;
+drop trigger if exists community_guide_reports_guard on public.community_guide_reports;
+create trigger community_guide_reports_guard before insert on public.community_guide_reports
+  for each row execute function public.guard_community_guide_report();
+
+alter table public.community_guide_reports enable row level security;
+drop policy if exists "guide reports: users report published guides" on public.community_guide_reports;
+create policy "guide reports: users report published guides" on public.community_guide_reports for insert to authenticated
+  with check (user_id = (select auth.uid())
+    and exists (select 1 from public.community_guides g where g.id = guide_id and g.status = 'published' and g.owner <> (select auth.uid())));
+-- Lo staff le legge tutte; ognuno le sue (serve a rileggere `first_in_day` dopo l'invio)
+drop policy if exists "guide reports: staff read" on public.community_guide_reports;
+drop policy if exists "guide reports: own and staff read" on public.community_guide_reports;
+create policy "guide reports: own and staff read" on public.community_guide_reports for select to authenticated
+  using (user_id = (select auth.uid()) or (select public.is_staff()));
+drop policy if exists "guide reports: staff delete" on public.community_guide_reports;
+create policy "guide reports: staff delete" on public.community_guide_reports for delete to authenticated
+  using ((select public.is_staff()));
+
+revoke all on public.community_guide_reports from anon, authenticated;
+grant insert (guide_id, user_id, reason) on public.community_guide_reports to authenticated;
+grant select, delete on public.community_guide_reports to authenticated;
+
+-- Le regole anche nel catalogo del database, per chi lo apre dalla dashboard di Supabase.
+comment on table public.community_guides is 'Guide della community pubblicate da Autore, Creator, Pro e Staff (27/09/2026). Regole in src/lib/community/guides.ts; permesso in can_publish_guides; documentazione in docs/guide-community.md.';
+comment on table public.community_guide_events is 'Registro dei tetti giornalieri delle guide della community (create, prime pubblicazioni, guide nascoste): lo scrive solo il trigger guard_community_guide.';
+comment on function public.can_publish_guides(uuid) is 'Chi pubblica guide senza passare dallo staff: Autore, Creator, Pro, Staff e admin (canPublishGuides in src/lib/community/badges.ts).';

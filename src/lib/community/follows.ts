@@ -4,7 +4,7 @@
  * TUTTO, OTTIMO!!", fra cui "Segui" con un avviso quando un creator pubblica un mazzo o va in diretta.
  *
  * - Si seguono solo i profili vetrina (Creator, Autore, Pro, Staff: `isShowcaseBadge` di badges.ts), mai se stessi, al
- *   massimo `FOLLOW_MAX` profili a testa. Lo decide il database (supabase/wave2-SEGUI.sql: policy e trigger
+ *   massimo `FOLLOW_MAX` profili a testa. Lo decide il database (blocco SEGUI di supabase/schema.sql: policy e trigger
  *   `guard_follow`); il sito lo sa per mostrare il tasto solo dove serve.
  * - Ognuno vede solo chi segue lui: il numero dei follower di un profilo è pubblico solo come conteggio (RPC
  *   `follow_state`), letto nel browser, così /u e le schede dei mazzi restano ISR.

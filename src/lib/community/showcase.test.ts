@@ -494,14 +494,17 @@ describe("pagine: privacy e /account", () => {
 });
 
 /*
-  SQL del pacchetto: nasce in supabase/wave2-VETRINA.sql e l'integrazione lo accoda a schema.sql. Il test legge lo schema
-  completo (con il blocco già dentro o, finché non c'è, con il file accodato) e controlla che dica le stesse cose del codice.
+  SQL del pacchetto: nato in supabase/wave2-VETRINA.sql, dal 27/09/2026 è il blocco "27/09/2026: VETRINA" di schema.sql.
+  Il test legge lo schema completo (con il blocco già dentro o, se manca, con il file accodato) e controlla che dica le
+  stesse cose del codice. Il blocco finisce dove comincia il successivo (SEGUI, TRAGUARDI, GUIDE vengono dopo).
 */
-describe("database: supabase/wave2-VETRINA.sql", () => {
+describe("database: blocco VETRINA di supabase/schema.sql", () => {
   const MARKER = "-- ===== 27/09/2026: VETRINA =====";
   const schema = read("../../../supabase/schema.sql");
   const fileUrl = new URL("../../../supabase/wave2-VETRINA.sql", import.meta.url);
-  const block = schema.includes(MARKER) ? schema.slice(schema.indexOf(MARKER)) : existsSync(fileUrl) ? readFileSync(fileUrl, "utf8") : "";
+  const at = schema.indexOf(MARKER);
+  const next = at >= 0 ? schema.indexOf("\n-- ===== ", at + MARKER.length) : -1;
+  const block = at >= 0 ? schema.slice(at, next < 0 ? undefined : next) : existsSync(fileUrl) ? readFileSync(fileUrl, "utf8") : "";
   const full = schema.includes(MARKER) ? schema : `${schema}\n${block}`;
   const stmts = sqlStatements(block);
   const fullStmts = sqlStatements(full);

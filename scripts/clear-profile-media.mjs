@@ -140,7 +140,7 @@ try {
   }
 } catch (e) {
   // prima della migrazione (colonne o bucket assenti) o un errore del database
-  console.error(e.code === "42703" ? "Mancano le colonne della vetrina: applica prima la migrazione (supabase/wave2-VETRINA.sql)." : e.message);
+  console.error(e.code === "42703" ? "Mancano le colonne della vetrina: applica prima la migrazione (blocco VETRINA di supabase/schema.sql)." : e.message);
   process.exitCode = 3;
 } finally {
   await db.end();

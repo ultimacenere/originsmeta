@@ -9,7 +9,7 @@ import { notificationErrorCode, publishTarget, type LiveAlert, type PublishKind 
 
 /**
  * Invio degli avvisi a chi segue (pacchetto SEGUI, 27/09/2026), lato server. Le righe le scrive solo il database, con le
- * funzioni security definer di supabase/wave2-SEGUI.sql: qui si chiamano.
+ * funzioni security definer del blocco SEGUI di supabase/schema.sql: qui si chiamano.
  *
  * - `notifyFollowers(actorId, kind, target, client?)`: mazzo o guida appena pubblicati. Da chiamare nella Server Action
  *   di pubblicazione, come `announceDeck` (discordDeck.ts): parte dopo la risposta al browser (`after()`), non lancia

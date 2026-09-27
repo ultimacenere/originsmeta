@@ -25,7 +25,7 @@ export type ProfileRow = {
   content_langs: string[];
   /** ultima modifica di bio, canali, lingue o tag: la scrive solo il trigger profiles_touch_showcase */
   showcase_updated_at: string | null;
-  /* vetrina (pacchetto VETRINA, supabase/wave2-VETRINA.sql; regole in src/lib/community/showcase.ts): foto caricata per tutti,
+  /* vetrina (pacchetto VETRINA, blocco VETRINA di supabase/schema.sql; regole in src/lib/community/showcase.ts): foto caricata per tutti,
      il resto solo per i ruoli con vetrina (trigger guard_profile_vetrina). Prima della migrazione le colonne non ci sono:
      le letture lo riconoscono (errore 42703) */
   avatar_path?: string | null;
@@ -42,7 +42,7 @@ export type ProfileRow = {
   /** ultime modifiche di foto e vetrina: le scrive solo il trigger guard_profile_vetrina (limiti di frequenza) */
   avatar_updated_at?: string | null;
   vetrina_updated_at?: string | null;
-  /** numeri pubblici sulla vetrina /u (pacchetto TRAGUARDI, supabase/wave2-TRAGUARDI.sql): solo ruoli con vetrina, difesa da trigger */
+  /** numeri pubblici sulla vetrina /u (pacchetto TRAGUARDI, blocco TRAGUARDI di supabase/schema.sql): solo ruoli con vetrina, difesa da trigger */
   show_stats: boolean;
 };
 
@@ -107,7 +107,7 @@ export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; cre
 export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
 
-/* guide della community (pacchetto GUIDE, 27/09/2026, supabase/wave2-GUIDE.sql): regole in src/lib/community/guides.ts */
+/* guide della community (pacchetto GUIDE, 27/09/2026, blocco GUIDE di supabase/schema.sql): regole in src/lib/community/guides.ts */
 export type CommunityGuideRow = {
   id: string;
   slug: string;
@@ -235,7 +235,7 @@ export type ConversationRow = {
 };
 export type MessageRow = { id: number; conversation_id: string; author_id: string | null; from_staff: boolean; body: string; created_at: string };
 
-/* ---------- "Segui" e avvisi (27/09/2026, supabase/wave2-SEGUI.sql, blocco SEGUI) ---------- */
+/* ---------- "Segui" e avvisi (27/09/2026, blocco SEGUI di supabase/schema.sql) ---------- */
 export type FollowRow = { follower: string; followed: string; created_at: string };
 /** authenticated legge solo queste colonne (grant per colonna): `event_key` resta fuori */
 export type NotificationRow = {
@@ -634,7 +634,7 @@ export type Database = {
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
       /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
       inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
-      /* vetrina dei profili (supabase/wave2-VETRINA.sql): usate dal trigger guard_profile_vetrina, dai vincoli e dalla policy
+      /* vetrina dei profili (blocco VETRINA di supabase/schema.sql): usate dal trigger guard_profile_vetrina, dai vincoli e dalla policy
          di caricamento del bucket profile-media; il sito non le chiama. EXECUTE solo per authenticated e service_role */
       profile_schedule_entry_ok: { Args: { e: unknown }; Returns: boolean };
       profile_schedule_ok: { Args: { s: unknown }; Returns: boolean };
@@ -646,10 +646,10 @@ export type Database = {
       profile_media_count: { Args: Record<string, never>; Returns: number };
       /** foto di Discord dai metadati dell'accesso (security definer): solo il proprio profilo o un admin, solo host Discord */
       profile_discord_avatar: { Args: { uid: string }; Returns: string | null };
-      /* traguardi e numeri pubblici del profilo /u (supabase/wave2-TRAGUARDI.sql); risposte ricontrollate da achievements.ts */
+      /* traguardi e numeri pubblici del profilo /u (blocco TRAGUARDI di supabase/schema.sql); risposte ricontrollate da achievements.ts */
       profile_achievement_facts: { Args: { pid: string }; Returns: unknown };
       profile_public_stats: { Args: { pid: string }; Returns: { decks: number; views: number; code_copies: number; votes: number; since: string | null }[] };
-      /* guide della community (supabase/wave2-GUIDE.sql): permesso e vincoli; il sito non le chiama direttamente */
+      /* guide della community (blocco GUIDE di supabase/schema.sql): permesso e vincoli; il sito non le chiama direttamente */
       can_publish_guides: { Args: { uid: string }; Returns: boolean };
       community_guide_text_ok: { Args: { t: string; minlen: number; maxlen: number; multiline: boolean }; Returns: boolean };
       community_guide_sections_ok: { Args: { s: { heading: string; body: string }[]; complete: boolean }; Returns: boolean };

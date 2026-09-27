@@ -16,7 +16,7 @@ import { UUID_RE, mediaPathOk } from "./profileMedia";
  *      nel SUO fuso (calcolo nel browser, `nextSlot`);
  *   7. frase di presentazione (80 caratteri, testo semplice).
  *
- * Nel database (supabase/wave2-VETRINA.sql, da accodare a schema.sql) le stesse regole: vincoli sulle colonne, un
+ * Nel database (blocco VETRINA di supabase/schema.sql) le stesse regole: vincoli sulle colonne, un
  * trigger che rifiuta i campi della vetrina a chi non ha il ruolo (avatar_path escluso: è di tutti), il controllo che il
  * mazzo in evidenza sia suo e pubblicato e che le immagini esistano nel bucket `profile-media`, con tipo e peso giusti.
  * Il test showcase.test.ts confronta codice e SQL.
@@ -397,7 +397,7 @@ export function upcomingSlots(entries: readonly ScheduleEntry[], tz: string, now
 
 // ---------- la vetrina letta e scritta ----------
 
-/** Colonne della vetrina in public.profiles (supabase/wave2-VETRINA.sql). */
+/** Colonne della vetrina in public.profiles (blocco VETRINA di supabase/schema.sql). */
 export const VETRINA_COLUMNS = "avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz";
 
 export type VetrinaRow = {

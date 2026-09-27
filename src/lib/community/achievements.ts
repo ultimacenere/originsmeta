@@ -10,7 +10,7 @@
  * TRAGUARDI. Si calcolano dai dati che ci sono già, tutti pubblici e verificabili da chiunque guardi il sito: nessuna
  * tabella nuova, niente da assegnare a mano. Metà dei fatti la pagina /u li ha già (profilo, mazzi pubblicati con i
  * voti, tier list pubbliche: `LocalFacts`); gli altri (tornei e "mazzo del mese") arrivano dalla funzione SQL
- * `profile_achievement_facts` (supabase/wave2-TRAGUARDI.sql: `RemoteFacts`). Finché la migrazione non c'è quei
+ * `profile_achievement_facts` (blocco TRAGUARDI di supabase/schema.sql: `RemoteFacts`). Finché la migrazione non c'è quei
  * traguardi semplicemente non compaiono. I traguardi si mostrano su OGNI profilo (anche della community), solo quelli
  * ottenuti, nell'ordine di `ACHIEVEMENTS`; i profili con vetrina li hanno più in grande.
  *
@@ -82,7 +82,7 @@ export const WELL_RATED = { minVotes: 5, minAvg: 4.5 } as const;
  * "Mazzo del mese": il mazzo pubblicato con più voti positivi (almeno `DECK_OF_MONTH_MIN_STARS` stelle) ricevuti in un
  * mese UTC già chiuso, con almeno `DECK_OF_MONTH_MIN_VOTES` voti positivi in quel mese (pari merito compresi). Contano
  * solo i voti positivi (revisione del 27/09/2026): tre voti da una stella non fanno un mazzo "del mese". Gli stessi
- * numeri stanno in `profile_achievement_facts` (supabase/wave2-TRAGUARDI.sql), e il test li confronta.
+ * numeri stanno in `profile_achievement_facts` (blocco TRAGUARDI di supabase/schema.sql), e il test li confronta.
  */
 export const DECK_OF_MONTH_MIN_VOTES = 3;
 export const DECK_OF_MONTH_MIN_STARS = 4;

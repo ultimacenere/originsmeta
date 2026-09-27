@@ -6,6 +6,8 @@ import { getDictionary, locales, type Locale } from "@/lib/i18n";
 import { discordWebhookUrl, sendDiscordWebhook } from "@/lib/discordWebhook";
 import { guidePayload, guideReportPayload, type AnnouncedGuide, type GuideReportNotice } from "./guideDiscord";
 import { guideCover, isGuideCategory } from "./guides";
+import type { Db } from "@/lib/supabase/public";
+import { notifyFollowers } from "./notify";
 
 /**
  * Avvisi di una guida della community (pacchetto GUIDE, 27/09/2026), tutti dopo la risposta al browser (`after()`), mai
@@ -16,9 +18,8 @@ import { guideCover, isGuideCategory } from "./guides";
  *   (Vercel → Settings → Environment Variables, solo server, poi un deploy): webhook del canale #guides. Senza, niente.
  *   La guida si rilegge con il client anonimo e senza cache: parte solo se è davvero pubblica. Una modifica, o una guida
  *   riportata tra le bozze e ripubblicata, non si riannuncia (conta `published_at`, scritto una volta sola dal database).
- * - `notifyGuideFollowers`: PUNTO DI AGGANCIO per il pacchetto SEGUI (avvisi a chi segue un autore). Nel ramo di questo
- *   pacchetto SEGUI non c'è ancora: la funzione non fa nulla. All'integrazione, se SEGUI esporta `notifyFollowers`, qui
- *   basta chiamarla con l'autore, il tipo "guide" e il link (vedi il commento dentro la funzione).
+ * - `notifyGuideFollowers`: avvisi a chi segue l'autore (pacchetto SEGUI): `notifyFollowers` con il tipo
+ *   "guide_published", il proprietario della guida e il suo slug.
  * - `notifyGuideReport`: la PRIMA segnalazione di una guida nelle 24 ore (`first_in_day`) va nel canale PRIVATO dello
  *   staff (DISCORD_FEEDBACK_WEBHOOK_URL, lo stesso dei feedback), con il motivo, il nome utente di chi segnala (lo dice
  *   l'informativa) e il link alla guida, dove lo staff trova "Nascondi". Le altre si leggono nella tabella.
@@ -95,13 +96,14 @@ export function announceGuide(slug: string): void {
 }
 
 /**
- * Avviso a chi segue l'autore (pacchetto SEGUI). Oggi non fa nulla: SEGUI non è in questo ramo.
- * All'integrazione: `import { notifyFollowers } from "./follows"` (o il modulo di SEGUI) e, qui dentro,
- * `notifyFollowers({ authorId: g.ownerId, kind: "guide", title: g.title, path: \`/guides/community/${g.slug}\` })`,
- * con la firma che SEGUI avrà scelto. Si chiama solo alla prima pubblicazione, come l'annuncio su Discord.
+ * Avviso a chi segue l'autore (pacchetto SEGUI, collegato all'integrazione del 27/09/2026): `notifyFollowers` di
+ * notify.ts con il PROPRIETARIO della guida (`saved.owner`, anche quando agisce lo staff: il database accetta la sessione
+ * dell'autore o dello staff e controlla che la guida sia pubblicata e sua) e il percorso /guides/community/<slug>.
+ * `client` è il client con la sessione della Server Action. Si chiama solo alla prima pubblicazione, come l'annuncio su
+ * Discord; parte dopo la risposta al browser e non lancia mai. Prima della migrazione di SEGUI non fa nulla.
  */
-export function notifyGuideFollowers(g: { ownerId: string; slug: string; title: string; lang: Locale }): void {
-  void g;
+export function notifyGuideFollowers(g: { ownerId: string; slug: string; title: string; lang: Locale }, client?: Db): void {
+  notifyFollowers(g.ownerId, "guide_published", g.slug, client);
 }
 
 /** Segnalazione di una guida: avviso nel canale privato dello staff, se il webhook c'è. */

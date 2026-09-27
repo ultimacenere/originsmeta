@@ -55,10 +55,10 @@
  *                         feedback_submit anche quando finisce nella casella)
  *     message_read        conversazione con messaggi nuovi aperta e segnata come   placement (account | staff_area)
  *                         letta (una volta per messaggi nuovi, non a ogni visita)
- *     follow              "Segui" su un profilo vetrina (pacchetto SEGUI,           placement (profile | deck_page)
- *                         27/09/2026), solo se il database l'ha registrato
- *     unfollow            "Segui già" premuto per smettere, o "Smetti di seguire"  placement (profile | deck_page | account)
- *                         nell'elenco "Chi segui" di /account
+ *     follow              "Segui" su un profilo vetrina (pacchetto SEGUI,           placement (profile | deck_page |
+ *                         27/09/2026), solo se il database l'ha registrato          guide_page)
+ *     unfollow            "Segui già" premuto per smettere, o "Smetti di seguire"  placement (profile | deck_page |
+ *                         nell'elenco "Chi segui" di /account                       guide_page | account)
  *     notification_open   clic su un avviso nella sezione "Notifiche" di           kind (deck_published | live |
  *                         /account/messages (pacchetto SEGUI)                      guide_published)
  *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
@@ -183,8 +183,8 @@ export type EventParams = {
   feedback_submit: Record<string, never>;
   message_sent: { placement: "account" | "staff_area"; kind: "new" | "reply" };
   message_read: { placement: "account" | "staff_area" };
-  follow: { placement: "profile" | "deck_page" };
-  unfollow: { placement: "profile" | "deck_page" | "account" };
+  follow: { placement: "profile" | "deck_page" | "guide_page" };
+  unfollow: { placement: "profile" | "deck_page" | "guide_page" | "account" };
   notification_open: { kind: "deck_published" | "live" | "guide_published" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };

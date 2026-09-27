@@ -7,7 +7,7 @@ import { cleanupNotifications, notifyLive } from "@/lib/community/notify";
 /**
  * Avvisi di diretta per chi segue (pacchetto SEGUI, 27/09/2026): chi fra i profili vetrina con un canale Twitch è in
  * diretta su Origins TCG (stesse regole del badge LIVE, `originsLiveStreams` in src/lib/twitch.ts) e, per ognuno, un
- * avviso a ogni follower, una volta per diretta (lo decide il database: `notify_live` in supabase/wave2-SEGUI.sql, con
+ * avviso a ogni follower, una volta per diretta (lo decide il database: `notify_live` nel blocco SEGUI di supabase/schema.sql, con
  * l'id della diretta e una pausa di 3 ore fra due avvisi di diretta della stessa persona). A ogni giro, anche senza le
  * chiavi di Twitch, la pulizia degli avvisi scaduti (`notifications_cleanup`: 90 giorni gli avvisi, 180 il registro
  * degli invii), così la conservazione scritta nella privacy vale anche quando per settimane non parte nessun avviso.

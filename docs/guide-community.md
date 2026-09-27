@@ -13,12 +13,12 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 | Server Action (salva, stato, elimina, segnala) | `src/lib/community/guideActions.ts` |
 | Traduzione automatica | `guideTranslateCore.ts` (a pezzi, puro, usato anche dallo script), `guideTranslate.ts` (dentro `after()`); parti generali in `deckTranslation.ts` |
 | Arretrati e nuovi tentativi delle traduzioni | `scripts/translate-guides.mjs` |
-| Annuncio su Discord, segnalazioni allo staff, aggancio per SEGUI | `guideNotify.ts`, messaggi puri in `guideDiscord.ts` |
+| Annuncio su Discord, segnalazioni allo staff, avvisi a chi segue l'autore (SEGUI) | `guideNotify.ts`, messaggi puri in `guideDiscord.ts` |
 | Testi EN/IT/ES | `src/lib/communityGuideLabels.ts` |
 | Dati strutturati | `src/lib/jsonld/communityGuide.ts` (Article, autore = Person del membro, parte di /guides/community) |
 | Componenti | `src/components/guides/` (modulo, copertina, schede, comandi, segnalazione, riquadro di /guides) |
 | Pagine | `/guides/new`, `/guides/community` (elenco, ISR 300 s), `/guides/community/[slug]` (ISR 60 s), `/guides/community/[slug]/edit` |
-| Database | `supabase/wave2-GUIDE.sql` (da accodare in fondo a `schema.sql`) |
+| Database | blocco `-- ===== 27/09/2026: GUIDE =====` in fondo a `supabase/schema.sql` |
 
 ## Regole
 
@@ -74,7 +74,7 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 
 ## Migrazione
 
-1. L'integratore accoda `supabase/wave2-GUIDE.sql` in fondo a `supabase/schema.sql` (sotto `-- ===== 27/09/2026: GUIDE =====`).
+1. Il blocco sta in fondo a `supabase/schema.sql`, sotto `-- ===== 27/09/2026: GUIDE =====` (accodato all'integrazione del 27/09/2026; il file `supabase/wave2-GUIDE.sql` non c'è più).
 2. Pierluigi lancia `node scripts/db-migrate.mjs` come sempre (lo schema è idempotente).
 3. Prima della migrazione il sito regge: niente sezione in /guides, /guides/community vuota e noindex, /guides/new e
    /account non mostrano le guide, le pagine delle guide rispondono 404 (tabella o colonna mancante: stato "non ancora
@@ -93,9 +93,18 @@ Lo staff (admin o tag Staff), con l'accesso fatto, trova "Nascondi (staff)" sull
 staff con il link alla guida (la prima di ogni giornata) e si leggono nella tabella `community_guide_reports` (dashboard
 di Supabase). Se un autore insiste, lo staff gli toglie il ruolo (`node scripts/set-badge.mjs <utente> community`).
 
-## Da collegare all'integrazione
+## Collegamenti con gli altri pacchetti (integrazione del 27/09/2026)
 
-- **SEGUI**: `notifyGuideFollowers` in `guideNotify.ts` è il punto di aggancio (oggi vuoto; si chiama solo alla prima
-  pubblicazione); il tasto "Segui" va in `CommunityGuideView`, accanto ad `AuthorChannels` (commento nel codice).
-- **VETRINA**: `GUIDE_COVER_BUCKET` in `guides.ts` e il caricamento della copertina nel modulo.
-- **Test**: registrare `src/lib/community/guides.test.ts` e `src/lib/sitemapGuides.test.ts` in `package.json`.
+- **SEGUI**: alla prima pubblicazione `notifyGuideFollowers` (`guideNotify.ts`) chiama `notifyFollowers` di
+  `notify.ts` con il PROPRIETARIO della guida (anche quando agisce lo staff), il tipo `guide_published`, lo slug e il
+  client della Server Action: chi segue l'autore riceve l'avviso in `/account/messages#notifications`, con il link
+  `/guides/community/<slug>`. Decide il database (`notify_followers`: guida pubblicata e sua, sessione dell'autore o
+  dello staff). Il tasto "Segui" sta nella pagina della guida, accanto al nome dell'autore (`FollowButton` compatto,
+  evento `follow` con `placement = guide_page`).
+- **VETRINA**: la copertina caricata NON è ancora collegata (`GUIDE_COVER_BUCKET` resta `null`, solo copertine del
+  media kit). Per accenderla serve una decisione e un pezzo di lavoro sui due pacchetti: la policy "profile media upload"
+  del bucket `profile-media` ammette solo le cartelle `<id>/avatar` e `<id>/cover`; la policy di cancellazione e
+  `scripts/clear-profile-media.mjs --orphans` proteggono solo i file usati dal profilo (una copertina di guida
+  risulterebbe "orfana"); il trigger delle guide controlla la cartella ma non che il file esista. Poi il caricamento nel
+  modulo (`mediaUpload.ts` della vetrina) e il test di `guides.test.ts` che oggi vuole il bucket a `null`.
+- **Test**: `src/lib/community/guides.test.ts` e `src/lib/sitemapGuides.test.ts` sono in `npm test`.

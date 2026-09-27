@@ -7,7 +7,7 @@ import { alreadyFollowing, followErrorCode, parseFollowState, type FollowErrorCo
 /**
  * Server Action del tasto "Segui" (pacchetto SEGUI, 27/09/2026): pagina /u, scheda di un mazzo, elenco "Chi segui" di
  * /account. Scrive con la sessione di chi preme (policy "follows insert own" / "follows delete own" e trigger
- * `guard_follow` di supabase/wave2-SEGUI.sql: si seguono solo i profili vetrina, mai se stessi, al massimo 500), poi
+ * `guard_follow` del blocco SEGUI di supabase/schema.sql: si seguono solo i profili vetrina, mai se stessi, al massimo 500), poi
  * rilegge lo stato con `follow_state` per il numero dei follower. Nessuna pagina da rigenerare: il tasto e il numero
  * si leggono nel browser, e /account è dinamica.
  *
