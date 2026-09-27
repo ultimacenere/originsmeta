@@ -30,17 +30,18 @@ export function UnfollowButton({
     if (pending) return;
     setFailed(false);
     start(async () => {
-      let ok = false;
+      let result: Awaited<ReturnType<typeof setFollow>>;
       try {
-        ok = !(await setFollow(profileId, false)).error;
+        result = await setFollow(profileId, false);
       } catch {
-        ok = false;
+        result = { error: "db" };
       }
-      if (!ok) {
+      if (result.error) {
         setFailed(true);
         return;
       }
-      trackEvent("unfollow", { placement: "account" });
+      // solo se il database ha tolto davvero la riga (non se era già stata tolta da un'altra scheda)
+      if (result.changed) trackEvent("unfollow", { placement: "account" });
       router.refresh();
     });
   };

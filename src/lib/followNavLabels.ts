@@ -12,11 +12,14 @@ import type { FollowErrorCode } from "./community/follows";
 const navEn = {
   follow: "Follow",
   following: "Following",
-  /** nome del tasto per i lettori di schermo, con il nome del profilo */
+  /**
+   * nome del tasto per i lettori di schermo, con il nome del profilo. Comincia sempre con il testo visibile del tasto
+   * (WCAG 2.5.3, "Label in Name": chi usa il controllo vocale dice "Following" e trova il tasto)
+   */
   followAria: "Follow {name}",
-  followingAria: "You follow {name}. Press to unfollow",
+  followingAria: "Following {name}. Press to unfollow",
   /** chi non ha fatto l'accesso: il tasto porta alla pagina di accesso e poi torna qui */
-  loginAria: "Sign in to follow {name}",
+  loginAria: "Follow {name}: sign in first",
   followersOne: "1 follower",
   followersMany: "{n} followers",
   errors: {
@@ -41,7 +44,7 @@ export const followNavLabels: Record<Locale, FollowNavLabels> = {
     following: "Segui già",
     followAria: "Segui {name}",
     followingAria: "Segui già {name}. Premi per smettere di seguire",
-    loginAria: "Accedi per seguire {name}",
+    loginAria: "Segui {name}: prima accedi",
     followersOne: "1 follower",
     followersMany: "{n} follower",
     errors: {
@@ -59,8 +62,8 @@ export const followNavLabels: Record<Locale, FollowNavLabels> = {
     follow: "Seguir",
     following: "Siguiendo",
     followAria: "Seguir a {name}",
-    followingAria: "Sigues a {name}. Pulsa para dejar de seguir",
-    loginAria: "Inicia sesión para seguir a {name}",
+    followingAria: "Siguiendo a {name}. Pulsa para dejar de seguir",
+    loginAria: "Seguir a {name}: primero inicia sesión",
     followersOne: "1 seguidor",
     followersMany: "{n} seguidores",
     errors: {

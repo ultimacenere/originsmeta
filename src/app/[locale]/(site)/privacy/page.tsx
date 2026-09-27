@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import { followLabels } from "@/lib/followLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
-import { followLabels } from "@/lib/followLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);

@@ -130,12 +130,13 @@ const nextConfig: NextConfig = {
       // La copia di Vercel (originsmeta.vercel.app) porta al dominio vero con lo stesso percorso, in modo permanente
       // (COMP-12, TRJ-05). Solo quell'host: le anteprime dei branch (altri *.vercel.app) e localhost restano come sono.
       {
-        source: "/:path*",
+        // Tranne le rotte del cron di Vercel (pacchetto SEGUI, /api/cron/live): il cron chiama l'indirizzo *.vercel.app
+        // della produzione e non segue i redirect, quindi con il 308 gli avvisi di diretta non partirebbero mai.
+        // L'eccezione è sul percorso (mai sull'user agent, che chiunque può falsificare): le rotte /api/cron/ sono
+        // protette da CRON_SECRET, tutto il resto riceve il 308.
+        source: "/:path((?!api/cron/).*)",
         has: [{ type: "host", value: "originsmeta.vercel.app" }],
-        // tranne il cron di Vercel (pacchetto SEGUI, /api/cron/live): chiama l'indirizzo *.vercel.app della produzione e
-        // non segue i redirect, quindi con il 308 gli avvisi di diretta non partirebbero mai
-        missing: [{ type: "header", key: "user-agent", value: "vercel-cron/.*" }],
-        destination: "https://originsmeta.com/:path*",
+        destination: "https://originsmeta.com/:path",
         permanent: true,
       },
       // Radice del sito: manda alla lingua del browser (`browserLocales`). Redirect temporanei (307), mai permanenti:

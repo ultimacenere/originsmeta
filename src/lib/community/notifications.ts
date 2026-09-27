@@ -9,9 +9,10 @@ import type { InboxStatus } from "./messages";
  * Tre tipi di avviso, per chi segue un profilo vetrina (Creator, Autore, Pro, Staff):
  *   - `deck_published`: ha pubblicato un mazzo (Server Action di pubblicazione, dentro after());
  *   - `live`: è andato in diretta su Twitch con Origins TCG (rotta /api/cron/live, cron di Vercel ogni 10 minuti);
- *   - `guide_published`: ha pubblicato una guida (lo userà il pacchetto GUIDE con `notifyFollowers`).
- * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida, la pagina /u di chi è in
- * diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne un link.
+ *   - `guide_published`: ha pubblicato una guida della community (pacchetto GUIDE, con `notifyFollowers`).
+ * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
+ * (`/guides/community/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
+ * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
 export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published"] as const;
@@ -23,11 +24,13 @@ export type PublishKind = Exclude<NotificationKind, "live">;
 export const NOTIFICATIONS_SHOWN = 50;
 /** Al massimo 10 invii al giorno per autore e tipo (mazzi, guide): uguale in `notify_followers`. */
 export const NOTIFY_DAILY_MAX = 10;
-/** Fra due avvisi di diretta della stessa persona almeno 3 ore: uguale in `notify_live`. */
+/** Fra due avvisi di diretta della stessa persona almeno 3 ore (dall'ultimo partito davvero): uguale in `notify_live`. */
 export const LIVE_COOLDOWN_HOURS = 3;
 /** Gli avvisi durano 90 giorni: uguale in `notifications_prune`. */
 export const NOTIFICATION_RETENTION_DAYS = 90;
-/** Lunghezza minima del segreto della rotta del cron (CRON_SECRET): uguale in `notify_live` e in scripts/set-cron-key.mjs. */
+/** Il registro degli invii (chi ha causato l'avviso, quando, a quante persone) dura 180 giorni: uguale in `notifications_prune`. */
+export const NOTIFICATION_EVENT_RETENTION_DAYS = 180;
+/** Lunghezza minima del segreto della rotta del cron (CRON_SECRET): uguale in `notify_key_ok` e in scripts/set-cron-key.mjs. */
 export const CRON_SECRET_MIN = 32;
 /** Ancora della sezione "Notifiche" in /account/messages. */
 export const NOTIFICATIONS_ANCHOR = "notifications";
@@ -36,14 +39,19 @@ export function isNotificationKind(v: unknown): v is NotificationKind {
   return typeof v === "string" && (NOTIFICATION_KINDS as readonly string[]).includes(v);
 }
 
-const SLUG = "[a-z0-9-]{1,80}";
-const DECK_TARGET = new RegExp(`^/decks/community/(${SLUG})$`);
-const GUIDE_TARGET = new RegExp(`^/guides(?:/${SLUG}){1,2}$`);
+const DECK_TARGET = /^\/decks\/community\/([a-z0-9-]{1,80})$/;
+/** Le guide della community (pacchetto GUIDE): slug di 3-60 caratteri, parole separate da un trattino (community_guides_slug_check). */
+const GUIDE_TARGET = /^\/guides\/community\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const PROFILE_TARGET = /^\/u\/([a-z0-9_-]{1,60})$/;
 
-/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida, pagina /u. */
+function isGuideTarget(target: string): boolean {
+  const slug = GUIDE_TARGET.exec(target)?.[1];
+  return Boolean(slug && slug.length >= 3 && slug.length <= 60);
+}
+
+/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, pagina /u. */
 export function isSafeTarget(target: unknown): target is string {
-  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || GUIDE_TARGET.test(target) || PROFILE_TARGET.test(target));
+  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || isGuideTarget(target) || PROFILE_TARGET.test(target));
 }
 
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
@@ -52,9 +60,9 @@ export function deckSlugOf(target: string): string | null {
 }
 
 /**
- * Il percorso da mandare a `notify_followers`, come lo vuole il database: per un mazzo basta lo slug (o il percorso
- * intero), per una guida il percorso sotto /guides (o lo slug). Una lingua in testa (/it/…) si toglie: gli avvisi si
- * aprono nella lingua di chi li legge. null se non ha la forma giusta (niente chiamata al database).
+ * Il percorso da mandare a `notify_followers`, come lo vuole il database: per un mazzo lo slug o `/decks/community/<slug>`,
+ * per una guida lo slug o `/guides/community/<slug>`. Una lingua in testa (/it/…) si toglie: gli avvisi si aprono nella
+ * lingua di chi li legge. null se non ha la forma giusta (niente chiamata al database).
  */
 export function publishTarget(kind: PublishKind, raw: string): string | null {
   let t = String(raw ?? "").trim();
@@ -63,8 +71,16 @@ export function publishTarget(kind: PublishKind, raw: string): string | null {
     if (!t.startsWith("/")) t = `/decks/community/${t}`;
     return DECK_TARGET.test(t) ? t : null;
   }
-  if (!t.startsWith("/")) t = `/guides/${t}`;
-  return GUIDE_TARGET.test(t) ? t : null;
+  if (!t.startsWith("/")) t = `/guides/community/${t}`;
+  return isGuideTarget(t) ? t : null;
+}
+
+/**
+ * Da quando si mostrano e si contano gli avvisi (ISO): gli ultimi `NOTIFICATION_RETENTION_DAYS` giorni. La pulizia del
+ * database li cancella dopo, ma fra un giro e l'altro il sito non li mostra già più.
+ */
+export function notificationsSince(now: number = Date.now()): string {
+  return new Date(now - NOTIFICATION_RETENTION_DAYS * 86_400_000).toISOString();
 }
 
 /** Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. */
@@ -133,6 +149,15 @@ export function notificationErrorCode(error: { message?: string | null; code?: s
   return Object.hasOwn(RAISED, msg) ? RAISED[msg] : "db";
 }
 
+/**
+ * Un conteggio HEAD (`select(…, { count: "exact", head: true })`) su una tabella che non c'è: PostgREST risponde 404
+ * senza corpo e postgrest-js lo trasforma in 204 senza errore e senza conteggio. Una tabella che c'è risponde sempre con
+ * il conteggio (200 o 206).
+ */
+export function missingHeadCount(res: { error: unknown; count: number | null | undefined; status: number }): boolean {
+  return !res.error && (res.count === null || res.count === undefined) && res.status === 204;
+}
+
 /* ---------- cron delle dirette ---------- */
 
 /**
@@ -157,8 +182,9 @@ export type LiveAlert = { actorId: string; username: string; streamId: string };
 
 /**
  * Le dirette su Origins TCG dei profili (`isOrigins`, cioè `isOriginsStream` di twitchLive.ts), una per profilo e per
- * diretta. Più profili sullo stesso canale ricevono ognuno il suo avviso (i loro follower sono diversi); una diretta
- * senza id numerico si salta (il database la rifiuterebbe).
+ * diretta. Più profili sullo stesso canale ricevono ognuno il suo avviso (i loro follower sono diversi: `notify_live`
+ * registra un evento per persona e per diretta, e chi li segue tutti e due riceve un avviso solo); una diretta senza id
+ * numerico si salta (il database la rifiuterebbe).
  */
 export function liveAlerts<S extends LiveStream>(profiles: readonly LiveProfile[], streams: readonly S[], isOrigins: (s: S) => boolean): LiveAlert[] {
   const byLogin = new Map<string, S>();

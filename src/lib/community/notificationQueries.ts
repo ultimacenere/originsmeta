@@ -1,12 +1,21 @@
 import type { Db } from "@/lib/supabase/public";
 import type { NotificationRow } from "@/lib/supabase/database";
 import type { Profile } from "./types";
-import { NOTIFICATIONS_SHOWN, deckSlugOf, isNotificationKind, notificationErrorCode, type NotificationErrorCode } from "./notifications";
+import {
+  NOTIFICATIONS_SHOWN,
+  deckSlugOf,
+  isNotificationKind,
+  missingHeadCount,
+  notificationErrorCode,
+  notificationsSince,
+  type NotificationErrorCode,
+} from "./notifications";
 
 /**
  * Letture degli avvisi (pacchetto SEGUI, 27/09/2026), solo lato server e con la sessione di chi guarda: la policy fa
  * vedere a ciascuno solo i suoi. Le usano la rotta /api/inbox/status (numero per la busta dell'header) e la sezione
- * "Notifiche" di /account/messages (pagina privata e dinamica).
+ * "Notifiche" di /account/messages (pagina privata e dinamica). Solo gli avvisi degli ultimi 90 giorni
+ * (`notificationsSince`), anche se la pulizia del database non è ancora passata.
  *
  * Nessuna lancia: la busta e la pagina dei messaggi non si rompono per gli avvisi. Prima della migrazione (tabella
  * mancante) il numero è 0 e la sezione non compare (`unavailable`); per 5 minuti non si riprova a leggere la tabella
@@ -31,25 +40,42 @@ function missing(error: { message?: string; code?: string } | null): boolean {
 }
 
 /**
- * Avvisi da leggere di `userId`, per la busta dell'header. 0 con qualsiasi errore (anche prima della migrazione: una
- * richiesta HEAD su una tabella che non c'è risponde senza corpo, e supabase-js la dà come "nessun risultato").
+ * Avvisi da leggere di `userId`, per la busta dell'header. 0 con qualsiasi errore. Prima della migrazione la richiesta
+ * HEAD su una tabella che non c'è risponde 404 senza corpo, e supabase-js la dà come 204 senza errore e senza conteggio
+ * (`missingHeadCount`): anche quello vale "migrazione mancante" e ferma le richieste per 5 minuti.
  */
 export async function unreadNotificationCount(client: Db, userId: string): Promise<number> {
   if (Date.now() < state.missingUntil) return 0;
-  const { count, error } = await client.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null);
-  if (error) {
-    if (!missing(error)) console.error("[follows] notifiche da leggere:", error.code ?? "", error.message);
+  const res = await client
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .is("read_at", null)
+    .gte("created_at", notificationsSince());
+  if (res.error) {
+    if (!missing(res.error)) console.error("[follows] notifiche da leggere:", res.error.code ?? "", res.error.message);
     return 0;
   }
-  return typeof count === "number" && count > 0 ? count : 0;
+  if (missingHeadCount(res)) {
+    state.missingUntil = Date.now() + MISSING_RETRY_MS;
+    return 0;
+  }
+  return typeof res.count === "number" && res.count > 0 ? res.count : 0;
 }
 
 /**
- * Gli ultimi `NOTIFICATIONS_SHOWN` avvisi di `userId`, dal più recente, con i profili di chi li ha causati (pubblici) e i
- * nomi dei mazzi ancora pubblicati (un mazzo nascosto o eliminato resta senza nome: la sezione lo dice e non fa il link).
+ * Gli ultimi `NOTIFICATIONS_SHOWN` avvisi di `userId` (degli ultimi 90 giorni), dal più recente, con i profili di chi li
+ * ha causati (pubblici) e i nomi dei mazzi ancora pubblicati (un mazzo nascosto o eliminato resta senza nome: la sezione
+ * lo dice e non fa il link).
  */
 export async function listNotifications(client: Db, userId: string): Promise<NotificationsResult> {
-  const res = await client.from("notifications").select(COLUMNS).eq("user_id", userId).order("created_at", { ascending: false }).limit(NOTIFICATIONS_SHOWN);
+  const res = await client
+    .from("notifications")
+    .select(COLUMNS)
+    .eq("user_id", userId)
+    .gte("created_at", notificationsSince())
+    .order("created_at", { ascending: false })
+    .limit(NOTIFICATIONS_SHOWN);
   if (res.error) {
     if (missing(res.error)) return { ok: false, error: "unavailable" };
     console.error("[follows] notifiche:", res.error.code ?? "", res.error.message);

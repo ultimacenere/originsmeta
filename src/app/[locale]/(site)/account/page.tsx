@@ -15,6 +15,7 @@ import type { CommunityDeck, Profile } from "@/lib/community/types";
 import { listUserTournaments } from "@/lib/tournament/queries";
 import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
+import { FollowingSection } from "@/components/follow/FollowingSection";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ProfileEditor } from "@/components/ProfileEditor";
@@ -23,7 +24,6 @@ import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { InboxSection } from "@/components/inbox/InboxSection";
-import { FollowingSection } from "@/components/follow/FollowingSection";
 
 export const dynamic = "force-dynamic";
 

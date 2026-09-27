@@ -11,6 +11,7 @@ import { sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
   CRON_SECRET_MIN,
   LIVE_COOLDOWN_HOURS,
+  NOTIFICATION_EVENT_RETENTION_DAYS,
   NOTIFICATION_KINDS,
   NOTIFICATION_RETENTION_DAYS,
   NOTIFY_DAILY_MAX,
@@ -21,9 +22,11 @@ import {
   isNotificationKind,
   isSafeTarget,
   liveAlerts,
+  missingHeadCount,
   notificationCount,
   notificationErrorCode,
   notificationHref,
+  notificationsSince,
   publishTarget,
   withNotificationCount,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
@@ -53,17 +56,23 @@ describe("percorsi degli avvisi", () => {
     assert.equal(publishTarget("deck_published", "swarm-aggro-ab12"), "/decks/community/swarm-aggro-ab12");
     assert.equal(publishTarget("deck_published", "/decks/community/swarm-ab12"), "/decks/community/swarm-ab12");
     assert.equal(publishTarget("deck_published", "/it/decks/community/swarm-ab12"), "/decks/community/swarm-ab12");
-    assert.equal(publishTarget("guide_published", "come-giocare-merlin"), "/guides/come-giocare-merlin");
+    assert.equal(publishTarget("guide_published", "come-giocare-merlin-x7k2"), "/guides/community/come-giocare-merlin-x7k2");
     assert.equal(publishTarget("guide_published", "/es/guides/community/mi-guia"), "/guides/community/mi-guia");
+    assert.equal(publishTarget("guide_published", `/guides/community/${"a".repeat(60)}`), `/guides/community/${"a".repeat(60)}`, "60 caratteri: il massimo");
     for (const bad of ["", "Swarm Aggro", "/decks/community/", "/decks/community/a/b", "../x", "/decks/community/x?y=1", "a".repeat(81)]) {
       assert.equal(publishTarget("deck_published", bad), null, bad);
     }
-    assert.equal(publishTarget("guide_published", "/guides/a/b/c"), null, "al massimo una sezione");
-    assert.equal(publishTarget("guide_published", "/news/x"), null);
+    // solo le guide della community (pacchetto GUIDE), con lo slug di community_guides_slug_check (3-60, trattini singoli)
+    for (const bad of ["/guides/merlin", "/guides/decks/merlin", "/guides/community/a/b", "ab", "/guides/community/a--b", "-abc", "abc-", "a".repeat(61), "/news/x", "Mi Guia"]) {
+      assert.equal(publishTarget("guide_published", bad), null, bad);
+    }
   });
-  test("isSafeTarget e notificationHref: solo mazzi, guide e pagine /u, con la lingua di chi legge", () => {
-    for (const ok of ["/decks/community/swarm-ab12", "/guides/merlin", "/guides/community/merlin", "/u/vegakiles", "/u/coach_crono"]) assert.ok(isSafeTarget(ok), ok);
-    for (const bad of ["/decks/x", "//evil.example", "/u/", "/u/Vega", "https://x.y/", "/guides", "/account", "/u/a b", 42, null]) assert.ok(!isSafeTarget(bad), String(bad));
+  test("isSafeTarget e notificationHref: solo mazzi, guide della community e pagine /u, con la lingua di chi legge", () => {
+    for (const ok of ["/decks/community/swarm-ab12", "/guides/community/merlin-x7k2", "/u/vegakiles", "/u/coach_crono"]) assert.ok(isSafeTarget(ok), ok);
+    for (const bad of ["/decks/x", "//evil.example", "/u/", "/u/Vega", "https://x.y/", "/guides", "/guides/merlin", "/guides/community/ab", "/account", "/u/a b", 42, null]) {
+      assert.ok(!isSafeTarget(bad), String(bad));
+    }
+    assert.equal(notificationHref("it", "/guides/community/merlin-x7k2"), "/it/guides/community/merlin-x7k2");
     assert.equal(notificationHref("it", "/u/vegakiles"), "/it/u/vegakiles");
     assert.equal(notificationHref("es", "/decks/community/swarm-ab12"), "/es/decks/community/swarm-ab12");
     assert.equal(notificationHref("en", "//evil.example"), null);
@@ -114,6 +123,17 @@ describe("errori e cron", () => {
     assert.equal(notificationErrorCode({ message: "x", code: "42883" }), "unavailable");
     assert.equal(notificationErrorCode({ message: "constructor" }), "db");
     assert.equal(notificationErrorCode(null), "db");
+  });
+  test("missingHeadCount: il 204 senza conteggio di postgrest-js per una tabella che non c'è", () => {
+    assert.ok(missingHeadCount({ error: null, count: null, status: 204 }), "404 senza corpo, trasformato in 204");
+    assert.ok(!missingHeadCount({ error: null, count: 0, status: 200 }), "tabella vuota");
+    assert.ok(!missingHeadCount({ error: null, count: 3, status: 206 }));
+    assert.ok(!missingHeadCount({ error: { code: "42P01" }, count: null, status: 404 }), "errore vero: lo gestisce notificationErrorCode");
+  });
+  test("notificationsSince: gli ultimi NOTIFICATION_RETENTION_DAYS giorni", () => {
+    const now = Date.UTC(2026, 8, 27, 12, 0, 0);
+    assert.equal(notificationsSince(now), new Date(now - NOTIFICATION_RETENTION_DAYS * 86_400_000).toISOString());
+    assert.equal(notificationsSince(now), "2026-06-29T12:00:00.000Z");
   });
   test("cronAuthorized: Bearer con il segreto esatto, lungo almeno CRON_SECRET_MIN", () => {
     const secret = "s".repeat(CRON_SECRET_MIN);
@@ -174,33 +194,59 @@ describe("database: avvisi in supabase/wave2-SEGUI.sql", () => {
     assert.deepEqual(grants, ["grant select (id, user_id, kind, actor_id, target, created_at, read_at) on public.notifications to authenticated"]);
     assert.ok(!stmts.some((s) => s.startsWith("grant") && /public\.(notification_events|notify_keys)\b/.test(s)), "nessun client legge eventi e impronte");
   });
-  test("notify_followers: autore = auth.uid(), mazzo suo e pubblicato, tetto giornaliero, solo authenticated", () => {
+  test("registro degli invii: uno per autore ed evento, con sent (le dirette soppresse non spostano la pausa)", () => {
+    const table = stmts.find((s) => s.startsWith("create table if not exists public.notification_events")) ?? "";
+    assert.match(table, /primary key \(kind, actor_id, event_key\)/, "l'autore nella chiave: nessuno prenota l'evento di un altro");
+    assert.match(table, /sent boolean not null default true/);
+    assert.match(fn("notify_fanout"), /on conflict \(kind, actor_id, event_key\) do nothing/);
+  });
+  test("notify_followers: autore = proprietario della riga pubblicata, chiamante autore o staff, tetto giornaliero", () => {
     const f = fn("notify_followers");
     assert.match(f, /me uuid := auth\.uid\(\)/);
-    assert.match(f, /d\.owner = me and d\.status = 'published'/);
+    assert.match(f, /v_actor uuid := coalesce\(p_actor, auth\.uid\(\)\)/);
+    assert.match(f, /if v_actor <> me and not public\.is_staff\(\) then raise exception 'forbidden'/, "solo l'autore o lo staff");
+    assert.match(f, /select d\.owner into v_owner from public\.community_decks d where d\.slug = substr\(v_target, 18\) and d\.status = 'published'/);
+    // la guida: pubblicata e dell'autore, letta solo se la tabella del pacchetto GUIDE c'è
+    assert.match(f, /if to_regclass\('public\.community_guides'\) is null then raise exception 'not_found'/);
+    assert.ok(f.includes("select g.owner from public.community_guides g where g.slug = $1 and g.status = ''published''"), "controllo della guida");
+    assert.match(f, /into v_owner using substr\(v_target, 19\)/, "'/guides/community/' sono 18 caratteri");
+    assert.match(f, /if v_owner is null or v_owner <> v_actor then raise exception 'not_found'/);
+    assert.match(f, /e\.kind = p_kind and e\.actor_id = v_actor and e\.event_key = v_target/, "dedupe per autore");
     assert.ok(f.includes(`if n >= ${NOTIFY_DAILY_MAX} then return 0`), "tetto giornaliero diverso fra codice e database");
-    assert.ok(f.includes("'^/decks/community/[a-z0-9-]{1,80}$'") && f.includes("'^/guides(/[a-z0-9-]{1,80}){1,2}$'"), "forme dei percorsi uguali a notifications.ts");
-    assert.ok(stmts.includes("revoke all on function public.notify_followers(text, text) from public, anon"));
-    assert.ok(stmts.includes("grant execute on function public.notify_followers(text, text) to authenticated"));
+    assert.ok(f.includes("'^/decks/community/[a-z0-9-]{1,80}$'") && f.includes("'^/guides/community/[a-z0-9]+(-[a-z0-9]+)*$'"), "forme dei percorsi uguali a notifications.ts");
+    assert.ok(f.includes("char_length(v_target) not between 21 and 78"), "slug delle guide da 3 a 60 caratteri, come publishTarget");
+    assert.ok(stmts.includes("drop function if exists public.notify_followers(text, text)"), "la firma a due argomenti si toglie");
+    assert.ok(stmts.includes("revoke all on function public.notify_followers(text, text, uuid) from public, anon"));
+    assert.ok(stmts.includes("grant execute on function public.notify_followers(text, text, uuid) to authenticated"));
   });
-  test("notify_live: segreto confrontato con l'impronta, una volta per diretta, pausa uguale a LIVE_COOLDOWN_HOURS", () => {
+  test("notify_key_ok, notify_live e notifications_cleanup: segreto confrontato con l'impronta, una volta per persona e diretta", () => {
+    const k = fn("notify_key_ok");
+    assert.ok(k.includes(`char_length(p_key) between ${CRON_SECRET_MIN} and 256`), "lunghezza minima diversa fra codice e database");
+    assert.match(k, /k\.key_hash = encode\(sha256\(convert_to\(p_key, 'utf8'\)\), 'hex'\)/);
     const f = fn("notify_live");
-    assert.ok(f.includes(`char_length(p_key) not between ${CRON_SECRET_MIN} and 256`), "lunghezza minima diversa fra codice e database");
-    assert.match(f, /k\.key_hash = encode\(sha256\(convert_to\(p_key, 'utf8'\)\), 'hex'\)/);
-    assert.match(f, /raise exception 'forbidden'/);
+    assert.match(f, /if not public\.notify_key_ok\(p_key\) then raise exception 'forbidden'/);
     assert.match(f, /v_event := 'twitch:' \|\| p_stream_id/);
-    assert.ok(f.includes(`interval '${LIVE_COOLDOWN_HOURS} hours'`), "pausa fra due dirette diversa fra codice e database");
+    assert.match(f, /e\.kind = 'live' and e\.actor_id = p_actor and e\.event_key = v_event/, "dedupe per persona e diretta");
+    assert.ok(f.includes(`e.sent and e.created_at > now() - interval '${LIVE_COOLDOWN_HOURS} hours'`), "pausa diversa fra codice e database, o conta le dirette soppresse");
+    assert.match(f, /values \('live', v_event, p_actor, 0, false\) on conflict \(kind, actor_id, event_key\) do nothing/, "diretta soppressa segnata con sent = false");
     assert.ok(stmts.includes("grant execute on function public.notify_live(text, uuid, text) to anon, authenticated"));
+    const c = fn("notifications_cleanup");
+    assert.match(c, /if not public\.notify_key_ok\(p_key\) then raise exception 'forbidden'/);
+    assert.match(c, /perform public\.notifications_prune\(\)/);
+    assert.ok(stmts.includes("grant execute on function public.notifications_cleanup(text) to anon, authenticated"));
     const script = read("../../../scripts/set-cron-key.mjs");
     assert.match(script, new RegExp(`const MIN = ${CRON_SECRET_MIN};`), "scripts/set-cron-key.mjs: lunghezza minima diversa");
     assert.match(script, /createHash\("sha256"\)\.update\(secret, "utf8"\)\.digest\("hex"\)/, "la stessa impronta del database");
   });
   test("conservazione e segna come letti", () => {
-    assert.ok(fn("notifications_prune").includes(`interval '${NOTIFICATION_RETENTION_DAYS} days'`), "conservazione diversa fra codice e database");
+    const prune = fn("notifications_prune");
+    assert.ok(prune.includes(`notifications where created_at < now() - interval '${NOTIFICATION_RETENTION_DAYS} days'`), "conservazione degli avvisi diversa fra codice e database");
+    assert.ok(prune.includes(`notification_events where created_at < now() - interval '${NOTIFICATION_EVENT_RETENTION_DAYS} days'`), "conservazione del registro diversa fra codice e database");
     const m = fn("notifications_mark_read");
     assert.match(m, /where user_id = me and read_at is null/);
+    assert.match(m, /perform public\.notifications_prune\(\)/);
     assert.ok(stmts.includes("grant execute on function public.notifications_mark_read(bigint[]) to authenticated"));
-    for (const internal of ["notifications_prune()", "notify_fanout(uuid, text, text, text)"]) {
+    for (const internal of ["notifications_prune()", "notify_fanout(uuid, text, text, text)", "notify_key_ok(text)"]) {
       assert.ok(stmts.includes(`revoke all on function public.${internal} from public, anon, authenticated`), internal);
       assert.ok(!stmts.some((s) => s.startsWith(`grant execute on function public.${internal}`)), internal);
     }

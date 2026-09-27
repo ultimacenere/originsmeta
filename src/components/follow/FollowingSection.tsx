@@ -13,13 +13,15 @@ import { UnfollowButton } from "./UnfollowButton";
 /**
  * Sezione "Chi segui" di /account (pacchetto SEGUI, 27/09/2026): i profili seguiti, dal più recente, con il ruolo, il
  * link alla pagina /u e "Smetti di seguire". Ancora #following (la sezione "Notifiche" ci porta con "Gestisci chi
- * segui"). Server component con la sessione dell'utente (/account è dinamica); prima della migrazione, o con il
- * database giù, la sezione lo dice e il resto del profilo resta com'è.
+ * segui"). Server component con la sessione dell'utente (/account è dinamica). Prima della migrazione (tabella
+ * mancante) la sezione non compare, come "Notifiche"; con il database giù dice che l'elenco non è disponibile e il resto
+ * del profilo resta com'è.
  */
 export async function FollowingSection({ locale, supabase, userId }: { locale: Locale; supabase: Db; userId: string }) {
   const L = followLabels[locale].account;
   const badges = getDictionary(locale).community.badges;
   const res = await listFollowing(supabase, userId);
+  if (!res.ok && res.error === "unavailable") return null;
   const list = res.ok ? res.data : [];
 
   return (

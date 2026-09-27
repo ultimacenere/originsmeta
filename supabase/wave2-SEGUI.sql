@@ -14,17 +14,24 @@
 --                        (policy restrittive e nessun grant di scrittura): le righe le scrivono solo le funzioni security
 --                        definer qui sotto (notify_followers dalla Server Action di chi pubblica, notify_live dalla rotta
 --                        del cron). `event_key` (uno per evento: il percorso del mazzo o della guida, `twitch:<id della
---                        diretta>`) con il vincolo unico fa arrivare ogni avviso una volta sola; il sito non la legge.
---   notification_events  un avviso per evento, con il numero dei destinatari: dedupe per evento (anche per diretta), tetto
---                        giornaliero per autore (NOTIFY_DAILY_MAX, 10 mazzi o guide al giorno) e pausa fra due dirette
---                        della stessa persona (LIVE_COOLDOWN_HOURS, 3 ore: una diretta interrotta e ripresa ha un id
---                        nuovo). Nessun client la legge.
+--                        diretta>`) con il vincolo unico fa arrivare ogni avviso una volta sola a ogni utente (chi segue
+--                        due profili sullo stesso canale Twitch riceve un avviso solo); il sito non la legge.
+--   notification_events  registro degli invii, uno per autore ed evento (chiave kind, actor_id, event_key: l'evento di un
+--                        autore non blocca mai quello di un altro), con il numero dei destinatari e `sent` (false: diretta
+--                        soppressa dalla pausa, nessun avviso partito), senza i nomi di chi riceve. Serve alla dedupe, al
+--                        tetto giornaliero per autore (NOTIFY_DAILY_MAX, 10 mazzi o guide al giorno) e alla pausa fra due
+--                        dirette della stessa persona (LIVE_COOLDOWN_HOURS, 3 ore dall'ultimo avviso partito davvero: una
+--                        diretta interrotta e ripresa ha un id nuovo). Nessun client la legge.
 --   notify_keys          impronta SHA-256 (esadecimale) del segreto della rotta /api/cron/live (variabile CRON_SECRET),
 --                        scritta da `node scripts/set-cron-key.mjs` con la connessione diretta; nessun client la legge.
---                        notify_live gira per `anon` (il cron non ha una sessione) e parte solo con il segreto giusto.
+--                        notify_live e notifications_cleanup girano per `anon` (il cron non ha una sessione) e partono
+--                        solo con il segreto giusto (notify_key_ok).
 --
--- Conservazione: gli avvisi durano NOTIFICATION_RETENTION_DAYS (90 giorni), gli eventi 180 (notifications_prune, a ogni
--- invio); tutto si cancella con l'account (on delete cascade dal profilo, anche per chi segue e per chi è seguito).
+-- Conservazione: gli avvisi durano NOTIFICATION_RETENTION_DAYS (90 giorni), il registro degli invii
+-- NOTIFICATION_EVENT_RETENTION_DAYS (180). La pulizia (notifications_prune) gira a ogni giro del cron
+-- (notifications_cleanup, ogni 10 minuti), a ogni invio e a ogni "segna come letti"; il sito comunque non mostra né
+-- conta gli avvisi più vecchi di 90 giorni. Tutto si cancella con l'account (on delete cascade dal profilo, anche per chi
+-- segue e per chi è seguito).
 --
 -- Sicurezza (stesse regole del blocco INBOX): tabelle nuove con RLS e policy esplicite; `revoke all` da anon e
 -- authenticated (Supabase dà ALL di default) e poi i soli grant che servono, per colonna; funzioni security definer con
@@ -117,7 +124,7 @@ create table if not exists public.notifications (
   kind text not null check (kind in ('deck_published', 'live', 'guide_published')),
   -- chi ha fatto la cosa (pubblicato il mazzo o la guida, avviato la diretta)
   actor_id uuid not null references public.profiles(id) on delete cascade,
-  -- percorso interno senza lingua: /decks/community/<slug>, /guides/<slug>, /u/<nome utente>
+  -- percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente>
   target text not null check (char_length(target) between 2 and 160 and target ~ '^/[a-z0-9][a-z0-9/_-]*$'),
   -- l'evento (percorso del mazzo o della guida, twitch:<id della diretta>): un avviso per evento e per utente
   event_key text not null check (char_length(event_key) between 1 and 200),
@@ -136,12 +143,16 @@ create table if not exists public.notification_events (
   event_key text not null check (char_length(event_key) between 1 and 200),
   actor_id uuid not null references public.profiles(id) on delete cascade,
   recipients integer not null default 0,
+  -- false: diretta soppressa dalla pausa di 3 ore (nessun avviso partito); non conta per la pausa successiva
+  sent boolean not null default true,
   created_at timestamptz not null default now(),
-  primary key (kind, event_key)
+  -- l'autore nella chiave: due profili sullo stesso canale Twitch hanno ognuno il suo evento, e nessuno può "prenotare"
+  -- il percorso del mazzo o della guida di un altro
+  primary key (kind, actor_id, event_key)
 );
 create index if not exists notification_events_actor_idx on public.notification_events (actor_id, kind, created_at desc);
 create index if not exists notification_events_created_idx on public.notification_events (created_at);
-comment on table public.notification_events is 'Un invio di avvisi per evento (pacchetto SEGUI): dedupe, tetto di 10 al giorno per autore e tipo, 3 ore fra due dirette della stessa persona. Nessun client la legge.';
+comment on table public.notification_events is 'Registro degli invii di avvisi (pacchetto SEGUI), uno per autore ed evento, senza i nomi dei destinatari: dedupe, tetto di 10 al giorno per autore e tipo, 3 ore fra due avvisi di diretta partiti davvero (sent). Dura 180 giorni. Nessun client la legge.';
 
 create table if not exists public.notify_keys (
   name text primary key check (name in ('live')),
@@ -177,7 +188,8 @@ grant select (id, user_id, kind, actor_id, target, created_at, read_at) on publi
 
 -- ---------- funzioni interne (nessun client le esegue direttamente) ----------
 
--- Pulizia a ogni invio: avvisi oltre i 90 giorni, eventi oltre i 180 (indici su created_at).
+-- Pulizia: avvisi oltre i 90 giorni, registro degli invii oltre i 180 (indici su created_at). Gira dal cron
+-- (notifications_cleanup), a ogni invio (notify_fanout) e a ogni "segna come letti".
 create or replace function public.notifications_prune()
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
@@ -186,8 +198,18 @@ begin
 end $$;
 revoke all on function public.notifications_prune() from public, anon, authenticated;
 
--- Un avviso per ogni follower di `actor`, una volta per evento (`event_key`); registra l'evento con i destinatari.
--- Chi chiama ha già fatto i controlli (chi è l'autore, che cosa ha pubblicato) e tiene il lock dell'autore.
+-- Il segreto del cron è quello registrato? (`p_key` = CRON_SECRET, almeno 32 caratteri, confrontato con la sua impronta
+-- SHA-256 in notify_keys.) La usano notify_live e notifications_cleanup, che girano per anon.
+create or replace function public.notify_key_ok(p_key text)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select p_key is not null and char_length(p_key) between 32 and 256
+    and exists (select 1 from public.notify_keys k where k.name = 'live' and k.key_hash = encode(sha256(convert_to(p_key, 'UTF8')), 'hex'));
+$$;
+revoke all on function public.notify_key_ok(text) from public, anon, authenticated;
+
+-- Un avviso per ogni follower di `actor`, una volta per evento (`event_key`); registra l'evento dell'autore con i
+-- destinatari (sent = true). Chi chiama ha già fatto i controlli (chi è l'autore, che cosa ha pubblicato, che l'evento
+-- non ci sia già) e tiene il lock dell'autore.
 create or replace function public.notify_fanout(p_actor uuid, p_kind text, p_target text, p_event text)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -198,7 +220,7 @@ begin
     on conflict (user_id, kind, event_key) do nothing;
   get diagnostics n = row_count;
   insert into public.notification_events (kind, event_key, actor_id, recipients) values (p_kind, p_event, p_actor, n)
-    on conflict (kind, event_key) do nothing;
+    on conflict (kind, actor_id, event_key) do nothing;
   perform public.notifications_prune();
   return n;
 end $$;
@@ -208,51 +230,67 @@ revoke all on function public.notify_fanout(uuid, text, text, text) from public,
 -- Errori con raise exception '<codice>': li traduce `notificationErrorCode` in src/lib/community/notifications.ts.
 
 -- Avviso ai follower di chi ha appena pubblicato un mazzo o una guida. Lo chiama la Server Action di pubblicazione con
--- la sessione dell'autore (dentro after(), `notifyFollowers` in src/lib/community/notify.ts): l'autore è auth.uid(),
--- mai un parametro. Un mazzo: `/decks/community/<slug>`, pubblicato e dell'autore. Una guida (pacchetto GUIDE):
--- `/guides/<slug>` o `/guides/<sezione>/<slug>`; qui si controllano solo la forma e il ruolo, quando il pacchetto GUIDE
--- avrà la sua tabella il controllo "guida pubblicata e sua" va aggiunto qui come per i mazzi.
--- Solo i ruoli con vetrina hanno follower: per gli altri non succede nulla (0). Una volta per mazzo o guida; al massimo
--- 10 invii al giorno per autore e tipo (poi 0, senza errore: la pubblicazione è già riuscita). Restituisce quanti avvisi
--- sono partiti.
-create or replace function public.notify_followers(p_kind text, p_target text)
+-- la sessione di chi ha agito (dentro after(), `notifyFollowers` in src/lib/community/notify.ts). L'autore dell'avviso è
+-- SEMPRE il proprietario della riga pubblicata, verificato qui, mai solo un nome passato da chi chiama:
+--   - un mazzo: `/decks/community/<slug>`, riga di community_decks pubblicata;
+--   - una guida (pacchetto GUIDE): `/guides/community/<slug>` (slug di 3-60 caratteri, come community_guides_slug_check),
+--     riga di community_guides pubblicata. Finché la tabella del pacchetto GUIDE non c'è (to_regclass nullo) nessuna guida
+--     esiste e la risposta è 'not_found'; la lettura è dinamica (execute), così la funzione si crea anche senza tabella.
+-- `p_actor` è l'autore atteso (assente = chi chiama) e deve essere il proprietario della riga ('not_found' se no). Chi
+-- chiama deve essere l'autore stesso, oppure lo staff (is_staff(): admin o ruolo Staff) quando pubblica per conto suo;
+-- chiunque altro riceve 'forbidden'. Solo i ruoli con vetrina hanno follower: per gli altri non succede nulla (0). Una
+-- volta per autore e per mazzo o guida; al massimo 10 invii al giorno per autore e tipo (poi 0, senza errore: la
+-- pubblicazione è già riuscita). Restituisce quanti avvisi sono partiti.
+-- La firma a due argomenti della prima versione (mai applicata al database vivo) si toglie, se c'è: con tutte e due le
+-- firme una chiamata con due argomenti sarebbe ambigua.
+drop function if exists public.notify_followers(text, text);
+create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   me uuid := auth.uid();
+  v_actor uuid := coalesce(p_actor, auth.uid());
   v_target text := btrim(coalesce(p_target, ''));
+  v_owner uuid;
   v_badge text;
   n integer;
 begin
   if me is null then raise exception 'not_logged_in'; end if;
   if p_kind is null or p_kind not in ('deck_published', 'guide_published') then raise exception 'bad_kind'; end if;
   if char_length(v_target) > 160 then raise exception 'bad_target'; end if;
+  if v_actor <> me and not public.is_staff() then raise exception 'forbidden'; end if;
   if p_kind = 'deck_published' then
     if v_target !~ '^/decks/community/[a-z0-9-]{1,80}$' then raise exception 'bad_target'; end if;
     -- '/decks/community/' sono 17 caratteri: lo slug comincia dal diciottesimo
-    if not exists (select 1 from public.community_decks d where d.slug = substr(v_target, 18) and d.owner = me and d.status = 'published') then
-      raise exception 'not_found';
-    end if;
+    select d.owner into v_owner from public.community_decks d where d.slug = substr(v_target, 18) and d.status = 'published';
   else
-    if v_target !~ '^/guides(/[a-z0-9-]{1,80}){1,2}$' then raise exception 'bad_target'; end if;
+    -- '/guides/community/' sono 18 caratteri: lo slug (3-60) comincia dal diciannovesimo
+    if v_target !~ '^/guides/community/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 21 and 78 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_guides') is null then raise exception 'not_found'; end if;
+    execute 'select g.owner from public.community_guides g where g.slug = $1 and g.status = ''published'''
+      into v_owner using substr(v_target, 19);
   end if;
-  select p.badge into v_badge from public.profiles p where p.id = me;
+  if v_owner is null or v_owner <> v_actor then raise exception 'not_found'; end if;
+  select p.badge into v_badge from public.profiles p where p.id = v_actor;
   if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
-  perform pg_advisory_xact_lock(hashtext('om_notify:' || me::text));
-  if exists (select 1 from public.notification_events e where e.kind = p_kind and e.event_key = v_target) then return 0; end if;
+  perform pg_advisory_xact_lock(hashtext('om_notify:' || v_actor::text));
+  if exists (select 1 from public.notification_events e where e.kind = p_kind and e.actor_id = v_actor and e.event_key = v_target) then return 0; end if;
   select count(*) into n from public.notification_events e
-   where e.actor_id = me and e.kind = p_kind and e.created_at > now() - interval '1 day';
+   where e.actor_id = v_actor and e.kind = p_kind and e.created_at > now() - interval '1 day';
   if n >= 10 then return 0; end if;
-  return public.notify_fanout(me, p_kind, v_target, v_target);
+  return public.notify_fanout(v_actor, p_kind, v_target, v_target);
 end $$;
-revoke all on function public.notify_followers(text, text) from public, anon;
-grant execute on function public.notify_followers(text, text) to authenticated;
+revoke all on function public.notify_followers(text, text, uuid) from public, anon;
+grant execute on function public.notify_followers(text, text, uuid) to authenticated;
 
 -- Avviso ai follower di chi è appena andato in diretta su Twitch con Origins TCG. Lo chiama la rotta /api/cron/live (cron
 -- di Vercel ogni 10 minuti, src/app/api/cron/live/route.ts) senza sessione, quindi come anon: parte solo con il segreto
--- giusto (`p_key` = CRON_SECRET, almeno 32 caratteri, confrontato con la sua impronta in notify_keys). Chi sia in
--- diretta lo decide la rotta con le API di Twitch; qui si controlla che il profilo sia vetrina e abbia un canale
--- Twitch. Una volta per diretta (id della diretta di Twitch) e al massimo una ogni 3 ore per persona: una diretta
--- interrotta e ripresa ha un id nuovo, e il secondo avviso non parte (l'evento resta segnato, con zero destinatari).
+-- giusto (`p_key` = CRON_SECRET, notify_key_ok). Chi sia in diretta lo decide la rotta con le API di Twitch; qui si
+-- controlla che il profilo sia vetrina e abbia un canale Twitch. Una volta per persona e per diretta (id della diretta di
+-- Twitch: due profili sullo stesso canale hanno ognuno il suo avviso) e al massimo un avviso ogni 3 ore per persona: una
+-- diretta interrotta e ripresa ha un id nuovo, e se l'ultimo avviso PARTITO è di meno di 3 ore fa non ne parte un altro
+-- (l'evento resta segnato con sent = false, che non sposta la finestra: conta solo l'ultimo avviso partito davvero).
 -- L'avviso porta alla pagina /u/<nome utente>, con il badge LIVE e il link al canale.
 create or replace function public.notify_live(p_key text, p_actor uuid, p_stream_id text)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
@@ -262,10 +300,7 @@ declare
   v_badge text;
   v_links jsonb;
 begin
-  if p_key is null or char_length(p_key) not between 32 and 256
-     or not exists (select 1 from public.notify_keys k where k.name = 'live' and k.key_hash = encode(sha256(convert_to(p_key, 'UTF8')), 'hex')) then
-    raise exception 'forbidden';
-  end if;
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
   if p_stream_id is null or p_stream_id !~ '^[0-9]{1,40}$' then raise exception 'bad_target'; end if;
   select p.username, p.badge, p.links into v_username, v_badge, v_links from public.profiles p where p.id = p_actor;
   if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
@@ -276,10 +311,12 @@ begin
   end if;
   v_event := 'twitch:' || p_stream_id;
   perform pg_advisory_xact_lock(hashtext('om_notify:' || p_actor::text));
-  if exists (select 1 from public.notification_events e where e.kind = 'live' and e.event_key = v_event) then return 0; end if;
-  if exists (select 1 from public.notification_events e where e.actor_id = p_actor and e.kind = 'live' and e.created_at > now() - interval '3 hours') then
-    insert into public.notification_events (kind, event_key, actor_id, recipients) values ('live', v_event, p_actor, 0)
-      on conflict (kind, event_key) do nothing;
+  -- questa diretta di questa persona c'è già (annunciata o soppressa)
+  if exists (select 1 from public.notification_events e where e.kind = 'live' and e.actor_id = p_actor and e.event_key = v_event) then return 0; end if;
+  -- pausa dall'ultimo avviso di diretta partito davvero (sent): una diretta soppressa non sposta la finestra
+  if exists (select 1 from public.notification_events e where e.actor_id = p_actor and e.kind = 'live' and e.sent and e.created_at > now() - interval '3 hours') then
+    insert into public.notification_events (kind, event_key, actor_id, recipients, sent) values ('live', v_event, p_actor, 0, false)
+      on conflict (kind, actor_id, event_key) do nothing;
     return 0;
   end if;
   return public.notify_fanout(p_actor, 'live', '/u/' || v_username, v_event);
@@ -287,8 +324,20 @@ end $$;
 revoke all on function public.notify_live(text, uuid, text) from public;
 grant execute on function public.notify_live(text, uuid, text) to anon, authenticated;
 
+-- Pulizia periodica dal cron (/api/cron/live, ogni 10 minuti, anche senza dirette e senza le chiavi di Twitch), con lo
+-- stesso segreto di notify_live: gli avvisi oltre i 90 giorni e il registro oltre i 180 si cancellano anche quando per
+-- settimane non parte nessun avviso.
+create or replace function public.notifications_cleanup(p_key text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  perform public.notifications_prune();
+end $$;
+revoke all on function public.notifications_cleanup(text) from public;
+grant execute on function public.notifications_cleanup(text) to anon, authenticated;
+
 -- Segna come letti i propri avvisi: tutti (`p_ids` nullo, "Segna tutte come lette") o quelli indicati (al massimo 200:
--- il clic su un avviso). Restituisce quanti ne ha segnati.
+-- il clic su un avviso). Restituisce quanti ne ha segnati. Passa anche la pulizia (notifications_prune).
 create or replace function public.notifications_mark_read(p_ids bigint[] default null)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -300,6 +349,7 @@ begin
   update public.notifications set read_at = now()
    where user_id = me and read_at is null and (p_ids is null or id = any (p_ids));
   get diagnostics n = row_count;
+  perform public.notifications_prune();
   return n;
 end $$;
 revoke all on function public.notifications_mark_read(bigint[]) from public, anon;

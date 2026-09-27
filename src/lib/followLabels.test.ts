@@ -11,7 +11,7 @@ import { fillFollowLabel, followLabels } from "./followLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { followNavLabels, followNavLabelsFor } from "./followNavLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { NOTIFICATION_KINDS, NOTIFICATION_RETENTION_DAYS } from "./community/notifications.ts";
+import { NOTIFICATION_EVENT_RETENTION_DAYS, NOTIFICATION_KINDS, NOTIFICATION_RETENTION_DAYS } from "./community/notifications.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { en as dictEn } from "./dictionaries/en.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -69,13 +69,22 @@ describe("contenuti", () => {
       for (const [key, text] of leaves(l as unknown as Tree)) assert.doesNotMatch(text, /influencer/i, `${locale} ${key}`);
     }
   });
-  test("numeri uguali al codice: avvisi per 90 giorni, Twitch ogni 10 minuti (vercel.json)", () => {
+  test("numeri uguali al codice: avvisi per 90 giorni, registro degli invii per 180, Twitch ogni 10 minuti (vercel.json)", () => {
     for (const [locale, l] of Object.entries(followLabels)) {
       assert.ok(l.privacy.includes(String(NOTIFICATION_RETENTION_DAYS)), `${locale}: privacy senza i ${NOTIFICATION_RETENTION_DAYS} giorni`);
+      assert.ok(l.privacy.includes(String(NOTIFICATION_EVENT_RETENTION_DAYS)), `${locale}: privacy senza il registro di ${NOTIFICATION_EVENT_RETENTION_DAYS} giorni`);
       assert.ok(l.notifications.intro.includes(String(NOTIFICATION_RETENTION_DAYS)), `${locale}: intro senza i giorni`);
       assert.match(l.privacy, /\b10\b/, `${locale}: privacy senza i 10 minuti del cron`);
       assert.match(l.privacy, /Twitch/, locale);
       assert.match(l.privacy, /Supabase/, locale);
+    }
+  });
+  test("nome accessibile del tasto: comincia con il testo visibile (WCAG 2.5.3, Label in Name)", () => {
+    for (const [locale, l] of Object.entries(followNavLabels)) {
+      const name = (t: string) => fillFollowLabel(t, { name: "Vega" }).toLowerCase();
+      assert.ok(name(l.followAria).startsWith(l.follow.toLowerCase()), `${locale} followAria`);
+      assert.ok(name(l.loginAria).startsWith(l.follow.toLowerCase()), `${locale} loginAria`);
+      assert.ok(name(l.followingAria).startsWith(l.following.toLowerCase()), `${locale} followingAria`);
     }
   });
   test("followNavLabelsFor: lingua sconosciuta → inglese; fillFollowLabel lascia i segnaposto sconosciuti", () => {

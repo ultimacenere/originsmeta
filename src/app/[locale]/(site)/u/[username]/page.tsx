@@ -22,6 +22,7 @@ import {
 import { authorName } from "@/lib/community/util";
 import { communityPerson, communityProfilePage } from "@/lib/jsonld/deck";
 import { Avatar } from "@/components/AccountMenu";
+import { FollowButton } from "@/components/follow/FollowButton";
 import { CardArt } from "@/components/CardChip";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { getProfileShowcase } from "@/lib/community/creators";
@@ -30,7 +31,6 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
 import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
-import { FollowButton } from "@/components/follow/FollowButton";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -164,6 +164,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               <span className={`${badgePill} ${badgeStyle[badge]}`}>{c.badges[badge]}</span>
             </p>
           ) : null}
+          {/* "Segui" (pacchetto SEGUI, 27/09/2026) subito sotto il ruolo, vicino al nome anche a 375 px: solo i ruoli con vetrina; stato e follower letti nel browser (la pagina è ISR) */}
+          <FollowButton profileId={profile.id} name={name} badge={profile.badge} locale={locale} placement="profile" className="mt-3" />
           {/* Chi pubblica mazzi ed è anche un autore del sito (DECKS-10 e MQ-13, 25/09/2026): link alla sua pagina
               /authors, con il nome completo. Prima le due pagine non si collegavano e nel grafo erano due persone. */}
           {editorial ? (
@@ -176,8 +178,6 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           <ProfileShowcase showcase={showcase} username={profile.username ?? ""} name={name} badge={profile.badge} locale={locale} />
           {/* "Scrivi a questo utente": solo per lo staff, deciso nel browser (la pagina è ISR); casella messaggi, pacchetto INBOX */}
           <StaffMessageLink locale={locale} username={profile.username} profileId={profile.id} />
-          {/* "Segui" (pacchetto SEGUI, 27/09/2026): solo i ruoli con vetrina; stato e follower letti nel browser (la pagina è ISR) */}
-          <FollowButton profileId={profile.id} name={name} badge={profile.badge} locale={locale} placement="profile" className="mt-3" />
         </div>
         <p className="font-mono text-xs text-pale-muted">
           {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}

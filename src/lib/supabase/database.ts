@@ -538,10 +538,15 @@ export type Database = {
       /* "Segui" e avvisi (blocco SEGUI): errori con raise exception '<codice>' (notificationErrorCode, followErrorCode) */
       /** follower del profilo (solo il numero), se chi guarda lo segue, se si può seguire; anon e authenticated */
       follow_state: { Args: { p_profile: string }; Returns: { followers: number; following: boolean; followable: boolean } };
-      /** avviso ai follower di chi chiama (auth.uid()) per un mazzo o una guida appena pubblicati; restituisce i destinatari */
-      notify_followers: { Args: { p_kind: "deck_published" | "guide_published"; p_target: string }; Returns: number };
+      /**
+       * avviso ai follower dell'autore (p_actor, assente = chi chiama) per un mazzo o una guida appena pubblicati: la riga
+       * deve essere pubblicata e sua, chi chiama deve essere l'autore o lo staff; restituisce i destinatari
+       */
+      notify_followers: { Args: { p_kind: "deck_published" | "guide_published"; p_target: string; p_actor?: string | null }; Returns: number };
       /** avviso di diretta, dal cron (anon) con il segreto CRON_SECRET; restituisce i destinatari */
       notify_live: { Args: { p_key: string; p_actor: string; p_stream_id: string }; Returns: number };
+      /** pulizia degli avvisi scaduti (90 giorni) e del registro degli invii (180), dal cron con il segreto CRON_SECRET */
+      notifications_cleanup: { Args: { p_key: string }; Returns: undefined };
       /** segna come letti i propri avvisi: tutti (p_ids assente) o quelli indicati; restituisce quanti */
       notifications_mark_read: { Args: { p_ids?: number[] | null }; Returns: number };
     };
