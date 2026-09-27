@@ -188,7 +188,7 @@ export type NotificationRow = {
   user_id: string;
   kind: "deck_published" | "live" | "guide_published";
   actor_id: string;
-  /** percorso interno senza lingua: /decks/community/<slug>, /guides/<slug>, /u/<nome utente> */
+  /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente> */
   target: string;
   created_at: string;
   read_at: string | null;
@@ -524,17 +524,6 @@ export type Database = {
       bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
       deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
       deck_stats_owns: { Args: { did: string }; Returns: boolean };
-      /* casella messaggi (supabase/schema.sql, blocco INBOX): scritture solo da qui, errori con raise exception '<codice>' */
-      is_staff: { Args: Record<string, never>; Returns: boolean };
-      inbox_status: { Args: Record<string, never>; Returns: { unread: number; staff: boolean; staff_unread: number } };
-      inbox_start: { Args: { topic: string; content: string; via_feedback?: boolean }; Returns: string };
-      inbox_staff_start: { Args: { uname: string; topic: string; content: string }; Returns: string };
-      /** restituisce from_staff del messaggio scritto */
-      inbox_send: { Args: { cid: string; content: string }; Returns: boolean };
-      inbox_mark_read: { Args: { cid: string; seen?: string | null }; Returns: boolean };
-      inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
-      /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
-      inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
       /* "Segui" e avvisi (blocco SEGUI): errori con raise exception '<codice>' (notificationErrorCode, followErrorCode) */
       /** follower del profilo (solo il numero), se chi guarda lo segue, se si può seguire; anon e authenticated */
       follow_state: { Args: { p_profile: string }; Returns: { followers: number; following: boolean; followable: boolean } };
@@ -549,6 +538,17 @@ export type Database = {
       notifications_cleanup: { Args: { p_key: string }; Returns: undefined };
       /** segna come letti i propri avvisi: tutti (p_ids assente) o quelli indicati; restituisce quanti */
       notifications_mark_read: { Args: { p_ids?: number[] | null }; Returns: number };
+      /* casella messaggi (supabase/schema.sql, blocco INBOX): scritture solo da qui, errori con raise exception '<codice>' */
+      is_staff: { Args: Record<string, never>; Returns: boolean };
+      inbox_status: { Args: Record<string, never>; Returns: { unread: number; staff: boolean; staff_unread: number } };
+      inbox_start: { Args: { topic: string; content: string; via_feedback?: boolean }; Returns: string };
+      inbox_staff_start: { Args: { uname: string; topic: string; content: string }; Returns: string };
+      /** restituisce from_staff del messaggio scritto */
+      inbox_send: { Args: { cid: string; content: string }; Returns: boolean };
+      inbox_mark_read: { Args: { cid: string; seen?: string | null }; Returns: boolean };
+      inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
+      /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
+      inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
