@@ -159,9 +159,28 @@ const ALL_TABLES = /\bon all tables in schema public\b/;
  *   il controllo del ruolo o di una colonna, o tolti e non rimessi (`GUARDED_GRANTS`);
  * - corpi di funzione con un dollaro solo (la migrazione intera fallirebbe, correzione compresa).
  */
+/**
+ * Le ripetizioni {n} / {n,m} oltre 255 in un'espressione regolare: Postgres le rifiuta ("invalid repetition count(s)",
+ * il suo limite è 255). Il 27/09/2026 una {1,300} nella regola della foto di Discord ha fatto fallire la migrazione e,
+ * dentro handle_new_user (una funzione, controllata solo quando gira), avrebbe bloccato ogni nuova iscrizione.
+ * Si guarda tutto il testo del file: fuori dalle regex le graffe con soli numeri non si usano.
+ */
+export const PG_REGEX_DUPMAX = 255;
+export function overLongRepetitions(sql) {
+  const found = [];
+  for (const m of sql.matchAll(/\{(\d+)(?:,(\d*))?\}/g)) {
+    const a = Number(m[1]);
+    const b = m[2] === undefined || m[2] === "" ? a : Number(m[2]);
+    if (a > PG_REGEX_DUPMAX || b > PG_REGEX_DUPMAX) found.push(m[0]);
+  }
+  return found;
+}
+
 export function schemaProblems(sql) {
   const problems = [];
   const stmts = sqlStatements(sql);
+
+  for (const rep of overLongRepetitions(sql)) problems.push(`ripetizione ${rep} in una regex: Postgres accetta al massimo ${PG_REGEX_DUPMAX}`);
 
   for (const line of singleDollarLines(sql)) problems.push(`corpo di funzione con un dollaro solo: ${line.trim()}`);
 

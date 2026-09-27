@@ -43,7 +43,7 @@ export const MEDIA_UPLOAD_NAME_RE = String.raw`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]
  * Una foto di Discord (dai metadati dell'accesso OAuth). Stessa espressione di `handle_new_user` e di
  * `profile_discord_avatar` in schema.sql (showcase.test.ts le confronta): solo i due host delle immagini di Discord.
  */
-export const DISCORD_AVATAR_RE = String.raw`^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$`;
+export const DISCORD_AVATAR_RE = String.raw`^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$`;
 const DISCORD_AVATAR = new RegExp(DISCORD_AVATAR_RE);
 
 export type MediaKind = "avatar" | "cover";

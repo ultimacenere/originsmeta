@@ -6,7 +6,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { CREATOR_MARKER, GUARDED_GRANTS, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
+import { CREATOR_MARKER, GUARDED_GRANTS, PROFILES_GRANTS, PROFILES_REVOKE, overLongRepetitions, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
 /*
@@ -190,5 +190,21 @@ describe("file dell'ondata 2 (supabase/wave2-*.sql)", () => {
     assert.equal(withPendingBlocks(appended, [block]), appended);
     assert.equal(withPendingBlocks(schema, [block]), `${schema}\n${block}`);
     assert.equal(withPendingBlocks(schema, ["  \n"]), schema);
+  });
+});
+
+describe("regex che Postgres rifiuta", () => {
+  // 27/09/2026: {1,300} nella regola della foto di Discord ha fatto fallire la migrazione e rotto handle_new_user
+  test("ripetizioni oltre 255 trovate, quelle fino a 255 no", () => {
+    assert.deepEqual(overLongRepetitions("x ~ '^[a-z]{1,300}$' and y ~ '[0-9]{256}' and z ~ '.{2,}'"), ["{1,300}", "{256}"]);
+    assert.deepEqual(overLongRepetitions("x ~ '^[a-z]{1,255}(\\?size=[0-9]{1,4})?$'"), []);
+  });
+  test("uno schema con una ripetizione troppo lunga è rifiutato", () => {
+    const bad = schema.replace("[A-Za-z0-9/_.-]{1,255}", "[A-Za-z0-9/_.-]{1,300}");
+    assert.notEqual(bad, schema, "la regola della foto di Discord deve esserci");
+    assert.ok(schemaProblems(bad).some((p) => p.includes("{1,300}")));
+  });
+  test("lo schema vero non ha ripetizioni oltre 255", () => {
+    assert.deepEqual(overLongRepetitions(schema), []);
   });
 });

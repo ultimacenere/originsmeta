@@ -39,7 +39,7 @@ begin
     new.id,
     candidate,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'user_name', candidate),
-    case when new.raw_user_meta_data->>'avatar_url' ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$'
+    case when new.raw_user_meta_data->>'avatar_url' ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$'
          then new.raw_user_meta_data->>'avatar_url' end,
     case when new.raw_app_meta_data->>'provider' = 'discord' then new.raw_user_meta_data->>'provider_id' else null end
   )
@@ -2258,7 +2258,7 @@ create or replace function public.profile_discord_avatar(uid uuid)
 returns text language sql stable security definer set search_path = public, pg_temp as $$
   select case
     when auth.uid() is not null and auth.uid() <> uid and not public.is_admin() then null
-    else (select case when m ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$' then m end
+    else (select case when m ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$' then m end
             from (select u.raw_user_meta_data->>'avatar_url' as m from auth.users u where u.id = uid) as x)
   end
 $$;
@@ -3467,7 +3467,7 @@ create trigger community_guides_words before insert or update of words, summary,
 -- ---------- 3) foto dei profili: solo Discord o la foto caricata dal sito ----------
 update public.profiles set avatar_url = null
  where avatar_path is null and avatar_url is not null
-   and avatar_url !~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$';
+   and avatar_url !~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$';
 
 comment on function public.guard_created_at() is 'created_at la scrive solo il database: now() alla creazione, poi fissa (tranne per la connessione diretta dello staff). Voti, mazzi e tier list (27/09/2026).';
 comment on function public.community_guide_words_max(text, jsonb) is 'Massimo delle parole possibili di una guida della community (sovrainsieme di communityGuideWords): il trigger community_guides_words azzera words sopra questo numero (27/09/2026).';
