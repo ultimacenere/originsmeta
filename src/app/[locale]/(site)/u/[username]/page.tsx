@@ -36,7 +36,7 @@ import { getProfileVetrina } from "@/lib/community/showcaseQueries";
 import { accentBorder, accentText } from "@/lib/community/showcase";
 import { ProfileCover } from "@/components/showcase/ProfileCover";
 import { ProfileBackground } from "@/components/showcase/ProfileBackground";
-import { FavoriteLegendary } from "@/components/showcase/FavoriteLegendary";
+import { FavoriteLegendary, favoriteLegendaryCard } from "@/components/showcase/FavoriteLegendary";
 import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
 import { UserGuides } from "@/components/guides/AccountGuides";
@@ -162,6 +162,14 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
     },
   });
 
+  // conteggio di mazzi, tier list e guide: sotto la Leggendaria del cuore se c'è, altrimenti a destra della testata
+  const counts = (
+    <p className="font-mono text-xs text-pale-muted">
+      {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}
+      {guides.length ? ` · ${guides.length} ${guides.length === 1 ? GL.countOne : GL.countMany}` : ""}
+    </p>
+  );
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <JsonLd
@@ -210,11 +218,15 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           {/* "Scrivi a questo utente": solo per lo staff, deciso nel browser (la pagina è ISR); casella messaggi, pacchetto INBOX */}
           <StaffMessageLink locale={locale} username={profile.username} profileId={profile.id} />
         </div>
-        {vetrina ? <FavoriteLegendary slug={vetrina.favoriteLegendary} locale={locale} legendaryLabel={d.common.legendary} /> : null}
-        <p className="font-mono text-xs text-pale-muted">
-          {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}
-          {guides.length ? ` · ${guides.length} ${guides.length === 1 ? GL.countOne : GL.countMany}` : ""}
-        </p>
+        {/* Leggendaria del cuore: la carta intera, con il conteggio di mazzi e tier list sotto (Pierluigi, 27/09/2026); senza
+            carta il conteggio resta a destra come prima */}
+        {vetrina && favoriteLegendaryCard(vetrina.favoriteLegendary) ? (
+          <FavoriteLegendary slug={vetrina.favoriteLegendary} locale={locale}>
+            {counts}
+          </FavoriteLegendary>
+        ) : (
+          counts
+        )}
       </section>
 
       {/* Vetrina: mazzo e video in evidenza, orari delle dirette nel fuso di chi guarda */}

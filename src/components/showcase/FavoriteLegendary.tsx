@@ -1,37 +1,41 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import { getCard } from "@/lib/data/cards";
 import { cardImageAlt } from "@/lib/cardPage";
 
+/** La Leggendaria del cuore da mostrare, o undefined (slug assente, carta rimossa, non Leggendaria, senza immagine). */
+export function favoriteLegendaryCard(slug: string | null | undefined) {
+  const card = slug ? getCard(slug) : undefined;
+  if (!card || !card.legendary || card.status !== "active" || card.type === "token") return undefined;
+  return card.image || card.art ? card : undefined;
+}
+
 /**
  * Leggendaria del cuore sulla vetrina /u (pacchetto VETRINA; rifatta il 27/09/2026 su richiesta di Pierluigi: "rimuovi
- * tutte le scritte inutili, dai spazio alla carta, allargala e rendila più grande, solo l'artwork ci interessa"): la sola
- * illustrazione ufficiale (la finestra d'arte di /cards/art/<slug>.webp, la stessa della carta di gioco che disegniamo;
- * la carta intera se manca), grande, con la cornice oro delle Leggendarie. Il nome non si vede ma resta per chi usa un
- * lettore di schermo (alt e nome del link) e al passaggio del mouse (title); il clic apre la scheda della carta.
- * L'unica scritta è il credito, minuscolo in un angolo: la regola del materiale Koin (CLAUDE.md) vieta di togliere i
- * crediti degli illustratori, e la finestra d'arte non ha quello impresso sulla carta. È contenuto, non interfaccia.
- * Solo una Leggendaria attiva del database; con uno slug che non torna non mostra nulla.
+ * tutte le scritte inutili, dai spazio alla carta, allargala e rendila più grande", poi "voglio la carta intera"): la
+ * carta ufficiale INTERA, grande, con i crediti impressi intatti (ILLUS // … e KOIN GAMES INC: la regola del materiale
+ * Koin vieta di ritagliarli o coprirli, e così non serve un credito scritto). Nessun titolo né nome visibile: il nome
+ * resta per chi usa un lettore di schermo (alt e nome del link) e al passaggio del mouse (title); il clic apre la scheda
+ * della carta. Sotto la carta ci può stare un contenuto della pagina (`children`: il conteggio di mazzi e tier list).
  */
-export function FavoriteLegendary({ slug, locale }: { slug: string | null; locale: Locale; legendaryLabel?: string }) {
-  const card = slug ? getCard(slug) : undefined;
-  if (!card || !card.legendary || card.status !== "active" || card.type === "token") return null;
-  const src = card.art ?? card.image;
-  if (!src) return null;
-  const credit = card.credit?.illus ? `Ill. ${card.credit.illus} · © Koin Games` : "© Koin Games";
+export function FavoriteLegendary({ slug, locale, children }: { slug: string | null; locale: Locale; children?: ReactNode }) {
+  const card = favoriteLegendaryCard(slug);
+  if (!card) return null;
+  const src = card.image ?? card.art!;
   return (
-    <figure className="w-full shrink-0 sm:w-[340px]">
+    <figure className="mx-auto flex w-full max-w-[260px] shrink-0 flex-col items-center gap-2 sm:mx-0 sm:w-[240px]">
       <Link
         href={href(locale, `/cards/${card.slug}`)}
         prefetch={false}
         title={card.name}
         aria-label={card.name}
-        className="relative block overflow-hidden rounded-[14px] border-[3px] border-gold bg-night-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
+        className="block w-full overflow-hidden rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={cardImageAlt(card, locale)} loading="lazy" decoding="async" className={`block w-full ${card.art ? "aspect-[560/437] object-cover" : "h-auto"}`} />
-        <figcaption className="absolute right-1.5 bottom-1.5 rounded bg-night/75 px-1.5 py-0.5 text-[10px] leading-tight text-chalk-muted">{credit}</figcaption>
+        <img src={src} alt={cardImageAlt(card, locale)} loading="lazy" decoding="async" className="block h-auto w-full" />
       </Link>
+      {children ? <figcaption className="text-center">{children}</figcaption> : null}
     </figure>
   );
 }
