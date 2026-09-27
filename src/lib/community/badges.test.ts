@@ -81,7 +81,7 @@ describe("ruoli e permessi", () => {
     for (const b of ["creator", "author", "pro", "staff"]) assert.ok(isShowcaseBadge(b), b);
     for (const b of ["community", "influencer", "", null, undefined, "admin"]) assert.ok(!isShowcaseBadge(b), String(b));
   });
-  test("guide (permesso previsto, pubblicazione diretta non ancora costruita): Autore, Creator, Pro, Staff e admin", () => {
+  test("guide pubblicate direttamente (pacchetto GUIDE; lo SQL lo confronta guides.test.ts): Autore, Creator, Pro, Staff e admin", () => {
     for (const b of ["author", "creator", "pro", "staff"]) assert.ok(canPublishGuides(b, "user"), b);
     assert.ok(canPublishGuides("community", "admin"));
     for (const b of ["community", "influencer", null]) assert.ok(!canPublishGuides(b, "user"), String(b));

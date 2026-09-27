@@ -7,6 +7,7 @@ import type { DeckStatus, Guide } from "@/lib/community/types";
 import type { DeckTranslations } from "@/lib/community/deckTranslation";
 import type { Locale } from "@/lib/i18n";
 import type { DeckLink, StoredVideo } from "@/lib/videos";
+import type { CommunityGuideTranslations } from "@/lib/community/guides";
 
 export type ProfileRow = {
   id: string;
@@ -86,6 +87,37 @@ export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; cre
 /** Statistiche dei mazzi per gli autori (26/09/2026, supabase/schema.sql, blocco STATS): totali per mazzo e giorno UTC. */
 export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
+
+/* guide della community (pacchetto GUIDE, 27/09/2026, supabase/wave2-GUIDE.sql): regole in src/lib/community/guides.ts */
+export type CommunityGuideRow = {
+  id: string;
+  slug: string;
+  owner: string;
+  lang: Locale;
+  title: string;
+  summary: string;
+  sections: { heading: string; body: string }[];
+  category: string;
+  cards: string[];
+  videos: StoredVideo[];
+  links: DeckLink[];
+  cover_preset: string;
+  cover_path: string | null;
+  status: "draft" | "published" | "hidden";
+  translations: CommunityGuideTranslations;
+  created_at: string;
+  updated_at: string;
+  /** prima pubblicazione: la scrive solo il trigger guard_community_guide */
+  published_at: string | null;
+};
+/** Le colonne con la grant di insert (slug, owner e testo); date, id e traduzioni no. */
+export type CommunityGuideInsert = Pick<CommunityGuideRow, "slug" | "owner" | "lang" | "title"> &
+  Partial<Pick<CommunityGuideRow, "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status">>;
+/** Le colonne con la grant di update: mai slug, owner, id e date. */
+export type CommunityGuideUpdate = Partial<
+  Pick<CommunityGuideRow, "lang" | "title" | "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status" | "translations">
+>;
+export type CommunityGuideReportRow = { id: number; guide_id: string; user_id: string | null; reason: string; created_at: string };
 
 /* ---------- Tournament Organizer (16/09/2026) ---------- */
 export type TournamentRow = {
@@ -306,6 +338,36 @@ export type Database = {
         Update: Partial<DeckReportRow>;
         Relationships: [];
       };
+      /** guide della community (pacchetto GUIDE): scrivono solo i ruoli con can_publish_guides, sulla propria riga */
+      community_guides: {
+        Row: CommunityGuideRow;
+        Insert: CommunityGuideInsert;
+        Update: CommunityGuideUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "community_guides_owner_fkey";
+            columns: ["owner"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** segnalazioni delle guide: le scrive chi ha fatto l'accesso, le legge lo staff */
+      community_guide_reports: {
+        Row: CommunityGuideReportRow;
+        Insert: { guide_id: string; user_id: string; reason: string };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "community_guide_reports_guide_id_fkey";
+            columns: ["guide_id"];
+            isOneToOne: false;
+            referencedRelation: "community_guides";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tournaments: {
         Row: TournamentRow;
         Insert: TournamentInsert;
@@ -477,6 +539,11 @@ export type Database = {
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
       /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
       inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
+      /* guide della community (supabase/wave2-GUIDE.sql): permesso e vincoli; il sito non le chiama direttamente */
+      can_publish_guides: { Args: { uid: string }; Returns: boolean };
+      community_guide_text_ok: { Args: { t: string; minlen: number; maxlen: number; multiline: boolean }; Returns: boolean };
+      community_guide_sections_ok: { Args: { s: { heading: string; body: string }[]; complete: boolean }; Returns: boolean };
+      community_guide_cards_ok: { Args: { c: string[] }; Returns: boolean };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

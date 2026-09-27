@@ -5,6 +5,15 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getGuides } from "@/lib/content/guides";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { communityGuideLabels } from "@/lib/communityGuideLabels";
+import { GuideCtaBox } from "@/components/guides/GuideCtaBox";
+import { CommunityGuidesSection } from "@/components/guides/CommunityGuideList";
+
+/**
+ * ISR dal 27/09/2026 (pacchetto GUIDE): la pagina mostra anche le ultime guide della community, lette da Supabase come
+ * /decks (cinque minuti; le Server Action delle guide la rinnovano subito). Le guide editoriali restano statiche.
+ */
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -42,16 +51,12 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
       <h1 className="t-page mt-2">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       {/* "Mandaci la tua guida" (diretta Twitch del 23/09/2026): subito sotto l'intro, come l'invito a pubblicare
-          di /decks; il modulo manda la guida al canale Discord privato dello staff */}
-      <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
-        <div className="min-w-0 flex-1 basis-72">
-          <h2 className="t-item">{d.guides.submitTitle}</h2>
-          <p className="mt-1 text-pale-muted">{d.guides.submitText}</p>
-        </div>
-        <Link className="btn btn-primary shrink-0" href={href(locale, "/guides/submit")}>
-          {d.guides.submitCta} →
-        </Link>
-      </section>
+          di /decks; il modulo manda la guida al canale Discord privato dello staff. Per chi ha un ruolo che pubblica le
+          guide (pacchetto GUIDE, 27/09/2026) il riquadro diventa "Scrivi una guida" (lo decide il browser: pagina ISR). */}
+      <GuideCtaBox
+        submit={{ title: d.guides.submitTitle, text: d.guides.submitText, button: d.guides.submitCta, href: href(locale, "/guides/submit") }}
+        write={{ ...communityGuideLabels[locale].cta, href: href(locale, "/guides/new") }}
+      />
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
           const count = guides.filter((g) => g.category === id).length;
@@ -80,6 +85,8 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
           </li>
         ))}
       </ul>
+      {/* Guide della community (pacchetto GUIDE): le ultime indicizzabili in questa lingua; niente se non ce ne sono */}
+      <CommunityGuidesSection locale={locale} />
     </div>
   );
 }

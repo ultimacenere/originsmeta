@@ -6,6 +6,7 @@ import { supabasePublic } from "@/lib/supabase/public";
 import { parseStoredLinks } from "@/lib/community/profileLinks";
 import { SHOWCASE_BADGES, isShowcaseBadge } from "@/lib/community/badges";
 import { listedInDirectory } from "@/lib/community/creatorDirectory";
+import { listGuideIndex } from "@/lib/community/guideQueries";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -63,7 +64,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 5;
+export const SITEMAP_DATA_VERSION = 6; // 6: guide della community (pacchetto GUIDE, 27/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -158,15 +159,17 @@ async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> 
  * sito acceso come le altre letture.
  */
 async function readCommunity(): Promise<CommunityData> {
-  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase] = await Promise.all([
+  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides] = await Promise.all([
     listPublishedDeckIndex(),
     tournamentSlugs(),
     listPublicProfiles(),
     tierListDates(),
     loadDeckRefs(),
     showcaseDates(),
+    // guide della community (pacchetto GUIDE, 27/09/2026): tabella mancante = nessuna guida, ogni altro errore lancia
+    listGuideIndex(),
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

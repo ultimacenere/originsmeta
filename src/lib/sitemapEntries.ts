@@ -41,7 +41,7 @@ export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
  * sono perché il loro lastmod conta i mazzi elencati nella scheda (`deckRefs`, come il `dateModified`); per create e
  * rimosse `cardPageDeckDays` non conta mazzi e i dati non servono.
  */
-export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "cards", "decks", "community"];
+export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "guides", "cards", "decks", "community"];
 
 export const HOME_SITEMAP_PATH = "/sitemap-home.xml";
 
@@ -80,6 +80,13 @@ export type CommunityData = {
    * motivo delle tier list. Assente: niente directory in sitemap e date dei profili come prima.
    */
   showcase?: { creators: number; latest?: string; byUser: [username: string, updatedAt: string][] };
+  /**
+   * Guide della community (pacchetto GUIDE, 27/09/2026): quelle da elencare, ognuna con le lingue in cui la pagina si
+   * indicizza (sopra la soglia di parole, originale e traduzioni aggiornate: `sitemapCommunityGuides` in
+   * community/guides.ts), e la data dell'ultima pubblicata o modificata, di qualunque lunghezza (lastmod di /guides).
+   * Nella sezione "guides", accanto alle guide editoriali. Assente: nessuna guida della community.
+   */
+  communityGuides?: { guides: { slug: string; updated_at: string; locales: Locale[] }[]; latest?: string };
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -155,7 +162,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/decks", section: "pages", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity] },
     // Il pool del deck builder segue le carte: patch e verifica sul gioco.
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
-    { path: "/guides", section: "pages", route: "/guides", dates: (l) => guidesBy[l].map((g) => g.updated) },
+    // dal 27/09/2026 anche le guide della community (pacchetto GUIDE), che la pagina elenca
+    { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.latest] },
     // Calendario: eventi ufficiali (data del modello, events.ts) e tornei della community.
     { path: "/tournaments", section: "pages", route: "/tournaments", dates: [latestTournament] },
     // /faq è l'unica pagina con dati strutturati FAQPage. Le sue date sono quelle del modello.
@@ -200,6 +208,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
         dates: (l) => [guideOf(l, g.slug)?.updated],
         images: (l) => [guideOf(l, g.slug)?.image],
       }),
+    ),
+    // Guide della community (pacchetto GUIDE, 27/09/2026): solo le lingue in cui la pagina si indicizza, come i mazzi.
+    ...(data.communityGuides?.guides ?? []).map(
+      (g): SitemapPage => ({ path: `/guides/community/${g.slug}`, section: "guides", route: "/guides/community/[slug]", dates: [g.updated_at], locales: g.locales }),
     ),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
     ...sortedNews.map(

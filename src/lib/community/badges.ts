@@ -51,9 +51,9 @@ export const LISTING_BADGES: readonly Badge[] = ["creator", "pro", "staff"];
 export const SHOWCASE_BADGES: readonly Badge[] = ["creator", "author", "pro", "staff"];
 
 /**
- * Tag che potranno pubblicare le guide direttamente (27/09/2026: l'Autore "se vuole può creare guide"). La pubblicazione
- * diretta delle guide non esiste ancora (oggi c'è il modulo "Mandaci la tua guida", aperto a tutti, e lo staff pubblica a
- * mano): questo è il permesso previsto, pronto per quando si costruirà.
+ * Tag che pubblicano le guide direttamente (27/09/2026: l'Autore "se vuole può creare guide"; pacchetto GUIDE dello
+ * stesso giorno: /guides/new, src/lib/community/guides.ts). Gli altri usano il modulo "Mandaci la tua guida". Nel database
+ * la stessa regola sta in `can_publish_guides` (supabase/wave2-GUIDE.sql): guides.test.ts controlla che coincidano.
  */
 export const GUIDE_BADGES: readonly Badge[] = ["author", "creator", "pro", "staff"];
 
@@ -97,7 +97,7 @@ export function publishedDeckCap(who: Who): number {
   return normalizeBadge(who?.badge) === "author" ? AUTHOR_DECK_LIMIT : COMMUNITY_DECK_LIMIT;
 }
 
-/** Permesso previsto per pubblicare direttamente le guide (non ancora costruito): Autore, Creator, Pro, Staff e admin. */
+/** Pubblica direttamente le guide della community (pacchetto GUIDE): Autore, Creator, Pro, Staff e admin. */
 export function canPublishGuides(badge: string | null | undefined, role?: string | null): boolean {
   return role === "admin" || has(GUIDE_BADGES, badge);
 }

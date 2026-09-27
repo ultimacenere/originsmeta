@@ -32,8 +32,11 @@ export function translationEnabled(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY);
 }
 
-/** Nomi ufficiali che il modello non deve tradurre: carte (anche rimosse e create) e luoghi. */
-const officialNames: string[] = [...new Set([...cards.map((c) => c.name), ...locations.map((l) => l.name)])];
+/**
+ * Nomi ufficiali che il modello non deve tradurre: carte (anche rimosse e create) e luoghi. Esportati dal 27/09/2026
+ * per le guide della community (guideTranslate.ts, pacchetto GUIDE), che seguono la stessa regola.
+ */
+export const officialNames: string[] = [...new Set([...cards.map((c) => c.name), ...locations.map((l) => l.name)])];
 
 type Row = { guide: Guide; translations: DeckTranslations | null; status: string; slug: string };
 

@@ -4,6 +4,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
+import { communityGuideLabels } from "@/lib/communityGuideLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -51,6 +52,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): testo in src/lib/inboxLabels.ts, ancora #messages */}
         <p id="messages" className="mt-6 scroll-mt-24">
           {inboxLabels[locale].privacy}
+        </p>
+        {/* Guide della community (pacchetto GUIDE, 27/09/2026): testo in src/lib/communityGuideLabels.ts, ancora #community-guides */}
+        <p id="community-guides" className="mt-6 scroll-mt-24">
+          {communityGuideLabels[locale].privacy}
         </p>
       </article>
     </div>

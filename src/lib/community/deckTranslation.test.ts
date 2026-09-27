@@ -5,6 +5,7 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import {
   freshTranslation,
   guideHash,
@@ -14,8 +15,13 @@ import {
   missingLocales,
   namesIn,
   parseTranslation,
+  STRATEGY_GUIDE_TRANSLATION_SYSTEM,
+  textHash,
   translationRequest,
+  translationRequestFor,
   TRANSLATION_MODEL,
+  TRANSLATION_RULES,
+  TRANSLATION_SYSTEM,
   type DeckTranslations,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./deckTranslation.ts";
@@ -129,5 +135,45 @@ describe("translationRequest", () => {
     assert.match(req.messages[0].content, /SOURCE LANGUAGE: Italian/);
     assert.match(req.messages[0].content, /TARGET LANGUAGE: Spanish/);
     assert.match(req.messages[0].content, /NAMES: Mulan/);
+  });
+});
+
+describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", () => {
+  test("guideHash dà le stesse impronte di prima della generalizzazione: le traduzioni salvate restano valide", () => {
+    // valori calcolati con il codice del 26/09/2026, prima di textHash
+    assert.equal(guideHash(g("it", "Mazzo aggro con Mulan", { strengths: "Curva bassa", notes: "Nota" })), "ddkdan0bgd");
+    assert.equal(guideHash(g("es", "Plan")), "cefco0o2ne");
+    assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
+  });
+
+  test("le istruzioni dei mazzi sono le stesse di prima (stessa impronta SHA-256)", () => {
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413");
+    assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
+  });
+
+  test("guide della community: stesse regole e glossario, titolo fuori dal testo", () => {
+    assert.ok(STRATEGY_GUIDE_TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
+    assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /heading_N/);
+    assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
+    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar/);
+  });
+
+  test("translationRequestFor: campi qualsiasi, lingua di partenza e istruzioni scelte da chi chiama", () => {
+    const req = translationRequestFor({ summary: "Intro", heading_1: "Mulligan", body_1: "Tieni Mulan" }, "it", "en", [], STRATEGY_GUIDE_TRANSLATION_SYSTEM);
+    const schema = req.output_config.format.schema as { properties: Record<string, unknown>; required: string[] };
+    assert.deepEqual(Object.keys(schema.properties), ["summary", "heading_1", "body_1"]);
+    assert.deepEqual(schema.required, ["summary", "heading_1", "body_1"]);
+    assert.equal(req.system[0].text, STRATEGY_GUIDE_TRANSLATION_SYSTEM);
+    assert.match(req.messages[0].content, /SOURCE LANGUAGE: Italian/);
+    assert.match(req.messages[0].content, /TARGET LANGUAGE: English/);
+    assert.match(req.messages[0].content, /NAMES: \(none\)/);
+    // la richiesta dei mazzi è quella generale con le istruzioni dei mazzi
+    const deck = translationRequest(g("it", "Riassunto"), "en" as never, []);
+    assert.deepEqual(deck, translationRequestFor({ summary: "Riassunto" }, "it", "en", [], TRANSLATION_SYSTEM));
+  });
+
+  test("parseTranslation vale per un testo qualsiasi", () => {
+    assert.deepEqual(parseTranslation({ summary: "Intro", heading_1: "Titolo" }, '{"summary":"Intro EN","heading_1":"Title"}'), { summary: "Intro EN", heading_1: "Title" });
+    assert.equal(parseTranslation({ summary: "Intro", heading_1: "Titolo" }, '{"summary":"Intro EN"}'), null);
   });
 });

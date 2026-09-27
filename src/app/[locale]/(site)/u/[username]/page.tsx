@@ -30,6 +30,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
 import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
+import { UserGuides } from "@/components/guides/AccountGuides";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -252,6 +253,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
 
       {/* Vetrina (pacchetto CREATOR, 26/09/2026; Creator, Autore, Pro e Staff dal 27/09): i tornei pubblici che organizza */}
       {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
+      {/* Guide pubblicate dall'iscritto (pacchetto GUIDE, 27/09/2026): niente se non ne ha */}
+      <UserGuides locale={locale} ownerId={profile.id} />
 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (

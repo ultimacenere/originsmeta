@@ -10,6 +10,11 @@ import type { Guide } from "./types";
  * Questo modulo è puro a runtime (nessun import che non sia di soli tipi): lo usano il sito (`translate.ts`,
  * dopo la pubblicazione), lo script `scripts/translate-decks.mjs` (arretrati e nuovi tentativi) e i test
  * (`deckTranslation.test.ts`), che Node esegue direttamente. Il client dell'API arriva da fuori.
+ *
+ * Dal 27/09/2026 (pacchetto GUIDE) le parti generali servono anche alle guide della community: impronta (`textHash`),
+ * richiesta (`translationRequestFor`), traduzione (`translateDocWith`) e controlli (`parseTranslation`) lavorano su un
+ * testo qualsiasi di soli campi stringa, con le stesse regole e lo stesso glossario (`TRANSLATION_RULES`). Le funzioni
+ * dei mazzi restano quelle di prima e danno gli stessi risultati (i test lo controllano con impronte e istruzioni fisse).
  */
 
 /** Sezioni facoltative della guida, nell'ordine in cui vengono mostrate (le riesporta `types.ts`). */
@@ -44,7 +49,16 @@ export function guideText(guide: Guide): GuideText {
  */
 export function guideHash(guide: Guide): string {
   const text = guideText(guide);
-  const s = JSON.stringify([guide.lang, text.summary, ...guideSections.map((k) => text[k] ?? "")]);
+  return textHash([guide.lang, text.summary, ...guideSections.map((k) => text[k] ?? "")]);
+}
+
+/**
+ * Impronta di un testo qualsiasi da tradurre, dato come elenco ordinato di parti (lingua compresa). La usano i mazzi
+ * (`guideHash`, che dà le stesse impronte di prima: le traduzioni già salvate restano valide) e le guide della
+ * community (pacchetto GUIDE, 27/09/2026, `communityGuideHash` in guides.ts).
+ */
+export function textHash(parts: readonly string[]): string {
+  const s = JSON.stringify(parts);
   // cyrb53: veloce, deterministico, 53 bit
   let h1 = 0xdeadbeef;
   let h2 = 0x41c6ce57;
@@ -93,7 +107,7 @@ const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  * I nomi (carte, luoghi) che compaiono nel testo, così il modello li lascia come sono: sono nomi ufficiali in
  * inglese e il sito li trasforma in link. Confronto senza maiuscole, a parola intera.
  */
-export function namesIn(text: GuideText, names: readonly string[]): string[] {
+export function namesIn(text: GuideText | Readonly<Record<string, string>>, names: readonly string[]): string[] {
   const hay = Object.values(text).join("\n");
   const found = names.filter((n) => n.length >= 3 && new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRe(n)}(?=$|[^\\p{L}\\p{N}])`, "iu").test(hay));
   return [...new Set(found)].sort((a, b) => a.localeCompare(b));
@@ -130,9 +144,14 @@ const LANGUAGE: Record<string, string> = {
  * Istruzioni fisse (in inglese, per il modello): restano identiche a ogni chiamata, quindi possono stare in
  * cache. Lingua di partenza, lingua di arrivo e nomi viaggiano nel messaggio.
  */
-export const TRANSLATION_SYSTEM = `You translate deck guides written by players on OriginsMeta, an unofficial fan site about Origins TCG, a digital trading card game by Koin Games. The guide is a JSON object whose fields are the parts of one guide (summary, strengths, weaknesses, mulligan, combos, matchups, notes). Translate every field from the source language into the target language and return the same fields.
+const DECK_GUIDE_INTRO =
+  "You translate deck guides written by players on OriginsMeta, an unofficial fan site about Origins TCG, a digital trading card game by Koin Games. The guide is a JSON object whose fields are the parts of one guide (summary, strengths, weaknesses, mulligan, combos, matchups, notes). Translate every field from the source language into the target language and return the same fields.";
 
-Rules:
+/**
+ * Le regole e il glossario, comuni a tutte le traduzioni del sito: le guide dei mazzi (`TRANSLATION_SYSTEM`) e le guide
+ * della community (`STRATEGY_GUIDE_TRANSLATION_SYSTEM`, pacchetto GUIDE del 27/09/2026). Cambia solo l'introduzione.
+ */
+export const TRANSLATION_RULES = `Rules:
 1. Translate faithfully: same meaning, same tone, same level of detail. Do not add, remove, summarize, explain, correct or comment anything.
 2. Keep exactly as written, in English: card names, location names and deck names. The names found in this guide are listed under NAMES. Good, Evil, Neutral and Conquest also stay in English.
 3. The game is officially translated: write its keywords with the official name of the target language from GLOSSARY, with the initial capital as in the game, even when the guide uses the English name or another language ("with Trample" becomes "con Travolgere" in Italian, "con Arrollar" in Spanish). When the keyword stands for the ability itself, say so: "its On Reveal" becomes "la sua abilità Alla rivelazione" in Italian, "su habilidad Al revelar" in Spanish. In English use the English names. The space a card occupies on the board is "spazio" in Italian and "espacio" in Spanish (never "casella" or "casilla").
@@ -146,8 +165,22 @@ GLOSSARY (English = Italian = Spanish):
 ${GAME_KEYWORDS.map(([en, it, es]) => `${en} = ${it} = ${es}`).join("\n")}
 As verbs: stun = stordire = aturdir; move = muovere = mover ("I move" = "mi muovo" = "me muevo").`;
 
+/** Istruzioni per le guide dei mazzi: introduzione più le regole comuni (lo stesso testo di prima del 27/09/2026). */
+export const TRANSLATION_SYSTEM = `${DECK_GUIDE_INTRO}\n\n${TRANSLATION_RULES}`;
+
+/**
+ * Istruzioni per le guide della community (pacchetto GUIDE, 27/09/2026): stesse regole e stesso glossario, con i campi
+ * di una guida a sezioni. Il titolo non viaggia nel testo e non si traduce, come il nome di un mazzo.
+ */
+export const STRATEGY_GUIDE_TRANSLATION_SYSTEM = `You translate strategy guides written by players (authors, content creators, pro players) on OriginsMeta, an unofficial fan site about Origins TCG, a digital trading card game by Koin Games. The guide is a JSON object: "summary" is its introduction, "heading_N" and "body_N" are the heading and the text of section N. Translate every field from the source language into the target language and return the same fields. The title of the guide is not part of the object and is never translated.
+
+${TRANSLATION_RULES}`;
+
+/** Un testo da tradurre: campi di sola stringa, nell'ordine in cui si mostrano. */
+export type TranslationDoc = Record<string, string>;
+
 /** Schema della risposta: gli stessi campi del testo di partenza, tutti obbligatori, nient'altro. */
-function schemaFor(text: GuideText) {
+function schemaFor(text: TranslationDoc) {
   const keys = Object.keys(text);
   return {
     type: "object",
@@ -159,20 +192,27 @@ function schemaFor(text: GuideText) {
 
 /** Parametri della richiesta all'API per tradurre `guide` in `to`. */
 export function translationRequest(guide: Guide, to: Locale, names: readonly string[]) {
-  const text = guideText(guide);
+  return translationRequestFor(guideText(guide), guide.lang, to, names, TRANSLATION_SYSTEM);
+}
+
+/**
+ * Parametri della richiesta per un testo qualsiasi (`text`, campi di sola stringa) da `from` a `to`, con le istruzioni
+ * `system`: la forma generale di `translationRequest`, usata anche dalle guide della community (pacchetto GUIDE).
+ */
+export function translationRequestFor(text: TranslationDoc, from: string, to: string, names: readonly string[], system: string) {
   return {
     model: TRANSLATION_MODEL,
     max_tokens: 16000,
     // Se il modello declina la richiesta, l'API la ripete da sola sul modello di riserva consigliato
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default" as const,
-    system: [{ type: "text" as const, text: TRANSLATION_SYSTEM, cache_control: { type: "ephemeral" as const } }],
+    system: [{ type: "text" as const, text: system, cache_control: { type: "ephemeral" as const } }],
     // Tradurre non chiede ragionamenti lunghi: sforzo basso, risposta vincolata allo schema
     output_config: { effort: "low" as const, format: { type: "json_schema" as const, schema: schemaFor(text) } },
     messages: [
       {
         role: "user" as const,
-        content: `SOURCE LANGUAGE: ${LANGUAGE[guide.lang] ?? guide.lang}\nTARGET LANGUAGE: ${LANGUAGE[to] ?? to}\nNAMES: ${names.length ? names.join(", ") : "(none)"}\n\nGUIDE:\n${JSON.stringify(text)}`,
+        content: `SOURCE LANGUAGE: ${LANGUAGE[from] ?? from}\nTARGET LANGUAGE: ${LANGUAGE[to] ?? to}\nNAMES: ${names.length ? names.join(", ") : "(none)"}\n\nGUIDE:\n${JSON.stringify(text)}`,
       },
     ],
   };
@@ -183,7 +223,7 @@ export function translationRequest(guide: Guide, to: Locale, names: readonly str
  * di lunghezza ragionevole (una traduzione non triplica il testo). Altrimenti null: meglio l'originale che
  * una traduzione rotta.
  */
-export function parseTranslation(source: GuideText, raw: string): GuideText | null {
+export function parseTranslation<T extends GuideText | TranslationDoc>(source: T, raw: string): T | null {
   let data: unknown;
   try {
     data = JSON.parse(raw);
@@ -203,17 +243,34 @@ export function parseTranslation(source: GuideText, raw: string): GuideText | nu
     if (!clean || clean.length > src.length * 2.5 + 200) return null;
     out[k] = clean;
   }
-  return out as GuideText;
+  return out as T;
 }
 
 /** Traduce la guida in `to`. Null se la risposta manca, è stata rifiutata, è troncata o non supera i controlli. */
 export async function translateGuideWith(client: Anthropic, guide: Guide, to: Locale, names: readonly string[]): Promise<{ guide: GuideText; model: string } | null> {
-  const res = await client.beta.messages.create(translationRequest(guide, to, names), { timeout: 120_000 });
+  const r = await translateDocWith(client, guideText(guide), guide.lang, to, names, TRANSLATION_SYSTEM);
+  return r ? { guide: r.doc as GuideText, model: r.model } : null;
+}
+
+/**
+ * Traduce un testo qualsiasi (`text`, campi di sola stringa) da `from` a `to` con le istruzioni `system`: la forma
+ * generale di `translateGuideWith`, usata anche dalle guide della community (pacchetto GUIDE, 27/09/2026). Null se la
+ * risposta manca, è stata rifiutata, è troncata o non supera i controlli di `parseTranslation`.
+ */
+export async function translateDocWith(
+  client: Anthropic,
+  text: TranslationDoc,
+  from: string,
+  to: string,
+  names: readonly string[],
+  system: string,
+): Promise<{ doc: TranslationDoc; model: string } | null> {
+  const res = await client.beta.messages.create(translationRequestFor(text, from, to, names, system), { timeout: 120_000 });
   if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") return null;
   const raw = res.content
     .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
     .map((b) => b.text)
     .join("");
-  const parsed = parseTranslation(guideText(guide), raw);
-  return parsed ? { guide: parsed, model: res.model } : null;
+  const parsed = parseTranslation(text, raw);
+  return parsed ? { doc: parsed, model: res.model } : null;
 }
