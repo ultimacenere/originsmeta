@@ -83,12 +83,15 @@
  *                                                                                 overlay_vertical | overlay_horizontal),
  *                                                                                 placement (deck_page | account)
  *     deck_image_download clic su "Scarica" dell'immagine di un mazzo            format (16x9 | 9x16), placement
+ *   ★ guide_published     guida della community pubblicata per la prima volta     guide_lang (lingua della guida), category
+ *                         (pacchetto GUIDE, 27/09/2026; non le modifiche né una guida riportata tra le bozze e ripubblicata:
+ *                         `firstPublish` di saveCommunityGuide)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars,
  *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, provider,
- *     host, tool, format;
+ *     host, tool, format, category;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
  * non rompere i rapporti già impostati: hanno lo stesso valore.
@@ -194,6 +197,7 @@ export type EventParams = {
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
+  guide_published: { guide_lang: string; category: string };
 };
 export type EventName = keyof EventParams;
 
@@ -234,6 +238,7 @@ export const VERCEL_PROPS = {
   stream_tools_open: ["placement"],
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],
+  guide_published: ["guide_lang", "category"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

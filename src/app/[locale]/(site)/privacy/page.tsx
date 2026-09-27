@@ -7,6 +7,7 @@ import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
 import { showcaseLabels } from "@/lib/showcaseLabels";
 import { achievementLabels } from "@/lib/achievementLabels";
+import { communityGuideLabels } from "@/lib/communityGuideLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -66,6 +67,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* "Segui" e notifiche (pacchetto SEGUI, 27/09/2026): testo in src/lib/followLabels.ts, ancora #follows */}
         <p id="follows" className="mt-6 scroll-mt-24">
           {followLabels[locale].privacy}
+        </p>
+        {/* Guide della community (pacchetto GUIDE, 27/09/2026): testo in src/lib/communityGuideLabels.ts, ancora #community-guides */}
+        <p id="community-guides" className="mt-6 scroll-mt-24">
+          {communityGuideLabels[locale].privacy}
         </p>
       </article>
     </div>

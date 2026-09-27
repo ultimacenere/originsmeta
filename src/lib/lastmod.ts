@@ -46,7 +46,9 @@ export const PAGE_UPDATED = {
   "/": "2026-09-25", // Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
   "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting; 25/09: news senza fonte citabile senza "Fonte"
   "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup; via World of Origins
-  "/guides": "2026-09-25", // Ondata 1: title e description
+  "/guides": "2026-09-27", // GUIDE: sezione "Guide della community" e riquadro "Scrivi una guida"; Ondata 1: title e description
+  "/guides/community": "2026-09-27", // GUIDE: nascita dell'elenco delle guide della community
+  "/guides/community/[slug]": "2026-09-27", // GUIDE: nascita delle guide della community
   "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
   "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
   "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"

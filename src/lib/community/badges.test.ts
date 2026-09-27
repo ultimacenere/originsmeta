@@ -6,7 +6,7 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
   AUTHOR_DECK_LIMIT,
@@ -81,7 +81,7 @@ describe("ruoli e permessi", () => {
     for (const b of ["creator", "author", "pro", "staff"]) assert.ok(isShowcaseBadge(b), b);
     for (const b of ["community", "influencer", "", null, undefined, "admin"]) assert.ok(!isShowcaseBadge(b), String(b));
   });
-  test("guide (permesso previsto, pubblicazione diretta non ancora costruita): Autore, Creator, Pro, Staff e admin", () => {
+  test("guide pubblicate direttamente (pacchetto GUIDE; lo SQL qui sotto e in guides.test.ts): Autore, Creator, Pro, Staff e admin", () => {
     for (const b of ["author", "creator", "pro", "staff"]) assert.ok(canPublishGuides(b, "user"), b);
     assert.ok(canPublishGuides("community", "admin"));
     for (const b of ["community", "influencer", null]) assert.ok(!canPublishGuides(b, "user"), String(b));
@@ -137,6 +137,24 @@ describe("database: stesse regole in supabase/schema.sql", () => {
     for (const s of stmts.filter((x) => /p\.badge in \(/.test(x))) {
       assert.doesNotMatch(s, /influencer/);
     }
+  });
+  test("guide della community (can_publish_guides) e copertine caricate: gli stessi tag del codice", () => {
+    // Qui, in un test già in `npm test`, perché il confronto giri anche prima che l'integratore registri guides.test.ts.
+    // Il blocco GUIDE sta in supabase/wave2-GUIDE.sql finché non viene accodato a schema.sql: si leggono i due file.
+    const wave = new URL("../../../supabase/wave2-GUIDE.sql", import.meta.url);
+    const all = sqlStatements(schema + (existsSync(wave) ? `\n${readFileSync(wave, "utf8")}` : ""));
+    const fn = all.filter((x) => /^create (?:or replace )?function public\.can_publish_guides\(/.test(x)).at(-1) ?? "";
+    assert.ok(fn, "manca can_publish_guides (supabase/wave2-GUIDE.sql o schema.sql)");
+    const m = /p\.role = 'admin' or p\.badge in \(([^)]*)\)/.exec(fn);
+    assert.ok(m, fn);
+    assert.deepEqual(sorted(quoted(m[1])), sorted(GUIDE_BADGES));
+    for (const badge of [...BADGES, "influencer", null]) {
+      for (const role of ["user", "admin", null]) assert.equal(canPublishGuides(badge, role), role === "admin" || (badge !== null && quoted(m[1]).includes(badge)), `${badge}/${role}`);
+    }
+    const guard = all.filter((x) => /^create (?:or replace )?function public\.guard_community_guide\(/.test(x)).at(-1) ?? "";
+    const cover = /p\.role = 'admin' or p\.badge in \(([^)]*)\)\)\) then raise exception 'guide_cover_role'/.exec(guard);
+    assert.ok(cover, "copertina caricata solo per i ruoli con vetrina");
+    assert.deepEqual(sorted(quoted(cover[1])), sorted(SHOWCASE_BADGES));
   });
 });
 

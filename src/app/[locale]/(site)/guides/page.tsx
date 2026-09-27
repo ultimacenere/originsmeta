@@ -5,6 +5,18 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getGuides } from "@/lib/content/guides";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { communityGuideLabels } from "@/lib/communityGuideLabels";
+import { GuideCtaBox } from "@/components/guides/GuideCtaBox";
+import { CommunityGuidesSection, communityGuidesIn } from "@/components/guides/CommunityGuideList";
+import { COMMUNITY_GUIDES_ON_HUB } from "@/lib/community/guides";
+
+/**
+ * ISR dal 27/09/2026 (pacchetto GUIDE; decisione da confermare con Pierluigi, scritta in CLAUDE.md): la pagina mostra
+ * anche le ultime guide della community, lette da Supabase come /decks (cinque minuti; le Server Action delle guide la
+ * rinnovano subito), e le elenca nei dati strutturati. Le guide editoriali restano statiche. Come /decks, una build con
+ * Supabase irraggiungibile fallisce di proposito (la lettura lancia); con la tabella che non c'è ancora, niente sezione.
+ */
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -17,8 +29,15 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
   const guides = getGuides(locale);
   const categories = Object.entries(d.guides.categories) as [keyof typeof d.guides.categories, string][];
 
-  // Lista per i dati strutturati: le guide già caricate qui sopra, ognuna con la sua pagina.
-  const listed = guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) }));
+  // Guide della community indicizzabili in questa lingua (pacchetto GUIDE): la sezione in fondo ne mostra le ultime
+  const community = await communityGuidesIn(locale);
+  const shownCommunity = community.slice(0, COMMUNITY_GUIDES_ON_HUB);
+
+  // Lista per i dati strutturati: le guide già caricate qui sopra e quelle della community mostrate in fondo, ognuna con la sua pagina.
+  const listed = [
+    ...guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) })),
+    ...shownCommunity.map((g) => ({ name: g.title, path: href(locale, `/guides/community/${g.slug}`) })),
+  ];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -42,16 +61,12 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
       <h1 className="t-page mt-2">{d.guides.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       {/* "Mandaci la tua guida" (diretta Twitch del 23/09/2026): subito sotto l'intro, come l'invito a pubblicare
-          di /decks; il modulo manda la guida al canale Discord privato dello staff */}
-      <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
-        <div className="min-w-0 flex-1 basis-72">
-          <h2 className="t-item">{d.guides.submitTitle}</h2>
-          <p className="mt-1 text-pale-muted">{d.guides.submitText}</p>
-        </div>
-        <Link className="btn btn-primary shrink-0" href={href(locale, "/guides/submit")}>
-          {d.guides.submitCta} →
-        </Link>
-      </section>
+          di /decks; il modulo manda la guida al canale Discord privato dello staff. Per chi ha un ruolo che pubblica le
+          guide (pacchetto GUIDE, 27/09/2026) il riquadro diventa "Scrivi una guida" (lo decide il browser: pagina ISR). */}
+      <GuideCtaBox
+        submit={{ title: d.guides.submitTitle, text: d.guides.submitText, button: d.guides.submitCta, href: href(locale, "/guides/submit") }}
+        write={{ ...communityGuideLabels[locale].cta, href: href(locale, "/guides/new") }}
+      />
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
           const count = guides.filter((g) => g.category === id).length;
@@ -80,6 +95,8 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
           </li>
         ))}
       </ul>
+      {/* Guide della community (pacchetto GUIDE): le ultime indicizzabili in questa lingua; niente se non ce ne sono */}
+      <CommunityGuidesSection locale={locale} guides={shownCommunity} total={community.length} />
     </div>
   );
 }

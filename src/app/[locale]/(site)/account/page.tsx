@@ -25,6 +25,7 @@ import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { ShowcaseEditor } from "@/components/showcase/ShowcaseEditor";
 import { ShowStatsSetting } from "@/components/achievements/ShowStatsSetting";
+import { AccountGuides } from "@/components/guides/AccountGuides";
 
 export const dynamic = "force-dynamic";
 
@@ -283,6 +284,9 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* Le mie guide (pacchetto GUIDE, 27/09/2026): solo per chi pubblica guide o ne ha già; ancora #guides */}
+      <AccountGuides locale={locale} supabase={supabase} userId={user.id} />
 
       {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
       {profile?.username ? (

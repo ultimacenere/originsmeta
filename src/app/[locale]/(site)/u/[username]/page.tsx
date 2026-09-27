@@ -38,6 +38,7 @@ import { ProfileCover } from "@/components/showcase/ProfileCover";
 import { FavoriteLegendary } from "@/components/showcase/FavoriteLegendary";
 import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
+import { UserGuides } from "@/components/guides/AccountGuides";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -273,6 +274,10 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           </ul>
         )}
       </section>
+
+      {/* Guide pubblicate dall'iscritto (pacchetto GUIDE, 27/09/2026): niente se non ne ha. I tornei in evidenza stanno
+          più in alto, sotto i traguardi (pacchetto TRAGUARDI) */}
+      <UserGuides locale={locale} ownerId={profile.id} />
 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (
