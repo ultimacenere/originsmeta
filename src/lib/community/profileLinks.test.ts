@@ -435,7 +435,9 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
     const full = withPendingBlocks(schema, pending);
     assert.deepEqual(schemaProblems(full), []);
     const onProfiles = sqlStatements(full).filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
-    assert.deepEqual(onProfiles, PROFILES_GRANTS);
+    // come insiemi: l'ordine dipende da come si accodano i blocchi dell'ondata 2; le prime due restano quelle di sempre
+    assert.deepEqual([...onProfiles].sort(), [...PROFILES_GRANTS].sort());
+    assert.deepEqual(onProfiles.slice(0, 2), PROFILES_GRANTS.slice(0, 2));
     assert.deepEqual(PROFILES_GRANTS.slice(0, 2), [
       "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
       "grant update (bio, links, content_langs) on public.profiles to authenticated",

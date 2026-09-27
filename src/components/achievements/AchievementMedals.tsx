@@ -19,14 +19,26 @@ export type Medal = {
   times?: string;
 };
 
+/** Il fuoco arriva dalla tastiera (`:focus-visible`); un browser che non conosce il selettore vale "sì". */
+function focusVisible(el: Element): boolean {
+  try {
+    return el.matches(":focus-visible");
+  } catch {
+    return true;
+  }
+}
+
 /**
  * La fila di medaglie dei traguardi su /u (pacchetto TRAGUARDI, 27/09/2026), con il dettaglio al passaggio del mouse,
  * al focus da tastiera o al tocco: nome, descrizione, data. Il dettaglio sta in un riquadro sotto la fila (non in un
  * fumetto accanto alla medaglia), così a 375 px non esce mai dallo schermo.
  *
- * Accessibilità: ogni medaglia è un bottone con il nome del traguardo e la descrizione collegata (`aria-describedby`),
- * quindi i lettori di schermo non hanno bisogno del riquadro, che per loro è nascosto (non si legge due volte). Il tocco
- * apre e chiude il dettaglio (`aria-pressed`). Senza JavaScript restano le medaglie con i loro nomi.
+ * Accessibilità: ogni medaglia è un bottone con il nome del traguardo e la descrizione collegata (`aria-describedby`,
+ * su uno span `hidden`), quindi i lettori di schermo non hanno bisogno del riquadro, che per loro è nascosto (non si
+ * legge due volte). Niente `aria-pressed`: il tocco apre e chiude un dettaglio solo visivo, e annunciare un interruttore
+ * che per un lettore di schermo non cambia nulla confonderebbe. Il dettaglio si apre col passaggio del mouse, col fuoco
+ * da tastiera (`:focus-visible`) e col tocco; il secondo tocco lo chiude (revisione del 27/09/2026: prima restava
+ * aperto per il fuoco lasciato dal tocco). Senza JavaScript restano le medaglie con i loro nomi.
  *
  * `size`: "large" sulla vetrina (Creator, Autore, Pro, Staff), con il nome sotto ogni medaglia; "small" sugli altri
  * profili. Animazione solo con `motion-safe` ("riduci animazioni": tutto fermo).
@@ -53,15 +65,22 @@ export function AchievementMedals({ medals, size, hint, listLabel }: { medals: M
               <button
                 type="button"
                 aria-describedby={descId}
-                aria-pressed={pinned === m.id}
-                onClick={() => setPinned((p) => (p === m.id ? null : m.id))}
+                onClick={() => {
+                  // il secondo tocco chiude: via anche il fuoco, che il browser lascia sul bottone toccato
+                  const closing = pinned === m.id;
+                  setPinned(closing ? null : m.id);
+                  if (closing) setFocused(null);
+                }}
                 onPointerEnter={(e) => {
                   if (e.pointerType === "mouse") setHovered(m.id);
                 }}
                 onPointerLeave={(e) => {
                   if (e.pointerType === "mouse") setHovered(null);
                 }}
-                onFocus={() => setFocused(m.id)}
+                onFocus={(e) => {
+                  // solo il fuoco da tastiera apre il dettaglio: quello del tocco o del clic lo gestisce `pinned`
+                  if (focusVisible(e.currentTarget)) setFocused(m.id);
+                }}
                 onBlur={() => setFocused((f) => (f === m.id ? null : f))}
                 className={`group flex w-full flex-col items-center gap-1.5 rounded-xl text-center ${large ? "p-1" : "p-0.5"}`}
               >
@@ -79,8 +98,9 @@ export function AchievementMedals({ medals, size, hint, listLabel }: { medals: M
                 </span>
                 <span className={large ? "text-[11px] font-semibold leading-tight text-pale" : "sr-only"}>{m.name}</span>
               </button>
-              {/* fuori dal bottone: altrimenti entrerebbe anche nel suo nome */}
-              <span id={descId} className="sr-only">
+              {/* fuori dal bottone (altrimenti entrerebbe nel suo nome) e `hidden`: aria-describedby la legge lo stesso,
+                  ma non compare una seconda volta nella lettura della pagina */}
+              <span id={descId} hidden>
                 {[m.description, ...m.meta].join(" · ")}
               </span>
             </li>

@@ -1,6 +1,4 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import type { Tournament } from "@/lib/tournament/types";
-import { TOURNAMENT_SELECT } from "@/lib/tournament/queries";
 import { CommunityReadError } from "./queries";
 import { cleanBio, cleanContentLangs, mainChannels, parseStoredLinks, twitchLogin, type ContentLang, type ProfileLink } from "./profileLinks";
 import { SHOWCASE_BADGES, isShowcaseBadge, normalizeBadge, type Badge } from "./badges";
@@ -8,8 +6,8 @@ import { SHOWCASE_BADGES, isShowcaseBadge, normalizeBadge, type Badge } from "./
 /**
  * Letture del profilo pubblico e dei profili vetrina (pacchetto CREATOR, 26/09/2026): bio, canali e lingue dei contenuti
  * di un iscritto (colonne di supabase/schema.sql, blocco CREATOR), l'elenco dei profili con il ruolo Creator, Autore,
- * Pro o Staff (ruoli del 27/09/2026: directory /creators, icone accanto al nome in /decks, rotta /api/live) e i tornei
- * pubblici che organizzano (vetrina su /u).
+ * Pro o Staff (ruoli del 27/09/2026: directory /creators, icone accanto al nome in /decks, rotta /api/live). I tornei
+ * pubblici che organizzano (vetrina su /u) dal 27/09/2026 stanno in achievementQueries.ts (pacchetto TRAGUARDI).
  *
  * Errori come nel resto della community (queries.ts, DECKS-12): nelle pagine ISR una lettura fallita lancia, così
  * Next tiene la pagina di prima invece di metterne in cache una senza canali. Unica eccezione, voluta: le colonne
@@ -149,26 +147,5 @@ export function creatorExtras(index: ReadonlyMap<string, CreatorProfile>, ownerI
   return { ...(channels.length ? { channels } : {}), ...(twitchLogin(c.links) ? { liveUser: c.username } : {}) };
 }
 
-/**
- * I tornei PUBBLICI organizzati da un iscritto, dal più recente (vetrina del creator su /u), con le colonne delle altre
- * schede torneo (`TOURNAMENT_SELECT` di tournament/queries.ts). Mai i privati: il filtro è esplicito, anche se la
- * policy `can_view_tournament` li nasconderebbe comunque al client anonimo. Niente annullati.
- */
-export async function listOrganizedTournaments(organizerId: string, limit = 12): Promise<Tournament[]> {
-  const client = supabasePublic();
-  if (!client) return [];
-  const res = await client
-    .from("tournaments")
-    .select(TOURNAMENT_SELECT)
-    .eq("organizer", organizerId)
-    .eq("visibility", "public")
-    .neq("status", "cancelled")
-    .order("starts_at", { ascending: false })
-    .limit(limit);
-  if (res.error) throw new CommunityReadError("listOrganizedTournaments", res.error.message);
-  type Raw = Omit<Tournament, "players"> & { players?: { count: number }[] | number | null };
-  return ((res.data ?? []) as unknown as Raw[]).map((r) => {
-    const p = r.players;
-    return { ...r, players: Array.isArray(p) ? Number(p[0]?.count ?? 0) : typeof p === "number" ? p : 0 };
-  });
-}
+// I tornei pubblici organizzati (vetrina su /u) si leggono in achievementQueries.ts, `readFeaturedTournaments`
+// (pacchetto TRAGUARDI, 27/09/2026): in arrivo e conclusi con due letture separate, conclusi solo con un vincitore.

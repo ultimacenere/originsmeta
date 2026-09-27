@@ -4,6 +4,7 @@ import { achievementLabels } from "@/lib/achievementLabels";
 import {
   ACHIEVEMENTS,
   ACHIEVEMENT_LOOK,
+  DECK_OF_MONTH_MIN_STARS,
   DECK_OF_MONTH_MIN_VOTES,
   WELL_RATED,
   earnedAchievements,
@@ -33,6 +34,7 @@ function toMedal(e: Earned, locale: Locale): Medal {
     votes: WELL_RATED.minVotes,
     avg: new Intl.NumberFormat(locale, { minimumFractionDigits: 1 }).format(WELL_RATED.minAvg),
     min: DECK_OF_MONTH_MIN_VOTES,
+    stars: DECK_OF_MONTH_MIN_STARS,
   };
   const meta: string[] = [];
   if (e.date) meta.push(fillAchievement(look.repeatable ? L.since : L.earnedOn, { date: formatDate(locale, e.date) }));
@@ -59,7 +61,8 @@ function toMedal(e: Earned, locale: Locale): Medal {
  *   (`profile_public_stats`): mazzi pubblicati, visite, copie del codice del gioco, voti ricevuti, con la nota "stime".
  *
  * Mazzi e tier list arrivano dalla pagina, che li ha già letti; tornei e "mazzo del mese" dalla funzione SQL
- * `profile_achievement_facts`. Se una delle due funzioni non c'è ancora o non risponde, la sua parte non compare.
+ * `profile_achievement_facts`. Se una delle due funzioni non c'è ancora (prima della migrazione), la sua parte non
+ * compare; un altro errore di lettura lancia, così l'ISR tiene la pagina di prima (achievementQueries.ts).
  */
 export async function ProfileHighlights({
   profileId,

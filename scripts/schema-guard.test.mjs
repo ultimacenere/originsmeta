@@ -56,12 +56,14 @@ describe("schema.sql vero", () => {
     assert.deepEqual(schemaProblems(schema), []);
     assert.deepEqual(schemaProblems(full), []);
   });
-  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima della grant per colonna", () => {
+  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima di ogni grant per colonna", () => {
     const stmts = sqlStatements(full);
     const onProfiles = stmts.filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
-    assert.deepEqual(onProfiles, PROFILES_GRANTS);
+    // come insiemi: l'ordine dipende da come l'integratore accoda i blocchi dell'ondata 2 (TRAGUARDI, VETRINA, …)
+    assert.deepEqual([...onProfiles].sort(), [...PROFILES_GRANTS].sort());
+    assert.equal(new Set(onProfiles).size, onProfiles.length, "grant ripetute");
     assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) >= 0);
-    assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) < stmts.indexOf(PROFILES_GRANTS[1]));
+    for (const g of PROFILES_GRANTS.slice(1)) assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) < stmts.indexOf(g), g);
   });
   test("due parti: lo schema di sempre (con la correzione) e i pacchetti creator", () => {
     const parts = splitSchema(schema);
@@ -103,15 +105,25 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
       assert.notDeepEqual(schemaProblems(sql), [], "db-migrate lo applicherebbe");
     });
   }
-  test("i file dell'ondata 2 già accodati a schema.sql non si contano due volte", () => {
+  test("la grant per colonna nella prima parte non basta a far passare la grant sull'intera tabella", () => {
+    const sql = replaced(COLUMN_GRANT, `${COLUMN_GRANT}\ngrant update on public.profiles to authenticated;`);
+    assert.ok(schemaProblems(sql).some((p) => p.startsWith("grant non prevista")));
+  });
+  test("revoke su profiles accodata dopo i file dell'ondata 2 (cancellerebbe anche la grant di show_stats)", () => {
+    assert.notDeepEqual(schemaProblems(`${full}\nrevoke update on public.profiles from authenticated;\n`), []);
+  });
+  test("grant di show_stats prima della revoke di 6c6756d", () => {
+    const sql = replaced(`${PROFILES_REVOKE};`, `grant update (show_stats) on public.profiles to authenticated;\n${PROFILES_REVOKE};`);
+    assert.ok(schemaProblems(sql).some((p) => p.includes("revoke")));
+  });
+});
+
+describe("file dell'ondata 2 (supabase/wave2-*.sql)", () => {
+  test("già accodati a schema.sql non si contano due volte", () => {
     const block = "-- blocco\ngrant update (show_stats) on public.profiles to authenticated;\n";
     const appended = `${schema}\r\n${block.replace(/\n/g, "\r\n")}`;
     assert.equal(withPendingBlocks(appended, [block]), appended);
     assert.equal(withPendingBlocks(schema, [block]), `${schema}\n${block}`);
     assert.equal(withPendingBlocks(schema, ["  \n"]), schema);
-  });
-  test("la grant per colonna nella prima parte non basta a far passare la grant sull'intera tabella", () => {
-    const sql = replaced(COLUMN_GRANT, `${COLUMN_GRANT}\ngrant update on public.profiles to authenticated;`);
-    assert.ok(schemaProblems(sql).some((p) => p.startsWith("grant non prevista")));
   });
 });

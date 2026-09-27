@@ -20,7 +20,8 @@
  * "Le tue statistiche".
  *
  * TORNEI IN EVIDENZA. Sulla vetrina, i tornei pubblici organizzati dal profilo: prima quelli aperti o in corso (con la
- * copertina), poi i finiti con chi li ha vinti (`featuredTournaments`, `finalWinners`).
+ * copertina, `safeCover`), poi i finiti con chi li ha vinti (`featuredTournaments`, `finalWinners`). Tornei e fatti dei
+ * traguardi valgono solo con una finale valida e senza i bot di prova (`isSeedBot`).
  */
 
 /* ---------- catalogo ---------- */
@@ -78,10 +79,26 @@ export const DECK_MILESTONES = { first_deck: 1, decks_5: 5, decks_10: 10 } as co
 export const WELL_RATED = { minVotes: 5, minAvg: 4.5 } as const;
 
 /**
- * "Mazzo del mese": il mazzo pubblicato con più voti ricevuti in un mese UTC già chiuso, con almeno questi voti in quel
- * mese (pari merito compresi). Lo stesso numero sta in `profile_achievement_facts` (supabase/wave2-TRAGUARDI.sql).
+ * "Mazzo del mese": il mazzo pubblicato con più voti positivi (almeno `DECK_OF_MONTH_MIN_STARS` stelle) ricevuti in un
+ * mese UTC già chiuso, con almeno `DECK_OF_MONTH_MIN_VOTES` voti positivi in quel mese (pari merito compresi). Contano
+ * solo i voti positivi (revisione del 27/09/2026): tre voti da una stella non fanno un mazzo "del mese". Gli stessi
+ * numeri stanno in `profile_achievement_facts` (supabase/wave2-TRAGUARDI.sql), e il test li confronta.
  */
 export const DECK_OF_MONTH_MIN_VOTES = 3;
+export const DECK_OF_MONTH_MIN_STARS = 4;
+
+/**
+ * I profili dei bot di prova dello staff (scripts/seed-bots.mjs: nome utente `bot-<n>`, `bot-<n>-<k>` se il nome era
+ * già preso da handle_new_user): i tornei con un bot iscritto non danno traguardi e non compaiono fra i tornei conclusi
+ * della vetrina (dati di prova, non risultati veri). La stessa espressione sta in `profile_achievement_facts`.
+ */
+export const SEED_BOT_USERNAME = "^bot-[0-9]+(-[0-9]+)?$";
+const SEED_BOT_RE = new RegExp(SEED_BOT_USERNAME);
+
+/** Un profilo creato da scripts/seed-bots.mjs (dal nome utente). */
+export function isSeedBot(username: string | null | undefined): boolean {
+  return typeof username === "string" && SEED_BOT_RE.test(username);
+}
 
 /** "Prima tier list": una tier list pubblica con almeno una carta classificata. */
 export const TIER_LIST_MIN_CARDS = 1;
@@ -98,7 +115,7 @@ export type LocalFacts = {
   tierLists: readonly { created_at: string; ranked: number }[];
 };
 
-/** Quante volte, e la data d'inizio del primo torneo (ISO), per tornei giocati, organizzati e vinti. */
+/** Quante volte, e il giorno della prima finale (ISO), per tornei giocati, organizzati e vinti. */
 export type TournamentFact = { count: number; first: string | null };
 
 /** I fatti della funzione SQL `profile_achievement_facts`. */
@@ -232,24 +249,63 @@ type TournamentLike = { id: string; status: string; starts_at: string };
 /** Quanti tornei finiti si mostrano sulla vetrina (i più recenti): la sezione sta in alto e non deve spingere giù i mazzi. */
 export const FINISHED_SHOWN = 4;
 
+/** Quanti tornei finiti si leggono per trovarne `FINISHED_SHOWN` con un vincitore vero (senza bot di prova). */
+export const FINISHED_FETCH = 12;
+
+/** Quanti tornei in corso e quanti aperti si leggono (i più vicini). */
+export const UPCOMING_FETCH = 12;
+
+/** Quanti tornei in arrivo o in corso si mostrano, con la copertina grande: tre file da due sul desktop. */
+export const UPCOMING_SHOWN = 6;
+
 /**
- * I tornei organizzati divisi per la vetrina: `upcoming` = aperti e in corso (prima quelli in corso, poi per data
- * d'inizio, il più vicino per primo), `finished` = finiti, dal più recente, al massimo `FINISHED_SHOWN`. Gli annullati
- * restano fuori.
+ * Dopo quanti giorni dalla data d'inizio un torneo ancora "open" non si mostra più: non si è riempito e nessuno l'ha
+ * avviato, e sulla vetrina, con la copertina grande in cima, sembrerebbe vivo. Resta raggiungibile da /tournaments.
  */
-export function featuredTournaments<T extends TournamentLike>(list: readonly T[]): { upcoming: T[]; finished: T[] } {
+export const STALE_OPEN_DAYS = 7;
+
+/**
+ * I tornei organizzati divisi per la vetrina.
+ * - `upcoming`: aperti e in corso, prima quelli in corso, poi per data d'inizio (il più vicino per primo), al massimo
+ *   `UPCOMING_SHOWN`; fuori gli aperti con la data d'inizio passata da più di `STALE_OPEN_DAYS` giorni.
+ * - `finished`: finiti CON un vincitore (`hasWinner`: finale valida e nessun bot di prova, vedi achievementQueries.ts),
+ *   dal più recente, al massimo `FINISHED_SHOWN`. Un torneo segnato "finito" senza finale giocata non compare.
+ * Gli annullati restano fuori.
+ */
+export function featuredTournaments<T extends TournamentLike>(
+  list: readonly T[],
+  opts: { now: number; hasWinner: (id: string) => boolean },
+): { upcoming: T[]; finished: T[] } {
   const time = (t: T) => {
     const v = Date.parse(t.starts_at);
     return Number.isFinite(v) ? v : 0;
   };
+  const staleBefore = opts.now - STALE_OPEN_DAYS * 86_400_000;
   const upcoming = list
-    .filter((t) => t.status === "open" || t.status === "running")
-    .sort((a, b) => (a.status === b.status ? time(a) - time(b) : a.status === "running" ? -1 : 1));
+    .filter((t) => t.status === "running" || (t.status === "open" && time(t) >= staleBefore))
+    .sort((a, b) => (a.status === b.status ? time(a) - time(b) : a.status === "running" ? -1 : 1))
+    .slice(0, UPCOMING_SHOWN);
   const finished = list
-    .filter((t) => t.status === "finished")
+    .filter((t) => t.status === "finished" && opts.hasWinner(t.id))
     .sort((a, b) => time(b) - time(a))
     .slice(0, FINISHED_SHOWN);
   return { upcoming, finished };
+}
+
+/**
+ * La copertina di un torneo da mostrare sulla vetrina: una copertina del media kit (`presets`) o un file caricato nella
+ * cartella dell'organizzatore nel bucket delle copertine (`uploadPrefix` = URL pubblico di `<organizer>/`, stesso nome
+ * di file ammesso da `checkCover` in src/lib/tournament/util.ts); altrimenti `fallback`. `cover_url` non ha vincoli nel
+ * database e si può scrivere via API saltando `checkCover`: senza questo controllo un indirizzo qualsiasi (un pixel di
+ * tracciamento, un'immagine fuori luogo) finirebbe sul profilo pubblico.
+ */
+export function safeCover(url: string | null | undefined, presets: readonly string[], uploadPrefix: string, fallback: string): string {
+  const v = typeof url === "string" ? url.trim() : "";
+  if (presets.includes(v)) return v;
+  const file = v.slice(uploadPrefix.length);
+  // un nome di file vero: niente "." o ".." (il browser li risolverebbe fuori dalla cartella dell'organizzatore)
+  if (uploadPrefix && v.startsWith(uploadPrefix) && /^[A-Za-z0-9._-]{1,80}$/.test(file) && !/^\.+$/.test(file)) return v;
+  return fallback;
 }
 
 /** Una partita in posizione 0 del tabellone (una per turno): l'ultima è la finale. */

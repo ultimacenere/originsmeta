@@ -66,7 +66,7 @@ export const PAGE_UPDATED = {
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-25", // Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-25", // Ondata 2: Person unica, link al profilo della community, tagline di Davdas
-  "/u/[username]": "2026-09-27", // ruoli del 27/09 (Creator, Autore) e bio da 600 caratteri; CREATOR: bio, canali e lingue, sameAs, tornei organizzati; Ondata 2: noindex senza contenuti, ProfilePage
+  "/u/[username]": "2026-09-27", // TRAGUARDI: traguardi, numeri pubblici della vetrina, tornei in evidenza; ruoli del 27/09 (Creator, Autore) e bio da 600 caratteri; CREATOR: bio, canali e lingue, sameAs, tornei organizzati; Ondata 2: noindex senza contenuti, ProfilePage
   "/creators": "2026-09-27", // ruoli del 27/09: "Creator e autori", filtro per ruolo; CREATOR: nascita della directory
 } as const satisfies Record<string, Day>;
 

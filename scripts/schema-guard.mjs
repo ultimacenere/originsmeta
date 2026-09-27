@@ -21,7 +21,8 @@ export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
  * La terza (27/09/2026, pacchetto TRAGUARDI, supabase/wave2-TRAGUARDI.sql da accodare a schema.sql) apre la sola colonna
  * `show_stats`: la casella "Mostra i numeri sulla vetrina" di /account, che il creator cambia con la propria sessione.
  * È un booleano senza effetti sui permessi, e il trigger profiles_guard_show_stats lo rifiuta a chi non ha un ruolo con
- * vetrina. Ogni altra grant, anche per colonna, resta rifiutata.
+ * vetrina. Ogni altra grant, anche per colonna, resta rifiutata. L'ordine dell'elenco non conta nei test (si
+ * confrontano gli insiemi); `schemaProblems` vuole la revoke di 6c6756d prima di OGNI grant per colonna.
  */
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
@@ -161,7 +162,11 @@ export function schemaProblems(sql) {
   });
 
   const revokeAt = stmts.lastIndexOf(PROFILES_REVOKE);
-  const grantAt = stmts.indexOf(PROFILES_GRANTS[1]);
+  // la prima grant per colonna (bio e canali, poi quella della vetrina): la revoke deve venire prima di tutte
+  const columnGrants = PROFILES_GRANTS.slice(1)
+    .map((g) => stmts.indexOf(g))
+    .filter((i) => i >= 0);
+  const grantAt = columnGrants.length ? Math.min(...columnGrants) : -1;
   if (revokeAt < 0) problems.push(`manca "${PROFILES_REVOKE};" (commit 6c6756d)`);
   if (grantAt >= 0 && revokeAt > grantAt) problems.push("la revoke su public.profiles viene dopo la grant per colonna e la cancellerebbe");
   if (grantAt >= 0) {

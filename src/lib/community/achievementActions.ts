@@ -41,10 +41,8 @@ export async function saveShowStats(_prev: ShowStatsState, formData: FormData): 
     console.error("[achievements] saveShowStats:", error.message);
     return { error: "db" };
   }
-  // la pagina pubblica mostra o toglie i numeri subito, senza aspettare la rigenerazione
-  for (const l of locales) {
-    revalidatePath(`/${l}/account`);
-    if (row.username) revalidatePath(`/${l}/u/${row.username}`);
-  }
+  // la pagina pubblica mostra o toglie i numeri subito, senza aspettare la rigenerazione; /account no: è dinamica e la
+  // casella mostra già il valore salvato (meno pagine da rigenerare se qualcuno cambiasse la casella a raffica)
+  if (row.username) for (const l of locales) revalidatePath(`/${l}/u/${row.username}`);
   return { ok: true, value: want };
 }

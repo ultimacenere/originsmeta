@@ -1,37 +1,47 @@
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
-import { listOrganizedTournaments } from "@/lib/community/creators";
-import { featuredTournaments } from "@/lib/community/achievements";
-import { readTournamentWinners } from "@/lib/community/achievementQueries";
+import { safeCover } from "@/lib/community/achievements";
+import { readFeaturedTournaments } from "@/lib/community/achievementQueries";
+import { COVER_PRESETS, DEFAULT_COVER, type Tournament } from "@/lib/tournament/types";
+import { coverPublicUrl } from "@/lib/tournament/util";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { achievementLabels } from "@/lib/achievementLabels";
 import { TournamentCard } from "./TournamentCard";
 
+/** La copertina solo se è del media kit o caricata dall'organizzatore nella sua cartella (`safeCover`). */
+function withSafeCover(t: Tournament): Tournament {
+  return { ...t, cover_url: safeCover(t.cover_url, COVER_PRESETS, coverPublicUrl(`${t.organizer}/`), DEFAULT_COVER) };
+}
+
 /**
  * "Tornei organizzati" nella vetrina di un profilo su /u (pacchetto CREATOR, 26/09/2026; tornei in evidenza dal
- * 27/09/2026, pacchetto TRAGUARDI): i tornei pubblici che ha organizzato su OriginsMeta. Prima quelli aperti o in corso,
- * con la copertina (`TournamentCard` intera, il più vicino per primo), poi i finiti più recenti in forma compatta, con
- * chi li ha vinti (`featuredTournaments`, `readTournamentWinners`). Mai i privati (filtro esplicito in
- * `listOrganizedTournaments` e policy `can_view_tournament`), niente annullati. Nessun torneo: nessuna sezione.
+ * 27/09/2026, pacchetto TRAGUARDI): i tornei pubblici che ha organizzato su OriginsMeta. Prima quelli in corso e in
+ * arrivo, con la copertina (`TournamentCard` intera, il più vicino per primo; gli aperti rimasti indietro di più di una
+ * settimana no), poi i finiti più recenti in forma compatta, con chi li ha vinti: solo quelli con una finale giocata e
+ * senza i bot di prova (`readFeaturedTournaments`). Mai i privati né gli annullati. Nessun torneo: nessuna sezione.
+ * I due gruppi hanno un'etichetta, non un titolo: il nome di ogni torneo nella scheda è già un `<h3>`.
  */
 export async function CreatorTournaments({ organizerId, locale, dict }: { organizerId: string; locale: Locale; dict: Dictionary }) {
-  const tournaments = await listOrganizedTournaments(organizerId);
-  const { upcoming, finished } = featuredTournaments(tournaments);
+  const { upcoming, finished, winners } = await readFeaturedTournaments(organizerId);
   if (!upcoming.length && !finished.length) return null;
-  const winners = await readTournamentWinners(finished.map((t) => t.id));
   const L = creatorLabels[locale].profile;
   const T = achievementLabels[locale].tournaments;
+  const [before, after = ""] = T.wonBy.split("{name}");
   return (
-    <section className="mt-12">
-      <h2 className="t-section">{L.organizedTitle}</h2>
+    <section className="mt-12" aria-labelledby="organized-title">
+      <h2 id="organized-title" className="t-section">
+        {L.organizedTitle}
+      </h2>
       <p className="mt-2 text-sm text-chalk-muted">{T.intro}</p>
       {upcoming.length ? (
         <>
-          <h3 className="kicker mt-5 text-mint">{T.upcoming}</h3>
-          <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <p id="organized-upcoming" className="kicker mt-5 text-mint">
+            {T.upcoming}
+          </p>
+          <ul aria-labelledby="organized-upcoming" className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             {upcoming.map((t) => (
               <li key={t.id}>
-                <TournamentCard t={t} locale={locale} dict={dict} />
+                <TournamentCard t={withSafeCover(t)} locale={locale} dict={dict} />
               </li>
             ))}
           </ul>
@@ -39,11 +49,12 @@ export async function CreatorTournaments({ organizerId, locale, dict }: { organi
       ) : null}
       {finished.length ? (
         <>
-          <h3 className="kicker mt-6 text-pale-muted">{T.finished}</h3>
-          <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <p id="organized-finished" className="kicker mt-6 text-pale-muted">
+            {T.finished}
+          </p>
+          <ul aria-labelledby="organized-finished" className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             {finished.map((t) => {
               const winner = winners.get(t.id);
-              const [before, after = ""] = T.wonBy.split("{name}");
               return (
                 <li key={t.id} className="flex flex-col gap-2">
                   <TournamentCard t={t} locale={locale} dict={dict} compact />

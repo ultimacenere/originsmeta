@@ -6,15 +6,19 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { PROFILES_GRANTS, schemaProblems, singleDollarLines, sqlStatements, withPendingBlocks } from "../../../scripts/schema-guard.mjs";
 import {
   ACHIEVEMENTS,
   ACHIEVEMENT_LOOK,
   DECK_MILESTONES,
+  DECK_OF_MONTH_MIN_STARS,
   DECK_OF_MONTH_MIN_VOTES,
   DEMO2_CUTOFF,
   FINISHED_SHOWN,
+  SEED_BOT_USERNAME,
+  STALE_OPEN_DAYS,
+  UPCOMING_SHOWN,
   WELL_RATED,
   dayOf,
   earnedAchievements,
@@ -22,8 +26,10 @@ import {
   fillAchievement,
   finalWinners,
   isMissing,
+  isSeedBot,
   parsePublicStats,
   parseRemoteFacts,
+  safeCover,
   type LocalFacts,
   type RemoteFacts,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
@@ -192,6 +198,8 @@ describe("difesa in lettura", () => {
 
 describe("tornei in evidenza", () => {
   const t = (id: string, status: string, starts_at: string) => ({ id, status, starts_at });
+  const NOW = Date.parse("2026-09-27T12:00:00Z");
+  const all = { now: NOW, hasWinner: () => true };
 
   test("prima in corso e aperti (il più vicino per primo), poi i finiti dal più recente; annullati fuori", () => {
     const list = [
@@ -202,16 +210,70 @@ describe("tornei in evidenza", () => {
       t("open-soon", "open", "2026-10-02T18:00:00Z"),
       t("f-new", "finished", "2026-09-20T18:00:00Z"),
     ];
-    const { upcoming, finished } = featuredTournaments(list);
+    const { upcoming, finished } = featuredTournaments(list, all);
     assert.deepEqual(ids(upcoming), ["running", "open-soon", "open-late"]);
     assert.deepEqual(ids(finished), ["f-new", "f-old"]);
   });
 
-  test("dei finiti solo i più recenti", () => {
+  test("un torneo aperto con la data d'inizio passata da più di una settimana non si mostra; in corso sì, anche vecchio", () => {
+    const day = 86_400_000;
+    const iso = (ms: number) => new Date(ms).toISOString();
+    const list = [
+      t("open-dead", "open", iso(NOW - (STALE_OPEN_DAYS + 1) * day)),
+      t("open-late-start", "open", iso(NOW - (STALE_OPEN_DAYS - 1) * day)),
+      t("running-long", "running", iso(NOW - 30 * day)),
+    ];
+    assert.deepEqual(ids(featuredTournaments(list, all).upcoming), ["running-long", "open-late-start"]);
+  });
+
+  test("in arrivo: al massimo UPCOMING_SHOWN, i più vicini", () => {
+    const list = Array.from({ length: UPCOMING_SHOWN + 2 }, (_, i) => t(`o${i}`, "open", `2026-10-${String(10 + i)}T18:00:00Z`));
+    const { upcoming } = featuredTournaments(list, all);
+    assert.equal(upcoming.length, UPCOMING_SHOWN);
+    assert.equal(upcoming[0].id, "o0");
+  });
+
+  test("dei finiti solo quelli con un vincitore (finale giocata, niente bot), i più recenti", () => {
     const list = Array.from({ length: FINISHED_SHOWN + 3 }, (_, i) => t(`f${i}`, "finished", `2026-09-${String(10 + i)}T18:00:00Z`));
-    const { finished } = featuredTournaments(list);
+    const { finished } = featuredTournaments(list, all);
     assert.equal(finished.length, FINISHED_SHOWN);
     assert.equal(finished[0].id, `f${FINISHED_SHOWN + 2}`);
+    // "finito" scritto via API senza finale: nessun vincitore, non compare
+    const some = featuredTournaments(list, { now: NOW, hasWinner: (id) => id === "f1" || id === "f3" });
+    assert.deepEqual(ids(some.finished), ["f3", "f1"]);
+  });
+
+  test("bot di prova di scripts/seed-bots.mjs: bot-<n> e bot-<n>-<k>, nient'altro", () => {
+    for (const u of ["bot-1", "bot-12", "bot-3-1"]) assert.equal(isSeedBot(u), true, u);
+    for (const u of ["bot", "bot-", "bot-master", "robot-1", "bot-1a", "abot-1", "", null, undefined]) assert.equal(isSeedBot(u), false, String(u));
+    // lo script crea proprio questi nomi (user_name bot-<n> nei metadati, handle_new_user li tiene così)
+    const script = readFileSync(new URL("../../../scripts/seed-bots.mjs", import.meta.url), "utf8");
+    assert.ok(script.includes("user_name: `bot-${i}`"));
+  });
+
+  test("copertina: solo del media kit o caricata nella cartella dell'organizzatore, altrimenti quella di default", () => {
+    const presets = ["/media/keyart-mulan.webp", "/media/hero-1920.webp"];
+    const prefix = "https://x.supabase.co/storage/v1/object/public/tournament-covers/u1/";
+    const fallback = "/media/keyart-king-arthur.webp";
+    assert.equal(safeCover("/media/hero-1920.webp", presets, prefix, fallback), "/media/hero-1920.webp");
+    assert.equal(safeCover(`${prefix}cover-1.webp`, presets, prefix, fallback), `${prefix}cover-1.webp`);
+    for (const bad of [
+      "https://tracker.example/pixel.gif",
+      "https://x.supabase.co/storage/v1/object/public/tournament-covers/u2/cover.webp",
+      `${prefix}../u2/cover.webp`,
+      `${prefix}..`,
+      `${prefix}.`,
+      `${prefix}a/b.webp`,
+      `${prefix}`,
+      "/media/keyart-mulan.webp?x=1",
+      "javascript:alert(1)",
+      "",
+      null,
+      undefined,
+    ]) {
+      assert.equal(safeCover(bad, presets, prefix, fallback), fallback, String(bad));
+    }
+    assert.equal(safeCover("https://evil.example/u1/a.webp", presets, "", fallback), fallback, "prefisso vuoto: nessun caricato");
   });
 
   test("vincitore: la partita in posizione 0 dell'ultimo turno, confermata o bye", () => {
@@ -270,12 +332,43 @@ describe("etichette nelle tre lingue", () => {
   test("i segnaposto si riempiono tutti, senza interpretare i $", () => {
     const d = achievementLabels.it.achievements.items;
     assert.equal(fillAchievement(d.well_rated.description, { votes: 5, avg: "4,5" }), "Un mazzo pubblicato con almeno 5 voti e una media di 4,5 stelle o più.");
+    assert.equal(
+      fillAchievement(d.deck_of_month.description, { stars: DECK_OF_MONTH_MIN_STARS, min: DECK_OF_MONTH_MIN_VOTES }),
+      "Il mazzo con più voti positivi (4 o 5 stelle) del sito in un mese, almeno 3 in quel mese.",
+    );
     assert.equal(fillAchievement("{name} $& {x}", { name: "a$1" }), "a$1 $& {x}");
+  });
+
+  test("la privacy non promette più di quello che la funzione garantisce", () => {
+    // con un solo mazzo i totali SONO i numeri di quel mazzo, e due letture a un giorno di distanza danno il giorno:
+    // i testi lo dicono invece di promettere "mai per giorno o per mazzo"
+    for (const l of Object.values(achievementLabels)) {
+      assert.doesNotMatch(l.privacy, /mai i numeri per giorno|never the figures per day|nunca las cifras por día/i);
+      assert.match(l.privacy, /single deck|solo mazzo|solo mazo/);
+      assert.match(l.account.intro, /single published deck|solo mazzo pubblicato|solo mazo publicado/);
+    }
   });
 });
 
-describe("supabase/wave2-TRAGUARDI.sql: le stesse regole del codice", () => {
-  const sql = readFileSync(new URL("../../../supabase/wave2-TRAGUARDI.sql", import.meta.url), "utf8");
+/*
+  L'SQL del pacchetto: il blocco `-- ===== 27/09/2026: TRAGUARDI =====` di schema.sql quando l'integratore l'ha accodato
+  (anche se poi cancella il file wave2), altrimenti supabase/wave2-TRAGUARDI.sql. Come notifications.test.ts di SEGUI.
+*/
+const MARKER = "-- ===== 27/09/2026: TRAGUARDI =====";
+function traguardiSql(): string {
+  const schema = readFileSync(new URL("../../../supabase/schema.sql", import.meta.url), "utf8");
+  const at = schema.indexOf(MARKER);
+  if (at >= 0) {
+    const next = schema.indexOf("\n-- ===== ", at + MARKER.length);
+    return schema.slice(at, next < 0 ? undefined : next);
+  }
+  const file = new URL("../../../supabase/wave2-TRAGUARDI.sql", import.meta.url);
+  assert.ok(existsSync(file), "manca l'SQL del pacchetto TRAGUARDI (supabase/wave2-TRAGUARDI.sql o il blocco in schema.sql)");
+  return readFileSync(file, "utf8");
+}
+
+describe("SQL del pacchetto TRAGUARDI: le stesse regole del codice", () => {
+  const sql = traguardiSql();
   const stmts = sqlStatements(sql);
   const quoted = (s: string) => [...s.matchAll(/'([a-z]+)'/g)].map((m) => m[1]).sort();
   const fn = (name: string) => stmts.find((s) => s.startsWith(`create or replace function public.${name}(`)) ?? "";
@@ -288,12 +381,32 @@ describe("supabase/wave2-TRAGUARDI.sql: le stesse regole del codice", () => {
     assert.deepEqual(quoted(stats[1]), [...SHOWCASE_BADGES].sort());
   });
 
-  test("mazzo del mese: stessa soglia di voti, solo mesi chiusi, solo mazzi pubblicati", () => {
+  test("mazzo del mese: stessa soglia di voti positivi, solo mesi chiusi, solo mazzi pubblicati", () => {
     const facts = fn("profile_achievement_facts");
-    assert.ok(facts.includes(`tp.n >= ${DECK_OF_MONTH_MIN_VOTES}`), "soglia diversa fra codice e database");
-    assert.ok(facts.includes("< date_trunc('month', now() at time zone 'utc')"));
-    assert.ok(facts.includes("d.status = 'published'"));
+    assert.ok(facts.includes(`having count(*) >= ${DECK_OF_MONTH_MIN_VOTES}`), "soglia di voti diversa fra codice e database");
+    // i voti positivi, sia nei mesi del profilo sia nel massimo del sito
+    assert.equal(facts.split(`v.stars >= ${DECK_OF_MONTH_MIN_STARS}`).length - 1, 2, "stelle diverse fra codice e database");
+    assert.ok(facts.includes("v.created_at < date_trunc('month', now() at time zone 'utc') at time zone 'utc'"), "solo mesi chiusi");
+    assert.equal(facts.split("d.status = 'published'").length - 1, 2);
+    // il massimo del sito solo nei mesi del profilo, non su tutta deck_votes
+    assert.ok(facts.includes("where d.owner = pid and d.status = 'published'"));
+    assert.ok(facts.includes("v.created_at >= mm.month at time zone 'utc' and v.created_at < (mm.month + interval '1 month') at time zone 'utc'"));
+    assert.ok(stmts.includes("create index if not exists deck_votes_created_idx on public.deck_votes (created_at)"));
+  });
+
+  test("tornei: pubblici, finiti e con una finale valida (come finish_tournament), senza bot, a partire dal profilo", () => {
+    const facts = fn("profile_achievement_facts");
     assert.ok(facts.includes("t.status = 'finished' and t.visibility = 'public'"));
+    assert.ok(facts.includes("f.position = 0 and f.status in ('confirmed', 'bye') and f.winner is not null"), "finale valida");
+    assert.ok(facts.includes("f.round = (select max(r.round) from public.tournament_matches r where r.tournament_id = t.id)"), "ultimo turno");
+    // `status` e `starts_at` li può scrivere l'organizzatore: la data viene dalla partita di finale
+    assert.doesNotMatch(facts, /starts_at/);
+    assert.equal(facts.split("min(pub.done_at)").length - 1, 3);
+    assert.ok(facts.includes(`bp.username ~ '${SEED_BOT_USERNAME}'`), "bot di prova: stessa espressione del codice");
+    for (const from of ["where m.player_a = pid", "where m.player_b = pid", "where t.organizer = pid"]) assert.ok(facts.includes(from), from);
+    // la regola della finale è quella di finish_tournament in schema.sql
+    const schema = readFileSync(new URL("../../../supabase/schema.sql", import.meta.url), "utf8");
+    assert.ok(schema.includes("f.winner is null or f.status not in ('confirmed', 'bye')"));
   });
 
   test("sicurezza delle funzioni: search_path fissato, invoker per i fatti, definer solo per gli aggregati, execute ristretto", () => {
@@ -330,5 +443,6 @@ describe("supabase/wave2-TRAGUARDI.sql: le stesse regole del codice", () => {
     for (const s of stmts.filter((x) => /^create (function|table|trigger|policy)\b/.test(x))) {
       assert.ok(/^create trigger profiles_guard_show_stats\b/.test(s), `non idempotente: ${s.slice(0, 80)}`);
     }
+    for (const s of stmts.filter((x) => /^create (unique )?index\b/.test(x))) assert.match(s, /^create (unique )?index if not exists\b/, s);
   });
 });
