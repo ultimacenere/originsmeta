@@ -26,7 +26,14 @@ export type DeckType = (typeof deckTypes)[number];
  * che ne dipendono stanno in badges.ts (27/09/2026); `badge` qui resta una stringa perché arriva dal database così
  * com'è: si legge con `normalizeBadge`.
  */
-export type Profile = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
+export type Profile = {
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  badge?: string | null;
+  /** foto caricata dal sito (pacchetto VETRINA, 27/09/2026): `Avatar` la mostra prima di `avatar_url`, quando la lettura la porta */
+  avatar_path?: string | null;
+};
 
 /** Riga di public.community_decks (vedi supabase/schema.sql) con autore e media voti. */
 export type CommunityDeck = {

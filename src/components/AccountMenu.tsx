@@ -4,7 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { supabaseEnabled } from "@/lib/supabase/env";
+import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
+// foto profilo caricata dal sito prima di quella di Discord (pacchetto VETRINA, 27/09/2026)
+import { PROFILE_UPDATED_EVENT, avatarSrc } from "@/lib/community/profileMedia";
 import type { Profile } from "@/lib/community/types";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
@@ -96,9 +98,12 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
     } = sb.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") setTimeout(load, 0);
     });
+    // foto profilo cambiata da /account (pacchetto VETRINA): l'header sopravvive alla navigazione, si rilegge il profilo
+    window.addEventListener(PROFILE_UPDATED_EVENT, load);
     return () => {
       alive = false;
       subscription.unsubscribe();
+      window.removeEventListener(PROFILE_UPDATED_EVENT, load);
     };
   }, []);
 
@@ -174,11 +179,31 @@ function AccountDetails({
 
 export function Avatar({ profile, name, size = 28 }: { profile: Profile | null | undefined; name: string; size?: number }) {
   const initial = name.trim().charAt(0).toUpperCase() || "?";
-  return profile?.avatar_url ? (
+  // prima la foto caricata dal sito (`avatar_path`, quando la lettura la porta), poi `avatar_url`, che il database tiene
+  // comunque allineata alla foto caricata (trigger guard_profile_vetrina): pacchetto VETRINA, 27/09/2026
+  const src = avatarSrc(profile, supabaseUrl);
+  // una foto che non si carica (file appena sostituito mentre una pagina ISR punta ancora al vecchio, indirizzo rotto):
+  // l'iniziale al posto dell'immagine rotta. Anche se l'errore arriva prima dell'idratazione (controllo nel ref).
+  const [broken, setBroken] = useState<string | null>(null);
+  // la lettera cresce con il cerchio (sulla vetrina è da 112 px), mai sotto gli 11 px dell'header
+  const letter = { width: size, height: size, fontSize: Math.max(11, Math.round(size * 0.42)) };
+  return src && broken !== src ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={profile.avatar_url} alt="" width={size} height={size} className="shrink-0 rounded-full bg-felt-soft object-cover" style={{ width: size, height: size }} referrerPolicy="no-referrer" />
+    <img
+      src={src}
+      alt=""
+      width={size}
+      height={size}
+      className="shrink-0 rounded-full bg-felt-soft object-cover"
+      style={{ width: size, height: size }}
+      referrerPolicy="no-referrer"
+      onError={() => setBroken(src)}
+      ref={(el) => {
+        if (el && el.complete && el.naturalWidth === 0) setBroken(src);
+      }}
+    />
   ) : (
-    <span className="flex shrink-0 items-center justify-center rounded-full bg-mint font-display text-[11px] font-bold text-ink" style={{ width: size, height: size }} aria-hidden="true">
+    <span className="flex shrink-0 items-center justify-center rounded-full bg-mint font-display font-bold text-ink" style={letter} aria-hidden="true">
       {initial}
     </span>
   );

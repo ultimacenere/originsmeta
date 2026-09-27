@@ -279,4 +279,20 @@ describe("foto profilo nell'area staff", () => {
     assert.deepEqual(withSafeAvatar({ username: "y", avatar_url: "https://cdn.discordapp.com/a.png" }), { username: "y", avatar_url: "https://cdn.discordapp.com/a.png" });
     assert.equal(withSafeAvatar(null), null);
   });
+  test("la foto caricata dal sito (pacchetto VETRINA): solo dal nostro Storage e solo le foto profilo", async () => {
+    // profileMedia.ts non ha import: Node lo carica così com'è
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const M: typeof import("./profileMedia") = await import("./profileMedia.ts");
+    const base = "https://obpnprlzxrlbvncpqlpq.supabase.co";
+    const own = M.mediaPublicUrl(base, "0f8b9c2e-1a2b-4c3d-8e9f-a0b1c2d3e4f5/avatar/0b6f3c1e-9d7a-4f1e-8c55-2a0e7d9b1c33.webp");
+    assert.ok(M.anyMediaPathOk("avatar", "0f8b9c2e-1a2b-4c3d-8e9f-a0b1c2d3e4f5/avatar/0b6f3c1e-9d7a-4f1e-8c55-2a0e7d9b1c33.webp"));
+    assert.equal(safeAvatarUrl(own, base), own);
+    assert.equal(safeAvatarUrl(own), null, "senza l'indirizzo del progetto: solo Discord, come prima");
+    assert.equal(safeAvatarUrl(own, "https://altro.supabase.co"), null, "un altro progetto Supabase no");
+    assert.equal(safeAvatarUrl(own.replace("/avatar/", "/cover/"), base), null, "le copertine no");
+    assert.equal(safeAvatarUrl(`${own}?x=1`, base), null, "niente query");
+    assert.equal(safeAvatarUrl(own.replace("/public/profile-media/", "/public/tournament-covers/"), base), null, "altri bucket no");
+    assert.equal(safeAvatarUrl(own.replace("0f8b9c2e-1a2b", "../../x"), base), null);
+    assert.deepEqual(withSafeAvatar({ username: "z", avatar_url: own }, base), { username: "z", avatar_url: own });
+  });
 });

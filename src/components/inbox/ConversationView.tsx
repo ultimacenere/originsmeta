@@ -7,6 +7,8 @@ import { THREAD_MESSAGES_MAX, authorKind, fillInbox, lastSeen, staffInboxPath, u
 import type { InboxProfile, StaffConversation, ThreadMessage } from "@/lib/community/inboxQueries";
 import { setConversationStatus } from "@/lib/community/inboxActions";
 import { Avatar } from "@/components/AccountMenu";
+// foto caricata dal sito (pacchetto VETRINA): ammessa da safeAvatarUrl solo dal nostro Storage
+import { supabaseUrl } from "@/lib/supabase/env";
 import { InboxTime } from "./InboxTime";
 import { ReplyForm } from "./InboxForms";
 import { MarkRead } from "./MarkRead";
@@ -59,8 +61,8 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
 
       {staffView ? (
         <section className="card-night mt-6 flex flex-wrap items-center gap-4 p-5" aria-label={L.thread.user}>
-          {/* foto solo da Discord (safeAvatarUrl): un indirizzo qualsiasi direbbe a chi scrive l'IP dello staff */}
-          <Avatar profile={withSafeAvatar(c.user)} name={userName} size={48} />
+          {/* foto solo da Discord o dal nostro Storage (safeAvatarUrl): un indirizzo qualsiasi direbbe a chi scrive l'IP dello staff */}
+          <Avatar profile={withSafeAvatar(c.user, supabaseUrl)} name={userName} size={48} />
           <div className="min-w-0 flex-1 basis-48">
             <p className="kicker text-pale-muted">{L.thread.user}</p>
             <p className="t-item break-words">{userName}</p>

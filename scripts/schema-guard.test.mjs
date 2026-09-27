@@ -5,11 +5,21 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements } from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
 const COLUMN_GRANT = "grant update (bio, links, content_langs) on public.profiles to authenticated;";
+
+/*
+  Pacchetto VETRINA (27/09/2026): il suo SQL nasce in supabase/wave2-VETRINA.sql e l'integrazione lo accoda in fondo a
+  schema.sql. Lo schema "completo" è schema.sql con il blocco già dentro oppure, finché non c'è, con il file accodato:
+  così i test valgono prima e dopo l'integrazione. Il grant per colonna della vetrina sta in PROFILES_GRANTS.
+*/
+const VETRINA_MARKER = "-- ===== 27/09/2026: VETRINA =====";
+const vetrinaFile = new URL("../supabase/wave2-VETRINA.sql", import.meta.url);
+const full = schema.includes(VETRINA_MARKER) || !existsSync(vetrinaFile) ? schema : `${schema}\n${readFileSync(vetrinaFile, "utf8")}`;
+const VETRINA_GRANT = `${PROFILES_GRANTS[2]};`;
 
 /** Lo schema vero con una riga accodata in fondo. */
 const withTail = (extra) => `${schema}\n${extra}\n`;
@@ -44,12 +54,21 @@ describe("schema.sql vero", () => {
   test("si può applicare: nessun problema", () => {
     assert.deepEqual(schemaProblems(schema), []);
   });
-  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima della grant per colonna", () => {
-    const stmts = sqlStatements(schema);
+  test("con il blocco della vetrina accodato si può ancora applicare", () => {
+    assert.ok(full.includes(VETRINA_MARKER), "manca il blocco VETRINA (supabase/wave2-VETRINA.sql o in fondo a schema.sql)");
+    assert.deepEqual(schemaProblems(full), []);
+  });
+  test("le sole grant su public.profiles sono quelle ammesse, la revoke c'è e viene prima delle grant per colonna", () => {
+    const stmts = sqlStatements(full);
     const onProfiles = stmts.filter((s) => /^grant\b/.test(s) && /\bpublic\.profiles\b/.test(s));
     assert.deepEqual(onProfiles, PROFILES_GRANTS);
     assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) >= 0);
-    assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) < stmts.indexOf(PROFILES_GRANTS[1]));
+    for (const g of PROFILES_GRANTS.slice(1)) assert.ok(stmts.lastIndexOf(PROFILES_REVOKE) < stmts.indexOf(g), g);
+  });
+  test("la grant della vetrina è per colonna e non tocca ruolo, tag, nome utente né id", () => {
+    const cols = /^grant update \(([^)]+)\) on public\.profiles to authenticated$/.exec(PROFILES_GRANTS[2])?.[1].split(", ") ?? [];
+    assert.ok(cols.length > 0);
+    for (const reserved of ["role", "badge", "username", "discord_id", "id", "created_at", "avatar_url", "showcase_updated_at"]) assert.ok(!cols.includes(reserved), reserved);
   });
   test("due parti: lo schema di sempre (con la correzione) e i pacchetti creator", () => {
     const parts = splitSchema(schema);
@@ -89,6 +108,18 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
       assert.notDeepEqual(schemaProblems(sql), [], "db-migrate lo applicherebbe");
     });
   }
+  test("revoke su profiles accodata dopo il blocco della vetrina (cancellerebbe anche la sua grant)", () => {
+    assert.notDeepEqual(schemaProblems(`${full}\nrevoke update on public.profiles from authenticated;\n`), []);
+  });
+  test("grant della vetrina prima della revoke di 6c6756d", () => {
+    const sql = replaced(`${PROFILES_REVOKE};`, `${VETRINA_GRANT}\n${PROFILES_REVOKE};`);
+    assert.ok(schemaProblems(sql).some((p) => p.includes("revoke")));
+  });
+  test("una colonna in più nella grant della vetrina (per esempio badge) non passa", () => {
+    const widened = VETRINA_GRANT.replace("(avatar_path,", "(badge, avatar_path,");
+    assert.notEqual(widened, VETRINA_GRANT);
+    assert.notDeepEqual(schemaProblems(withTail(widened)), []);
+  });
   test("la grant per colonna nella prima parte non basta a far passare la grant sull'intera tabella", () => {
     const sql = replaced(COLUMN_GRANT, `${COLUMN_GRANT}\ngrant update on public.profiles to authenticated;`);
     assert.ok(schemaProblems(sql).some((p) => p.startsWith("grant non prevista")));

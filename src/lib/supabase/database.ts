@@ -24,6 +24,23 @@ export type ProfileRow = {
   content_langs: string[];
   /** ultima modifica di bio, canali, lingue o tag: la scrive solo il trigger profiles_touch_showcase */
   showcase_updated_at: string | null;
+  /* vetrina (pacchetto VETRINA, supabase/wave2-VETRINA.sql; regole in src/lib/community/showcase.ts): foto caricata per tutti,
+     il resto solo per i ruoli con vetrina (trigger guard_profile_vetrina). Prima della migrazione le colonne non ci sono:
+     le letture lo riconoscono (errore 42703) */
+  avatar_path?: string | null;
+  cover_preset?: string | null;
+  cover_path?: string | null;
+  accent?: string | null;
+  tagline?: string | null;
+  favorite_legendary?: string | null;
+  featured_deck?: string | null;
+  featured_video?: string | null;
+  /** [{day 0-6 (0 = lunedì), time "HH:MM", minutes?}] nel fuso schedule_tz (che c'è solo con degli orari) */
+  schedule?: { day: number; time: string; minutes?: number }[];
+  schedule_tz?: string | null;
+  /** ultime modifiche di foto e vetrina: le scrive solo il trigger guard_profile_vetrina (limiti di frequenza) */
+  avatar_updated_at?: string | null;
+  vetrina_updated_at?: string | null;
 };
 
 export type CommunityDeckRow = {
@@ -477,6 +494,18 @@ export type Database = {
       inbox_set_status: { Args: { cid: string; new_status: "open" | "closed" }; Returns: undefined };
       /** chi ha scritto i messaggi di una conversazione: righe solo per lo staff (gli utenti non leggono author_id) */
       inbox_message_authors: { Args: { cid: string }; Returns: { message_id: number; author_id: string }[] };
+      /* vetrina dei profili (supabase/wave2-VETRINA.sql): usate dal trigger guard_profile_vetrina, dai vincoli e dalla policy
+         di caricamento del bucket profile-media; il sito non le chiama. EXECUTE solo per authenticated e service_role */
+      profile_schedule_entry_ok: { Args: { e: unknown }; Returns: boolean };
+      profile_schedule_ok: { Args: { s: unknown }; Returns: boolean };
+      /** indirizzo pubblico di un file del bucket profile-media */
+      profile_media_url: { Args: { p: string }; Returns: string };
+      /** il file c'è nella propria cartella, con tipo ammesso e al massimo max_bytes (con i privilegi di chi chiama) */
+      profile_media_ok: { Args: { p: string; max_bytes: number }; Returns: boolean };
+      /** file dell'utente collegato nel bucket (tetto di 12 della policy di caricamento) */
+      profile_media_count: { Args: Record<string, never>; Returns: number };
+      /** foto di Discord dai metadati dell'accesso (security definer): solo il proprio profilo o un admin, solo host Discord */
+      profile_discord_avatar: { Args: { uid: string }; Returns: string | null };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

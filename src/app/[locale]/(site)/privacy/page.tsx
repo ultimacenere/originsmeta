@@ -4,6 +4,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
+import { showcaseLabels } from "@/lib/showcaseLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -43,6 +44,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Profilo pubblico e stato in diretta (pacchetto CREATOR, 26/09/2026) */}
         <p id="profile" className="mt-6 scroll-mt-24">
           {creatorLabels[locale].privacy}
+        </p>
+        {/* Foto profilo caricate e vetrina (pacchetto VETRINA, 27/09/2026): testo in src/lib/showcaseLabels.ts */}
+        <p id="profile-media" className="mt-6 scroll-mt-24">
+          {showcaseLabels[locale].privacy}
         </p>
         {/* Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026): totali per mazzo, senza dati personali. */}
         <p id="deck-stats" className="mt-6 scroll-mt-24">
