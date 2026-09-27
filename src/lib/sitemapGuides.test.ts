@@ -1,8 +1,9 @@
 /**
  * Test delle guide della community nelle sitemap (pacchetto GUIDE, 27/09/2026): `node --test src/lib/sitemapGuides.test.ts`.
  * Le guide stanno nella sezione "guides" accanto alle editoriali, solo nelle lingue in cui la pagina si indicizza (con
- * hreflang solo verso quelle), con la data di ogni versione e la copertina; /guides si sposta, lingua per lingua, con
- * le guide della community che mostra; l'elenco /guides/community c'è solo nelle lingue in cui ha almeno una guida.
+ * hreflang solo verso quelle), con la data di ogni versione e la copertina; /guides non si sposta (statica, la sezione la
+ * carica il browser dal 27/09/2026; prima si spostava con le guide della community che mostrava); l'elenco
+ * /guides/community c'è solo nelle lingue in cui ha almeno una guida.
  * Stesso hook di risoluzione dei moduli di sitemapEntries.test.ts (import senza estensione, JSON dichiarati).
  */
 import * as nodeModule from "node:module";
@@ -79,12 +80,13 @@ describe("guide della community nelle sitemap", () => {
     assert.equal(it[0].lastmod, "2026-09-27");
   });
 
-  test("/guides si sposta, lingua per lingua, con le guide della community che mostra", () => {
+  test("/guides non si sposta con le guide della community: la pagina è statica e la sezione la carica il browser", () => {
+    // revisione del 27/09/2026: le guide della community non cambiano l'HTML di /guides, quindi nemmeno il suo lastmod
     const hub = (l: Locale, data: Data = community) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
-    assert.equal(hub("es"), "2026-09-29");
-    assert.equal(hub("en"), "2026-09-29");
-    assert.ok((hub("it") ?? "") >= "2026-09-27");
-    assert.ok((hub("en", EMPTY_COMMUNITY) ?? "") <= "2026-09-29");
+    for (const l of ["en", "it", "es"] as const) {
+      assert.ok(hub(l), l);
+      assert.equal(hub(l), hub(l, EMPTY_COMMUNITY), l);
+    }
   });
 
   test("/guides/community solo nelle lingue in cui l'elenco ha almeno una guida, con la sua data", () => {

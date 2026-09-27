@@ -9,7 +9,8 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 | Cosa | Dove |
 | --- | --- |
 | Regole pure (limiti, testo semplice, modulo, parole e soglia, lingue, elenchi leggeri, sitemap, piano della traduzione) | `src/lib/community/guides.ts` + `guides.test.ts` |
-| Letture (pagina, /guides, /guides/community, /u, /account, sitemap) | `src/lib/community/guideQueries.ts` |
+| Letture (pagina, /guides/community, /u, /account, sitemap, rotta di /guides) | `src/lib/community/guideQueries.ts` |
+| Sezione di /guides (statica): le ultime guide chieste dal browser | `src/app/api/community-guides/route.ts` (ISR) + `src/components/guides/CommunityGuidesHub.tsx` |
 | Server Action (salva, stato, elimina, segnala) | `src/lib/community/guideActions.ts` |
 | Traduzione automatica | `guideTranslateCore.ts` (a pezzi, puro, usato anche dallo script), `guideTranslate.ts` (dentro `after()`); parti generali in `deckTranslation.ts` |
 | Arretrati e nuovi tentativi delle traduzioni | `scripts/translate-guides.mjs` |
@@ -17,7 +18,7 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 | Testi EN/IT/ES | `src/lib/communityGuideLabels.ts` |
 | Dati strutturati | `src/lib/jsonld/communityGuide.ts` (Article, autore = Person del membro, parte di /guides/community) |
 | Componenti | `src/components/guides/` (modulo, copertina, schede, comandi, segnalazione, riquadro di /guides) |
-| Pagine | `/guides/new`, `/guides/community` (elenco, ISR 300 s), `/guides/community/[slug]` (ISR 60 s), `/guides/community/[slug]/edit` |
+| Pagine | `/guides/new`, `/guides/community` (elenco, `revalidate = 300` ma in pratica 60 s: vince la lettura di `supabasePublic`), `/guides/community/[slug]` (ISR 60 s), `/guides/community/[slug]/edit`; `/guides` resta statica (revisione del 27/09/2026) |
 | Database | blocco `-- ===== 27/09/2026: GUIDE =====` in fondo a `supabase/schema.sql` |
 
 ## Regole
@@ -91,7 +92,9 @@ per una guida, `--redo it,es` per rifare da capo le traduzioni valide dopo un ca
 Lo staff (admin o tag Staff), con l'accesso fatto, trova "Nascondi (staff)" sulla pagina della guida e "Rimetti online
 (staff)" nella pagina di modifica, dove può anche correggere il testo. Le segnalazioni arrivano sul canale privato dello
 staff con il link alla guida (la prima di ogni giornata) e si leggono nella tabella `community_guide_reports` (dashboard
-di Supabase). Se un autore insiste, lo staff gli toglie il ruolo (`node scripts/set-badge.mjs <utente> community`).
+di Supabase). Se un autore insiste, lo staff gli toglie il ruolo (`node scripts/set-badge.mjs <utente> community`): dal 27/09/2026 lo script riporta anche tra le bozze le sue guide pubblicate (le nascoste restano nascoste), che escono da pagine, elenchi e sitemap entro qualche minuto.
+
+Altre difese (revisione del 27/09/2026): fra due modifiche della stessa guida (salvataggio o cambio di stato) passano almeno 10 secondi per il proprietario (`tooFast`, lo staff no); una modifica che non cambia nulla non rigenera pagine né sitemap; IndexNow parte solo alla prima pubblicazione o quando cambia il testo; `words` mandato via API sopra il massimo possibile per quel testo si azzera (trigger `community_guides_words`, blocco `DATE E FOTO` di `supabase/schema.sql`), e la guida esce dagli elenchi indicizzati finché il sito non la risalva. Resta scritta dal sito anche `text_hash`: un'impronta falsa può al più mettere in sitemap una traduzione vecchia che la pagina dichiara noindex.
 
 ## Collegamenti con gli altri pacchetti (integrazione del 27/09/2026)
 

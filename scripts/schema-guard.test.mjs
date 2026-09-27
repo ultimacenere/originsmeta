@@ -6,7 +6,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { CREATOR_MARKER, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
+import { CREATOR_MARKER, GUARDED_GRANTS, PROFILES_GRANTS, PROFILES_REVOKE, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
 /*
@@ -144,6 +144,42 @@ describe("rifiutato: tutto quello che riaprirebbe i profili", () => {
   test("grant di show_stats prima della revoke di 6c6756d", () => {
     const sql = replaced(`${PROFILES_REVOKE};`, `grant update (show_stats) on public.profiles to authenticated;\n${PROFILES_REVOKE};`);
     assert.ok(schemaProblems(sql).some((p) => p.includes("revoke")));
+  });
+});
+
+/*
+  Revisione del 27/09/2026: le grant per colonna della vetrina e di show_stats sono sicure solo con i trigger che le
+  difendono (GUARDED_GRANTS). Togliere un trigger, o ridefinire la sua funzione senza il controllo del ruolo o di una
+  colonna, riaprirebbe i campi riservati ai ruoli con vetrina a ogni iscritto.
+*/
+describe("rifiutato: trigger della vetrina e di show_stats tolti o svuotati", () => {
+  test("lo schema vero ha tutti i controlli", () => {
+    for (const g of GUARDED_GRANTS) assert.ok(sqlStatements(full).includes(g.grant), g.grant);
+    assert.deepEqual(schemaProblems(full), []);
+  });
+  const nl = schema.includes("\r\n") ? "\r\n" : "\n";
+  const cases = {
+    "trigger della vetrina tolto": withTail("drop trigger if exists profiles_guard_vetrina on public.profiles;"),
+    "trigger di show_stats tolto": withTail("drop trigger if exists profiles_guard_show_stats on public.profiles;"),
+    "vetrina ridefinita senza il controllo del ruolo": withTail(
+      ["create or replace function public.guard_profile_vetrina()", "returns trigger language plpgsql set search_path = public, pg_temp as $$", "begin", "  return new;", "end $$;"].join(nl),
+    ),
+    "show_stats ridefinita senza spegnere la casella": withTail(
+      ["create or replace function public.guard_profile_show_stats()", "returns trigger language plpgsql set search_path = public, pg_temp as $$", "begin", "  return new;", "end $$;"].join(nl),
+    ),
+    "vetrina senza il controllo della frase": replaced("(new.tagline is not null and new.tagline is distinct from old.tagline)", "false"),
+    "vetrina senza il controllo degli orari": replaced("(new.schedule <> '[]'::jsonb and new.schedule is distinct from old.schedule)", "false"),
+    "vetrina con un ruolo in più": replaced("and old.badge not in ('creator', 'author', 'pro', 'staff') and (", "and old.badge not in ('creator', 'author', 'pro', 'staff', 'community') and ("),
+  };
+  for (const [name, sql] of Object.entries(cases)) {
+    test(name, () => {
+      assert.notDeepEqual(schemaProblems(sql), [], "db-migrate lo applicherebbe");
+    });
+  }
+  test("senza la grant della vetrina il suo trigger non serve", () => {
+    const vetrina = GUARDED_GRANTS[0].grant;
+    const sql = replaced(`${vetrina};`, "select 1;").split("drop trigger if exists profiles_guard_vetrina on public.profiles;").join("select 1;");
+    assert.deepEqual(schemaProblems(sql).filter((p) => p.includes("vetrina")), []);
   });
 });
 

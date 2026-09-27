@@ -2,7 +2,7 @@
  * Test delle guide della community (pacchetto GUIDE, 27/09/2026) con il runner integrato di Node:
  * `node --test src/lib/community/guides.test.ts`.
  *
- * - Database: le regole di supabase/wave2-GUIDE.sql (accodato a schema.sql dall'integratore: il test legge i due file
+ * - Database: le regole del blocco GUIDE di supabase/schema.sql (più supabase/wave2-GUIDE.sql se tornasse: il test legge i due file
  *   insieme, così vale prima e dopo l'unione) coincidono con il codice: ruoli di `can_publish_guides` uguali a
  *   `canPublishGuides` di badges.ts, limiti del testo, invisibili, categorie, copertine (file veri del media kit), tetti
  *   contati sul registro, traduzioni salvate, grant per colonna, policy, segnalazioni, nessuna grant su public.profiles
@@ -61,7 +61,7 @@ const sorted = (xs: readonly string[]) => [...xs].sort();
 /** Gli elementi fra apici di un elenco SQL: "('creator','pro')" → ["creator", "pro"]. */
 const quoted = (s: string) => [...s.matchAll(/'([a-z0-9-]+)'/g)].map((m) => m[1]);
 
-/** schema.sql più wave2-GUIDE.sql, se c'è ancora (prima dell'unione): le istruzioni del pacchetto sono in fondo. */
+/** schema.sql (più wave2-GUIDE.sql, ripiego per i pacchetti futuri: dal 27/09/2026 il file non c'è più). */
 const waveUrl = new URL("../../../supabase/wave2-GUIDE.sql", import.meta.url);
 const sql = read("../../../supabase/schema.sql") + (existsSync(waveUrl) ? `\n${readFileSync(waveUrl, "utf8")}` : "");
 const stmts: string[] = S.sqlStatements(sql);
@@ -305,6 +305,52 @@ describe("database: grant minime", () => {
     }
     assert.ok(stmts.includes("revoke all on function public.guard_community_guide() from public, anon, authenticated"));
     assert.ok(stmts.includes("revoke all on function public.guard_community_guide_report() from public, anon, authenticated"));
+  });
+});
+
+/*
+  Revisione del 27/09/2026 (blocco "27/09/2026: DATE E FOTO" di schema.sql): `words` la scrive il sito, ma via API chi ha
+  il ruolo poteva mandare un numero qualsiasi. Il trigger community_guides_words la azzera sopra
+  community_guide_words_max, che conta i pezzi separati da spazi, barre e apostrofi: deve essere un sovrainsieme di
+  countWords, così il numero giusto del sito passa sempre. L'espressione si legge dallo schema e si prova qui in JavaScript.
+*/
+describe("database: parole delle guide mai sopra il massimo possibile", () => {
+  const body = /function public\.community_guide_words_max\(summary text, sections jsonb\)[\s\S]*?regexp_split_to_array\(p\.t, '((?:[^']|'')+)'\)/.exec(sql);
+  const pgClass = body?.[1] ?? "";
+  // [[:space:]] è una classe POSIX di Postgres: in JavaScript diventa \s (gli spazi ASCII; quelli Unicode sono elencati)
+  const jsSplit = new RegExp(pgClass.split("[:space:]").join(String.raw`\s`).split("''").join("'"), "u");
+  const maxWords = (summary: string, sections: { heading: string; body: string }[]) =>
+    [summary, ...sections.flatMap((s) => [s.heading, s.body])].reduce((n, t) => n + t.split(jsSplit).filter(Boolean).length, 0);
+  const ch = (code: number) => String.fromCharCode(code);
+
+  test("la funzione e il trigger ci sono, dopo community_guides_guard", () => {
+    assert.ok(pgClass, "manca community_guide_words_max");
+    assert.ok(stmts.includes("create trigger community_guides_words before insert or update of words, summary, sections on public.community_guides for each row execute function public.guard_community_guide_words()"));
+    assert.ok("community_guides_guard" < "community_guides_words", "Postgres esegue i trigger nell'ordine dei nomi");
+    assert.match(last(/^create (?:or replace )?function public\.guard_community_guide_words\(/), /if new\.words is not null and new\.words > public\.community_guide_words_max\(new\.summary, new\.sections\) then new\.words := null/);
+    assert.ok(stmts.includes("revoke all on function public.community_guide_words_max(text, jsonb) from public, anon"));
+    assert.ok(stmts.includes("grant execute on function public.community_guide_words_max(text, jsonb) to authenticated, service_role"));
+  });
+
+  test("mai meno delle parole contate dal sito (spazi Unicode, barre, apostrofi, numeri, trattini)", () => {
+    const samples: { summary: string; sections: { heading: string; body: string }[] }[] = [
+      { summary: "uno due", sections: [{ heading: "tre", body: "quattro cinque 3/2" }] },
+      { summary: `dell'avversario l${ch(0x2019)}abilità don't`, sections: [{ heading: "Swarm/Aggro | Midrange", body: "mid-range Trick-or-Treat - • 5" }] },
+      { summary: ["a", "b", "c", "d", "e", "f", "g", "h", "i"].join(ch(0xa0)), sections: [{ heading: ["x", "y"].join(ch(0x202f)), body: ["p", "q", "r", "s"].join(ch(0x2003)) }] },
+      { summary: `uno${ch(0x3000)}due${ch(0x2028)}tre${ch(0x1680)}quattro`, sections: [{ heading: `${ch(0x205f)}cinque`, body: `sei${ch(0x2009)}sette\n\notto\tnove` }] },
+      { summary: "   spazi   in   testa   ", sections: [{ heading: "''", body: "l'' 'x' ’y’ ///a" }] },
+      { summary: "Dorothy, Merlin e Dracula: 3 Leggendarie per 12 carte base.", sections: [] },
+    ];
+    for (const s of samples) {
+      const site = G.communityGuideWords(s);
+      assert.ok(maxWords(s.summary, s.sections) >= site, `${JSON.stringify(s)}: ${maxWords(s.summary, s.sections)} < ${site}`);
+    }
+  });
+
+  test("un numero inventato su una guida corta supera il massimo", () => {
+    const short = { summary: "Una guida corta.", sections: [{ heading: "Piano", body: "Gioca le carte giuste." }] };
+    assert.ok(maxWords(short.summary, short.sections) < 300);
+    assert.ok(99999 > maxWords(short.summary, short.sections));
   });
 });
 

@@ -2,7 +2,7 @@
  * Test degli avvisi per chi segue (pacchetto SEGUI, 27/09/2026): funzioni pure di `notifications.ts` (percorsi, busta
  * dell'header, errori, cron delle dirette) e regole dell'SQL degli avvisi, con il runner integrato di Node:
  * `node --test src/lib/community/notifications.test.ts`. L'SQL si legge come in follows.test.ts: il blocco
- * `-- ===== 27/09/2026: SEGUI =====` di schema.sql se c'è, altrimenti supabase/wave2-SEGUI.sql.
+ * `-- ===== 27/09/2026: SEGUI =====` di schema.sql (il ripiego su supabase/wave2-SEGUI.sql resta per i pacchetti futuri).
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -17,6 +17,7 @@ import {
   NOTIFY_DAILY_MAX,
   cronAuthorized,
   deckSlugOf,
+  guideSlugOf,
   envelopeAria,
   envelopeTarget,
   isNotificationKind,
@@ -78,6 +79,8 @@ describe("percorsi degli avvisi", () => {
     assert.equal(notificationHref("en", "//evil.example"), null);
     assert.equal(deckSlugOf("/decks/community/swarm-ab12"), "swarm-ab12");
     assert.equal(deckSlugOf("/u/vegakiles"), null);
+    assert.equal(guideSlugOf("/guides/community/merlin-x7k2"), "merlin-x7k2");
+    for (const bad of ["/decks/community/swarm-ab12", "/guides/community/ab", "/guides/community/Merlin", "/guides/community/a--b", "/u/vegakiles", "/it/guides/community/merlin-x7k2"]) assert.equal(guideSlugOf(bad), null, bad);
     assert.ok(isNotificationKind("live"));
     assert.ok(!isNotificationKind("message"));
     assert.ok(!isNotificationKind("toString"));
@@ -171,7 +174,7 @@ describe("errori e cron", () => {
   });
 });
 
-describe("database: avvisi in supabase/wave2-SEGUI.sql", () => {
+describe("database: avvisi nel blocco SEGUI di supabase/schema.sql", () => {
   const sql = seguiSql();
   const stmts = sqlStatements(sql);
   const fn = (name: string) => stmts.find((s) => s.startsWith(`create or replace function public.${name}(`)) ?? "";

@@ -2,7 +2,7 @@ import type { InboxStatus } from "./messages";
 
 /**
  * Avvisi per chi segue (pacchetto SEGUI, 27/09/2026): le regole in funzioni pure, senza import (a parte un tipo), così
- * si provano con `node --test src/lib/community/notifications.test.ts`. Il database sta in supabase/wave2-SEGUI.sql, gli
+ * si provano con `node --test src/lib/community/notifications.test.ts`. Il database sta nel blocco SEGUI di supabase/schema.sql, gli
  * invii in `notify.ts`, le letture in `notificationQueries.ts`, la sezione "Notifiche" di /account/messages in
  * src/components/follow/.
  *
@@ -57,6 +57,11 @@ export function isSafeTarget(target: unknown): target is string {
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
 export function deckSlugOf(target: string): string | null {
   return DECK_TARGET.exec(target)?.[1] ?? null;
+}
+
+/** Lo slug della guida di un avviso `guide_published` (per leggerne il titolo e sapere se è ancora online), altrimenti null. */
+export function guideSlugOf(target: string): string | null {
+  return isGuideTarget(target) ? (GUIDE_TARGET.exec(target)?.[1] ?? null) : null;
 }
 
 /**

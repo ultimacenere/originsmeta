@@ -31,9 +31,11 @@ export {
   AVATAR_SIZE,
   COVER_MAX_BYTES,
   COVER_MAX_SIDE,
+  DISCORD_AVATAR_RE,
   MEDIA_FILES_MAX,
   MEDIA_FILE_RE,
   MEDIA_TYPES,
+  MEDIA_UPLOAD_NAME_RE,
   PROFILE_MEDIA_BUCKET,
   PROFILE_UPDATED_EVENT,
   anyMediaPathOk,
@@ -41,6 +43,7 @@ export {
   mediaExtension,
   mediaPathOk,
   mediaPublicUrl,
+  safeAvatarUrl,
   type MediaKind,
 } from "./profileMedia";
 

@@ -2,8 +2,9 @@
  * Test del "Segui" (pacchetto SEGUI, 27/09/2026): funzioni pure di `follows.ts` e regole dell'SQL del pacchetto, con il
  * runner integrato di Node: `node --test src/lib/community/follows.test.ts`.
  *
- * L'SQL sta in supabase/wave2-SEGUI.sql finché l'integratore non lo accoda a supabase/schema.sql, sotto il titolo
- * `-- ===== 27/09/2026: SEGUI =====`: il test legge il blocco in schema.sql se c'è, altrimenti il file del pacchetto.
+ * L'SQL sta in supabase/schema.sql, sotto il titolo
+ * `-- ===== 27/09/2026: SEGUI =====` (fino al titolo successivo). Il ripiego su supabase/wave2-SEGUI.sql resta per un
+ * pacchetto futuro che arrivasse allo stesso modo: dal 27/09/2026 il file non c'è più.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -93,7 +94,7 @@ describe("errori e ritorno dall'accesso", () => {
   });
 });
 
-describe("database: supabase/wave2-SEGUI.sql", () => {
+describe("database: blocco SEGUI di supabase/schema.sql", () => {
   const { sql, inSchema } = seguiSql();
   const stmts = sqlStatements(sql);
   const fn = (name: string) => stmts.find((s) => s.startsWith(`create or replace function public.${name}(`)) ?? "";

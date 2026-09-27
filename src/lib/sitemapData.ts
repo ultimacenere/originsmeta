@@ -64,7 +64,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 6; // 6: guide della community (pacchetto GUIDE, 27/09/2026)
+export const SITEMAP_DATA_VERSION = 7; // 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi

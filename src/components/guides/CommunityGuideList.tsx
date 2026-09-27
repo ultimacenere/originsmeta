@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { formatDate, getDictionary, href, locales, type Locale } from "@/lib/i18n";
-import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { guideShapeSummary, guidesIndexableIn, readMinutes, type CommunityGuideListItem } from "@/lib/community/guides";
+import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
+import { guideShapeSummary, readMinutes, type CommunityGuideListItem } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { shownBadge } from "@/lib/community/badges";
 import { authorName } from "@/lib/community/util";
@@ -10,12 +9,11 @@ import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { GuideCover } from "./GuideCover";
 
 /**
- * Elenchi delle guide della community (pacchetto GUIDE, 27/09/2026): la scheda di una guida (`CommunityGuideCard`,
- * usata in /guides, in /guides/community, in fondo alla pagina di una guida e nel profilo /u), la lettura delle guide
- * indicizzabili in una lingua (`communityGuidesIn`) e la sezione "Guide della community" di /guides
- * (`CommunityGuidesSection`), che mostra le più recenti e porta all'elenco completo. Le voci sono leggere (niente
- * sezioni né traduzioni intere): parole, impronta e riassunti tradotti bastano per le schede e per decidere dove una
- * guida si indicizza (`guideShapeIndexing` in guides.ts).
+ * Scheda di una guida della community (pacchetto GUIDE, 27/09/2026), usata in /guides/community, in fondo alla pagina
+ * di una guida e nel profilo /u. La sezione "Guide della community" di /guides, che è statica, la disegna il browser
+ * (`CommunityGuidesHub`, con i dati di /api/community-guides: stessa scheda, stessi testi). Le voci sono leggere
+ * (niente sezioni né traduzioni intere): parole, impronta e riassunti tradotti bastano per le schede e per decidere dove
+ * una guida si indicizza (`guideShapeIndexing` in guides.ts).
  */
 
 export function CommunityGuideCard({ guide, locale, categoryLabel, showAuthor = true }: { guide: CommunityGuideListItem; locale: Locale; categoryLabel: string; showAuthor?: boolean }) {
@@ -49,38 +47,3 @@ export function CommunityGuideCard({ guide, locale, categoryLabel, showAuthor = 
   );
 }
 
-/**
- * Le guide della community indicizzabili nella lingua della pagina (sopra la soglia di parole e scritte o tradotte in
- * questa lingua), dalla più recente: la sezione di /guides ne mostra le prime, /guides/community tutte. Le altre restano
- * sul profilo dell'autore, raggiungibili ma fuori dagli elenchi indicizzati.
- */
-export async function communityGuidesIn(locale: Locale): Promise<CommunityGuideListItem[]> {
-  return guidesIndexableIn(await listPublishedGuides(), locales, locale);
-}
-
-/** Sezione di /guides: le ultime guide della community indicizzabili nella lingua della pagina (niente se non ce ne sono). */
-export function CommunityGuidesSection({ locale, guides, total }: { locale: Locale; guides: readonly CommunityGuideListItem[]; total: number }) {
-  if (!guides.length) return null;
-  const L = communityGuideLabels[locale];
-  const d = getDictionary(locale);
-  return (
-    <section className="mt-12 scroll-mt-24" aria-labelledby="community-guides-title" id="community-guides">
-      <h2 id="community-guides-title" className="t-section">
-        {L.list.title}
-      </h2>
-      <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{L.list.intro}</p>
-      <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {guides.map((g) => (
-          <li key={g.id} className="min-w-0">
-            <CommunityGuideCard guide={g} locale={locale} categoryLabel={d.guides.categories[g.category]} />
-          </li>
-        ))}
-      </ul>
-      <p className="mt-6">
-        <Link href={href(locale, "/guides/community")} className="font-display text-sm font-bold text-mint hover:underline">
-          {L.list.all} ({fillLabel(L.listPage.count, { n: String(total) })}) →
-        </Link>
-      </p>
-    </section>
-  );
-}

@@ -12,8 +12,11 @@ import { GuideCtaBox } from "@/components/guides/GuideCtaBox";
 
 /**
  * Tutte le guide della community (pacchetto GUIDE, 27/09/2026, dopo i rilievi: /guides ne mostra solo le ultime sei e
- * le più vecchie restavano raggiungibili solo dal profilo dell'autore). In ISR come /guides: le Server Action delle
- * guide e l'arrivo di una traduzione la rinnovano subito. Elenca le guide indicizzabili nella lingua della pagina (sopra
+ * le più vecchie restavano raggiungibili solo dal profilo dell'autore). In ISR (`revalidate = 300`, ma in pratica ogni
+ * 60 s: vince il tempo più basso, quello della lettura di `supabasePublic`); le Server Action delle guide e l'arrivo di
+ * una traduzione la rinnovano subito. /guides invece è statica e la sua sezione della community la carica il browser
+ * (revisione del 27/09/2026): l'elenco indicizzato delle guide della community è questo.
+ * Elenca le guide indicizzabili nella lingua della pagina (sopra
  * la soglia di parole, scritte o tradotte in questa lingua), dalla più recente; una versione senza guide è noindex e
  * fuori da hreflang e sitemap (`sitemapCommunityGuides` in guides.ts, `list`). Per ora una pagina sola: le guide sono
  * poche; con qualche centinaio servirà la paginazione (la lettura ne prende fino a 200).

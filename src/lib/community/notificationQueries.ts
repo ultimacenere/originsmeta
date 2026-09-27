@@ -4,6 +4,7 @@ import type { Profile } from "./types";
 import {
   NOTIFICATIONS_SHOWN,
   deckSlugOf,
+  guideSlugOf,
   isNotificationKind,
   missingHeadCount,
   notificationErrorCode,
@@ -24,8 +25,11 @@ import {
 
 export type NotificationActor = Profile & { id: string };
 
-/** Un avviso da mostrare: chi ha fatto la cosa e, per un mazzo, il nome (null se il mazzo non è più pubblico). */
-export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null };
+/**
+ * Un avviso da mostrare: chi ha fatto la cosa e, per un mazzo, il nome (null se il mazzo non è più pubblico); per una
+ * guida il titolo (null se la guida non è più online: riportata tra le bozze, nascosta dallo staff o eliminata).
+ */
+export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null };
 
 export type NotificationsResult = { ok: true; data: { items: NotificationItem[]; unread: number } } | { ok: false; error: NotificationErrorCode };
 
@@ -65,8 +69,8 @@ export async function unreadNotificationCount(client: Db, userId: string): Promi
 
 /**
  * Gli ultimi `NOTIFICATIONS_SHOWN` avvisi di `userId` (degli ultimi 90 giorni), dal più recente, con i profili di chi li
- * ha causati (pubblici) e i nomi dei mazzi ancora pubblicati (un mazzo nascosto o eliminato resta senza nome: la sezione
- * lo dice e non fa il link).
+ * ha causati (pubblici), i nomi dei mazzi ancora pubblicati e i titoli delle guide ancora pubblicate (un mazzo o una
+ * guida non più online resta senza nome: la sezione lo dice e non fa il link, che porterebbe a un 404).
  */
 export async function listNotifications(client: Db, userId: string): Promise<NotificationsResult> {
   const res = await client
@@ -84,19 +88,32 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const rows = ((res.data ?? []) as NotificationRow[]).filter((r) => isNotificationKind(r.kind));
   const actorIds = [...new Set(rows.map((r) => r.actor_id))];
   const slugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_published" ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
-  const [actors, decks, unread] = await Promise.all([
-    actorIds.length ? client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", actorIds) : Promise.resolve({ data: [], error: null }),
-    slugs.length ? client.from("community_decks").select("slug, name").in("slug", slugs).eq("status", "published") : Promise.resolve({ data: [], error: null }),
+  const guideSlugs = [...new Set(rows.flatMap((r) => (r.kind === "guide_published" ? [guideSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  const none = Promise.resolve({ data: [], error: null });
+  const [actors, decks, guides, unread] = await Promise.all([
+    actorIds.length ? client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", actorIds) : none,
+    slugs.length ? client.from("community_decks").select("slug, name").in("slug", slugs).eq("status", "published") : none,
+    // guide ancora online (revisione del 27/09/2026): prima l'avviso portava anche a una guida tornata tra le bozze
+    guideSlugs.length ? client.from("community_guides").select("slug, title").in("slug", guideSlugs).eq("status", "published") : none,
     unreadNotificationCount(client, userId),
   ]);
-  // profili e nomi dei mazzi sono un di più: con un errore l'avviso resta, con "un profilo che segui" e senza nome
+  // profili, nomi dei mazzi e titoli delle guide sono un di più: con un errore (anche la tabella delle guide che non c'è
+  // ancora) l'avviso resta, con "un profilo che segui" e senza nome
   if (actors.error) console.error("[follows] profili degli avvisi:", actors.error.message);
   if (decks.error) console.error("[follows] mazzi degli avvisi:", decks.error.message);
+  if (guides.error) console.error("[follows] guide degli avvisi:", guides.error.message);
   const byId = new Map(((actors.data ?? []) as NotificationActor[]).map((p) => [p.id, p]));
   const names = new Map(((decks.data ?? []) as { slug: string; name: string }[]).map((d) => [d.slug, d.name]));
+  const titles = new Map(((guides.data ?? []) as { slug: string; title: string }[]).map((g) => [g.slug, g.title]));
   const items = rows.map((r) => {
     const slug = r.kind === "deck_published" ? deckSlugOf(r.target) : null;
-    return { ...r, actor: byId.get(r.actor_id) ?? null, deckName: slug ? (names.get(slug) ?? null) : null };
+    const guide = r.kind === "guide_published" ? guideSlugOf(r.target) : null;
+    return {
+      ...r,
+      actor: byId.get(r.actor_id) ?? null,
+      deckName: slug ? (names.get(slug) ?? null) : null,
+      guideTitle: guide ? (titles.get(guide) ?? null) : null,
+    };
   });
   return { ok: true, data: { items, unread: Math.max(unread, rows.filter((r) => !r.read_at).length) } };
 }

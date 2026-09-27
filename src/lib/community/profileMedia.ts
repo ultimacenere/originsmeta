@@ -2,7 +2,7 @@
  * Immagini caricate dal sito nel bucket `profile-media` (pacchetto VETRINA, 27/09/2026): foto profilo per tutti gli
  * iscritti, copertina per i ruoli con vetrina. Modulo minuscolo e senza import, apposta: `Avatar` (header, su ogni
  * pagina) lo usa per `avatarSrc` senza portarsi dietro il resto della vetrina. showcase.ts lo riesporta; le regole sono
- * uguali ai vincoli e alle policy di supabase/wave2-VETRINA.sql (showcase.test.ts le confronta).
+ * uguali ai vincoli e alle policy del blocco VETRINA di supabase/schema.sql (showcase.test.ts le confronta).
  */
 
 /** Bucket pubblico dello Storage con foto profilo e copertine, una cartella per utente: `<id>/avatar/…`, `<id>/cover/…`. */
@@ -32,6 +32,19 @@ export const MEDIA_FILES_MAX = 12;
 export const PROFILE_UPDATED_EVENT = "om:profile-updated";
 /** Nome di un file caricato (lo sceglie il sito: un uuid) con l'estensione del tipo. Uguale nei vincoli SQL. */
 export const MEDIA_FILE_RE = "[A-Za-z0-9_-]{8,64}\\.(png|jpg|jpeg|webp)";
+/**
+ * Il nome che il sito dà a un file caricato (`uploadMedia`: un uuid minuscolo con l'estensione del tipo, sempre nuovo).
+ * La policy di caricamento del bucket accetta solo questo (revisione del 27/09/2026, `storage.filename(name) ~ …` nel
+ * blocco VETRINA di schema.sql): chi salta il sito non sceglie nomi a piacere. Più stretto di `MEDIA_FILE_RE`, che
+ * resta il vincolo dei percorsi salvati nel profilo.
+ */
+export const MEDIA_UPLOAD_NAME_RE = String.raw`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$`;
+/**
+ * Una foto di Discord (dai metadati dell'accesso OAuth). Stessa espressione di `handle_new_user` e di
+ * `profile_discord_avatar` in schema.sql (showcase.test.ts le confronta): solo i due host delle immagini di Discord.
+ */
+export const DISCORD_AVATAR_RE = String.raw`^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$`;
+const DISCORD_AVATAR = new RegExp(DISCORD_AVATAR_RE);
 
 export type MediaKind = "avatar" | "cover";
 
@@ -62,12 +75,26 @@ export function mediaPublicUrl(base: string, path: string): string {
 }
 
 /**
+ * `avatar_url` se è una foto che il sito sa di poter mostrare: una foto di Discord (`DISCORD_AVATAR_RE`) o una foto
+ * caricata nel bucket del progetto (`base`, cartella avatar). Altrimenti null: difesa in più rispetto al database
+ * (revisione del 27/09/2026), perché fino a quel giorno `handle_new_user` copiava qualsiasi indirizzo dai metadati del
+ * magic link, che manda il browser (pixel traccianti, immagini non moderate su /u, sui mazzi e sui tornei).
+ */
+export function safeAvatarUrl(url: string | null | undefined, base: string): string | null {
+  if (typeof url !== "string" || !url) return null;
+  if (DISCORD_AVATAR.test(url)) return url;
+  const prefix = mediaPublicUrl(base, "");
+  return url.startsWith(prefix) && anyMediaPathOk("avatar", url.slice(prefix.length)) ? url : null;
+}
+
+/**
  * La foto da mostrare per un profilo: prima quella caricata dal sito (`avatar_path`, se la lettura la porta), poi
- * `avatar_url`. Il trigger del database tiene comunque `avatar_url` allineata alla foto caricata (e la riporta a quella
- * di Discord quando la si toglie), quindi anche le letture che non chiedono `avatar_path` mostrano la foto giusta.
+ * `avatar_url` (solo Discord o il bucket del sito, `safeAvatarUrl`). Il trigger del database tiene comunque
+ * `avatar_url` allineata alla foto caricata (e la riporta a quella di Discord quando la si toglie), quindi anche le
+ * letture che non chiedono `avatar_path` mostrano la foto giusta.
  */
 export function avatarSrc(profile: { avatar_url?: string | null; avatar_path?: string | null } | null | undefined, base: string): string | null {
   if (!profile) return null;
   if (anyMediaPathOk("avatar", profile.avatar_path)) return mediaPublicUrl(base, profile.avatar_path);
-  return profile.avatar_url || null;
+  return safeAvatarUrl(profile.avatar_url, base);
 }

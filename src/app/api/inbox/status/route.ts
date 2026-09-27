@@ -15,7 +15,11 @@ import { unreadNotificationCount } from "@/lib/community/notificationQueries";
  * cookie di sessione Supabase (nomi che iniziano con sb-) risponde subito, senza chiamare Supabase. Con la migrazione
  * non ancora applicata (o un errore del database) 503: il menu semplicemente non mostra il numero.
  * `notifications` (pacchetto SEGUI, 27/09/2026): avvisi da leggere dei profili seguiti, che la busta somma ai messaggi;
- * 0 prima della migrazione del pacchetto o con un errore, senza cambiare il resto della risposta.
+ * 0 prima della migrazione del pacchetto o con un errore degli avvisi, senza cambiare il resto della risposta.
+ * Quando invece non si legge la casella messaggi la rotta risponde 503 e la busta tace del tutto, avvisi compresi
+ * (revisione del 27/09/2026, scelta voluta): il 200 è la prova che la casella funziona, e `FeedbackWidget` ci si basa per
+ * promettere che la risposta dello staff arriverà lì. Un 200 con i soli avvisi farebbe una promessa falsa; il caso è
+ * raro (casella già migrata e database giù solo per quella lettura) e gli avvisi restano in /account/messages.
  */
 export const dynamic = "force-dynamic";
 

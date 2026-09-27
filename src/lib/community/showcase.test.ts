@@ -2,7 +2,7 @@
  * Test della vetrina dei profili (pacchetto VETRINA, 27/09/2026): `node --test src/lib/community/showcase.test.ts`.
  * Regole pure di showcase.ts e profileMedia.ts (immagini caricate, copertine, colori d'accento e contrasti, frase,
  * orari delle dirette e fusi orari, modulo di /account, lettura della riga), etichette EN/IT/ES e SQL del pacchetto
- * (supabase/wave2-VETRINA.sql, o in fondo a schema.sql dopo l'integrazione): stessi elenchi e limiti del codice,
+ * (blocco VETRINA in fondo a supabase/schema.sql): stessi elenchi e limiti del codice,
  * grant per colonna accettata da scripts/schema-guard.mjs, funzioni security definer con search_path fissato.
  *
  * showcase.ts è scritto per Next (import senza estensione): come deckQuality.test.ts, prima di caricarlo il test
@@ -83,6 +83,34 @@ describe("immagini caricate (profileMedia.ts)", () => {
     assert.equal(S.avatarSrc({ avatar_path: "https://evil.example/x.webp", avatar_url: "https://cdn.discordapp.com/a.png" }, base), "https://cdn.discordapp.com/a.png", "un percorso che non torna non passa");
     assert.equal(S.avatarSrc({ avatar_url: null }, base), null);
     assert.equal(S.avatarSrc(null, base), null);
+  });
+  test("avatar_url solo se è Discord o il bucket del sito (revisione del 27/09/2026: metadati del magic link)", () => {
+    const base = "https://x.supabase.co";
+    const own = `${base}/storage/v1/object/public/profile-media/${USER}/avatar/abcdefgh.webp`;
+    assert.equal(S.safeAvatarUrl(own, base), own);
+    assert.equal(S.safeAvatarUrl("https://cdn.discordapp.com/avatars/1/abc.png?size=128", base), "https://cdn.discordapp.com/avatars/1/abc.png?size=128");
+    for (const bad of [
+      "https://evil.example/pixel.gif",
+      "https://cdn.discordapp.com.evil.example/a.png",
+      "http://cdn.discordapp.com/a.png",
+      `${base}/storage/v1/object/public/profile-media/${USER}/cover/abcdefgh.webp`,
+      `${base}/storage/v1/object/public/tournament-covers/x/abcdefgh.webp`,
+      `https://y.supabase.co/storage/v1/object/public/profile-media/${USER}/avatar/abcdefgh.webp`,
+      "javascript:alert(1)",
+      "",
+    ]) {
+      assert.equal(S.safeAvatarUrl(bad, base), null, bad);
+      assert.equal(S.avatarSrc({ avatar_url: bad }, base), null, bad);
+    }
+  });
+  test("nome dei file caricati: quello di uploadMedia (uuid minuscolo e l'estensione del tipo)", () => {
+    const re = new RegExp(S.MEDIA_UPLOAD_NAME_RE);
+    for (const ext of ["webp", "png", "jpg"] as const) assert.match(`${crypto.randomUUID()}.${ext}`, re);
+    for (const bad of ["abcdefgh.webp", `${crypto.randomUUID()}.jpeg`, `${crypto.randomUUID().toUpperCase()}.webp`, `${crypto.randomUUID()}.webp.html`, `x${crypto.randomUUID()}.png`]) assert.doesNotMatch(bad, re, bad);
+    // ogni estensione di mediaExtension è ammessa
+    for (const t of S.MEDIA_TYPES) assert.match(`${crypto.randomUUID()}.${S.mediaExtension(t)}`, re, t);
+    const upload = read("../../components/showcase/mediaUpload.ts");
+    assert.ok(upload.includes("const path = `${userId}/${kind}/${crypto.randomUUID()}.${ext}`;"), "il nome lo sceglie uploadMedia");
   });
 });
 
@@ -661,5 +689,13 @@ describe("database: blocco VETRINA di supabase/schema.sql", () => {
     assert.match("https://cdn.discordapp.com/avatars/123456789/abcdef0123.png", re);
     assert.match("https://media.discordapp.net/avatars/1/a.webp?size=64", re);
     for (const bad of ["https://evil.example/a.png", "https://cdn.discordapp.com.evil.example/a.png", "http://cdn.discordapp.com/a.png", "https://cdn.discordapp.com/a.png?x=1", "https://cdn.discordapp.com/a b.png"]) assert.doesNotMatch(bad, re, bad);
+    // la stessa espressione del codice (DISCORD_AVATAR_RE) e di handle_new_user, che dal 27/09/2026 la usa per i profili nuovi
+    assert.equal(m[1], S.DISCORD_AVATAR_RE);
+    assert.ok(schema.includes(`new.raw_user_meta_data->>'avatar_url' ~ '${S.DISCORD_AVATAR_RE}'`), "handle_new_user con la stessa espressione");
+    assert.ok(schema.includes(`and avatar_url !~ '${S.DISCORD_AVATAR_RE}'`), "pulizia delle foto già scritte con la stessa espressione");
+  });
+  test("policy di caricamento: solo il nome che sceglie il sito", () => {
+    // dal testo del file (sqlStatements scrive tutto in minuscolo)
+    assert.ok(block.includes(`and storage.filename(name) ~ '${S.MEDIA_UPLOAD_NAME_RE}'`));
   });
 });

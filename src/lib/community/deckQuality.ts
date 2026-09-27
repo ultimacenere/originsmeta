@@ -163,14 +163,17 @@ export function guideMeter(words: number, locale: Locale): { ok: boolean; text: 
 // ——— Profili pubblici (/u/<username>) ———
 
 /**
- * Un profilo si indicizza se ha qualcosa di suo: almeno un mazzo pubblicato o una tier list salvata. Senza nessuno dei
- * due è una pagina vuota (avatar, nome, due riquadri "niente ancora"): noindex e fuori dalla sitemap.
+ * Un profilo si indicizza se ha qualcosa di suo: almeno un mazzo pubblicato, una tier list salvata o una guida della
+ * community pubblicata (revisione del 27/09/2026: prima un Autore con le sole guide aveva /u in noindex, mentre le sue
+ * guide portano il lettore e i dati strutturati proprio lì). Senza nulla è una pagina vuota (avatar, nome, riquadri
+ * "niente ancora"): noindex e fuori dalla sitemap.
  * Si contano i mazzi pubblicati, non solo quelli sopra la soglia: albeo_o, con quattro mazzi sotto soglia, è oggi un
  * risultato in SERP per "origins tcg koin games tier list decks", e togliere profili così lo decide Pierluigi (nota
- * del verificatore su DECKS-09). Il profilo resta l'unica pagina che raccoglie i mazzi di un autore.
+ * del verificatore su DECKS-09). Il profilo resta l'unica pagina che raccoglie i mazzi di un autore. Allo stesso modo
+ * si contano tutte le guide pubblicate, anche quelle sotto la soglia di parole.
  */
-export function profileIndexable(counts: { decks: number; tierLists: number }): boolean {
-  return counts.decks > 0 || counts.tierLists > 0;
+export function profileIndexable(counts: { decks: number; tierLists: number; guides?: number }): boolean {
+  return counts.decks > 0 || counts.tierLists > 0 || (counts.guides ?? 0) > 0;
 }
 
 /** Stessi limiti di `page.ts` (TITLE_MAX, DESCRIPTION_MAX) e della regola 120–158 delle description. */
@@ -187,14 +190,20 @@ export type ProfileFacts = {
   tierLists: number;
   /** tipi delle tier list salvate: una per tipo (indice unico owner,kind) */
   tierKinds: readonly ("legendaries" | "cards")[];
+  /** guide della community pubblicate (pacchetto GUIDE); assente = nessuna */
+  guides?: number;
 };
 
 type ProfileWords = {
-  title: { both: string; decks: string; deck: string; none: string; short: string };
+  title: { both: string; decks: string; deck: string; decksGuides: string; guides: string; guide: string; none: string; short: string };
   /** attacco della description con i mazzi: {name}, {n}, {list} (la lista arriva già fra parentesi, o vuota) */
   decks: (f: { name: string; n: number; list: string }) => string;
   /** coda sulle tier list, dopo i mazzi */
   plusTiers: (k: number) => string;
+  /** coda sulle guide della community, dopo i mazzi (al posto di quella sulle tier list) */
+  plusGuides: (g: number) => string;
+  /** attacco della description con le sole guide (e al più le tier list) */
+  guidesOnly: (f: { name: string; g: number }) => string;
   /** description senza mazzi, con le sole tier list ({kinds} già unite): la versione lunga e quella corta */
   tiersOnly: (f: { name: string; k: number; kinds: string }) => readonly [string, string];
   none: (name: string) => string;
@@ -219,12 +228,17 @@ const profileWords: Record<Locale, ProfileWords> = {
       both: "{name}: Origins TCG decks and tier lists",
       decks: "{name}: Origins TCG decks",
       deck: "{name}: Origins TCG deck",
+      decksGuides: "{name}: Origins TCG decks and guides",
+      guides: "{name}: Origins TCG guides",
+      guide: "{name}: Origins TCG guide",
       none: "{name}: Origins TCG community profile",
       short: "{name}: Origins TCG",
     },
     decks: ({ name, n, list }) =>
       n === 1 ? `An Origins TCG deck by ${name}${list} with its game plan and full card list` : `${n} Origins TCG decks by ${name}${list} with game plans and full card lists`,
     plusTiers: (k) => (k === 1 ? ", plus a saved tier list" : `, plus ${k} saved tier lists`),
+    plusGuides: (g) => (g === 1 ? ", plus a guide" : `, plus ${g} guides`),
+    guidesOnly: ({ name, g }) => `${g === 1 ? "An Origins TCG guide" : `${g} Origins TCG guides`} written by ${name} for other players`,
     tiersOnly: ({ name, k, kinds }) => {
       const head = `${k === 1 ? "An Origins TCG tier list" : `${k} Origins TCG tier lists`} by ${name} (${kinds}) ranked from S to D`;
       return [`${head}, ready to open in the tier list maker.`, `${head}.`];
@@ -239,6 +253,9 @@ const profileWords: Record<Locale, ProfileWords> = {
       both: "{name}: mazzi e tier list di Origins TCG",
       decks: "{name}: mazzi di Origins TCG",
       deck: "{name}: mazzo di Origins TCG",
+      decksGuides: "{name}: mazzi e guide di Origins TCG",
+      guides: "{name}: guide di Origins TCG",
+      guide: "{name}: guida di Origins TCG",
       none: "{name}: profilo della community di Origins TCG",
       short: "{name}: Origins TCG",
     },
@@ -247,6 +264,8 @@ const profileWords: Record<Locale, ProfileWords> = {
         ? `Il mazzo di Origins TCG di ${name}${list} con piano di gioco e lista completa`
         : `I ${n} mazzi di Origins TCG di ${name}${list} con piano di gioco e lista completa`,
     plusTiers: (k) => (k === 1 ? ", più la sua tier list" : `, più le sue ${k} tier list`),
+    plusGuides: (g) => (g === 1 ? ", più la sua guida" : `, più le sue ${g} guide`),
+    guidesOnly: ({ name, g }) => (g === 1 ? `La guida di Origins TCG scritta da ${name} per gli altri giocatori` : `Le ${g} guide di Origins TCG scritte da ${name} per gli altri giocatori`),
     tiersOnly: ({ name, k, kinds }) => {
       const head = `${k === 1 ? "La tier list" : `Le ${k} tier list`} di Origins TCG di ${name} (${kinds}), dalla fascia S alla D`;
       return [`${head}, da aprire nello strumento per creare la tua.`, `${head}.`];
@@ -261,6 +280,9 @@ const profileWords: Record<Locale, ProfileWords> = {
       both: "{name}: mazos y tier lists de Origins TCG",
       decks: "{name}: mazos de Origins TCG",
       deck: "{name}: mazo de Origins TCG",
+      decksGuides: "{name}: mazos y guías de Origins TCG",
+      guides: "{name}: guías de Origins TCG",
+      guide: "{name}: guía de Origins TCG",
       none: "{name}: perfil de la comunidad de Origins TCG",
       short: "{name}: Origins TCG",
     },
@@ -269,6 +291,8 @@ const profileWords: Record<Locale, ProfileWords> = {
         ? `El mazo de Origins TCG de ${name}${list} con plan de juego y lista completa`
         : `Los ${n} mazos de Origins TCG de ${name}${list} con plan de juego y lista completa`,
     plusTiers: (k) => (k === 1 ? ", y su tier list" : `, y sus ${k} tier lists`),
+    plusGuides: (g) => (g === 1 ? ", y su guía" : `, y sus ${g} guías`),
+    guidesOnly: ({ name, g }) => (g === 1 ? `La guía de Origins TCG escrita por ${name} para otros jugadores` : `Las ${g} guías de Origins TCG escritas por ${name} para otros jugadores`),
     tiersOnly: ({ name, k, kinds }) => {
       const head = `${k === 1 ? "La tier list" : `Las ${k} tier lists`} de Origins TCG de ${name} (${kinds}), de la S a la D`;
       // "lista" concorda con "La tier list", "listas" con "Las … tier lists"
@@ -291,12 +315,27 @@ function cutName(name: string, max: number): string {
 
 /**
  * Title del profilo, senza marchio: "albeo_o: Origins TCG decks and tier lists", "albeo_o: mazzi di Origins TCG".
- * Senza mazzi è "profilo della community", anche con le tier list (vedi `profileWords`).
+ * Senza mazzi è "profilo della community", anche con le tier list (vedi `profileWords`); le guide della community
+ * (revisione del 27/09/2026) entrano nel title: "mazzi e guide", o "guide" per chi ha solo quelle.
  * Con un nome troppo lungo si ripiega su "{name}: Origins TCG", poi si accorcia il nome.
  */
-export function profileTitle(f: Pick<ProfileFacts, "name" | "decks" | "tierLists">, locale: Locale): string {
+export function profileTitle(f: Pick<ProfileFacts, "name" | "decks" | "tierLists" | "guides">, locale: Locale): string {
   const t = profileWords[locale].title;
-  const model = f.decks > 0 ? (f.tierLists > 0 ? t.both : f.decks === 1 ? t.deck : t.decks) : t.none;
+  const guides = f.guides ?? 0;
+  const model =
+    f.decks > 0
+      ? guides > 0
+        ? t.decksGuides
+        : f.tierLists > 0
+          ? t.both
+          : f.decks === 1
+            ? t.deck
+            : t.decks
+      : guides > 0
+        ? guides === 1
+          ? t.guide
+          : t.guides
+        : t.none;
   const name = f.name.replace(/\s+/g, " ").trim();
   for (const m of [model, t.short]) {
     const title = fillLabel(m, { name });
@@ -315,13 +354,16 @@ function joinList(items: readonly string[], and: string): string {
  * "4 Origins TCG decks by albeo_o (Dorothy, Merlin, Dracula and Robin Hood) with game plans and full card lists, plus a
  * saved tier list." Le Leggendarie si tolgono dalla coda se la frase non ci sta (poi tutta la parentesi);
  * sotto i 120 caratteri si aggiunge la coda più lunga che ci sta. Il profilo senza nulla (noindex) ha una frase onesta.
+ * Con le guide della community la coda dopo i mazzi parla delle guide (al posto delle tier list, per la lunghezza);
+ * con le sole guide l'attacco è "La guida di Origins TCG scritta da…", più le tier list se ci sono.
  */
 export function profileDescription(f: ProfileFacts, locale: Locale): string {
   const w = profileWords[locale];
   const name = cutName(f.name.replace(/\s+/g, " ").trim(), 40);
+  const guides = f.guides ?? 0;
   let base: string;
   if (f.decks > 0) {
-    const tiers = f.tierLists > 0 ? w.plusTiers(f.tierLists) : "";
+    const tiers = guides > 0 ? w.plusGuides(guides) : f.tierLists > 0 ? w.plusTiers(f.tierLists) : "";
     const lists = [f.legendaries.length, ...Array.from({ length: f.legendaries.length }, (_, i) => f.legendaries.length - 1 - i)];
     base = "";
     for (const k of lists) {
@@ -330,6 +372,9 @@ export function profileDescription(f: ProfileFacts, locale: Locale): string {
       base = `${w.decks({ name, n: f.decks, list })}${tiers}.`;
       if (base.length <= PROFILE_DESC_MAX) break;
     }
+  } else if (guides > 0) {
+    const withTiers = `${w.guidesOnly({ name, g: guides })}${f.tierLists > 0 ? w.plusTiers(f.tierLists) : ""}.`;
+    base = withTiers.length <= PROFILE_DESC_MAX ? withTiers : `${w.guidesOnly({ name, g: guides })}.`;
   } else if (f.tierLists > 0) {
     const kinds = joinList(
       (["legendaries", "cards"] as const).filter((k) => f.tierKinds.includes(k)).map((k) => w.kinds[k]),

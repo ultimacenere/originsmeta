@@ -86,6 +86,13 @@ export const WELL_RATED = { minVotes: 5, minAvg: 4.5 } as const;
  */
 export const DECK_OF_MONTH_MIN_VOTES = 3;
 export const DECK_OF_MONTH_MIN_STARS = 4;
+/**
+ * Nascita della community (account, mazzi e voti dal 15/09/2026): il "mazzo del mese" conta solo i voti da qui in poi.
+ * Fino al 27/09/2026 la data di un voto la poteva scrivere chi votava (revisione dell'integrazione dei profili: ora la
+ * scrive il database, blocco "27/09/2026: DATE E FOTO" di schema.sql), e un voto retrodatato prima di questo giorno
+ * non vale. La stessa data sta in `profile_achievement_facts` (il test la cerca).
+ */
+export const COMMUNITY_SINCE = "2026-09-15T00:00:00Z";
 
 /**
  * I profili dei bot di prova dello staff (scripts/seed-bots.mjs: nome utente `bot-<n>`, `bot-<n>-<k>` se il nome era

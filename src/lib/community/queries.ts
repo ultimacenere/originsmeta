@@ -4,6 +4,7 @@ import type { CommunityDeck, Guide, Profile } from "./types";
 import { normalizeBadge, publishedDeckCap, type Badge } from "./badges";
 import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
+import { guideTableMissing } from "./guides";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -195,15 +196,16 @@ export async function listDecksByOwner(userId: string, limit = 50): Promise<Comm
 type UserRow = { updated_at: string; profile: { username: string | null } | null };
 
 /**
- * Nomi utente delle pagine profilo da mettere in sitemap: chi ha almeno un mazzo pubblicato o una tier list salvata,
- * la stessa regola del noindex della pagina (`profileIndexable` in deckQuality.ts, 25/09/2026: prima c'erano solo
- * i profili con un mazzo, e quelli con le sole tier list restavano fuori pur essendo indicizzabili).
- * La data è la più recente fra mazzi e tier list. Con un errore lancia: la sitemap resta quella di prima.
+ * Nomi utente delle pagine profilo da mettere in sitemap: chi ha almeno un mazzo pubblicato, una tier list salvata o
+ * una guida della community pubblicata, la stessa regola del noindex della pagina (`profileIndexable` in
+ * deckQuality.ts, 25/09/2026: prima c'erano solo i profili con un mazzo; le guide dal 27/09/2026).
+ * La data è la più recente fra mazzi, tier list e guide. Con un errore lancia: la sitemap resta quella di prima. La
+ * tabella delle guide che non c'è ancora (migrazione del pacchetto GUIDE non applicata) vale "nessuna guida".
  */
 export async function listPublicProfiles(): Promise<{ username: string; updated_at: string }[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const [decks, tiers] = await Promise.all([
+  const [decks, tiers, guides] = await Promise.all([
     client
       .from("community_decks")
       .select("updated_at, profile:profiles!community_decks_owner_fkey(username)")
@@ -216,8 +218,15 @@ export async function listPublicProfiles(): Promise<{ username: string; updated_
       .eq("status", PUBLISHED)
       .order("updated_at", { ascending: false })
       .limit(1000),
+    client
+      .from("community_guides")
+      .select("updated_at, profile:profiles!community_guides_owner_fkey(username)")
+      .eq("status", PUBLISHED)
+      .order("updated_at", { ascending: false })
+      .limit(1000),
   ]);
-  const rows = [...rowsOrThrow<UserRow>("listPublicProfiles (mazzi)", decks), ...rowsOrThrow<UserRow>("listPublicProfiles (tier list)", tiers)];
+  const guideRows = guideTableMissing(guides.error) ? [] : rowsOrThrow<UserRow>("listPublicProfiles (guide)", guides);
+  const rows = [...rowsOrThrow<UserRow>("listPublicProfiles (mazzi)", decks), ...rowsOrThrow<UserRow>("listPublicProfiles (tier list)", tiers), ...guideRows];
   const latest = new Map<string, string>();
   for (const r of rows) {
     const u = r.profile?.username;

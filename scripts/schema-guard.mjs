@@ -41,7 +41,8 @@ export const PROFILES_GRANTS = [
  * schema.sql più i file dei pacchetti dell'ondata 2 (supabase/wave2-<PACCHETTO>.sql, 27/09/2026) che l'integratore
  * accoda in fondo e che non ci sono ancora dentro: lo schema che db-migrate applicherà. Un file già accodato (il suo
  * testo, a meno degli spazi e dei fine riga, sta in schema.sql) non si conta due volte. Solo per i test: db-migrate
- * applica schema.sql e basta.
+ * applica schema.sql e basta. Dal 27/09/2026 i quattro pacchetti dei profili stanno tutti in schema.sql e non ci sono
+ * più file wave2: la funzione resta per i pacchetti futuri che arrivassero allo stesso modo.
  */
 export function withPendingBlocks(schema, pending) {
   const flat = (s) => s.replace(/\s+/g, " ").trim();
@@ -154,6 +155,8 @@ const ALL_TABLES = /\bon all tables in schema public\b/;
  *   grant per colonna, che la cancellerebbero a ogni migrazione;
  * - l'ultima definizione di protect_profile_badge senza il controllo di uno dei campi riservati, o il trigger che la
  *   usa tolto e non rimesso;
+ * - con le grant della vetrina e di show_stats, i loro trigger (guard_profile_vetrina, guard_profile_show_stats) senza
+ *   il controllo del ruolo o di una colonna, o tolti e non rimessi (`GUARDED_GRANTS`);
  * - corpi di funzione con un dollaro solo (la migrazione intera fallirebbe, correzione compresa).
  */
 export function schemaProblems(sql) {
@@ -195,8 +198,58 @@ export function schemaProblems(sql) {
   const dropAt = stmts.lastIndexOf("drop trigger if exists profiles_protect_badge on public.profiles");
   if (triggerAt < 0 || dropAt > triggerAt) problems.push("manca il trigger profiles_protect_badge su public.profiles");
 
+  // Le grant per colonna della vetrina e di show_stats sono sicure solo con i loro trigger (revisione del 27/09/2026):
+  // se un blocco accodato li togliesse, o ridefinisse le funzioni senza il controllo del ruolo, ogni iscritto potrebbe
+  // impostarsi via API copertina, frase, video, orari, mazzo in evidenza o i numeri pubblici.
+  for (const guard of GUARDED_GRANTS) {
+    if (!stmts.includes(guard.grant)) continue;
+    const fnDefs = stmts.filter((s) => s.startsWith(`create or replace function public.${guard.fn}(`) || s.startsWith(`create function public.${guard.fn}(`));
+    const fnBody = fnDefs.at(-1);
+    if (!fnBody) problems.push(`manca la funzione public.${guard.fn}, che difende "${guard.grant}"`);
+    else for (const part of guard.checks) if (!fnBody.includes(part)) problems.push(`${guard.fn} non controlla: ${part}`);
+    const create = `create trigger ${guard.trigger} before update on public.profiles for each row execute function public.${guard.fn}()`;
+    const createAt = stmts.lastIndexOf(create);
+    const dropGuardAt = stmts.lastIndexOf(`drop trigger if exists ${guard.trigger} on public.profiles`);
+    if (createAt < 0 || dropGuardAt > createAt) problems.push(`manca il trigger ${guard.trigger} su public.profiles`);
+  }
+
   return problems;
 }
+
+/** Il ruolo con vetrina come lo scrivono i trigger (SHOWCASE_BADGES di src/lib/community/badges.ts). */
+const SHOWCASE_SQL = "('creator', 'author', 'pro', 'staff')";
+
+/** Colonne di una grant per colonna di `PROFILES_GRANTS` (senza le parentesi). */
+function grantColumns(grant) {
+  return (/^grant update \(([^)]+)\)/.exec(grant)?.[1] ?? "").split(",").map((c) => c.trim()).filter(Boolean);
+}
+
+/**
+ * Le grant per colonna che un trigger deve difendere, con i pezzi (normalizzati come `sqlStatements`) che l'ultima
+ * definizione della funzione deve contenere: per la vetrina il controllo del ruolo e una condizione per ogni colonna
+ * della grant (tranne avatar_path, la foto profilo di tutti); per show_stats il ruolo e lo spegnimento.
+ */
+export const GUARDED_GRANTS = [
+  {
+    grant: PROFILES_GRANTS[2],
+    fn: "guard_profile_vetrina",
+    trigger: "profiles_guard_vetrina",
+    checks: [
+      "auth.uid() is not null and not public.is_admin()",
+      `old.badge not in ${SHOWCASE_SQL}`,
+      ...grantColumns(PROFILES_GRANTS[2])
+        .filter((c) => c !== "avatar_path")
+        .map((c) => (c === "schedule" ? "new.schedule <> '[]'::jsonb and new.schedule is distinct from old.schedule" : `new.${c} is not null and new.${c} is distinct from old.${c}`)),
+      "raise exception",
+    ],
+  },
+  {
+    grant: PROFILES_GRANTS[3],
+    fn: "guard_profile_show_stats",
+    trigger: "profiles_guard_show_stats",
+    checks: [`if new.show_stats and new.badge not in ${SHOWCASE_SQL} then`, "new.show_stats := false", "raise exception"],
+  },
+];
 
 /**
  * schema.sql in due parti, da applicare una dopo l'altra (due transazioni): lo schema di sempre con la correzione
@@ -208,6 +261,6 @@ export function splitSchema(sql) {
   if (at < 0) return [{ name: "schema", sql }];
   return [
     { name: "base (schema di sempre + correzione dei profili)", sql: sql.slice(0, at) },
-    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO e profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE)", sql: sql.slice(at) },
+    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO e profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO)", sql: sql.slice(at) },
   ];
 }

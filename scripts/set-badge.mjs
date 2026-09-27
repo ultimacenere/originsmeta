@@ -13,6 +13,8 @@ const BADGES = ["community", "creator", "author", "pro", "staff"];
 const ALIAS = { autore: "author", autor: "author" };
 /** chi pubblica sul calendario e carica una copertina propria dei tornei (con gli admin): LISTING_BADGES di badges.ts */
 const LISTING = ["creator", "pro", "staff"];
+/** chi pubblica guide della community senza passare dallo staff (con gli admin): GUIDE_BADGES di badges.ts */
+const GUIDES = ["author", "creator", "pro", "staff"];
 const [needle, badgeRaw] = process.argv.slice(2);
 const typed = String(badgeRaw ?? "").trim().toLowerCase();
 if (typed === "influencer") {
@@ -62,5 +64,21 @@ console.log(`${target.display_name ?? target.username} (@${target.username}, ${t
 if (!LISTING.includes(badge)) {
   const t = await db.query("update public.tournaments set listed = false where organizer = $1 and listed and not exists (select 1 from public.profiles p where p.id = $1 and p.role = 'admin')", [target.id]);
   if (t.rowCount) console.log(`Tornei tolti dal calendario: ${t.rowCount}`);
+}
+// Guide della community (revisione del 27/09/2026): chi perde il ruolo che le pubblica (per esempio per un abuso) non
+// lascia online le sue guide. Le pubblicate tornano tra le bozze (non si cancellano: l'autore le ritrova in /account e,
+// con il ruolo restituito, le ripubblica); le nascoste dallo staff restano nascoste. can_publish_guides blocca già le
+// scritture nuove; le pagine e le sitemap si aggiornano da sole entro qualche minuto (ISR). Connessione diretta:
+// il trigger guard_community_guide la tratta come staff. Prima della migrazione del pacchetto GUIDE la tabella non c'è.
+if (!GUIDES.includes(badge)) {
+  try {
+    const g = await db.query(
+      "update public.community_guides set status = 'draft' where owner = $1 and status = 'published' and not exists (select 1 from public.profiles p where p.id = $1 and p.role = 'admin')",
+      [target.id],
+    );
+    if (g.rowCount) console.log(`Guide riportate tra le bozze: ${g.rowCount}`);
+  } catch (e) {
+    if (e.code !== "42P01") console.error(`Guide non riportate tra le bozze: ${e.message}`);
+  }
 }
 await db.end();

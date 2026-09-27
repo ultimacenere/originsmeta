@@ -140,7 +140,7 @@ describe("database: stesse regole in supabase/schema.sql", () => {
   });
   test("guide della community (can_publish_guides) e copertine caricate: gli stessi tag del codice", () => {
     // Qui, in un test già in `npm test`, perché il confronto giri anche prima che l'integratore registri guides.test.ts.
-    // Il blocco GUIDE sta in supabase/wave2-GUIDE.sql finché non viene accodato a schema.sql: si leggono i due file.
+    // Il blocco GUIDE sta in schema.sql; il ripiego su supabase/wave2-GUIDE.sql resta per i pacchetti futuri.
     const wave = new URL("../../../supabase/wave2-GUIDE.sql", import.meta.url);
     const all = sqlStatements(schema + (existsSync(wave) ? `\n${readFileSync(wave, "utf8")}` : ""));
     const fn = all.filter((x) => /^create (?:or replace )?function public\.can_publish_guides\(/.test(x)).at(-1) ?? "";
@@ -170,6 +170,11 @@ describe("script e interfaccia", () => {
     const listing = /const LISTING = \[([^\]]*)\]/.exec(src);
     assert.ok(listing);
     assert.deepEqual(sorted([...listing[1].matchAll(/"([a-z]+)"/g)].map((x) => x[1])), sorted(LISTING_BADGES));
+    // chi perde il ruolo che pubblica le guide le ritrova tra le bozze (revisione del 27/09/2026): stesso elenco di GUIDE_BADGES
+    const guides = /const GUIDES = \[([^\]]*)\]/.exec(src);
+    assert.ok(guides);
+    assert.deepEqual(sorted([...guides[1].matchAll(/"([a-z]+)"/g)].map((x) => x[1])), sorted(GUIDE_BADGES));
+    assert.match(src, /update public\.community_guides set status = 'draft' where owner = \$1 and status = 'published'/);
   });
   test("dizionari: un'etichetta per ogni tag, Creator uguale nelle tre lingue; il tetto dell'Autore nel messaggio", () => {
     const expected: Record<string, Record<string, string>> = {

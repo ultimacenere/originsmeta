@@ -39,6 +39,10 @@ import { FavoriteLegendary } from "@/components/showcase/FavoriteLegendary";
 import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
 import { UserGuides } from "@/components/guides/AccountGuides";
+import { listGuidesByOwner } from "@/lib/community/guideQueries";
+import { communityGuideLabels } from "@/lib/communityGuideLabels";
+import { safeAvatarUrl } from "@/lib/community/profileMedia";
+import { supabaseUrl } from "@/lib/supabase/env";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -69,21 +73,24 @@ async function loadProfile(username: string) {
   // un guasto di rete non finisce in cache. I tipi delle tier list (title, description, noindex) si ricavano dalla
   // lettura completa, una per tipo e già in ordine di tipo (revisione dell'integrazione dell'Ondata 2: prima una
   // seconda lettura dei soli tipi, quando `listPublicTierLists` trasformava ancora un errore in una lista vuota).
-  const [decks, tierLists] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id)]);
+  // Le guide della community pubblicate (pacchetto GUIDE; revisione del 27/09/2026: contano per l'indicizzazione del
+  // profilo, come mazzi e tier list) si leggono qui una volta sola e la sezione in fondo le riceve già lette. Tabella
+  // che non c'è ancora = nessuna guida; un altro errore lancia come le altre due letture.
+  const [decks, tierLists, guides] = await Promise.all([listDecksByOwner(profile.id), listPublicTierLists(profile.id), listGuidesByOwner(profile.id, 24)]);
   const tierKinds = [...new Set(tierLists.map((t) => t.kind))];
   const name = authorName(profile);
   // Le Leggendarie dei mazzi, dal più recente e senza doppioni (anche quelle scritte a mano, fuori dal database)
   const legendaries = [
     ...new Set(decks.flatMap((deck) => (deck.legendary ? [getCard(deck.legendary)?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? ""] : [])).filter(Boolean)),
   ];
-  const facts: ProfileFacts = { name, decks: decks.length, legendaries, tierLists: tierKinds.length, tierKinds };
+  const facts: ProfileFacts = { name, decks: decks.length, legendaries, tierLists: tierKinds.length, tierKinds, guides: guides.length };
   // L'autore editoriale dietro l'account, se authors.ts lo dichiara (nome utente o mazzi: Davdas è luigidavdasragoni)
   const editorial = editorialAuthor(
     authors,
     decks.map((deck) => deck.slug),
     profile.username,
   );
-  return { profile, decks, tierLists, name, facts, editorial };
+  return { profile, decks, tierLists, guides, name, facts, editorial };
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -92,7 +99,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const data = await loadProfile(username);
   if (!data) return {};
   // Title e description dai dati (DECKS-09, 25/09/2026: prima una frase fissa di 93–104 caratteri che parlava di tier
-  // list anche a chi non ne ha). Un profilo senza mazzi né tier list è una pagina vuota: noindex e senza hreflang
+  // list anche a chi non ne ha). Un profilo senza mazzi, tier list né guide è una pagina vuota: noindex e senza hreflang
   // (`pageMeta` con `noindex` li dichiarerebbe comunque, `dropHreflang`), e resta fuori dalla sitemap (`listPublicProfiles`).
   const indexable = profileIndexable(data.facts);
   const meta = pageMeta(locale, `/u/${data.profile.username}`, profileTitle(data.facts, locale), profileDescription(data.facts, locale), undefined, {
@@ -101,9 +108,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return indexable ? meta : dropHreflang(meta);
 }
 
-/** Avatar per i dati strutturati: solo un indirizzo assoluto http(s), come lo salvano Discord e Supabase. */
+/**
+ * Avatar per i dati strutturati: solo una foto di Discord o una caricata nel bucket del sito (`safeAvatarUrl`,
+ * revisione del 27/09/2026: prima bastava un indirizzo http(s) qualsiasi, anche uno arrivato dai metadati del magic link).
+ */
 function avatarUrl(url: string | null | undefined): string | undefined {
-  return url && /^https?:\/\//.test(url) ? url : undefined;
+  return safeAvatarUrl(url, supabaseUrl) ?? undefined;
 }
 
 export default async function PublicProfilePage({ params }: { params: Params }) {
@@ -113,8 +123,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const p = c.profile;
   const data = await loadProfile(username);
   if (!data) notFound();
-  const { profile, decks, tierLists, name, editorial } = data;
+  const { profile, decks, tierLists, guides, name, editorial } = data;
   const L = communityPageLabels[locale];
+  const GL = communityGuideLabels[locale].profile;
+  // Chi ha pubblicato guide non vede le schede vuote "Nessun mazzo" e "Nessuna tier list" prima delle sue guide
+  // (revisione del 27/09/2026): le sezioni vuote restano solo per chi non ha ancora nulla, che le vede come invito.
+  const hideEmpty = guides.length > 0;
   // ruolo del profilo (27/09/2026): un tag che il codice non conosce, come `influencer` prima della migrazione, vale community e non si mostra
   const role = normalizeBadge(profile.badge);
   const badge = role !== "community" ? role : null;
@@ -197,6 +211,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         {vetrina ? <FavoriteLegendary slug={vetrina.favoriteLegendary} locale={locale} legendaryLabel={d.common.legendary} /> : null}
         <p className="font-mono text-xs text-pale-muted">
           {decks.length} {decks.length === 1 ? p.deckOne : p.deckMany} · {tierLists.length} {tierLists.length === 1 ? p.tierOne : p.tierMany}
+          {guides.length ? ` · ${guides.length} ${guides.length === 1 ? GL.countOne : GL.countMany}` : ""}
         </p>
       </section>
 
@@ -207,77 +222,82 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
 
       {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
-      <section className="mt-10">
-        <h2 className="t-section">{p.decksTitle}</h2>
-        {decks.length === 0 ? (
-          <p className="card-night mt-4 p-6 text-pale-muted">{p.noDecks}</p>
-        ) : (
-          <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {decks.map((deck) => {
-              const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
-              const patch = patchAt(deck.created_at);
-              return (
-                <li key={deck.id} className="card-night flex gap-4 p-5">
-                  {legendary ? (
-                    <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
-                      <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
-                    </Link>
-                  ) : null}
-                  <div className="min-w-0 flex-1">
-                    <Link href={href(locale, `/decks/community/${deck.slug}`)} className="t-item block leading-tight hover:text-mint">
-                      {deck.name}
-                    </Link>
-                    <p className="mt-2 flex flex-wrap items-center gap-2">
-                      <span className="stat-pill bg-sky text-[11px] text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
-                      {patch ? (
-                        <span className="stat-pill bg-night-3 text-[11px] text-pale">
-                          {d.common.patch} {patchLabel(patch, locale)}
-                        </span>
-                      ) : null}
-                    </p>
-                    <p className="mt-2 font-mono text-xs text-pale-muted">
-                      {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
-                      {deck.rating?.votes ? ` · ★ ${deck.rating.avg.toFixed(1)} (${deck.rating.votes})` : ""}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+      {decks.length === 0 && hideEmpty ? null : (
+        <section className="mt-10">
+          <h2 className="t-section">{p.decksTitle}</h2>
+          {decks.length === 0 ? (
+            <p className="card-night mt-4 p-6 text-pale-muted">{p.noDecks}</p>
+          ) : (
+            <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              {decks.map((deck) => {
+                const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
+                const patch = patchAt(deck.created_at);
+                return (
+                  <li key={deck.id} className="card-night flex gap-4 p-5">
+                    {legendary ? (
+                      <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
+                        <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
+                      </Link>
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      <Link href={href(locale, `/decks/community/${deck.slug}`)} className="t-item block leading-tight hover:text-mint">
+                        {deck.name}
+                      </Link>
+                      <p className="mt-2 flex flex-wrap items-center gap-2">
+                        <span className="stat-pill bg-sky text-[11px] text-ink">{archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}</span>
+                        {patch ? (
+                          <span className="stat-pill bg-night-3 text-[11px] text-pale">
+                            {d.common.patch} {patchLabel(patch, locale)}
+                          </span>
+                        ) : null}
+                      </p>
+                      <p className="mt-2 font-mono text-xs text-pale-muted">
+                        {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
+                        {deck.rating?.votes ? ` · ★ ${deck.rating.avg.toFixed(1)} (${deck.rating.votes})` : ""}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      )}
 
       {/* Le tier list salvate: una per tipo, aperte nello strumento con il loro codice */}
-      <section className="mt-12">
-        <h2 className="t-section">{p.tierListsTitle}</h2>
-        {tierLists.length === 0 ? (
-          <p className="card-night mt-4 p-6 text-pale-muted">{p.noTierLists}</p>
-        ) : (
-          <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {tierLists.map((tl) => (
-              <li key={tl.id} className="card-night flex flex-col p-5">
-                <span className="stat-pill w-fit bg-sky text-[11px] font-semibold uppercase text-ink">
-                  {tl.kind === "legendaries" ? d.tierMaker.tabLegendaries : d.tierMaker.tabCards}
-                </span>
-                <p className="t-item mt-3 leading-tight">{tl.title || d.tierMaker.h1}</p>
-                <p className="mt-1 font-mono text-xs text-pale-muted">
-                  {countEntries(tl.entries)} {c.account.rankedCards} · {d.common.updated} {formatDate(locale, tl.updated_at.slice(0, 10))}
-                </p>
-                <p className="mt-4">
-                  {/* il codice TL1 nell'hash apre questa lista nello strumento, senza account */}
-                  <a href={`${href(locale, "/tier-list/create")}#${tl.code}`} className="btn btn-ink text-xs">
-                    {p.openTierList}
-                  </a>
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {tierLists.length === 0 && hideEmpty ? null : (
+        <section className="mt-12">
+          <h2 className="t-section">{p.tierListsTitle}</h2>
+          {tierLists.length === 0 ? (
+            <p className="card-night mt-4 p-6 text-pale-muted">{p.noTierLists}</p>
+          ) : (
+            <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              {tierLists.map((tl) => (
+                <li key={tl.id} className="card-night flex flex-col p-5">
+                  <span className="stat-pill w-fit bg-sky text-[11px] font-semibold uppercase text-ink">
+                    {tl.kind === "legendaries" ? d.tierMaker.tabLegendaries : d.tierMaker.tabCards}
+                  </span>
+                  <p className="t-item mt-3 leading-tight">{tl.title || d.tierMaker.h1}</p>
+                  <p className="mt-1 font-mono text-xs text-pale-muted">
+                    {countEntries(tl.entries)} {c.account.rankedCards} · {d.common.updated} {formatDate(locale, tl.updated_at.slice(0, 10))}
+                  </p>
+                  <p className="mt-4">
+                    {/* il codice TL1 nell'hash apre questa lista nello strumento, senza account */}
+                    <a href={`${href(locale, "/tier-list/create")}#${tl.code}`} className="btn btn-ink text-xs">
+                      {p.openTierList}
+                    </a>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
-      {/* Guide pubblicate dall'iscritto (pacchetto GUIDE, 27/09/2026): niente se non ne ha. I tornei in evidenza stanno
-          più in alto, sotto i traguardi (pacchetto TRAGUARDI) */}
-      <UserGuides locale={locale} ownerId={profile.id} />
+      {/* Guide pubblicate dall'iscritto (pacchetto GUIDE, 27/09/2026): niente se non ne ha. Lette in loadProfile insieme
+          a mazzi e tier list (contano per l'indicizzazione). I tornei in evidenza stanno più in alto, sotto i traguardi
+          (pacchetto TRAGUARDI) */}
+      <UserGuides locale={locale} guides={guides} />
 
       <div className="mt-12 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (

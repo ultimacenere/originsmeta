@@ -53,7 +53,7 @@ export const SHOWCASE_BADGES: readonly Badge[] = ["creator", "author", "pro", "s
 /**
  * Tag che pubblicano le guide direttamente (27/09/2026: l'Autore "se vuole può creare guide"; pacchetto GUIDE dello
  * stesso giorno: /guides/new, src/lib/community/guides.ts). Gli altri usano il modulo "Mandaci la tua guida". Nel database
- * la stessa regola sta in `can_publish_guides` (supabase/wave2-GUIDE.sql): guides.test.ts controlla che coincidano.
+ * la stessa regola sta in `can_publish_guides` (blocco GUIDE di supabase/schema.sql): guides.test.ts controlla che coincidano.
  */
 export const GUIDE_BADGES: readonly Badge[] = ["author", "creator", "pro", "staff"];
 

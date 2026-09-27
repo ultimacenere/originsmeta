@@ -2,7 +2,7 @@
  * Test del pacchetto TRAGUARDI (`achievements.ts`, 27/09/2026) con il runner integrato di Node:
  * `node --test src/lib/community/achievements.test.ts`. Traguardi calcolati dai fatti, difesa in lettura delle risposte
  * delle funzioni SQL, tornei in evidenza e vincitori, etichette nelle tre lingue e coerenza fra il codice e
- * supabase/wave2-TRAGUARDI.sql (ruoli con vetrina, soglie, grant, sicurezza delle funzioni). Mai la rete.
+ * blocco TRAGUARDI di supabase/schema.sql (ruoli con vetrina, soglie, grant, sicurezza delle funzioni). Mai la rete.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -11,6 +11,7 @@ import { PROFILES_GRANTS, schemaProblems, singleDollarLines, sqlStatements, with
 import {
   ACHIEVEMENTS,
   ACHIEVEMENT_LOOK,
+  COMMUNITY_SINCE,
   DECK_MILESTONES,
   DECK_OF_MONTH_MIN_STARS,
   DECK_OF_MONTH_MIN_VOTES,
@@ -351,8 +352,8 @@ describe("etichette nelle tre lingue", () => {
 });
 
 /*
-  L'SQL del pacchetto: il blocco `-- ===== 27/09/2026: TRAGUARDI =====` di schema.sql quando l'integratore l'ha accodato
-  (anche se poi cancella il file wave2), altrimenti supabase/wave2-TRAGUARDI.sql. Come notifications.test.ts di SEGUI.
+  L'SQL del pacchetto: il blocco `-- ===== 27/09/2026: TRAGUARDI =====` di schema.sql. Il ripiego su
+  supabase/wave2-TRAGUARDI.sql resta per un pacchetto futuro che arrivasse allo stesso modo (dal 27/09/2026 il file non c'è più).
 */
 const MARKER = "-- ===== 27/09/2026: TRAGUARDI =====";
 function traguardiSql(): string {
@@ -392,6 +393,9 @@ describe("SQL del pacchetto TRAGUARDI: le stesse regole del codice", () => {
     assert.ok(facts.includes("where d.owner = pid and d.status = 'published'"));
     assert.ok(facts.includes("v.created_at >= mm.month at time zone 'utc' and v.created_at < (mm.month + interval '1 month') at time zone 'utc'"));
     assert.ok(stmts.includes("create index if not exists deck_votes_created_idx on public.deck_votes (created_at)"));
+    // solo i voti dalla nascita della community, nei mesi del profilo e nel massimo del sito (revisione del 27/09/2026)
+    const since = `v.created_at >= timestamptz '${COMMUNITY_SINCE.slice(0, 10)} 00:00:00+00'`;
+    assert.equal(facts.split(since).length - 1, 2, "data minima dei voti diversa fra codice e database");
   });
 
   test("tornei: pubblici, finiti e con una finale valida (come finish_tournament), senza bot, a partire dal profilo", () => {

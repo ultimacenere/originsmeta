@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
-import { guideRoleOf, listGuidesByOwner, listOwnGuides } from "@/lib/community/guideQueries";
+import { guideRoleOf, listOwnGuides } from "@/lib/community/guideQueries";
+import type { CommunityGuideListItem } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { deleteCommunityGuide } from "@/lib/community/guideActions";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
@@ -77,10 +78,10 @@ export async function AccountGuides({ locale, supabase, userId }: { locale: Loca
 
 /**
  * Le guide pubblicate di un iscritto sulla sua pagina pubblica /u/<nome> (ISR): niente se non ne ha. Le schede portano
- * alle guide; il riassunto è nella lingua della pagina quando la traduzione c'è.
+ * alle guide; il riassunto è nella lingua della pagina quando la traduzione c'è. Le guide le legge la pagina
+ * (`listGuidesByOwner`, una volta sola: servono anche a title, description e noindex del profilo).
  */
-export async function UserGuides({ locale, ownerId }: { locale: Locale; ownerId: string }) {
-  const guides = await listGuidesByOwner(ownerId, 24);
+export function UserGuides({ locale, guides }: { locale: Locale; guides: readonly CommunityGuideListItem[] }) {
   if (!guides.length) return null;
   const L = communityGuideLabels[locale];
   const d = getDictionary(locale);

@@ -12,6 +12,8 @@ import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
 import { revalidateSitemaps } from "@/lib/sitemapData";
 import { isUuid, slugify } from "./util";
 import { guideRoleOf } from "./guideQueries";
+import { SAVE_MIN_INTERVAL_MS } from "./profileLinks";
+import { retryAfterSeconds } from "./showcase";
 import {
   REPORT_REASON_MAX,
   REPORT_REASON_MIN,
@@ -54,6 +56,8 @@ export type GuideActionState = {
   /** lingua e categoria della guida, per l'evento */
   lang?: string;
   category?: string;
+  /** con `tooFast`: secondi da aspettare prima di salvare di nuovo */
+  retryIn?: number;
 };
 
 function localeOf(fd: FormData): Locale {
@@ -70,10 +74,11 @@ function newGuideSlug(title: string): string {
 /**
  * Pagine da rigenerare quando cambia una guida (e la sitemap: una guida pubblicata ci entra, una nascosta ne esce).
  * `username` è quello del PROPRIETARIO della guida (la sua pagina /u la elenca), anche quando agisce lo staff.
+ * /guides è statica: la sua sezione della community la carica il browser da /api/community-guides, che si rinnova qui.
  */
 function revalidateGuide(slug: string | undefined, username: string | null): void {
+  revalidatePath("/api/community-guides");
   for (const l of locales) {
-    revalidatePath(`/${l}/guides`);
     revalidatePath(`/${l}/guides/community`);
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/guides/community/${slug}`);
@@ -98,25 +103,38 @@ function pingIndexNow(paths: string[]): void {
 /**
  * Dopo un salvataggio: pagine, e per una guida pubblicata annuncio e avviso ai follower alla PRIMA pubblicazione,
  * IndexNow per la versione originale (se supera la soglia di parole) e traduzione nelle altre lingue.
+ * Revisione del 27/09/2026 (niente lavoro ripetuto a ogni salvataggio, che uno script potrebbe lanciare a raffica):
+ * - `changed` falso (il database non ha spostato `updated_at`: niente è cambiato per chi legge) → nessuna pagina da
+ *   rigenerare e nessun IndexNow; la traduzione parte comunque, ma traduce solo le lingue che mancano (di solito nulla);
+ * - IndexNow solo alla prima pubblicazione o quando cambia il testo (`textChanged`), non a ogni ripubblicazione.
  */
 function afterSave(
   supabase: Db,
-  g: { id: string; slug: string; status: string; first: boolean; ownerId: string; value: Pick<GuideFormValue, "title" | "lang" | "summary" | "sections"> },
+  g: {
+    id: string;
+    slug: string;
+    status: string;
+    first: boolean;
+    ownerId: string;
+    value: Pick<GuideFormValue, "title" | "lang" | "summary" | "sections">;
+    changed?: boolean;
+    textChanged?: boolean;
+  },
   username: string | null,
 ): void {
-  revalidateGuide(g.slug, username);
+  if (g.changed !== false) revalidateGuide(g.slug, username);
   if (g.status !== "published") return;
   if (g.first) {
     announceGuide(g.slug);
     notifyGuideFollowers({ ownerId: g.ownerId, slug: g.slug, title: g.value.title, lang: g.value.lang }, supabase);
   }
-  if (communityGuideIndexable(g.value)) pingIndexNow([`/${g.value.lang}/guides/community/${g.slug}`]);
+  if ((g.first || g.textChanged) && communityGuideIndexable(g.value)) pingIndexNow([`/${g.value.lang}/guides/community/${g.slug}`]);
   translateCommunityGuideLater(supabase, g.id);
 }
 
 /** Colonne rilette dopo una scrittura: con il nome utente del proprietario, per rigenerare la sua pagina /u. */
-const SAVED_COLUMNS = "id, slug, status, published_at, owner, profile:profiles!community_guides_owner_fkey(username)";
-type Saved = { id: string; slug: string; status: string; published_at: string | null; owner: string; profile?: { username: string | null } | null };
+const SAVED_COLUMNS = "id, slug, status, published_at, owner, updated_at, profile:profiles!community_guides_owner_fkey(username)";
+type Saved = { id: string; slug: string; status: string; published_at: string | null; owner: string; updated_at?: string; profile?: { username: string | null } | null };
 const ownerName = (s: { profile?: { username: string | null } | null } | null) => s?.profile?.username ?? null;
 
 /**
@@ -125,6 +143,8 @@ const ownerName = (s: { profile?: { username: string | null } | null } | null) =
  * Una bozza porta alla sua pagina di modifica; una guida pubblicata alla sua pagina (con `?new=1` la prima volta).
  * Una guida nascosta la corregge solo lo staff, e resta nascosta (la rimette online il tasto "Rimetti online").
  * Con il testo si salvano parole e impronta (`words`, `text_hash`): le leggono gli elenchi e la sitemap.
+ * Due modifiche della stessa guida a meno di `SAVE_MIN_INTERVAL_MS` non passano (`tooFast`, revisione del 27/09/2026:
+ * ogni salvataggio rigenera pagine e sitemap e può far partire traduzioni); lo staff non ha il limite.
  */
 export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData): Promise<GuideActionState> {
   const { supabase, user } = await currentUser();
@@ -145,19 +165,25 @@ export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData):
 
   let saved: Saved | null = null;
   let first = false;
+  let changed = true;
+  let textChanged = true;
   const id = fd.get("id");
   if (isUuid(id)) {
-    const before = await supabase.from("community_guides").select("id, slug, status, published_at, owner").eq("id", id).maybeSingle();
+    const before = await supabase.from("community_guides").select("id, slug, status, published_at, owner, updated_at, text_hash").eq("id", id).maybeSingle();
     if (before.error) return { error: guideErrorCode(before.error) };
-    const prev = before.data as Saved | null;
+    const prev = before.data as (Saved & { text_hash: string | null }) | null;
     if (!prev) return { error: "forbidden" };
     if (prev.status === "hidden" && !role.staff) return { error: "guide_hidden" };
+    const wait = role.staff ? 0 : retryAfterSeconds(prev.updated_at, SAVE_MIN_INTERVAL_MS, Date.now());
+    if (wait) return { error: "tooFast", retryIn: wait };
     const nextStatus = prev.status === "hidden" ? "hidden" : status;
     const res = await supabase.from("community_guides").update({ ...row, status: nextStatus }).eq("id", id).select(SAVED_COLUMNS).maybeSingle();
     if (res.error) return { error: guideErrorCode(res.error) };
     saved = res.data as unknown as Saved | null;
     if (!saved) return { error: "forbidden" };
     first = !prev.published_at && Boolean(saved.published_at);
+    changed = saved.updated_at !== prev.updated_at || saved.status !== prev.status;
+    textChanged = prev.text_hash !== row.text_hash;
   } else {
     for (let attempt = 0; attempt < 4 && !saved; attempt++) {
       const res = await supabase
@@ -176,7 +202,7 @@ export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData):
     if (!saved) return { error: "duplicate" };
   }
 
-  afterSave(supabase, { id: saved.id, slug: saved.slug, status: saved.status, first, value, ownerId: saved.owner }, ownerName(saved));
+  afterSave(supabase, { id: saved.id, slug: saved.slug, status: saved.status, first, value, ownerId: saved.owner, changed, textChanged }, ownerName(saved));
   const href =
     saved.status === "published"
       ? `/${locale}/guides/community/${saved.slug}${first ? "?new=1" : ""}`
@@ -194,6 +220,9 @@ function safeBack(raw: FormDataEntryValue | null, locale: Locale): string | null
  * Cambia lo stato di una guida: il proprietario la riporta tra le bozze (`draft`) o la ripubblica (`published`, se il
  * testo ha i minimi: lo controlla il database); lo staff la nasconde (`hidden`) o la rimette online. Il database decide
  * chi può fare che cosa (trigger guard_community_guide): una richiesta non ammessa non cambia nulla.
+ * Come il salvataggio, per il proprietario un cambio di stato a meno di `SAVE_MIN_INTERVAL_MS` dall'ultima modifica non
+ * passa (si torna alla pagina senza cambiare nulla): alternare bozza e pubblicata a raffica rigenererebbe pagine e
+ * sitemap a ogni giro. Lo staff non ha il limite (un proprietario che salva di continuo non blocca la moderazione).
  */
 export async function setCommunityGuideStatus(fd: FormData): Promise<void> {
   const { supabase, user } = await currentUser();
@@ -204,15 +233,25 @@ export async function setCommunityGuideStatus(fd: FormData): Promise<void> {
   const status = raw === "hidden" ? "hidden" : raw === "published" ? "published" : "draft";
   const back = safeBack(fd.get("back"), locale);
   if (!isUuid(id)) redirect(back ?? `/${locale}/account#guides`);
-  const before = await supabase.from("community_guides").select("published_at, lang, title, summary, sections").eq("id", id).maybeSingle();
-  const prev = before.data as { published_at: string | null; lang: string; title: string; summary: string; sections: unknown } | null;
+  const [before, role] = await Promise.all([
+    supabase.from("community_guides").select("published_at, updated_at, status, lang, title, summary, sections").eq("id", id).maybeSingle(),
+    guideRoleOf(supabase, user.id),
+  ]);
+  const prev = before.data as { published_at: string | null; updated_at: string; status: string; lang: string; title: string; summary: string; sections: unknown } | null;
+  if (prev && !role.staff && prev.status !== status && retryAfterSeconds(prev.updated_at, SAVE_MIN_INTERVAL_MS, Date.now())) {
+    redirect(back ?? `/${locale}/account#guides`);
+  }
   const res = await supabase.from("community_guides").update({ status }).eq("id", id).select(SAVED_COLUMNS).maybeSingle();
   const saved = res.data as unknown as Saved | null;
   if (saved && prev) {
     const first = !prev.published_at && Boolean(saved.published_at);
     const value = { lang: isLocale(prev.lang) ? prev.lang : "en", title: prev.title, summary: prev.summary, sections: storedSections(prev.sections) } as const;
-    // la pagina /u da rigenerare è quella del proprietario, anche quando a nascondere è lo staff
-    afterSave(supabase, { id: saved.id, slug: saved.slug, status: saved.status, first, value, ownerId: saved.owner }, ownerName(saved));
+    // la pagina /u da rigenerare è quella del proprietario, anche quando a nascondere è lo staff; il testo non cambia
+    afterSave(
+      supabase,
+      { id: saved.id, slug: saved.slug, status: saved.status, first, value, ownerId: saved.owner, changed: saved.status !== prev.status, textChanged: false },
+      ownerName(saved),
+    );
   } else if (res.error) {
     console.error("[guides] cambio di stato non riuscito:", res.error.message);
   }

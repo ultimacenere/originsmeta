@@ -70,11 +70,11 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
     console.error("[guides] salvataggio delle traduzioni non riuscito:", error.message);
     return [];
   }
-  for (const l of locales) {
+  // /guides è statica: la sua sezione della community la chiede il browser a /api/community-guides (revisione del 27/09/2026)
+  const paths = ["/api/community-guides", ...locales.flatMap((l) => [`/${l}/guides/community/${fresh.slug}`, `/${l}/guides/community`])];
+  for (const p of paths) {
     try {
-      revalidatePath(`/${l}/guides/community/${fresh.slug}`);
-      revalidatePath(`/${l}/guides/community`);
-      revalidatePath(`/${l}/guides`);
+      revalidatePath(p);
     } catch {
       // fuori dalla richiesta la pagina si aggiorna comunque da sola (ISR)
     }

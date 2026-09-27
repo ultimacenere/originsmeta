@@ -425,7 +425,8 @@ describe("database: stesse regole nel vincolo (supabase/schema.sql)", () => {
   */
   test("permessi di public.profiles: solo le grant ammesse, revoke prima, trigger con i campi riservati", () => {
     assert.deepEqual(schemaProblems(schema), []);
-    // 27/09/2026: con i file dell'ondata 2 da accodare (supabase/wave2-*.sql) c'è anche la grant di show_stats
+    // 27/09/2026: con i file dell'ondata 2 da accodare (supabase/wave2-*.sql, oggi nessuno: i pacchetti dei profili sono
+    // già in schema.sql; il ramo resta per quelli futuri) c'è anche la grant di show_stats
     // (pacchetto TRAGUARDI); l'elenco ammesso è uno solo, PROFILES_GRANTS di scripts/schema-guard.mjs
     const dir = new URL("../../../supabase/", import.meta.url);
     const pending = readdirSync(dir)

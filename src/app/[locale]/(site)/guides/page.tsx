@@ -7,16 +7,17 @@ import { getGuides } from "@/lib/content/guides";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { GuideCtaBox } from "@/components/guides/GuideCtaBox";
-import { CommunityGuidesSection, communityGuidesIn } from "@/components/guides/CommunityGuideList";
-import { COMMUNITY_GUIDES_ON_HUB } from "@/lib/community/guides";
+import { CommunityGuidesHub } from "@/components/guides/CommunityGuidesHub";
 
 /**
- * ISR dal 27/09/2026 (pacchetto GUIDE; decisione da confermare con Pierluigi, scritta in CLAUDE.md): la pagina mostra
- * anche le ultime guide della community, lette da Supabase come /decks (cinque minuti; le Server Action delle guide la
- * rinnovano subito), e le elenca nei dati strutturati. Le guide editoriali restano statiche. Come /decks, una build con
- * Supabase irraggiungibile fallisce di proposito (la lettura lancia); con la tabella che non c'è ancora, niente sezione.
+ * Pagina editoriale statica, come le altre (CLAUDE.md: "Le pagine editoriali restano statiche"). Dal 27/09/2026 mostra
+ * anche le ultime guide della community (pacchetto GUIDE): all'integrazione la pagina era passata in ISR per leggerle
+ * da Supabase, ma era una decisione da confermare con Pierluigi e una build con Supabase irraggiungibile avrebbe fatto
+ * fallire anche l'hub delle guide editoriali. Nella revisione dello stesso giorno la sezione la carica il browser da
+ * /api/community-guides (`CommunityGuidesHub`, lo schema della striscia del calendario con /api/calendar); le guide
+ * della community restano fuori dai dati strutturati e dal lastmod di questa pagina, e l'elenco completo, indicizzato e
+ * in sitemap, è /guides/community (ISR). Se Pierluigi preferisce la sezione nell'HTML, si torna all'ISR.
  */
-export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -29,15 +30,10 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
   const guides = getGuides(locale);
   const categories = Object.entries(d.guides.categories) as [keyof typeof d.guides.categories, string][];
 
-  // Guide della community indicizzabili in questa lingua (pacchetto GUIDE): la sezione in fondo ne mostra le ultime
-  const community = await communityGuidesIn(locale);
-  const shownCommunity = community.slice(0, COMMUNITY_GUIDES_ON_HUB);
-
-  // Lista per i dati strutturati: le guide già caricate qui sopra e quelle della community mostrate in fondo, ognuna con la sua pagina.
-  const listed = [
-    ...guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) })),
-    ...shownCommunity.map((g) => ({ name: g.title, path: href(locale, `/guides/community/${g.slug}`) })),
-  ];
+  // Lista per i dati strutturati: le guide editoriali della pagina, ognuna con la sua pagina (quelle della community le
+  // carica il browser e le elenca /guides/community)
+  const listed = guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) }));
+  const CL = communityGuideLabels[locale];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -62,10 +58,10 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
       <p className="mt-4 max-w-2xl text-chalk-muted">{d.guides.intro}</p>
       {/* "Mandaci la tua guida" (diretta Twitch del 23/09/2026): subito sotto l'intro, come l'invito a pubblicare
           di /decks; il modulo manda la guida al canale Discord privato dello staff. Per chi ha un ruolo che pubblica le
-          guide (pacchetto GUIDE, 27/09/2026) il riquadro diventa "Scrivi una guida" (lo decide il browser: pagina ISR). */}
+          guide (pacchetto GUIDE, 27/09/2026) il riquadro diventa "Scrivi una guida" (lo decide il browser: pagina statica). */}
       <GuideCtaBox
         submit={{ title: d.guides.submitTitle, text: d.guides.submitText, button: d.guides.submitCta, href: href(locale, "/guides/submit") }}
-        write={{ ...communityGuideLabels[locale].cta, href: href(locale, "/guides/new") }}
+        write={{ ...CL.cta, href: href(locale, "/guides/new") }}
       />
       <ul className="mt-6 flex flex-wrap gap-2" aria-label={d.guides.title}>
         {categories.map(([id, label]) => {
@@ -95,8 +91,12 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
           </li>
         ))}
       </ul>
-      {/* Guide della community (pacchetto GUIDE): le ultime indicizzabili in questa lingua; niente se non ce ne sono */}
-      <CommunityGuidesSection locale={locale} guides={shownCommunity} total={community.length} />
+      {/* Guide della community (pacchetto GUIDE): le ultime indicizzabili in questa lingua, chieste dal browser; niente se non ce ne sono */}
+      <CommunityGuidesHub
+        locale={locale}
+        labels={{ title: CL.list.title, intro: CL.list.intro, all: CL.list.all, count: CL.listPage.count }}
+        allHref={href(locale, "/guides/community")}
+      />
     </div>
   );
 }

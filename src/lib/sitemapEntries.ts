@@ -64,7 +64,7 @@ export type CommunityData = {
   deckRefs?: DeckRef[] | null;
   /** tornei pubblici non annullati */
   tournaments: { slug: string; updated_at: string }[];
-  /** iscritti con almeno un mazzo pubblicato (/u/<nome>) */
+  /** iscritti con almeno un mazzo pubblicato, una tier list salvata o una guida della community (/u/<nome>) */
   profiles: { username: string; updated_at: string }[];
   /**
    * tier list salvate: la più recente e quella di ogni utente, come coppie [nome, data]. Non un oggetto: la cache dei
@@ -84,9 +84,9 @@ export type CommunityData = {
    * Guide della community (pacchetto GUIDE, 27/09/2026): quelle da elencare, ognuna con le lingue in cui la pagina si
    * indicizza (sopra la soglia di parole, originale e traduzioni aggiornate: `sitemapCommunityGuides` in
    * community/guides.ts), la data di ogni versione (ultima modifica o arrivo della traduzione) e la copertina. Per lingua:
-   * `hub` è il lastmod di /guides (le guide che la pagina mostra in quella lingua), `list` quello di /guides/community
-   * (una lingua assente = elenco vuoto, noindex e fuori dalla sitemap). Nella sezione "guides", accanto alle guide
-   * editoriali. Assente: nessuna guida della community.
+   * `list` è il lastmod di /guides/community (una lingua assente = elenco vuoto, noindex e fuori dalla sitemap); `hub`
+   * sarebbe quello di /guides con la sezione nell'HTML, oggi non usato (la sezione la carica il browser, revisione del
+   * 27/09/2026). Nella sezione "guides", accanto alle guide editoriali. Assente: nessuna guida della community.
    */
   communityGuides?: {
     guides: { slug: string; locales: Locale[]; dates: Partial<Record<Locale, string>>; image?: string }[];
@@ -170,8 +170,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/decks", section: "pages", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity] },
     // Il pool del deck builder segue le carte: patch e verifica sul gioco.
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
-    // dal 27/09/2026 anche le guide della community (pacchetto GUIDE) che la pagina mostra in quella lingua
-    { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.hub[l]] },
+    // Solo le guide editoriali: la pagina è statica e la sezione con le ultime guide della community la carica il browser
+    // (revisione del 27/09/2026), quindi quelle guide non cambiano il suo HTML. `communityGuides.hub` resta nei dati per
+    // quando la sezione tornasse nell'HTML (ISR, decisione di Pierluigi).
+    { path: "/guides", section: "pages", route: "/guides", dates: (l) => guidesBy[l].map((g) => g.updated) },
     // Tutte le guide della community (pacchetto GUIDE): solo nelle lingue in cui l'elenco ha almeno una guida.
     ...(communityListLocales.length
       ? [{ path: "/guides/community", section: "pages", route: "/guides/community", dates: (l) => [data.communityGuides?.list[l]], locales: communityListLocales } satisfies SitemapPage]
@@ -242,7 +244,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ...data.decks.map(
       (c): SitemapPage => ({ path: `/decks/community/${c.slug}`, section: "decks", route: "/decks/community/[slug]", dates: [c.updated_at], locales: c.locales }),
     ),
-    // Pagine pubbliche degli iscritti che hanno pubblicato almeno un mazzo (23/09/2026): i loro mazzi e le loro tier list.
+    // Pagine pubbliche degli iscritti con qualcosa di loro (23/09/2026; tier list dal 25/09, guide della community dal 27/09).
     ...data.profiles.map(
       (p): SitemapPage => ({
         path: `/u/${p.username}`,

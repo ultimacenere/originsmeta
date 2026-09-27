@@ -81,19 +81,20 @@ export async function NotificationsJump({ locale, supabase, userId }: { locale: 
   );
 }
 
-/** Il testo di un avviso: chi ha fatto che cosa, con il nome del mazzo quando c'è. Solo testo semplice. */
+/** Il testo di un avviso: chi ha fatto che cosa, con il nome del mazzo o il titolo della guida quando c'è. Solo testo semplice. */
 function notificationText(n: NotificationItem, L: FollowLabels["notifications"]): string {
   const name = n.actor ? authorName(n.actor) : L.someone;
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
-  if (n.kind === "guide_published") return fillFollowLabel(L.guidePublished, { name });
+  if (n.kind === "guide_published") return n.guideTitle ? fillFollowLabel(L.guidePublished, { name, guide: n.guideTitle }) : fillFollowLabel(L.guideGone, { name });
   return n.deckName ? fillFollowLabel(L.deckPublished, { name, deck: n.deckName }) : fillFollowLabel(L.deckGone, { name });
 }
 
 function NotificationCard({ item: n, locale, L }: { item: NotificationItem; locale: Locale; L: FollowLabels["notifications"] }) {
   const unread = !n.read_at;
   const name = n.actor ? authorName(n.actor) : L.someone;
-  // un mazzo non più pubblico non ha link (porterebbe a una pagina che non c'è)
-  const link = n.kind === "deck_published" && !n.deckName ? null : notificationHref(locale, n.target);
+  // un mazzo o una guida non più online non ha link (porterebbe a una pagina che non c'è)
+  const gone = (n.kind === "deck_published" && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle);
+  const link = gone ? null : notificationHref(locale, n.target);
   const body = (
     <>
       <Avatar profile={n.actor} name={name} size={36} />

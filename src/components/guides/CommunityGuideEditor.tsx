@@ -209,7 +209,8 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
 
   const errorText = (() => {
     if (!state.error) return null;
-    const n = String((state.index ?? 0) + 1);
+    // `tooFast`: {n} sono i secondi da aspettare; negli altri errori il numero della sezione o della riga
+    const n = state.error === "tooFast" ? String(state.retryIn ?? 10) : String((state.index ?? 0) + 1);
     const media = (mediaLabels.errors as Record<string, string>)[state.error];
     if (media) return fillVideoLabel(media, { n: mediaFieldRow(state.field) });
     const text = (L.errors as Record<string, string>)[state.error] ?? L.errors.db;

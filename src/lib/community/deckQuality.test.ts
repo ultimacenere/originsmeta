@@ -223,6 +223,23 @@ describe("profili pubblici", () => {
     assert.equal(q.profileIndexable({ decks: 0, tierLists: 0 }), false);
     assert.equal(q.profileIndexable({ decks: 1, tierLists: 0 }), true);
     assert.equal(q.profileIndexable({ decks: 0, tierLists: 1 }), true);
+    // revisione del 27/09/2026: anche con le sole guide della community
+    assert.equal(q.profileIndexable({ decks: 0, tierLists: 0, guides: 1 }), true);
+    assert.equal(q.profileIndexable({ decks: 0, tierLists: 0, guides: 0 }), false);
+  });
+
+  test("con le guide della community: title e description le nominano, mai la frase \"niente ancora\"", () => {
+    assert.equal(q.profileTitle({ name: "albeo_o", decks: 0, tierLists: 0, guides: 1 }, "en"), "albeo_o: Origins TCG guide");
+    assert.equal(q.profileTitle({ name: "albeo_o", decks: 0, tierLists: 1, guides: 3 }, "it"), "albeo_o: guide di Origins TCG");
+    assert.equal(q.profileTitle({ name: "albeo_o", decks: 2, tierLists: 1, guides: 1 }, "es"), "albeo_o: mazos y guías de Origins TCG");
+    const only = { name: "albeo_o", decks: 0, legendaries: [], tierLists: 0, tierKinds: [], guides: 2 } as const;
+    assert.match(q.profileDescription(only, "it"), /^Le 2 guide di Origins TCG scritte da albeo_o/);
+    assert.match(q.profileDescription({ ...only, guides: 1 }, "es"), /^La guía de Origins TCG escrita por albeo_o/);
+    assert.match(q.profileDescription({ ...only, decks: 3, legendaries: ["Dorothy", "Merlin", "Dracula"] }, "en"), /, plus 2 guides\./);
+    for (const locale of all) {
+      const text = q.profileDescription(only, locale);
+      assert.doesNotMatch(text, /no published decks|nessun mazzo|sin mazos/, `${locale}: ${text}`);
+    }
   });
 
   const names = ["a", "albeo_o", "luigidavdasragoni", "Un nome utente davvero molto lungo per davvero", "x".repeat(60), "Cash$&Co", "x$'y"];
@@ -231,14 +248,17 @@ describe("profili pubblici", () => {
   test("title: contiene Origins TCG e sta entro 60 caratteri, in ogni lingua e con ogni nome", () => {
     for (const locale of all)
       for (const name of names)
-        for (const [decks, tierLists] of [
-          [0, 0],
-          [1, 0],
-          [3, 0],
-          [0, 2],
-          [4, 1],
+        for (const [decks, tierLists, guides] of [
+          [0, 0, 0],
+          [1, 0, 0],
+          [3, 0, 0],
+          [0, 2, 0],
+          [4, 1, 0],
+          [0, 0, 1],
+          [0, 1, 4],
+          [2, 1, 2],
         ]) {
-          const t = q.profileTitle({ name, decks, tierLists }, locale);
+          const t = q.profileTitle({ name, decks, tierLists, guides }, locale);
           assert.ok(t.length <= q.PROFILE_TITLE_MAX, `${locale} ${t} (${t.length})`);
           assert.match(t, /Origins TCG/);
           assert.doesNotMatch(t, /\{name\}/);
@@ -264,13 +284,15 @@ describe("profili pubblici", () => {
     for (const locale of all)
       for (const name of names)
         for (let decks = 0; decks <= 6; decks++)
-          for (const tierLists of [0, 1, 2]) {
+          for (const tierLists of [0, 1, 2])
+            for (const guides of [0, 1, 2, 12]) {
             const facts = {
               name,
               decks,
               legendaries: legendaryPool.slice(0, decks),
               tierLists,
               tierKinds: (["legendaries", "cards"] as const).slice(0, tierLists),
+              guides,
             };
             const text = q.profileDescription(facts, locale);
             assert.ok(text.length <= q.PROFILE_DESC_MAX, `${locale} troppo lunga (${text.length}): ${text}`);

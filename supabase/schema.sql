@@ -30,12 +30,17 @@ begin
     n := n + 1;
     candidate := base || '-' || n;
   end loop;
+  -- 27/09/2026 (revisione dei profili): la foto solo se è davvero un indirizzo di Discord. Con il magic link i metadati
+  -- li manda il browser (POST /auth/v1/otp con data.avatar_url): prima qualsiasi indirizzo finiva in avatar_url e il sito
+  -- lo mostrava con <img> su /u, sui mazzi e sui tornei. Stessa espressione di profile_discord_avatar (blocco VETRINA)
+  -- e di DISCORD_AVATAR_RE in src/lib/community/profileMedia.ts (showcase.test.ts le confronta).
   insert into public.profiles (id, username, display_name, avatar_url, discord_id)
   values (
     new.id,
     candidate,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'user_name', candidate),
-    new.raw_user_meta_data->>'avatar_url',
+    case when new.raw_user_meta_data->>'avatar_url' ~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$'
+         then new.raw_user_meta_data->>'avatar_url' end,
     case when new.raw_app_meta_data->>'provider' = 'discord' then new.raw_user_meta_data->>'provider_id' else null end
   )
   on conflict (id) do nothing;
@@ -2373,6 +2378,9 @@ begin
     and array_length(storage.foldername(name), 1) = 2
     and (storage.foldername(name))[1] = auth.uid()::text
     and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp')
+    -- revisione del 27/09/2026: solo il nome che sceglie il sito (un uuid con l'estensione del tipo, `uploadMedia` in
+    -- src/components/showcase/mediaUpload.ts; MEDIA_UPLOAD_NAME_RE in profileMedia.ts, showcase.test.ts le confronta)
+    and storage.filename(name) ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$'
     and public.profile_media_count() < 12
     and (
       (storage.foldername(name))[2] = 'avatar'
@@ -2850,6 +2858,11 @@ grant execute on function public.profile_public_stats(uuid) to anon, authenticat
 -- Mazzo del mese: per ogni mese UTC già chiuso, i mazzi pubblicati con più voti POSITIVI (4 o 5 stelle) ricevuti in quel
 -- mese, almeno 3, pari merito compresi: un mazzo con tre voti da una stella non è "del mese". Il massimo del sito si
 -- calcola solo nei mesi in cui un mazzo del profilo ha almeno 3 voti positivi. `top_months` = quei mesi, 'YYYY-MM'.
+-- Revisione del 27/09/2026: la data di un voto (deck_votes.created_at) fino a oggi la poteva scrivere chi vota (grant di
+-- insert e update sull'intera tabella), quindi tre account potevano retrodatare i loro voti a un mese vuoto. Dal blocco
+-- "27/09/2026: DATE E FOTO" in fondo al file la scrive solo il database; qui contano comunque solo i voti dalla nascita
+-- della community (15/09/2026, COMMUNITY_SINCE in src/lib/community/achievements.ts), così le righe falsate prima della
+-- correzione non valgono.
 create or replace function public.profile_achievement_facts(pid uuid)
 returns jsonb language sql stable security invoker set search_path = public, pg_temp as $$
   with played_ids as (
@@ -2879,6 +2892,7 @@ returns jsonb language sql stable security invoker set search_path = public, pg_
     select date_trunc('month', v.created_at at time zone 'utc') as month, v.deck_id, count(*) as n
     from public.community_decks d join public.deck_votes v on v.deck_id = d.id
     where d.owner = pid and d.status = 'published' and v.stars >= 4
+      and v.created_at >= timestamptz '2026-09-15 00:00:00+00'
       and v.created_at < date_trunc('month', now() at time zone 'utc') at time zone 'utc'
     group by 1, 2
     having count(*) >= 3
@@ -2889,7 +2903,8 @@ returns jsonb language sql stable security invoker set search_path = public, pg_
     cross join lateral (
       select count(*) as n
       from public.deck_votes v join public.community_decks d on d.id = v.deck_id and d.status = 'published'
-      where v.stars >= 4 and v.created_at >= mm.month at time zone 'utc' and v.created_at < (mm.month + interval '1 month') at time zone 'utc'
+      where v.stars >= 4 and v.created_at >= timestamptz '2026-09-15 00:00:00+00'
+        and v.created_at >= mm.month at time zone 'utc' and v.created_at < (mm.month + interval '1 month') at time zone 'utc'
       group by v.deck_id
     ) x
     group by mm.month
@@ -3366,3 +3381,93 @@ grant select, delete on public.community_guide_reports to authenticated;
 comment on table public.community_guides is 'Guide della community pubblicate da Autore, Creator, Pro e Staff (27/09/2026). Regole in src/lib/community/guides.ts; permesso in can_publish_guides; documentazione in docs/guide-community.md.';
 comment on table public.community_guide_events is 'Registro dei tetti giornalieri delle guide della community (create, prime pubblicazioni, guide nascoste): lo scrive solo il trigger guard_community_guide.';
 comment on function public.can_publish_guides(uuid) is 'Chi pubblica guide senza passare dallo staff: Autore, Creator, Pro, Staff e admin (canPublishGuides in src/lib/community/badges.ts).';
+
+-- ===== 27/09/2026: DATE E FOTO =====
+-- =====================================================================================================
+-- Revisione dell'integrazione dei profili del 27/09/2026 (VETRINA, SEGUI, TRAGUARDI, GUIDE): date che l'utente poteva
+-- scrivere via API, parole delle guide dichiarate dal sito, foto esterne nei profili nuovi. Idempotente, come tutto il
+-- file. Nessuna grant né revoke su public.profiles (scripts/schema-guard.mjs): l'unica scrittura sui profili è la
+-- pulizia una tantum delle foto qui sotto, con la connessione diretta di db-migrate.
+--
+--   1) created_at di deck_votes, community_decks e tier_lists la scrive solo il database. Le tre tabelle hanno la grant
+--      di insert e update sull'intera tabella e nessun trigger fissava la data: con la chiave
+--      pubblica e la propria sessione si poteva retrodatare un voto (e con tre account fare un "Mazzo del mese" falso,
+--      pacchetto TRAGUARDI), un mazzo o una tier list (date dei traguardi sulla vetrina, ordine di /decks, patch mostrata
+--      sul mazzo). Alla creazione vale now(); dopo non cambia più, tranne che per uno script dello staff con la
+--      connessione diretta (auth.uid() nullo), che può correggere una data. Il sito non scrive mai created_at su queste
+--      tabelle; l'upsert dei voti (castVote) e delle tier list (saveTierList) tiene la data del primo salvataggio.
+--   2) community_guides.words: il sito la scrive insieme al testo (communityGuideWords di guides.ts) e la leggono elenchi
+--      e sitemap per decidere se una guida si indicizza. Chi ha il ruolo poteva mandare via API un numero qualsiasi
+--      (words 99999 su una guida corta: in sitemap e sull'hub come indicizzabile). Un secondo trigger, dopo
+--      guard_community_guide, azzera `words` quando supera il massimo possibile per quel testo
+--      (community_guide_words_max: i pezzi separati da spazi, barre e apostrofi, un sovrainsieme delle parole di
+--      communityGuideWords, quindi il numero giusto passa sempre; guides.test.ts lo prova su dei campioni). Azzerata,
+--      la guida esce da elenchi indicizzati e sitemap finché il sito non la risalva.
+--   3) Foto dei profili: handle_new_user (in cima al file) prende avatar_url dai metadati dell'accesso solo se è un
+--      indirizzo di Discord; qui si puliscono le righe già scritte con un indirizzo diverso (mai quelle con una foto
+--      caricata dal sito, avatar_path).
+-- =====================================================================================================
+
+-- ---------- 1) date di creazione ----------
+create or replace function public.guard_created_at()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if tg_op = 'INSERT' then
+    new.created_at := now();
+  elsif auth.uid() is not null then
+    new.created_at := old.created_at;
+  end if;
+  return new;
+end $$;
+-- la funzione di un trigger non si chiama da sola: niente EXECUTE per nessuno (il trigger scatta lo stesso)
+revoke all on function public.guard_created_at() from public, anon, authenticated;
+drop trigger if exists deck_votes_guard_created on public.deck_votes;
+create trigger deck_votes_guard_created before insert or update on public.deck_votes
+  for each row execute function public.guard_created_at();
+drop trigger if exists community_decks_guard_created on public.community_decks;
+create trigger community_decks_guard_created before insert or update on public.community_decks
+  for each row execute function public.guard_created_at();
+drop trigger if exists tier_lists_guard_created on public.tier_lists;
+create trigger tier_lists_guard_created before insert or update on public.tier_lists
+  for each row execute function public.guard_created_at();
+
+-- ---------- 2) parole delle guide: mai più del massimo possibile ----------
+-- Pezzi del testo originale (riassunto, titoli e testi delle sezioni) separati da spazi, anche Unicode, barre verticali
+-- e oblique e apostrofi: ogni separatore di countWords (deckQuality.ts) è anche qui, e qui non serve una lettera, quindi
+-- il risultato non è mai minore di communityGuideWords.
+create or replace function public.community_guide_words_max(summary text, sections jsonb)
+returns integer language sql immutable set search_path = pg_catalog as $$
+  select coalesce(sum(cardinality(array_remove(regexp_split_to_array(p.t, '[[:space:]\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff/|''’]+'), ''))), 0)::integer
+    from (
+      select summary as t
+      union all
+      select e.x ->> 'heading' from jsonb_array_elements(case when jsonb_typeof(sections) = 'array' then sections else '[]'::jsonb end) as e(x)
+      union all
+      select e.x ->> 'body' from jsonb_array_elements(case when jsonb_typeof(sections) = 'array' then sections else '[]'::jsonb end) as e(x)
+    ) as p
+   where p.t is not null
+$$;
+revoke all on function public.community_guide_words_max(text, jsonb) from public, anon;
+grant execute on function public.community_guide_words_max(text, jsonb) to authenticated, service_role;
+
+create or replace function public.guard_community_guide_words()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if new.words is not null and new.words > public.community_guide_words_max(new.summary, new.sections) then
+    new.words := null;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_community_guide_words() from public, anon, authenticated;
+-- il nome viene dopo community_guides_guard: Postgres esegue i trigger nell'ordine dei nomi
+drop trigger if exists community_guides_words on public.community_guides;
+create trigger community_guides_words before insert or update of words, summary, sections on public.community_guides
+  for each row execute function public.guard_community_guide_words();
+
+-- ---------- 3) foto dei profili: solo Discord o la foto caricata dal sito ----------
+update public.profiles set avatar_url = null
+ where avatar_path is null and avatar_url is not null
+   and avatar_url !~ '^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,300}(\?size=[0-9]{1,4})?$';
+
+comment on function public.guard_created_at() is 'created_at la scrive solo il database: now() alla creazione, poi fissa (tranne per la connessione diretta dello staff). Voti, mazzi e tier list (27/09/2026).';
+comment on function public.community_guide_words_max(text, jsonb) is 'Massimo delle parole possibili di una guida della community (sovrainsieme di communityGuideWords): il trigger community_guides_words azzera words sopra questo numero (27/09/2026).';

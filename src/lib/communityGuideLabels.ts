@@ -144,6 +144,8 @@ const en = {
     guide_status: "This change is for the staff only.",
     duplicate: "Something went wrong with the address of the guide: try again.",
     db: "Saving failed: try again in a moment.",
+    /** {n} = secondi da aspettare */
+    tooFast: "You saved this guide a moment ago: wait {n} seconds and save again.",
   },
   /** comandi del proprietario e dello staff sulla pagina pubblica */
   owner: {
@@ -186,6 +188,9 @@ const en = {
   /** guide dell'iscritto sulla sua pagina /u */
   profile: {
     title: "Guides",
+    /** contatore nella testata di /u, accanto a mazzi e tier list */
+    countOne: "guide",
+    countMany: "guides",
   },
   /** paragrafo della pagina /privacy, ancora #community-guides */
   privacy:
@@ -277,7 +282,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       cardNoMatch: "Nessuna carta con questo nome.",
       cover: "Copertina",
       coverHint: "Un'immagine del media kit ufficiale di Origins TCG (di Koin Games), mostrata intera in testa alla guida, negli elenchi e quando si condivide il link.",
-      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Due modi di collezionare", "ls-zero-pay-to-win": "Zero pay-to-win", "ls-real-collecting": "Collezionismo vero", "ls-collect-them-all": "Collezionale tutte", "ls-collector-pack": "Collector pack" },
+      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Due modi di collezionare", "ls-zero-pay-to-win": "Zero pay-to-win", "ls-real-collecting": "Collezionismo vero", "ls-collect-them-all": "Collezionale tutte", "ls-collector-pack": "Bustina da collezione" },
       counter: "{n}/{max}",
       preview: "Anteprima",
       edit: "Scrivi",
@@ -319,6 +324,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       guide_status: "Questa modifica è riservata allo staff.",
       duplicate: "Qualcosa è andato storto con l'indirizzo della guida: riprova.",
       db: "Salvataggio non riuscito: riprova tra un momento.",
+      tooFast: "Hai salvato questa guida un attimo fa: aspetta {n} secondi e salva di nuovo.",
     },
     owner: {
       edit: "Modifica",
@@ -359,6 +365,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
     },
     profile: {
       title: "Guide",
+      countOne: "guida",
+      countMany: "guide",
     },
     privacy:
       "Guide della community: Autori, Creator, giocatori Pro e Staff del sito possono pubblicare guide con il loro nome utente. Titolo, testo, lingua, categoria, carte scelte, video e link di una guida pubblicata sono pubblici; le bozze e le guide nascoste dallo staff le vedono solo l'autore e lo staff. Sono conservate su Supabase (server in Irlanda, UE) con l'account. Dopo la pubblicazione il testo della guida (non il titolo) viene inviato all'API di Anthropic (Stati Uniti) per tradurlo nelle altre due lingue del sito, senza nessun dato dell'autore; una guida nuova viene anche annunciata, con titolo, riassunto e nome dell'autore, sul server Discord di OriginsMeta (Discord Inc., Stati Uniti). Se segnali una guida conserviamo chi l'ha segnalata, il motivo e quando, e li legge solo lo staff; la prima segnalazione di una guida in una giornata arriva anche al canale Discord privato dello staff, con il motivo e il tuo nome utente. Le tue guide e le segnalazioni che hai fatto si cancellano con l'account; per eliminare prima una guida usa “Elimina” o scrivi a staff@originsmeta.com.",
@@ -444,7 +452,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       cardNoMatch: "Ninguna carta con ese nombre.",
       cover: "Portada",
       coverHint: "Una imagen del media kit oficial de Origins TCG (de Koin Games), mostrada entera al comienzo de la guía, en las listas y al compartir el enlace.",
-      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Dos formas de coleccionar", "ls-zero-pay-to-win": "Cero pay-to-win", "ls-real-collecting": "Coleccionismo de verdad", "ls-collect-them-all": "Colecciónalas todas", "ls-collector-pack": "Collector pack" },
+      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Dos formas de coleccionar", "ls-zero-pay-to-win": "Cero pay-to-win", "ls-real-collecting": "Coleccionismo de verdad", "ls-collect-them-all": "Colecciónalas todas", "ls-collector-pack": "Sobre de coleccionista" },
       counter: "{n}/{max}",
       preview: "Vista previa",
       edit: "Escribir",
@@ -486,6 +494,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       guide_status: "Este cambio es solo para el staff.",
       duplicate: "Algo falló con la dirección de la guía: vuelve a intentarlo.",
       db: "No se pudo guardar: vuelve a intentarlo en un momento.",
+      tooFast: "Guardaste esta guía hace un momento: espera {n} segundos y vuelve a guardar.",
     },
     owner: {
       edit: "Editar",
@@ -526,6 +535,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
     },
     profile: {
       title: "Guías",
+      countOne: "guía",
+      countMany: "guías",
     },
     privacy:
       "Guías de la comunidad: los Autores, Creators, jugadores Pro y el Staff del sitio pueden publicar guías con su nombre de usuario. El título, el texto, el idioma, la categoría, las cartas elegidas, los videos y los enlaces de una guía publicada son públicos; los borradores y las guías ocultas por el staff solo los ven el autor y el staff. Se guardan en Supabase (servidores en Irlanda, UE) junto con la cuenta. Después de publicarla, el texto de la guía (no el título) se envía a la API de Anthropic (Estados Unidos) para traducirlo a los otros dos idiomas del sitio, sin ningún dato del autor; una guía nueva también se anuncia, con su título, su resumen y el nombre del autor, en el servidor de Discord de OriginsMeta (Discord Inc., Estados Unidos). Si reportas una guía, guardamos quién la reportó, el motivo y cuándo, y solo los lee el staff; el primer reporte de una guía en un día también llega al canal privado de Discord del staff, con el motivo y tu nombre de usuario. Tus guías y los reportes que hiciste se eliminan con tu cuenta; para eliminar antes una guía usa “Eliminar” o escribe a staff@originsmeta.com.",
