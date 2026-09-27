@@ -18,6 +18,12 @@ export const COVER_MAX_BYTES = 2 * 1024 * 1024;
 export const AVATAR_SIZE = 512;
 /** Lato lungo massimo della copertina caricata (la pagina la ritaglia larga con object-fit). */
 export const COVER_MAX_SIDE = 1920;
+/** Misura consigliata della copertina (3:1): la pagina la ritaglia larga. */
+export const COVER_SUGGESTED = { width: 1500, height: 500 } as const;
+/** Lato lungo massimo dello sfondo della pagina del profilo (27/09/2026): si riduce senza ritagliare. */
+export const BACKGROUND_MAX_SIDE = 2560;
+/** Misura consigliata dello sfondo (16:9, orizzontale): la pagina lo adatta alla finestra. */
+export const BACKGROUND_SUGGESTED = { width: 1920, height: 1080 } as const;
 /** Tipi ammessi, uguali a `allowed_mime_types` del bucket. */
 export const MEDIA_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
 /**
@@ -46,7 +52,7 @@ export const MEDIA_UPLOAD_NAME_RE = String.raw`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]
 export const DISCORD_AVATAR_RE = String.raw`^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$`;
 const DISCORD_AVATAR = new RegExp(DISCORD_AVATAR_RE);
 
-export type MediaKind = "avatar" | "cover";
+export type MediaKind = "avatar" | "cover" | "background";
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 

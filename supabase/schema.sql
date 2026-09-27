@@ -2136,6 +2136,10 @@ comment on function public.max_published_decks(uuid) is 'Tetto ai mazzi pubblica
 alter table public.profiles add column if not exists avatar_path text;
 alter table public.profiles add column if not exists cover_preset text;
 alter table public.profiles add column if not exists cover_path text;
+-- sfondo della pagina del profilo (richiesta di Pierluigi del 27/09/2026: "mi va bene che ci sia una copertina ma ci deve
+-- essere anche lo sfondo"): uno dei motivi della copertina o un'immagine caricata (<id>/background/<file>, 2 MB)
+alter table public.profiles add column if not exists background_preset text;
+alter table public.profiles add column if not exists background_path text;
 alter table public.profiles add column if not exists accent text;
 alter table public.profiles add column if not exists tagline text;
 alter table public.profiles add column if not exists favorite_legendary text;
@@ -2197,6 +2201,12 @@ alter table public.profiles add constraint profiles_cover_path_check
 alter table public.profiles drop constraint if exists profiles_cover_preset_check;
 alter table public.profiles add constraint profiles_cover_preset_check
   check (cover_preset is null or cover_preset in ('aurora', 'mint-tide', 'sky-crystal', 'gold-stars', 'crimson-rays', 'violet-nebula', 'night-grid', 'sunset'));
+alter table public.profiles drop constraint if exists profiles_background_path_check;
+alter table public.profiles add constraint profiles_background_path_check
+  check (background_path is null or background_path ~ ('^' || id::text || '/background/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$'));
+alter table public.profiles drop constraint if exists profiles_background_preset_check;
+alter table public.profiles add constraint profiles_background_preset_check
+  check (background_preset is null or background_preset in ('aurora', 'mint-tide', 'sky-crystal', 'gold-stars', 'crimson-rays', 'violet-nebula', 'night-grid', 'sunset'));
 alter table public.profiles drop constraint if exists profiles_accent_check;
 alter table public.profiles add constraint profiles_accent_check
   check (accent is null or accent in ('sky', 'mint', 'gold', 'crimson', 'violet', 'coral', 'green', 'peach'));
@@ -2285,6 +2295,8 @@ begin
      and old.badge not in ('creator', 'author', 'pro', 'staff') and (
           (new.cover_preset is not null and new.cover_preset is distinct from old.cover_preset)
        or (new.cover_path is not null and new.cover_path is distinct from old.cover_path)
+       or (new.background_preset is not null and new.background_preset is distinct from old.background_preset)
+       or (new.background_path is not null and new.background_path is distinct from old.background_path)
        or (new.accent is not null and new.accent is distinct from old.accent)
        or (new.tagline is not null and new.tagline is distinct from old.tagline)
        or (new.favorite_legendary is not null and new.favorite_legendary is distinct from old.favorite_legendary)
@@ -2305,6 +2317,11 @@ begin
   if new.cover_path is not null and new.cover_path is distinct from old.cover_path
      and not public.profile_media_ok(new.cover_path, 2097152) then
     raise exception 'cover image not found or not allowed';
+  end if;
+  -- 3b) sfondo caricato (27/09/2026): stesse regole della copertina
+  if new.background_path is not null and new.background_path is distinct from old.background_path
+     and not public.profile_media_ok(new.background_path, 2097152) then
+    raise exception 'background image not found or not allowed';
   end if;
 
   -- 4) foto profilo: controllo del file e avatar_url allineata (caricata → indirizzo del file; tolta → Discord, o nessuna)
@@ -2329,11 +2346,11 @@ begin
       new.showcase_updated_at := now();
     end if;
   end if;
-  if (new.cover_preset, new.cover_path, new.accent, new.tagline, new.favorite_legendary, new.featured_deck, new.featured_video,
-      new.schedule, new.schedule_tz)
+  if (new.cover_preset, new.cover_path, new.background_preset, new.background_path, new.accent, new.tagline, new.favorite_legendary,
+      new.featured_deck, new.featured_video, new.schedule, new.schedule_tz)
      is distinct from
-     (old.cover_preset, old.cover_path, old.accent, old.tagline, old.favorite_legendary, old.featured_deck, old.featured_video,
-      old.schedule, old.schedule_tz) then
+     (old.cover_preset, old.cover_path, old.background_preset, old.background_path, old.accent, old.tagline, old.favorite_legendary,
+      old.featured_deck, old.featured_video, old.schedule, old.schedule_tz) then
     new.vetrina_updated_at := now();
     new.showcase_updated_at := now();
   end if;
@@ -2347,11 +2364,13 @@ create trigger profiles_guard_vetrina before update on public.profiles
 
 -- Le sole colonne nuove che l'utente cambia dal sito, sulla propria riga (policy "users edit own profile"). MAI un grant
 -- di UPDATE sull'intera tabella: riaprirebbe role e badge (6c6756d).
-grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated;
+grant update (avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated;
 
 comment on column public.profiles.avatar_path is 'Foto profilo caricata dal sito (bucket profile-media, <id>/avatar/<file>, 1 MB): il trigger guard_profile_vetrina tiene avatar_url allineata (27/09/2026).';
 comment on column public.profiles.cover_preset is 'Vetrina: sfondo preimpostato della copertina (src/lib/community/showcase.ts, COVER_PRESETS). Solo ruoli con vetrina.';
 comment on column public.profiles.cover_path is 'Vetrina: copertina caricata (bucket profile-media, <id>/cover/<file>, 2 MB). Solo ruoli con vetrina.';
+comment on column public.profiles.background_preset is 'Vetrina: sfondo della pagina del profilo, uno dei motivi di COVER_PRESETS (27/09/2026). Solo ruoli con vetrina.';
+comment on column public.profiles.background_path is 'Vetrina: sfondo della pagina caricato (bucket profile-media, <id>/background/<file>, 2 MB; 27/09/2026). Solo ruoli con vetrina.';
 comment on column public.profiles.schedule is 'Vetrina: orari delle dirette, al massimo 7 voci {day 0-6 (0 = lunedì), time HH:MM, minutes 15-720 facoltativo} nel fuso schedule_tz (che c''è solo con degli orari).';
 comment on column public.profiles.avatar_updated_at is 'Ultimo cambio della foto caricata: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveAvatar).';
 comment on column public.profiles.vetrina_updated_at is 'Ultimo cambio della vetrina: lo scrive solo il trigger guard_profile_vetrina (limite di frequenza di saveShowcase).';
@@ -2384,7 +2403,7 @@ begin
     and public.profile_media_count() < 12
     and (
       (storage.foldername(name))[2] = 'avatar'
-      or ((storage.foldername(name))[2] = 'cover'
+      or ((storage.foldername(name))[2] in ('cover', 'background')
           and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')))
     )
   );
@@ -2394,7 +2413,7 @@ begin
   create policy "profile media owners delete" on storage.objects for delete to authenticated using (
     bucket_id = 'profile-media'
     and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
-    and not exists (select 1 from public.profiles p where p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name))
+    and not exists (select 1 from public.profiles p where p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name or p.background_path = name))
   );
 exception when others then
   raise notice 'Storage profile-media non configurato da SQL (%): creare bucket e policy dalla dashboard, vedi README ("Vetrina dei profili e foto caricate").', sqlerrm;

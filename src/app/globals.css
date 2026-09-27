@@ -106,12 +106,24 @@
   */
   body {
     background-color: var(--color-felt);
-    background-image:
-      radial-gradient(1100px 520px at 12% -10%, rgba(49, 227, 189, 0.16), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(200, 30, 122, 0.16), transparent 55%);
     color: var(--color-chalk);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+  }
+  /* Sfondo del sito FERMO (Pierluigi, 27/09/2026: "vedere che lo sfondo si ripete scrollando in giù mi manda fuori di
+     testa, lo rendiamo bloccato"). Le due sfumature stavano sul body, che passa lo sfondo alla tela con l'area della
+     finestra: a ogni altezza di finestra si ripetevano. Ora stanno in un livello fisso dietro a tutto; non
+     background-attachment: fixed, che su iOS/Safari non funziona. Lo sfondo di un profilo vetrina (ProfileBackground)
+     è un livello uguale che viene dopo nel documento, quindi sta sopra a questo. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1100px 520px at 12% -10%, rgba(49, 227, 189, 0.16), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(200, 30, 122, 0.16), transparent 55%);
   }
   ::selection {
     background: var(--color-mint);

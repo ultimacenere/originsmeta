@@ -31,6 +31,9 @@ export type ProfileRow = {
   avatar_path?: string | null;
   cover_preset?: string | null;
   cover_path?: string | null;
+  /** sfondo della pagina del profilo (27/09/2026, blocco SFONDO di supabase/schema.sql) */
+  background_preset?: string | null;
+  background_path?: string | null;
   accent?: string | null;
   tagline?: string | null;
   favorite_legendary?: string | null;

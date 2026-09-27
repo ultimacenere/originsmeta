@@ -5,7 +5,7 @@
 // profile" vale solo per la propria riga.
 //
 // Uso (dal checkout con .env.local, come set-badge.mjs):
-//   node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--tagline] [--all] [--dry-run]
+//   node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all] [--dry-run]
 //     --avatar   toglie la foto caricata (torna quella di Discord, o l'iniziale) e cancella i file di <id>/avatar
 //     --cover    toglie la copertina caricata (resta lo sfondo predefinito) e cancella i file di <id>/cover
 //     --tagline  toglie la frase di presentazione
@@ -34,7 +34,7 @@ const dryRun = flag("dry-run");
 const orphans = flag("orphans");
 const needle = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--hours");
 if (!orphans && !needle) {
-  console.error("Uso: node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--tagline] [--all] [--dry-run]");
+  console.error("Uso: node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all] [--dry-run]");
   console.error("     node scripts/clear-profile-media.mjs --orphans [--hours <n>] [--dry-run]");
   process.exit(1);
 }
@@ -82,7 +82,7 @@ try {
     // un file è in uso se è la foto o la copertina del profilo proprietario della cartella
     const r = await db.query(
       `select o.name, o.created_at, (storage.foldername(o.name))[1] as folder,
-              exists (select 1 from public.profiles p where p.id::text = (storage.foldername(o.name))[1] and (p.avatar_path = o.name or p.cover_path = o.name)) as used
+              exists (select 1 from public.profiles p where p.id::text = (storage.foldername(o.name))[1] and (p.avatar_path = o.name or p.cover_path = o.name or p.background_path = o.name)) as used
          from storage.objects o
         where o.bucket_id = $1
         order by o.created_at`,
@@ -98,7 +98,7 @@ try {
     await removeFiles(stale);
   } else {
     const found = await db.query(
-      `select p.id, p.username, p.display_name, p.badge, p.avatar_path, p.cover_path, p.tagline, u.email
+      `select p.id, p.username, p.display_name, p.badge, p.avatar_path, p.cover_path, p.background_path, p.tagline, u.email
          from public.profiles p join auth.users u on u.id = p.id
         where lower(p.username) = lower($1) or lower(u.email) = lower($1)`,
       [needle],
@@ -114,8 +114,9 @@ try {
       const sets = [];
       if (all || flag("avatar")) sets.push("avatar_path = null");
       if (all || flag("cover")) sets.push("cover_path = null");
+      if (all || flag("background")) sets.push("background_path = null");
       if (all || flag("tagline")) sets.push("tagline = null");
-      if (all) sets.push("cover_preset = null", "accent = null", "favorite_legendary = null", "featured_deck = null", "featured_video = null", "schedule = '[]'::jsonb", "schedule_tz = null");
+      if (all) sets.push("cover_preset = null", "background_preset = null", "accent = null", "favorite_legendary = null", "featured_deck = null", "featured_video = null", "schedule = '[]'::jsonb", "schedule_tz = null");
       if (!sets.length) {
         console.log("Nessuna opzione: niente da cambiare (--avatar, --cover, --tagline, --all).");
       } else if (dryRun) {
@@ -125,12 +126,12 @@ try {
         console.log(`Profilo aggiornato: ${sets.join(", ")}`);
       }
       // i file delle cartelle svuotate (con --dry-run anche quello ancora in uso, che il salvataggio libererebbe)
-      const kinds = [...(all || flag("avatar") ? ["avatar"] : []), ...(all || flag("cover") ? ["cover"] : [])];
+      const kinds = [...(all || flag("avatar") ? ["avatar"] : []), ...(all || flag("cover") ? ["cover"] : []), ...(all || flag("background") ? ["background"] : [])];
       if (kinds.length) {
         const files = await db.query(
           `select o.name from storage.objects o
             where o.bucket_id = $1 and (storage.foldername(o.name))[1] = $2 and (storage.foldername(o.name))[2] = any($3)
-              and ($4 or not exists (select 1 from public.profiles p where p.id = $2::uuid and (p.avatar_path = o.name or p.cover_path = o.name)))`,
+              and ($4 or not exists (select 1 from public.profiles p where p.id = $2::uuid and (p.avatar_path = o.name or p.cover_path = o.name or p.background_path = o.name)))`,
           [BUCKET, t.id, kinds, dryRun],
         );
         await removeFiles(files.rows.map((f) => f.name));

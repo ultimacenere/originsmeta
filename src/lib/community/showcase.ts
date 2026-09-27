@@ -31,6 +31,9 @@ export {
   AVATAR_SIZE,
   COVER_MAX_BYTES,
   COVER_MAX_SIDE,
+  COVER_SUGGESTED,
+  BACKGROUND_MAX_SIDE,
+  BACKGROUND_SUGGESTED,
   DISCORD_AVATAR_RE,
   MEDIA_FILES_MAX,
   MEDIA_FILE_RE,
@@ -401,12 +404,14 @@ export function upcomingSlots(entries: readonly ScheduleEntry[], tz: string, now
 // ---------- la vetrina letta e scritta ----------
 
 /** Colonne della vetrina in public.profiles (blocco VETRINA di supabase/schema.sql). */
-export const VETRINA_COLUMNS = "avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz";
+export const VETRINA_COLUMNS = "avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz";
 
 export type VetrinaRow = {
   avatar_path: string | null;
   cover_preset: string | null;
   cover_path: string | null;
+  background_preset: string | null;
+  background_path: string | null;
   accent: string | null;
   tagline: string | null;
   favorite_legendary: string | null;
@@ -421,6 +426,9 @@ export type Vetrina = {
   avatarPath: string | null;
   coverPreset: CoverPreset | null;
   coverPath: string | null;
+  /** sfondo della pagina del profilo (27/09/2026): uno dei motivi della copertina o l'immagine caricata, o niente */
+  backgroundPreset: CoverPreset | null;
+  backgroundPath: string | null;
   accent: Accent | null;
   tagline: string | null;
   favoriteLegendary: string | null;
@@ -441,6 +449,8 @@ export function toVetrina(row: Partial<VetrinaRow> | null | undefined, profileId
     avatarPath: mediaPathOk(profileId, "avatar", r.avatar_path) ? r.avatar_path : null,
     coverPreset: isCoverPreset(r.cover_preset) ? r.cover_preset : null,
     coverPath: mediaPathOk(profileId, "cover", r.cover_path) ? r.cover_path : null,
+    backgroundPreset: isCoverPreset(r.background_preset) ? r.background_preset : null,
+    backgroundPath: mediaPathOk(profileId, "background", r.background_path) ? r.background_path : null,
     accent: isAccent(r.accent) ? r.accent : null,
     tagline: tagline.ok ? tagline.value : null,
     favoriteLegendary: typeof r.favorite_legendary === "string" && r.favorite_legendary.length <= 60 && SLUG_RE.test(r.favorite_legendary) ? r.favorite_legendary : null,
@@ -456,6 +466,8 @@ export function toVetrina(row: Partial<VetrinaRow> | null | undefined, profileId
 export type ShowcaseValue = {
   cover_preset: CoverPreset | null;
   cover_path: string | null;
+  background_preset: CoverPreset | null;
+  background_path: string | null;
   accent: Accent | null;
   tagline: string | null;
   favorite_legendary: string | null;
@@ -469,6 +481,9 @@ export type ShowcaseFormInput = {
   /** id di uno sfondo preimpostato, "image" per l'immagine caricata, "" per quella predefinita */
   cover: string;
   coverPath: string;
+  /** sfondo: id di un motivo, "image" per l'immagine caricata, "" per nessuno (lo sfondo del sito) */
+  background: string;
+  backgroundPath: string;
   accent: string;
   tagline: string;
   favoriteLegendary: string;
@@ -482,6 +497,7 @@ export type ShowcaseFormInput = {
 
 export type ShowcaseFormErrors = {
   cover?: "invalid" | "image";
+  background?: "invalid" | "image";
   accent?: "invalid";
   tagline?: "long";
   legendary?: "invalid";
@@ -517,6 +533,17 @@ export function parseShowcaseForm(input: ShowcaseFormInput, ctx: ShowcaseContext
     if (isCoverPreset(cover)) cover_preset = cover;
     else errors.cover = "invalid";
   }
+  // sfondo: un motivo OPPURE l'immagine caricata OPPURE niente
+  let background_preset: CoverPreset | null = null;
+  let background_path: string | null = null;
+  const background = input.background.trim();
+  if (background === "image") {
+    if (mediaPathOk(ctx.userId, "background", input.backgroundPath.trim())) background_path = input.backgroundPath.trim();
+    else errors.background = "image";
+  } else if (background) {
+    if (isCoverPreset(background)) background_preset = background;
+    else errors.background = "invalid";
+  }
   const accentRaw = input.accent.trim();
   const accent = accentRaw ? (isAccent(accentRaw) ? accentRaw : null) : null;
   if (accentRaw && !accent) errors.accent = "invalid";
@@ -549,6 +576,8 @@ export function parseShowcaseForm(input: ShowcaseFormInput, ctx: ShowcaseContext
     value: {
       cover_preset,
       cover_path,
+      background_preset,
+      background_path,
       accent,
       tagline: tagline.ok ? tagline.value : null,
       favorite_legendary,
@@ -562,7 +591,7 @@ export function parseShowcaseForm(input: ShowcaseFormInput, ctx: ShowcaseContext
 
 /** La vetrina salvata è già uguale a quella del modulo? Allora niente scrittura e niente pagine da rigenerare. */
 export function sameShowcaseValue(row: Partial<VetrinaRow>, value: ShowcaseValue): boolean {
-  const keys = ["cover_preset", "cover_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
+  const keys = ["cover_preset", "cover_path", "background_preset", "background_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
   if (keys.some((k) => (row[k] ?? null) !== value[k])) return false;
   return JSON.stringify(storedSchedule(row.schedule)) === JSON.stringify(value.schedule) && Array.isArray(row.schedule) && row.schedule.length === value.schedule.length;
 }
@@ -571,6 +600,8 @@ export function sameShowcaseValue(row: Partial<VetrinaRow>, value: ShowcaseValue
 export const EMPTY_SHOWCASE: ShowcaseValue = {
   cover_preset: null,
   cover_path: null,
+  background_preset: null,
+  background_path: null,
   accent: null,
   tagline: null,
   favorite_legendary: null,
@@ -586,7 +617,7 @@ export const EMPTY_SHOWCASE: ShowcaseValue = {
  */
 export function hasShowcaseData(row: Partial<VetrinaRow> | null | undefined): boolean {
   if (!row) return false;
-  const keys = ["cover_preset", "cover_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
+  const keys = ["cover_preset", "cover_path", "background_preset", "background_path", "accent", "tagline", "favorite_legendary", "featured_deck", "featured_video", "schedule_tz"] as const;
   return keys.some((k) => row[k] !== null && row[k] !== undefined) || (Array.isArray(row.schedule) && row.schedule.length > 0);
 }
 

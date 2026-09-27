@@ -10,6 +10,9 @@ import {
   ACCENT_HEX,
   COVER_MAX_BYTES,
   COVER_MAX_SIDE,
+  COVER_SUGGESTED,
+  BACKGROUND_MAX_SIDE,
+  BACKGROUND_SUGGESTED,
   COVER_PRESETS,
   DEFAULT_COVER_PRESET,
   DURATION_MAX,
@@ -35,6 +38,8 @@ import { MediaError, cleanupMedia, encodeImage, uploadMedia } from "./mediaUploa
 export type ShowcaseInitial = {
   coverPreset: CoverPreset | null;
   coverPath: string | null;
+  backgroundPreset: CoverPreset | null;
+  backgroundPath: string | null;
   accent: Accent | null;
   tagline: string | null;
   favoriteLegendary: string | null;
@@ -96,6 +101,13 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
   const [coverPath, setCoverPath] = useState<string | null>(initial.coverPath);
   // la copertina salvata nel database: l'unica da tenere quando se ne carica un'altra (le prove non salvate si tolgono)
   const savedCoverPath = useRef<string | null>(initial.coverPath);
+  // sfondo della pagina: "" = nessuno (lo sfondo del sito), un motivo, oppure "image"
+  const [background, setBackground] = useState<string>(initial.backgroundPath ? "image" : (initial.backgroundPreset ?? ""));
+  const [backgroundPath, setBackgroundPath] = useState<string | null>(initial.backgroundPath);
+  const savedBackgroundPath = useRef<string | null>(initial.backgroundPath);
+  const [bgUploading, setBgUploading] = useState(false);
+  const [bgUploadError, setBgUploadError] = useState<string | null>(null);
+  const bgFileInput = useRef<HTMLInputElement>(null);
   const [accent, setAccent] = useState<Accent>(initial.accent ?? "sky");
   const [tagline, setTagline] = useState(initial.tagline ?? "");
   const [legendary, setLegendary] = useState(initial.favoriteLegendary ?? "");
@@ -122,6 +134,8 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
       const v = res.value;
       setCover(v.cover_path ? "image" : (v.cover_preset ?? DEFAULT_COVER_PRESET));
       setCoverPath(v.cover_path);
+      setBackground(v.background_path ? "image" : (v.background_preset ?? ""));
+      setBackgroundPath(v.background_path);
       setAccent(v.accent ?? "sky");
       setTagline(v.tagline ?? "");
       setLegendary(v.favorite_legendary ?? "");
@@ -131,9 +145,13 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
       if (v.schedule_tz) setTz(v.schedule_tz);
       setDirty(false);
       savedCoverPath.current = v.cover_path;
-      // le copertine caricate e non più in uso (o mai salvate) si cancellano
+      savedBackgroundPath.current = v.background_path;
+      // le copertine e gli sfondi caricati e non più in uso (o mai salvati) si cancellano
       const sb = supabaseBrowser();
-      if (sb) await cleanupMedia(sb, userId, "cover", v.cover_path);
+      if (sb) {
+        await cleanupMedia(sb, userId, "cover", v.cover_path);
+        await cleanupMedia(sb, userId, "background", v.background_path);
+      }
     }
     return res;
   }, {});
@@ -169,6 +187,35 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
     } finally {
       setUploading(false);
       if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  const onBackgroundFile = async (file: File | undefined) => {
+    if (!file) return;
+    setBgUploadError(null);
+    setBgUploading(true);
+    let cleaned = false;
+    try {
+      const sb = supabaseBrowser();
+      if (!sb) throw new MediaError("upload");
+      // lato lungo ridotto a BACKGROUND_MAX_SIDE, senza ritagliare; entro il limite del bucket (2 MB)
+      const blob = await encodeImage(file, { maxSide: BACKGROUND_MAX_SIDE, maxBytes: COVER_MAX_BYTES });
+      await cleanupMedia(sb, userId, "background", savedBackgroundPath.current);
+      cleaned = true;
+      const path = await uploadMedia(sb, userId, "background", blob);
+      setBackgroundPath(path);
+      setBackground("image");
+      touch();
+    } catch (err) {
+      const code = err instanceof MediaError ? err.code : "upload";
+      setBgUploadError(L.errors[code]);
+      if (cleaned && backgroundPath !== savedBackgroundPath.current) {
+        setBackgroundPath(savedBackgroundPath.current);
+        if (!savedBackgroundPath.current && background === "image") setBackground("");
+      }
+    } finally {
+      setBgUploading(false);
+      if (bgFileInput.current) bgFileInput.current.value = "";
     }
   };
 
@@ -216,13 +263,55 @@ function ShowcaseFormInner({ userId, locale, labels, presetNames, accentNames, i
             {uploading ? L.coverUploading : L.coverUpload}
           </label>
           <span className="min-w-0 flex-1 basis-56 text-xs text-pale-muted">
-            {fillShowcase(L.coverImageHint, { size: COVER_MAX_SIDE })}{" "}
+            {fillShowcase(L.coverImageHint, { size: COVER_MAX_SIDE, w: COVER_SUGGESTED.width, h: COVER_SUGGESTED.height })}{" "}
             <a href={privacyHref} className="link-mint">
               {L.privacyLink}
             </a>
           </span>
         </div>
         {fieldError(uploadError ?? (errors?.cover === "image" ? L.errors.coverImage : errors?.cover ? L.errors.cover : null))}
+      </fieldset>
+
+      {/* sfondo della pagina del profilo (27/09/2026): nessuno, uno dei motivi, oppure l'immagine caricata; fermo mentre si scorre */}
+      <fieldset>
+        <legend className="kicker text-chalk-muted">{L.background}</legend>
+        <p className="mt-1 text-xs text-pale-muted">{L.backgroundHint}</p>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <label className={tileCls}>
+            <input type="radio" name="background" value="" checked={background === ""} onChange={() => setBackground("")} className="sr-only" />
+            <span aria-hidden="true" className="block h-14 w-full bg-felt" />
+            <span className="px-2 py-1.5">{L.backgroundNone}</span>
+          </label>
+          {COVER_PRESETS.map((p) => (
+            <label key={p} className={tileCls}>
+              <input type="radio" name="background" value={p} checked={background === p} onChange={() => setBackground(p)} className="sr-only" />
+              <span aria-hidden="true" className="block h-14 w-full" style={coverStyle(p)} />
+              <span className="px-2 py-1.5">{presetNames[p]}</span>
+            </label>
+          ))}
+          {backgroundPath ? (
+            <label className={tileCls}>
+              <input type="radio" name="background" value="image" checked={background === "image"} onChange={() => setBackground("image")} className="sr-only" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={mediaPublicUrl(supabaseUrl, backgroundPath)} alt="" className="block h-14 w-full object-cover" />
+              <span className="px-2 py-1.5">{L.coverImage}</span>
+            </label>
+          ) : null}
+        </div>
+        <input type="hidden" name="background_path" value={background === "image" && backgroundPath ? backgroundPath : ""} />
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <label className={`btn btn-ink text-xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mint ${bgUploading ? "opacity-60" : "cursor-pointer"}`}>
+            <input ref={bgFileInput} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={bgUploading} onChange={(e) => onBackgroundFile(e.target.files?.[0])} />
+            {bgUploading ? L.coverUploading : L.coverUpload}
+          </label>
+          <span className="min-w-0 flex-1 basis-56 text-xs text-pale-muted">
+            {fillShowcase(L.backgroundImageHint, { size: BACKGROUND_MAX_SIDE, w: BACKGROUND_SUGGESTED.width, h: BACKGROUND_SUGGESTED.height })}{" "}
+            <a href={privacyHref} className="link-mint">
+              {L.privacyLink}
+            </a>
+          </span>
+        </div>
+        {fieldError(bgUploadError ?? (errors?.background === "image" ? L.errors.backgroundImage : errors?.background ? L.errors.background : null))}
       </fieldset>
 
       {/* colore d'accento: contrasto almeno 4,5:1 sul blu notte (showcase.test.ts) */}

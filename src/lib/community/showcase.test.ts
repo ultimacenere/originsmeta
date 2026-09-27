@@ -303,6 +303,8 @@ describe("modulo \"Personalizza la vetrina\"", () => {
   const base = {
     cover: "",
     coverPath: "",
+    background: "",
+    backgroundPath: "",
     accent: "",
     tagline: "",
     favoriteLegendary: "",
@@ -335,6 +337,8 @@ describe("modulo \"Personalizza la vetrina\"", () => {
       value: {
         cover_preset: "violet-nebula",
         cover_path: null,
+        background_preset: null,
+        background_path: null,
         accent: "mint",
         tagline: "In diretta ogni sera",
         favorite_legendary: "merlin",
@@ -351,7 +355,7 @@ describe("modulo \"Personalizza la vetrina\"", () => {
   test("vuoto: nessuna scelta (copertina predefinita), niente orari", () => {
     assert.deepEqual(S.parseShowcaseForm(base, ctx), {
       ok: true,
-      value: { cover_preset: null, cover_path: null, accent: null, tagline: null, favorite_legendary: null, featured_deck: null, featured_video: null, schedule: [], schedule_tz: null },
+      value: { cover_preset: null, cover_path: null, background_preset: null, background_path: null, accent: null, tagline: null, favorite_legendary: null, featured_deck: null, featured_video: null, schedule: [], schedule_tz: null },
     });
   });
   test("copertina caricata: solo un file nella propria cartella, e allora niente sfondo preimpostato", () => {
@@ -364,6 +368,23 @@ describe("modulo \"Personalizza la vetrina\"", () => {
     assert.deepEqual(!url.ok && url.errors, { cover: "image" });
     const preset = S.parseShowcaseForm({ ...base, cover: "sunset", coverPath: own }, ctx);
     assert.ok(preset.ok && preset.value.cover_path === null, "con uno sfondo scelto il percorso si ignora");
+  });
+  test("sfondo della pagina (27/09/2026): nessuno, un motivo, o un file nella propria cartella background", () => {
+    const none = S.parseShowcaseForm({ ...base }, ctx);
+    assert.ok(none.ok && none.value.background_preset === null && none.value.background_path === null);
+    const preset = S.parseShowcaseForm({ ...base, background: "night-grid" }, ctx);
+    assert.ok(preset.ok && preset.value.background_preset === "night-grid" && preset.value.background_path === null);
+    const own = `${USER}/background/abcdefgh.webp`;
+    const image = S.parseShowcaseForm({ ...base, background: "image", backgroundPath: own }, ctx);
+    assert.ok(image.ok && image.value.background_path === own && image.value.background_preset === null);
+    const cover = S.parseShowcaseForm({ ...base, background: "image", backgroundPath: `${USER}/cover/abcdefgh.webp` }, ctx);
+    assert.deepEqual(!cover.ok && cover.errors, { background: "image" });
+    const other = S.parseShowcaseForm({ ...base, background: "image", backgroundPath: `${OTHER}/background/abcdefgh.webp` }, ctx);
+    assert.deepEqual(!other.ok && other.errors, { background: "image" });
+    const bad = S.parseShowcaseForm({ ...base, background: "keyart" }, ctx);
+    assert.deepEqual(!bad.ok && bad.errors, { background: "invalid" });
+    assert.equal(S.toVetrina({ background_path: `${OTHER}/background/abcdefgh.webp`, background_preset: "sunset" }, USER).backgroundPath, null);
+    assert.equal(S.toVetrina({ background_preset: "sunset" }, USER).backgroundPreset, "sunset");
   });
   test("valori fuori dagli elenchi: errori campo per campo, e nulla si salva", () => {
     const res = S.parseShowcaseForm(
@@ -456,6 +477,8 @@ describe("vetrina letta dal database", () => {
       avatarPath: null,
       coverPreset: null,
       coverPath: `${USER}/cover/abcdefgh.webp`,
+      backgroundPreset: null,
+      backgroundPath: null,
       accent: "gold",
       tagline: "Ciao mondo",
       favoriteLegendary: null,
@@ -634,7 +657,7 @@ describe("database: blocco VETRINA di supabase/schema.sql", () => {
     assert.ok(readPolicy.includes("((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())"));
     const del = one(/create policy "profile media owners delete"/);
     assert.ok(del.includes("((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())"));
-    assert.ok(del.includes("p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name)"));
+    assert.ok(del.includes("p.id::text = (storage.foldername(name))[1] and (p.avatar_path = name or p.cover_path = name or p.background_path = name)"));
     assert.ok(!stmts.some((s) => /^create policy .* on storage\.objects for update/.test(s) && s.includes("profile-media")), "niente update");
   });
   test("lo strumento dello staff svuota le stesse colonne (scripts/clear-profile-media.mjs)", () => {

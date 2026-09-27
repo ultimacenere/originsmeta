@@ -35,6 +35,7 @@ import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
 import { getProfileVetrina } from "@/lib/community/showcaseQueries";
 import { accentBorder, accentText } from "@/lib/community/showcase";
 import { ProfileCover } from "@/components/showcase/ProfileCover";
+import { ProfileBackground } from "@/components/showcase/ProfileBackground";
 import { FavoriteLegendary } from "@/components/showcase/FavoriteLegendary";
 import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
@@ -174,6 +175,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
         ]}
       />
       <p className="kicker text-mint">{p.kicker}</p>
+      {vetrina ? <ProfileBackground vetrina={vetrina} /> : null}
       {vetrina ? <ProfileCover vetrina={vetrina} /> : null}
 
       <section className="card-night mt-4 flex flex-wrap items-center gap-4 p-6" style={accentBorder(vetrina?.accent)}>

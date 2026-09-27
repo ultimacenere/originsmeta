@@ -33,7 +33,7 @@ export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
   "grant update (bio, links, content_langs) on public.profiles to authenticated",
-  "grant update (avatar_path, cover_preset, cover_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated",
+  "grant update (avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated",
   "grant update (show_stats) on public.profiles to authenticated",
 ];
 

@@ -97,6 +97,8 @@ export async function saveShowcase(_prev: ShowcaseActionState, formData: FormDat
     {
       cover: text("cover"),
       coverPath: text("cover_path"),
+      background: text("background"),
+      backgroundPath: text("background_path"),
       accent: text("accent"),
       tagline: text("tagline"),
       favoriteLegendary: text("favorite_legendary"),

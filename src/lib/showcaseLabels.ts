@@ -66,6 +66,11 @@ export type ShowcaseEditorLabels = {
   coverUpload: string;
   coverUploading: string;
   coverImageHint: string;
+  /** sfondo della pagina del profilo (27/09/2026) */
+  background: string;
+  backgroundHint: string;
+  backgroundNone: string;
+  backgroundImageHint: string;
   privacyLink: string;
   accent: string;
   accentHint: string;
@@ -99,6 +104,8 @@ export type ShowcaseEditorLabels = {
   errors: {
     cover: string;
     coverImage: string;
+    background: string;
+    backgroundImage: string;
     accent: string;
     tagline: string;
     legendary: string;
@@ -157,7 +164,7 @@ const en: ShowcaseLabels = {
     upload: "Upload a photo",
     uploading: "Uploading…",
     remove: "Remove the photo",
-    hint: "PNG, JPEG or WebP. Your browser crops it square and shrinks it to {size} px before uploading it (removing data such as the location), up to 1 MB.",
+    hint: "Square, at least {size}×{size} px; PNG, JPEG or WebP up to 1 MB. Your browser crops it square and shrinks it to {size} px before uploading it (removing data such as the location).",
     privacyLink: "Privacy",
     saved: "Photo saved.",
     removed: "Photo removed: you have the Discord photo or your initial back.",
@@ -193,7 +200,11 @@ const en: ShowcaseLabels = {
     coverImage: "Your image",
     coverUpload: "Upload an image",
     coverUploading: "Uploading…",
-    coverImageHint: "PNG, JPEG or WebP up to 2 MB, shrunk in your browser to {size} px. Use your own image, or one you have the rights to.",
+    coverImageHint: "Recommended size {w}×{h} px (3:1, wide); PNG, JPEG or WebP up to 2 MB, shrunk in your browser to {size} px. Use your own image, or one you have the rights to.",
+    background: "Background",
+    backgroundHint: "The background of your whole profile page, behind everything and still while visitors scroll. None (the site's background), one of ours, or your own image: a dark veil keeps the text readable.",
+    backgroundNone: "None",
+    backgroundImageHint: "Recommended size {w}×{h} px or larger (16:9, landscape); PNG, JPEG or WebP up to 2 MB, shrunk in your browser to {size} px on the long side, never cropped. Use your own image, or one you have the rights to.",
     privacyLink: "Privacy",
     accent: "Accent color",
     accentHint: "For the frames and your name on the showcase.",
@@ -227,6 +238,8 @@ const en: ShowcaseLabels = {
     errors: {
       cover: "Choose one of the backgrounds.",
       coverImage: "Upload the image again, or choose one of the backgrounds.",
+      background: "Choose one of the backgrounds, or none.",
+      backgroundImage: "Upload the image again, or choose one of the backgrounds.",
       accent: "Choose one of the colors.",
       tagline: "The tagline is too long.",
       legendary: "Choose a Legendary from the list.",
@@ -294,7 +307,7 @@ const it: ShowcaseLabels = {
     upload: "Carica una foto",
     uploading: "Caricamento…",
     remove: "Togli la foto",
-    hint: "PNG, JPEG o WebP. Il browser la ritaglia quadrata e la riduce a {size} px prima di caricarla (togliendo dati come la posizione), fino a 1 MB.",
+    hint: "Quadrata, almeno {size}×{size} px; PNG, JPEG o WebP fino a 1 MB. Il browser la ritaglia quadrata e la riduce a {size} px prima di caricarla (togliendo dati come la posizione).",
     privacyLink: "Privacy",
     saved: "Foto salvata.",
     removed: "Foto tolta: torna quella di Discord, o la tua iniziale.",
@@ -330,7 +343,11 @@ const it: ShowcaseLabels = {
     coverImage: "La tua immagine",
     coverUpload: "Carica un'immagine",
     coverUploading: "Caricamento…",
-    coverImageHint: "PNG, JPEG o WebP fino a 2 MB, ridotta dal browser a {size} px. Usa un'immagine tua o di cui hai i diritti.",
+    coverImageHint: "Misura consigliata {w}×{h} px (3:1, larga); PNG, JPEG o WebP fino a 2 MB, ridotta dal browser a {size} px. Usa un'immagine tua o di cui hai i diritti.",
+    background: "Sfondo",
+    backgroundHint: "Lo sfondo di tutta la pagina del tuo profilo, dietro a tutto e fermo mentre chi guarda scorre. Nessuno (lo sfondo del sito), uno dei nostri o un'immagine tua: una velatura scura tiene leggibili i testi.",
+    backgroundNone: "Nessuno",
+    backgroundImageHint: "Misura consigliata {w}×{h} px o più grande (16:9, orizzontale); PNG, JPEG o WebP fino a 2 MB, ridotta dal browser a {size} px sul lato lungo, mai ritagliata. Usa un'immagine tua o di cui hai i diritti.",
     privacyLink: "Privacy",
     accent: "Colore d'accento",
     accentHint: "Per le cornici e il tuo nome nella vetrina.",
@@ -364,6 +381,8 @@ const it: ShowcaseLabels = {
     errors: {
       cover: "Scegli uno degli sfondi.",
       coverImage: "Carica di nuovo l'immagine, o scegli uno degli sfondi.",
+      background: "Scegli uno degli sfondi, o nessuno.",
+      backgroundImage: "Carica di nuovo l'immagine, o scegli uno degli sfondi.",
       accent: "Scegli uno dei colori.",
       tagline: "La frase è troppo lunga.",
       legendary: "Scegli una Leggendaria dall'elenco.",
@@ -431,7 +450,7 @@ const es: ShowcaseLabels = {
     upload: "Subir una foto",
     uploading: "Subiendo…",
     remove: "Quitar la foto",
-    hint: "PNG, JPEG o WebP. Tu navegador la recorta cuadrada y la reduce a {size} px antes de subirla (quitando datos como la ubicación), hasta 1 MB.",
+    hint: "Cuadrada, de al menos {size}×{size} px; PNG, JPEG o WebP de hasta 1 MB. Tu navegador la recorta cuadrada y la reduce a {size} px antes de subirla (quitando datos como la ubicación).",
     privacyLink: "Privacidad",
     saved: "Foto guardada.",
     removed: "Foto quitada: vuelves a tener la foto de Discord o tu inicial.",
@@ -467,7 +486,11 @@ const es: ShowcaseLabels = {
     coverImage: "Tu imagen",
     coverUpload: "Subir una imagen",
     coverUploading: "Subiendo…",
-    coverImageHint: "PNG, JPEG o WebP hasta 2 MB, reducida por tu navegador a {size} px. Usa una imagen tuya o de la que tengas los derechos.",
+    coverImageHint: "Tamaño recomendado {w}×{h} px (3:1, ancha); PNG, JPEG o WebP de hasta 2 MB, reducida por tu navegador a {size} px. Usa una imagen tuya o de la que tengas los derechos.",
+    background: "Fondo",
+    backgroundHint: "El fondo de toda la página de tu perfil, detrás de todo y quieto mientras quien la visita se desplaza. Ninguno (el fondo del sitio), uno de los nuestros o una imagen tuya: un velo oscuro mantiene legibles los textos.",
+    backgroundNone: "Ninguno",
+    backgroundImageHint: "Tamaño recomendado {w}×{h} px o mayor (16:9, horizontal); PNG, JPEG o WebP de hasta 2 MB, reducida por tu navegador a {size} px en el lado largo, nunca recortada. Usa una imagen tuya o de la que tengas los derechos.",
     privacyLink: "Privacidad",
     accent: "Color de acento",
     accentHint: "Para los marcos y tu nombre en la vitrina.",
@@ -501,6 +524,8 @@ const es: ShowcaseLabels = {
     errors: {
       cover: "Elige uno de los fondos.",
       coverImage: "Vuelve a subir la imagen o elige uno de los fondos.",
+      background: "Elige uno de los fondos, o ninguno.",
+      backgroundImage: "Vuelve a subir la imagen o elige uno de los fondos.",
       accent: "Elige uno de los colores.",
       tagline: "La frase es demasiado larga.",
       legendary: "Elige una Legendaria de la lista.",

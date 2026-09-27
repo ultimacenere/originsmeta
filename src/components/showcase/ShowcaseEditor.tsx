@@ -80,6 +80,8 @@ export async function ShowcaseEditor({ supabase, userId, locale, name }: { supab
               initial={{
                 coverPreset: v.coverPreset,
                 coverPath: v.coverPath,
+                backgroundPreset: v.backgroundPreset,
+                backgroundPath: v.backgroundPath,
                 accent: v.accent,
                 tagline: v.tagline,
                 favoriteLegendary: v.favoriteLegendary,
