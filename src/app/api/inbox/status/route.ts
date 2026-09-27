@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { currentUser } from "@/lib/supabase/server";
 import { readInboxStatus } from "@/lib/community/inboxQueries";
+import { unreadNotificationCount } from "@/lib/community/notificationQueries";
 
 /**
  * Stato della casella messaggi di chi guarda (26/09/2026, pacchetto INBOX): numero delle conversazioni da leggere e,
@@ -13,6 +14,8 @@ import { readInboxStatus } from "@/lib/community/inboxQueries";
  * GET → { loggedIn, unread, staff, staffUnread }. Privata e mai in cache (dipende dalla sessione nei cookie). Senza un
  * cookie di sessione Supabase (nomi che iniziano con sb-) risponde subito, senza chiamare Supabase. Con la migrazione
  * non ancora applicata (o un errore del database) 503: il menu semplicemente non mostra il numero.
+ * `notifications` (pacchetto SEGUI, 27/09/2026): avvisi da leggere dei profili seguiti, che la busta somma ai messaggi;
+ * 0 prima della migrazione del pacchetto o con un errore, senza cambiare il resto della risposta.
  */
 export const dynamic = "force-dynamic";
 
@@ -25,7 +28,7 @@ export async function GET() {
   if (!store.getAll().some((c) => c.name.startsWith("sb-"))) return NextResponse.json(nobody, { headers });
   const { supabase, user } = await currentUser();
   if (!supabase || !user) return NextResponse.json(nobody, { headers });
-  const status = await readInboxStatus(supabase);
+  const [status, notifications] = await Promise.all([readInboxStatus(supabase), unreadNotificationCount(supabase, user.id)]);
   if (!status.ok) return NextResponse.json({ error: status.error }, { status: 503, headers });
-  return NextResponse.json({ loggedIn: true, ...status.data }, { headers });
+  return NextResponse.json({ loggedIn: true, ...status.data, notifications }, { headers });
 }

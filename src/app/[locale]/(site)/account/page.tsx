@@ -15,6 +15,7 @@ import type { CommunityDeck, Profile } from "@/lib/community/types";
 import { listUserTournaments } from "@/lib/tournament/queries";
 import { deleteTournament } from "@/lib/tournament/actions";
 import { Avatar, SignOutButton } from "@/components/AccountMenu";
+import { FollowingSection } from "@/components/follow/FollowingSection";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ProfileEditor } from "@/components/ProfileEditor";
@@ -101,6 +102,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       <ShowcaseEditor supabase={supabase} userId={user.id} locale={locale} name={name} />
       {/* La casella messaggi non sta qui: vive tutta in /account/messages, dove porta la busta dell'header (Pierluigi, 27/09/2026:
           "questo modulo deve stare sotto messaggi e non sotto profilo") */}
+      {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
+      <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">

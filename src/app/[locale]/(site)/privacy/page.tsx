@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
+import { followLabels } from "@/lib/followLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
@@ -56,6 +57,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Casella messaggi utente ↔ staff (26/09/2026, pacchetto INBOX): testo in src/lib/inboxLabels.ts, ancora #messages */}
         <p id="messages" className="mt-6 scroll-mt-24">
           {inboxLabels[locale].privacy}
+        </p>
+        {/* "Segui" e notifiche (pacchetto SEGUI, 27/09/2026): testo in src/lib/followLabels.ts, ancora #follows */}
+        <p id="follows" className="mt-6 scroll-mt-24">
+          {followLabels[locale].privacy}
         </p>
       </article>
     </div>

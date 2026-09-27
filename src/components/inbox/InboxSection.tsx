@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
 import { inboxLabels } from "@/lib/inboxLabels";
@@ -38,7 +39,20 @@ type ListResult = Result<{ rows: ConversationSummary[]; more: boolean }>;
  * La sezione dai dati già letti. `unread` = conversazioni con risposte nuove (null se non si sa: allora si contano
  * quelle mostrate); `staffUnread` null = chi guarda non è dello staff.
  */
-export function InboxSectionView({ locale, list, unread, staffUnread }: { locale: Locale; list: ListResult; unread: number | null; staffUnread: number | null }) {
+export function InboxSectionView({
+  locale,
+  list,
+  unread,
+  staffUnread,
+  afterIntro,
+}: {
+  locale: Locale;
+  list: ListResult;
+  unread: number | null;
+  staffUnread: number | null;
+  /** Sotto l'introduzione (pacchetto SEGUI, 27/09/2026): il salto "N notifiche da leggere ↓" verso #notifications. */
+  afterIntro?: ReactNode;
+}) {
   const L = inboxLabels[locale];
   const rows = list.ok ? list.data.rows : [];
   const unreadCount = unread ?? rows.filter((c) => c.unread_by_user).length;
@@ -55,6 +69,7 @@ export function InboxSectionView({ locale, list, unread, staffUnread }: { locale
         ) : null}
       </div>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{L.section.intro}</p>
+      {afterIntro}
 
       {!list.ok ? (
         <div className="card-night mt-4 p-6">

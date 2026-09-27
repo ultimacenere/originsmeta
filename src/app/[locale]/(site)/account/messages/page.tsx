@@ -10,6 +10,7 @@ import { listUserConversations, readInboxStatus } from "@/lib/community/inboxQue
 import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { InboxSectionView, UnreadLine, UserConversationList } from "@/components/inbox/InboxSection";
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
+import { NotificationsJump, NotificationsSection } from "@/components/follow/NotificationsSection";
 
 /**
  * La casella messaggi dell'utente con lo staff (26/09/2026, pacchetto INBOX). Dal 27/09/2026 vive tutta qui, dove
@@ -53,6 +54,7 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
             list={list}
             unread={status.ok ? status.data.unread : null}
             staffUnread={status.ok && status.data.staff ? status.data.staffUnread : null}
+            afterIntro={<NotificationsJump locale={locale} supabase={supabase} userId={user.id} />}
           />
         </div>
       ) : (
@@ -93,6 +95,8 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
       )}
         </>
       )}
+      {/* Notifiche dei profili seguiti (pacchetto SEGUI, 27/09/2026), solo sulla prima pagina; ancora #notifications */}
+      {page === 1 ? <NotificationsSection locale={locale} supabase={supabase} userId={user.id} /> : null}
     </div>
   );
 }

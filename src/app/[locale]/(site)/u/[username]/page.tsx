@@ -22,6 +22,7 @@ import {
 import { authorName } from "@/lib/community/util";
 import { communityPerson, communityProfilePage } from "@/lib/jsonld/deck";
 import { Avatar } from "@/components/AccountMenu";
+import { FollowButton } from "@/components/follow/FollowButton";
 import { CardArt } from "@/components/CardChip";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { getProfileShowcase } from "@/lib/community/creators";
@@ -176,6 +177,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               <span className={`${badgePill} ${badgeStyle[badge]}`}>{c.badges[badge]}</span>
             </p>
           ) : null}
+          {/* "Segui" (pacchetto SEGUI, 27/09/2026) subito sotto il ruolo, vicino al nome anche a 375 px: solo i ruoli con vetrina; stato e follower letti nel browser (la pagina è ISR) */}
+          <FollowButton profileId={profile.id} name={name} badge={profile.badge} locale={locale} placement="profile" className="mt-3" />
           {/* Chi pubblica mazzi ed è anche un autore del sito (DECKS-10 e MQ-13, 25/09/2026): link alla sua pagina
               /authors, con il nome completo. Prima le due pagine non si collegavano e nel grafo erano due persone. */}
           {editorial ? (

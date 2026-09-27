@@ -9,7 +9,16 @@
  */
 
 /** Una diretta come la restituisce Helix, GET /helix/streams (solo i campi che servono). */
-export type TwitchStream = { user_login: string; game_id?: string; game_name?: string; title?: string; viewer_count?: number; type?: string };
+export type TwitchStream = {
+  user_login: string;
+  game_id?: string;
+  game_name?: string;
+  title?: string;
+  viewer_count?: number;
+  type?: string;
+  /** id della diretta: gli avvisi a chi segue ne mandano uno per diretta (pacchetto SEGUI, 27/09/2026) */
+  id?: string;
+};
 
 /** Un creator da controllare: il suo nome utente su OriginsMeta e il suo canale Twitch. */
 export type LiveCandidate = { username: string; login: string };

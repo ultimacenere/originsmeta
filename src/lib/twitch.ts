@@ -1,6 +1,7 @@
 import { listCreators } from "@/lib/community/creators";
 import { twitchLogin } from "@/lib/community/profileLinks";
-import { chunk, liveUsers, loginsToCheck, type LiveCandidate, type LiveResponse, type TwitchStream } from "./twitchLive";
+import { liveAlerts, type LiveAlert } from "@/lib/community/notifications";
+import { chunk, isOriginsStream, liveUsers, loginsToCheck, type LiveCandidate, type LiveResponse, type TwitchStream } from "./twitchLive";
 
 /**
  * Twitch, lato server (pacchetto CREATOR, 26/09/2026): chi fra i creator è in diretta su Origins TCG. La usa solo la
@@ -76,4 +77,24 @@ export async function liveStatus(): Promise<LiveResponse> {
   if (!logins.length) return { enabled: true, users: {} };
   const streams = (await Promise.all(chunk(logins).map((group) => streamsOf(creds, group)))).flat();
   return { enabled: true, users: liveUsers(candidates, streams, process.env.TWITCH_GAME_ID?.trim() || undefined) };
+}
+
+/**
+ * Chi fra i profili vetrina con un canale Twitch è in diretta su Origins TCG adesso, con l'id del profilo e della
+ * diretta: gli avvisi a chi segue (pacchetto SEGUI, 27/09/2026, rotta /api/cron/live). Stesse regole del badge LIVE
+ * (`isOriginsStream`). null senza le chiavi di Twitch (nessuna chiamata); un errore di Twitch o del database sale.
+ */
+export async function originsLiveStreams(): Promise<LiveAlert[] | null> {
+  const creds = credentials();
+  if (!creds) return null;
+  const creators = await listCreators();
+  const profiles = creators.flatMap((c) => {
+    const login = twitchLogin(c.links);
+    return login ? [{ id: c.id, username: c.username, login }] : [];
+  });
+  const logins = loginsToCheck(profiles);
+  if (!logins.length) return [];
+  const streams = (await Promise.all(chunk(logins).map((group) => streamsOf(creds, group)))).flat();
+  const gameId = process.env.TWITCH_GAME_ID?.trim() || undefined;
+  return liveAlerts(profiles, streams, (s) => isOriginsStream(s, gameId));
 }
