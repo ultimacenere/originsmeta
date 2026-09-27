@@ -5,12 +5,12 @@ import { locales, type Locale } from "@/lib/i18n";
 import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
 import { revalidateSitemaps } from "@/lib/sitemapData";
 import type { Db } from "@/lib/supabase/public";
-import { STRATEGY_GUIDE_TRANSLATION_SYSTEM, namesIn, translateDocWith } from "./deckTranslation";
+import { namesIn } from "./deckTranslation";
 import { officialNames, translationEnabled } from "./translate";
+import { translateGuideText } from "./guideTranslateCore";
 import {
   communityGuideHash,
   communityGuideIndexing,
-  guideTextFromDoc,
   guideTranslationDoc,
   missingGuideLocales,
   storedSections,
@@ -24,13 +24,15 @@ import {
  * traducono nelle altre lingue del sito con lo stesso modello, la stessa chiave (ANTHROPIC_API_KEY: senza, nulla) e lo
  * stesso glossario delle parole chiave (`TRANSLATION_RULES`); titolo e nomi di carte e luoghi non si traducono.
  *
- * - parte dopo la risposta al browser (`after()`), scrive con la sessione del proprietario (policy di community_guides,
- *   colonna `translations` nella grant di update);
- * - traduce solo le lingue che mancano o che sono rimaste indietro rispetto al testo (impronta `communityGuideHash`);
+ * - parte dopo la risposta al browser (`after()`, pagine di scrittura con `maxDuration = 300`), scrive con la sessione
+ *   del proprietario (policy di community_guides, colonna `translations` nella grant di update; il trigger controlla le
+ *   regole del testo);
+ * - traduce solo le lingue che mancano o che sono rimaste indietro rispetto al testo, e in quelle solo le parti
+ *   cambiate, a pezzi (`translateGuideText` in guideTranslateCore.ts, lo stesso codice dello script degli arretrati);
  * - prima di scrivere rilegge la guida: se nel frattempo l'autore l'ha cambiata la traduzione è vecchia e si lascia
  *   perdere (ci pensa il giro partito con la modifica); se non è più pubblicata non si scrive;
  * - nessuna eccezione verso chi pubblica: senza traduzione la pagina mostra l'originale con la nota ed è noindex in quella
- *   lingua, fuori da hreflang e sitemap.
+ *   lingua, fuori da hreflang e sitemap. Gli arretrati e i nuovi tentativi: `node scripts/translate-guides.mjs`.
  */
 
 type Row = { lang: Locale; summary: string; sections: GuideSectionText[]; translations: CommunityGuideTranslations | null; status: string; slug: string };
@@ -38,8 +40,9 @@ type Row = { lang: Locale; summary: string; sections: GuideSectionText[]; transl
 async function readRow(supabase: Db, guideId: string): Promise<Row | null> {
   const { data, error } = await supabase.from("community_guides").select("lang, summary, sections, translations, status, slug").eq("id", guideId).maybeSingle();
   if (error || !data) return null;
-  const raw = data as unknown as Omit<Row, "sections"> & { sections: unknown };
-  return { ...raw, sections: storedSections(raw.sections) };
+  const raw = data as unknown as Omit<Row, "sections" | "translations"> & { sections: unknown; translations: unknown };
+  const translations = raw.translations && typeof raw.translations === "object" && !Array.isArray(raw.translations) ? (raw.translations as CommunityGuideTranslations) : null;
+  return { ...raw, sections: storedSections(raw.sections), translations };
 }
 
 /** Traduce la guida nelle lingue che mancano e salva il risultato. Restituisce le lingue scritte. */
@@ -50,32 +53,18 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
   if (!targets.length) return [];
 
   const hash = communityGuideHash(row);
-  const doc = guideTranslationDoc({ summary: row.summary, sections: row.sections });
-  const names = namesIn(doc, officialNames);
-  const client = new Anthropic({ maxRetries: 1 });
-  const results = await Promise.all(
-    targets.map((to) =>
-      translateDocWith(client, doc, row.lang, to, names, STRATEGY_GUIDE_TRANSLATION_SYSTEM).catch((e: unknown) => {
-        console.error(`[guides] traduzione ${row.lang}→${to} non riuscita:`, e instanceof Error ? e.message : e);
-        return null;
-      }),
-    ),
-  );
+  const names = namesIn(guideTranslationDoc(row), officialNames);
+  const done = await translateGuideText(new Anthropic({ maxRetries: 1 }), row, targets, names, {
+    onError: (to, e) => console.error(`[guides] traduzione ${row.lang}→${to} non riuscita:`, e instanceof Error ? e.message : e),
+  });
+  const written = (Object.keys(done) as Locale[]).filter((l) => done[l]);
+  if (!written.length) return [];
 
   // Rilettura: se la guida è cambiata (o non è più pubblicata) mentre traducevamo, queste traduzioni non servono.
   const fresh = await readRow(supabase, guideId);
   if (!fresh || fresh.status !== "published" || communityGuideHash(fresh) !== hash) return [];
-  const next: CommunityGuideTranslations = { ...(fresh.translations ?? {}) };
+  const next: CommunityGuideTranslations = { ...(fresh.translations ?? {}), ...done };
   delete next[fresh.lang];
-  const written: Locale[] = [];
-  targets.forEach((to, i) => {
-    const r = results[i];
-    const text = r ? guideTextFromDoc(r.doc, fresh.sections.length) : null;
-    if (!r || !text) return;
-    next[to] = { hash, at: new Date().toISOString(), model: r.model, guide: text };
-    written.push(to);
-  });
-  if (!written.length) return [];
   const { error } = await supabase.from("community_guides").update({ translations: next }).eq("id", guideId);
   if (error) {
     console.error("[guides] salvataggio delle traduzioni non riuscito:", error.message);
@@ -84,6 +73,7 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
   for (const l of locales) {
     try {
       revalidatePath(`/${l}/guides/community/${fresh.slug}`);
+      revalidatePath(`/${l}/guides/community`);
       revalidatePath(`/${l}/guides`);
     } catch {
       // fuori dalla richiesta la pagina si aggiorna comunque da sola (ISR)

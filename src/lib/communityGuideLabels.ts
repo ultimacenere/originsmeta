@@ -41,11 +41,22 @@ const en = {
     title: "Community guides",
     intro: "Written and published by the site's Authors, Creators and Pro players, and translated automatically into the other languages.",
     by: "by {name}",
+    /** link dalla sezione di /guides all'elenco completo */
+    all: "All community guides",
+  },
+  /** pagina /guides/community: tutte le guide della community che si leggono nella lingua della pagina */
+  listPage: {
+    title: "Community guides",
+    metaTitle: "Origins TCG community guides by creators and pros",
+    description: "Origins TCG guides written by the Authors, Creators and Pro players of OriginsMeta: decks, ranked, matchups and strategy, kept up to date by their authors.",
+    intro: "Every guide written and published by the site's Authors, Creators and Pro players that reads in English, newest first. Guides in other languages appear here as soon as their translation is ready.",
+    empty: "No community guide reads in English yet: the first ones will appear here as soon as they are published or translated.",
+    count: "{n} guides",
   },
   /** riquadro di /guides per chi ha il ruolo (al posto di "Mandaci la tua guida") */
   cta: {
     title: "Write a guide",
-    text: "Your role lets you publish guides on OriginsMeta yourself: they go online under your name and the site translates them into English, Italian and Spanish.",
+    text: "Your role lets you publish guides on OriginsMeta directly: they go online under your name and the site translates them into its other two languages.",
     button: "Write a guide",
   },
   /** /guides/new senza il ruolo */
@@ -89,8 +100,9 @@ const en = {
     cardRemove: "Remove {name}",
     cardNoMatch: "No card with that name.",
     cover: "Cover",
-    coverHint: "A design of the site, in its colors, at the top of the guide and in the lists.",
-    covers: { mint: "Mint", sky: "Sky", gold: "Gold", crimson: "Crimson", aurora: "Aurora", night: "Night" },
+    coverHint: "An image from the official Origins TCG media kit (by Koin Games), shown whole at the top of the guide, in the lists and when the link is shared.",
+    /** nomi delle copertine: le Leggendarie con il nome della carta, in inglese come nel gioco */
+    covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Two ways to collect", "ls-zero-pay-to-win": "Zero pay-to-win", "ls-real-collecting": "Real collecting", "ls-collect-them-all": "Collect them all", "ls-collector-pack": "Collector pack" },
     counter: "{n}/{max}",
     preview: "Preview",
     edit: "Write",
@@ -128,6 +140,7 @@ const en = {
     guide_limit: "You have reached 100 guides: delete an old one to write a new one.",
     guide_rate: "You have started 10 guides in the last 24 hours: try again tomorrow.",
     guide_hidden: "The staff has hidden this guide: write to the staff from your messages.",
+    guide_hidden_recent: "The staff hid one of your guides in the last 24 hours: you can publish again tomorrow. Save this one as a draft meanwhile, and write to the staff from your messages if you want to know why.",
     guide_status: "This change is for the staff only.",
     duplicate: "Something went wrong with the address of the guide: try again.",
     db: "Saving failed: try again in a moment.",
@@ -155,6 +168,8 @@ const en = {
       duplicate: "You have already reported this guide: the staff will look into it.",
       report_rate: "You have sent many reports today: try again tomorrow.",
       notLoggedIn: "Sign in to report this guide.",
+      own: "You can't report your own guide: to change it, edit it.",
+      forbidden: "This guide can't be reported (it may have been hidden or deleted).",
       db: "Sending failed: try again in a moment.",
     },
   },
@@ -174,7 +189,7 @@ const en = {
   },
   /** paragrafo della pagina /privacy, ancora #community-guides */
   privacy:
-    "Community guides: the site's Authors, Creators, Pro players and Staff can publish guides under their username. Title, text, language, category, chosen cards, videos and links of a published guide are public; drafts and guides hidden by the staff are visible only to the author and the staff. They are stored on Supabase (servers in Ireland, EU) with the account. After publication the text of the guide (not the title) is sent to Anthropic's API (United States) to be translated into the site's other two languages, and nothing about the author is sent with it; a new guide is also announced, with its title, summary and author name, on the OriginsMeta Discord server (Discord Inc., United States). If you report a guide we keep who reported it, the reason and when, read only by the staff, and the staff's private Discord channel receives a notice with the reason. Guides and reports are deleted with the account; to delete a guide sooner use \"Delete\" or write to staff@originsmeta.com.",
+    "Community guides: the site's Authors, Creators, Pro players and Staff can publish guides under their username. Title, text, language, category, chosen cards, videos and links of a published guide are public; drafts and guides hidden by the staff are visible only to the author and the staff. They are stored on Supabase (servers in Ireland, EU) with the account. After publication the text of the guide (not the title) is sent to Anthropic's API (United States) to be translated into the site's other two languages, and nothing about the author is sent with it; a new guide is also announced, with its title, summary and author name, on the OriginsMeta Discord server (Discord Inc., United States). If you report a guide we keep who reported it, the reason and when, read only by the staff; the first report of a guide in a day also reaches the staff's private Discord channel, with the reason and your username. Your guides and the reports you made are deleted with your account; to delete a guide sooner use \"Delete\" or write to staff@originsmeta.com.",
 };
 
 export type CommunityGuideLabels = typeof en;
@@ -206,10 +221,19 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       title: "Guide della community",
       intro: "Scritte e pubblicate da Autori, Creator e giocatori Pro del sito, e tradotte in automatico nelle altre lingue.",
       by: "di {name}",
+      all: "Tutte le guide della community",
+    },
+    listPage: {
+      title: "Guide della community",
+      metaTitle: "Guide della community di Origins TCG: creator e pro",
+      description: "Guide di Origins TCG scritte da Autori, Creator e giocatori Pro di OriginsMeta: mazzi, classificata, matchup e strategia, aggiornate dai loro autori.",
+      intro: "Tutte le guide scritte e pubblicate da Autori, Creator e giocatori Pro del sito che si leggono in italiano, dalla più recente. Le guide scritte in altre lingue arrivano qui appena è pronta la traduzione.",
+      empty: "Ancora nessuna guida della community si legge in italiano: le prime compariranno qui appena saranno pubblicate o tradotte.",
+      count: "{n} guide",
     },
     cta: {
       title: "Scrivi una guida",
-      text: "Il tuo ruolo ti permette di pubblicare guide su OriginsMeta da solo: vanno online a tuo nome e il sito le traduce in inglese, italiano e spagnolo.",
+      text: "Il tuo ruolo ti permette di pubblicare guide su OriginsMeta direttamente: vanno online a tuo nome e il sito le traduce nelle altre due lingue.",
       button: "Scrivi una guida",
     },
     notAllowed: {
@@ -252,8 +276,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       cardRemove: "Togli {name}",
       cardNoMatch: "Nessuna carta con questo nome.",
       cover: "Copertina",
-      coverHint: "Un disegno del sito, nei suoi colori, in testa alla guida e negli elenchi.",
-      covers: { mint: "Menta", sky: "Cielo", gold: "Oro", crimson: "Cremisi", aurora: "Aurora", night: "Notte" },
+      coverHint: "Un'immagine del media kit ufficiale di Origins TCG (di Koin Games), mostrata intera in testa alla guida, negli elenchi e quando si condivide il link.",
+      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Due modi di collezionare", "ls-zero-pay-to-win": "Zero pay-to-win", "ls-real-collecting": "Collezionismo vero", "ls-collect-them-all": "Collezionale tutte", "ls-collector-pack": "Collector pack" },
       counter: "{n}/{max}",
       preview: "Anteprima",
       edit: "Scrivi",
@@ -291,6 +315,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       guide_limit: "Hai raggiunto 100 guide: eliminane una vecchia per scriverne una nuova.",
       guide_rate: "Hai iniziato 10 guide nelle ultime 24 ore: riprova domani.",
       guide_hidden: "Lo staff ha nascosto questa guida: scrivi allo staff dai tuoi messaggi.",
+      guide_hidden_recent: "Nelle ultime 24 ore lo staff ha nascosto una tua guida: potrai pubblicare di nuovo domani. Intanto salva questa come bozza; se vuoi sapere perché, scrivi allo staff dai tuoi messaggi.",
       guide_status: "Questa modifica è riservata allo staff.",
       duplicate: "Qualcosa è andato storto con l'indirizzo della guida: riprova.",
       db: "Salvataggio non riuscito: riprova tra un momento.",
@@ -317,6 +342,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
         duplicate: "Hai già segnalato questa guida: lo staff ci darà un'occhiata.",
         report_rate: "Oggi hai mandato molte segnalazioni: riprova domani.",
         notLoggedIn: "Accedi per segnalare questa guida.",
+        own: "Non puoi segnalare la tua guida: se vuoi cambiarla, modificala.",
+        forbidden: "Questa guida non si può segnalare (forse è stata nascosta o eliminata).",
         db: "Invio non riuscito: riprova tra un momento.",
       },
     },
@@ -334,7 +361,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       title: "Guide",
     },
     privacy:
-      "Guide della community: Autori, Creator, giocatori Pro e Staff del sito possono pubblicare guide con il loro nome utente. Titolo, testo, lingua, categoria, carte scelte, video e link di una guida pubblicata sono pubblici; le bozze e le guide nascoste dallo staff le vedono solo l'autore e lo staff. Sono conservate su Supabase (server in Irlanda, UE) con l'account. Dopo la pubblicazione il testo della guida (non il titolo) viene inviato all'API di Anthropic (Stati Uniti) per tradurlo nelle altre due lingue del sito, senza nessun dato dell'autore; una guida nuova viene anche annunciata, con titolo, riassunto e nome dell'autore, sul server Discord di OriginsMeta (Discord Inc., Stati Uniti). Se segnali una guida conserviamo chi l'ha segnalata, il motivo e quando, e li legge solo lo staff; il canale Discord privato dello staff riceve un avviso con il motivo. Guide e segnalazioni si cancellano con l'account; per eliminare prima una guida usa “Elimina” o scrivi a staff@originsmeta.com.",
+      "Guide della community: Autori, Creator, giocatori Pro e Staff del sito possono pubblicare guide con il loro nome utente. Titolo, testo, lingua, categoria, carte scelte, video e link di una guida pubblicata sono pubblici; le bozze e le guide nascoste dallo staff le vedono solo l'autore e lo staff. Sono conservate su Supabase (server in Irlanda, UE) con l'account. Dopo la pubblicazione il testo della guida (non il titolo) viene inviato all'API di Anthropic (Stati Uniti) per tradurlo nelle altre due lingue del sito, senza nessun dato dell'autore; una guida nuova viene anche annunciata, con titolo, riassunto e nome dell'autore, sul server Discord di OriginsMeta (Discord Inc., Stati Uniti). Se segnali una guida conserviamo chi l'ha segnalata, il motivo e quando, e li legge solo lo staff; la prima segnalazione di una guida in una giornata arriva anche al canale Discord privato dello staff, con il motivo e il tuo nome utente. Le tue guide e le segnalazioni che hai fatto si cancellano con l'account; per eliminare prima una guida usa “Elimina” o scrivi a staff@originsmeta.com.",
   },
   es: {
     page: {
@@ -361,10 +388,19 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       title: "Guías de la comunidad",
       intro: "Escritas y publicadas por los Autores, Creators y jugadores Pro del sitio, y traducidas automáticamente a los otros idiomas.",
       by: "de {name}",
+      all: "Todas las guías de la comunidad",
+    },
+    listPage: {
+      title: "Guías de la comunidad",
+      metaTitle: "Guías de la comunidad de Origins TCG: creators y pros",
+      description: "Guías de Origins TCG escritas por los Autores, Creators y jugadores Pro de OriginsMeta: mazos, clasificatoria, matchups y estrategia, al día.",
+      intro: "Todas las guías escritas y publicadas por los Autores, Creators y jugadores Pro del sitio que se leen en español, de la más reciente a la más antigua. Las guías escritas en otros idiomas llegan aquí en cuanto su traducción está lista.",
+      empty: "Todavía ninguna guía de la comunidad se lee en español: las primeras aparecerán aquí en cuanto se publiquen o se traduzcan.",
+      count: "{n} guías",
     },
     cta: {
       title: "Escribe una guía",
-      text: "Tu rol te permite publicar guías en OriginsMeta por tu cuenta: salen con tu nombre y el sitio las traduce al inglés, al italiano y al español.",
+      text: "Tu rol te permite publicar guías en OriginsMeta directamente: salen con tu nombre y se traducen solas a los otros dos idiomas del sitio.",
       button: "Escribe una guía",
     },
     notAllowed: {
@@ -407,8 +443,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       cardRemove: "Quitar {name}",
       cardNoMatch: "Ninguna carta con ese nombre.",
       cover: "Portada",
-      coverHint: "Un diseño del sitio, con sus colores, al comienzo de la guía y en las listas.",
-      covers: { mint: "Menta", sky: "Cielo", gold: "Oro", crimson: "Carmesí", aurora: "Aurora", night: "Noche" },
+      coverHint: "Una imagen del media kit oficial de Origins TCG (de Koin Games), mostrada entera al comienzo de la guía, en las listas y al compartir el enlace.",
+      covers: { "keyart-king-arthur": "King Arthur", "keyart-mulan": "Mulan", "keyart-queen-of-hearts": "Queen of Hearts", "keyart-robin-hood": "Robin Hood", "keyart-winnie-the-pooh": "Winnie the Pooh", "keyart-puss-in-boots": "Puss in Boots", "keyart-goldi": "Goldi", "keyart-queen-of-hearts-cyber": "Queen of Hearts (cyber)", "keyart-red-wide": "Red", "hero-1920": "Origins TCG", "ls-two-ways": "Dos formas de coleccionar", "ls-zero-pay-to-win": "Cero pay-to-win", "ls-real-collecting": "Coleccionismo de verdad", "ls-collect-them-all": "Colecciónalas todas", "ls-collector-pack": "Collector pack" },
       counter: "{n}/{max}",
       preview: "Vista previa",
       edit: "Escribir",
@@ -446,6 +482,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       guide_limit: "Llegaste a 100 guías: elimina una antigua para escribir una nueva.",
       guide_rate: "Empezaste 10 guías en las últimas 24 horas: vuelve a intentarlo mañana.",
       guide_hidden: "El staff ocultó esta guía: escribe al staff desde tus mensajes.",
+      guide_hidden_recent: "En las últimas 24 horas el staff ocultó una de tus guías: podrás volver a publicar mañana. Mientras tanto, guarda esta como borrador; si quieres saber por qué, escribe al staff desde tus mensajes.",
       guide_status: "Este cambio es solo para el staff.",
       duplicate: "Algo falló con la dirección de la guía: vuelve a intentarlo.",
       db: "No se pudo guardar: vuelve a intentarlo en un momento.",
@@ -472,6 +509,8 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
         duplicate: "Ya reportaste esta guía: el staff la revisará.",
         report_rate: "Hoy enviaste muchos reportes: vuelve a intentarlo mañana.",
         notLoggedIn: "Inicia sesión para reportar esta guía.",
+        own: "No puedes reportar tu propia guía: si quieres cambiarla, edítala.",
+        forbidden: "Esta guía no se puede reportar (quizá la ocultaron o la eliminaron).",
         db: "No se pudo enviar: vuelve a intentarlo en un momento.",
       },
     },
@@ -489,7 +528,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
       title: "Guías",
     },
     privacy:
-      "Guías de la comunidad: los Autores, Creators, jugadores Pro y el Staff del sitio pueden publicar guías con su nombre de usuario. El título, el texto, el idioma, la categoría, las cartas elegidas, los videos y los enlaces de una guía publicada son públicos; los borradores y las guías ocultas por el staff solo los ven el autor y el staff. Se guardan en Supabase (servidores en Irlanda, UE) junto con la cuenta. Después de publicarla, el texto de la guía (no el título) se envía a la API de Anthropic (Estados Unidos) para traducirlo a los otros dos idiomas del sitio, sin ningún dato del autor; una guía nueva también se anuncia, con su título, su resumen y el nombre del autor, en el servidor de Discord de OriginsMeta (Discord Inc., Estados Unidos). Si reportas una guía, guardamos quién la reportó, el motivo y cuándo, y solo los lee el staff; el canal privado de Discord del staff recibe un aviso con el motivo. Las guías y los reportes se eliminan con la cuenta; para eliminar antes una guía usa “Eliminar” o escribe a staff@originsmeta.com.",
+      "Guías de la comunidad: los Autores, Creators, jugadores Pro y el Staff del sitio pueden publicar guías con su nombre de usuario. El título, el texto, el idioma, la categoría, las cartas elegidas, los videos y los enlaces de una guía publicada son públicos; los borradores y las guías ocultas por el staff solo los ven el autor y el staff. Se guardan en Supabase (servidores en Irlanda, UE) junto con la cuenta. Después de publicarla, el texto de la guía (no el título) se envía a la API de Anthropic (Estados Unidos) para traducirlo a los otros dos idiomas del sitio, sin ningún dato del autor; una guía nueva también se anuncia, con su título, su resumen y el nombre del autor, en el servidor de Discord de OriginsMeta (Discord Inc., Estados Unidos). Si reportas una guía, guardamos quién la reportó, el motivo y cuándo, y solo los lee el staff; el primer reporte de una guía en un día también llega al canal privado de Discord del staff, con el motivo y tu nombre de usuario. Tus guías y los reportes que hiciste se eliminan con tu cuenta; para eliminar antes una guía usa “Eliminar” o escribe a staff@originsmeta.com.",
   },
 };
 

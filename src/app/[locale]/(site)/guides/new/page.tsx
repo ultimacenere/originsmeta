@@ -14,8 +14,13 @@ type Params = Promise<{ locale: string }>;
 
 /** Pagina privata e dinamica: dipende da chi ha fatto l'accesso e dal suo ruolo. */
 export const dynamic = "force-dynamic";
-/** Dopo la pubblicazione la guida si traduce dentro `after()`: la funzione deve vivere abbastanza (come /decks/publish). */
-export const maxDuration = 120;
+/**
+ * Dopo la pubblicazione la guida si traduce dentro `after()`: la funzione deve vivere abbastanza. Una guida arriva a
+ * circa 49 mila caratteri e si traduce a pezzi (guideTranslateCore.ts, quattro richieste alla volta): 300 secondi, il
+ * massimo del piano Hobby di Vercel con Fluid Compute (i mazzi, più corti, stanno in 120). Quello che non finisce lo
+ * recupera `node scripts/translate-guides.mjs`.
+ */
+export const maxDuration = 300;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { locale } = await resolveLocale(params);

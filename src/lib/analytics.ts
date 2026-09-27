@@ -77,7 +77,7 @@
  *                                                                                 overlay_vertical | overlay_horizontal),
  *                                                                                 placement (deck_page | account)
  *     deck_image_download clic su "Scarica" dell'immagine di un mazzo            format (16x9 | 9x16), placement
- *   ★ guide_published     guida della community pubblicata per la prima volta     locale (lingua della guida), category
+ *   ★ guide_published     guida della community pubblicata per la prima volta     guide_lang (lingua della guida), category
  *                         (pacchetto GUIDE, 27/09/2026; non le modifiche né una guida riportata tra le bozze e ripubblicata:
  *                         `firstPublish` di saveCommunityGuide)
  *
@@ -188,7 +188,7 @@ export type EventParams = {
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
-  guide_published: { locale: string; category: string };
+  guide_published: { guide_lang: string; category: string };
 };
 export type EventName = keyof EventParams;
 
@@ -226,7 +226,7 @@ export const VERCEL_PROPS = {
   stream_tools_open: ["placement"],
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],
-  guide_published: ["category", "locale"],
+  guide_published: ["guide_lang", "category"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

@@ -5,28 +5,32 @@
 -- Creator, Pro o Staff (o è admin) pubblica le sue guide sul sito senza passare dallo staff; gli altri continuano con
 -- il modulo "Mandaci la tua guida" (/guides/submit). Codice: src/lib/community/guides.ts (regole pure, con test in
 -- guides.test.ts che confrontano limiti, categorie, copertine e ruoli con questo file), guideQueries.ts (letture),
--- guideActions.ts (Server Action), guideTranslate.ts (traduzione automatica), pagine /guides/new,
--- /guides/community/[slug] e /guides/community/[slug]/edit.
+-- guideActions.ts (Server Action), guideTranslate.ts e guideTranslateCore.ts (traduzione automatica), pagine
+-- /guides/new, /guides/community, /guides/community/[slug] e /guides/community/[slug]/edit. Documentazione:
+-- docs/guide-community.md.
 --
 -- File da accodare IN FONDO a supabase/schema.sql (lo fa l'integratore): usa funzioni definite prima là dentro
--- (is_staff del blocco INBOX, deck_videos_ok e deck_links_ok del blocco VIDEO, touch non serve: il trigger qui sotto
+-- (is_staff del blocco INBOX, deck_videos_ok e deck_links_ok del blocco VIDEO; touch non serve: il trigger qui sotto
 -- scrive da solo le date). NON tocca public.profiles: nessuna grant, nessuna revoke (schema-guard.mjs resta com'è).
--- Idempotente: create ... if not exists, create or replace, drop policy if exists, drop constraint if exists.
+-- Idempotente: create ... if not exists, add column if not exists, create or replace, drop policy/constraint if exists.
 --
 -- Sicurezza, in breve:
 --   - il permesso di scrivere sta in UNA funzione, can_publish_guides(uid), uguale a canPublishGuides di
---     src/lib/community/badges.ts (Autore, Creator, Pro, Staff e admin; guides.test.ts li confronta);
+--     src/lib/community/badges.ts (Autore, Creator, Pro, Staff e admin; guides.test.ts e badges.test.ts li confrontano);
 --   - RLS: le guide pubblicate le legge chiunque; bozze e nascoste solo il proprietario e lo staff (is_staff());
 --     insert e update solo con can_publish_guides(auth.uid()), sulla propria riga (lo staff anche sulle altre, per
 --     nasconderle); delete del proprietario e dello staff;
 --   - grant minime e PER COLONNA per insert e update: slug, owner, date e published_at non si cambiano mai via API;
---   - il trigger guard_community_guide scrive le date, tiene i tetti (100 guide per account, 10 nuove al giorno,
---     3 prime pubblicazioni al giorno, con un lock per utente) e riserva lo stato 'hidden' allo staff: una guida
---     nascosta dallo staff il proprietario non la rimette online (la può solo eliminare);
+--   - il trigger guard_community_guide scrive le date, tiene i tetti (100 guide per account; 10 nuove e 3 prime
+--     pubblicazioni al giorno contate su un REGISTRO che l'utente non può cancellare, community_guide_events: eliminare
+--     e ricreare una guida non azzera nulla), riserva lo stato 'hidden' allo staff e, dopo che lo staff ha nascosto una
+--     guida, per 24 ore non lascia pubblicare altro al proprietario (una guida nascosta non torna online eliminandola e
+--     ripubblicandola identica); controlla le traduzioni scritte (testo semplice, stesse sezioni dell'originale);
 --   - testo semplice: niente caratteri di controllo (a capo ammessi solo in riassunto e corpo delle sezioni), niente
---     invisibili né segni di direzione del testo, al massimo una riga vuota di fila; il sito lo mostra come testo;
+--     invisibili, riempitivi (Hangul, Braille vuoto) né segni di direzione del testo, al massimo una riga vuota di fila
+--     (anche se "vuota" di spazi Unicode); il sito lo mostra come testo;
 --   - copertina caricata (cover_path) solo nella cartella del proprietario e solo per i ruoli con vetrina; il bucket
---     lo porta il pacchetto VETRINA (finché non c'è, il sito usa solo le copertine preimpostate, cover_preset).
+--     lo porta il pacchetto VETRINA (finché non c'è, il sito usa solo le copertine preimpostate del media kit).
 -- =====================================================================================================
 
 -- ---------- chi può pubblicare le guide ----------
@@ -40,23 +44,27 @@ returns boolean language sql stable security definer set search_path = public, p
      where p.id = uid and (p.role = 'admin' or p.badge in ('author','creator','pro','staff'))
   );
 $$;
--- La usano le policy di insert e update (solo authenticated) e il sito per decidere il riquadro di /guides.
+-- La usano le policy di insert e update (solo authenticated).
 revoke all on function public.can_publish_guides(uuid) from public, anon;
 grant execute on function public.can_publish_guides(uuid) to authenticated, service_role;
 
 -- ---------- testo semplice ----------
--- Da `minlen` a `maxlen` caratteri (punti di codice, come `char_length`), almeno un carattere che non sia uno spazio,
--- niente caratteri di controllo (con `multiline` l'a capo è ammesso), niente trattino morbido, segni di direzione del
--- testo né invisibili (la stessa lista di deck_text_ok), al massimo una riga vuota di fila, niente spazi in testa o in
--- coda. Gli stessi controlli di `plainTextOk` in src/lib/community/guides.ts (il sito pulisce prima di scrivere).
+-- Da `minlen` a `maxlen` caratteri (punti di codice, come `char_length`), almeno un carattere che non sia uno spazio
+-- (nemmeno uno spazio Unicode: NBSP, spazio ideografico…), niente caratteri di controllo (con `multiline` l'a capo è
+-- ammesso), niente separatori di riga Unicode, niente trattino morbido, segni di direzione del testo, invisibili e
+-- riempitivi (U+115F, U+1160, U+2060-2064, U+2800, U+3164, U+FFA0: con quelli un titolo sembra vuoto), al massimo una
+-- riga vuota di fila (le righe fatte solo di spazi Unicode contano come vuote), niente spazi in testa o in coda.
+-- Gli stessi controlli di `plainTextOk` in src/lib/community/guides.ts (il sito pulisce prima di scrivere; il test
+-- guides.test.ts confronta la lista degli invisibili con quella del codice).
 create or replace function public.community_guide_text_ok(t text, minlen integer, maxlen integer, multiline boolean)
 returns boolean language sql immutable set search_path = pg_catalog as $$
   select t is not null
      and char_length(t) between minlen and maxlen
-     and (char_length(t) = 0 or (t ~ '[^[:space:]]' and t = btrim(t, E' \n')))
+     and (char_length(t) = 0 or (regexp_replace(t, '[[:space:]\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]', '', 'g') <> '' and t = btrim(t, E' \n')))
      and (case when multiline then replace(t, chr(10), '') else t end) !~ '[[:cntrl:]]'
-     and translate(t, U&'\00AD\061C\200B\200E\200F\202A\202B\202C\202D\202E\2066\2067\2068\2069\FEFF', '') = t
-     and strpos(replace(t, ' ', ''), repeat(chr(10), 3)) = 0;
+     and t !~ '[\u2028\u2029]'
+     and translate(t, U&'\00AD\061C\115F\1160\200B\200E\200F\202A\202B\202C\202D\202E\2060\2061\2062\2063\2064\2066\2067\2068\2069\2800\3164\FEFF\FFA0', '') = t
+     and strpos(regexp_replace(t, '[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]', '', 'g'), repeat(chr(10), 3)) = 0;
 $$;
 
 -- Le sezioni: un array di oggetti con le sole chiavi heading e body. Una guida pubblicata (o nascosta) ha da 1 a 12
@@ -81,6 +89,42 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
   end;
 $$;
 
+-- Una traduzione salvata in `translations` (una lingua): {hash, at, model, parts, guide: {summary, sections}} con il
+-- testo che rispetta le regole del testo semplice, lo stesso numero di sezioni dell'originale (`n`) e lunghezze fino a
+-- 2,5 volte i massimi dell'originale più 200 (la tolleranza di `parseTranslation`; in guides.ts TRANSLATION_LIMITS e
+-- `translationTextOk`, confrontati dal test: una traduzione è più lunga dell'originale, non a piacere). Le traduzioni le
+-- scrive il sito con la sessione del proprietario: senza questo controllo chi ha il ruolo potrebbe metterci via API
+-- testo che le regole vietano.
+create or replace function public.community_guide_translation_ok(t jsonb, n integer)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when t is null or jsonb_typeof(t) is distinct from 'object' then false
+    when octet_length(t::text) > 190000 then false
+    when (t - 'hash' - 'at' - 'model' - 'parts' - 'guide') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'hash') is distinct from 'string' or char_length(t ->> 'hash') > 32 then false
+    when t ? 'at' and (jsonb_typeof(t -> 'at') is distinct from 'string' or char_length(t ->> 'at') > 40) then false
+    when t ? 'model' and (jsonb_typeof(t -> 'model') is distinct from 'string' or char_length(t ->> 'model') > 80) then false
+    when t ? 'parts' and (jsonb_typeof(t -> 'parts') is distinct from 'array' or jsonb_array_length(t -> 'parts') > 13) then false
+    when t ? 'parts' and exists (select 1 from jsonb_array_elements(t -> 'parts') as p(x) where jsonb_typeof(x) is distinct from 'string' or char_length(x #>> '{}') > 32) then false
+    when jsonb_typeof(t -> 'guide') is distinct from 'object' then false
+    when ((t -> 'guide') - 'summary' - 'sections') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'guide' -> 'summary') is distinct from 'string' then false
+    when not public.community_guide_text_ok(t -> 'guide' ->> 'summary', 1, 950, true) then false
+    when jsonb_typeof(t -> 'guide' -> 'sections') is distinct from 'array' then false
+    when jsonb_array_length(t -> 'guide' -> 'sections') <> n then false
+    else not exists (
+      select 1 from jsonb_array_elements(t -> 'guide' -> 'sections') as e(x)
+       where case
+         when jsonb_typeof(x) is distinct from 'object' then true
+         when (x - 'heading' - 'body') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'heading') is distinct from 'string' then true
+         when jsonb_typeof(x -> 'body') is distinct from 'string' then true
+         when not public.community_guide_text_ok(x ->> 'heading', 1, 400, false) then true
+         else not public.community_guide_text_ok(x ->> 'body', 1, 10200, true)
+       end)
+  end;
+$$;
+
 -- Le carte citate: slug del database carte del sito (il sito controlla che esistano), al massimo 24, senza doppioni.
 create or replace function public.community_guide_cards_ok(c text[])
 returns boolean language sql immutable set search_path = pg_catalog as $$
@@ -90,12 +134,14 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
      and cardinality(c) = (select count(distinct x) from unnest(c) as u(x));
 $$;
 
--- Funzioni pure dentro i vincoli: girano con i privilegi di chi scrive la riga (authenticated), niente anon.
+-- Funzioni pure dentro i vincoli e nel trigger: girano con i privilegi di chi scrive la riga (authenticated), niente anon.
 revoke all on function public.community_guide_text_ok(text, integer, integer, boolean) from public, anon;
 revoke all on function public.community_guide_sections_ok(jsonb, boolean) from public, anon;
+revoke all on function public.community_guide_translation_ok(jsonb, integer) from public, anon;
 revoke all on function public.community_guide_cards_ok(text[]) from public, anon;
 grant execute on function public.community_guide_text_ok(text, integer, integer, boolean) to authenticated, service_role;
 grant execute on function public.community_guide_sections_ok(jsonb, boolean) to authenticated, service_role;
+grant execute on function public.community_guide_translation_ok(jsonb, integer) to authenticated, service_role;
 grant execute on function public.community_guide_cards_ok(text[]) to authenticated, service_role;
 
 -- ---------- la tabella ----------
@@ -115,17 +161,25 @@ create table if not exists public.community_guides (
   -- video e risorse con le regole dei mazzi (blocco VIDEO: deck_videos_ok, deck_links_ok)
   videos jsonb not null default '[]'::jsonb,
   links jsonb not null default '[]'::jsonb,
-  -- copertina: un disegno del sito (gradiente della palette, mai materiale Koin) o un'immagine caricata dal proprietario
-  cover_preset text not null default 'mint',
+  -- copertina: un'immagine del media kit ufficiale in public/media (contenuto, come le copertine delle guide del sito;
+  -- GUIDE_COVERS in guides.ts) o un'immagine caricata dal proprietario (cover_path, pacchetto VETRINA)
+  cover_preset text not null default 'keyart-king-arthur',
   cover_path text,
   status text not null default 'draft',
-  -- traduzioni automatiche: {"it": {"hash": "…", "at": "…", "model": "…", "guide": {"summary": "…", "sections": [...]}}}
+  -- traduzioni automatiche: {"it": {"hash": "…", "at": "…", "model": "…", "parts": [...], "guide": {"summary": "…", "sections": [...]}}}
   translations jsonb not null default '{}'::jsonb,
+  -- parole del testo originale e impronta del testo (communityGuideWords e communityGuideHash di guides.ts), scritte dal
+  -- sito insieme al testo: servono agli elenchi e alla sitemap, che così non leggono sezioni e traduzioni intere
+  words integer,
+  text_hash text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  -- prima pubblicazione: la scrive solo il trigger; serve alla data dell'articolo e al tetto giornaliero
+  -- prima pubblicazione: la scrive solo il trigger; serve alla data dell'articolo
   published_at timestamptz
 );
+alter table public.community_guides add column if not exists words integer;
+alter table public.community_guides add column if not exists text_hash text;
+alter table public.community_guides alter column cover_preset set default 'keyart-king-arthur';
 create index if not exists community_guides_status_idx on public.community_guides (status, published_at desc);
 create index if not exists community_guides_owner_idx on public.community_guides (owner, updated_at desc);
 
@@ -156,9 +210,10 @@ alter table public.community_guides drop constraint if exists community_guides_v
 alter table public.community_guides add constraint community_guides_videos_check check (public.deck_videos_ok(videos));
 alter table public.community_guides drop constraint if exists community_guides_links_check;
 alter table public.community_guides add constraint community_guides_links_check check (public.deck_links_ok(links));
+-- GUIDE_COVER_PRESETS di guides.ts (il test li confronta, e controlla che i file esistano in public/media)
 alter table public.community_guides drop constraint if exists community_guides_cover_preset_check;
 alter table public.community_guides add constraint community_guides_cover_preset_check
-  check (cover_preset in ('mint','sky','gold','crimson','aurora','night'));
+  check (cover_preset in ('keyart-king-arthur','keyart-mulan','keyart-queen-of-hearts','keyart-robin-hood','keyart-winnie-the-pooh','keyart-puss-in-boots','keyart-goldi','keyart-queen-of-hearts-cyber','keyart-red-wide','hero-1920','ls-two-ways','ls-zero-pay-to-win','ls-real-collecting','ls-collect-them-all','ls-collector-pack'));
 alter table public.community_guides drop constraint if exists community_guides_cover_path_check;
 alter table public.community_guides add constraint community_guides_cover_path_check
   check (cover_path is null or (char_length(cover_path) <= 200
@@ -166,8 +221,29 @@ alter table public.community_guides add constraint community_guides_cover_path_c
 alter table public.community_guides drop constraint if exists community_guides_translations_check;
 alter table public.community_guides add constraint community_guides_translations_check
   check (jsonb_typeof(translations) = 'object' and octet_length(translations::text) <= 400000);
+alter table public.community_guides drop constraint if exists community_guides_words_check;
+alter table public.community_guides add constraint community_guides_words_check check (words is null or words between 0 and 100000);
+alter table public.community_guides drop constraint if exists community_guides_text_hash_check;
+alter table public.community_guides add constraint community_guides_text_hash_check check (text_hash is null or text_hash ~ '^[0-9a-z]{1,16}$');
 
--- ---------- trigger: date, tetti, stato riservato allo staff, copertina ----------
+-- ---------- registro per i tetti giornalieri ----------
+-- Una riga per ogni guida creata ('create'), per ogni prima pubblicazione ('publish') e per ogni guida nascosta dallo
+-- staff ('hide'). La scrive solo il trigger guard_community_guide (security definer); nessuno la legge o la cancella via
+-- API (RLS senza policy, nessuna grant): eliminare una guida non toglie le sue righe, quindi i tetti non si aggirano con
+-- pubblica → elimina → ricrea. Le righe più vecchie di una settimana le toglie il trigger stesso.
+create table if not exists public.community_guide_events (
+  id bigint generated always as identity primary key,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  kind text not null,
+  at timestamptz not null default now()
+);
+alter table public.community_guide_events drop constraint if exists community_guide_events_kind_check;
+alter table public.community_guide_events add constraint community_guide_events_kind_check check (kind in ('create','publish','hide'));
+create index if not exists community_guide_events_owner_idx on public.community_guide_events (owner, kind, at desc);
+alter table public.community_guide_events enable row level security;
+revoke all on public.community_guide_events from anon, authenticated;
+
+-- ---------- trigger: date, tetti, stato riservato allo staff, traduzioni, copertina ----------
 -- Privilegiato = lo staff (is_staff: admin o tag Staff) o una connessione diretta (auth.uid() nullo: script dello staff,
 -- traduzioni degli arretrati). Errori con codici letti da `guideErrorCode` in src/lib/community/guides.ts.
 create or replace function public.guard_community_guide()
@@ -176,24 +252,33 @@ declare
   me uuid := auth.uid();
   privileged boolean := me is null or public.is_staff();
   n int;
+  k text;
+  v jsonb;
 begin
   if tg_op = 'INSERT' then
     new.created_at := now();
     new.updated_at := now();
     new.published_at := case when new.status = 'published' then now() else null end;
+    -- le richieste parallele dello stesso utente passano una alla volta: i tetti valgono anche così
+    perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
     if not privileged then
       if new.status not in ('draft', 'published') then raise exception 'guide_status' using errcode = '42501'; end if;
-      -- le richieste parallele dello stesso utente passano una alla volta: i tetti valgono anche così
-      perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
       select count(*) into n from public.community_guides where owner = new.owner;
       if n >= 100 then raise exception 'guide_limit' using errcode = '23514'; end if;
-      select count(*) into n from public.community_guides where owner = new.owner and created_at > now() - interval '1 day';
+      -- i tetti giornalieri contano il registro, non le guide ancora presenti
+      select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'create' and at > now() - interval '1 day';
       if n >= 10 then raise exception 'guide_rate' using errcode = '23514'; end if;
       if new.status = 'published' then
-        select count(*) into n from public.community_guides where owner = new.owner and published_at > now() - interval '1 day';
+        if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+          raise exception 'guide_hidden_recent' using errcode = '42501';
+        end if;
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
         if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
       end if;
     end if;
+    delete from public.community_guide_events where owner = new.owner and at < now() - interval '7 days';
+    insert into public.community_guide_events (owner, kind) values (new.owner, 'create');
+    if new.status = 'published' then insert into public.community_guide_events (owner, kind) values (new.owner, 'publish'); end if;
   else
     -- id, proprietario, slug e nascita non cambiano mai (le grant per colonna non li danno; questo vale anche per lo staff)
     if me is not null and (new.id is distinct from old.id or new.owner is distinct from old.owner
@@ -205,16 +290,47 @@ begin
       raise exception 'guide_hidden' using errcode = '42501';
     end if;
     new.published_at := old.published_at;
-    if new.status = 'published' and old.published_at is null then
-      if not privileged then
-        perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
-        select count(*) into n from public.community_guides where owner = new.owner and published_at > now() - interval '1 day';
+    -- una guida che va (o torna) online: niente per 24 ore dopo una guida nascosta dallo staff; la prima pubblicazione
+    -- conta nel tetto giornaliero
+    if new.status = 'published' and old.status is distinct from 'published' and not privileged then
+      perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
+      if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+        raise exception 'guide_hidden_recent' using errcode = '42501';
+      end if;
+      if old.published_at is null then
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
         if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
       end if;
+    end if;
+    if new.status = 'published' and old.published_at is null then
       new.published_at := now();
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'publish');
+    end if;
+    if new.status = 'hidden' and old.status is distinct from 'hidden' then
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'hide');
+    end if;
+    -- parole e impronta le scrive il sito insieme al testo: se il testo cambia senza una nuova impronta (una scrittura
+    -- via API che non passa dal sito), si azzerano e gli elenchi trattano la guida come da ricontare (non indicizzabile)
+    if (new.lang, new.summary, new.sections) is distinct from (old.lang, old.summary, old.sections)
+       and new.text_hash is not distinct from old.text_hash then
+      new.words := null;
+      new.text_hash := null;
+    end if;
+    -- traduzioni: ogni lingua cambiata deve essere un'altra lingua del sito e rispettare le regole del testo semplice,
+    -- con le stesse sezioni del testo attuale (vale per tutti, staff e script compresi)
+    if new.translations is distinct from old.translations then
+      for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
+        if v is distinct from (old.translations -> k) then
+          if k not in ('en', 'it', 'es') or k = new.lang
+             or not public.community_guide_translation_ok(v, jsonb_array_length(new.sections)) then
+            raise exception 'guide_translation' using errcode = '23514';
+          end if;
+        end if;
+      end loop;
     end if;
     -- la data di aggiornamento è quella dell'autore: scrivere le traduzioni non la sposta (come i mazzi)
-    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at') is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at') then
+    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash')
+        is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash') then
       new.updated_at := now();
     else
       new.updated_at := old.updated_at;
@@ -260,29 +376,37 @@ create policy "community guides: owners and staff delete" on public.community_gu
 -- colonna, quindi il blocco si può rilanciare.
 revoke all on public.community_guides from anon, authenticated;
 grant select on public.community_guides to anon, authenticated;
-grant insert (slug, owner, lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status)
+grant insert (slug, owner, lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status, words, text_hash)
   on public.community_guides to authenticated;
-grant update (lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status, translations)
+grant update (lang, title, summary, sections, category, cards, videos, links, cover_preset, cover_path, status, translations, words, text_hash)
   on public.community_guides to authenticated;
 grant delete on public.community_guides to authenticated;
 
 -- ---------- segnalazioni (gemella di deck_reports) ----------
--- Una per utente e per guida; solo sulle guide pubblicate; le legge lo staff. Il sito avvisa anche il canale privato
--- dello staff su Discord (DISCORD_FEEDBACK_WEBHOOK_URL), con il link alla guida.
+-- Una per utente e per guida; solo sulle guide pubblicate e mai sulla propria; le legge lo staff (e ognuno le sue).
+-- Il sito avvisa il canale privato dello staff su Discord (DISCORD_FEEDBACK_WEBHOOK_URL) solo alla prima segnalazione
+-- di una guida nelle 24 ore (`first_in_day`, scritta dal trigger): una raffica di segnalazioni non riempie il canale.
+-- Si cancellano con l'account di chi le ha fatte (on delete cascade, come dice l'informativa).
 create table if not exists public.community_guide_reports (
   id bigint generated always as identity primary key,
   guide_id uuid not null references public.community_guides(id) on delete cascade,
-  user_id uuid references public.profiles(id) on delete set null,
+  user_id uuid not null references public.profiles(id) on delete cascade,
   reason text not null,
   created_at timestamptz not null default now(),
+  first_in_day boolean not null default false,
   unique (guide_id, user_id)
 );
+alter table public.community_guide_reports add column if not exists first_in_day boolean not null default false;
+alter table public.community_guide_reports drop constraint if exists community_guide_reports_user_id_fkey;
+alter table public.community_guide_reports add constraint community_guide_reports_user_id_fkey
+  foreign key (user_id) references public.profiles(id) on delete cascade;
 create index if not exists community_guide_reports_user_idx on public.community_guide_reports (user_id, created_at desc);
+create index if not exists community_guide_reports_guide_idx on public.community_guide_reports (guide_id, created_at desc);
 alter table public.community_guide_reports drop constraint if exists community_guide_reports_reason_check;
 alter table public.community_guide_reports add constraint community_guide_reports_reason_check
   check (public.community_guide_text_ok(reason, 3, 500, true));
 
--- Al massimo 20 segnalazioni al giorno per utente (lo staff no); la data la scrive il database.
+-- Al massimo 5 segnalazioni al giorno per utente (lo staff no); data e `first_in_day` le scrive il database.
 create or replace function public.guard_community_guide_report()
 returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -292,8 +416,12 @@ begin
   if auth.uid() is not null and not public.is_staff() then
     perform pg_advisory_xact_lock(hashtext('om_guide_reports:' || auth.uid()::text));
     select count(*) into n from public.community_guide_reports where user_id = auth.uid() and created_at > now() - interval '1 day';
-    if n >= 20 then raise exception 'report_rate' using errcode = '23514'; end if;
+    if n >= 5 then raise exception 'report_rate' using errcode = '23514'; end if;
   end if;
+  perform pg_advisory_xact_lock(hashtext('om_guide_report_g:' || new.guide_id::text));
+  new.first_in_day := not exists (
+    select 1 from public.community_guide_reports r where r.guide_id = new.guide_id and r.created_at > now() - interval '1 day'
+  );
   return new;
 end $$;
 revoke all on function public.guard_community_guide_report() from public, anon, authenticated;
@@ -305,10 +433,12 @@ alter table public.community_guide_reports enable row level security;
 drop policy if exists "guide reports: users report published guides" on public.community_guide_reports;
 create policy "guide reports: users report published guides" on public.community_guide_reports for insert to authenticated
   with check (user_id = (select auth.uid())
-    and exists (select 1 from public.community_guides g where g.id = guide_id and g.status = 'published'));
+    and exists (select 1 from public.community_guides g where g.id = guide_id and g.status = 'published' and g.owner <> (select auth.uid())));
+-- Lo staff le legge tutte; ognuno le sue (serve a rileggere `first_in_day` dopo l'invio)
 drop policy if exists "guide reports: staff read" on public.community_guide_reports;
-create policy "guide reports: staff read" on public.community_guide_reports for select to authenticated
-  using ((select public.is_staff()));
+drop policy if exists "guide reports: own and staff read" on public.community_guide_reports;
+create policy "guide reports: own and staff read" on public.community_guide_reports for select to authenticated
+  using (user_id = (select auth.uid()) or (select public.is_staff()));
 drop policy if exists "guide reports: staff delete" on public.community_guide_reports;
 create policy "guide reports: staff delete" on public.community_guide_reports for delete to authenticated
   using ((select public.is_staff()));
@@ -318,5 +448,6 @@ grant insert (guide_id, user_id, reason) on public.community_guide_reports to au
 grant select, delete on public.community_guide_reports to authenticated;
 
 -- Le regole anche nel catalogo del database, per chi lo apre dalla dashboard di Supabase.
-comment on table public.community_guides is 'Guide della community pubblicate da Autore, Creator, Pro e Staff (27/09/2026). Regole in src/lib/community/guides.ts; permesso in can_publish_guides.';
+comment on table public.community_guides is 'Guide della community pubblicate da Autore, Creator, Pro e Staff (27/09/2026). Regole in src/lib/community/guides.ts; permesso in can_publish_guides; documentazione in docs/guide-community.md.';
+comment on table public.community_guide_events is 'Registro dei tetti giornalieri delle guide della community (create, prime pubblicazioni, guide nascoste): lo scrive solo il trigger guard_community_guide.';
 comment on function public.can_publish_guides(uuid) is 'Chi pubblica guide senza passare dallo staff: Autore, Creator, Pro, Staff e admin (canPublishGuides in src/lib/community/badges.ts).';

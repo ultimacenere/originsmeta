@@ -7,11 +7,14 @@ import { getGuides } from "@/lib/content/guides";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { GuideCtaBox } from "@/components/guides/GuideCtaBox";
-import { CommunityGuidesSection } from "@/components/guides/CommunityGuideList";
+import { CommunityGuidesSection, communityGuidesIn } from "@/components/guides/CommunityGuideList";
+import { COMMUNITY_GUIDES_ON_HUB } from "@/lib/community/guides";
 
 /**
- * ISR dal 27/09/2026 (pacchetto GUIDE): la pagina mostra anche le ultime guide della community, lette da Supabase come
- * /decks (cinque minuti; le Server Action delle guide la rinnovano subito). Le guide editoriali restano statiche.
+ * ISR dal 27/09/2026 (pacchetto GUIDE; decisione da confermare con Pierluigi, scritta in CLAUDE.md): la pagina mostra
+ * anche le ultime guide della community, lette da Supabase come /decks (cinque minuti; le Server Action delle guide la
+ * rinnovano subito), e le elenca nei dati strutturati. Le guide editoriali restano statiche. Come /decks, una build con
+ * Supabase irraggiungibile fallisce di proposito (la lettura lancia); con la tabella che non c'è ancora, niente sezione.
  */
 export const revalidate = 300;
 
@@ -26,8 +29,15 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
   const guides = getGuides(locale);
   const categories = Object.entries(d.guides.categories) as [keyof typeof d.guides.categories, string][];
 
-  // Lista per i dati strutturati: le guide già caricate qui sopra, ognuna con la sua pagina.
-  const listed = guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) }));
+  // Guide della community indicizzabili in questa lingua (pacchetto GUIDE): la sezione in fondo ne mostra le ultime
+  const community = await communityGuidesIn(locale);
+  const shownCommunity = community.slice(0, COMMUNITY_GUIDES_ON_HUB);
+
+  // Lista per i dati strutturati: le guide già caricate qui sopra e quelle della community mostrate in fondo, ognuna con la sua pagina.
+  const listed = [
+    ...guides.map((g) => ({ name: g.title, path: href(locale, `/guides/${g.slug}`) })),
+    ...shownCommunity.map((g) => ({ name: g.title, path: href(locale, `/guides/community/${g.slug}`) })),
+  ];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -86,7 +96,7 @@ export default async function GuidesPage({ params }: { params: LocaleParams }) {
         ))}
       </ul>
       {/* Guide della community (pacchetto GUIDE): le ultime indicizzabili in questa lingua; niente se non ce ne sono */}
-      <CommunityGuidesSection locale={locale} />
+      <CommunityGuidesSection locale={locale} guides={shownCommunity} total={community.length} />
     </div>
   );
 }

@@ -17,8 +17,8 @@ type Params = Promise<{ locale: string; slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export const dynamic = "force-dynamic";
-/** Dopo una modifica di una guida pubblicata la traduzione si rifà dentro `after()` (vedi /guides/new). */
-export const maxDuration = 120;
+/** Dopo una modifica di una guida pubblicata la traduzione delle parti cambiate si rifà dentro `after()` (vedi /guides/new). */
+export const maxDuration = 300;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 /**
  * Modifica di una guida della community (pacchetto GUIDE, 27/09/2026): per il proprietario (bozze e pubblicate; una
- * nascosta dallo staff si vede ma non si salva) e per lo staff, che da qui rimette online una guida nascosta. Le policy
+ * nascosta dallo staff si vede ma non si salva) e per lo staff, che da qui corregge una guida nascosta (resta nascosta)
+ * e la rimette online. Le policy
  * RLS mostrano bozze e nascoste solo al proprietario e allo staff: a chiunque altro la pagina risponde 404.
  */
 export default async function EditGuidePage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
@@ -94,6 +95,7 @@ export default async function EditGuidePage({ params, searchParams }: { params: 
           langs={locales.map((l) => [l, localeNames[l]])}
           pool={guidePool()}
           justSaved={saved}
+          staff={role.staff}
         />
       </div>
 

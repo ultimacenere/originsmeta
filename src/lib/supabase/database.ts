@@ -105,6 +105,9 @@ export type CommunityGuideRow = {
   cover_path: string | null;
   status: "draft" | "published" | "hidden";
   translations: CommunityGuideTranslations;
+  /** parole e impronta del testo originale, scritte dal sito con il testo (le leggono elenchi e sitemap) */
+  words: number | null;
+  text_hash: string | null;
   created_at: string;
   updated_at: string;
   /** prima pubblicazione: la scrive solo il trigger guard_community_guide */
@@ -112,12 +115,13 @@ export type CommunityGuideRow = {
 };
 /** Le colonne con la grant di insert (slug, owner e testo); date, id e traduzioni no. */
 export type CommunityGuideInsert = Pick<CommunityGuideRow, "slug" | "owner" | "lang" | "title"> &
-  Partial<Pick<CommunityGuideRow, "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status">>;
+  Partial<Pick<CommunityGuideRow, "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status" | "words" | "text_hash">>;
 /** Le colonne con la grant di update: mai slug, owner, id e date. */
 export type CommunityGuideUpdate = Partial<
-  Pick<CommunityGuideRow, "lang" | "title" | "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status" | "translations">
+  Pick<CommunityGuideRow, "lang" | "title" | "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status" | "translations" | "words" | "text_hash">
 >;
-export type CommunityGuideReportRow = { id: number; guide_id: string; user_id: string | null; reason: string; created_at: string };
+/** `first_in_day`: prima segnalazione della guida nelle 24 ore (la scrive il trigger; solo allora il sito avvisa lo staff) */
+export type CommunityGuideReportRow = { id: number; guide_id: string; user_id: string; reason: string; created_at: string; first_in_day: boolean };
 
 /* ---------- Tournament Organizer (16/09/2026) ---------- */
 export type TournamentRow = {
@@ -353,7 +357,7 @@ export type Database = {
           },
         ];
       };
-      /** segnalazioni delle guide: le scrive chi ha fatto l'accesso, le legge lo staff */
+      /** segnalazioni delle guide: le scrive chi ha fatto l'accesso (mai sulla propria guida), le legge lo staff e ognuno le sue */
       community_guide_reports: {
         Row: CommunityGuideReportRow;
         Insert: { guide_id: string; user_id: string; reason: string };
@@ -544,6 +548,7 @@ export type Database = {
       community_guide_text_ok: { Args: { t: string; minlen: number; maxlen: number; multiline: boolean }; Returns: boolean };
       community_guide_sections_ok: { Args: { s: { heading: string; body: string }[]; complete: boolean }; Returns: boolean };
       community_guide_cards_ok: { Args: { c: string[] }; Returns: boolean };
+      community_guide_translation_ok: { Args: { t: unknown; n: number }; Returns: boolean };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

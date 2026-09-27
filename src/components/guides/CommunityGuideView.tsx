@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { formatDate, getDictionary, href, locales, siteUrl, type Locale } from "@/lib/i18n";
-import { defaultOgImage, pageTitle, pageTitleWith } from "@/lib/page";
+import { pageTitle, pageTitleWith } from "@/lib/page";
 import { getCard } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { communityGuideIndexing, communityGuideWords, localizedCommunityGuide, readMinutes, type CommunityGuide } from "@/lib/community/guides";
+import { communityGuideIndexing, communityGuideWords, guideCover, guideShapeIndexing, localizedCommunityGuide, readMinutes, type CommunityGuide } from "@/lib/community/guides";
 import { editorialAuthor, fillLabel } from "@/lib/community/deckQuality";
 import { normalizeBadge } from "@/lib/community/badges";
 import { authorName, authorHandle } from "@/lib/community/util";
@@ -58,14 +58,17 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
   const videos = deckVideos(guide);
   const links = deckLinks(guide);
   // Altre guide della community: prima quelle che si leggono in questa lingua e della stessa categoria (link a pagine
-  // indicizzabili), poi le più recenti. Stessa lettura della sezione di /guides (cache dei dati di Next, 60 s).
+  // indicizzabili), poi le più recenti. Stessa lettura leggera della sezione di /guides (cache dei dati di Next, 60 s).
   const others = (await listPublishedGuides())
     .filter((g) => g.id !== guide.id)
-    .map((g) => ({ g, score: (communityGuideIndexing(g, locales, locale).noindex ? 0 : 2) + (g.category === guide.category ? 1 : 0) }))
+    .map((g) => ({ g, score: (guideShapeIndexing(g, locales, locale).noindex ? 0 : 2) + (g.category === guide.category ? 1 : 0) }))
     .sort((a, b) => b.score - a.score || (b.g.published_at ?? "").localeCompare(a.g.published_at ?? ""))
     .slice(0, 4)
     .map((x) => x.g);
   const editorial = editorialAuthor(authors, [], guide.profile?.username);
+  const cover = guideCover(guide.cover_preset);
+  // l'elenco /guides/community nelle briciole solo quando questa versione è indicizzabile (allora l'elenco la contiene)
+  const listed = !communityGuideIndexing(guide, locales, locale).noindex;
 
   const article = communityGuideArticle({
     locale,
@@ -74,8 +77,8 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
     description: guideDescription(guide, locale).slice(0, 300),
     published,
     modified: guide.updated_at,
-    // `image` è obbligatoria per i rich result: la copertina è un disegno CSS, quindi l'immagine social del sito
-    image: `${siteUrl}${defaultOgImage}`,
+    // `image` è obbligatoria per i rich result: la copertina della guida (media kit, la stessa dell'og:image)
+    image: `${siteUrl}${cover.src}`,
     author: communityPerson({ locale, username: guide.profile?.username, name: author, editorial }),
     cards: cards.flatMap((s) => {
       const card = getCard(s);
@@ -87,7 +90,17 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <JsonLd data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.guides.title, path: href(locale, "/guides") }, { name: guide.title, path }])]} />
+      <JsonLd
+        data={[
+          article,
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: d.guides.title, path: href(locale, "/guides") },
+            ...(listed ? [{ name: L.listPage.title, path: href(locale, "/guides/community") }] : []),
+            { name: guide.title, path },
+          ]),
+        ]}
+      />
       <p className="text-sm">
         <Link href={href(locale, "/guides")} className="text-chalk-muted hover:text-chalk">
           ← {d.common.backTo} {d.guides.title}
@@ -102,15 +115,16 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
         labels={{ title: L.page.newTitle, text: L.page.newText, copyLink: c.copyLink, copied: c.copied, discord: d.nav.discord, close: c.newDeckClose }}
       />
 
-      <article className="mt-6">
-        <GuideCover preset={guide.cover_preset} label={category} />
+      <article className="mt-6 min-w-0">
+        <GuideCover preset={guide.cover_preset} eager />
         <p className="kicker mt-6 text-mint">
-          {L.page.kicker} · {fillLabel(L.page.published, { date: formatDate(locale, published.slice(0, 10)) })}
+          {L.page.kicker} · {category} · {fillLabel(L.page.published, { date: formatDate(locale, published.slice(0, 10)) })}
           {guide.updated_at.slice(0, 10) !== published.slice(0, 10) ? ` · ${fillLabel(L.page.updated, { date: formatDate(locale, guide.updated_at.slice(0, 10)) })}` : ""}
           {` · ${fillLabel(L.page.readTime, { n: String(readMinutes(words)) })}`}
         </p>
-        {/* il titolo non si traduce (come il nome di un mazzo): resta nella lingua dell'autore */}
-        <h1 className="t-page mt-2 leading-tight" lang={guide.lang === locale ? undefined : guide.lang}>
+        {/* il titolo non si traduce (come il nome di un mazzo): resta nella lingua dell'autore. break-words (anche sotto):
+            una parola lunghissima scritta dall'autore (un link, un codice del gioco) va a capo invece di allargare la pagina */}
+        <h1 className="t-page mt-2 break-words leading-tight" lang={guide.lang === locale ? undefined : guide.lang}>
           {guide.title}
         </h1>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
@@ -148,7 +162,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
         ) : null}
 
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
-          <p className="whitespace-pre-line text-lg text-pale" lang={view.lang}>
+          <p className="whitespace-pre-line break-words text-lg text-pale" lang={view.lang}>
             <CardMentions text={view.text.summary} locale={locale} dict={d} />
           </p>
         </div>
@@ -156,9 +170,9 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
         <CommunityGuideVideos videos={videos} title={guide.title} locale={locale} />
 
         {view.text.sections.map((s, i) => (
-          <section key={i} className="mt-10" lang={view.lang}>
-            <h2 className="t-section">{s.heading}</h2>
-            <p className="mt-3 whitespace-pre-line leading-relaxed text-pale">
+          <section key={i} className="mt-10 min-w-0" lang={view.lang}>
+            <h2 className="t-section break-words">{s.heading}</h2>
+            <p className="mt-3 whitespace-pre-line break-words leading-relaxed text-pale">
               <CardMentions text={s.body} locale={locale} dict={d} />
             </p>
           </section>
@@ -195,7 +209,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
 
       {/* La segnalazione resta in fondo e in piccolo, come nei mazzi */}
       <div className="mt-12 flex justify-end">
-        <GuideReportForm guideId={guide.id} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} labels={L.report} />
+        <GuideReportForm guideId={guide.id} ownerId={guide.owner} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} labels={L.report} />
       </div>
     </div>
   );

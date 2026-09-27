@@ -2,7 +2,6 @@ import Link from "next/link";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
 import { guideRoleOf, listGuidesByOwner, listOwnGuides } from "@/lib/community/guideQueries";
-import { communityGuideWords } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { deleteCommunityGuide } from "@/lib/community/guideActions";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
@@ -50,7 +49,7 @@ export async function AccountGuides({ locale, supabase, userId }: { locale: Loca
                 </div>
                 <p className="t-item mt-3 break-words leading-tight">{g.title}</p>
                 <p className="mt-1 font-mono text-xs text-pale-muted">
-                  {fillLabel(L.account.words, { n: String(communityGuideWords(g)) })} · {d.common.updated} {formatDate(locale, g.updated_at.slice(0, 10))}
+                  {fillLabel(L.account.words, { n: String(g.words ?? 0) })} · {d.common.updated} {formatDate(locale, g.updated_at.slice(0, 10))}
                 </p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {g.status === "published" ? (

@@ -38,16 +38,19 @@ export type AnnouncedGuide = {
   summary: string;
   /** nome della categoria nelle tre lingue (dizionari: guides.categories) */
   category: Record<Lang, string>;
+  /** copertina (percorso del sito, media kit in public/media): l'immagine grande del messaggio */
+  image?: string;
 };
 
 /**
- * L'annuncio: titolo e link nella lingua in cui la guida è scritta (la versione che si legge subito), riassunto, autore
- * e categoria nelle tre lingue, e i link alle altre due versioni (tradotte dal sito dopo la pubblicazione).
+ * L'annuncio: titolo e link nella lingua in cui la guida è scritta, riassunto, autore e categoria nelle tre lingue, la
+ * lingua della guida e la copertina. Solo il link alla versione originale: l'annuncio parte alla prima pubblicazione,
+ * quando le altre due versioni mostrano ancora l'originale con la nota (la traduzione arriva qualche minuto dopo) e sono
+ * noindex; dalla pagina si passa comunque alle altre lingue con il selettore del sito.
  */
 export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
   const author = escapeDiscord(cut(g.author, 60));
-  const others = (["it", "en", "es"] as const).filter((l) => l !== g.lang);
-  const title = g.title.replace(/[[\]]/g, "").slice(0, 200);
+  const image = g.image && g.image.startsWith("/") && !g.image.startsWith("//") ? `${SITE}${g.image}` : null;
   return {
     content: "📘 **Nuova guida · New guide · Nueva guía**",
     embeds: [
@@ -60,7 +63,8 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
           "",
           ...(["it", "en", "es"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
         ].join("\n"),
-        fields: others.map((l) => ({ name: FLAGS[l], value: `[${escapeDiscord(title)}](${SITE}/${l}/guides/community/${g.slug}?${UTM})` })),
+        fields: [{ name: FLAGS[g.lang], value: `[${escapeDiscord(g.title.replace(/[[\]]/g, "").slice(0, 200))}](${SITE}/${g.lang}/guides/community/${g.slug}?${UTM})` }],
+        ...(image ? { image: { url: image } } : {}),
         color: MINT,
         footer: { text: "originsmeta.com" },
       },

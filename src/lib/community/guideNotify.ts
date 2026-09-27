@@ -5,7 +5,7 @@ import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { getDictionary, locales, type Locale } from "@/lib/i18n";
 import { discordWebhookUrl, sendDiscordWebhook } from "@/lib/discordWebhook";
 import { guidePayload, guideReportPayload, type AnnouncedGuide, type GuideReportNotice } from "./guideDiscord";
-import { isGuideCategory } from "./guides";
+import { guideCover, isGuideCategory } from "./guides";
 
 /**
  * Avvisi di una guida della community (pacchetto GUIDE, 27/09/2026), tutti dopo la risposta al browser (`after()`), mai
@@ -19,8 +19,9 @@ import { isGuideCategory } from "./guides";
  * - `notifyGuideFollowers`: PUNTO DI AGGANCIO per il pacchetto SEGUI (avvisi a chi segue un autore). Nel ramo di questo
  *   pacchetto SEGUI non c'è ancora: la funzione non fa nulla. All'integrazione, se SEGUI esporta `notifyFollowers`, qui
  *   basta chiamarla con l'autore, il tipo "guide" e il link (vedi il commento dentro la funzione).
- * - `notifyGuideReport`: una segnalazione va nel canale PRIVATO dello staff (DISCORD_FEEDBACK_WEBHOOK_URL, lo stesso dei
- *   feedback), con il motivo e il link alla guida, dove lo staff trova "Nascondi".
+ * - `notifyGuideReport`: la PRIMA segnalazione di una guida nelle 24 ore (`first_in_day`) va nel canale PRIVATO dello
+ *   staff (DISCORD_FEEDBACK_WEBHOOK_URL, lo stesso dei feedback), con il motivo, il nome utente di chi segnala (lo dice
+ *   l'informativa) e il link alla guida, dove lo staff trova "Nascondi". Le altre si leggono nella tabella.
  */
 
 const TIMEOUT_MS = 3000;
@@ -64,7 +65,7 @@ async function readPublished(slug: string): Promise<AnnouncedGuide | null> {
   if (!supabaseEnabled) return null;
   const { data } = await anonClient()
     .from("community_guides")
-    .select("slug, title, lang, summary, category, status, owner:profiles!community_guides_owner_fkey(username, display_name)")
+    .select("slug, title, lang, summary, category, cover_preset, status, owner:profiles!community_guides_owner_fkey(username, display_name)")
     .eq("slug", slug)
     .maybeSingle();
   const row = data as unknown as {
@@ -73,13 +74,14 @@ async function readPublished(slug: string): Promise<AnnouncedGuide | null> {
     lang: string;
     summary: string;
     category: string;
+    cover_preset: string | null;
     status: string;
     owner: { username: string | null; display_name: string | null } | null;
   } | null;
   if (!row || row.status !== "published") return null;
   const lang = (locales as readonly string[]).includes(row.lang) ? (row.lang as Locale) : "en";
   const author = (row.owner?.display_name || row.owner?.username || "?").replace(/[\r\n]+/g, " ").trim();
-  return { slug: row.slug, title: row.title, lang, author, summary: row.summary, category: categoryNames(row.category) };
+  return { slug: row.slug, title: row.title, lang, author, summary: row.summary, category: categoryNames(row.category), image: guideCover(row.cover_preset).src };
 }
 
 /** Da chiamare dopo la PRIMA pubblicazione di una guida: annuncio nel canale #guides, se il webhook c'è. */

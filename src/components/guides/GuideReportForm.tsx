@@ -10,12 +10,14 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 /**
  * "Segnala questa guida" in fondo alla pagina di una guida della community (pacchetto GUIDE, 27/09/2026): in piccolo,
  * come la segnalazione dei mazzi. Con l'accesso fatto apre un campo per il motivo (testo semplice, 3-500 caratteri) e
- * manda la segnalazione con la Server Action `reportCommunityGuide` (una per utente e per guida, 20 al giorno: lo decide
- * il database), che avvisa lo staff sul canale privato di Discord. Senza accesso porta al login e poi di nuovo qui.
+ * manda la segnalazione con la Server Action `reportCommunityGuide` (una per utente e per guida, 5 al giorno, mai sulla
+ * propria: lo decide il database), che avvisa lo staff sul canale privato di Discord alla prima segnalazione della
+ * giornata. Senza accesso porta al login e poi di nuovo qui. All'autore della guida non si mostra.
  */
-export function GuideReportForm({ guideId, loginHref, labels }: { guideId: string; loginHref: string; labels: CommunityGuideLabels["report"] }) {
+export function GuideReportForm({ guideId, ownerId, loginHref, labels }: { guideId: string; ownerId: string; loginHref: string; labels: CommunityGuideLabels["report"] }) {
   const [open, setOpen] = useState(false);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [mine, setMine] = useState(false);
   const [state, action, pending] = useActionState<GuideActionState, FormData>(reportCommunityGuide, {});
 
   useEffect(() => {
@@ -23,13 +25,16 @@ export function GuideReportForm({ guideId, loginHref, labels }: { guideId: strin
     if (!sb) return;
     let alive = true;
     sb.auth.getSession().then(({ data }) => {
-      if (alive) setSignedIn(Boolean(data.session));
+      if (!alive) return;
+      setSignedIn(Boolean(data.session));
+      setMine(data.session?.user.id === ownerId);
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [ownerId]);
 
+  if (mine) return null;
   if (state.ok) return <p className="text-xs text-good" role="status">{labels.sent}</p>;
   if (signedIn === false) {
     return (

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useRef, useState, useTransition } f
 import { useRouter } from "next/navigation";
 import { saveCommunityGuide, type GuideActionState } from "@/lib/community/guideActions";
 import {
+  DEFAULT_GUIDE_COVER,
   GUIDE_COVER_PRESETS,
   GUIDE_LIMITS,
   COMMUNITY_GUIDE_MIN_WORDS,
@@ -52,6 +53,8 @@ type Props = {
   pool: GuidePoolCard[];
   /** la pagina di modifica dopo un salvataggio della bozza (?saved=1) */
   justSaved?: boolean;
+  /** chi modifica è dello staff: può correggere anche una guida nascosta (che resta nascosta) */
+  staff?: boolean;
 };
 
 /** Bozza locale del modulo (solo in creazione): un'interruzione (accesso, telefono che si blocca) non cancella il testo. */
@@ -88,7 +91,7 @@ const fold = (s: string) => s.normalize("NFKD").replace(/[\u{300}-\u{36f}]/gu, "
 /**
  * Modulo di scrittura delle guide della community (pacchetto GUIDE, 27/09/2026): titolo, lingua, categoria, riassunto,
  * sezioni aggiungibili e riordinabili (su, giù, togli), carte scelte dal database, video e risorse con le regole dei
- * mazzi (`DeckMediaFields`), copertina preimpostata, contatori e parole verso la soglia di Google, anteprima. Due tasti:
+ * mazzi (`DeckMediaFields`), copertina dal media kit, contatori e parole verso la soglia di Google, anteprima. Due tasti:
  * "Salva bozza" e "Pubblica" (in modifica di una guida pubblicata: "Salva le modifiche" e "Riporta tra le bozze").
  * Le regole sono quelle di `readGuideForm` (guides.ts), che la Server Action applica di nuovo; il database per terzo.
  * Invio a mano (niente `<form action>`), come il modulo dei mazzi: React 19 svuoterebbe i campi anche con un errore.
@@ -108,7 +111,7 @@ export function CommunityGuideEditor(props: Props) {
   return <EditorForm {...props} draft={draft} />;
 }
 
-function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, langs, pool, justSaved, draft }: Props & { draft: Draft | null }) {
+function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, langs, pool, justSaved, staff = false, draft }: Props & { draft: Draft | null }) {
   const router = useRouter();
   const mounted = useMounted();
   const formRef = useRef<HTMLFormElement>(null);
@@ -122,7 +125,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
   const [lang, setLang] = useState(draft?.lang ?? initial?.lang ?? locale);
   const [category, setCategory] = useState(draft?.category ?? initial?.category ?? "decks");
   const [cover, setCover] = useState<GuideCoverPreset>(() =>
-    draft?.cover && (GUIDE_COVER_PRESETS as readonly string[]).includes(draft.cover) ? (draft.cover as GuideCoverPreset) : (initial?.cover_preset ?? "mint"),
+    draft?.cover && (GUIDE_COVER_PRESETS as readonly string[]).includes(draft.cover) ? (draft.cover as GuideCoverPreset) : (initial?.cover_preset ?? DEFAULT_GUIDE_COVER),
   );
   const [rows, setRows] = useState<Row[]>(() =>
     toRows(
@@ -166,7 +169,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
   useEffect(() => {
     if (state.ok && state.href) {
       clearDraft();
-      if (state.firstPublish) trackEvent("guide_published", { locale: state.lang ?? locale, category: state.category ?? category });
+      if (state.firstPublish) trackEvent("guide_published", { guide_lang: state.lang ?? lang, category: state.category ?? category });
       router.push(state.href);
     }
     // solo quando cambia l'esito
@@ -284,9 +287,10 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
       {preview ? (
         <section className="min-w-0" aria-label={L.preview}>
           <p className="mb-3 text-xs text-pale-muted">{L.previewNote}</p>
-          <GuideCover preset={cover} label={categories.find(([id]) => id === category)?.[1]} />
-          <h2 className="t-page mt-4 break-words leading-tight">{title || "…"}</h2>
-          {summary ? <p className="mt-4 whitespace-pre-line rounded-xl border-2 border-sky bg-night-2/80 p-5 text-lg text-pale">{summary}</p> : null}
+          <GuideCover preset={cover} />
+          <p className="kicker mt-4 text-mint">{categories.find(([id]) => id === category)?.[1]}</p>
+          <h2 className="t-page mt-2 break-words leading-tight">{title || "…"}</h2>
+          {summary ? <p className="mt-4 whitespace-pre-line break-words rounded-xl border-2 border-sky bg-night-2/80 p-5 text-lg text-pale">{summary}</p> : null}
           {rows
             .filter((r) => r.heading || r.body)
             .map((r) => (
@@ -544,9 +548,9 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
             <p className="mt-1 text-xs text-pale-muted">{L.coverHint}</p>
             <div id="gd-cover_preset" tabIndex={-1} className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {GUIDE_COVER_PRESETS.map((p) => (
-                <label key={p} className={`block cursor-pointer rounded-xl p-1 ${cover === p ? "bg-mint/20 ring-2 ring-mint" : ""}`}>
+                <label key={p} className={`block min-w-0 cursor-pointer rounded-xl p-1 ${cover === p ? "bg-mint/20 ring-2 ring-mint" : ""}`}>
                   <input type="radio" name="cover_choice" value={p} checked={cover === p} onChange={() => setCover(p)} className="sr-only" />
-                  <GuideCover preset={p} className="aspect-[16/7]" />
+                  <GuideCover preset={p} sizes="(max-width: 640px) 45vw, 260px" />
                   <span className="mt-1 block text-center text-xs text-pale">
                     {cover === p ? "✓ " : ""}
                     {L.covers[p]}
@@ -568,7 +572,8 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
         <div className="mt-4 flex flex-wrap items-center gap-3">
           {published || hidden ? (
             <>
-              <button type="submit" name="intent" value="publish" disabled={pending || hidden} className="btn btn-primary">
+              {/* una guida nascosta la corregge solo lo staff (e resta nascosta: la rimette online "Rimetti online") */}
+              <button type="submit" name="intent" value="publish" disabled={pending || (hidden && !staff)} className="btn btn-primary">
                 {pending ? L.saving : L.update}
               </button>
               {published ? (

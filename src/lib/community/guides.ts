@@ -11,8 +11,9 @@ import { textHash, type TranslationDoc } from "./deckTranslation";
  * Qui stanno le regole pure, uguali a quelle del database (supabase/wave2-GUIDE.sql, da accodare a schema.sql; il test
  * guides.test.ts le confronta): limiti del testo, categorie, copertine preimpostate, pulizia del testo semplice, lettura
  * del modulo, parole e soglia di indicizzazione, lingue in cui la guida si legge (originale più traduzioni aggiornate),
- * righe della sitemap, testo da tradurre. Nessun import a runtime che non sia puro (`deckQuality.ts` e
- * `deckTranslation.ts`, a loro volta puri): lo esegue `node --test`, lo carica il modulo nel browser.
+ * elenchi leggeri e righe della sitemap, piano della traduzione a pezzi. Nessun import a runtime che non sia puro
+ * (`deckQuality.ts` e `deckTranslation.ts`, a loro volta puri): lo esegue `node --test`, lo carica il modulo nel browser,
+ * lo usa scripts/translate-guides.mjs.
  *
  * Testo degli utenti: sempre testo semplice, mai Markdown né HTML. Il sito lo mostra come testo, con i nomi delle carte
  * trasformati in link (`CardMentions`), come le guide dei mazzi.
@@ -36,12 +37,20 @@ export const GUIDE_LIMITS = {
   cardsMax: 24,
 } as const;
 
-/** Tetti del database (trigger guard_community_guide): lo staff e gli admin non li hanno. */
+/**
+ * Tetti del database (trigger guard_community_guide): lo staff e gli admin non li hanno. I due giornalieri contano il
+ * registro `community_guide_events`, che l'utente non può cancellare: eliminare e ricreare una guida non li azzera.
+ */
 export const GUIDE_MAX_PER_OWNER = 100;
 export const GUIDE_DAILY_NEW_LIMIT = 10;
 export const GUIDE_DAILY_PUBLISH_LIMIT = 3;
-/** Segnalazioni al giorno per utente (trigger guard_community_guide_report) e lunghezza del motivo. */
-export const REPORT_DAILY_LIMIT = 20;
+/** Dopo che lo staff ha nascosto una sua guida, per quante ore il proprietario non pubblica (trigger, 'guide_hidden_recent'). */
+export const GUIDE_HIDE_COOLDOWN_HOURS = 24;
+/**
+ * Segnalazioni al giorno per utente (trigger guard_community_guide_report) e lunghezza del motivo. Lo staff riceve un
+ * avviso su Discord solo alla prima segnalazione di una guida nelle 24 ore (`first_in_day`).
+ */
+export const REPORT_DAILY_LIMIT = 5;
 export const REPORT_REASON_MIN = 3;
 export const REPORT_REASON_MAX = 500;
 
@@ -50,11 +59,35 @@ export const GUIDE_CATEGORIES = ["game", "decks", "rank", "archetypes", "intervi
 export type CommunityGuideCategory = (typeof GUIDE_CATEGORIES)[number];
 
 /**
- * Copertine preimpostate: disegni del sito con la palette (gradienti e motivi SVG, `GuideCover`), mai materiale Koin
- * (le regole del media kit: niente illustrazioni come sfondo o copertina di interfaccia).
+ * Copertine preimpostate: immagini del media kit ufficiale in public/media, le stesse che il sito usa come copertine
+ * delle sue guide e delle sue news e che i tornei offrono a chi non carica un'immagine (COVER_PRESETS di
+ * src/lib/tournament/types.ts; il test controlla che siano fra quelle e che i file esistano). Regola di CLAUDE.md:
+ * "ogni news e ogni guida ha SEMPRE una copertina", presa dal media kit; il materiale Koin si usa come contenuto
+ * (copertine di news e guide sì), mai come identità o interfaccia del sito. Si mostrano intere, in 16:9 come sono
+ * (niente ritagli: i crediti impressi restano). Fuori le immagini troppo larghe per il 16:9 (banner) e gli screenshot
+ * con il watermark "Development Build", che vogliono una didascalia.
  */
-export const GUIDE_COVER_PRESETS = ["mint", "sky", "gold", "crimson", "aurora", "night"] as const;
-export type GuideCoverPreset = (typeof GUIDE_COVER_PRESETS)[number];
+export const GUIDE_COVERS = {
+  "keyart-king-arthur": { src: "/media/keyart-king-arthur.webp", width: 1600, height: 899 },
+  "keyart-mulan": { src: "/media/keyart-mulan.webp", width: 1600, height: 899 },
+  "keyart-queen-of-hearts": { src: "/media/keyart-queen-of-hearts.webp", width: 1600, height: 899 },
+  "keyart-robin-hood": { src: "/media/keyart-robin-hood.webp", width: 1600, height: 899 },
+  "keyart-winnie-the-pooh": { src: "/media/keyart-winnie-the-pooh.webp", width: 1600, height: 899 },
+  "keyart-puss-in-boots": { src: "/media/keyart-puss-in-boots.webp", width: 1600, height: 899 },
+  "keyart-goldi": { src: "/media/keyart-goldi.webp", width: 1600, height: 899 },
+  "keyart-queen-of-hearts-cyber": { src: "/media/keyart-queen-of-hearts-cyber.webp", width: 1600, height: 899 },
+  "keyart-red-wide": { src: "/media/keyart-red-wide.webp", width: 1600, height: 900 },
+  "hero-1920": { src: "/media/hero-1920.webp", width: 1920, height: 1080 },
+  "ls-two-ways": { src: "/media/ls-two-ways.webp", width: 1600, height: 900 },
+  "ls-zero-pay-to-win": { src: "/media/ls-zero-pay-to-win.webp", width: 1600, height: 900 },
+  "ls-real-collecting": { src: "/media/ls-real-collecting.webp", width: 1600, height: 900 },
+  "ls-collect-them-all": { src: "/media/ls-collect-them-all.webp", width: 1600, height: 900 },
+  "ls-collector-pack": { src: "/media/ls-collector-pack.webp", width: 1600, height: 900 },
+} as const satisfies Record<string, { src: string; width: number; height: number }>;
+export type GuideCoverPreset = keyof typeof GUIDE_COVERS;
+export const GUIDE_COVER_PRESETS = Object.keys(GUIDE_COVERS) as GuideCoverPreset[];
+/** La copertina di una guida nuova (e di un valore sconosciuto letto dal database). */
+export const DEFAULT_GUIDE_COVER: GuideCoverPreset = "keyart-king-arthur";
 
 /**
  * Bucket dello Storage delle copertine caricate (`cover_path`): quello del pacchetto VETRINA, che nel ramo di questo
@@ -74,12 +107,22 @@ export const GUIDE_LANGS = ["en", "it", "es"] as const;
  */
 export const COMMUNITY_GUIDE_MIN_WORDS = 300;
 
+/** Quante guide della community mostra /guides (le più recenti indicizzabili nella lingua); le altre in /guides/community. */
+export const COMMUNITY_GUIDES_ON_HUB = 6;
+
 export type CommunityGuideStatus = "draft" | "published" | "hidden";
 export type GuideSectionText = { heading: string; body: string };
 /** Il testo che si traduce: riassunto e sezioni (il titolo no, come il nome di un mazzo). */
 export type CommunityGuideText = { summary: string; sections: GuideSectionText[] };
-export type CommunityGuideTranslation = { hash: string; at: string; model?: string; guide: CommunityGuideText };
+/**
+ * Una traduzione salvata: `hash` è l'impronta del testo originale da cui è fatta (`communityGuideHash`), `parts` le
+ * impronte delle sue parti (riassunto, poi ogni sezione: `guidePartHashes`), così una modifica ritraduce solo le parti
+ * cambiate.
+ */
+export type CommunityGuideTranslation = { hash: string; at: string; model?: string; parts?: string[]; guide: CommunityGuideText };
 export type CommunityGuideTranslations = Partial<Record<Locale, CommunityGuideTranslation>>;
+
+type Author = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
 
 /** Una riga di public.community_guides come la legge il sito (con l'autore quando serve). */
 export type CommunityGuide = {
@@ -98,24 +141,37 @@ export type CommunityGuide = {
   cover_path?: string | null;
   status: CommunityGuideStatus;
   translations?: CommunityGuideTranslations | null;
+  words?: number | null;
+  text_hash?: string | null;
   created_at: string;
   updated_at: string;
   published_at?: string | null;
-  profile?: { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null } | null;
+  profile?: Author | null;
 };
 
 export const isGuideCategory = (v: unknown): v is CommunityGuideCategory => typeof v === "string" && (GUIDE_CATEGORIES as readonly string[]).includes(v);
-export const isCoverPreset = (v: unknown): v is GuideCoverPreset => typeof v === "string" && (GUIDE_COVER_PRESETS as readonly string[]).includes(v);
+export const isCoverPreset = (v: unknown): v is GuideCoverPreset => typeof v === "string" && Object.hasOwn(GUIDE_COVERS, v);
 const isGuideLang = (v: unknown): v is Locale => typeof v === "string" && (GUIDE_LANGS as readonly string[]).includes(v);
+
+/** L'immagine di una copertina preimpostata (percorso del sito e misure); per un valore sconosciuto quella di riserva. */
+export function guideCover(preset: unknown): { src: string; width: number; height: number } {
+  return GUIDE_COVERS[isCoverPreset(preset) ? preset : DEFAULT_GUIDE_COVER];
+}
 
 // ——— Testo semplice ———
 
 /**
  * Caratteri tolti: controllo C0 e C1 (tranne a capo e tabulazione, trattati a parte), trattino morbido, segni di
- * direzione del testo (ALM, LRM, RLM, LRE…RLO, LRI…PDI: con quelli un testo si legge al contrario) e invisibili (spazio
- * a larghezza zero, BOM). La stessa lista di `community_guide_text_ok` nel database, scritta con gli escape.
+ * direzione del testo (ALM, LRM, RLM, LRE…RLO, LRI…PDI: con quelli un testo si legge al contrario), invisibili (spazio
+ * a larghezza zero, word joiner e operatori invisibili U+2060-2064, BOM) e riempitivi che sembrano spazi vuoti ma non
+ * lo sono per le regex (Hangul U+115F, U+1160, U+3164, U+FFA0, Braille vuoto U+2800: un titolo fatto solo di quelli
+ * passerebbe `\S` e sarebbe invisibile). La stessa lista di `community_guide_text_ok` nel database (il test le confronta).
  */
-const HIDDEN = /[\u{0}-\u{8}\u{b}-\u{1f}\u{7f}-\u{9f}\u{ad}\u{61c}\u{200b}\u{200e}\u{200f}\u{202a}-\u{202e}\u{2066}-\u{2069}\u{feff}]/gu;
+const HIDDEN =
+  /[\u{0}-\u{8}\u{b}-\u{1f}\u{7f}-\u{9f}\u{ad}\u{61c}\u{115f}\u{1160}\u{200b}\u{200e}\u{200f}\u{202a}-\u{202e}\u{2060}-\u{2064}\u{2066}-\u{2069}\u{2800}\u{3164}\u{feff}\u{ffa0}]/gu;
+
+/** Gli spazi che non vanno a capo (come lo spazio normale per le righe vuote): gli stessi della regex del database. */
+const SPACES = /[ \u{a0}\u{1680}\u{2000}-\u{200a}\u{202f}\u{205f}\u{3000}]/gu;
 
 /** Punti di codice (come `char_length` di Postgres: un'emoji conta uno). */
 export const codePoints = (s: string): number => Array.from(s).length;
@@ -143,16 +199,18 @@ export function cleanPlain(raw: unknown, max: number, multiline: boolean): strin
 /**
  * Il testo rispetta le regole del database (`community_guide_text_ok`)? Lunghezza in punti di codice, almeno un
  * carattere che non sia uno spazio (tranne il testo vuoto ammesso dalle bozze), niente a capo in una riga sola, niente
- * caratteri tolti da `cleanPlain`, al massimo una riga vuota di fila, niente spazi o a capo in testa e in coda.
+ * caratteri tolti da `cleanPlain`, al massimo una riga vuota di fila (anche con righe fatte di soli spazi Unicode),
+ * niente spazi o a capo in testa e in coda.
  */
 export function plainTextOk(t: string, min: number, max: number, multiline: boolean): boolean {
+  if (typeof t !== "string") return false;
   const n = codePoints(t);
   if (n < min || n > max) return false;
   if (n === 0) return true;
   if (!/\S/.test(t) || t !== t.replace(/^[ \n]+|[ \n]+$/g, "")) return false;
   if (!multiline && /\n/.test(t)) return false;
   if (/[\r\t\u{2028}\u{2029}\u{85}]/u.test(t) || new RegExp(HIDDEN.source, "u").test(t)) return false;
-  return !t.replace(/ /g, "").includes("\n\n\n");
+  return !t.replace(SPACES, "").includes("\n\n\n");
 }
 
 // ——— Modulo ———
@@ -239,6 +297,9 @@ export function readGuideForm(fd: FormReader, intent: GuideIntent, knownCard: (s
   return { ok: true, value: { lang, title, summary, sections, category, cards, cover_preset: cover } };
 }
 
+/** Codici delle eccezioni del trigger (`raise exception '<codice>'`), dal più lungo: 'guide_hidden' è dentro 'guide_hidden_recent'. */
+const TRIGGER_CODES = ["guide_hidden_recent", "guide_daily_limit", "guide_limit", "guide_rate", "guide_hidden", "guide_status", "guide_translation", "report_rate"] as const;
+
 /**
  * Errore del database → codice del modulo: i tetti e le regole del trigger `guard_community_guide` (supabase/wave2-GUIDE.sql,
  * `raise exception '<codice>'`), le policy (42501: ruolo mancante o riga altrui) e la tabella che non c'è ancora.
@@ -246,7 +307,7 @@ export function readGuideForm(fd: FormReader, intent: GuideIntent, knownCard: (s
 export function guideErrorCode(error: { code?: string; message?: string } | null | undefined): string {
   if (!error) return "db";
   const m = error.message ?? "";
-  for (const code of ["guide_daily_limit", "guide_limit", "guide_rate", "guide_hidden", "guide_status", "report_rate"]) if (m.includes(code)) return code;
+  for (const code of TRIGGER_CODES) if (m.includes(code)) return code;
   if (guideTableMissing(error)) return "unavailable";
   if (error.code === "42501") return "forbidden";
   if (error.code === "23505") return "duplicate";
@@ -263,9 +324,10 @@ export function guideTableMissing(error: { code?: string; message?: string } | n
   return /community_guide/.test(error.message ?? "") && /does not exist|could not find/i.test(error.message ?? "");
 }
 
-// ——— Parole, lettura, indicizzazione ———
+// ——— Parole, impronte, traduzioni aggiornate ———
 
 type WithText = { summary: string; sections: readonly GuideSectionText[] };
+type WithLang = WithText & { lang: Locale; translations?: CommunityGuideTranslations | null };
 
 /** Parole della guida originale: riassunto più titoli e testi delle sezioni (il titolo della guida no). */
 export function communityGuideWords(g: WithText): number {
@@ -277,25 +339,58 @@ export function readMinutes(words: number): number {
   return Math.max(1, Math.round(words / 200));
 }
 
-type WithLang = WithText & { lang: Locale; translations?: CommunityGuideTranslations | null };
-
-/** Impronta del testo originale (lingua compresa, titolo escluso: non si traduce). */
+/**
+ * Impronta del testo originale (lingua compresa, titolo escluso: non si traduce). Il sito la salva in `text_hash`
+ * insieme al testo, così gli elenchi sanno quali traduzioni sono aggiornate senza leggere le sezioni.
+ */
 export function communityGuideHash(g: Pick<WithLang, "lang" | "summary" | "sections">): string {
   return textHash([g.lang, g.summary, ...g.sections.flatMap((s) => [s.heading, s.body])]);
 }
 
-/** La traduzione in `locale`, solo se è stata fatta sul testo attuale (stessa impronta e stesse sezioni). */
+/** Lunghezza massima di un testo tradotto: 2,5 volte l'originale più 200, la tolleranza di `parseTranslation`. */
+const translatedMax = (max: number) => Math.ceil(max * 2.5) + 200;
+
+/** Massimi di una traduzione salvata, uguali a `community_guide_translation_ok` nel database (il test li confronta). */
+export const TRANSLATION_LIMITS = {
+  summaryMax: translatedMax(GUIDE_LIMITS.summaryMax),
+  headingMax: translatedMax(GUIDE_LIMITS.headingMax),
+  bodyMax: translatedMax(GUIDE_LIMITS.bodyMax),
+} as const;
+
+/**
+ * Il testo di una traduzione rispetta le regole del testo semplice (come l'originale, con i massimi di
+ * `TRANSLATION_LIMITS`) e ha `sections` sezioni? Una traduzione scritta via API con segni di direzione, invisibili,
+ * titoli su più righe o testi enormi non vale, e la pagina mostra l'originale (il database la rifiuta comunque).
+ */
+export function translationTextOk(t: unknown, sections: number): t is CommunityGuideText {
+  if (!t || typeof t !== "object") return false;
+  const x = t as { summary?: unknown; sections?: unknown };
+  if (typeof x.summary !== "string" || !plainTextOk(x.summary, 1, TRANSLATION_LIMITS.summaryMax, true)) return false;
+  if (!Array.isArray(x.sections) || x.sections.length !== sections) return false;
+  return x.sections.every(
+    (s: unknown) =>
+      Boolean(s) &&
+      typeof s === "object" &&
+      plainTextOk((s as GuideSectionText).heading, 1, TRANSLATION_LIMITS.headingMax, false) &&
+      plainTextOk((s as GuideSectionText).body, 1, TRANSLATION_LIMITS.bodyMax, true),
+  );
+}
+
+/** Una traduzione pulita come il database la accetta (a capo, spazi, invisibili), prima di salvarla. */
+export function cleanTranslation(t: CommunityGuideText): CommunityGuideText {
+  const L = TRANSLATION_LIMITS;
+  return {
+    summary: cleanPlain(t.summary, L.summaryMax, true),
+    sections: t.sections.map((s) => ({ heading: cleanPlain(s.heading, L.headingMax, false), body: cleanPlain(s.body, L.bodyMax, true) })),
+  };
+}
+
+/** La traduzione in `locale`, solo se è stata fatta sul testo attuale (stessa impronta) e rispetta le regole del testo. */
 export function freshGuideTranslation(g: WithLang, locale: Locale): CommunityGuideTranslation | null {
   if (locale === g.lang) return null;
   const t = g.translations?.[locale];
-  if (!t || t.hash !== communityGuideHash(g) || typeof t.guide?.summary !== "string" || !Array.isArray(t.guide.sections)) return null;
-  if (t.guide.sections.length !== g.sections.length) return null;
-  return t.guide.sections.every((s) => typeof s?.heading === "string" && typeof s?.body === "string") ? t : null;
-}
-
-/** Le lingue in cui la guida si legge davvero, nell'ordine di `all`: l'originale più le traduzioni aggiornate. */
-export function communityGuideLocales(g: WithLang, all: readonly Locale[]): Locale[] {
-  return all.filter((l) => l === g.lang || freshGuideTranslation(g, l) !== null);
+  if (!t || typeof t !== "object" || t.hash !== communityGuideHash(g)) return null;
+  return translationTextOk(t.guide, g.sections.length) ? t : null;
 }
 
 /** Le lingue da tradurre (mancanti o rimaste indietro rispetto al testo). */
@@ -310,9 +405,87 @@ export function localizedCommunityGuide(g: WithLang, locale: Locale): { text: Co
   return { text: { summary: g.summary, sections: [...g.sections] }, lang: g.lang, translated: false };
 }
 
-/** La guida ha abbastanza testo per stare in Google (e deve essere pubblicata)? */
-export function communityGuideIndexable(g: WithText & { status?: string }): boolean {
-  return (g.status === undefined || g.status === "published") && communityGuideWords(g) >= COMMUNITY_GUIDE_MIN_WORDS;
+// ——— Indicizzazione: la stessa regola per la pagina, gli elenchi e la sitemap ———
+
+/** Una traduzione vista dagli elenchi: impronta, data e riassunto (le sezioni no). */
+export type GuideListTranslation = { hash: string | null; at: string | null; summary: string | null };
+
+/**
+ * Quello che serve per decidere dove una guida si indicizza, senza sezioni né traduzioni intere: parole e impronta
+ * salvate dal sito (`words`, `text_hash`) e, per lingua, impronta, data e riassunto della traduzione. Gli elenchi lo
+ * leggono dal database (colonne leggere, guideQueries.ts); la pagina di una guida lo calcola dal testo intero
+ * (`indexShapeOf`), così le due strade danno la stessa risposta.
+ */
+export type GuideIndexShape = {
+  lang: Locale;
+  status?: string;
+  words: number | null;
+  text_hash: string | null;
+  tr: Partial<Record<Locale, GuideListTranslation>>;
+};
+
+/** Una guida negli elenchi (/guides, /guides/community, /u, /account, altre guide, sitemap). */
+export type CommunityGuideListItem = GuideIndexShape & {
+  id: string;
+  slug: string;
+  owner: string;
+  title: string;
+  summary: string;
+  category: CommunityGuideCategory;
+  cover_preset: GuideCoverPreset;
+  cover_path?: string | null;
+  status: CommunityGuideStatus;
+  created_at: string;
+  updated_at: string;
+  published_at?: string | null;
+  profile?: Author | null;
+};
+
+/** La forma per l'indicizzazione calcolata dal testo intero (parole, impronta e sole traduzioni aggiornate). */
+export function indexShapeOf(g: WithLang & { status?: string }): GuideIndexShape {
+  const tr: Partial<Record<Locale, GuideListTranslation>> = {};
+  for (const l of GUIDE_LANGS) {
+    const t = freshGuideTranslation(g, l);
+    if (t) tr[l] = { hash: t.hash, at: t.at ?? null, summary: t.guide.summary };
+  }
+  return { lang: g.lang, status: g.status, words: communityGuideWords(g), text_hash: communityGuideHash(g), tr };
+}
+
+/** Una guida intera come voce di elenco. */
+export function listItemOf(g: CommunityGuide): CommunityGuideListItem {
+  return {
+    id: g.id,
+    slug: g.slug,
+    owner: g.owner,
+    title: g.title,
+    summary: g.summary,
+    category: g.category,
+    cover_preset: g.cover_preset,
+    cover_path: g.cover_path,
+    created_at: g.created_at,
+    updated_at: g.updated_at,
+    published_at: g.published_at,
+    profile: g.profile,
+    ...indexShapeOf(g),
+    status: g.status,
+  };
+}
+
+/** La traduzione in `locale` vista da un elenco: vale solo sul testo attuale (impronta salvata uguale) e con un riassunto valido. */
+function listTranslation(g: GuideIndexShape, locale: Locale): GuideListTranslation | null {
+  if (locale === g.lang || !g.text_hash) return null;
+  const t = g.tr[locale];
+  return t && t.hash === g.text_hash && typeof t.summary === "string" && plainTextOk(t.summary, 1, TRANSLATION_LIMITS.summaryMax, true) ? t : null;
+}
+
+/** Le lingue in cui la guida si legge davvero, nell'ordine di `all`: l'originale più le traduzioni aggiornate. */
+export function guideShapeLocales(g: GuideIndexShape, all: readonly Locale[]): Locale[] {
+  return all.filter((l) => l === g.lang || listTranslation(g, l) !== null);
+}
+
+/** La guida ha abbastanza testo per stare in Google (e deve essere pubblicata)? Senza parole salvate no. */
+export function guideShapeIndexable(g: GuideIndexShape): boolean {
+  return (g.status === undefined || g.status === "published") && (g.words ?? 0) >= COMMUNITY_GUIDE_MIN_WORDS;
 }
 
 /**
@@ -320,31 +493,87 @@ export function communityGuideIndexable(g: WithText & { status?: string }): bool
  * da dichiarare (originale e traduzioni aggiornate, solo sopra soglia), `noindex` se questa versione non si indicizza,
  * `hreflang` false se la guida non si indicizza in nessuna lingua (allora resta la sola canonical, `dropHreflang`).
  */
-export function communityGuideIndexing(g: WithLang & { status?: string }, all: readonly Locale[], locale: Locale): { languages: Locale[]; noindex: boolean; hreflang: boolean } {
-  const languages = communityGuideIndexable(g) ? communityGuideLocales(g, all) : [];
+export function guideShapeIndexing(g: GuideIndexShape, all: readonly Locale[], locale: Locale): { languages: Locale[]; noindex: boolean; hreflang: boolean } {
+  const languages = guideShapeIndexable(g) ? guideShapeLocales(g, all) : [];
   return { languages, noindex: !languages.includes(locale), hreflang: languages.length > 0 };
 }
 
-/** Una riga della sitemap: le lingue in cui la pagina si indicizza (mai vuote: vuol dire "tutte"). */
-export type SitemapCommunityGuide = { slug: string; updated_at: string; locales: Locale[] };
-
-/**
- * Le righe della sitemap dalle guide pubblicate: solo quelle sopra soglia, con le loro lingue; `latest` è la data
- * dell'ultima guida pubblicata o modificata, di qualunque lunghezza (il lastmod di /guides, che le elenca).
- */
-export function sitemapCommunityGuides<R extends WithLang & { slug: string; updated_at: string; status?: string }>(
-  rows: readonly R[],
-  all: readonly Locale[],
-): { guides: SitemapCommunityGuide[]; latest?: string } {
-  const guides = rows
-    .filter((r) => r.status === undefined || r.status === "published")
-    .map((r) => ({ slug: r.slug, updated_at: r.updated_at, locales: communityGuideIndexable(r) ? communityGuideLocales(r, all) : [] }))
-    .filter((r) => r.locales.length > 0);
-  const latest = rows.reduce<string | undefined>((max, r) => (!max || r.updated_at > max ? r.updated_at : max), undefined);
-  return latest ? { guides, latest } : { guides };
+/** `guideShapeIndexing` per una guida intera (la pagina della guida). */
+export function communityGuideIndexing(g: WithLang & { status?: string }, all: readonly Locale[], locale: Locale): { languages: Locale[]; noindex: boolean; hreflang: boolean } {
+  return guideShapeIndexing(indexShapeOf(g), all, locale);
 }
 
-// ——— Traduzione: il testo in campi piatti ———
+/** La guida intera ha abbastanza testo per stare in Google (e deve essere pubblicata)? */
+export function communityGuideIndexable(g: WithText & { status?: string }): boolean {
+  return (g.status === undefined || g.status === "published") && communityGuideWords(g) >= COMMUNITY_GUIDE_MIN_WORDS;
+}
+
+/** Il riassunto di una voce nella lingua della pagina, se la traduzione c'è; altrimenti quello dell'autore. */
+export function guideShapeSummary(g: GuideIndexShape & { summary: string }, locale: Locale): { text: string; lang: Locale } {
+  const t = listTranslation(g, locale);
+  return t && t.summary !== null ? { text: t.summary, lang: locale } : { text: g.summary, lang: g.lang };
+}
+
+/** La data più recente fra quelle date (confronto per istante, non per stringa); undefined se non ce n'è. */
+function latestOf(dates: readonly (string | null | undefined)[]): string | undefined {
+  let best: string | undefined;
+  let bestAt = -Infinity;
+  for (const d of dates) {
+    const at = d ? Date.parse(d) : NaN;
+    if (!Number.isNaN(at) && at > bestAt) {
+      best = d as string;
+      bestAt = at;
+    }
+  }
+  return best;
+}
+
+/** Quando è cambiata la versione in `locale`: l'ultima modifica dell'autore o l'arrivo della traduzione in quella lingua. */
+export function guideShapeDate(g: GuideIndexShape & { updated_at: string }, locale: Locale): string {
+  return latestOf([g.updated_at, listTranslation(g, locale)?.at]) ?? g.updated_at;
+}
+
+type Dated = GuideIndexShape & { published_at?: string | null; created_at?: string };
+
+/** Le guide indicizzabili in `locale`, dalla più recente (prima pubblicazione): quelle di /guides (le prime) e di /guides/community. */
+export function guidesIndexableIn<T extends Dated>(items: readonly T[], all: readonly Locale[], locale: Locale): T[] {
+  const day = (g: Dated) => g.published_at ?? g.created_at ?? "";
+  return items.filter((g) => !guideShapeIndexing(g, all, locale).noindex).sort((a, b) => day(b).localeCompare(day(a)));
+}
+
+/** Una riga della sitemap: le lingue in cui la pagina si indicizza (mai vuote: vuol dire "tutte"), la data per lingua e la copertina. */
+export type SitemapCommunityGuide = { slug: string; locales: Locale[]; dates: Partial<Record<Locale, string>>; image?: string };
+
+/**
+ * Le righe della sitemap dalle guide pubblicate: solo quelle sopra soglia, con le loro lingue, la data di ogni versione
+ * (ultima modifica o arrivo della traduzione) e la copertina. `hub` e `list` sono, per lingua, il lastmod di /guides
+ * (le prime `COMMUNITY_GUIDES_ON_HUB` guide indicizzabili in quella lingua, le sole che la pagina mostra) e di
+ * /guides/community (tutte quelle indicizzabili in quella lingua; una lingua assente = pagina vuota e noindex, fuori
+ * dalla sitemap). Una guida sottile o non tradotta non sposta le date delle pagine che non la mostrano.
+ */
+export function sitemapCommunityGuides<R extends Dated & { slug: string; updated_at: string; cover_preset?: string | null }>(
+  rows: readonly R[],
+  all: readonly Locale[],
+): { guides: SitemapCommunityGuide[]; hub: Partial<Record<Locale, string>>; list: Partial<Record<Locale, string>> } {
+  const published = rows.filter((r) => r.status === undefined || r.status === "published");
+  const guides = published
+    .map((r) => {
+      const locales = guideShapeIndexable(r) ? guideShapeLocales(r, all) : [];
+      return { slug: r.slug, locales, dates: Object.fromEntries(locales.map((l) => [l, guideShapeDate(r, l)])), image: guideCover(r.cover_preset).src };
+    })
+    .filter((r) => r.locales.length > 0);
+  const hub: Partial<Record<Locale, string>> = {};
+  const list: Partial<Record<Locale, string>> = {};
+  for (const l of all) {
+    const shown = guidesIndexableIn(published, all, l);
+    if (!shown.length) continue;
+    list[l] = latestOf(shown.map((r) => guideShapeDate(r, l)));
+    hub[l] = latestOf(shown.slice(0, COMMUNITY_GUIDES_ON_HUB).map((r) => guideShapeDate(r, l)));
+  }
+  return { guides, hub, list };
+}
+
+// ——— Traduzione: il testo in campi piatti, a pezzi ———
 
 /** Riassunto e sezioni come campi stringa per il modello: summary, heading_1, body_1, heading_2… */
 export function guideTranslationDoc(text: CommunityGuideText): TranslationDoc {
@@ -367,6 +596,106 @@ export function guideTextFromDoc(doc: TranslationDoc, count: number): CommunityG
     sections.push({ heading, body });
   }
   return { summary: doc.summary, sections };
+}
+
+/**
+ * Impronte delle parti del testo, lingua compresa: il riassunto, poi ogni sezione (titolo e testo insieme). Una
+ * modifica cambia solo le impronte delle parti toccate: si ritraducono quelle, le altre si riusano.
+ */
+export function guidePartHashes(g: Pick<WithLang, "lang" | "summary" | "sections">): string[] {
+  return [textHash([g.lang, "summary", g.summary]), ...g.sections.map((s) => textHash([g.lang, "section", s.heading, s.body]))];
+}
+
+/**
+ * Caratteri di testo di partenza per richiesta: una guida arriva a 300 + 12 × 4080 caratteri (circa 49 mila), troppo
+ * per una risposta sola entro il tempo di una funzione; a pezzi di 8000 caratteri ogni richiesta resta sotto il minuto.
+ */
+export const TRANSLATION_CHUNK_CHARS = 8000;
+
+export type GuideTranslationPlan = {
+  /** impronte delle parti del testo attuale (`guidePartHashes`), da salvare con la traduzione */
+  parts: string[];
+  /** parti già tradotte e riusate (null = da tradurre) */
+  summary: string | null;
+  sections: (GuideSectionText | null)[];
+  /** le parti da tradurre, in gruppi: campi `summary`, `heading_N` e `body_N` (N = numero della sezione, da 1) */
+  chunks: TranslationDoc[];
+};
+
+/**
+ * Che cosa tradurre in una lingua: le parti già tradotte in `prev` (la traduzione salvata, anche vecchia) con la stessa
+ * impronta si riusano, le altre si raccolgono in gruppi di al massimo `maxChars` caratteri (una sezione non si divide).
+ * Una traduzione salvata rovinata o senza impronte delle parti non si riusa.
+ */
+export function planGuideTranslation(g: Pick<WithLang, "lang" | "summary" | "sections">, prev?: CommunityGuideTranslation | null, maxChars = TRANSLATION_CHUNK_CHARS): GuideTranslationPlan {
+  const parts = guidePartHashes(g);
+  const summaries = new Map<string, string>();
+  const bodies = new Map<string, GuideSectionText>();
+  const old = prev?.guide;
+  if (prev && Array.isArray(prev.parts) && old && Array.isArray(old.sections) && prev.parts.length === old.sections.length + 1 && translationTextOk(old, old.sections.length)) {
+    summaries.set(prev.parts[0], old.summary);
+    old.sections.forEach((s, i) => bodies.set(prev.parts![i + 1], s));
+  }
+  const summary = summaries.get(parts[0]) ?? null;
+  const sections = g.sections.map((_, i) => {
+    const s = bodies.get(parts[i + 1]);
+    return s ? { heading: s.heading, body: s.body } : null;
+  });
+
+  const chunks: TranslationDoc[] = [];
+  let current: TranslationDoc = {};
+  let size = 0;
+  const add = (fields: TranslationDoc) => {
+    const n = Object.values(fields).reduce((a, v) => a + v.length, 0);
+    if (size > 0 && size + n > maxChars) {
+      chunks.push(current);
+      current = {};
+      size = 0;
+    }
+    Object.assign(current, fields);
+    size += n;
+  };
+  if (summary === null) add({ summary: g.summary });
+  g.sections.forEach((s, i) => {
+    if (!sections[i]) add({ [`heading_${i + 1}`]: s.heading, [`body_${i + 1}`]: s.body });
+  });
+  if (size > 0) chunks.push(current);
+  return { parts, summary, sections, chunks };
+}
+
+/**
+ * Riunisce le parti riusate e quelle appena tradotte (`results`: una risposta per gruppo, nell'ordine di `plan.chunks`),
+ * pulite come il database le accetta. Null se manca una risposta o un campo, o se il testo non rispetta le regole.
+ */
+export function assembleGuideTranslation(g: WithText, plan: GuideTranslationPlan, results: readonly (TranslationDoc | null | undefined)[]): CommunityGuideText | null {
+  if (results.length !== plan.chunks.length) return null;
+  const merged: TranslationDoc = {};
+  for (let i = 0; i < plan.chunks.length; i++) {
+    const r = results[i];
+    if (!r) return null;
+    for (const k of Object.keys(plan.chunks[i])) {
+      if (typeof r[k] !== "string") return null;
+      merged[k] = r[k];
+    }
+  }
+  const summary = plan.summary ?? merged.summary;
+  if (typeof summary !== "string") return null;
+  const sections: GuideSectionText[] = [];
+  for (let i = 0; i < g.sections.length; i++) {
+    const done = plan.sections[i];
+    const heading = done ? done.heading : merged[`heading_${i + 1}`];
+    const body = done ? done.body : merged[`body_${i + 1}`];
+    if (typeof heading !== "string" || typeof body !== "string") return null;
+    sections.push({ heading, body });
+  }
+  const text = cleanTranslation({ summary, sections });
+  return translationTextOk(text, g.sections.length) ? text : null;
+}
+
+/** max_tokens di una richiesta: circa un token ogni due caratteri del testo di partenza più un margine, al massimo 16000. */
+export function translationMaxTokens(doc: TranslationDoc): number {
+  const chars = Object.values(doc).reduce((n, v) => n + v.length, 0);
+  return Math.min(16000, Math.ceil(chars / 2) + 1000);
 }
 
 // ——— Letture: dalla riga del database ai dati mostrati ———

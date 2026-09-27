@@ -195,14 +195,18 @@ export function translationRequest(guide: Guide, to: Locale, names: readonly str
   return translationRequestFor(guideText(guide), guide.lang, to, names, TRANSLATION_SYSTEM);
 }
 
+/** Opzioni di una richiesta: tetto dei token in uscita e tempo massimo (di default quelli dei mazzi, 16000 e 120 s). */
+export type TranslationOptions = { maxTokens?: number; timeoutMs?: number };
+
 /**
  * Parametri della richiesta per un testo qualsiasi (`text`, campi di sola stringa) da `from` a `to`, con le istruzioni
- * `system`: la forma generale di `translationRequest`, usata anche dalle guide della community (pacchetto GUIDE).
+ * `system`: la forma generale di `translationRequest`, usata anche dalle guide della community (pacchetto GUIDE), che
+ * traducono a pezzi e passano un `maxTokens` calcolato dalla lunghezza del pezzo (`translationMaxTokens` in guides.ts).
  */
-export function translationRequestFor(text: TranslationDoc, from: string, to: string, names: readonly string[], system: string) {
+export function translationRequestFor(text: TranslationDoc, from: string, to: string, names: readonly string[], system: string, opts: TranslationOptions = {}) {
   return {
     model: TRANSLATION_MODEL,
-    max_tokens: 16000,
+    max_tokens: opts.maxTokens ?? 16000,
     // Se il modello declina la richiesta, l'API la ripete da sola sul modello di riserva consigliato
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default" as const,
@@ -264,8 +268,9 @@ export async function translateDocWith(
   to: string,
   names: readonly string[],
   system: string,
+  opts: TranslationOptions = {},
 ): Promise<{ doc: TranslationDoc; model: string } | null> {
-  const res = await client.beta.messages.create(translationRequestFor(text, from, to, names, system), { timeout: 120_000 });
+  const res = await client.beta.messages.create(translationRequestFor(text, from, to, names, system, opts), { timeout: opts.timeoutMs ?? 120_000 });
   if (res.stop_reason === "refusal" || res.stop_reason === "max_tokens") return null;
   const raw = res.content
     .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")

@@ -8,7 +8,9 @@ type Json = Record<string, unknown>;
  * Article della pagina di una guida della community (pacchetto GUIDE, 27/09/2026), con le convenzioni di jsonld/deck.ts:
  * l'autore è la stessa Person del suo profilo /u (`communityPerson`, `@id` `memberId`, uguale nelle tre lingue; per un
  * autore editoriale quella della sua pagina autore), `headline` è il title della SERP, le carte collegate rimandano alle
- * entità delle loro schede (`cardEntityId`), la guida fa parte della CollectionPage di /guides. `inLanguage` è la lingua
+ * entità delle loro schede (`cardEntityId`), la guida fa parte della CollectionPage di /guides/community (l'elenco di
+ * tutte le guide della community indicizzabili in quella lingua: quando questa versione si indicizza, l'elenco la
+ * contiene; /guides mostra solo le ultime). `image` è la copertina della guida. `inLanguage` è la lingua
  * del documento (quella della pagina), non quella dell'autore: la pagina /en resta una pagina inglese anche quando mostra
  * l'originale in attesa della traduzione (e allora è noindex).
  */
@@ -52,7 +54,7 @@ export function communityGuideArticle({
     author,
     publisher: { "@id": organizationId },
     mainEntityOfPage: pageUrl,
-    isPartOf: { "@id": `${siteUrl}${href(locale, "/guides")}#collection` },
+    isPartOf: { "@id": `${siteUrl}${href(locale, "/guides/community")}#collection` },
     about: { "@id": videoGameId },
     articleSection: section,
     wordCount: words,

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { locales } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { getPublishedGuide } from "@/lib/community/guideQueries";
-import { communityGuideIndexing } from "@/lib/community/guides";
+import { communityGuideIndexing, guideCover } from "@/lib/community/guides";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { CommunityGuideView, guideDescription } from "@/components/guides/CommunityGuideView";
@@ -32,7 +32,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // hreflang solo verso le lingue in cui la guida si legge davvero, e solo sopra la soglia di parole: lo stesso criterio
   // della sitemap (`communityGuideIndexing` in guides.ts, come `deckIndexing` dei mazzi)
   const indexing = communityGuideIndexing(guide, locales, locale);
-  const meta = pageMeta(locale, `/guides/community/${guide.slug}`, pageTitleWith(guide.title, L.page.metaSuffix), guideDescription(guide, locale), undefined, {
+  // og:image = la copertina della guida (media kit), con le sue misure: ogni guida ha la sua immagine social
+  const cover = guideCover(guide.cover_preset);
+  const meta = pageMeta(locale, `/guides/community/${guide.slug}`, pageTitleWith(guide.title, L.page.metaSuffix), guideDescription(guide, locale), cover.src, {
+    imageSize: { width: cover.width, height: cover.height },
     type: "article",
     published: guide.published_at ?? guide.created_at,
     modified: guide.updated_at,
