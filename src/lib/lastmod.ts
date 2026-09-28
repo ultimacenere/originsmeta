@@ -64,7 +64,7 @@ export const PAGE_UPDATED = {
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
   "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
-  "/faq": "2026-09-25", // Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
+  "/faq": "2026-09-28", // 28/09: risposta "kickstarter" con la data confermata dal CEO di Koin Games; Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-27", // 27/09: la pagina si chiama Redazione (decisione di Pierluigi); Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-27", // 27/09: "Tutta la redazione"; Ondata 2: Person unica, link al profilo della community, tagline di Davdas

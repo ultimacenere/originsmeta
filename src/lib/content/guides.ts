@@ -1273,7 +1273,7 @@ The Steam page lists the release for Q4 2026, with no more precise date. The dem
     metaTitle: "Origins TCG roadmap and release dates",
     excerpt: "Every confirmed Origins TCG date, from the first Steam post to the Demo 2.0 update and the Crimson Cup at Next Fest, plus what is planned for 2027.",
     readTime: 4,
-    updated: "2026-09-25",
+    updated: "2026-09-28",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "When does Origins TCG launch on Steam?", a: "The Steam store page lists the release for Q4 2026, with no more precise date. The demo got its first big update on 21 September 2026, and ranked mode switches on with Steam Next Fest, 19–26 October 2026." },
@@ -1308,6 +1308,7 @@ The Steam page lists the release for Q4 2026, with no more precise date. The dem
 | 28 August | Big Bob's Playtest Battle, first Conquest tournament, 130+ registered |
 | 9 September | [Next Fest tournament announced](https://store.steampowered.com/news/app/4429430/view/1843481262690278) |
 | 10 September | Kickstarter AMA on the official Discord: Alpha Edition, rarities, grading, trading, VIP discount |
+| 17 September | [Koin Games' CEO gives the Kickstarter date](https://x.com/TimothyJooste/status/2100700207285445011): the Alpha Edition campaign opens on 27 October |
 | 21 September | [First big demo update](https://store.steampowered.com/news/app/4429430/view/1844115010502611): new interface and board, collectors tutorial, test packs, balance changes, tentative Crimson Cup card list |
 | 24 September | [Crimson Cup rules](/en/news/crimson-cup-format-check-in): Conquest with three decks, check-in |
 
@@ -1315,11 +1316,11 @@ The Steam page lists the release for Q4 2026, with no more precise date. The dem
 
 - **19–26 October 2026.** Steam Next Fest: ranked mode switches on in the demo, with exclusive ranked rewards. The last balance patch before the festival is due two weeks earlier.
 - **20–25 October 2026.** The Crimson Cup, the Steam Next Fest tournament: regional qualifiers on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000, including an exclusive 1/1 promo card.
-- **27 October 2026.** The Kickstarter: on 25 September the demo's main menu showed it as "Coming soon – Oct 27". Koin Games has not announced the date on Steam or on the official Discord yet; our [Kickstarter guide](/en/guides/origins-tcg-kickstarter) will confirm it.
+- **27 October 2026.** The Kickstarter for the Alpha Edition, announced by Koin Games' CEO on 17 September; the demo's main menu also shows it as "Coming soon – Oct 27". Everything about it in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
 - **Q4 2026.** Release on Steam, according to the store page, which gives no more precise date.
 - **2027.** Mobile version and pack opening on phone. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
 
-Dates come from the official Steam posts, the studio's Discord and, for the Kickstarter, the demo's own menu. We update this page when they change.
+Dates come from the official Steam posts, the studio's Discord and, for the Kickstarter, the post of Koin Games' CEO and the demo's own menu. We update this page when they change.
 `,
   },
   "collector-economy": {
@@ -1523,22 +1524,22 @@ Sources: the Origins TCG and Origins TCG Demo pages on Steam (read on 25 Septemb
     category: "economy",
     title: "Origins TCG Kickstarter: date, pre-registration, Alpha Edition and what we know",
     metaTitle: "Origins TCG Kickstarter: date, pre-registration, Alpha",
-    excerpt: "The demo menu shows the Kickstarter as “Coming soon – Oct 27”. Pre-registration is open: 15% off for a refundable 1 dollar deposit, preorder-only Alpha boxes.",
+    excerpt: "Kickstarter on 27 October 2026, confirmed by Koin Games' CEO. Pre-registration is open: 15% off for a refundable 1 dollar deposit, preorder-only Alpha boxes.",
     readTime: 4,
-    updated: "2026-09-25",
+    updated: "2026-09-28",
     image: "/media/ls-collector-pack.webp",
     faq: [
-      { q: "When does the Origins TCG Kickstarter start?", a: "On 25 September 2026 the demo's main menu showed the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”. Koin Games has not announced the date on Steam or on the official Discord yet: we will confirm it here as soon as they do." },
+      { q: "When does the Origins TCG Kickstarter start?", a: "On 27 October 2026. Koin Games' CEO, Tim Jooste, gave the date on X on 17 September 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), and the demo's main menu shows the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”. Neither says at what time the campaign opens: we will add it here as soon as Koin does." },
       { q: "What does the 1 dollar deposit give you?", a: "VIP status with 15% off at launch. The official page states the deposit is fully refundable before launch." },
       { q: "What is the Alpha Edition?", a: "Origins Myths & Legends Alpha Edition: collector packs of 5 cards with at least one Rare or better guaranteed, booster boxes of 24 packs and cases of 6 boxes. Boxes and cases are preorder-only and the print run will not be repeated." },
       { q: "Do I need to back the Kickstarter to compete?", a: "No. Origins is free-to-compete: ranked play needs no purchase, and the Steam demo is free. The Kickstarter is about collecting, not power." },
       { q: "Where are the cards traded?", a: "On the Steam Community Market and its connected marketplaces, according to the official page. Mobile pack opening is planned for 2027." },
     ],
-    body: `## The date: 27 October, according to the demo {#date}
+    body: `## The date: 27 October, confirmed by Koin Games {#date}
 
-On **25 September 2026** the main menu of the Origins TCG demo showed the Kickstarter box with **"Coming soon – Oct 27"** and **"Preregister for 15% off"**, while the loading screen advertises the **Myths & Legends Alpha Edition**. It is the first date Koin Games has shown anywhere, but it is not an announcement yet: there is no post with the date on Steam or on the official Discord, and the [pre-registration page](https://founder.origins-tcg.com) does not mention it. We will update this guide the day Koin confirms it.
+The Kickstarter for the **Myths & Legends Alpha Edition** opens on **27 October 2026**. Koin Games' CEO, **Tim Jooste**, wrote "back the Alpha Edition Kickstarter (Oct 27th)" in a [post on X of 17 September 2026](https://x.com/TimothyJooste/status/2100700207285445011), which the studio's account shared. The demo says the same: on **25 September 2026** its main menu showed the Kickstarter box with **"Coming soon – Oct 27"** and **"Preregister for 15% off"**, while the loading screen advertises the Alpha Edition. Neither says at what time the campaign opens, and on 28 September 2026 the [pre-registration page](https://founder.origins-tcg.com) did not mention the date yet: we will add the time and the link to the campaign as soon as Koin publishes them.
 
-*Update of 25 September 2026: added the date shown in the demo, the topics of the AMA from the official announcement and the corrected timeline.*
+*Update of 28 September 2026: the date is confirmed by Koin Games' CEO. The update of 25 September had added the date shown in the demo, the topics of the AMA from the official announcement and the corrected timeline.*
 
 ## What has been announced
 
@@ -1575,7 +1576,7 @@ Backing the Kickstarter buys collectibles, not strength: ranked play in Origins 
 - 15 July 2026: free demo on Steam.
 - 21 September 2026: first big update of the demo.
 - 19–26 October 2026: Steam Next Fest, with ranked mode in the demo and the Crimson Cup (20–25 October).
-- 27 October 2026: Kickstarter, "Coming soon" in the demo menu (not yet announced on Steam or Discord).
+- 27 October 2026: Kickstarter for the Alpha Edition (date given by Koin Games' CEO on 17 September and shown in the demo menu).
 - Q4 2026: release on Steam, according to the store page.
 - 2027: mobile.
 
@@ -1583,9 +1584,9 @@ Backing the Kickstarter buys collectibles, not strength: ranked play in Origins 
 
 1. Wishlist the game on Steam and play the demo.
 2. If you want the launch discount, [pre-register on founder.origins-tcg.com](https://founder.origins-tcg.com) with the refundable deposit.
-3. Follow the official Discord for the confirmation of the date: we will publish it here and in the news the same day.
+3. Follow the official Discord for the time of the launch and the link to the campaign: we will add them here the same day.
 
-Sources: [official pre-registration page](https://founder.origins-tcg.com), [Steam page](https://store.steampowered.com/app/4429430/Origins_TCG/), the AMA announcement on the official Discord (11 September 2026) and the main menu of the demo (read on 25 September 2026).`,
+Sources: [official pre-registration page](https://founder.origins-tcg.com), [Steam page](https://store.steampowered.com/app/4429430/Origins_TCG/), the AMA announcement on the official Discord (11 September 2026), the [post of Koin Games' CEO on X](https://x.com/TimothyJooste/status/2100700207285445011) (17 September 2026) and the main menu of the demo (read on 25 September 2026).`,
   },
 };
 
@@ -2753,7 +2754,7 @@ La pagina Steam indica l'uscita nel quarto trimestre 2026, senza una data più p
     metaTitle: "Origins TCG: roadmap e date di uscita",
     excerpt: "Tutte le date confermate di Origins TCG, dal primo post su Steam alla Demo 2.0 e alla Crimson Cup del Next Fest, più ciò che è previsto per il 2027.",
     readTime: 4,
-    updated: "2026-09-25",
+    updated: "2026-09-28",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "Quando esce Origins TCG su Steam?", a: "La pagina dello store su Steam indica l'uscita nel quarto trimestre 2026, senza una data più precisa. La demo ha avuto il suo primo grande aggiornamento il 21 settembre 2026 e la classificata si accende con lo Steam Next Fest, dal 19 al 26 ottobre 2026." },
@@ -2788,6 +2789,7 @@ La pagina Steam indica l'uscita nel quarto trimestre 2026, senza una data più p
 | 28 agosto | Big Bob's Playtest Battle, primo torneo Conquest, oltre 130 iscritti |
 | 9 settembre | [Annunciato il torneo del Next Fest](https://store.steampowered.com/news/app/4429430/view/1843481262690278) |
 | 10 settembre | AMA sul Kickstarter nel Discord ufficiale: Alpha Edition, rarità, valutazione, scambi, sconto VIP |
+| 17 settembre | [Il CEO di Koin Games dà la data del Kickstarter](https://x.com/TimothyJooste/status/2100700207285445011): la campagna dell'Alpha Edition parte il 27 ottobre |
 | 21 settembre | [Primo grande aggiornamento della demo](https://store.steampowered.com/news/app/4429430/view/1844115010502611): interfaccia e tabellone nuovi, tutorial per collezionisti, pacchetti di prova, bilanciamenti, lista provvisoria delle carte della Crimson Cup |
 | 24 settembre | [Regole della Crimson Cup](/it/news/crimson-cup-format-check-in): Conquest a tre mazzi, check-in |
 
@@ -2795,11 +2797,11 @@ La pagina Steam indica l'uscita nel quarto trimestre 2026, senza una data più p
 
 - **19–26 ottobre 2026.** Steam Next Fest: nella demo si accende la classificata, con ricompense esclusive. L'ultima patch di bilanciamento prima del festival è attesa due settimane prima.
 - **20–25 ottobre 2026.** La Crimson Cup, il torneo dello Steam Next Fest: qualificazioni regionali il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $, fra cui una carta promo 1/1 esclusiva.
-- **27 ottobre 2026.** Il Kickstarter: il 25 settembre il menu principale della demo lo mostrava come "Coming soon – Oct 27". Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale; la nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter) la confermerà.
+- **27 ottobre 2026.** Il Kickstarter dell'Alpha Edition, annunciato dal CEO di Koin Games il 17 settembre; anche il menu principale della demo lo mostra come "Coming soon – Oct 27". Tutto quello che c'è da sapere nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
 - **Q4 2026.** Uscita su Steam, secondo la pagina dello store, che non dà una data più precisa.
 - **2027.** Versione mobile e apertura dei pacchetti da telefono. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein e Sherlock Holmes.
 
-Le date vengono dai post ufficiali su Steam, dal Discord dello studio e, per il Kickstarter, dal menu della demo. Aggiorniamo questa pagina quando cambiano.
+Le date vengono dai post ufficiali su Steam, dal Discord dello studio e, per il Kickstarter, dal post del CEO di Koin Games e dal menu della demo. Aggiorniamo questa pagina quando cambiano.
 `,
   },
   "collector-economy": {
@@ -3003,22 +3005,22 @@ Fonti: le pagine Steam di Origins TCG e della demo (lette il 25 settembre 2026) 
     category: "economy",
     title: "Kickstarter di Origins TCG: data, pre-registrazione, Alpha Edition e cosa sappiamo",
     metaTitle: "Kickstarter di Origins TCG: data, pre-registrazione, Alpha",
-    excerpt: "Nel menu della demo il Kickstarter è “Coming soon – Oct 27”. Pre-registrazione aperta: 15% di sconto con 1 dollaro rimborsabile, box Alpha solo in preordine.",
+    excerpt: "Kickstarter il 27 ottobre 2026, confermato dal CEO di Koin Games. Pre-registrazione aperta: 15% di sconto con 1 dollaro rimborsabile, box Alpha in preordine.",
     readTime: 4,
-    updated: "2026-09-25",
+    updated: "2026-09-28",
     image: "/media/ls-collector-pack.webp",
     faq: [
-      { q: "Quando parte il Kickstarter di Origins TCG?", a: "Il 25 settembre 2026 il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”. Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale: la confermeremo qui appena lo farà." },
+      { q: "Quando parte il Kickstarter di Origins TCG?", a: "Il 27 ottobre 2026. L'ha scritto il CEO di Koin Games, Tim Jooste, su X il 17 settembre 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e il menu principale della demo mostra il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”. Nessuno dei due dice a che ora apre la campagna: lo aggiungeremo qui appena lo farà Koin." },
       { q: "Cosa dà il deposito da 1 dollaro?", a: "Lo stato VIP con il 15% di sconto al lancio. La pagina ufficiale dichiara che il deposito è interamente rimborsabile prima del lancio." },
       { q: "Cos'è l'Alpha Edition?", a: "Origins Myths & Legends Alpha Edition: pacchetti collector da 5 carte con almeno una Rara o superiore garantita, box da 24 pacchetti e case da 6 box. Box e case sono solo in preordine e la tiratura non verrà ripetuta." },
       { q: "Devo sostenere il Kickstarter per competere?", a: "No. Origins è free-to-compete: la classificata non richiede acquisti e la demo su Steam è gratuita. Il Kickstarter riguarda il collezionismo, non la forza in partita." },
       { q: "Dove si scambiano le carte?", a: "Sul Mercato della Comunità di Steam e sui marketplace collegati, secondo la pagina ufficiale. L'apertura dei pacchetti su mobile è prevista per il 2027." },
     ],
-    body: `## La data: 27 ottobre, secondo la demo {#data}
+    body: `## La data: 27 ottobre, confermata da Koin Games {#data}
 
-Il **25 settembre 2026** il menu principale della demo di Origins TCG mostrava il riquadro del Kickstarter con **"Coming soon – Oct 27"** e **"Preregister for 15% off"**, mentre la schermata di caricamento pubblicizza la **Myths & Legends Alpha Edition**. È la prima data che Koin Games mostra da qualche parte, ma non è ancora un annuncio: su Steam e sul Discord ufficiale non c'è un post con la data e la [pagina di pre-registrazione](https://founder.origins-tcg.com) non la cita. Aggiorneremo questa guida il giorno in cui Koin la conferma.
+Il Kickstarter della **Myths & Legends Alpha Edition** parte il **27 ottobre 2026**. Il CEO di Koin Games, **Tim Jooste**, ha scritto "back the Alpha Edition Kickstarter (Oct 27th)" in un [post su X del 17 settembre 2026](https://x.com/TimothyJooste/status/2100700207285445011), rilanciato dall'account dello studio. La demo dice lo stesso: il **25 settembre 2026** il menu principale mostrava il riquadro del Kickstarter con **"Coming soon – Oct 27"** e **"Preregister for 15% off"**, mentre la schermata di caricamento pubblicizza l'Alpha Edition. Nessuno dei due dice a che ora apre la campagna, e il 28 settembre 2026 la [pagina di pre-registrazione](https://founder.origins-tcg.com) non citava ancora la data: aggiungeremo l'orario e il link alla campagna appena Koin li pubblica.
 
-*Aggiornamento del 25 settembre 2026: aggiunti la data mostrata nella demo, i temi dell'AMA dall'annuncio ufficiale e le date corrette.*
+*Aggiornamento del 28 settembre 2026: la data è confermata dal CEO di Koin Games. L'aggiornamento del 25 settembre aveva aggiunto la data mostrata nella demo, i temi dell'AMA dall'annuncio ufficiale e le date corrette.*
 
 ## Cosa è stato annunciato
 
@@ -3055,7 +3057,7 @@ Sostenere il Kickstarter compra collezionabili, non forza in partita: la classif
 - 15 luglio 2026: demo gratuita su Steam.
 - 21 settembre 2026: primo grande aggiornamento della demo.
 - 19–26 ottobre 2026: Steam Next Fest, con la classificata nella demo e la Crimson Cup (20–25 ottobre).
-- 27 ottobre 2026: Kickstarter, "Coming soon" nel menu della demo (non ancora annunciato su Steam o su Discord).
+- 27 ottobre 2026: Kickstarter dell'Alpha Edition (data annunciata dal CEO di Koin Games il 17 settembre e mostrata nel menu della demo).
 - Q4 2026: uscita su Steam, secondo la pagina dello store.
 - 2027: mobile.
 
@@ -3063,9 +3065,9 @@ Sostenere il Kickstarter compra collezionabili, non forza in partita: la classif
 
 1. Metti il gioco in lista dei desideri su Steam e prova la demo.
 2. Se vuoi lo sconto al lancio, [pre-registrati su founder.origins-tcg.com](https://founder.origins-tcg.com) con il deposito rimborsabile.
-3. Segui il Discord ufficiale per la conferma della data: la pubblicheremo qui e nelle news lo stesso giorno.
+3. Segui il Discord ufficiale per l'orario del lancio e il link alla campagna: li aggiungeremo qui lo stesso giorno.
 
-Fonti: [pagina ufficiale di pre-registrazione](https://founder.origins-tcg.com), [pagina Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), l'annuncio dell'AMA nel Discord ufficiale (11 settembre 2026) e il menu principale della demo (letto il 25 settembre 2026).`,
+Fonti: [pagina ufficiale di pre-registrazione](https://founder.origins-tcg.com), [pagina Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), l'annuncio dell'AMA nel Discord ufficiale (11 settembre 2026), il [post del CEO di Koin Games su X](https://x.com/TimothyJooste/status/2100700207285445011) (17 settembre 2026) e il menu principale della demo (letto il 25 settembre 2026).`,
   },
 };
 

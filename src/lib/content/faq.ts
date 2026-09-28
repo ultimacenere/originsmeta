@@ -103,7 +103,7 @@ const en: Faq[] = [
   {
     id: "kickstarter",
     q: "Is there a date for the Origins TCG Kickstarter?",
-    a: "On 25 September 2026 the demo's main menu showed the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”; Koin Games has not announced the date on Steam or on the official Discord yet. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
+    a: "Yes: 27 October 2026. Koin Games' CEO, Tim Jooste, gave the date on X on 17 September 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), and the demo's main menu shows the Kickstarter as “Coming soon – Oct 27” (read on 25 September 2026); neither says at what time it opens. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter AMA of 10 September" }],
     keywords: ["kickstarter", "crowdfunding", "pre-registration", "preregistration", "preregister", "deposit", "founder", "alpha"],
@@ -227,7 +227,7 @@ const it: Faq[] = [
   {
     id: "kickstarter",
     q: "C'è una data per il Kickstarter di Origins TCG?",
-    a: "Il 25 settembre 2026 il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”; Koin Games non ha ancora annunciato la data su Steam né sul Discord ufficiale. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
+    a: "Sì: il 27 ottobre 2026. L'ha scritto il CEO di Koin Games, Tim Jooste, su X il 17 settembre 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e il menu principale della demo mostra il Kickstarter come “Coming soon – Oct 27” (letto il 25 settembre 2026); nessuno dei due dice a che ora apre. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA sul Kickstarter del 10 settembre" }],
     keywords: ["kickstarter", "crowdfunding", "pre-registrazione", "preregistrazione", "preregistrarsi", "deposito", "founder", "alpha"],
@@ -351,7 +351,7 @@ const es: Faq[] = [
   {
     id: "kickstarter",
     q: "¿Hay fecha para el Kickstarter de Origins TCG?",
-    a: "El 25 de septiembre de 2026 el menú principal de la demo mostraba el Kickstarter como “Coming soon – Oct 27”, junto a “Preregister for 15% off”; Koin Games aún no ha anunciado la fecha en Steam ni en el Discord oficial. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
+    a: "Sí: el 27 de octubre de 2026. Lo escribió el CEO de Koin Games, Tim Jooste, en X el 17 de septiembre de 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), y el menú principal de la demo muestra el Kickstarter como “Coming soon – Oct 27” (consultado el 25 de septiembre de 2026); ninguno de los dos dice a qué hora abre. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA del Kickstarter del 10 de septiembre" }],
     keywords: ["kickstarter", "crowdfunding", "prerregistro", "preregistro", "prerregistrarse", "deposito", "founder", "alpha"],
