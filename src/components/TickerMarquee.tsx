@@ -2,6 +2,12 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useLiveUsers } from "@/lib/liveClient";
+import { liveOrder } from "@/lib/twitchLive";
+import { fillCreator, type LiveStripLabels } from "@/lib/creatorLabels";
+
+/** La voce "Ora live" (28/09/2026): indirizzo della pagina /live nella lingua e le sue etichette. */
+export type TickerLive = LiveStripLabels & { href: string };
 
 export type TickerItem = {
   key: string;
@@ -26,7 +32,46 @@ type Props = {
   /** JSON con i tornei della community per lingua (/api/calendar): caricato nel browser, così il layout resta statico */
   extraUrl?: string;
   locale?: string;
+  /** "Ora live" accanto al logo del gioco (28/09/2026): compare solo quando almeno un creator è in diretta */
+  live?: TickerLive;
 };
+
+/**
+ * "Ora live" (28/09/2026, idea di Davdas ripresa da Pierluigi: "nel calendario, di fianco al logo di Origins, prima che
+ * parta il giro di date"): subito dopo il blocco col logo, un cubetto magenta con quanti creator sono in diretta su
+ * Origins TCG e il link alla pagina /live. Lo stato arriva nel browser da /api/live (`useLiveUsers`, stessa promessa
+ * del badge LIVE, riletta ogni due minuti a scheda visibile): il layout resta statico. Nessuno in diretta, nessuna voce.
+ * Le due copie del nastro la mostrano insieme (stessa promessa), la seconda nascosta ai lettori di schermo come le date.
+ */
+function LiveChip({ live, hidden }: { live: TickerLive; hidden: boolean }) {
+  const state = useLiveUsers(120_000);
+  const names = state ? liveOrder(state.users) : [];
+  if (!names.length) return null;
+  const line = names.length === 1 ? fillCreator(live.one, { name: names[0] }) : fillCreator(live.many, { n: names.length });
+  return (
+    <Link
+      href={live.href}
+      prefetch={false}
+      aria-hidden={hidden ? true : undefined}
+      tabIndex={hidden ? -1 : undefined}
+      data-om-event="live_now_open"
+      data-om-placement="calendar"
+      className="flex shrink-0 items-center gap-3 rounded-xl px-2 py-1 hover:bg-felt-soft"
+    >
+      <span className="date-cube is-live">
+        <span className="text-lg">{names.length}</span>
+        <small>live</small>
+      </span>
+      <span className="min-w-0">
+        <span className="flex items-center gap-2 font-display text-sm font-bold text-crimson-soft">
+          <span className="live-dot" aria-hidden="true" />
+          {live.title}
+        </span>
+        <span className="block font-mono text-[11px] uppercase tracking-wider text-chalk-muted">{line}</span>
+      </span>
+    </Link>
+  );
+}
 
 /** Unisce eventi ufficiali e tornei, in ordine di data; il primo è "il prossimo" (evidenziato in giallo). */
 function merge(base: TickerItem[], extra: TickerItem[]): TickerItem[] {
@@ -52,7 +97,7 @@ const MAX_REPEATS = 8;
  * Tra la fine e l'inizio del ciclo c'è un blocco con il logo del gioco. Con "riduci il movimento" attivo
  * non scorre da sola ma resta navigabile.
  */
-export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 16, extraUrl, locale }: Props) {
+export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 16, extraUrl, locale, live }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const pausedUntil = useRef(0);
@@ -219,6 +264,7 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
                 <img src="/media/origins-tcg-logo.webp" alt="" loading="lazy" />
                 Origins TCG
               </span>
+              {live ? <LiveChip live={live} hidden={copy === 1} /> : null}
             </Fragment>
           ))}
         </div>

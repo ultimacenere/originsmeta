@@ -29,6 +29,8 @@ import { getProfileShowcase } from "@/lib/community/creators";
 import { isShowcaseBadge, normalizeBadge } from "@/lib/community/badges";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { ProfileShowcase } from "@/components/ProfileShowcase";
+import { LiveBadge } from "@/components/LiveBadge";
+import { twitchLogin } from "@/lib/community/profileLinks";
 import { CreatorTournaments } from "@/components/CreatorTournaments";
 import { StaffMessageLink } from "@/components/inbox/InboxIndicator";
 // vetrina dei profili (pacchetto VETRINA, 27/09/2026): copertina, colore d'accento, frase, Leggendaria del cuore, mazzo e video in evidenza, orari
@@ -146,6 +148,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   // authors.ts, e i link scritti dall'utente la cambierebbero da una pagina all'altra.
   const showcase = await getProfileShowcase(profile.id);
   const showcaseRole = isShowcaseBadge(role);
+  // badge LIVE nella testata: solo i ruoli con vetrina e un canale Twitch nel profilo (le regole di /api/live)
+  const liveHeader = showcaseRole && Boolean(profile.username) && showcase !== null && twitchLogin(showcase.links) !== null;
   // Vetrina (pacchetto VETRINA): solo per Creator, Autore, Pro e Staff; null prima della migrazione (la pagina resta com'era)
   const vetrina = showcaseRole ? await getProfileVetrina(profile.id) : null;
   const sameAs = showcaseRole && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
@@ -198,9 +202,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
             {profile.username ? `@${profile.username}` : ""}
             {profile.created_at ? ` · ${p.memberSince} ${formatDate(locale, profile.created_at.slice(0, 10))}` : ""}
           </p>
-          {badge ? (
-            <p className="mt-3">
-              <span className={`${badgePill} ${badgeStyle[badge]}`}>{c.badges[badge]}</span>
+          {badge || liveHeader ? (
+            <p className="mt-3 flex flex-wrap items-center gap-3">
+              {badge ? <span className={`${badgePill} ${badgeStyle[badge]}`}>{c.badges[badge]}</span> : null}
+              {/* badge LIVE accanto al ruolo, grande e con gli spettatori (28/09/2026, Pierluigi: "rendi più visibile il
+                  bollino"; prima stava piccolo sulla riga delle lingue); caricato nel browser, la pagina resta ISR */}
+              {liveHeader ? <LiveBadge username={profile.username ?? ""} labels={creatorLabels[locale].live} placement="profile" size="lg" /> : null}
             </p>
           ) : null}
           {/* "Segui" (pacchetto SEGUI, 27/09/2026) subito sotto il ruolo, vicino al nome anche a 375 px: solo i ruoli con vetrina; stato e follower letti nel browser (la pagina è ISR) */}
@@ -214,7 +221,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               </Link>
             </p>
           ) : null}
-          <ProfileShowcase showcase={showcase} username={profile.username ?? ""} name={name} badge={profile.badge} locale={locale} />
+          <ProfileShowcase showcase={showcase} name={name} locale={locale} />
           {/* "Scrivi a questo utente": solo per lo staff, deciso nel browser (la pagina è ISR); casella messaggi, pacchetto INBOX */}
           <StaffMessageLink locale={locale} username={profile.username} profileId={profile.id} />
         </div>

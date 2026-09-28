@@ -29,6 +29,7 @@ import {
   guideVideoLd,
   isIsoDate,
   legacyResource,
+  liveEmbedSrc,
   mediaErrorField,
   mediaFieldRow,
   mediaNeedsColumns,
@@ -159,6 +160,17 @@ describe("lettore e link esterni", () => {
     assert.equal(embedSrc(vod, ["originsmeta.com", "preview.vercel.app"]), "https://player.twitch.tv/?video=v123&parent=originsmeta.com&parent=preview.vercel.app&autoplay=true&time=0h1m5s");
     const clip = parseVideoUrl("https://clips.twitch.tv/Abc-1")!;
     assert.equal(embedSrc(clip, ["originsmeta.com"]), "https://clips.twitch.tv/embed?clip=Abc-1&parent=originsmeta.com&autoplay=true");
+  });
+
+  test("liveEmbedSrc: la diretta di un canale con tutti i parent; un nome di canale non valido non dà nessun lettore", () => {
+    assert.equal(
+      liveEmbedSrc("aldrymus", ["originsmeta.com", "www.originsmeta.com"]),
+      "https://player.twitch.tv/?channel=aldrymus&parent=originsmeta.com&parent=www.originsmeta.com&autoplay=true",
+    );
+    assert.equal(liveEmbedSrc("r0bip", twitchParents("localhost")), "https://player.twitch.tv/?channel=r0bip&parent=originsmeta.com&parent=www.originsmeta.com&parent=localhost&autoplay=true");
+    assert.equal(liveEmbedSrc("Aldrymus", ["originsmeta.com"]), null);
+    assert.equal(liveEmbedSrc("ab", ["originsmeta.com"]), null);
+    assert.equal(liveEmbedSrc("x&parent=evil.com", ["originsmeta.com"]), null);
   });
 
   test("twitchParents: i domini del sito più quello della pagina, senza doppioni né valori strani", () => {

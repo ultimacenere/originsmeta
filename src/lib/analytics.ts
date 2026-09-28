@@ -40,7 +40,8 @@
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
  *     video_play          "riproduci" su un video a clic (VideoEmbed, 26/09/2026): provider (youtube | twitch),
- *                         solo da qui si carica il lettore di YouTube o Twitch      placement (deck_page | guide | profile)
+ *                         solo da qui si carica il lettore di YouTube o Twitch;     placement (deck_page | guide | profile |
+ *                         anche la diretta a clic della pagina /live (LivePlayer)   live_page)
  *     deck_link_click     link delle Risorse di un mazzo (attributi); uno verso     host, placement (deck_resources)
  *                         Discord o Steam manda anche discord_click / steam_click
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
@@ -75,7 +76,9 @@
  *                         (pacchetto CREATOR, 26/09/2026; attributi sul link,     instagram | kick | bluesky | discord |
  *                         ChannelLinks e LiveBadge): il traffico che il sito      website | twitch_live), placement
  *                         porta ai creator; un canale Discord manda anche         (profile | deck_page | decks_list | creators)
- *                         discord_click (server=other), come deck_link_click
+ *                         discord_click (server=other), come deck_link_click;      e dal 28/09/2026 live_page (la pagina /live)
+ *     live_now_open       clic su "Ora live" nella striscia del calendario        placement (calendar)
+ *                         (28/09/2026, compare solo se qualcuno è in diretta; attributi sul link, TickerMarquee)
  *     stream_tools_open   apertura del menu "Per le dirette" di un mazzo, o delle placement (deck_page | account)
  *                         istruzioni per le dirette in /account (pacchetto STREAM, 26/09/2026)
  *     stream_tool_copy    copia RIUSCITA di un link o comando per le dirette      tool (short_link | chat_nightbot |
@@ -194,6 +197,7 @@ export type EventParams = {
   tier_entry_open: { tier_source: string; card: string };
   tier_entry_click: { tier_source: string; target: string };
   creator_link_click: { kind: string; placement: string };
+  live_now_open: { placement: string };
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
@@ -235,6 +239,7 @@ export const VERCEL_PROPS = {
   tier_entry_open: ["tier_source", "card"],
   tier_entry_click: ["tier_source", "target"],
   creator_link_click: ["kind", "placement"],
+  live_now_open: ["placement"],
   stream_tools_open: ["placement"],
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],

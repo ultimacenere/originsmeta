@@ -54,6 +54,7 @@ const sections = [
   "decks",
   "faq",
   "guides",
+  "live",
   "locations",
   "login",
   "metashifting",

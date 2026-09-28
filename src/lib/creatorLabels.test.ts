@@ -64,6 +64,17 @@ describe("etichette dei creator", () => {
       assert.ok(d.description.length >= 120 && d.description.length <= 158, `${locale}: description di ${d.description.length} caratteri`);
     }
   });
+  test("pagina /live (28/09/2026): title con Origins TCG entro 60 caratteri con il marchio, description 120–158", () => {
+    for (const [locale, l] of Object.entries(creatorLabels)) {
+      const p = l.liveNow.page;
+      assert.match(p.metaTitle, /Origins TCG/, `${locale}: metaTitle senza Origins TCG`);
+      assert.ok(`${p.metaTitle} · OriginsMeta`.length <= 60, `${locale}: metaTitle di ${p.metaTitle.length} caratteri, senza posto per il marchio`);
+      assert.ok(p.description.length >= 120 && p.description.length <= 158, `${locale}: description di ${p.description.length} caratteri`);
+      // i ruoli come nei dizionari anche nell'invito a comparire nella pagina
+      const badges = dictionaries[locale as keyof typeof dictionaries].community.badges;
+      for (const role of ["creator", "author", "pro", "staff"] as const) assert.ok(p.howTo.includes(badges[role]), `${locale} liveNow.page.howTo: manca il ruolo ${badges[role]}`);
+    }
+  });
   test("ruoli (27/09/2026): nei testi si chiamano come nei dizionari, Creator uguale nelle tre lingue", () => {
     for (const [locale, l] of Object.entries(creatorLabels)) {
       const badges = dictionaries[locale as keyof typeof dictionaries].community.badges;

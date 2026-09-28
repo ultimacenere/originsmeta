@@ -124,9 +124,55 @@ export type DirectoryLabels = {
   listName: string;
 };
 
+/** Voce "Ora live" della striscia del calendario (28/09/2026): compare solo se almeno un creator è in diretta. */
+export type LiveStripLabels = {
+  title: string;
+  /** un solo creator in diretta: {name} */
+  one: string;
+  /** più creator in diretta: {n} */
+  many: string;
+};
+
+/** Pagina /live con i creator in diretta (28/09/2026, idea di Davdas ripresa da Pierluigi). */
+export type LivePageLabels = {
+  kicker: string;
+  h1: string;
+  /** title della SERP: con "Origins TCG" dentro, entro 60 caratteri con " · OriginsMeta" */
+  metaTitle: string;
+  /** 120–158 caratteri */
+  description: string;
+  intro: string;
+  loading: string;
+  none: string;
+  /** il sito non ha le chiavi di Twitch */
+  off: string;
+  /** "Spettatori: {viewers}" */
+  viewers: string;
+  profile: string;
+  openTwitch: string;
+  /** lettore a clic: nome accessibile del tasto, {name} */
+  watch: string;
+  /** titolo dell'iframe e didascalia: {name} */
+  playerTitle: string;
+  /** sotto il tasto, prima del clic */
+  consent: string;
+  privacy: string;
+  /** riquadro sotto 400×300: la diretta si apre su Twitch */
+  narrow: string;
+  /** nome accessibile del tasto quando il clic apre Twitch: {name} */
+  openAria: string;
+  streamersTitle: string;
+  streamersIntro: string;
+  streamersEmpty: string;
+  twitchChannel: string;
+  howTo: string;
+  allCreators: string;
+};
+
 export type CreatorLabels = {
   channels: ChannelLabels;
   live: LiveLabels;
+  liveNow: { strip: LiveStripLabels; page: LivePageLabels };
   form: ProfileFormLabels;
   profile: {
     /** "Contenuti in" + lingue */
@@ -147,6 +193,37 @@ export type CreatorLabels = {
 const en: CreatorLabels = {
   channels: { website: "Website", newTab: "(opens in a new tab)", listOf: "{name}'s channels" },
   live: { badge: "LIVE", title: "Live on Twitch now: {viewers} viewers" },
+  liveNow: {
+    strip: { title: "Live now", one: "{name} is live", many: "{n} creators live" },
+    page: {
+      kicker: "Live on Twitch",
+      h1: "Origins TCG creators live now",
+      metaTitle: "Origins TCG creators live on Twitch now",
+      description:
+        "See which Origins TCG creators, authors, Pro players and staff are streaming on Twitch right now, and watch them live without leaving OriginsMeta.",
+      intro:
+        "Who among the people with the Creator, Author, Pro or Staff role on OriginsMeta is streaming Origins TCG on Twitch right now. The page updates by itself every minute.",
+      loading: "Checking who's live…",
+      none: "Nobody is streaming Origins TCG right now. Come back later: this page updates by itself.",
+      off: "Live status isn't available right now.",
+      viewers: "Viewers: {viewers}",
+      profile: "Profile",
+      openTwitch: "Open on Twitch",
+      watch: "Watch {name}'s stream here",
+      playerTitle: "{name} live on Twitch",
+      consent: "Loading the stream means accepting Twitch's cookies.",
+      privacy: "Privacy",
+      narrow: "On a small screen the stream opens on Twitch.",
+      openAria: "Open {name}'s stream on Twitch (new tab)",
+      streamersTitle: "Streamers on OriginsMeta",
+      streamersIntro: "Creators, authors, Pro players and staff with a Twitch channel in their profile: when they stream Origins TCG, they show up above.",
+      streamersEmpty: "Nobody has added a Twitch channel to their profile yet.",
+      twitchChannel: "Twitch channel",
+      howTo:
+        "Do you stream Origins TCG? Add your Twitch channel in your account, under “Your public profile”. With the Creator, Author, Pro or Staff role you show up here while you're live in the Origins TCG category, or with “Origins TCG” in the stream title.",
+      allCreators: "All creators and authors",
+    },
+  },
   form: {
     title: "Your public profile",
     intro:
@@ -237,6 +314,37 @@ const en: CreatorLabels = {
 const it: CreatorLabels = {
   channels: { website: "Sito web", newTab: "(si apre in una nuova scheda)", listOf: "Canali di {name}" },
   live: { badge: "LIVE", title: "In diretta su Twitch ora: {viewers} spettatori" },
+  liveNow: {
+    strip: { title: "Ora live", one: "{name} è in diretta", many: "{n} creator in diretta" },
+    page: {
+      kicker: "Dirette su Twitch",
+      h1: "Creator di Origins TCG in diretta ora",
+      metaTitle: "Creator di Origins TCG in diretta su Twitch",
+      description:
+        "Scopri quali creator, autori, Pro e staff di Origins TCG sono in diretta su Twitch in questo momento e guardali senza lasciare OriginsMeta.",
+      intro:
+        "Chi fra le persone con il ruolo Creator, Autore, Pro o Staff su OriginsMeta sta trasmettendo Origins TCG su Twitch in questo momento. La pagina si aggiorna da sola ogni minuto.",
+      loading: "Controllo chi è in diretta…",
+      none: "In questo momento nessuno sta trasmettendo Origins TCG. Torna più tardi: la pagina si aggiorna da sola.",
+      off: "Lo stato delle dirette non è disponibile in questo momento.",
+      viewers: "Spettatori: {viewers}",
+      profile: "Profilo",
+      openTwitch: "Apri su Twitch",
+      watch: "Guarda qui la diretta di {name}",
+      playerTitle: "{name} in diretta su Twitch",
+      consent: "Caricando la diretta accetti i cookie di Twitch.",
+      privacy: "Privacy",
+      narrow: "Su uno schermo piccolo la diretta si apre su Twitch.",
+      openAria: "Apri su Twitch la diretta di {name} (nuova scheda)",
+      streamersTitle: "Gli streamer di OriginsMeta",
+      streamersIntro: "Creator, autori, Pro e staff con un canale Twitch nel profilo: quando trasmettono Origins TCG compaiono qui sopra.",
+      streamersEmpty: "Nessuno ha ancora aggiunto un canale Twitch al profilo.",
+      twitchChannel: "Canale Twitch",
+      howTo:
+        "Trasmetti Origins TCG? Aggiungi il tuo canale Twitch nel tuo account, in “Il tuo profilo pubblico”. Con il ruolo Creator, Autore, Pro o Staff compari qui mentre sei in diretta nella categoria Origins TCG, oppure con “Origins TCG” nel titolo.",
+      allCreators: "Tutti i creator e gli autori",
+    },
+  },
   form: {
     title: "Il tuo profilo pubblico",
     intro:
@@ -327,6 +435,37 @@ const it: CreatorLabels = {
 const es: CreatorLabels = {
   channels: { website: "Sitio web", newTab: "(se abre en una pestaña nueva)", listOf: "Canales de {name}" },
   live: { badge: "LIVE", title: "En directo en Twitch ahora: {viewers} espectadores" },
+  liveNow: {
+    strip: { title: "En directo", one: "{name} está en directo", many: "{n} creadores en directo" },
+    page: {
+      kicker: "Directos en Twitch",
+      h1: "Creadores de Origins TCG en directo ahora",
+      metaTitle: "Creadores de Origins TCG en directo en Twitch",
+      description:
+        "Descubre qué creadores, autores, Pro y staff de Origins TCG están en directo en Twitch ahora mismo y míralos sin salir de OriginsMeta.",
+      intro:
+        "Quién de las personas con el rol Creator, Autor, Pro o Staff en OriginsMeta está transmitiendo Origins TCG en Twitch ahora mismo. La página se actualiza sola cada minuto.",
+      loading: "Comprobando quién está en directo…",
+      none: "Ahora mismo nadie está transmitiendo Origins TCG. Vuelve más tarde: la página se actualiza sola.",
+      off: "El estado de los directos no está disponible ahora mismo.",
+      viewers: "Espectadores: {viewers}",
+      profile: "Perfil",
+      openTwitch: "Abrir en Twitch",
+      watch: "Mira aquí el directo de {name}",
+      playerTitle: "{name} en directo en Twitch",
+      consent: "Al cargar el directo aceptas las cookies de Twitch.",
+      privacy: "Privacidad",
+      narrow: "En una pantalla pequeña, el directo se abre en Twitch.",
+      openAria: "Abrir en Twitch el directo de {name} (pestaña nueva)",
+      streamersTitle: "Los streamers de OriginsMeta",
+      streamersIntro: "Creadores, autores, Pro y staff con un canal de Twitch en su perfil: cuando transmiten Origins TCG, aparecen aquí arriba.",
+      streamersEmpty: "Nadie ha añadido todavía un canal de Twitch a su perfil.",
+      twitchChannel: "Canal de Twitch",
+      howTo:
+        "¿Transmites Origins TCG? Añade tu canal de Twitch en tu cuenta, en “Tu perfil público”. Con el rol Creator, Autor, Pro o Staff apareces aquí mientras estás en directo en la categoría Origins TCG, o con “Origins TCG” en el título.",
+      allCreators: "Todos los creadores y autores",
+    },
+  },
   form: {
     title: "Tu perfil público",
     intro:

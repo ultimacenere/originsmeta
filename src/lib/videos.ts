@@ -246,6 +246,17 @@ export function embedSrc(v: ParsedVideo, parents: readonly string[]): string {
   return `https://player.twitch.tv/?video=v${v.id}&${parent}&autoplay=true${v.start ? `&time=${twitchTime(v.start)}` : ""}`;
 }
 
+/**
+ * Il lettore di Twitch per la diretta di un canale (pagina /live, 28/09/2026), solo DOPO il clic come i video:
+ * `parent` obbligatori, `autoplay` perché il clic sul nostro tasto vale come gesto dell'utente. Il nome del canale deve
+ * essere quello di Twitch (3–25 lettere minuscole, cifre e trattini bassi), altrimenti null e niente iframe.
+ */
+export function liveEmbedSrc(login: string, parents: readonly string[]): string | null {
+  if (!/^[a-z0-9_]{3,25}$/.test(login)) return null;
+  const parent = parents.map((p) => `parent=${encodeURIComponent(p)}`).join("&");
+  return `https://player.twitch.tv/?channel=${login}&${parent}&autoplay=true`;
+}
+
 /** Il video sulla sua piattaforma, con il minuto di partenza: il link "Apri su YouTube/Twitch". */
 export function watchUrl(v: ParsedVideo): string {
   if (v.provider === "youtube") return v.kind === "short" ? v.url : `${v.url}${v.start ? `&t=${v.start}s` : ""}`;

@@ -1,41 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { LiveResponse } from "@/lib/twitchLive";
+import { loadLive } from "@/lib/liveClient";
+import { safeLiveUsers } from "@/lib/twitchLive";
 import { fillCreator, type LiveLabels } from "@/lib/creatorLabels";
 
 /**
  * Badge LIVE accanto al nome di un creator in diretta su Origins TCG (pacchetto CREATOR, 26/09/2026). Lo stato arriva
- * nel browser da /api/live, una richiesta sola per pagina anche con tanti badge (la promessa è condivisa e vale 90
- * secondi, come la cache della rotta): le pagine restano ISR. Finché la risposta non arriva, o senza le chiavi di
- * Twitch, o se nessuno è in diretta, non c'è nulla (niente segnaposto che sposta il testo). Il link porta al canale
- * Twitch, in una nuova scheda; il puntino pulsa solo se il sistema non chiede di ridurre le animazioni.
- * Colori della palette: magenta scuro (`crimson-deep`, avvisi) con testo `chalk`, contrasto 6:1; `ink` resta per i fondi
- * menta e oro. Il colore definitivo lo sceglie Pierluigi.
+ * nel browser da /api/live, una richiesta sola per pagina anche con tanti badge (`loadLive` in src/lib/liveClient.ts,
+ * promessa condivisa per 90 secondi come la cache della rotta): le pagine restano ISR. Finché la risposta non arriva, o
+ * senza le chiavi di Twitch, o se nessuno è in diretta, non c'è nulla (niente segnaposto che sposta il testo). Il link
+ * porta al canale Twitch, in una nuova scheda.
+ *
+ * Più visibile dal 28/09/2026 (Pierluigi: "rendi più visibile il bollino"): pastiglia magenta scuro (`crimson-deep`,
+ * testo `chalk`, contrasto 6:1) con l'anello e l'alone magenta, pallino che pulsa (fermo con "riduci animazioni"), e tre
+ * misure: `sm` nelle righe fitte di /decks, `md` accanto ai nomi (scheda del mazzo, /creators, /live), `lg` nella
+ * testata del profilo /u, con gli spettatori. Stili `.live-badge` e `.live-dot` in globals.css.
  */
-
-const TTL_MS = 90_000;
-let shared: { at: number; promise: Promise<LiveResponse | null> } | null = null;
-
-function loadLive(): Promise<LiveResponse | null> {
-  if (!shared || Date.now() - shared.at > TTL_MS) {
-    shared = {
-      at: Date.now(),
-      promise: fetch("/api/live")
-        .then((r) => (r.ok ? (r.json() as Promise<LiveResponse>) : null))
-        .catch(() => null),
-    };
-  }
-  return shared.promise;
-}
-
-export function LiveBadge({ username, labels, placement, className = "" }: { username: string; labels: LiveLabels; placement: string; className?: string }) {
+export function LiveBadge({
+  username,
+  labels,
+  placement,
+  size = "md",
+  className = "",
+}: {
+  username: string;
+  labels: LiveLabels;
+  placement: string;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}) {
   const [live, setLive] = useState<{ channel: string; viewers: number } | null>(null);
   useEffect(() => {
     let alive = true;
     loadLive().then((res) => {
-      const found = res?.users?.[username];
-      if (alive && found && /^https:\/\/www\.twitch\.tv\/[a-z0-9_]{3,25}$/.test(found.channel)) setLive(found);
+      const found = safeLiveUsers(res?.users)[username];
+      if (alive && found) setLive(found);
     });
     return () => {
       alive = false;
@@ -53,10 +53,19 @@ export function LiveBadge({ username, labels, placement, className = "" }: { use
       data-om-event="creator_link_click"
       data-om-kind="twitch_live"
       data-om-placement={placement}
-      className={`inline-flex shrink-0 items-center gap-1 rounded-md bg-crimson-deep px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-chalk hover:bg-crimson ${className}`}
+      className={`live-badge is-${size} ${className}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-crimson-soft motion-safe:animate-pulse" aria-hidden="true" />
+      <span className="live-dot" aria-hidden="true" />
       {labels.badge}
+      {size === "lg" ? (
+        <span className="live-badge-viewers" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          {live.viewers}
+        </span>
+      ) : null}
     </a>
   );
 }

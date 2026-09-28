@@ -279,7 +279,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     return (
       <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-1">
         {badge && d.publisherBadgeId ? <span className={`${badgePill} ${badgeStyle[d.publisherBadgeId] ?? badgeStyle.community}`}>{badge}</span> : null}
-        {live && d.liveUser && labels.live ? <LiveBadge username={d.liveUser} labels={labels.live} placement="decks_list" /> : null}
+        {live && d.liveUser && labels.live ? <LiveBadge username={d.liveUser} labels={labels.live} placement="decks_list" size="sm" /> : null}
         {channels && d.channels && labels.channels ? <ChannelLinks links={d.channels} labels={labels.channels} ownerName={d.publisher} placement="decks_list" variant={variant} /> : null}
       </span>
     );
