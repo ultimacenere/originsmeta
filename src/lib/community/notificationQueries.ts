@@ -28,8 +28,9 @@ export type NotificationActor = Profile & { id: string };
 /**
  * Un avviso da mostrare: chi ha fatto la cosa e, per un mazzo, il nome (null se il mazzo non è più pubblico); per una
  * guida il titolo (null se la guida non è più online: riportata tra le bozze, nascosta dallo staff o eliminata).
+ * `gone`: il mazzo o la guida sono stati cercati e non ci sono più (con un errore di lettura resta false).
  */
-export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null };
+export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null; gone: boolean };
 
 export type NotificationsResult = { ok: true; data: { items: NotificationItem[]; unread: number } } | { ok: false; error: NotificationErrorCode };
 
@@ -113,6 +114,7 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
       actor: byId.get(r.actor_id) ?? null,
       deckName: slug ? (names.get(slug) ?? null) : null,
       guideTitle: guide ? (titles.get(guide) ?? null) : null,
+      gone: slug ? !decks.error && !names.has(slug) : guide ? !guides.error && !titles.has(guide) : false,
     };
   });
   return { ok: true, data: { items, unread: Math.max(unread, rows.filter((r) => !r.read_at).length) } };

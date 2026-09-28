@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -43,6 +43,29 @@ export function NotificationLink({ id, href, kind, unread, className, children }
       {children}
     </Link>
   );
+}
+
+/**
+ * Avvisi da leggere di un mazzo o di una guida che non è più online (`goneUnreadIds`, 29/09/2026): non hanno link, quindi
+ * appena la sezione li mostra si segnano come letti, poi la pagina si ridisegna e la busta si spegne. Una sola volta per
+ * elenco di id; se la chiamata fallisce resta "Segna tutte come lette".
+ */
+export function MarkGoneRead({ ids }: { ids: number[] }) {
+  const router = useRouter();
+  const key = ids.join(",");
+  useEffect(() => {
+    if (!key) return;
+    let live = true;
+    void markRead(key.split(",").map(Number)).then((ok) => {
+      if (!ok) return;
+      announceInboxChange();
+      if (live) router.refresh();
+    });
+    return () => {
+      live = false;
+    };
+  }, [key, router]);
+  return null;
 }
 
 /** "Segna tutte come lette": poi la pagina si ridisegna (dinamica) e la busta si aggiorna. */

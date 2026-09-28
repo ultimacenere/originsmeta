@@ -18,6 +18,7 @@ import {
   cronAuthorized,
   deckSlugOf,
   guideSlugOf,
+  goneUnreadIds,
   envelopeAria,
   envelopeTarget,
   isNotificationKind,
@@ -84,6 +85,16 @@ describe("percorsi degli avvisi", () => {
     assert.ok(isNotificationKind("live"));
     assert.ok(!isNotificationKind("message"));
     assert.ok(!isNotificationKind("toString"));
+  });
+  test("goneUnreadIds: solo gli avvisi da leggere di un mazzo o di una guida non più online (29/09/2026)", () => {
+    const items = [
+      { id: 1, read_at: null, gone: true },
+      { id: 2, read_at: "2026-09-29T08:00:00Z", gone: true },
+      { id: 3, read_at: null, gone: false },
+      { id: 4, read_at: null, gone: true },
+    ];
+    assert.deepEqual(goneUnreadIds(items), [1, 4]);
+    assert.deepEqual(goneUnreadIds([]), []);
   });
 });
 

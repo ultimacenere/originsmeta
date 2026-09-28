@@ -93,6 +93,16 @@ export function notificationHref(locale: string, target: string): string | null 
   return isSafeTarget(target) ? `/${locale}${target}` : null;
 }
 
+/**
+ * Gli avvisi da leggere di un mazzo o di una guida che non è più online (`gone`: cercato e non trovato, mai per un errore
+ * di lettura): non c'è niente da aprire, quindi la sezione "Notifiche" li segna come letti da sola (`MarkGoneRead`).
+ * Prima restavano da leggere per sempre e tenevano accesa la busta (29/09/2026: un mazzo pubblicato per sbaglio e
+ * cancellato subito).
+ */
+export function goneUnreadIds(items: readonly { id: number; read_at: string | null; gone: boolean }[]): number[] {
+  return items.filter((n) => n.gone && !n.read_at).map((n) => n.id);
+}
+
 /* ---------- busta dell'header: messaggi + avvisi ---------- */
 
 /** Lo stato della busta con gli avvisi non letti (campo `notifications` di /api/inbox/status). */
