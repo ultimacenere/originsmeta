@@ -6,6 +6,7 @@ import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { getGuideForEdit, guideRoleOf } from "@/lib/community/guideQueries";
 import { guidePool } from "@/lib/community/guidePool";
+import { coverPathOk } from "@/lib/community/guides";
 import { deleteCommunityGuide, setCommunityGuideStatus } from "@/lib/community/guideActions";
 import { communityGuideLabels, guideEditorLabels } from "@/lib/communityGuideLabels";
 import { deckLinks, deckVideos } from "@/lib/videos";
@@ -85,6 +86,9 @@ export default async function EditGuidePage({ params, searchParams }: { params: 
             category: guide.category,
             cards: guide.cards,
             cover_preset: guide.cover_preset,
+            // copertina caricata (29/09/2026): solo se è nella cartella delle guide del proprietario, come la mostra la pagina
+            cover_path: coverPathOk(guide.cover_path, guide.owner) ? guide.cover_path : null,
+            owner: guide.owner,
             // video e risorse riletti con le regole della pagina: salvando non si perde nulla di valido
             videos: deckVideos(guide).map((v) => ({ url: v.url, ...(v.start ? { start: v.start } : {}), ...(v.title ? { title: v.title } : {}) })),
             links: deckLinks(guide).map((l) => ({ label: l.label, url: l.url })),

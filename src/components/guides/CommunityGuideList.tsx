@@ -10,8 +10,8 @@ import { GuideCover } from "./GuideCover";
 
 /**
  * Scheda di una guida della community (pacchetto GUIDE, 27/09/2026), usata in /guides/community, in fondo alla pagina
- * di una guida e nel profilo /u. La sezione "Guide della community" di /guides, che è statica, la disegna il browser
- * (`CommunityGuidesHub`, con i dati di /api/community-guides: stessa scheda, stessi testi). Le voci sono leggere
+ * di una guida e nel profilo /u (/guides, dal 29/09/2026 un elenco solo con le guide della redazione, ha la sua scheda
+ * uguale per tutte). Copertina del media kit o caricata dall'autore (`GuideCover` con la guida). Le voci sono leggere
  * (niente sezioni né traduzioni intere): parole, impronta e riassunti tradotti bastano per le schede e per decidere dove
  * una guida si indicizza (`guideShapeIndexing` in guides.ts).
  */
@@ -24,7 +24,7 @@ export function CommunityGuideCard({ guide, locale, categoryLabel, showAuthor = 
   const date = (guide.published_at ?? guide.created_at).slice(0, 10);
   return (
     <Link href={href(locale, `/guides/community/${guide.slug}`)} className="card-night card-night-hover flex h-full min-w-0 flex-col overflow-hidden" prefetch={false}>
-      <GuideCover preset={guide.cover_preset} framed={false} sizes="(max-width: 768px) 92vw, 30vw" />
+      <GuideCover guide={guide} framed={false} sizes="(max-width: 768px) 92vw, 30vw" />
       <div className="flex min-w-0 flex-1 flex-col p-5">
         <p className="kicker text-pale-muted">
           {categoryLabel} · {fillLabel(L.page.readTime, { n: String(readMinutes(guide.words ?? 0)) })} · {formatDate(locale, date)}

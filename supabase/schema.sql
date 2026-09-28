@@ -3490,3 +3490,139 @@ update public.profiles set avatar_url = null
 
 comment on function public.guard_created_at() is 'created_at la scrive solo il database: now() alla creazione, poi fissa (tranne per la connessione diretta dello staff). Voti, mazzi e tier list (27/09/2026).';
 comment on function public.community_guide_words_max(text, jsonb) is 'Massimo delle parole possibili di una guida della community (sovrainsieme di communityGuideWords): il trigger community_guides_words azzera words sopra questo numero (27/09/2026).';
+
+-- ===== 29/09/2026: IMMAGINI =====
+-- =====================================================================================================
+-- IMMAGINI CARICATE PER LE GUIDE E PER I MAZZI (29/09/2026)
+-- Richieste di Pierluigi del 29/09/2026. Vega (Creator) non riusciva a cambiare la copertina della sua guida: "aggiungiamo
+-- questa funzione, sempre dando le misure richieste per la copertina". E per i Creator: "diamo la possibilità quando
+-- sviluppano un deck di sostituire l'artwork della leggendaria per quel deck così da caratterizzare il loro lavoro, anche
+-- in questo caso, solo per i creator e con le misure per sostituire l'artwork della carta".
+--   1) Copertina caricata di una guida della community: community_guides.cover_path (colonna, vincolo e controllo del
+--      ruolo nel blocco GUIDE) punta a <id>/guide/<uuid>.<ext> nel bucket profile-media, 16:9 (1600×900 consigliati,
+--      almeno 1200×675), al massimo 2 MB (GUIDE_COVER_* in src/lib/community/guides.ts). Qui: un trigger che vuole la
+--      cartella delle guide del proprietario e il file davvero caricato.
+--   2) Artwork della Leggendaria di un mazzo: colonna community_decks.art_path, <id>/deck/<uuid>.<ext>, 5:7 come le carte
+--      (750×1050 consigliati, almeno 480×672), al massimo 2 MB; solo Creator e Staff, più gli admin (DECK_ART_BADGES di
+--      src/lib/community/badges.ts, regole in src/lib/community/deckArt.ts). La carta ufficiale resta nella scheda della
+--      carta e nell'anteprima al passaggio del mouse: l'artwork prende il posto dell'illustrazione solo sul mazzo.
+--   3) Policy del bucket profile-media rifatte qui, dopo il blocco GUIDE (leggono community_guides, che prima non c'è):
+--      prendono il posto di quelle del blocco VETRINA, che restano scritte com'erano e vengono applicate prima. Caricamento
+--      anche nelle cartelle guide e deck, tetto di 60 file per i ruoli con vetrina e gli admin (12 per gli altri);
+--      cancellazione mai di un file in uso (foto, copertina e sfondo del profilo, copertina di una guida, artwork di un
+--      mazzo: profile_media_in_use).
+-- Nessuna grant né revoke su public.profiles (scripts/schema-guard.mjs). Idempotente come tutto il file. La colonna nuova
+-- dei mazzi la scrive il proprietario con la grant di sempre sulla tabella e la policy "owners update decks".
+-- =====================================================================================================
+
+-- ---------- 1) copertine delle guide: la cartella delle guide del proprietario e un file che c'è ----------
+-- Con i privilegi di chi salva (profile_media_ok vede solo la sua cartella, un admin tutte): una copertina nuova la mette
+-- il proprietario; lo staff che corregge una guida altrui la lascia com'è o sceglie una copertina del media kit.
+create or replace function public.guard_community_guide_cover()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if new.cover_path is not null and (tg_op = 'INSERT' or new.cover_path is distinct from old.cover_path) then
+    if new.cover_path !~ ('^' || new.owner::text || '/guide/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$') then
+      raise exception 'guide_cover_path' using errcode = '42501';
+    end if;
+    if not public.profile_media_ok(new.cover_path, 2097152) then
+      raise exception 'guide_cover_file' using errcode = '23514';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_community_guide_cover() from public, anon, authenticated;
+drop trigger if exists community_guides_cover on public.community_guides;
+create trigger community_guides_cover before insert or update of cover_path on public.community_guides
+  for each row execute function public.guard_community_guide_cover();
+create index if not exists community_guides_cover_path_idx on public.community_guides (cover_path) where cover_path is not null;
+
+-- ---------- 2) artwork della Leggendaria di un mazzo ----------
+alter table public.community_decks add column if not exists art_path text;
+alter table public.community_decks drop constraint if exists community_decks_art_path_check;
+alter table public.community_decks add constraint community_decks_art_path_check
+  check (art_path is null or (char_length(art_path) <= 200 and art_path ~ ('^' || owner::text || '/deck/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$')));
+create index if not exists community_decks_art_path_idx on public.community_decks (art_path) where art_path is not null;
+
+-- Un artwork nuovo lo mette solo un mazzo di un Creator o dello Staff (o di un admin), e solo con un file che c'è, di tipo
+-- e peso ammessi. Toglierlo si può sempre. Chi perde il ruolo lo tiene nel database, ma il sito non lo mostra più
+-- (deckArtUrl in src/lib/community/deckArt.ts guarda il ruolo di oggi).
+create or replace function public.guard_deck_art()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if new.art_path is not null and (tg_op = 'INSERT' or new.art_path is distinct from old.art_path) then
+    if not exists (select 1 from public.profiles p where p.id = new.owner and (p.role = 'admin' or p.badge in ('creator', 'staff'))) then
+      raise exception 'deck_art_role' using errcode = '42501';
+    end if;
+    if not public.profile_media_ok(new.art_path, 2097152) then
+      raise exception 'deck_art_file' using errcode = '23514';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_deck_art() from public, anon, authenticated;
+drop trigger if exists community_decks_art on public.community_decks;
+create trigger community_decks_art before insert or update of art_path on public.community_decks
+  for each row execute function public.guard_deck_art();
+
+-- ---------- 3) bucket profile-media: cartelle nuove, tetto dei file, file in uso ----------
+-- Un file del bucket è in uso? Foto, copertina o sfondo del profilo del proprietario della cartella, copertina di una sua
+-- guida (anche in bozza o nascosta), artwork di un suo mazzo (anche privato o nascosto). Security definer perché la
+-- risposta deve valere anche per le righe che chi cancella non vede (le bozze altrui per un admin): dice solo sì o no, su
+-- un percorso che chi chiama conosce già. La usa la policy di cancellazione qui sotto (e --orphans di
+-- scripts/clear-profile-media.mjs).
+create or replace function public.profile_media_in_use(p text)
+returns boolean language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  folder text := split_part(p, '/', 1);
+  uid uuid;
+begin
+  if folder !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    return false;
+  end if;
+  uid := folder::uuid;
+  return exists (select 1 from public.profiles pr where pr.id = uid and (pr.avatar_path = p or pr.cover_path = p or pr.background_path = p))
+      or exists (select 1 from public.community_guides g where g.owner = uid and g.cover_path = p)
+      or exists (select 1 from public.community_decks d where d.owner = uid and d.art_path = p);
+end $$;
+revoke all on function public.profile_media_in_use(text) from public, anon;
+grant execute on function public.profile_media_in_use(text) to authenticated, service_role;
+
+do $$
+begin
+  -- <id>/avatar/<file> per tutti; cover, background e guide per i ruoli con vetrina e gli admin (per le guide sono gli
+  -- stessi ruoli di can_publish_guides); deck per Creator, Staff e admin. Tetto dei file per utente: 60 per i ruoli con
+  -- vetrina e gli admin, 12 per gli altri (MEDIA_FILES_MAX_SHOWCASE e MEDIA_FILES_MAX in profileMedia.ts). Niente peso
+  -- qui: lo Storage prova la policy prima di ricevere il file (vedi il blocco VETRINA).
+  drop policy if exists "profile media upload" on storage.objects;
+  create policy "profile media upload" on storage.objects for insert to authenticated with check (
+    bucket_id = 'profile-media'
+    and array_length(storage.foldername(name), 1) = 2
+    and (storage.foldername(name))[1] = auth.uid()::text
+    and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp')
+    and storage.filename(name) ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$'
+    and public.profile_media_count() < (case when exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')) then 60 else 12 end)
+    and (
+      (storage.foldername(name))[2] = 'avatar'
+      or ((storage.foldername(name))[2] in ('cover', 'background', 'guide')
+          and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')))
+      or ((storage.foldername(name))[2] = 'deck'
+          and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'staff') or p.role = 'admin')))
+    )
+  );
+  -- si cancellano i propri file (un admin anche quelli degli altri), mai un file in uso: prima si svuota il campo, poi
+  -- si toglie il file
+  drop policy if exists "profile media owners delete" on storage.objects;
+  create policy "profile media owners delete" on storage.objects for delete to authenticated using (
+    bucket_id = 'profile-media'
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and not public.profile_media_in_use(name)
+  );
+exception when others then
+  raise notice 'Policy del bucket profile-media non aggiornate da SQL (%): vedi README ("Immagini delle guide e dei mazzi").', sqlerrm;
+end $$;
+
+comment on column public.community_decks.art_path is 'Artwork della Leggendaria caricato dal proprietario (bucket profile-media, <owner>/deck/<file>, 5:7, 2 MB; 29/09/2026). Solo Creator e Staff (e admin): trigger guard_deck_art.';
+comment on function public.guard_community_guide_cover() is 'Copertina caricata di una guida: nella cartella delle guide del proprietario (<owner>/guide/<file>) e un file che c''è, al massimo 2 MB (29/09/2026).';
+comment on function public.guard_deck_art() is 'Artwork del mazzo: solo Creator, Staff e admin, e un file che c''è nel bucket, al massimo 2 MB (29/09/2026).';
+comment on function public.profile_media_in_use(text) is 'Un file del bucket profile-media è in uso (profilo, copertina di una guida, artwork di un mazzo del proprietario della cartella): la policy di cancellazione non lo lascia togliere (29/09/2026).';

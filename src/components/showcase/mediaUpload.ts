@@ -1,5 +1,6 @@
 import type { Db } from "@/lib/supabase/public";
 import { MEDIA_TYPES, PROFILE_MEDIA_BUCKET, mediaExtension, type MediaKind } from "@/lib/community/showcase";
+import { MEDIA_KINDS } from "@/lib/community/profileMedia";
 
 /**
  * Caricamenti della vetrina dal browser allo Storage (pacchetto VETRINA, 27/09/2026), come le copertine dei tornei: mai
@@ -24,11 +25,13 @@ function toBlob(canvas: HTMLCanvasElement, type: string, quality: number): Promi
 }
 
 /**
- * Ricodifica un'immagine: `square` = ritaglio quadrato al centro e lato massimo (foto profilo), altrimenti lato lungo al
- * massimo `maxSide` (copertina). Lancia `MediaError("type")` per un file che non è un'immagine ammessa o che il browser
- * non sa leggere, `MediaError("tooBig")` se anche ridotta supera `maxBytes`.
+ * Ricodifica un'immagine: `square` = ritaglio quadrato al centro e lato massimo (foto profilo); `aspect` (larghezza /
+ * altezza) = ritaglio al centro in quelle proporzioni e lato lungo al massimo `maxSide` (copertina di una guida in 16:9,
+ * artwork di un mazzo in 5:7, dal 29/09/2026); altrimenti solo il lato lungo al massimo `maxSide` (copertina e sfondo
+ * della vetrina). Lancia `MediaError("type")` per un file che non è un'immagine ammessa o che il browser non sa
+ * leggere, `MediaError("tooBig")` se anche ridotta supera `maxBytes`.
  */
-export async function encodeImage(file: File, opts: { square?: number; maxSide?: number; maxBytes: number }): Promise<Blob> {
+export async function encodeImage(file: File, opts: { square?: number; aspect?: number; maxSide?: number; maxBytes: number }): Promise<Blob> {
   if (!(MEDIA_TYPES as readonly string[]).includes(file.type)) throw new MediaError("type");
   let bitmap: ImageBitmap;
   try {
@@ -50,6 +53,18 @@ export async function encodeImage(file: File, opts: { square?: number; maxSide?:
     sy = Math.round((h - side) / 2);
     sw = sh = side;
     dw = dh = Math.max(1, Math.min(opts.square, side));
+  } else if (opts.aspect && opts.aspect > 0) {
+    // ritaglio al centro nelle proporzioni chieste, poi il lato lungo entro maxSide
+    if (w / h > opts.aspect) {
+      sw = Math.max(1, Math.round(h * opts.aspect));
+      sx = Math.round((w - sw) / 2);
+    } else {
+      sh = Math.max(1, Math.round(w / opts.aspect));
+      sy = Math.round((h - sh) / 2);
+    }
+    const scale = Math.min(1, (opts.maxSide ?? 1920) / Math.max(sw, sh));
+    dw = Math.max(1, Math.round(sw * scale));
+    dh = Math.max(1, Math.round(sh * scale));
   } else {
     const scale = Math.min(1, (opts.maxSide ?? 1920) / Math.max(w, h));
     dw = Math.max(1, Math.round(w * scale));
@@ -95,10 +110,10 @@ export async function uploadMedia(sb: Db, userId: string, kind: MediaKind, blob:
   };
   const first = await put();
   if ("path" in first) return first.path;
-  // rifiutato: si fa spazio (solo allora: dopo un errore di rete si riprova e basta, senza toccare i file)
+  // rifiutato: si fa spazio (solo allora: dopo un errore di rete si riprova e basta, senza toccare i file). Tutte le
+  // cartelle: i file in uso (profilo, copertine delle guide, artwork dei mazzi) la policy non li lascia cancellare
   if (first.denied) {
-    await cleanupMedia(sb, userId, "avatar", null);
-    await cleanupMedia(sb, userId, "cover", null);
+    for (const k of MEDIA_KINDS) await cleanupMedia(sb, userId, k, null);
   }
   const second = await put();
   if ("path" in second) return second.path;

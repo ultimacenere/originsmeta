@@ -85,8 +85,8 @@ export type CommunityData = {
    * indicizza (sopra la soglia di parole, originale e traduzioni aggiornate: `sitemapCommunityGuides` in
    * community/guides.ts), la data di ogni versione (ultima modifica o arrivo della traduzione) e la copertina. Per lingua:
    * `list` è il lastmod di /guides/community (una lingua assente = elenco vuoto, noindex e fuori dalla sitemap); `hub`
-   * sarebbe quello di /guides con la sezione nell'HTML, oggi non usato (la sezione la carica il browser, revisione del
-   * 27/09/2026). Nella sezione "guides", accanto alle guide editoriali. Assente: nessuna guida della community.
+   * quello che le guide della community danno a /guides, che dal 29/09/2026 le mostra nell'HTML insieme alle editoriali.
+   * Nella sezione "guides", accanto alle guide editoriali. Assente: nessuna guida della community.
    */
   communityGuides?: {
     guides: { slug: string; locales: Locale[]; dates: Partial<Record<Locale, string>>; image?: string }[];
@@ -170,10 +170,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/decks", section: "pages", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity] },
     // Il pool del deck builder segue le carte: patch e verifica sul gioco.
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
-    // Solo le guide editoriali: la pagina è statica e la sezione con le ultime guide della community la carica il browser
-    // (revisione del 27/09/2026), quindi quelle guide non cambiano il suo HTML. `communityGuides.hub` resta nei dati per
-    // quando la sezione tornasse nell'HTML (ISR, decisione di Pierluigi).
-    { path: "/guides", section: "pages", route: "/guides", dates: (l) => guidesBy[l].map((g) => g.updated) },
+    // Guide editoriali e, dal 29/09/2026, le guide della community indicizzabili nella lingua: la pagina le mostra tutte in
+    // un elenco solo, nell'HTML (ISR; Pierluigi: niente divisione fra guide ufficiali e della community).
+    { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.hub[l]] },
     // Tutte le guide della community (pacchetto GUIDE): solo nelle lingue in cui l'elenco ha almeno una guida.
     ...(communityListLocales.length
       ? [{ path: "/guides/community", section: "pages", route: "/guides/community", dates: (l) => [data.communityGuides?.list[l]], locales: communityListLocales } satisfies SitemapPage]

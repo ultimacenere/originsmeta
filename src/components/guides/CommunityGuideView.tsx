@@ -4,7 +4,8 @@ import { pageTitle, pageTitleWith } from "@/lib/page";
 import { getCard } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { communityGuideIndexing, communityGuideWords, guideCover, guideShapeIndexing, localizedCommunityGuide, readMinutes, type CommunityGuide } from "@/lib/community/guides";
+import { absoluteCover, communityGuideCover, communityGuideWords, guideShapeIndexing, localizedCommunityGuide, readMinutes, type CommunityGuide } from "@/lib/community/guides";
+import { supabaseUrl } from "@/lib/supabase/env";
 import { editorialAuthor, fillLabel } from "@/lib/community/deckQuality";
 import { normalizeBadge } from "@/lib/community/badges";
 import { authorName, authorHandle } from "@/lib/community/util";
@@ -67,9 +68,8 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
     .slice(0, 4)
     .map((x) => x.g);
   const editorial = editorialAuthor(authors, [], guide.profile?.username);
-  const cover = guideCover(guide.cover_preset);
-  // l'elenco /guides/community nelle briciole solo quando questa versione è indicizzabile (allora l'elenco la contiene)
-  const listed = !communityGuideIndexing(guide, locales, locale).noindex;
+  // copertina caricata dall'autore o preimpostata (communityGuideCover), la stessa dell'og:image
+  const cover = communityGuideCover(guide, supabaseUrl);
 
   const article = communityGuideArticle({
     locale,
@@ -78,8 +78,8 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
     description: guideDescription(guide, locale).slice(0, 300),
     published,
     modified: guide.updated_at,
-    // `image` è obbligatoria per i rich result: la copertina della guida (media kit, la stessa dell'og:image)
-    image: `${siteUrl}${cover.src}`,
+    // `image` è obbligatoria per i rich result: la copertina della guida (la stessa dell'og:image)
+    image: absoluteCover(cover.src, siteUrl),
     author: communityPerson({ locale, username: guide.profile?.username, name: author, editorial }),
     cards: cards.flatMap((s) => {
       const card = getCard(s);
@@ -94,10 +94,11 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
       <JsonLd
         data={[
           article,
+          // come le guide editoriali: OriginsMeta › Guide › guida (29/09/2026: nessuna distinzione fra guide del sito e
+          // della community, che da quel giorno stanno tutte nell'elenco di /guides)
           breadcrumbs([
             { name: "OriginsMeta", path: href(locale) },
             { name: d.guides.title, path: href(locale, "/guides") },
-            ...(listed ? [{ name: L.listPage.title, path: href(locale, "/guides/community") }] : []),
             { name: guide.title, path },
           ]),
         ]}
@@ -117,9 +118,10 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
       />
 
       <article className="mt-6 min-w-0">
-        <GuideCover preset={guide.cover_preset} eager />
+        <GuideCover src={cover} eager />
+        {/* categoria e date come nelle guide editoriali: niente "Guida della community" (29/09/2026), l'autore sta nella firma */}
         <p className="kicker mt-6 text-mint">
-          {L.page.kicker} · {category} · {fillLabel(L.page.published, { date: formatDate(locale, published.slice(0, 10)) })}
+          {category} · {fillLabel(L.page.published, { date: formatDate(locale, published.slice(0, 10)) })}
           {guide.updated_at.slice(0, 10) !== published.slice(0, 10) ? ` · ${fillLabel(L.page.updated, { date: formatDate(locale, guide.updated_at.slice(0, 10)) })}` : ""}
           {` · ${fillLabel(L.page.readTime, { n: String(readMinutes(words)) })}`}
         </p>

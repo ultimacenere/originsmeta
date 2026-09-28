@@ -14,6 +14,7 @@ import { isUuid, slugify } from "./util";
 import { guideRoleOf } from "./guideQueries";
 import { SAVE_MIN_INTERVAL_MS } from "./profileLinks";
 import { retryAfterSeconds } from "./showcase";
+import { PROFILE_MEDIA_BUCKET } from "./profileMedia";
 import {
   REPORT_REASON_MAX,
   REPORT_REASON_MIN,
@@ -21,6 +22,7 @@ import {
   communityGuideHash,
   communityGuideIndexable,
   communityGuideWords,
+  coverPathOk,
   guideErrorCode,
   guideErrorField,
   plainTextOk,
@@ -40,8 +42,8 @@ import { translateCommunityGuideLater } from "./guideTranslate";
  * vincoli del testo e trigger con i tetti (contati su un registro che eliminare una guida non azzera) e lo stato
  * riservato allo staff. Qui si controlla prima, con le stesse regole (`readGuideForm`, `canPublishGuides`), per
  * rispondere con un messaggio chiaro; gli errori del database diventano un codice con `guideErrorCode`. Niente file
- * attraverso le Server Action (limite 1 MB): la copertina è un'immagine del media kit (`cover_preset`); quella caricata
- * arriverà dal browser allo Storage con il pacchetto VETRINA.
+ * attraverso le Server Action (limite 1 MB): la copertina è un'immagine del media kit (`cover_preset`) oppure, dal
+ * 29/09/2026, un'immagine che il browser carica da solo nello Storage (`<id>/guide/<file>`); qui arriva solo il percorso.
  */
 
 export type GuideActionState = {
@@ -74,11 +76,11 @@ function newGuideSlug(title: string): string {
 /**
  * Pagine da rigenerare quando cambia una guida (e la sitemap: una guida pubblicata ci entra, una nascosta ne esce).
  * `username` è quello del PROPRIETARIO della guida (la sua pagina /u la elenca), anche quando agisce lo staff.
- * /guides è statica: la sua sezione della community la carica il browser da /api/community-guides, che si rinnova qui.
+ * /guides dal 29/09/2026 elenca le guide della community insieme a quelle del sito (ISR): si rinnova qui.
  */
 function revalidateGuide(slug: string | undefined, username: string | null): void {
-  revalidatePath("/api/community-guides");
   for (const l of locales) {
+    revalidatePath(`/${l}/guides`);
     revalidatePath(`/${l}/guides/community`);
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/guides/community/${slug}`);
@@ -162,6 +164,11 @@ export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData):
   const value = parsed.value;
   const status = intent === "publish" ? "published" : "draft";
   const row = { ...value, videos: media.videos, links: media.links, words: communityGuideWords(value), text_hash: communityGuideHash(value) };
+  // Copertina caricata (29/09/2026): il percorso che il browser ha caricato nello Storage, solo nella cartella delle guide
+  // del PROPRIETARIO della guida (`coverPathOk`); vuoto = copertina preimpostata. Il database controlla di nuovo cartella,
+  // ruolo e che il file ci sia (trigger del blocco GUIDE e del blocco IMMAGINI).
+  const coverRaw = String(fd.get("cover_path") ?? "").trim();
+  const coverFor = (owner: string): string | null | undefined => (!coverRaw ? null : coverPathOk(coverRaw, owner) ? coverRaw : undefined);
 
   let saved: Saved | null = null;
   let first = false;
@@ -177,7 +184,9 @@ export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData):
     const wait = role.staff ? 0 : retryAfterSeconds(prev.updated_at, SAVE_MIN_INTERVAL_MS, Date.now());
     if (wait) return { error: "tooFast", retryIn: wait };
     const nextStatus = prev.status === "hidden" ? "hidden" : status;
-    const res = await supabase.from("community_guides").update({ ...row, status: nextStatus }).eq("id", id).select(SAVED_COLUMNS).maybeSingle();
+    const coverPath = coverFor(prev.owner);
+    if (coverPath === undefined) return { error: "coverImage", field: guideErrorField({ code: "coverImage" }) };
+    const res = await supabase.from("community_guides").update({ ...row, cover_path: coverPath, status: nextStatus }).eq("id", id).select(SAVED_COLUMNS).maybeSingle();
     if (res.error) return { error: guideErrorCode(res.error) };
     saved = res.data as unknown as Saved | null;
     if (!saved) return { error: "forbidden" };
@@ -185,10 +194,12 @@ export async function saveCommunityGuide(_prev: GuideActionState, fd: FormData):
     changed = saved.updated_at !== prev.updated_at || saved.status !== prev.status;
     textChanged = prev.text_hash !== row.text_hash;
   } else {
+    const coverPath = coverFor(user.id);
+    if (coverPath === undefined) return { error: "coverImage", field: guideErrorField({ code: "coverImage" }) };
     for (let attempt = 0; attempt < 4 && !saved; attempt++) {
       const res = await supabase
         .from("community_guides")
-        .insert({ ...row, status, slug: newGuideSlug(value.title), owner: user.id })
+        .insert({ ...row, cover_path: coverPath, status, slug: newGuideSlug(value.title), owner: user.id })
         .select(SAVED_COLUMNS)
         .single();
       if (!res.error) {
@@ -265,11 +276,22 @@ export async function deleteCommunityGuide(fd: FormData): Promise<void> {
   if (!supabase || !user) redirect(`/${locale}/login`);
   const id = fd.get("id");
   if (isUuid(id)) {
-    const { data, error } = await supabase.from("community_guides").delete().eq("id", id).select("slug, owner, profile:profiles!community_guides_owner_fkey(username)").maybeSingle();
+    const { data, error } = await supabase
+      .from("community_guides")
+      .delete()
+      .eq("id", id)
+      .select("slug, owner, cover_path, profile:profiles!community_guides_owner_fkey(username)")
+      .maybeSingle();
     if (error) console.error("[guides] eliminazione non riuscita:", error.message);
-    const gone = data as unknown as { slug: string; owner: string; profile?: { username: string | null } | null } | null;
+    const gone = data as unknown as { slug: string; owner: string; cover_path: string | null; profile?: { username: string | null } | null } | null;
     // la pagina /u del proprietario, anche quando a eliminare è lo staff
     if (gone) revalidateGuide(gone.slug, ownerName(gone));
+    // la copertina caricata non è più in uso (29/09/2026): la toglie chi ha eliminato la guida, se la policy del bucket
+    // glielo lascia fare (il proprietario, un admin); altrimenti resta a scripts/clear-profile-media.mjs --orphans
+    if (gone && coverPathOk(gone.cover_path, gone.owner)) {
+      const { error: removeError } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([gone.cover_path]);
+      if (removeError) console.error("[guides] copertina non cancellata:", removeError.message);
+    }
   }
   redirect(`/${locale}/account#guides`);
 }

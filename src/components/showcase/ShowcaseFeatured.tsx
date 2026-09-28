@@ -8,6 +8,11 @@ import { accentBorder, accentText, type Vetrina } from "@/lib/community/showcase
 import { getFeaturedDeck, type FeaturedDeck } from "@/lib/community/showcaseQueries";
 import type { CommunityDeck } from "@/lib/community/types";
 import { CardArt } from "@/components/CardChip";
+import { DeckArtImage } from "@/components/DeckArtImage";
+import { deckArtUrl } from "@/lib/community/deckArt";
+import { deckArtLabels } from "@/lib/deckArtLabels";
+import { fillLabel } from "@/lib/community/deckQuality";
+import { supabaseUrl } from "@/lib/supabase/env";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { ScheduleView } from "./ScheduleView";
 
@@ -47,11 +52,18 @@ export async function ShowcaseFeatured({
     ? (() => {
         const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
         const patch = patchAt(deck.created_at);
+        // artwork della Leggendaria (29/09/2026): c'è nei mazzi che la pagina ha già letto (con proprietario e ruolo); il
+        // mazzo letto da solo con getFeaturedDeck, raro, mostra la carta ufficiale
+        const art = "owner" in deck ? deckArtUrl(deck as CommunityDeck, supabaseUrl) : null;
         return (
           <article className="card-night flex gap-4 p-5" style={frame}>
             {legendary ? (
               <Link href={href(locale, `/cards/${legendary.slug}`)} prefetch={false} className="shrink-0" title={legendary.name}>
-                <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
+                {art ? (
+                  <DeckArtImage src={art} alt={fillLabel(deckArtLabels[locale].deck.alt, { legendary: legendary.name, author: name })} mana={legendary.mana} className="!h-[110px] !w-[78px] text-lg" />
+                ) : (
+                  <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
+                )}
               </Link>
             ) : null}
             <div className="min-w-0 flex-1">

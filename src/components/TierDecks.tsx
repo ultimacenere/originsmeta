@@ -16,9 +16,10 @@ export function TierDeckList({ decks, dict: d, locale }: { decks: TierDeckEntry[
       {decks.map((dk) => (
         <li key={dk.slug} className="min-w-0">
           <Link href={dk.href} className="tier-deck">
-            {dk.legendary?.thumb ? (
+            {/* l'artwork di un Creator o dello Staff (29/09/2026) al posto della miniatura ufficiale */}
+            {dk.art || dk.legendary?.thumb ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={dk.legendary.thumb} alt="" width={160} height={230} loading="lazy" decoding="async" />
+              <img src={dk.art ?? dk.legendary?.thumb} alt="" width={160} height={230} loading="lazy" decoding="async" />
             ) : (
               <span aria-hidden="true" className="row-span-2" />
             )}

@@ -5,16 +5,25 @@ import { useRouter } from "next/navigation";
 import { saveCommunityGuide, type GuideActionState } from "@/lib/community/guideActions";
 import {
   DEFAULT_GUIDE_COVER,
+  GUIDE_COVER_MAX_BYTES,
+  GUIDE_COVER_MIN,
   GUIDE_COVER_PRESETS,
+  GUIDE_COVER_SIZE,
   GUIDE_LIMITS,
   COMMUNITY_GUIDE_MIN_WORDS,
   codePoints,
   communityGuideWords,
+  coverPathOk,
   sectionFields,
   type CommunityGuideStatus,
+  type GuideCoverImage,
   type GuideCoverPreset,
   type GuideSectionText,
 } from "@/lib/community/guides";
+import { PROFILE_MEDIA_BUCKET, mediaPublicUrl } from "@/lib/community/profileMedia";
+import { supabaseUrl } from "@/lib/supabase/env";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { MediaError, encodeImage, uploadMedia } from "../showcase/mediaUpload";
 import { fillLabel } from "@/lib/community/deckQuality";
 import type { GuideEditorLabels } from "@/lib/communityGuideLabels";
 import { MEDIA_FIELD_NAMES, fillVideoLabel, mediaFieldRow, type DeckLink, type StoredVideo } from "@/lib/videos";
@@ -37,6 +46,10 @@ export type GuideEditorInitial = {
   category: string;
   cards: string[];
   cover_preset: GuideCoverPreset;
+  /** copertina caricata (29/09/2026): percorso nel bucket, `<id>/guide/<file>` */
+  cover_path?: string | null;
+  /** proprietario della guida: solo lui carica la copertina (lo staff che corregge una guida altrui no) */
+  owner?: string;
   videos: StoredVideo[];
   links: DeckLink[];
 };
@@ -60,7 +73,12 @@ type Props = {
 /** Bozza locale del modulo (solo in creazione): un'interruzione (accesso, telefono che si blocca) non cancella il testo. */
 const DRAFT_KEY = "originsmeta.guide.draft.v1";
 type Row = GuideSectionText & { key: number };
-type Draft = { title?: string; summary?: string; lang?: string; category?: string; cover?: string; cards?: string[]; sections?: GuideSectionText[]; media?: Record<string, string> };
+type Draft = { title?: string; summary?: string; lang?: string; category?: string; cover?: string; coverPath?: string | null; cards?: string[]; sections?: GuideSectionText[]; media?: Record<string, string> };
+
+/** Una copertina caricata come immagine da mostrare (anteprima del modulo): indirizzo pubblico del bucket, 16:9. */
+const uploadedCover = (path: string): GuideCoverImage => ({ src: mediaPublicUrl(supabaseUrl, path), ...GUIDE_COVER_SIZE, remote: true });
+/** Il percorso di una copertina caricata, senza sapere ancora chi è l'utente (bozza locale): `<id>/guide/<file>`. */
+const looksLikeCover = (p: unknown): p is string => typeof p === "string" && coverPathOk(p, p.slice(0, 36));
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale placeholder:text-pale-muted/80 focus:border-mint";
 
@@ -127,6 +145,14 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
   const [cover, setCover] = useState<GuideCoverPreset>(() =>
     draft?.cover && (GUIDE_COVER_PRESETS as readonly string[]).includes(draft.cover) ? (draft.cover as GuideCoverPreset) : (initial?.cover_preset ?? DEFAULT_GUIDE_COVER),
   );
+  // Copertina caricata (29/09/2026): il percorso nel bucket e se è quella scelta (altrimenti vale la preimpostata `cover`)
+  const [coverPath, setCoverPath] = useState<string | null>(() => (looksLikeCover(draft?.coverPath) ? draft.coverPath : (initial?.cover_path ?? null)));
+  const [useUpload, setUseUpload] = useState<boolean>(() => Boolean(looksLikeCover(draft?.coverPath) ? draft.coverPath : initial?.cover_path));
+  // la copertina salvata nel database: l'unica da tenere quando se ne carica un'altra (le prove non salvate si tolgono)
+  const savedCoverPath = useRef<string | null>(initial?.cover_path ?? null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<Row[]>(() =>
     toRows(
       Array.isArray(draft?.sections)
@@ -149,7 +175,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
       const v = fd.get(k);
       if (typeof v === "string" && v.trim()) media[k] = v;
     }
-    const draft: Draft = { title, summary, lang, category, cover, cards, sections: rows.map(({ heading, body }) => ({ heading, body })), media };
+    const draft: Draft = { title, summary, lang, category, cover, coverPath: useUpload ? coverPath : null, cards, sections: rows.map(({ heading, body }) => ({ heading, body })), media };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch {
@@ -163,18 +189,65 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
   });
   useEffect(() => {
     if (mounted) saveRef.current();
-  }, [mounted, title, summary, lang, category, cover, cards, rows]);
+  }, [mounted, title, summary, lang, category, cover, coverPath, useUpload, cards, rows]);
 
-  /* esito della Server Action: evento, bozza locale tolta, pagina successiva */
+  /* esito della Server Action: evento, bozza locale tolta, immagini caricate e non più usate tolte, pagina successiva */
   useEffect(() => {
     if (state.ok && state.href) {
       clearDraft();
       if (state.firstPublish) trackEvent("guide_published", { guide_lang: state.lang ?? lang, category: state.category ?? category });
+      // la copertina caricata che la guida aveva prima, sostituita o tolta, non serve più: si cancella ora che la guida non
+      // la usa (le prove non salvate si tolgono già quando se ne carica un'altra; i file rimasti li toglie la pulizia dei
+      // file non usati). Solo quel file: le copertine delle altre guide restano dove sono.
+      const keep = useUpload ? coverPath : null;
+      const before = savedCoverPath.current;
+      savedCoverPath.current = keep;
+      if (before && before !== keep) {
+        const sb = supabaseBrowser();
+        if (sb) void sb.storage.from(PROFILE_MEDIA_BUCKET).remove([before]);
+      }
       router.push(state.href);
     }
     // solo quando cambia l'esito
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, router]);
+
+  /**
+   * Caricamento della copertina (29/09/2026): ritaglio al centro in 16:9 e lato lungo a 1600 px nel browser (WebP), poi
+   * lo Storage, nella cartella delle guide di chi carica. Solo il proprietario della guida: lo staff che ne corregge una
+   * altrui la caricherebbe nella propria cartella, e la Server Action la rifiuterebbe.
+   */
+  const onCoverFile = async (file: File | undefined) => {
+    if (!file) return;
+    const E = L.coverUploadErrors;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const sb = supabaseBrowser();
+      if (!sb) throw new MediaError("upload");
+      const { data } = await sb.auth.getUser();
+      const userId = data.user?.id;
+      if (!userId) throw new MediaError("upload");
+      if (initial?.owner && initial.owner !== userId) {
+        setUploadError(L.coverUploadOwner);
+        return;
+      }
+      const blob = await encodeImage(file, { aspect: GUIDE_COVER_SIZE.width / GUIDE_COVER_SIZE.height, maxSide: GUIDE_COVER_SIZE.width, maxBytes: GUIDE_COVER_MAX_BYTES });
+      const path = await uploadMedia(sb, userId, "guide", blob);
+      // la prova precedente, se non era salvata, non serve più
+      const previous = coverPath;
+      setCoverPath(path);
+      setUseUpload(true);
+      if (previous && previous !== savedCoverPath.current && previous !== path) void sb.storage.from(PROFILE_MEDIA_BUCKET).remove([previous]);
+    } catch (err) {
+      const code = err instanceof MediaError ? err.code : "upload";
+      setUploadError(E[code]);
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+  const coverImage = useUpload && coverPath ? uploadedCover(coverPath) : undefined;
 
   /* errore su un campo: lo si mette a fuoco (le sezioni hanno id `gd-…`, i video e le risorse `pub-…`) */
   useEffect(() => {
@@ -241,6 +314,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
       <input type="hidden" name="locale" value={locale} />
       {initial ? <input type="hidden" name="id" value={initial.id} /> : null}
       <input type="hidden" name="cover_preset" value={cover} />
+      <input type="hidden" name="cover_path" value={useUpload && coverPath ? coverPath : ""} />
       {cards.map((s) => (
         <input key={s} type="hidden" name="cards" value={s} />
       ))}
@@ -288,7 +362,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
       {preview ? (
         <section className="min-w-0" aria-label={L.preview}>
           <p className="mb-3 text-xs text-pale-muted">{L.previewNote}</p>
-          <GuideCover preset={cover} />
+          <GuideCover preset={cover} src={coverImage} />
           <p className="kicker mt-4 text-mint">{categories.find(([id]) => id === category)?.[1]}</p>
           <h2 className="t-page mt-2 break-words leading-tight">{title || "…"}</h2>
           {summary ? <p className="mt-4 whitespace-pre-line break-words rounded-xl border-2 border-sky bg-night-2/80 p-5 text-lg text-pale">{summary}</p> : null}
@@ -547,17 +621,60 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
           <fieldset>
             <legend className="t-item">{L.cover}</legend>
             <p className="mt-1 text-xs text-pale-muted">{L.coverHint}</p>
+            {/* la tua immagine (29/09/2026): caricata dal browser nello Storage, ritagliata in 16:9, con le misure accanto */}
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <label className={`btn btn-ink text-xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mint ${uploading ? "opacity-60" : "cursor-pointer"}`}>
+                <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploading} onChange={(e) => onCoverFile(e.target.files?.[0])} />
+                {uploading ? L.coverUploading : coverPath ? L.coverUploadReplace : L.coverUpload}
+              </label>
+              <span className="min-w-0 flex-1 basis-56 text-xs text-pale-muted">
+                {fillLabel(L.coverUploadHint, {
+                  minw: String(GUIDE_COVER_MIN.width),
+                  minh: String(GUIDE_COVER_MIN.height),
+                  w: String(GUIDE_COVER_SIZE.width),
+                  h: String(GUIDE_COVER_SIZE.height),
+                })}
+              </span>
+            </div>
+            {uploadError ? (
+              <p className="mt-2 text-xs text-bad" role="alert">
+                {uploadError}
+              </p>
+            ) : null}
             <div id="gd-cover_preset" tabIndex={-1} className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {GUIDE_COVER_PRESETS.map((p) => (
-                <label key={p} className={`block min-w-0 cursor-pointer rounded-xl p-1 ${cover === p ? "bg-mint/20 ring-2 ring-mint" : ""}`}>
-                  <input type="radio" name="cover_choice" value={p} checked={cover === p} onChange={() => setCover(p)} className="sr-only" />
-                  <GuideCover preset={p} sizes="(max-width: 640px) 45vw, 260px" />
+              {coverPath ? (
+                <label className={`block min-w-0 cursor-pointer rounded-xl p-1 ${useUpload ? "bg-mint/20 ring-2 ring-mint" : ""}`}>
+                  <input type="radio" name="cover_choice" value="image" checked={useUpload} onChange={() => setUseUpload(true)} className="sr-only" />
+                  <GuideCover src={uploadedCover(coverPath)} />
                   <span className="mt-1 block text-center text-xs text-pale">
-                    {cover === p ? "✓ " : ""}
-                    {L.covers[p]}
+                    {useUpload ? "✓ " : ""}
+                    {L.coverImage}
                   </span>
                 </label>
-              ))}
+              ) : null}
+              {GUIDE_COVER_PRESETS.map((p) => {
+                const on = !useUpload && cover === p;
+                return (
+                  <label key={p} className={`block min-w-0 cursor-pointer rounded-xl p-1 ${on ? "bg-mint/20 ring-2 ring-mint" : ""}`}>
+                    <input
+                      type="radio"
+                      name="cover_choice"
+                      value={p}
+                      checked={on}
+                      onChange={() => {
+                        setCover(p);
+                        setUseUpload(false);
+                      }}
+                      className="sr-only"
+                    />
+                    <GuideCover preset={p} sizes="(max-width: 640px) 45vw, 260px" />
+                    <span className="mt-1 block text-center text-xs text-pale">
+                      {on ? "✓ " : ""}
+                      {L.covers[p]}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </fieldset>
         </section>

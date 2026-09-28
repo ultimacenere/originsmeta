@@ -38,9 +38,26 @@ export type AnnouncedGuide = {
   summary: string;
   /** nome della categoria nelle tre lingue (dizionari: guides.categories) */
   category: Record<Lang, string>;
-  /** copertina (percorso del sito, media kit in public/media): l'immagine grande del messaggio */
+  /**
+   * copertina: un percorso del sito (media kit in public/media) oppure, dal 29/09/2026, l'indirizzo pubblico di una
+   * copertina caricata nel bucket del sito (`STORAGE_COVER`): l'immagine grande del messaggio
+   */
   image?: string;
 };
+
+/**
+ * Le sole immagini assolute ammesse nell'annuncio: le copertine delle guide caricate nel bucket `profile-media` del
+ * progetto Supabase del sito (cartella `<id>/guide/`, nome scelto dal sito). Un indirizzo qualsiasi farebbe dire a Discord
+ * l'IP di chi apre il messaggio a un sito di terzi.
+ */
+const STORAGE_COVER = /^https:\/\/[a-z0-9]{20}\.supabase\.co\/storage\/v1\/object\/public\/profile-media\/[0-9a-f-]{36}\/guide\/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$/;
+
+/** L'immagine dell'annuncio: percorso del sito reso assoluto, copertina caricata nel bucket del sito, altrimenti niente. */
+function announcedImage(image: string | undefined): string | null {
+  if (!image) return null;
+  if (image.startsWith("/") && !image.startsWith("//")) return `${SITE}${image}`;
+  return STORAGE_COVER.test(image) ? image : null;
+}
 
 /**
  * L'annuncio: titolo e link nella lingua in cui la guida è scritta, riassunto, autore e categoria nelle tre lingue, la
@@ -50,7 +67,7 @@ export type AnnouncedGuide = {
  */
 export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
   const author = escapeDiscord(cut(g.author, 60));
-  const image = g.image && g.image.startsWith("/") && !g.image.startsWith("//") ? `${SITE}${g.image}` : null;
+  const image = announcedImage(g.image);
   return {
     content: "📘 **Nuova guida · New guide · Nueva guía**",
     embeds: [

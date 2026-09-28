@@ -24,6 +24,9 @@ import { communityPerson, communityProfilePage } from "@/lib/jsonld/deck";
 import { Avatar } from "@/components/AccountMenu";
 import { FollowButton } from "@/components/follow/FollowButton";
 import { CardArt } from "@/components/CardChip";
+import { DeckArtImage } from "@/components/DeckArtImage";
+import { deckArtUrl } from "@/lib/community/deckArt";
+import { deckArtLabels } from "@/lib/deckArtLabels";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { getProfileShowcase } from "@/lib/community/creators";
 import { isShowcaseBadge, normalizeBadge } from "@/lib/community/badges";
@@ -253,11 +256,17 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               {decks.map((deck) => {
                 const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
                 const patch = patchAt(deck.created_at);
+                // artwork della Leggendaria dei Creator e dello Staff (29/09/2026), al posto dell'illustrazione ufficiale
+                const art = deckArtUrl(deck, supabaseUrl);
                 return (
                   <li key={deck.id} className="card-inset flex gap-4 p-4">
                     {legendary ? (
                       <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
-                        <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
+                        {art ? (
+                          <DeckArtImage src={art} alt={fillLabel(deckArtLabels[locale].deck.alt, { legendary: legendary.name, author: name })} mana={legendary.mana} className="!h-[110px] !w-[78px] text-lg" />
+                        ) : (
+                          <CardArt card={legendary} full className="!h-[110px] !w-[78px] text-lg" />
+                        )}
                       </Link>
                     ) : null}
                     <div className="min-w-0 flex-1">

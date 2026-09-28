@@ -38,6 +38,10 @@ import { DeckStreamTools } from "@/components/stream/StreamTools";
 import { deckImageAlt, deckOgImage } from "@/lib/stream";
 import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsBeacon } from "@/components/DeckStatsBeacon";
+import { DeckArtImage } from "@/components/DeckArtImage";
+import { deckArtUrl } from "@/lib/community/deckArt";
+import { deckArtLabels } from "@/lib/deckArtLabels";
+import { supabaseUrl } from "@/lib/supabase/env";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -129,6 +133,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
   const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
   const customLegendary = !legendary ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
+  // artwork della Leggendaria caricato da un Creator o dallo Staff (29/09/2026): solo se chi ha pubblicato ha ancora il ruolo
+  const artUrl = deckArtUrl(deck, supabaseUrl);
   const knownCards = deck.cards.filter((s) => getCard(s));
   const customCards = deck.cards.filter((s) => !getCard(s)).map((s) => deck.custom_cards.find((x) => x.slug === s)?.name ?? s);
   // fino a tre video (YouTube, Twitch) e le risorse dell'autore; il vecchio video_url vale come primo video (videos.ts)
@@ -206,7 +212,20 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
 
       <article className="card-night mt-6 p-6 sm:p-8">
         <div className="flex flex-wrap items-start gap-5">
-          {legendary ? (
+          {artUrl ? (
+            /* l'artwork del creator al posto dell'illustrazione ufficiale, con la didascalia: la carta ufficiale resta nella
+               sua scheda, a cui porta il riquadro, e nel tag ★ qui sotto */
+            <figure className="w-[120px] shrink-0">
+              {legendary ? (
+                <Link href={href(locale, `/cards/${legendary.slug}`)} className="block" title={legendary.name}>
+                  <DeckArtImage src={artUrl} alt={fillLabel(deckArtLabels[locale].deck.alt, { legendary: legendary.name, author })} mana={legendary.mana} eager className="!h-[168px] !w-[120px] text-2xl" />
+                </Link>
+              ) : (
+                <DeckArtImage src={artUrl} alt={fillLabel(deckArtLabels[locale].deck.alt, { legendary: customLegendary?.name ?? deck.name, author })} eager className="!h-[168px] !w-[120px] text-2xl" />
+              )}
+              <figcaption className="mt-1 text-center text-[10px] font-semibold uppercase tracking-wider text-pale-muted">{deckArtLabels[locale].deck.caption}</figcaption>
+            </figure>
+          ) : legendary ? (
             <Link href={href(locale, `/cards/${legendary.slug}`)} className="shrink-0" title={legendary.name}>
               <CardArt card={legendary} full className="!h-[168px] !w-[120px] text-2xl" />
             </Link>

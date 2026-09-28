@@ -19,9 +19,24 @@ import type { LoginLabels } from "@/lib/loginLabels";
 import { MEDIA_FIELD_NAMES, fillVideoLabel, mediaFieldRow, type DeckLink, type StoredVideo } from "@/lib/videos";
 import type { VideoFormLabels } from "@/lib/videoLabels";
 import { DeckMediaFields } from "./DeckMediaFields";
+import { canUseDeckArt } from "@/lib/community/badges";
+import { deckArtPathOk } from "@/lib/community/deckArt";
+import { PROFILE_MEDIA_BUCKET } from "@/lib/community/profileMedia";
+import type { DeckArtFormLabels } from "@/lib/deckArtLabels";
+import { DeckArtField } from "./DeckArtField";
 
-/** Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). */
-export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string };
+/**
+ * Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). `image` solo per
+ * le Leggendarie: il confronto con l'artwork del creator (29/09/2026).
+ */
+export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string; image?: string };
+
+/**
+ * Artwork della Leggendaria in modifica (29/09/2026), deciso dalla pagina sul server: `path` quello salvato, `mode`
+ * `upload` per il proprietario Creator o Staff, `remove` per chi può solo toglierlo (`reason`). Assente: niente campo,
+ * e la Server Action non tocca l'artwork.
+ */
+export type DeckArtEdit = { path: string | null; mode: "upload" | "remove"; reason?: "notOwner" | "noRole" };
 /** Mazzo da modificare. `videos` e `links` dal 26/09/2026 (pacchetto VIDEO): al posto del vecchio campo `video`. */
 export type InitialDeck = { id: string; code: string; name: string; archetype: string; deckTypes: string[]; videos?: StoredVideo[]; links?: DeckLink[]; guide: Guide };
 
@@ -36,6 +51,10 @@ type Props = {
   labels: Labels;
   /** etichette di video e risorse nella lingua della pagina (`videoFormLabels`, pacchetto VIDEO del 26/09/2026) */
   mediaLabels: VideoFormLabels;
+  /** etichette dell'artwork della Leggendaria (`deckArtFormLabels`, 29/09/2026) */
+  artLabels: DeckArtFormLabels;
+  /** solo in modifica: l'artwork del mazzo e che cosa può farne chi modifica (in pubblicazione lo decide il browser) */
+  art?: DeckArtEdit | null;
   loginLabels: LoginLabels;
   builderHref: string;
   /** percorso della pagina di pubblicazione, usato come ritorno dopo l'accesso */
@@ -45,7 +64,7 @@ type Props = {
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale placeholder:text-pale-muted/80 focus:border-mint";
 
 /** Campi di testo salvati nella bozza locale della guida (le caselle e i menu si rifanno in un attimo). */
-const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, ...MEDIA_FIELD_NAMES] as const;
+const DRAFT_FIELDS = ["name", "lang", "summary", ...guideSections, ...MEDIA_FIELD_NAMES, "art_path"] as const;
 type DraftValues = Partial<Record<(typeof DRAFT_FIELDS)[number], string>>;
 
 /**
@@ -161,7 +180,7 @@ function clearLocalDrafts() {
  * Il modulo è volutamente corto: in vista c'è solo il piano di gioco (obbligatorio); le sezioni facoltative
  * stanno in un <details> chiuso, e il testo scritto resta in una bozza locale finché non si pubblica.
  */
-export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, loginLabels, builderHref, publishPath }: Props) {
+export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, artLabels, art, loginLabels, builderHref, publishPath }: Props) {
   const router = useRouter();
   const mounted = useMounted();
   // ?deck e ?draft dal router: sempre quelli della pagina che si sta aprendo, anche con un <Link>
@@ -188,6 +207,12 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   const sent = useRef<EventParams["deck_published"] | null>(null);
   /* il modulo, per risalvare la bozza quando si toglie una riga di video o di link (DeckMediaFields) */
   const formRef = useRef<HTMLFormElement>(null);
+  /* artwork della Leggendaria (29/09/2026): in pubblicazione il campo c'è se chi pubblica è Creator o Staff (lo si legge
+     dal profilo nel browser, la pagina è statica); in modifica lo decide la pagina (`art`) */
+  const [artRole, setArtRole] = useState(false);
+  /* l'artwork mandato con il salvataggio: dopo, quello salvato prima (`savedArt`, se è cambiato) si toglie dallo Storage */
+  const sentArt = useRef<string | null | undefined>(undefined);
+  const savedArt = useRef<string | null>(art?.path ?? null);
 
   /* errore su un video o un link: la Server Action dice quale campo (`field`), che si apre e riceve il fuoco */
   useEffect(() => {
@@ -245,7 +270,34 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
   }, [mode]);
 
   useEffect(() => {
+    if (mode === "edit" || !user) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    let alive = true;
+    sb.from("profiles")
+      .select("badge, role")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        const p = data as { badge?: string | null; role?: string | null } | null;
+        if (alive) setArtRole(canUseDeckArt(p?.badge, p?.role));
+      });
+    return () => {
+      alive = false;
+    };
+  }, [mode, user]);
+
+  useEffect(() => {
     if (state.ok && state.href) {
+      // l'artwork salvato prima e sostituito o tolto non serve più: si cancella ora che il mazzo non lo usa (la policy del
+      // bucket non lascia cancellare un file in uso); se non riesce, lo toglie la pulizia dei file non usati
+      const before = savedArt.current;
+      if (sentArt.current !== undefined && before && sentArt.current !== before) {
+        const sb = supabaseBrowser();
+        if (sb) void sb.storage.from(PROFILE_MEDIA_BUCKET).remove([before]);
+      }
+      if (sentArt.current !== undefined) savedArt.current = sentArt.current;
+      sentArt.current = undefined;
       // solo la prima pubblicazione è un evento (deck_published): una modifica non crea un mazzo nuovo
       if (mode === "create") {
         clearLocalDrafts();
@@ -316,11 +368,19 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
     guideSections.some((k) => Boolean(restored?.[k] || g?.[k])) || MEDIA_FIELD_NAMES.some((k) => Boolean(restored?.[k])) || Boolean(initial?.videos?.length || initial?.links?.length);
   /* errori di video e link (videoLabels.ts, con il numero della riga) prima di quelli del dizionario */
   const mediaError = state.error ? (mediaLabels.errors as Record<string, string>)[state.error] : undefined;
+  const artError = state.error ? (artLabels.actionErrors as Record<string, string>)[state.error] : undefined;
   const errorText = state.error
-    ? mediaError
-      ? fillVideoLabel(mediaError, { n: mediaFieldRow(state.field) })
-      : ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
+    ? artError
+      ? artError
+      : mediaError
+        ? fillVideoLabel(mediaError, { n: mediaFieldRow(state.field) })
+        : ((labels.errors as Record<string, string>)[state.error] ?? labels.errors.db)
     : null;
+  /* il campo dell'artwork: in modifica come dice la pagina, in pubblicazione per Creator e Staff */
+  const legendaryCard = deck.legendary ? pool.find((c) => c.slug === deck.legendary) : undefined;
+  const artField: DeckArtEdit | null = mode === "edit" ? (art ?? null) : artRole ? { path: null, mode: "upload" } : null;
+  const restoredArt = v("art_path");
+  const artStart = mode === "edit" ? (art?.path ?? null) : deckArtPathOk(restoredArt) ? restoredArt : null;
   const busyLabel = mode === "edit" ? labels.updating : labels.submitting;
   const submitLabel = mode === "edit" ? labels.update : labels.submit;
   const ph = labels.placeholders;
@@ -351,6 +411,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
         if (mode === "create") sent.current = { locale, legendary: legendaryParam(deck.legendary), source: draftId ? "private_draft" : "builder" };
+        sentArt.current = fd.has("art_path") ? String(fd.get("art_path") ?? "") || null : undefined;
         startSubmit(() => formAction(fd));
       }}
       onChange={(e) => {
@@ -438,6 +499,20 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
             <span className="mt-1 block text-xs text-pale-muted">{labels.deckTypeHint}</span>
           </fieldset>
         </div>
+
+        {artField ? (
+          <DeckArtField
+            labels={artLabels}
+            legendary={legendaryCard ? { name: legendaryCard.name, image: legendaryCard.image } : deck.legendary ? { name: nameOf(deck.legendary) } : null}
+            initialPath={artStart}
+            savedPath={mode === "edit" ? (art?.path ?? null) : null}
+            mode={artField.mode}
+            reason={artField.reason}
+            onChange={() => {
+              if (formRef.current) saveDraftOf(formRef.current);
+            }}
+          />
+        ) : null}
 
         <Field id="summary" label={labels.summary} hint={labels.summaryHint} placeholder={ph.summary} required minLength={20} maxLength={600} rows={4} defaultValue={v("summary", g?.summary)} />
         {meter ? (

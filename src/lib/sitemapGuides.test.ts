@@ -1,9 +1,9 @@
 /**
  * Test delle guide della community nelle sitemap (pacchetto GUIDE, 27/09/2026): `node --test src/lib/sitemapGuides.test.ts`.
  * Le guide stanno nella sezione "guides" accanto alle editoriali, solo nelle lingue in cui la pagina si indicizza (con
- * hreflang solo verso quelle), con la data di ogni versione e la copertina; /guides non si sposta (statica, la sezione la
- * carica il browser dal 27/09/2026; prima si spostava con le guide della community che mostrava); l'elenco
- * /guides/community c'è solo nelle lingue in cui ha almeno una guida.
+ * hreflang solo verso quelle), con la data di ogni versione e la copertina; /guides si sposta con le guide della community
+ * che mostra (dal 29/09/2026 sono nel suo HTML, un elenco solo con le editoriali; dal 27 al 29/09 le caricava il browser e
+ * la data non si spostava); l'elenco /guides/community c'è solo nelle lingue in cui ha almeno una guida.
  * Stesso hook di risoluzione dei moduli di sitemapEntries.test.ts (import senza estensione, JSON dichiarati).
  */
 import * as nodeModule from "node:module";
@@ -35,23 +35,24 @@ const { COMMUNITY_SECTIONS, EMPTY_COMMUNITY, sectionEntries, sitemapIndexEntries
 type Locale = "en" | "it" | "es";
 type Data = Parameters<typeof sitemapPages>[0];
 const SITE = "https://originsmeta.com";
-const TODAY = "2026-09-30";
+// dopo il 29/09/2026, ultimo cambio del modello delle pagine delle guide (PAGE_UPDATED): le date dei dati si vedono
+const TODAY = "2026-10-03";
 
 const community = {
   ...EMPTY_COMMUNITY,
   communityGuides: {
     guides: [
-      { slug: "dorothy-combo-ab12", locales: ["es"] as Locale[], dates: { es: "2026-09-28T10:00:00+00:00" }, image: "/media/keyart-mulan.webp" },
+      { slug: "dorothy-combo-ab12", locales: ["es"] as Locale[], dates: { es: "2026-09-30T10:00:00+00:00" }, image: "/media/keyart-mulan.webp" },
       {
         slug: "mulligan-cd34",
         locales: ["en", "it", "es"] as Locale[],
         // la versione inglese è cambiata quando è arrivata la sua traduzione
-        dates: { en: "2026-09-29T07:00:00.000Z", it: "2026-09-27T08:00:00+00:00", es: "2026-09-27T08:00:00+00:00" },
+        dates: { en: "2026-10-01T07:00:00.000Z", it: "2026-09-30T08:00:00+00:00", es: "2026-09-30T08:00:00+00:00" },
         image: "/media/keyart-king-arthur.webp",
       },
     ],
-    hub: { en: "2026-09-29T07:00:00.000Z", it: "2026-09-27T08:00:00+00:00", es: "2026-09-29T09:00:00+00:00" },
-    list: { en: "2026-09-29T07:00:00.000Z", it: "2026-09-27T08:00:00+00:00", es: "2026-09-29T09:00:00+00:00" },
+    hub: { en: "2026-10-01T07:00:00.000Z", it: "2026-09-30T08:00:00+00:00", es: "2026-10-01T09:00:00+00:00" },
+    list: { en: "2026-10-01T07:00:00.000Z", it: "2026-09-30T08:00:00+00:00", es: "2026-10-01T09:00:00+00:00" },
   },
 };
 
@@ -73,26 +74,28 @@ describe("guide della community nelle sitemap", () => {
     const solo = es.find((e) => e.url.endsWith("dorothy-combo-ab12"));
     assert.deepEqual(Object.keys(solo?.alternates ?? {}).sort(), ["es", "x-default"]);
     assert.equal(solo?.alternates?.["x-default"], `${SITE}/es/guides/community/dorothy-combo-ab12`);
-    assert.equal(solo?.lastmod, "2026-09-28");
+    assert.equal(solo?.lastmod, "2026-09-30");
     assert.deepEqual(solo?.images, [`${SITE}/media/keyart-mulan.webp`]);
     const en = sectionEntries(pages, "guides", "en", TODAY).find((e) => e.url.endsWith("/en/guides/community/mulligan-cd34"));
-    assert.equal(en?.lastmod, "2026-09-29", "la data della versione inglese");
-    assert.equal(it[0].lastmod, "2026-09-27");
+    assert.equal(en?.lastmod, "2026-10-01", "la data della versione inglese");
+    assert.equal(it[0].lastmod, "2026-09-30");
   });
 
-  test("/guides non si sposta con le guide della community: la pagina è statica e la sezione la carica il browser", () => {
-    // revisione del 27/09/2026: le guide della community non cambiano l'HTML di /guides, quindi nemmeno il suo lastmod
+  test("/guides si sposta con le guide della community che mostra nella lingua", () => {
+    // dal 29/09/2026 le guide della community indicizzabili stanno nell'HTML di /guides (ISR), quindi ne spostano il lastmod
     const hub = (l: Locale, data: Data = community) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
-    for (const l of ["en", "it", "es"] as const) {
-      assert.ok(hub(l), l);
-      assert.equal(hub(l), hub(l, EMPTY_COMMUNITY), l);
-    }
+    assert.equal(hub("es"), "2026-10-01");
+    assert.equal(hub("it"), "2026-09-30");
+    assert.ok(hub("es", EMPTY_COMMUNITY)! < "2026-09-30", "senza guide della community la data del modello e delle editoriali");
+    // una lingua senza guide della community da mostrare resta com'era
+    const noIt: Data = { ...community, communityGuides: { ...community.communityGuides, hub: { es: "2026-10-01T09:00:00+00:00" } } };
+    for (const l of ["en", "it"] as const) assert.equal(hub(l, noIt), hub(l, EMPTY_COMMUNITY), l);
   });
 
   test("/guides/community solo nelle lingue in cui l'elenco ha almeno una guida, con la sua data", () => {
     const listOf = (l: Locale, data: Data) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides/community`);
-    assert.equal(listOf("es", community)?.lastmod, "2026-09-29");
-    const onlyEs: Data = { ...community, communityGuides: { ...community.communityGuides, list: { es: "2026-09-29T09:00:00+00:00" } } };
+    assert.equal(listOf("es", community)?.lastmod, "2026-10-01");
+    const onlyEs: Data = { ...community, communityGuides: { ...community.communityGuides, list: { es: "2026-10-01T09:00:00+00:00" } } };
     assert.ok(listOf("es", onlyEs));
     assert.equal(listOf("it", onlyEs), undefined, "elenco vuoto in italiano: fuori dalla sitemap");
     assert.deepEqual(Object.keys(listOf("es", onlyEs)?.alternates ?? {}).sort(), ["es", "x-default"]);

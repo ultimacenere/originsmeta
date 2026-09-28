@@ -37,6 +37,9 @@ export type ExplorerDeck = {
   tagline: string;
   /** `href` = scheda della carta, quando la Leggendaria è nel nostro database */
   legendary?: { slug: string; name: string; href?: string; cover?: string; thumb?: string; image?: string; mana?: number };
+  /** artwork della Leggendaria caricato da un Creator o dallo Staff (29/09/2026, `deckArtUrl`): prende il posto della
+   *  miniatura ufficiale; l'anteprima al passaggio del mouse resta la carta ufficiale */
+  art?: string;
   archetype: string;
   archetypeLabel: string;
   /** chi ha pubblicato il mazzo (nome mostrato): mai "creator" né "autore", che dal 27/09/2026 sono ruoli */
@@ -136,16 +139,17 @@ function roleOf(d: ExplorerDeck): string | undefined {
  * carte di ogni mazzo, che era il 69% delle parole della pagina. `shared`: i dati di una carta ripetuta in più mazzi
  * li porta solo la prima copia mostrata (vedi `peekShares` sotto).
  */
-function DeckCardArt({ card, size, legendary = false, shared }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean; shared?: "first" | "copy" }) {
+function DeckCardArt({ card, size, legendary = false, shared, art }: { card: DeckCard; size: "xs" | "sm" | "md"; legendary?: boolean; shared?: "first" | "copy"; art?: string }) {
   const isLeg = legendary || card.legendary;
   const peek = { ...card, legendary: isLeg };
   return (
     <span className={`deck-card-wrap ${hasPeek(peek) ? "has-peek" : ""}`}>
       <span className={`deck-card deck-card-${size} ${isLeg ? "is-legendary" : ""}`} title={card.name}>
-        {/* oltre gli 80 px la miniatura da 160 px si vede sgranata sugli schermi densi: lì va la carta intera */}
-        {card.thumb || card.image ? (
+        {/* oltre gli 80 px la miniatura da 160 px si vede sgranata sugli schermi densi: lì va la carta intera. L'artwork
+            di un Creator (`art`, 29/09/2026) sostituisce solo l'immagine: l'anteprima resta quella della carta ufficiale */}
+        {art || card.thumb || card.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={(size === "md" ? card.image : undefined) ?? card.thumb ?? card.image} alt="" loading="lazy" decoding="async" />
+          <img src={art ?? (size === "md" ? card.image : undefined) ?? card.thumb ?? card.image} alt="" loading="lazy" decoding="async" />
         ) : (
           <span className="deck-card-initials" aria-hidden="true">
             {card.name.slice(0, 2).toUpperCase()}
@@ -454,8 +458,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               <div className="flex gap-4">
                 <div className="w-[140px] shrink-0">
                   <Link href={d.href} className="block">
-                    {d.legendary?.thumb ? (
-                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" legendary />
+                    {d.legendary && (d.legendary.thumb || d.art) ? (
+                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" legendary art={d.art} />
                     ) : (
                       <span className="deck-card deck-card-md">
                         <span className="deck-card-initials" aria-hidden="true">
@@ -532,7 +536,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               {/* Le tredici carte in fila; a schermo stretto vanno a capo. Niente overflow: taglierebbe
                   l'anteprima che si apre sopra la carta. */}
               <Link href={d.href} className="flex min-w-0 flex-1 flex-wrap gap-1">
-                {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="xs" legendary /> : null}
+                {d.legendary ? <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="xs" legendary art={d.art} /> : null}
                 {d.cardArt.map((c, k) => (
                   <DeckCardArt key={`${c.name}-${k}`} card={c} size="xs" shared={peekShares.get(c)} />
                 ))}

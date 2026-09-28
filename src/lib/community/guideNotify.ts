@@ -5,7 +5,7 @@ import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { getDictionary, locales, type Locale } from "@/lib/i18n";
 import { discordWebhookUrl, sendDiscordWebhook } from "@/lib/discordWebhook";
 import { guidePayload, guideReportPayload, type AnnouncedGuide, type GuideReportNotice } from "./guideDiscord";
-import { guideCover, isGuideCategory } from "./guides";
+import { communityGuideCover, isGuideCategory } from "./guides";
 import type { Db } from "@/lib/supabase/public";
 import { notifyFollowers } from "./notify";
 
@@ -66,7 +66,7 @@ async function readPublished(slug: string): Promise<AnnouncedGuide | null> {
   if (!supabaseEnabled) return null;
   const { data } = await anonClient()
     .from("community_guides")
-    .select("slug, title, lang, summary, category, cover_preset, status, owner:profiles!community_guides_owner_fkey(username, display_name)")
+    .select("slug, title, lang, summary, category, cover_preset, cover_path, status, owner_id:owner, owner:profiles!community_guides_owner_fkey(username, display_name)")
     .eq("slug", slug)
     .maybeSingle();
   const row = data as unknown as {
@@ -76,13 +76,17 @@ async function readPublished(slug: string): Promise<AnnouncedGuide | null> {
     summary: string;
     category: string;
     cover_preset: string | null;
+    cover_path: string | null;
     status: string;
+    owner_id: string;
     owner: { username: string | null; display_name: string | null } | null;
   } | null;
   if (!row || row.status !== "published") return null;
   const lang = (locales as readonly string[]).includes(row.lang) ? (row.lang as Locale) : "en";
   const author = (row.owner?.display_name || row.owner?.username || "?").replace(/[\r\n]+/g, " ").trim();
-  return { slug: row.slug, title: row.title, lang, author, summary: row.summary, category: categoryNames(row.category), image: guideCover(row.cover_preset).src };
+  // copertina caricata (indirizzo pubblico del bucket) o preimpostata (percorso del sito): guidePayload accetta le due
+  const image = communityGuideCover({ owner: row.owner_id, cover_path: row.cover_path, cover_preset: row.cover_preset }, supabaseUrl).src;
+  return { slug: row.slug, title: row.title, lang, author, summary: row.summary, category: categoryNames(row.category), image };
 }
 
 /** Da chiamare dopo la PRIMA pubblicazione di una guida: annuncio nel canale #guides, se il webhook c'è. */

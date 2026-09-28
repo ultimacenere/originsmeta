@@ -32,6 +32,11 @@ export const MEDIA_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
  */
 export const MEDIA_FILES_MAX = 12;
 /**
+ * Lo stesso tetto per i ruoli con vetrina e gli admin (29/09/2026, blocco IMMAGINI di schema.sql): oltre a foto,
+ * copertina e sfondo hanno una copertina per guida e, Creator e Staff, un artwork per mazzo.
+ */
+export const MEDIA_FILES_MAX_SHOWCASE = 60;
+/**
  * Evento della finestra lanciato dopo il cambio della foto profilo: il menu dell'account (header, che sopravvive alla
  * navigazione e legge il profilo solo al montaggio) lo ascolta e rilegge la foto.
  */
@@ -52,7 +57,13 @@ export const MEDIA_UPLOAD_NAME_RE = String.raw`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]
 export const DISCORD_AVATAR_RE = String.raw`^https://(cdn\.discordapp\.com|media\.discordapp\.net)/[A-Za-z0-9/_.-]{1,255}(\?size=[0-9]{1,4})?$`;
 const DISCORD_AVATAR = new RegExp(DISCORD_AVATAR_RE);
 
-export type MediaKind = "avatar" | "cover" | "background";
+/**
+ * Le cartelle di un utente nel bucket: foto profilo, copertina e sfondo della vetrina (27/09/2026) e, dal 29/09/2026, le
+ * copertine delle guide (`guide`, chi pubblica guide) e l'artwork dei mazzi (`deck`, Creator e Staff). La policy di
+ * caricamento e quella di cancellazione le conoscono tutte (blocco IMMAGINI di supabase/schema.sql).
+ */
+export type MediaKind = "avatar" | "cover" | "background" | "guide" | "deck";
+export const MEDIA_KINDS: readonly MediaKind[] = ["avatar", "cover", "background", "guide", "deck"];
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 

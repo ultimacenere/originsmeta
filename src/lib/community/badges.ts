@@ -14,6 +14,8 @@
  *   author      Author / Autore / Autor           AUTHOR_DECK_LIMIT (20)      no                               sì
  *   community   Community (non si mostra)         COMMUNITY_DECK_LIMIT (5)    no                               no
  *
+ * Dal 29/09/2026 Creator e Staff sostituiscono anche l'artwork della Leggendaria sui propri mazzi (`canUseDeckArt`).
+ *
  * Un admin (`profiles.role = 'admin'`) ha i permessi dello Staff qualunque sia il suo tag. Il tag lo assegna solo lo
  * staff (scripts/set-badge.mjs, trigger protect_profile_badge), mai l'utente.
  *
@@ -56,6 +58,13 @@ export const SHOWCASE_BADGES: readonly Badge[] = ["creator", "author", "pro", "s
  * la stessa regola sta in `can_publish_guides` (blocco GUIDE di supabase/schema.sql): guides.test.ts controlla che coincidano.
  */
 export const GUIDE_BADGES: readonly Badge[] = ["author", "creator", "pro", "staff"];
+
+/**
+ * Tag che sostituiscono l'artwork della Leggendaria sui propri mazzi (29/09/2026, Pierluigi: "solo per i creator"; lo
+ * Staff, come per gli altri permessi, e gli admin). Nel database la stessa regola sta nel trigger `guard_deck_art` e nella
+ * policy di caricamento del bucket (blocco IMMAGINI di supabase/schema.sql): deckArt.test.ts controlla che coincidano.
+ */
+export const DECK_ART_BADGES: readonly Badge[] = ["creator", "staff"];
 
 type Who = { badge?: string | null; role?: string | null } | null | undefined;
 
@@ -100,4 +109,12 @@ export function publishedDeckCap(who: Who): number {
 /** Pubblica direttamente le guide della community (pacchetto GUIDE): Autore, Creator, Pro, Staff e admin. */
 export function canPublishGuides(badge: string | null | undefined, role?: string | null): boolean {
   return role === "admin" || has(GUIDE_BADGES, badge);
+}
+
+/**
+ * Carica l'artwork della Leggendaria di un proprio mazzo (29/09/2026): Creator, Staff e admin. Le letture pubbliche dei
+ * mazzi portano solo il tag di chi ha pubblicato, non il ruolo: lì l'artwork si mostra per Creator e Staff.
+ */
+export function canUseDeckArt(badge: string | null | undefined, role?: string | null): boolean {
+  return role === "admin" || has(DECK_ART_BADGES, badge);
 }

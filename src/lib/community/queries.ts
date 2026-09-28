@@ -68,15 +68,18 @@ export function rowOrThrow<T>(what: string, res: ReadResult): T | null {
  * Lo stesso per video e risorse dei mazzi (colonne `videos` e `links`, supabase/schema.sql, blocco VIDEO, 26/09/2026): senza,
  * la scheda legge il vecchio `video_url` come primo video (`deckVideos` in src/lib/videos.ts) e non mostra risorse.
  * `groups`: i gruppi di colonne facoltative che la lettura vuole. Video e risorse ("media") li chiede solo la scheda di
- * un mazzo: le liste (/decks, tier list, profili, sitemap) non li mostrano e non li scaricano.
+ * un mazzo: le liste (/decks, tier list, profili, sitemap) non li mostrano e non li scaricano. L'artwork della Leggendaria
+ * ("art", 29/09/2026) lo chiedono la scheda e le liste che mostrano la Leggendaria (non la sitemap).
  */
-type OptionalGroup = "translations" | "media";
+type OptionalGroup = "translations" | "media" | "art";
 /** Per quanto tempo, dopo un 42703, un gruppo di colonne non si chiede più (poi si riprova). */
 const OPTIONAL_RETRY_MS = 5 * 60_000;
 /** `missingUntil`: fino a quando il gruppo si considera mancante (0: si legge). */
 const optionalColumns: { id: OptionalGroup; columns: string[]; missingUntil: number }[] = [
   { id: "translations", columns: ["translations"], missingUntil: 0 },
   { id: "media", columns: ["videos", "links"], missingUntil: 0 },
+  // artwork della Leggendaria dei Creator (blocco IMMAGINI, 29/09/2026): la scheda, /decks, i profili e le tier list
+  { id: "art", columns: ["art_path"], missingUntil: 0 },
 ];
 
 async function readWithTranslations(
@@ -124,8 +127,10 @@ async function withRatings(client: Db, decks: CommunityDeck[], lenient = false):
 export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const res = await readWithTranslations(DECK_SELECT, (sel) =>
-    client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+  const res = await readWithTranslations(
+    DECK_SELECT,
+    (sel) => client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+    ["translations", "art"],
   );
   return withRatings(client, rowsOrThrow<CommunityDeck>("listPublishedDecks", res));
 }
@@ -137,6 +142,7 @@ export async function getCommunityDeck(slug: string): Promise<CommunityDeck | nu
   const res = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("slug", slug).eq("status", PUBLISHED).maybeSingle(), [
     "translations",
     "media",
+    "art",
   ]);
   const deck = rowOrThrow<CommunityDeck>("getCommunityDeck", res);
   if (!deck) return null;
@@ -187,8 +193,10 @@ export async function getProfileByUsername(username: string): Promise<(Profile &
 export async function listDecksByOwner(userId: string, limit = 50): Promise<CommunityDeck[]> {
   const client = supabasePublic();
   if (!client) return [];
-  const res = await readWithTranslations(DECK_SELECT, (sel) =>
-    client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+  const res = await readWithTranslations(
+    DECK_SELECT,
+    (sel) => client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
+    ["translations", "art"],
   );
   return withRatings(client, rowsOrThrow<CommunityDeck>("listDecksByOwner", res));
 }

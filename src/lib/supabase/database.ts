@@ -70,9 +70,12 @@ export type CommunityDeckRow = {
   status: DeckStatus;
   created_at: string;
   updated_at: string;
+  /** artwork della Leggendaria (supabase/schema.sql, blocco IMMAGINI, 29/09/2026): <owner>/deck/<file> nel bucket profile-media,
+   *  solo Creator, Staff e admin (trigger guard_deck_art) */
+  art_path: string | null;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations" | "videos" | "links"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations" | "videos" | "links" | "art_path"> & {
   id?: string;
   videos?: StoredVideo[];
   links?: DeckLink[];
@@ -82,6 +85,7 @@ export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "
   video_url?: string | null;
   code_om?: string | null;
   legendary?: string | null;
+  art_path?: string | null;
 };
 
 /* ---------- tier list salvate nel profilo (23/09/2026, §1 punto 27.5 della KB) ---------- */
@@ -645,8 +649,11 @@ export type Database = {
       profile_media_url: { Args: { p: string }; Returns: string };
       /** il file c'è nella propria cartella, con tipo ammesso e al massimo max_bytes (con i privilegi di chi chiama) */
       profile_media_ok: { Args: { p: string; max_bytes: number }; Returns: boolean };
-      /** file dell'utente collegato nel bucket (tetto di 12 della policy di caricamento) */
+      /** file dell'utente collegato nel bucket (tetto della policy di caricamento: 12, 60 per i ruoli con vetrina dal 29/09/2026) */
       profile_media_count: { Args: Record<string, never>; Returns: number };
+      /** il file è in uso (profilo, copertina di una guida, artwork di un mazzo): policy di cancellazione del bucket e --orphans
+       *  di clear-profile-media.mjs (blocco IMMAGINI, 29/09/2026; security definer) */
+      profile_media_in_use: { Args: { p: string }; Returns: boolean };
       /** foto di Discord dai metadati dell'accesso (security definer): solo il proprio profilo o un admin, solo host Discord */
       profile_discord_avatar: { Args: { uid: string }; Returns: string | null };
       /* traguardi e numeri pubblici del profilo /u (blocco TRAGUARDI di supabase/schema.sql); risposte ricontrollate da achievements.ts */

@@ -2,6 +2,7 @@ import type { Locale } from "../i18n";
 import type { DeckLink, StoredVideo } from "../videos";
 import { countWords } from "./deckQuality";
 import { textHash, type TranslationDoc } from "./deckTranslation";
+import { MEDIA_FILE_RE, PROFILE_MEDIA_BUCKET, UUID_RE, mediaPublicUrl } from "./profileMedia";
 
 /**
  * Guide della community pubblicate direttamente da chi ha un ruolo (pacchetto GUIDE, 27/09/2026; Pierluigi: "OK A
@@ -90,11 +91,24 @@ export const GUIDE_COVER_PRESETS = Object.keys(GUIDE_COVERS) as GuideCoverPreset
 export const DEFAULT_GUIDE_COVER: GuideCoverPreset = "keyart-king-arthur";
 
 /**
- * Bucket dello Storage delle copertine caricate (`cover_path`): quello del pacchetto VETRINA, che nel ramo di questo
- * pacchetto non c'è ancora. Finché è null il modulo offre solo le copertine preimpostate e la pagina ignora `cover_path`
- * (l'integratore lo imposta al nome del bucket di VETRINA, con le sue policy per cartella dell'utente).
+ * Bucket dello Storage delle copertine caricate (`cover_path`): quello del pacchetto VETRINA (`profile-media`), acceso il
+ * 29/09/2026 su segnalazione di Vega ("non ha potuto cambiare l'immagine della copertina della guida"). Il file sta nella
+ * cartella del proprietario, `<id>/guide/<file>`: la policy di caricamento del bucket lo ammette per chi pubblica guide,
+ * quella di cancellazione non tocca una copertina in uso e il trigger controlla che il file ci sia (blocco IMMAGINI di
+ * supabase/schema.sql).
  */
-export const GUIDE_COVER_BUCKET: string | null = null;
+export const GUIDE_COVER_BUCKET: string | null = PROFILE_MEDIA_BUCKET;
+/** La cartella delle copertine delle guide dentro quella dell'utente. */
+export const GUIDE_COVER_FOLDER = "guide";
+/**
+ * Misura della copertina caricata: 16:9 come le copertine del media kit. Il browser la ritaglia al centro in 16:9 e la
+ * riduce a questa misura al caricamento (WebP), quindi la pagina ne conosce sempre le proporzioni. Il modulo consiglia
+ * almeno `GUIDE_COVER_MIN`, sotto si vede sgranata.
+ */
+export const GUIDE_COVER_SIZE = { width: 1600, height: 900 } as const;
+export const GUIDE_COVER_MIN = { width: 1200, height: 675 } as const;
+/** Peso massimo della copertina caricata: il limite del bucket (2 MB), come la copertina del profilo. */
+export const GUIDE_COVER_MAX_BYTES = 2 * 1024 * 1024;
 
 /** Lingue in cui si scrive una guida: quelle del sito (`locales` di i18n.ts, il test le confronta). */
 export const GUIDE_LANGS = ["en", "it", "es"] as const;
@@ -107,8 +121,6 @@ export const GUIDE_LANGS = ["en", "it", "es"] as const;
  */
 export const COMMUNITY_GUIDE_MIN_WORDS = 300;
 
-/** Quante guide della community mostra /guides (le più recenti indicizzabili nella lingua); le altre in /guides/community. */
-export const COMMUNITY_GUIDES_ON_HUB = 6;
 
 export type CommunityGuideStatus = "draft" | "published" | "hidden";
 export type GuideSectionText = { heading: string; body: string };
@@ -156,6 +168,25 @@ const isGuideLang = (v: unknown): v is Locale => typeof v === "string" && (GUIDE
 /** L'immagine di una copertina preimpostata (percorso del sito e misure); per un valore sconosciuto quella di riserva. */
 export function guideCover(preset: unknown): { src: string; width: number; height: number } {
   return GUIDE_COVERS[isCoverPreset(preset) ? preset : DEFAULT_GUIDE_COVER];
+}
+
+/** L'immagine da mostrare per una guida: `remote` quando è la copertina caricata (indirizzo pubblico del bucket). */
+export type GuideCoverImage = { src: string; width: number; height: number; remote?: true };
+
+/**
+ * La copertina di una guida della community (29/09/2026): quella caricata dall'autore, se il percorso è nella SUA
+ * cartella delle guide (`coverPathOk`), altrimenti quella preimpostata del media kit. `base` è l'URL del progetto
+ * Supabase (src/lib/supabase/env.ts): la caricata è un indirizzo assoluto dello Storage, la preimpostata un percorso
+ * del sito (`absoluteCover` le rende entrambe assolute per og:image, dati strutturati e Discord).
+ */
+export function communityGuideCover(g: { owner: string; cover_path?: string | null; cover_preset?: unknown }, base: string): GuideCoverImage {
+  if (GUIDE_COVER_BUCKET && coverPathOk(g.cover_path, g.owner)) return { src: mediaPublicUrl(base, g.cover_path), ...GUIDE_COVER_SIZE, remote: true };
+  return guideCover(g.cover_preset);
+}
+
+/** Indirizzo assoluto di una copertina: quelle caricate lo sono già, le preimpostate sono percorsi del sito. */
+export function absoluteCover(src: string, site: string): string {
+  return /^https:\/\//.test(src) ? src : `${site}${src}`;
 }
 
 // ——— Testo semplice ———
@@ -232,14 +263,14 @@ export type GuideFormValue = {
 
 /** Errori del modulo: `index` è la sezione (da 0) per `heading` e `body`. */
 export type GuideFormError =
-  | { code: "title" | "summary" | "sections" | "category" | "lang" | "cover" | "cards"; index?: undefined }
+  | { code: "title" | "summary" | "sections" | "category" | "lang" | "cover" | "coverImage" | "cards"; index?: undefined }
   | { code: "heading" | "body"; index: number };
 
 /** I campi del modulo per ogni errore, così il modulo mette il fuoco sul campo giusto (`index` = sezione, da 0). */
 export function guideErrorField(error: GuideFormError): string {
   if (error.code === "heading" || error.code === "body") return sectionFields(error.index)[error.code];
   if (error.code === "sections") return sectionFields(0).heading;
-  if (error.code === "cover") return "cover_preset";
+  if (error.code === "cover" || error.code === "coverImage") return "cover_preset";
   if (error.code === "cards") return "card_search";
   return error.code;
 }
@@ -308,6 +339,8 @@ export function guideErrorCode(error: { code?: string; message?: string } | null
   if (!error) return "db";
   const m = error.message ?? "";
   for (const code of TRIGGER_CODES) if (m.includes(code)) return code;
+  // copertina caricata: cartella o ruolo (trigger del blocco GUIDE), file che non c'è (blocco IMMAGINI, 29/09/2026)
+  if (/guide_cover_(path|role|file)/.test(m)) return "coverImage";
   if (guideTableMissing(error)) return "unavailable";
   if (error.code === "42501") return "forbidden";
   if (error.code === "23505") return "duplicate";
@@ -546,12 +579,14 @@ export type SitemapCommunityGuide = { slug: string; locales: Locale[]; dates: Pa
 
 /**
  * Le righe della sitemap dalle guide pubblicate: solo quelle sopra soglia, con le loro lingue, la data di ogni versione
- * (ultima modifica o arrivo della traduzione) e la copertina. `hub` e `list` sono, per lingua, il lastmod di /guides
- * (le prime `COMMUNITY_GUIDES_ON_HUB` guide indicizzabili in quella lingua, le sole che la pagina mostra) e di
- * /guides/community (tutte quelle indicizzabili in quella lingua; una lingua assente = pagina vuota e noindex, fuori
- * dalla sitemap). Una guida sottile o non tradotta non sposta le date delle pagine che non la mostrano.
+ * (ultima modifica o arrivo della traduzione) e la copertina preimpostata (una copertina caricata sta nello Storage, un
+ * altro dominio: niente immagine, come le miniature di YouTube). `hub` e `list` sono, per lingua, il lastmod di /guides
+ * e di /guides/community: dal 29/09/2026 /guides mostra tutte le guide indicizzabili in quella lingua insieme a quelle
+ * editoriali (prima solo le ultime sei, in una sezione a parte), quindi le due date coincidono. Una lingua assente =
+ * nessuna guida da mostrare (/guides/community vuota e noindex, fuori dalla sitemap). Una guida sottile o non tradotta
+ * non sposta le date delle pagine che non la mostrano.
  */
-export function sitemapCommunityGuides<R extends Dated & { slug: string; updated_at: string; cover_preset?: string | null }>(
+export function sitemapCommunityGuides<R extends Dated & { slug: string; owner?: string; updated_at: string; cover_preset?: string | null; cover_path?: string | null }>(
   rows: readonly R[],
   all: readonly Locale[],
 ): { guides: SitemapCommunityGuide[]; hub: Partial<Record<Locale, string>>; list: Partial<Record<Locale, string>> } {
@@ -559,7 +594,13 @@ export function sitemapCommunityGuides<R extends Dated & { slug: string; updated
   const guides = published
     .map((r) => {
       const locales = guideShapeIndexable(r) ? guideShapeLocales(r, all) : [];
-      return { slug: r.slug, locales, dates: Object.fromEntries(locales.map((l) => [l, guideShapeDate(r, l)])), image: guideCover(r.cover_preset).src };
+      const uploaded = r.owner !== undefined && coverPathOk(r.cover_path, r.owner);
+      return {
+        slug: r.slug,
+        locales,
+        dates: Object.fromEntries(locales.map((l) => [l, guideShapeDate(r, l)])),
+        ...(uploaded ? {} : { image: guideCover(r.cover_preset).src }),
+      };
     })
     .filter((r) => r.locales.length > 0);
   const hub: Partial<Record<Locale, string>> = {};
@@ -568,7 +609,7 @@ export function sitemapCommunityGuides<R extends Dated & { slug: string; updated
     const shown = guidesIndexableIn(published, all, l);
     if (!shown.length) continue;
     list[l] = latestOf(shown.map((r) => guideShapeDate(r, l)));
-    hub[l] = latestOf(shown.slice(0, COMMUNITY_GUIDES_ON_HUB).map((r) => guideShapeDate(r, l)));
+    hub[l] = list[l];
   }
   return { guides, hub, list };
 }
@@ -712,8 +753,12 @@ export function storedSections(raw: unknown): GuideSectionText[] {
     .map((s) => ({ heading: s.heading, body: s.body }));
 }
 
-/** Nome del file di una copertina caricata: solo nella cartella del proprietario e con un'estensione d'immagine. */
-export function coverPathOk(path: string | null | undefined, owner: string): boolean {
-  if (!path) return false;
-  return path.length <= 200 && path.split("/")[0] === owner && /^[0-9a-f-]{36}\/([A-Za-z0-9_-]{1,60}\/)?[A-Za-z0-9_-]{1,80}\.(png|jpg|jpeg|webp)$/.test(path);
+/**
+ * Percorso di una copertina caricata: solo nella cartella delle guide del proprietario, `<id>/guide/<file>`, con il nome
+ * che dà il sito (29/09/2026: prima bastava una cartella qualsiasi dell'utente, ma il bucket ammette solo le sue
+ * cartelle, e una foto profilo o la copertina della vetrina non devono diventare la copertina di una guida).
+ */
+export function coverPathOk(path: string | null | undefined, owner: string): path is string {
+  if (!path || !UUID_RE.test(owner)) return false;
+  return path.length <= 200 && new RegExp(`^${owner}/${GUIDE_COVER_FOLDER}/${MEDIA_FILE_RE}$`).test(path);
 }

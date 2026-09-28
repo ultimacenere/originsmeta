@@ -40,6 +40,8 @@ export type TierDeckEntry = {
   name: string;
   href: string;
   legendary?: { slug: string; name: string; thumb?: string };
+  /** artwork della Leggendaria di un Creator o dello Staff (29/09/2026, `deckArtUrl`): prende il posto della miniatura */
+  art?: string;
   archetype: string;
   archetypeLabel: string;
   /** chi ha pubblicato il mazzo (nome mostrato) */

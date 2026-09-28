@@ -7,6 +7,8 @@ import { listPublishedTierLists } from "@/lib/community/tierlists";
 import { authorName } from "@/lib/community/util";
 import { indexableLocales } from "@/lib/community/deckQuality";
 import { normalizeBadge } from "@/lib/community/badges";
+import { deckArtUrl } from "@/lib/community/deckArt";
+import { supabaseUrl } from "@/lib/supabase/env";
 import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 
@@ -56,6 +58,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
         legendary: leg ? { slug: leg.slug, name: leg.name, thumb: leg.thumb } : undefined,
+        art: deckArtUrl(deck, supabaseUrl) ?? undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
         publisher: authorName(deck.profile),

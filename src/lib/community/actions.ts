@@ -20,6 +20,8 @@ import { refreshCardDecks } from "./decksByCard";
 import { deckIndexable } from "./deckQuality";
 import { checkDeck, cleanDeckName, isUuid, newSlug, parseGuide, type CheckedDeck } from "./util";
 import { mediaErrorField, mediaNeedsColumns, readDeckMedia } from "@/lib/videos";
+import { PROFILE_MEDIA_BUCKET } from "./profileMedia";
+import { deckArtErrorCode, deckArtPathOk, missingArtColumn, readDeckArtField } from "./deckArt";
 
 /**
  * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
@@ -95,6 +97,10 @@ async function parseSubmission(formData: FormData) {
   // fino a 3 video (YouTube, Twitch) e 5 risorse, con le stesse regole dei vincoli SQL (src/lib/videos.ts)
   const media = readDeckMedia((k) => formData.get(k));
   if (!media.ok) return { error: media.code, field: mediaErrorField(media.code, media.index) } as const;
+  // artwork della Leggendaria (Creator e Staff, 29/09/2026): il campo c'è solo nel modulo di chi può usarlo; senza campo
+  // la colonna non si tocca. Ruolo, cartella del proprietario e file li controlla il database (blocco IMMAGINI).
+  const art = readDeckArtField(formData.get("art_path"));
+  if (art === false) return { error: "artFile", field: "art" } as const;
   const state = { name, legendary: checked.deck.legendary, cards: checked.deck.cards, customCards: checked.deck.customCards };
   return {
     supabase,
@@ -113,6 +119,7 @@ async function parseSubmission(formData: FormData) {
       links: media.links,
       guide: guide.guide,
       code_om: encodeOmCode(state),
+      ...(art === undefined ? {} : { art_path: art }),
     },
   };
 }
@@ -133,6 +140,21 @@ function withoutMedia<T extends Record<string, unknown>>(row: T): Omit<T, "video
 }
 
 /**
+ * Colonna `art_path` non ancora nel database (blocco IMMAGINI di schema.sql non applicato, 29/09/2026): si salva senza,
+ * ma solo se il modulo non chiedeva un artwork (`null`: resta la carta ufficiale, com'era); con un artwork la Server
+ * Action risponde `artUnavailable`. Prima della migrazione il bucket non accetta comunque i file della cartella deck.
+ */
+function withoutArt<T extends Record<string, unknown>>(row: T): Omit<T, "art_path"> {
+  return Object.fromEntries(Object.entries(row).filter(([k]) => k !== "art_path")) as Omit<T, "art_path">;
+}
+
+/** Errore di scrittura di un mazzo → esito del modulo: i controlli dell'artwork (trigger guard_deck_art), poi "db". */
+function deckWriteError(error: { code?: string; message?: string } | null): ActionState {
+  const art = deckArtErrorCode(error);
+  return art ? { error: art, field: "art" } : { error: "db" };
+}
+
+/**
  * Pubblica un mazzo del deck builder con la sua guida. Porta alla scheda creata con `?new=1`: lì il
  * proprietario trova il pannello "il tuo mazzo è online" con il link da copiare (UX-10, `NewDeckBanner`).
  * Se il mazzo arrivava dai privati (campo `draft`, dal tasto "Pubblica" di /account), la copia privata
@@ -149,16 +171,22 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
   if (limit.used >= limit.cap) return { error: limit.badge === "author" ? "deckLimitAuthor" : "deckLimit" };
   const draftId = formData.get("draft");
   let slug = newSlug(p.row.name);
-  let row: Omit<typeof p.row, "videos" | "links"> = p.row;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  let row: Record<string, unknown> = p.row;
+  for (let attempt = 0; attempt < 6; attempt++) {
     const { data, error } = await p.supabase
       .from("community_decks")
-      .insert({ ...row, slug, owner: p.user.id, status: "published" })
+      .insert({ ...(row as typeof p.row), slug, owner: p.user.id, status: "published" })
       .select("id, slug")
       .single();
-    if (missingMediaColumn(error) && row === p.row) {
+    // colonne dei pacchetti VIDEO e IMMAGINI non ancora nel database: si riprova senza (una volta per gruppo)
+    if (missingMediaColumn(error) && "videos" in row) {
       if (mediaNeedsColumns(p.row)) return { error: "mediaUnavailable" };
-      row = withoutMedia(p.row);
+      row = withoutMedia(row);
+      continue;
+    }
+    if (missingArtColumn(error) && "art_path" in row) {
+      if (row.art_path) return { error: "artUnavailable", field: "art" };
+      row = withoutArt(row);
       continue;
     }
     if (!error && data) {
@@ -176,7 +204,7 @@ export async function publishDeck(_prev: ActionState, formData: FormData): Promi
       translateDeckLater(p.supabase, id);
       return { ok: true, href: `/${p.locale}/decks/community/${s}?new=1` };
     }
-    if (error?.code !== "23505") return { error: "db" };
+    if (error?.code !== "23505") return deckWriteError(error);
     slug = newSlug(p.row.name);
   }
   return { error: "db" };
@@ -288,13 +316,21 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
   const id = formData.get("id");
   if (!isUuid(id)) return { error: "forbidden" };
-  let res = await p.supabase.from("community_decks").update(p.row).eq("id", id).select("slug, status").maybeSingle();
-  if (missingMediaColumn(res.error)) {
-    if (mediaNeedsColumns(p.row)) return { error: "mediaUnavailable" };
-    res = await p.supabase.from("community_decks").update(withoutMedia(p.row)).eq("id", id).select("slug, status").maybeSingle();
+  let row: Record<string, unknown> = p.row;
+  let res = await p.supabase.from("community_decks").update(row as typeof p.row).eq("id", id).select("slug, status").maybeSingle();
+  // colonne dei pacchetti VIDEO e IMMAGINI non ancora nel database: si riprova senza (una volta per gruppo)
+  for (let i = 0; i < 2 && res.error; i++) {
+    if (missingMediaColumn(res.error) && "videos" in row) {
+      if (mediaNeedsColumns(p.row)) return { error: "mediaUnavailable" };
+      row = withoutMedia(row);
+    } else if (missingArtColumn(res.error) && "art_path" in row) {
+      if (row.art_path) return { error: "artUnavailable", field: "art" };
+      row = withoutArt(row);
+    } else break;
+    res = await p.supabase.from("community_decks").update(row as typeof p.row).eq("id", id).select("slug, status").maybeSingle();
   }
   const { data, error } = res;
-  if (error) return { error: "db" };
+  if (error) return deckWriteError(error);
   if (!data) return { error: "forbidden" };
   const { slug: s, status } = data as { slug: string; status: string };
   revalidateDeckPaths(s, false, status === "published");
@@ -329,8 +365,17 @@ export async function deleteDeck(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   if (!supabase || !user) redirect(`/${locale}/login`);
   const id = String(formData.get("id") ?? "");
+  // l'artwork del mazzo (29/09/2026), letto a parte: la colonna può non esserci ancora e la delete non deve dipenderne
+  const art = isUuid(id) ? await supabase.from("community_decks").select("art_path").eq("id", id).maybeSingle() : null;
+  const artPath = (art?.data as { art_path?: string | null } | null)?.art_path;
   const { data } = await supabase.from("community_decks").delete().eq("id", id).select("slug, status").maybeSingle();
   const deleted = data as { slug: string; status: string } | null;
+  // il file non è più in uso: lo toglie chi ha eliminato il mazzo (la policy del bucket lo lascia fare al proprietario e
+  // a un admin); se non riesce, resta a scripts/clear-profile-media.mjs --orphans
+  if (deleted && deckArtPathOk(artPath)) {
+    const { error } = await supabase.storage.from(PROFILE_MEDIA_BUCKET).remove([artPath]);
+    if (error) console.error("[community] artwork del mazzo non cancellato:", error.message);
+  }
   // un mazzo privato o nascosto non era su nessuna scheda carta: solo l'eliminazione di un mazzo pubblicato le tocca
   revalidateDeckPaths(deleted?.slug, true, deleted?.status === "published");
   redirect(`/${locale}/account${formData.get("back") === "private" ? "#private" : ""}`);

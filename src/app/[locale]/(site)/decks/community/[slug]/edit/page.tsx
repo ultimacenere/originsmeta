@@ -8,7 +8,10 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { encodeOmCode } from "@/lib/deckcode";
 import { currentUser } from "@/lib/supabase/server";
 import type { CommunityDeck } from "@/lib/community/types";
-import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
+import { PublishDeckForm, type DeckArtEdit, type PoolCard } from "@/components/PublishDeckForm";
+import { canUseDeckArt } from "@/lib/community/badges";
+import { deckArtPathOk } from "@/lib/community/deckArt";
+import { deckArtFormLabels } from "@/lib/deckArtLabels";
 import { loginLabels } from "@/lib/loginLabels";
 import { withCarriedParams } from "@/lib/analytics";
 import { deckResources, deckVideos } from "@/lib/videos";
@@ -39,11 +42,21 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
   const { data } = await supabase.from("community_decks").select("*").eq("slug", slug).maybeSingle();
   const deck = data as CommunityDeck | null;
   if (!deck) notFound();
-  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  const isAdmin = (me as { role?: string } | null)?.role === "admin";
+  const { data: me } = await supabase.from("profiles").select("role, badge").eq("id", user.id).maybeSingle();
+  const my = me as { role?: string | null; badge?: string | null } | null;
+  const isAdmin = my?.role === "admin";
   if (deck.owner !== user.id && !isAdmin) notFound();
+  // Artwork della Leggendaria (29/09/2026): lo carica il proprietario Creator o Staff; chi può solo toglierlo (un admin sul
+  // mazzo di un altro, il proprietario che ha perso il ruolo) vede quello che c'è e il tasto per tornare alla carta
+  // ufficiale; per gli altri il campo non c'è e la Server Action non tocca l'artwork.
+  const isOwner = deck.owner === user.id;
+  const savedArt = deckArtPathOk(deck.art_path, deck.owner) ? deck.art_path : null;
+  const art: DeckArtEdit | null =
+    isOwner && canUseDeckArt(my?.badge, my?.role) ? { path: savedArt, mode: "upload" } : savedArt ? { path: savedArt, mode: "remove", reason: isOwner ? "noRole" : "notOwner" } : null;
 
-  const pool: PoolCard[] = cards.filter((c) => c.status === "active" && c.type !== "token").map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary) }));
+  const pool: PoolCard[] = cards
+    .filter((c) => c.status === "active" && c.type !== "token")
+    .map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary), ...(c.legendary && (c.thumb ?? c.image) ? { image: c.thumb ?? c.image } : {}) }));
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   const code = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
   // Un mazzo privato non ha ancora la guida: "modificarlo" significa pubblicarlo, dal modulo apposito. Il segnale
@@ -79,6 +92,8 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
           }}
           labels={d.community}
           mediaLabels={videoFormLabels(locale)}
+          artLabels={deckArtFormLabels(locale)}
+          art={art}
           builderHref={`${href(locale, "/deck-builder")}#${code}`}
           publishPath={path}
           loginLabels={loginLabels(d)}

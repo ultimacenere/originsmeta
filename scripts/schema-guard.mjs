@@ -280,6 +280,6 @@ export function splitSchema(sql) {
   if (at < 0) return [{ name: "schema", sql }];
   return [
     { name: "base (schema di sempre + correzione dei profili)", sql: sql.slice(0, at) },
-    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO e profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO)", sql: sql.slice(at) },
+    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO, profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO) e IMMAGINI del 29/09", sql: sql.slice(at) },
   ];
 }

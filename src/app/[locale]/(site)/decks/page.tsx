@@ -18,7 +18,8 @@ import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/de
 import { deckGameCode } from "@/lib/deckGameCode";
 import { badgeStyle } from "@/lib/cardArt";
 import { BADGE_ORDER, normalizeBadge } from "@/lib/community/badges";
-import { supabaseEnabled } from "@/lib/supabase/env";
+import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
+import { deckArtUrl } from "@/lib/community/deckArt";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
@@ -108,6 +109,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           : legCustom
             ? { slug: legCustom.slug, name: legCustom.name }
             : undefined,
+        // artwork della Leggendaria dei Creator e dello Staff (29/09/2026): solo se il ruolo c'è ancora
+        art: deckArtUrl(deck, supabaseUrl) ?? undefined,
         archetype: deck.archetype,
         archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
         publisher: authorName(deck.profile),

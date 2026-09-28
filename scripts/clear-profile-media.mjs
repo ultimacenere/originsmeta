@@ -4,16 +4,27 @@
 // tornei, header, /creators, dati strutturati): dal sito lo staff non la può cambiare, perché la policy "users edit own
 // profile" vale solo per la propria riga.
 //
+// Dal 29/09/2026 (blocco IMMAGINI di supabase/schema.sql) nello stesso bucket ci sono anche le copertine caricate delle
+// guide della community (<id>/guide) e gli artwork della Leggendaria dei mazzi (<id>/deck): --orphans le conta come in uso
+// (funzione profile_media_in_use del database) e le due opzioni --guide-covers e --deck-art le tolgono. Una copia di questo
+// script precedente al 29/09 NON le conosce e con --orphans le cancellerebbe: usarlo solo da un checkout aggiornato.
+//
 // Uso (dal checkout con .env.local, come set-badge.mjs):
-//   node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all] [--dry-run]
-//     --avatar   toglie la foto caricata (torna quella di Discord, o l'iniziale) e cancella i file di <id>/avatar
-//     --cover    toglie la copertina caricata (resta lo sfondo predefinito) e cancella i file di <id>/cover
-//     --tagline  toglie la frase di presentazione
-//     --all      tutto quello della vetrina (anche colore, Leggendaria, mazzo e video in evidenza, orari) più la foto
+//   node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all]
+//                                        [--guide-covers] [--deck-art] [--dry-run]
+//     --avatar        toglie la foto caricata (torna quella di Discord, o l'iniziale) e cancella i file di <id>/avatar
+//     --cover         toglie la copertina caricata (resta lo sfondo predefinito) e cancella i file di <id>/cover
+//     --tagline       toglie la frase di presentazione
+//     --all           tutto quello della vetrina (anche colore, Leggendaria, mazzo e video in evidenza, orari) più la foto
+//     --guide-covers  toglie le copertine caricate da tutte le sue guide (tornano quella del media kit che avevano scelto)
+//                     e cancella i file di <id>/guide
+//     --deck-art      toglie l'artwork della Leggendaria da tutti i suoi mazzi (torna la carta ufficiale) e cancella i file
+//                     di <id>/deck
 //     senza opzioni mostra che cosa c'è, senza cambiare nulla
 //   node scripts/clear-profile-media.mjs --orphans [--hours <n>] [--dry-run]
-//     i file che nessun profilo usa (caricati e mai salvati, sostituiti, di account cancellati) più vecchi di n ore
-//     (24 di default: un file appena caricato può essere in attesa del salvataggio), e chi supera il tetto dei 12 file
+//     i file che nessuno usa (caricati e mai salvati, sostituiti, di guide e mazzi eliminati, di account cancellati) più
+//     vecchi di n ore (24 di default: un file appena caricato può essere in attesa del salvataggio), e chi supera il tetto
+//     dei file (12, o 60 per i ruoli con vetrina e gli admin)
 //
 // Il database si aggiorna con la connessione diretta (password in .env.local): auth.uid() è nullo, quindi il trigger
 // guard_profile_vetrina lascia passare lo script e, togliendo la foto, rimette in avatar_url quella di Discord. I file si
@@ -34,7 +45,7 @@ const dryRun = flag("dry-run");
 const orphans = flag("orphans");
 const needle = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--hours");
 if (!orphans && !needle) {
-  console.error("Uso: node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all] [--dry-run]");
+  console.error("Uso: node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all] [--guide-covers] [--deck-art] [--dry-run]");
   console.error("     node scripts/clear-profile-media.mjs --orphans [--hours <n>] [--dry-run]");
   process.exit(1);
 }
@@ -79,10 +90,10 @@ try {
   if (orphans) {
     const hours = Number(valueOf("hours") ?? 24);
     if (!Number.isFinite(hours) || hours < 1) throw new Error("--hours vuole un numero di ore, almeno 1");
-    // un file è in uso se è la foto o la copertina del profilo proprietario della cartella
+    // un file è in uso se è la foto, la copertina o lo sfondo del profilo proprietario della cartella, la copertina di una
+    // sua guida o l'artwork di un suo mazzo: la stessa funzione della policy di cancellazione (blocco IMMAGINI)
     const r = await db.query(
-      `select o.name, o.created_at, (storage.foldername(o.name))[1] as folder,
-              exists (select 1 from public.profiles p where p.id::text = (storage.foldername(o.name))[1] and (p.avatar_path = o.name or p.cover_path = o.name or p.background_path = o.name)) as used
+      `select o.name, o.created_at, (storage.foldername(o.name))[1] as folder, public.profile_media_in_use(o.name) as used
          from storage.objects o
         where o.bucket_id = $1
         order by o.created_at`,
@@ -90,8 +101,11 @@ try {
     );
     const perUser = new Map();
     for (const row of r.rows) perUser.set(row.folder, (perUser.get(row.folder) ?? 0) + 1);
-    const crowded = [...perUser].filter(([, n]) => n > 12);
-    if (crowded.length) console.log("Oltre il tetto dei 12 file:", crowded.map(([id, n]) => `${id} (${n})`).join(", "));
+    // il tetto della policy di caricamento: 60 file per i ruoli con vetrina e gli admin, 12 per gli altri
+    const roles = await db.query(`select id::text as id, badge, role from public.profiles where id::text = any($1)`, [[...perUser.keys()]]);
+    const capOf = new Map(roles.rows.map((p) => [p.id, p.role === "admin" || ["creator", "author", "pro", "staff"].includes(p.badge) ? 60 : 12]));
+    const crowded = [...perUser].filter(([id, n]) => n > (capOf.get(id) ?? 12));
+    if (crowded.length) console.log("Oltre il tetto dei file:", crowded.map(([id, n]) => `${id} (${n} su ${capOf.get(id) ?? 12})`).join(", "));
     const cutoff = Date.now() - hours * 3600_000;
     const stale = r.rows.filter((row) => !row.used && new Date(row.created_at).getTime() < cutoff).map((row) => row.name);
     console.log(`File nel bucket: ${r.rows.length}; non usati da più di ${hours} ore: ${stale.length}`);
@@ -110,6 +124,11 @@ try {
       const t = found.rows[0];
       console.log(`${t.display_name ?? t.username} (@${t.username}, ${t.email}, ${t.badge})`);
       console.log(`  foto caricata: ${t.avatar_path ?? "nessuna"}\n  copertina caricata: ${t.cover_path ?? "nessuna"}\n  frase: ${t.tagline ?? "nessuna"}`);
+      // copertine delle guide e artwork dei mazzi (29/09/2026)
+      const guideCovers = await db.query(`select slug, cover_path from public.community_guides where owner = $1 and cover_path is not null order by slug`, [t.id]);
+      const deckArt = await db.query(`select slug, art_path from public.community_decks where owner = $1 and art_path is not null order by slug`, [t.id]);
+      console.log(`  guide con la copertina caricata: ${guideCovers.rows.map((g) => g.slug).join(", ") || "nessuna"}`);
+      console.log(`  mazzi con l'artwork della Leggendaria: ${deckArt.rows.map((d) => d.slug).join(", ") || "nessuno"}`);
       const all = flag("all");
       const sets = [];
       if (all || flag("avatar")) sets.push("avatar_path = null");
@@ -117,31 +136,56 @@ try {
       if (all || flag("background")) sets.push("background_path = null");
       if (all || flag("tagline")) sets.push("tagline = null");
       if (all) sets.push("cover_preset = null", "background_preset = null", "accent = null", "favorite_legendary = null", "featured_deck = null", "featured_video = null", "schedule = '[]'::jsonb", "schedule_tz = null");
-      if (!sets.length) {
-        console.log("Nessuna opzione: niente da cambiare (--avatar, --cover, --tagline, --all).");
+      const guidesToo = flag("guide-covers");
+      const decksToo = flag("deck-art");
+      if (!sets.length && !guidesToo && !decksToo) {
+        console.log("Nessuna opzione: niente da cambiare (--avatar, --cover, --tagline, --all, --guide-covers, --deck-art).");
       } else if (dryRun) {
-        console.log(`Si scriverebbe: ${sets.join(", ")}`);
+        if (sets.length) console.log(`Si scriverebbe: ${sets.join(", ")}`);
+        if (guidesToo) console.log(`Si toglierebbe la copertina caricata da ${guideCovers.rows.length} guide`);
+        if (decksToo) console.log(`Si toglierebbe l'artwork da ${deckArt.rows.length} mazzi`);
       } else {
-        await db.query(`update public.profiles set ${sets.join(", ")} where id = $1`, [t.id]);
-        console.log(`Profilo aggiornato: ${sets.join(", ")}`);
+        if (sets.length) {
+          await db.query(`update public.profiles set ${sets.join(", ")} where id = $1`, [t.id]);
+          console.log(`Profilo aggiornato: ${sets.join(", ")}`);
+        }
+        // con la connessione diretta auth.uid() è nullo: i trigger delle guide e dei mazzi lasciano passare lo script
+        if (guidesToo) {
+          const g = await db.query(`update public.community_guides set cover_path = null where owner = $1 and cover_path is not null`, [t.id]);
+          console.log(`Copertine caricate tolte da ${g.rowCount} guide (resta quella del media kit che avevano scelto)`);
+        }
+        if (decksToo) {
+          const d = await db.query(`update public.community_decks set art_path = null where owner = $1 and art_path is not null`, [t.id]);
+          console.log(`Artwork tolto da ${d.rowCount} mazzi (torna la carta ufficiale)`);
+        }
       }
-      // i file delle cartelle svuotate (con --dry-run anche quello ancora in uso, che il salvataggio libererebbe)
-      const kinds = [...(all || flag("avatar") ? ["avatar"] : []), ...(all || flag("cover") ? ["cover"] : []), ...(all || flag("background") ? ["background"] : [])];
+      // i file delle cartelle svuotate (con --dry-run anche quelli ancora in uso, che il salvataggio libererebbe)
+      const kinds = [
+        ...(all || flag("avatar") ? ["avatar"] : []),
+        ...(all || flag("cover") ? ["cover"] : []),
+        ...(all || flag("background") ? ["background"] : []),
+        ...(guidesToo ? ["guide"] : []),
+        ...(decksToo ? ["deck"] : []),
+      ];
       if (kinds.length) {
         const files = await db.query(
           `select o.name from storage.objects o
             where o.bucket_id = $1 and (storage.foldername(o.name))[1] = $2 and (storage.foldername(o.name))[2] = any($3)
-              and ($4 or not exists (select 1 from public.profiles p where p.id = $2::uuid and (p.avatar_path = o.name or p.cover_path = o.name or p.background_path = o.name)))`,
+              and ($4 or not public.profile_media_in_use(o.name))`,
           [BUCKET, t.id, kinds, dryRun],
         );
         await removeFiles(files.rows.map((f) => f.name));
       }
-      if (sets.length && !dryRun) console.log("Le pagine si rinnovano da sole entro qualche minuto (ISR); /u/<nome> e /creators al giro successivo.");
+      if ((sets.length || guidesToo || decksToo) && !dryRun) console.log("Le pagine si rinnovano da sole entro qualche minuto (ISR); /u/<nome> e /creators al giro successivo.");
     }
   }
 } catch (e) {
   // prima della migrazione (colonne o bucket assenti) o un errore del database
-  console.error(e.code === "42703" ? "Mancano le colonne della vetrina: applica prima la migrazione (blocco VETRINA di supabase/schema.sql)." : e.message);
+  console.error(
+    e.code === "42703" || e.code === "42883"
+      ? "Mancano colonne o funzioni del database: applica prima la migrazione (blocchi VETRINA e IMMAGINI di supabase/schema.sql)."
+      : e.message,
+  );
   process.exitCode = 3;
 } finally {
   await db.end();

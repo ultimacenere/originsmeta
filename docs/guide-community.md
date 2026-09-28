@@ -9,8 +9,9 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 | Cosa | Dove |
 | --- | --- |
 | Regole pure (limiti, testo semplice, modulo, parole e soglia, lingue, elenchi leggeri, sitemap, piano della traduzione) | `src/lib/community/guides.ts` + `guides.test.ts` |
-| Letture (pagina, /guides/community, /u, /account, sitemap, rotta di /guides) | `src/lib/community/guideQueries.ts` |
-| Sezione di /guides (statica): le ultime guide chieste dal browser | `src/app/api/community-guides/route.ts` (ISR) + `src/components/guides/CommunityGuidesHub.tsx` |
+| Letture (pagina, /guides, /guides/community, /u, /account, sitemap) | `src/lib/community/guideQueries.ts` |
+| /guides: un elenco solo con le guide della redazione (29/09/2026), in ISR | `src/app/[locale]/(site)/guides/page.tsx` |
+| Copertina caricata (29/09/2026): caricamento dal browser, regole, trigger | `CommunityGuideEditor.tsx` + `src/components/showcase/mediaUpload.ts`, `coverPathOk` e `communityGuideCover` in `guides.ts`, blocco IMMAGINI di `supabase/schema.sql` |
 | Server Action (salva, stato, elimina, segnala) | `src/lib/community/guideActions.ts` |
 | Traduzione automatica | `guideTranslateCore.ts` (a pezzi, puro, usato anche dallo script), `guideTranslate.ts` (dentro `after()`); parti generali in `deckTranslation.ts` |
 | Arretrati e nuovi tentativi delle traduzioni | `scripts/translate-guides.mjs` |
@@ -18,8 +19,20 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 | Testi EN/IT/ES | `src/lib/communityGuideLabels.ts` |
 | Dati strutturati | `src/lib/jsonld/communityGuide.ts` (Article, autore = Person del membro, parte di /guides/community) |
 | Componenti | `src/components/guides/` (modulo, copertina, schede, comandi, segnalazione, riquadro di /guides) |
-| Pagine | `/guides/new`, `/guides/community` (elenco, `revalidate = 300` ma in pratica 60 s: vince la lettura di `supabasePublic`), `/guides/community/[slug]` (ISR 60 s), `/guides/community/[slug]/edit`; `/guides` resta statica (revisione del 27/09/2026) |
-| Database | blocco `-- ===== 27/09/2026: GUIDE =====` in fondo a `supabase/schema.sql` |
+| Pagine | `/guides/new`, `/guides` e `/guides/community` (elenchi, `revalidate = 300` ma in pratica 60 s: vince la lettura di `supabasePublic`), `/guides/community/[slug]` (ISR 60 s), `/guides/community/[slug]/edit` |
+| Database | blocco `-- ===== 27/09/2026: GUIDE =====` in fondo a `supabase/schema.sql`; copertine caricate nel blocco `-- ===== 29/09/2026: IMMAGINI =====` |
+
+## Un elenco solo (29/09/2026)
+
+Pierluigi, 29/09/2026: "essendo autorizzata e pochi altri a farlo, le guide non devono avere distinzioni tra guide
+ufficiali e guide della community, quindi rimuovi la divisione nella pagina e mi aspetto che la guida di Vega venga vista
+come ultima pubblicata". Da quel giorno `/guides` mostra nella stessa griglia, con la stessa scheda e la firma, le guide
+della redazione (`content/guides.ts`) e le guide della community indicizzabili nella lingua della pagina (le stesse di
+`/guides/community` e della sitemap: `guidesIndexableIn`), dalla più recente per data di prima pubblicazione. La pagina
+è in ISR (`revalidate = 300`), come `/decks`: le guide della community sono nell'HTML, nella CollectionPage e nel
+lastmod di /guides (`communityGuides.hub`). Non c'è più la sezione caricata dal browser (`/api/community-guides` e
+`CommunityGuidesHub` tolti). Anche la pagina di una guida della community non si presenta più come "Guida della
+community" (kicker e briciole come le altre guide); gli indirizzi restano `/guides/community/<slug>`.
 
 ## Regole
 
@@ -54,8 +67,17 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 - **Copertina**: un'immagine del media kit ufficiale (`GUIDE_COVERS`, quindici fra keyart e immagini della pagina Steam,
   le stesse offerte ai tornei), mostrata intera in 16:9 e senza nulla sopra (i crediti impressi restano visibili):
   og:image, immagine del JSON-LD, immagine della sitemap e dell'annuncio su Discord. Regola di CLAUDE.md: le copertine di
-  news e guide dal media kit sono contenuto. La colonna `cover_path` (immagine caricata) è pronta nel database ma il sito
-  la usa solo quando `GUIDE_COVER_BUCKET` in `guides.ts` avrà il nome del bucket del pacchetto VETRINA.
+  news e guide dal media kit sono contenuto. **Dal 29/09/2026 anche un'immagine propria** (Vega non riusciva a cambiarla;
+  Pierluigi: "aggiungiamo questa funzione, sempre dando le misure richieste per la copertina"): 16:9, almeno 1200 × 675
+  (l'ideale 1600 × 900), PNG, JPG o WebP fino a 2 MB (`GUIDE_COVER_SIZE`, `GUIDE_COVER_MIN`, `GUIDE_COVER_MAX_BYTES`). Il
+  browser la ritaglia al centro in 16:9, la riduce a 1600 px e la ricodifica in WebP senza EXIF (`encodeImage` con
+  `aspect`), poi la carica nel bucket `profile-media`, cartella `<id>/guide/` del proprietario (mai attraverso le Server
+  Action); la guida salva il percorso in `cover_path`. La carica solo il proprietario (lo staff che corregge una guida
+  altrui può tornare a una copertina del media kit). Si mostra nella pagina, negli elenchi, nell'og:image, nel JSON-LD e
+  nell'annuncio su Discord (solo indirizzi del nostro Storage, cartella `guide`); la sitemap la salta (altro dominio). La
+  copertina sostituita si cancella dopo il salvataggio, quella di una guida eliminata con la guida; i file rimasti li
+  toglie `node scripts/clear-profile-media.mjs --orphans`, e lo staff toglie le copertine caricate di un utente con
+  `--guide-covers`.
 - **Video e risorse**: le regole dei mazzi (fino a 3 video YouTube/Twitch col lettore a clic, fino a 5 link su host ammessi).
 - **Traduzioni**: stesso modello, stessa chiave e stesso glossario delle guide dei mazzi; titolo e nomi di carte e luoghi
   non si traducono. Una guida arriva a circa 49 mila caratteri, quindi si traduce a pezzi di 8000 caratteri (una
@@ -77,9 +99,12 @@ Creator, Pro o Staff** (o è admin) pubblica le sue guide sul sito senza passare
 
 1. Il blocco sta in fondo a `supabase/schema.sql`, sotto `-- ===== 27/09/2026: GUIDE =====` (accodato all'integrazione del 27/09/2026; il file `supabase/wave2-GUIDE.sql` non c'è più).
 2. Pierluigi lancia `node scripts/db-migrate.mjs` come sempre (lo schema è idempotente).
-3. Prima della migrazione il sito regge: niente sezione in /guides, /guides/community vuota e noindex, /guides/new e
-   /account non mostrano le guide, le pagine delle guide rispondono 404 (tabella o colonna mancante: stato "non ancora
-   disponibile" per 5 minuti, poi si riprova).
+3. Prima della migrazione il sito regge: /guides con le sole guide della redazione, /guides/community vuota e noindex,
+   /guides/new e /account non mostrano le guide, le pagine delle guide rispondono 404 (tabella o colonna mancante: stato
+   "non ancora disponibile" per 5 minuti, poi si riprova).
+4. Copertine caricate (29/09/2026): blocco `-- ===== 29/09/2026: IMMAGINI =====`, in fondo al file, con la stessa
+   migrazione. Prima, il bucket rifiuta i file della cartella `guide` e il modulo dice che il caricamento non è riuscito;
+   le copertine del media kit funzionano come sempre.
 
 ## Traduzioni non riuscite
 
@@ -104,10 +129,11 @@ Altre difese (revisione del 27/09/2026): fra due modifiche della stessa guida (s
   `/guides/community/<slug>`. Decide il database (`notify_followers`: guida pubblicata e sua, sessione dell'autore o
   dello staff). Il tasto "Segui" sta nella pagina della guida, accanto al nome dell'autore (`FollowButton` compatto,
   evento `follow` con `placement = guide_page`).
-- **VETRINA**: la copertina caricata NON è ancora collegata (`GUIDE_COVER_BUCKET` resta `null`, solo copertine del
-  media kit). Per accenderla serve una decisione e un pezzo di lavoro sui due pacchetti: la policy "profile media upload"
-  del bucket `profile-media` ammette solo le cartelle `<id>/avatar` e `<id>/cover`; la policy di cancellazione e
-  `scripts/clear-profile-media.mjs --orphans` proteggono solo i file usati dal profilo (una copertina di guida
-  risulterebbe "orfana"); il trigger delle guide controlla la cartella ma non che il file esista. Poi il caricamento nel
-  modulo (`mediaUpload.ts` della vetrina) e il test di `guides.test.ts` che oggi vuole il bucket a `null`.
-- **Test**: `src/lib/community/guides.test.ts` e `src/lib/sitemapGuides.test.ts` sono in `npm test`.
+- **VETRINA**: la copertina caricata è collegata dal 29/09/2026 (`GUIDE_COVER_BUCKET` = `profile-media`). Il blocco
+  IMMAGINI di `supabase/schema.sql` rifà le policy del bucket (cartelle `guide` per chi pubblica guide e `deck` per
+  l'artwork dei mazzi di Creator e Staff, tetto di 60 file per i ruoli con vetrina, mai cancellato un file in uso:
+  `profile_media_in_use`), aggiunge il trigger `guard_community_guide_cover` (cartella `<owner>/guide/` e file che c'è) e
+  `scripts/clear-profile-media.mjs --orphans` conta le copertine delle guide come in uso. Test in
+  `src/lib/community/deckArt.test.ts`.
+- **Test**: `src/lib/community/guides.test.ts`, `src/lib/community/deckArt.test.ts` e `src/lib/sitemapGuides.test.ts`
+  sono in `npm test`.

@@ -7,6 +7,7 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
 import { videoFormLabels } from "@/lib/videoLabels";
+import { deckArtFormLabels } from "@/lib/deckArtLabels";
 
 /**
  * Durata massima delle Server Action di questa pagina: dopo la pubblicazione la guida si traduce nelle altre
@@ -27,10 +28,11 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
  */
 export default async function PublishPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  // `key` = ID ufficiale della carta: serve a riconoscere le carte di un codice del gioco (KGBLDC…) incollato
+  // `key` = ID ufficiale della carta: serve a riconoscere le carte di un codice del gioco (KGBLDC…) incollato; `image`
+  // solo per le Leggendarie, per il confronto con l'artwork del creator (29/09/2026)
   const pool: PoolCard[] = cards
     .filter((c) => c.status === "active" && c.type !== "token")
-    .map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary), ...(c.key ? { key: c.key } : {}) }));
+    .map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary), ...(c.key ? { key: c.key } : {}), ...(c.legendary && (c.thumb ?? c.image) ? { image: c.thumb ?? c.image } : {}) }));
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -52,6 +54,7 @@ export default async function PublishPage({ params }: { params: LocaleParams }) 
             archetypes={archetypes}
             labels={d.community}
             mediaLabels={videoFormLabels(locale)}
+            artLabels={deckArtFormLabels(locale)}
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/publish")}
             loginLabels={loginLabels(d)}

@@ -55,6 +55,9 @@ export type CommunityDeck = {
   guide: Guide;
   /** traduzioni automatiche della guida nelle altre lingue del sito (colonna `translations`, dal 25/09/2026) */
   translations?: DeckTranslations | null;
+  /** artwork della Leggendaria caricato da un Creator o dallo Staff (bucket profile-media, `<owner>/deck/<file>`, 29/09/2026):
+   *  si mostra con `deckArtUrl` (deckArt.ts); assente finché la migrazione del blocco IMMAGINI non c'è */
+  art_path?: string | null;
   code_om: string | null;
   status: DeckStatus;
   created_at: string;

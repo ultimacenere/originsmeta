@@ -609,7 +609,7 @@ describe("elenchi leggeri", () => {
 });
 
 describe("sitemap e date degli elenchi", () => {
-  type Row = { slug: string; lang: Lang; status: string; words: number | null; text_hash: string | null; tr: Record<string, { hash: string | null; at: string | null; summary: string | null }>; updated_at: string; published_at: string; cover_preset: string };
+  type Row = { slug: string; lang: Lang; status: string; words: number | null; text_hash: string | null; tr: Record<string, { hash: string | null; at: string | null; summary: string | null }>; updated_at: string; published_at: string; cover_preset: string; owner?: string; cover_path?: string | null };
   const row = (slug: string, extra: Partial<Row> = {}): Row => ({
     slug,
     lang: "it",
@@ -645,21 +645,33 @@ describe("sitemap e date degli elenchi", () => {
     assert.deepEqual(G.sitemapCommunityGuides([], LOCALES as never), { guides: [], hub: {}, list: {} });
   });
 
-  test("/guides guarda solo le guide che mostra (le più recenti), /guides/community tutte", () => {
-    const rows = Array.from({ length: G.COMMUNITY_GUIDES_ON_HUB + 1 }, (_, i) =>
+  test("/guides e /guides/community mostrano le stesse guide (29/09/2026): stessa data, anche per la più vecchia modificata", () => {
+    const rows = Array.from({ length: 8 }, (_, i) =>
       row(`g${i}`, {
         published_at: `2026-09-${String(10 + i).padStart(2, "0")}T10:00:00+00:00`,
-        // la più vecchia (fuori da /guides) è stata modificata per ultima
+        // la più vecchia è stata modificata per ultima: prima /guides (che ne mostrava sei) non la vedeva, ora sì
         updated_at: i === 0 ? "2026-09-29T10:00:00+00:00" : `2026-09-${String(10 + i).padStart(2, "0")}T10:00:00+00:00`,
       }),
     );
     const out = G.sitemapCommunityGuides(rows as never, LOCALES as never);
     assert.equal(out.list.it, "2026-09-29T10:00:00+00:00");
-    assert.equal(out.hub.it, `2026-09-${10 + G.COMMUNITY_GUIDES_ON_HUB}T10:00:00+00:00`);
+    assert.equal(out.hub.it, out.list.it);
     assert.deepEqual(
       (G.guidesIndexableIn(rows as never, LOCALES as never, "it" as never) as unknown as Row[]).map((r) => r.slug).slice(0, 2),
-      [`g${G.COMMUNITY_GUIDES_ON_HUB}`, `g${G.COMMUNITY_GUIDES_ON_HUB - 1}`],
+      ["g7", "g6"],
       "dalla più recente",
+    );
+  });
+
+  test("copertina caricata: nessuna immagine in sitemap (sta nello Storage, un altro dominio)", () => {
+    const owner = "8d0a3c9e-1234-4abc-9def-0123456789ab";
+    const out = G.sitemapCommunityGuides([row("up", { owner, cover_path: `${owner}/guide/0d0a3c9e-1234-4abc-9def-0123456789ab.webp` }), row("kit", { owner, cover_path: null })] as never, LOCALES as never);
+    assert.deepEqual(
+      out.guides.map((g) => [g.slug, g.image]),
+      [
+        ["up", undefined],
+        ["kit", "/media/keyart-mulan.webp"],
+      ],
     );
   });
 });
@@ -811,11 +823,30 @@ describe("letture difensive", () => {
     assert.deepEqual(G.storedSections([{ heading: "A", body: "B" }, { heading: 3 }, null, "x"]), [{ heading: "A", body: "B" }]);
     assert.deepEqual(G.storedSections("nope"), []);
     const owner = "8d0a3c9e-1234-4abc-9def-0123456789ab";
-    assert.ok(G.coverPathOk(`${owner}/guides/cover-1.webp`, owner));
+    const file = "0d0a3c9e-1234-4abc-9def-0123456789ab.webp";
+    assert.ok(G.coverPathOk(`${owner}/guide/${file}`, owner));
+    assert.ok(!G.coverPathOk(`${owner}/guides/cover-1.webp`, owner), "solo la cartella delle guide");
+    assert.ok(!G.coverPathOk(`${owner}/cover/${file}`, owner), "non la copertina della vetrina");
+    assert.ok(!G.coverPathOk(`${owner}/avatar/${file}`, owner), "non la foto profilo");
     assert.ok(!G.coverPathOk(`${owner}/../x.webp`, owner));
-    assert.ok(!G.coverPathOk(`0d0a3c9e-1234-4abc-9def-0123456789ab/cover.webp`, owner));
-    assert.ok(!G.coverPathOk(`${owner}/cover.svg`, owner));
-    assert.equal(G.GUIDE_COVER_BUCKET, null, "il bucket lo porta VETRINA: finché è null si usano le copertine preimpostate");
+    assert.ok(!G.coverPathOk(`0d0a3c9e-1234-4abc-9def-0123456789ab/guide/${file}`, owner), "cartella di un altro");
+    assert.ok(!G.coverPathOk(`${owner}/guide/${file.replace("webp", "svg")}`, owner));
+    assert.ok(!G.coverPathOk(`${owner}/guide/${file}`, "non-un-uuid"));
+    assert.equal(G.GUIDE_COVER_BUCKET, "profile-media", "copertine caricate accese il 29/09/2026 (bucket del pacchetto VETRINA)");
+  });
+
+  test("copertina da mostrare: la caricata se è nella cartella del proprietario, altrimenti la preimpostata", () => {
+    const owner = "8d0a3c9e-1234-4abc-9def-0123456789ab";
+    const path = `${owner}/guide/0d0a3c9e-1234-4abc-9def-0123456789ab.webp`;
+    const base = "https://abcdefghijklmnopqrst.supabase.co";
+    const up = G.communityGuideCover({ owner, cover_path: path, cover_preset: "keyart-mulan" }, base);
+    assert.deepEqual(up, { src: `${base}/storage/v1/object/public/profile-media/${path}`, ...G.GUIDE_COVER_SIZE, remote: true });
+    assert.deepEqual(G.communityGuideCover({ owner, cover_path: null, cover_preset: "keyart-mulan" }, base), G.GUIDE_COVERS["keyart-mulan"]);
+    // un percorso nella cartella di un altro (riga scritta a mano) non si mostra
+    assert.deepEqual(G.communityGuideCover({ owner: "0d0a3c9e-1234-4abc-9def-0123456789ab", cover_path: path, cover_preset: "keyart-goldi" }, base), G.GUIDE_COVERS["keyart-goldi"]);
+    assert.equal(G.absoluteCover("/media/keyart-mulan.webp", "https://originsmeta.com"), "https://originsmeta.com/media/keyart-mulan.webp");
+    assert.equal(G.absoluteCover(up.src, "https://originsmeta.com"), up.src);
+    assert.equal(G.GUIDE_COVER_SIZE.width / G.GUIDE_COVER_SIZE.height, 16 / 9);
   });
 });
 
@@ -841,6 +872,11 @@ describe("messaggi Discord", () => {
     assert.ok(!JSON.stringify(p).includes("/it/guides/community/") && !JSON.stringify(p).includes("/en/guides/community/"), "niente link alle versioni non ancora tradotte");
     assert.equal(e.image?.url, "https://originsmeta.com/media/keyart-mulan.webp");
     assert.equal(D.guidePayload({ ...g, image: "https://evil.example/x.png" }).embeds![0].image, undefined, "solo immagini del sito");
+    // copertina caricata (29/09/2026): solo dal bucket del sito, nella cartella delle guide
+    const uploaded = "https://obpnprlzxrlbvncpqlpq.supabase.co/storage/v1/object/public/profile-media/8d0a3c9e-1234-4abc-9def-0123456789ab/guide/0d0a3c9e-1234-4abc-9def-0123456789ab.webp";
+    assert.equal(D.guidePayload({ ...g, image: uploaded }).embeds![0].image?.url, uploaded);
+    assert.equal(D.guidePayload({ ...g, image: uploaded.replace("/guide/", "/avatar/") }).embeds![0].image, undefined, "non un'altra cartella del bucket");
+    assert.equal(D.guidePayload({ ...g, image: uploaded.replace("supabase.co", "supabase.co.evil.example") }).embeds![0].image, undefined, "non un altro host");
     assert.ok(!e.description!.includes("**guía**"), "Markdown dell'utente annullato");
     assert.ok(!e.description!.includes("@everyone"), "menzioni spezzate");
     assert.ok(e.description!.includes("Guide ai mazzi") && e.description!.includes("Guías de mazos"));
@@ -908,7 +944,7 @@ describe("etichette", () => {
   });
 
   test("un messaggio per ogni errore del modulo, del database e delle segnalazioni", () => {
-    const codes = ["title", "summary", "sections", "heading", "body", "category", "lang", "cover", "cards", "notLoggedIn", "forbidden", "disabled", "unavailable", "guide_daily_limit", "guide_limit", "guide_rate", "guide_hidden", "guide_hidden_recent", "guide_status", "duplicate", "db"];
+    const codes = ["title", "summary", "sections", "heading", "body", "category", "lang", "cover", "coverImage", "cards", "notLoggedIn", "forbidden", "disabled", "unavailable", "guide_daily_limit", "guide_limit", "guide_rate", "guide_hidden", "guide_hidden_recent", "guide_status", "duplicate", "db"];
     for (const locale of ["en", "it", "es"] as const) for (const c of codes) assert.ok(L.communityGuideLabels[locale].errors[c as keyof typeof L.communityGuideLabels.en.errors], `${locale}: ${c}`);
     for (const locale of ["en", "it", "es"] as const) for (const c of ["reason", "duplicate", "report_rate", "notLoggedIn", "own", "forbidden", "db"]) assert.ok(L.communityGuideLabels[locale].report.errors[c as "db"], `${locale}: report ${c}`);
     // i tetti detti nei messaggi sono quelli del database
