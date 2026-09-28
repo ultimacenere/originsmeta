@@ -2,12 +2,12 @@ import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
 import { authorName } from "@/lib/community/util";
-import { NOTIFICATIONS_ANCHOR, notificationHref } from "@/lib/community/notifications";
+import { NOTIFICATIONS_ANCHOR, goneUnreadIds, notificationHref } from "@/lib/community/notifications";
 import { listNotifications, unreadNotificationCount, type NotificationItem } from "@/lib/community/notificationQueries";
 import { fillFollowLabel, followLabels, type FollowLabels } from "@/lib/followLabels";
 import { Avatar } from "@/components/AccountMenu";
 import { InboxTime } from "@/components/inbox/InboxTime";
-import { MarkAllRead, NotificationLink } from "./NotificationControls";
+import { MarkAllRead, MarkGoneRead, NotificationLink } from "./NotificationControls";
 
 /**
  * Sezione "Notifiche" di /account/messages (pacchetto SEGUI, 27/09/2026): gli avvisi dei profili seguiti (mazzo
@@ -22,9 +22,12 @@ export async function NotificationsSection({ locale, supabase, userId }: { local
   if (!res.ok && res.error === "unavailable") return null;
   const items = res.ok ? res.data.items : [];
   const unread = res.ok ? res.data.unread : 0;
+  // mazzi e guide non più online: niente da aprire, si segnano come letti da soli (29/09/2026)
+  const gone = goneUnreadIds(items);
 
   return (
     <section id={NOTIFICATIONS_ANCHOR} className="mt-12 scroll-mt-24">
+      {gone.length ? <MarkGoneRead ids={gone} /> : null}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 className="t-section">{L.title}</h2>
         {unread > 0 ? <MarkAllRead label={L.markAll} pendingLabel={L.marking} errorLabel={L.error} /> : null}
