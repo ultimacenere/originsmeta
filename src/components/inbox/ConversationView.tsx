@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
+import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { normalizeBadge } from "@/lib/community/badges";
 import { inboxLabels } from "@/lib/inboxLabels";
@@ -43,6 +43,8 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
   const role = normalizeBadge(c.user?.badge);
   const badge = role !== "community" ? role : null;
   const unread = staffView ? c.unread_by_staff : c.unread_by_user;
+  // "Iniziata il {date}": il testo attorno alla data, che è un componente (ora locale nel browser)
+  const [startedBefore, startedAfter = ""] = L.thread.started.split("{date}");
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -56,7 +58,12 @@ export function ConversationView({ locale, view, viewerId, conversation: c, mess
       <p className="mt-3 flex flex-wrap items-center gap-2">
         <span className="stat-pill bg-sky text-[11px] font-semibold uppercase text-ink">{origin}</span>
         <span className={`stat-pill text-[11px] font-semibold uppercase ${closed ? "bg-night-3 text-pale" : "bg-mint text-ink"}`}>{L.status[c.status]}</span>
-        <span className="font-mono text-xs text-pale-muted">{fillInbox(L.thread.started, { date: formatDate(locale, c.created_at.slice(0, 10)) })}</span>
+        {/* il giorno nell'ora locale di chi legge (InboxTime), non tagliato dall'orario UTC */}
+        <span className="font-mono text-xs text-pale-muted">
+          {startedBefore}
+          <InboxTime iso={c.created_at} locale={locale} utcLabel={L.thread.utcLabel} dateOnly />
+          {startedAfter}
+        </span>
       </p>
 
       {staffView ? (
