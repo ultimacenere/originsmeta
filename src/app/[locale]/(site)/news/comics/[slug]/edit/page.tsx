@@ -7,7 +7,7 @@ import { currentUser } from "@/lib/supabase/server";
 import { comicRoleOf, getComicForEdit } from "@/lib/community/comicQueries";
 import { comicPath } from "@/lib/community/comics";
 import { deleteComic, setComicStatus } from "@/lib/community/comicActions";
-import { comicLabels } from "@/lib/comicLabels";
+import { comicLabels, COMIC_LANG_NAMES } from "@/lib/comicLabels";
 import { ComicEditor } from "@/components/comics/ComicEditor";
 import { ConfirmButton } from "@/components/ConfirmButton";
 
@@ -74,9 +74,10 @@ export default async function EditComicPage({ params, searchParams }: { params: 
           <ComicEditor
             locale={locale}
             mode="edit"
-            initial={{ id: comic.id, status: comic.status, lang: comic.lang, title: comic.title, summary: comic.summary, pages: comic.pages, cover_path: comic.cover_path }}
+            initial={{ id: comic.id, status: comic.status, lang: comic.lang, title: comic.title, summary: comic.summary, pages: comic.pages, cover_path: comic.cover_path, editions: comic.editions }}
             labels={{ editor: L.editor, errors: L.errors }}
             langs={locales.map((l) => [l, localeNames[l]])}
+            langNames={COMIC_LANG_NAMES[locale]}
             justSaved={saved}
           />
         </div>

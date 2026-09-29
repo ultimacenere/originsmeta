@@ -5,7 +5,7 @@ import { href, localeNames, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { comicRoleOf } from "@/lib/community/comicQueries";
-import { comicLabels } from "@/lib/comicLabels";
+import { comicLabels, COMIC_LANG_NAMES } from "@/lib/comicLabels";
 import { ComicEditor } from "@/components/comics/ComicEditor";
 
 type Params = Promise<{ locale: string }>;
@@ -46,7 +46,7 @@ export default async function NewComicPage({ params }: { params: Params }) {
         <>
           <p className="mt-4 max-w-3xl text-chalk-muted">{L.newIntro}</p>
           <div className="mt-8">
-            <ComicEditor locale={locale} mode="create" labels={{ editor: L.editor, errors: L.errors }} langs={locales.map((l) => [l, localeNames[l]])} />
+            <ComicEditor locale={locale} mode="create" labels={{ editor: L.editor, errors: L.errors }} langs={locales.map((l) => [l, localeNames[l]])} langNames={COMIC_LANG_NAMES[locale]} />
           </div>
         </>
       ) : (

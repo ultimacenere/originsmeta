@@ -4130,3 +4130,151 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
 $$;
 
 comment on function public.community_guide_translation_ok(jsonb, integer) is 'Traduzione di una guida della community valida: testo semplice, stesse sezioni dell''originale, titolo tradotto con la sua impronta (facoltativi, insieme; dal 29/09/2026).';
+
+-- ===== 30/09/2026: FUMETTI IN PIÙ LINGUE =====
+-- =====================================================================================================
+-- VERSIONI DISEGNATE IN ALTRE LINGUE (30/09/2026). Vega ha pubblicato lo stesso fumetto tre volte, una per lingua, e
+-- Pierluigi ha chiesto: "unificali in una sola news subito". Un fumetto ha ora, oltre alle
+-- tavole nella lingua dei testi (`lang`), una versione disegnata per ognuna delle altre lingue del sito (colonna
+-- `editions`): tavole, titolo, presentazione e, facoltativa, una copertina sua. La pagina in quella lingua mostra la
+-- versione disegnata al posto della traduzione automatica (che per quella lingua non si fa più) e la news resta una,
+-- con un indirizzo solo. `former_slugs`: gli indirizzi dei fumetti uniti in questo da scripts/merge-comics.mjs, che la
+-- pagina /news/comics/<slug> porta qui con un 308; li scrive solo lo script (connessione diretta), nessuna grant.
+-- Codice: `editions` e `comicEdition` in src/lib/community/comics.ts (comics.test.ts confronta limiti e regole con
+-- questo blocco), `comicMovedTo` in comicQueries.ts, scripts/merge-comics.mjs; documentazione in docs/fumetti.md.
+-- Viene dopo FUMETTI: rifà il trigger dei file e la funzione dei file in uso (profile_media_in_use) con le versioni
+-- disegnate, e aggiunge `editions` alle grant per colonna (la revoke del blocco FUMETTI, rilanciata a ogni migrazione,
+-- le toglie: qui si rimettono). Nessuna grant né revoke su public.profiles. Idempotente come tutto il file. Si migra
+-- prima del deploy (il codice regge anche senza la colonna: legge senza, e i fumetti restano con le tavole originali).
+-- =====================================================================================================
+
+alter table public.community_comics add column if not exists editions jsonb not null default '{}'::jsonb;
+alter table public.community_comics add column if not exists former_slugs text[] not null default '{}';
+create index if not exists community_comics_former_slugs_idx on public.community_comics using gin (former_slugs);
+
+-- Le versioni: {"it": {"title": "…", "summary": "…", "pages": [...], "cover_path": "…"}}. Chiavi fra le lingue del
+-- sito, mai quella dei testi del fumetto (`lang`); titolo (una riga), presentazione e tavole con le regole
+-- dell'originale: un fumetto pubblicato (o nascosto) le vuole complete (titolo 3-110, presentazione 40-300, da 1 a 10
+-- tavole), una bozza anche a metà; copertina facoltativa (null o assente: vale quella del fumetto) nella cartella dei
+-- fumetti del proprietario. Gli stessi limiti di COMIC_LIMITS in comics.ts. I CASE fissano l'ordine dei controlli.
+create or replace function public.community_comic_editions_ok(e jsonb, owner uuid, lang text, complete boolean)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when e is null or jsonb_typeof(e) is distinct from 'object' then false
+    when octet_length(e::text) > 150000 then false
+    else not exists (
+      select 1 from jsonb_each(e) as x(k, v)
+       where case
+         when k not in ('en', 'it', 'es') or k = lang then true
+         when jsonb_typeof(v) is distinct from 'object' then true
+         when (v - 'title' - 'summary' - 'pages' - 'cover_path') <> '{}'::jsonb then true
+         when jsonb_typeof(v -> 'title') is distinct from 'string' then true
+         when not public.community_guide_text_ok(v ->> 'title', case when complete then 3 else 0 end, 110, false) then true
+         when jsonb_typeof(v -> 'summary') is distinct from 'string' then true
+         when not public.community_guide_text_ok(v ->> 'summary', case when complete then 40 else 0 end, 300, true) then true
+         when coalesce(jsonb_typeof(v -> 'cover_path'), 'null') not in ('string', 'null') then true
+         when jsonb_typeof(v -> 'cover_path') = 'string'
+              and (char_length(v ->> 'cover_path') > 200
+                   or (v ->> 'cover_path') !~ ('^' || owner::text || '/comic/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$')) then true
+         else not public.community_comic_pages_ok(v -> 'pages', owner, complete)
+       end)
+  end;
+$$;
+
+-- Gli indirizzi di prima: al massimo 20, ognuno con la regola degli slug dei fumetti (community_comics_slug_check).
+create or replace function public.community_comic_slugs_ok(s text[])
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select s is not null and cardinality(s) <= 20
+     and not exists (
+       select 1 from unnest(s) as x(slug)
+        where slug is null or char_length(slug) not between 3 and 60 or slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+$$;
+
+-- Tutti i file di un fumetto, senza doppioni: tavole, copertina, tavole e copertine delle versioni disegnate (la stessa
+-- cosa di comicFiles in comics.ts). La usano il trigger dei file e profile_media_in_use.
+create or replace function public.community_comic_files(pages jsonb, cover text, editions jsonb)
+returns text[] language sql immutable set search_path = pg_catalog as $$
+  select coalesce(array_agg(distinct f) filter (where f is not null), '{}')
+    from (
+      select a.x ->> 'path' as f
+        from jsonb_array_elements(case when jsonb_typeof(pages) = 'array' then pages else '[]'::jsonb end) as a(x)
+      union all
+      select cover
+      union all
+      select e.v ->> 'cover_path'
+        from jsonb_each(case when jsonb_typeof(editions) = 'object' then editions else '{}'::jsonb end) as e(k, v)
+      union all
+      select b.y ->> 'path'
+        from jsonb_each(case when jsonb_typeof(editions) = 'object' then editions else '{}'::jsonb end) as e2(k, v)
+        cross join lateral jsonb_array_elements(case when jsonb_typeof(e2.v -> 'pages') = 'array' then e2.v -> 'pages' else '[]'::jsonb end) as b(y)
+    ) as files;
+$$;
+
+revoke all on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) from public, anon;
+revoke all on function public.community_comic_slugs_ok(text[]) from public, anon;
+revoke all on function public.community_comic_files(jsonb, text, jsonb) from public, anon;
+grant execute on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) to authenticated, service_role;
+grant execute on function public.community_comic_slugs_ok(text[]) to authenticated, service_role;
+grant execute on function public.community_comic_files(jsonb, text, jsonb) to authenticated, service_role;
+
+alter table public.community_comics drop constraint if exists community_comics_editions_check;
+alter table public.community_comics add constraint community_comics_editions_check
+  check (public.community_comic_editions_ok(editions, owner, lang, status <> 'draft'));
+alter table public.community_comics drop constraint if exists community_comics_former_slugs_check;
+alter table public.community_comics add constraint community_comics_former_slugs_check
+  check (public.community_comic_slugs_ok(former_slugs));
+
+-- I file nuovi (tavole e copertine, anche delle versioni disegnate) devono esserci nel bucket, con tipo ammesso e al
+-- massimo 2 MB; quelli che il fumetto aveva già passano. Con i privilegi di chi salva, come nel blocco FUMETTI.
+create or replace function public.guard_community_comic_files()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+declare
+  p text;
+  known text[] := '{}';
+begin
+  if tg_op = 'UPDATE' then
+    known := public.community_comic_files(old.pages, old.cover_path, old.editions);
+  end if;
+  foreach p in array public.community_comic_files(new.pages, new.cover_path, new.editions) loop
+    if not (p = any(known)) and not public.profile_media_ok(p, 2097152) then
+      raise exception 'comic_file' using errcode = '23514';
+    end if;
+  end loop;
+  return new;
+end $$;
+revoke all on function public.guard_community_comic_files() from public, anon, authenticated;
+drop trigger if exists community_comics_files on public.community_comics;
+create trigger community_comics_files before insert or update of pages, cover_path, editions on public.community_comics
+  for each row execute function public.guard_community_comic_files();
+
+-- I file in uso comprendono le tavole e le copertine delle versioni disegnate: il bucket non li lascia cancellare e
+-- scripts/clear-profile-media.mjs --orphans li conta come usati.
+create or replace function public.profile_media_in_use(p text)
+returns boolean language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  folder text := split_part(p, '/', 1);
+  uid uuid;
+begin
+  if folder !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    return false;
+  end if;
+  uid := folder::uuid;
+  return exists (select 1 from public.profiles pr where pr.id = uid and (pr.avatar_path = p or pr.cover_path = p or pr.background_path = p))
+      or exists (select 1 from public.community_guides g where g.owner = uid and g.cover_path = p)
+      or exists (select 1 from public.community_decks d where d.owner = uid and d.art_path = p)
+      or exists (select 1 from public.community_comics c where c.owner = uid
+                  and (c.cover_path = p or c.pages @> jsonb_build_array(jsonb_build_object('path', p))
+                       or p = any(public.community_comic_files('[]'::jsonb, null, c.editions))));
+end $$;
+revoke all on function public.profile_media_in_use(text) from public, anon;
+grant execute on function public.profile_media_in_use(text) to authenticated, service_role;
+
+-- Le versioni disegnate le scrive il sito con la sessione del proprietario (grant per colonna, come le altre del blocco
+-- FUMETTI); `former_slugs` no: solo lo script, con la connessione diretta.
+grant insert (editions) on public.community_comics to authenticated;
+grant update (editions) on public.community_comics to authenticated;
+
+comment on column public.community_comics.editions is 'Versioni disegnate nelle altre lingue del sito (30/09/2026): {"<lingua>": {title, summary, pages, cover_path}}. La pagina in quella lingua le mostra al posto della traduzione automatica. Regole: community_comic_editions_ok, comics.ts.';
+comment on column public.community_comics.former_slugs is 'Indirizzi dei fumetti uniti in questo (scripts/merge-comics.mjs, 30/09/2026): la pagina /news/comics/<slug> di un indirizzo di prima porta qui con un 308. Nessuna grant: li scrive solo lo script.';
+comment on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) is 'Versioni disegnate di un fumetto valide: le altre lingue del sito, testi e tavole con le regole dell''originale, copertina facoltativa nella cartella del proprietario (30/09/2026).';
+comment on function public.community_comic_files(jsonb, text, jsonb) is 'Tutti i file di un fumetto, versioni disegnate comprese (trigger dei file e profile_media_in_use, 30/09/2026).';
