@@ -1,0 +1,21 @@
+{
+  "name": "originsmeta-tracker",
+  "productName": "OriginsMeta Tracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Registra da solo le partite di Origins TCG leggendo i file del gioco sul PC (fan project, non affiliato a Koin Games).",
+  "author": "OriginsMeta",
+  "main": "dist/main.js",
+  "scripts": {
+    "cards": "node scripts/cards.mjs",
+    "build": "node scripts/cards.mjs && node build.mjs",
+    "start": "npm run build && electron .",
+    "capture": "npm run build && electron . --capture=out/capture.png",
+    "test": "node --import ./scripts/ts-hooks.mjs --test src/main/watcher.test.ts src/main/store.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "electron": "44.4.5",
+    "esbuild": "0.28.2"
+  }
+}

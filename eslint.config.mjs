@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // app del tracker (tracker/, tsconfig proprio): si controllano i sorgenti, non la build né gli script di Electron
+    "tracker/dist/**",
+    "tracker/out/**",
+    "tracker/node_modules/**",
+    "tracker/scripts/*.cjs",
   ]),
 ]);
 
