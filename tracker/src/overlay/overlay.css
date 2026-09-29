@@ -1,0 +1,40 @@
+/* Overlay del tracker (Fase 4): palette "ink & mint" del sito, fondo trasparente, leggibile sopra il gioco e in OBS. */
+:root {
+  color-scheme: dark;
+  --panel: rgba(21, 12, 44, 0.86);
+  --sky: #3fc4e8;
+  --mint: #31e3bd;
+  --gold: #f2d23c;
+  --ink: #16102a;
+  --chalk: #d9dfe8;
+  --muted: #a9b4c6;
+  --win: #46d369;
+  --loss: #ff5c5c;
+  --body: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: transparent; color: var(--chalk); font-family: var(--body); font-size: 14px; line-height: 1.35; overflow: hidden; }
+.ov { display: inline-grid; gap: 4px; margin: 6px; padding: 10px 14px 8px; background: var(--panel); border: 2px solid var(--sky); border-radius: 14px; max-width: calc(100vw - 12px); user-select: none; }
+.deck { font-weight: 700; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deck b { color: var(--chalk); }
+.leg { color: var(--muted); font-weight: 500; font-size: 0.82rem; margin-left: 8px; }
+.star { color: var(--gold); margin-right: 5px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; white-space: nowrap; }
+.pair { display: inline-flex; align-items: center; gap: 6px; }
+.k { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.v { font-family: var(--mono); font-weight: 700; color: var(--chalk); }
+.pct { font-family: var(--mono); color: var(--mint); font-weight: 700; }
+.muted { color: var(--muted); }
+.res { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-family: var(--mono); font-weight: 700; font-size: 0.7rem; color: var(--ink); }
+.res.W { background: var(--win); }
+.res.L { background: var(--loss); }
+.res.X { background: #22304b; color: var(--muted); }
+.brand { font-size: 0.62rem; color: var(--muted); opacity: 0.85; }
+
+/* verticale (per OBS: ?layout=v) */
+.layout-v .ov { display: grid; width: 240px; }
+.layout-v .row { flex-direction: column; align-items: flex-start; gap: 3px; }
+
+/* finestra sopra il gioco: "Sposta" acceso (non lascia passare i clic) = si trascina */
+.in-window.moving .ov { -webkit-app-region: drag; border-style: dashed; cursor: move; }

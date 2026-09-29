@@ -40,10 +40,13 @@ const profileModule: typeof import("./profile") = await import("./profile.ts");
 const matchModule: typeof import("./match") = await import("./match.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const deckcode: typeof import("../deckcode") = await import("../deckcode.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const queueModule: typeof import("./queue") = await import("./queue.ts");
 
 const { parseReplay, readReplay, replayFileInfo, instanceDeck, cardOfInstance, ReplayFormatError, REPLAY_MAX_BYTES } = replayModule;
 const { readStatsFile, readInventoryFile, detectMatchEnd, resultsDelta } = profileModule;
-const { buildMatch, matchFingerprint, pickMe, replayBelongsTo, PAIR_WINDOW_MS } = matchModule;
+const { buildMatch, matchFingerprint, pickMe, replayBelongsTo, readTrackedMatch, PAIR_WINDOW_MS, TRACKED_MATCH_VERSION } = matchModule;
+const { matchQueue, TRACK_QUEUES } = queueModule;
 
 /* ---------- replay finti (codificatore in testing.ts, usato anche dai test dell'app) ---------- */
 
@@ -238,7 +241,8 @@ describe("buildMatch", () => {
   test("cache + replay: esito, mazzo con nome e codice del gioco, avversario, giocate", async () => {
     const m = await buildMatch({ end, accountId: ME.id, deck: decks[1], replay });
     const base = MY_DECK.map((k) => k.replace(/_V\d+$/, ""));
-    assert.equal(m.v, 1);
+    assert.equal(m.v, 2);
+    assert.equal(m.queue, "normal");
     assert.match(m.id, /^[0-9a-f]{32}$/);
     assert.deepEqual([m.result, m.rank, m.turns, m.missed], ["W", "Bronze III", 2, ""]);
     assert.deepEqual(m.deck, { name: "On Death", legendary: "C00176_MC", cards: base, code: await deckcode.encodeGameCode(base) });
@@ -271,11 +275,56 @@ describe("buildMatch", () => {
     assert.equal(m.deck.legendary, "C00176_MC");
   });
 
+  test("coda: quella passata dall'app, normale se manca", async () => {
+    assert.equal((await buildMatch({ end, accountId: ME.id, deck: decks[1], replay, queue: "ranked" })).queue, "ranked");
+    assert.equal((await buildMatch({ end, accountId: ME.id, deck: decks[1], replay: null })).queue, "normal");
+  });
+
   test("impronta: stessa partita e stesso account uguale, account diverso diversa, mai l'id", async () => {
     const a = await matchFingerprint("1", "offline_x", null);
     assert.equal(a, await matchFingerprint("1", "offline_x", null));
     assert.notEqual(a, await matchFingerprint("2", "offline_x", null));
     assert.notEqual(a, await matchFingerprint("1", null, "2026-09-29T00:51:19.000Z"));
+  });
+});
+
+describe("matchQueue (coda della partita)", () => {
+  test("coda normale: BotBattle, nomi del Mac, nomi strani, senza replay", () => {
+    for (const mode of ["BotBattle", "vs", "other", null, "Battle", "Casual"]) assert.equal(matchQueue({ mode, battleMode: "0" }), "normal", String(mode));
+    assert.equal(matchQueue({ mode: null, battleMode: null }), "normal");
+  });
+
+  test("classificata: un nome con \"rank\" (da confermare quando apre la classificata)", () => {
+    assert.equal(matchQueue({ mode: "RankedBattle", battleMode: "0" }), "ranked");
+    assert.equal(matchQueue({ mode: "Ranked", battleMode: null }), "ranked");
+  });
+
+  test("mai un segnale bot: solo ranked o normal, e la stessa coda contro un bot o contro una persona", () => {
+    const values = new Set(["BotBattle", "Battle", "PvP", "vs", "other", "RankedBattle", "RankedBotBattle"].map((mode) => matchQueue({ mode, battleMode: "0" })));
+    for (const v of values) assert.ok((TRACK_QUEUES as readonly string[]).includes(v), v);
+    // la partita contro i bot della coda normale ("BotBattle") e quella contro una persona (nome ancora ignoto) danno lo stesso valore
+    assert.equal(matchQueue({ mode: "BotBattle", battleMode: "0" }), matchQueue({ mode: "Battle", battleMode: "0" }));
+  });
+});
+
+describe("readTrackedMatch (storico sul PC)", () => {
+  const v2 = { v: 2, id: "a".repeat(32), endedAt: null, result: "W", queue: "ranked", deck: { name: null, legendary: null, cards: [], code: null }, rank: null, opponent: null, arena: null, locationPool: null, turns: null, plays: [], missed: "" };
+
+  test("v1 della Fase 2: diventa v2 con la coda normale", () => {
+    const { queue: _q, ...v1 } = { ...v2, v: 1 };
+    void _q;
+    const m = readTrackedMatch(v1);
+    assert.equal(m?.v, TRACKED_MATCH_VERSION);
+    assert.equal(m?.queue, "normal");
+  });
+
+  test("v2 com'è; coda strana → normale; versioni future e righe rotte → null", () => {
+    assert.equal(readTrackedMatch(v2)?.queue, "ranked");
+    assert.equal(readTrackedMatch({ ...v2, queue: "BotBattle" })?.queue, "normal");
+    assert.equal(readTrackedMatch({ ...v2, v: 3 }), null);
+    assert.equal(readTrackedMatch({ ...v2, id: 5 }), null);
+    assert.equal(readTrackedMatch(null), null);
+    assert.equal(readTrackedMatch([v2]), null);
   });
 });
 

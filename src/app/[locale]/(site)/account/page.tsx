@@ -27,6 +27,8 @@ import { ShowcaseEditor } from "@/components/showcase/ShowcaseEditor";
 import { ShowStatsSetting } from "@/components/achievements/ShowStatsSetting";
 import { AccountGuides } from "@/components/guides/AccountGuides";
 import { AccountComics } from "@/components/comics/AccountComics";
+import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
+import { normalizeBadge } from "@/lib/community/badges";
 
 export const dynamic = "force-dynamic";
 
@@ -57,8 +59,10 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   }
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/account"))}`);
 
-  const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, created_at").eq("id", user.id).maybeSingle();
-  const profile = (profileRow as (Profile & { role: string; created_at: string }) | null) ?? null;
+  const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, badge, created_at").eq("id", user.id).maybeSingle();
+  const profile = (profileRow as (Profile & { role: string; badge: string | null; created_at: string }) | null) ?? null;
+  // il tracker in /account: a tutti dal lancio dell'app, prima solo a Staff e admin (TRACKER_ACCOUNT_LINK_PUBLIC)
+  const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || profile?.role === "admin" || normalizeBadge(profile?.badge) === "staff";
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   const [allDecks, tournaments, tierLists, deckLimit] = await Promise.all([
     listUserDecks(supabase, user.id),
@@ -294,6 +298,19 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
       {profile?.username ? (
         <AccountStreamGuide username={profile.username} locale={locale} site={siteUrl} hasDecks={decks.some((deck) => deck.status === "published")} labels={streamLabels[locale].account} tools={streamLabels[locale].tools} />
+      ) : null}
+
+      {/* OriginsMeta Tracker (tracker/overlay, Fase 3, 30/09/2026): l'app per Windows si collega e si gestisce da /account/tracker */}
+      {showTracker ? (
+        <section id="tracker" className="mt-12 scroll-mt-24">
+          <h2 className="t-section">{trackerLabels[locale].account.title}</h2>
+          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{trackerLabels[locale].account.intro}</p>
+          <p className="mt-4">
+            <Link href={href(locale, "/account/tracker")} prefetch={false} className="btn btn-ink text-xs">
+              {trackerLabels[locale].account.open} →
+            </Link>
+          </p>
+        </section>
       ) : null}
 
       {/* Tournament Organizer: tornei organizzati e giocati */}

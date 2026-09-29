@@ -305,6 +305,14 @@ export function getCard(slug: string): Card | undefined {
   return bySlug.get(slug);
 }
 
+const byKey = new Map<string, Card>();
+for (const c of cards) if (c.key && !byKey.has(c.key)) byKey.set(c.key, c);
+
+/** Carta dalla chiave del gioco senza variante (C00176_MC), come la scrivono il tracker e i codici del gioco. */
+export function getCardByKey(key: string): Card | undefined {
+  return byKey.get(key);
+}
+
 /** Carte giocabili nella demo attuale (attive, non create da altre carte). */
 export const activeCards: Card[] = cards.filter((c) => c.status === "active" && c.type !== "token");
 

@@ -8,8 +8,9 @@ Pierluigi il 26/09/2026: il **tracker** registra le partite, l'**overlay** le mo
 Un'**app desktop per Windows** (Pierluigi, 29/09/2026: "perché non un'app? è più carina e vendibile che una roba sul
 web") che, mentre il giocatore usa Origins TCG, legge in sola lettura i file che il gioco salva sul PC e registra da
 sola ogni partita: esito, mazzo usato con il codice del gioco, mazzo dell'avversario, carte giocate turno per turno.
-L'overlay mostra questi dati al giocatore (finestra sopra il gioco) e a chi fa dirette (sorgente per OBS); il sito
-riceve dati anonimi per lo storico personale e, più avanti, per il meta.
+Collegata all'account OriginsMeta, manda le partite al sito: storico e statistiche personali in `/account/tracker`, e
+statistiche anonime (win rate di Leggendarie, mazzi, archetipi e carte) per tutti. L'overlay mostra i dati al
+giocatore (finestra sopra il gioco) e a chi fa dirette (sorgente per OBS).
 
 Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; testo e data da archiviare in
 `G:\Il mio Drive\OriginsMeta\10_Materiale_Koin\`, come quello del 19/09 sul materiale ufficiale).
@@ -21,12 +22,11 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 | 0 | Verifiche: permesso, termini d'uso, partite di prova, scelta fra app e pagina web | fatta il 29/09/2026 |
 | 1 | Lettore dei file (cache + replay), funzioni pure con i test: `src/lib/tracker/` | fatta il 29/09/2026 |
 | 2 | App base in `tracker/` (Electron 44): icona nella barra, avvio con Windows, partite registrate da sola, storico sul PC | fatta il 29/09/2026 |
-| 3 | Collegamento al sito: account OriginsMeta, tabella delle partite con RLS, pagina `/tracker`, pagina per scaricare l'app | da fare |
-| 4 | Overlay: finestra separata sopra il gioco e sorgente per OBS (partendo da `/overlay/deck`, pacchetto STREAM) | da fare |
-| 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, prova con pochi giocatori, lancio | da fare |
+| 3 | Collegamento al sito: codice → token, invio delle partite, tabella con RLS, `/account/tracker`, statistiche anonime (win rate) | fatta il 30/09/2026, **migrazione da lanciare** |
+| 4 | Overlay: finestra sopra il gioco e sorgente per OBS (servita dall'app su 127.0.0.1) | fatta il 30/09/2026 |
+| 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, pagina per scaricare l'app, prova con pochi giocatori, lancio | da fare |
 
-Calendario proposto il 27/09: fasi 1–2 dal 3 al 6/10 (ricontrollo dei file dopo la patch di inizio ottobre), fasi 3–4
-dal 7 al 12/10, prova dal 12 al 18/10, Next Fest dal 19/10.
+Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal 12 al 18/10, Next Fest dal 19/10.
 
 ## Regole
 
@@ -37,21 +37,29 @@ dal 7 al 12/10, prova dal 12 al 18/10, Next Fest dal 19/10.
 2. **Mai dire se l'avversario è un bot o una persona** (Pierluigi, 29/09/2026): niente flag bot, niente modalità del
    nome del file ("BotBattle"), niente rank dell'avversario (quello dei bot è un "Master" finto), in nessuna parte:
    app, overlay, sito, file esportati, nomi delle copie dei replay. Il flag si legge solo dentro il lettore per
-   riconoscere il giocatore (`pickMe`). Test: "mai dire se l'avversario è un bot o una persona" in `tracker.test.ts`.
+   riconoscere il giocatore (`pickMe`). La coda (classificata o normale) è solo "ranked" o "normal" e non si mostra
+   partita per partita (vedi "Coda"). Test: "mai dire se l'avversario è un bot o una persona" in `tracker.test.ts`,
+   più quelli dell'app, dell'upload e dell'overlay.
 3. **Mai nomi né id** di giocatori o partite fuori dal lettore: dell'id della partita resta un'impronta salata con
    l'id dell'account (`matchFingerprint`). I termini di Koin vietano di raccogliere dati di altri utenti senza
    consenso (Terms of Use, §2.3).
-4. L'overlay non mostra durante la partita niente che il gioco nasconde (il replay arriva comunque a fine partita).
-5. A ogni patch: rilanciare `npm test` sul PC con il gioco (il test "file veri del gioco su questo PC" legge replay e
+4. **Al sito, dell'avversario solo la Leggendaria e le carte che ha giocato** (Pierluigi, 30/09/2026): il suo mazzo
+   completo, che il gioco non mostra, resta nello storico sul PC e non parte mai (`toUpload`, con un test).
+5. **Statistiche anonime sempre** (Pierluigi, 30/09/2026): le partite di chi collega l'app entrano sempre nelle
+   statistiche del sito, senza caselle; lo dicono l'app e `/account/tracker` prima del collegamento e l'informativa
+   (`/privacy#tracker`). Solo aggregati sopra la soglia (vedi "Statistiche anonime").
+6. L'overlay non mostra durante la partita niente che il gioco nasconde: la Leggendaria avversaria compare solo nella
+   riga dell'ultima partita finita.
+7. A ogni patch: rilanciare `npm test` sul PC con il gioco (il test "file veri del gioco su questo PC" legge replay e
    cache veri, se ci sono) e una partita di prova.
 
 ## I file del gioco
 
 | File | Dove | Quando cambia | Cosa ci serve |
 |---|---|---|---|
-| Statistiche del profilo | `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG Demo\beamable\cache\<cid>\<realm>\<versione>\<impronta>.json` | pochi secondi dopo ogni partita; `ActiveUserDeckIndex` appena si sceglie il mazzo; all'avvio del gioco si riscrive senza cambiare valori | esito, ora e id dell'ultima partita, mazzo scelto, id dell'account (solo per riconoscere il giocatore) |
+| Statistiche del profilo | `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG Demo\beamable\cache\<cid>\<realm>\<versione>\<impronta>.json` | pochi secondi dopo ogni partita; `ActiveUserDeckIndex` appena si sceglie il mazzo; all'avvio del gioco si riscrive senza cambiare valori | esito, ora e id dell'ultima partita, mazzo scelto, `BattleMode`, id dell'account (solo per riconoscere il giocatore) |
 | Inventario | stessa cartella | circa 15 s dopo la partita | i mazzi: nome, 13 chiavi delle carte |
-| Replay | `%USERPROFILE%\Documents\My Games\Origins TCG Demo\Replays\LatestMatch_<modalità>_<aaaa-mm-gg_hh-mm-ss>.replay` | a fine partita, **sovrascritto dalla successiva** | mazzi di tutti e due, rank, giocate |
+| Replay | `%USERPROFILE%\Documents\My Games\Origins TCG Demo\Replays\LatestMatch_<modalità>_<aaaa-mm-gg_hh-mm-ss>.replay` | a fine partita, **sovrascritto dalla successiva** | mazzi di tutti e due, rank, giocate; la modalità nel nome |
 | `Player.log` | cartella del gioco in LocalLow | sempre | niente: solo messaggi del motore |
 | File dell'account | cache di Beamable (quelli con `email`) | al login | **mai letti né copiati** |
 
@@ -68,10 +76,10 @@ cartella Documenti di Windows, non un percorso scritto a mano. Su Mac il nome de
 - `onboardingResults`: esiti, **il più recente a sinistra** ("LWW…"); cresce a ogni partita (24 il 29/09/2026), anche
   con l'abbandono (una L);
 - `onboardingLastMatchId`: `offline_<uuid>` in tutte le partite viste (29/09: tutte contro l'IA);
-- `ActiveUserDeckIndex`: posizione del mazzo nell'ordine dell'inventario.
+- `ActiveUserDeckIndex`: posizione del mazzo nell'ordine dell'inventario;
+- `BattleMode`: sempre "0" nelle partite viste (serve alla coda, vedi sotto).
 
-Non servono (significato ignoto o inaffidabile): `winWindow1/2`, `lossWindow1/2`, `BattleMode` (sempre 0),
-`ChallengeChallengeCounter`.
+Non servono (significato ignoto o inaffidabile): `winWindow1/2`, `lossWindow1/2`, `ChallengeChallengeCounter`.
 
 ### Inventario
 
@@ -109,43 +117,184 @@ Campi (versione 5, confermati su 5 replay il 29/09/2026):
 Il replay **non contiene l'esito**: sta nelle statistiche. Replay e statistiche arrivano a 1–2 secondi l'uno
 dall'altro e si abbinano per ora (`replayBelongsTo`, finestra di 2 minuti).
 
-## Codice (Fase 1)
+### Coda
 
-- `src/lib/tracker/replay.ts`: `parseReplay` (albero grezzo, `ReplayFormatError` se il formato cambia), `readReplay`
-  (giocatori, mazzi, giocate, mulligan; mai nomi né id), `replayFileInfo`.
-- `src/lib/tracker/profile.ts`: `readStatsFile`, `readInventoryFile`, `detectMatchEnd` (esito dalla lettera aggiunta a
-  sinistra; le lettere in più sono partite perse per strada, `missed`).
-- `src/lib/tracker/match.ts`: `buildMatch` → `TrackedMatch` (il record che l'app salva: esito, mazzo con nome e codice
-  del gioco, rank, mazzo dell'avversario, giocate), `matchFingerprint`, `pickMe`, `replayBelongsTo`.
-- `src/lib/tracker/tracker.test.ts` (in `npm test`): replay finti costruiti nel test (nessun file del gioco nel repo),
-  più i file veri del PC se ci sono.
+Richiesta di Pierluigi del 30/09/2026: ogni partita porta la coda, "ranked" o "normal" (`matchQueue` di
+`src/lib/tracker/queue.ts`, con i test), per poter tenere un giorno solo le classificate. Si ricava dalla modalità nel
+nome del replay e da `BattleMode` delle statistiche: vale "ranked" se `BattleMode` è in `RANKED_BATTLE_MODES` (vuoto
+finché non lo si vede) o se la modalità contiene "rank"; tutto il resto, "BotBattle" compreso, è "normal". Mai
+"BotBattle", mai un segnale bot.
 
-Tutto è puro (niente file system): l'app legge i file e passa il testo o i byte.
+**Da verificare quando apre la classificata** (il 29/09 era chiusa): come si chiamano i replay della classificata e
+che valore prende `BattleMode`, **sia contro una persona sia contro un bot**. Se nella classificata le partite contro i
+bot avessero un nome diverso da quelle contro le persone (per esempio ancora "BotBattle"), la coda dovrà venire solo da
+`BattleMode`, altrimenti "normal" dentro la classificata direbbe "bot". Per lo stesso motivo la coda non si mostra
+partita per partita, né nell'app né in `/account/tracker`: serve solo a filtrare le statistiche anonime.
 
-## L'app (Fase 2, `tracker/`)
+## Codice
+
+Lettore e regole condivise, in `src/lib/tracker/` (puri, niente file system: girano nell'app, nel sito e nei test):
+
+- `replay.ts`: `parseReplay` (albero grezzo, `ReplayFormatError` se il formato cambia), `readReplay` (giocatori, mazzi,
+  giocate, mulligan; mai nomi né id), `replayFileInfo`.
+- `profile.ts`: `readStatsFile`, `readInventoryFile`, `detectMatchEnd`, `resultsDelta`.
+- `match.ts`: `buildMatch` → `TrackedMatch` v2 (il record che l'app salva: esito, coda, mazzo con nome e codice del
+  gioco, rank, mazzo dell'avversario, giocate), `readTrackedMatch` (legge anche le v1 della Fase 2, coda "normal"),
+  `matchFingerprint`, `pickMe`, `replayBelongsTo`.
+- `queue.ts`: `matchQueue` (vedi "Coda").
+- `upload.ts`: la partita che va al sito (`toUpload`, `isUpload`, `UPLOAD_LIMITS`, `SERVER_KEYS`), codice di
+  collegamento (`normalizeLinkCode`, `LINK`), token, errori (`trackerErrorCode`, `trackerErrorStatus`). Stessi campi
+  e limiti di `tracker_match_ok` nel database: `upload.test.ts` li confronta con l'SQL.
+- `stats.ts`: soglie (`TRACKER_STATS`), "prime stime", lista esatta (`listKey`, `deckListKey`), lettura delle risposte
+  delle statistiche anonime. `personal.ts`: statistiche personali di `/account/tracker`.
+- Solo sito: `enrich.ts` (patch e archetipo aggiunti all'invio), `http.ts` (aiuti delle rotte).
+- Test: `tracker.test.ts` (lettore, coda, lettura v1) e `upload.test.ts` (upload, statistiche, personali, patch e
+  archetipo, confronto con il blocco SQL), in `npm test`: replay finti costruiti nel test (`testing.ts`), nessun file
+  del gioco nel repo, più i file veri del PC se ci sono.
+
+## L'app (`tracker/`)
 
 Pacchetto a sé nella cartella `tracker/` del repo (package.json, tsconfig e test propri; il `tsconfig.json` del sito la
 esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracker/README.md`:
 
 - `src/main/watcher.ts`: ogni 2 s una `stat` sul file delle statistiche; quando cambia lo rilegge e, se l'impronta
-  dell'ultima partita è nuova, aspetta il replay fino a un minuto (il gioco lo scrive un secondo prima della cache) e
-  registra la partita con il lettore; senza replay la registra con esito e mazzo. Al primo avvio registra l'ultima
-  partita solo se il suo replay è ancora lì. Cartelle del gioco in `paths.ts` (anche "Origins TCG" e "Origins TCG
-  Playtest"), riconoscimento dei file per contenuto ogni 30 s.
-- `src/main/store.ts`: `%APPDATA%\OriginsMeta Tracker\matches.jsonl` (una partita per riga) e `state.json` (impronta
-  dell'ultima partita vista, esiti, esiti delle partite giocate a tracker spento).
-- `src/main/main.ts`: icona nella barra, finestra che si nasconde invece di chiudersi, una sola copia, "Avvia con
-  Windows" spento di default (con `--hidden`), sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
+  dell'ultima partita è nuova, aspetta il replay fino a un minuto e registra la partita con il lettore, con la coda dal
+  nome del replay e da `BattleMode`; senza replay la registra con esito e mazzo. Al primo avvio registra l'ultima
+  partita solo se il suo replay è ancora lì. Cartelle del gioco in `paths.ts`.
+- `src/main/store.ts`: `%APPDATA%\OriginsMeta Tracker\matches.jsonl` (una partita per riga, v1 e v2) e `state.json`.
+- `src/main/account.ts`, `sync.ts`: collegamento e invio (sotto). `src/main/overlay.ts`: overlay (sotto).
+- `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra che si nasconde invece di chiudersi, una sola
+  copia, "Avvia con Windows" spento di default, sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
   permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
-- `src/renderer/`: interfaccia EN/IT/ES (round/ronda, corsia/carril), palette del sito; dell'avversario mostra la
-  Leggendaria e le carte che ha giocato.
-- Icona dal logo del sito (`src/app/icon.svg`) con `scripts/make-icon.cjs`. Attenzione: `src/app/favicon.ico` del sito
-  è ancora l'icona predefinita di Next (il triangolo di Vercel), da sostituire a parte.
-- Test: `npm test` in `tracker/` (10 test su cartelle del gioco finte), `npm run typecheck`.
+- `src/renderer/`: interfaccia EN/IT/ES con i pannelli "Account OriginsMeta" e "Overlay"; `src/overlay/`: la pagina
+  dell'overlay; `src/preload/`: i due ponti (l'overlay può solo leggere i suoi dati).
+- Test: `npm test` in `tracker/` (27 test: watcher con la coda, storico con le v1, invio con una rete finta, token
+  cifrato, dati dell'overlay e server locale), `npm run typecheck`.
+
+## Collegamento e invio (Fase 3)
+
+1. In `/account/tracker` il giocatore crea un **codice monouso** (8 caratteri senza 0/O e 1/I, "ABCD-EFGH", 10
+   minuti, al massimo 5 l'ora: `tracker_link_code`).
+2. Nell'app lo scrive in "Account OriginsMeta" → `POST /api/tracker/link` {code, name} → `tracker_link_claim` →
+   **token** "omt_" + 64 caratteri esadecimali, una volta sola. `name` è il nome del PC (lo vede solo il proprietario).
+   Al massimo 10 PC collegati per utente.
+3. L'app salva il token **cifrato** con `safeStorage` di Electron (DPAPI di Windows) in `account.json`; senza cifratura
+   il token resta solo in memoria fino alla chiusura (mai in chiaro su disco). Il database tiene solo l'impronta.
+4. **Coda di invio** (`sync.ts`): tutte le partite dello storico che il sito non ha ancora (`sync.json`), comprese quelle
+   registrate prima del collegamento (l'app lo dice prima di collegare), a gruppi di 50 dalla più vecchia →
+   `POST /api/tracker/sync` con `Authorization: Bearer <token>`. Parte 5 s dopo ogni partita, 10 s dopo l'avvio e ogni
+   5 minuti se qualcosa resta indietro; "Invia ora" non aspetta.
+5. Errori: rete assente o sito giù → riprova dopo 1, 2, 5, 15 minuti; 429 (500 partite nuove in 24 ore) → dopo un'ora;
+   503 (funzioni non ancora nel database) → dopo 15 minuti; 401 → il PC è stato scollegato dal sito: l'app dimentica il
+   token e lo dice; 400 → errore nostro, quelle partite non si riprovano.
+6. Scollegare: dal sito (`/account/tracker`, `tracker_revoke`) o dall'app ("Scollega questo PC": `DELETE
+   /api/tracker/link` → `tracker_device_unlink`). Dopo lo scollegamento l'app rimanderebbe tutto al prossimo account.
+
+Per le prove: `ORIGINSMETA_TRACKER_SITE` (solo https o http://localhost) punta l'app a un'anteprima o al server di
+sviluppo; `ORIGINSMETA_TRACKER_DATA` usa una cartella dati di prova.
+
+## Il sito (Fase 3)
+
+- **Rotte** (client anonimo senza cache, `supabaseAnon` di `src/lib/supabase/public.ts`; mai in cache; niente cookie):
+  `src/app/api/tracker/link/route.ts` (POST codice → token, DELETE scollega) e `src/app/api/tracker/sync/route.ts`
+  (POST partite: `isUpload`, poi patch e archetipo con `enrich.ts`, poi `tracker_submit`). Prima della migrazione
+  rispondono 503 "unavailable" (verificato il 30/09 sul server locale).
+- **Pagina** `/[locale]/account/tracker` (privata, dinamica, noindex, nel matcher di `src/proxy.ts`): codice
+  (`TrackerCodeBox`), PC collegati con "Scollega", statistiche personali (totali, mazzi per lista esatta, contro le
+  Leggendarie, ultime 20 partite con la patch), "Cancella tutte le mie partite". Azioni in
+  `src/lib/community/trackerActions.ts`, letture in `trackerQueries.ts`, testi EN/IT/ES in `src/lib/trackerLabels.ts`.
+- **In /account** il riquadro "OriginsMeta Tracker" si vede solo a Staff e admin finché l'app non si scarica
+  (`TRACKER_ACCOUNT_LINK_PUBLIC` in `trackerLabels.ts`, da accendere al lancio insieme al testo `beta`).
+- **Privacy**: paragrafo `#tracker` (EN/IT/ES, `trackerPrivacy`): cosa legge l'app, cosa manda e cosa mai, dove sta,
+  chi lo vede, statistiche anonime sempre e come uscirne (non collegare, cancellare), token cifrato.
+- **Database**: blocco `-- ===== 30/09/2026: TRACKER =====` in fondo a `supabase/schema.sql` (tabelle
+  `tracker_devices`, `tracker_link_codes`, `tracked_matches` con RLS e nessuna scrittura diretta; funzioni del
+  collegamento, dell'invio, della gestione e delle statistiche). Tipi in `src/lib/supabase/database.ts`.
+
+## Statistiche anonime (win rate)
+
+Richiesta di Pierluigi del 30/09/2026: i win rate di mazzi e carte "sono molto importanti e dobbiamo averli". Le
+calcola il database, al momento, con funzioni `security definer` per anon che restituiscono **solo aggregati**:
+
+| Funzione | Numeri (per una patch) |
+|---|---|
+| `tracker_stats_overview` | partite, vittorie di chi traccia, giocatori, partite con la Leggendaria avversaria |
+| `tracker_stats_legendaries` | win rate per Leggendaria del mazzo |
+| `tracker_stats_lists` | win rate per lista esatta (13 carte): il sito la confronta con i mazzi della community (`deckListKey`) |
+| `tracker_stats_archetypes` | win rate per archetipo (`suggestArchetype`, calcolato dal sito all'invio) |
+| `tracker_stats_cards` | per carta: win rate quando è nel mazzo, win rate quando chi traccia la gioca, turno medio della prima giocata |
+| `tracker_stats_matchups` | scontri fra Leggendarie (esito dal lato di chi traccia) |
+| `tracker_stats_opponents` | Leggendarie più incontrate (la quota è partite / partite con la Leggendaria avversaria) |
+
+- **Soglia di ogni numero**: almeno 20 partite di almeno 3 giocatori diversi (`tracker_stats_ok` = `TRACKER_STATS`);
+  sotto soglia il numero non esce (null o riga assente). Si mostra appena la supera (decisione di Pierluigi). Sotto le
+  100 partite porta l'etichetta **"prime stime"** (`isEarly`, soglia da confermare).
+- **Per patch**: la patch in vigore alla fine della partita (`patchAt` di `cards.ts`, calcolata dal sito all'invio e
+  salvata sulla riga). Niente somme di più patch né di più code: il totale meno una parte mostrata svelerebbe la parte
+  sotto soglia. Le differenze fra tabelle diverse (per esempio una Leggendaria meno le sue liste mostrate) possono
+  ancora rivelare la somma di gruppi piccoli: sono numeri di gioco senza nomi né id, rischio accettato.
+- **Coda**: per ora tutte le partite (`tracker_stats_queue()` = null, `TRACKER_STATS.queue`); con molta più utenza solo
+  la classificata: si cambiano insieme la funzione (una riga di SQL, migrazione) e la costante.
+- **Solo i mazzi di chi traccia**, una volta per impronta: niente doppioni (la stessa partita da due account
+  OriginsMeta con lo stesso account di gioco conta una volta), nessun collegamento fra utenti. Una partita fra due
+  giocatori che tracciano conta due volte, una per lato, ognuna con il suo mazzo.
+- Una partita cancellata (`tracker_forget`, account eliminato) esce subito dai numeri.
+- Lettura dal sito: `readTrackerStats(patch)` di `src/lib/community/trackerStatsQueries.ts` (client pubblico, cache di
+  60 s), che ricontrolla le risposte con `stats.ts`. Oggi nessuna pagina la usa: vedi la proposta qui sotto.
+
+**Patch nuove.** La patch si scrive sulla riga all'invio: se una patch esce prima che sia in `cards.ts`, le partite di
+quelle ore restano sulla patch precedente. Dopo averla registrata (procedura "Patch nuove" di CLAUDE.md) si correggono
+con una riga nel SQL Editor di Supabase (esempio per la 0.8 con l'ora del post):
+`update public.tracked_matches set patch = '0.8' where ended_at >= '2026-10-20T18:00:00Z' and patch is distinct from '0.8';`
+
+### Win rate sul sito: proposta (da decidere con Pierluigi, non ancora fatta)
+
+1. **Pagina delle statistiche**, `/tier-list/win-rate` (quarta scheda di `TierListHeader`, "Win rate", accanto a
+   OriginsMeta · Community · Le più giocate): Leggendarie, archetipi, carte (nel mazzo / giocata / turno medio),
+   matrice degli scontri, Leggendarie più incontrate; patch corrente e precedente; "prime stime" dove serve; riga del
+   metodo (soglie, solo chi collega l'app). Noindex finché il campione è piccolo, come l'anteprima della community.
+2. **Scheda di un mazzo della community**: riquadro "Win rate nelle partite registrate" quando la sua lista esatta
+   supera la soglia (patch corrente), con partite e "prime stime"; niente riquadro sotto soglia.
+3. **Scheda carta**: "Nelle partite registrate": win rate nel mazzo, quando giocata, turno medio; sulle Leggendarie
+   anche gli scontri migliori e peggiori e quanto spesso si incontrano.
+4. Più avanti, in home, una striscia "Win rate della patch" quando i numeri sono solidi.
+
+Consiglio: 1 e 2 per primi (sono i numeri chiesti), poi 3. Tutte le pagine restano statiche o ISR: i numeri arrivano
+con la rigenerazione, come i voti.
+
+## Overlay (Fase 4)
+
+- **Finestra sopra il gioco** (`main.ts`, `src/overlay/`): piccola (380 × 136), trasparente, sempre in primo piano,
+  fuori dalla barra delle applicazioni, aperta senza rubare il fuoco al gioco. Di base lascia passare i clic
+  (`setIgnoreMouseEvents`); con "Sposta" si trascina e la posizione resta (`overlay.json`). Si accende dall'app o dal
+  menu dell'icona. Con il gioco a schermo intero esclusivo Windows non la mostra: modalità finestra o senza bordi.
+- **Sorgente per OBS**: l'app serve la stessa pagina su `http://127.0.0.1:47015/overlay/` (porte di riserva
+  47016–47019), con `?lang=it|en|es` e `&layout=v` per la versione verticale; stato in `state.json` ogni 2 secondi.
+  Solo 127.0.0.1, solo GET e HEAD, Host controllato (contro il DNS rebinding), niente cache.
+- **Cosa mostra** (`overlayView`, con i test): mazzo scelto nel gioco con la Leggendaria, sessione (dall'avvio o da
+  "Nuova sessione"), record del mazzo nello storico sul PC con la percentuale, ultima partita con la Leggendaria
+  avversaria. Sempre "non affiliato a Koin Games". Niente bot o persona, rank, nomi.
+- L'overlay per OBS del sito (`/overlay/deck`, pacchetto STREAM) resta per chi non usa l'app: mostra un mazzo
+  pubblicato, non le partite.
+
+## Migrazione e prove
+
+- Prova in memoria (nessun database vero): lo script `tracker-test.mjs` con PGlite nello scratchpad della sessione del
+  30/09 applica il blocco due volte e prova collegamento, invio, permessi, cancellazione e soglie (59 controlli, tutti
+  verdi il 30/09/2026). Non sta nel repo (PGlite non è una dipendenza).
+- **Prova a secco sul database vero**, da lanciare a mano (transazione con rollback, nulla resta):
+  `node scripts/tracker-dry-run.mjs` dalla radice del repo (legge `.env.local` della cartella corrente, altrimenti quello
+  del checkout principale); usa i primi quattro profili iscritti solo dentro la transazione.
+- **Migrazione**: `node scripts/db-migrate.mjs` da un checkout aggiornato con questo lavoro e con `.env.local` (di solito
+  il checkout principale dopo il merge su main). Il codice regge la migrazione mancante: rotte 503, pagina "non ancora
+  disponibile".
+- Dopo la migrazione: rifare la prova completa con l'app (codice, invio, scollegamento) e con due o tre account per
+  vedere le statistiche superare la soglia.
 
 ## Da decidere
 
-- **Cosa arriva al sito** (Fase 3): il mazzo completo dell'avversario (il gioco non lo mostra) o solo le carte che ha
-  giocato; se il segnale bot può servire, senza mai mostrarlo, a tenere fuori quelle partite dai dati pubblici.
-- Firma e distribuzione dell'app (certificato annuale o Microsoft Store), dove pubblicare installer e aggiornamenti.
+- **Dove mostrare i win rate** (proposta qui sopra).
+- Quando mostrare il riquadro in `/account` a tutti (`TRACKER_ACCOUNT_LINK_PUBLIC`) e togliere il testo "in prova".
+- Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate.
+- Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.
 - Uso dei dati del client (poteri leggendari, luoghi): contengono anche carte non annunciate.

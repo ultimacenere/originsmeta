@@ -4278,3 +4278,471 @@ comment on column public.community_comics.editions is 'Versioni disegnate nelle 
 comment on column public.community_comics.former_slugs is 'Indirizzi dei fumetti uniti in questo (scripts/merge-comics.mjs, 30/09/2026): la pagina /news/comics/<slug> di un indirizzo di prima porta qui con un 308. Nessuna grant: li scrive solo lo script.';
 comment on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) is 'Versioni disegnate di un fumetto valide: le altre lingue del sito, testi e tavole con le regole dell''originale, copertina facoltativa nella cartella del proprietario (30/09/2026).';
 comment on function public.community_comic_files(jsonb, text, jsonb) is 'Tutti i file di un fumetto, versioni disegnate comprese (trigger dei file e profile_media_in_use, 30/09/2026).';
+
+-- ===== 30/09/2026: TRACKER =====
+-- =====================================================================================================
+-- 29–30/09/2026 — TRACKER/OVERLAY, Fase 3: le partite registrate dall'app OriginsMeta Tracker (docs/tracker.md).
+--   Collegamento: l'app non ha una sessione di Supabase. Si collega all'account con un codice monouso: lo crea il sito
+--   per chi ha fatto l'accesso (/account/tracker, tracker_link_code: 8 caratteri, 10 minuti, al massimo 5 l'ora) e
+--   l'app lo scambia con un token (tracker_link_claim, anon, attraverso /api/tracker/link). Del codice e del token il
+--   database tiene solo l'impronta SHA-256. Un PC si scollega dal sito (tracker_revoke) o dall'app
+--   (tracker_device_unlink, con il suo token).
+--   Partite: arrivano con tracker_submit (anon, con il token, attraverso /api/tracker/sync): righe dell'utente del
+--   token, una per impronta di partita, al massimo 50 per chiamata e 500 al giorno; una partita che non ha la forma
+--   prevista (tracker_match_ok = isUpload di src/lib/tracker/upload.ts, più i due campi del sito) si scarta. Il sito
+--   aggiunge la patch in vigore alla fine della partita e l'archetipo del mazzo (src/lib/tracker/enrich.ts); la lista
+--   esatta (deck_list: le 13 carte in ordine, separate da virgole) la calcola il database.
+--   Regole del tracker: nessun nome né id di giocatori o partite, nessun rank dell'avversario, nessun segnale bot né
+--   modalità "BotBattle" (la coda è solo 'ranked' o 'normal'); dell'avversario solo la Leggendaria e le carte che ha
+--   giocato (Pierluigi, 30/09/2026: il suo mazzo completo non si manda).
+--   Righe: le legge solo il proprietario (RLS); nessuna scrittura diretta. Le cancella lui (tracker_forget) o
+--   l'eliminazione dell'account (cascade).
+--   Statistiche anonime (Pierluigi, 30/09/2026: i win rate di mazzi e carte "sono molto importanti e dobbiamo averli"):
+--   le partite di chi collega l'app entrano SEMPRE nelle statistiche, senza caselle (decisione di Pierluigi, scritta
+--   nell'informativa, /privacy#tracker). Le funzioni tracker_stats_* (security definer, anon) restituiscono SOLO
+--   aggregati di una patch, e ogni numero solo sopra la soglia: almeno 20 partite di almeno 3 giocatori diversi
+--   (tracker_stats_ok = TRACKER_STATS di src/lib/tracker/stats.ts). Contano solo i mazzi di chi traccia, una volta per
+--   impronta (niente doppioni, nessun collegamento fra utenti). Niente somme su più patch né su più code: il totale
+--   meno una parte mostrata svelerebbe la parte sotto soglia. La coda contata la decide tracker_stats_queue() (oggi
+--   tutte; poi solo la classificata, con una migrazione). I numeri si calcolano al momento: una partita cancellata esce
+--   subito. Tutto è idempotente.
+-- =====================================================================================================
+
+create table if not exists public.tracker_devices (
+  id uuid primary key default gen_random_uuid(),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  name text not null default 'PC' check (char_length(name) between 1 and 40),
+  token_hash text not null unique check (token_hash ~ '^[0-9a-f]{64}$'),
+  created_at timestamptz not null default now(),
+  last_seen_at timestamptz,
+  revoked_at timestamptz
+);
+create index if not exists tracker_devices_owner_idx on public.tracker_devices (owner);
+
+create table if not exists public.tracker_link_codes (
+  code_hash text primary key check (code_hash ~ '^[0-9a-f]{64}$'),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  used_at timestamptz
+);
+create index if not exists tracker_link_codes_owner_idx on public.tracker_link_codes (owner, created_at);
+
+create table if not exists public.tracked_matches (
+  owner uuid not null references public.profiles(id) on delete cascade,
+  id text not null check (id ~ '^[0-9a-f]{32}$'),
+  device_id uuid references public.tracker_devices(id) on delete set null,
+  ended_at timestamptz,
+  result text check (result in ('W', 'L')),
+  queue text not null default 'normal' check (queue in ('ranked', 'normal')),
+  patch text check (patch ~ '^[a-z0-9][a-z0-9.-]{0,19}$'),
+  deck_name text check (char_length(deck_name) <= 60),
+  deck_legendary text check (deck_legendary ~ '^C[0-9]{5}_[A-Z]{2}$'),
+  deck_cards text[] not null default '{}' check (cardinality(deck_cards) <= 13),
+  deck_list text check (deck_list ~ '^(C[0-9]{5}_[A-Z]{2},){12}C[0-9]{5}_[A-Z]{2}$'),
+  archetype text check (archetype ~ '^[a-z]{1,20}$'),
+  deck_code text check (char_length(deck_code) <= 420),
+  rank text check (char_length(rank) <= 30),
+  opponent_legendary text check (opponent_legendary ~ '^C[0-9]{5}_[A-Z]{2}$'),
+  opponent_played text[] not null default '{}' check (cardinality(opponent_played) <= 40),
+  turns smallint check (turns between 0 and 200),
+  plays jsonb not null default '[]'::jsonb check (jsonb_typeof(plays) = 'array'),
+  created_at timestamptz not null default now(),
+  primary key (owner, id)
+);
+create index if not exists tracked_matches_owner_ended_idx on public.tracked_matches (owner, ended_at desc);
+create index if not exists tracked_matches_owner_created_idx on public.tracked_matches (owner, created_at);
+create index if not exists tracked_matches_patch_idx on public.tracked_matches (patch, queue);
+create index if not exists tracked_matches_id_idx on public.tracked_matches (id);
+
+comment on table public.tracker_devices is 'PC collegati all''account dall''app OriginsMeta Tracker: del token solo l''impronta SHA-256 (30/09/2026).';
+comment on table public.tracker_link_codes is 'Codici monouso di collegamento dell''app (impronta SHA-256, 10 minuti). Nessun client li legge.';
+comment on table public.tracked_matches is 'Partite registrate dall''app OriginsMeta Tracker, una per impronta: niente nomi, id, rank dell''avversario né segnale bot; dell''avversario solo Leggendaria e carte giocate.';
+
+-- Chiave di una carta come nel gioco, senza variante cosmetica.
+create or replace function public.tracker_key_ok(k jsonb)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select jsonb_typeof(k) = 'string' and (k #>> '{}') ~ '^C[0-9]{5}_[A-Z]{2}$';
+$$;
+
+-- Intero dentro un intervallo (jsonb number senza decimali).
+create or replace function public.tracker_int_ok(v jsonb, lo integer, hi integer)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select jsonb_typeof(v) = 'number' and (v #>> '{}') ~ '^[0-9]{1,4}$' and (v #>> '{}')::integer between lo and hi;
+$$;
+
+-- Data e ora ISO in UTC valida e sensata (dal 2026 a domani): la conversione si prova qui, così una data impossibile
+-- con la forma giusta (mese 13) scarta la partita invece di far fallire tutto l'invio.
+create or replace function public.tracker_ts_ok(s text)
+returns boolean language plpgsql stable set search_path = public, pg_temp as $$
+begin
+  if s is null or s !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{1,6})?Z$' then return false; end if;
+  return s::timestamptz between timestamptz '2026-01-01 00:00:00+00' and now() + interval '1 day';
+exception when others then
+  return false;
+end $$;
+
+-- Una partita come la manda l'app (src/lib/tracker/upload.ts, `isUpload`: stessi campi e stessi limiti) più i due campi
+-- che aggiunge il sito (patch e archetype, facoltativi). Il nome del mazzo non si rifiuta per i caratteri di controllo:
+-- tracker_submit li toglie.
+create or replace function public.tracker_match_ok(m jsonb)
+returns boolean language sql stable set search_path = public, pg_temp as $$
+  select case
+    when jsonb_typeof(m) is distinct from 'object' then false
+    when (m - array['id', 'endedAt', 'result', 'queue', 'deckName', 'deckLegendary', 'deckCards', 'deckCode', 'rank', 'oppLegendary', 'oppPlayed', 'turns', 'plays', 'patch', 'archetype']) <> '{}'::jsonb then false
+    when jsonb_typeof(m -> 'id') is distinct from 'string' or (m ->> 'id') !~ '^[0-9a-f]{32}$' then false
+    when jsonb_typeof(m -> 'endedAt') not in ('null', 'string') then false
+    when jsonb_typeof(m -> 'endedAt') = 'string' and not public.tracker_ts_ok(m ->> 'endedAt') then false
+    when jsonb_typeof(m -> 'result') not in ('null', 'string') or coalesce(m ->> 'result', 'W') not in ('W', 'L') then false
+    when jsonb_typeof(m -> 'queue') is distinct from 'string' or (m ->> 'queue') not in ('ranked', 'normal') then false
+    when jsonb_typeof(m -> 'deckName') not in ('null', 'string') or char_length(coalesce(m ->> 'deckName', '')) > 60 then false
+    when jsonb_typeof(m -> 'deckLegendary') <> 'null' and not public.tracker_key_ok(m -> 'deckLegendary') then false
+    when jsonb_typeof(m -> 'deckCards') is distinct from 'array' or jsonb_array_length(m -> 'deckCards') > 13 then false
+    when exists (select 1 from jsonb_array_elements(m -> 'deckCards') as c(x) where not public.tracker_key_ok(x)) then false
+    when jsonb_typeof(m -> 'deckCode') not in ('null', 'string') then false
+    when jsonb_typeof(m -> 'deckCode') = 'string' and (char_length(m ->> 'deckCode') > 420 or (m ->> 'deckCode') !~ '^KGBLDC[A-Za-z0-9+/=]+:[0-9a-f]{8}$') then false
+    when jsonb_typeof(m -> 'rank') not in ('null', 'string') or char_length(coalesce(m ->> 'rank', '')) > 30 or coalesce(m ->> 'rank', '') !~ '^[A-Za-z0-9 ]*$' then false
+    when jsonb_typeof(m -> 'oppLegendary') <> 'null' and not public.tracker_key_ok(m -> 'oppLegendary') then false
+    when jsonb_typeof(m -> 'oppPlayed') is distinct from 'array' or jsonb_array_length(m -> 'oppPlayed') > 40 then false
+    when exists (select 1 from jsonb_array_elements(m -> 'oppPlayed') as c(x) where not public.tracker_key_ok(x)) then false
+    when jsonb_typeof(m -> 'turns') <> 'null' and not public.tracker_int_ok(m -> 'turns', 0, 200) then false
+    when jsonb_typeof(m -> 'patch') not in ('null', 'string') or coalesce(m ->> 'patch', 'x') !~ '^[a-z0-9][a-z0-9.-]{0,19}$' then false
+    when jsonb_typeof(m -> 'archetype') not in ('null', 'string') or coalesce(m ->> 'archetype', 'x') !~ '^[a-z]{1,20}$' then false
+    when jsonb_typeof(m -> 'plays') is distinct from 'array' or jsonb_array_length(m -> 'plays') > 300 then false
+    else not exists (
+      select 1 from jsonb_array_elements(m -> 'plays') as p(x)
+       where case
+         when jsonb_typeof(x) is distinct from 'object' then true
+         when (x - array['t', 'm', 'c', 'l']) <> '{}'::jsonb or not (x ?& array['t', 'm', 'c', 'l']) then true
+         when not public.tracker_int_ok(x -> 't', 0, 200) then true
+         when jsonb_typeof(x -> 'm') is distinct from 'boolean' then true
+         when jsonb_typeof(x -> 'c') <> 'null' and not public.tracker_key_ok(x -> 'c') then true
+         when jsonb_typeof(x -> 'l') <> 'null' and not public.tracker_int_ok(x -> 'l', 0, 2) then true
+         else false
+       end)
+  end;
+$$;
+
+alter table public.tracker_devices enable row level security;
+alter table public.tracker_link_codes enable row level security;
+alter table public.tracked_matches enable row level security;
+
+-- Lettura: solo il proprietario. Scrittura: nessuna policy, di proposito; solo le funzioni qui sotto.
+drop policy if exists "tracker devices: owner reads" on public.tracker_devices;
+create policy "tracker devices: owner reads" on public.tracker_devices for select to authenticated using (owner = (select auth.uid()));
+drop policy if exists "tracked matches: owner reads" on public.tracked_matches;
+create policy "tracked matches: owner reads" on public.tracked_matches for select to authenticated using (owner = (select auth.uid()));
+
+-- Supabase dà di default tutti i privilegi ad anon e authenticated sulle tabelle nuove: si tolgono. Dei PC collegati
+-- il proprietario legge tutto tranne l'impronta del token; i codici non li legge nessuno.
+revoke all on public.tracker_devices from anon, authenticated;
+revoke all on public.tracker_link_codes from anon, authenticated;
+revoke all on public.tracked_matches from anon, authenticated;
+grant select (id, name, created_at, last_seen_at, revoked_at) on public.tracker_devices to authenticated;
+grant select on public.tracked_matches to authenticated;
+
+-- ---------- codice di collegamento (sito, con l'accesso fatto) ----------
+-- 8 caratteri senza quelli che si confondono (niente 0/O, 1/I), da byte casuali di gen_random_uuid() fuori dai bit
+-- fissi di versione e variante (32 simboli: nessuno sbilanciamento del modulo). Restituisce "ABCD-EFGH".
+create or replace function public.tracker_link_code()
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  raw bytea := uuid_send(gen_random_uuid()) || uuid_send(gen_random_uuid());
+  code text := '';
+  i integer;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  if (select count(*) from public.tracker_link_codes c where c.owner = uid and c.created_at > now() - interval '1 hour') >= 5 then
+    raise exception 'too_many_codes';
+  end if;
+  foreach i in array array[0, 1, 2, 3, 4, 5, 16, 17] loop
+    code := code || substr(alphabet, (get_byte(raw, i) % 32) + 1, 1);
+  end loop;
+  delete from public.tracker_link_codes c where c.expires_at < now() - interval '1 day';
+  insert into public.tracker_link_codes (code_hash, owner, expires_at)
+  values (encode(sha256(convert_to(code, 'UTF8')), 'hex'), uid, now() + interval '10 minutes');
+  return substr(code, 1, 4) || '-' || substr(code, 5, 4);
+end $$;
+revoke all on function public.tracker_link_code() from public, anon;
+grant execute on function public.tracker_link_code() to authenticated;
+
+-- ---------- scambio del codice con il token (app, anon) ----------
+-- Codice sconosciuto, già usato o scaduto: 'invalid_code'. Al massimo 10 PC collegati per utente: 'too_many_devices'.
+-- Il token ("omt_" + 64 caratteri esadecimali) esce solo qui, una volta; il database ne tiene l'impronta.
+create or replace function public.tracker_link_claim(p_code text, p_name text)
+returns table (token text, username text) language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  norm text := upper(regexp_replace(left(coalesce(p_code, ''), 40), '[^A-Za-z0-9]', '', 'g'));
+  dname text := btrim(regexp_replace(left(coalesce(p_name, ''), 40), '[[:cntrl:]]', '', 'g'));
+  row_owner uuid;
+  tok text;
+begin
+  if char_length(norm) <> 8 then raise exception 'invalid_code'; end if;
+  update public.tracker_link_codes c set used_at = now()
+   where c.code_hash = encode(sha256(convert_to(norm, 'UTF8')), 'hex') and c.used_at is null and c.expires_at > now()
+   returning c.owner into row_owner;
+  if row_owner is null then raise exception 'invalid_code'; end if;
+  if (select count(*) from public.tracker_devices d where d.owner = row_owner and d.revoked_at is null) >= 10 then
+    raise exception 'too_many_devices';
+  end if;
+  tok := 'omt_' || encode(sha256(convert_to(gen_random_uuid()::text || gen_random_uuid()::text || clock_timestamp()::text, 'UTF8')), 'hex');
+  insert into public.tracker_devices (owner, name, token_hash)
+  values (row_owner, case when dname = '' then 'PC' else dname end, encode(sha256(convert_to(tok, 'UTF8')), 'hex'));
+  return query select tok, p.username from public.profiles p where p.id = row_owner;
+end $$;
+revoke all on function public.tracker_link_claim(text, text) from public;
+grant execute on function public.tracker_link_claim(text, text) to anon, authenticated;
+
+-- ---------- l'app si scollega da sola (anon, con il suo token) ----------
+-- true se il token valeva ed è stato scollegato; un token sconosciuto o già scollegato dà false, senza errori.
+create or replace function public.tracker_device_unlink(p_token text)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if p_token is null or p_token !~ '^omt_[0-9a-f]{64}$' then return false; end if;
+  update public.tracker_devices set revoked_at = now()
+   where token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex') and revoked_at is null;
+  return found;
+end $$;
+revoke all on function public.tracker_device_unlink(text) from public;
+grant execute on function public.tracker_device_unlink(text) to anon, authenticated;
+
+-- ---------- partite dall'app (anon, con il token) ----------
+-- Token sconosciuto o scollegato: 'invalid_token' (l'app si scollega). Più di 50 partite o un corpo che non è un array:
+-- 'invalid_matches'. Oltre 500 partite nuove in 24 ore per utente: 'too_many_matches'. Le partite che non hanno la
+-- forma prevista si saltano; quelle già arrivate (stessa impronta) non contano. Restituisce le partite aggiunte.
+create or replace function public.tracker_submit(p_token text, p_matches jsonb)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  dev_id uuid;
+  dev_owner uuid;
+  m jsonb;
+  n integer;
+  added integer := 0;
+  rows_in integer;
+  cards text[];
+begin
+  if p_token is null or p_token !~ '^omt_[0-9a-f]{64}$' then raise exception 'invalid_token'; end if;
+  select d.id, d.owner into dev_id, dev_owner from public.tracker_devices d
+   where d.token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex') and d.revoked_at is null;
+  if dev_id is null then raise exception 'invalid_token'; end if;
+  update public.tracker_devices set last_seen_at = now() where id = dev_id;
+  if jsonb_typeof(p_matches) is distinct from 'array' then raise exception 'invalid_matches'; end if;
+  n := jsonb_array_length(p_matches);
+  if n > 50 then raise exception 'invalid_matches'; end if;
+  if (select count(*) from public.tracked_matches t where t.owner = dev_owner and t.created_at > now() - interval '1 day') + n > 500 then
+    raise exception 'too_many_matches';
+  end if;
+  for m in select value from jsonb_array_elements(p_matches) loop
+    continue when not public.tracker_match_ok(m);
+    cards := array(select jsonb_array_elements_text(m -> 'deckCards'));
+    insert into public.tracked_matches (owner, id, device_id, ended_at, result, queue, patch, deck_name, deck_legendary, deck_cards, deck_list,
+                                        archetype, deck_code, rank, opponent_legendary, opponent_played, turns, plays)
+    values (dev_owner, m ->> 'id', dev_id, (m ->> 'endedAt')::timestamptz, m ->> 'result', m ->> 'queue', m ->> 'patch',
+            nullif(btrim(regexp_replace(m ->> 'deckName', '[[:cntrl:]]', '', 'g')), ''), m ->> 'deckLegendary', cards,
+            case when cardinality(cards) = 13 then (select string_agg(k, ',' order by k collate "C") from unnest(cards) as u(k)) end,
+            m ->> 'archetype', m ->> 'deckCode', m ->> 'rank', m ->> 'oppLegendary',
+            array(select jsonb_array_elements_text(m -> 'oppPlayed')), (m ->> 'turns')::smallint, m -> 'plays')
+    on conflict (owner, id) do nothing;
+    get diagnostics rows_in = row_count;
+    added := added + rows_in;
+  end loop;
+  return added;
+end $$;
+revoke all on function public.tracker_submit(text, jsonb) from public;
+grant execute on function public.tracker_submit(text, jsonb) to anon, authenticated;
+
+-- ---------- gestione dal sito (con l'accesso fatto) ----------
+-- Scollega un proprio PC: il suo token smette di valere. true se c'era.
+create or replace function public.tracker_revoke(p_device uuid)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if auth.uid() is null then raise exception 'not_authenticated'; end if;
+  update public.tracker_devices set revoked_at = now() where id = p_device and owner = auth.uid() and revoked_at is null;
+  return found;
+end $$;
+revoke all on function public.tracker_revoke(uuid) from public, anon;
+grant execute on function public.tracker_revoke(uuid) to authenticated;
+
+-- Cancella tutte le proprie partite registrate (i PC restano collegati). Restituisce quante.
+create or replace function public.tracker_forget()
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  gone integer;
+begin
+  if auth.uid() is null then raise exception 'not_authenticated'; end if;
+  delete from public.tracked_matches where owner = auth.uid();
+  get diagnostics gone = row_count;
+  return gone;
+end $$;
+revoke all on function public.tracker_forget() from public, anon;
+grant execute on function public.tracker_forget() to authenticated;
+
+-- ---------- statistiche anonime (sito, anon) ----------
+-- Soglia di ogni numero: almeno 20 partite di almeno 3 giocatori diversi (TRACKER_STATS di src/lib/tracker/stats.ts).
+create or replace function public.tracker_stats_ok(games bigint, players bigint)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select coalesce(games >= 20 and players >= 3, false);
+$$;
+
+-- La coda che conta nelle statistiche: null = tutte le partite (Pierluigi, 30/09/2026: "per ora contano tutte"); con
+-- molta più utenza diventerà 'ranked', con una migrazione (TRACKER_STATS.queue di stats.ts, un test li confronta).
+-- Non è un parametro delle funzioni: tutte le code e una coda sola insieme svelerebbero l'altra per differenza.
+create or replace function public.tracker_stats_queue()
+returns text language sql immutable set search_path = public, pg_temp as $$
+  select null::text;
+$$;
+
+-- Le partite che contano per una patch: esito noto, coda di tracker_stats_queue(), una volta per impronta (la stessa
+-- partita arrivata da due account OriginsMeta con lo stesso account di gioco conta una volta). Solo per le funzioni qui
+-- sotto: restituisce anche il proprietario, che serve solo a contare i giocatori diversi e non esce mai.
+create or replace function public.tracker_stat_rows(p_patch text)
+returns table (owner uuid, id text, win boolean, legendary text, cards text[], list text, archetype text, opponent text, plays jsonb)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select distinct on (t.id) t.owner, t.id, t.result = 'W', t.deck_legendary, t.deck_cards, t.deck_list, t.archetype, t.opponent_legendary, t.plays
+    from public.tracked_matches t
+   where p_patch is not null
+     and t.patch = p_patch
+     and t.result in ('W', 'L')
+     and (public.tracker_stats_queue() is null or t.queue = public.tracker_stats_queue())
+   order by t.id, t.created_at;
+$$;
+revoke all on function public.tracker_stat_rows(text) from public, anon, authenticated;
+
+-- Totali della patch: partite, vittorie di chi traccia, giocatori, partite con la Leggendaria avversaria (per le quote).
+create or replace function public.tracker_stats_overview(p_patch text)
+returns table (games bigint, wins bigint, players bigint, with_opponent bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with r as (select * from public.tracker_stat_rows(p_patch)),
+  o as (select count(*) as n, count(distinct r.owner) as p from r where r.opponent is not null)
+  select count(*), count(*) filter (where r.win), count(distinct r.owner),
+         (select case when public.tracker_stats_ok(o.n, o.p) then o.n end from o)
+    from r
+  having public.tracker_stats_ok(count(*), count(distinct r.owner));
+$$;
+
+-- Win rate per Leggendaria del mazzo di chi traccia.
+create or replace function public.tracker_stats_legendaries(p_patch text)
+returns table (legendary text, games bigint, wins bigint, players bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select r.legendary, count(*), count(*) filter (where r.win), count(distinct r.owner)
+    from public.tracker_stat_rows(p_patch) r
+   where r.legendary is not null
+   group by r.legendary
+  having public.tracker_stats_ok(count(*), count(distinct r.owner))
+   order by count(*) desc, r.legendary;
+$$;
+
+-- Win rate per lista esatta (le 13 carte): il sito la confronta con i mazzi della community (deckListKey di stats.ts).
+create or replace function public.tracker_stats_lists(p_patch text)
+returns table (list text, legendary text, games bigint, wins bigint, players bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select r.list, min(r.legendary), count(*), count(*) filter (where r.win), count(distinct r.owner)
+    from public.tracker_stat_rows(p_patch) r
+   where r.list is not null
+   group by r.list
+  having public.tracker_stats_ok(count(*), count(distinct r.owner))
+   order by count(*) desc, r.list;
+$$;
+
+-- Win rate per archetipo (suggestArchetype di src/lib/archetype.ts, calcolato dal sito all'invio).
+create or replace function public.tracker_stats_archetypes(p_patch text)
+returns table (archetype text, games bigint, wins bigint, players bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select r.archetype, count(*), count(*) filter (where r.win), count(distinct r.owner)
+    from public.tracker_stat_rows(p_patch) r
+   where r.archetype is not null
+   group by r.archetype
+  having public.tracker_stats_ok(count(*), count(distinct r.owner))
+   order by count(*) desc, r.archetype;
+$$;
+
+-- Carte: win rate quando sono nel mazzo e quando chi traccia le gioca, turno medio della prima giocata. Ogni gruppo di
+-- numeri ha la sua soglia (null sotto soglia); una carta compare se almeno un gruppo la supera.
+create or replace function public.tracker_stats_cards(p_patch text)
+returns table (card text, deck_games bigint, deck_wins bigint, deck_players bigint, played_games bigint, played_wins bigint, played_players bigint, avg_turn numeric)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with r as (select * from public.tracker_stat_rows(p_patch)),
+  in_deck as (
+    select c.card, count(distinct r.id) as games, count(distinct r.id) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r cross join lateral unnest(r.cards) as c(card)
+     group by c.card
+  ),
+  first_play as (
+    select r.id, r.owner, r.win, p.x ->> 'c' as card, min((p.x ->> 't')::integer) as turn
+      from r cross join lateral jsonb_array_elements(r.plays) as p(x)
+     where p.x ->> 'm' = 'true' and jsonb_typeof(p.x -> 'c') = 'string'
+     group by r.id, r.owner, r.win, p.x ->> 'c'
+  ),
+  played as (
+    select f.card, count(*) as games, count(*) filter (where f.win) as wins, count(distinct f.owner) as players, round(avg(f.turn), 1) as avg_turn
+      from first_play f
+     group by f.card
+  ),
+  j as (
+    select coalesce(d.card, p.card) as card, d.games as dg, d.wins as dw, d.players as dp, p.games as pg, p.wins as pw, p.players as pp, p.avg_turn as pt,
+           public.tracker_stats_ok(d.games, d.players) as ok_d, public.tracker_stats_ok(p.games, p.players) as ok_p
+      from in_deck d full join played p on p.card = d.card
+  )
+  select j.card,
+         case when j.ok_d then j.dg end, case when j.ok_d then j.dw end, case when j.ok_d then j.dp end,
+         case when j.ok_p then j.pg end, case when j.ok_p then j.pw end, case when j.ok_p then j.pp end, case when j.ok_p then j.pt end
+    from j
+   where j.ok_d or j.ok_p
+   order by coalesce(j.dg, 0) desc, j.card;
+$$;
+
+-- Scontri fra Leggendarie: esito dal lato di chi traccia, con la sua Leggendaria contro quella avversaria.
+create or replace function public.tracker_stats_matchups(p_patch text)
+returns table (legendary text, opponent text, games bigint, wins bigint, players bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select r.legendary, r.opponent, count(*), count(*) filter (where r.win), count(distinct r.owner)
+    from public.tracker_stat_rows(p_patch) r
+   where r.legendary is not null and r.opponent is not null
+   group by r.legendary, r.opponent
+  having public.tracker_stats_ok(count(*), count(distinct r.owner))
+   order by count(*) desc, r.legendary, r.opponent;
+$$;
+
+-- Leggendarie più incontrate: quante partite contro ognuna (la quota è games / with_opponent della panoramica) e
+-- l'esito di chi traccia contro di lei.
+create or replace function public.tracker_stats_opponents(p_patch text)
+returns table (opponent text, games bigint, wins bigint, players bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select r.opponent, count(*), count(*) filter (where r.win), count(distinct r.owner)
+    from public.tracker_stat_rows(p_patch) r
+   where r.opponent is not null
+   group by r.opponent
+  having public.tracker_stats_ok(count(*), count(distinct r.owner))
+   order by count(*) desc, r.opponent;
+$$;
+
+revoke all on function public.tracker_stats_overview(text) from public;
+revoke all on function public.tracker_stats_legendaries(text) from public;
+revoke all on function public.tracker_stats_lists(text) from public;
+revoke all on function public.tracker_stats_archetypes(text) from public;
+revoke all on function public.tracker_stats_cards(text) from public;
+revoke all on function public.tracker_stats_matchups(text) from public;
+revoke all on function public.tracker_stats_opponents(text) from public;
+grant execute on function public.tracker_stats_overview(text) to anon, authenticated;
+grant execute on function public.tracker_stats_legendaries(text) to anon, authenticated;
+grant execute on function public.tracker_stats_lists(text) to anon, authenticated;
+grant execute on function public.tracker_stats_archetypes(text) to anon, authenticated;
+grant execute on function public.tracker_stats_cards(text) to anon, authenticated;
+grant execute on function public.tracker_stats_matchups(text) to anon, authenticated;
+grant execute on function public.tracker_stats_opponents(text) to anon, authenticated;
+
+-- Controlli puri: li usano tracker_submit e le statistiche (che girano come proprietario) e la prova a secco.
+revoke all on function public.tracker_key_ok(jsonb) from public, anon;
+revoke all on function public.tracker_int_ok(jsonb, integer, integer) from public, anon;
+revoke all on function public.tracker_ts_ok(text) from public, anon;
+revoke all on function public.tracker_match_ok(jsonb) from public, anon;
+revoke all on function public.tracker_stats_ok(bigint, bigint) from public, anon;
+revoke all on function public.tracker_stats_queue() from public, anon;
+grant execute on function public.tracker_key_ok(jsonb) to authenticated;
+grant execute on function public.tracker_int_ok(jsonb, integer, integer) to authenticated;
+grant execute on function public.tracker_ts_ok(text) to authenticated;
+grant execute on function public.tracker_match_ok(jsonb) to authenticated;
+grant execute on function public.tracker_stats_ok(bigint, bigint) to authenticated;
+grant execute on function public.tracker_stats_queue() to authenticated;

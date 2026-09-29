@@ -285,6 +285,36 @@ export type NotificationRow = {
   read_at: string | null;
 };
 
+/* ---------- tracker/overlay (30/09/2026, blocco TRACKER di supabase/schema.sql) ---------- */
+/** partita registrata dall'app OriginsMeta Tracker: la legge solo il proprietario, si scrive solo con tracker_submit */
+export type TrackedMatchRow = {
+  owner: string;
+  /** impronta della partita (mai l'id del gioco) */
+  id: string;
+  device_id: string | null;
+  ended_at: string | null;
+  result: "W" | "L" | null;
+  queue: "ranked" | "normal";
+  /** patch in vigore alla fine della partita (id di patchOrder), la scrive il sito all'invio */
+  patch: string | null;
+  deck_name: string | null;
+  deck_legendary: string | null;
+  deck_cards: string[];
+  /** le 13 carte in ordine, separate da virgole (la calcola il database) */
+  deck_list: string | null;
+  archetype: string | null;
+  deck_code: string | null;
+  rank: string | null;
+  opponent_legendary: string | null;
+  opponent_played: string[];
+  turns: number | null;
+  plays: { t: number; m: boolean; c: string | null; l: number | null }[];
+  created_at: string;
+};
+/** authenticated legge solo queste colonne dei propri PC (grant per colonna): mai l'impronta del token */
+export type TrackerDeviceRow = { id: string; owner: string; name: string; created_at: string; last_seen_at: string | null; revoked_at: string | null };
+type TrackerStatCount = { games: number; wins: number; players: number };
+
 export type Database = {
   public: {
     Tables: {
@@ -617,6 +647,36 @@ export type Database = {
           },
         ];
       };
+      /** partite del tracker (blocco TRACKER): lettura solo del proprietario, scrittura solo con tracker_submit */
+      tracked_matches: {
+        Row: TrackedMatchRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "tracked_matches_owner_fkey";
+            columns: ["owner"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** PC collegati (blocco TRACKER): lettura per colonna del proprietario, scrittura solo con le funzioni tracker_* */
+      tracker_devices: {
+        Row: TrackerDeviceRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "tracker_devices_owner_fkey";
+            columns: ["owner"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       deck_ratings: {
@@ -712,6 +772,39 @@ export type Database = {
       community_guide_sections_ok: { Args: { s: { heading: string; body: string }[]; complete: boolean }; Returns: boolean };
       community_guide_cards_ok: { Args: { c: string[] }; Returns: boolean };
       community_guide_translation_ok: { Args: { t: unknown; n: number }; Returns: boolean };
+      /* tracker/overlay (blocco TRACKER): errori con raise exception '<codice>' (trackerErrorCode di src/lib/tracker/upload.ts) */
+      /** codice monouso "ABCD-EFGH" per collegare l'app (10 minuti, al massimo 5 l'ora), per chi ha fatto l'accesso */
+      tracker_link_code: { Args: Record<string, never>; Returns: string };
+      /** l'app scambia il codice con il token (anon, dalla rotta /api/tracker/link) */
+      tracker_link_claim: { Args: { p_code: string; p_name: string }; Returns: { token: string; username: string | null }[] };
+      /** l'app si scollega con il suo token; true se valeva */
+      tracker_device_unlink: { Args: { p_token: string }; Returns: boolean };
+      /** partite dall'app (anon, con il token, dalla rotta /api/tracker/sync); restituisce quante aggiunte */
+      tracker_submit: { Args: { p_token: string; p_matches: unknown[] }; Returns: number };
+      /** scollega un proprio PC; true se c'era */
+      tracker_revoke: { Args: { p_device: string }; Returns: boolean };
+      /** cancella tutte le proprie partite; restituisce quante */
+      tracker_forget: { Args: Record<string, never>; Returns: number };
+      /* statistiche anonime (anon): solo aggregati di una patch, ogni numero sopra la soglia (stats.ts le ricontrolla) */
+      tracker_stats_overview: { Args: { p_patch: string }; Returns: (TrackerStatCount & { with_opponent: number | null })[] };
+      tracker_stats_legendaries: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string })[] };
+      tracker_stats_lists: { Args: { p_patch: string }; Returns: (TrackerStatCount & { list: string; legendary: string | null })[] };
+      tracker_stats_archetypes: { Args: { p_patch: string }; Returns: (TrackerStatCount & { archetype: string })[] };
+      tracker_stats_cards: {
+        Args: { p_patch: string };
+        Returns: {
+          card: string;
+          deck_games: number | null;
+          deck_wins: number | null;
+          deck_players: number | null;
+          played_games: number | null;
+          played_wins: number | null;
+          played_players: number | null;
+          avg_turn: number | null;
+        }[];
+      };
+      tracker_stats_matchups: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string; opponent: string })[] };
+      tracker_stats_opponents: { Args: { p_patch: string }; Returns: (TrackerStatCount & { opponent: string })[] };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

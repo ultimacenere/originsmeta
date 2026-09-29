@@ -48,6 +48,8 @@ export const config = {
     "/:locale(en|it|es)/account/messages/:id",
     "/:locale(en|it|es)/account/staff/messages",
     "/:locale(en|it|es)/account/staff/messages/:id",
+    // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
+    "/:locale(en|it|es)/account/tracker",
     "/:locale(en|it|es)/decks/community/:slug/edit",
     // guide della community (pacchetto GUIDE, 27/09/2026): scrittura e modifica, pagine renderizzate sul server
     "/:locale(en|it|es)/guides/new",

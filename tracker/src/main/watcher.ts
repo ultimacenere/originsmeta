@@ -21,6 +21,7 @@ import path from "node:path";
 import { readInventoryFile, readStatsFile, resultsDelta, type GameDeck, type MatchEnd, type ProfileStats } from "../../../src/lib/tracker/profile";
 import { parseReplay, readReplay, replayFileInfo, REPLAY_MAX_BYTES, type ReplayMatch } from "../../../src/lib/tracker/replay";
 import { buildMatch, matchFingerprint, replayBelongsTo } from "../../../src/lib/tracker/match";
+import { matchQueue } from "../../../src/lib/tracker/queue";
 import type { GameDirs } from "./paths";
 import type { SavedState } from "./store";
 import type { TrackerStatus } from "../shared/types";
@@ -38,6 +39,8 @@ type Pending = {
   end: MatchEnd;
   accountId: string | null;
   deck: GameDeck | null;
+  /** `BattleMode` delle statistiche alla fine della partita: con il nome del replay dà la coda (queue.ts) */
+  battleMode: string | null;
   fingerprint: string;
   results: string;
   since: number;
@@ -205,7 +208,7 @@ export class MatchWatcher extends EventEmitter {
     // due partite in meno di un minuto: la prima si chiude subito con quello che c'è
     if (this.pending) await this.finish(this.pending, null);
     const deck = stats.activeDeckIndex === null ? null : (this.decks()[stats.activeDeckIndex] ?? null);
-    this.pending = { end, accountId: stats.accountId, deck, fingerprint, results: stats.results, since: now, firstRun: this.firstRun };
+    this.pending = { end, accountId: stats.accountId, deck, battleMode: stats.battleMode, fingerprint, results: stats.results, since: now, firstRun: this.firstRun };
     this.firstRun = false;
     await this.tryFinish(now);
   }
@@ -245,7 +248,7 @@ export class MatchWatcher extends EventEmitter {
     const file = this.findReplay(p.end.endedAt);
     const replay = file ? this.readReplayFile(file, p.accountId) : null;
     const timedOut = now - p.since >= REPLAY_WAIT_MS;
-    if (replay) return this.finish(p, replay);
+    if (replay) return this.finish(p, replay, file);
     if (!timedOut) return; // il replay arriva o si sta ancora scrivendo: si riprova al giro dopo
     if (file) this.setStatus({ problem: PROBLEMS.badReplay });
     if (p.firstRun) {
@@ -255,13 +258,16 @@ export class MatchWatcher extends EventEmitter {
       this.emit("saved", this.saved);
       return;
     }
-    return this.finish(p, null);
+    return this.finish(p, null, file);
   }
 
-  private async finish(p: Pending, replay: ReplayMatch | null) {
+  /** `file`: il replay di questa partita (anche se non si legge), per la modalità scritta nel nome. */
+  private async finish(p: Pending, replay: ReplayMatch | null, file: string | null = null) {
     this.pending = null;
     if (replay && this.status.problem === PROBLEMS.badReplay) this.setStatus({ problem: null });
-    const match = await buildMatch({ end: p.end, accountId: p.accountId, deck: p.deck, replay });
+    // la coda: solo "ranked" o "normal", mai la modalità del nome ("BotBattle") né un segnale bot (queue.ts)
+    const queue = matchQueue({ mode: file ? (replayFileInfo(path.basename(file))?.mode ?? null) : null, battleMode: p.battleMode });
+    const match = await buildMatch({ end: p.end, accountId: p.accountId, deck: p.deck, replay, queue });
     this.saved = { lastFingerprint: p.fingerprint, results: p.results };
     this.emit("match", match);
     if (p.end.missed) this.emit("missed", p.end.missed);

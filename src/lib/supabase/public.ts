@@ -17,3 +17,16 @@ export function supabasePublic(): Db | null {
     global: { fetch: (input, init) => fetch(input, { ...init, next: { revalidate: 60 } }) },
   });
 }
+
+/**
+ * Client anonimo senza cookie e senza cache (tracker/overlay, 30/09/2026): per le rotte che chiamano una funzione del
+ * database con un segreto nella richiesta (il token dell'app in /api/tracker/*). Ogni chiamata va al database: niente
+ * data cache di Next, che per una scrittura con un token sarebbe sbagliata.
+ */
+export function supabaseAnon(): Db | null {
+  if (!supabaseEnabled) return null;
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+  });
+}

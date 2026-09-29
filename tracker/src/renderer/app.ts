@@ -5,10 +5,15 @@
  *
  * Regole del tracker (docs/tracker.md): nessuna parola su bot o persone e nessun rank dell'avversario (i dati non li
  * hanno); dell'avversario si mostrano la Leggendaria e le carte che ha giocato, non il mazzo completo, che il gioco
- * non fa vedere (decisione aperta: il dato resta nello storico sul PC).
+ * non fa vedere (resta nello storico sul PC e non va al sito: decisione di Pierluigi del 30/09/2026). La coda
+ * (classificata o normale) non si mostra partita per partita.
+ *
+ * Fase 3 (30/09/2026): pannello "Account OriginsMeta" (codice di collegamento, stato dell'invio, scollega), con la frase
+ * sulle statistiche anonime prima del collegamento. Fase 4: pannello "Overlay" (finestra sopra il gioco, sposta,
+ * sessione, indirizzi della sorgente per OBS).
  */
 import cardsTable from "../cards.json";
-import type { AppState, TrackedMatch, TrackerApi } from "../shared/types";
+import type { AppState, LinkProblem, SyncProblem, TrackedMatch, TrackerApi } from "../shared/types";
 
 declare global {
   interface Window {
@@ -62,8 +67,55 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the tracker off`,
     startup: "Start with Windows",
     dataFolder: "Open the data folder",
-    privacy: "The tracker only reads the files Origins TCG saves on this PC and never touches the game. Your matches stay on this PC.",
+    privacy: "The tracker only reads the files Origins TCG saves on this PC and never touches the game. Your matches stay on this PC unless you link the app to your OriginsMeta account.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
+    account: "OriginsMeta account",
+    accountIntro: "Link the app to your account: your matches also go to originsmeta.com, where you can see your stats.",
+    consent:
+      "When you link it, the app sends your matches to your account, including the ones already recorded here, and they always go into the site's anonymous stats too: only aggregate numbers, never who played. If you don't want that, don't link it: the app also works on this PC alone.",
+    howTo: "Create a code on originsmeta.com (Account → OriginsMeta Tracker) and type it here.",
+    openCodePage: "Create a code on originsmeta.com",
+    codeLabel: "Link code",
+    link: "Link",
+    linking: "Linking…",
+    linkedAs: (u: string | null) => (u ? `Linked to @${u}` : "Linked to your account"),
+    pending: (n: number) => (n ? `${n} ${n === 1 ? "match" : "matches"} to send` : "All your matches are on the site"),
+    lastSync: "Last sync",
+    never: "none yet",
+    sending: "Sending…",
+    syncNow: "Send now",
+    unlink: "Unlink this PC",
+    unlinkConfirm: "Unlink this PC from your account? The matches already sent stay on the site: you can delete them from originsmeta.com.",
+    openStats: "Your stats on originsmeta.com",
+    notPersisted: "Windows data protection isn't available: the link lasts until you close the app.",
+    unlinkedNotice: "The site unlinked this PC: link it again with a new code.",
+    linkProblems: {
+      invalid_code: "Wrong or expired code: create a new one on the site.",
+      too_many_devices: "You already have 10 linked PCs: unlink one on the site.",
+      unavailable: "Linking isn't available on the site yet.",
+      offline: "Can't reach originsmeta.com: check your connection.",
+      error: "Linking failed: please try again.",
+    },
+    syncProblems: {
+      offline: "Can't reach originsmeta.com: I'll try again shortly.",
+      server: "The site didn't answer: I'll try again shortly.",
+      rate_limited: "Too many matches sent today: I'll continue later.",
+      unavailable: "The site isn't ready to receive matches yet: I'll try again later.",
+      unlinked: "The site unlinked this PC: link it again with a new code.",
+    },
+    overlay: "Overlay",
+    overlayIntro: "A small window above the game with your deck, the session and the last match, and the same box for OBS. During a match it never shows anything the game hides.",
+    overlayWindow: "Show above the game",
+    overlayMove: "Move it (while this is on, clicks don't go through to the game)",
+    overlayFullscreen: "It shows above the game in windowed or borderless mode, not in exclusive fullscreen.",
+    session: "Session",
+    sessionSince: (t: string) => `since ${t}`,
+    newSession: "New session",
+    obs: "Source for OBS",
+    obsHow: "In OBS, add a Browser source with this address: it works on this PC while the app is open.",
+    obsH: "Horizontal",
+    obsV: "Vertical",
+    obsOff: "The source for OBS couldn't start: another program is using its ports.",
     win: "win",
     loss: "loss",
     unknown: "?",
@@ -112,8 +164,55 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} a tracker spento`,
     startup: "Avvia con Windows",
     dataFolder: "Apri la cartella dei dati",
-    privacy: "Il tracker legge solo i file che Origins TCG salva su questo PC e non tocca mai il gioco. Le tue partite restano su questo PC.",
+    privacy: "Il tracker legge solo i file che Origins TCG salva su questo PC e non tocca mai il gioco. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
+    account: "Account OriginsMeta",
+    accountIntro: "Collega l'app al tuo account: le tue partite arrivano anche su originsmeta.com, dove vedi le tue statistiche.",
+    consent:
+      "Collegandola, l'app manda le tue partite al tuo account, anche quelle già registrate qui, ed entrano sempre anche nelle statistiche anonime del sito: solo numeri aggregati, mai chi ha giocato. Se non vuoi, non collegarla: l'app funziona anche solo su questo PC.",
+    howTo: "Crea un codice su originsmeta.com (Account → OriginsMeta Tracker) e scrivilo qui.",
+    openCodePage: "Crea un codice su originsmeta.com",
+    codeLabel: "Codice di collegamento",
+    link: "Collega",
+    linking: "Collego…",
+    linkedAs: (u: string | null) => (u ? `Collegato a @${u}` : "Collegato al tuo account"),
+    pending: (n: number) => (n ? `${n} ${n === 1 ? "partita" : "partite"} da inviare` : "Tutte le tue partite sono sul sito"),
+    lastSync: "Ultimo invio",
+    never: "nessuno per ora",
+    sending: "Invio…",
+    syncNow: "Invia ora",
+    unlink: "Scollega questo PC",
+    unlinkConfirm: "Scollegare questo PC dal tuo account? Le partite già inviate restano sul sito: puoi cancellarle da originsmeta.com.",
+    openStats: "Le tue statistiche su originsmeta.com",
+    notPersisted: "La protezione dei dati di Windows non è disponibile: il collegamento vale fino alla chiusura dell'app.",
+    unlinkedNotice: "Il sito ha scollegato questo PC: collegalo di nuovo con un codice nuovo.",
+    linkProblems: {
+      invalid_code: "Codice sbagliato o scaduto: creane uno nuovo sul sito.",
+      too_many_devices: "Hai già 10 PC collegati: scollegane uno dal sito.",
+      unavailable: "Il collegamento non è ancora disponibile sul sito.",
+      offline: "Non raggiungo originsmeta.com: controlla la connessione.",
+      error: "Collegamento non riuscito: riprova.",
+    },
+    syncProblems: {
+      offline: "Non raggiungo originsmeta.com: riprovo fra poco.",
+      server: "Il sito non ha risposto: riprovo fra poco.",
+      rate_limited: "Troppe partite inviate oggi: continuo più tardi.",
+      unavailable: "Il sito non è ancora pronto a ricevere le partite: riprovo più tardi.",
+      unlinked: "Il sito ha scollegato questo PC: collegalo di nuovo con un codice nuovo.",
+    },
+    overlay: "Overlay",
+    overlayIntro: "Una finestrella sopra il gioco con il tuo mazzo, la sessione e l'ultima partita, e lo stesso riquadro per OBS. Durante la partita non mostra mai niente che il gioco nasconde.",
+    overlayWindow: "Mostra sopra il gioco",
+    overlayMove: "Spostala (finché è acceso, i clic non passano al gioco)",
+    overlayFullscreen: "Si vede sopra il gioco in modalità finestra o finestra senza bordi, non a schermo intero esclusivo.",
+    session: "Sessione",
+    sessionSince: (t: string) => `dalle ${t}`,
+    newSession: "Nuova sessione",
+    obs: "Sorgente per OBS",
+    obsHow: "In OBS aggiungi una sorgente Browser con questo indirizzo: funziona su questo PC finché l'app è aperta.",
+    obsH: "Orizzontale",
+    obsV: "Verticale",
+    obsOff: "La sorgente per OBS non è partita: un altro programma usa le sue porte.",
     win: "vittoria",
     loss: "sconfitta",
     unknown: "?",
@@ -162,8 +261,55 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con el tracker apagado`,
     startup: "Iniciar con Windows",
     dataFolder: "Abrir la carpeta de datos",
-    privacy: "El tracker solo lee los archivos que Origins TCG guarda en este PC y nunca toca el juego. Tus partidas se quedan en este PC.",
+    privacy: "El tracker solo lee los archivos que Origins TCG guarda en este PC y nunca toca el juego. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
+    account: "Cuenta de OriginsMeta",
+    accountIntro: "Vincula la app a tu cuenta: tus partidas llegan también a originsmeta.com, donde ves tus estadísticas.",
+    consent:
+      "Al vincularla, la app envía tus partidas a tu cuenta, también las que ya registró aquí, y entran siempre también en las estadísticas anónimas del sitio: solo números agregados, nunca quién jugó. Si no quieres, no la vincules: la app también funciona solo en este PC.",
+    howTo: "Crea un código en originsmeta.com (Cuenta → OriginsMeta Tracker) y escríbelo aquí.",
+    openCodePage: "Crear un código en originsmeta.com",
+    codeLabel: "Código de vinculación",
+    link: "Vincular",
+    linking: "Vinculando…",
+    linkedAs: (u: string | null) => (u ? `Vinculado a @${u}` : "Vinculado a tu cuenta"),
+    pending: (n: number) => (n ? `${n} ${n === 1 ? "partida" : "partidas"} por enviar` : "Todas tus partidas están en el sitio"),
+    lastSync: "Último envío",
+    never: "ninguno todavía",
+    sending: "Enviando…",
+    syncNow: "Enviar ahora",
+    unlink: "Desvincular este PC",
+    unlinkConfirm: "¿Desvincular este PC de tu cuenta? Las partidas ya enviadas se quedan en el sitio: puedes borrarlas desde originsmeta.com.",
+    openStats: "Tus estadísticas en originsmeta.com",
+    notPersisted: "La protección de datos de Windows no está disponible: la vinculación dura hasta que cierres la app.",
+    unlinkedNotice: "El sitio desvinculó este PC: vuelve a vincularlo con un código nuevo.",
+    linkProblems: {
+      invalid_code: "Código incorrecto o caducado: crea uno nuevo en el sitio.",
+      too_many_devices: "Ya tienes 10 PC vinculados: desvincula uno en el sitio.",
+      unavailable: "La vinculación todavía no está disponible en el sitio.",
+      offline: "No consigo llegar a originsmeta.com: revisa la conexión.",
+      error: "No se pudo vincular: vuelve a intentarlo.",
+    },
+    syncProblems: {
+      offline: "No consigo llegar a originsmeta.com: lo intento de nuevo en un momento.",
+      server: "El sitio no respondió: lo intento de nuevo en un momento.",
+      rate_limited: "Demasiadas partidas enviadas hoy: sigo más tarde.",
+      unavailable: "El sitio todavía no está listo para recibir partidas: lo intento más tarde.",
+      unlinked: "El sitio desvinculó este PC: vuelve a vincularlo con un código nuevo.",
+    },
+    overlay: "Overlay",
+    overlayIntro: "Una ventanita sobre el juego con tu mazo, la sesión y la última partida, y el mismo recuadro para OBS. Durante la partida nunca muestra nada que el juego oculte.",
+    overlayWindow: "Mostrar sobre el juego",
+    overlayMove: "Moverla (mientras esté activo, los clics no pasan al juego)",
+    overlayFullscreen: "Se ve sobre el juego en modo ventana o ventana sin bordes, no en pantalla completa exclusiva.",
+    session: "Sesión",
+    sessionSince: (t: string) => `desde las ${t}`,
+    newSession: "Nueva sesión",
+    obs: "Fuente para OBS",
+    obsHow: "En OBS, añade una fuente de Navegador con esta dirección: funciona en este PC mientras la app esté abierta.",
+    obsH: "Horizontal",
+    obsV: "Vertical",
+    obsOff: "La fuente para OBS no pudo arrancar: otro programa usa sus puertos.",
     win: "victoria",
     loss: "derrota",
     unknown: "?",
@@ -300,6 +446,60 @@ function history(s: AppState) {
     </section>`;
 }
 
+/* ---------- account OriginsMeta (Fase 3) e overlay (Fase 4) ---------- */
+
+// stato solo dell'interfaccia: il collegamento in corso e il suo ultimo errore
+let linkBusy = false;
+let linkError: LinkProblem | null = null;
+const SYNC_PROBLEMS: Record<SyncProblem, string> = L.syncProblems;
+const clock = (iso: string) => new Date(iso).toLocaleTimeString(lang === "en" ? "en-GB" : lang, { hour: "2-digit", minute: "2-digit" });
+
+function accountPanel(s: AppState) {
+  const a = s.account;
+  const codeUrl = `https://originsmeta.com/${lang}/account/tracker`;
+  if (!a.linked) {
+    return `<section class="panel" id="account"><h2>${esc(L.account)}</h2><p class="sub">${esc(L.accountIntro)}</p>
+        ${a.notice === "unlinked" ? `<p class="problem">${esc(L.unlinkedNotice)}</p>` : ""}
+        <p class="fine">${esc(L.consent)}</p>
+        <p class="sub">${esc(L.howTo)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></p>
+        <form id="link-form" class="row" autocomplete="off">
+          <label class="field"><span>${esc(L.codeLabel)}</span><input id="link-code" name="code" spellcheck="false" maxlength="20" placeholder="ABCD-EFGH" /></label>
+          <button type="submit" class="btn"${linkBusy ? " disabled" : ""}>${esc(linkBusy ? L.linking : L.link)}</button>
+        </form>
+        ${linkError ? `<p class="problem">${esc(L.linkProblems[linkError])}</p>` : ""}
+      </section>`;
+  }
+  return `<section class="panel" id="account"><h2>${esc(L.account)}</h2>
+      <p><span class="pill ok">${esc(L.linkedAs(a.username))}</span></p>
+      <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
+      ${a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
+      ${a.persisted ? "" : `<p class="fine">${esc(L.notPersisted)}</p>`}
+      <div class="row">
+        <button type="button" class="btn" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
+        <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
+        <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
+      </div>
+    </section>`;
+}
+
+function overlayPanel(s: AppState) {
+  const o = s.overlay;
+  const v = o.view;
+  const url = (layout: "h" | "v") => (o.obsUrl ? `${o.obsUrl}${layout === "v" ? "&layout=v" : ""}` : "");
+  const obsRow = (label: string, layout: "h" | "v") =>
+    `<div class="row"><span class="sub">${esc(label)}</span><code class="code">${esc(url(layout))}</code><button type="button" class="btn" data-copy-text="${esc(url(layout))}">${esc(L.copy)}</button></div>`;
+  return `<section class="panel" id="overlay"><h2>${esc(L.overlay)}</h2><p class="sub">${esc(L.overlayIntro)}</p>
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="ov-window"${o.window ? " checked" : ""} /> ${esc(L.overlayWindow)}</label>
+        <label class="switch"><input type="checkbox" id="ov-move"${o.clickThrough ? "" : " checked"}${o.window ? "" : " disabled"} /> ${esc(L.overlayMove)}</label>
+      </div>
+      <p class="fine">${esc(L.overlayFullscreen)}</p>
+      <div class="row"><span class="sub">${esc(L.session)} ${v.session.wins}–${v.session.losses} · ${esc(L.sessionSince(clock(o.sessionStart)))}</span><button type="button" class="btn" id="ov-session">${esc(L.newSession)}</button></div>
+      <h3>${esc(L.obs)}</h3>
+      ${o.obsUrl ? `<p class="sub">${esc(L.obsHow)}</p>${obsRow(L.obsH, "h")}${obsRow(L.obsV, "v")}` : `<p class="problem">${esc(L.obsOff)}</p>`}
+    </section>`;
+}
+
 function footer(s: AppState) {
   return `<footer class="foot">
       <div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
@@ -312,15 +512,38 @@ function footer(s: AppState) {
 
 const root = document.getElementById("app")!;
 let first = true;
+let last: AppState | null = null;
 
 function render(s: AppState) {
+  last = s;
   const scroll = window.scrollY;
-  root.innerHTML = [top(s), now(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  // il codice che il giocatore sta scrivendo sopravvive ai ridisegni (arrivano a ogni cambio di stato)
+  const input = document.getElementById("link-code") as HTMLInputElement | null;
+  const typed = input?.value ?? "";
+  const focused = document.activeElement === input && input !== null;
+  const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
+  root.innerHTML = [top(s), now(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  const again = document.getElementById("link-code") as HTMLInputElement | null;
+  if (again) {
+    again.value = typed;
+    if (focused) {
+      again.focus();
+      if (caret) again.setSelectionRange(caret[0], caret[1]);
+    }
+  }
   window.scrollTo(0, scroll);
   if (first) {
     first = false;
     window.tracker.rendered();
   }
+}
+const rerender = () => last && render(last);
+
+/** Copia con gli appunti dell'app (il browser dell'interfaccia non ha il permesso degli appunti). */
+async function copyWith(button: HTMLButtonElement, text: string) {
+  await window.tracker.copyText(text);
+  button.textContent = L.copied;
+  setTimeout(() => (button.textContent = L.copy), 1500);
 }
 
 root.addEventListener("click", async (e) => {
@@ -331,22 +554,40 @@ root.addEventListener("click", async (e) => {
     return void window.tracker.openLink(link.href);
   }
   const copy = target.closest<HTMLButtonElement>("[data-copy]");
-  if (copy) {
-    try {
-      await navigator.clipboard.writeText(copy.dataset.copy!);
-      copy.textContent = L.copied;
-    } catch {
-      const code = copy.parentElement?.querySelector("code");
-      if (code) getSelection()?.selectAllChildren(code);
-    }
-    setTimeout(() => (copy.textContent = L.copy), 1500);
-    return;
-  }
+  if (copy) return void copyWith(copy, copy.dataset.copy!);
+  const copyText = target.closest<HTMLButtonElement>("[data-copy-text]");
+  if (copyText) return void copyWith(copyText, copyText.dataset.copyText!);
   if (target.id === "folder") void window.tracker.openDataFolder();
+  if (target.id === "sync-now") void window.tracker.syncNow();
+  if (target.id === "ov-session") void window.tracker.resetSession();
+  if (target.id === "unlink" && window.confirm(L.unlinkConfirm)) {
+    linkError = null;
+    void window.tracker.unlinkAccount();
+  }
 });
 root.addEventListener("change", async (e) => {
   const t = e.target as HTMLInputElement;
   if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
+  if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
+  // "Sposta" acceso = la finestra non lascia passare i clic
+  if (t.id === "ov-move") t.checked = !(await window.tracker.setOverlayClickThrough(!t.checked));
+});
+root.addEventListener("submit", async (e) => {
+  const form = e.target as HTMLFormElement;
+  if (form.id !== "link-form") return;
+  e.preventDefault();
+  const input = document.getElementById("link-code") as HTMLInputElement | null;
+  if (linkBusy || !input) return;
+  linkBusy = true;
+  linkError = null;
+  rerender();
+  const result = await window.tracker.linkAccount(input.value);
+  linkBusy = false;
+  if (result.ok) {
+    const field = document.getElementById("link-code") as HTMLInputElement | null;
+    if (field) field.value = "";
+  } else linkError = result.problem;
+  rerender();
 });
 // clic sul riepilogo di una partita: la scelta del giocatore vale anche dopo i ridisegni
 root.addEventListener("click", (e) => {

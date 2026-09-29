@@ -6,7 +6,10 @@
  * Il replay arriva a pochi secondi dalla cache (2 s nelle prove del 29/09/2026) e non contiene l'esito; i due si
  * abbinano per ora (`replayBelongsTo`). Senza replay la partita resta registrata con esito e mazzo.
  *
- * `TrackedMatch` è il record che l'app salva sul PC; cosa ne arriva al sito lo decide la Fase 3 (docs/tracker.md).
+ * `TrackedMatch` è il record che l'app salva sul PC; al sito ne arriva solo una parte (`toUpload` di upload.ts: del
+ * mazzo dell'avversario solo la Leggendaria e le carte che ha giocato, decisione di Pierluigi del 30/09/2026).
+ * Versione 2 (30/09/2026): in più la coda (`queue`, "ranked" o "normal", da queue.ts). Le partite v1 già salvate sul PC
+ * si leggono con `readTrackedMatch`, che le porta alla v2 con la coda "normal" (erano tutte della coda normale).
  * Regole (docs/tracker.md):
  * - **mai dire se l'avversario è un bot o una persona** (Pierluigi, 29/09/2026): niente flag bot, niente modalità del
  *   nome del file ("BotBattle"), niente rank dell'avversario (quello dei bot è un "Master" finto). Un test controlla
@@ -17,8 +20,9 @@
 import { encodeGameCode } from "../deckcode";
 import { cardBaseKey, isLegendaryKey, type ReplayMatch, type ReplayPlayer } from "./replay";
 import type { GameDeck, MatchEnd } from "./profile";
+import { isTrackQueue, type TrackQueue } from "./queue";
 
-export const TRACKED_MATCH_VERSION = 1;
+export const TRACKED_MATCH_VERSION = 2;
 /** Distanza massima fra la fine della partita nella cache e la scrittura del replay. */
 export const PAIR_WINDOW_MS = 120_000;
 
@@ -28,6 +32,8 @@ export type TrackedMatch = {
   id: string;
   endedAt: string | null;
   result: "W" | "L" | null;
+  /** Classificata o coda normale (queue.ts): serve solo alle statistiche del sito, non si mostra partita per partita. */
+  queue: TrackQueue;
   deck: {
     /** Nome dato dal giocatore nel gioco, se il mazzo giocato è quello scelto nel profilo. */
     name: string | null;
@@ -95,6 +101,8 @@ export async function buildMatch(input: {
   deck: GameDeck | null;
   /** Il replay della partita, già letto con `readReplay(…, { accountId })`; null se non è arrivato. */
   replay: ReplayMatch | null;
+  /** Coda della partita (`matchQueue` di queue.ts); "normal" se non si sa. */
+  queue?: TrackQueue;
 }): Promise<TrackedMatch> {
   const { end, accountId, deck, replay } = input;
   const me = replay ? pickMe(replay.players, deck) : null;
@@ -111,6 +119,7 @@ export async function buildMatch(input: {
     id: await matchFingerprint(accountId, end.matchId, end.endedAt),
     endedAt: end.endedAt,
     result: end.result,
+    queue: input.queue ?? "normal",
     deck: { name, legendary: cards.find(isLegendaryKey) ?? null, cards, code },
     rank: me?.rank ?? null,
     opponent: opp ? { legendary: opp.legendary ? cardBaseKey(opp.legendary) : null, cards: opp.deck.map(cardBaseKey) } : null,
@@ -120,4 +129,15 @@ export async function buildMatch(input: {
     plays: replay && me ? replay.plays.map((p) => ({ turn: p.turn, me: p.player === me.index, card: p.card ? cardBaseKey(p.card) : null, lane: p.lane })) : [],
     missed: end.missed,
   };
+}
+
+/**
+ * Una partita letta dallo storico sul PC (una riga di `matches.jsonl`): v2 così com'è, v1 (Fase 2, 29/09/2026) portata
+ * alla v2 con la coda "normal". Null per tutto il resto (riga rotta, versione futura, forma diversa).
+ */
+export function readTrackedMatch(raw: unknown): TrackedMatch | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const m = raw as Omit<Partial<TrackedMatch>, "v"> & { v?: unknown };
+  if ((m.v !== 1 && m.v !== TRACKED_MATCH_VERSION) || typeof m.id !== "string" || !m.deck || typeof m.deck !== "object" || !Array.isArray(m.plays)) return null;
+  return { ...(m as TrackedMatch), v: TRACKED_MATCH_VERSION, queue: isTrackQueue(m.queue) ? m.queue : "normal" };
 }

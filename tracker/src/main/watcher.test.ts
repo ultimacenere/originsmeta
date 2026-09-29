@@ -219,6 +219,30 @@ describe("MatchWatcher", () => {
     }
   });
 
+  test("coda: \"BotBattle\" è la coda normale, un replay della classificata dà ranked; mai la modalità nella partita", async () => {
+    const g = setup();
+    try {
+      const w = new MatchWatcher(g.dirs, { lastFingerprint: "x", results: "" }, { firstRun: false, now: g.now });
+      const out = listen(w);
+      const end = g.advance(1000);
+      g.replay(end, syntheticReplay(), "BotBattle");
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "W", onboardingLastMatchId: "offline_q1" }, end + 200);
+      await w.tick();
+      const end2 = g.advance(60_000);
+      g.replay(end2, syntheticReplay(), "RankedBattle");
+      g.stats({ lastMatchPlayedDateTime: iso(end2), onboardingResults: "LW", onboardingLastMatchId: "offline_q2" }, end2 + 200);
+      await w.tick();
+      assert.deepEqual(
+        out.matches.map((m) => m.queue),
+        ["normal", "ranked"],
+      );
+      const json = JSON.stringify(out.matches);
+      for (const tell of ["BotBattle", "RankedBattle", '"mode"']) assert.ok(!json.includes(tell), tell);
+    } finally {
+      g.cleanup();
+    }
+  });
+
   test("mai nomi, id, rank dell'avversario né segnale bot nelle partite registrate", async () => {
     const g = setup();
     try {

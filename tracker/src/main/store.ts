@@ -8,7 +8,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import type { TrackedMatch } from "../../../src/lib/tracker/match";
+import { readTrackedMatch, type TrackedMatch } from "../../../src/lib/tracker/match";
 
 export type SavedState = {
   v: 1;
@@ -43,8 +43,9 @@ export class Store {
       for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
         if (!line.trim()) continue;
         try {
-          const m = JSON.parse(line) as TrackedMatch;
-          if (m && m.v === 1 && typeof m.id === "string" && !this.ids.has(m.id)) {
+          // v1 (Fase 2) e v2 (con la coda, dal 30/09/2026): readTrackedMatch porta tutto alla v2
+          const m = readTrackedMatch(JSON.parse(line));
+          if (m && !this.ids.has(m.id)) {
             this.ids.add(m.id);
             this.list.push(m);
           }
