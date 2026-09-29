@@ -67,9 +67,10 @@ export default async function CommunityTierListPage({ params }: { params: Locale
   const signed = data.signed;
   // nell'indice il numero conta le tier list della sezione, come le altre voci contano le carte (non gli autori)
   const signedLists = signed.reduce((n, a) => n + a.lists.length, 0);
+  // nell'ordine della pagina: le liste della media, poi quelle firmate (in fondo dal 29/09/2026)
   const sectionIndex = [
-    ...(signedLists ? [{ id: "signed", label: c.signedTitle, count: signedLists }] : []),
     ...(lists ? kinds.map((k) => ({ id: k.id, label: k.title, count: k.entries.length })) : []),
+    ...(signedLists ? [{ id: "signed", label: c.signedTitle, count: signedLists }] : []),
   ];
 
   return (
@@ -103,13 +104,45 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         sections={sectionIndex.length ? sectionIndex : undefined}
       />
 
+      {lists === 0 ? (
+        /* Nessuna tier list salvata: una pagina vuota non serve a nessuno, l'invito sì. */
+        <div className="felt-panel-mint mt-8 flex max-w-3xl flex-wrap items-center gap-4 p-6">
+          <p className="min-w-0 flex-1 basis-64 text-pale">{c.empty}</p>
+          <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
+            {c.emptyCta} →
+          </Link>
+        </div>
+      ) : (
+        kinds.map((k, i) => (
+          <section key={k.id} id={k.id} className={`${i === 0 ? "mt-8" : "mt-10"} scroll-mt-32`} aria-labelledby={`${k.id}-title`}>
+            <h2 id={`${k.id}-title`} className="t-section">
+              {k.title}
+            </h2>
+            {k.n > 0 && k.n < COMMUNITY_MIN_LISTS ? <p className="tier-ribbon">{preview(k.n)}</p> : null}
+            <div className="mt-4">
+              <TierExplorer locale={locale}
+                id={`community-${k.id}`}
+                mode="tiers"
+                source="community"
+                entries={k.entries}
+                deckCount={data.decks.length}
+                labels={labels}
+                filters={k.id === "cards"}
+                table={k.id === "cards"}
+              />
+            </div>
+          </section>
+        ))
+      )}
+
       {/*
         Tier list firmate (Ondata 3, TOOL-01): quelle salvate da Staff, Creator, Autori e Pro (ruoli del 27/09/2026), con nome, ruolo, data e
-        link al profilo pubblico e al tool. Stanno prima della media perché, mentre la media è un'anteprima, sono il
-        contenuto firmato della pagina; senza liste firmate la sezione non c'è.
+        link al profilo pubblico e al tool; senza liste firmate la sezione non c'è. Fino al 29/09/2026 stavano prima della
+        media; da allora in fondo, dopo le liste della community e prima dei testi (Pierluigi: "anche le tierlist firmate
+        devono andare a piè pagina").
       */}
       {signed.length ? (
-        <section id="signed" className="mt-8 scroll-mt-32" aria-labelledby="signed-title">
+        <section id="signed" className="mt-12 scroll-mt-32" aria-labelledby="signed-title">
           <h2 id="signed-title" className="t-section">
             {c.signedTitle}
           </h2>
@@ -154,37 +187,6 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         </section>
       ) : null}
 
-      {lists === 0 ? (
-        /* Nessuna tier list salvata: una pagina vuota non serve a nessuno, l'invito sì. */
-        <div className={`felt-panel-mint ${signed.length ? "mt-10" : "mt-8"} flex max-w-3xl flex-wrap items-center gap-4 p-6`}>
-          <p className="min-w-0 flex-1 basis-64 text-pale">{c.empty}</p>
-          <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
-            {c.emptyCta} →
-          </Link>
-        </div>
-      ) : (
-        kinds.map((k, i) => (
-          <section key={k.id} id={k.id} className={`${i === 0 && !signed.length ? "mt-8" : "mt-10"} scroll-mt-32`} aria-labelledby={`${k.id}-title`}>
-            <h2 id={`${k.id}-title`} className="t-section">
-              {k.title}
-            </h2>
-            {k.n > 0 && k.n < COMMUNITY_MIN_LISTS ? <p className="tier-ribbon">{preview(k.n)}</p> : null}
-            <div className="mt-4">
-              <TierExplorer locale={locale}
-                id={`community-${k.id}`}
-                mode="tiers"
-                source="community"
-                entries={k.entries}
-                deckCount={data.decks.length}
-                labels={labels}
-                filters={k.id === "cards"}
-                table={k.id === "cards"}
-              />
-            </div>
-          </section>
-        ))
-      )}
-
       {/* I testi della pagina, dopo il contenuto (Pierluigi, 29/09/2026): prima stavano fra il titolo e le liste */}
       <PageNotes>
         <p className="max-w-3xl text-chalk-muted">{c.intro}</p>
@@ -197,8 +199,8 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         />
         <TierSectionNotes
           items={[
-            ...(signed.length ? [{ title: c.signedTitle, text: c.signedText }] : []),
             ...kinds.map((k) => ({ title: `${k.title} (${listsLabel(k.n)})`, text: k.text })),
+            ...(signed.length ? [{ title: c.signedTitle, text: c.signedText }] : []),
           ]}
         />
         <p className="mt-4 max-w-3xl text-sm text-chalk-muted">{c.disclaimer}</p>
