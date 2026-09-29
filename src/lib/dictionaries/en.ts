@@ -262,6 +262,8 @@ export const en = {
     description: "Every Demo 2.0 card of Origins TCG, the Koin Games card game: official text, stats and balance history, with filters by type, saga and rarity.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
+    /* l'unico tasto sotto il titolo di /cards (Pierluigi, 29/09/2026): i testi della pagina stanno in fondo */
+    exploreLocations: "Explore the locations",
     countLabel: "cards in Demo 2.0",
     countCreated: "created cards",
     countRemoved: "removed in earlier builds",
@@ -286,8 +288,7 @@ export const en = {
     description: "Community decklists for Origins TCG, the Koin Games card game: deck guides, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
     conquestText: "Used for the first time at Big Bob's Playtest Battle (28 August 2026), where each deck needed a different Legendary, and chosen for the Crimson Cup: you submit several decks that must differ from each other, and you ban one of your opponent's decks before the match. At the Crimson Cup: three decks, at least 8 unique cards between each pair, decklists hidden until the top 4, and no ban in best-of-five matches, where you must win with all three decks.",
-    submitTitle: "Publish your deck with your guide",
-    submitText: "Build it in the deck builder and write your game plan: it joins this database under your name and the community rates it from 1 to 5 stars.",
+    /* tasto sotto il titolo di /decks, verso il deck builder (29/09/2026: il riquadro con titolo e testo non c'è più) */
     submitCta: "Publish a deck",
     inviteTitle: "Your deck here",
     inviteText: "Build it in the deck builder and publish it with a short guide: it appears here under your name and the community rates it from 1 to 5 stars.",
@@ -323,6 +324,8 @@ export const en = {
        /es/decks#mejores-mazos); {min} è la soglia di parole della guida (GUIDE_MIN_WORDS in deckQuality.ts) */
     best: {
       anchor: "best-decks",
+      /* tasto sotto il titolo che porta alla classifica, in fondo alla pagina (29/09/2026) */
+      cta: "Discover the best decks",
       kicker: "Community ranking",
       title: "The best Origins TCG decks right now",
       lead: "A ranking built from the stars the community gives to decks published on OriginsMeta with a complete guide, updated on {date}. It is not our opinion: every vote moves it.",
@@ -335,10 +338,10 @@ export const en = {
       excludedAboveMany: "{list} have the weighted score to make the ranking but stay out: their guide is under {min} words or not yet in English.",
       excludedRestOne: "One more rated deck stays out for the same reason.",
       excludedRestMany: "{n} more rated decks stay out for the same reason.",
-      tiedOne: "One more deck has the same weighted score and is also #{rank}: you'll find it in the full list below.",
-      tiedMany: "{n} more decks have the same weighted score and are also #{rank}: you'll find them in the full list below.",
-      moreOne: "One more rated deck is in the full list below.",
-      moreMany: "{n} more rated decks are in the full list below.",
+      tiedOne: "One more deck has the same weighted score and is also #{rank}: you'll find it in the full list above.",
+      tiedMany: "{n} more decks have the same weighted score and are also #{rank}: you'll find them in the full list above.",
+      moreOne: "One more rated deck is in the full list above.",
+      moreMany: "{n} more rated decks are in the full list above.",
       vote: "Played one of these decks? Rate it from 1 to 5 stars on its page (you need an account): the ranking follows the votes.",
       empty: "No deck has votes and a complete guide in English yet: rate the decks you play and the ranking starts.",
     },
@@ -437,7 +440,6 @@ export const en = {
       previewShort: "it becomes the community tier list at {min} lists ({n} of {min} so far)",
       empty: "Nobody has saved a tier list yet: the first one could be yours.",
       emptyCta: "Make your tier list",
-      officialLink: "See the OriginsMeta tier list",
       disclaimer: "It is the opinion of the people on this site, not a game statistic: it weighs as much as the people who voted.",
       /* Tier list firmate (Ondata 3, TOOL-01): quelle salvate da profili con il ruolo Staff, Creator, Autore o Pro
          (`signedTierLists` in tierstats.ts, ruoli del 27/09/2026). Senza liste firmate la sezione non c'è */
@@ -1521,11 +1523,11 @@ export const en = {
       kicker: "Hierarchy",
       title: "Title scale",
       sub: "Color alternates by level, so a container never looks like its content: sky page title, chalk section title, sky item title again but smaller.",
-      page: "Page title (H1), one per page. Unbounded extrabold, 2.25rem, 3rem from 640 px, sky.",
+      page: "Page title (H1), one per page. Unbounded extrabold, 1.25rem, 1.5rem from 640 px, sky.",
       kickerRole: "Kicker above a section title: always mint, monospaced, uppercase.",
       sampleKicker: "Latest patch",
       sampleSection: "Balance changes",
-      section: "Section title (H2), also used by SectionHead. Unbounded extrabold, 1.5rem, 1.875rem from 640 px, chalk.",
+      section: "Section title (H2), also used by SectionHead. Unbounded extrabold, 1.125rem, 1.25rem from 640 px, chalk.",
       item: "Item title: the name of a deck, card, guide, news story or tournament, in a list or a card. Unbounded bold, 1.125rem, 1.25rem from 640 px, sky.",
       sampleItem: "Name of a deck, card or guide",
     },

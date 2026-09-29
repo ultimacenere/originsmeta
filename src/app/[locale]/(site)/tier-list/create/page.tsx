@@ -7,6 +7,7 @@ import { builderPool } from "@/lib/builderLabels";
 import { TierListMaker, type TierCard, type TierMakerLabels } from "@/components/TierListMaker";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { TierListHeader } from "@/components/TierListHeader";
+import { PageNotes } from "@/components/PageNotes";
 import { JsonLd, breadcrumbs, organizationId, videoGameId } from "@/components/JsonLd";
 
 /*
@@ -142,13 +143,13 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
       {/* La testata della sezione (24/09/2026): le tre fonti a vista al posto della tendina e dei due link che la
           ripetevano. Il tool è statico e non legge Supabase, quindi sotto Community e Le più giocate c'è una dicitura
           fissa invece dei conteggi. */}
-      {/* H1 = titolo della pagina, con il nome del gioco (piano SEO del 25/09/2026: prima era "Crea la tua tier list") */}
+      {/* H1 = titolo della pagina, con il nome del gioco (piano SEO del 25/09/2026: prima era "Crea la tua tier list").
+          Sotto la testata subito lo strumento: l'introduzione sta in fondo (29/09/2026). */}
       <TierListHeader
         locale={locale}
         dict={d}
         current="create"
         title={m.title}
-        intro={m.intro}
         state={{
           // la tier list di OriginsMeta è un dato statico (tierlist.ts): quando avrà le fasce, qui compare la data
           official: tierList.sections.some((s) => tierIds.some((t) => s.tiers[t].length))
@@ -159,17 +160,21 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
         }}
       />
 
-      <div className="mt-8">
+      <div className="mt-6">
         <TierListMaker legendaries={legendaries} cards={cards} shareBase={url} labels={labels} locale={locale} />
       </div>
 
-      <p className="mt-8 text-xs text-chalk-muted">
-        {m.dataNote
-          .replace("{legendaries}", String(legendaries.length))
-          .replace("{cards}", String(cards.length))
-          .replace("{date}", formatDate(locale, cardsVerified.date))}{" "}
-        {d.common.notAffiliated}
-      </p>
+      {/* I testi della pagina, dopo lo strumento (Pierluigi, 29/09/2026) */}
+      <PageNotes>
+        <p className="max-w-3xl text-chalk-muted">{m.intro}</p>
+        <p className="mt-4 text-xs text-chalk-muted">
+          {m.dataNote
+            .replace("{legendaries}", String(legendaries.length))
+            .replace("{cards}", String(cards.length))
+            .replace("{date}", formatDate(locale, cardsVerified.date))}{" "}
+          {d.common.notAffiliated}
+        </p>
+      </PageNotes>
     </div>
   );
 }

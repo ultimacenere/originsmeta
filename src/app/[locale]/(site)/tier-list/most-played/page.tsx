@@ -5,7 +5,8 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { loadTierData } from "@/lib/tierData";
 import { usageOrder } from "@/lib/tierstats";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
-import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
+import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
+import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
@@ -80,32 +81,8 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
         ]}
       />
       <CardMentionEdges />
-      <TierListHeader locale={locale} dict={d} current="played" title={p.h1} intro={p.intro} state={state} sections={n ? sections : undefined} />
-      <TierSourceLine
-        items={[
-          {
-            label: t.lineSource,
-            text: `${p.sourceText.replace("{n}", String(n)).replace("{range}", range)}${data.deckPatches.length ? ` (${p.patchesText.replace("{patches}", data.deckPatches.join(", "))})` : ""}`,
-          },
-          { label: t.lineMeasure, text: p.measureText },
-        ]}
-      />
-      {/* Link nel testo verso le due pagine primarie vicine (piano SEO del 25/09/2026): la tier list per "origins tcg
-          tier list" e /decks per "origins tcg mazzi", ricerca su cui questa pagina usciva al posto dei mazzi */}
-      <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-chalk-muted">
-        <span>
-          {t.mainText}{" "}
-          <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
-            {t.mainAnchor} →
-          </Link>
-        </span>
-        <span>
-          {t.decksText}{" "}
-          <Link href={href(locale, "/decks")} className="link-mint font-bold">
-            {t.decksAnchor} →
-          </Link>
-        </span>
-      </p>
+      {/* Sotto la testata subito il contenuto: introduzione, fonte e misura stanno in fondo (29/09/2026) */}
+      <TierListHeader locale={locale} dict={d} current="played" title={p.h1} state={state} sections={n ? sections : undefined} />
 
       {n === 0 ? (
         <div className="felt-panel-mint mt-8 flex max-w-3xl flex-wrap items-center gap-4 p-6">
@@ -116,13 +93,10 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
         </div>
       ) : (
         <>
-          <section id="decks" className="mt-10 scroll-mt-32" aria-labelledby="decks-title">
+          <section id="decks" className="mt-8 scroll-mt-32" aria-labelledby="decks-title">
             <h2 id="decks-title" className="t-section">
               {t.sections.decks.title}
             </h2>
-            <p className="mt-1 max-w-2xl text-chalk-muted">
-              {p.archetypesText} {p.variantsNote}
-            </p>
             <ol className="mt-4 grid gap-1.5">
               {archetypes.map((a) => (
                 <li key={a.label} className="tier-arch">
@@ -158,7 +132,6 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
             <h2 id="legendaries-title" className="t-section">
               {t.sections.legendaries.title}
             </h2>
-            <p className="mt-1 max-w-2xl text-chalk-muted">{t.sections.legendaries.text}</p>
             <div className="mt-4">
               <TierExplorer locale={locale} id="played-legendaries" mode="usage" source="played" entries={legendaries} deckCount={n} labels={labels} />
             </div>
@@ -168,11 +141,49 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
             <h2 id="cards-title" className="t-section">
               {t.sections.cards.title}
             </h2>
-            <p className="mt-1 max-w-2xl text-chalk-muted">{t.sections.cards.text}</p>
             <TierExplorer locale={locale} id="played-cards" mode="usage" source="played" entries={base} deckCount={n} labels={labels} filters table />
           </section>
         </>
       )}
+
+      {/* I testi della pagina, dopo il contenuto (Pierluigi, 29/09/2026): prima stavano fra il titolo e le sezioni */}
+      <PageNotes>
+        <p className="max-w-3xl text-chalk-muted">{p.intro}</p>
+        <TierSourceLine
+          items={[
+            {
+              label: t.lineSource,
+              text: `${p.sourceText.replace("{n}", String(n)).replace("{range}", range)}${data.deckPatches.length ? ` (${p.patchesText.replace("{patches}", data.deckPatches.join(", "))})` : ""}`,
+            },
+            { label: t.lineMeasure, text: p.measureText },
+          ]}
+        />
+        {n ? (
+          <TierSectionNotes
+            items={[
+              { title: t.sections.decks.title, text: `${p.archetypesText} ${p.variantsNote}` },
+              t.sections.legendaries,
+              t.sections.cards,
+            ]}
+          />
+        ) : null}
+        {/* Link nel testo verso le due pagine primarie vicine (piano SEO del 25/09/2026): la tier list per "origins tcg
+            tier list" e /decks per "origins tcg mazzi", ricerca su cui questa pagina usciva al posto dei mazzi */}
+        <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm text-chalk-muted">
+          <span>
+            {t.mainText}{" "}
+            <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
+              {t.mainAnchor} →
+            </Link>
+          </span>
+          <span>
+            {t.decksText}{" "}
+            <Link href={href(locale, "/decks")} className="link-mint font-bold">
+              {t.decksAnchor} →
+            </Link>
+          </span>
+        </p>
+      </PageNotes>
     </div>
   );
 }

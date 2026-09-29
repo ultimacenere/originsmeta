@@ -10,7 +10,8 @@ import { deckBrief, pickPreview, type Tier } from "@/lib/tierstats";
 import { loadTierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
-import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
+import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
+import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
 import { TierDeckList } from "@/components/TierDecks";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
@@ -29,6 +30,8 @@ import { changeLabel } from "@/lib/linkLabels";
   subito un contenuto vero: i mazzi più votati, le Leggendarie e le carte più presenti nei mazzi pubblicati, con i
   rimandi a "Le più giocate" e alla community. Quando le fasce ci saranno, le stesse sezioni le mostrano con le
   carte tutte uguali di TierExplorer. I dati arrivano da Supabase: la pagina è in ISR come /decks.
+  Dal 29/09/2026 (Pierluigi, per la navigabilità) sotto la testata c'è subito il contenuto: introduzione, In breve,
+  fonte e stato e che cosa contiene ogni sezione stanno in fondo (`PageNotes`), prima di "Come classifichiamo".
 */
 export const revalidate = 300;
 
@@ -134,43 +137,21 @@ export default async function TierListPage({ params }: { params: LocaleParams })
       />
       {/* Anteprima delle carte al passaggio del mouse: la tiene dentro la finestra ai bordi. */}
       <CardMentionEdges />
+      {/* Sotto la testata subito il contenuto: introduzione, In breve, fonte e stato stanno in fondo (29/09/2026) */}
       <TierListHeader
         locale={locale}
         dict={d}
         current="official"
         title={t.title}
-        intro={t.intro}
         state={state}
         sections={sectionIds.map((id) => ({ id, label: t.sections[id].title, count: counts[id] }))}
       />
-      {brief.length ? (
-        <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
-          <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
-          {brief.map((part, i) =>
-            typeof part === "string" ? (
-              <Fragment key={i}>{part}</Fragment>
-            ) : (
-              <Link key={i} href={part.href} className="link-mint">
-                {part.text}
-              </Link>
-            ),
-          )}
-        </p>
-      ) : null}
-      <TierSourceLine
-        items={[
-          { label: t.lineSource, text: t.officialSourceText },
-          ranked ? { label: d.common.updated, text: formatDate(locale, tierList.updated) } : { label: t.lineStatus, text: t.officialStatusText },
-        ]}
-      />
-      {ranked ? null : <div className="mt-5">{emptyLine}</div>}
 
       {/* Mazzi */}
-      <section id="decks" className="mt-10 scroll-mt-32" aria-labelledby="decks-title">
+      <section id="decks" className="mt-8 scroll-mt-32" aria-labelledby="decks-title">
         <h2 id="decks-title" className="t-section">
           {t.sections.decks.title}
         </h2>
-        <p className="mt-1 max-w-2xl text-chalk-muted">{t.sections.decks.text}</p>
         {ranked && Object.keys(official.decks).length ? (
           <div className="tier-board mt-4">
             {tierIds.map((tier) => {
@@ -217,7 +198,6 @@ export default async function TierListPage({ params }: { params: LocaleParams })
             <h2 id={`${id}-title`} className="t-section">
               {t.sections[id].title}
             </h2>
-            <p className="mt-1 max-w-2xl text-chalk-muted">{t.sections[id].text}</p>
             {hasOfficial ? (
               <div className="mt-4">
                 <TierExplorer locale={locale}
@@ -279,7 +259,34 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         </Link>
       </section>
 
-      {/* Come classifichiamo: resta a portata, chiuso, senza occupare la prima schermata */}
+      {/* I testi della pagina, dopo il contenuto (Pierluigi, 29/09/2026): prima stavano fra il titolo e le sezioni */}
+      <PageNotes>
+        <p className="max-w-3xl text-chalk-muted">{t.intro}</p>
+        {brief.length ? (
+          <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
+            <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
+            {brief.map((part, i) =>
+              typeof part === "string" ? (
+                <Fragment key={i}>{part}</Fragment>
+              ) : (
+                <Link key={i} href={part.href} className="link-mint">
+                  {part.text}
+                </Link>
+              ),
+            )}
+          </p>
+        ) : null}
+        <TierSourceLine
+          items={[
+            { label: t.lineSource, text: t.officialSourceText },
+            ranked ? { label: d.common.updated, text: formatDate(locale, tierList.updated) } : { label: t.lineStatus, text: t.officialStatusText },
+          ]}
+        />
+        {ranked ? null : <div className="mt-5">{emptyLine}</div>}
+        <TierSectionNotes items={sectionIds.map((id) => t.sections[id])} />
+      </PageNotes>
+
+      {/* Come classifichiamo: resta a portata, chiuso, in fondo */}
       <details className="card-night mt-6 p-5">
         <summary className="t-item cursor-pointer">{t.methodTitle}</summary>
         <ol className="mt-3 list-decimal space-y-1 pl-5 text-pale">

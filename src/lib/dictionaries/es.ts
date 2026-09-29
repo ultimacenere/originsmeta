@@ -264,6 +264,8 @@ export const es: Dictionary = {
     description: "Todas las cartas de la Demo 2.0 de Origins TCG, el juego de cartas de Koin Games: texto oficial, estadísticas y cambios, con filtros por tipo, saga y rareza.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Nombre o texto: Merlin, Al revelar…",
+    /* l'unico tasto sotto il titolo di /cards (Pierluigi, 29/09/2026): i testi della pagina stanno in fondo */
+    exploreLocations: "Explora las ubicaciones",
     countLabel: "cartas en la Demo 2.0",
     countCreated: "cartas creadas",
     countRemoved: "retiradas en builds anteriores",
@@ -288,8 +290,7 @@ export const es: Dictionary = {
     description: "Listas de mazos de Origins TCG, el juego de cartas de Koin Games: guía del mazo, valoraciones y código del juego. Filtra por Legendaria, arquetipo o carta.",
     conquestTitle: "El formato Conquest, explicado",
     conquestText: "Se usó por primera vez en Big Bob's Playtest Battle (28 de agosto de 2026), donde cada mazo necesitaba una Legendaria distinta, y es el elegido para la Crimson Cup: presentas varios mazos, diferentes entre sí, y antes de la partida baneas uno de los mazos de tu rival. En la Crimson Cup: tres mazos, al menos 8 cartas únicas entre cada par, listas ocultas hasta el top 4 y sin ban en las partidas al mejor de cinco, donde hay que ganar con los tres mazos.",
-    submitTitle: "Publica tu mazo con tu guía",
-    submitText: "Constrúyelo en el deck builder y escribe tu plan de juego: entra en esta base de datos con tu nombre y la comunidad lo valora de 1 a 5 estrellas.",
+    /* tasto sotto il titolo di /decks, verso il deck builder (29/09/2026: il riquadro con titolo e testo non c'è più) */
     submitCta: "Publica un mazo",
     inviteTitle: "Tu mazo aquí",
     inviteText: "Constrúyelo en el deck builder y publícalo con una guía breve: aparece aquí con tu nombre y la comunidad lo valora de 1 a 5 estrellas.",
@@ -323,6 +324,8 @@ export const es: Dictionary = {
        (vedi en.ts). `anchor` è l'id della sezione in spagnolo: /es/decks#mejores-mazos */
     best: {
       anchor: "mejores-mazos",
+      /* tasto sotto il titolo che porta alla classifica, in fondo alla pagina (29/09/2026) */
+      cta: "Descubre los mejores mazos",
       kicker: "Clasificación de la comunidad",
       title: "Los mejores mazos de Origins TCG ahora",
       lead: "La clasificación de las estrellas que la comunidad da a los mazos publicados en OriginsMeta con una guía completa, actualizada el {date}. No es nuestra opinión: cambia con cada voto.",
@@ -335,10 +338,10 @@ export const es: Dictionary = {
       excludedAboveMany: "{list} tienen la nota ponderada para entrar en la clasificación, pero quedan fuera: su guía tiene menos de {min} palabras o todavía no está en español.",
       excludedRestOne: "Por el mismo motivo queda fuera otro mazo votado.",
       excludedRestMany: "Por el mismo motivo quedan fuera otros {n} mazos votados.",
-      tiedOne: "Otro mazo tiene la misma nota ponderada y también es el #{rank}: lo encuentras en la lista completa de abajo.",
-      tiedMany: "Otros {n} mazos tienen la misma nota ponderada y también son el #{rank}: los encuentras en la lista completa de abajo.",
-      moreOne: "Otro mazo votado está en la lista completa de abajo.",
-      moreMany: "Otros {n} mazos votados están en la lista completa de abajo.",
+      tiedOne: "Otro mazo tiene la misma nota ponderada y también es el #{rank}: lo encuentras en la lista completa de arriba.",
+      tiedMany: "Otros {n} mazos tienen la misma nota ponderada y también son el #{rank}: los encuentras en la lista completa de arriba.",
+      moreOne: "Otro mazo votado está en la lista completa de arriba.",
+      moreMany: "Otros {n} mazos votados están en la lista completa de arriba.",
       vote: "¿Jugaste uno de estos mazos? Vótalo de 1 a 5 estrellas en su página (necesitas una cuenta): la clasificación sigue los votos.",
       empty: "Ningún mazo tiene todavía votos y una guía completa en español: vota los mazos que juegas y la clasificación arranca.",
     },
@@ -437,7 +440,6 @@ export const es: Dictionary = {
       previewShort: "se convierte en la tier list de la comunidad con {min} listas ({n} de {min} por ahora)",
       empty: "Aún nadie ha guardado una tier list: la primera puede ser la tuya.",
       emptyCta: "Crea tu tier list",
-      officialLink: "Ver la tier list de OriginsMeta",
       disclaimer: "Es la opinión de quienes usan este sitio, no una estadística del juego: pesa tanto como las personas que la votaron.",
       /* Tier list firmate (Ondata 3, TOOL-01): vedi en.ts */
       signedTitle: "Tier lists firmadas",
@@ -1519,11 +1521,11 @@ export const es: Dictionary = {
       kicker: "Jerarquía",
       title: "Escala de títulos",
       sub: "El color alterna por nivel, así un contenedor nunca se confunde con su contenido: título de página celeste, título de sección chalk, título de elemento otra vez celeste pero más pequeño.",
-      page: "Título de página (H1), uno por página. Unbounded extrabold, 2,25rem, 3rem desde 640 px, celeste.",
+      page: "Título de página (H1), uno por página. Unbounded extrabold, 1,25rem, 1,5rem desde 640 px, celeste.",
       kickerRole: "Kicker sobre un título de sección: siempre menta, monoespaciado, en mayúsculas.",
       sampleKicker: "Último parche",
       sampleSection: "Cambios de equilibrio",
-      section: "Título de sección (H2), también lo usa SectionHead. Unbounded extrabold, 1,5rem, 1,875rem desde 640 px, chalk.",
+      section: "Título de sección (H2), también lo usa SectionHead. Unbounded extrabold, 1,125rem, 1,25rem desde 640 px, chalk.",
       item: "Título de elemento: el nombre de un mazo, una carta, una guía, una noticia o un torneo, en una lista o en una ficha. Unbounded bold, 1,125rem, 1,25rem desde 640 px, celeste.",
       sampleItem: "Nombre de un mazo, una carta o una guía",
     },

@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { activeCards, cards, sagas, type SagaId } from "@/lib/data/cards";
 import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
 import { RemovedCardsArchive, removedArchiveId } from "@/components/RemovedCardsArchive";
+import { PageNotes } from "@/components/PageNotes";
 import { flipOf } from "@/components/CardChip";
 import { keywordLabel } from "@/lib/keywordLabels";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
@@ -61,24 +62,14 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       />
       <p className="kicker text-mint">{d.nav.cards}</p>
       <h1 className="t-page mt-2">{d.cards.title}</h1>
-      <p className="mt-4 max-w-2xl text-chalk-muted">{d.cards.intro}</p>
-      {/* I Luoghi sono l'altra metà del tabellone: da qui ci si arriva senza passare dal menu (23/09/2026) */}
-      <p className="mt-3 text-sm">
-        <Link href={href(locale, "/locations")} className="link-mint font-bold">
-          {d.locations.h1} →
+      {/* L'unica cosa sotto il titolo è il tasto verso i Luoghi, l'altra metà del tabellone (Pierluigi, 29/09/2026):
+          introduzione, conteggi e note sui dati stanno in fondo, dopo le carte */}
+      <p className="mt-4">
+        <Link href={href(locale, "/locations")} className="btn btn-ghost">
+          {d.cards.exploreLocations} →
         </Link>
       </p>
-      <p className="mt-2 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
-      <p className="mt-6 font-display text-3xl font-extrabold text-mint">
-        {inDemo} <span className="text-base font-bold text-chalk-muted">{d.cards.countLabel}</span>
-      </p>
-      <p className="mt-1 font-mono text-xs text-chalk-muted">
-        +{created} {d.cards.countCreated} ·{" "}
-        <a href={`#${removedArchiveId}`} className="link-mint">
-          {removed} {d.cards.countRemoved}
-        </a>
-      </p>
-      <div className="mt-8">
+      <div className="mt-6">
         <CardExplorer
             cards={list}
             sagas={sagaOptions}
@@ -110,11 +101,25 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
       </div>
       <RemovedCardsArchive locale={locale} />
 
-      <p className="mt-10 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
-      {/* Da dove vengono i dati, detto per quello che è verificato (25/09/2026, decisione di Pierluigi): il sito non
-          nomina né linka la fonte dei dati importati. Prima qui c'erano il link e "(Patch 0.6.3)", la patch dell'import. */}
-      <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">{d.cards.sourceNote}</p>
-      <p className="mt-2 text-xs text-chalk-muted/70">{d.common.imageCredit}</p>
+      {/* I testi della pagina, dopo le carte (Pierluigi, 29/09/2026): prima stavano fra il titolo e la ricerca */}
+      <PageNotes>
+        <p className="max-w-2xl text-chalk-muted">{d.cards.intro}</p>
+        <p className="mt-4 font-display text-xl font-extrabold text-mint">
+          {inDemo} <span className="text-sm font-bold text-chalk-muted">{d.cards.countLabel}</span>
+        </p>
+        <p className="mt-1 font-mono text-xs text-chalk-muted">
+          +{created} {d.cards.countCreated} ·{" "}
+          <a href={`#${removedArchiveId}`} className="link-mint">
+            {removed} {d.cards.countRemoved}
+          </a>
+        </p>
+        <p className="mt-4 max-w-2xl text-sm text-chalk-muted/80">{d.common.asOf}</p>
+        <p className="mt-4 max-w-2xl text-sm text-chalk-muted">{d.cards.legendNote}</p>
+        {/* Da dove vengono i dati, detto per quello che è verificato (25/09/2026, decisione di Pierluigi): il sito non
+            nomina né linka la fonte dei dati importati. Prima qui c'erano il link e "(Patch 0.6.3)", la patch dell'import. */}
+        <p className="mt-2 max-w-2xl text-xs text-chalk-muted/70">{d.cards.sourceNote}</p>
+        <p className="mt-2 text-xs text-chalk-muted/70">{d.common.imageCredit}</p>
+      </PageNotes>
     </div>
   );
 }

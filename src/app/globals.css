@@ -186,6 +186,11 @@
       .t-item     titolo di un elemento: mazzo, carta, guida, news, torneo, in una lista o in una scheda
     Le utility di Tailwind vincono sulle classi di componente: dove serve una misura diversa (una griglia fitta)
     si scrive `t-item text-sm` e si tiene il ruolo cambiando solo la dimensione.
+    29/09/2026 (Pierluigi: "titoli delle pagine, ridurli tutti del 50%"): l'H1 passa da 3rem a 1,5rem sopra i 640 px
+    (la metà esatta) e da 2,25rem a 1,25rem sul telefono (non 1,125rem, perché sarebbe grande come i titoli di
+    sezione e i nomi delle carte). Il titolo di sezione scende con lui (1,25rem, 1,125rem sul telefono), perché
+    un H2 più grande dell'H1 della stessa pagina rovescerebbe la gerarchia: ora è grande come i nomi degli elementi e
+    si distingue per colore (gesso contro celeste) e peso.
   */
   .t-page,
   .t-section,
@@ -195,15 +200,15 @@
     text-wrap: balance;
   }
   .t-page {
-    font-size: 2.25rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.2;
     color: var(--color-sky);
   }
   .t-section {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
     font-weight: 800;
-    line-height: 1.2;
+    line-height: 1.25;
     color: var(--color-chalk);
   }
   .t-item {
@@ -214,10 +219,10 @@
   }
   @media (min-width: 640px) {
     .t-page {
-      font-size: 3rem;
+      font-size: 1.5rem;
     }
     .t-section {
-      font-size: 1.875rem;
+      font-size: 1.25rem;
     }
     .t-item {
       font-size: 1.25rem;
@@ -225,7 +230,8 @@
   }
   /* Pannelli del profilo /u (Pierluigi, 27/09/2026: "i titoli e sottotitoli inseriscili negli elementi, riduci anche
      la grandezza degli stessi almeno del 50%, poi riduci a 10px lo spazio tra i vari elementi"): il titolo sta dentro
-     il riquadro, a metà di .t-section (0,9375rem contro 1,875rem); gli elementi di una lista dentro un pannello sono
+     il riquadro, a metà di quello che era .t-section (0,9375rem contro 1,875rem; dal 29/09 .t-section è 1,25rem e
+     .t-panel resta com'è); gli elementi di una lista dentro un pannello sono
      riquadri senza cornice (.card-inset), e le schede condivise (tornei, guide) annidate in un pannello hanno la cornice
      da 2 px invece di 3. */
   .t-panel {

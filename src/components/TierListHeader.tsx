@@ -9,6 +9,9 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
  * Le schede sono link fra pagine vere (ognuna col suo URL, per la SEO), quindi `nav` + `aria-current="page"`, non
  * un `tablist`. L'H1 cambia con la pagina: la testata è la stessa, il titolo dice dove si è.
  * Sotto, facoltativo, l'indice della pagina (Mazzi · Leggendarie · Carte) con le ancore delle sezioni.
+ * Dal 29/09/2026 (Pierluigi: i testi "ci creano un problema dal punto di vista della navigabilità") fra l'H1 e le
+ * schede non c'è più l'introduzione: ogni pagina la mette in fondo (`PageNotes`), con "In breve", la riga della fonte
+ * (`TierSourceLine`) e che cosa contiene ogni sezione (`TierSectionNotes`).
  */
 
 export type TierSource = "official" | "community" | "played" | "create";
@@ -18,7 +21,6 @@ export function TierListHeader({
   dict: d,
   current,
   title,
-  intro,
   state,
   sections,
 }: {
@@ -26,7 +28,6 @@ export function TierListHeader({
   dict: Dictionary;
   current: TierSource;
   title: string;
-  intro?: string;
   /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "14 mazzi" */
   state: { official: string; community: string; played: string };
   /** indice della pagina: ancore e conteggi delle sezioni */
@@ -43,8 +44,7 @@ export function TierListHeader({
     <header>
       <p className="kicker text-mint">{d.nav.tierList}</p>
       <h1 className="t-page mt-2">{title}</h1>
-      {intro ? <p className="mt-3 max-w-3xl text-chalk-muted">{intro}</p> : null}
-      <nav aria-label={t.sourcesLabel} className="mt-5 flex flex-wrap items-stretch gap-2">
+      <nav aria-label={t.sourcesLabel} className="mt-4 flex flex-wrap items-stretch gap-2">
         {sources.map((s) => {
           const on = s.id === current;
           return (
@@ -83,7 +83,20 @@ export function TierListHeader({
   );
 }
 
-/** La riga sotto la testata: fonte, campione, stato o misura, in un'unica riga che va a capo. */
+/** Che cosa contiene ogni sezione della pagina, in fondo con gli altri testi: sotto i titoli c'è subito il contenuto. */
+export function TierSectionNotes({ items }: { items: { title: string; text: string }[] }) {
+  return (
+    <ul className="mt-3 max-w-3xl space-y-1 text-sm text-chalk-muted">
+      {items.map((it) => (
+        <li key={it.title}>
+          <b className="font-semibold text-pale">{it.title}:</b> {it.text}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** La riga della fonte: fonte, campione, stato o misura, in un'unica riga che va a capo (in fondo alla pagina). */
 export function TierSourceLine({ items }: { items: { label: string; text: string; warn?: boolean }[] }) {
   return (
     <p className="tier-line">

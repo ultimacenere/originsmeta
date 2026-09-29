@@ -8,7 +8,8 @@ import { normalizeBadge } from "@/lib/community/badges";
 import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communitySample, communityStage } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
-import { TierListHeader, TierSourceLine } from "@/components/TierListHeader";
+import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
+import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
@@ -91,31 +92,16 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         ]}
       />
       <CardMentionEdges />
-      {/* Sotto la soglia anche l'H1 dice che è un'anteprima, come il titolo in SERP (decisione del 24/09/2026) */}
+      {/* Sotto la soglia anche l'H1 dice che è un'anteprima, come il titolo in SERP (decisione del 24/09/2026).
+          Sotto la testata subito il contenuto: introduzione, fonte e campione stanno in fondo (29/09/2026). */}
       <TierListHeader
         locale={locale}
         dict={d}
         current="community"
         title={lists < COMMUNITY_MIN_LISTS ? c.h1Preview : c.h1}
-        intro={c.intro}
         state={state}
         sections={sectionIndex.length ? sectionIndex : undefined}
       />
-      <TierSourceLine
-        items={[
-          { label: t.lineSource, text: c.sourceText },
-          { label: t.lineSample, text: `${communitySample(t, data.lists)}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
-          ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort, lists), warn: true }] : []),
-        ]}
-      />
-      {/* Link nel testo verso la tier list principale, con il suo nome come ancora (piano SEO del 25/09/2026): su
-          "origins tcg tier list" deve uscire /tier-list, non questa pagina */}
-      <p className="mt-3 text-sm text-chalk-muted">
-        {t.mainText}{" "}
-        <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
-          {t.mainAnchor} →
-        </Link>
-      </p>
 
       {/*
         Tier list firmate (Ondata 3, TOOL-01): quelle salvate da Staff, Creator, Autori e Pro (ruoli del 27/09/2026), con nome, ruolo, data e
@@ -123,11 +109,10 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         contenuto firmato della pagina; senza liste firmate la sezione non c'è.
       */}
       {signed.length ? (
-        <section id="signed" className="mt-10 scroll-mt-32" aria-labelledby="signed-title">
+        <section id="signed" className="mt-8 scroll-mt-32" aria-labelledby="signed-title">
           <h2 id="signed-title" className="t-section">
             {c.signedTitle}
           </h2>
-          <p className="mt-1 max-w-3xl text-chalk-muted">{c.signedText}</p>
           <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {signed.map((a) => (
               <li key={a.username} className="card-night flex min-w-0 flex-col p-5">
@@ -171,21 +156,18 @@ export default async function CommunityTierListPage({ params }: { params: Locale
 
       {lists === 0 ? (
         /* Nessuna tier list salvata: una pagina vuota non serve a nessuno, l'invito sì. */
-        <div className="felt-panel-mint mt-8 flex max-w-3xl flex-wrap items-center gap-4 p-6">
+        <div className={`felt-panel-mint ${signed.length ? "mt-10" : "mt-8"} flex max-w-3xl flex-wrap items-center gap-4 p-6`}>
           <p className="min-w-0 flex-1 basis-64 text-pale">{c.empty}</p>
           <Link href={href(locale, "/tier-list/create")} className="btn btn-primary max-sm:w-full">
             {c.emptyCta} →
           </Link>
         </div>
       ) : (
-        kinds.map((k) => (
-          <section key={k.id} id={k.id} className="mt-10 scroll-mt-32" aria-labelledby={`${k.id}-title`}>
+        kinds.map((k, i) => (
+          <section key={k.id} id={k.id} className={`${i === 0 && !signed.length ? "mt-8" : "mt-10"} scroll-mt-32`} aria-labelledby={`${k.id}-title`}>
             <h2 id={`${k.id}-title`} className="t-section">
               {k.title}
             </h2>
-            <p className="mt-1 max-w-2xl text-chalk-muted">
-              {k.text} <span className="font-mono text-xs text-pale-muted">· {listsLabel(k.n)}</span>
-            </p>
             {k.n > 0 && k.n < COMMUNITY_MIN_LISTS ? <p className="tier-ribbon">{preview(k.n)}</p> : null}
             <div className="mt-4">
               <TierExplorer locale={locale}
@@ -203,15 +185,37 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         ))
       )}
 
-      <p className="mt-10 max-w-3xl text-sm text-chalk-muted">{c.disclaimer}</p>
-      <div className="mt-6 flex flex-wrap gap-4 text-sm">
-        <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
-          {c.officialLink} →
-        </Link>
-        <Link href={href(locale, "/tier-list/create")} className="link-mint font-bold">
-          {t.makerCta} →
-        </Link>
-      </div>
+      {/* I testi della pagina, dopo il contenuto (Pierluigi, 29/09/2026): prima stavano fra il titolo e le liste */}
+      <PageNotes>
+        <p className="max-w-3xl text-chalk-muted">{c.intro}</p>
+        <TierSourceLine
+          items={[
+            { label: t.lineSource, text: c.sourceText },
+            { label: t.lineSample, text: `${communitySample(t, data.lists)}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
+            ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort, lists), warn: true }] : []),
+          ]}
+        />
+        <TierSectionNotes
+          items={[
+            ...(signed.length ? [{ title: c.signedTitle, text: c.signedText }] : []),
+            ...kinds.map((k) => ({ title: `${k.title} (${listsLabel(k.n)})`, text: k.text })),
+          ]}
+        />
+        <p className="mt-4 max-w-3xl text-sm text-chalk-muted">{c.disclaimer}</p>
+        {/* Link nel testo verso la tier list principale, con il suo nome come ancora (piano SEO del 25/09/2026): su
+            "origins tcg tier list" deve uscire /tier-list, non questa pagina */}
+        <p className="mt-3 text-sm text-chalk-muted">
+          {t.mainText}{" "}
+          <Link href={href(locale, "/tier-list")} className="link-mint font-bold">
+            {t.mainAnchor} →
+          </Link>
+        </p>
+        <p className="mt-3 text-sm">
+          <Link href={href(locale, "/tier-list/create")} className="link-mint font-bold">
+            {t.makerCta} →
+          </Link>
+        </p>
+      </PageNotes>
     </div>
   );
 }

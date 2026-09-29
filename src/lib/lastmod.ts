@@ -50,15 +50,15 @@ export const PAGE_UPDATED = {
   "/guides/community": "2026-09-27", // GUIDE: nascita dell'elenco delle guide della community
   "/guides/community/[slug]": "2026-09-29", // 29/09: niente più "Guida della community" nel kicker e nelle briciole, copertina caricata; GUIDE: nascita delle guide della community
   "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
-  "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
+  "/cards": "2026-09-29", // 29/09: sotto il titolo solo il tasto "Esplora i luoghi", introduzione e note in fondo; Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
   "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"
   "/locations": "2026-09-25", // 71a6dad: effetti con il glossario ufficiale del gioco; 25/09: riga della fonte senza World of Origins
-  "/decks": "2026-09-27", // ruoli del 27/09: filtri "Ruolo" e "Pubblicato da", Creator e Autore nelle pastiglie; CREATOR: ruolo, canali e LIVE accanto al nome; Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
+  "/decks": "2026-09-29", // 29/09: via il riquadro "Pubblica il tuo mazzo" (resta il tasto), tasto verso i migliori mazzi, classifica dopo l'elenco, introduzione e In breve in fondo; ruoli del 27/09: filtri "Ruolo" e "Pubblicato da", Creator e Autore nelle pastiglie; CREATOR: ruolo, canali e LIVE accanto al nome; Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
   "/decks/[slug]": "2026-09-27", // ruoli del 27/09: "Pubblicato da" al posto di "Autore"; 63fa759
   "/decks/community/[slug]": "2026-09-27", // ruoli del 27/09: pastiglia Creator/Autore accanto al nome, "chi ha pubblicato il mazzo" nelle note della guida e delle risorse; CREATOR: ruolo, canali e LIVE accanto al nome; VIDEO: lettore a clic e risorse; STREAM: menu "Per le dirette" e og:image dalla lista del mazzo; Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
   "/deck-builder": "2026-09-25", // Ondata 2: WebApplication nei dati strutturati
   "/tier-list": "2026-09-27", // ruoli del 27/09: pastiglia Creator/Autore accanto al nome nei mazzi più votati; Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
-  "/tier-list/community": "2026-09-27", // ruoli del 27/09 nelle tier list firmate; Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
+  "/tier-list/community": "2026-09-29", // 29/09: testi in fondo, un solo link verso la tier list di OriginsMeta; ruoli del 27/09 nelle tier list firmate; Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
   "/tier-list/most-played": "2026-09-25", // Ondata 2: ItemList delle carte più giocate
   "/tier-list/create": "2026-09-25", // Ondata 1: H1
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch

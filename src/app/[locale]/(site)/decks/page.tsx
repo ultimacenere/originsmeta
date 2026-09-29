@@ -9,6 +9,7 @@ import type { Card } from "@/lib/data/cards";
 import { activeCards, getCard, patchAt, patchLabel, statLine } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
+import { PageNotes } from "@/components/PageNotes";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { creatorExtras, creatorIndex, listCreators } from "@/lib/community/creators";
 import { creatorLabels } from "@/lib/creatorLabels";
@@ -272,33 +273,68 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
       />
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="t-page mt-2">{d.decks.title}</h1>
-      <p className="mt-4 max-w-2xl text-chalk-muted">{d.decks.intro}</p>
-      {brief.length ? (
-        <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
-          <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
-          {renderParts(brief)}
-        </p>
-      ) : null}
-
-      {/* UX-13: l'invito a pubblicare sta subito sotto l'intro (prima era in fondo alla pagina, dopo tutto il resto) */}
-      <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
-        <div className="min-w-0 flex-1 basis-72">
-          <h2 className="t-item">{d.decks.submitTitle}</h2>
-          <p className="mt-1 text-pale-muted">{d.decks.submitText}</p>
-        </div>
-        <Link className="btn btn-primary shrink-0" href={href(locale, "/deck-builder")}>
+      {/*
+        Sotto il titolo solo due tasti (Pierluigi, 29/09/2026): "Pubblica un mazzo" (il riquadro con titolo e testo non
+        c'è più) e, alla sua sinistra, quello che scende alla classifica dei migliori mazzi, in fondo dopo l'elenco.
+        Introduzione e In breve stanno in fondo alla pagina. Il tasto della classifica c'è solo se c'è la classifica.
+      */}
+      <p className="mt-4 flex flex-wrap gap-3">
+        {supabaseEnabled ? (
+          <a href={`#${bestLabels.anchor}`} className="btn btn-ghost">
+            {bestLabels.cta} ↓
+          </a>
+        ) : null}
+        <Link className="btn btn-primary" href={href(locale, "/deck-builder")}>
           {d.decks.submitCta} →
         </Link>
-      </section>
+      </p>
+
+      <div className="mt-6">
+        {/* sposta l'anteprima della carta quando uscirebbe dai bordi della finestra */}
+        <CardMentionEdges />
+        <DeckExplorer
+          decks={[...list, ...communityList]}
+          labels={{
+            legendary: d.common.filterLegendary,
+            archetype: d.common.filterArchetype,
+            publishedBy: d.common.publishedBy,
+            role: d.common.filterRole,
+            roles,
+            clear: d.common.clearFilters,
+            card: d.common.filterCard,
+            all: d.common.all,
+            allMasculine: d.common.allMasculine,
+            results: d.common.results,
+            noResults: d.common.noDecks,
+            votes: d.community.votes,
+            vote: d.community.vote,
+            viewBlocks: d.common.viewBlocks,
+            viewList: d.common.viewList,
+            copyCode: d.common.copyCode,
+            copied: d.common.copied,
+            firstDecks: d.decks.firstDecks,
+            patch: d.common.patch,
+            patchFilter: d.common.filterPatch,
+            sortBy: d.common.sortBy,
+            sortNewest: d.common.sortNewest,
+            sortRated: d.common.sortRated,
+            createdOn: d.common.createdOn,
+            channels: creatorLabels[locale].channels,
+            live: creatorLabels[locale].live,
+          }}
+          invite={{ href: href(locale, "/deck-builder"), title: d.decks.inviteTitle, text: d.decks.inviteText, cta: d.decks.inviteCta }}
+        />
+      </div>
 
       {/*
         I migliori mazzi adesso (Ondata 3, C18): la classifica dei voti, con l'ancora tradotta per lingua
         (#best-decks, #migliori-mazzi, #mejores-mazos) per i link dalle altre pagine. Posizione "da classifica": i pari
         merito hanno lo stesso numero. Ogni riga porta alla scheda del mazzo e a quella della sua Leggendaria.
+        Dal 29/09/2026 sta dopo l'elenco dei mazzi (Pierluigi): ci porta il tasto sotto il titolo.
       */}
       {/* con la community spenta (NEXT_PUBLIC_COMMUNITY=off) non si vota: niente classifica, come l'invito della home */}
       {supabaseEnabled ? (
-        <section id={bestLabels.anchor} aria-labelledby="best-decks-title" className="card-night mt-6 scroll-mt-28 p-5 sm:p-6" data-om-placement="decks_best">
+        <section id={bestLabels.anchor} aria-labelledby="best-decks-title" className="card-night mt-12 scroll-mt-28 p-5 sm:p-6" data-om-placement="decks_best">
           <p className="kicker text-mint">{bestLabels.kicker}</p>
           <h2 id="best-decks-title" className="t-section mt-1">
             {bestLabels.title}
@@ -363,43 +399,6 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         </section>
       ) : null}
 
-      <div className="mt-8">
-        {/* sposta l'anteprima della carta quando uscirebbe dai bordi della finestra */}
-        <CardMentionEdges />
-        <DeckExplorer
-          decks={[...list, ...communityList]}
-          labels={{
-            legendary: d.common.filterLegendary,
-            archetype: d.common.filterArchetype,
-            publishedBy: d.common.publishedBy,
-            role: d.common.filterRole,
-            roles,
-            clear: d.common.clearFilters,
-            card: d.common.filterCard,
-            all: d.common.all,
-            allMasculine: d.common.allMasculine,
-            results: d.common.results,
-            noResults: d.common.noDecks,
-            votes: d.community.votes,
-            vote: d.community.vote,
-            viewBlocks: d.common.viewBlocks,
-            viewList: d.common.viewList,
-            copyCode: d.common.copyCode,
-            copied: d.common.copied,
-            firstDecks: d.decks.firstDecks,
-            patch: d.common.patch,
-            patchFilter: d.common.filterPatch,
-            sortBy: d.common.sortBy,
-            sortNewest: d.common.sortNewest,
-            sortRated: d.common.sortRated,
-            createdOn: d.common.createdOn,
-            channels: creatorLabels[locale].channels,
-            live: creatorLabels[locale].live,
-          }}
-          invite={{ href: href(locale, "/deck-builder"), title: d.decks.inviteTitle, text: d.decks.inviteText, cta: d.decks.inviteCta }}
-        />
-      </div>
-
       <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="felt-panel p-6">
           <h2 className="t-section">{d.decks.legendariesTitle}</h2>
@@ -419,6 +418,17 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           <p className="mt-3 text-chalk-muted">{d.decks.conquestText}</p>
         </section>
       </div>
+
+      {/* I testi della pagina, in fondo (Pierluigi, 29/09/2026): prima stavano fra il titolo e l'elenco dei mazzi */}
+      <PageNotes>
+        <p className="max-w-2xl text-chalk-muted">{d.decks.intro}</p>
+        {brief.length ? (
+          <p className="mt-4 max-w-3xl break-words text-sm leading-relaxed text-pale">
+            <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
+            {renderParts(brief)}
+          </p>
+        ) : null}
+      </PageNotes>
     </div>
   );
 }
