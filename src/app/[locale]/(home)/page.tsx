@@ -157,6 +157,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const mv = d.home.moves;
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
   const slides: Slide[] = [
+    // Prima slide dal 30/09/2026 (richiesta di Pierluigi): la copertina ufficiale della patch 0.7 con il tasto verso l'articolo.
+    // Quando esce la patch successiva si sostituisce o si toglie.
+    { src: "/media/news-patch-07.webp", ...sl.patch07, href: href(locale, "/news/patch-0-7") },
     { src: "/media/hero-1920.webp", ...sl.keyArt, href: officialLinks.demo, external: true },
     { src: "/media/banner-rapunzel.webp", ...sl.rapunzel, href: href(locale, "/cards") },
     { src: "/media/ls-zero-pay-to-win.webp", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
