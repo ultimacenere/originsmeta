@@ -6,7 +6,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import type { Dictionary } from "@/lib/i18n";
 import { archetypeLabels, decks } from "@/lib/data/decks";
 import type { Card } from "@/lib/data/cards";
-import { activeCards, getCard, patchAt, patchLabel, statLine } from "@/lib/data/cards";
+import { activeCards, getCard, patchAt, patchLabel, patchOrder, statLine, type PatchId } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { PageNotes } from "@/components/PageNotes";
@@ -240,6 +240,13 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Voci del filtro "Ruolo" (27/09/2026: Staff, Creator, Autore, Pro, Community), dallo staff al più comune: i nomi
   // sono quelli delle pastiglie sui mazzi
   const roles = BADGE_ORDER.map((id): [string, string] => [id, d.community.badges[id]]);
+  // Versioni del gioco del filtro (30/09/2026, Pierluigi: "aggiungi un filtro per selezionare la versione del gioco"): dalla
+  // prima usata da un mazzo pubblicato all'ultima uscita, dalla più recente, anche quelle ancora senza mazzi (la patch nuova).
+  const firstVersion = Math.min(...communityList.map((deck) => (deck.patchId ? patchOrder.indexOf(deck.patchId as PatchId) : Infinity)));
+  const versions = patchOrder
+    .slice(Number.isFinite(firstVersion) && firstVersion >= 0 ? firstVersion : patchOrder.length - 1)
+    .map((id): [string, string] => [id, patchLabel(id, locale)])
+    .reverse();
 
   // Lista per i dati strutturati: i mazzi editoriali statici (oggi nessuno) e quelli della community che la pagina
   // mostra, dal più recente, ma solo dove la scheda si indicizza in questa lingua: la guida originale o una traduzione
@@ -315,6 +322,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             firstDecks: d.decks.firstDecks,
             patch: d.common.patch,
             patchFilter: d.common.filterPatch,
+            versions,
             sortBy: d.common.sortBy,
             sortNewest: d.common.sortNewest,
             sortRated: d.common.sortRated,
