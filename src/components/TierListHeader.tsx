@@ -55,7 +55,7 @@ export function TierListHeader({
               className={`tier-src min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto ${on ? "is-on" : ""}`}
             >
               <span className="tier-src-name">{s.label}</span>
-              <span className="tier-src-state">{state[s.id]}</span>
+              {state[s.id] ? <span className="tier-src-state">{state[s.id]}</span> : null}
             </Link>
           );
         })}

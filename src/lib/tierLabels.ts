@@ -61,8 +61,9 @@ export function tierSourceState(d: Dictionary, n: { lists: number; people: numbe
   const t = d.tier;
   return {
     official: n.officialUpdated ? t.sourceOfficialUpdated.replace("{date}", n.officialUpdated) : t.sourceOfficialSoon,
-    // chi ha salvato una tier list, non il numero di liste: una persona ne salva una per scheda (Leggendarie e carte base)
-    community: n.lists === 0 ? t.sourceCommunityNone : n.people === 1 ? t.sourceCommunityPeopleOne : t.sourceCommunityPeopleMany.replace("{n}", String(n.people)),
+    // niente conteggio sotto "Community" (Pierluigi, 29/09/2026: "rimuovi la dicitura 6 persone"): resta solo il nome.
+    // Quante persone hanno salvato una lista si legge ancora nella riga del campione (communitySample di tierstats.ts).
+    community: "",
     played: n.decks === 0 ? t.sourcePlayedNone : n.decks === 1 ? t.sourcePlayedOne : t.sourcePlayedMany.replace("{n}", String(n.decks)),
   };
 }
