@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
-import { guideShapeSummary, readMinutes, type CommunityGuideListItem } from "@/lib/community/guides";
+import { guideShapeSummary, guideShapeTitle, readMinutes, type CommunityGuideListItem } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { shownBadge } from "@/lib/community/badges";
 import { authorName } from "@/lib/community/util";
@@ -20,6 +20,8 @@ export function CommunityGuideCard({ guide, locale, categoryLabel, showAuthor = 
   const L = communityGuideLabels[locale];
   const d = getDictionary(locale);
   const summary = guideShapeSummary(guide, locale);
+  // titolo tradotto dal 29/09/2026, quando la traduzione c'è ed è fatta dal titolo attuale
+  const title = guideShapeTitle(guide, locale);
   const role = shownBadge(guide.profile?.badge);
   const date = (guide.published_at ?? guide.created_at).slice(0, 10);
   return (
@@ -30,8 +32,8 @@ export function CommunityGuideCard({ guide, locale, categoryLabel, showAuthor = 
           {categoryLabel} · {fillLabel(L.page.readTime, { n: String(readMinutes(guide.words ?? 0)) })} · {formatDate(locale, date)}
         </p>
         {/* break-words: un titolo o un riassunto con una parola lunghissima (un link, un codice) non allarga la pagina */}
-        <h3 className="t-item mt-1 break-words leading-tight" lang={guide.lang === locale ? undefined : guide.lang}>
-          {guide.title}
+        <h3 className="t-item mt-1 break-words leading-tight" lang={title.lang === locale ? undefined : title.lang}>
+          {title.text}
         </h3>
         <p className="mt-2 line-clamp-3 flex-1 break-words text-sm text-pale-muted" lang={summary.lang === locale ? undefined : summary.lang}>
           {summary.text}

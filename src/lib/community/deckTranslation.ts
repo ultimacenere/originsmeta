@@ -170,9 +170,10 @@ export const TRANSLATION_SYSTEM = `${DECK_GUIDE_INTRO}\n\n${TRANSLATION_RULES}`;
 
 /**
  * Istruzioni per le guide della community (pacchetto GUIDE, 27/09/2026): stesse regole e stesso glossario, con i campi
- * di una guida a sezioni. Il titolo non viaggia nel testo e non si traduce, come il nome di un mazzo.
+ * di una guida a sezioni. Dal 29/09/2026 si traduce anche il titolo (Pierluigi: "non è tradotto il titolo"), che prima
+ * restava nella lingua dell'autore come il nome di un mazzo: viaggia nel campo `title`, solo quando va tradotto.
  */
-export const STRATEGY_GUIDE_TRANSLATION_SYSTEM = `You translate strategy guides written by players (authors, content creators, pro players) on OriginsMeta, an unofficial fan site about Origins TCG, a digital trading card game by Koin Games. The guide is a JSON object: "summary" is its introduction, "heading_N" and "body_N" are the heading and the text of section N. Translate every field from the source language into the target language and return the same fields. The title of the guide is not part of the object and is never translated.
+export const STRATEGY_GUIDE_TRANSLATION_SYSTEM = `You translate strategy guides written by players (authors, content creators, pro players) on OriginsMeta, an unofficial fan site about Origins TCG, a digital trading card game by Koin Games. The guide is a JSON object: "title" is the title of the guide, "summary" is its introduction, "heading_N" and "body_N" are the heading and the text of section N; a request can carry only some of these fields. Translate every field from the source language into the target language and return the same fields. Translate the title as a title, keeping its emoji and punctuation.
 
 ${TRANSLATION_RULES}`;
 

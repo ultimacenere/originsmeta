@@ -52,6 +52,9 @@ export const config = {
     // guide della community (pacchetto GUIDE, 27/09/2026): scrittura e modifica, pagine renderizzate sul server
     "/:locale(en|it|es)/guides/new",
     "/:locale(en|it|es)/guides/community/:slug/edit",
+    // fumetti dei creator (pacchetto FUMETTI, 29/09/2026): pubblicazione e modifica, pagine renderizzate sul server
+    "/:locale(en|it|es)/news/comics/new",
+    "/:locale(en|it|es)/news/comics/:slug/edit",
     // Tournament Organizer: pagine renderizzate sul server (la scheda è dinamica dal 16/09: i tornei privati dipendono dalla sessione)
     "/:locale(en|it|es)/tournaments/new",
     "/:locale(en|it|es)/tournaments/:slug",

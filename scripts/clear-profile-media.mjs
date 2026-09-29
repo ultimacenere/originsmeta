@@ -4,10 +4,12 @@
 // tornei, header, /creators, dati strutturati): dal sito lo staff non la può cambiare, perché la policy "users edit own
 // profile" vale solo per la propria riga.
 //
-// Dal 29/09/2026 (blocco IMMAGINI di supabase/schema.sql) nello stesso bucket ci sono anche le copertine caricate delle
-// guide della community (<id>/guide) e gli artwork della Leggendaria dei mazzi (<id>/deck): --orphans le conta come in uso
-// (funzione profile_media_in_use del database) e le due opzioni --guide-covers e --deck-art le tolgono. Una copia di questo
-// script precedente al 29/09 NON le conosce e con --orphans le cancellerebbe: usarlo solo da un checkout aggiornato.
+// Dal 29/09/2026 (blocchi IMMAGINI e FUMETTI di supabase/schema.sql) nello stesso bucket ci sono anche le copertine
+// caricate delle guide della community (<id>/guide), gli artwork della Leggendaria dei mazzi (<id>/deck) e tavole e
+// copertine dei fumetti (<id>/comic): --orphans le conta come in uso (funzione profile_media_in_use del database) e le
+// opzioni --guide-covers e --deck-art tolgono le prime due. Un fumetto da togliere lo nasconde lo staff dal sito, o lo
+// elimina (con i suoi file). Una copia di questo script precedente al 29/09 NON le conosce e con --orphans le
+// cancellerebbe: usarlo solo da un checkout aggiornato.
 //
 // Uso (dal checkout con .env.local, come set-badge.mjs):
 //   node scripts/clear-profile-media.mjs <username|email> [--avatar] [--cover] [--background] [--tagline] [--all]
@@ -104,7 +106,10 @@ try {
     // il tetto della policy di caricamento: 60 file per i ruoli con vetrina e gli admin, 12 per gli altri
     const roles = await db.query(`select id::text as id, badge, role from public.profiles where id::text = any($1)`, [[...perUser.keys()]]);
     const capOf = new Map(roles.rows.map((p) => [p.id, p.role === "admin" || ["creator", "author", "pro", "staff"].includes(p.badge) ? 60 : 12]));
-    const crowded = [...perUser].filter(([id, n]) => n > (capOf.get(id) ?? 12));
+    // la cartella dei fumetti ha un tetto suo (300) e non conta in quello della vetrina (blocco FUMETTI)
+    const perUserNoComics = new Map();
+    for (const row of r.rows) if (row.name.split("/")[1] !== "comic") perUserNoComics.set(row.folder, (perUserNoComics.get(row.folder) ?? 0) + 1);
+    const crowded = [...perUserNoComics].filter(([id, n]) => n > (capOf.get(id) ?? 12));
     if (crowded.length) console.log("Oltre il tetto dei file:", crowded.map(([id, n]) => `${id} (${n} su ${capOf.get(id) ?? 12})`).join(", "));
     const cutoff = Date.now() - hours * 3600_000;
     const stale = r.rows.filter((row) => !row.used && new Date(row.created_at).getTime() < cutoff).map((row) => row.name);

@@ -43,12 +43,14 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
  * Le pagine senza dati propri (FAQ, chi siamo, deck builder…) hanno solo questa data.
  */
 export const PAGE_UPDATED = {
-  "/": "2026-09-25", // Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
-  "/news": "2026-09-25", // Ondata 1: title senza "patch notes", link a MetaShifting; 25/09: news senza fonte citabile senza "Fonte"
+  "/": "2026-09-29", // FUMETTI: i fumetti dei creator fra le news in evidenza e in bacheca (ISR); Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
+  "/news": "2026-09-29", // FUMETTI: i fumetti dei creator nell'elenco (ISR) e il link a /news/comics; Ondata 1: title senza "patch notes", link a MetaShifting; 25/09: news senza fonte citabile senza "Fonte"
+  "/news/comics": "2026-09-29", // FUMETTI: nascita dell'elenco dei fumetti dei creator
+  "/news/comics/[slug]": "2026-09-29", // FUMETTI: nascita delle pagine dei fumetti
   "/news/[slug]": "2026-09-25", // Ondata 2: firma con la Person unica e "Tutti gli autori", Event della Crimson Cup; via World of Origins
-  "/guides": "2026-09-29", // 29/09: un elenco solo, guide della redazione e della community insieme dalla più recente (Pierluigi: niente divisione), pagina in ISR; GUIDE: sezione "Guide della community" e riquadro "Scrivi una guida"; Ondata 1: title e description
-  "/guides/community": "2026-09-27", // GUIDE: nascita dell'elenco delle guide della community
-  "/guides/community/[slug]": "2026-09-29", // 29/09: niente più "Guida della community" nel kicker e nelle briciole, copertina caricata; GUIDE: nascita delle guide della community
+  "/guides": "2026-09-29", // 29/09: titoli delle guide della community tradotti; un elenco solo, guide della redazione e della community insieme dalla più recente (Pierluigi: niente divisione), pagina in ISR; GUIDE: sezione "Guide della community" e riquadro "Scrivi una guida"; Ondata 1: title e description
+  "/guides/community": "2026-09-29", // 29/09: titoli tradotti nelle schede; GUIDE: nascita dell'elenco delle guide della community
+  "/guides/community/[slug]": "2026-09-29", // 29/09: titolo tradotto (H1, title, dati strutturati); niente più "Guida della community" nel kicker e nelle briciole, copertina caricata; GUIDE: nascita delle guide della community
   "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
   "/cards": "2026-09-25", // Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
   "/cards/[slug]": "2026-09-25", // Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"

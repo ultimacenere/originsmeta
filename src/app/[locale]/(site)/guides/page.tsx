@@ -6,7 +6,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getGuides } from "@/lib/content/guides";
 import { authorOfGuide } from "@/lib/data/authors";
 import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { communityGuideCover, guideShapeSummary, guidesIndexableIn, readMinutes } from "@/lib/community/guides";
+import { communityGuideCover, guideShapeSummary, guideShapeTitle, guidesIndexableIn, readMinutes } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { shownBadge } from "@/lib/community/badges";
 import { authorName } from "@/lib/community/util";
@@ -38,7 +38,7 @@ type Entry = {
   key: string;
   href: string;
   title: string;
-  /** lingua del titolo o del riassunto quando non è quella della pagina (una guida della community non si traduce il titolo) */
+  /** lingua del titolo o del riassunto quando non è quella della pagina (traduzione di una guida della community che manca) */
   titleLang?: string;
   excerpt: string;
   excerptLang?: string;
@@ -70,13 +70,14 @@ async function loadEntries(locale: Locale, badges: Record<string, string>) {
   }));
   const community: Entry[] = guidesIndexableIn(await listPublishedGuides(), locales, locale).map((g) => {
     const summary = guideShapeSummary(g, locale);
+    const title = guideShapeTitle(g, locale);
     const role = shownBadge(g.profile?.badge);
     const cover = communityGuideCover(g, supabaseUrl);
     return {
       key: `community-${g.id}`,
       href: href(locale, `/guides/community/${g.slug}`),
-      title: g.title,
-      ...(g.lang !== locale ? { titleLang: g.lang } : {}),
+      title: title.text,
+      ...(title.lang !== locale ? { titleLang: title.lang } : {}),
       excerpt: summary.text,
       ...(summary.lang !== locale ? { excerptLang: summary.lang } : {}),
       category: g.category,

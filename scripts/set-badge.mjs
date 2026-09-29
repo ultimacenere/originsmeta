@@ -15,6 +15,8 @@ const ALIAS = { autore: "author", autor: "author" };
 const LISTING = ["creator", "pro", "staff"];
 /** chi pubblica guide della community senza passare dallo staff (con gli admin): GUIDE_BADGES di badges.ts */
 const GUIDES = ["author", "creator", "pro", "staff"];
+/** chi pubblica fumetti fra le news (con gli admin): COMIC_BADGES di badges.ts (pacchetto FUMETTI, 29/09/2026) */
+const COMICS = ["creator", "staff"];
 const [needle, badgeRaw] = process.argv.slice(2);
 const typed = String(badgeRaw ?? "").trim().toLowerCase();
 if (typed === "influencer") {
@@ -79,6 +81,19 @@ if (!GUIDES.includes(badge)) {
     if (g.rowCount) console.log(`Guide riportate tra le bozze: ${g.rowCount}`);
   } catch (e) {
     if (e.code !== "42P01") console.error(`Guide non riportate tra le bozze: ${e.message}`);
+  }
+}
+// Fumetti (pacchetto FUMETTI, 29/09/2026): come le guide. Chi perde il ruolo Creator o Staff ritrova i suoi fumetti
+// pubblicati tra le bozze (i nascosti restano nascosti); con il ruolo restituito li ripubblica da /account.
+if (!COMICS.includes(badge)) {
+  try {
+    const c = await db.query(
+      "update public.community_comics set status = 'draft' where owner = $1 and status = 'published' and not exists (select 1 from public.profiles p where p.id = $1 and p.role = 'admin')",
+      [target.id],
+    );
+    if (c.rowCount) console.log(`Fumetti riportati tra le bozze: ${c.rowCount}`);
+  } catch (e) {
+    if (e.code !== "42P01") console.error(`Fumetti non riportati tra le bozze: ${e.message}`);
   }
 }
 await db.end();

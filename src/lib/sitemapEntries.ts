@@ -11,6 +11,7 @@ import { cardDates, cardLastmod } from "./cardDates";
 import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
 import type { IndexEntry, UrlEntry } from "./seoXml";
 import { directoryIndexable } from "./community/creatorDirectory";
+import type { SitemapComic } from "./community/comics";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -39,9 +40,10 @@ export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
 /**
  * Le sezioni che leggono i dati della community: le altre dipendono solo dai file del repository. Le carte attive ci
  * sono perché il loro lastmod conta i mazzi elencati nella scheda (`deckRefs`, come il `dateModified`); per create e
- * rimosse `cardPageDeckDays` non conta mazzi e i dati non servono.
+ * rimosse `cardPageDeckDays` non conta mazzi e i dati non servono. Le news dal 29/09/2026: i fumetti dei creator
+ * (pacchetto FUMETTI) stanno nella loro sezione.
  */
-export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "guides", "cards", "decks", "community"];
+export const COMMUNITY_SECTIONS: readonly SitemapSection[] = ["pages", "news", "guides", "cards", "decks", "community"];
 
 export const HOME_SITEMAP_PATH = "/sitemap-home.xml";
 
@@ -93,6 +95,12 @@ export type CommunityData = {
     hub: Partial<Record<Locale, string>>;
     list: Partial<Record<Locale, string>>;
   };
+  /**
+   * Fumetti dei creator (pacchetto FUMETTI, 29/09/2026, `sitemapComics` in community/comics.ts): nella sezione "news", solo
+   * nelle lingue in cui la pagina si indicizza, con la data di ogni versione; `latest` è l'ultimo uscito, che sposta il
+   * lastmod di /news (li mostra in tutte le lingue) e dell'elenco /news/comics. Assente: nessun fumetto.
+   */
+  communityComics?: { comics: SitemapComic[]; latest?: string };
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -152,7 +160,20 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
   return [
     // La home mostra le ultime news, i movimenti dell'ultima patch e la tier list.
     { path: "", section: "home", route: "/", dates: [latestNews, patchDay, tierList.updated] },
-    { path: "/news", section: "pages", route: "/news", dates: [latestNews] },
+    // Dal 29/09/2026 /news mostra anche i fumetti dei creator (pacchetto FUMETTI), in tutte le lingue.
+    { path: "/news", section: "pages", route: "/news", dates: [latestNews, data.communityComics?.latest] },
+    // L'elenco dei fumetti: solo quando ce n'è almeno uno (vuoto è noindex), nelle lingue in cui almeno uno si legge.
+    ...(data.communityComics?.comics.length
+      ? [
+          {
+            path: "/news/comics",
+            section: "pages",
+            route: "/news/comics",
+            dates: [data.communityComics.latest],
+            locales: locales.filter((l) => data.communityComics?.comics.some((c) => c.locales.includes(l))),
+          } satisfies SitemapPage,
+        ]
+      : []),
     // Dal 24/09/2026 la tier list mostra anche lo stato delle altre fonti e le anteprime dei mazzi pubblicati.
     { path: "/tier-list", section: "pages", route: "/tier-list", dates: [tierList.updated, latestCommunity, data.tierLists.latest] },
     // Le più giocate: calcolata dai mazzi pubblicati, cambia con loro.
@@ -233,6 +254,12 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
         locales: g.locales,
         images: () => [g.image],
       }),
+    ),
+    // Fumetti dei creator (pacchetto FUMETTI, 29/09/2026): nella sezione delle news, solo nelle lingue in cui la pagina si
+    // indicizza (testi originali o tradotti), con la data di ogni versione. La copertina sta nello Storage di Supabase (un
+    // altro dominio): niente immagine, come le guide della community con la copertina caricata.
+    ...(data.communityComics?.comics ?? []).map(
+      (c): SitemapPage => ({ path: `/news/comics/${c.slug}`, section: "news", route: "/news/comics/[slug]", dates: (l) => [c.dates[l]], locales: c.locales }),
     ),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
     ...sortedNews.map(

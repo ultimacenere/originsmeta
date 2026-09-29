@@ -21,6 +21,20 @@ import { changeLabel } from "@/lib/linkLabels";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
 import { TierInvite } from "@/components/TierInvite";
+import { listPublishedComics } from "@/lib/community/comicQueries";
+import { comicFeedCards, mergeFeed, type ComicFeedCard } from "@/lib/community/comics";
+import { fillLabel } from "@/lib/community/deckQuality";
+import { authorName } from "@/lib/community/util";
+import { supabaseUrl } from "@/lib/supabase/env";
+import { comicLabels } from "@/lib/comicLabels";
+
+/**
+ * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
+ * anche i fumetti dei creator, che stanno nel database: la home è in ISR (ogni 5 minuti, e le Server Action dei fumetti
+ * la rinnovano subito). Un errore del database lancia e resta la pagina di prima; con la community spenta o la tabella
+ * che non c'è, solo le news del sito come prima.
+ */
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -116,8 +130,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const top = movers(latestPatch).slice(0, 3);
   const startGuides = START_GUIDES.map((s) => getGuide(locale, s)).filter((g): g is Guide => g !== undefined);
   const economyGuide = getGuide(locale, "collector-economy");
-  const featured = sortedNews.slice(0, 3);
-  const board = sortedNews.filter((n) => !featured.includes(n)).slice(0, 6);
+  // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, sei in bacheca
+  const feed = mergeFeed(sortedNews, comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
+  const featured = feed.slice(0, 3);
+  const board = feed.slice(3, 9);
+  const C = comicLabels[locale];
+  const comicHref = (c: ComicFeedCard) => href(locale, c.path);
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
   /* la promessa datata resta finché nessuna sezione ha una fascia: sparisce da sola alla prima classifica */
@@ -178,10 +196,42 @@ export default async function Home({ params }: { params: LocaleParams }) {
               {d.home.featured}
             </h2>
             <div className="grid grid-cols-1 gap-x-5 gap-y-10 md:grid-cols-3">
-              {featured.map((item, i) => {
+              {featured.map((entry, i) => {
+                const note = FEATURED_POSTITS[i % FEATURED_POSTITS.length];
+                if (entry.kind === "comic") {
+                  const c = entry.comic;
+                  return (
+                    <article key={`comic-${c.slug}`} className="card-night relative flex flex-col p-6">
+                      <Postit kind="comic" label={d.home.postit.comic} date={c.date} size="lg" tilt={note.tilt} className={note.place} />
+                      {c.image ? <NewsCover src={c.image} className="mb-4" /> : null}
+                      <p className="kicker text-mint">
+                        {i === 0 ? d.home.latestNews : d.home.featured} · {formatDate(locale, c.date.slice(0, 10))}
+                      </p>
+                      <h3 className="t-item mt-2" lang={c.titleLang}>
+                        <Link href={comicHref(c)} className="hover:underline">
+                          {c.title}
+                        </Link>
+                      </h3>
+                      <p className="mt-1 text-sm text-pale-muted">{fillLabel(C.by, { name: c.author.name })}</p>
+                      <p className="mt-3 line-clamp-4 text-sm text-pale md:line-clamp-6 lg:line-clamp-none" lang={c.summaryLang}>
+                        {c.summary}
+                      </p>
+                      <p className="mt-3">
+                        <Link href={comicHref(c)} className="text-sm font-bold text-mint hover:underline">
+                          {C.read} →
+                        </Link>
+                      </p>
+                      <p className="mt-auto flex flex-wrap gap-x-4 gap-y-2 pt-4 text-sm">
+                        <Link href={href(locale, "/news")} className="text-pale-muted hover:text-sky">
+                          {d.common.viewAll} →
+                        </Link>
+                      </p>
+                    </article>
+                  );
+                }
+                const item = entry.item;
                 const kind = postitOf(item);
                 const deck = isDeckNews(item);
-                const note = FEATURED_POSTITS[i % FEATURED_POSTITS.length];
                 return (
                   <article key={item.slug} className="card-night relative flex flex-col p-6">
                     {/*
@@ -374,22 +424,43 @@ export default async function Home({ params }: { params: LocaleParams }) {
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_news">
           <SectionHead title={d.home.newsBoardTitle} sub={d.home.newsBoardSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
           <ul className="felt-panel divide-y divide-felt-line">
-            {board.map((nItem) => (
-              <li key={nItem.slug} className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
-                <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, nItem.date)}</p>
-                <NewsCover src={nItem.image} />
-                <div>
-                  {/* Il titolo porta all'articolo; la fonte (o la scheda del mazzo) resta il link piccolo sotto il riassunto */}
-                  <h3 className="t-item text-base">
-                    <Link href={newsHref(nItem)} className="hover:underline">
-                      {nItem.title[locale]}
-                    </Link>
-                  </h3>
-                  <p className="mt-1 text-sm text-chalk-muted">{nItem.summary[locale]}</p>
-                  <NewsSourceLink item={nItem} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
-                </div>
-              </li>
-            ))}
+            {board.map((entry) =>
+              entry.kind === "comic" ? (
+                <li key={`comic-${entry.comic.slug}`} className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
+                  <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, entry.comic.date.slice(0, 10))}</p>
+                  {entry.comic.image ? <NewsCover src={entry.comic.image} /> : <span aria-hidden="true" />}
+                  <div>
+                    <h3 className="t-item text-base" lang={entry.comic.titleLang}>
+                      <Link href={comicHref(entry.comic)} className="hover:underline">
+                        {entry.comic.title}
+                      </Link>
+                    </h3>
+                    <p className="mt-1 text-sm text-chalk-muted" lang={entry.comic.summaryLang}>
+                      {entry.comic.summary}
+                    </p>
+                    <p className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                      <span className="stat-pill pill-comic text-[10px] font-semibold uppercase">{C.pill}</span>
+                      <span className="text-pale-muted">{fillLabel(C.by, { name: entry.comic.author.name })}</span>
+                    </p>
+                  </div>
+                </li>
+              ) : (
+                <li key={entry.item.slug} className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
+                  <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, entry.item.date)}</p>
+                  <NewsCover src={entry.item.image} />
+                  <div>
+                    {/* Il titolo porta all'articolo; la fonte (o la scheda del mazzo) resta il link piccolo sotto il riassunto */}
+                    <h3 className="t-item text-base">
+                      <Link href={newsHref(entry.item)} className="hover:underline">
+                        {entry.item.title[locale]}
+                      </Link>
+                    </h3>
+                    <p className="mt-1 text-sm text-chalk-muted">{entry.item.summary[locale]}</p>
+                    <NewsSourceLink item={entry.item} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
+                  </div>
+                </li>
+              ),
+            )}
           </ul>
         </section>
 

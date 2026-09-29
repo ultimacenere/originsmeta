@@ -8,6 +8,7 @@ import { inboxLabels } from "@/lib/inboxLabels";
 import { showcaseLabels } from "@/lib/showcaseLabels";
 import { achievementLabels } from "@/lib/achievementLabels";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
+import { comicLabels } from "@/lib/comicLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -67,6 +68,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* "Segui" e notifiche (pacchetto SEGUI, 27/09/2026): testo in src/lib/followLabels.ts, ancora #follows */}
         <p id="follows" className="mt-6 scroll-mt-24">
           {followLabels[locale].privacy}
+        </p>
+        {/* Fumetti dei creator (pacchetto FUMETTI, 29/09/2026): testo in src/lib/comicLabels.ts, ancora #community-comics */}
+        <p id="community-comics" className="mt-6 scroll-mt-24">
+          {comicLabels[locale].privacy}
         </p>
         {/* Guide della community (pacchetto GUIDE, 27/09/2026): testo in src/lib/communityGuideLabels.ts, ancora #community-guides */}
         <p id="community-guides" className="mt-6 scroll-mt-24">

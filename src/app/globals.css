@@ -75,6 +75,7 @@
     --postit-guide: #31e3bd; /* Guida, menta (11,3:1) */
     --postit-tournament: #3fc4e8; /* Torneo, celeste (9,0:1) */
     --postit-event: #ffb454; /* Evento, arancio (10,4:1) */
+    --postit-comic: #b6e36a; /* Fumetto, lime (12,4:1; pacchetto FUMETTI, 29/09/2026) */
     --postit-label: #ffe98a; /* Etichetta di sezione a penna, giallo canarino dei foglietti veri (15,1:1) */
   }
   html {
@@ -532,7 +533,7 @@
         <span class="postit postit-news postit-corner">News</span>  figlio DIRETTO del contenitore, non dentro
         …                                                            un riquadro con overflow: hidden (la copertina)
       </article>
-    Colore: postit-deck (Nuovo mazzo), postit-news, postit-patch, postit-guide, postit-tournament, postit-event.
+    Colore: postit-deck (Nuovo mazzo), postit-news, postit-patch, postit-guide, postit-tournament, postit-event, postit-comic.
     Misura: `postit-lg`, il post-it grande che sta sopra l'angolo dell'immagine (vedi sotto).
     Stato: `is-fresh`, news delle ultime 72 ore. La mette <Postit> nel browser dopo il montaggio: le pagine sono
     statiche e un calcolo fatto alla build sbaglierebbe il giorno della visita.
@@ -620,6 +621,17 @@
     --postit-bg: var(--postit-event);
     --tilt: 1.9deg;
     --delay: -4.4s;
+  }
+  /* Fumetti dei creator fra le news (pacchetto FUMETTI, 29/09/2026) */
+  .postit-comic {
+    --postit-bg: var(--postit-comic);
+    --tilt: -2.2deg;
+    --delay: -5s;
+  }
+  /* la stessa tinta per la pastiglia "Fumetto" accanto alla data, con il testo scuro dei fondi pieni */
+  .pill-comic {
+    background: var(--postit-comic);
+    color: var(--color-ink);
   }
   .postit-corner {
     position: absolute;

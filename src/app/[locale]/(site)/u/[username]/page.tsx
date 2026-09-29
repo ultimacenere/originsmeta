@@ -46,6 +46,9 @@ import { ShowcaseFeatured } from "@/components/showcase/ShowcaseFeatured";
 import { ProfileHighlights } from "@/components/achievements/ProfileHighlights";
 import { UserGuides } from "@/components/guides/AccountGuides";
 import { listGuidesByOwner } from "@/lib/community/guideQueries";
+import { listComicsByOwner } from "@/lib/community/comicQueries";
+import { comicFeedCards } from "@/lib/community/comics";
+import { UserComics } from "@/components/comics/UserComics";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { safeAvatarUrl } from "@/lib/community/profileMedia";
 import { supabaseUrl } from "@/lib/supabase/env";
@@ -130,6 +133,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const data = await loadProfile(username);
   if (!data) notFound();
   const { profile, decks, tierLists, guides, name, editorial } = data;
+  // fumetti pubblicati (pacchetto FUMETTI, 29/09/2026): solo mostrati, non contano per l'indicizzazione del profilo
+  const comics = comicFeedCards(await listComicsByOwner(profile.id, 24), locale, supabaseUrl, authorName);
   const L = communityPageLabels[locale];
   const GL = communityGuideLabels[locale].profile;
   // Chi ha pubblicato guide non vede le schede vuote "Nessun mazzo" e "Nessuna tier list" prima delle sue guide
@@ -328,6 +333,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           a mazzi e tier list (contano per l'indicizzazione). I tornei in evidenza stanno più in alto, sotto i traguardi
           (pacchetto TRAGUARDI) */}
       <UserGuides locale={locale} guides={guides} />
+      {/* Fumetti pubblicati dall'iscritto (pacchetto FUMETTI, 29/09/2026): niente se non ne ha */}
+      <UserComics locale={locale} comics={comics} />
 
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         {showcaseRole ? (

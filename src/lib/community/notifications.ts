@@ -9,13 +9,14 @@ import type { InboxStatus } from "./messages";
  * Tre tipi di avviso, per chi segue un profilo vetrina (Creator, Autore, Pro, Staff):
  *   - `deck_published`: ha pubblicato un mazzo (Server Action di pubblicazione, dentro after());
  *   - `live`: è andato in diretta su Twitch con Origins TCG (rotta /api/cron/live, cron di Vercel ogni 10 minuti);
- *   - `guide_published`: ha pubblicato una guida della community (pacchetto GUIDE, con `notifyFollowers`).
+ *   - `guide_published`: ha pubblicato una guida della community (pacchetto GUIDE, con `notifyFollowers`);
+ *   - `comic_published`: ha pubblicato un fumetto fra le news (pacchetto FUMETTI, 29/09/2026, con `notifyFollowers`).
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
- * (`/guides/community/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
+ * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 /** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`). */
 export type PublishKind = Exclude<NotificationKind, "live">;
@@ -43,15 +44,22 @@ const DECK_TARGET = /^\/decks\/community\/([a-z0-9-]{1,80})$/;
 /** Le guide della community (pacchetto GUIDE): slug di 3-60 caratteri, parole separate da un trattino (community_guides_slug_check). */
 const GUIDE_TARGET = /^\/guides\/community\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const PROFILE_TARGET = /^\/u\/([a-z0-9_-]{1,60})$/;
+/** I fumetti (pacchetto FUMETTI): slug di 3-60 caratteri come le guide (community_comics_slug_check). */
+const COMIC_TARGET = /^\/news\/comics\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 function isGuideTarget(target: string): boolean {
   const slug = GUIDE_TARGET.exec(target)?.[1];
   return Boolean(slug && slug.length >= 3 && slug.length <= 60);
 }
 
-/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, pagina /u. */
+function isComicTarget(target: string): boolean {
+  const slug = COMIC_TARGET.exec(target)?.[1];
+  return Boolean(slug && slug.length >= 3 && slug.length <= 60);
+}
+
+/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u. */
 export function isSafeTarget(target: unknown): target is string {
-  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || isGuideTarget(target) || PROFILE_TARGET.test(target));
+  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target));
 }
 
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
@@ -64,10 +72,16 @@ export function guideSlugOf(target: string): string | null {
   return isGuideTarget(target) ? (GUIDE_TARGET.exec(target)?.[1] ?? null) : null;
 }
 
+/** Lo slug del fumetto di un avviso `comic_published` (per leggerne il titolo e sapere se è ancora online), altrimenti null. */
+export function comicSlugOf(target: string): string | null {
+  return isComicTarget(target) ? (COMIC_TARGET.exec(target)?.[1] ?? null) : null;
+}
+
 /**
  * Il percorso da mandare a `notify_followers`, come lo vuole il database: per un mazzo lo slug o `/decks/community/<slug>`,
- * per una guida lo slug o `/guides/community/<slug>`. Una lingua in testa (/it/…) si toglie: gli avvisi si aprono nella
- * lingua di chi li legge. null se non ha la forma giusta (niente chiamata al database).
+ * per una guida lo slug o `/guides/community/<slug>`, per un fumetto lo slug o `/news/comics/<slug>`. Una lingua in
+ * testa (/it/…) si toglie: gli avvisi si aprono nella lingua di chi li legge. null se non ha la forma giusta (niente
+ * chiamata al database).
  */
 export function publishTarget(kind: PublishKind, raw: string): string | null {
   let t = String(raw ?? "").trim();
@@ -75,6 +89,10 @@ export function publishTarget(kind: PublishKind, raw: string): string | null {
   if (kind === "deck_published") {
     if (!t.startsWith("/")) t = `/decks/community/${t}`;
     return DECK_TARGET.test(t) ? t : null;
+  }
+  if (kind === "comic_published") {
+    if (!t.startsWith("/")) t = `/news/comics/${t}`;
+    return isComicTarget(t) ? t : null;
   }
   if (!t.startsWith("/")) t = `/guides/community/${t}`;
   return isGuideTarget(t) ? t : null;

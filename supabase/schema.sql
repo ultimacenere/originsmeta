@@ -3626,3 +3626,507 @@ comment on column public.community_decks.art_path is 'Artwork della Leggendaria 
 comment on function public.guard_community_guide_cover() is 'Copertina caricata di una guida: nella cartella delle guide del proprietario (<owner>/guide/<file>) e un file che c''è, al massimo 2 MB (29/09/2026).';
 comment on function public.guard_deck_art() is 'Artwork del mazzo: solo Creator, Staff e admin, e un file che c''è nel bucket, al massimo 2 MB (29/09/2026).';
 comment on function public.profile_media_in_use(text) is 'Un file del bucket profile-media è in uso (profilo, copertina di una guida, artwork di un mazzo del proprietario della cartella): la policy di cancellazione non lo lascia togliere (29/09/2026).';
+
+-- ===== 29/09/2026: FUMETTI =====
+-- =====================================================================================================
+-- FUMETTI DEI CREATOR PUBBLICATI COME NEWS (pacchetto FUMETTI, 29/09/2026)
+-- Richiesta di Pierluigi del 29/09/2026: Vega (Creator) disegna fumetti che raccontano notizie e storie del gioco, uno a
+-- settimana, e "vorrei che venisse fatta come news"; alla domanda su come, ha scelto "Li pubblica lei da sola" e la firma
+-- "Vega". Chi ha il ruolo Creator o Staff (o è admin: can_publish_comics, uguale a canPublishComics di
+-- src/lib/community/badges.ts) pubblica da /news/comics/new: tavole (immagini verticali, 1080 px di larghezza, fino a
+-- 1920 di altezza, fino a 10), copertina 16:9, titolo, presentazione e il testo di ogni tavola (dialoghi e didascalie).
+-- Il fumetto esce fra le news (home, /news, sitemap, Discord) con una pagina sua, /news/comics/<slug>, firmata da chi l'ha
+-- disegnato; il sito traduce titolo, presentazione e testi delle tavole nelle altre due lingue.
+-- Codice: src/lib/community/comics.ts (regole pure, test in comics.test.ts che le confrontano con questo blocco),
+-- comicQueries.ts, comicActions.ts, comicTranslate.ts, comicNotify.ts; documentazione in docs/fumetti.md.
+--
+-- Viene dopo IMMAGINI: rifà le due policy del bucket profile-media (cartella nuova `comic`, con un tetto suo di 300 file
+-- che non consuma quello della vetrina) e la funzione dei file in uso, e aggiunge il tipo `comic_published` agli avvisi
+-- del pacchetto SEGUI (vincoli e notify_followers rifatti qui). Nessuna grant né revoke su public.profiles
+-- (scripts/schema-guard.mjs). Idempotente come tutto il file.
+-- =====================================================================================================
+
+-- ---------- chi può pubblicare i fumetti ----------
+-- Creator e Staff, più gli admin (COMIC_BADGES di badges.ts; comics.test.ts li confronta). Security definer come
+-- can_publish_guides: legge profiles, dice solo sì o no (e i ruoli sono comunque pubblici).
+create or replace function public.can_publish_comics(uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select uid is not null and exists (
+    select 1 from public.profiles p
+     where p.id = uid and (p.role = 'admin' or p.badge in ('creator','staff'))
+  );
+$$;
+revoke all on function public.can_publish_comics(uuid) from public, anon;
+grant execute on function public.can_publish_comics(uuid) to authenticated, service_role;
+
+-- ---------- tavole ----------
+-- Un array di oggetti con le sole chiavi path, width, height e text: il file nella cartella dei fumetti del proprietario
+-- (`<owner>/comic/<file>`, il nome che sceglie il sito), le misure dell'immagine già ridotta dal browser (larghezza
+-- 100-1080, altezza 100-1920, numeri interi) e il testo della tavola in testo semplice (dialoghi e didascalie, 0-1500,
+-- più righe). Un fumetto pubblicato (o nascosto) ha da 1 a 10 tavole, una bozza da 0 a 10; mai due volte lo stesso file.
+-- Gli stessi limiti di COMIC_LIMITS in comics.ts. I CASE fissano l'ordine dei controlli.
+create or replace function public.community_comic_pages_ok(p jsonb, owner uuid, complete boolean)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when p is null or jsonb_typeof(p) <> 'array' then false
+    when jsonb_array_length(p) > 10 then false
+    when complete and jsonb_array_length(p) < 1 then false
+    when exists (
+      select 1 from jsonb_array_elements(p) as e(x)
+       where case
+         when jsonb_typeof(x) <> 'object' then true
+         when (x - 'path' - 'width' - 'height' - 'text') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'path') is distinct from 'string' then true
+         when char_length(x ->> 'path') > 200 then true
+         when (x ->> 'path') !~ ('^' || owner::text || '/comic/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$') then true
+         when jsonb_typeof(x -> 'width') is distinct from 'number' or jsonb_typeof(x -> 'height') is distinct from 'number' then true
+         when (x ->> 'width') !~ '^[0-9]{1,4}$' or (x ->> 'height') !~ '^[0-9]{1,4}$' then true
+         when (x ->> 'width')::integer not between 100 and 1080 or (x ->> 'height')::integer not between 100 and 1920 then true
+         when jsonb_typeof(x -> 'text') is distinct from 'string' then true
+         else not public.community_guide_text_ok(x ->> 'text', 0, 1500, true)
+       end) then false
+    else jsonb_array_length(p) = (select count(distinct e.x ->> 'path') from jsonb_array_elements(p) as e(x))
+  end;
+$$;
+
+-- Una traduzione salvata in `translations` (una lingua): {hash, at, model, comic: {title, summary, pages: [testo…]}}
+-- con il titolo tradotto (Pierluigi, 29/09/2026: "non è tradotto il titolo", sulla guida di Vega), un testo per tavola
+-- (lo stesso numero dell'originale, `n`; vuoto dove l'originale è vuoto), le regole del testo semplice e lunghezze fino a
+-- 2,5 volte i massimi dell'originale più 200 (COMIC_TRANSLATION_LIMITS di comics.ts).
+create or replace function public.community_comic_translation_ok(t jsonb, n integer)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when t is null or jsonb_typeof(t) is distinct from 'object' then false
+    when octet_length(t::text) > 200000 then false
+    when (t - 'hash' - 'at' - 'model' - 'comic') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'hash') is distinct from 'string' or char_length(t ->> 'hash') > 32 then false
+    when t ? 'at' and (jsonb_typeof(t -> 'at') is distinct from 'string' or char_length(t ->> 'at') > 40) then false
+    when t ? 'model' and (jsonb_typeof(t -> 'model') is distinct from 'string' or char_length(t ->> 'model') > 80) then false
+    when jsonb_typeof(t -> 'comic') is distinct from 'object' then false
+    when ((t -> 'comic') - 'title' - 'summary' - 'pages') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'comic' -> 'title') is distinct from 'string' then false
+    when not public.community_guide_text_ok(t -> 'comic' ->> 'title', 1, 475, false) then false
+    when jsonb_typeof(t -> 'comic' -> 'summary') is distinct from 'string' then false
+    when not public.community_guide_text_ok(t -> 'comic' ->> 'summary', 1, 950, true) then false
+    when jsonb_typeof(t -> 'comic' -> 'pages') is distinct from 'array' then false
+    when jsonb_array_length(t -> 'comic' -> 'pages') <> n then false
+    else not exists (
+      select 1 from jsonb_array_elements(t -> 'comic' -> 'pages') as e(x)
+       where case
+         when jsonb_typeof(x) is distinct from 'string' then true
+         else not public.community_guide_text_ok(x #>> '{}', 0, 3950, true)
+       end)
+  end;
+$$;
+
+revoke all on function public.community_comic_pages_ok(jsonb, uuid, boolean) from public, anon;
+revoke all on function public.community_comic_translation_ok(jsonb, integer) from public, anon;
+grant execute on function public.community_comic_pages_ok(jsonb, uuid, boolean) to authenticated, service_role;
+grant execute on function public.community_comic_translation_ok(jsonb, integer) to authenticated, service_role;
+
+-- ---------- la tabella ----------
+create table if not exists public.community_comics (
+  id uuid primary key default gen_random_uuid(),
+  -- slug leggibile dal titolo più 4 caratteri casuali (come le guide); non si cambia mai
+  slug text unique not null,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  -- lingua dei testi (quella dei balloon); il sito traduce titolo, presentazione e testi delle tavole nelle altre due
+  lang text not null default 'en',
+  -- il titolo si traduce con il resto (i nomi dei mazzi no)
+  title text not null,
+  summary text not null default '',
+  pages jsonb not null default '[]'::jsonb,
+  -- copertina 16:9 caricata dall'autore (obbligatoria per pubblicare): lista delle news, anteprima dei link, Discord
+  cover_path text,
+  status text not null default 'draft',
+  -- traduzioni automatiche: {"it": {"hash": "…", "at": "…", "model": "…", "comic": {"title": "…", "summary": "…", "pages": ["…"]}}}
+  translations jsonb not null default '{}'::jsonb,
+  -- impronta di lingua, presentazione e testi delle tavole (comicHash di comics.ts), scritta dal sito con il testo
+  text_hash text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  -- prima pubblicazione: la scrive solo il trigger; è la data della news
+  published_at timestamptz
+);
+create index if not exists community_comics_status_idx on public.community_comics (status, published_at desc);
+create index if not exists community_comics_owner_idx on public.community_comics (owner, updated_at desc);
+
+alter table public.community_comics drop constraint if exists community_comics_slug_check;
+alter table public.community_comics add constraint community_comics_slug_check
+  check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+alter table public.community_comics drop constraint if exists community_comics_lang_check;
+alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es'));
+alter table public.community_comics drop constraint if exists community_comics_status_check;
+alter table public.community_comics add constraint community_comics_status_check check (status in ('draft','published','hidden'));
+alter table public.community_comics drop constraint if exists community_comics_title_check;
+alter table public.community_comics add constraint community_comics_title_check
+  check (public.community_guide_text_ok(title, case when status = 'draft' then 1 else 3 end, 110, false));
+alter table public.community_comics drop constraint if exists community_comics_summary_check;
+alter table public.community_comics add constraint community_comics_summary_check
+  check (public.community_guide_text_ok(summary, case when status = 'draft' then 0 else 40 end, 300, true));
+alter table public.community_comics drop constraint if exists community_comics_pages_check;
+alter table public.community_comics add constraint community_comics_pages_check
+  check (public.community_comic_pages_ok(pages, owner, status <> 'draft'));
+alter table public.community_comics drop constraint if exists community_comics_cover_path_check;
+alter table public.community_comics add constraint community_comics_cover_path_check
+  check (cover_path is null or (char_length(cover_path) <= 200 and cover_path ~ ('^' || owner::text || '/comic/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$')));
+alter table public.community_comics drop constraint if exists community_comics_cover_required;
+alter table public.community_comics add constraint community_comics_cover_required check (status = 'draft' or cover_path is not null);
+alter table public.community_comics drop constraint if exists community_comics_translations_check;
+alter table public.community_comics add constraint community_comics_translations_check
+  check (jsonb_typeof(translations) = 'object' and octet_length(translations::text) <= 400000);
+alter table public.community_comics drop constraint if exists community_comics_text_hash_check;
+alter table public.community_comics add constraint community_comics_text_hash_check check (text_hash is null or text_hash ~ '^[0-9a-z]{1,16}$');
+
+-- ---------- registro per i tetti giornalieri ----------
+-- Come community_guide_events: una riga per fumetto creato, prima pubblicazione e fumetto nascosto dallo staff, scritta
+-- solo dal trigger (security definer); nessuno la legge né la cancella via API, quindi eliminare un fumetto non azzera i
+-- tetti. Le righe più vecchie di una settimana le toglie il trigger stesso.
+create table if not exists public.community_comic_events (
+  id bigint generated always as identity primary key,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  kind text not null,
+  at timestamptz not null default now()
+);
+alter table public.community_comic_events drop constraint if exists community_comic_events_kind_check;
+alter table public.community_comic_events add constraint community_comic_events_kind_check check (kind in ('create','publish','hide'));
+create index if not exists community_comic_events_owner_idx on public.community_comic_events (owner, kind, at desc);
+alter table public.community_comic_events enable row level security;
+revoke all on public.community_comic_events from anon, authenticated;
+
+-- ---------- trigger: date, tetti, stato riservato allo staff, traduzioni ----------
+-- Privilegiato = lo staff (is_staff: admin o tag Staff) o una connessione diretta (auth.uid() nullo). Tetti (COMIC_* di
+-- comics.ts): 500 fumetti per account, 10 creati e 3 prime pubblicazioni al giorno, 24 ore senza pubblicare dopo un
+-- fumetto nascosto dallo staff. Errori con codici letti da `comicErrorCode` in comics.ts.
+create or replace function public.guard_community_comic()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  privileged boolean := me is null or public.is_staff();
+  n int;
+  k text;
+  v jsonb;
+begin
+  if tg_op = 'INSERT' then
+    new.created_at := now();
+    new.updated_at := now();
+    new.published_at := case when new.status = 'published' then now() else null end;
+    perform pg_advisory_xact_lock(hashtext('om_comics:' || new.owner::text));
+    if not privileged then
+      if new.status not in ('draft', 'published') then raise exception 'comic_status' using errcode = '42501'; end if;
+      select count(*) into n from public.community_comics where owner = new.owner;
+      if n >= 500 then raise exception 'comic_limit' using errcode = '23514'; end if;
+      select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'create' and at > now() - interval '1 day';
+      if n >= 10 then raise exception 'comic_rate' using errcode = '23514'; end if;
+      if new.status = 'published' then
+        if exists (select 1 from public.community_comic_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+          raise exception 'comic_hidden_recent' using errcode = '42501';
+        end if;
+        select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'comic_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    delete from public.community_comic_events where owner = new.owner and at < now() - interval '7 days';
+    insert into public.community_comic_events (owner, kind) values (new.owner, 'create');
+    if new.status = 'published' then insert into public.community_comic_events (owner, kind) values (new.owner, 'publish'); end if;
+  else
+    -- id, proprietario, slug e nascita non cambiano mai (le grant per colonna non li danno; vale anche per lo staff)
+    if me is not null and (new.id is distinct from old.id or new.owner is distinct from old.owner
+        or new.slug is distinct from old.slug or new.created_at is distinct from old.created_at) then
+      raise exception 'comic_reserved_fields' using errcode = '42501';
+    end if;
+    -- 'hidden' è la moderazione dello staff: il proprietario non la toglie e non la mette
+    if not privileged and (old.status = 'hidden' or new.status = 'hidden') then
+      raise exception 'comic_hidden' using errcode = '42501';
+    end if;
+    new.published_at := old.published_at;
+    if new.status = 'published' and old.status is distinct from 'published' and not privileged then
+      perform pg_advisory_xact_lock(hashtext('om_comics:' || new.owner::text));
+      if exists (select 1 from public.community_comic_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+        raise exception 'comic_hidden_recent' using errcode = '42501';
+      end if;
+      if old.published_at is null then
+        select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'comic_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    if new.status = 'published' and old.published_at is null then
+      new.published_at := now();
+      insert into public.community_comic_events (owner, kind) values (new.owner, 'publish');
+    end if;
+    if new.status = 'hidden' and old.status is distinct from 'hidden' then
+      insert into public.community_comic_events (owner, kind) values (new.owner, 'hide');
+    end if;
+    -- l'impronta la scrive il sito con il testo: un testo cambiato via API senza impronta nuova la perde (le traduzioni
+    -- fatte sul testo di prima non valgono più)
+    if (new.lang, new.summary, new.pages) is distinct from (old.lang, old.summary, old.pages)
+       and new.text_hash is not distinct from old.text_hash then
+      new.text_hash := null;
+    end if;
+    -- traduzioni: ogni lingua cambiata deve essere un'altra lingua del sito, con le regole del testo semplice e un testo
+    -- per tavola (vale per tutti, staff e script compresi)
+    if new.translations is distinct from old.translations then
+      for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
+        if v is distinct from (old.translations -> k) then
+          if k not in ('en', 'it', 'es') or k = new.lang
+             or not public.community_comic_translation_ok(v, jsonb_array_length(new.pages)) then
+            raise exception 'comic_translation' using errcode = '23514';
+          end if;
+        end if;
+      end loop;
+    end if;
+    -- la data di aggiornamento è quella dell'autore: scrivere le traduzioni non la sposta
+    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at' - 'text_hash')
+        is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at' - 'text_hash') then
+      new.updated_at := now();
+    else
+      new.updated_at := old.updated_at;
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_community_comic() from public, anon, authenticated;
+drop trigger if exists community_comics_guard on public.community_comics;
+create trigger community_comics_guard before insert or update on public.community_comics
+  for each row execute function public.guard_community_comic();
+
+-- I file nuovi (tavole aggiunte o cambiate, copertina cambiata) devono esserci nel bucket, con tipo ammesso e al massimo
+-- 2 MB. Con i privilegi di chi salva (profile_media_ok vede solo la sua cartella, un admin tutte), come la copertina delle
+-- guide del blocco IMMAGINI: lo staff che nasconde un fumetto altrui non tocca i file e passa.
+create or replace function public.guard_community_comic_files()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+declare
+  p text;
+begin
+  for p in
+    select e.x ->> 'path' from jsonb_array_elements(case when jsonb_typeof(new.pages) = 'array' then new.pages else '[]'::jsonb end) as e(x)
+  loop
+    if tg_op = 'INSERT' or not exists (
+      select 1 from jsonb_array_elements(case when jsonb_typeof(old.pages) = 'array' then old.pages else '[]'::jsonb end) as o(y)
+       where o.y ->> 'path' = p) then
+      if p is null or not public.profile_media_ok(p, 2097152) then
+        raise exception 'comic_file' using errcode = '23514';
+      end if;
+    end if;
+  end loop;
+  if new.cover_path is not null and (tg_op = 'INSERT' or new.cover_path is distinct from old.cover_path)
+     and not public.profile_media_ok(new.cover_path, 2097152) then
+    raise exception 'comic_file' using errcode = '23514';
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_community_comic_files() from public, anon, authenticated;
+drop trigger if exists community_comics_files on public.community_comics;
+create trigger community_comics_files before insert or update of pages, cover_path on public.community_comics
+  for each row execute function public.guard_community_comic_files();
+
+-- ---------- RLS ----------
+alter table public.community_comics enable row level security;
+
+drop policy if exists "community comics: published are public" on public.community_comics;
+create policy "community comics: published are public" on public.community_comics for select to anon, authenticated
+  using (status = 'published');
+drop policy if exists "community comics: owners and staff read all" on public.community_comics;
+create policy "community comics: owners and staff read all" on public.community_comics for select to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()));
+drop policy if exists "community comics: roles insert own" on public.community_comics;
+create policy "community comics: roles insert own" on public.community_comics for insert to authenticated
+  with check (owner = (select auth.uid()) and public.can_publish_comics((select auth.uid())));
+drop policy if exists "community comics: owners and staff update" on public.community_comics;
+create policy "community comics: owners and staff update" on public.community_comics for update to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()))
+  with check (public.can_publish_comics((select auth.uid())) and (owner = (select auth.uid()) or (select public.is_staff())));
+drop policy if exists "community comics: owners and staff delete" on public.community_comics;
+create policy "community comics: owners and staff delete" on public.community_comics for delete to authenticated
+  using (owner = (select auth.uid()) or (select public.is_staff()));
+
+-- Grant minime: lettura per tutti, scrittura per chi ha fatto l'accesso e solo sulle colonne che il sito scrive. La
+-- revoke sulla tabella toglie anche le grant per colonna, quindi il blocco si può rilanciare.
+revoke all on public.community_comics from anon, authenticated;
+grant select on public.community_comics to anon, authenticated;
+grant insert (slug, owner, lang, title, summary, pages, cover_path, status, text_hash) on public.community_comics to authenticated;
+grant update (lang, title, summary, pages, cover_path, status, translations, text_hash) on public.community_comics to authenticated;
+grant delete on public.community_comics to authenticated;
+
+-- ---------- bucket profile-media: cartella dei fumetti ----------
+-- Il tetto della vetrina (12 file, 60 per i ruoli con vetrina) non conta più i file dei fumetti: una puntata a settimana
+-- con 10 tavole lo riempirebbe in un mese e mezzo. La cartella `comic` ha il suo (COMIC_FILES_MAX = 300 in comics.ts).
+create or replace function public.profile_media_count()
+returns integer language sql stable set search_path = public, pg_temp as $$
+  select count(*)::integer from storage.objects o
+   where o.bucket_id = 'profile-media' and (storage.foldername(o.name))[1] = auth.uid()::text
+     and (storage.foldername(o.name))[2] is distinct from 'comic'
+$$;
+-- I file dell'utente collegato in una sua cartella (per ora solo `comic`), con i privilegi di chi carica.
+create or replace function public.profile_media_count_in(folder text)
+returns integer language sql stable set search_path = public, pg_temp as $$
+  select count(*)::integer from storage.objects o
+   where o.bucket_id = 'profile-media' and (storage.foldername(o.name))[1] = auth.uid()::text
+     and (storage.foldername(o.name))[2] = folder
+$$;
+revoke all on function public.profile_media_count_in(text) from public, anon;
+grant execute on function public.profile_media_count_in(text) to authenticated, service_role;
+
+-- I file in uso ora comprendono tavole e copertine dei fumetti del proprietario della cartella (anche in bozza o nascosti).
+create or replace function public.profile_media_in_use(p text)
+returns boolean language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  folder text := split_part(p, '/', 1);
+  uid uuid;
+begin
+  if folder !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    return false;
+  end if;
+  uid := folder::uuid;
+  return exists (select 1 from public.profiles pr where pr.id = uid and (pr.avatar_path = p or pr.cover_path = p or pr.background_path = p))
+      or exists (select 1 from public.community_guides g where g.owner = uid and g.cover_path = p)
+      or exists (select 1 from public.community_decks d where d.owner = uid and d.art_path = p)
+      or exists (select 1 from public.community_comics c where c.owner = uid
+                  and (c.cover_path = p or c.pages @> jsonb_build_array(jsonb_build_object('path', p))));
+end $$;
+revoke all on function public.profile_media_in_use(text) from public, anon;
+grant execute on function public.profile_media_in_use(text) to authenticated, service_role;
+
+do $$
+begin
+  -- Cartelle e tetti: `comic` per Creator, Staff e admin, fino a 300 file; le altre come nel blocco IMMAGINI (avatar per
+  -- tutti; cover, background e guide per i ruoli con vetrina; deck per Creator e Staff), con il tetto della vetrina.
+  drop policy if exists "profile media upload" on storage.objects;
+  create policy "profile media upload" on storage.objects for insert to authenticated with check (
+    bucket_id = 'profile-media'
+    and array_length(storage.foldername(name), 1) = 2
+    and (storage.foldername(name))[1] = auth.uid()::text
+    and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp')
+    and storage.filename(name) ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$'
+    and (
+      ((storage.foldername(name))[2] = 'comic'
+          and public.profile_media_count_in('comic') < 300
+          and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'staff') or p.role = 'admin')))
+      or ((storage.foldername(name))[2] <> 'comic'
+          and public.profile_media_count() < (case when exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')) then 60 else 12 end)
+          and (
+            (storage.foldername(name))[2] = 'avatar'
+            or ((storage.foldername(name))[2] in ('cover', 'background', 'guide')
+                and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')))
+            or ((storage.foldername(name))[2] = 'deck'
+                and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'staff') or p.role = 'admin')))
+          ))
+    )
+  );
+  -- si cancellano i propri file (un admin anche quelli degli altri), mai un file in uso
+  drop policy if exists "profile media owners delete" on storage.objects;
+  create policy "profile media owners delete" on storage.objects for delete to authenticated using (
+    bucket_id = 'profile-media'
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and not public.profile_media_in_use(name)
+  );
+exception when others then
+  raise notice 'Policy del bucket profile-media non aggiornate da SQL (%): vedi README ("Fumetti dei creator").', sqlerrm;
+end $$;
+
+-- ---------- avvisi a chi segue: un fumetto nuovo ----------
+-- Il tipo `comic_published` (NOTIFICATION_KINDS di notifications.ts) nei vincoli delle due tabelle del blocco SEGUI (lì
+-- scritti dentro create table, che su un database esistente non si riapplica) e in notify_followers, che per i fumetti
+-- vuole `/news/comics/<slug>` di un fumetto pubblicato dell'autore. Il resto della funzione è quello del blocco SEGUI.
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published'));
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published'));
+
+create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_actor uuid := coalesce(p_actor, auth.uid());
+  v_target text := btrim(coalesce(p_target, ''));
+  v_owner uuid;
+  v_badge text;
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if p_kind is null or p_kind not in ('deck_published', 'guide_published', 'comic_published') then raise exception 'bad_kind'; end if;
+  if char_length(v_target) > 160 then raise exception 'bad_target'; end if;
+  if v_actor <> me and not public.is_staff() then raise exception 'forbidden'; end if;
+  if p_kind = 'deck_published' then
+    if v_target !~ '^/decks/community/[a-z0-9-]{1,80}$' then raise exception 'bad_target'; end if;
+    -- '/decks/community/' sono 17 caratteri: lo slug comincia dal diciottesimo
+    select d.owner into v_owner from public.community_decks d where d.slug = substr(v_target, 18) and d.status = 'published';
+  elsif p_kind = 'guide_published' then
+    -- '/guides/community/' sono 18 caratteri: lo slug (3-60) comincia dal diciannovesimo
+    if v_target !~ '^/guides/community/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 21 and 78 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_guides') is null then raise exception 'not_found'; end if;
+    execute 'select g.owner from public.community_guides g where g.slug = $1 and g.status = ''published'''
+      into v_owner using substr(v_target, 19);
+  else
+    -- '/news/comics/' sono 13 caratteri: lo slug (3-60) comincia dal quattordicesimo
+    if v_target !~ '^/news/comics/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 16 and 73 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_comics') is null then raise exception 'not_found'; end if;
+    execute 'select c.owner from public.community_comics c where c.slug = $1 and c.status = ''published'''
+      into v_owner using substr(v_target, 14);
+  end if;
+  if v_owner is null or v_owner <> v_actor then raise exception 'not_found'; end if;
+  select p.badge into v_badge from public.profiles p where p.id = v_actor;
+  if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
+  perform pg_advisory_xact_lock(hashtext('om_notify:' || v_actor::text));
+  if exists (select 1 from public.notification_events e where e.kind = p_kind and e.actor_id = v_actor and e.event_key = v_target) then return 0; end if;
+  select count(*) into n from public.notification_events e
+   where e.actor_id = v_actor and e.kind = p_kind and e.created_at > now() - interval '1 day';
+  if n >= 10 then return 0; end if;
+  return public.notify_fanout(v_actor, p_kind, v_target, v_target);
+end $$;
+revoke all on function public.notify_followers(text, text, uuid) from public, anon;
+grant execute on function public.notify_followers(text, text, uuid) to authenticated;
+
+comment on table public.community_comics is 'Fumetti dei Creator e dello Staff pubblicati come news (29/09/2026): tavole e copertina nel bucket profile-media (<owner>/comic/), testi tradotti dal sito. Regole in src/lib/community/comics.ts; documentazione in docs/fumetti.md.';
+comment on table public.community_comic_events is 'Registro dei tetti giornalieri dei fumetti (creati, prime pubblicazioni, nascosti dallo staff): lo scrive solo il trigger guard_community_comic.';
+comment on function public.can_publish_comics(uuid) is 'Chi pubblica fumetti: Creator, Staff e admin (canPublishComics in src/lib/community/badges.ts).';
+comment on function public.profile_media_count_in(text) is 'File dell''utente collegato in una sua cartella del bucket profile-media (tetto della cartella dei fumetti, 29/09/2026).';
+
+-- ===== 29/09/2026: TITOLI TRADOTTI =====
+-- Il titolo delle guide della community si traduce (Pierluigi, 29/09/2026, sulla guida di Vega: "non è tradotto il
+-- titolo"; fino a qui restava nella lingua dell'autore, come il nome di un mazzo). La traduzione salvata ha in più il
+-- titolo tradotto, `guide.title`, e l'impronta del titolo da cui è fatto, `title_hash`: facoltativi (le traduzioni fatte
+-- prima non li hanno e restano valide: il sito traduce solo il titolo), ma sempre insieme. Massimo del titolo tradotto
+-- 475 = 2,5 × 110 + 200, come le altre parti (TRANSLATION_LIMITS.titleMax in src/lib/community/guides.ts, il test
+-- guides.test.ts lo confronta). È la funzione del blocco GUIDE con le due chiavi in più: il trigger
+-- guard_community_guide la chiama già, grant e revoke restano quelli del blocco GUIDE. Il codice di prima regge
+-- (non scrive le due chiavi); il codice nuovo, prima di questo blocco, vedrebbe rifiutate le traduzioni con il titolo:
+-- si migra prima del deploy.
+create or replace function public.community_guide_translation_ok(t jsonb, n integer)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when t is null or jsonb_typeof(t) is distinct from 'object' then false
+    when octet_length(t::text) > 190000 then false
+    when (t - 'hash' - 'at' - 'model' - 'parts' - 'title_hash' - 'guide') <> '{}'::jsonb then false
+    when jsonb_typeof(t -> 'hash') is distinct from 'string' or char_length(t ->> 'hash') > 32 then false
+    when t ? 'at' and (jsonb_typeof(t -> 'at') is distinct from 'string' or char_length(t ->> 'at') > 40) then false
+    when t ? 'model' and (jsonb_typeof(t -> 'model') is distinct from 'string' or char_length(t ->> 'model') > 80) then false
+    when t ? 'parts' and (jsonb_typeof(t -> 'parts') is distinct from 'array' or jsonb_array_length(t -> 'parts') > 13) then false
+    when t ? 'parts' and exists (select 1 from jsonb_array_elements(t -> 'parts') as p(x) where jsonb_typeof(x) is distinct from 'string' or char_length(x #>> '{}') > 32) then false
+    when t ? 'title_hash' and (jsonb_typeof(t -> 'title_hash') is distinct from 'string' or char_length(t ->> 'title_hash') > 32) then false
+    when jsonb_typeof(t -> 'guide') is distinct from 'object' then false
+    when ((t -> 'guide') - 'title' - 'summary' - 'sections') <> '{}'::jsonb then false
+    when (t -> 'guide' ? 'title') is distinct from (t ? 'title_hash') then false
+    when t -> 'guide' ? 'title' and (jsonb_typeof(t -> 'guide' -> 'title') is distinct from 'string' or not public.community_guide_text_ok(t -> 'guide' ->> 'title', 1, 475, false)) then false
+    when jsonb_typeof(t -> 'guide' -> 'summary') is distinct from 'string' then false
+    when not public.community_guide_text_ok(t -> 'guide' ->> 'summary', 1, 950, true) then false
+    when jsonb_typeof(t -> 'guide' -> 'sections') is distinct from 'array' then false
+    when jsonb_array_length(t -> 'guide' -> 'sections') <> n then false
+    else not exists (
+      select 1 from jsonb_array_elements(t -> 'guide' -> 'sections') as e(x)
+       where case
+         when jsonb_typeof(x) is distinct from 'object' then true
+         when (x - 'heading' - 'body') <> '{}'::jsonb then true
+         when jsonb_typeof(x -> 'heading') is distinct from 'string' then true
+         when jsonb_typeof(x -> 'body') is distinct from 'string' then true
+         when not public.community_guide_text_ok(x ->> 'heading', 1, 400, false) then true
+         else not public.community_guide_text_ok(x ->> 'body', 1, 10200, true)
+       end)
+  end;
+$$;
+
+comment on function public.community_guide_translation_ok(jsonb, integer) is 'Traduzione di una guida della community valida: testo semplice, stesse sezioni dell''originale, titolo tradotto con la sua impronta (facoltativi, insieme; dal 29/09/2026).';

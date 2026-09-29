@@ -4,7 +4,7 @@ import { pageTitle, pageTitleWith } from "@/lib/page";
 import { getCard } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { absoluteCover, communityGuideCover, communityGuideWords, guideShapeIndexing, localizedCommunityGuide, readMinutes, type CommunityGuide } from "@/lib/community/guides";
+import { absoluteCover, communityGuideCover, communityGuideWords, guideShapeIndexing, localizedCommunityGuide, localizedGuideTitle, readMinutes, type CommunityGuide } from "@/lib/community/guides";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { editorialAuthor, fillLabel } from "@/lib/community/deckQuality";
 import { normalizeBadge } from "@/lib/community/badges";
@@ -50,6 +50,8 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
   const path = href(locale, `/guides/community/${guide.slug}`);
   const pageUrl = `${siteUrl}${path}`;
   const view = localizedCommunityGuide(guide, locale);
+  // il titolo si traduce dal 29/09/2026: quello nella lingua della pagina quando c'è (H1, dati strutturati, briciole)
+  const title = localizedGuideTitle(guide, locale);
   const words = communityGuideWords(guide);
   const author = authorName(guide.profile);
   const handle = authorHandle(guide.profile);
@@ -74,7 +76,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
   const article = communityGuideArticle({
     locale,
     pageUrl,
-    headline: pageTitle(pageTitleWith(guide.title, L.page.metaSuffix)),
+    headline: pageTitle(pageTitleWith(title.text, L.page.metaSuffix)),
     description: guideDescription(guide, locale).slice(0, 300),
     published,
     modified: guide.updated_at,
@@ -99,7 +101,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
           breadcrumbs([
             { name: "OriginsMeta", path: href(locale) },
             { name: d.guides.title, path: href(locale, "/guides") },
-            { name: guide.title, path },
+            { name: title.text, path },
           ]),
         ]}
       />
@@ -125,10 +127,10 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
           {guide.updated_at.slice(0, 10) !== published.slice(0, 10) ? ` · ${fillLabel(L.page.updated, { date: formatDate(locale, guide.updated_at.slice(0, 10)) })}` : ""}
           {` · ${fillLabel(L.page.readTime, { n: String(readMinutes(words)) })}`}
         </p>
-        {/* il titolo non si traduce (come il nome di un mazzo): resta nella lingua dell'autore. break-words (anche sotto):
-            una parola lunghissima scritta dall'autore (un link, un codice del gioco) va a capo invece di allargare la pagina */}
-        <h1 className="t-page mt-2 break-words leading-tight" lang={guide.lang === locale ? undefined : guide.lang}>
-          {guide.title}
+        {/* il titolo tradotto quando c'è (dal 29/09/2026), altrimenti quello dell'autore con la sua lingua. break-words (anche
+            sotto): una parola lunghissima scritta dall'autore (un link, un codice del gioco) va a capo invece di allargare la pagina */}
+        <h1 className="t-page mt-2 break-words leading-tight" lang={title.lang === locale ? undefined : title.lang}>
+          {title.text}
         </h1>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
           <Avatar profile={guide.profile} name={author} size={32} />
@@ -172,7 +174,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
           </p>
         </div>
 
-        <CommunityGuideVideos videos={videos} title={guide.title} locale={locale} />
+        <CommunityGuideVideos videos={videos} title={title.text} locale={locale} />
 
         {view.text.sections.map((s, i) => (
           <section key={i} className="mt-10 min-w-0" lang={view.lang}>

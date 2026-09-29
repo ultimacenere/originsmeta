@@ -66,6 +66,13 @@ export const GUIDE_BADGES: readonly Badge[] = ["author", "creator", "pro", "staf
  */
 export const DECK_ART_BADGES: readonly Badge[] = ["creator", "staff"];
 
+/**
+ * Tag che pubblicano i fumetti come news (29/09/2026, pacchetto FUMETTI: Pierluigi ha scelto "Li pubblica lei da sola" per
+ * i fumetti di Vega, Creator), con lo Staff e gli admin. Nel database: `can_publish_comics` (blocco FUMETTI di
+ * supabase/schema.sql), confrontata da comics.test.ts.
+ */
+export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
+
 type Who = { badge?: string | null; role?: string | null } | null | undefined;
 
 export function isBadge(value: unknown): value is Badge {
@@ -117,4 +124,9 @@ export function canPublishGuides(badge: string | null | undefined, role?: string
  */
 export function canUseDeckArt(badge: string | null | undefined, role?: string | null): boolean {
   return role === "admin" || has(DECK_ART_BADGES, badge);
+}
+
+/** Pubblica fumetti fra le news (pacchetto FUMETTI, 29/09/2026): Creator, Staff e admin. */
+export function canPublishComics(badge: string | null | undefined, role?: string | null): boolean {
+  return role === "admin" || has(COMIC_BADGES, badge);
 }
