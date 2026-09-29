@@ -56,7 +56,7 @@ const en = {
   },
   editor: {
     lang: "Language of the texts",
-    langHint: "The language of the balloons and of the texts below. The site translates the title, the presentation and the page texts into the other two languages.",
+    langHint: "The language of the balloons and of the texts below. The site translates the title, the presentation and the page texts into the other two languages; if you also drew the comic in another language, add that version further down.",
     title: "Title",
     summary: "Presentation",
     summaryHint: "2 or 3 sentences, from {min} to {max} characters: they appear in the news list, on the home page and when the link is shared.",
@@ -97,6 +97,17 @@ const en = {
     statusHidden: "Hidden by the staff: write to the staff from your messages to know why.",
     counter: "{n}/{max}",
     consent: "Publishing puts the comic online among the news, under your name, with the site's automatic translations of the texts, and announces it on our Discord. You can move it back to drafts or delete it whenever you want.",
+    /** versioni disegnate nelle altre lingue (30/09/2026); {lang} = nome della lingua ("Italian") */
+    editions: {
+      title: "Versions drawn in other languages",
+      hint: "Did you also draw the comic in another language, with the balloons rewritten? Add that version here: its readers see its pages, title and presentation instead of the automatic translation. It stays one comic, one news item, one address.",
+      heading: "{lang} version",
+      add: "Add the {lang} version",
+      remove: "Remove the {lang} version",
+      confirmRemove: "Remove the {lang} version and its images?",
+      cover: "Cover of this version (optional)",
+      coverHint: "Only if the cover has text on it: without one, the comic's cover is used.",
+    },
   },
   errors: {
     lang: "Choose the language of the texts.",
@@ -122,6 +133,12 @@ const en = {
     db: "Saving failed: try again in a moment.",
     /** {n} = secondi da aspettare */
     tooFast: "Wait {n} seconds before saving again.",
+    editions: "The versions in other languages can't be used: check them and try again.",
+    edition_title: "{lang} version, title: from {min} to {max} characters on one line.",
+    edition_summary: "{lang} version, presentation: from {min} to {max} characters to publish.",
+    edition_pages: "{lang} version, pages: from 1 to {max} to publish.",
+    edition_page: "{lang} version, page {n}: the image or its text can't be used. Upload it again.",
+    edition_cover: "{lang} version: the cover can't be used. Upload it again.",
   },
   account: {
     title: "My comics",
@@ -195,7 +212,7 @@ const it: ComicLabels = {
   },
   editor: {
     lang: "Lingua dei testi",
-    langHint: "La lingua dei balloon e dei testi qui sotto. Il sito traduce titolo, presentazione e testi delle tavole nelle altre due lingue.",
+    langHint: "La lingua dei balloon e dei testi qui sotto. Il sito traduce titolo, presentazione e testi delle tavole nelle altre due lingue; se hai disegnato il fumetto anche in un'altra lingua, aggiungi quella versione più in basso.",
     title: "Titolo",
     summary: "Presentazione",
     summaryHint: "2 o 3 frasi, da {min} a {max} caratteri: compaiono nell'elenco delle news, in home e quando si condivide il link.",
@@ -236,6 +253,16 @@ const it: ComicLabels = {
     statusHidden: "Nascosto dallo staff: scrivi allo staff dai tuoi messaggi per sapere perché.",
     counter: "{n}/{max}",
     consent: "Pubblicando, il fumetto va online fra le news con il tuo nome, con le traduzioni automatiche dei testi fatte dal sito, e lo annunciamo sul nostro Discord. Puoi riportarlo tra le bozze o eliminarlo quando vuoi.",
+    editions: {
+      title: "Versioni disegnate in altre lingue",
+      hint: "Hai disegnato il fumetto anche in un'altra lingua, con i balloon riscritti? Aggiungi qui quella versione: chi legge in quella lingua vede le sue tavole, il suo titolo e la sua presentazione al posto della traduzione automatica. Resta un fumetto solo, una news sola, un indirizzo solo.",
+      heading: "Versione in {lang}",
+      add: "Aggiungi la versione in {lang}",
+      remove: "Togli la versione in {lang}",
+      confirmRemove: "Togliere la versione in {lang} e le sue immagini?",
+      cover: "Copertina di questa versione (facoltativa)",
+      coverHint: "Solo se la copertina ha delle scritte: senza, vale quella del fumetto.",
+    },
   },
   errors: {
     lang: "Scegli la lingua dei testi.",
@@ -260,6 +287,12 @@ const it: ComicLabels = {
     duplicate: "Qualcosa è andato storto con l'indirizzo del fumetto: riprova.",
     db: "Salvataggio non riuscito: riprova fra un momento.",
     tooFast: "Aspetta {n} secondi prima di salvare di nuovo.",
+    editions: "Le versioni nelle altre lingue non vanno bene: controllale e riprova.",
+    edition_title: "Versione in {lang}, titolo: da {min} a {max} caratteri su una riga.",
+    edition_summary: "Versione in {lang}, presentazione: da {min} a {max} caratteri per pubblicare.",
+    edition_pages: "Versione in {lang}, tavole: da 1 a {max} per pubblicare.",
+    edition_page: "Versione in {lang}, tavola {n}: l'immagine o il suo testo non vanno bene. Caricala di nuovo.",
+    edition_cover: "Versione in {lang}: la copertina non va bene. Caricala di nuovo.",
   },
   account: {
     title: "I miei fumetti",
@@ -330,7 +363,7 @@ const es: ComicLabels = {
   },
   editor: {
     lang: "Idioma de los textos",
-    langHint: "El idioma de los globos y de los textos de abajo. El sitio traduce el título, la presentación y los textos de las páginas a los otros dos idiomas.",
+    langHint: "El idioma de los globos y de los textos de abajo. El sitio traduce el título, la presentación y los textos de las páginas a los otros dos idiomas; si también dibujaste el cómic en otro idioma, añade esa versión más abajo.",
     title: "Título",
     summary: "Presentación",
     summaryHint: "2 o 3 frases, de {min} a {max} caracteres: aparecen en la lista de noticias, en la portada del sitio y al compartir el enlace.",
@@ -371,6 +404,16 @@ const es: ComicLabels = {
     statusHidden: "Oculto por el staff: escribe al staff desde tus mensajes para saber por qué.",
     counter: "{n}/{max}",
     consent: "Al publicar, el cómic sale entre las noticias con tu nombre, con las traducciones automáticas de los textos que hace el sitio, y lo anunciamos en nuestro Discord. Puedes volver a dejarlo como borrador o eliminarlo cuando quieras.",
+    editions: {
+      title: "Versiones dibujadas en otros idiomas",
+      hint: "¿Dibujaste el cómic también en otro idioma, con los globos reescritos? Añade aquí esa versión: quien lee en ese idioma ve sus páginas, su título y su presentación en lugar de la traducción automática. Sigue siendo un solo cómic, una sola noticia, una sola dirección.",
+      heading: "Versión en {lang}",
+      add: "Añade la versión en {lang}",
+      remove: "Quita la versión en {lang}",
+      confirmRemove: "¿Quitar la versión en {lang} y sus imágenes?",
+      cover: "Portada de esta versión (opcional)",
+      coverHint: "Solo si la portada lleva texto: si no, se usa la del cómic.",
+    },
   },
   errors: {
     lang: "Elige el idioma de los textos.",
@@ -395,6 +438,12 @@ const es: ComicLabels = {
     duplicate: "Algo salió mal con la dirección del cómic: vuelve a intentarlo.",
     db: "No se pudo guardar: vuelve a intentarlo en un momento.",
     tooFast: "Espera {n} segundos antes de volver a guardar.",
+    editions: "Las versiones en otros idiomas no sirven: revísalas y vuelve a intentarlo.",
+    edition_title: "Versión en {lang}, título: de {min} a {max} caracteres en una línea.",
+    edition_summary: "Versión en {lang}, presentación: de {min} a {max} caracteres para publicar.",
+    edition_pages: "Versión en {lang}, páginas: de 1 a {max} para publicar.",
+    edition_page: "Versión en {lang}, página {n}: la imagen o su texto no sirven. Súbela de nuevo.",
+    edition_cover: "Versión en {lang}: la portada no sirve. Súbela de nuevo.",
   },
   account: {
     title: "Mis cómics",

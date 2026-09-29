@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { cleanDescription, pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
-import { getPublishedComic, listPublishedComics } from "@/lib/community/comicQueries";
+import { comicMovedTo, getPublishedComic, listPublishedComics } from "@/lib/community/comicQueries";
 import { COMIC_COVER_SIZE, comicDate, comicFeedCards, comicImageUrl, comicIndexing, comicPath, comicPathOk, localizedComic, type CommunityComic } from "@/lib/community/comics";
 import { dropHreflang, fillLabel } from "@/lib/community/deckQuality";
 import { normalizeBadge, shownBadge } from "@/lib/community/badges";
@@ -29,7 +29,9 @@ type Params = Promise<{ locale: string; slug: string }>;
  * guide della community, generata alla prima richiesta e rigenerata al massimo ogni minuto (le Server Action la
  * rinnovano subito). Titolo, firma, presentazione, le tavole una sotto l'altra e la trascrizione dei testi nella lingua
  * della pagina (tradotta dal sito quando c'è, altrimenti l'originale con la nota: allora la pagina è noindex in quella
- * lingua e fuori da hreflang e sitemap).
+ * lingua e fuori da hreflang e sitemap). Con una versione disegnata nella lingua della pagina (30/09/2026) tavole, titolo,
+ * presentazione, testi e copertina sono i suoi, e niente nota. L'indirizzo di un fumetto unito in un altro
+ * (scripts/merge-comics.mjs) porta al fumetto che l'ha assorbito con un 308.
  */
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -49,9 +51,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!comic) return {};
   const L = comicLabels[locale];
   const indexing = comicIndexing(comic, locales, locale);
-  const cover = comicPathOk(comic.cover_path, comic.owner) ? comicImageUrl(comic.cover_path, supabaseUrl) : undefined;
-  // titolo nella lingua della pagina quando la traduzione c'è (il titolo si traduce con il resto)
-  const title = localizedComic(comic, locale).text.title;
+  const view = localizedComic(comic, locale);
+  const cover = comicPathOk(view.cover_path, comic.owner) ? comicImageUrl(view.cover_path, supabaseUrl) : undefined;
+  // titolo nella lingua della pagina quando c'è la versione disegnata o la traduzione (il titolo si traduce con il resto)
+  const title = view.text.title;
   const meta = pageMeta(locale, comicPath(comic.slug), pageTitleWith(title, L.page.metaSuffix), comicDescription(comic, locale), cover, {
     ...(cover ? { imageSize: COMIC_COVER_SIZE, imageAlt: title } : {}),
     type: "article",
@@ -67,15 +70,21 @@ export default async function ComicPage({ params }: { params: Params }) {
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const comic = await getPublishedComic(slug);
-  if (!comic) notFound();
+  if (!comic) {
+    // un fumetto unito in un altro (scripts/merge-comics.mjs): i link di prima (Discord, avvisi, motori) portano lì
+    const moved = await comicMovedTo(slug);
+    if (moved) permanentRedirect(href(locale, comicPath(moved)));
+    notFound();
+  }
   const L = comicLabels[locale];
   const path = href(locale, comicPath(comic.slug));
   const view = localizedComic(comic, locale);
   const author = authorName(comic.profile);
   const role = shownBadge(comic.profile?.badge);
   const published = comicDate(comic);
-  const cover = comicPathOk(comic.cover_path, comic.owner) ? comicImageUrl(comic.cover_path, supabaseUrl) : null;
-  const pagesLabel = comic.pages.length === 1 ? L.page.pagesOne : fillLabel(L.page.pagesMany, { n: String(comic.pages.length) });
+  const cover = comicPathOk(view.cover_path, comic.owner) ? comicImageUrl(view.cover_path, supabaseUrl) : null;
+  const pages = view.pages;
+  const pagesLabel = pages.length === 1 ? L.page.pagesOne : fillLabel(L.page.pagesMany, { n: String(pages.length) });
   const langName = COMIC_LANG_NAMES[locale][comic.lang];
   // Altri fumetti: gli ultimi usciti (la stessa lettura delle news, condivisa dalla cache dei dati)
   const others = comicFeedCards(await listPublishedComics(12), locale, supabaseUrl, authorName).filter((c) => c.slug !== comic.slug).slice(0, 3);
@@ -88,7 +97,7 @@ export default async function ComicPage({ params }: { params: Params }) {
     inLanguage: locale,
     datePublished: published,
     dateModified: comic.updated_at,
-    ...(cover ? { image: [cover, ...comic.pages.slice(0, 3).map((p) => comicImageUrl(p.path, supabaseUrl))] } : {}),
+    ...(cover ? { image: [cover, ...pages.slice(0, 3).map((p) => comicImageUrl(p.path, supabaseUrl))] } : {}),
     // la Person di chi l'ha disegnato: la stessa della sua pagina /u (un @id per tutte le lingue)
     author: communityPerson({ locale, username: comic.profile?.username, name: author }),
     publisher: { "@id": organizationId },
@@ -145,15 +154,16 @@ export default async function ComicPage({ params }: { params: Params }) {
             {view.text.summary}
           </p>
         ) : null}
-        {/* i balloon sono disegnati nella lingua dell'autore: la nota dice se i testi qui sono tradotti o originali */}
-        {comic.lang !== locale ? (
+        {/* i balloon sono disegnati nella lingua dell'autore (o in quella della pagina, con la versione disegnata): la nota
+            dice se i testi qui sono tradotti o originali */}
+        {comic.lang !== locale && !view.edition ? (
           <p className="mt-3 text-sm text-pale-muted">{fillLabel(view.translated ? L.page.translatedNote : L.page.originalNote, { lang: langName })}</p>
         ) : null}
 
         <ComicActions comicId={comic.id} ownerId={comic.owner} locale={locale} editHref={href(locale, `${comicPath(comic.slug)}/edit`)} backHref={path} labels={L.owner} />
 
         <div className="mt-8">
-          <ComicStrip pages={comic.pages} texts={view.text.pages} base={supabaseUrl} labels={L.page} />
+          <ComicStrip pages={pages} texts={view.text.pages} base={supabaseUrl} labels={L.page} />
         </div>
 
         {/* Trascrizione: il testo di ogni tavola, per i lettori di schermo, per chi preferisce leggerlo e per i motori */}
@@ -163,9 +173,9 @@ export default async function ComicPage({ params }: { params: Params }) {
           </h2>
           <p className="mt-1 text-sm text-pale-muted">{L.page.transcriptIntro}</p>
           <ol className="mt-4 space-y-4" lang={view.lang !== locale ? view.lang : undefined}>
-            {comic.pages.map((p, i) => (
+            {pages.map((p, i) => (
               <li key={p.path} className="card-night p-4">
-                <p className="kicker text-pale-muted">{fillLabel(L.page.pageAlt, { n: String(i + 1), total: String(comic.pages.length) })}</p>
+                <p className="kicker text-pale-muted">{fillLabel(L.page.pageAlt, { n: String(i + 1), total: String(pages.length) })}</p>
                 {view.text.pages[i] ? <p className="mt-2 whitespace-pre-line break-words text-pale">{view.text.pages[i]}</p> : <p className="mt-2 text-sm text-pale-muted">{L.page.noText}</p>}
               </li>
             ))}

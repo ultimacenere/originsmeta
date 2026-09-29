@@ -8,7 +8,7 @@ import type { DeckTranslations } from "@/lib/community/deckTranslation";
 import type { Locale } from "@/lib/i18n";
 import type { DeckLink, StoredVideo } from "@/lib/videos";
 import type { CommunityGuideTranslations } from "@/lib/community/guides";
-import type { ComicTranslations } from "@/lib/community/comics";
+import type { ComicEditions, ComicTranslations } from "@/lib/community/comics";
 
 export type ProfileRow = {
   id: string;
@@ -160,6 +160,10 @@ export type CommunityComicRow = {
   cover_path: string | null;
   status: "draft" | "published" | "hidden";
   translations: ComicTranslations;
+  /** versioni disegnate nelle altre lingue (blocco FUMETTI IN PIÙ LINGUE, 30/09/2026) */
+  editions: ComicEditions;
+  /** indirizzi dei fumetti uniti in questo: li scrive solo scripts/merge-comics.mjs (nessuna grant) */
+  former_slugs: string[];
   text_hash: string | null;
   created_at: string;
   updated_at: string;
@@ -168,9 +172,9 @@ export type CommunityComicRow = {
 };
 /** Le colonne con la grant di insert; date, id e traduzioni no. */
 export type CommunityComicInsert = Pick<CommunityComicRow, "slug" | "owner" | "lang" | "title"> &
-  Partial<Pick<CommunityComicRow, "summary" | "pages" | "cover_path" | "status" | "text_hash">>;
+  Partial<Pick<CommunityComicRow, "summary" | "pages" | "cover_path" | "status" | "text_hash" | "editions">>;
 /** Le colonne con la grant di update: mai slug, owner, id e date. */
-export type CommunityComicUpdate = Partial<Pick<CommunityComicRow, "lang" | "title" | "summary" | "pages" | "cover_path" | "status" | "translations" | "text_hash">>;
+export type CommunityComicUpdate = Partial<Pick<CommunityComicRow, "lang" | "title" | "summary" | "pages" | "cover_path" | "status" | "translations" | "text_hash" | "editions">>;
 /** `first_in_day`: prima segnalazione della guida nelle 24 ore (la scrive il trigger; solo allora il sito avvisa lo staff) */
 export type CommunityGuideReportRow = { id: number; guide_id: string; user_id: string; reason: string; created_at: string; first_in_day: boolean };
 

@@ -9,7 +9,13 @@ import { cleanPlain, plainTextOk } from "./guides";
  * pubblica lei da sola" e la firma "Vega". Chi ha il ruolo Creator o Staff (o è admin: `canPublishComics` di badges.ts)
  * pubblica da /news/comics/new: tavole, copertina 16:9, titolo, presentazione e il testo di ogni tavola. Il fumetto esce
  * fra le news (home, /news, sitemap, Discord), con la pagina /news/comics/<slug> firmata da chi l'ha disegnato; il sito
- * traduce presentazione e testi delle tavole nelle altre due lingue (il titolo no).
+ * traduce titolo, presentazione e testi delle tavole nelle altre due lingue.
+ *
+ * Versioni disegnate (30/09/2026): Vega aveva pubblicato lo stesso fumetto tre volte, una per lingua, e Pierluigi ha
+ * chiesto "unificali in una sola news subito". Un fumetto ha ora, oltre alle tavole nella lingua dei
+ * testi (`lang`), una versione disegnata per ognuna delle altre lingue (`editions`: tavole, titolo, presentazione e, se
+ * serve, una copertina sua): nella pagina in quella lingua si vede la versione disegnata al posto della traduzione
+ * automatica, e la news resta una, con un indirizzo solo.
  *
  * Regole pure, senza dipendenze a runtime oltre a moduli a loro volta puri: `node --test src/lib/community/comics.test.ts`
  * le prova e le confronta con il blocco FUMETTI di supabase/schema.sql, che dice le stesse cose (limiti, cartelle, ruoli).
@@ -56,6 +62,13 @@ export type ComicPage = { path: string; width: number; height: number; text: str
 export type ComicText = { title: string; summary: string; pages: string[] };
 export type ComicTranslation = { hash: string; at: string; model?: string; comic: ComicText };
 export type ComicTranslations = Partial<Record<Locale, ComicTranslation>>;
+/**
+ * La versione disegnata in un'altra lingua (30/09/2026): tavole con i balloon in quella lingua, ognuna con il suo testo,
+ * titolo, presentazione e, facoltativa, una copertina sua (una copertina con delle scritte); senza, vale quella del
+ * fumetto. Le regole sono quelle dell'originale (colonna `editions`, vincolo `community_comics_editions_check`).
+ */
+export type ComicEdition = { title: string; summary: string; pages: ComicPage[]; cover_path: string | null };
+export type ComicEditions = Partial<Record<Locale, ComicEdition>>;
 export type ComicAuthor = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
 
 /** Un fumetto intero (pagina pubblica e modifica). */
@@ -70,6 +83,8 @@ export type CommunityComic = {
   cover_path: string | null;
   status: ComicStatus;
   translations: ComicTranslations | null;
+  /** versioni disegnate nelle altre lingue (vuoto: nessuna) */
+  editions: ComicEditions;
   text_hash: string | null;
   created_at: string;
   updated_at: string;
@@ -79,6 +94,8 @@ export type CommunityComic = {
 
 /** Di ogni traduzione, negli elenchi, solo impronta, data, titolo e presentazione. */
 export type ComicListTranslation = { hash: string | null; at: string | null; summary: string | null; title?: string | null };
+/** Di ogni versione disegnata, negli elenchi, titolo, presentazione, copertina e il file della prima tavola (se ce n'è una). */
+export type ComicListEdition = { title: string | null; summary: string | null; cover_path: string | null; page: string | null };
 
 /** Un fumetto negli elenchi (home, /news, profilo, /account, sitemap): senza tavole né traduzioni intere. */
 export type ComicListItem = {
@@ -92,6 +109,8 @@ export type ComicListItem = {
   status: ComicStatus;
   text_hash: string | null;
   tr: Partial<Record<Locale, ComicListTranslation>>;
+  /** versioni disegnate (facoltativo: le righe lette prima della migrazione non le hanno) */
+  ed?: Partial<Record<Locale, ComicListEdition>>;
   created_at: string;
   updated_at: string;
   published_at: string | null;
@@ -154,30 +173,122 @@ export function storedPages(raw: unknown, owner: string): ComicPage[] {
   return out;
 }
 
+/**
+ * Le versioni disegnate lette dal database, ricontrollate come le tavole: solo le altre lingue del sito (mai `lang`),
+ * testi stringa, tavole e copertina nella cartella del proprietario. Una versione a metà (una bozza) resta: la pagina
+ * mostra solo quelle complete (`comicEdition`).
+ */
+export function storedEditions(raw: unknown, owner: string, lang: Locale): ComicEditions {
+  const out: ComicEditions = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+  for (const l of COMIC_LANGS) {
+    const x = (raw as Record<string, unknown>)[l];
+    if (l === lang || !x || typeof x !== "object" || Array.isArray(x)) continue;
+    const e = x as Record<string, unknown>;
+    out[l] = {
+      title: typeof e.title === "string" ? e.title : "",
+      summary: typeof e.summary === "string" ? e.summary : "",
+      pages: storedPages(e.pages, owner),
+      cover_path: comicPathOk(e.cover_path, owner) ? e.cover_path : null,
+    };
+  }
+  return out;
+}
+
+/** Tutti i file di un fumetto (tavole, copertina, tavole e copertine delle versioni disegnate), senza doppioni. */
+export function comicFiles(c: { owner: string; pages: readonly ComicPage[]; cover_path: string | null; editions?: ComicEditions | null }): string[] {
+  const all = [...c.pages.map((p) => p.path), c.cover_path, ...Object.values(c.editions ?? {}).flatMap((e) => (e ? [...e.pages.map((p) => p.path), e.cover_path] : []))];
+  return [...new Set(all.filter((p): p is string => comicPathOk(p, c.owner)))];
+}
+
 // ——— Modulo ———
 
 export type ComicIntent = "draft" | "publish";
-export type ComicFormValue = { lang: Locale; title: string; summary: string; pages: ComicPage[]; cover_path: string | null };
+export type ComicFormValue = { lang: Locale; title: string; summary: string; pages: ComicPage[]; cover_path: string | null; editions: ComicEditions };
 export type ComicFormError =
-  | { code: "lang" | "title" | "summary" | "pages" | "cover"; index?: undefined }
-  | { code: "page"; index: number };
+  | { code: "lang" | "title" | "summary" | "pages" | "cover" | "editions"; index?: undefined; edition?: undefined }
+  | { code: "page"; index: number; edition?: undefined }
+  | { code: "edition_title" | "edition_summary" | "edition_pages" | "edition_cover"; edition: Locale; index?: undefined }
+  | { code: "edition_page"; edition: Locale; index: number };
 
 type FormReader = { get: (name: string) => unknown };
 
-/** Il campo del modulo da mettere a fuoco per un errore (i testi delle tavole hanno id `cm-page-<n>`). */
+/**
+ * Il campo del modulo da mettere a fuoco per un errore: i testi delle tavole hanno id `cm-page-<n>`, i campi di una
+ * versione disegnata `cm-ed-<lingua>-title`, `cm-ed-<lingua>-page-<n>`…
+ */
 export function comicErrorField(error: ComicFormError): string {
   if (error.code === "page") return `page-${error.index}`;
+  if (error.code === "edition_page") return `ed-${error.edition}-page-${error.index}`;
+  if (error.edition) return `ed-${error.edition}-${error.code.slice("edition_".length)}`;
   return error.code;
 }
 
 /** Lunghezza massima della lista delle tavole nel modulo (JSON): 10 tavole piene stanno ben sotto. */
 const PAGES_JSON_MAX = 60_000;
+/** Lunghezza massima delle versioni disegnate nel modulo (JSON): due versioni da 10 tavole piene. */
+const EDITIONS_JSON_MAX = 130_000;
+
+/** Un JSON del modulo: vuoto → `empty`, troppo lungo o rotto → undefined. */
+function formJson(raw: unknown, max: number, empty: unknown): unknown {
+  if (typeof raw !== "string" || !raw.trim()) return empty;
+  if (raw.length > max) return undefined;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Le tavole di un elenco del modulo: tutte giuste, o l'indice della prima che non va (`-1`: l'elenco intero). */
+function formPages(list: unknown, publish: boolean, owner: string): { ok: true; pages: ComicPage[] } | { ok: false; index: number } {
+  const L = COMIC_LIMITS;
+  if (!Array.isArray(list) || list.length > L.pagesMax || (publish && list.length < 1)) return { ok: false, index: -1 };
+  const pages: ComicPage[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < list.length; i++) {
+    const x = list[i] as Record<string, unknown> | null;
+    if (!x || typeof x !== "object" || !comicPathOk(x.path, owner) || !pageSizeOk(x.width, x.height) || seen.has(x.path)) return { ok: false, index: i };
+    const text = cleanPlain(x.text ?? "", L.pageTextMax, true);
+    if (!plainTextOk(text, 0, L.pageTextMax, true)) return { ok: false, index: i };
+    seen.add(x.path);
+    pages.push({ path: x.path, width: x.width as number, height: x.height as number, text });
+  }
+  return { ok: true, pages };
+}
+
+/**
+ * Le versioni disegnate del modulo (JSON: {"it": {title, summary, pages, cover_path}}), con le regole dell'originale:
+ * per pubblicare titolo, presentazione e almeno una tavola; una bozza anche a metà (titolo compreso). Mai la lingua dei
+ * testi del fumetto; la copertina è facoltativa, nella cartella del proprietario.
+ */
+function formEditions(raw: unknown, lang: Locale, publish: boolean, owner: string): { ok: true; editions: ComicEditions } | { ok: false; error: ComicFormError } {
+  const L = COMIC_LIMITS;
+  const data = formJson(raw, EDITIONS_JSON_MAX, {});
+  if (!data || typeof data !== "object" || Array.isArray(data)) return { ok: false, error: { code: "editions" } };
+  const editions: ComicEditions = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (!isLang(key) || key === lang || !value || typeof value !== "object" || Array.isArray(value)) return { ok: false, error: { code: "editions" } };
+    const e = value as Record<string, unknown>;
+    const title = cleanPlain(e.title ?? "", L.titleMax, false);
+    if (!plainTextOk(title, publish ? L.titleMin : 0, L.titleMax, false)) return { ok: false, error: { code: "edition_title", edition: key } };
+    const summary = cleanPlain(e.summary ?? "", L.summaryMax, true);
+    if (!plainTextOk(summary, publish ? L.summaryMin : 0, L.summaryMax, true)) return { ok: false, error: { code: "edition_summary", edition: key } };
+    const pages = formPages(e.pages ?? [], publish, owner);
+    if (!pages.ok) return { ok: false, error: pages.index < 0 ? { code: "edition_pages", edition: key } : { code: "edition_page", edition: key, index: pages.index } };
+    const cover = typeof e.cover_path === "string" ? e.cover_path.trim() : "";
+    if (cover && !comicPathOk(cover, owner)) return { ok: false, error: { code: "edition_cover", edition: key } };
+    editions[key] = { title, summary, pages: pages.pages, cover_path: cover || null };
+  }
+  return { ok: true, editions };
+}
 
 /**
  * Legge e controlla i campi del modulo di un fumetto (FormData), con le regole del database per lo stato che si chiede:
  * una bozza si salva anche a metà (titolo da 1 carattere, niente presentazione, tavole e copertina); un fumetto da
  * pubblicare ha titolo, presentazione, almeno una tavola e la copertina. `owner` è il proprietario: tavole e copertina
- * devono stare nella SUA cartella. `pages` arriva come JSON ([{path, width, height, text}]) dal modulo.
+ * devono stare nella SUA cartella. `pages` arriva come JSON ([{path, width, height, text}]) dal modulo, `editions` (le
+ * versioni disegnate, facoltative) come JSON per lingua: un modulo senza il campo vale "nessuna versione".
  */
 export function readComicForm(fd: FormReader, intent: ComicIntent, owner: string): { ok: true; value: ComicFormValue } | { ok: false; error: ComicFormError } {
   const L = COMIC_LIMITS;
@@ -189,32 +300,17 @@ export function readComicForm(fd: FormReader, intent: ComicIntent, owner: string
   const summary = cleanPlain(fd.get("summary"), L.summaryMax, true);
   if (!plainTextOk(summary, publish ? L.summaryMin : 0, L.summaryMax, true)) return { ok: false, error: { code: "summary" } };
 
-  const rawPages = fd.get("pages");
-  let list: unknown = [];
-  if (typeof rawPages === "string" && rawPages.trim()) {
-    if (rawPages.length > PAGES_JSON_MAX) return { ok: false, error: { code: "pages" } };
-    try {
-      list = JSON.parse(rawPages);
-    } catch {
-      return { ok: false, error: { code: "pages" } };
-    }
-  }
-  if (!Array.isArray(list) || list.length > L.pagesMax || (publish && list.length < 1)) return { ok: false, error: { code: "pages" } };
-  const pages: ComicPage[] = [];
-  const seen = new Set<string>();
-  for (let i = 0; i < list.length; i++) {
-    const x = list[i] as Record<string, unknown> | null;
-    if (!x || typeof x !== "object" || !comicPathOk(x.path, owner) || !pageSizeOk(x.width, x.height) || seen.has(x.path)) return { ok: false, error: { code: "page", index: i } };
-    const text = cleanPlain(x.text ?? "", L.pageTextMax, true);
-    if (!plainTextOk(text, 0, L.pageTextMax, true)) return { ok: false, error: { code: "page", index: i } };
-    seen.add(x.path);
-    pages.push({ path: x.path, width: x.width as number, height: x.height as number, text });
-  }
+  const list = formJson(fd.get("pages"), PAGES_JSON_MAX, []);
+  if (list === undefined) return { ok: false, error: { code: "pages" } };
+  const pages = formPages(list, publish, owner);
+  if (!pages.ok) return { ok: false, error: pages.index < 0 ? { code: "pages" } : { code: "page", index: pages.index } };
 
   const coverRaw = String(fd.get("cover_path") ?? "").trim();
   if (coverRaw && !comicPathOk(coverRaw, owner)) return { ok: false, error: { code: "cover" } };
   if (publish && !coverRaw) return { ok: false, error: { code: "cover" } };
-  return { ok: true, value: { lang, title, summary, pages, cover_path: coverRaw || null } };
+  const editions = formEditions(fd.get("editions"), lang, publish, owner);
+  if (!editions.ok) return { ok: false, error: editions.error };
+  return { ok: true, value: { lang, title, summary, pages: pages.pages, cover_path: coverRaw || null, editions: editions.editions } };
 }
 
 /** Codici delle eccezioni dei trigger (`raise exception '<codice>'`), dal più lungo: 'comic_hidden' è dentro 'comic_hidden_recent'. */
@@ -243,6 +339,7 @@ export function comicErrorCode(error: { code?: string; message?: string } | null
   if (/community_comics_cover_(path_check|required)/.test(m)) return "cover";
   if (/community_comics_title_check/.test(m)) return "title";
   if (/community_comics_summary_check/.test(m)) return "summary";
+  if (/community_comics_editions_check/.test(m)) return "editions";
   if (error.code === "42501") return "forbidden";
   if (error.code === "23505") return "duplicate";
   return "db";
@@ -314,7 +411,15 @@ export function comicTextFromDoc(doc: TranslationDoc, c: { summary: string; page
   return comicTranslationOk(text, c.pages.length) ? text : null;
 }
 
-type WithText = { lang: Locale; title: string; summary: string; pages: readonly ComicPage[]; translations?: ComicTranslations | null };
+type WithText = {
+  lang: Locale;
+  title: string;
+  summary: string;
+  pages: readonly ComicPage[];
+  translations?: ComicTranslations | null;
+  editions?: ComicEditions | null;
+  cover_path?: string | null;
+};
 
 /** La traduzione in `locale`, solo se è stata fatta sul testo attuale e rispetta le regole. */
 export function freshComicTranslation(c: WithText, locale: Locale): ComicTranslation | null {
@@ -324,25 +429,56 @@ export function freshComicTranslation(c: WithText, locale: Locale): ComicTransla
   return comicTranslationOk(t.comic, c.pages.length) ? t : null;
 }
 
-/** Le lingue da tradurre (mancanti o rimaste indietro rispetto al testo). */
-export function missingComicLocales(c: WithText, all: readonly Locale[]): Locale[] {
-  return all.filter((l) => l !== c.lang && freshComicTranslation(c, l) === null);
+/**
+ * La versione disegnata in `locale`, se è completa (titolo, presentazione e almeno una tavola, come per pubblicare);
+ * altrimenti null. Mai nella lingua dei testi del fumetto.
+ */
+export function comicEdition(c: WithText, locale: Locale): ComicEdition | null {
+  if (locale === c.lang) return null;
+  const e = c.editions?.[locale];
+  if (!e || !e.pages.length) return null;
+  const L = COMIC_LIMITS;
+  return plainTextOk(e.title, L.titleMin, L.titleMax, false) && plainTextOk(e.summary, L.summaryMin, L.summaryMax, true) ? e : null;
 }
 
-/** Il testo da mostrare nella pagina in `locale`: tradotto quando si può, altrimenti l'originale. */
-export function localizedComic(c: WithText, locale: Locale): { text: ComicText; lang: Locale; translated: boolean } {
+/** Le lingue da tradurre (mancanti o rimaste indietro rispetto al testo): mai quelle con una versione disegnata. */
+export function missingComicLocales(c: WithText, all: readonly Locale[]): Locale[] {
+  return all.filter((l) => l !== c.lang && comicEdition(c, l) === null && freshComicTranslation(c, l) === null);
+}
+
+/** Quello che la pagina mostra in una lingua: testi (e la loro lingua), tavole e copertina. */
+export type ComicView = {
+  text: ComicText;
+  lang: Locale;
+  /** testi tradotti in automatico (le tavole restano quelle dell'originale) */
+  translated: boolean;
+  /** la versione disegnata in quella lingua */
+  edition: boolean;
+  pages: readonly ComicPage[];
+  cover_path: string | null;
+};
+
+/**
+ * Il fumetto nella pagina in `locale`: la versione disegnata in quella lingua, se c'è (con la sua copertina o, senza,
+ * quella del fumetto); altrimenti le tavole originali con i testi tradotti quando si può, o quelli originali.
+ */
+export function localizedComic(c: WithText, locale: Locale): ComicView {
+  const cover = c.cover_path ?? null;
+  const e = comicEdition(c, locale);
+  if (e) return { text: { title: e.title, summary: e.summary, pages: e.pages.map((p) => p.text) }, lang: locale, translated: false, edition: true, pages: e.pages, cover_path: e.cover_path ?? cover };
   const t = freshComicTranslation(c, locale);
-  if (t) return { text: t.comic, lang: locale, translated: true };
-  return { text: { title: c.title, summary: c.summary, pages: c.pages.map((p) => p.text) }, lang: c.lang, translated: false };
+  if (t) return { text: t.comic, lang: locale, translated: true, edition: false, pages: c.pages, cover_path: cover };
+  return { text: { title: c.title, summary: c.summary, pages: c.pages.map((p) => p.text) }, lang: c.lang, translated: false, edition: false, pages: c.pages, cover_path: cover };
 }
 
 /**
- * Dove si indicizza la pagina: nella lingua dei testi e in quelle con la traduzione aggiornata. Le altre versioni restano
- * navigabili (le tavole si capiscono lo stesso) ma noindex e fuori da hreflang e sitemap, come le guide non tradotte.
+ * Dove si indicizza la pagina: nella lingua dei testi, in quelle con una versione disegnata e in quelle con la
+ * traduzione aggiornata. Le altre versioni restano navigabili (le tavole si capiscono lo stesso) ma noindex e fuori da
+ * hreflang e sitemap, come le guide non tradotte.
  */
 export function comicIndexing(c: WithText & { status?: string }, all: readonly Locale[], locale: Locale): { languages: Locale[]; noindex: boolean } {
   if (c.status && c.status !== "published") return { languages: [], noindex: true };
-  const languages = all.filter((l) => l === c.lang || freshComicTranslation(c, l) !== null);
+  const languages = all.filter((l) => l === c.lang || comicEdition(c, l) !== null || freshComicTranslation(c, l) !== null);
   return { languages, noindex: !languages.includes(locale) };
 }
 
@@ -355,25 +491,52 @@ function listFresh(c: ComicListItem, locale: Locale): ComicListTranslation | nul
   return t && t.hash === c.text_hash && t.summary ? t : null;
 }
 
-/** Le lingue in cui un fumetto si indicizza, viste dagli elenchi. */
-export function comicListLocales(c: ComicListItem, all: readonly Locale[]): Locale[] {
-  return all.filter((l) => l === c.lang || listFresh(c, l) !== null);
+/** La versione disegnata in `locale` secondo gli elenchi: completa come per `comicEdition` (la prima tavola basta a dirlo). */
+function listEdition(c: ComicListItem, locale: Locale): ComicListEdition | null {
+  if (locale === c.lang) return null;
+  const e = c.ed?.[locale];
+  const L = COMIC_LIMITS;
+  if (!e?.title || !e.summary || !comicPathOk(e.page, c.owner)) return null;
+  return plainTextOk(e.title, L.titleMin, L.titleMax, false) && plainTextOk(e.summary, L.summaryMin, L.summaryMax, true) ? e : null;
 }
 
-/** La presentazione nella lingua della pagina, se la traduzione è aggiornata; altrimenti l'originale con la sua lingua. */
+/** Le lingue in cui un fumetto si indicizza, viste dagli elenchi. */
+export function comicListLocales(c: ComicListItem, all: readonly Locale[]): Locale[] {
+  return all.filter((l) => l === c.lang || listEdition(c, l) !== null || listFresh(c, l) !== null);
+}
+
+/**
+ * La presentazione nella lingua della pagina: quella della versione disegnata, o la traduzione aggiornata; altrimenti
+ * l'originale con la sua lingua.
+ */
 export function comicListSummary(c: ComicListItem, locale: Locale): { text: string; lang: Locale } {
+  const e = listEdition(c, locale);
+  if (e?.summary) return { text: e.summary, lang: locale };
   const t = listFresh(c, locale);
   return t?.summary ? { text: t.summary, lang: locale } : { text: c.summary, lang: c.lang };
 }
 
-/** Il titolo nella lingua della pagina, se la traduzione è aggiornata; altrimenti quello dell'autore con la sua lingua. */
+/** Il titolo nella lingua della pagina (versione disegnata o traduzione aggiornata); altrimenti quello dell'autore con la sua lingua. */
 export function comicListTitle(c: ComicListItem, locale: Locale): { text: string; lang: Locale } {
+  const e = listEdition(c, locale);
+  if (e?.title) return { text: e.title, lang: locale };
   const title = listFresh(c, locale)?.title;
   return title && plainTextOk(title, 1, COMIC_TRANSLATION_LIMITS.titleMax, false) ? { text: title, lang: locale } : { text: c.title, lang: c.lang };
 }
 
-/** La data della versione in `locale` (sitemap): l'ultima modifica o, se più recente, l'arrivo della traduzione. */
+/** La copertina nella lingua della pagina: quella della versione disegnata, se ne ha una; altrimenti quella del fumetto. */
+export function comicListCover(c: ComicListItem, locale: Locale): string | null {
+  const own = listEdition(c, locale)?.cover_path;
+  if (comicPathOk(own, c.owner)) return own;
+  return comicPathOk(c.cover_path, c.owner) ? c.cover_path : null;
+}
+
+/**
+ * La data della versione in `locale` (sitemap): l'ultima modifica o, se più recente, l'arrivo della traduzione. Una
+ * versione disegnata cambia con il fumetto: la sua data è l'ultima modifica.
+ */
 export function comicListDate(c: ComicListItem, locale: Locale): string {
+  if (listEdition(c, locale)) return c.updated_at;
   const at = listFresh(c, locale)?.at;
   return at && at > c.updated_at ? at : c.updated_at;
 }
@@ -414,7 +577,7 @@ export type ComicFeedCard = {
   summaryLang?: Locale;
   /** data della news (ISO): la prima pubblicazione */
   date: string;
-  /** copertina (indirizzo pubblico) */
+  /** copertina (indirizzo pubblico): quella della versione disegnata nella lingua della pagina, se ne ha una */
   image: string | null;
   author: { name: string; username: string | null };
 };
@@ -426,6 +589,7 @@ export function comicFeedCards(items: readonly ComicListItem[], locale: Locale, 
     .map((c) => {
       const summary = comicListSummary(c, locale);
       const title = comicListTitle(c, locale);
+      const cover = comicListCover(c, locale);
       return {
         slug: c.slug,
         path: comicPath(c.slug),
@@ -434,7 +598,7 @@ export function comicFeedCards(items: readonly ComicListItem[], locale: Locale, 
         summary: summary.text,
         ...(summary.lang !== locale ? { summaryLang: summary.lang } : {}),
         date: comicDate(c),
-        image: comicPathOk(c.cover_path, c.owner) ? comicImageUrl(c.cover_path, base) : null,
+        image: cover ? comicImageUrl(cover, base) : null,
         author: { name: name(c.profile), username: c.profile?.username ?? null },
       };
     });

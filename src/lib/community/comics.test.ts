@@ -186,8 +186,8 @@ describe("fumetti: traduzioni e indicizzazione", () => {
     assert.ok(C.freshComicTranslation(withIt, "it"));
     assert.equal(C.freshComicTranslation({ ...withIt, summary: `${SUMMARY} Otra frase.` }, "it"), null, "testo cambiato");
     assert.deepEqual(C.missingComicLocales(withIt, LOCALES), ["en"]);
-    assert.deepEqual(C.localizedComic(withIt, "it"), { text: it.comic, lang: "it", translated: true });
-    assert.deepEqual(C.localizedComic(withIt, "en"), { text: { title: "La semana de Vega", summary: SUMMARY, pages: ["¡Hola!", "", "Adiós"] }, lang: "es", translated: false });
+    assert.deepEqual(C.localizedComic(withIt, "it"), { text: it.comic, lang: "it", translated: true, edition: false, pages: comic.pages, cover_path: null });
+    assert.deepEqual(C.localizedComic(withIt, "en"), { text: { title: "La semana de Vega", summary: SUMMARY, pages: ["¡Hola!", "", "Adiós"] }, lang: "es", translated: false, edition: false, pages: comic.pages, cover_path: null });
     assert.deepEqual(C.comicIndexing({ ...withIt, status: "published" }, LOCALES, "it"), { languages: ["it", "es"], noindex: false });
     assert.deepEqual(C.comicIndexing({ ...withIt, status: "published" }, LOCALES, "en"), { languages: ["it", "es"], noindex: true });
     assert.deepEqual(C.comicIndexing({ ...withIt, status: "draft" }, LOCALES, "es"), { languages: [], noindex: true });
@@ -249,6 +249,115 @@ describe("fumetti: traduzioni e indicizzazione", () => {
   });
 });
 
+describe("fumetti: versioni disegnate in altre lingue (30/09/2026)", () => {
+  const it = { title: "Settimana uno", summary: SUMMARY, pages: [page(4, "Ciao!"), page(5)], cover_path: file(6) };
+  const es = { title: "Semana uno", summary: SUMMARY, pages: [page(7, "¡Hola!")], cover_path: null };
+  const comic = { lang: "en" as const, title: "Week one", summary: SUMMARY, pages: [page(1, "Hi!"), page(2)], cover_path: file(3), translations: null, editions: { it, es } };
+
+  test("dal database: solo le altre lingue, file del proprietario, anche a metà", () => {
+    const raw = { it, es: { ...es, cover_path: `${OTHER}/comic/7f3c2a10-9b8e-4d6c-a5f4-3e2d1c0b9a87.webp` }, en: it, fr: it, xx: "no" };
+    const stored = C.storedEditions(raw, OWNER, "en");
+    assert.deepEqual(Object.keys(stored).sort(), ["es", "it"], "mai la lingua del fumetto, mai lingue che non ci sono");
+    assert.equal(stored.es?.cover_path, null, "copertina di un'altra cartella: niente");
+    assert.deepEqual(C.storedEditions({ it: { title: 3, pages: "x" } }, OWNER, "en"), { it: { title: "", summary: "", pages: [], cover_path: null } });
+    assert.deepEqual(C.storedEditions(null, OWNER, "en"), {});
+    assert.deepEqual(C.storedEditions([it], OWNER, "en"), {});
+  });
+
+  test("tutti i file del fumetto, senza doppioni", () => {
+    assert.deepEqual(C.comicFiles({ owner: OWNER, ...comic }).sort(), [file(1), file(2), file(3), file(4), file(5), file(6), file(7)].sort());
+    assert.deepEqual(C.comicFiles({ owner: OWNER, pages: [page(1)], cover_path: file(1), editions: { it: { ...it, pages: [page(1)], cover_path: `${OTHER}/comic/x.webp` } } }), [file(1)]);
+  });
+
+  test("la pagina in una lingua con la versione disegnata: tavole, testi e copertina suoi, niente traduzione", () => {
+    const itView = C.localizedComic(comic, "it");
+    assert.deepEqual(itView, { text: { title: "Settimana uno", summary: SUMMARY, pages: ["Ciao!", ""] }, lang: "it", translated: false, edition: true, pages: it.pages, cover_path: file(6) });
+    assert.equal(C.localizedComic(comic, "es").cover_path, file(3), "senza copertina sua vale quella del fumetto");
+    assert.equal(C.localizedComic(comic, "en").edition, false);
+    assert.deepEqual(C.localizedComic(comic, "en").pages, comic.pages);
+    // una versione a metà (una bozza) non si mostra
+    const half = { ...comic, editions: { it: { ...it, summary: "" }, es: { ...es, pages: [] } } };
+    assert.equal(C.comicEdition(half, "it"), null);
+    assert.equal(C.comicEdition(half, "es"), null);
+    assert.equal(C.localizedComic(half, "it").edition, false);
+    assert.equal(C.comicEdition({ ...comic, lang: "it" }, "it"), null, "mai nella lingua dei testi");
+  });
+
+  test("indicizzazione e traduzioni: le lingue con la versione disegnata si indicizzano e non si traducono", () => {
+    assert.deepEqual(C.comicIndexing({ ...comic, status: "published" }, LOCALES, "es"), { languages: ["en", "it", "es"], noindex: false });
+    assert.deepEqual(C.missingComicLocales(comic, LOCALES), []);
+    assert.deepEqual(C.missingComicLocales({ ...comic, editions: { it } }, LOCALES), ["es"]);
+    assert.deepEqual(C.comicIndexing({ ...comic, editions: { it }, status: "published" }, LOCALES, "es"), { languages: ["en", "it"], noindex: true });
+  });
+
+  test("modulo: versioni lette, controllate e con l'errore giusto", () => {
+    const base = { lang: "en", title: "Week one", summary: SUMMARY, pages: JSON.stringify([page(1, "Hi!")]), cover_path: file(3) };
+    const withEd = (editions: unknown, intent: "draft" | "publish" = "publish") => C.readComicForm(form({ ...base, editions: JSON.stringify(editions) }), intent, OWNER);
+    const r = withEd({ it: { title: " Settimana\nuno ", summary: SUMMARY, pages: [page(4, "Ciao!")], cover_path: "" } });
+    assert.ok(r.ok);
+    assert.deepEqual(r.value.editions, { it: { title: "Settimana uno", summary: SUMMARY, pages: [page(4, "Ciao!")], cover_path: null } });
+    const none = C.readComicForm(form(base), "publish", OWNER);
+    assert.ok(none.ok);
+    assert.deepEqual(none.value.editions, {}, "senza il campo: nessuna versione");
+    const err = (editions: unknown, intent: "draft" | "publish" = "publish") => {
+      const x = withEd(editions, intent);
+      return x.ok ? null : x.error;
+    };
+    assert.deepEqual(err({ en: it }), { code: "editions" }, "la lingua del fumetto");
+    assert.deepEqual(err({ fr: it }), { code: "editions" });
+    assert.deepEqual(err([it]), { code: "editions" });
+    assert.deepEqual(C.readComicForm(form({ ...base, editions: "{rotto" }), "publish", OWNER), { ok: false, error: { code: "editions" } });
+    assert.deepEqual(err({ it: { ...it, title: "ab" } }), { code: "edition_title", edition: "it" });
+    assert.deepEqual(err({ es: { ...es, summary: "Corta." } }), { code: "edition_summary", edition: "es" });
+    assert.deepEqual(err({ it: { ...it, pages: [] } }), { code: "edition_pages", edition: "it" });
+    assert.deepEqual(err({ it: { ...it, pages: [page(4), { ...page(5), width: 5000 }] } }), { code: "edition_page", edition: "it", index: 1 });
+    assert.deepEqual(err({ it: { ...it, cover_path: `${OTHER}/comic/7f3c2a10-9b8e-4d6c-a5f4-3e2d1c0b9a87.webp` } }), { code: "edition_cover", edition: "it" });
+    // una bozza si salva anche con una versione appena aggiunta, vuota
+    assert.equal(err({ it: { title: "", summary: "", pages: [], cover_path: null } }, "draft"), null);
+    assert.equal(C.comicErrorField({ code: "edition_page", edition: "it", index: 2 }), "ed-it-page-2");
+    assert.equal(C.comicErrorField({ code: "edition_title", edition: "es" }), "ed-es-title");
+    assert.equal(C.comicErrorField({ code: "edition_pages", edition: "es" }), "ed-es-pages");
+    assert.equal(C.comicErrorField({ code: "editions" }), "editions");
+    assert.equal(C.comicErrorCode({ code: "23514", message: 'violates check constraint "community_comics_editions_check"' }), "editions");
+  });
+
+  test("elenchi: titolo, presentazione, copertina, lingue e data della versione disegnata", () => {
+    const item = {
+      id: "1",
+      slug: "week-one-ab12",
+      owner: OWNER,
+      lang: "en" as const,
+      title: "Week one",
+      summary: SUMMARY,
+      cover_path: file(3),
+      status: "published" as const,
+      text_hash: "h",
+      tr: { es: { hash: "h", at: "2026-09-30T12:00:00Z", summary: "Traducción automática.", title: "Semana (automática)" } },
+      ed: { it: { title: "Settimana uno", summary: SUMMARY, cover_path: file(6), page: file(4) }, es: { title: "Semana uno", summary: SUMMARY, cover_path: null, page: file(7) } },
+      created_at: "2026-09-29T09:00:00Z",
+      updated_at: "2026-09-30T10:00:00Z",
+      published_at: "2026-09-29T09:30:00Z",
+      profile: { username: "vegakiles", display_name: "Vega", avatar_url: null, badge: "creator" },
+    };
+    assert.deepEqual(C.comicListLocales(item, LOCALES), ["en", "it", "es"]);
+    assert.deepEqual(C.comicListTitle(item, "it"), { text: "Settimana uno", lang: "it" });
+    assert.deepEqual(C.comicListTitle(item, "es"), { text: "Semana uno", lang: "es" }, "la versione disegnata vince sulla traduzione");
+    assert.deepEqual(C.comicListSummary(item, "es"), { text: SUMMARY, lang: "es" });
+    assert.equal(C.comicListCover(item, "it"), file(6));
+    assert.equal(C.comicListCover(item, "es"), file(3), "senza copertina sua quella del fumetto");
+    assert.equal(C.comicListDate(item, "es"), "2026-09-30T10:00:00Z", "la data della versione disegnata è l'ultima modifica");
+    const [card] = C.comicFeedCards([item], "it", BASE, (p) => p?.display_name ?? "?");
+    assert.equal(card.title, "Settimana uno");
+    assert.equal(card.titleLang, undefined);
+    assert.equal(card.image, `${BASE}/storage/v1/object/public/profile-media/${file(6)}`);
+    // senza prima tavola (una versione a metà) conta la traduzione, o l'originale
+    const half = { ...item, ed: { es: { ...item.ed.es, page: null } } };
+    assert.deepEqual(C.comicListTitle(half, "es"), { text: "Semana (automática)", lang: "es" });
+    assert.deepEqual(C.comicListTitle(half, "it"), { text: "Week one", lang: "en" });
+    assert.deepEqual(C.sitemapComics([item], LOCALES).comics[0].locales, ["en", "it", "es"]);
+  });
+});
+
 describe("fumetti: errori del database", () => {
   test("tetti e regole dei trigger, vincoli, tabella mancante, policy", () => {
     assert.equal(C.comicErrorCode({ message: "comic_hidden_recent" }), "comic_hidden_recent");
@@ -301,7 +410,7 @@ describe("fumetti: etichette", () => {
   });
 
   test("un messaggio per ogni errore del modulo e del database, e i tetti detti sono quelli veri", () => {
-    const codes = ["lang", "title", "summary", "pages", "page", "cover", "notLoggedIn", "forbidden", "disabled", "unavailable", "comic_daily_limit", "comic_limit", "comic_rate", "comic_hidden", "comic_hidden_recent", "comic_status", "comic_file", "comic_translation", "comic_reserved_fields", "duplicate", "db", "tooFast"];
+    const codes = ["lang", "title", "summary", "pages", "page", "cover", "editions", "edition_title", "edition_summary", "edition_pages", "edition_page", "edition_cover", "notLoggedIn", "forbidden", "disabled", "unavailable", "comic_daily_limit", "comic_limit", "comic_rate", "comic_hidden", "comic_hidden_recent", "comic_status", "comic_file", "comic_translation", "comic_reserved_fields", "duplicate", "db", "tooFast"];
     for (const locale of LOCALES) for (const c of codes) assert.ok((L.comicLabels[locale].errors as Record<string, string>)[c], `${locale}: ${c}`);
     assert.match(L.comicLabels.it.errors.comic_daily_limit, new RegExp(`\\b${C.COMIC_DAILY_PUBLISH_LIMIT}\\b`));
     assert.match(L.comicLabels.en.errors.comic_limit, new RegExp(`\\b${C.COMIC_MAX_PER_OWNER}\\b`));
@@ -447,6 +556,98 @@ describe("database: blocco FUMETTI di supabase/schema.sql", () => {
     assert.ok(fn.includes("'^/news/comics/[a-z0-9]+(-[a-z0-9]+)*$'"));
     assert.ok(fn.includes("into v_owner using substr(v_target, 14)"), "'/news/comics/' sono 13 caratteri");
     assert.equal("/news/comics/".length, 13);
+  });
+});
+
+describe("database: blocco FUMETTI IN PIÙ LINGUE di supabase/schema.sql (30/09/2026)", () => {
+  const MARKER = "-- ===== 30/09/2026: FUMETTI IN PIÙ LINGUE =====";
+  const schema = read("../../../supabase/schema.sql");
+  const at = schema.indexOf(MARKER);
+  const next = at >= 0 ? schema.indexOf("\n-- ===== ", at + MARKER.length) : -1;
+  const block = at >= 0 ? schema.slice(at, next < 0 ? undefined : next) : "";
+  const stmts = S.sqlStatements(block);
+  const fullStmts = S.sqlStatements(schema);
+  const one = (re: RegExp) => {
+    const found = stmts.filter((s) => re.test(s));
+    assert.equal(found.length, 1, `${re}: ${found.length} istruzioni`);
+    return found[0];
+  };
+  const last = (re: RegExp) => fullStmts.filter((s) => re.test(s)).at(-1) ?? "";
+  const LIM = C.COMIC_LIMITS;
+
+  test("il blocco c'è, dopo FUMETTI, e non tocca public.profiles", () => {
+    assert.ok(at > schema.indexOf("-- ===== 29/09/2026: FUMETTI ====="), "manca il blocco, o viene prima di FUMETTI");
+    assert.deepEqual(S.singleDollarLines(block), []);
+    assert.deepEqual(S.overLongRepetitions(block), []);
+    assert.deepEqual(
+      stmts.filter((s) => /^(grant|revoke)\b/.test(s) && /\bpublic\.profiles\b/.test(s)),
+      [],
+    );
+    assert.ok(stmts.includes("alter table public.community_comics add column if not exists editions jsonb not null default '{}'::jsonb"));
+    assert.ok(stmts.includes("alter table public.community_comics add column if not exists former_slugs text[] not null default '{}'"));
+  });
+
+  test("versioni: lingue, limiti, cartella e tavole uguali al codice", () => {
+    const fn = one(/^create or replace function public\.community_comic_editions_ok\(/);
+    assert.deepEqual(quoted(/when k not in \(([^)]*)\) or k = lang then true/.exec(fn)![1]), [...C.COMIC_LANGS]);
+    assert.ok(fn.includes("(v - 'title' - 'summary' - 'pages' - 'cover_path') <> '{}'::jsonb"));
+    assert.ok(fn.includes(`community_guide_text_ok(v ->> 'title', case when complete then ${LIM.titleMin} else 0 end, ${LIM.titleMax}, false)`));
+    assert.ok(fn.includes(`community_guide_text_ok(v ->> 'summary', case when complete then ${LIM.summaryMin} else 0 end, ${LIM.summaryMax}, true)`));
+    assert.ok(fn.includes("community_comic_pages_ok(v -> 'pages', owner, complete)"), "tavole con le regole dell'originale");
+    assert.ok(block.includes(`(v ->> 'cover_path') !~ ('^' || owner::text || '/${C.COMIC_FOLDER}/${M.MEDIA_FILE_RE}$')`));
+    assert.ok(one(/add constraint community_comics_editions_check/).includes("community_comic_editions_ok(editions, owner, lang, status <> 'draft')"));
+  });
+
+  test("indirizzi di prima: la regola degli slug, nessuna grant", () => {
+    const fn = one(/^create or replace function public\.community_comic_slugs_ok\(/);
+    const slugRule = /check \((char_length\(slug\) between 3 and 60 and slug ~ '[^']+')\)/.exec(fullStmts.find((s) => s.includes("add constraint community_comics_slug_check")) ?? "");
+    assert.ok(slugRule, "manca community_comics_slug_check");
+    assert.ok(fn.includes("char_length(slug) not between 3 and 60 or slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$'"));
+    assert.ok(slugRule[1].includes("'^[a-z0-9]+(-[a-z0-9]+)*$'"), "la stessa espressione dello slug");
+    assert.ok(one(/add constraint community_comics_former_slugs_check/).includes("community_comic_slugs_ok(former_slugs)"));
+    assert.ok(!fullStmts.some((s) => /^grant (insert|update) \([^)]*former_slugs/.test(s)), "former_slugs li scrive solo lo script");
+  });
+
+  test("file: il trigger (ultima definizione) guarda anche le versioni, con il peso del codice", () => {
+    const fn = last(/^create or replace function public\.guard_community_comic_files\(/);
+    assert.ok(stmts.includes(fn), "l'ultima definizione è in questo blocco");
+    assert.doesNotMatch(fn, /security definer/, "con i privilegi di chi salva");
+    assert.ok(fn.includes("public.community_comic_files(new.pages, new.cover_path, new.editions)"));
+    assert.ok(fn.includes("public.community_comic_files(old.pages, old.cover_path, old.editions)"));
+    assert.ok(fn.includes(`profile_media_ok(p, ${C.COMIC_FILE_MAX_BYTES})`));
+    const trigger = "create trigger community_comics_files before insert or update of pages, cover_path, editions on public.community_comics for each row execute function public.guard_community_comic_files()";
+    assert.equal(fullStmts.filter((s) => /^create trigger community_comics_files /.test(s)).at(-1), trigger);
+    const files = one(/^create or replace function public\.community_comic_files\(/);
+    for (const part of ["a.x ->> 'path'", "select cover", "e.v ->> 'cover_path'", "b.y ->> 'path'", "array_agg(distinct f)"]) assert.ok(files.includes(part), part);
+  });
+
+  test("file in uso (ultima definizione): anche tavole e copertine delle versioni", () => {
+    const inUse = last(/^create or replace function public\.profile_media_in_use\(/);
+    assert.ok(stmts.includes(inUse), "l'ultima definizione è in questo blocco");
+    assert.ok(inUse.includes("p = any(public.community_comic_files('[]'::jsonb, null, c.editions))"));
+    for (const t of ["pr.avatar_path = p", "g.cover_path = p", "d.art_path = p", "c.cover_path = p or c.pages @> jsonb_build_array(jsonb_build_object('path', p))"]) assert.ok(inUse.includes(t), t);
+  });
+
+  test("grant per colonna: editions si scrive, dopo la revoke del blocco FUMETTI", () => {
+    const grantAt = fullStmts.lastIndexOf("grant update (editions) on public.community_comics to authenticated");
+    assert.ok(grantAt > fullStmts.lastIndexOf("revoke all on public.community_comics from anon, authenticated"), "la revoke la cancellerebbe");
+    assert.ok(fullStmts.includes("grant insert (editions) on public.community_comics to authenticated"));
+  });
+});
+
+describe("fumetti: script per unire i fumetti di più lingue (scripts/merge-comics.mjs)", () => {
+  const script = read("../../../scripts/merge-comics.mjs");
+
+  test("prova senza scrivere se non con --apply, in una transazione, con le regole del database", () => {
+    assert.match(script, /const apply = process\.argv\.includes\("--apply"\)/);
+    assert.match(script, /await db\.query\("begin"\)/);
+    assert.match(script, /await db\.query\(apply && ok \? "commit" : "rollback"\)/);
+    assert.match(script, /for update/, "le righe si bloccano prima di leggerle");
+    // stesso proprietario, lingue diverse, e la versione nelle stesse chiavi del codice
+    assert.match(script, /owner !== main\.owner/);
+    assert.match(script, /editions\[o\.lang\] = \{ title: o\.title, summary: o\.summary, pages: o\.pages, cover_path: o\.cover_path \}/);
+    assert.match(script, /former_slugs/);
+    assert.match(script, /comic_published/);
   });
 });
 

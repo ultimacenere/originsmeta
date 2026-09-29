@@ -16,11 +16,14 @@ import {
   comicTextFromDoc,
   comicTranslationDoc,
   missingComicLocales,
+  storedEditions,
   storedPages,
+  type ComicEditions,
   type ComicPage,
   type ComicTranslation,
   type ComicTranslations,
 } from "./comics";
+import { editionsColumnMissing } from "./comicQueries";
 
 /**
  * Traduzione automatica dei testi di un fumetto (pacchetto FUMETTI, 29/09/2026), come le guide della community
@@ -33,17 +36,33 @@ import {
  * - traduce solo le lingue che mancano o che sono rimaste indietro rispetto al testo;
  * - prima di scrivere rilegge il fumetto: se nel frattempo è cambiato, o non è più pubblicato, lascia perdere;
  * - nessuna eccezione verso chi pubblica: senza traduzione la pagina mostra i testi originali con la nota ed è noindex
- *   in quella lingua, fuori da hreflang e sitemap.
+ *   in quella lingua, fuori da hreflang e sitemap;
+ * - una lingua con la versione disegnata dall'autore (colonna `editions`, 30/09/2026) non si traduce: la pagina in
+ *   quella lingua mostra la versione disegnata.
  */
 
-type Row = { lang: Locale; title: string; summary: string; pages: ComicPage[]; translations: ComicTranslations | null; status: string; slug: string };
+type Row = { lang: Locale; title: string; summary: string; pages: ComicPage[]; translations: ComicTranslations | null; editions: ComicEditions; status: string; slug: string };
+
+const ROW_COLUMNS = "lang, title, summary, pages, translations, status, slug, owner";
 
 async function readRow(supabase: Db, comicId: string): Promise<Row | null> {
-  const { data, error } = await supabase.from("community_comics").select("lang, title, summary, pages, translations, status, slug, owner").eq("id", comicId).maybeSingle();
-  if (error || !data) return null;
-  const raw = data as unknown as { lang: Locale; title: string; summary: string; pages: unknown; translations: unknown; status: string; slug: string; owner: string };
+  const read = (columns: string) => supabase.from("community_comics").select(columns).eq("id", comicId).maybeSingle();
+  let res = await read(`${ROW_COLUMNS}, editions`);
+  // prima della migrazione del 30/09/2026 la colonna delle versioni disegnate non c'è: si legge senza
+  if (editionsColumnMissing(res.error)) res = await read(ROW_COLUMNS);
+  if (res.error || !res.data) return null;
+  const raw = res.data as unknown as { lang: Locale; title: string; summary: string; pages: unknown; translations: unknown; editions?: unknown; status: string; slug: string; owner: string };
   const translations = raw.translations && typeof raw.translations === "object" && !Array.isArray(raw.translations) ? (raw.translations as ComicTranslations) : null;
-  return { lang: raw.lang, title: raw.title, summary: raw.summary, pages: storedPages(raw.pages, raw.owner), translations, status: raw.status, slug: raw.slug };
+  return {
+    lang: raw.lang,
+    title: raw.title,
+    summary: raw.summary,
+    pages: storedPages(raw.pages, raw.owner),
+    translations,
+    editions: storedEditions(raw.editions, raw.owner, raw.lang),
+    status: raw.status,
+    slug: raw.slug,
+  };
 }
 
 /** Traduce il fumetto nelle lingue che mancano e salva il risultato. Restituisce le lingue scritte. */

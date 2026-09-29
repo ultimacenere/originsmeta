@@ -51,6 +51,40 @@ firmato da chi l'ha disegnato, con una pagina sua.
 - **Dati strutturati**: NewsArticle con l'autore uguale alla Person della sua pagina `/u` e le briciole
   News › Fumetti › titolo.
 
+## Versioni disegnate in altre lingue (30/09/2026)
+
+Vega ha pubblicato lo stesso fumetto tre volte, una per lingua: tre news per un fumetto solo. Pierluigi, 30/09/2026:
+**"Vega ha fatto tre fumetti in 3 lingue, unificali in una sola news subito"**.
+
+- **Che cos'è**: oltre alle tavole nella lingua dei testi (`lang`), un fumetto può avere una versione disegnata per
+  ognuna delle altre due lingue (colonna `editions`, `{"it": {title, summary, pages, cover_path}}`): tavole con i loro
+  testi, titolo, presentazione e, facoltativa, una copertina sua (serve se la copertina ha delle scritte; senza, vale
+  quella del fumetto). Stesse regole dell'originale: per pubblicare titolo 3-110, presentazione 40-300, da 1 a 10 tavole;
+  una bozza anche a metà.
+- **Dove si vede**: nella lingua della versione la pagina mostra le sue tavole, il suo titolo, la sua presentazione, la
+  sua trascrizione e la sua copertina (anche nell'anteprima dei link), senza la nota sulla traduzione; lo stesso in home,
+  `/news`, `/news/comics`, `/u` e sitemap. Quella lingua non si traduce in automatico (`missingComicLocales`) e si
+  indicizza (`comicIndexing`). La news resta una, con un indirizzo solo; le date e gli avvisi sono quelli del fumetto.
+- **Dal modulo**: sezione "Versioni disegnate in altre lingue", con "Aggiungi la versione in italiano/spagnolo/inglese";
+  la lingua di una versione non si può scegliere come lingua dei testi (prima si toglie la versione). I file tolti con
+  una versione si cancellano dopo il salvataggio, come le tavole.
+- **Unire fumetti già pubblicati separati** (`scripts/merge-comics.mjs`, dal checkout con `.env.local`):
+  1. `node scripts/merge-comics.mjs --list <utente>`: i fumetti dell'utente con slug, lingua, stato, tavole e data;
+  2. `node scripts/merge-comics.mjs <slug che resta> <slug> [<slug>]`: prova tutto in una transazione e la annulla,
+     mostrando che cosa farebbe; conviene tenere il fumetto uscito per primo (la data della news resta la sua);
+  3. lo stesso comando con `--apply` scrive. Gli altri fumetti diventano le versioni di quello che resta, le loro righe
+     si cancellano (i file restano: li usa il fumetto che resta), i loro indirizzi vanno in `former_slugs` e la pagina
+     `/news/comics/<slug>` di un indirizzo di prima porta al fumetto che resta con un 308 (`comicMovedTo`); gli avvisi
+     "ha pubblicato un fumetto" puntano al fumetto che resta, uno per persona; le traduzioni automatiche nelle lingue
+     che ora hanno la versione si tolgono. Le pagine si rinnovano da sole (ISR, entro 5 minuti).
+  4. Su Discord gli annunci dei fumetti uniti si tolgono a mano (i loro link portano comunque al fumetto che resta).
+- **Database**: blocco `-- ===== 30/09/2026: FUMETTI IN PIÙ LINGUE =====` in fondo a `supabase/schema.sql`, dopo
+  FUMETTI: colonne `editions` e `former_slugs` (quest'ultima senza grant: la scrive solo lo script), vincoli
+  `community_comics_editions_check` e `community_comics_former_slugs_check`, funzione `community_comic_files` (tutti i
+  file di un fumetto), trigger dei file e `profile_media_in_use` rifatti con le versioni, grant per colonna di
+  `editions`. Il codice regge anche prima della migrazione (legge senza la colonna e lo scrive nei log una volta), ma
+  lo script vuole la migrazione.
+
 ## Avvisi, Discord, analytics
 
 - **Chi segue** l'autore (pacchetto SEGUI) riceve l'avviso "ha pubblicato un fumetto" alla prima pubblicazione
@@ -75,6 +109,9 @@ firmato da chi l'ha disegnato, con una pagina sua.
    policyname = 'profile media upload';` contiene `'comic'` (se no, il NOTICE "Policy del bucket profile-media non
    aggiornate da SQL": policy dalla dashboard con lo SQL del blocco).
 4. Su Vercel: `DISCORD_WEBHOOK_COMICS` (facoltativa). `ANTHROPIC_API_KEY` c'è già.
+5. Versioni disegnate (30/09/2026): la stessa `node scripts/db-migrate.mjs` applica anche il blocco FUMETTI IN PIÙ
+   LINGUE. Verifica: `select column_name from information_schema.columns where table_name = 'community_comics' and
+   column_name in ('editions', 'former_slugs');` → due righe.
 
 ## Prove dopo il deploy
 
