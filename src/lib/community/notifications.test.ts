@@ -195,7 +195,16 @@ describe("database: avvisi nel blocco SEGUI di supabase/schema.sql", () => {
     const table = stmts.find((s) => s.startsWith("create table if not exists public.notifications")) ?? "";
     const kinds = /kind text not null check \(kind in \(([^)]*)\)\)/.exec(table);
     assert.ok(kinds, table.slice(0, 300));
-    assert.deepEqual(quoted(kinds[1]), [...NOTIFICATION_KINDS]);
+    // i tipi nati con SEGUI; quelli arrivati dopo (i fumetti, blocco FUMETTI del 29/09/2026) stanno nei vincoli rifatti
+    // più avanti nello schema: l'ultimo vincolo di ogni tabella elenca esattamente NOTIFICATION_KINDS
+    for (const k of quoted(kinds[1])) assert.ok((NOTIFICATION_KINDS as readonly string[]).includes(k), k);
+    const all = sqlStatements(read("../../../supabase/schema.sql"));
+    for (const t of ["notifications", "notification_events"]) {
+      const last = all.filter((s) => s.startsWith(`alter table public.${t} add constraint ${t}_kind_check`)).at(-1) ?? "";
+      const list = /check \(kind in \(([^)]*)\)\)/.exec(last);
+      assert.ok(list, `${t}: manca il vincolo rifatto dei tipi`);
+      assert.deepEqual(quoted(list[1]), [...NOTIFICATION_KINDS], t);
+    }
     assert.match(table, /constraint notifications_once unique \(user_id, kind, event_key\)/);
   });
   test("nessuna scrittura diretta: policy restrittive, lettura per colonna senza event_key", () => {

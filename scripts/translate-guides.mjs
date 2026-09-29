@@ -1,5 +1,7 @@
 // Traduce le guide della community (pacchetto GUIDE, 27/09/2026) che non hanno ancora la traduzione, o l'hanno rimasta
-// indietro rispetto al testo, nelle altre lingue del sito, e la salva nella colonna community_guides.translations.
+// indietro rispetto al testo, nelle altre lingue del sito, e la salva nella colonna community_guides.translations. Dal
+// 29/09/2026 si traduce anche il titolo: le traduzioni fatte prima (senza titolo) si completano con il titolo solo,
+// riusando riassunto e sezioni già tradotti.
 //
 // Serve per ritentare quando la traduzione dopo la pubblicazione non è riuscita (rete, API, tempo della funzione) e per
 // gli arretrati. Il sito, dopo ogni pubblicazione o modifica, fa da solo lo stesso lavoro (guideTranslate.ts): lo
@@ -86,12 +88,13 @@ await db.connect();
 
 const only = opt("--only");
 const { rows } = await db.query(
-  `select id, slug, lang, summary, sections, translations from public.community_guides
+  `select id, slug, lang, title, summary, sections, translations from public.community_guides
     where status = 'published' ${only ? "and slug = $1" : ""} order by published_at`,
   only ? [only] : [],
 );
 const guideOf = (r) => ({
   lang: LOCALES.includes(r.lang) ? r.lang : "en",
+  title: r.title ?? "",
   summary: r.summary ?? "",
   sections: G.storedSections(r.sections),
   translations: r.translations && typeof r.translations === "object" && !Array.isArray(r.translations) ? r.translations : {},
@@ -121,9 +124,9 @@ async function save(r, done) {
   const hash = G.communityGuideHash(r.g);
   await db.query("begin");
   try {
-    const cur = await db.query("select lang, summary, sections, translations from public.community_guides where id = $1 for update", [r.id]);
+    const cur = await db.query("select lang, title, summary, sections, translations from public.community_guides where id = $1 for update", [r.id]);
     const row = cur.rows[0];
-    if (!row || G.communityGuideHash(guideOf(row)) !== hash) {
+    if (!row || G.communityGuideHash(guideOf(row)) !== hash || (row.title ?? "") !== r.g.title) {
       await db.query("rollback");
       console.log(`  ${r.slug}: la guida è cambiata nel frattempo, traduzioni scartate`);
       return 0;

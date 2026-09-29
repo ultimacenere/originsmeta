@@ -89,11 +89,13 @@
  *   ★ guide_published     guida della community pubblicata per la prima volta     guide_lang (lingua della guida), category
  *                         (pacchetto GUIDE, 27/09/2026; non le modifiche né una guida riportata tra le bozze e ripubblicata:
  *                         `firstPublish` di saveCommunityGuide)
+ *   ★ comic_published     fumetto pubblicato fra le news per la prima volta        comic_lang (lingua dei testi)
+ *                         (pacchetto FUMETTI, 29/09/2026: `firstPublish` di saveComic)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars,
- *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, provider,
+ *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, comic_lang, provider,
  *     host, tool, format, category;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
@@ -186,9 +188,9 @@ export type EventParams = {
   feedback_submit: Record<string, never>;
   message_sent: { placement: "account" | "staff_area"; kind: "new" | "reply" };
   message_read: { placement: "account" | "staff_area" };
-  follow: { placement: "profile" | "deck_page" | "guide_page" };
-  unfollow: { placement: "profile" | "deck_page" | "guide_page" | "account" };
-  notification_open: { kind: "deck_published" | "live" | "guide_published" };
+  follow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" };
+  unfollow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" | "account" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -202,6 +204,7 @@ export type EventParams = {
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
   guide_published: { guide_lang: string; category: string };
+  comic_published: { comic_lang: string };
 };
 export type EventName = keyof EventParams;
 
@@ -244,6 +247,7 @@ export const VERCEL_PROPS = {
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],
   guide_published: ["guide_lang", "category"],
+  comic_published: ["comic_lang"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

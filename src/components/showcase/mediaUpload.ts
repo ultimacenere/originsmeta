@@ -24,14 +24,23 @@ function toBlob(canvas: HTMLCanvasElement, type: string, quality: number): Promi
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
 }
 
+/** Come ridurre un'immagine: vedi `encodeImageSized`. */
+export type EncodeOptions = { square?: number; aspect?: number; maxSide?: number; box?: { width: number; height: number }; maxBytes: number };
+
 /**
  * Ricodifica un'immagine: `square` = ritaglio quadrato al centro e lato massimo (foto profilo); `aspect` (larghezza /
  * altezza) = ritaglio al centro in quelle proporzioni e lato lungo al massimo `maxSide` (copertina di una guida in 16:9,
- * artwork di un mazzo in 5:7, dal 29/09/2026); altrimenti solo il lato lungo al massimo `maxSide` (copertina e sfondo
+ * artwork di un mazzo in 5:7, dal 29/09/2026); `box` = nessun ritaglio, l'immagine intera ridotta finché sta nel
+ * riquadro (tavole dei fumetti, 1080 × 1920); altrimenti solo il lato lungo al massimo `maxSide` (copertina e sfondo
  * della vetrina). Lancia `MediaError("type")` per un file che non è un'immagine ammessa o che il browser non sa
  * leggere, `MediaError("tooBig")` se anche ridotta supera `maxBytes`.
  */
-export async function encodeImage(file: File, opts: { square?: number; aspect?: number; maxSide?: number; maxBytes: number }): Promise<Blob> {
+export async function encodeImage(file: File, opts: EncodeOptions): Promise<Blob> {
+  return (await encodeImageSized(file, opts)).blob;
+}
+
+/** `encodeImage` con le misure dell'immagine ricodificata (le tavole dei fumetti le salvano, per riservare lo spazio). */
+export async function encodeImageSized(file: File, opts: EncodeOptions): Promise<{ blob: Blob; width: number; height: number }> {
   if (!(MEDIA_TYPES as readonly string[]).includes(file.type)) throw new MediaError("type");
   let bitmap: ImageBitmap;
   try {
@@ -53,6 +62,11 @@ export async function encodeImage(file: File, opts: { square?: number; aspect?: 
     sy = Math.round((h - side) / 2);
     sw = sh = side;
     dw = dh = Math.max(1, Math.min(opts.square, side));
+  } else if (opts.box) {
+    // intera, ridotta finché non sta nel riquadro (mai ingrandita)
+    const scale = Math.min(1, opts.box.width / w, opts.box.height / h);
+    dw = Math.max(1, Math.round(w * scale));
+    dh = Math.max(1, Math.round(h * scale));
   } else if (opts.aspect && opts.aspect > 0) {
     // ritaglio al centro nelle proporzioni chieste, poi il lato lungo entro maxSide
     if (w / h > opts.aspect) {
@@ -85,7 +99,7 @@ export async function encodeImage(file: File, opts: { square?: number; aspect?: 
     let blob = await toBlob(canvas, "image/webp", quality);
     if (!blob || blob.type !== "image/webp") blob = await toBlob(canvas, "image/jpeg", quality);
     if (!blob || !mediaExtension(blob.type)) throw new MediaError("type");
-    if (blob.size <= opts.maxBytes) return blob;
+    if (blob.size <= opts.maxBytes) return { blob, width: dw, height: dh };
   }
   throw new MediaError("tooBig");
 }
@@ -94,8 +108,8 @@ export async function encodeImage(file: File, opts: { square?: number; aspect?: 
  * Carica il file nella cartella dell'utente (`<id>/<kind>/<uuid>.<ext>`, nome sempre nuovo) e ne restituisce il percorso.
  * Cache di un'ora (il valore predefinito dello Storage, come le copertine dei tornei): una foto sostituita o tolta, che
  * il sito cancella, non resta nelle cache per mesi. Si riprova una volta; se lo Storage ha rifiutato il file (per esempio
- * il tetto dei 12 file, pieno di immagini caricate e mai salvate), prima si tolgono i file non in uso delle due cartelle:
- * quelli in uso sul profilo la policy non li lascia cancellare.
+ * il tetto dei 12 file, pieno di immagini caricate e mai salvate), prima si tolgono i file non in uso di tutte le
+ * cartelle: quelli in uso (profilo, guide, mazzi, fumetti) la policy non li lascia cancellare.
  */
 export async function uploadMedia(sb: Db, userId: string, kind: MediaKind, blob: Blob): Promise<string> {
   const ext = mediaExtension(blob.type);

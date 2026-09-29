@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore, type CSSProperties } from "react";
 
-export type PostitKind = "deck" | "news" | "patch" | "guide" | "tournament" | "event";
+export type PostitKind = "deck" | "news" | "patch" | "guide" | "tournament" | "event" | "comic";
 
 /** Una news è "fresca" (post-it isterico) per 72 ore dalla sua data. */
 const FRESH_MS = 72 * 60 * 60 * 1000;

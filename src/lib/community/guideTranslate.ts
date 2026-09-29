@@ -20,9 +20,10 @@ import {
 
 /**
  * Traduzione automatica delle guide della community (pacchetto GUIDE, 27/09/2026), come le guide dei mazzi
- * (translate.ts, stesse regole): dopo la pubblicazione o la modifica di una guida pubblicata, riassunto e sezioni si
- * traducono nelle altre lingue del sito con lo stesso modello, la stessa chiave (ANTHROPIC_API_KEY: senza, nulla) e lo
- * stesso glossario delle parole chiave (`TRANSLATION_RULES`); titolo e nomi di carte e luoghi non si traducono.
+ * (translate.ts, stesse regole): dopo la pubblicazione o la modifica di una guida pubblicata, titolo (dal 29/09/2026),
+ * riassunto e sezioni si traducono nelle altre lingue del sito con lo stesso modello, la stessa chiave
+ * (ANTHROPIC_API_KEY: senza, nulla) e lo stesso glossario delle parole chiave (`TRANSLATION_RULES`); i nomi di carte e
+ * luoghi non si traducono.
  *
  * - parte dopo la risposta al browser (`after()`, pagine di scrittura con `maxDuration = 300`), scrive con la sessione
  *   del proprietario (policy di community_guides, colonna `translations` nella grant di update; il trigger controlla le
@@ -35,10 +36,10 @@ import {
  *   lingua, fuori da hreflang e sitemap. Gli arretrati e i nuovi tentativi: `node scripts/translate-guides.mjs`.
  */
 
-type Row = { lang: Locale; summary: string; sections: GuideSectionText[]; translations: CommunityGuideTranslations | null; status: string; slug: string };
+type Row = { lang: Locale; title: string; summary: string; sections: GuideSectionText[]; translations: CommunityGuideTranslations | null; status: string; slug: string };
 
 async function readRow(supabase: Db, guideId: string): Promise<Row | null> {
-  const { data, error } = await supabase.from("community_guides").select("lang, summary, sections, translations, status, slug").eq("id", guideId).maybeSingle();
+  const { data, error } = await supabase.from("community_guides").select("lang, title, summary, sections, translations, status, slug").eq("id", guideId).maybeSingle();
   if (error || !data) return null;
   const raw = data as unknown as Omit<Row, "sections" | "translations"> & { sections: unknown; translations: unknown };
   const translations = raw.translations && typeof raw.translations === "object" && !Array.isArray(raw.translations) ? (raw.translations as CommunityGuideTranslations) : null;
@@ -62,7 +63,7 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
 
   // Rilettura: se la guida è cambiata (o non è più pubblicata) mentre traducevamo, queste traduzioni non servono.
   const fresh = await readRow(supabase, guideId);
-  if (!fresh || fresh.status !== "published" || communityGuideHash(fresh) !== hash) return [];
+  if (!fresh || fresh.status !== "published" || communityGuideHash(fresh) !== hash || fresh.title !== row.title) return [];
   const next: CommunityGuideTranslations = { ...(fresh.translations ?? {}), ...done };
   delete next[fresh.lang];
   const { error } = await supabase.from("community_guides").update({ translations: next }).eq("id", guideId);

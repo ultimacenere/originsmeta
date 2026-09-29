@@ -229,7 +229,14 @@ describe("database: vincoli uguali al codice", () => {
     assert.ok(fn.includes(`community_guide_text_ok(x ->> 'body', 1, ${TL.bodyMax}, true)`));
     assert.ok(fn.includes("jsonb_array_length(t -> 'guide' -> 'sections') <> n"));
     assert.ok(fn.includes(`jsonb_array_length(t -> 'parts') > ${G.GUIDE_LIMITS.sectionsMax + 1}`));
-    assert.deepEqual([TL.summaryMax, TL.headingMax, TL.bodyMax], [950, 400, 10200]);
+    // titolo tradotto dal 29/09/2026 (blocco TITOLI TRADOTTI): facoltativo, una riga, sempre con la sua impronta
+    assert.ok(fn.includes(`community_guide_text_ok(t -> 'guide' ->> 'title', 1, ${TL.titleMax}, false)`));
+    assert.ok(fn.includes("(t - 'hash' - 'at' - 'model' - 'parts' - 'title_hash' - 'guide') <> '{}'::jsonb"));
+    assert.ok(fn.includes("((t -> 'guide') - 'title' - 'summary' - 'sections') <> '{}'::jsonb"));
+    assert.ok(fn.includes("(t -> 'guide' ? 'title') is distinct from (t ? 'title_hash')"), "titolo e impronta del titolo insieme");
+    assert.ok(fn.includes("char_length(t ->> 'title_hash') > 32"));
+    assert.ok(sql.indexOf("-- ===== 29/09/2026: TITOLI TRADOTTI =====") > sql.indexOf("-- ===== 27/09/2026: GUIDE ====="), "dopo il blocco GUIDE");
+    assert.deepEqual([TL.titleMax, TL.summaryMax, TL.headingMax, TL.bodyMax], [475, 950, 400, 10200]);
     const guard = guardFn();
     assert.ok(guard.includes("not public.community_guide_translation_ok(v, jsonb_array_length(new.sections))"));
     assert.ok(guard.includes("raise exception 'guide_translation'"));
@@ -525,7 +532,8 @@ describe("parole, lingue, indicizzazione", () => {
   test("traduzioni: valgono solo sul testo attuale e con le stesse sezioni", () => {
     const g0 = guide(300);
     const hash = G.communityGuideHash(g0);
-    const tr = { hash, at: "2026-09-27T10:00:00Z", guide: { summary: "Summary", sections: [{ heading: "Mulligan", body: "Text" }] } };
+    // con il titolo tradotto e la sua impronta (dal 29/09/2026): senza, la lingua resta da completare
+    const tr = { hash, at: "2026-09-27T10:00:00Z", title_hash: G.guideTitleHash(g0 as never), guide: { title: "A guide", summary: "Summary", sections: [{ heading: "Mulligan", body: "Text" }] } };
     const g1 = guide(300, { translations: { en: tr, es: { ...tr, hash: "vecchia" }, it: tr } });
     assert.deepEqual(G.guideShapeLocales(G.indexShapeOf(g1), LOCALES as never), ["en", "it"]);
     assert.deepEqual(G.missingGuideLocales(g1, LOCALES as never), ["es"]);
@@ -534,7 +542,7 @@ describe("parole, lingue, indicizzazione", () => {
     assert.equal(G.localizedCommunityGuide(g1, "it" as never).translated, false, "nella lingua dell'autore sempre l'originale");
     const fewer = guide(300, { translations: { en: { ...tr, guide: { summary: "S", sections: [] } } } });
     assert.equal(G.freshGuideTranslation(fewer, "en" as never), null);
-    // il titolo non entra nell'impronta: cambiarlo non butta via le traduzioni
+    // il titolo non entra nell'impronta del testo (ha la sua, guideTitleHash): cambiarlo non butta via le traduzioni
     assert.equal(G.communityGuideHash({ ...(g0 as object), title: "Altro" } as never), hash);
     assert.notEqual(G.communityGuideHash({ ...(g0 as object), lang: "es" } as never), hash);
   });
@@ -677,7 +685,7 @@ describe("sitemap e date degli elenchi", () => {
 });
 
 describe("traduzione a pezzi", () => {
-  const big = (n: number) => ({ lang: "it" as const, summary: "Riassunto della guida.", sections: Array.from({ length: n }, (_, i) => ({ heading: `Sezione ${i + 1}`, body: `${"testo ".repeat(660)}fine ${i + 1}` })) });
+  const big = (n: number) => ({ lang: "it" as const, title: "Guida di prova", summary: "Riassunto della guida.", sections: Array.from({ length: n }, (_, i) => ({ heading: `Sezione ${i + 1}`, body: `${"testo ".repeat(660)}fine ${i + 1}` })) });
   const size = (doc: Record<string, string>) => Object.values(doc).reduce((n, v) => n + v.length, 0);
 
   test("gruppi entro 8000 caratteri, una sezione mai divisa, ogni campo una volta sola", () => {
@@ -696,14 +704,22 @@ describe("traduzione a pezzi", () => {
   });
 
   test("riuso: una modifica ritraduce solo le parti cambiate, anche con le sezioni spostate", () => {
-    const g = { lang: "it" as const, summary: "Riassunto", sections: [{ heading: "A", body: "Uno" }, { heading: "B", body: "Due" }] };
-    const prev = { hash: "x", at: "2026-09-27T10:00:00Z", parts: G.guidePartHashes(g), guide: { summary: "Summary", sections: [{ heading: "A-en", body: "One" }, { heading: "B-en", body: "Two" }] } };
+    const g = { lang: "it" as const, title: "La mia guida", summary: "Riassunto", sections: [{ heading: "A", body: "Uno" }, { heading: "B", body: "Due" }] };
+    const prev = {
+      hash: "x",
+      at: "2026-09-27T10:00:00Z",
+      parts: G.guidePartHashes(g),
+      title_hash: G.guideTitleHash(g),
+      guide: { title: "My guide", summary: "Summary", sections: [{ heading: "A-en", body: "One" }, { heading: "B-en", body: "Two" }] },
+    };
     const g2 = { ...g, sections: [{ heading: "B", body: "Due" }, { heading: "A", body: "Uno cambiato" }] };
     const plan = G.planGuideTranslation(g2, prev);
+    assert.equal(plan.title, "My guide");
     assert.equal(plan.summary, "Summary");
     assert.deepEqual(plan.sections, [{ heading: "B-en", body: "Two" }, null]);
     assert.deepEqual(plan.chunks, [{ heading_2: "A", body_2: "Uno cambiato" }]);
     assert.deepEqual(G.assembleGuideTranslation(g2, plan, [{ heading_2: "A-en", body_2: "One, changed" }]), {
+      title: "My guide",
       summary: "Summary",
       sections: [
         { heading: "B-en", body: "Two" },
@@ -718,12 +734,15 @@ describe("traduzione a pezzi", () => {
   });
 
   test("riunione: un pezzo mancante dà null; il testo tradotto si pulisce come il database lo accetta", () => {
-    const g = { lang: "it" as const, summary: "Riassunto", sections: [{ heading: "A", body: "Uno" }] };
+    const g = { lang: "it" as const, title: "La mia guida", summary: "Riassunto", sections: [{ heading: "A", body: "Uno" }] };
     const plan = G.planGuideTranslation(g, null);
+    assert.deepEqual(Object.keys(plan.chunks[0]), ["title", "summary", "heading_1", "body_1"], "il titolo per primo");
     assert.equal(G.assembleGuideTranslation(g, plan, []), null);
     assert.equal(G.assembleGuideTranslation(g, plan, [null]), null);
     assert.equal(G.assembleGuideTranslation(g, plan, [{ summary: "Summary", heading_1: "A" }]), null);
-    assert.deepEqual(G.assembleGuideTranslation(g, plan, [{ summary: " Summary\u202e ", heading_1: "Title on\ntwo lines", body_1: "One\r\n\r\n\r\n\r\nTwo" }]), {
+    assert.equal(G.assembleGuideTranslation(g, plan, [{ summary: "Summary", heading_1: "A", body_1: "One" }]), null, "senza il titolo");
+    assert.deepEqual(G.assembleGuideTranslation(g, plan, [{ title: " My\nguide\u202e ", summary: " Summary\u202e ", heading_1: "Title on\ntwo lines", body_1: "One\r\n\r\n\r\n\r\nTwo" }]), {
+      title: "My guide",
       summary: "Summary",
       sections: [{ heading: "Title on two lines", body: "One\n\nTwo" }],
     });
@@ -769,8 +788,11 @@ describe("traduzione a pezzi", () => {
     assert.equal(en.at, "2026-09-27T12:00:00.000Z");
     assert.equal(en.guide.sections.length, 12);
     assert.ok(en.guide.sections.every((s, i) => s.heading === `[English] Sezione ${i + 1}`));
-    // la traduzione salvata vale per la pagina
+    assert.equal(en.guide.title, "[English] Guida di prova");
+    assert.equal(en.title_hash, G.guideTitleHash(g));
+    // la traduzione salvata vale per la pagina, titolo compreso
     assert.ok(G.freshGuideTranslation({ ...g, translations: { en } } as never, "en" as never));
+    assert.equal(G.freshGuideTitle({ ...g, translations: { en } } as never, "en" as never), "[English] Guida di prova");
   });
 
   test("un pezzo che non riesce fa saltare solo quella lingua; al giro dopo si riusa quello che c'era", async () => {
@@ -814,7 +836,54 @@ describe("traduzione a pezzi", () => {
     assert.deepEqual(Object.keys(doc), ["summary", "heading_1", "body_1", "heading_2", "body_2"]);
     assert.deepEqual(G.guideTextFromDoc(doc, 2), text);
     assert.equal(G.guideTextFromDoc({ summary: "x", heading_1: "A" }, 1), null);
+    const titled = G.guideTranslationDoc({ title: "Titolo", ...text });
+    assert.deepEqual(Object.keys(titled), ["title", "summary", "heading_1", "body_1", "heading_2", "body_2"]);
+    assert.deepEqual(G.guideTextFromDoc(titled, 2), { title: "Titolo", ...text });
     assert.deepEqual((T.translationRequestFor(doc, "it", "es", [], T.STRATEGY_GUIDE_TRANSLATION_SYSTEM).output_config.format.schema as { required: string[] }).required, Object.keys(doc));
+  });
+});
+
+describe("titolo tradotto (29/09/2026)", () => {
+  const g = { lang: "es" as const, title: "Merlin: no es magia", summary: "Resumen de la guía.", sections: [{ heading: "Mulligan", body: "Texto" }] };
+  const body = { hash: G.communityGuideHash(g), at: "2026-09-28T22:00:00Z", parts: G.guidePartHashes(g) };
+  const old = { ...body, guide: { summary: "Riassunto della guida.", sections: [{ heading: "Mulligan", body: "Testo" }] } };
+  const withTitle = { ...body, title_hash: G.guideTitleHash(g), guide: { ...old.guide, title: "Merlin: non è magia" } };
+
+  test("una traduzione di prima (senza titolo) resta valida, ma la lingua va completata con il titolo solo", () => {
+    const guide = { ...g, translations: { it: old } };
+    assert.ok(G.freshGuideTranslation(guide, "it"), "riassunto e sezioni valgono ancora");
+    assert.equal(G.freshGuideTitle(guide, "it"), null);
+    assert.deepEqual(G.localizedGuideTitle(guide, "it"), { text: g.title, lang: "es" });
+    assert.deepEqual(G.missingGuideLocales(guide, LOCALES as never), ["en", "it"]);
+    const plan = G.planGuideTranslation(g, old);
+    assert.deepEqual(plan.chunks, [{ title: g.title }], "una richiesta piccola, per il titolo solo");
+    assert.deepEqual(G.assembleGuideTranslation(g, plan, [{ title: "Merlin: non è magia" }]), withTitle.guide);
+  });
+
+  test("titolo tradotto e aggiornato: nella pagina e negli elenchi; cambiato il titolo, torna quello dell'autore", () => {
+    const guide = { ...g, translations: { it: withTitle } };
+    assert.equal(G.freshGuideTitle(guide, "it"), "Merlin: non è magia");
+    assert.deepEqual(G.localizedGuideTitle(guide, "it"), { text: "Merlin: non è magia", lang: "it" });
+    assert.deepEqual(G.localizedGuideTitle(guide, "es"), { text: g.title, lang: "es" }, "la lingua dell'autore");
+    assert.deepEqual(G.missingGuideLocales(guide, LOCALES as never), ["en"]);
+    const renamed = { ...guide, title: "Merlin: la secuencia" };
+    assert.ok(G.freshGuideTranslation(renamed, "it"), "riassunto e sezioni non diventano vecchi");
+    assert.equal(G.freshGuideTitle(renamed, "it"), null);
+    assert.deepEqual(G.missingGuideLocales(renamed, LOCALES as never), ["en", "it"]);
+    assert.deepEqual(G.planGuideTranslation(renamed, withTitle).chunks, [{ title: "Merlin: la secuencia" }]);
+    // elenchi: stessa risposta dalle colonne leggere
+    const item = { ...G.listItemOf({ ...guide, id: "1", slug: "merlin-57f9", owner: "o", category: "decks", cards: [], cover_preset: "keyart-red-wide", status: "published", created_at: "", updated_at: "" } as never) };
+    assert.deepEqual(G.guideShapeTitle(item, "it"), { text: "Merlin: non è magia", lang: "it" });
+    assert.deepEqual(G.guideShapeTitle({ ...item, title: "Merlin: la secuencia" }, "it"), { text: "Merlin: la secuencia", lang: "es" });
+    assert.deepEqual(G.guideShapeTitle(item, "en"), { text: g.title, lang: "es" });
+  });
+
+  test("un titolo tradotto su più righe o troppo lungo non vale (e il database lo rifiuta)", () => {
+    assert.ok(!G.translationTextOk({ ...withTitle.guide, title: "Due\nrighe" }, 1));
+    assert.ok(!G.translationTextOk({ ...withTitle.guide, title: "x".repeat(G.TRANSLATION_LIMITS.titleMax + 1) }, 1));
+    assert.ok(!G.translationTextOk({ ...withTitle.guide, title: "" }, 1));
+    assert.ok(G.translationTextOk(old.guide, 1), "senza titolo sì");
+    assert.equal(G.freshGuideTitle({ ...g, translations: { it: { ...withTitle, guide: { ...withTitle.guide, title: "a\u202eb" } } } }, "it"), null);
   });
 });
 

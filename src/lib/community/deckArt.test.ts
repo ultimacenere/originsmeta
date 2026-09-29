@@ -217,16 +217,17 @@ describe("database: blocco IMMAGINI di supabase/schema.sql", () => {
     assert.ok(stmts.includes("grant execute on function public.profile_media_in_use(text) to authenticated, service_role"));
   });
 
-  test("policy del bucket dopo la migrazione: sono quelle di questo blocco", () => {
+  test("policy del bucket: le regole di questo blocco restano nell'ultima definizione", () => {
+    // le policy di questo blocco le ha rifatte il blocco FUMETTI (29/09/2026): conta l'ultima definizione nello schema
+    one(/create policy "profile media upload"/);
     const upload = lastInSchema(/create policy "profile media upload"/);
     const del = lastInSchema(/create policy "profile media owners delete"/);
-    assert.ok(stmts.some((s) => s.includes(upload)), "l'ultima policy di caricamento è in questo blocco");
-    assert.ok(stmts.some((s) => s.includes(del)), "l'ultima policy di cancellazione è in questo blocco");
     // cancellazione: propria cartella (o admin) e mai un file in uso
     assert.ok(del.includes("((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())"));
     assert.ok(del.includes("and not public.profile_media_in_use(name)"));
     // caricamento: il nome che sceglie il sito (dal testo del file: sqlStatements scrive in minuscolo)
     assert.ok(block.includes(`and storage.filename(name) ~ '${M.MEDIA_UPLOAD_NAME_RE}'`));
+    assert.ok(schema.slice(schema.lastIndexOf('create policy "profile media upload"')).includes(`and storage.filename(name) ~ '${M.MEDIA_UPLOAD_NAME_RE}'`));
     assert.ok(upload.includes("(storage.foldername(name))[1] = auth.uid()::text"));
     assert.doesNotMatch(upload, /metadata/, "niente peso nella policy (lo Storage la prova prima del file)");
   });

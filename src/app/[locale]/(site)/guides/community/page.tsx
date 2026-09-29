@@ -4,7 +4,7 @@ import { href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { dropHreflang, fillLabel } from "@/lib/community/deckQuality";
 import { listPublishedGuides } from "@/lib/community/guideQueries";
-import { guidesIndexableIn } from "@/lib/community/guides";
+import { guideShapeTitle, guidesIndexableIn } from "@/lib/community/guides";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { CommunityGuideCard } from "@/components/guides/CommunityGuideList";
@@ -59,7 +59,7 @@ export default async function CommunityGuidesPage({ params }: { params: LocalePa
                   path,
                   name: L.listPage.title,
                   description: L.listPage.description,
-                  items: guides.map((g) => ({ name: g.title, path: href(locale, `/guides/community/${g.slug}`) })),
+                  items: guides.map((g) => ({ name: guideShapeTitle(g, locale).text, path: href(locale, `/guides/community/${g.slug}`) })),
                   about: videoGameId,
                 }),
               ]

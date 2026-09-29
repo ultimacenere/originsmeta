@@ -72,7 +72,7 @@ const en = {
   unavailable: "Community guides are not available yet: try again in a few minutes.",
   editor: {
     title: "Title",
-    titleHint: "{min}–{max} characters. The title is not translated: write it the way you want it in every language.",
+    titleHint: "{min}–{max} characters. The site translates it into the other languages together with the rest of the guide; card names stay in English.",
     titlePlaceholder: "E.g. Dorothy Combo: mulligan, matchups and the turns that matter",
     lang: "Language of the guide",
     langHint: "The site translates the guide into the other two languages after you publish it.",
@@ -267,7 +267,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
     unavailable: "Le guide della community non sono ancora disponibili: riprova tra qualche minuto.",
     editor: {
       title: "Titolo",
-      titleHint: "{min}–{max} caratteri. Il titolo non si traduce: scrivilo come lo vuoi in tutte le lingue.",
+      titleHint: "{min}–{max} caratteri. Il sito lo traduce nelle altre lingue insieme al resto della guida; i nomi delle carte restano in inglese.",
       titlePlaceholder: "Es. Dorothy Combo: mulligan, matchup e i turni che contano",
       lang: "Lingua della guida",
       langHint: "Il sito traduce la guida nelle altre due lingue dopo la pubblicazione.",
@@ -450,7 +450,7 @@ export const communityGuideLabels: Record<Locale, CommunityGuideLabels> = {
     unavailable: "Las guías de la comunidad todavía no están disponibles: vuelve a intentarlo en unos minutos.",
     editor: {
       title: "Título",
-      titleHint: "De {min} a {max} caracteres. El título no se traduce: escríbelo como lo quieres en todos los idiomas.",
+      titleHint: "De {min} a {max} caracteres. El sitio lo traduce a los otros idiomas junto con el resto de la guía; los nombres de las cartas se quedan en inglés.",
       titlePlaceholder: "Ej.: Dorothy Combo: mulligan, matchups y los turnos que importan",
       lang: "Idioma de la guía",
       langHint: "El sitio traduce la guía a los otros dos idiomas después de publicarla.",

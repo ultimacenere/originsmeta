@@ -8,6 +8,7 @@ import type { DeckTranslations } from "@/lib/community/deckTranslation";
 import type { Locale } from "@/lib/i18n";
 import type { DeckLink, StoredVideo } from "@/lib/videos";
 import type { CommunityGuideTranslations } from "@/lib/community/guides";
+import type { ComicTranslations } from "@/lib/community/comics";
 
 export type ProfileRow = {
   id: string;
@@ -146,6 +147,30 @@ export type CommunityGuideInsert = Pick<CommunityGuideRow, "slug" | "owner" | "l
 export type CommunityGuideUpdate = Partial<
   Pick<CommunityGuideRow, "lang" | "title" | "summary" | "sections" | "category" | "cards" | "videos" | "links" | "cover_preset" | "cover_path" | "status" | "translations" | "words" | "text_hash">
 >;
+/* fumetti dei Creator pubblicati come news (pacchetto FUMETTI, 29/09/2026, blocco FUMETTI di supabase/schema.sql): regole in src/lib/community/comics.ts */
+export type CommunityComicRow = {
+  id: string;
+  slug: string;
+  owner: string;
+  lang: Locale;
+  title: string;
+  summary: string;
+  /** tavole: file nella cartella `<owner>/comic/` del bucket profile-media, misure e testo */
+  pages: { path: string; width: number; height: number; text: string }[];
+  cover_path: string | null;
+  status: "draft" | "published" | "hidden";
+  translations: ComicTranslations;
+  text_hash: string | null;
+  created_at: string;
+  updated_at: string;
+  /** prima pubblicazione: la scrive solo il trigger guard_community_comic */
+  published_at: string | null;
+};
+/** Le colonne con la grant di insert; date, id e traduzioni no. */
+export type CommunityComicInsert = Pick<CommunityComicRow, "slug" | "owner" | "lang" | "title"> &
+  Partial<Pick<CommunityComicRow, "summary" | "pages" | "cover_path" | "status" | "text_hash">>;
+/** Le colonne con la grant di update: mai slug, owner, id e date. */
+export type CommunityComicUpdate = Partial<Pick<CommunityComicRow, "lang" | "title" | "summary" | "pages" | "cover_path" | "status" | "translations" | "text_hash">>;
 /** `first_in_day`: prima segnalazione della guida nelle 24 ore (la scrive il trigger; solo allora il sito avvisa lo staff) */
 export type CommunityGuideReportRow = { id: number; guide_id: string; user_id: string; reason: string; created_at: string; first_in_day: boolean };
 
@@ -248,7 +273,7 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published";
   actor_id: string;
   /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente> */
   target: string;
@@ -390,6 +415,20 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "community_guides_owner_fkey";
+            columns: ["owner"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_comics: {
+        Row: CommunityComicRow;
+        Insert: CommunityComicInsert;
+        Update: CommunityComicUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "community_comics_owner_fkey";
             columns: ["owner"];
             isOneToOne: false;
             referencedRelation: "profiles";
@@ -623,7 +662,7 @@ export type Database = {
        * avviso ai follower dell'autore (p_actor, assente = chi chiama) per un mazzo o una guida appena pubblicati: la riga
        * deve essere pubblicata e sua, chi chiama deve essere l'autore o lo staff; restituisce i destinatari
        */
-      notify_followers: { Args: { p_kind: "deck_published" | "guide_published"; p_target: string; p_actor?: string | null }; Returns: number };
+      notify_followers: { Args: { p_kind: "deck_published" | "guide_published" | "comic_published"; p_target: string; p_actor?: string | null }; Returns: number };
       /** avviso di diretta, dal cron (anon) con il segreto CRON_SECRET; restituisce i destinatari */
       notify_live: { Args: { p_key: string; p_actor: string; p_stream_id: string }; Returns: number };
       /** pulizia degli avvisi scaduti (90 giorni) e del registro degli invii (180), dal cron con il segreto CRON_SECRET */
@@ -661,6 +700,10 @@ export type Database = {
       profile_public_stats: { Args: { pid: string }; Returns: { decks: number; views: number; code_copies: number; votes: number; since: string | null }[] };
       /* guide della community (blocco GUIDE di supabase/schema.sql): permesso e vincoli; il sito non le chiama direttamente */
       can_publish_guides: { Args: { uid: string }; Returns: boolean };
+      /* fumetti (blocco FUMETTI di supabase/schema.sql): permesso e controlli; il sito non le chiama direttamente */
+      can_publish_comics: { Args: { uid: string }; Returns: boolean };
+      /** file dell'utente collegato in una sua cartella del bucket profile-media (tetto della cartella dei fumetti) */
+      profile_media_count_in: { Args: { folder: string }; Returns: number };
       community_guide_text_ok: { Args: { t: string; minlen: number; maxlen: number; multiline: boolean }; Returns: boolean };
       community_guide_sections_ok: { Args: { s: { heading: string; body: string }[]; complete: boolean }; Returns: boolean };
       community_guide_cards_ok: { Args: { c: string[] }; Returns: boolean };

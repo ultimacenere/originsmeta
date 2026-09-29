@@ -39,8 +39,8 @@ community" (kicker e briciole come le altre guide); gli indirizzi restano `/guid
 - **Permesso**: `canPublishGuides` in `badges.ts` e `can_publish_guides(uid)` nel database dicono la stessa cosa (lo
   controllano `badges.test.ts`, già in `npm test`, e `guides.test.ts`). Insert e update passano solo con quella
   funzione vera; lo staff aggiorna anche le guide altrui (per nasconderle o correggerle).
-- **Testo semplice**, mai Markdown né HTML: titolo 10-110 caratteri su una riga (non si traduce, come il nome di un
-  mazzo), riassunto 120-300, da 1 a 12 sezioni con titolo (fino a 80) e testo (fino a 4000). Una bozza si salva anche
+- **Testo semplice**, mai Markdown né HTML: titolo 10-110 caratteri su una riga (si traduce dal 29/09/2026, vedi
+  "Traduzioni"), riassunto 120-300, da 1 a 12 sezioni con titolo (fino a 80) e testo (fino a 4000). Una bozza si salva anche
   a metà. I nomi delle carte diventano link da soli (`CardMentions`). Niente caratteri di controllo, segni di
   direzione, invisibili e riempitivi (Hangul U+3164 e simili, Braille vuoto: un titolo fatto solo di quelli sembra
   vuoto); al massimo una riga vuota di fila, anche se "vuota" di spazi Unicode. Le stesse regole nel codice
@@ -79,8 +79,17 @@ community" (kicker e briciole come le altre guide); gli indirizzi restano `/guid
   toglie `node scripts/clear-profile-media.mjs --orphans`, e lo staff toglie le copertine caricate di un utente con
   `--guide-covers`.
 - **Video e risorse**: le regole dei mazzi (fino a 3 video YouTube/Twitch col lettore a clic, fino a 5 link su host ammessi).
-- **Traduzioni**: stesso modello, stessa chiave e stesso glossario delle guide dei mazzi; titolo e nomi di carte e luoghi
-  non si traducono. Una guida arriva a circa 49 mila caratteri, quindi si traduce a pezzi di 8000 caratteri (una
+- **Traduzioni**: stesso modello, stessa chiave e stesso glossario delle guide dei mazzi; i nomi di carte e luoghi non si
+  traducono. **Il titolo si traduce dal 29/09/2026** (Pierluigi, sulla guida di Vega: "non è tradotto il titolo"; prima
+  restava nella lingua dell'autore, come il nome di un mazzo): viaggia nel campo `title` del primo pezzo e la traduzione
+  salvata lo tiene in `guide.title` con l'impronta del titolo da cui è fatto, `title_hash` (`guideTitleHash`), separata
+  da quella del testo (`communityGuideHash`, che resta riassunto e sezioni). Così le traduzioni fatte prima restano
+  valide e si completano con una richiesta piccola, per il titolo solo, e un titolo corretto non rende vecchi riassunto
+  e sezioni. H1, title della pagina, dati strutturati, briciole, schede degli elenchi (colonne leggere `tr_<lingua>_title`
+  e `tr_<lingua>_title_hash`) mostrano il titolo tradotto quando è aggiornato (`localizedGuideTitle`,
+  `guideShapeTitle`), altrimenti quello dell'autore con la sua lingua; l'indicizzazione dipende solo da riassunto e
+  sezioni, come prima. Database: blocco `-- ===== 29/09/2026: TITOLI TRADOTTI =====` (le due chiavi facoltative, ma
+  sempre insieme). Una guida arriva a circa 49 mila caratteri, quindi si traduce a pezzi di 8000 caratteri (una
   richiesta per pezzo, `max_tokens` dalla lunghezza, quattro richieste alla volta) e si riusano le parti già tradotte e
   rimaste uguali (impronte `parts`): una correzione ritraduce solo la sezione toccata. Le pagine di scrittura hanno
   `maxDuration = 300`. Le traduzioni si scrivono con la sessione del proprietario; il trigger le ricontrolla (lingua
@@ -105,11 +114,17 @@ community" (kicker e briciole come le altre guide); gli indirizzi restano `/guid
 4. Copertine caricate (29/09/2026): blocco `-- ===== 29/09/2026: IMMAGINI =====`, in fondo al file, con la stessa
    migrazione. Prima, il bucket rifiuta i file della cartella `guide` e il modulo dice che il caricamento non è riuscito;
    le copertine del media kit funzionano come sempre.
+5. Titoli tradotti (29/09/2026): blocco `-- ===== 29/09/2026: TITOLI TRADOTTI =====`, in fondo al file. Si migra prima
+   del deploy: il codice nuovo con il database di prima vede rifiutate (e lasciate perdere, senza errori per chi scrive)
+   le traduzioni con il titolo; il codice di prima con il database nuovo funziona come sempre. Dopo il deploy le guide
+   già pubblicate prendono il titolo tradotto al primo salvataggio (dell'autore o dello staff, anche senza cambiare
+   nulla: la traduzione parte a ogni salvataggio di una guida pubblicata) o con `node scripts/translate-guides.mjs`.
 
 ## Traduzioni non riuscite
 
-`node scripts/translate-guides.mjs --dry-run` elenca le guide pubblicate con lingue mancanti e quanto testo va tradotto;
-senza opzioni traduce (serve `ANTHROPIC_API_KEY`) e salva, solo se il testo non è cambiato nel frattempo. `--only <slug>`
+`node scripts/translate-guides.mjs --dry-run` elenca le guide pubblicate con lingue mancanti (anche solo il titolo) e
+quanto testo va tradotto; senza opzioni traduce (serve `ANTHROPIC_API_KEY`, che oggi sta solo su Vercel: va passata come
+variabile d'ambiente) e salva, solo se il testo non è cambiato nel frattempo. `--only <slug>`
 per una guida, `--redo it,es` per rifare da capo le traduzioni valide dopo un cambio del prompt.
 
 ## Moderazione

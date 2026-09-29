@@ -7,6 +7,7 @@ import { parseStoredLinks } from "@/lib/community/profileLinks";
 import { SHOWCASE_BADGES, isShowcaseBadge } from "@/lib/community/badges";
 import { listedInDirectory } from "@/lib/community/creatorDirectory";
 import { listGuideIndex } from "@/lib/community/guideQueries";
+import { listComicIndex } from "@/lib/community/comicQueries";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -64,7 +65,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 7; // 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026)
+export const SITEMAP_DATA_VERSION = 8; // 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -159,7 +160,7 @@ async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> 
  * sito acceso come le altre letture.
  */
 async function readCommunity(): Promise<CommunityData> {
-  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides] = await Promise.all([
+  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides, communityComics] = await Promise.all([
     listPublishedDeckIndex(),
     tournamentSlugs(),
     listPublicProfiles(),
@@ -168,8 +169,10 @@ async function readCommunity(): Promise<CommunityData> {
     showcaseDates(),
     // guide della community (pacchetto GUIDE, 27/09/2026): tabella mancante = nessuna guida, ogni altro errore lancia
     listGuideIndex(),
+    // fumetti dei creator (pacchetto FUMETTI, 29/09/2026): come le guide
+    listComicIndex(),
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

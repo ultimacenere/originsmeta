@@ -59,11 +59,12 @@ const DISCORD_AVATAR = new RegExp(DISCORD_AVATAR_RE);
 
 /**
  * Le cartelle di un utente nel bucket: foto profilo, copertina e sfondo della vetrina (27/09/2026) e, dal 29/09/2026, le
- * copertine delle guide (`guide`, chi pubblica guide) e l'artwork dei mazzi (`deck`, Creator e Staff). La policy di
- * caricamento e quella di cancellazione le conoscono tutte (blocco IMMAGINI di supabase/schema.sql).
+ * copertine delle guide (`guide`, chi pubblica guide) e l'artwork dei mazzi (`deck`, Creator e Staff); dal pacchetto
+ * FUMETTI (29/09/2026) tavole e copertine dei fumetti (`comic`, Creator e Staff, con un tetto suo). La policy di
+ * caricamento e quella di cancellazione le conoscono tutte (blocchi IMMAGINI e FUMETTI di supabase/schema.sql).
  */
-export type MediaKind = "avatar" | "cover" | "background" | "guide" | "deck";
-export const MEDIA_KINDS: readonly MediaKind[] = ["avatar", "cover", "background", "guide", "deck"];
+export type MediaKind = "avatar" | "cover" | "background" | "guide" | "deck" | "comic";
+export const MEDIA_KINDS: readonly MediaKind[] = ["avatar", "cover", "background", "guide", "deck", "comic"];
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 

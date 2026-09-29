@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { locales } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { getPublishedGuide } from "@/lib/community/guideQueries";
-import { communityGuideCover, communityGuideIndexing } from "@/lib/community/guides";
+import { communityGuideCover, communityGuideIndexing, localizedGuideTitle } from "@/lib/community/guides";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
@@ -35,7 +35,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const indexing = communityGuideIndexing(guide, locales, locale);
   // og:image = la copertina della guida (caricata dall'autore o del media kit), con le sue misure: ogni guida ha la sua immagine social
   const cover = communityGuideCover(guide, supabaseUrl);
-  const meta = pageMeta(locale, `/guides/community/${guide.slug}`, pageTitleWith(guide.title, L.page.metaSuffix), guideDescription(guide, locale), cover.src, {
+  // il title nella lingua della pagina quando il titolo è tradotto (dal 29/09/2026), come l'H1
+  const title = localizedGuideTitle(guide, locale).text;
+  const meta = pageMeta(locale, `/guides/community/${guide.slug}`, pageTitleWith(title, L.page.metaSuffix), guideDescription(guide, locale), cover.src, {
     imageSize: { width: cover.width, height: cover.height },
     type: "article",
     published: guide.published_at ?? guide.created_at,

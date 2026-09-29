@@ -27,7 +27,7 @@ const en = {
   },
   notifications: {
     title: "Notifications",
-    intro: "News from the profiles you follow: new decks, new guides and Twitch streams with Origins TCG. We keep them for 90 days.",
+    intro: "News from the profiles you follow: new decks, guides and comics, and Twitch streams with Origins TCG. We keep them for 90 days.",
     unreadOne: "1 new notification.",
     unreadMany: "{n} new notifications.",
     /** in cima a /account/messages, link alla sezione in fondo alla pagina */
@@ -36,7 +36,7 @@ const en = {
     markAll: "Mark all as read",
     marking: "Marking…",
     newBadge: "New",
-    kinds: { deck_published: "Deck", live: "Live", guide_published: "Guide" } satisfies Record<NotificationKind, string>,
+    kinds: { deck_published: "Deck", live: "Live", guide_published: "Guide", comic_published: "Comic" } satisfies Record<NotificationKind, string>,
     /** {name} = chi ha pubblicato o è in diretta, {deck} = nome del mazzo */
     deckPublished: "{name} published a deck: {deck}",
     deckGone: "{name} published a deck that is no longer online",
@@ -44,6 +44,9 @@ const en = {
     /** {guide} = titolo della guida */
     guidePublished: "{name} published a guide: {guide}",
     guideGone: "{name} published a guide that is no longer online",
+    /** {comic} = titolo del fumetto (pacchetto FUMETTI, 29/09/2026) */
+    comicPublished: "{name} published a comic: {comic}",
+    comicGone: "{name} published a comic that is no longer online",
     /** quando il profilo di chi ha fatto la cosa non si legge */
     someone: "A profile you follow",
     empty: "No notifications yet. Follow Creators and Authors to know when they publish a deck or go live.",
@@ -79,7 +82,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
     },
     notifications: {
       title: "Notifiche",
-      intro: "Le novità dei profili che segui: mazzi nuovi, guide nuove e dirette su Twitch con Origins TCG. Le teniamo per 90 giorni.",
+      intro: "Le novità dei profili che segui: mazzi, guide e fumetti nuovi e dirette su Twitch con Origins TCG. Le teniamo per 90 giorni.",
       unreadOne: "1 notifica nuova.",
       unreadMany: "{n} notifiche nuove.",
       jumpOne: "1 notifica nuova dai profili che segui",
@@ -87,12 +90,14 @@ export const followLabels: Record<Locale, FollowLabels> = {
       markAll: "Segna tutte come lette",
       marking: "Un momento…",
       newBadge: "Nuova",
-      kinds: { deck_published: "Mazzo", live: "Diretta", guide_published: "Guida" },
+      kinds: { deck_published: "Mazzo", live: "Diretta", guide_published: "Guida", comic_published: "Fumetto" },
       deckPublished: "{name} ha pubblicato un mazzo: {deck}",
       deckGone: "{name} ha pubblicato un mazzo che non è più online",
       live: "{name} ha avviato una diretta su Twitch con Origins TCG",
       guidePublished: "{name} ha pubblicato una guida: {guide}",
       guideGone: "{name} ha pubblicato una guida che non è più online",
+      comicPublished: "{name} ha pubblicato un fumetto: {comic}",
+      comicGone: "{name} ha pubblicato un fumetto che non è più online",
       someone: "Un profilo che segui",
       empty: "Nessuna notifica per ora. Segui Creator e Autori per sapere quando pubblicano un mazzo o vanno in diretta.",
       browse: "Scopri Creator e Autori",
@@ -121,7 +126,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
     },
     notifications: {
       title: "Notificaciones",
-      intro: "Las novedades de los perfiles que sigues: mazos nuevos, guías nuevas y directos en Twitch con Origins TCG. Las guardamos durante 90 días.",
+      intro: "Las novedades de los perfiles que sigues: mazos, guías y cómics nuevos, y directos en Twitch con Origins TCG. Las guardamos durante 90 días.",
       unreadOne: "1 notificación nueva.",
       unreadMany: "{n} notificaciones nuevas.",
       jumpOne: "1 notificación nueva de los perfiles que sigues",
@@ -129,12 +134,14 @@ export const followLabels: Record<Locale, FollowLabels> = {
       markAll: "Marcar todas como leídas",
       marking: "Un momento…",
       newBadge: "Nueva",
-      kinds: { deck_published: "Mazo", live: "Directo", guide_published: "Guía" },
+      kinds: { deck_published: "Mazo", live: "Directo", guide_published: "Guía", comic_published: "Cómic" },
       deckPublished: "{name} publicó un mazo: {deck}",
       deckGone: "{name} publicó un mazo que ya no está en línea",
       live: "{name} empezó un directo en Twitch con Origins TCG",
       guidePublished: "{name} publicó una guía: {guide}",
       guideGone: "{name} publicó una guía que ya no está en línea",
+      comicPublished: "{name} publicó un cómic: {comic}",
+      comicGone: "{name} publicó un cómic que ya no está en línea",
       someone: "Un perfil que sigues",
       empty: "Todavía no hay notificaciones. Sigue a Creators y Autores para saber cuándo publican un mazo o empiezan un directo.",
       browse: "Descubre Creators y Autores",

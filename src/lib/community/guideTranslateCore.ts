@@ -30,7 +30,7 @@ import {
  * tentativi) e i test (guides.test.ts, con un client finto).
  */
 
-export type GuideSource = { lang: Locale; summary: string; sections: GuideSectionText[]; translations?: CommunityGuideTranslations | null };
+export type GuideSource = { lang: Locale; title: string; summary: string; sections: GuideSectionText[]; translations?: CommunityGuideTranslations | null };
 
 /** Richieste all'API in corso insieme, per una guida (tutte le lingue). */
 export const TRANSLATION_CONCURRENCY = 4;
@@ -93,7 +93,8 @@ export async function translateGuideText(
     const text = assembleGuideTranslation(g, plan, mine.map((r) => r?.doc ?? null));
     if (!text) continue;
     const model = mine.find((r) => r?.model)?.model ?? g.translations?.[to]?.model ?? TRANSLATION_MODEL;
-    out[to] = { hash, at: opts.now ? opts.now() : new Date().toISOString(), model, parts: plan.parts, guide: text };
+    // `title_hash` solo con il titolo tradotto: il database vuole le due chiavi insieme (blocco TITOLI TRADOTTI)
+    out[to] = { hash, at: opts.now ? opts.now() : new Date().toISOString(), model, parts: plan.parts, ...(text.title !== undefined ? { title_hash: plan.titleHash } : {}), guide: text };
   }
   return out;
 }

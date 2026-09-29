@@ -151,10 +151,11 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 
-  test("guide della community: stesse regole e glossario, titolo fuori dal testo", () => {
+  test("guide della community: stesse regole e glossario, titolo tradotto dal 29/09/2026", () => {
     assert.ok(STRATEGY_GUIDE_TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /heading_N/);
-    assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
+    assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /"title" is the title of the guide/);
+    assert.doesNotMatch(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
     assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar/);
   });
 

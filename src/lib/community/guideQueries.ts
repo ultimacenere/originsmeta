@@ -38,8 +38,16 @@ import {
 const AUTHOR = "profile:profiles!community_guides_owner_fkey(username, display_name, avatar_url, badge)";
 /** Colonne di base di una voce di elenco (le stesse per la sitemap, senza l'autore). */
 const BASE_COLUMNS = "id, slug, owner, lang, title, summary, category, cover_preset, cover_path, status, words, text_hash, created_at, updated_at, published_at";
-/** Di ogni traduzione solo impronta, data e riassunto: `tr_it_hash`, `tr_it_at`, `tr_it_summary`… */
-const TRANSLATION_COLUMNS = locales.map((l) => `tr_${l}_hash:translations->${l}->>hash, tr_${l}_at:translations->${l}->>at, tr_${l}_summary:translations->${l}->guide->>summary`).join(", ");
+/**
+ * Di ogni traduzione solo impronta, data, riassunto e titolo con la sua impronta (dal 29/09/2026 il titolo si traduce):
+ * `tr_it_hash`, `tr_it_at`, `tr_it_summary`, `tr_it_title`, `tr_it_title_hash`…
+ */
+const TRANSLATION_COLUMNS = locales
+  .map(
+    (l) =>
+      `tr_${l}_hash:translations->${l}->>hash, tr_${l}_at:translations->${l}->>at, tr_${l}_summary:translations->${l}->guide->>summary, tr_${l}_title:translations->${l}->guide->>title, tr_${l}_title_hash:translations->${l}->>title_hash`,
+  )
+  .join(", ");
 const LIST_COLUMNS = `${BASE_COLUMNS}, ${TRANSLATION_COLUMNS}, ${AUTHOR}`;
 const INDEX_COLUMNS = `${BASE_COLUMNS}, ${TRANSLATION_COLUMNS}`;
 /** Una guida intera (pagina pubblica e modifica). */
@@ -102,7 +110,7 @@ export function toGuide(row: Row): CommunityGuide {
 export function toListItem(row: Row): CommunityGuideListItem {
   const tr: Partial<Record<Locale, GuideListTranslation>> = {};
   for (const l of locales) {
-    const t = { hash: str(row[`tr_${l}_hash`]), at: str(row[`tr_${l}_at`]), summary: str(row[`tr_${l}_summary`]) };
+    const t = { hash: str(row[`tr_${l}_hash`]), at: str(row[`tr_${l}_at`]), summary: str(row[`tr_${l}_summary`]), title: str(row[`tr_${l}_title`]), title_hash: str(row[`tr_${l}_title_hash`]) };
     if (t.hash || t.summary) tr[l] = t;
   }
   return {

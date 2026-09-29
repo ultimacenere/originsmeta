@@ -124,14 +124,20 @@ export const COMMUNITY_GUIDE_MIN_WORDS = 300;
 
 export type CommunityGuideStatus = "draft" | "published" | "hidden";
 export type GuideSectionText = { heading: string; body: string };
-/** Il testo che si traduce: riassunto e sezioni (il titolo no, come il nome di un mazzo). */
-export type CommunityGuideText = { summary: string; sections: GuideSectionText[] };
 /**
- * Una traduzione salvata: `hash` è l'impronta del testo originale da cui è fatta (`communityGuideHash`), `parts` le
- * impronte delle sue parti (riassunto, poi ogni sezione: `guidePartHashes`), così una modifica ritraduce solo le parti
- * cambiate.
+ * Il testo che si traduce: riassunto e sezioni e, dal 29/09/2026, il titolo (Pierluigi, sulla guida di Vega: "non è
+ * tradotto il titolo"; prima restava nella lingua dell'autore, come il nome di un mazzo). Il titolo è facoltativo perché
+ * le traduzioni fatte prima non lo hanno.
  */
-export type CommunityGuideTranslation = { hash: string; at: string; model?: string; parts?: string[]; guide: CommunityGuideText };
+export type CommunityGuideText = { title?: string; summary: string; sections: GuideSectionText[] };
+/**
+ * Una traduzione salvata: `hash` è l'impronta del testo originale da cui è fatta (`communityGuideHash`: riassunto e
+ * sezioni), `parts` le impronte delle sue parti (riassunto, poi ogni sezione: `guidePartHashes`), così una modifica
+ * ritraduce solo le parti cambiate; `title_hash` l'impronta del titolo da cui è fatto `guide.title` (`guideTitleHash`).
+ * Il titolo ha un'impronta sua così le traduzioni fatte prima del 29/09/2026 restano valide e si traduce solo il titolo,
+ * e un titolo corretto non rende vecchi riassunto e sezioni.
+ */
+export type CommunityGuideTranslation = { hash: string; at: string; model?: string; parts?: string[]; title_hash?: string; guide: CommunityGuideText };
 export type CommunityGuideTranslations = Partial<Record<Locale, CommunityGuideTranslation>>;
 
 type Author = { username: string | null; display_name: string | null; avatar_url: string | null; badge?: string | null };
@@ -361,6 +367,7 @@ export function guideTableMissing(error: { code?: string; message?: string } | n
 
 type WithText = { summary: string; sections: readonly GuideSectionText[] };
 type WithLang = WithText & { lang: Locale; translations?: CommunityGuideTranslations | null };
+type WithTitle = WithLang & { title: string };
 
 /** Parole della guida originale: riassunto più titoli e testi delle sezioni (il titolo della guida no). */
 export function communityGuideWords(g: WithText): number {
@@ -373,11 +380,16 @@ export function readMinutes(words: number): number {
 }
 
 /**
- * Impronta del testo originale (lingua compresa, titolo escluso: non si traduce). Il sito la salva in `text_hash`
- * insieme al testo, così gli elenchi sanno quali traduzioni sono aggiornate senza leggere le sezioni.
+ * Impronta del testo originale (lingua compresa, titolo escluso: ha un'impronta sua, `guideTitleHash`). Il sito la salva
+ * in `text_hash` insieme al testo, così gli elenchi sanno quali traduzioni sono aggiornate senza leggere le sezioni.
  */
 export function communityGuideHash(g: Pick<WithLang, "lang" | "summary" | "sections">): string {
   return textHash([g.lang, g.summary, ...g.sections.flatMap((s) => [s.heading, s.body])]);
+}
+
+/** Impronta del titolo originale (lingua compresa): il titolo tradotto vale solo se è fatto da questo titolo. */
+export function guideTitleHash(g: { lang: Locale; title: string }): string {
+  return textHash([g.lang, "title", g.title]);
 }
 
 /** Lunghezza massima di un testo tradotto: 2,5 volte l'originale più 200, la tolleranza di `parseTranslation`. */
@@ -385,19 +397,25 @@ const translatedMax = (max: number) => Math.ceil(max * 2.5) + 200;
 
 /** Massimi di una traduzione salvata, uguali a `community_guide_translation_ok` nel database (il test li confronta). */
 export const TRANSLATION_LIMITS = {
+  titleMax: translatedMax(GUIDE_LIMITS.titleMax),
   summaryMax: translatedMax(GUIDE_LIMITS.summaryMax),
   headingMax: translatedMax(GUIDE_LIMITS.headingMax),
   bodyMax: translatedMax(GUIDE_LIMITS.bodyMax),
 } as const;
 
+/** Un titolo tradotto valido: una riga di testo semplice, fino a `TRANSLATION_LIMITS.titleMax`. */
+const translatedTitleOk = (t: unknown): t is string => typeof t === "string" && plainTextOk(t, 1, TRANSLATION_LIMITS.titleMax, false);
+
 /**
  * Il testo di una traduzione rispetta le regole del testo semplice (come l'originale, con i massimi di
  * `TRANSLATION_LIMITS`) e ha `sections` sezioni? Una traduzione scritta via API con segni di direzione, invisibili,
- * titoli su più righe o testi enormi non vale, e la pagina mostra l'originale (il database la rifiuta comunque).
+ * titoli su più righe o testi enormi non vale, e la pagina mostra l'originale (il database la rifiuta comunque). Il
+ * titolo può mancare (traduzioni di prima del 29/09/2026); se c'è, deve essere valido anche lui.
  */
 export function translationTextOk(t: unknown, sections: number): t is CommunityGuideText {
   if (!t || typeof t !== "object") return false;
-  const x = t as { summary?: unknown; sections?: unknown };
+  const x = t as { title?: unknown; summary?: unknown; sections?: unknown };
+  if (x.title !== undefined && !translatedTitleOk(x.title)) return false;
   if (typeof x.summary !== "string" || !plainTextOk(x.summary, 1, TRANSLATION_LIMITS.summaryMax, true)) return false;
   if (!Array.isArray(x.sections) || x.sections.length !== sections) return false;
   return x.sections.every(
@@ -413,6 +431,7 @@ export function translationTextOk(t: unknown, sections: number): t is CommunityG
 export function cleanTranslation(t: CommunityGuideText): CommunityGuideText {
   const L = TRANSLATION_LIMITS;
   return {
+    ...(t.title !== undefined ? { title: cleanPlain(t.title, L.titleMax, false) } : {}),
     summary: cleanPlain(t.summary, L.summaryMax, true),
     sections: t.sections.map((s) => ({ heading: cleanPlain(s.heading, L.headingMax, false), body: cleanPlain(s.body, L.bodyMax, true) })),
   };
@@ -426,9 +445,19 @@ export function freshGuideTranslation(g: WithLang, locale: Locale): CommunityGui
   return translationTextOk(t.guide, g.sections.length) ? t : null;
 }
 
-/** Le lingue da tradurre (mancanti o rimaste indietro rispetto al testo). */
-export function missingGuideLocales(g: WithLang, all: readonly Locale[]): Locale[] {
-  return all.filter((l) => l !== g.lang && freshGuideTranslation(g, l) === null);
+/**
+ * Il titolo tradotto in `locale`, solo con la traduzione aggiornata (riassunto e sezioni) e fatto dal titolo attuale
+ * (`title_hash`); altrimenti null e si mostra il titolo dell'autore.
+ */
+export function freshGuideTitle(g: WithTitle, locale: Locale): string | null {
+  const t = freshGuideTranslation(g, locale);
+  if (!t || t.title_hash !== guideTitleHash(g)) return null;
+  return translatedTitleOk(t.guide.title) ? t.guide.title : null;
+}
+
+/** Le lingue da tradurre: senza traduzione aggiornata, o con il titolo che manca o è rimasto indietro. */
+export function missingGuideLocales(g: WithTitle, all: readonly Locale[]): Locale[] {
+  return all.filter((l) => l !== g.lang && (freshGuideTranslation(g, l) === null || freshGuideTitle(g, l) === null));
 }
 
 /** Il testo da mostrare nella pagina in `locale`: tradotto quando si può, altrimenti l'originale. */
@@ -438,10 +467,16 @@ export function localizedCommunityGuide(g: WithLang, locale: Locale): { text: Co
   return { text: { summary: g.summary, sections: [...g.sections] }, lang: g.lang, translated: false };
 }
 
+/** Il titolo da mostrare in `locale` (H1, title della pagina, dati strutturati): tradotto quando si può, con la sua lingua. */
+export function localizedGuideTitle(g: WithTitle, locale: Locale): { text: string; lang: Locale } {
+  const t = freshGuideTitle(g, locale);
+  return t ? { text: t, lang: locale } : { text: g.title, lang: g.lang };
+}
+
 // ——— Indicizzazione: la stessa regola per la pagina, gli elenchi e la sitemap ———
 
-/** Una traduzione vista dagli elenchi: impronta, data e riassunto (le sezioni no). */
-export type GuideListTranslation = { hash: string | null; at: string | null; summary: string | null };
+/** Una traduzione vista dagli elenchi: impronta, data, riassunto e titolo con la sua impronta (le sezioni no). */
+export type GuideListTranslation = { hash: string | null; at: string | null; summary: string | null; title?: string | null; title_hash?: string | null };
 
 /**
  * Quello che serve per decidere dove una guida si indicizza, senza sezioni né traduzioni intere: parole e impronta
@@ -479,7 +514,7 @@ export function indexShapeOf(g: WithLang & { status?: string }): GuideIndexShape
   const tr: Partial<Record<Locale, GuideListTranslation>> = {};
   for (const l of GUIDE_LANGS) {
     const t = freshGuideTranslation(g, l);
-    if (t) tr[l] = { hash: t.hash, at: t.at ?? null, summary: t.guide.summary };
+    if (t) tr[l] = { hash: t.hash, at: t.at ?? null, summary: t.guide.summary, title: t.guide.title ?? null, title_hash: t.title_hash ?? null };
   }
   return { lang: g.lang, status: g.status, words: communityGuideWords(g), text_hash: communityGuideHash(g), tr };
 }
@@ -545,6 +580,15 @@ export function communityGuideIndexable(g: WithText & { status?: string }): bool
 export function guideShapeSummary(g: GuideIndexShape & { summary: string }, locale: Locale): { text: string; lang: Locale } {
   const t = listTranslation(g, locale);
   return t && t.summary !== null ? { text: t.summary, lang: locale } : { text: g.summary, lang: g.lang };
+}
+
+/**
+ * Il titolo di una voce nella lingua della pagina: quello tradotto se la traduzione è aggiornata e fatta dal titolo
+ * attuale (`guideTitleHash`), come nella pagina della guida (`localizedGuideTitle`); altrimenti quello dell'autore.
+ */
+export function guideShapeTitle(g: GuideIndexShape & { title: string }, locale: Locale): { text: string; lang: Locale } {
+  const t = listTranslation(g, locale);
+  return t && t.title_hash === guideTitleHash(g) && translatedTitleOk(t.title) ? { text: t.title, lang: locale } : { text: g.title, lang: g.lang };
 }
 
 /** La data più recente fra quelle date (confronto per istante, non per stringa); undefined se non ce n'è. */
@@ -616,9 +660,9 @@ export function sitemapCommunityGuides<R extends Dated & { slug: string; owner?:
 
 // ——— Traduzione: il testo in campi piatti, a pezzi ———
 
-/** Riassunto e sezioni come campi stringa per il modello: summary, heading_1, body_1, heading_2… */
+/** Titolo (se c'è), riassunto e sezioni come campi stringa per il modello: title, summary, heading_1, body_1, heading_2… */
 export function guideTranslationDoc(text: CommunityGuideText): TranslationDoc {
-  const doc: TranslationDoc = { summary: text.summary };
+  const doc: TranslationDoc = text.title ? { title: text.title, summary: text.summary } : { summary: text.summary };
   text.sections.forEach((s, i) => {
     doc[`heading_${i + 1}`] = s.heading;
     doc[`body_${i + 1}`] = s.body;
@@ -636,7 +680,7 @@ export function guideTextFromDoc(doc: TranslationDoc, count: number): CommunityG
     if (typeof heading !== "string" || typeof body !== "string") return null;
     sections.push({ heading, body });
   }
-  return { summary: doc.summary, sections };
+  return { ...(typeof doc.title === "string" ? { title: doc.title } : {}), summary: doc.summary, sections };
 }
 
 /**
@@ -656,20 +700,26 @@ export const TRANSLATION_CHUNK_CHARS = 8000;
 export type GuideTranslationPlan = {
   /** impronte delle parti del testo attuale (`guidePartHashes`), da salvare con la traduzione */
   parts: string[];
-  /** parti già tradotte e riusate (null = da tradurre) */
+  /** impronta del titolo attuale (`guideTitleHash`), da salvare con la traduzione come `title_hash` */
+  titleHash: string;
+  /** parti già tradotte e riusate (null = da tradurre; il titolo è null anche quando la guida non ne ha uno) */
+  title: string | null;
   summary: string | null;
   sections: (GuideSectionText | null)[];
-  /** le parti da tradurre, in gruppi: campi `summary`, `heading_N` e `body_N` (N = numero della sezione, da 1) */
+  /** le parti da tradurre, in gruppi: campi `title`, `summary`, `heading_N` e `body_N` (N = numero della sezione, da 1) */
   chunks: TranslationDoc[];
 };
 
 /**
  * Che cosa tradurre in una lingua: le parti già tradotte in `prev` (la traduzione salvata, anche vecchia) con la stessa
  * impronta si riusano, le altre si raccolgono in gruppi di al massimo `maxChars` caratteri (una sezione non si divide).
- * Una traduzione salvata rovinata o senza impronte delle parti non si riusa.
+ * Una traduzione salvata rovinata o senza impronte delle parti non si riusa. Il titolo va nel primo gruppo e si riusa
+ * se `title_hash` è quella del titolo attuale: una traduzione di prima del 29/09/2026 (senza titolo) si completa con
+ * una richiesta piccola, per il titolo solo.
  */
-export function planGuideTranslation(g: Pick<WithLang, "lang" | "summary" | "sections">, prev?: CommunityGuideTranslation | null, maxChars = TRANSLATION_CHUNK_CHARS): GuideTranslationPlan {
+export function planGuideTranslation(g: Pick<WithTitle, "lang" | "title" | "summary" | "sections">, prev?: CommunityGuideTranslation | null, maxChars = TRANSLATION_CHUNK_CHARS): GuideTranslationPlan {
   const parts = guidePartHashes(g);
+  const titleHash = guideTitleHash(g);
   const summaries = new Map<string, string>();
   const bodies = new Map<string, GuideSectionText>();
   const old = prev?.guide;
@@ -677,6 +727,8 @@ export function planGuideTranslation(g: Pick<WithLang, "lang" | "summary" | "sec
     summaries.set(prev.parts[0], old.summary);
     old.sections.forEach((s, i) => bodies.set(prev.parts![i + 1], s));
   }
+  const oldTitle = old?.title;
+  const title = prev && prev.title_hash === titleHash && translatedTitleOk(oldTitle) ? oldTitle : null;
   const summary = summaries.get(parts[0]) ?? null;
   const sections = g.sections.map((_, i) => {
     const s = bodies.get(parts[i + 1]);
@@ -696,17 +748,19 @@ export function planGuideTranslation(g: Pick<WithLang, "lang" | "summary" | "sec
     Object.assign(current, fields);
     size += n;
   };
+  if (title === null && g.title.trim()) add({ title: g.title });
   if (summary === null) add({ summary: g.summary });
   g.sections.forEach((s, i) => {
     if (!sections[i]) add({ [`heading_${i + 1}`]: s.heading, [`body_${i + 1}`]: s.body });
   });
   if (size > 0) chunks.push(current);
-  return { parts, summary, sections, chunks };
+  return { parts, titleHash, title, summary, sections, chunks };
 }
 
 /**
  * Riunisce le parti riusate e quelle appena tradotte (`results`: una risposta per gruppo, nell'ordine di `plan.chunks`),
- * pulite come il database le accetta. Null se manca una risposta o un campo, o se il testo non rispetta le regole.
+ * pulite come il database le accetta. Null se manca una risposta o un campo, o se il testo non rispetta le regole. Il
+ * titolo c'è se era riusato o da tradurre (una guida senza titolo, solo in teoria: si pubblica con 10 caratteri almeno).
  */
 export function assembleGuideTranslation(g: WithText, plan: GuideTranslationPlan, results: readonly (TranslationDoc | null | undefined)[]): CommunityGuideText | null {
   if (results.length !== plan.chunks.length) return null;
@@ -719,6 +773,7 @@ export function assembleGuideTranslation(g: WithText, plan: GuideTranslationPlan
       merged[k] = r[k];
     }
   }
+  const title = plan.title ?? merged.title;
   const summary = plan.summary ?? merged.summary;
   if (typeof summary !== "string") return null;
   const sections: GuideSectionText[] = [];
@@ -729,7 +784,7 @@ export function assembleGuideTranslation(g: WithText, plan: GuideTranslationPlan
     if (typeof heading !== "string" || typeof body !== "string") return null;
     sections.push({ heading, body });
   }
-  const text = cleanTranslation({ summary, sections });
+  const text = cleanTranslation({ ...(typeof title === "string" ? { title } : {}), summary, sections });
   return translationTextOk(text, g.sections.length) ? text : null;
 }
 
