@@ -119,19 +119,20 @@ export type MatchEnd = {
 };
 
 /**
- * Una partita nuova fra due letture delle statistiche, o null. Cambiano l'ora o l'id dell'ultima partita; l'esito è
- * il primo carattere degli esiti se la stringa nuova allunga la vecchia (le lettere in più oltre la prima sono
- * partite perse per strada, per esempio con il tracker spento).
+ * Esito dell'ultima partita confrontando due stringhe di esiti: il primo carattere se la nuova allunga la vecchia (le
+ * lettere in più oltre la prima sono partite perse per strada, per esempio con il tracker spento); altrimenti nessun
+ * esito certo. La usa anche l'app all'avvio, con la stringa salvata l'ultima volta.
  */
+export function resultsDelta(prevResults: string, curResults: string): { result: MatchEnd["result"]; missed: string } {
+  if (curResults.length <= prevResults.length || !curResults.endsWith(prevResults)) return { result: null, missed: "" };
+  const added = curResults.slice(0, curResults.length - prevResults.length);
+  return { result: added[0] === "W" || added[0] === "L" ? added[0] : null, missed: added.slice(1) };
+}
+
+/** Una partita nuova fra due letture delle statistiche, o null: cambiano l'ora o l'id dell'ultima partita. */
 export function detectMatchEnd(prev: ProfileStats | null, cur: ProfileStats): MatchEnd | null {
   if (!prev) return null;
   if (cur.lastMatchAt === prev.lastMatchAt && cur.lastMatchId === prev.lastMatchId) return null;
-  let result: MatchEnd["result"] = null;
-  let missed = "";
-  if (cur.results.length > prev.results.length && cur.results.endsWith(prev.results)) {
-    const added = cur.results.slice(0, cur.results.length - prev.results.length);
-    result = added[0] === "W" || added[0] === "L" ? added[0] : null;
-    missed = added.slice(1);
-  }
+  const { result, missed } = resultsDelta(prev.results, cur.results);
   return { endedAt: cur.lastMatchAt, result, matchId: cur.lastMatchId, deckIndex: cur.activeDeckIndex, missed };
 }

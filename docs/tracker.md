@@ -20,7 +20,7 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 |---|---|---|
 | 0 | Verifiche: permesso, termini d'uso, partite di prova, scelta fra app e pagina web | fatta il 29/09/2026 |
 | 1 | Lettore dei file (cache + replay), funzioni pure con i test: `src/lib/tracker/` | fatta il 29/09/2026 |
-| 2 | App base (Electron, consigliata): icona nella barra, avvio con Windows, partite registrate da sola, storico sul PC | da fare |
+| 2 | App base in `tracker/` (Electron 44): icona nella barra, avvio con Windows, partite registrate da sola, storico sul PC | fatta il 29/09/2026 |
 | 3 | Collegamento al sito: account OriginsMeta, tabella delle partite con RLS, pagina `/tracker`, pagina per scaricare l'app | da fare |
 | 4 | Overlay: finestra separata sopra il gioco e sorgente per OBS (partendo da `/overlay/deck`, pacchetto STREAM) | da fare |
 | 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, prova con pochi giocatori, lancio | da fare |
@@ -120,7 +120,28 @@ dall'altro e si abbinano per ora (`replayBelongsTo`, finestra di 2 minuti).
 - `src/lib/tracker/tracker.test.ts` (in `npm test`): replay finti costruiti nel test (nessun file del gioco nel repo),
   più i file veri del PC se ci sono.
 
-Tutto è puro (niente file system): l'app della Fase 2 legge i file e passa il testo o i byte.
+Tutto è puro (niente file system): l'app legge i file e passa il testo o i byte.
+
+## L'app (Fase 2, `tracker/`)
+
+Pacchetto a sé nella cartella `tracker/` del repo (package.json, tsconfig e test propri; il `tsconfig.json` del sito la
+esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracker/README.md`:
+
+- `src/main/watcher.ts`: ogni 2 s una `stat` sul file delle statistiche; quando cambia lo rilegge e, se l'impronta
+  dell'ultima partita è nuova, aspetta il replay fino a un minuto (il gioco lo scrive un secondo prima della cache) e
+  registra la partita con il lettore; senza replay la registra con esito e mazzo. Al primo avvio registra l'ultima
+  partita solo se il suo replay è ancora lì. Cartelle del gioco in `paths.ts` (anche "Origins TCG" e "Origins TCG
+  Playtest"), riconoscimento dei file per contenuto ogni 30 s.
+- `src/main/store.ts`: `%APPDATA%\OriginsMeta Tracker\matches.jsonl` (una partita per riga) e `state.json` (impronta
+  dell'ultima partita vista, esiti, esiti delle partite giocate a tracker spento).
+- `src/main/main.ts`: icona nella barra, finestra che si nasconde invece di chiudersi, una sola copia, "Avvia con
+  Windows" spento di default (con `--hidden`), sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
+  permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
+- `src/renderer/`: interfaccia EN/IT/ES (round/ronda, corsia/carril), palette del sito; dell'avversario mostra la
+  Leggendaria e le carte che ha giocato.
+- Icona dal logo del sito (`src/app/icon.svg`) con `scripts/make-icon.cjs`. Attenzione: `src/app/favicon.ico` del sito
+  è ancora l'icona predefinita di Next (il triangolo di Vercel), da sostituire a parte.
+- Test: `npm test` in `tracker/` (10 test su cartelle del gioco finte), `npm run typecheck`.
 
 ## Da decidere
 
