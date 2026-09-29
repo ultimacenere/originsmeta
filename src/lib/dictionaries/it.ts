@@ -594,6 +594,7 @@ export const it: Dictionary = {
     clear: "Azzera i filtri",
     source: "Nomi ed effetti dei luoghi si riferiscono alla {patch}; gli effetti in italiano sono una traduzione di OriginsMeta, con il glossario ufficiale del gioco.",
     notVerified: "Non li abbiamo ancora confrontati uno per uno con il gioco: lo faremo come per le carte, e da quel momento questa riga lo dirà.",
+    rarity: "Dalla patch 0.7 del 29 settembre 2026 ogni luogo ha una rarità, comune, rara, molto rara o ultra rara, che decide quanto spesso compare. Le patch notes non dicono quale luogo ha quale rarità.",
     verified: "Confrontati uno per uno nel gioco: {n} luoghi.",
     guideCta: "Leggi la guida ai Luoghi",
   },
@@ -830,6 +831,8 @@ export const it: Dictionary = {
     description: "Deck builder gratuito per Origins TCG: 1 Leggendaria più 12 carte base, controllo della legalità, modalità Conquest, link e codici condivisibili.",
     dataKicker: "Dati delle carte",
     dataNotice: "Carte aggiornate alla Demo 2.0 del {date}: costi, statistiche e testi di tutte le {count} carte verificati uno per uno nel gioco, compresa la patch del {patchDate}.",
+    // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
+    dataNoticePatch: "Carte verificate una per una nel gioco il {date}: costi, statistiche e testi di tutte le {count} carte. La patch del {patchDate} è uscita dopo: le sue modifiche vengono dalle patch notes ufficiali, e i testi che ha cambiato non sono ancora stati verificati nel gioco.",
     rulesTitle: "Regole del mazzo",
     rules: ["1 carta Leggendaria guida il mazzo.", "12 carte base diverse; la seconda copia di ciascuna la aggiunge il gioco.", "25 carte in gioco: 1 + 12 × 2."],
     rulesSource: "Fonte: AMA del team Koin Games. La modalità Conquest segue la regola della Crimson Cup annunciata il 24 settembre 2026: almeno 8 carte uniche fra due mazzi qualsiasi (ogni carta conta una volta, a prescindere dalle copie).",

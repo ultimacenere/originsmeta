@@ -68,6 +68,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 1, power: 1, health: 1 },
       note: { en: "Loses 1 Health; On Reveal bonus on a middle space rises from +1/+1 to +2/+2.", it: "Perde 1 Salute; il bonus dell'abilità Alla rivelazione su spazio centrale sale da +1/+1 a +2/+2.", es: "Pierde 1 de Salud; la bonificación de su habilidad Al revelar en un espacio central sube de +1/+1 a +2/+2.", fr: "Perd 1 Vie ; le bonus On Reveal sur case centrale passe de +1/+1 à +2/+2." },
     },
+    {
+      patch: "0.7",
+      kind: "nerf",
+      from: { mana: 1, power: 1, health: 1 },
+      to: { mana: 2, power: 1, health: 1 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más." },
+    },
   ],
   mowgli: [
     {
@@ -318,6 +325,12 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 3, power: 4, health: 1 },
       note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance." },
     },
+    {
+      patch: "0.7",
+      kind: "rework",
+      fix: true,
+      note: { en: "The random card it adds to your hand can no longer be Humpty.", it: "La carta casuale che aggiunge alla tua mano non può più essere Humpty.", es: "La carta aleatoria que añade a tu mano ya no puede ser Humpty." },
+    },
   ],
   "old-macdonald": [
     {
@@ -418,6 +431,13 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "deck",
       note: { en: "Added to the Discard deck in place of Genie.", it: "Aggiunto al mazzo Discard al posto di Genie.", es: "Añadido al mazo Discard en lugar de Genie.", fr: "Ajouté au deck Discard à la place de Genie." },
     },
+    {
+      patch: "0.7",
+      kind: "nerf",
+      from: { mana: 2 },
+      to: { mana: 3 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más." },
+    },
   ],
   "first-aid": [
     {
@@ -507,6 +527,16 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       note: { en: "Its +2 Power buff now applies again when the spell is repeated.", it: "Il bonus di +2 Potenza ora si applica di nuovo quando la magia viene ripetuta.", es: "Su mejora de +2 de Poder ahora se aplica de nuevo cuando se repite el hechizo." },
     },
+    {
+      patch: "0.7",
+      kind: "buff",
+      fix: true,
+      note: {
+        en: "Bug fix: if a character it buffed loses its abilities, the +2 Power now stays; Trample is still removed.",
+        it: "Correzione di un bug: se un personaggio che ha potenziato perde le abilità, il +2 Potenza ora resta; Travolgere viene comunque tolto.",
+        es: "Corrección de un error: si un personaje al que ha potenciado pierde sus habilidades, el +2 de Poder ahora se mantiene; Arrollar se sigue quitando.",
+      },
+    },
   ],
   "frog-prince": [
     {
@@ -527,6 +557,36 @@ export const cardHistory: Record<string, Change[]> = {
         en: "Can target characters at full Health; it still fails if the target is not damaged by the time it reveals.",
         it: "Può bersagliare personaggi con la Salute piena; fallisce comunque se il bersaglio non è danneggiato quando si rivela.",
         es: "Puede elegir como objetivo a personajes con la Salud al máximo; aun así, falla si el objetivo no está dañado cuando se revela.",
+      },
+    },
+  ],
+
+  // ---------- Patch 0.7 del 29/09/2026 ("Steam Demo Update #2", l'ultima di bilanciamento prima della Crimson Cup) ----------
+  // Bagheera, Mind Palace, Humpty e Heroic Charge stanno sopra, con le modifiche precedenti. Freeze! e Dorothy hanno solo
+  // la spiegazione delle parole chiave al passaggio del mouse (interfaccia, non bilanciamento): stanno nella news `patch-0-7`,
+  // non qui. Boogeyman è citato nel riassunto delle patch notes ("now behave differently") senza una riga che dica che cosa
+  // cambia: niente voce finché il team non lo dice.
+  "twister-toss": [
+    {
+      patch: "0.7",
+      kind: "rework",
+      note: {
+        en: "Now moves an ally to any space; if another card is already there, the two swap places. It can also target occupied spaces.",
+        it: "Ora muove un alleato in qualsiasi spazio; se lì c'è già un'altra carta, le due si scambiano di posto. Può anche bersagliare spazi occupati.",
+        es: "Ahora mueve a un aliado a cualquier espacio; si ya hay otra carta allí, las dos intercambian sus posiciones. También puede elegir como objetivo espacios ocupados.",
+      },
+    },
+  ],
+  spellbook: [
+    {
+      patch: "0.7",
+      kind: "nerf",
+      from: { mana: 3 },
+      to: { mana: 4 },
+      note: {
+        en: "Costs 1 more; the random spells it adds can no longer be Spellbook.",
+        it: "Costa 1 in più; le magie casuali che aggiunge non possono più essere Spellbook.",
+        es: "Cuesta 1 más; los hechizos aleatorios que añade ya no pueden ser Spellbook.",
       },
     },
   ],

@@ -6,17 +6,17 @@ OriginsMeta is a fan project run by players and is not affiliated with Koin Game
 
 Origins TCG is a digital trading card game by Koin Games, a studio based in Tampa, Florida, founded in 2021. Its cast is made of public-domain legends — Robin Hood, Mulan, the Queen of Hearts, Dracula and many more — reimagined in one original world. The game is presented as free-to-compete: every card needed to play competitively is earned by playing, and money only buys collectible versions of cards. A free demo is available on Steam.
 
-Card data on this site follows the latest published patch — at the time of writing, the demo patch of 21 September 2026, with all 122 demo cards checked one by one in the game on 22 September 2026 — and is updated when a new patch changes it, so stats and card text move with the game rather than staying fixed at one version. Every page states the patch its numbers come from.
+Card data on this site follows the latest published patch — at the time of writing, patch 0.7 of 29 September 2026, with all 122 demo cards checked one by one in the game on 22 September 2026, before that patch — and is updated when a new patch changes it, so stats and card text move with the game rather than staying fixed at one version. Every page states the patch its numbers come from.
 
 Community decks are written by players in their own language; the site translates each deck guide automatically into the other two languages and says so on the translated page, with a link to the author's original.
 
 ## Key facts (checked on 25 September 2026)
 
 - Release: the Steam store page says "Q4 2026", with no exact date. No early access has been announced.
-- Demo: the free Demo 2.0 has been on Steam since 21 September 2026, when the first big demo update arrived (new interface and board, test packs, voice lines, balance changes). Ranked mode opens with the Steam Next Fest, 19–26 October 2026. Guide: [How to play the demo](https://originsmeta.com/en/guides/play-the-demo).
+- Demo: the free Demo 2.0 has been on Steam since 21 September 2026, when the first big demo update arrived (new interface and board, test packs, voice lines, balance changes); the second, patch 0.7 of 29 September 2026, is the last balance patch before the Crimson Cup. Ranked mode opens with the Steam Next Fest, 19–26 October 2026. Guide: [How to play the demo](https://originsmeta.com/en/guides/play-the-demo).
 - Crimson Cup: the official tournament of the Next Fest, from 20 to 25 October 2026, played on the demo. The format is three-deck Conquest with at least 8 unique cards between each pair of decks, and decklists stay hidden until the top 4. Summary in the next section; rules: [Crimson Cup format and check-in](https://originsmeta.com/en/news/crimson-cup-format-check-in).
 - Kickstarter: 27 October 2026, announced by Koin Games' CEO Tim Jooste on X on 17 September 2026 ("back the Alpha Edition Kickstarter (Oct 27th)"); the main menu of the demo also shows it as "Coming soon – Oct 27" (read on 25 September 2026). Neither gives a time of day (checked on 28 September 2026). Pre-registration is open: a refundable $1 deposit gives 15% off, and the Alpha boxes are preorder-only. Guide: [Origins TCG Kickstarter](https://originsmeta.com/en/guides/origins-tcg-kickstarter).
-- Languages: Steam lists English, French, Italian and German for the interface, with full audio in English only. The demo also has the interface and the card texts in Spanish (checked in the game on 25 September 2026), which Steam does not list yet.
+- Languages: since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). The Steam page lists the same 13 for the interface, with full audio in English only (read on 30 September 2026).
 - Platforms: the Steam page lists Windows and macOS. Mobile is not out: on its pre-registration page (founder.origins-tcg.com) Koin Games writes "Mobile pack opening is coming! We have our sights set on 2027 for Origins on Mobile." (read on 25 September 2026). Neither page says whether that means Android, iOS or both.
 - Demo progress: according to the Steam post of 21 September 2026, whoever played the demo, the playtest or both keeps whichever progress is further ahead. The exclusive demo collectibles become tradeable on the Steam marketplace when the full game launches (Steam post of 16 July 2026).
 - Not Riftbound: "Riftbound Origins" is a card set of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026). Origins TCG by Koin Games is a different game.
@@ -33,12 +33,12 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 - Matches: best of three, with a best-of-five grand final (announcement of 9 September). Best-of-five matches have no ban: you must win with all three decks.
 - Check-in: opens two hours before each qualifier and closes five minutes before the start, together with deck submission. Miss it and you can't play.
 - Prizes: worth $10,000 in total, not a cash pool: an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash prizes. The exact prize pool was promised for the week after 24 September.
-- Balance: the last balance patch before the tournament arrives two weeks before Steam Next Fest.
+- Balance: patch 0.7 of 29 September 2026 is, in the team's words, the final balance patch before the tournament: Twister Toss reworked, Bagheera, Mind Palace and Spellbook 1 mana more ([patch 0.7 notes](https://originsmeta.com/en/news/patch-0-7)).
 - Sign-ups on the [official Discord](https://discord.gg/originstcg). Guide to the festival: [Origins TCG at Steam Next Fest 2026](https://originsmeta.com/en/guides/steam-next-fest-2026). The [deck builder](https://originsmeta.com/en/deck-builder) has a tournament mode that checks three decks against the Conquest rule.
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (demo patch of 21 September 2026). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.

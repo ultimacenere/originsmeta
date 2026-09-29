@@ -217,9 +217,16 @@ describe("cardDescription", () => {
 });
 
 describe("textOutdated", () => {
-  test("oggi solo due carte create hanno il testo superato da una modifica dello storico", () => {
+  test("oggi hanno il testo superato da una modifica dello storico due carte create e Twister Toss, rifatta dalla 0.7", () => {
     // Se l'elenco cambia, va ricontrollato a mano il testo delle carte nuove (e magari corretto in card-lore.ts).
-    assert.deepEqual(cards.filter((c) => textOutdated(c, src)).map((c) => c.slug).sort(), ["silver-bullet", "wooden-stake"]);
+    // Twister Toss esce dall'elenco quando il testo nuovo è letto nel gioco e `cardsVerified.date` passa il 29/09/2026.
+    assert.deepEqual(cards.filter((c) => textOutdated(c, src)).map((c) => c.slug).sort(), ["silver-bullet", "twister-toss", "wooden-stake"]);
+  });
+  test("le correzioni (`fix`) non rendono superato il testo: Heroic Charge e Humpty nella 0.7", () => {
+    for (const slug of ["heroic-charge", "humpty"]) {
+      assert.ok(card(slug).history.some((h) => h.patch === "0.7" && h.fix), slug);
+      assert.equal(textOutdated(card(slug), src), false, slug);
+    }
   });
   test("Silver Bullet è superata già dalla 0.6.2, uscita prima dell'import: il database dice ancora 3 danni", () => {
     // Senza la patch della demo del 21/09 resta la sola 0.6.2 (danno da 3 a 1): basta quella
@@ -251,7 +258,25 @@ describe("textOutdated", () => {
     assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "nerf", from: { mana: 2 }, to: { mana: 3 }, note }]), source), false);
     assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "rework", alignment: { from: "good", to: "evil" }, note }]), source), false);
     assert.equal(textOutdated(token(text("0.6.3", "deck")), source), false);
+    // una correzione dichiarata (`fix`) cambia come funziona la carta, non il testo
+    assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "buff", fix: true, note }]), source), false);
+    assert.equal(textOutdated(token([{ patch: "0.6.3", kind: "buff", fix: true, note }]), source), false);
     assert.equal(textOutdated(token([{ patch: "0.6.2", kind: "nerf", from: { power: 3 }, to: { power: 1 }, note }]), source), false);
+  });
+});
+
+describe("patchAt", () => {
+  test("il giorno della patch 0.7 conta l'ora del post (19:37 UTC del 29/09/2026), se il mazzo ce l'ha", () => {
+    const { patchAt } = cardsModule;
+    assert.equal(patchAt("2026-09-29T15:02:23.59659+00:00"), "demo-0921");
+    assert.equal(patchAt("2026-09-29T19:37:43Z"), "demo-0921");
+    assert.equal(patchAt("2026-09-29T19:37:44Z"), "0.7");
+    assert.equal(patchAt("2026-09-29T23:10:00+02:00"), "0.7");
+    assert.equal(patchAt("2026-09-30T01:00:00+00:00"), "0.7");
+    // senza ora vale la patch uscita quel giorno; le patch senza `at` guardano solo il giorno
+    assert.equal(patchAt("2026-09-29"), "0.7");
+    assert.equal(patchAt("2026-09-21T08:00:00+00:00"), "demo-0921");
+    assert.equal(patchAt("2026-08-13T23:00:00Z"), undefined);
   });
 });
 

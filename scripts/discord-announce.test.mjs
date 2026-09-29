@@ -51,7 +51,9 @@ describe("lettura dei file", () => {
     const patches = patchNews(read("src/lib/data/cards.ts"));
     assert.deepEqual(patches.get("demo-patch-notes-0921"), { patch: "demo-0921", date: "2026-09-21" });
     assert.deepEqual(patches.get("patch-0-6-1-ranked"), { patch: "0.6.1", date: "2026-08-14" });
-    assert.equal(patches.size, 4);
+    // patch 0.7 del 29/09/2026: la sua news va anche in #metashifting
+    assert.deepEqual(patches.get("patch-0-7"), { patch: "0.7", date: "2026-09-29" });
+    assert.equal(patches.size, 5);
     for (const slug of patches.keys()) assert.ok(bySlug.has(slug), `la patch cita una news che esiste: ${slug}`);
   });
 });

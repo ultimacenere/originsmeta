@@ -35,7 +35,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
 - En la Demo 2.0, la versión de Origins TCG que se juega hoy, hay **once Legendarias**: seis cuestan 4 de maná, una 5, tres 7 y una 8.
 - Diez son unidades y una es un hechizo, Legion of the Dead. Cinco son Good, tres Evil y tres Neutral.
 - Cuatro crean otras cartas con su texto: Dracula, Van Helsing, Legion of the Dead y Three Not So Little Pigs.
-- Siete cambiaron en los parches de equilibrio entre agosto y el 21 de septiembre de 2026; Dracula, Van Helsing, Legion of the Dead y Robin Hood no.
+- Siete cambiaron en los parches de equilibrio entre agosto y el 21 de septiembre de 2026; Dracula, Van Helsing, Legion of the Dead y Robin Hood no. El [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026 no reequilibró ninguna.
 - Los 20 mazos publicados en OriginsMeta hasta las 20:00 (CEST) del 25 de septiembre de 2026 usan diez de las once: Three Not So Little Pigs lidera cuatro, Van Helsing tres, Wicked Stepmother ninguno. Seis Legendarias tienen una guía de OriginsMeta sobre uno de sus mazos.
 
 Aquí abajo las Legendarias van por orden de coste y, con el mismo coste, por orden alfabético. La guía describe lo que hace cada carta, no lo fuerte que es: eso lo dirá nuestra [tier list de Origins TCG](/es/tier-list), con los resultados de los torneos y la cima de la [clasificatoria](/es/guides/origins-tcg-ranked), después de la Crimson Cup.
@@ -64,7 +64,7 @@ La última columna cuenta los mazos que lidera cada Legendaria entre los 20 publ
 - **Tu rival la ve.** El parche 0.6.1 del playtest cerrado (14 de agosto de 2026) añadió la vista previa de la Legendaria del rival durante el mulligan, según las [notas oficiales del parche](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **En Conquest da nombre al mazo.** En la Crimson Cup cada jugador lleva tres mazos, y cuando baneas uno de los mazos de tu rival solo ves su Legendaria ([reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in)). Los anuncios no dicen si las tres Legendarias tienen que ser distintas; en Big Bob's Playtest Battle tenían que serlo. Cómo armar los tres mazos: nuestra [guía de Conquest](/es/guides/origins-tcg-conquest).
 
-Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español; los costes y las estadísticas se comprobaron carta por carta el 22 de septiembre de 2026. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026) y el parche de la demo del 21 de septiembre de 2026. El poder legendario no aparece aquí: todavía no lo hemos transcrito del juego, y la ficha de cada carta lo mostrará cuando lo hagamos.
+Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español; los costes y las estadísticas se comprobaron carta por carta el 22 de septiembre de 2026. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026), el parche de la demo del 21 de septiembre de 2026 y el parche 0.7 del 29 de septiembre de 2026, que no reequilibró ninguna Legendaria. El poder legendario no aparece aquí: todavía no lo hemos transcrito del juego, y la ficha de cada carta lo mostrará cuando lo hagamos.
 
 ## Dorothy {#dorothy}
 
@@ -351,7 +351,7 @@ Para la Crimson Cup, los anuncios del 9 y del 24 de septiembre de 2026 fijan est
 - listas ocultas hasta el top 4: cuando baneas uno de los mazos de tu rival solo ves su Legendaria;
 - enfrentamientos al mejor de tres y gran final al mejor de cinco; al mejor de cinco no hay ban y tienes que ganar con los tres mazos.
 
-El torneo se juega en la demo principal, con su lista de cartas. El último parche de equilibrio llega dos semanas antes del Steam Next Fest: conviene volver a comprobar después de ese parche los mazos que armes hoy.
+El torneo se juega en la demo principal, con su lista de cartas. El 29 de septiembre de 2026 llegó el [parche 0.7](/es/news/patch-0-7), que el equipo llama el último parche de equilibrio antes del torneo: Bagheera, Mind Palace y Spellbook cuestan uno más y Twister Toss ha recibido un rework, así que conviene volver a comprobar los mazos armados antes de esa fecha.
 
 ## Cómo se cuentan las cartas únicas {#recuento}
 
@@ -421,11 +421,11 @@ Son recuentos, no consejos: dicen qué mazos pueden ir juntos según la regla, n
 
 - Cómo cuenta Koin las 8 cartas únicas: el anuncio del 24 de septiembre no lo dice.
 - Si los tres mazos de la Crimson Cup tienen que tener Legendarias distintas: los anuncios no lo dicen.
-- La lista de cartas definitiva: la provisional está en el juego desde el 21 de septiembre, y el último parche de equilibrio llega dos semanas antes del Steam Next Fest.
+- La lista de cartas definitiva: la provisional está en el juego desde el 21 de septiembre. El parche 0.7 del 29 de septiembre es, en palabras del equipo, el último parche de equilibrio antes del torneo, pero sus notas no dicen si la lista es definitiva.
 
 ## Fuentes {#fuentes}
 
-Las publicaciones de Koin Games en Steam del [25 de agosto](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle) y del [9 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (el torneo del Steam Next Fest), el anuncio de la Crimson Cup en el Discord oficial (24 de septiembre) y los mazos publicados en OriginsMeta hasta las 20:00 (CEST) del 25 de septiembre de 2026, contados con la misma función que usa el deck builder.
+Las publicaciones de Koin Games en Steam del [25 de agosto](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (Big Bob's Playtest Battle), del [9 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1843481262690278) (el torneo del Steam Next Fest) y del [29 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1844751498235283) (el parche 0.7), el anuncio de la Crimson Cup en el Discord oficial (24 de septiembre) y los mazos publicados en OriginsMeta hasta las 20:00 (CEST) del 25 de septiembre de 2026, contados con la misma función que usa el deck builder.
 `,
   },
   "origins-tcg-locations": {
@@ -462,6 +462,10 @@ La Demo 2.0 tiene **44 ubicaciones** en rotación. La [página oficial de Steam]
 Las tres ubicaciones se revelan **una por ronda durante las tres primeras rondas**. La primera está en la mesa desde el principio, la segunda aparece en la segunda ronda y la tercera en la tercera. A partir de la cuarta ronda ya no queda nada oculto y juegas en un tablero que ves entero.
 
 Ese calendario es la razón por la que las primeras rondas no son solo una cuestión de curva: en la primera ronda estás comprometiendo cartas en un carril cuyos dos vecinos todavía no conoces. Guardar un personaje una ronda para ver dónde encaja suele valer más que jugarlo en curva en el carril equivocado.
+
+## Con qué frecuencia aparecen
+
+Desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026, cada ubicación tiene una rareza: común, rara, muy rara o ultra rara. La rareza decide con qué frecuencia aparece una ubicación. El equipo lo explica así: las conocidas saldrán en la mayoría de las partidas, y algunas solo muy de vez en cuando. Las notas del parche no dicen qué rareza tiene cada ubicación: la añadiremos a la [página de ubicaciones](/es/locations) en cuanto la conozcamos.
 
 ## Las familias de efectos
 
@@ -512,7 +516,7 @@ Esta lista coincide con la rotación de la Demo 2.0. Todavía no hemos revisado 
       },
       {
         q: "¿Qué conservas en el mulligan?",
-        a: "Una curva que llegue a Mulan en la cuarta ronda: Bagheera en un espacio central, Baby Bear y luego Black Knight o Frog Prince. Vale la pena conservar a Mary cuando esperas una partida larga.",
+        a: "Una curva que llegue a Mulan en la cuarta ronda: Bagheera en un espacio central o Baby Bear en la segunda ronda, y luego Black Knight o Frog Prince en la tercera. Vale la pena conservar a Mary cuando esperas una partida larga.",
       },
       {
         q: "¿Qué habilidad Al revelar gana más con Mulan?",
@@ -530,12 +534,12 @@ Esta lista coincide con la rotación de la Demo 2.0. Todavía no hemos revisado 
 
 ## La lista
 
-Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una. Las estadísticas son las de la Demo 2.0, [comprobadas carta por carta en el juego](/es/deck-builder) el 22 de septiembre de 2026.
+Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una. Las estadísticas son las de la Demo 2.0, [comprobadas carta por carta en el juego](/es/deck-builder) el 22 de septiembre de 2026, con el nuevo coste de Bagheera del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre.
 
 | Carta | Coste | Qué hace |
 | --- | --- | --- |
 | [Mulan](/es/cards/mulan) ★ | 4 | 2/4, Ataque doble; cuando se activa una habilidad Al revelar de un aliado, se repite |
-| [Bagheera](/es/cards/bagheera) | 1 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
+| [Bagheera](/es/cards/bagheera) | 2 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Baby Bear](/es/cards/baby-bear) | 2 | 1/1; devuelve 1 de daño cuando un enemigo daña tu barrera aquí, y al morir añade un Papa Bear 4/4 a tu mano |
 | [Mary](/es/cards/mary) | 3 | 1/1; Al revelar añade un Little Lamb a la mano, al morir tus Lamb obtienen +3⚔️/+3❤️ de forma permanente |
 | [Black Knight](/es/cards/black-knight) | 3 | 2/2; Al revelar inflige 2 de daño al enemigo que tiene enfrente |
@@ -562,11 +566,11 @@ Mulan también tiene **Ataque doble**, así que su propio cuerpo 2/4 intercambia
 
 ## Mulligan
 
-Busca una curva que te lleve a Mulan en la cuarta ronda sin quedarte atrás: **Bagheera** en un espacio central (un 3/3 por un maná), luego **Baby Bear** y luego **Black Knight** o **Frog Prince**. Conserva a **Mary** cuando esperes una partida larga: el Lamb que añade a tu mano es un cuerpo barato y, si Mary muere, los Lamb que ya has jugado crecen de forma permanente.
+Busca una curva que te lleve a Mulan en la cuarta ronda sin quedarte atrás: **Bagheera** en un espacio central (un 3/3 por dos de maná desde el parche 0.7) o **Baby Bear** en la segunda ronda, y luego **Black Knight** o **Frog Prince** en la tercera. Conserva a **Mary** cuando esperes una partida larga: el Lamb que añade a tu mano es un cuerpo barato y, si Mary muere, los Lamb que ya has jugado crecen de forma permanente.
 
 ## Ronda a ronda
 
-1. **Rondas 1–3: ocupar espacio sin sobreextenderse.** Bagheera en el centro, Baby Bear donde esperes los primeros ataques, Black Knight frente a algo que quieras ver muerto. Una carta por carril basta: el mazo quiere un tablero igualado, no lleno, cuando llegue Mulan.
+1. **Rondas 1–3: ocupar espacio sin sobreextenderse.** Desde el parche 0.7, la única carta de un maná de la lista es Bullseye, así que tu primera unidad llega en la segunda ronda: Bagheera en el centro o Baby Bear donde esperes los primeros ataques, y luego Black Knight en la tercera, frente a algo que quieras ver muerto. Una carta por carril basta: el mazo quiere un tablero igualado, no lleno, cuando llegue Mulan.
 2. **Ronda 4: Mulan.** A partir de aquí, el orden de tus jugadas importa más que las cartas. Pregúntate en cada ronda qué habilidad Al revelar vale la pena duplicar, y juega esa carta en la ubicación de Mulan.
 3. **Rondas 5–6: las cartas de valor.** Fairy Godmother y luego Mowgli en la sexta. White Queen es la carta de respuesta de la lista: devuelve CUALQUIER personaje a la mano de su dueño, así que puede quitar de en medio una carta de cierre en la misma ronda en que llega, o recoger a tu propia Mary para volver a jugarla.
 4. **Rondas 7–8: cierre.** Ellen Trechend en el carril que el rival ha llenado; En Passant para mover a un aliado, golpear lo que tiene enfrente y abrir camino al daño de Arrollar.
@@ -590,7 +594,7 @@ La página del mazo enumera dos: **una buena curva suele ser esencial** y **pued
 ## Adónde ir ahora
 
 - La [página del mazo](/es/decks/community/on-reveal-mid-range-772e) tiene la lista con los gráficos de curva de maná y de sagas, las notas del autor, “Abrir en el deck builder” y el código del juego para pegar en Origins.
-- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche del 21 de septiembre](/es/news/demo-patch-notes-0921); cada página de carta tiene su propio historial de cambios de equilibrio.
+- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche 0.7 del 29 de septiembre de 2026](/es/news/patch-0-7), que subió el coste de Bagheera de uno a dos de maná; cada página de carta tiene su propio historial de cambios de equilibrio.
 `,
   },
   "king-of-value-trade-guide": {
@@ -627,7 +631,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | Carta | Coste | Qué hace |
 | --- | --- | --- |
 | [King Arthur](/es/cards/king-arthur) ★ | 7 | 7/7 con Escudo; Al revelar da Escudo a tus personajes Good |
-| [Bagheera](/es/cards/bagheera) | 1 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
+| [Bagheera](/es/cards/bagheera) | 2 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Musketeer](/es/cards/musketeer) | 2 | 2/1 con Primer golpe |
 | [Roo](/es/cards/roo) | 2 | 2/4 con Mover |
 | [Shahrazad](/es/cards/shahrazad) | 2 | 1/4; cura 1 de daño a tu barrera aquí cada vez que una carta entra en tu mano |
@@ -635,7 +639,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | [Dark Omen](/es/cards/dark-omen) | 3 | Hechizo: destruye a CUALQUIER personaje |
 | [Cowardly Lion](/es/cards/cowardly-lion) | 3 | 2/5 con Defensor |
 | [Ali Baba](/es/cards/ali-baba) | 3 | 2/3; roba una carta cada vez que daña una barrera del rival |
-| [Spellbook](/es/cards/spellbook) | 3 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
+| [Spellbook](/es/cards/spellbook) | 4 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
 | [Lancelot](/es/cards/lancelot) | 4 | 4/4; cada personaje Good que juegas en su ubicación obtiene +2⚔️/+2❤️ |
 | [Fairy Godmother](/es/cards/fairy-godmother) | 5 | 3/3; Al revelar da +3⚔️/+3❤️ a otro aliado |
 | [Boitata](/es/cards/boitata) | 5 | 5/5; el daño de hechizos y habilidades dirigido a tus barreras golpea en su lugar la barrera del rival de esa ubicación |
@@ -658,7 +662,7 @@ Tres palabras clave hacen el trabajo.
 
 ## Ronda a ronda
 
-1. **Rondas 1–3: intercambiar con ventaja.** Bagheera en el centro, Musketeer frente a un cuerpo de 1 o 2 de Salud, Roo donde quizá quieras moverlo más tarde. Cada combate que puedas ganar sin perder el cuerpo es una carta ganada.
+1. **Rondas 1–3: intercambiar con ventaja.** Desde el parche 0.7 la lista no tiene cartas de un maná, así que empieza en la segunda ronda, y la segunda y la tercera ronda dan para dos de estas: Bagheera en el centro, Musketeer frente a un cuerpo de 1 o 2 de Salud, Roo donde quizá quieras moverlo más tarde. Cada combate que puedas ganar sin perder el cuerpo es una carta ganada.
 2. **Rondas 4–5: sostener un carril.** Lancelot, y luego juega los personajes Good en su ubicación: cada uno llega +2⚔️/+2❤️ más grande de lo que debería. Boitata en la quinta es un 5/5 que además devuelve contra las barreras del rival el daño de los hechizos enemigos dirigido a las tuyas.
 3. **Rondas 6–7: la Legendaria.** King Arthur es un 7/7 con Escudo, y su habilidad Al revelar da Escudo a todo lo Good que ya tengas en el tablero. No lo juegues con el tablero vacío: el valor está en los Escudos, no en el cuerpo.
 4. **Dark Omen, cuando importe.** Tres de maná para destruir a CUALQUIER personaje es la respuesta a esa carta que no puedes vencer en combate: un cuerpo potenciado, un Defensor en el carril equivocado, una Legendaria enemiga.
@@ -683,7 +687,7 @@ La página del mazo enumera tres: **ninguna eliminación de área**, **Dark Omen
 ## Adónde ir ahora
 
 - La [página del mazo](/es/decks/community/king-of-value-trade-fd14) tiene la lista completa con los gráficos, las notas del autor, “Abrir en el deck builder” y el código del juego (KGBLDC…).
-- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche del 21 de septiembre](/es/news/demo-patch-notes-0921).
+- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche 0.7 del 29 de septiembre de 2026](/es/news/patch-0-7), que subió el coste de Bagheera a dos de maná y el de Spellbook a cuatro; los hechizos que añade Spellbook ya no pueden ser Spellbook.
 `,
   },
   "dorothy-combo-guide": {
@@ -720,7 +724,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | Carta | Coste | Qué hace |
 | --- | --- | --- |
 | [Dorothy](/es/cards/dorothy) ★ | 4 | 1/1; puede moverse cada ronda y obtiene +1⚔️/+1❤️ por cada vez que un aliado se ha movido en esta partida |
-| [Twister Toss](/es/cards/twister-toss) | 1 | Hechizo: mueve a un aliado |
+| [Twister Toss](/es/cards/twister-toss) | 1 | Hechizo: mueve a un aliado a cualquier espacio; si ya hay otra carta allí, las dos intercambian sus posiciones |
 | [Card Soldier](/es/cards/card-soldier) | 2 | 3/1; después de moverse, invoca una copia de sí mismo en su espacio anterior |
 | [Roo](/es/cards/roo) | 2 | 2/4 con Mover |
 | [Basilisk](/es/cards/basilisk) | 2 | 1/2 con Toque mortal |
@@ -729,7 +733,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | [Wicked Witch of the West](/es/cards/wicked-witch-of-the-west) | 3 | 1/5; cuando sobrevive al daño, añade un Flying Monkey a tu mano y se mueve un espacio a la izquierda |
 | [Kanga](/es/cards/kanga) | 3 | 2/3; antes del combate, los aliados que se movieron en esta ronda obtienen +1⚔️/+1❤️ |
 | [En Passant](/es/cards/en-passant) | 3 | Hechizo: mueve a un aliado e inflige daño igual a su Poder al personaje que tiene enfrente |
-| [Spellbook](/es/cards/spellbook) | 3 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
+| [Spellbook](/es/cards/spellbook) | 4 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
 | [Magic Carpet](/es/cards/magic-carpet) | 4 | 4/4; Al revelar mueve a tus otros aliados un espacio a la izquierda, o un espacio a la derecha |
 | [Hare](/es/cards/hare) | 5 | 4/1 con Primer golpe y Mover |
 
@@ -737,7 +741,7 @@ Nueve unidades y tres hechizos, y casi todo o se mueve o premia un movimiento.
 
 ## Cómo gana el mazo
 
-Dorothy es un 1/1 que cuenta: **+1⚔️/+1❤️ por cada vez que un aliado se ha movido en esta partida**. El contador no se reinicia y cuenta los movimientos en cualquier parte del tablero, así que un hechizo barato como [Twister Toss](/es/cards/twister-toss) nunca se desperdicia: es un maná por un punto permanente en tu Legendaria. Jugada en la quinta ronda después de unos cuantos movimientos, Dorothy llega como un cuerpo de verdad y sigue creciendo en cada ronda posterior, porque se mueve ella misma.
+Dorothy es un 1/1 que cuenta: **+1⚔️/+1❤️ por cada vez que un aliado se ha movido en esta partida**. El contador no se reinicia y cuenta los movimientos en cualquier parte del tablero, así que un hechizo barato como [Twister Toss](/es/cards/twister-toss) nunca se desperdicia: es un maná por un punto permanente en tu Legendaria. Desde el [parche 0.7](/es/news/patch-0-7) puede llevar al aliado a cualquier espacio, incluso a uno ocupado, y las dos cartas intercambian sus posiciones. Jugada en la quinta ronda después de unos cuantos movimientos, Dorothy llega como un cuerpo de verdad y sigue creciendo en cada ronda posterior, porque se mueve ella misma.
 
 Tres combos son la razón de ser de la lista:
 
@@ -772,6 +776,7 @@ Los datos de la clasificatoria no son públicos: esta es una lectura de las list
 
 - La [página del mazo](/es/decks/community/dorothy-combo-7503) tiene la lista completa, los gráficos, las notas del autor, “Abrir en el deck builder” y el código del juego.
 - Los buffs de los que nace esta lista están en las [notas del parche del 21 de septiembre](/es/news/demo-patch-notes-0921); MetaShifting sigue cada cambio en [su propia página](/es/metashifting).
+- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche 0.7 del 29 de septiembre de 2026](/es/news/patch-0-7), que subió el coste de Spellbook de tres a cuatro de maná y cambió el efecto de Twister Toss. La tabla describe Twister Toss según las notas del parche: todavía no hemos leído su nuevo texto en el juego.
 `,
   },
   "trick-or-treat-legion-guide": {
@@ -809,10 +814,10 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | --- | --- | --- |
 | [Legion of the Dead](/es/cards/legion-of-the-dead) ★ | 7 | Legendaria de tipo hechizo: llena tu tablero de Zombies (2⚔️/2❤️) |
 | [Bullseye](/es/cards/bullseye) | 1 | Hechizo: 3 de daño a CUALQUIER personaje |
-| [Bagheera](/es/cards/bagheera) | 1 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Thumbelina](/es/cards/thumbelina) | 1 | 2/2, sin habilidad |
+| [Bagheera](/es/cards/bagheera) | 2 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Morgiana](/es/cards/morgiana) | 2 | 2/3; impide que se activen TODAS las habilidades Al revelar en su ubicación |
-| [Mind Palace](/es/cards/mind-palace) | 2 | Hechizo: roba 2 cartas |
+| [Mind Palace](/es/cards/mind-palace) | 3 | Hechizo: roba 2 cartas |
 | [Asanbosam](/es/cards/asanbosam) | 3 | 5/5; Al revelar descarta una carta aleatoria de coste par |
 | [Golden Egg](/es/cards/golden-egg) | 3 | 0/1; Al morir invoca una Golden Goose (5/5) en su espacio |
 | [Flying Monkey](/es/cards/flying-monkey) | 3 | 4/1; Al revelar mueve a CUALQUIER otro personaje a un espacio aleatorio de su ubicación |
@@ -821,7 +826,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | [White Queen](/es/cards/white-queen) | 4 | 3/3; Al revelar devuelve a CUALQUIER personaje a la mano de su dueño |
 | [Impundulu](/es/cards/impundulu) | 5 | 3/6; cuando ataca añade un Lightning Strike a tu mano, que se descarta antes del combate de la ronda siguiente |
 
-Diez unidades y tres hechizos. Las tres cartas baratas no son relleno: este mazo necesita que el tablero sea suyo antes de que llegue la Legendaria, porque los Zombies solo ocupan espacios *libres*.
+Diez unidades y tres hechizos. Las cartas baratas no son relleno: este mazo necesita que el tablero sea suyo antes de que llegue la Legendaria, porque los Zombies solo ocupan espacios *libres*.
 
 ## Cómo gana el mazo
 
@@ -845,11 +850,11 @@ La **Legendaria** cierra la partida en lugar de empezarla: a siete de maná, *Ll
 
 ## Mulligan
 
-La nota del autor es breve y clara: **Bagheera y Thumbelina son inicios perfectos junto a Bullseye**, y **Golden Egg más Boogeyman pueden decidir la partida incluso desde la mano inicial**. Bagheera en un espacio central es un 3/3 por un maná; Thumbelina es un simple 2/2 que, por un maná, da presencia en el tablero sin tener que pensarlo.
+La nota del autor es breve y clara: **Bagheera y Thumbelina son inicios perfectos junto a Bullseye**, y **Golden Egg más Boogeyman pueden decidir la partida incluso desde la mano inicial**. Bagheera en un espacio central es un 3/3 por dos de maná desde el parche 0.7; Thumbelina es un simple 2/2 que, por un maná, da presencia en el tablero sin tener que pensarlo.
 
 ## Ronda a ronda
 
-1. **Rondas 1–2: ocupa espacio a bajo coste.** Bagheera en el centro, Thumbelina donde esperes pelear, Bullseye sobre cualquier cosa con tres de Salud.
+1. **Rondas 1–2: ocupa espacio a bajo coste.** Las dos rondas dan tres de maná, y desde el parche 0.7 Bagheera cuesta dos: Thumbelina o Bullseye en la primera ronda, Bagheera en el centro en la segunda. Thumbelina va donde esperes pelear, Bullseye sobre cualquier cosa con tres de Salud.
 2. **Ronda 3: la primera amenaza.** Asanbosam como 5/5, o el Golden Egg en el carril al que irá Boogeyman en la ronda siguiente.
 3. **Ronda 4: Boogeyman.** Junto al Huevo si lo tienes; si no, junto al cuerpo más pequeño que puedas permitirte perder, y nunca en un carril vacío.
 4. **Rondas 5–6: presión y cartas.** Impundulu empieza a producir Strikes; Mind Palace rellena la mano. El autor lo dice sin rodeos: sin Mind Palace, el mazo se queda sin cartas demasiado pronto.
@@ -870,7 +875,7 @@ Son dos, según la ficha del mazo: **Mind Palace es muy importante para no queda
 ## Adónde ir ahora
 
 - La [ficha del mazo](/es/decks/community/the-trick-or-treat-legion-72c4) tiene la lista con los gráficos, las notas del autor, “Abrir en el deck builder” y el código del juego (KGBLDC…).
-- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche del 21 de septiembre](/es/news/demo-patch-notes-0921).
+- Las estadísticas de las cartas son las de la Demo 2.0 con el [parche 0.7 del 29 de septiembre de 2026](/es/news/patch-0-7), que subió el coste de Bagheera de uno a dos de maná y el de Mind Palace de dos a tres.
 `,
   },
   "three-pigs-midrange-guide": {
@@ -907,11 +912,11 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | Carta | Coste | Función |
 | --- | --- | --- |
 | [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) ★ | 7 | Legendaria: Arrollar y, con su habilidad Al revelar, invoca un Not So Little Pig con Arrollar en cada una de las otras ubicaciones |
-| [Bagheera](/es/cards/bagheera) | 1 | Carta de un maná que crece si se juega en un espacio central |
+| [Bagheera](/es/cards/bagheera) | 2 | Carta de dos de maná que crece si se juega en un espacio central |
 | [Rumple](/es/cards/rumple) | 2 | 2/2 que te da +1 de maná en la ronda siguiente |
 | [Axe Throw](/es/cards/axe-throw) | 2 | 4 de daño a cualquier personaje |
-| [Mind Palace](/es/cards/mind-palace) | 2 | Roba 2 cartas |
 | [Piglet](/es/cards/piglet) | 2 | Al revelar: potencia a los demás aliados de su ubicación |
+| [Mind Palace](/es/cards/mind-palace) | 3 | Roba 2 cartas |
 | [Big Bad Wolf](/es/cards/big-bad-wolf) | 3 | 3/3 que obtiene +1/+1 después de cada combate |
 | [Wicked Witch of the West](/es/cards/wicked-witch-of-the-west) | 3 | 1/5: cuando sobrevive al daño, añade un Flying Monkey a tu mano y se mueve un espacio a la izquierda |
 | [En Passant](/es/cards/en-passant) | 3 | Mueve a un aliado e inflige daño igual a su Poder al personaje de enfrente |
@@ -920,7 +925,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | [Impundulu](/es/cards/impundulu) | 5 | 3/6: cada vez que ataca, añade un Lightning Strike a tu mano |
 | [Ellen Trechend](/es/cards/ellen-trechend) | 8 | Arrollar; con su habilidad Al revelar crece por cada carta enemiga de su ubicación |
 
-Nueve unidades y tres hechizos. Todo salvo Impundulu, los Pigs y Ellen Trechend cuesta tres de maná o menos, y por eso el autor dice que la curva es "muy sólida": siempre hay algo que jugar de la ronda uno a la cuatro.
+Nueve unidades y tres hechizos. Todo salvo Impundulu, los Pigs y Ellen Trechend cuesta tres de maná o menos, y por eso el autor dice que la curva es "muy sólida": siempre hay algo que jugar de la ronda dos a la cuatro. Desde el parche 0.7, ninguna carta de la lista cuesta un maná.
 
 ## Cómo gana el mazo
 
@@ -938,7 +943,7 @@ Busca siempre **Bagheera, Ali Baba, Big Bad Wolf y Rumple**: dan un buen inicio 
 
 ## Ronda a ronda
 
-1. **Rondas 1–3: toma el tablero.** Bagheera en un espacio central, luego Rumple o Piglet, luego una carta de tres. Rumple en la ronda dos significa cuatro de maná en la ronda tres, o sea, un Wolf más Bagheera o una Witch más un hechizo. La Wicked Witch of the West es el muro del mazo: con cinco de Salud sobrevive a la mayoría de los golpes tempranos, y cada vez que lo hace recibes un Flying Monkey en la mano y ella se mueve un espacio a la izquierda.
+1. **Rondas 1–3: toma el tablero.** Desde el parche 0.7 la lista no tiene cartas de un maná: Bagheera cuesta dos, como Rumple y Piglet, así que una de las tres baja en la ronda dos (Bagheera, siempre en un espacio central) y luego una carta de tres. Rumple en la ronda dos significa cuatro de maná en la ronda tres, o sea, dos cartas de dos, por ejemplo Bagheera más Piglet o Axe Throw. La Wicked Witch of the West es el muro del mazo: con cinco de Salud sobrevive a la mayoría de los golpes tempranos, y cada vez que lo hace recibes un Flying Monkey en la mano y ella se mueve un espacio a la izquierda.
 2. **Rondas 4–6: elige un carril y presiona.** Ali Baba quiere golpear una barrera: cada vez que lo hace, robas. Frog Prince es o un 5/2 que intercambia a su favor o un 2/5 que aguanta un carril; elige después de ver lo que ha revelado el rival. Impundulu baja en la ronda cinco y empieza a producir Lightning Strikes desde su primer ataque.
 3. **Rondas 7–8: los finalizadores.** Los Pigs en la siete (o en la seis con un Rumple la ronda anterior), Ellen Trechend en la ocho, en la ubicación donde el rival tenga más cartas. Usa En Passant en la misma ronda para llevar una amenaza adonde no se la espera, o para quitar de en medio al único bloqueador que estorba.
 
@@ -950,7 +955,7 @@ La ficha del mazo es clara sobre el principal punto débil: "salirse de la curva
 
 - La [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311) tiene la lista con los gráficos de curva de maná, sagas y palabras clave, las notas del autor, el botón “Abrir en el deck builder” para el [deck builder](/es/deck-builder) y el código del juego (KGBLDC…) para pegar en Origins.
 - [Matchups, interacciones clave y Conquest](/es/guides/three-pigs-midrange-matchups) es la segunda parte de esta guía.
-- Las estadísticas de las cartas son las del parche de la demo del 21 de septiembre de 2026, comprobadas en el juego el 22 de septiembre. Varias cartas de esta lista se retocaron en los parches 0.6.2 y 0.6.3, y el 21 de septiembre Frog Prince dejó de borrar las mejoras que ya tenía: consulta el historial de cambios de equilibrio en la ficha de cada carta.
+- Las estadísticas de las cartas son las del parche de la demo del 21 de septiembre de 2026, comprobadas en el juego el 22 de septiembre, con los cambios del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026: Bagheera ahora cuesta dos de maná y Mind Palace, tres. Varias cartas de esta lista se retocaron en los parches 0.6.2 y 0.6.3, y el 21 de septiembre Frog Prince dejó de borrar las mejoras que ya tenía: consulta el historial de cambios de equilibrio en la ficha de cada carta.
 `,
   },
   "three-pigs-midrange-matchups": {
@@ -974,7 +979,7 @@ La ficha del mazo es clara sobre el principal punto débil: "salirse de la curva
     body: `
 ## Antes de empezar
 
-Esta es la segunda parte de la guía de **3 Pigs Mid Range**, el mazo midrange liderado por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026. La [primera parte](/es/guides/three-pigs-midrange-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y el formato para el que está etiquetado el mazo. Las notas del autor están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
+Esta es la segunda parte de la guía de **3 Pigs Mid Range**, el mazo midrange liderado por [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026. La [primera parte](/es/guides/three-pigs-midrange-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y el formato para el que está etiquetado el mazo. Las notas del autor están en la [ficha del mazo](/es/decks/community/3-pigs-mid-range-6311); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre y del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre, que subió el coste de Bagheera a dos de maná y el de Mind Palace a tres, están en el [MetaShifting](/es/metashifting).
 
 ## Cinco interacciones que conviene conocer
 
@@ -1045,7 +1050,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | [Shahrazad](/es/cards/shahrazad) | 2 | 1/4: cura 1 de daño de tu barrera cada vez que una carta entra en tu mano |
 | [Ali Baba](/es/cards/ali-baba) | 3 | 2/3 que roba una carta cuando daña la barrera rival |
 | [Jill](/es/cards/jill) | 3 | 2/4: cura 2 de daño de tu barrera cada vez que recibe daño |
-| [Spellbook](/es/cards/spellbook) | 3 | Durante el resto de la partida, un hechizo aleatorio en la mano al inicio de cada ronda |
+| [Spellbook](/es/cards/spellbook) | 4 | Durante el resto de la partida, un hechizo aleatorio en la mano al inicio de cada ronda |
 | [Phuong Hoang](/es/cards/phuong-hoang) | 4 | Renacer, Mover; obtiene +1/+1 cada vez que se cura a un aliado o una barrera |
 | [Jekyll](/es/cards/jekyll) | 4 | Al revelar cura 3; si sigue en la mano después del combate, se convierte en Hyde, un 5/3 con Arrollar |
 | [Searing Light](/es/cards/searing-light) | 4 | 4 de daño a un enemigo y 4 de curación a tu barrera de esa ubicación |
@@ -1083,8 +1088,8 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
 
 ## Ronda a ronda
 
-1. **Rondas 1–3: preparación.** Scarecrow o Baby Bear en la dos, Spellbook o Ali Baba en la tres. Spellbook es la mejor jugada de la ronda tres: a partir de ahí empiezas cada ronda con un hechizo extra, y Shahrazad convierte cada uno de ellos en una curación.
-2. **Rondas 4–5: Van Helsing y las primeras curaciones.** Van Helsing en la cuatro, o Jekyll para curar una unidad o una barrera dañada. Phuong Hoang baja cuando hay al menos una fuente de curación en el tablero. Boitata en la cinco: a partir de ahí, el daño de hechizos y habilidades a cualquiera de tus barreras se inflige en cambio a la barrera rival de esa ubicación.
+1. **Rondas 1–3: preparación.** Scarecrow o Baby Bear en la dos, Ali Baba en la tres. Spellbook, que desde el parche 0.7 cuesta cuatro, ya no cabe en la ronda tres.
+2. **Rondas 4–5: Spellbook, Van Helsing y las primeras curaciones.** En la cuatro, Spellbook, Van Helsing y Jekyll cuestan lo mismo: desde la ronda en que juegas Spellbook empiezas cada ronda con un hechizo extra, y Shahrazad convierte cada uno de ellos en una curación; Van Helsing añade sus Tools antes de cada combate; Jekyll cura una unidad o una barrera dañada. Phuong Hoang baja cuando hay al menos una fuente de curación en el tablero. Boitata en la cinco: a partir de ahí, el daño de hechizos y habilidades a cualquiera de tus barreras se inflige en cambio a la barrera rival de esa ubicación.
 3. **Rondas 6–7: estabilizar.** Los ocho puntos de curación de Tin Woodman en la barrera bajo presión, Searing Light sobre la mayor amenaza, las Tools en cada combate.
 4. **Ronda 8 o 9: Forbidden Knowledge.** Todo muere, en los dos lados. Tu lado pierde menos: Baby Bear te deja Papa Bear en la mano, un Jekyll guardado en la mano ya se ha convertido en Hyde, las Tools vuelven antes del siguiente combate y llevas toda la partida robando más cartas que el rival.
 
@@ -1092,7 +1097,7 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
 
 - La [ficha del mazo](/es/decks/community/healing-healsing-9411) tiene la lista con los gráficos de curva de maná y palabras clave, las notas del autor, el botón “Abrir en el deck builder” para el [deck builder](/es/deck-builder) y el código del juego (KGBLDC…) para pegar en Origins.
 - [Matchups, interacciones clave y errores que evitar](/es/guides/healing-healsing-matchups) es la segunda parte de esta guía.
-- Las estadísticas de las cartas son las del parche de la demo del 21 de septiembre de 2026, comprobadas en el juego el 22 de septiembre. Scarecrow, Van Helsing's Tools y otras cartas de esta lista cambiaron en los parches 0.6.2 y 0.6.3, y desde el 21 de septiembre Wooden Stake también puede elegir personajes con la Salud completa: consulta el historial de cambios de equilibrio en la ficha de cada carta.
+- Las estadísticas de las cartas son las del parche de la demo del 21 de septiembre de 2026, comprobadas en el juego el 22 de septiembre, con los cambios del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026: Spellbook ahora cuesta cuatro de maná y los hechizos que añade ya no pueden ser Spellbook. Scarecrow, Van Helsing's Tools y otras cartas de esta lista cambiaron en los parches 0.6.2 y 0.6.3, y desde el 21 de septiembre Wooden Stake también puede elegir personajes con la Salud completa: consulta el historial de cambios de equilibrio en la ficha de cada carta.
 `,
   },
   "healing-healsing-matchups": {
@@ -1116,7 +1121,7 @@ Conserva **Ali Baba, Baby Bear, Scarecrow, Van Helsing y Spellbook**. Contra maz
     body: `
 ## Antes de empezar
 
-Esta es la segunda parte de la guía de **Healing Healsing**, el mazo de control de Van Helsing que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026 como primer mazo de la comunidad del sitio. La [primera parte](/es/guides/healing-healsing-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y los errores que más caro se pagan. Las notas del autor están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre están en el [MetaShifting](/es/metashifting).
+Esta es la segunda parte de la guía de **Healing Healsing**, el mazo de control de Van Helsing que [Davdas](/es/authors/davdas), del staff de OriginsMeta, publicó el 15 de septiembre de 2026 como primer mazo de la comunidad del sitio. La [primera parte](/es/guides/healing-healsing-guide) trata la lista, el plan de juego, el mulligan y el juego ronda a ronda. Aquí vemos las interacciones que deciden las partidas, los matchups y los errores que más caro se pagan. Las notas del autor están en la [ficha del mazo](/es/decks/community/healing-healsing-9411); la lectura de los matchups que sigue es de OriginsMeta y se basa en los textos de las cartas del parche 0.6.3; los cambios del parche de la demo del 21 de septiembre y del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre, que subió el coste de Spellbook a cuatro de maná, están en el [MetaShifting](/es/metashifting).
 
 ## Cinco interacciones que conviene conocer
 
@@ -1155,7 +1160,7 @@ El mazo está etiquetado solo para la ladder, pero encaja en una selección de m
     faq: [
       {
         q: "¿Cuándo es el Steam Next Fest de octubre de 2026?",
-        a: "Del lunes 19 de octubre a las 10:00, hora del Pacífico (13:00 hora del Este, 18:00 en el Reino Unido y 19:00 en Europa central), al lunes 26 de octubre de 2026. Origins TCG participa con su demo gratuita, actualizada el 21 de septiembre, y con el festival se activa la clasificatoria.",
+        a: "Del lunes 19 de octubre a las 10:00, hora del Pacífico (13:00 hora del Este, 18:00 en el Reino Unido y 19:00 en Europa central), al lunes 26 de octubre de 2026. Origins TCG participa con su demo gratuita, actualizada el 21 y el 29 de septiembre, y con el festival se activa la clasificatoria.",
       },
       {
         q: "¿Cuándo es el torneo de Origins TCG?",
@@ -1194,7 +1199,7 @@ Con el inicio del Steam Next Fest, Koin activa la **clasificatoria**, "con recom
 2. **Playoffs y finales, 24 y 25 de octubre.** La fase de playoffs tiene 256 plazas el día 24 (10:00 EST / 16:00 CEST / 22:00 SGT) y de ella salen cuatro jugadores para las finales del día 25, a las 10:00 EST (15:00 CET / 22:00 SGT). Atención a los relojes: Europa deja el horario de verano la noche del 24, mientras que Estados Unidos lo mantiene hasta el 1 de noviembre, así que un mismo horario de inicio en EST cae una hora antes en los relojes europeos el domingo. Los creadores de contenido reciben invitaciones wildcard directas a los playoffs (pregunta en Discord).
 3. **Formato.** Oficial, según los anuncios del 9 y del 24 de septiembre: **Conquest con tres mazos**, con al menos 8 cartas únicas entre cada par de mazos; las listas se mantienen ocultas hasta el top 4, así que cuando baneas uno de los mazos de tu rival solo ves su Legendaria. **Partidas al mejor de tres y gran final al mejor de cinco**: al mejor de cinco no hay ban y tienes que ganar con los tres mazos. Los detalles, en [nuestro artículo sobre las reglas](/es/news/crimson-cup-format-check-in).
 4. **Check-in.** Se abre dos horas antes de cada clasificatorio y se cierra cinco minutos antes del inicio, junto con la entrega de mazos; después, una breve ventana por orden de llegada reparte las plazas libres entre quienes están en la lista de espera. Si no haces el check-in, no puedes jugar: para el clasificatorio EMEA de las 19:00 CEST, haz el check-in entre las 17:00 y las 18:55.
-5. **Qué build se usa.** El torneo se juega en la demo principal, solo con las cartas disponibles allí: practica con esa versión. El playtest recibirá más actualizaciones y será distinto de la build del torneo. El último parche de equilibrio llega dos semanas antes del Steam Next Fest.
+5. **Qué build se usa.** El torneo se juega en la demo principal, solo con las cartas disponibles allí: practica con esa versión. El playtest recibirá más actualizaciones y será distinto de la build del torneo. El último parche de equilibrio antes del torneo, el [parche 0.7](/es/news/patch-0-7), llegó el 29 de septiembre de 2026, tres semanas antes del primer clasificatorio.
 6. **Premios.** **Premios por un valor de 10.000 dólares**, en palabras de Koin: una carta promocional 1/1 exclusiva del torneo, otras cartas promocionales, sobres digitales, cajas de sobres y cases Alpha, y premios en dinero. No es una bolsa de premios en efectivo: el dinero es una de las cuatro categorías, y Koin prometió la bolsa de premios exacta para la semana siguiente al 24 de septiembre. El torneo se llama **Crimson Cup**: el nombre aparece en las imágenes oficiales de Koin, no es un apodo de la comunidad.
 
 Las inscripciones se hacen en el [Discord oficial](https://discord.gg/originstcg).
@@ -1202,14 +1207,14 @@ Las inscripciones se hacen en el [Discord oficial](https://discord.gg/originstcg
 ## Cómo prepararte en cinco jugadas
 
 1. [Instala la demo gratuita en Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) y juega las misiones: enseñan los tres carriles y los turnos simultáneos.
-2. Lee [Origins TCG explicado en cinco minutos](/es/guides/origins-tcg-explained) y consulta la [base de datos de cartas](/es/cards): las estadísticas son las del parche de la demo del 21 de septiembre, comprobadas carta por carta en el juego.
+2. Lee [Origins TCG explicado en cinco minutos](/es/guides/origins-tcg-explained) y consulta la [base de datos de cartas](/es/cards): las estadísticas son las del parche de la demo del 21 de septiembre, comprobadas carta por carta en el juego, con los cambios del parche 0.7 del 29 de septiembre.
 3. Construye tus tres mazos de Conquest en nuestro [deck builder](/es/deck-builder): avisa si dos mazos tienen la misma Legendaria y cuenta las cartas que cambian entre un mazo y otro. Paso a paso, con mazos reales de la comunidad: [cómo armar tus tres mazos de Conquest](/es/guides/origins-tcg-conquest).
 4. Estudia los [mazos publicados por la comunidad](/es/decks): cada lista incluye sus gráficos de composición, las notas del autor, un botón que la abre en el deck builder y el código del juego para pegarlo en Origins. Publica la tuya con una guía para que otros jugadores la valoren.
 5. Sigue las [noticias](/es/news): resumimos cada anuncio en menos de un día, con el enlace a la fuente.
 
 ## Cómo cubrirá OriginsMeta la semana
 
-Nuestro plan a 25 de septiembre de 2026: publicaremos una noticia al día durante el festival, los mazos del torneo con sus gráficos de composición en cuanto las listas sean públicas (desde el top 4) y la primera tier list de OriginsMeta después de las finales de la Crimson Cup del 25 de octubre, basada en los resultados del torneo y en la cima de la clasificatoria. Fuentes: las publicaciones oficiales en Steam del 4 de agosto, del 25 de agosto, del [9 de septiembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278) y del [21 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1844115010502611), y el [calendario del Steam Next Fest](https://store.steampowered.com/sale/nextfest).
+Nuestro plan a 25 de septiembre de 2026: publicaremos una noticia al día durante el festival, los mazos del torneo con sus gráficos de composición en cuanto las listas sean públicas (desde el top 4) y la primera tier list de OriginsMeta después de las finales de la Crimson Cup del 25 de octubre, basada en los resultados del torneo y en la cima de la clasificatoria. Fuentes: las publicaciones oficiales en Steam del 4 de agosto, del 25 de agosto, del [9 de septiembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278), del [21 de septiembre](https://store.steampowered.com/news/app/4429430/view/1844115010502611) y del [29 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1844751498235283), y el [calendario del Steam Next Fest](https://store.steampowered.com/sale/nextfest).
 `,
   },
   "is-origins-tcg-pay-to-win": {
@@ -1281,7 +1286,7 @@ Como las versiones de colección son cosméticas, una tier list solo tiene que j
       },
       {
         q: "¿En qué idiomas está disponible la demo?",
-        a: "La página de Steam indica cuatro para la interfaz —inglés, francés, italiano y alemán— y audio completo solo en inglés. El 25 de septiembre de 2026 la demo también tenía la interfaz y los textos de las cartas en español, que Steam todavía no indica (comprobado en el juego).",
+        a: "En trece desde el parche 0.7, la actualización de la demo del 29 de septiembre de 2026: inglés, francés, italiano, alemán, español (España), japonés, coreano, polaco, portugués (Brasil), portugués (Portugal), ruso, chino simplificado y español (Latinoamérica). La página de Steam, consultada el 30 de septiembre de 2026, indica los mismos 13 para la interfaz, con audio completo solo en inglés.",
       },
       {
         q: "¿Qué necesito para ejecutarla?",
@@ -1301,7 +1306,7 @@ Como las versiones de colección son cosméticas, una tier list solo tiene que j
 
 La demo de Origins TCG está en Steam desde el **15 de julio de 2026**, gratis, para Windows y macOS. El 25 de septiembre de 2026 tenía reseñas "Muy positivas": el 96 % de 184. Las partidas duran unos siete minutos: los dos jugadores juegan a la vez en tres ubicaciones, sacadas de un conjunto de más de cien que rotan y cambian las reglas del tablero. La demo incluye el tutorial, misiones contra jefes con su propia IA y juego en línea.
 
-Idiomas: la página de Steam indica **inglés, francés, italiano y alemán** para la interfaz y audio completo **solo en inglés**. El 25 de septiembre de 2026 la demo también tenía la interfaz y los textos de las cartas en **español**, que Steam todavía no indica (comprobado en el juego).
+Idiomas: desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026, el juego admite **13 idiomas**: inglés, francés, italiano, alemán, español (España), japonés, coreano, polaco, portugués (Brasil), portugués (Portugal), ruso, chino simplificado y español (Latinoamérica). La página de Steam, consultada el 30 de septiembre de 2026, indica los mismos 13 para la interfaz, con audio completo **solo en inglés**.
 
 ## Requisitos
 
@@ -1317,7 +1322,7 @@ Idiomas: la página de Steam indica **inglés, francés, italiano y alemán** pa
 2. **Abre la [página de Origins TCG Demo](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/)** y haz clic en "Descargar Origins TCG Demo"; o busca "Origins TCG" dentro de Steam y elige la demo. La instalación tarda un par de minutos.
 3. **Elige el idioma** si Steam no lo ha hecho: clic derecho sobre el juego en tu biblioteca, Propiedades, Idioma. El doblaje está en inglés; los demás idiomas traducen la interfaz y los textos.
 4. **Completa el tutorial** y luego las misiones: enseñan los tres carriles, los turnos simultáneos y las palabras clave Al revelar (On Reveal), Al morir (On Death), Primer golpe (First Strike), Ataque doble (Double Attack) y Toque mortal (Deathtouch). Nuestra [guía de cinco minutos](/es/guides/origins-tcg-explained) cuenta lo mismo por escrito.
-5. **Juega en línea** y prueba los mazos predefinidos. Cuando quieras más, consulta los [mazos publicados por la comunidad](/es/decks), reconstrúyelos en el [deck builder](/es/deck-builder) y revisa las estadísticas actuales de las cartas en la [base de datos de cartas](/es/cards) (parche de la demo del 21 de septiembre de 2026).
+5. **Juega en línea** y prueba los mazos predefinidos. Cuando quieras más, consulta los [mazos publicados por la comunidad](/es/decks), reconstrúyelos en el [deck builder](/es/deck-builder) y revisa las estadísticas actuales de las cartas en la [base de datos de cartas](/es/cards) (Demo 2.0 con el parche 0.7 del 29 de septiembre de 2026).
 
 ## Qué desbloquean los jugadores de la demo
 
@@ -1327,7 +1332,7 @@ En la publicación de lanzamiento de julio, Koin Games dijo que quienes juegan l
 
 La demo recibió su primera gran actualización el [21 de septiembre de 2026](https://store.steampowered.com/news/app/4429430/view/1844115010502611): interfaz y tablero nuevos, un tutorial para coleccionistas, sobres de prueba, nuevas voces, cambios de equilibrio y la lista provisional de cartas de la Crimson Cup, junto con los mazos, las cartas y la construcción de mazos probados en los playtests cerrados de agosto. Tu progreso de la demo o del playtest se conserva, el del que esté más avanzado. La clasificatoria se activa con el Steam Next Fest (del 19 al 26 de octubre de 2026): todo sobre las fechas, el torneo y cómo prepararte está en nuestra [página sobre el Steam Next Fest 2026](/es/guides/steam-next-fest-2026). Los playtests de las builds más grandes se anuncian en el [Discord oficial](https://discord.gg/originstcg) y, hasta ahora, ha podido participar todo el que ha querido.
 
-Fuentes: las páginas de Origins TCG y de Origins TCG Demo en Steam (consultadas el 25 de septiembre de 2026) y las publicaciones oficiales en Steam del 16 de julio, del 4 de agosto y del 21 de septiembre de 2026.
+Fuentes: las páginas de Origins TCG y de Origins TCG Demo en Steam (consultadas el 25 y el 30 de septiembre de 2026) y las publicaciones oficiales en Steam del 16 de julio, del 4 de agosto, del 21 y del 29 de septiembre de 2026.
 `,
   },
   "origins-tcg-kickstarter": {
@@ -1453,11 +1458,11 @@ La demo tiene un tutorial, misiones contra jefes con su propia IA y juego en lí
 
 1. Instala la demo gratuita desde la [página de Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/). Quienes juegan la demo ganan coleccionables exclusivos que se podrán intercambiar cuando salga el juego completo.
 2. Únete al [Discord oficial](https://discord.gg/originstcg) para los torneos, los AMA con el equipo y los playtests de las próximas builds.
-3. La página de Steam indica inglés, francés, italiano y alemán para la interfaz, con audio completo solo en inglés; el 25 de septiembre de 2026 la demo también tenía la interfaz y los textos de las cartas en español, que Steam todavía no indica (comprobado en el juego). La versión móvil está prevista para 2027.
+3. Desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026, el juego admite 13 idiomas: inglés, francés, italiano, alemán, español (España), japonés, coreano, polaco, portugués (Brasil), portugués (Portugal), ruso, chino simplificado y español (Latinoamérica). La página de Steam, consultada el 30 de septiembre de 2026, indica los mismos 13 para la interfaz, con audio completo solo en inglés. La versión móvil está prevista para 2027.
 
 ## Hacia dónde va el juego
 
-La página de Steam indica el lanzamiento para el cuarto trimestre de 2026, sin una fecha más precisa. La demo recibió su primera gran actualización el 21 de septiembre de 2026, la clasificatoria se activa con el Steam Next Fest (del 19 al 26 de octubre de 2026) y el mayor torneo del estudio hasta la fecha, la Crimson Cup, se juega del 20 al 25 de octubre. El 25 de septiembre el menú principal de la demo mostraba el Kickstarter como "Coming soon – Oct 27". Consulta el [roadmap](/es/guides/roadmap-and-dates) y nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
+La página de Steam indica el lanzamiento para el cuarto trimestre de 2026, sin una fecha más precisa. La demo recibió su primera gran actualización el 21 de septiembre de 2026 y el parche 0.7, el último de equilibrio antes del torneo, el 29 de septiembre; la clasificatoria se activa con el Steam Next Fest (del 19 al 26 de octubre de 2026) y el mayor torneo del estudio hasta la fecha, la Crimson Cup, se juega del 20 al 25 de octubre. El 25 de septiembre el menú principal de la demo mostraba el Kickstarter como "Coming soon – Oct 27". Consulta el [roadmap](/es/guides/roadmap-and-dates) y nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
 `,
   },
   "roadmap-and-dates": {
@@ -1512,10 +1517,11 @@ La página de Steam indica el lanzamiento para el cuarto trimestre de 2026, sin 
 | 17 de septiembre | [El CEO de Koin Games da la fecha del Kickstarter](https://x.com/TimothyJooste/status/2100700207285445011): la campaña de la Alpha Edition empieza el 27 de octubre |
 | 21 de septiembre | [Primera gran actualización de la demo](https://store.steampowered.com/news/app/4429430/view/1844115010502611): interfaz y tablero nuevos, tutorial para coleccionistas, sobres de prueba, cambios de equilibrio, lista provisional de cartas de la Crimson Cup |
 | 24 de septiembre | [Reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in): Conquest con tres mazos, check-in |
+| 29 de septiembre | [Parche 0.7](/es/news/patch-0-7), el último de equilibrio antes de la Crimson Cup: rework de Twister Toss, Bagheera, Mind Palace y Spellbook cuestan uno más, las ubicaciones tienen rareza, 13 idiomas |
 
 ## Lo que viene
 
-- **Del 19 al 26 de octubre de 2026.** Steam Next Fest: la clasificatoria se activa en la demo, con recompensas exclusivas. El último parche de equilibrio antes del festival se espera dos semanas antes.
+- **Del 19 al 26 de octubre de 2026.** Steam Next Fest: la clasificatoria se activa en la demo, con recompensas exclusivas.
 - **Del 20 al 25 de octubre de 2026.** La Crimson Cup, el torneo del Steam Next Fest: clasificatorios regionales los días 20, 21 y 22, y después playoffs y finales. Premios por un valor de 10.000 dólares, entre ellos una carta promocional 1/1 exclusiva.
 - **27 de octubre de 2026.** El Kickstarter de la Alpha Edition, anunciado por el CEO de Koin Games el 17 de septiembre; el menú principal de la demo también lo muestra como "Coming soon – Oct 27". Todo lo que hay que saber, en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
 - **Cuarto trimestre de 2026.** Lanzamiento en Steam, según la página de la tienda, que no da una fecha más precisa.

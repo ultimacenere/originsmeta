@@ -86,7 +86,8 @@ describe("guide della community nelle sitemap", () => {
     const hub = (l: Locale, data: Data = community) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
     assert.equal(hub("es"), "2026-10-01");
     assert.equal(hub("it"), "2026-09-30");
-    assert.ok(hub("es", EMPTY_COMMUNITY)! < "2026-09-30", "senza guide della community la data del modello e delle editoriali");
+    // le guide editoriali arrivano al 30/09/2026 (patch 0.7): senza la guida spagnola del 01/10 la data resta prima
+    assert.ok(hub("es", EMPTY_COMMUNITY)! < "2026-10-01", "senza guide della community la data del modello e delle editoriali");
     // una lingua senza guide della community da mostrare resta com'era
     const noIt: Data = { ...community, communityGuides: { ...community.communityGuides, hub: { es: "2026-10-01T09:00:00+00:00" } } };
     for (const l of ["en", "it"] as const) assert.equal(hub(l, noIt), hub(l, EMPTY_COMMUNITY), l);

@@ -97,9 +97,9 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 0, total: 16 };
     assert.equal(
       lead("spellbook", "es", decks),
-      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 3 de maná y es Neutral. Está en la Demo 2.0 (verificado en el juego el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
+      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la Demo 2.0 (verificado en el juego el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
     );
-    assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 3 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
+    assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 4 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
   });
 
   test("una carta creata: non si aggiunge nel deck builder e chi la genera, con la catena dai testi", () => {

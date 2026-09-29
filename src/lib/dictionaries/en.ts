@@ -602,6 +602,7 @@ export const en = {
     clear: "Clear filters",
     source: "Location names and effects refer to {patch}.",
     notVerified: "We have not checked them one by one in the game yet: we will, as we did for the cards, and this line will say so.",
+    rarity: "Since patch 0.7 of 29 September 2026 every location has a rarity, common, rare, very rare or ultra rare, which decides how often it shows up. The patch notes don't say which location has which rarity.",
     verified: "Checked one by one in the game: {n} locations.",
     guideCta: "Read the locations guide",
   },
@@ -839,6 +840,8 @@ export const en = {
     description: "Free Origins TCG deck builder: 1 Legendary plus 12 base cards, legality checks, Conquest mode for three decks, shareable links and in-game codes.",
     dataKicker: "Card data",
     dataNotice: "Cards up to date with Demo 2.0 as of {date}: costs, stats and text of all {count} cards checked one by one in the game, including the {patchDate} patch.",
+    // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
+    dataNoticePatch: "Cards checked one by one in the game on {date}: costs, stats and text of all {count} cards. The {patchDate} patch came out afterwards: its changes come from the official patch notes, and the texts it changed have not been checked in the game yet.",
     rulesTitle: "Deck rules",
     rules: ["1 Legendary card leads the deck.", "12 different base cards; the game adds the second copy of each automatically.", "25 cards in play: 1 + 12 × 2."],
     rulesSource: "Source: Koin Games team AMA. Conquest mode follows the Crimson Cup rule announced on 24 September 2026: at least 8 unique cards between any two decks (each card counts once, whatever its copies).",

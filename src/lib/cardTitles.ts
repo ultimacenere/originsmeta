@@ -38,8 +38,8 @@ export type TextSource = {
 
 /**
  * Il testo della carta nei nostri dati è superato da una modifica dello storico? Contano le sole modifiche del testo
- * (senza statistiche prima/dopo, senza allineamento e senza modifiche ai mazzi: per esempio il danno di una magia, che
- * sta nel testo):
+ * (senza statistiche prima/dopo, senza allineamento, senza modifiche ai mazzi e senza le correzioni `fix`, che cambiano
+ * come funziona la carta ma non il testo: per esempio il danno di una magia, che sta nel testo):
  * - carte della collezione della demo (attive e non create): il testo è stato letto nel gioco (`verified`), quindi
  *   conta solo una patch uscita dopo quel giorno;
  * - carte create e rimosse: non stanno nella collezione, quindi nessuno le ha rilette nel gioco, e il testo importato
@@ -48,11 +48,13 @@ export type TextSource = {
  * Esempio: Silver Bullet, carta creata, nel database dice ancora "Deal 3 damage to ANY character." anche se la 0.6.2,
  * uscita prima dell'import della 0.6.3, ha portato il danno a 1 (e la patch della demo del 21/09/2026 le fa colpire
  * anche le barriere). Il testo resta sulla scheda, con lo storico sotto; la description e i dati strutturati non lo citano.
+ * Carta della collezione: Twister Toss, rifatta dalla 0.7 del 29/09/2026 ("moves an ally to any space"), finché il testo
+ * nuovo non si legge nel gioco e `cardsVerified` non passa quel giorno.
  */
 export function textOutdated(card: Pick<Card, "status" | "type" | "history">, src: TextSource): boolean {
   const inCollection = card.status === "active" && card.type !== "token";
   return card.history.some((h) => {
-    if (h.kind === "deck" || (h.from && h.to) || h.alignment) return false;
+    if (h.kind === "deck" || h.fix || (h.from && h.to) || h.alignment) return false;
     return inCollection ? (src.dates[h.patch] ?? "") > src.verified : true;
   });
 }

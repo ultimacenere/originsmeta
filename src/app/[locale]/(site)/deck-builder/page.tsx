@@ -69,7 +69,9 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
         <p className="felt-panel-mint mt-5 flex max-w-4xl flex-wrap items-baseline gap-x-3 gap-y-1 p-4 text-sm text-chalk">
           <span className="kicker text-mint">{b.dataKicker}</span>
           <span>
-            {fill(b.dataNotice, {
+            {/* Se l'ultima patch è uscita dopo la verifica sul gioco (la 0.7 del 29/09/2026 rispetto al 22/09), la nota non
+                può dire che è stata verificata: dice che i suoi cambi vengono dalle patch notes. */}
+            {fill(patches[latestPatch].date > cardsVerified.date ? b.dataNoticePatch : b.dataNotice, {
               date: formatDate(locale, cardsVerified.date),
               count: String(cardsVerified.count),
               patchDate: formatDate(locale, patches[latestPatch].date),

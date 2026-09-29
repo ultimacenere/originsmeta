@@ -91,6 +91,8 @@ export default async function LocationsPage({ params }: { params: LocaleParams }
           {t.source.replace("{patch}", patchLabel(locationsPatch, locale))}{" "}
           {locationsVerified ? t.verified.replace("{n}", String(locationsVerified.count)) : t.notVerified}
         </p>
+        {/* Patch 0.7 del 29/09/2026: i luoghi hanno una rarità, ma le patch notes non dicono quale; va qui e non fra i fatti (griglia a tre) */}
+        <p className="mt-3">{t.rarity}</p>
         <p className="mt-3">
           <Link href={href(locale, "/guides/origins-tcg-locations")} className="link-mint font-bold">
             {t.guideCta} →

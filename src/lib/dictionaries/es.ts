@@ -601,6 +601,7 @@ export const es: Dictionary = {
     clear: "Borrar filtros",
     source: "Los nombres y los efectos de las ubicaciones se refieren a la versión {patch}; los efectos en español son una traducción de OriginsMeta, con el glosario oficial del juego.",
     notVerified: "Todavía no las hemos comprobado una por una en el juego: lo haremos, como con las cartas, y esta línea lo dirá.",
+    rarity: "Desde el parche 0.7 del 29 de septiembre de 2026 cada ubicación tiene una rareza, común, rara, muy rara o ultra rara, que decide con qué frecuencia aparece. Las notas del parche no dicen qué rareza tiene cada ubicación.",
     verified: "Comprobadas una por una en el juego: {n} ubicaciones.",
     guideCta: "Lee la guía de las ubicaciones",
   },
@@ -837,6 +838,8 @@ export const es: Dictionary = {
     description: "Deck builder gratuito de Origins TCG: 1 Legendaria más 12 cartas base, control de legalidad, modo Conquest para tres mazos, enlaces y códigos del juego.",
     dataKicker: "Datos de las cartas",
     dataNotice: "Cartas actualizadas a la Demo 2.0 del {date}: costes, estadísticas y textos de las {count} cartas comprobados uno a uno en el juego, incluido el parche del {patchDate}.",
+    // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
+    dataNoticePatch: "Cartas comprobadas una a una en el juego el {date}: costes, estadísticas y textos de las {count} cartas. El parche del {patchDate} salió después: sus cambios vienen de las notas oficiales del parche, y los textos que cambió todavía no se han comprobado en el juego.",
     rulesTitle: "Reglas del mazo",
     rules: ["1 carta Legendaria lidera el mazo.", "12 cartas base distintas; el juego añade automáticamente la segunda copia de cada una.", "25 cartas en juego: 1 + 12 × 2."],
     rulesSource: "Fuente: AMA del equipo de Koin Games. El modo Conquest sigue la regla de la Crimson Cup anunciada el 24 de septiembre de 2026: al menos 8 cartas únicas entre dos mazos cualesquiera (cada carta cuenta una vez, sin importar sus copias).",

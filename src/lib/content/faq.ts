@@ -75,8 +75,9 @@ const en: Faq[] = [
   {
     id: "languages",
     q: "What languages is Origins TCG in?",
-    a: "The Steam page lists English, French, Italian and German for the interface, with full audio in English only (read on 25 September 2026). On 25 September 2026 the demo also had its interface and card texts in Spanish, which Steam does not list yet (checked in the game). To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian and Spanish, with the game's own card texts in each.",
+    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian and Spanish, with the game's own card texts in each.",
     guides: ["play-the-demo"],
+    news: [{ slug: "patch-0-7", label: "Patch 0.7 notes" }],
     keywords: ["language", "english", "italian", "spanish", "french", "german", "translated", "translation", "subtitles", "voice", "espanol", "italiano"],
   },
   {
@@ -156,7 +157,7 @@ const en: Faq[] = [
   {
     id: "legendaries",
     q: "Which Legendaries are in the Origins TCG demo?",
-    a: "There are 11 in the Demo 2.0, as of the demo patch of 21 September 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
+    a: "There are 11 in the Demo 2.0, as of patch 0.7 of 29 September 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Card database" }],
@@ -182,8 +183,11 @@ const en: Faq[] = [
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "Costs, stats, alignments and texts of the 122 cards of the Demo 2.0 were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts. They are the numbers of the demo patch of 21 September 2026; balance changes come from the official patch notes on Steam. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
-    news: [{ slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" }],
+    a: "Costs, stats, alignments and texts of the 122 cards of the Demo 2.0 were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    news: [
+      { slug: "patch-0-7", label: "Patch 0.7 notes" },
+      { slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" },
+    ],
     keywords: ["stats", "source", "sources", "data", "accurate", "verified", "checked"],
   },
 ];
@@ -199,8 +203,9 @@ const it: Faq[] = [
   {
     id: "languages",
     q: "In che lingue è Origins TCG?",
-    a: "Secondo la pagina Steam l'interfaccia è in inglese, francese, italiano e tedesco e l'audio completo solo in inglese (letta il 25 settembre 2026). Il 25 settembre 2026 la demo aveva anche interfaccia e testi delle carte in spagnolo, che Steam non elenca ancora (verificato nel gioco). Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese e spagnolo, con i testi delle carte del gioco in ogni lingua.",
+    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese e spagnolo, con i testi delle carte del gioco in ogni lingua.",
     guides: ["play-the-demo"],
+    news: [{ slug: "patch-0-7", label: "Patch notes della 0.7" }],
     keywords: ["lingua", "lingue", "italiano", "inglese", "spagnolo", "francese", "tedesco", "tradotto", "traduzione", "sottotitoli", "doppiaggio", "ita"],
   },
   {
@@ -280,7 +285,7 @@ const it: Faq[] = [
   {
     id: "legendaries",
     q: "Quali Leggendarie ci sono nella demo di Origins TCG?",
-    a: "Nella Demo 2.0 ce ne sono 11, con la patch della demo del 21 settembre 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
+    a: "Nella Demo 2.0 ce ne sono 11, con la patch 0.7 del 29 settembre 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Database carte" }],
@@ -306,8 +311,11 @@ const it: Faq[] = [
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Costi, statistiche, allineamenti e testi delle 122 carte della Demo 2.0 sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco. Sono i numeri della patch della demo del 21 settembre 2026; i bilanciamenti vengono dalle patch notes ufficiali su Steam. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
-    news: [{ slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" }],
+    a: "Costi, statistiche, allineamenti e testi delle 122 carte della Demo 2.0 sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    news: [
+      { slug: "patch-0-7", label: "Patch notes della 0.7" },
+      { slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" },
+    ],
     keywords: ["statistiche", "fonte", "fonti", "dati", "affidabili", "verificate", "verificati"],
   },
 ];
@@ -323,8 +331,9 @@ const es: Faq[] = [
   {
     id: "languages",
     q: "¿Origins TCG está en español?",
-    a: "La demo, sí: el 25 de septiembre de 2026 tenía la interfaz y los textos de las cartas en español (comprobado en el juego), aunque la página de Steam todavía no lo indica. Steam indica inglés, francés, italiano y alemán para la interfaz, con audio completo solo en inglés (consultada el 25 de septiembre de 2026). Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés e italiano, con los textos de las cartas del juego en cada idioma.",
+    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés e italiano, con los textos de las cartas del juego en cada idioma.",
     guides: ["play-the-demo"],
+    news: [{ slug: "patch-0-7", label: "Notas del parche 0.7" }],
     keywords: ["idioma", "idiomas", "espanol", "castellano", "ingles", "italiano", "frances", "aleman", "traducido", "traduccion", "subtitulos", "doblaje"],
   },
   {
@@ -404,7 +413,7 @@ const es: Faq[] = [
   {
     id: "legendaries",
     q: "¿Qué Legendarias hay en la demo de Origins TCG?",
-    a: "En la Demo 2.0 hay 11, con el parche de la demo del 21 de septiembre de 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
+    a: "En la Demo 2.0 hay 11, con el parche 0.7 del 29 de septiembre de 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
@@ -430,8 +439,11 @@ const es: Faq[] = [
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la Demo 2.0 se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego. Son los números del parche de la demo del 21 de septiembre de 2026; los cambios de equilibrio vienen de las notas oficiales de los parches en Steam. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
-    news: [{ slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" }],
+    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la Demo 2.0 se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    news: [
+      { slug: "patch-0-7", label: "Notas del parche 0.7" },
+      { slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" },
+    ],
     keywords: ["estadisticas", "fuente", "fuentes", "datos", "fiables", "verificadas", "comprobadas"],
   },
 ];

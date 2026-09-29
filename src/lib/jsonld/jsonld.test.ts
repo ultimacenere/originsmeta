@@ -435,7 +435,7 @@ describe("autori", () => {
 });
 
 describe("news della patch del 21 settembre", () => {
-  test('"patch 0.7" nel testo e nelle FAQ, in ogni lingua (i creator la chiamano così, Steam non le dà un numero)', () => {
+  test('"patch 0.7" nel testo e nelle FAQ, in ogni lingua (i creator la chiamavano così; dal 29/09 è il nome della patch successiva)', () => {
     const item = newsData.news.find((n) => n.slug === "demo-patch-notes-0921");
     assert.ok(item);
     // un articolo già uscito che cambia dichiara la data (lastmod della sitemap, dateModified); il paragrafo
@@ -449,8 +449,12 @@ describe("news della patch del 21 settembre", () => {
         `${l}: FAQ`,
       );
     }
-    // "parche 0.7" non è documentato fra i creator (le fonti sono video in inglese): il testo non lo attribuisce a loro
-    assert.doesNotMatch(item.body?.es ?? "", /parche 0\.7/);
-    assert.ok(item.faq?.es?.every((f) => !/parche 0\.7/.test(f.a)));
+    // "parche 0.7" non è documentato fra i creator (le fonti sono video in inglese): il testo non lo attribuisce a loro.
+    // Dal 30/09/2026 "parche 0.7" è il nome ufficiale dell'aggiornamento del 29/09 (news `patch-0-7`), e l'articolo lo usa
+    // solo per quello, con il link.
+    const creators = /creadores de contenido[^.]*parche 0\.7/;
+    assert.doesNotMatch(item.body?.es ?? "", creators);
+    assert.ok(item.faq?.es?.every((f) => !creators.test(f.a)));
+    for (const l of locales) assert.match(item.body?.[l] ?? "", new RegExp(`/${l}/news/patch-0-7\\)`), `${l}: link alla patch 0.7`);
   });
 });

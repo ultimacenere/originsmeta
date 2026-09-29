@@ -70,6 +70,415 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Patch 0.7 del 29/09/2026 (richiesta di Pierluigi del 30/09: "uscita la patchnote, bisogna fare subito articolo").
+    // Fonti: il post Steam del 29/09 alle 19:37 UTC (gid 1844751498235283, stesso testo che Pierluigi ha incollato, con in
+    // più la frase "This time around we've focused on balance and card fixes") e l'immagine ufficiale "Steam Demo Update #2
+    // – 0.7", che è la copertina. I conteggi dei mazzi sono una fotografia della tabella community_decks (mazzi pubblicati,
+    // carte uniche per mazzo, come "Le più giocate") alle 00:13 del 30/09 ora italiana. Le carte che riportano una carta in
+    // mano (White Queen, Stroke of Midnight, Koschei, Dracula) vengono dai loro testi, non dalle patch notes.
+    slug: "patch-0-7",
+    image: "/media/news-patch-07.webp",
+    cards: ["twister-toss", "bagheera", "mind-palace", "spellbook", "humpty", "heroic-charge", "freeze", "dorothy", "boogeyman", "trash-for-treasure", "white-queen", "stroke-of-midnight", "koschei", "dracula"],
+    guides: ["steam-next-fest-2026", "origins-tcg-conquest", "dorothy-combo-guide", "origins-tcg-locations"],
+    date: "2026-09-29",
+    title: n(
+      "Patch 0.7, the last balance patch before the Crimson Cup: Twister Toss reworked, three cards cost more",
+      "Patch 0.7, l'ultima di bilanciamento prima della Crimson Cup: Twister Toss rifatta, tre carte costano di più",
+      "Parche 0.7, el último de equilibrio antes de la Crimson Cup: rework de Twister Toss y tres cartas más caras",
+    ),
+    metaTitle: n("Origins TCG patch 0.7 notes: Twister Toss and three nerfs", "Patch 0.7 di Origins TCG: Twister Toss e tre nerf", "Parche 0.7 de Origins TCG: Twister Toss y tres nerfs"),
+    description: n(
+      "Origins TCG patch 0.7, the last balance patch before the Crimson Cup: Twister Toss reworked, Bagheera, Mind Palace and Spellbook cost 1 more.",
+      "Patch 0.7 di Origins TCG, l'ultima prima della Crimson Cup: Twister Toss rifatta, Bagheera, Mind Palace e Spellbook costano 1 in più, luoghi con rarità.",
+      "Parche 0.7 de Origins TCG, el último antes de la Crimson Cup: rework de Twister Toss; Bagheera, Mind Palace y Spellbook cuestan 1 más.",
+    ),
+    summary: n(
+      "Patch 0.7, the second update of the demo, is the last balance patch before the Crimson Cup. Twister Toss is reworked, Bagheera, Mind Palace and Spellbook cost 1 more mana, and locations now come up by rarity. It also fixes Humpty, Spellbook, Heroic Charge and multiple Defenders, and brings the game to 13 languages.",
+      "La patch 0.7, secondo aggiornamento della demo, è l'ultima di bilanciamento prima della Crimson Cup. Twister Toss cambia effetto, Bagheera, Mind Palace e Spellbook costano 1 mana in più e i luoghi ora compaiono in base alla rarità. Corregge anche Humpty, Spellbook, Heroic Charge e i Difensori multipli, e porta il gioco a 13 lingue.",
+      "El parche 0.7, la segunda actualización de la demo, es el último de equilibrio antes de la Crimson Cup. Twister Toss recibe un rework, Bagheera, Mind Palace y Spellbook cuestan 1 de maná más y las ubicaciones ahora aparecen según su rareza. También corrige Humpty, Spellbook, Heroic Charge y los Defensores múltiples, y lleva el juego a 13 idiomas.",
+    ),
+    highlights: {
+      en: [
+        { label: "The last balance patch before the Crimson Cup", text: "out on 29 September, three weeks before the first qualifier", anchor: "crimson-cup" },
+        { label: "Twister Toss reworked", text: "it moves an ally to any space and swaps it with the card already there", anchor: "twister-toss" },
+        { label: "Three cards cost 1 more", text: "Bagheera 2, Mind Palace 3, Spellbook 4", anchor: "costs" },
+        { label: "Humpty and Spellbook no longer give themselves", anchor: "humpty-spellbook" },
+        { label: "Full hand", text: "a returned card now burns instead of the ability fizzling", anchor: "full-hand" },
+        { label: "Heroic Charge and Defender fixed", anchor: "bug-fixes" },
+        { label: "Locations have a rarity", text: "common, rare, very rare or ultra rare", anchor: "locations" },
+        { label: "13 languages in the game", anchor: "languages" },
+        { label: "Boogeyman", text: "the notes say it changes, not how", anchor: "boogeyman" },
+      ],
+      it: [
+        { label: "L'ultima patch di bilanciamento prima della Crimson Cup", text: "uscita il 29 settembre, tre settimane prima della prima qualificazione", anchor: "crimson-cup" },
+        { label: "Twister Toss cambia effetto", text: "muove un alleato in qualsiasi spazio e lo scambia con la carta che c'è già", anchor: "twister-toss" },
+        { label: "Tre carte costano 1 in più", text: "Bagheera 2, Mind Palace 3, Spellbook 4", anchor: "costi" },
+        { label: "Humpty e Spellbook non danno più sé stessi", anchor: "humpty-spellbook" },
+        { label: "Mano piena", text: "la carta riportata ora brucia invece di far fallire l'abilità", anchor: "mano-piena" },
+        { label: "Heroic Charge e Difensori corretti", anchor: "bug" },
+        { label: "I luoghi hanno una rarità", text: "comune, rara, molto rara o ultra rara", anchor: "luoghi" },
+        { label: "13 lingue nel gioco", anchor: "lingue" },
+        { label: "Boogeyman", text: "le note dicono che cambia, non come", anchor: "boogeyman" },
+      ],
+      es: [
+        { label: "El último parche de equilibrio antes de la Crimson Cup", text: "salió el 29 de septiembre, tres semanas antes del primer clasificatorio", anchor: "crimson-cup" },
+        { label: "Rework de Twister Toss", text: "mueve a un aliado a cualquier espacio y lo intercambia con la carta que ya está allí", anchor: "twister-toss" },
+        { label: "Tres cartas cuestan 1 más", text: "Bagheera 2, Mind Palace 3, Spellbook 4", anchor: "costes" },
+        { label: "Humpty y Spellbook ya no se dan a sí mismos", anchor: "humpty-spellbook" },
+        { label: "Mano llena", text: "la carta devuelta ahora se quema en lugar de que la habilidad falle", anchor: "mano-llena" },
+        { label: "Correcciones de Heroic Charge y Defensor", anchor: "errores" },
+        { label: "Las ubicaciones tienen rareza", text: "común, rara, muy rara o ultra rara", anchor: "ubicaciones" },
+        { label: "13 idiomas en el juego", anchor: "idiomas" },
+        { label: "Boogeyman", text: "las notas dicen que cambia, no cómo", anchor: "boogeyman" },
+      ],
+    },
+    body: n(
+      `## The last balance patch before the Crimson Cup {#crimson-cup}
+
+"This is the FINAL balance patch before the tournament", the team writes. The Crimson Cup starts on 20 October with the EMEA qualifier, during Steam Next Fest, and is played in three-deck Conquest ([the rules](/en/news/crimson-cup-format-check-in)). On 24 September the team had said the last balance patch would come two weeks before the festival: it arrived on 29 September, three weeks before. If the plan holds, these are the costs and stats the tournament will be played with.
+
+The official image calls it Steam Demo Update #2, version 0.7: it is the second update of the demo, after [the one of 21 September](/en/news/demo-patch-notes-0921).
+
+## All the balance changes {#balance}
+
+Format: mana · Power/Health for characters, mana only for spells.
+
+| Card | Before | After | What changes |
+| --- | --- | --- | --- |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | costs 1 more |
+| Mind Palace | 2 | 3 | costs 1 more |
+| Spellbook | 3 | 4 | costs 1 more; its random spells can no longer be Spellbook |
+| Twister Toss | 1 | 1 | reworked: moves an ally to any space, swapping it with the card already there |
+
+No Legendary changes cost, stats or ability: Dorothy only gets a clearer explanation of her keywords.
+
+## Twister Toss reworked {#twister-toss}
+
+Until now Twister Toss, a 1-mana spell, did one thing: move an ally. After the rework it moves an ally to any space, and if another card is already there, the two swap places.
+
+It can also target occupied spaces. The team gives two examples:
+
+- move a character away and then right back in the same round;
+- destroy your character with Trash for Treasure and immediately move another character into its space.
+
+On OriginsMeta Twister Toss is in three published decks, among them the [Dorothy Combo](/en/guides/dorothy-combo-guide): Dorothy grows every time an ally moves. The patch notes don't give the new text of the card: its page shows the old one, with a warning, until we read the new one in the game.
+
+## Three cards cost 1 more {#costs}
+
+Among the 35 decks published on OriginsMeta (count at 00:13 CEST on 30 September), Mind Palace is in 22 and Spellbook in 17: they are the two most played cards on the site. Bagheera is in 13. The full ranking is in [the most played cards](/en/tier-list/most-played).
+
+### Bagheera: 2 mana {#bagheera}
+
+Bagheera stays a 1/1 whose On Reveal ability gives it +2⚔️/+2❤️ on a middle space. At 1 mana it was a 3/3 from the first round; now it comes down on round two at the earliest.
+
+### Mind Palace: 3 mana {#mind-palace}
+
+The spell that draws 2 cards now costs 3.
+
+### Spellbook: 4 mana {#spellbook}
+
+For the rest of the game Spellbook adds a random spell to your hand at the start of each round, to be played before combat or it is discarded. It now costs 4, and its random spells can no longer be Spellbook.
+
+## Ability changes and fixes {#fixes}
+
+### Humpty and Spellbook no longer give themselves {#humpty-spellbook}
+
+The random cards they give you can no longer be themselves. Humpty's On Death ability adds a random card to your hand: it can no longer be Humpty. The random spell Spellbook adds every round can no longer be Spellbook.
+
+### Full hand: a returned card burns {#full-hand}
+
+When a card is returned to a hand that is already full, it now burns (it is lost) instead of the ability fizzling. Among the cards of the Demo 2.0, this concerns the ones that return a card to hand: White Queen and Stroke of Midnight, which return ANY character to its owner's hand, and Koschei and Dracula, which return themselves.
+
+### Freeze! and Dorothy: keywords explained {#keywords}
+
+Hovering over them now explains the keywords they use, and they turn up in the collection's keyword search.
+
+## Bug fixes {#bug-fixes}
+
+### Heroic Charge {#heroic-charge}
+
+Heroic Charge gives allies +2⚔️ and Trample this round. If a character it buffed loses its abilities, the +2⚔️ now stays; Trample is still removed.
+
+### More than one Defender {#defenders}
+
+When you have more than one Defender at a location and one of them is stunned, the other one now always defends instead.
+
+## Locations now have a rarity {#locations}
+
+Every location is now common, rare, very rare or ultra rare, and the rarity decides how often it shows up. The team puts it this way: expect the familiar ones in most matches, and a few you'll only see "once in a blue moon". The patch notes don't say which location has which rarity: the [Locations](/en/locations) page lists all the locations of the Demo 2.0 with their effects, and we'll add the rarity as soon as we know it.
+
+## 13 languages in the game {#languages}
+
+The game now supports 13 languages: English, French, Italian, German, Spanish (Spain), Japanese, Korean, Polish, Portuguese (Brazil), Portuguese (Portugal), Russian, Simplified Chinese and Spanish (Latin America). On 30 September the Steam page lists the same 13 for the interface, with full audio in English only.
+
+## Boogeyman {#boogeyman}
+
+The summary at the top of the patch notes says that "Twister Toss, Heroic Charge and Boogeyman now behave differently", but no line of the notes says what changes for Boogeyman. Its On Reveal ability destroys the ally at its location with the lowest Power, even itself. We'll update this article when the team explains it.
+
+## What we don't know yet {#unknowns}
+
+- Which location has which rarity.
+- The new text of Twister Toss, and whether a swap counts as one move or two for Dorothy.
+- What changes for Boogeyman.
+
+## What changes on OriginsMeta {#on-the-site}
+
+- The pages of Bagheera, Mind Palace and Spellbook show the new cost, and every card in the patch has the change in its balance history, with a link to the Steam post.
+- The page of Twister Toss still shows the old text, with a warning, until we read the new one in the game.
+- [MetaShifting](/en/metashifting) lists patch 0.7 at the top, and the [deck builder](/en/deck-builder) uses the new costs: Bagheera is now a 2-drop in the mana curve.
+- Published decks keep their list, with the date they were created and the patch live that day; their mana curve uses the new costs. The deck guides with these cards are updated.
+
+## Where these notes come from {#sources}
+
+- The official Steam post of 29 September, "A small demo update is about to land!", published before the servers went down for the patch.
+- The number 0.7 and the name Steam Demo Update #2 come from the official image of the update, the cover of this article. Some creators had called the 21 September update "patch 0.7": on this site that one stays "Demo · 21 Sep".`,
+      `## L'ultima patch di bilanciamento prima della Crimson Cup {#crimson-cup}
+
+"Questa è l'ULTIMA patch di bilanciamento prima del torneo", scrive il team. La Crimson Cup parte il 20 ottobre con la qualificazione EMEA, durante lo Steam Next Fest, e si gioca in Conquest a tre mazzi ([le regole](/it/news/crimson-cup-format-check-in)). Il 24 settembre il team aveva detto che l'ultima patch di bilanciamento sarebbe arrivata due settimane prima del festival: è arrivata il 29 settembre, tre settimane prima. Se il programma regge, sono questi i costi e le statistiche con cui si giocherà il torneo.
+
+L'immagine ufficiale la chiama Steam Demo Update #2, versione 0.7: è il secondo aggiornamento della demo, dopo [quello del 21 settembre](/it/news/demo-patch-notes-0921).
+
+## Tutte le modifiche di bilanciamento {#bilanciamento}
+
+Formato: mana · Potenza/Salute per i personaggi, solo il mana per le magie.
+
+| Carta | Prima | Dopo | Cosa cambia |
+| --- | --- | --- | --- |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | costa 1 in più |
+| Mind Palace | 2 | 3 | costa 1 in più |
+| Spellbook | 3 | 4 | costa 1 in più; le sue magie casuali non possono più essere Spellbook |
+| Twister Toss | 1 | 1 | rifatta: muove un alleato in qualsiasi spazio, scambiandolo con la carta che c'è già |
+
+Nessuna Leggendaria cambia costo, statistiche o abilità: Dorothy riceve solo una spiegazione più chiara delle sue parole chiave.
+
+## Twister Toss cambia effetto {#twister-toss}
+
+Finora Twister Toss, una magia da 1 mana, faceva una cosa sola: muovere un alleato. Dopo il rework muove un alleato in qualsiasi spazio e, se lì c'è già un'altra carta, le due si scambiano di posto.
+
+Ora può anche bersagliare spazi occupati. Il team fa due esempi:
+
+- spostare un personaggio e riportarlo indietro nello stesso round;
+- distruggere un tuo personaggio con Trash for Treasure e spostarne subito un altro nel suo spazio.
+
+Su OriginsMeta Twister Toss è in tre mazzi pubblicati, fra cui il [Dorothy Combo](/it/guides/dorothy-combo-guide): Dorothy cresce ogni volta che un alleato si muove. Le patch notes non danno il testo nuovo della carta: la sua scheda mostra quello vecchio, con un avviso, finché non leggiamo il nuovo nel gioco.
+
+## Tre carte costano 1 in più {#costi}
+
+Fra i 35 mazzi pubblicati su OriginsMeta (conteggio delle 00:13 del 30 settembre, ora italiana), Mind Palace è in 22 e Spellbook in 17: sono le due carte più giocate del sito. Bagheera è in 13. La classifica completa è nelle [carte più giocate](/it/tier-list/most-played).
+
+### Bagheera: 2 mana {#bagheera}
+
+Bagheera resta un 1/1: la sua abilità Alla rivelazione gli dà +2⚔️/+2❤️ su uno spazio centrale. A 1 mana era un 3/3 già al primo round; ora scende al secondo round, non prima.
+
+### Mind Palace: 3 mana {#mind-palace}
+
+La magia che pesca 2 carte ora costa 3.
+
+### Spellbook: 4 mana {#spellbook}
+
+Per il resto della partita Spellbook aggiunge alla tua mano una magia casuale all'inizio di ogni round, da giocare prima del combattimento, altrimenti viene scartata. Ora costa 4, e le sue magie casuali non possono più essere Spellbook.
+
+## Abilità cambiate e correzioni {#correzioni}
+
+### Humpty e Spellbook non danno più sé stessi {#humpty-spellbook}
+
+Le carte casuali che ti danno non possono più essere loro stesse. L'abilità Alla morte di Humpty aggiunge alla tua mano una carta casuale: non può più essere Humpty. La magia casuale che Spellbook aggiunge a ogni round non può più essere Spellbook.
+
+### Mano piena: la carta riportata brucia {#mano-piena}
+
+Quando una carta viene riportata in una mano già piena, ora brucia (va persa) invece di far fallire l'abilità. Fra le carte della Demo 2.0 riguarda quelle che riportano una carta in mano: White Queen e Stroke of Midnight, che riportano QUALSIASI personaggio nella mano del suo proprietario, e Koschei e Dracula, che tornano loro stessi in mano.
+
+### Freeze! e Dorothy: parole chiave spiegate {#parole-chiave}
+
+Al passaggio del mouse ora spiegano le parole chiave che usano, e compaiono nella ricerca per parola chiave della collezione.
+
+## Correzioni di bug {#bug}
+
+### Heroic Charge {#heroic-charge}
+
+Heroic Charge dà agli alleati +2⚔️ e Travolgere in questo round. Se un personaggio che ha potenziato perde le abilità, il +2⚔️ ora resta; Travolgere viene comunque tolto.
+
+### Più Difensori nello stesso luogo {#difensori}
+
+Se hai più Difensori in un luogo e uno di loro è stordito, ora a difendere è sempre l'altro.
+
+## I luoghi hanno una rarità {#luoghi}
+
+Ogni luogo ora ha una rarità, comune, rara, molto rara o ultra rara, che decide quanto spesso compare. Il team la spiega così: quelli familiari si vedranno nella maggior parte delle partite, alcuni solo molto di rado. Le patch notes non dicono quale luogo ha quale rarità: la pagina dei [Luoghi](/it/locations) li elenca tutti con i loro effetti, e aggiungeremo la rarità appena la conosceremo.
+
+## 13 lingue nel gioco {#lingue}
+
+Il gioco ora supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), giapponese, coreano, polacco, portoghese (Brasile), portoghese (Portogallo), russo, cinese semplificato e spagnolo (America latina). Il 30 settembre la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese.
+
+## Boogeyman {#boogeyman}
+
+Il riassunto in cima alle patch notes dice che "Twister Toss, Heroic Charge e Boogeyman ora si comportano in modo diverso", ma nessuna riga delle note spiega che cosa cambia per Boogeyman. La sua abilità Alla rivelazione distrugge l'alleato nel suo luogo con la ⚔️ più bassa, anche sé stesso. Aggiorneremo l'articolo quando il team lo spiegherà.
+
+## Cosa non sappiamo ancora {#cosa-non-sappiamo}
+
+- Quale luogo ha quale rarità.
+- Il testo nuovo di Twister Toss, e se per Dorothy uno scambio di posto conta come uno o due movimenti.
+- Che cosa cambia per Boogeyman.
+
+## Cosa cambia su OriginsMeta {#sul-sito}
+
+- Le schede di Bagheera, Mind Palace e Spellbook mostrano il costo nuovo, e ogni carta della patch ha la modifica nello storico dei bilanciamenti, con il link al post su Steam.
+- La scheda di Twister Toss mostra ancora il testo vecchio, con un avviso, finché non leggiamo il nuovo nel gioco.
+- Il [MetaShifting](/it/metashifting) mette la patch 0.7 in cima, e il [deck builder](/it/deck-builder) usa i costi nuovi: Bagheera ora conta come carta da 2 nella curva di mana.
+- I mazzi pubblicati tengono la loro lista, con la data in cui sono stati creati e la patch in vigore quel giorno; la loro curva di mana usa i costi nuovi. Le guide ai mazzi con queste carte sono aggiornate.
+
+## Da dove arrivano queste note {#fonti}
+
+- Il post ufficiale su Steam del 29 settembre, "A small demo update is about to land!", pubblicato prima che i server si fermassero per la patch.
+- Il numero 0.7 e il nome Steam Demo Update #2 vengono dall'immagine ufficiale dell'aggiornamento, la copertina di questo articolo. Alcuni creator avevano chiamato "patch 0.7" l'aggiornamento del 21 settembre: sul sito quello resta "Demo · 21 set".`,
+      `## El último parche de equilibrio antes de la Crimson Cup {#crimson-cup}
+
+"Este es el ÚLTIMO parche de equilibrio antes del torneo", escribe el equipo. La Crimson Cup empieza el 20 de octubre con el clasificatorio EMEA, durante el Steam Next Fest, y se juega en Conquest con tres mazos ([las reglas](/es/news/crimson-cup-format-check-in)). El 24 de septiembre el equipo había dicho que el último parche de equilibrio llegaría dos semanas antes del festival: llegó el 29 de septiembre, tres semanas antes. Si el plan se mantiene, estos son los costes y las estadísticas con los que se jugará el torneo.
+
+La imagen oficial lo llama Steam Demo Update #2, versión 0.7: es la segunda actualización de la demo, después de [la del 21 de septiembre](/es/news/demo-patch-notes-0921).
+
+## Todos los cambios de equilibrio {#equilibrio}
+
+Formato: maná · Poder/Salud para los personajes, solo el maná para los hechizos.
+
+| Carta | Antes | Después | Qué cambia |
+| --- | --- | --- | --- |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | cuesta 1 más |
+| Mind Palace | 2 | 3 | cuesta 1 más |
+| Spellbook | 3 | 4 | cuesta 1 más; sus hechizos aleatorios ya no pueden ser Spellbook |
+| Twister Toss | 1 | 1 | rework: mueve a un aliado a cualquier espacio y lo intercambia con la carta que ya está allí |
+
+Ninguna Legendaria cambia de coste, estadísticas ni habilidad: Dorothy solo recibe una explicación más clara de sus palabras clave.
+
+## Rework de Twister Toss {#twister-toss}
+
+Hasta ahora Twister Toss, un hechizo de coste 1, hacía una sola cosa: mover a un aliado. Tras el rework mueve a un aliado a cualquier espacio y, si ya hay otra carta allí, las dos intercambian sus posiciones.
+
+Ahora también puede elegir como objetivo espacios ocupados. El equipo da dos ejemplos:
+
+- mover a un personaje y devolverlo a su sitio en la misma ronda;
+- destruir a tu personaje con Trash for Treasure y mover de inmediato a otro personaje a su espacio.
+
+En OriginsMeta Twister Toss está en tres mazos publicados, entre ellos el [Dorothy Combo](/es/guides/dorothy-combo-guide): Dorothy crece cada vez que un aliado se mueve. Las notas del parche no dan el nuevo texto de la carta: su página muestra el antiguo, con un aviso, hasta que leamos el nuevo en el juego.
+
+## Tres cartas cuestan 1 más {#costes}
+
+De los 35 mazos publicados en OriginsMeta (recuento a las 00:13 CEST del 30 de septiembre), Mind Palace está en 22 y Spellbook en 17: son las dos cartas más jugadas del sitio. Bagheera está en 13. La clasificación completa está en [las cartas más jugadas](/es/tier-list/most-played).
+
+### Bagheera: coste 2 {#bagheera}
+
+Bagheera sigue siendo un 1/1 cuya habilidad Al revelar le da +2⚔️/+2❤️ en un espacio central. Con coste 1 era un 3/3 desde la primera ronda; ahora llega en la segunda ronda como pronto.
+
+### Mind Palace: coste 3 {#mind-palace}
+
+El hechizo que roba 2 cartas ahora cuesta 3.
+
+### Spellbook: coste 4 {#spellbook}
+
+Durante el resto de la partida, Spellbook añade un hechizo aleatorio a tu mano al comienzo de cada ronda, que debes jugar antes del combate o se descarta. Ahora cuesta 4, y sus hechizos aleatorios ya no pueden ser Spellbook.
+
+## Cambios de habilidad y correcciones {#correcciones}
+
+### Humpty y Spellbook ya no se dan a sí mismos {#humpty-spellbook}
+
+Las cartas aleatorias que te dan ya no pueden ser ellas mismas. La habilidad Al morir de Humpty añade una carta aleatoria a tu mano: ya no puede ser Humpty. El hechizo aleatorio que Spellbook añade cada ronda ya no puede ser Spellbook.
+
+### Mano llena: la carta devuelta se quema {#mano-llena}
+
+Cuando una carta se devuelve a una mano que ya está llena, ahora se quema (se pierde) en lugar de que la habilidad falle. Entre las cartas de la Demo 2.0, afecta a las que devuelven una carta a la mano: White Queen y Stroke of Midnight, que devuelven a CUALQUIER personaje a la mano de su dueño, y Koschei y Dracula, que vuelven ellos mismos a la mano.
+
+### Freeze! y Dorothy: palabras clave explicadas {#palabras-clave}
+
+Al pasar el ratón por encima ahora explican las palabras clave que usan, y aparecen en la búsqueda por palabra clave de la colección.
+
+## Corrección de errores {#errores}
+
+### Heroic Charge {#heroic-charge}
+
+Heroic Charge da a los aliados +2⚔️ y Arrollar esta ronda. Si un personaje al que ha potenciado pierde sus habilidades, el +2⚔️ ahora se mantiene; Arrollar se sigue quitando.
+
+### Varios Defensores en la misma ubicación {#defensores}
+
+Si tienes varios Defensores en una ubicación y uno de ellos está aturdido, ahora defiende siempre el otro.
+
+## Las ubicaciones tienen rareza {#ubicaciones}
+
+Cada ubicación es ahora común, rara, muy rara o ultra rara, y la rareza decide con qué frecuencia aparece. El equipo lo explica así: las conocidas saldrán en la mayoría de las partidas, y algunas solo muy de vez en cuando. Las notas del parche no dicen qué rareza tiene cada ubicación: la página de [Ubicaciones](/es/locations) las muestra todas con sus efectos, y añadiremos la rareza en cuanto la conozcamos.
+
+## 13 idiomas en el juego {#idiomas}
+
+El juego ahora admite 13 idiomas: inglés, francés, italiano, alemán, español (España), japonés, coreano, polaco, portugués (Brasil), portugués (Portugal), ruso, chino simplificado y español (Latinoamérica). El 30 de septiembre la página de Steam indica los mismos 13 para la interfaz, con audio completo solo en inglés.
+
+## Boogeyman {#boogeyman}
+
+El resumen al principio de las notas del parche dice que "Twister Toss, Heroic Charge y Boogeyman ahora se comportan de otra manera", pero ninguna línea de las notas explica qué cambia para Boogeyman. Su habilidad Al revelar destruye al aliado de su ubicación con menor ⚔️, incluso a sí mismo. Actualizaremos el artículo cuando el equipo lo explique.
+
+## Lo que todavía no sabemos {#lo-que-no-sabemos}
+
+- Qué rareza tiene cada ubicación.
+- El nuevo texto de Twister Toss, y si para Dorothy un intercambio de posiciones cuenta como uno o dos movimientos.
+- Qué cambia para Boogeyman.
+
+## Qué cambia en OriginsMeta {#en-el-sitio}
+
+- Las páginas de Bagheera, Mind Palace y Spellbook muestran el nuevo coste, y cada carta del parche tiene el cambio en su historial de equilibrio, con el enlace a la publicación de Steam.
+- La página de Twister Toss sigue mostrando el texto antiguo, con un aviso, hasta que leamos el nuevo en el juego.
+- [MetaShifting](/es/metashifting) pone el parche 0.7 arriba, y el [deck builder](/es/deck-builder) usa los nuevos costes: Bagheera ahora cuenta como carta de coste 2 en la curva de maná.
+- Los mazos publicados conservan su lista, con la fecha en que se crearon y el parche vigente ese día; su curva de maná usa los nuevos costes. Las guías de mazos con estas cartas están actualizadas.
+
+## De dónde vienen estas notas {#fuentes}
+
+- La publicación oficial de Steam del 29 de septiembre, "A small demo update is about to land!", publicada antes de que los servidores se detuvieran para el parche.
+- El número 0.7 y el nombre Steam Demo Update #2 vienen de la imagen oficial de la actualización, la portada de este artículo. Algunos creadores de contenido habían llamado "patch 0.7" a la actualización del 21 de septiembre: en este sitio esa sigue siendo "Demo · 21 sep".`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "What changed in Origins TCG patch 0.7?",
+          a: "Twister Toss is reworked; Bagheera (1 → 2 mana), Mind Palace (2 → 3) and Spellbook (3 → 4) cost 1 more; locations now have a rarity that decides how often they show up; Humpty and Spellbook can no longer give themselves; a card returned to a full hand now burns; Heroic Charge and multiple Defenders are fixed; the game supports 13 languages.",
+        },
+        {
+          q: "Is patch 0.7 the last balance patch before the Crimson Cup?",
+          a: "Yes: the team calls it the final balance patch before the tournament. It came out on 29 September 2026; the Crimson Cup starts on 20 October with the EMEA qualifier, during Steam Next Fest.",
+        },
+        {
+          q: "How does Twister Toss work after patch 0.7?",
+          a: "It still costs 1 mana. It moves an ally to any space, and if another card is already there, the two swap places. It can also target occupied spaces: you can move a character away and back in the same round, or destroy one with Trash for Treasure and move another into its space.",
+        },
+      ],
+      it: [
+        {
+          q: "Cosa cambia con la patch 0.7 di Origins TCG?",
+          a: "Twister Toss cambia effetto; Bagheera (da 1 a 2 mana), Mind Palace (da 2 a 3) e Spellbook (da 3 a 4) costano 1 in più; i luoghi hanno una rarità che decide quanto spesso compaiono; Humpty e Spellbook non possono più dare sé stessi; una carta riportata in una mano piena ora brucia; si correggono Heroic Charge e i Difensori multipli; il gioco supporta 13 lingue.",
+        },
+        {
+          q: "La patch 0.7 è l'ultima di bilanciamento prima della Crimson Cup?",
+          a: "Sì: il team la chiama l'ultima patch di bilanciamento prima del torneo. È uscita il 29 settembre 2026; la Crimson Cup parte il 20 ottobre con la qualificazione EMEA, durante lo Steam Next Fest.",
+        },
+        {
+          q: "Come funziona Twister Toss dopo la patch 0.7?",
+          a: "Costa sempre 1 mana. Muove un alleato in qualsiasi spazio e, se lì c'è già un'altra carta, le due si scambiano di posto. Può anche bersagliare spazi occupati: puoi spostare un personaggio e riportarlo indietro nello stesso round, oppure distruggerne uno con Trash for Treasure e spostarne un altro nel suo spazio.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Qué cambia con el parche 0.7 de Origins TCG?",
+          a: "Twister Toss recibe un rework; Bagheera (de 1 a 2 de maná), Mind Palace (de 2 a 3) y Spellbook (de 3 a 4) cuestan 1 más; las ubicaciones tienen una rareza que decide con qué frecuencia aparecen; Humpty y Spellbook ya no pueden darse a sí mismos; una carta devuelta a una mano llena ahora se quema; se corrigen Heroic Charge y los Defensores múltiples; el juego admite 13 idiomas.",
+        },
+        {
+          q: "¿El parche 0.7 es el último de equilibrio antes de la Crimson Cup?",
+          a: "Sí: el equipo lo llama el último parche de equilibrio antes del torneo. Salió el 29 de septiembre de 2026; la Crimson Cup empieza el 20 de octubre con el clasificatorio EMEA, durante el Steam Next Fest.",
+        },
+        {
+          q: "¿Cómo funciona Twister Toss después del parche 0.7?",
+          a: "Sigue costando 1 de maná. Mueve a un aliado a cualquier espacio y, si ya hay otra carta allí, las dos intercambian sus posiciones. También puede elegir como objetivo espacios ocupados: puedes mover a un personaje y devolverlo a su sitio en la misma ronda, o destruir a uno con Trash for Treasure y mover a otro a su espacio.",
+        },
+      ],
+    },
+    url: "https://store.steampowered.com/news/app/4429430/view/1844751498235283",
+    source: "steam",
+  },
+  {
     // Terza news "Upgrade Meta" (richiesta di Pierluigi del 29/09/2026: "una newsletter con tutte le novità sviluppate sul
     // sito questa settimana", poi "rimuovi la parte del sito in spagnolo che abbiamo già annunciato"): solo quello che le
     // news del 24 e del 25/9 non raccontano (niente spagnolo, ricerca nel testo, tier list rifatta, Luoghi, Discord). La
@@ -516,6 +925,8 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
     image: "/media/news-crimson-cup-rules.webp",
     guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-09-24",
+    // 30/09/2026: l'ultima patch di bilanciamento è uscita il 29/09 (patch 0.7): "In breve", sezione #balance e "Cosa non sappiamo"
+    updated: "2026-09-30",
     title: n(
       "Crimson Cup rules: three-deck Conquest, decklists hidden until the top 4 and a check-in you can't miss",
       "Regole della Crimson Cup: Conquest a tre mazzi, liste segrete fino alla top 4 e check-in obbligatorio",
@@ -541,7 +952,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Best-of-five without a ban", text: "you have to win with all three decks", anchor: "best-of-five" },
         { label: "Check-in", text: "opens two hours before, closes five minutes before the start with deck submission", anchor: "check-in" },
         { label: "Practise on the demo", text: "the playtest will get updates the tournament won't have", anchor: "demo-playtest" },
-        { label: "Last balance patch", text: "two weeks before Steam Next Fest", anchor: "balance" },
+        { label: "Last balance patch", text: "out on 29 September: patch 0.7", anchor: "balance" },
         { label: "Prizes", text: "10,000 dollars, the exact prize pool next week", anchor: "prizes" },
       ],
       it: [
@@ -550,7 +961,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Al meglio delle cinque senza ban", text: "bisogna vincere con tutti e tre i mazzi", anchor: "al-meglio-delle-cinque" },
         { label: "Check-in", text: "apre due ore prima, chiude cinque minuti prima dell'inizio con la consegna dei mazzi", anchor: "check-in" },
         { label: "Allenarsi sulla demo", text: "il playtest avrà aggiornamenti che il torneo non avrà", anchor: "demo-playtest" },
-        { label: "Ultima patch di bilanciamento", text: "due settimane prima dello Steam Next Fest", anchor: "bilanciamento" },
+        { label: "Ultima patch di bilanciamento", text: "uscita il 29 settembre: è la patch 0.7", anchor: "bilanciamento" },
         { label: "Premi", text: "10.000 dollari, la ripartizione esatta la settimana prossima", anchor: "premi" },
       ],
       es: [
@@ -559,7 +970,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Al mejor de cinco sin ban", text: "tienes que ganar con los tres mazos", anchor: "al-mejor-de-cinco" },
         { label: "Check-in", text: "abre dos horas antes y cierra cinco minutos antes del inicio, con la entrega de mazos", anchor: "check-in" },
         { label: "Entrena en la demo", text: "el playtest tendrá actualizaciones que el torneo no tendrá", anchor: "demo-playtest" },
-        { label: "Último parche de equilibrio", text: "dos semanas antes del Steam Next Fest", anchor: "equilibrio" },
+        { label: "Último parche de equilibrio", text: "salió el 29 de septiembre: es el parche 0.7", anchor: "equilibrio" },
         { label: "Premios", text: "10.000 dólares; el reparto exacto de la bolsa de premios, la próxima semana", anchor: "premios" },
       ],
     },
@@ -601,6 +1012,8 @@ You can play both, but the tournament is held on the main demo and only with the
 
 The last balance patch will arrive two weeks before Steam Next Fest, which starts on 19 October. We will track it card by card in [MetaShifting](/en/metashifting).
 
+**Update, 30 September:** the last balance patch came out earlier than announced, on 29 September. It is [patch 0.7](/en/news/patch-0-7), which the team calls the final balance patch before the tournament: Twister Toss is reworked, and Bagheera, Mind Palace and Spellbook cost 1 more.
+
 ## Prizes {#prizes}
 
 The official post on X talks about a 10,000-dollar prize pool, and the Discord announcement says the exact prize pool will be shared next week. In September Koin described prizes worth 10,000 dollars in total, between an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash ([our article](/en/news/biggest-tournament-ever)).
@@ -609,7 +1022,6 @@ The official post on X talks about a 10,000-dollar prize pool, and the Discord a
 
 - The exact prize pool, due next week.
 - How the unique cards between two decks are counted.
-- The date of the last balance patch: the announcement only says two weeks before the festival.
 
 ## Where this comes from {#sources}
 
@@ -652,6 +1064,8 @@ Si possono giocare tutti e due, ma il torneo si gioca sulla demo principale e so
 
 L'ultima patch di bilanciamento arriverà due settimane prima dello Steam Next Fest, che parte il 19 ottobre. La seguiremo carta per carta in [MetaShifting](/it/metashifting).
 
+**Aggiornamento del 30 settembre:** l'ultima patch di bilanciamento è uscita prima del previsto, il 29 settembre. È la [patch 0.7](/it/news/patch-0-7), che il team chiama l'ultima patch di bilanciamento prima del torneo: Twister Toss cambia effetto, e Bagheera, Mind Palace e Spellbook costano 1 in più.
+
 ## I premi {#premi}
 
 Il post ufficiale su X parla di un montepremi da 10.000 dollari, e l'annuncio su Discord dice che la ripartizione esatta arriverà la settimana prossima. A settembre Koin aveva descritto premi per un valore complessivo di 10.000 dollari, fra una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha e premi in denaro ([il nostro articolo](/it/news/biggest-tournament-ever)).
@@ -660,7 +1074,6 @@ Il post ufficiale su X parla di un montepremi da 10.000 dollari, e l'annuncio su
 
 - La ripartizione esatta dei premi, attesa la settimana prossima.
 - Come si contano le carte uniche fra due mazzi.
-- La data dell'ultima patch di bilanciamento: l'annuncio dice solo due settimane prima del festival.
 
 ## Da dove arriva {#fonti}
 
@@ -703,6 +1116,8 @@ Puedes jugar a los dos, pero el torneo se juega en la demo principal y solo con 
 
 El último parche de equilibrio llegará dos semanas antes del Steam Next Fest, que empieza el 19 de octubre. Lo seguiremos carta por carta en [MetaShifting](/es/metashifting).
 
+**Actualización del 30 de septiembre:** el último parche de equilibrio salió antes de lo anunciado, el 29 de septiembre. Es el [parche 0.7](/es/news/patch-0-7), que el equipo llama el último parche de equilibrio antes del torneo: Twister Toss recibe un rework, y Bagheera, Mind Palace y Spellbook cuestan 1 más.
+
 ## Premios {#premios}
 
 La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y el anuncio en Discord dice que el reparto exacto de la bolsa de premios se dará a conocer la próxima semana. En septiembre Koin describió premios por un valor total de 10.000 dólares, entre una carta promo 1/1 exclusiva, otras cartas promo, sobres digitales, cajas y cases de Alpha, y dinero en efectivo ([nuestro artículo](/es/news/biggest-tournament-ever)).
@@ -711,7 +1126,6 @@ La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y
 
 - El reparto exacto de la bolsa de premios, previsto para la próxima semana.
 - Cómo se cuentan las cartas únicas entre dos mazos.
-- La fecha del último parche de equilibrio: el anuncio solo dice que llegará dos semanas antes del festival.
 
 ## De dónde viene {#fuentes}
 
@@ -1042,8 +1456,9 @@ El buzón de comentarios lleva abierto pocos días y el equipo lee cada mensaje.
     cards: ["dorothy", "wicked-stepmother", "christopher-robin", "guy-of-gisborne", "quasimodo", "beauty", "magic-carpet", "roo", "itsy-bitsy-spider", "silver-bullet", "don-quixote", "heroic-charge", "frog-prince", "wooden-stake"],
     guides: ["steam-next-fest-2026"],
     date: "2026-09-21",
-    // 25/09/2026 (Ondata 2, COMP-08): la nota sul nome "patch 0.7" che usano alcuni creator, nel testo e nelle FAQ
-    updated: "2026-09-25",
+    // 25/09/2026 (Ondata 2, COMP-08): la nota sul nome "patch 0.7" che usano alcuni creator, nel testo e nelle FAQ.
+    // 30/09/2026: il numero 0.7 è ufficialmente quello dell'aggiornamento successivo, del 29/09 (news `patch-0-7`).
+    updated: "2026-09-30",
     title: n(
       "Origins TCG demo patch notes, 21 September: Dorothy costs 4, 14 cards change and The Gallows is fixed",
       "Patch notes della demo del 21 settembre: Dorothy costa 4, cambiano 14 carte e The Gallows è corretto",
@@ -1168,9 +1583,11 @@ The location always destroys the enemy across from the space a character entered
 - The official Steam post of 21 September, the one announcing the update, lists the stat changes and the six cards that change what they do, "compared to the latest playtest build". The team's Reddit post says the same.
 - The version posted on the official Discord adds Christopher Robin, the two game rules and The Gallows. We report it in full.
 
-The patch has no version number: the team calls it the demo patch notes of 21 September. Some creators call it "patch 0.7", but that number is not in the official posts. On this site it appears as "Demo · 21 Sep".
+The patch has no version number: the team calls it the demo patch notes of 21 September. Some creators called it "patch 0.7", but that number is not in the official posts about this update. On this site it appears as "Demo · 21 Sep".
 
 **Update, 25 September:** we added the note on the name "patch 0.7", which some creators use for this update.
+
+**Update, 30 September:** the number 0.7 officially belongs to the next update, Steam Demo Update #2 of 29 September, the last balance patch before the Crimson Cup: all its changes are in [the patch 0.7 notes](/en/news/patch-0-7). The stats in this article are the ones before that patch.
 
 ## What changes on OriginsMeta {#on-the-site}
 
@@ -1255,9 +1672,11 @@ Il luogo distrugge sempre il nemico di fronte allo spazio in cui è entrato il p
 - Il post ufficiale su Steam del 21 settembre, quello che annuncia l'aggiornamento, elenca le modifiche alle statistiche e le sei carte che cambiano effetto, "rispetto all'ultima build del playtest". Il post del team su Reddit dice lo stesso.
 - La versione pubblicata sul Discord ufficiale aggiunge Christopher Robin, le due regole di gioco e The Gallows. La riportiamo per intero.
 
-La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Alcuni creator la chiamano "patch 0.7", ma quel numero non c'è nei post ufficiali. Sul sito compare come "Demo · 21 set".
+La patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre. Alcuni creator la chiamavano "patch 0.7", ma quel numero non c'è nei post ufficiali su questo aggiornamento. Sul sito compare come "Demo · 21 set".
 
 **Aggiornamento del 25 settembre:** abbiamo aggiunto la nota sul nome "patch 0.7", che alcuni creator usano per questo aggiornamento.
+
+**Aggiornamento del 30 settembre:** il numero 0.7 è ufficialmente quello dell'aggiornamento successivo, lo Steam Demo Update #2 del 29 settembre, l'ultima patch di bilanciamento prima della Crimson Cup: tutte le sue modifiche sono nelle [patch notes della 0.7](/it/news/patch-0-7). Le statistiche di questo articolo sono quelle di prima di quella patch.
 
 ## Cosa cambia su OriginsMeta {#sul-sito}
 
@@ -1342,9 +1761,11 @@ La ubicación siempre destruye al enemigo situado frente al espacio en el que en
 - La publicación oficial de Steam del 21 de septiembre, la que anuncia la actualización, enumera los cambios de estadísticas y las seis cartas que cambian lo que hacen, "en comparación con la última build del playtest". La publicación del equipo en Reddit dice lo mismo.
 - La versión publicada en el Discord oficial añade Christopher Robin, las dos reglas de juego y The Gallows. La reproducimos completa.
 
-El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. Algunos creadores de contenido lo llaman "patch 0.7", pero ese número no está en las publicaciones oficiales. En este sitio aparece como "Demo · 21 sep".
+El parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre. Algunos creadores de contenido lo llamaban "patch 0.7", pero ese número no está en las publicaciones oficiales sobre esta actualización. En este sitio aparece como "Demo · 21 sep".
 
 **Actualización del 25 de septiembre:** hemos añadido la nota sobre el nombre "patch 0.7", que algunos creadores de contenido usan para esta actualización.
+
+**Actualización del 30 de septiembre:** el número 0.7 corresponde oficialmente a la actualización siguiente, la Steam Demo Update #2 del 29 de septiembre, el último parche de equilibrio antes de la Crimson Cup: todos sus cambios están en [las notas del parche 0.7](/es/news/patch-0-7). Las estadísticas de este artículo son las de antes de ese parche.
 
 ## Qué cambia en OriginsMeta {#en-el-sitio}
 
@@ -1358,13 +1779,13 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
     faq: {
       en: [
         { q: "What changed in the Origins TCG demo patch of 21 September?", a: "Dorothy costs 4 instead of 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet and Roo change stats; Itsy Bitsy Spider becomes Evil; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet and Wooden Stake change what they do; two game rules and The Gallows location are fixed." },
-        { q: "Is this Origins TCG patch 0.7?", a: "It is the update some creators call patch 0.7, but the patch has no version number: the team calls it the demo patch notes of 21 September 2026, and the changes are compared to the last playtest build, 0.6.3." },
-        { q: "Should I build my Crimson Cup decks on these stats?", a: "Yes: the tentative card list of the tournament arrived with the same update. The team warns that further balance patches can still come before the Crimson Cup, from 20 to 25 October 2026." },
+        { q: "Is this Origins TCG patch 0.7?", a: "No. Some creators called it patch 0.7, but this update has no version number: the team calls it the demo patch notes of 21 September 2026, with the changes compared to the last playtest build, 0.6.3. Patch 0.7 is the next update, Steam Demo Update #2 of 29 September 2026." },
+        { q: "Should I build my Crimson Cup decks on these stats?", a: "On those of patch 0.7, which came after this one: on 29 September 2026 the team released it as the final balance patch before the tournament, with Twister Toss reworked and Bagheera, Mind Palace and Spellbook costing 1 more. The tentative card list of the Crimson Cup arrived with the 21 September update; the tournament runs from 20 to 25 October 2026." },
       ],
       it: [
         { q: "Cosa cambia con la patch della demo di Origins TCG del 21 settembre?", a: "Dorothy costa 4 invece di 5; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet e Roo cambiano statistiche; Itsy Bitsy Spider diventa Malvagia; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet e Wooden Stake cambiano effetto; si correggono due regole di gioco e il luogo The Gallows." },
-        { q: "È la patch 0.7 di Origins TCG?", a: "È l'aggiornamento che alcuni creator chiamano patch 0.7, ma la patch non ha un numero di versione: il team la chiama patch notes della demo del 21 settembre 2026, e le modifiche sono confrontate con l'ultima build del playtest, la 0.6.3." },
-        { q: "Devo costruire i mazzi per la Crimson Cup su queste statistiche?", a: "Sì: la lista carte provvisoria del torneo è arrivata con lo stesso aggiornamento. Il team avverte che prima della Crimson Cup, dal 20 al 25 ottobre 2026, possono arrivare altre patch di bilanciamento." },
+        { q: "È la patch 0.7 di Origins TCG?", a: "No. Alcuni creator la chiamavano patch 0.7, ma questo aggiornamento non ha un numero di versione: il team lo chiama patch notes della demo del 21 settembre 2026, con le modifiche confrontate con l'ultima build del playtest, la 0.6.3. La patch 0.7 è l'aggiornamento successivo, lo Steam Demo Update #2 del 29 settembre 2026." },
+        { q: "Devo costruire i mazzi per la Crimson Cup su queste statistiche?", a: "Su quelle della patch 0.7, arrivata dopo: il 29 settembre 2026 il team l'ha pubblicata come ultima patch di bilanciamento prima del torneo, con Twister Toss rifatta e Bagheera, Mind Palace e Spellbook che costano 1 in più. La lista carte provvisoria della Crimson Cup è arrivata con l'aggiornamento del 21 settembre; il torneo si gioca dal 20 al 25 ottobre 2026." },
       ],
       es: [
         {
@@ -1373,11 +1794,11 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
         },
         {
           q: "¿Es el parche 0.7 de Origins TCG?",
-          a: "Es la actualización que algunos creadores de contenido llaman patch 0.7, pero el parche no tiene número de versión: el equipo lo llama las notas del parche de la demo del 21 de septiembre de 2026, y los cambios se comparan con la última build del playtest, la 0.6.3.",
+          a: "No. Algunos creadores de contenido lo llamaban patch 0.7, pero esta actualización no tiene número de versión: el equipo la llama las notas del parche de la demo del 21 de septiembre de 2026, con los cambios comparados con la última build del playtest, la 0.6.3. El parche 0.7 es la actualización siguiente, la Steam Demo Update #2 del 29 de septiembre de 2026.",
         },
         {
           q: "¿Debo construir mis mazos para la Crimson Cup con estas estadísticas?",
-          a: "Sí: la lista provisional de cartas del torneo llegó con la misma actualización. El equipo advierte que todavía pueden llegar más parches de equilibrio antes de la Crimson Cup, del 20 al 25 de octubre de 2026.",
+          a: "Con las del parche 0.7, que llegó después: el 29 de septiembre de 2026 el equipo lo publicó como el último parche de equilibrio antes del torneo, con un rework de Twister Toss y un coste 1 más alto para Bagheera, Mind Palace y Spellbook. La lista provisional de cartas de la Crimson Cup llegó con la actualización del 21 de septiembre; el torneo se juega del 20 al 25 de octubre de 2026.",
         },
       ],
     },
@@ -1389,7 +1810,8 @@ Todo lo demás de la actualización, desde la nueva interfaz hasta la clasificat
     image: "/media/news-play-collect-trade.webp",
     guides: ["play-the-demo", "steam-next-fest-2026", "collector-economy", "origins-tcg-ranked"],
     date: "2026-09-21",
-    updated: "2026-09-22",
+    // 30/09/2026: la patch di bilanciamento di cui parlava il team è uscita (0.7 del 29/09): paragrafo nella sezione Crimson Cup e FAQ
+    updated: "2026-09-30",
     title: n(
       "Origins TCG's first big demo update: new UI, test packs, ranked at Next Fest and the Crimson Cup card list",
       "Il primo grande aggiornamento della demo di Origins TCG: pacchetti di prova, classificata e Crimson Cup",
@@ -1481,6 +1903,8 @@ The update also carries the tentative card list of the Crimson Cup, the biggest 
 - the [deck builder](/en/deck-builder), whose tournament mode checks the Conquest rules while you build;
 - the [Steam Next Fest guide](/en/guides/steam-next-fest-2026), with dates, times and how to sign up on Discord.
 
+**Update, 30 September:** the balance patch came on 29 September. [Patch 0.7](/en/news/patch-0-7), which the team calls the final balance patch before the tournament, reworks Twister Toss and makes Bagheera, Mind Palace and Spellbook cost 1 more.
+
 ## Progress: what you keep {#progress}
 
 This was the question left open. On 16 September a staff message on Discord had confirmed that [deck unlocks and boss progress would move from Demo 1 to Demo 2](/en/news/demo-2-progress-carryover), but it said nothing about the closed playtest. Now the team is explicit: whoever played the demo, the playtest or both keeps the progress of whichever is further ahead, "so no one will have to unlock cards again".
@@ -1537,6 +1961,8 @@ L'aggiornamento contiene anche la lista carte provvisoria della Crimson Cup, il 
 
 - il [deck builder](/it/deck-builder), che in modalità torneo controlla le regole del Conquest mentre costruisci;
 - la [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026), con date, orari e come iscriversi su Discord.
+
+**Aggiornamento del 30 settembre:** la patch di bilanciamento è arrivata il 29 settembre. La [patch 0.7](/it/news/patch-0-7), che il team chiama l'ultima patch di bilanciamento prima del torneo, cambia l'effetto di Twister Toss e fa costare 1 in più Bagheera, Mind Palace e Spellbook.
 
 ## I progressi: cosa si conserva {#progressi}
 
@@ -1595,6 +2021,8 @@ La actualización también incluye la lista provisional de cartas de la Crimson 
 - el [deck builder](/es/deck-builder), cuyo modo torneo comprueba las reglas de Conquest mientras construyes;
 - la [guía del Steam Next Fest](/es/guides/steam-next-fest-2026), con fechas, horarios y cómo inscribirse en Discord.
 
+**Actualización del 30 de septiembre:** el parche de equilibrio llegó el 29 de septiembre. El [parche 0.7](/es/news/patch-0-7), que el equipo llama el último parche de equilibrio antes del torneo, hace un rework de Twister Toss y sube en 1 el coste de Bagheera, Mind Palace y Spellbook.
+
 ## El progreso: qué conservas {#progreso}
 
 Era la pregunta que quedaba abierta. El 16 de septiembre, un mensaje del staff en Discord había confirmado que [los desbloqueos de mazos y el progreso contra los jefes pasarían de la Demo 1 a la Demo 2](/es/news/demo-2-progress-carryover), pero no decía nada del playtest cerrado. Ahora el equipo lo deja claro: quien haya jugado a la demo, al playtest o a ambos conserva el progreso del que esté más avanzado, "para que nadie tenga que volver a desbloquear cartas".
@@ -1620,13 +2048,13 @@ La semana pasada circuló en redes sociales una frase sobre una "Demo Season 2" 
       en: [
         { q: "Do I lose my progress with the Origins TCG demo update?", a: "No. Whoever played the demo, the closed playtest or both keeps the progress of whichever is further ahead, so no cards have to be unlocked again (team announcement of 21 September 2026)." },
         { q: "When does ranked mode start in the Origins TCG demo?", a: "With the start of Steam Next Fest, on Monday 19 October 2026, with exclusive ranked rewards whose details have not been announced yet." },
-        { q: "Can I already build decks for the Crimson Cup?", a: "Yes: the tentative card list of the tournament has been in the game since the update of 21 September. Balance patches can still change it before the Crimson Cup, which runs from 20 to 25 October 2026." },
+        { q: "Can I already build decks for the Crimson Cup?", a: "Yes: the tentative card list of the tournament has been in the game since the update of 21 September, and patch 0.7 of 29 September is the final balance patch before the Crimson Cup, which runs from 20 to 25 October 2026." },
         { q: "What changes for playtest players?", a: "No new decks, cards or bosses for now: the polish update reaches the playtest later in the week of 21 September, together with other changes to test." },
       ],
       it: [
         { q: "Con l'aggiornamento della demo di Origins TCG perdo i progressi?", a: "No. Chi ha giocato la demo, il playtest chiuso o entrambi conserva i progressi del percorso più avanzato, quindi nessuna carta va sbloccata di nuovo (annuncio del team del 21 settembre 2026)." },
         { q: "Quando parte la classificata nella demo di Origins TCG?", a: "Con l'inizio dello Steam Next Fest, lunedì 19 ottobre 2026, con ricompense esclusive i cui dettagli non sono ancora stati annunciati." },
-        { q: "Si possono già preparare i mazzi per la Crimson Cup?", a: "Sì: la lista carte provvisoria del torneo è nel gioco dall'aggiornamento del 21 settembre. Le patch di bilanciamento possono ancora cambiarla prima della Crimson Cup, dal 20 al 25 ottobre 2026." },
+        { q: "Si possono già preparare i mazzi per la Crimson Cup?", a: "Sì: la lista carte provvisoria del torneo è nel gioco dall'aggiornamento del 21 settembre, e la patch 0.7 del 29 settembre è l'ultima di bilanciamento prima della Crimson Cup, dal 20 al 25 ottobre 2026." },
         { q: "Cosa cambia per chi gioca il playtest?", a: "Per ora nessun nuovo mazzo, carta o boss: l'aggiornamento di rifinitura arriva sul playtest più avanti nella settimana del 21 settembre, insieme ad altre novità da provare." },
       ],
       es: [
@@ -1640,7 +2068,7 @@ La semana pasada circuló en redes sociales una frase sobre una "Demo Season 2" 
         },
         {
           q: "¿Ya puedo construir mazos para la Crimson Cup?",
-          a: "Sí: la lista provisional de cartas del torneo está en el juego desde la actualización del 21 de septiembre. Los parches de equilibrio todavía pueden cambiarla antes de la Crimson Cup, que se juega del 20 al 25 de octubre de 2026.",
+          a: "Sí: la lista provisional de cartas del torneo está en el juego desde la actualización del 21 de septiembre, y el parche 0.7 del 29 de septiembre es el último de equilibrio antes de la Crimson Cup, que se juega del 20 al 25 de octubre de 2026.",
         },
         {
           q: "¿Qué cambia para los jugadores del playtest?",

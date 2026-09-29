@@ -22,9 +22,10 @@ export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
  * Patch del gioco in ordine di uscita. Le versioni del playtest hanno un numero; la patch della demo
  * del 21/09/2026 non ce l'ha (il team la chiama "Demo patch notes - Sep 21 2026"), quindi ha un id nostro
- * e un'etichetta leggibile in `patches`.
+ * e un'etichetta leggibile in `patches`. La seconda della demo, del 29/09/2026, torna ad avere un numero:
+ * 0.7 ("Steam Demo Update #2" nell'immagine ufficiale).
  */
-export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921"] as const;
+export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7"] as const;
 export type PatchId = (typeof patchOrder)[number];
 export type Alignment = "good" | "evil" | "neutral";
 export type Rarity = "common" | "rare" | "epic" | "legendary";
@@ -70,7 +71,11 @@ export const sagas: Record<SagaId, L10n> = {
 
 /** `url` è il post Steam della patch (gid verificati con l'API ufficiale Valve `ISteamNews/GetNewsForApp`, appid 4429430). */
 /** `news` è lo slug dell'articolo del sito che racconta la patch (MetaShifting ci rimanda). */
-export const patches: Record<PatchId, { date: string; url: string; title: string; label?: L10n; news?: string }> = {
+/**
+ * `at` (facoltativo) è l'ora del post ufficiale in UTC: serve a `patchAt` nel giorno stesso della patch, perché un mazzo
+ * creato il 29/09/2026 alle 15:00 UTC è della patch precedente (la 0.7 è stata annunciata alle 19:37).
+ */
+export const patches: Record<PatchId, { date: string; at?: string; url: string; title: string; label?: L10n; news?: string }> = {
   "0.6.1": {
     date: "2026-08-14",
     url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
@@ -99,6 +104,18 @@ export const patches: Record<PatchId, { date: string; url: string; title: string
     label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep" },
     news: "demo-patch-notes-0921",
   },
+  // Secondo aggiornamento della demo: post Steam del 29/09/2026 alle 19:37 UTC, "l'ultima patch di bilanciamento prima
+  // del torneo" (la Crimson Cup). Il numero 0.7 e il nome "Steam Demo Update #2" vengono dall'immagine ufficiale
+  // dell'aggiornamento; il post Steam non li scrive. Attenzione all'import di World of Origins: alcuni creator chiamavano
+  // "0.7" anche l'aggiornamento del 21/09. Se l'import porta una patch "0.7" in cui Bagheera costa ancora 1, Mind Palace 2
+  // e Spellbook 3, è quella del 21/09: qui `cardSource.patch` diventerebbe "0.7" e i costi nuovi non si applicherebbero più.
+  "0.7": {
+    date: "2026-09-29",
+    at: "2026-09-29T19:37:44Z",
+    url: "https://store.steampowered.com/news/app/4429430/view/1844751498235283",
+    title: "A small demo update is about to land!",
+    news: "patch-0-7",
+  },
 };
 
 /** Nome della patch da mostrare: l'etichetta quando c'è (patch senza numero), altrimenti il numero di versione. */
@@ -114,12 +131,19 @@ export const latestPatch: PatchId = patchOrder[patchOrder.length - 1];
  * specificato, la data di creazione e la versione del gioco o patch"). È l'ultima patch uscita entro quella
  * data: non è un dato inventato, si legge dal calendario delle patch ufficiali qui sopra. Un mazzo pubblicato
  * prima della prima patch che conosciamo non ha versione (undefined), e la scheda non ne mostra nessuna.
- * `date` è una data ISO (aaaa-mm-gg) o un timestamp: si confronta il solo giorno.
+ * `date` è una data ISO (aaaa-mm-gg) o un timestamp: si confronta il giorno e, nel giorno di una patch che ha l'ora del
+ * post (`at`), anche l'ora, se `date` ce l'ha (i `created_at` dei mazzi). Senza ora vale la patch uscita quel giorno.
  */
 export function patchAt(date: string): PatchId | undefined {
   const day = date.slice(0, 10);
+  const time = date.length > 10 ? Date.parse(date) : NaN;
   let found: PatchId | undefined;
-  for (const id of patchOrder) if (patches[id].date <= day) found = id;
+  for (const id of patchOrder) {
+    const p = patches[id];
+    if (p.date > day) continue;
+    if (p.date === day && p.at && !Number.isNaN(time) && time < Date.parse(p.at)) continue;
+    found = id;
+  }
   return found;
 }
 
@@ -138,6 +162,12 @@ export type Change = {
   to?: Stats;
   /** cambio di allineamento, quando la patch lo tocca (es. Itsy Bitsy Spider da Neutrale a Malvagia) */
   alignment?: { from: Alignment; to: Alignment };
+  /**
+   * correzione di come funziona la carta (un bug, un caso limite) che le patch notes descrivono senza dire che il testo
+   * cambia: `textOutdated` (cardTitles.ts) non la conta, così la scheda non dice che il testo è superato. Esempi della 0.7:
+   * Heroic Charge (il +2⚔️ resta se la carta perde le abilità) e Humpty (la carta casuale non può più essere Humpty).
+   */
+  fix?: true;
   note: L10n;
 };
 
