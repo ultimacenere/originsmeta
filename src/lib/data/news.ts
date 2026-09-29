@@ -70,6 +70,257 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Terza news "Upgrade Meta" (richiesta di Pierluigi del 29/09/2026: "una newsletter con tutte le novità sviluppate sul
+    // sito questa settimana", poi "rimuovi la parte del sito in spagnolo che abbiamo già annunciato"): solo quello che le
+    // news del 24 e del 25/9 non raccontano (niente spagnolo, ricerca nel testo, tier list rifatta, Luoghi, Discord). La
+    // sezione creator chiude con l'invito a scrivere a Pierluigi su Discord per diventare Creator (sua richiesta).
+    // Permessi dei ruoli come in src/lib/community/badges.ts; copertina: key art ufficiale di Red, mai usata da altre news.
+    slug: "upgrade-meta-0929",
+    image: "/media/keyart-red-wide.webp",
+    guides: ["origins-tcg-legendaries", "origins-tcg-ranked", "origins-tcg-conquest", "origins-tcg-kickstarter"],
+    date: "2026-09-29",
+    title: n(
+      "Upgrade Meta: creator tools, follows and notifications, community guides and comics",
+      "Upgrade Meta: strumenti per i creator, Segui e notifiche, guide della community e fumetti",
+      "Upgrade Meta: herramientas para creadores, seguir y notificaciones, guías de la comunidad y cómics",
+    ),
+    metaTitle: n("Upgrade Meta: Origins TCG creator tools on OriginsMeta", "Upgrade Meta: gli strumenti per i creator", "Upgrade Meta: herramientas para creadores"),
+    description: n(
+      "New on OriginsMeta: creator profiles and directory, stream tools with !deck and an OBS overlay, follows, community guides and comics. Become a Creator.",
+      "Novità su OriginsMeta: profili e directory dei creator, !deck e overlay per OBS nelle dirette, Segui, guide della community e fumetti. Diventa Creator.",
+      "Novedades en OriginsMeta: perfiles y directorio de creadores, !deck y overlay para OBS en directo, seguir, guías de la comunidad y cómics. Hazte Creator.",
+    ),
+    summary: n(
+      "This week OriginsMeta got a whole section for the people who make content about Origins TCG: showcase profiles, the creators directory, tools for streams, deck stats, community guides and comics published straight on the site. You can now follow your favourite players and get notified when they publish or go live. Want to become a Creator? Write to Pierluigi on our Discord.",
+      "Questa settimana OriginsMeta ha una sezione tutta per chi crea contenuti su Origins TCG: profili vetrina, la directory dei creator, strumenti per le dirette, statistiche dei mazzi, guide della community e fumetti pubblicati direttamente sul sito. Ora puoi anche seguire i tuoi giocatori preferiti e ricevere un avviso quando pubblicano o vanno in diretta. Vuoi diventare Creator? Scrivi a Pierluigi sul nostro Discord.",
+      "Esta semana OriginsMeta estrena una sección para quienes crean contenido sobre Origins TCG: perfiles escaparate, el directorio de creadores, herramientas para directos, estadísticas de los mazos, guías de la comunidad y cómics publicados directamente en el sitio. Ahora también puedes seguir a tus jugadores favoritos y recibir un aviso cuando publican o empiezan un directo. ¿Quieres ser Creator? Escribe a Pierluigi en nuestro Discord.",
+    ),
+    highlights: {
+      en: [
+        { label: "Creator profiles", text: "a showcase page, the short link originsmeta.com/@name and the creators directory", anchor: "profiles" },
+        { label: "Stream tools", text: "the !deck chat command, an OBS overlay, the deck image and the LIVE badge", anchor: "streams" },
+        { label: "Publish more", text: "videos and links on decks, deck stats, Legendary artwork, guides, comics and tournaments", anchor: "publish" },
+        { label: "Become a Creator", text: "write to Pierluigi on our Discord", anchor: "become-a-creator" },
+        { label: "Follow and notifications", text: "decks, guides, comics and streams from the profiles you follow", anchor: "follow" },
+        { label: "Roles and achievements", text: "Staff, Creator, Author, Pro and Community, achievements on every profile, messages to the staff", anchor: "roles" },
+        { label: "Decks, tier lists and guides", text: "the best decks right now, signed tier lists, three new guides and the Kickstarter date", anchor: "decks-guides" },
+      ],
+      it: [
+        { label: "Profili dei creator", text: "una pagina vetrina, il link breve originsmeta.com/@nome e la directory dei creator", anchor: "profili" },
+        { label: "Strumenti per le dirette", text: "il comando !deck in chat, l'overlay per OBS, l'immagine del mazzo e il bollino LIVE", anchor: "dirette" },
+        { label: "Pubblica di più", text: "video e link nei mazzi, statistiche, artwork della Leggendaria, guide, fumetti e tornei", anchor: "pubblica" },
+        { label: "Diventa Creator", text: "scrivi a Pierluigi sul nostro Discord", anchor: "diventa-creator" },
+        { label: "Segui e notifiche", text: "mazzi, guide, fumetti e dirette dei profili che segui", anchor: "segui" },
+        { label: "Ruoli e traguardi", text: "Staff, Creator, Autore, Pro e Community, traguardi su ogni profilo, messaggi allo staff", anchor: "ruoli" },
+        { label: "Mazzi, tier list e guide", text: "i migliori mazzi del momento, le tier list firmate, tre guide nuove e la data del Kickstarter", anchor: "mazzi-guide" },
+      ],
+      es: [
+        { label: "Perfiles de creadores", text: "una página escaparate, el enlace corto originsmeta.com/@nombre y el directorio de creadores", anchor: "perfiles" },
+        { label: "Herramientas para directos", text: "el comando !deck en el chat, un overlay para OBS, la imagen del mazo y la etiqueta LIVE", anchor: "directos" },
+        { label: "Publica más", text: "vídeos y enlaces en los mazos, estadísticas, artwork de la Legendaria, guías, cómics y torneos", anchor: "publica" },
+        { label: "Hazte Creator", text: "escribe a Pierluigi en nuestro Discord", anchor: "hazte-creator" },
+        { label: "Seguir y notificaciones", text: "mazos, guías, cómics y directos de los perfiles que sigues", anchor: "seguir" },
+        { label: "Roles y logros", text: "Staff, Creator, Autor, Pro y Community, logros en cada perfil, mensajes al staff", anchor: "roles" },
+        { label: "Mazos, tier lists y guías", text: "los mejores mazos del momento, tier lists firmadas, tres guías nuevas y la fecha del Kickstarter", anchor: "mazos-guias" },
+      ],
+    },
+    body: n(
+      `## Creator profiles {#profiles}
+
+If you make content about Origins TCG (streams, videos, guides, decks), OriginsMeta now has a place for you. Profiles with the Creator, Author, Pro or Staff role get a **showcase page**: a cover (one of 8 backgrounds or your own image), a bigger photo, an accent colour, a short tagline, your favourite Legendary, a featured deck and a featured video, your stream schedule (shown in each visitor's time zone), plus your bio, channels and the languages you create in. Everyone can upload a profile photo.
+
+Every profile also has a **short link** to share: originsmeta.com/@yourname. And the [Creators and authors](/en/creators) page gathers everyone with one of these roles who has filled in a bio or a channel, with filters by role, language and platform.
+
+## Stream tools {#streams}
+
+- **The \`!deck\` chat command**: add it to Nightbot, StreamElements or Fossabot and your chat gets your latest published deck, with its Legendary, the link and the game code.
+- **An OBS overlay** that shows your deck on stream, vertical or horizontal, and updates by itself when you publish a new one.
+- **The deck image**, ready for social posts, 16:9 thumbnails and 9:16 stories.
+- **The LIVE badge**: when you're streaming Origins TCG on Twitch, it appears next to your name on decks, profiles and in the directory. The [Live](/en/live) page shows who's streaming right now, and the calendar strip at the top says "Live now".
+
+You'll find everything under "For streamers" on the page of each of your decks.
+
+## Publish more {#publish}
+
+- **Videos and links on decks**: up to 3 YouTube or Twitch videos and 5 links on every deck, with a player that loads only when you click.
+- **Deck stats**: in your account you see views, game code copies, link clicks and video plays for each of your decks, over 7 days, 30 days and in total. Only you and the staff see them.
+- **Legendary artwork**: Creators can put their own artwork of the Legendary on their decks. The official card stays on the card page.
+- **Community guides**: Authors, Creators, Pro players and Staff publish guides straight on the site, translated automatically into the other two languages. Everyone else can still [send us a guide](/en/guides/submit).
+- **Comics**: Creators publish their comics among the news, with the text translated automatically.
+- **Tournaments**: Creators, Pro players and Staff can put their public tournaments on the calendar, with their own cover.
+
+## Become a Creator {#become-a-creator}
+
+The Creator role is assigned by the OriginsMeta staff. If you make content about Origins TCG and want to become a Creator, **write to Pierluigi on [our Discord](https://discord.gg/RAG7nnrNGP)**.
+
+## Follow and notifications {#follow}
+
+With an account you can **follow** the profiles with the Creator, Author, Pro or Staff role. When they publish a deck, a guide or a comic, or go live on Twitch, you get a notification in the envelope at the top of the site. You'll find the profiles you follow in [your account](/en/account). Notifications stay on the site: no emails.
+
+## Roles and achievements {#roles}
+
+- **Five roles**, with their tag next to the name: Staff, Creator, Author, Pro and Community.
+- **Achievements** on every profile, such as First deck, Crowd favorite, Deck of the month and Tournament won.
+- **Messages to the staff**: from your account you can write to us and read our replies, feedback included.
+
+## Decks, tier lists and guides {#decks-guides}
+
+- In [Decks](/en/decks), the best Origins TCG decks right now, ranked by the community's votes.
+- In the [community tier list](/en/tier-list/community), the tier lists signed by Staff, Creators, Authors and Pro players.
+- Tier lists, cards, decks and the deck builder now start with the content, with more compact titles.
+- Three new guides: [the 11 Legendaries](/en/guides/origins-tcg-legendaries), [ranked](/en/guides/origins-tcg-ranked) and [Conquest](/en/guides/origins-tcg-conquest).
+- The [Kickstarter guide](/en/guides/origins-tcg-kickstarter) has the date confirmed by Koin Games' CEO: 27 October.
+
+## Join in {#join}
+
+[Sign up](/en/login) for free with Discord or your email, publish your decks and follow the players you like. And [join our Discord](https://discord.gg/RAG7nnrNGP): everything that goes live on the site gets posted there.`,
+      `## Profili dei creator {#profili}
+
+Se crei contenuti su Origins TCG (dirette, video, guide, mazzi), OriginsMeta ora ha un posto per te. I profili con il ruolo Creator, Autore, Pro o Staff hanno una **pagina vetrina**: copertina (uno degli 8 sfondi o un'immagine tua), foto più grande, colore d'accento, una frase breve, la Leggendaria del cuore, un mazzo e un video in evidenza, gli orari delle dirette (nel fuso orario di chi guarda), più bio, canali e lingue in cui crei. La foto del profilo la può caricare chiunque.
+
+Ogni profilo ha anche un **link breve** da condividere: originsmeta.com/@tuonome. E la pagina [Creator e autori](/it/creators) raccoglie tutti quelli con uno di questi ruoli che hanno scritto una bio o aggiunto un canale, con i filtri per ruolo, lingua e piattaforma.
+
+## Strumenti per le dirette {#dirette}
+
+- **Il comando \`!deck\` in chat**: aggiungilo a Nightbot, StreamElements o Fossabot e la tua chat riceve l'ultimo mazzo che hai pubblicato, con la Leggendaria, il link e il codice del gioco.
+- **Un overlay per OBS** che mostra il tuo mazzo in diretta, verticale od orizzontale, e si aggiorna da solo quando ne pubblichi uno nuovo.
+- **L'immagine del mazzo**, pronta per i social, le miniature 16:9 e le storie 9:16.
+- **Il bollino LIVE**: quando trasmetti Origins TCG su Twitch compare accanto al tuo nome nei mazzi, nei profili e nella directory. La pagina [Live](/it/live) mostra chi è in diretta adesso, e la striscia del calendario in alto dice "Ora live".
+
+Trovi tutto sotto "Per le dirette" nella pagina di ogni tuo mazzo.
+
+## Pubblica di più {#pubblica}
+
+- **Video e link nei mazzi**: fino a 3 video di YouTube o Twitch e 5 link su ogni mazzo, con un lettore che si carica solo al clic.
+- **Statistiche dei mazzi**: nel tuo account vedi visite, copie del codice, clic sui link e video visti di ogni tuo mazzo, negli ultimi 7 giorni, 30 giorni e in totale. Le vedete solo tu e lo staff.
+- **Artwork della Leggendaria**: i Creator possono mettere sui loro mazzi un artwork proprio della Leggendaria. La carta ufficiale resta nella sua scheda.
+- **Guide della community**: Autori, Creator, Pro e Staff pubblicano le guide direttamente sul sito, tradotte in automatico nelle altre due lingue. Tutti gli altri possono sempre [mandarci una guida](/it/guides/submit).
+- **Fumetti**: i Creator pubblicano i loro fumetti fra le news, con i testi tradotti in automatico.
+- **Tornei**: Creator, Pro e Staff mettono i loro tornei pubblici nel calendario, con una copertina propria.
+
+## Diventa Creator {#diventa-creator}
+
+Il ruolo Creator lo assegna lo staff di OriginsMeta. Se crei contenuti su Origins TCG e vuoi diventare Creator, **scrivi a Pierluigi sul [nostro Discord](https://discord.gg/RAG7nnrNGP)**.
+
+## Segui e notifiche {#segui}
+
+Con un account puoi **seguire** i profili con il ruolo Creator, Autore, Pro o Staff. Quando pubblicano un mazzo, una guida o un fumetto, o vanno in diretta su Twitch, ricevi un avviso nella busta in alto nel sito. I profili che segui li trovi nel [tuo account](/it/account). Le notifiche restano sul sito: niente email.
+
+## Ruoli e traguardi {#ruoli}
+
+- **Cinque ruoli**, con il tag accanto al nome: Staff, Creator, Autore, Pro e Community.
+- **Traguardi** su ogni profilo, come Primo mazzo, Mazzo apprezzato, Mazzo del mese e Torneo vinto.
+- **Messaggi allo staff**: dal tuo account puoi scriverci e leggere le nostre risposte, anche ai feedback.
+
+## Mazzi, tier list e guide {#mazzi-guide}
+
+- In [Mazzi](/it/decks), i migliori mazzi di Origins TCG del momento, in ordine di voto della community.
+- Nella [tier list della community](/it/tier-list/community), le tier list firmate da Staff, Creator, Autori e Pro.
+- Tier list, carte, mazzi e deck builder ora partono dai contenuti, con titoli più compatti.
+- Tre guide nuove: [le 11 Leggendarie](/it/guides/origins-tcg-legendaries), [la classificata](/it/guides/origins-tcg-ranked) e [il Conquest](/it/guides/origins-tcg-conquest).
+- La [guida al Kickstarter](/it/guides/origins-tcg-kickstarter) ha la data confermata dal CEO di Koin Games: il 27 ottobre.
+
+## Partecipa {#partecipa}
+
+[Iscriviti](/it/login) gratis con Discord o con la tua email, pubblica i tuoi mazzi e segui i giocatori che ti piacciono. E [entra nel nostro Discord](https://discord.gg/RAG7nnrNGP): tutto quello che esce sul sito arriva anche lì.`,
+      `## Perfiles de creadores {#perfiles}
+
+Si creas contenido sobre Origins TCG (directos, vídeos, guías, mazos), OriginsMeta ahora tiene un lugar para ti. Los perfiles con el rol Creator, Autor, Pro o Staff tienen una **página escaparate**: portada (uno de los 8 fondos o una imagen propia), foto más grande, color de acento, una frase breve, tu Legendaria favorita, un mazo y un vídeo destacados, el horario de tus directos (en la zona horaria de quien lo mira), además de tu biografía, tus canales y los idiomas en los que creas. Cualquier persona puede subir su foto de perfil.
+
+Cada perfil tiene también un **enlace corto** para compartir: originsmeta.com/@tunombre. Y la página [Creadores y autores](/es/creators) reúne a todas las personas con uno de estos roles que han escrito una biografía o añadido un canal, con filtros por rol, idioma y plataforma.
+
+## Herramientas para directos {#directos}
+
+- **El comando \`!deck\` en el chat**: añádelo a Nightbot, StreamElements o Fossabot y tu chat recibe el último mazo que publicaste, con su Legendaria, el enlace y el código del juego.
+- **Un overlay para OBS** que muestra tu mazo en directo, en vertical u horizontal, y se actualiza solo cuando publicas uno nuevo.
+- **La imagen del mazo**, lista para redes sociales, miniaturas 16:9 e historias 9:16.
+- **La etiqueta LIVE**: cuando transmites Origins TCG en Twitch aparece junto a tu nombre en los mazos, los perfiles y el directorio. La página [Live](/es/live) muestra quién está en directo ahora, y la franja del calendario de arriba dice "En directo".
+
+Lo encontrarás todo en "Para directos", en la página de cada uno de tus mazos.
+
+## Publica más {#publica}
+
+- **Vídeos y enlaces en los mazos**: hasta 3 vídeos de YouTube o Twitch y 5 enlaces en cada mazo, con un reproductor que solo se carga al hacer clic.
+- **Estadísticas de los mazos**: en tu cuenta ves las visitas, las copias del código, los clics en los enlaces y las reproducciones de vídeo de cada uno de tus mazos, en los últimos 7 días, 30 días y en total. Solo las ves tú y el staff.
+- **Artwork de la Legendaria**: los Creators pueden poner en sus mazos un artwork propio de la Legendaria. La carta oficial sigue en su ficha.
+- **Guías de la comunidad**: Autores, Creators, Pro y Staff publican guías directamente en el sitio, traducidas automáticamente a los otros dos idiomas. Los demás pueden seguir [enviándonos una guía](/es/guides/submit).
+- **Cómics**: los Creators publican sus cómics entre las noticias, con los textos traducidos automáticamente.
+- **Torneos**: Creators, Pro y Staff ponen sus torneos públicos en el calendario, con una portada propia.
+
+## Hazte Creator {#hazte-creator}
+
+El rol Creator lo asigna el staff de OriginsMeta. Si creas contenido sobre Origins TCG y quieres ser Creator, **escribe a Pierluigi en [nuestro Discord](https://discord.gg/RAG7nnrNGP)**.
+
+## Seguir y notificaciones {#seguir}
+
+Con una cuenta puedes **seguir** los perfiles con el rol Creator, Autor, Pro o Staff. Cuando publican un mazo, una guía o un cómic, o empiezan un directo en Twitch, recibes un aviso en el sobre de la parte superior del sitio. Los perfiles que sigues están en [tu cuenta](/es/account). Las notificaciones se quedan en el sitio: nada de correos.
+
+## Roles y logros {#roles}
+
+- **Cinco roles**, con su etiqueta junto al nombre: Staff, Creator, Autor, Pro y Community.
+- **Logros** en cada perfil, como Primer mazo, Mazo favorito, Mazo del mes y Torneo ganado.
+- **Mensajes al staff**: desde tu cuenta puedes escribirnos y leer nuestras respuestas, también a tus comentarios.
+
+## Mazos, tier lists y guías {#mazos-guias}
+
+- En [Mazos](/es/decks), los mejores mazos de Origins TCG del momento, ordenados por los votos de la comunidad.
+- En la [tier list de la comunidad](/es/tier-list/community), las tier lists firmadas por Staff, Creators, Autores y Pro.
+- Las tier lists, las cartas, los mazos y el deck builder ahora empiezan por el contenido, con títulos más compactos.
+- Tres guías nuevas: [las 11 Legendarias](/es/guides/origins-tcg-legendaries), [la clasificatoria](/es/guides/origins-tcg-ranked) y [el Conquest](/es/guides/origins-tcg-conquest).
+- La [guía del Kickstarter](/es/guides/origins-tcg-kickstarter) tiene la fecha confirmada por el CEO de Koin Games: el 27 de octubre.
+
+## Participa {#participa}
+
+[Regístrate](/es/login) gratis con Discord o con tu correo electrónico, publica tus mazos y sigue a los jugadores que te gustan. Y [únete a nuestro Discord](https://discord.gg/RAG7nnrNGP): todo lo que se publica en el sitio llega también allí.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "How do I become a Creator on OriginsMeta?",
+          a: "The Creator role is assigned by the staff: if you make content about Origins TCG, write to Pierluigi on the OriginsMeta Discord (discord.gg/RAG7nnrNGP).",
+        },
+        {
+          q: "How do I show my deck on stream?",
+          a: "Open the page of your deck and go to \"For streamers\": you'll find the !deck chat command for Nightbot, StreamElements or Fossabot, the OBS overlay and the deck image.",
+        },
+        {
+          q: "Who can I follow on OriginsMeta?",
+          a: "With an account you can follow the profiles with the Creator, Author, Pro or Staff role and get a notification on the site when they publish a deck, a guide or a comic, or go live on Twitch.",
+        },
+      ],
+      it: [
+        {
+          q: "Come si diventa Creator su OriginsMeta?",
+          a: "Il ruolo Creator lo assegna lo staff: se crei contenuti su Origins TCG, scrivi a Pierluigi sul Discord di OriginsMeta (discord.gg/RAG7nnrNGP).",
+        },
+        {
+          q: "Come mostro il mio mazzo in diretta?",
+          a: "Apri la pagina del tuo mazzo e vai su \"Per le dirette\": trovi il comando !deck per Nightbot, StreamElements o Fossabot, l'overlay per OBS e l'immagine del mazzo.",
+        },
+        {
+          q: "Chi posso seguire su OriginsMeta?",
+          a: "Con un account puoi seguire i profili con il ruolo Creator, Autore, Pro o Staff e ricevere un avviso sul sito quando pubblicano un mazzo, una guida o un fumetto, o vanno in diretta su Twitch.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Cómo me hago Creator en OriginsMeta?",
+          a: "El rol Creator lo asigna el staff: si creas contenido sobre Origins TCG, escribe a Pierluigi en el Discord de OriginsMeta (discord.gg/RAG7nnrNGP).",
+        },
+        {
+          q: "¿Cómo muestro mi mazo en directo?",
+          a: "Abre la página de tu mazo y ve a \"Para directos\": encontrarás el comando !deck para Nightbot, StreamElements o Fossabot, el overlay para OBS y la imagen del mazo.",
+        },
+        {
+          q: "¿A quién puedo seguir en OriginsMeta?",
+          a: "Con una cuenta puedes seguir los perfiles con el rol Creator, Autor, Pro o Staff y recibir un aviso en el sitio cuando publican un mazo, una guía o un cómic, o empiezan un directo en Twitch.",
+        },
+      ],
+    },
+    url: "/creators",
+    source: "site",
+  },
+  {
     // Seconda news "Upgrade Meta" (richiesta di Pierluigi del 25/09/2026): lo spagnolo, i testi ufficiali delle carte
     // nelle tre lingue, due anticipazioni (l'overlay, uno strumento di gioco per tutti, volutamente vago per scelta di Pierluigi, e il
     // mazzo della settimana), il grazie alla community e i link per partecipare.
