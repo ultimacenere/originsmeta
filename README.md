@@ -38,6 +38,7 @@ La build legge Supabase (mazzi, tier list, sitemap) e fallisce se non lo raggiun
 | Traduzione automatica delle guide dei mazzi della community | `src/lib/community/deckTranslation.ts`, `translate.ts`, `scripts/translate-decks.mjs` |
 | Guide della community scritte dai ruoli (Autore, Creator, Pro, Staff) | `src/lib/community/guides.ts` e `guide*.ts`, `src/components/guides/`, `scripts/translate-guides.mjs`, blocco GUIDE di `supabase/schema.sql`; tutto in `docs/guide-community.md` |
 | Immagini ufficiali ottimizzate | `public/media/` |
+| Icone del sito (scheda del browser, risultati di ricerca) | `src/app/icon.svg` (il logo) e `src/app/favicon.ico`, generata dall'SVG con `node scripts/make-favicon.mjs` (Chrome o Edge headless; da rilanciare dopo ogni modifica del logo) |
 | Palette e componenti CSS | `src/app/globals.css` |
 | Schema del database community (tabelle, trigger, policy RLS) | `supabase/schema.sql` (+ `scripts/db-migrate.mjs`) |
 | Tipi delle tabelle per supabase-js | `src/lib/supabase/database.ts` |
