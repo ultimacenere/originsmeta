@@ -15,6 +15,7 @@ import { fillLabel } from "@/lib/community/deckQuality";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { ScheduleView } from "./ScheduleView";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 
 /**
  * In cima alla vetrina /u, subito sotto la testata (pacchetto VETRINA, 27/09/2026): il mazzo in evidenza (uno dei suoi
@@ -51,7 +52,7 @@ export async function ShowcaseFeatured({
   const deckCard = deck
     ? (() => {
         const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
-        const patch = patchAt(deck.created_at);
+        const patch = patchAt(deckCardsDate(deck));
         // artwork della Leggendaria (29/09/2026): c'è nei mazzi che la pagina ha già letto (con proprietario e ruolo); il
         // mazzo letto da solo con getFeaturedDeck, raro, mostra la carta ufficiale
         const art = "owner" in deck ? deckArtUrl(deck as CommunityDeck, supabaseUrl) : null;

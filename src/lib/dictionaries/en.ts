@@ -1088,6 +1088,7 @@ export const en = {
     errors: {
       notLoggedIn: "Your session expired: sign in again.",
       disabled: "Publishing is not enabled yet.",
+      versionsUnavailable: "Changing the cards isn't available yet: try again in a few minutes, or save without changing the cards.",
       invalidDeck: "The deck is not legal: check the Legendary and the base cards.",
       invalidName: "Give the deck a name (3–60 characters).",
       archetype: "Pick an archetype.",

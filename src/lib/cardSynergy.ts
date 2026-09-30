@@ -39,6 +39,8 @@ export type DeckRef = {
   rating: { avg: number; votes: number };
   /** timestamp ISO di creazione e ultima modifica */
   created: string;
+  /** ultimo cambio di carte, da cui si ricava la patch (blocco VERSIONI, 30/09/2026); uguale a `created` se le carte sono quelle pubblicate */
+  cardsAt?: string;
   updated: string;
   /** nome dell'autore, come lo mostra il sito (`authorName`) */
   author: string;

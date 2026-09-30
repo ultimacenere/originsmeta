@@ -11,6 +11,7 @@ import { deckArtUrl } from "@/lib/community/deckArt";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 
 /**
  * Dati della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB): una sola lettura di Supabase
@@ -52,7 +53,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
       const rating = deck.rating ?? { avg: 0, votes: 0 };
       const badge = normalizeBadge(deck.profile?.badge);
       const created = deck.created_at.slice(0, 10);
-      const patch = patchAt(deck.created_at);
+      const patch = patchAt(deckCardsDate(deck));
       return {
         slug: deck.slug,
         name: deck.name,
@@ -115,7 +116,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
 
   const created = rawDecks.map((deck) => deck.created_at.slice(0, 10)).sort();
   // versioni del gioco presenti fra i mazzi, dalla più recente (l'ordine è quello ufficiale di `patchOrder`)
-  const patchIds = Array.from(new Set(rawDecks.map((deck) => patchAt(deck.created_at)).filter((p): p is PatchId => p !== undefined))).sort(
+  const patchIds = Array.from(new Set(rawDecks.map((deck) => patchAt(deckCardsDate(deck))).filter((p): p is PatchId => p !== undefined))).sort(
     (a, b) => patchOrder.indexOf(a) - patchOrder.indexOf(b),
   );
   const updated = lists.map((l) => l.updated_at.slice(0, 10)).sort().at(-1);

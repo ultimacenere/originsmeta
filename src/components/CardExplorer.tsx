@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
 import { trackSearch } from "@/lib/analytics";
 import { FlipCard, type FlipCardData } from "./FlipCard";
+import type { CardFilterLabels } from "@/lib/cardFilterLabels";
 
 /**
  * Carta del database: i dati della carta che si gira (`FlipCard`, la stessa della scheda di un mazzo, costruiti
@@ -16,6 +17,8 @@ export type ExplorerCard = FlipCardData & {
   sagaLabel: string;
   rarity?: string;
   keywords: string[];
+  /** i tag della carta in inglese, per il filtro "Parola chiave" (30/09/2026); `keywords` ha in più le traduzioni per la ricerca */
+  tags: string[];
   /** testo inglese del gioco, solo sulle pagine non inglesi: la ricerca trova "draw" anche dove c'è "Pesca" */
   abilityEn?: string;
   removed: boolean;
@@ -47,6 +50,16 @@ type Labels = {
 };
 
 type Option = { id: string; label: string };
+/** voce del filtro "Parola chiave": `game` per le parole chiave del gioco, le altre sono categorie di effetto */
+export type KeywordOption = Option & { game: boolean };
+
+/** Costi della fila di pastiglie: l'ultimo vale "7 o più". */
+const COSTS = ["0", "1", "2", "3", "4", "5", "6", "7"] as const;
+const inRange = (v: number | undefined, min: string, max: string) => {
+  if (!min && !max) return true;
+  if (v === undefined) return false;
+  return (!min || v >= Number(min)) && (!max || v <= Number(max));
+};
 
 /* La ricerca dell'header arriva come ?q=…: letta dal browser dopo l'idratazione (sul server vale ""),
    così la pagina resta statica e le schede stanno nell'HTML iniziale, senza useSearchParams. */
@@ -60,12 +73,17 @@ export function CardExplorer({
   sagas,
   alignments,
   rarities,
+  keywordOptions,
+  filterLabels,
 }: {
   cards: ExplorerCard[];
   labels: Labels;
   sagas: Option[];
   alignments: Option[];
   rarities: Option[];
+  /** tag delle carte per il filtro "Parola chiave" (30/09/2026), già nella lingua della pagina */
+  keywordOptions: KeywordOption[];
+  filterLabels: CardFilterLabels;
 }) {
   const initialQ = useSyncExternalStore(noSubscribe, readQueryQ, emptyQ);
   const [qEdit, setQEdit] = useState<string | null>(null);
@@ -76,6 +94,27 @@ export function CardExplorer({
   const [rarity, setRarity] = useState("all");
   const [showRemoved, setShowRemoved] = useState(false);
   const [sort, setSort] = useState<"name" | "mana" | "power" | "health">("mana");
+  /* filtri del 30/09/2026: costo (pastiglie), parola chiave e intervalli di potenza e salute ("Altri filtri") */
+  const [cost, setCost] = useState("all");
+  const [keyword, setKeyword] = useState("all");
+  const [powerMin, setPowerMin] = useState("");
+  const [powerMax, setPowerMax] = useState("");
+  const [healthMin, setHealthMin] = useState("");
+  const [healthMax, setHealthMax] = useState("");
+  const moreActive = [keyword !== "all", Boolean(powerMin || powerMax), Boolean(healthMin || healthMax)].filter(Boolean).length;
+  const anyFilter = moreActive > 0 || cost !== "all" || type !== "all" || saga !== "all" || alignment !== "all" || rarity !== "all";
+  const clearFilters = () => {
+    setCost("all");
+    setKeyword("all");
+    setPowerMin("");
+    setPowerMax("");
+    setHealthMin("");
+    setHealthMax("");
+    setType("all");
+    setSaga("all");
+    setAlignment("all");
+    setRarity("all");
+  };
 
   /* Si cerca in nome, saga, parole chiave e testo della carta (anche inglese sulle pagine non inglesi): la stessa
      ricerca del deck builder (`cardSearch.ts`, 24/09/2026), più le parole chiave, che qui c'erano già e portano
@@ -89,6 +128,9 @@ export function CardExplorer({
       if (saga !== "all" && c.sagaId !== saga) return false;
       if (alignment !== "all" && c.alignment !== alignment) return false;
       if (rarity !== "all" && c.rarity !== rarity) return false;
+      if (cost !== "all" && (c.mana === undefined || (cost === "7" ? c.mana < 7 : c.mana !== Number(cost)))) return false;
+      if (keyword !== "all" && !c.tags.includes(keyword)) return false;
+      if (!inRange(c.power, powerMin, powerMax) || !inRange(c.health, healthMin, healthMax)) return false;
       if (!matchesSearch(haystacks.get(c.slug) ?? "", terms)) return false;
       return true;
     });
@@ -100,7 +142,7 @@ export function CardExplorer({
       return num(b.health === undefined ? -99 : -b.health) - num(a.health === undefined ? -99 : -a.health) || a.name.localeCompare(b.name);
     });
     return out;
-  }, [cards, haystacks, q, type, saga, alignment, rarity, showRemoved, sort]);
+  }, [cards, haystacks, q, type, saga, alignment, rarity, showRemoved, sort, cost, keyword, powerMin, powerMax, healthMin, healthMax]);
   /* misura della ricerca interna (MIS-13, src/lib/analytics.ts): un evento quando si smette di scrivere; il termine
      arrivato dall'header con ?q= lo conta già GA4, quindi quello va solo a Vercel */
   useEffect(() => trackSearch("cards", q, list.length), [q, list.length]);
@@ -182,6 +224,94 @@ export function CardExplorer({
             </select>
           </label>
         </div>
+        {/* Costo: pastiglie sempre in vista, una scelta per volta (di nuovo sulla stessa per toglierla) */}
+        <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={filterLabels.cost}>
+          <span className="kicker text-chalk-muted">{filterLabels.cost}</span>
+          {COSTS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              aria-pressed={cost === m}
+              onClick={() => setCost((x) => (x === m ? "all" : m))}
+              className={`min-h-9 min-w-9 rounded-full border-2 px-2 font-mono text-sm font-bold ${cost === m ? "border-mint bg-mint text-ink" : "border-felt-line bg-felt-deep text-chalk hover:border-mint"}`}
+            >
+              {m === "7" ? "7+" : m}
+            </button>
+          ))}
+        </div>
+        {/* Altri filtri: chiusi di partenza, così sul telefono le carte restano nella prima schermata */}
+        <details className="mt-3" open={moreActive > 0 ? true : undefined}>
+          <summary className="cursor-pointer text-sm font-semibold text-chalk">
+            {filterLabels.more}
+            {moreActive ? <span className="ml-2 font-mono text-xs text-mint">{filterLabels.active.replace("{n}", String(moreActive))}</span> : null}
+          </summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <label className="flex flex-col gap-1">
+              <span className="kicker text-chalk-muted">{filterLabels.keyword}</span>
+              <select id="card-keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)} className={selectCls}>
+                <option value="all">{labels.all}</option>
+                <optgroup label={filterLabels.gameKeywords}>
+                  {keywordOptions
+                    .filter((k) => k.game)
+                    .map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.label}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label={filterLabels.effects}>
+                  {keywordOptions
+                    .filter((k) => !k.game)
+                    .map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.label}
+                      </option>
+                    ))}
+                </optgroup>
+              </select>
+            </label>
+            {(
+              [
+                [filterLabels.power, powerMin, setPowerMin, powerMax, setPowerMax, "power"],
+                [filterLabels.health, healthMin, setHealthMin, healthMax, setHealthMax, "health"],
+              ] as const
+            ).map(([label, min, setMin, max, setMax, id]) => (
+              <fieldset key={id} className="flex flex-col gap-1">
+                <legend className="kicker mb-1 text-chalk-muted">{label}</legend>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={20}
+                    value={min}
+                    onChange={(e) => setMin(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                    placeholder={filterLabels.min}
+                    aria-label={`${label} ${filterLabels.min}`}
+                    className={`${selectCls} w-20`}
+                  />
+                  <span className="text-chalk-muted">–</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={20}
+                    value={max}
+                    onChange={(e) => setMax(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                    placeholder={filterLabels.max}
+                    aria-label={`${label} ${filterLabels.max}`}
+                    className={`${selectCls} w-20`}
+                  />
+                </div>
+              </fieldset>
+            ))}
+          </div>
+        </details>
+        {anyFilter ? (
+          <button type="button" onClick={clearFilters} className="btn btn-ghost mt-3 text-xs">
+            {filterLabels.clear}
+          </button>
+        ) : null}
         {removedCount > 0 ? (
           <label className="mt-3 flex items-center gap-2 text-sm text-chalk-muted">
             <input id="card-show-removed" type="checkbox" checked={showRemoved} onChange={(e) => setShowRemoved(e.target.checked)} className="accent-mint" />

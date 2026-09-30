@@ -8,6 +8,7 @@ import type { DeckTranslations } from "./deckTranslation";
 import { indexableLocales } from "./deckQuality";
 import { authorName } from "./util";
 import type { Guide, Profile } from "./types";
+import { deckCardsDate } from "./deckVersions";
 
 /**
  * Mazzi pubblicati e tier list della community per le schede carta (Ondata 2 del piano SEO/GEO: SCHEDE-02, DECKS-04,
@@ -57,7 +58,7 @@ export const CARD_DATA_REVALIDATE = 3600;
  * la forma dei dati: DA AGGIORNARE (v2, v3…) quando cambia il tipo `DeckRef` di cardSynergy.ts o `CommunityScores`
  * qui sotto, altrimenti un deploy leggerebbe fino a un'ora di dati nella forma vecchia.
  */
-const DECK_REFS_CACHE_KEY = "card-pages-decks-v1";
+const DECK_REFS_CACHE_KEY = "card-pages-decks-v2";
 const TIER_SCORES_CACHE_KEY = "card-pages-tier-lists-v1";
 
 const building = process.env.NEXT_PHASE === "phase-production-build";
@@ -82,6 +83,8 @@ type Row = {
   translations?: DeckTranslations | null;
   created_at: string;
   updated_at: string;
+  /** ultimo cambio di carte (blocco VERSIONI, 30/09/2026): assente prima della migrazione */
+  cards_updated_at?: string | null;
   profile?: Profile | null;
 };
 
@@ -107,8 +110,10 @@ async function fetchDeckRefs(): Promise<DeckRef[] | null> {
   const read = (columns: string) =>
     client.from("community_decks").select(columns).eq("status", "published").order("created_at", { ascending: false }).limit(1000);
   // Come in queries.ts: se la colonna delle traduzioni non c'è ancora (migrazione non applicata) si rilegge senza.
-  const [first, ratings] = await Promise.all([read(`${DECK_COLUMNS}, translations`), fetchRatings(client)]);
+  // Lo stesso per la data del cambio di carte (blocco VERSIONI, 30/09/2026), da cui si ricava la patch del mazzo.
+  const [first, ratings] = await Promise.all([read(`${DECK_COLUMNS}, translations, cards_updated_at`), fetchRatings(client)]);
   let res = first;
+  if (res.error && (res.error.code === "42703" || res.error.message.includes("cards_updated_at"))) res = await read(`${DECK_COLUMNS}, translations`);
   if (res.error && (res.error.code === "42703" || res.error.message.includes("translations"))) res = await read(DECK_COLUMNS);
   if (res.error) throw new Error(`[community] decksByCard: ${res.error.message}`);
   const rows = (res.data ?? []) as unknown as Row[];
@@ -120,6 +125,7 @@ async function fetchDeckRefs(): Promise<DeckRef[] | null> {
     archetype: r.archetype,
     rating: ratings.get(r.id) ?? { avg: 0, votes: 0 },
     created: r.created_at,
+    cardsAt: deckCardsDate(r),
     updated: r.updated_at,
     author: authorName(r.profile),
     badge: r.profile?.badge ?? "community",

@@ -6,6 +6,7 @@ import { latestPatch, patchChanges, patchLabel, patches, sagas } from "@/lib/dat
 import { changeDetail, changeLabel } from "@/lib/linkLabels";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardName } from "@/components/CardChip";
+import { PatchCompare } from "@/components/PatchCompare";
 import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
@@ -98,6 +99,8 @@ export default async function MetaShiftingPage({ params }: { params: LocaleParam
               </a>
             </span>
           </div>
+          {/* Prima e dopo (30/09/2026): le carte con statistiche cambiate, affiancate con i valori vecchi e nuovi */}
+          <PatchCompare items={items} locale={locale} />
           {/* Tabella da 768 px; sotto, ogni riga diventa una scheda (nome e tipo di modifica, statistiche, nota) */}
           <table className="mt-3 w-full text-sm max-md:block">
             <thead className="max-md:hidden">

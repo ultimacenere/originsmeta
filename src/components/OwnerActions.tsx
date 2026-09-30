@@ -16,6 +16,7 @@ export function OwnerActions({
   locale,
   editHref,
   labels,
+  update,
 }: {
   deckId: string;
   ownerId: string;
@@ -23,6 +24,8 @@ export function OwnerActions({
   locale: string;
   editHref: string;
   labels: OwnerLabels;
+  /** "Aggiorna alla versione …" (pacchetto VERSIONI, 30/09/2026): solo quando il mazzo è fermo a una patch di prima */
+  update?: { href: string; label: string };
 }) {
   const [isOwner, setIsOwner] = useState(false);
   useEffect(() => {
@@ -39,6 +42,11 @@ export function OwnerActions({
   if (!isOwner) return null;
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg bg-night-2/80 p-3">
+      {update ? (
+        <Link href={update.href} className="btn btn-primary text-xs">
+          {update.label}
+        </Link>
+      ) : null}
       <Link href={editHref} className="btn btn-ink text-xs">
         {labels.edit}
       </Link>

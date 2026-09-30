@@ -4279,6 +4279,232 @@ comment on column public.community_comics.former_slugs is 'Indirizzi dei fumetti
 comment on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) is 'Versioni disegnate di un fumetto valide: le altre lingue del sito, testi e tavole con le regole dell''originale, copertina facoltativa nella cartella del proprietario (30/09/2026).';
 comment on function public.community_comic_files(jsonb, text, jsonb) is 'Tutti i file di un fumetto, versioni disegnate comprese (trigger dei file e profile_media_in_use, 30/09/2026).';
 
+-- =====================================================================================================
+-- ===== 30/09/2026: VERSIONI =====
+-- =====================================================================================================
+-- Aggiornare le carte di un mazzo pubblicato quando esce una patch (richiesta di MagicOfHands sul Discord il 30/09/2026,
+-- "sarebbe molto più comodo mantenere la descrizione e cambiare solo qualcosina"; risposta: "vi tiriamo su un sistema
+-- per aggiornamento deck con anche selettore della versione"). Fino a qui dalla pagina di modifica si cambiavano solo
+-- nome, guida e media; per cambiare le carte bisognava pubblicare un mazzo nuovo e riscrivere la guida.
+--
+--   1) community_decks.version (1 alla pubblicazione) e cards_updated_at (null finché le carte sono quelle pubblicate):
+--      le scrive solo il trigger. Quando un mazzo non privato cambia carte, Leggendaria o carte create, la versione di
+--      prima finisce in community_deck_versions (carte, codice, da quando a quando), `version` sale di uno e
+--      cards_updated_at diventa now(). Nome, guida, video e artwork si cambiano senza nuova versione. Un mazzo privato
+--      ('draft') si riscrive senza versioni: non ha voti né una scheda pubblica.
+--   2) I voti valgono per una versione: deck_votes.version, scritta dal trigger con la versione del mazzo al momento del
+--      voto (mai dal sito né da chi vota), e la chiave primaria diventa (deck_id, user_id, version): sulla versione nuova
+--      si vota da capo (Magic: "perdendo tutti i voti una volta aggiornato"), ma i voti di prima NON si cancellano:
+--      restano nelle statistiche dei creator, nei traguardi e nel "Mazzo del mese", e la versione di prima mostra ancora
+--      la sua media. Un voto di una versione chiusa non si cambia più (si può solo togliere).
+--   3) deck_ratings conta solo i voti della versione in vigore: è la media che il sito mostra ovunque (schede, /decks,
+--      profili, tier list). Le versioni di prima la calcolano dai voti con la loro `version` (listDeckVersions).
+--   4) community_deck_versions: lettura con le stesse regole del mazzo (la policy guarda community_decks, che ha la sua
+--      RLS: chi non vede il mazzo non vede le versioni), nessuna scrittura degli utenti (solo il grant di select e una
+--      policy restrittiva che nega le scritture): le righe le scrive solo il trigger security definer. Si cancellano
+--      con il mazzo (on delete cascade).
+-- ORDINE: questo blocco sta dopo DATE E FOTO (trigger deck_votes_guard_created). Qui, al contrario di altri blocchi, PRIMA
+-- si mette online il codice e POI si migra: il codice nuovo regge senza (colonne facoltative in queries.ts, gruppo
+-- "version"; updateDeck rifiuta un cambio di carte con `versionsUnavailable`; il voto riprova con la chiave di prima),
+-- mentre il voto del codice VECCHIO usa la chiave (deck_id, user_id) che qui sparisce.
+-- =====================================================================================================
+
+alter table public.community_decks add column if not exists version integer not null default 1;
+alter table public.community_decks add column if not exists cards_updated_at timestamptz;
+alter table public.deck_votes add column if not exists version integer not null default 1;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_index i join pg_attribute a on a.attrelid = i.indrelid and a.attnum = any (i.indkey)
+     where i.indrelid = 'public.deck_votes'::regclass and i.indisprimary and a.attname = 'version'
+  ) then
+    alter table public.deck_votes drop constraint if exists deck_votes_pkey;
+    alter table public.deck_votes add constraint deck_votes_pkey primary key (deck_id, user_id, version);
+  end if;
+end $$;
+
+create table if not exists public.community_deck_versions (
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  version integer not null check (version >= 1),
+  legendary text,
+  cards jsonb not null default '[]'::jsonb,
+  custom_cards jsonb not null default '[]'::jsonb,
+  code_om text,
+  -- da quando valevano queste carte (pubblicazione o aggiornamento di prima) e fino a quando
+  started_at timestamptz not null,
+  ended_at timestamptz not null default now(),
+  primary key (deck_id, version)
+);
+
+alter table public.community_deck_versions enable row level security;
+drop policy if exists "deck versions follow the deck" on public.community_deck_versions;
+create policy "deck versions follow the deck" on public.community_deck_versions for select
+  using (exists (select 1 from public.community_decks d where d.id = deck_id));
+drop policy if exists "deck versions are written by the database" on public.community_deck_versions;
+create policy "deck versions are written by the database" on public.community_deck_versions as restrictive for all
+  using (true) with check (false);
+revoke all on public.community_deck_versions from anon, authenticated;
+grant select on public.community_deck_versions to anon, authenticated;
+
+-- ---------- 1) versione del mazzo ----------
+create or replace function public.guard_deck_version()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if tg_op = 'INSERT' then
+    new.version := 1;
+    new.cards_updated_at := null;
+    return new;
+  end if;
+  new.version := old.version;
+  new.cards_updated_at := old.cards_updated_at;
+  if old.status <> 'draft'
+     and (new.cards is distinct from old.cards or new.legendary is distinct from old.legendary or new.custom_cards is distinct from old.custom_cards) then
+    insert into public.community_deck_versions (deck_id, version, legendary, cards, custom_cards, code_om, started_at, ended_at)
+    values (old.id, old.version, old.legendary, old.cards, old.custom_cards, old.code_om, coalesce(old.cards_updated_at, old.created_at), now())
+    on conflict (deck_id, version) do nothing;
+    new.version := old.version + 1;
+    new.cards_updated_at := now();
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_deck_version() from public, anon, authenticated;
+drop trigger if exists community_decks_version on public.community_decks;
+create trigger community_decks_version before insert or update on public.community_decks
+  for each row execute function public.guard_deck_version();
+
+-- ---------- 2) il voto vale per la versione in vigore ----------
+create or replace function public.guard_vote_version()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare current_version integer;
+begin
+  select d.version into current_version from public.community_decks d where d.id = new.deck_id;
+  if tg_op = 'INSERT' then
+    new.version := coalesce(current_version, 1);
+  else
+    new.version := old.version;
+    if new.deck_id is distinct from old.deck_id or old.version is distinct from current_version then
+      raise exception 'vote of a closed deck version' using errcode = '42501';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_vote_version() from public, anon, authenticated;
+drop trigger if exists deck_votes_version on public.deck_votes;
+create trigger deck_votes_version before insert or update on public.deck_votes
+  for each row execute function public.guard_vote_version();
+
+-- ---------- 3) la media mostrata è quella della versione in vigore ----------
+create or replace view public.deck_ratings as
+  select v.deck_id, round(avg(v.stars)::numeric, 2) as avg_stars, count(*)::int as votes
+    from public.deck_votes v join public.community_decks d on d.id = v.deck_id and d.version = v.version
+   group by v.deck_id;
+grant select on public.deck_ratings to anon, authenticated;
+
+comment on column public.community_decks.version is 'Versione delle carte del mazzo: 1 alla pubblicazione, +1 a ogni cambio di carte di un mazzo non privato (trigger guard_deck_version, 30/09/2026).';
+comment on column public.community_decks.cards_updated_at is 'Quando sono cambiate le carte l''ultima volta (null: quelle della pubblicazione). La patch del mazzo si ricava da qui (30/09/2026).';
+comment on column public.deck_votes.version is 'Versione del mazzo votata: la scrive il trigger guard_vote_version (30/09/2026).';
+comment on table public.community_deck_versions is 'Versioni di prima delle carte dei mazzi della community, scritte dal trigger guard_deck_version (30/09/2026).';
+
+-- =====================================================================================================
+-- ===== 30/09/2026: PREFERITI E TENDENZA =====
+-- =====================================================================================================
+-- Dal confronto con i siti concorrenti del 30/09/2026 (Pierluigi: "lavoriamo su sti 10 punti, iniziamo dai primi 5"):
+-- un sito rivale ha sui mazzi il tasto "Favorite" e l'ordine "Trending"; noi avevamo solo "Più recenti" e "Più votati".
+--
+--   1) deck_favorites: i mazzi salvati da ogni utente ("Salva", un segnalibro personale, diverso dal voto: si può salvare
+--      anche un proprio mazzo). Ognuno legge, aggiunge e toglie SOLO i suoi (RLS); si salva solo un mazzo pubblicato
+--      (trigger) e al massimo FAVORITE_MAX (500) a testa, come i "Segui". Chi ha salvato un mazzo non è pubblico: il
+--      numero dei salvataggi di ogni mazzo sì, solo come conteggio, dalla funzione deck_favorite_counts.
+--   2) deck_trending: punteggio "Di tendenza" dei mazzi pubblicati, sugli ultimi 7 giorni UTC, con i giorni più vecchi
+--      che pesano meno (oggi 7/7, sei giorni fa 1/7): visite ×1, copie del codice del gioco ×3, clic sulle risorse ×1,
+--      video avviati ×2, più voti ×4 e salvataggi ×5 dati nella settimana. deck_stats_daily resta privata (blocco STATS):
+--      la funzione restituisce SOLO il punteggio arrotondato per mazzo, mai visite o copie, e solo per i mazzi pubblicati
+--      con punteggio positivo. Pesi e finestra sono uguali in src/lib/community/favorites.ts (TRENDING_*), che il test
+--      confronta.
+-- Le due funzioni sono security definer (leggono tabelle private) ma restituiscono solo aggregati. Il codice regge senza
+-- questo blocco (la scheda non mostra il tasto e /decks non offre gli ordini nuovi): l'ordine di rilascio è libero.
+-- =====================================================================================================
+
+create table if not exists public.deck_favorites (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, deck_id)
+);
+create index if not exists deck_favorites_deck_idx on public.deck_favorites (deck_id);
+
+alter table public.deck_favorites enable row level security;
+drop policy if exists "favorites: own rows" on public.deck_favorites;
+create policy "favorites: own rows" on public.deck_favorites for select to authenticated using (user_id = auth.uid());
+drop policy if exists "favorites: add own" on public.deck_favorites;
+create policy "favorites: add own" on public.deck_favorites for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "favorites: remove own" on public.deck_favorites;
+create policy "favorites: remove own" on public.deck_favorites for delete to authenticated using (user_id = auth.uid());
+revoke all on public.deck_favorites from anon, authenticated;
+grant select, insert, delete on public.deck_favorites to authenticated;
+
+-- solo mazzi pubblicati, al massimo 500 a testa, data scritta dal database
+create or replace function public.guard_deck_favorite()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not exists (select 1 from public.community_decks d where d.id = new.deck_id and d.status = 'published') then
+    raise exception 'deck not published' using errcode = '42501';
+  end if;
+  perform pg_advisory_xact_lock(hashtextextended('deck_favorites:' || new.user_id::text, 0));
+  if (select count(*) from public.deck_favorites f where f.user_id = new.user_id) >= 500 then
+    raise exception 'favorite limit' using errcode = '23514';
+  end if;
+  new.created_at := now();
+  return new;
+end $$;
+revoke all on function public.guard_deck_favorite() from public, anon, authenticated;
+drop trigger if exists deck_favorites_guard on public.deck_favorites;
+create trigger deck_favorites_guard before insert on public.deck_favorites
+  for each row execute function public.guard_deck_favorite();
+
+-- quanti hanno salvato ogni mazzo pubblicato (solo i numeri, mai chi)
+create or replace function public.deck_favorite_counts()
+returns table (deck_id uuid, favorites integer) language sql stable security definer set search_path = public, pg_temp as $$
+  select f.deck_id, count(*)::int
+    from public.deck_favorites f join public.community_decks d on d.id = f.deck_id and d.status = 'published'
+   group by f.deck_id;
+$$;
+revoke all on function public.deck_favorite_counts() from public;
+grant execute on function public.deck_favorite_counts() to anon, authenticated;
+
+-- ---------- 2) di tendenza ----------
+create or replace function public.deck_trending()
+returns table (deck_id uuid, score numeric) language sql stable security definer set search_path = public, pg_temp as $$
+  with pub as (select id from public.community_decks where status = 'published'),
+  stats as (
+    select s.deck_id,
+           sum((s.views * 1 + s.code_copies * 3 + s.link_clicks * 1 + s.video_plays * 2)
+               * greatest(0, 7 - ((now() at time zone 'utc')::date - s.day)) / 7.0) as pts
+      from public.deck_stats_daily s
+     where s.day > (now() at time zone 'utc')::date - 7 and s.deck_id in (select id from pub)
+     group by s.deck_id
+  ),
+  votes as (
+    select v.deck_id, count(*) * 4.0 as pts from public.deck_votes v
+     where v.created_at > now() - interval '7 days' and v.deck_id in (select id from pub) group by v.deck_id
+  ),
+  favs as (
+    select f.deck_id, count(*) * 5.0 as pts from public.deck_favorites f
+     where f.created_at > now() - interval '7 days' and f.deck_id in (select id from pub) group by f.deck_id
+  )
+  select x.deck_id, round(sum(x.pts), 1)
+    from (select * from stats union all select * from votes union all select * from favs) x
+   group by x.deck_id
+  having sum(x.pts) > 0;
+$$;
+revoke all on function public.deck_trending() from public;
+grant execute on function public.deck_trending() to anon, authenticated;
+
+comment on table public.deck_favorites is 'Mazzi salvati da ogni utente ("Salva", 30/09/2026): privati, solo il conteggio è pubblico (deck_favorite_counts).';
+comment on function public.deck_favorite_counts() is 'Numero di salvataggi di ogni mazzo pubblicato, senza chi li ha fatti (30/09/2026).';
+comment on function public.deck_trending() is 'Punteggio "Di tendenza" dei mazzi pubblicati sugli ultimi 7 giorni: solo il punteggio, mai visite o copie (30/09/2026).';
+
 -- ===== 30/09/2026: TRACKER =====
 -- =====================================================================================================
 -- 29–30/09/2026 — TRACKER/OVERLAY, Fase 3: le partite registrate dall'app OriginsMeta Tracker (docs/tracker.md).

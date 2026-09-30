@@ -29,6 +29,7 @@ export function StarRating({
   path,
   loginHref,
   labels,
+  version,
 }: {
   deckId: string;
   ownerId: string;
@@ -37,6 +38,8 @@ export function StarRating({
   path: string;
   loginHref: string;
   labels: RatingLabels;
+  /** versione del mazzo in vigore (blocco VERSIONI, 30/09/2026): il voto dell'utente si legge su quella; assente prima della migrazione */
+  version?: number | null;
 }) {
   const [userId, setUserId] = useState<string | null | undefined>(supabaseEnabled ? undefined : null);
   const [mine, setMine] = useState<number | null>(null);
@@ -57,14 +60,15 @@ export function StarRating({
       if (!alive) return;
       setUserId(uid);
       if (uid) {
-        const { data } = await sb.from("deck_votes").select("stars").eq("deck_id", deckId).eq("user_id", uid).maybeSingle();
+        const q = sb.from("deck_votes").select("stars").eq("deck_id", deckId).eq("user_id", uid);
+        const { data } = await (version ? q.eq("version", version) : q).maybeSingle();
         if (alive && data) setMine((data as { stars: number }).stars);
       }
     })();
     return () => {
       alive = false;
     };
-  }, [deckId]);
+  }, [deckId, version]);
 
   const isOwner = Boolean(userId) && userId === ownerId;
   const canVote = Boolean(userId) && !isOwner && !pending;

@@ -10,7 +10,8 @@ import { activeCards, getCard, patchAt, patchLabel, patchOrder, statLine, type P
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { PageNotes } from "@/components/PageNotes";
-import { listPublishedDecks } from "@/lib/community/queries";
+import { listDeckPopularity, listPublishedDecks } from "@/lib/community/queries";
+import { favoriteLabels } from "@/lib/favoriteLabels";
 import { creatorExtras, creatorIndex, listCreators } from "@/lib/community/creators";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { authorName } from "@/lib/community/util";
@@ -24,6 +25,7 @@ import { deckArtUrl } from "@/lib/community/deckArt";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 
 /** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
 const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
@@ -85,6 +87,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Solo le Leggendarie giocabili nella demo (le rimosse del playtest restano nel database carte)
   const legendaries = activeCards.filter((c) => c.legendary);
   const community = await listPublishedDecks();
+  // "Di tendenza" e "Più salvati" (blocco PREFERITI E TENDENZA, 30/09/2026): null senza la migrazione, e gli ordini non ci sono
+  const popularity = await listDeckPopularity();
   // canali e badge LIVE accanto a chi ha pubblicato, se ha il ruolo Creator, Autore, Pro o Staff (pacchetto CREATOR)
   const creators = creatorIndex(await listCreators());
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
@@ -124,9 +128,10 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         // data di creazione e versione del gioco di quel giorno (richiesta di Pierluigi del 23/09/2026)
         created: deck.created_at.slice(0, 10),
         createdLabel: formatDate(locale, deck.created_at.slice(0, 10)),
-        patchId: patchAt(deck.created_at),
-        patchLabel: patchAt(deck.created_at) ? patchLabel(patchAt(deck.created_at)!, locale) : undefined,
+        patchId: patchAt(deckCardsDate(deck)),
+        patchLabel: patchAt(deckCardsDate(deck)) ? patchLabel(patchAt(deckCardsDate(deck))!, locale) : undefined,
         rating: deck.rating,
+        ...(popularity ? { trend: popularity.get(deck.id)?.trend ?? 0, favorites: popularity.get(deck.id)?.favorites ?? 0 } : {}),
         // voto pesato per l'ordine "Più votati" dell'elenco (`ExplorerDeck.score`), lo stesso della classifica dei migliori
         // mazzi (Ondata 3): con la media semplice un solo voto da 5 stelle passava davanti al #1 della classifica
         score: deck.rating?.votes ? weightedRating(deck.rating.avg, deck.rating.votes) : 0,
@@ -326,6 +331,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             sortBy: d.common.sortBy,
             sortNewest: d.common.sortNewest,
             sortRated: d.common.sortRated,
+            // ordini nuovi solo con la migrazione del blocco PREFERITI E TENDENZA (30/09/2026)
+            ...(popularity ? { sortTrending: favoriteLabels[locale].sortTrending, sortSaved: favoriteLabels[locale].sortSaved } : {}),
             createdOn: d.common.createdOn,
             channels: creatorLabels[locale].channels,
             live: creatorLabels[locale].live,

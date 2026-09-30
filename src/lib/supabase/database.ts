@@ -68,6 +68,9 @@ export type CommunityDeckRow = {
   /** traduzioni automatiche della guida (25/09/2026): le scrive il sito dopo la pubblicazione, non l'autore */
   translations: DeckTranslations;
   code_om: string | null;
+  /** versione delle carte e ultimo cambio di carte (blocco VERSIONI, 30/09/2026): le scrive solo il trigger guard_deck_version */
+  version: number;
+  cards_updated_at: string | null;
   status: DeckStatus;
   created_at: string;
   updated_at: string;
@@ -76,7 +79,7 @@ export type CommunityDeckRow = {
   art_path: string | null;
 };
 
-export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations" | "videos" | "links" | "art_path"> & {
+export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "updated_at" | "status" | "video_url" | "code_om" | "legendary" | "deck_types" | "translations" | "videos" | "links" | "art_path" | "version" | "cards_updated_at"> & {
   id?: string;
   videos?: StoredVideo[];
   links?: DeckLink[];
@@ -110,7 +113,21 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
   status?: TierListRow["status"];
 };
 
-export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; created_at: string; updated_at: string };
+/** `version`: la versione del mazzo votata, scritta dal trigger guard_vote_version (blocco VERSIONI, 30/09/2026) */
+export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; version: number; created_at: string; updated_at: string };
+/** Mazzo salvato da un utente ("Salva", blocco PREFERITI E TENDENZA, 30/09/2026): ognuno vede solo i suoi. */
+export type DeckFavoriteRow = { user_id: string; deck_id: string; created_at: string };
+/** Versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026): solo lettura, le scrive il trigger. */
+export type CommunityDeckVersionRow = {
+  deck_id: string;
+  version: number;
+  legendary: string | null;
+  cards: string[];
+  custom_cards: BuilderCard[];
+  code_om: string | null;
+  started_at: string;
+  ended_at: string;
+};
 /** Statistiche dei mazzi per gli autori (26/09/2026, supabase/schema.sql, blocco STATS): totali per mazzo e giorno UTC. */
 export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
@@ -387,7 +404,7 @@ export type Database = {
       };
       deck_votes: {
         Row: DeckVoteRow;
-        Insert: { deck_id: string; user_id: string; stars: number; created_at?: string; updated_at?: string };
+        Insert: { deck_id: string; user_id: string; stars: number; version?: number; created_at?: string; updated_at?: string };
         Update: Partial<DeckVoteRow>;
         Relationships: [
           {
@@ -402,6 +419,34 @@ export type Database = {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      deck_favorites: {
+        Row: DeckFavoriteRow;
+        Insert: { user_id: string; deck_id: string; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "deck_favorites_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_deck_versions: {
+        Row: CommunityDeckVersionRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "community_deck_versions_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
             referencedColumns: ["id"];
           },
         ];
@@ -692,6 +737,9 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      /** preferiti e "Di tendenza" (blocco PREFERITI E TENDENZA, 30/09/2026): solo aggregati per mazzo pubblicato */
+      deck_favorite_counts: { Args: Record<string, never>; Returns: { deck_id: string; favorites: number }[] };
+      deck_trending: { Args: Record<string, never>; Returns: { deck_id: string; score: number }[] };
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };

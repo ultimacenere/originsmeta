@@ -7,7 +7,8 @@ import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
 import { RemovedCardsArchive, removedArchiveId } from "@/components/RemovedCardsArchive";
 import { PageNotes } from "@/components/PageNotes";
 import { flipOf } from "@/components/CardChip";
-import { keywordLabel } from "@/lib/keywordLabels";
+import { keywordLabel, keywordLabels } from "@/lib/keywordLabels";
+import { cardFilterLabels } from "@/lib/cardFilterLabels";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -29,11 +30,17 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
     sagaLabel: sagas[c.saga][locale],
     rarity: c.rarity,
     // tag nella lingua della pagina e, sulle pagine tradotte, anche in inglese: "Trample" e "Travolgere" trovano le stesse carte
+    tags: c.keywords ?? [],
     keywords: [...(c.keywords ?? []), ...(locale === "en" ? [] : (c.keywords ?? []).map((k) => keywordLabel(k, locale)))],
     // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
     abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
     removed: c.status === "removed",
   }));
+  // Filtro "Parola chiave" (30/09/2026): i tag che le carte usano davvero, prima le parole chiave del gioco (nomi ufficiali)
+  const usedTags = Array.from(new Set(cards.flatMap((c) => c.keywords ?? [])));
+  const keywordOptions = usedTags
+    .map((id) => ({ id, label: keywordLabel(id, locale), game: Boolean(keywordLabels[id]?.game) }))
+    .sort((a, b) => a.label.localeCompare(b.label, locale));
   const usedSagas = Array.from(new Set(cards.map((c) => c.saga))) as SagaId[];
   const sagaOptions = usedSagas.map((id) => ({ id, label: sagas[id][locale] })).sort((a, b) => a.label.localeCompare(b.label));
   const inDemo = cards.filter((c) => c.status === "active" && c.type !== "token").length;
@@ -75,6 +82,8 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             sagas={sagaOptions}
             alignments={(["good", "evil", "neutral"] as const).map((id) => ({ id, label: alignLabel[id] }))}
             rarities={(["common", "rare", "epic", "legendary"] as const).map((id) => ({ id, label: rarityLabel[id] }))}
+            keywordOptions={keywordOptions}
+            filterLabels={cardFilterLabels[locale]}
             labels={{
               search: d.common.search,
               searchHint: d.cards.searchHint,

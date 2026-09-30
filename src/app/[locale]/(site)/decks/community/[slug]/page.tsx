@@ -5,12 +5,17 @@ import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { deckLead, deckShortTail, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
-import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
+import { getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
 import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { getCommunityDeck, listPublishedDecks } from "@/lib/community/queries";
+import { getCommunityDeck, listDeckPopularity, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { favoriteLabels } from "@/lib/favoriteLabels";
+import { deckCardsDate, deckCardsDiff, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
+import { deckVersionLabels } from "@/lib/deckVersionLabels";
+import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
 import { normalizeBadge } from "@/lib/community/badges";
 import { localizedGuide } from "@/lib/community/deckTranslation";
@@ -145,7 +150,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const pageUrl = `${siteUrl}${path}`;
   const author = authorName(deck.profile);
   /** versione del gioco in vigore quando il mazzo è stato creato (dal calendario delle patch, non dichiarata) */
-  const deckPatch = patchAt(deck.created_at);
+  // Dal 30/09/2026 (pacchetto VERSIONI) la patch è quella dell'ultimo cambio di carte, non della pubblicazione.
+  const deckPatch = patchAt(deckCardsDate(deck));
   const handle = authorHandle(deck.profile);
   const L = communityPageLabels[locale];
   // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
@@ -171,6 +177,22 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
   // Codice del gioco (KGBLDC…), l'unico da copiare (note del 22/09/2026): null se una carta non ha l'ID ufficiale.
   const gameCode = await deckGameCode(deck);
+  // Versioni delle carte (pacchetto VERSIONI, 30/09/2026): quella in vigore più le precedenti, dalla più recente.
+  const VL = deckVersionLabels[locale].deck;
+  const version = typeof deck.version === "number" ? deck.version : null;
+  const oldVersions = version && version > 1 ? await listDeckVersions(deck.id) : [];
+  const versionViews = versionsView(deck, oldVersions, locale);
+  // "Salva" (blocco PREFERITI E TENDENZA, 30/09/2026): quante persone l'hanno salvato; null senza la migrazione (niente tasto)
+  const popularity = await listDeckPopularity();
+  const favoriteCount = popularity ? (popularity.get(deck.id)?.favorites ?? 0) : null;
+  // tasto "Aggiorna alla versione …" per il proprietario, quando il mazzo è fermo a una patch di prima (solo con la migrazione)
+  const ownerUpdate =
+    version && deckOutdated(deckPatch, patchOrder)
+      ? {
+          href: deckUpdateHref(locale, deck.slug, deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })),
+          label: fillLabel(deckVersionLabels[locale].edit.updateTo, { patch: patchLabel(latestPatch, locale) }),
+        }
+      : undefined;
   // La guida nella lingua della pagina: la traduzione del sito quando è aggiornata, altrimenti l'originale.
   const view = localizedGuide(deck, locale);
   const sections = guideSections.filter((k) => view.text[k]);
@@ -244,6 +266,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             <p className="kicker text-mint">
               {c.kicker} · {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
               {deckPatch ? ` · ${d.common.patch} ${patchLabel(deckPatch, locale)}` : ""}
+              {version && version > 1 ? ` · ${fillLabel(VL.version, { n: String(version) })}` : ""}
               {deck.updated_at.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, deck.updated_at.slice(0, 10))}` : ""}
             </p>
             <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
@@ -356,6 +379,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             avg={deck.rating?.avg ?? 0}
             votes={deck.rating?.votes ?? 0}
             path={path}
+            version={version}
             loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
             labels={{
               rating: c.rating,
@@ -369,6 +393,16 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               voted: c.voted,
               voteError: c.voteError,
             }}
+          />
+        </div>
+
+        <div className="mt-3">
+          <FavoriteButton
+            deckId={deck.id}
+            slug={deck.slug}
+            count={favoriteCount}
+            loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
+            labels={favoriteLabels[locale]}
           />
         </div>
 
@@ -405,6 +439,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           status={deck.status}
           locale={locale}
           editHref={`${path}/edit`}
+          update={ownerUpdate}
           labels={{ edit: c.edit, hide: c.hide, unhide: c.unhide, delete: c.delete, confirmDelete: c.confirmDelete }}
         />
 
@@ -450,6 +485,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </ul>
           </div>
         ) : null}
+
+        {versionViews.length > 1 ? <DeckVersions title={VL.title} hint={VL.hint} currentTag={VL.current} versions={versionViews} /> : null}
 
         <DeckCharts stats={deckStats({ legendary: deck.legendary, cards: deck.cards }, locale)} labels={d.stats} />
 
@@ -550,4 +587,72 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
       </p>
     </div>
   );
+}
+
+/**
+ * Le versioni del mazzo pronte per il selettore (pacchetto VERSIONI, 30/09/2026): la versione in vigore e quelle di prima,
+ * dalla più recente, con periodo, patch (dalla data delle carte, come la scheda), voti e cambi rispetto alla precedente.
+ * Una sola versione: niente selettore.
+ */
+function versionsView(deck: CommunityDeck, old: Awaited<ReturnType<typeof listDeckVersions>>, locale: Locale): VersionView[] {
+  if (!old.length || typeof deck.version !== "number") return [];
+  const L = deckVersionLabels[locale].deck;
+  const customs = [...deck.custom_cards, ...old.flatMap((v) => v.custom_cards ?? [])] as { slug: string; name?: string }[];
+  const toCard = (s: string): VersionCard => {
+    const card = getCard(s);
+    return card ? { name: card.name, href: href(locale, `/cards/${card.slug}`) } : { name: customs.find((x) => x.slug === s)?.name ?? s };
+  };
+  const day = (iso: string) => formatDate(locale, iso.slice(0, 10));
+  const rating = (r: { avg: number; votes: number } | undefined) =>
+    !r?.votes ? L.noVotes : fillLabel(r.votes === 1 ? L.oneVote : L.votes, { avg: r.avg.toFixed(1), n: String(r.votes) });
+  type Step = DeckCards & { n: number; current: boolean; start: string; end: string | null; code: string; rating?: { avg: number; votes: number } };
+  const steps: Step[] = [
+    {
+      n: deck.version,
+      current: true,
+      legendary: deck.legendary,
+      cards: deck.cards,
+      custom_cards: deck.custom_cards,
+      start: deckCardsDate(deck),
+      end: null,
+      code: deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards }),
+      rating: deck.rating,
+    },
+    ...old.map((v) => ({
+      n: v.version,
+      current: false,
+      legendary: v.legendary,
+      cards: v.cards,
+      custom_cards: v.custom_cards,
+      start: v.started_at,
+      end: v.ended_at,
+      code: v.code_om ?? encodeOmCode({ name: deck.name, legendary: v.legendary, cards: v.cards, customCards: (v.custom_cards ?? []) as CommunityDeck["custom_cards"] }),
+      rating: v.rating,
+    })),
+  ];
+  return steps.map((x, i) => {
+    const prev = steps[i + 1];
+    const patch = patchAt(x.start);
+    const diff = prev ? deckCardsDiff(prev, x) : null;
+    return {
+      n: x.n,
+      current: x.current,
+      label: patch ? fillLabel(L.option, { n: String(x.n), patch: patchLabel(patch, locale) }) : fillLabel(L.optionNoPatch, { n: String(x.n) }),
+      when: x.end ? fillLabel(L.range, { from: day(x.start), to: day(x.end) }) : fillLabel(L.since, { date: day(x.start) }),
+      rating: rating(x.rating),
+      legendary: x.legendary ? toCard(x.legendary) : null,
+      cards: x.cards.map(toCard),
+      changes:
+        diff && prev
+          ? {
+              title: fillLabel(L.changes, { n: String(prev.n) }),
+              legendary: diff.legendary ? `★ ${diff.legendary.from ? toCard(diff.legendary.from).name : "—"} → ${diff.legendary.to ? toCard(diff.legendary.to).name : "—"}` : null,
+              added: diff.added.map(toCard),
+              removed: diff.removed.map(toCard),
+            }
+          : null,
+      builderHref: `${href(locale, "/deck-builder")}#${x.code}`,
+      builderLabel: fillLabel(L.openInBuilder, { n: String(x.n) }),
+    };
+  });
 }

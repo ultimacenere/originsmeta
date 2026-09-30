@@ -13,6 +13,8 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { CardPeek, hasPeek } from "./CardPeek";
+import { DECK_SLUG_RE, deckSaveCardsHref } from "@/lib/community/deckVersions";
+import type { DeckVersionLabels } from "@/lib/deckVersionLabels";
 
 type Issues = {
   missingLegendary: string;
@@ -175,6 +177,7 @@ export function DeckBuilder({
   preset,
   onSubmit,
   submitLabels,
+  updateLabels,
 }: {
   pool: BuilderCard[];
   labels: BuilderLabels;
@@ -188,6 +191,8 @@ export function DeckBuilder({
   /** consegna dei codici al torneo (Server Action): sostituisce il bottone "Pubblica" */
   onSubmit?: (codes: string[]) => Promise<{ error?: string; ok?: boolean }>;
   submitLabels?: SubmitLabels;
+  /** testi della modalità aggiornamento (?update=<slug>, blocco VERSIONI del 30/09/2026); senza, la modalità non c'è */
+  updateLabels?: DeckVersionLabels["builder"];
 }) {
   const count = preset?.deckCount ?? 3;
   const locked = Boolean(preset);
@@ -231,6 +236,10 @@ export function DeckBuilder({
   const pendingSave = useRef(false);
   /** mazzo privato aperto da /account (?draft=): id della riga e casella in cui si è aperto */
   const draftLink = useRef<{ id: string; slot: number } | null>(null);
+  /** Aggiornamento delle carte di un mazzo pubblicato (?update=<slug>, 30/09/2026): slug del mazzo e casella in cui si
+   *  lavora. Il tasto principale di quella casella porta alla pagina di modifica con le carte nuove, invece di "Pubblica".
+   *  `update` resta nell'indirizzo: dopo un ricaricamento la modalità riparte sulla casella attiva. */
+  const [updating, setUpdating] = useState<{ slug: string; slot: number } | null>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const sharePanelRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
@@ -288,6 +297,7 @@ export function DeckBuilder({
     }
 
     let linked: DeckState | null = null;
+    let updateSlug = "";
     try {
       const url = new URL(window.location.href);
       const params = url.searchParams;
@@ -299,6 +309,8 @@ export function DeckBuilder({
       // mazzo privato aperto da /account (?draft=<id>): "Salva privato" aggiorna quello invece di crearne un altro
       const draft = params.get("draft") ?? "";
       if (linked && /^[0-9a-f-]{36}$/i.test(draft)) draftLink.current = { id: draft, slot: 0 };
+      const upd = params.get("update") ?? "";
+      if (!locked && updateLabels && DECK_SLUG_RE.test(upd)) updateSlug = upd;
       // Il mazzo del link passa nello stato (e nel salvataggio automatico): lo si toglie dall'indirizzo, così un
       // ricaricamento non rimette la versione del link sopra le modifiche fatte nel frattempo.
       if (fromHash || params.has("deck") || params.has("intent") || params.has("draft")) {
@@ -320,6 +332,7 @@ export function DeckBuilder({
       const already = prevDecks.findIndex((d) => !isEmptyDeck(d) && sameDeck(d, linked));
       if (saved && already >= 0) {
         if (draftLink.current) draftLink.current.slot = Math.min(count - 1, already);
+        if (updateSlug) setUpdating({ slug: updateSlug, slot: Math.min(count - 1, already) });
         applySaved(saved, already);
         setAutoSaved(true);
         setHydrated(true);
@@ -328,6 +341,7 @@ export function DeckBuilder({
       // Il link apre il mazzo solo nella casella attiva: le altre (i mazzi B e C del Conquest) restano intatte.
       const slot = Math.min(count - 1, Math.max(0, typeof saved?.active === "number" ? saved.active : 0));
       if (draftLink.current) draftLink.current.slot = slot;
+      if (updateSlug) setUpdating({ slug: updateSlug, slot });
       // Se la casella sostituita non era vuota, se ne tiene una copia da ripristinare ("Torna al mazzo di prima").
       if (saved && !isEmptyDeck(prevDecks[slot])) {
         try {
@@ -348,13 +362,14 @@ export function DeckBuilder({
       setHydrated(true);
       return;
     }
+    if (updateSlug) setUpdating({ slug: updateSlug, slot: Math.min(count - 1, Math.max(0, typeof saved?.active === "number" ? saved.active : 0)) });
     if (saved) {
       applySaved(saved);
       // i mazzi mostrati sono quelli del browser: sono già salvati
       if (Array.isArray(saved.decks) && saved.decks.some((d) => !isEmptyDeck(d))) setAutoSaved(true);
     }
     setHydrated(true);
-  }, [labels.restored, storageKey, backupKey, count, locked, applySaved]);
+  }, [labels.restored, storageKey, backupKey, count, locked, applySaved, updateLabels]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   /* --- salvataggio automatico nel browser (niente più tasto "Salva nel browser") ---
@@ -720,6 +735,18 @@ export function DeckBuilder({
     });
   };
 
+  const updateHere = updating && updating.slot === active ? updating : null;
+  const stopUpdating = () => {
+    setUpdating(null);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("update");
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    } catch {
+      /* indirizzo non modificabile: la modalità resta spenta fino al prossimo ricaricamento */
+    }
+  };
+
   /** Tasto primario: consegna al torneo (Tournament Organizer) oppure "Pubblica sul sito". `compact` per la barra del telefono. */
   const primaryAction = (compact: boolean) => {
     const size = compact ? "shrink-0 px-4 py-2 text-xs" : "w-full justify-center";
@@ -733,6 +760,18 @@ export function DeckBuilder({
           onClick={submitDecks}
         >
           {submitting ? submitLabels.submitting : submitLabels.submit}
+        </button>
+      );
+    }
+    // aggiornamento di un mazzo pubblicato: si torna alla sua pagina di modifica (che chiede l'accesso, se serve)
+    if (updateHere && updateLabels) {
+      return complete ? (
+        <a className={`btn btn-primary ${size}`} href={deckSaveCardsHref(locale, updateHere.slug, omCode)}>
+          {updateLabels.update}
+        </a>
+      ) : (
+        <button type="button" disabled aria-describedby={compact ? undefined : "builder-complete-hint"} className={`btn btn-primary ${size}`}>
+          {updateLabels.update}
         </button>
       );
     }
@@ -776,6 +815,15 @@ export function DeckBuilder({
 
   return (
     <div className="relative">
+      {/* ---------- aggiornamento di un mazzo pubblicato (30/09/2026): che cosa si sta facendo e come uscirne ---------- */}
+      {updateHere && updateLabels ? (
+        <div role="status" className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border-2 border-gold bg-gold/10 px-4 py-3 text-sm text-chalk">
+          <span className="min-w-0 flex-1 basis-64">{deck.name.trim() ? updateLabels.banner.replace("{name}", deck.name.trim()) : updateLabels.bannerNoName}</span>
+          <button type="button" onClick={stopUpdating} className="btn btn-ghost px-3 py-1.5 text-xs">
+            {updateLabels.cancel}
+          </button>
+        </div>
+      ) : null}
       {/* ---------- importazione: in cima, su tutta la larghezza (sul telefono prima delle carte) ---------- */}
       <form
         className="felt-panel mb-6 p-4"
