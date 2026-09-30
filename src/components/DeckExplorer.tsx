@@ -105,6 +105,11 @@ type Labels = {
   /* filtro per versione del gioco e ordinamento (23/09/2026) */
   patch: string;
   patchFilter: string;
+  /**
+   * versioni del gioco del filtro [id, nome], dalla più recente (30/09/2026, Pierluigi: "aggiungi un filtro per selezionare
+   * la versione del gioco"): tutte dalla prima usata da un mazzo all'ultima uscita, anche senza mazzi, come i ruoli
+   */
+  versions: [string, string][];
   sortBy: string;
   sortNewest: string;
   sortRated: string;
@@ -204,14 +209,12 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);
   const archetypes = useMemo(() => Array.from(new Map(decks.map((d) => [d.archetype, d.archetypeLabel])).entries()), [decks]);
   const publishers = useMemo(() => Array.from(new Set(decks.map((d) => d.publisher))), [decks]);
-  /* versioni presenti nei mazzi, dalla più recente: l'ordine è quello delle date, non quello alfabetico degli id */
-  const patchesInUse = useMemo(
-    () =>
-      Array.from(new Map(decks.filter((d) => d.patchId && d.patchLabel).map((d) => [d.patchId!, { label: d.patchLabel!, date: d.created ?? "" }])).entries()).sort((a, b) =>
-        b[1].date.localeCompare(a[1].date),
-      ),
-    [decks],
-  );
+  /* mazzi per versione del gioco, per il numero accanto a ogni voce del filtro (anche 0: la versione appena uscita) */
+  const perVersion = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const d of decks) if (d.patchId) m.set(d.patchId, (m.get(d.patchId) ?? 0) + 1);
+    return m;
+  }, [decks]);
 
   const list = useMemo(() => {
     const needle = card.trim().toLowerCase();
@@ -348,7 +351,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
 
   return (
     <div>
-      <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="felt-panel mb-6 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <label className="flex flex-col gap-1">
           <span className="kicker text-chalk-muted">{labels.legendary}</span>
           <select ref={firstFilter} id="deck-legendary" value={legendary} onChange={(e) => setLegendary(e.target.value)} className={selectCls}>
@@ -395,6 +398,19 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
             ))}
           </select>
         </label>
+        {/* Versione del gioco (30/09/2026, Pierluigi): prima era un menu piccolo sulla riga del conteggio, visibile solo con
+            mazzi di due versioni; ora sta con gli altri filtri, sempre, con ogni versione e quanti mazzi ha. */}
+        <label className="flex flex-col gap-1">
+          <span className="kicker text-chalk-muted">{labels.patchFilter}</span>
+          <select id="deck-version" value={patch} onChange={(e) => setPatch(e.target.value)} className={selectCls}>
+            <option value="all">{labels.all}</option>
+            {labels.versions.map(([id, name]) => (
+              <option key={id} value={id}>
+                {`${name} (${perVersion.get(id) ?? 0})`}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="flex flex-col gap-1">
           <span className="kicker text-chalk-muted">{labels.card}</span>
           <input id="deck-card" type="search" value={card} onChange={(e) => setCard(e.target.value)} placeholder="Merlin…" className={selectCls} />
@@ -413,8 +429,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
             </button>
           ) : null}
         </div>
-        {/* Ordinamento e versione del gioco stanno sulla riga del conteggio (nati quando il pannello dei filtri con
-            pochi mazzi non si vedeva): dicono in che ordine e di che epoca sono i mazzi, non che cosa contengono. */}
+        {/* L'ordinamento sta sulla riga del conteggio (nato quando il pannello dei filtri con pochi mazzi non si vedeva):
+            dice in che ordine sono i mazzi, non che cosa contengono. La versione del gioco dal 30/09/2026 sta nel pannello. */}
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 text-xs text-chalk-muted">
             {labels.sortBy}
@@ -423,19 +439,6 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               <option value="rated">{labels.sortRated}</option>
             </select>
           </label>
-          {patchesInUse.length > 1 ? (
-            <label className="flex items-center gap-2 text-xs text-chalk-muted">
-              {labels.patchFilter}
-              <select value={patch} onChange={(e) => setPatch(e.target.value)} className={selectCls}>
-                <option value="all">{labels.all}</option>
-                {patchesInUse.map(([id, { label }]) => (
-                  <option key={id} value={id}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
         </div>
         <div className="flex gap-1 rounded-lg border border-felt-line bg-felt-deep p-1">
           <button type="button" onClick={() => setView("blocks")} className={viewBtn(view === "blocks")} aria-pressed={view === "blocks"}>

@@ -598,11 +598,13 @@ This list matches the Demo 2.0 rotation. We have not yet gone through the locati
     image: "/cards/cover/mulan.webp",
     faq: [
       { q: "What does Mulan do in this deck?", a: "Mulan is a 4-mana 2/4 with Double Attack, and when an ally On Reveal ability happens she repeats it. Nine cards in the list have an On Reveal, so she turns each of them into two." },
-      { q: "What do you keep in the mulligan?", a: "A curve that reaches Mulan on round four: Bagheera on a middle space or Baby Bear on round two, then Black Knight or Frog Prince on round three. Mary is worth keeping when you expect a long game." },
+      { q: "What do you keep in the mulligan?", a: "A curve that reaches Mulan on round four: Bagheera on a middle space, Baby Bear, then Black Knight or Frog Prince. Mary is worth keeping when you expect a long game." },
       { q: "Which On Reveal gains the most from Mulan?", a: "Mowgli, whose 6-mana On Reveal summons a 6/6 Baloo at another random location: repeated, it puts two Baloos on the board. Ellen Trechend and Fairy Godmother also double up." },
       { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press “Open in the deck builder”, or “Copy game code” to paste the code (KGBLDC…) into Origins." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **On Reveal Mid Range** is a **midrange** list led by [Mulan](/en/cards/mulan), published on OriginsMeta on 22 September 2026 by [Davdas](/en/authors/davdas), a member of the site's staff, and tagged for **ladder**, **competitive** and **tournament** play. The idea is the one the author states on the [deck page](/en/decks/community/on-reveal-mid-range-772e): Mulan "lets you use On Reveal abilities to the full", and the list is built to have one worth repeating in every round. It holds up against an aggressive deck and puts pressure on a control deck, because the same cards buy time and build a board.
@@ -641,11 +643,11 @@ Mulan also has **Double Attack**, so her own 2/4 body trades better than it read
 
 ## Mulligan
 
-Look for a curve that gets you to Mulan on round four without falling behind: **Bagheera** on a middle space (a 3/3 for two mana since patch 0.7) or **Baby Bear** on round two, then **Black Knight** or **Frog Prince** on round three. Keep **Mary** when you expect a long game: the Lamb she adds to your hand is a cheap body, and if Mary dies the Lambs you have already played grow permanently.
+Look for a curve that gets you to Mulan on round four without falling behind: **Bagheera** on a middle space (a 3/3 for one mana), then **Baby Bear**, then **Black Knight** or **Frog Prince**. Keep **Mary** when you expect a long game: the Lamb she adds to your hand is a cheap body, and if Mary dies the Lambs you have already played grow permanently.
 
 ## Round by round
 
-1. **Rounds 1–3: take space without overcommitting.** Since patch 0.7 the only one-mana card in the list is Bullseye, so your first unit comes on round two: Bagheera in the middle or Baby Bear where you expect the first attacks, then Black Knight on round three, across from something you want dead. One card per lane is enough: the deck wants the board to be even, not crowded, when Mulan arrives.
+1. **Rounds 1–3: take space without overcommitting.** Bagheera in the middle, Baby Bear where you expect the first attacks, Black Knight across from something you want dead. One card per lane is enough: the deck wants the board to be even, not crowded, when Mulan arrives.
 2. **Round 4: Mulan.** From here on, the order of your plays matters more than the cards. Ask every round which On Reveal is worth doubling, and play it in Mulan's location.
 3. **Rounds 5–6: the value cards.** Fairy Godmother, then Mowgli on six. White Queen is the answer card of the list: it returns ANY character to its owner's hand, so it can remove a finisher the round it lands, or pick up your own Mary to replay her.
 4. **Rounds 7–8: closing.** Ellen Trechend into the lane the opponent has filled; En Passant to move an ally, hit what stands across from it, and open a path for the Trample damage.
@@ -693,6 +695,8 @@ The deck page lists two: **a good curve is often essential**, and **you can run 
       { q: "Is Spellbook necessary?", a: "No. It adds a random spell each round for fuel and unpredictability, but the deck page says the list can win without it." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **King of Value Trade** is a **midrange** list led by [King Arthur](/en/cards/king-arthur), published on OriginsMeta on 22 September 2026 by [Davdas](/en/authors/davdas), a member of the site's staff, and tagged for **ladder** play. The name says the plan: "almost every piece wants to go two for one", that is, to answer two of the opponent's cards with one of yours. Do that often enough and the board becomes yours on its own, without needing a single big finishing turn.
@@ -735,7 +739,7 @@ Three keywords do the work.
 
 ## Round by round
 
-1. **Rounds 1–3: trade up.** Since patch 0.7 the list has no one-mana card, so it starts on round two, and rounds two and three have room for two of these: Bagheera in the middle, Musketeer across from a 1- or 2-Health body, Roo where you may want to move later. Every fight you can win without losing the body is a card gained.
+1. **Rounds 1–3: trade up.** Bagheera in the middle, Musketeer across from a 1- or 2-Health body, Roo where you may want to move later. Every fight you can win without losing the body is a card gained.
 2. **Rounds 4–5: hold a lane.** Lancelot, then play the Good characters in his location: each arrives +2⚔️/+2❤️ bigger than it should be. Boitata on five is a 5/5 that also turns enemy spell damage aimed at your barriers back at theirs.
 3. **Rounds 6–7: the Legendary.** King Arthur is a 7/7 with Shield, and his On Reveal gives Shield to everything Good you already have on the board. Do not play him into an empty board: the value is in the Shields, not in the body.
 4. **Dark Omen, whenever it matters.** Three mana to destroy ANY character is the answer to the one card you cannot beat in a fight: a buffed body, a Defender in the wrong lane, an enemy Legendary.
@@ -784,6 +788,8 @@ The deck page lists three: **no area removal**, **Dark Omen must be used precise
       { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press “Open in the deck builder”, or copy the game code (KGBLDC…) into Origins." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **Dorothy Combo** is a **combo** list led by [Dorothy](/en/cards/dorothy), published on OriginsMeta on 22 September 2026 by [Davdas](/en/authors/davdas), a member of the site's staff, and tagged for **ladder** and **fun** play. It is the move deck, rebuilt after the [Demo patch of 21 September 2026](/en/news/demo-patch-notes-0921), which buffed Dorothy, [Roo](/en/cards/roo) and [Magic Carpet](/en/cards/magic-carpet) among others. The author's assessment is on the [deck page](/en/decks/community/dorothy-combo-7503) and we keep it as it is: this is probably not a top-tier list yet, but something is moving.
@@ -812,7 +818,7 @@ Nine units and three spells, and almost everything either moves or rewards a mov
 
 ## How the deck wins
 
-Dorothy is a 1/1 that counts: **+1⚔️/+1❤️ for each time an ally moved this game**. The counter does not reset, and it counts moves anywhere on the board, so a cheap spell like [Twister Toss](/en/cards/twister-toss) is never wasted — it is one mana for a permanent point on your Legendary. Since [patch 0.7](/en/news/patch-0-7) it can send the ally to any space, even an occupied one, and the two cards swap places. Played on round five after a few moves, Dorothy lands as a real body and keeps growing every round afterwards, because she moves herself.
+Dorothy is a 1/1 that counts: **+1⚔️/+1❤️ for each time an ally moved this game**. The counter does not reset, and it counts moves anywhere on the board, so a cheap spell like [Twister Toss](/en/cards/twister-toss) is never wasted — it is one mana for a permanent point on your Legendary. Played on round five after a few moves, Dorothy lands as a real body and keeps growing every round afterwards, because she moves herself.
 
 Three combos are the point of the list:
 
@@ -871,6 +877,8 @@ Ranked data is not public: this is a reading of the lists, not a win rate.
       { q: "Why is Mind Palace important?", a: "The deck empties its hand quickly: without the two cards Mind Palace draws, you run out of plays before the Legendary lands." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **The Trick-or-Treat Legion** is an **evil** list led by [Legion of the Dead](/en/cards/legion-of-the-dead), published on OriginsMeta on 22 September 2026 by [Davdas](/en/authors/davdas), a member of the site's staff, and tagged for **ladder**, **competitive** and **tournament** play. Several versions of the Legion deck are going around; this one, in the author's words, wants to raise its unpredictability, putting together cards that "play a trick" on the opponent's board every round. The full list and the charts are on the [deck page](/en/decks/community/the-trick-or-treat-legion-72c4).
@@ -895,7 +903,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [White Queen](/en/cards/white-queen) | 4 | 3/3; On Reveal returns ANY character to its owner's hand |
 | [Impundulu](/en/cards/impundulu) | 5 | 3/6; when it attacks it adds a Lightning Strike to your hand, discarded before combat next round |
 
-Ten units and three spells. The cheap cards are not filler: this deck needs the board to be its own before the Legendary arrives, because the Zombies only fill *free* spaces.
+Ten units and three spells. The three cheap cards are not filler: this deck needs the board to be its own before the Legendary arrives, because the Zombies only fill *free* spaces.
 
 ## How the deck wins
 
@@ -919,11 +927,11 @@ The **Legendary** closes the game rather than starting it: at seven mana, *Fill 
 
 ## Mulligan
 
-The author's note is short and clear: **Bagheera and Thumbelina are perfect starts alongside Bullseye**, and **Golden Egg plus Boogeyman can decide the game even from the opening hand**. Bagheera on a middle space is a 3/3 for two mana since patch 0.7; Thumbelina is a plain 2/2, which at one mana is board presence you do not have to think about.
+The author's note is short and clear: **Bagheera and Thumbelina are perfect starts alongside Bullseye**, and **Golden Egg plus Boogeyman can decide the game even from the opening hand**. Bagheera on a middle space is a 3/3 for one mana; Thumbelina is a plain 2/2, which at one mana is board presence you do not have to think about.
 
 ## Round by round
 
-1. **Rounds 1–2: take space cheaply.** The two rounds give three mana, and since patch 0.7 Bagheera costs two of them: Thumbelina or Bullseye on round one, Bagheera in the middle on round two. Thumbelina goes wherever you expect to fight, Bullseye on anything with three Health.
+1. **Rounds 1–2: take space cheaply.** Bagheera in the middle, Thumbelina wherever you expect to fight, Bullseye on anything with three Health.
 2. **Round 3: the first threat.** Asanbosam as a 5/5, or the Golden Egg in the lane where Boogeyman is going next round.
 3. **Round 4: Boogeyman.** Into the Egg if you have it, otherwise next to the smallest body you can afford to lose — and never into an empty lane.
 4. **Rounds 5–6: pressure and cards.** Impundulu starts producing Strikes; Mind Palace refills the hand. The author is explicit about it: without Mind Palace the deck runs out of cards too early.
@@ -968,6 +976,8 @@ Two, from the deck page: **Mind Palace is very important, so you do not run out 
       { q: "How do I try the deck?", a: "Open the deck page on OriginsMeta and press “Open in the deck builder”, or “Copy game code” to paste the game code (KGBLDC…) into Origins. The builder checks the 1 Legendary + 12 cards × 2 rule." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **3 Pigs Mid Range** is the second deck published on OriginsMeta by [Davdas](/en/authors/davdas), a member of the site's staff, on 15 September 2026. It is a **midrange** list led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs), tagged for **ladder** and **competitive** play. The idea is simple: win the board in the first rounds, get ahead in at least one location and then close with cards that punish an opponent who thinks they are safe behind a barrier. The full list, the composition charts and the game code are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); this guide explains how to pilot it. A second guide covers [matchups, key interactions and Conquest](/en/guides/three-pigs-midrange-matchups).
@@ -992,7 +1002,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [Impundulu](/en/cards/impundulu) | 5 | 3/6: every time it attacks it adds a Lightning Strike to your hand |
 | [Ellen Trechend](/en/cards/ellen-trechend) | 8 | Trample; On Reveal it grows for every enemy card in its location |
 
-Nine units and three spells. Everything except Impundulu, the Pigs and Ellen Trechend costs three mana or less, which is why the author calls the curve "very solid": there is always something to play in rounds two to four. Since patch 0.7 no card in the list costs one mana.
+Nine units and three spells. Everything except Impundulu, the Pigs and Ellen Trechend costs three mana or less, which is why the author calls the curve "very solid": there is always something to play in rounds one to four.
 
 ## How the deck wins
 
@@ -1010,7 +1020,7 @@ Always look for **Bagheera, Ali Baba, Big Bad Wolf and Rumple**: they give a goo
 
 ## Round by round
 
-1. **Rounds 1–3: take the board.** Since patch 0.7 the list has no one-mana card: Bagheera costs two, like Rumple and Piglet, so one of them comes down on round two (Bagheera always on a middle space), then a three-drop. Rumple on round two means four mana on round three, which is two two-drops, such as Bagheera plus Piglet or Axe Throw. The Wicked Witch of the West is the wall of the deck: with five Health she survives most early hits, and every time she does you get a Flying Monkey in hand and she shifts one space to the left.
+1. **Rounds 1–3: take the board.** Bagheera on a middle space, then Rumple or Piglet, then a three-drop. Rumple on round two means four mana on round three, which is a Wolf plus Bagheera or a Witch plus a spell. The Wicked Witch of the West is the wall of the deck: with five Health she survives most early hits, and every time she does you get a Flying Monkey in hand and she shifts one space to the left.
 2. **Rounds 4–6: pick a lane and press it.** Ali Baba wants to hit a barrier: every time it does you draw. Frog Prince is either a 5/2 that trades up or a 2/5 that holds a lane; choose after you have seen what the opponent revealed. Impundulu comes down on five and starts producing Lightning Strikes from its first attack.
 3. **Rounds 7–8: the finishers.** The Pigs on seven (or on six with a Rumple the round before), Ellen Trechend on eight into the location where the opponent has the most cards. Use En Passant the same round to move a threat where it is not expected, or to remove the one blocker in the way.
 
@@ -1048,6 +1058,8 @@ The deck page is clear about the main weakness: "falling off curve lowers its po
       { q: "Can 3 Pigs Mid Range and Healing Healsing be played together in Conquest?", a: "Yes. The two decks have different Legendaries and share a single card, Ali Baba, so they are twelve unique cards apart, Legendary included: more than the 8 the Crimson Cup requires between each pair of decks." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## Before you start
 
 This is the second part of the guide to **3 Pigs Mid Range**, the midrange deck led by [Three Not So Little Pigs](/en/cards/three-not-so-little-pigs) that [Davdas](/en/authors/davdas), OriginsMeta staff, published on 15 September 2026. The [first part](/en/guides/three-pigs-midrange-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the format the deck is tagged for. The author's notes are on the [deck page](/en/decks/community/3-pigs-mid-range-6311); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3; the changes of the demo patch of 21 September and of [patch 0.7](/en/news/patch-0-7) of 29 September, which raised Bagheera to two mana and Mind Palace to three, are in [MetaShifting](/en/metashifting).
@@ -1103,6 +1115,8 @@ The deck is tagged for both ladder and competitive play. Conquest, the format fi
       { q: "How does the deck win if it destroys its own board too?", a: "On card advantage: Spellbook, Scarecrow and Ali Baba keep the hand full, Baby Bear leaves Papa Bear behind when it dies, Jekyll turns into Hyde in hand, and the heals make Phuong Hoang grow until the opponent runs out of answers." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## The deck in one paragraph
 
 **Healing Healsing** was the first deck published on OriginsMeta, on 15 September 2026, by [Davdas](/en/authors/davdas), a member of the site's staff. It is a **control** list led by [Van Helsing](/en/cards/van-helsing), tagged for the **ladder**. The plan is to survive the early rounds while taking value, to heal through the damage while [Phuong Hoang](/en/cards/phuong-hoang) grows with every heal, and to reset the board with [Forbidden Knowledge](/en/cards/forbidden-knowledge) once you have eight mana. The full list, the composition charts and the game code are on the [deck page](/en/decks/community/healing-healsing-9411); this guide explains how to pilot it. A second guide covers [matchups, key interactions and the mistakes to avoid](/en/guides/healing-healsing-matchups).
@@ -1157,8 +1171,8 @@ Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggr
 
 ## Round by round
 
-1. **Rounds 1–3: set up.** Scarecrow or Baby Bear on two, Ali Baba on three. Spellbook, which costs four since patch 0.7, no longer fits on round three.
-2. **Rounds 4–5: Spellbook, Van Helsing and the first heals.** On four, Spellbook, Van Helsing and Jekyll cost the same: from the round you play Spellbook you start every round with an extra spell, and Shahrazad turns each of them into a heal; Van Helsing adds his Tools before every combat; Jekyll heals a damaged unit or barrier. Phuong Hoang comes down once at least one heal source is on the board. Boitata on five: from then on, spell and ability damage to any of your barriers is dealt to the opponent's barrier in that location instead.
+1. **Rounds 1–3: set up.** Scarecrow or Baby Bear on two, Spellbook or Ali Baba on three. Spellbook is the best round-three play: from then on you start every round with an extra spell, and Shahrazad turns each of them into a heal.
+2. **Rounds 4–5: Van Helsing and the first heals.** Van Helsing on four, or Jekyll to heal a damaged unit or barrier. Phuong Hoang comes down once at least one heal source is on the board. Boitata on five: from then on, spell and ability damage to any of your barriers is dealt to the opponent's barrier in that location instead.
 3. **Rounds 6–7: stabilise.** Tin Woodman's eight points of healing on the barrier under pressure, Searing Light on the biggest threat, Tools every combat.
 4. **Round 8 or 9: Forbidden Knowledge.** Everything dies, on both sides. Your side loses less: Baby Bear leaves Papa Bear in your hand, a Jekyll kept in hand has already become Hyde, the Tools come back before the next combat, and you have been drawing more cards than the opponent all game.
 
@@ -1192,6 +1206,8 @@ Keep **Ali Baba, Baby Bear, Scarecrow, Van Helsing and Spellbook**. Against aggr
       { q: "What loses games with this deck?", a: "Casting Forbidden Knowledge too early, letting Van Helsing's Tools sit in hand so he stops adding them, and playing Phuong Hoang before there is anything to heal." },
     ],
     body: `
+**Written before patch 0.7.** This deck and this guide were published before [patch 0.7](/en/news/patch-0-7) of 29 September 2026: the list and the game plan are not canonical for 0.7. The card tables show today's costs and stats.
+
 ## Before you start
 
 This is the second part of the guide to **Healing Healsing**, the Van Helsing control deck that [Davdas](/en/authors/davdas), OriginsMeta staff, published on 15 September 2026 as the first community deck of the site. The [first part](/en/guides/healing-healsing-guide) covers the list, the game plan, the mulligan and the round-by-round play. Here we look at the interactions that decide games, at the matchups and at the mistakes that cost the most. The author's notes are on the [deck page](/en/decks/community/healing-healsing-9411); the matchup reading below is OriginsMeta's, based on the card texts of patch 0.6.3; the changes of the demo patch of 21 September and of [patch 0.7](/en/news/patch-0-7) of 29 September, which raised Spellbook to four mana, are in [MetaShifting](/en/metashifting).
@@ -2085,11 +2101,13 @@ Questo elenco corrisponde alla rotazione della Demo 2.0. Non abbiamo ancora cont
     image: "/cards/cover/mulan.webp",
     faq: [
       { q: "Che cosa fa Mulan in questo mazzo?", a: "Mulan è una 2/4 da 4 mana con Doppio attacco e, quando si attiva l'abilità Alla rivelazione di un alleato, la ripete. Nella lista ci sono nove carte con un'abilità Alla rivelazione: lei le raddoppia." },
-      { q: "Che cosa si tiene al mulligan?", a: "Una curva che arrivi a Mulan al quarto round: Bagheera su uno spazio centrale o Baby Bear al secondo round, poi Black Knight o Frog Prince al terzo. Mary vale la pena tenerla quando ci si aspetta una partita lunga." },
+      { q: "Che cosa si tiene al mulligan?", a: "Una curva che arrivi a Mulan al quarto round: Bagheera su uno spazio centrale, Baby Bear, poi Black Knight o Frog Prince. Mary vale la pena tenerla quando ci si aspetta una partita lunga." },
       { q: "Quale abilità Alla rivelazione guadagna di più da Mulan?", a: "Mowgli, che a 6 mana evoca un Baloo 6/6 in un altro luogo casuale: ripetuto, mette due Baloo sul campo. Raddoppiano bene anche Ellen Trechend e Fairy Godmother." },
       { q: "Come si prova il mazzo?", a: "Dalla scheda del mazzo su OriginsMeta con “Apri nel deck builder”, oppure “Copia codice del gioco” per incollare il codice (KGBLDC…) in Origins." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **On Reveal Mid Range** è una lista **midrange** guidata da [Mulan](/it/cards/mulan), pubblicata su OriginsMeta il 22 settembre 2026 da [Davdas](/it/authors/davdas), dello staff del sito, e dichiarata per **classificata**, **competitivo** e **tornei**. L'idea è quella che l'autore scrive nella [scheda del mazzo](/it/decks/community/on-reveal-mid-range-772e): Mulan permette "di sfruttare a pieno" le abilità Alla rivelazione, e la lista è costruita per averne una che valga la pena ripetere in ogni round. Regge contro un mazzo aggressivo e diventa opprimente contro un controllo, perché le stesse carte comprano tempo e costruiscono il campo.
@@ -2128,11 +2146,11 @@ Mulan ha anche **Doppio attacco**, quindi il suo 2/4 scambia meglio di come si l
 
 ## Mulligan
 
-Serve una curva che arrivi a Mulan al quarto round senza restare indietro: **Bagheera** su uno spazio centrale (un 3/3 da due mana dalla patch 0.7) o **Baby Bear** al secondo round, poi **Black Knight** o **Frog Prince** al terzo. **Mary** si tiene quando ci si aspetta una partita lunga: il Lamb che aggiunge alla mano è un corpo a basso costo e, se Mary muore, i Lamb già giocati crescono in modo permanente.
+Serve una curva che arrivi a Mulan al quarto round senza restare indietro: **Bagheera** su uno spazio centrale (un 3/3 da un mana), poi **Baby Bear**, poi **Black Knight** o **Frog Prince**. **Mary** si tiene quando ci si aspetta una partita lunga: il Lamb che aggiunge alla mano è un corpo a basso costo e, se Mary muore, i Lamb già giocati crescono in modo permanente.
 
 ## Round per round
 
-1. **Round 1–3: prendere spazio senza esporsi.** Dalla patch 0.7 l'unica carta da un mana della lista è Bullseye, quindi la prima unità arriva al secondo round: Bagheera al centro o Baby Bear dove ti aspetti i primi attacchi, poi Black Knight al terzo, di fronte a qualcosa che vuoi morto. Una carta per corsia basta: il mazzo vuole un campo pari, non affollato, quando arriva Mulan.
+1. **Round 1–3: prendere spazio senza esporsi.** Bagheera al centro, Baby Bear dove ti aspetti i primi attacchi, Black Knight di fronte a qualcosa che vuoi morto. Una carta per corsia basta: il mazzo vuole un campo pari, non affollato, quando arriva Mulan.
 2. **Round 4: Mulan.** Da qui in poi conta più l'ordine delle giocate delle carte in mano. Ogni round chiediti quale abilità Alla rivelazione valga la pena raddoppiare, e gioca quella carta nel luogo di Mulan.
 3. **Round 5–6: le carte di valore.** Fairy Godmother, poi Mowgli al sesto. White Queen è la carta risposta della lista: riporta QUALSIASI personaggio nella mano del proprietario, quindi toglie di mezzo una chiusura avversaria per un round, o raccoglie la tua Mary per rigiocarla.
 4. **Round 7–8: chiusura.** Ellen Trechend nella corsia che l'avversario ha riempito; En Passant per muovere un alleato, colpire chi ha di fronte e aprire la strada al danno di Travolgere.
@@ -2180,6 +2198,8 @@ La scheda ne elenca due: **una buona curva è spesso essenziale** e **si rischia
       { q: "Spellbook è indispensabile?", a: "No. Aggiunge una magia casuale ogni round per avere benzina e imprevedibilità, ma la scheda del mazzo dice che la lista può vincere anche senza." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **King of Value Trade** è una lista **midrange** guidata da [King Arthur](/it/cards/king-arthur), pubblicata su OriginsMeta il 22 settembre 2026 da [Davdas](/it/authors/davdas), dello staff del sito, e dichiarata per la **classificata**. Il nome dice il piano: "quasi tutti i pezzi vogliono fare 2 x 1", cioè rispondere a due carte avversarie con una tua. Ripetuto abbastanza volte, il campo diventa tuo da solo, senza bisogno di un unico grande turno di chiusura.
@@ -2222,7 +2242,7 @@ Il lavoro lo fanno tre parole chiave.
 
 ## Round per round
 
-1. **Round 1–3: scambiare in vantaggio.** Dalla patch 0.7 la lista non ha carte da un mana, quindi parte al secondo round, e il secondo e il terzo round bastano per due di queste: Bagheera al centro, Musketeer di fronte a un corpo da una o due salute, Roo dove potresti voler muovere più tardi. Ogni scontro vinto senza perdere il corpo è una carta guadagnata.
+1. **Round 1–3: scambiare in vantaggio.** Bagheera al centro, Musketeer di fronte a un corpo da una o due salute, Roo dove potresti voler muovere più tardi. Ogni scontro vinto senza perdere il corpo è una carta guadagnata.
 2. **Round 4–5: tenere una corsia.** Lancelot, poi i personaggi Good nel suo luogo: ognuno arriva +2⚔️/+2❤️ più grosso di quanto dovrebbe. Boitata al quinto è un 5/5 che gira sull'avversario i danni da magia diretti alle tue barriere.
 3. **Round 6–7: la Leggendaria.** King Arthur è un 7/7 con Scudo e la sua abilità Alla rivelazione dà Scudo a tutto il Good che hai già sul campo. Non giocarlo su un campo vuoto: il valore sta negli Scudi, non nel corpo.
 4. **Dark Omen, quando conta.** Tre mana per distruggere QUALSIASI personaggio sono la risposta all'unica carta che non puoi battere in uno scontro: un corpo potenziato, un Difensore nella corsia sbagliata, una Leggendaria avversaria.
@@ -2271,6 +2291,8 @@ La scheda ne elenca tre: **nessuna rimozione ad area**, **l'utilizzo di Dark Ome
       { q: "Come si prova il mazzo?", a: "Dalla scheda del mazzo su OriginsMeta con “Apri nel deck builder”, oppure copiando il codice del gioco (KGBLDC…) in Origins." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **Dorothy Combo** è una lista **combo** guidata da [Dorothy](/it/cards/dorothy), pubblicata su OriginsMeta il 22 settembre 2026 da [Davdas](/it/authors/davdas), dello staff del sito, e dichiarata per **classificata** e **fun**. È il mazzo move, ricostruito dopo la [patch della Demo del 21 settembre 2026](/it/news/demo-patch-notes-0921), che ha potenziato tra le altre Dorothy, [Roo](/it/cards/roo) e [Magic Carpet](/it/cards/magic-carpet). Il giudizio dell'autore sta nella [scheda del mazzo](/it/decks/community/dorothy-combo-7503) e lo riportiamo così com'è: probabilmente non siamo ancora ai livelli dei top tier, però qualcosa si sta muovendo.
@@ -2299,7 +2321,7 @@ Nove unità e tre magie, e quasi tutto o si muove o premia un movimento.
 
 ## Come vince il mazzo
 
-Dorothy è un 1/1 che conta: **+1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita**. Il contatore non si azzera e conta i movimenti ovunque sul campo, quindi una magia da un mana come [Twister Toss](/it/cards/twister-toss) non è mai sprecata: è un punto permanente sulla tua Leggendaria. Dalla [patch 0.7](/it/news/patch-0-7) può mandare l'alleato in qualsiasi spazio, anche occupato, e le due carte si scambiano di posto. Giocata al quinto round dopo qualche movimento, Dorothy arriva come un corpo vero e continua a crescere, perché si muove da sola.
+Dorothy è un 1/1 che conta: **+1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita**. Il contatore non si azzera e conta i movimenti ovunque sul campo, quindi una magia da un mana come [Twister Toss](/it/cards/twister-toss) non è mai sprecata: è un punto permanente sulla tua Leggendaria. Giocata al quinto round dopo qualche movimento, Dorothy arriva come un corpo vero e continua a crescere, perché si muove da sola.
 
 Le combo che danno senso alla lista sono tre:
 
@@ -2358,6 +2380,8 @@ I dati della classificata non sono pubblici: questa è una lettura delle liste, 
       { q: "Perché Mind Palace è importante?", a: "Il mazzo svuota la mano in fretta: senza le due carte che pesca Mind Palace si rimane senza giocate prima che arrivi la Leggendaria." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **The Trick-or-Treat Legion** è una lista **evil** guidata da [Legion of the Dead](/it/cards/legion-of-the-dead), pubblicata su OriginsMeta il 22 settembre 2026 da [Davdas](/it/authors/davdas), dello staff del sito, e dichiarata per **classificata**, **competitivo** e **tornei**. Di mazzi Legione ne girano diverse versioni; questa, nelle parole dell'autore, vuole aumentare la propria imprevedibilità mettendo insieme carte pronte a fare "uno scherzetto" ogni turno sul campo avversario. La lista completa e i grafici stanno nella [scheda del mazzo](/it/decks/community/the-trick-or-treat-legion-72c4).
@@ -2382,7 +2406,7 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 | [White Queen](/it/cards/white-queen) | 4 | 3/3; Alla rivelazione riporta QUALSIASI personaggio nella mano del proprietario |
 | [Impundulu](/it/cards/impundulu) | 5 | 3/6; quando attacca aggiunge un Lightning Strike alla mano, da scartare prima del combattimento successivo |
 
-Dieci unità e tre magie. Le carte economiche non sono riempitivo: questo mazzo ha bisogno che il campo sia suo prima che arrivi la Leggendaria, perché gli Zombie occupano solo gli spazi *liberi*.
+Dieci unità e tre magie. Le tre carte da un mana non sono riempitivo: questo mazzo ha bisogno che il campo sia suo prima che arrivi la Leggendaria, perché gli Zombie occupano solo gli spazi *liberi*.
 
 ## Come vince il mazzo
 
@@ -2406,11 +2430,11 @@ La **Leggendaria** chiude la partita più di quanto la apra: a sette mana *riemp
 
 ## Mulligan
 
-La nota dell'autore è breve e chiara: **Bagheera e Thumbelina sono partenze perfette da affiancare a Bullseye**, e **la combo Golden Egg più Boogeyman può svoltare la partita anche tenuta di prima mano**. Bagheera su uno spazio centrale è un 3/3 da due mana dalla patch 0.7; Thumbelina è un semplice 2/2, che a un mana è presenza sul campo senza doverci pensare.
+La nota dell'autore è breve e chiara: **Bagheera e Thumbelina sono partenze perfette da affiancare a Bullseye**, e **la combo Golden Egg più Boogeyman può svoltare la partita anche tenuta di prima mano**. Bagheera su uno spazio centrale è un 3/3 da un mana; Thumbelina è un semplice 2/2, che a un mana è presenza sul campo senza doverci pensare.
 
 ## Round per round
 
-1. **Round 1–2: prendere spazio a poco prezzo.** I due round danno tre mana, e dalla patch 0.7 Bagheera ne costa due: Thumbelina o Bullseye al primo round, Bagheera al centro al secondo. Thumbelina va dove ti aspetti di combattere, Bullseye su qualsiasi cosa abbia tre salute.
+1. **Round 1–2: prendere spazio a poco prezzo.** Bagheera al centro, Thumbelina dove ti aspetti di combattere, Bullseye su qualsiasi cosa abbia tre salute.
 2. **Round 3: la prima minaccia.** Asanbosam come 5/5, oppure il Golden Egg nella corsia dove il round dopo arriverà Boogeyman.
 3. **Round 4: Boogeyman.** Sull'Uovo se ce l'hai, altrimenti accanto al corpo più piccolo che puoi permetterti di perdere — e mai in una corsia vuota.
 4. **Round 5–6: pressione e carte.** Impundulu comincia a produrre Lightning Strike; Mind Palace ricarica la mano. L'autore è esplicito: senza Mind Palace si resta senza carte troppo presto.
@@ -2455,6 +2479,8 @@ Sono due, dalla scheda del mazzo: **Mind Palace è molto importante per non rima
       { q: "Come provo il mazzo?", a: "Apri la scheda del mazzo su OriginsMeta e premi “Apri nel deck builder”, oppure “Copia codice del gioco” per incollare il codice del gioco (KGBLDC…) in Origins. Il builder controlla la regola 1 Leggendaria + 12 carte × 2." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **3 Pigs Mid Range** è il secondo mazzo pubblicato su OriginsMeta da [Davdas](/it/authors/davdas), membro dello staff del sito, il 15 settembre 2026. È una lista **midrange** guidata dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs), pensata per la **ladder** e per il gioco **competitivo**. L'idea è semplice: vincere il tabellone nei primi round, prendere vantaggio in almeno un luogo e poi chiudere con carte che puniscono l'avversario convinto di essere al sicuro dietro una barriera. La lista completa, i grafici di composizione e il codice del gioco sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave e Conquest](/it/guides/three-pigs-midrange-matchups).
@@ -2479,7 +2505,7 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 | [Impundulu](/it/cards/impundulu) | 5 | 3/6: ogni volta che attacca aggiunge un Lightning Strike alla tua mano |
 | [Ellen Trechend](/it/cards/ellen-trechend) | 8 | Travolgere; con l'abilità Alla rivelazione cresce per ogni carta nemica nel suo luogo |
 
-Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa tre mana o meno: per questo l'autore definisce la curva "molto solida", c'è sempre qualcosa da giocare dal round due al quattro. Dalla patch 0.7 nessuna carta della lista costa un mana.
+Nove unità e tre magie. Tutto tranne Impundulu, i Pigs ed Ellen Trechend costa tre mana o meno: per questo l'autore definisce la curva "molto solida", c'è sempre qualcosa da giocare dal round uno al quattro.
 
 ## Come vince il mazzo
 
@@ -2497,7 +2523,7 @@ Cerca sempre **Bagheera, Ali Baba, Big Bad Wolf e Rumple**: regalano una buona p
 
 ## Round per round
 
-1. **Round 1–3: prendi il tabellone.** Dalla patch 0.7 la lista non ha carte da un mana: Bagheera costa due, come Rumple e Piglet, quindi una delle tre scende al secondo round (Bagheera sempre su uno spazio centrale), poi una carta da tre. Rumple al round due significa quattro mana al round tre: due carte da due, per esempio Bagheera più Piglet o Axe Throw. La Wicked Witch of the West è il muro del mazzo: con cinque Salute sopravvive alla maggior parte dei colpi iniziali, e ogni volta che lo fa ricevi una Flying Monkey in mano e lei scivola di uno spazio a sinistra.
+1. **Round 1–3: prendi il tabellone.** Bagheera su uno spazio centrale, poi Rumple o Piglet, poi una carta da tre. Rumple al round due significa quattro mana al round tre: un Wolf più Bagheera, o una Witch più una magia. La Wicked Witch of the West è il muro del mazzo: con cinque Salute sopravvive alla maggior parte dei colpi iniziali, e ogni volta che lo fa ricevi una Flying Monkey in mano e lei scivola di uno spazio a sinistra.
 2. **Round 4–6: scegli una corsia e spingi.** Ali Baba vuole colpire una barriera: ogni volta che lo fa peschi. Frog Prince è un 5/2 che scambia al rialzo oppure un 2/5 che tiene la corsia: scegli dopo aver visto cosa ha rivelato l'avversario. Impundulu scende al round cinque e produce Lightning Strike dal primo attacco.
 3. **Round 7–8: le chiusure.** I Pigs al sette (o al sei con un Rumple il round prima), Ellen Trechend all'otto nel luogo dove l'avversario ha più carte. Nello stesso round usa En Passant per muovere una minaccia dove non è attesa, o per togliere di mezzo l'unico bloccante.
 
@@ -2535,6 +2561,8 @@ La scheda del mazzo è chiara sul principale punto debole: "uscire fuori curva a
       { q: "3 Pigs Mid Range e Healing Healsing si possono giocare insieme in Conquest?", a: "Sì. I due mazzi hanno Leggendarie diverse e condividono una sola carta, Ali Baba, quindi differiscono per dodici carte uniche, Leggendaria compresa: più delle 8 che la Crimson Cup chiede fra ogni coppia di mazzi." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Prima di iniziare
 
 Questa è la seconda parte della guida a **3 Pigs Mid Range**, il mazzo midrange guidato dai [Three Not So Little Pigs](/it/cards/three-not-so-little-pigs) che [Davdas](/it/authors/davdas), staff di OriginsMeta, ha pubblicato il 15 settembre 2026. La [prima parte](/it/guides/three-pigs-midrange-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e al formato per cui il mazzo è stato pensato. Le note dell'autore sono nella [scheda del mazzo](/it/decks/community/3-pigs-mid-range-6311); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3; le modifiche della patch della demo del 21 settembre e della [patch 0.7](/it/news/patch-0-7) del 29 settembre, che ha portato Bagheera a due mana e Mind Palace a tre, sono nel [MetaShifting](/it/metashifting).
@@ -2590,6 +2618,8 @@ Il mazzo è segnato sia per la ladder sia per il gioco competitivo. Il Conquest,
       { q: "Come vince il mazzo se distrugge anche il proprio tabellone?", a: "Con il vantaggio carte: Spellbook, Scarecrow e Ali Baba tengono la mano piena, Baby Bear lascia Papa Bear quando muore, Jekyll si trasforma in Hyde in mano, e le cure fanno crescere Phuong Hoang finché l'avversario resta senza risposte." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Il mazzo in un paragrafo
 
 **Healing Healsing** è stato il primo mazzo pubblicato su OriginsMeta, il 15 settembre 2026, da [Davdas](/it/authors/davdas), membro dello staff del sito. È una lista **controllo** guidata da [Van Helsing](/it/cards/van-helsing), pensata per la **ladder**. Il piano è sopravvivere ai primi round prendendo valore, curare i danni mentre [Phuong Hoang](/it/cards/phuong-hoang) cresce a ogni cura, e azzerare il tabellone con [Forbidden Knowledge](/it/cards/forbidden-knowledge) una volta arrivati a otto mana. La lista completa, i grafici di composizione e il codice del gioco sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); questa guida spiega come pilotarlo. Una seconda guida copre [matchup, interazioni chiave ed errori da evitare](/it/guides/healing-healsing-matchups).
@@ -2644,8 +2674,8 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
 
 ## Round per round
 
-1. **Round 1–3: preparazione.** Scarecrow o Baby Bear al due, Ali Baba al tre. Spellbook, che dalla patch 0.7 costa quattro, al terzo round non ci sta più.
-2. **Round 4–5: Spellbook, Van Helsing e le prime cure.** Al quattro Spellbook, Van Helsing e Jekyll costano lo stesso: dal round in cui giochi Spellbook inizi ogni round con una magia in più, e Shahrazad trasforma ciascuna di esse in una cura; Van Helsing aggiunge i suoi Tools prima di ogni combattimento; Jekyll cura un'unità o una barriera danneggiata. Phuong Hoang scende quando c'è almeno una fonte di cure sul tabellone. Boitata al cinque: da lì in poi i danni di magie e abilità a una qualsiasi delle tue barriere vengono inflitti invece alla barriera avversaria in quel luogo.
+1. **Round 1–3: preparazione.** Scarecrow o Baby Bear al due, Spellbook o Ali Baba al tre. Spellbook è la miglior giocata del round tre: da lì in poi inizi ogni round con una magia in più, e Shahrazad trasforma ciascuna di esse in una cura.
+2. **Round 4–5: Van Helsing e le prime cure.** Van Helsing al quattro, oppure Jekyll per curare un'unità o una barriera danneggiata. Phuong Hoang scende quando c'è almeno una fonte di cure sul tabellone. Boitata al cinque: da lì in poi i danni di magie e abilità a una qualsiasi delle tue barriere vengono inflitti invece alla barriera avversaria in quel luogo.
 3. **Round 6–7: stabilizzare.** Gli otto punti di cura di Tin Woodman sulla barriera sotto pressione, Searing Light sulla minaccia più grande, i Tools a ogni combattimento.
 4. **Round 8 o 9: Forbidden Knowledge.** Muore tutto, da entrambe le parti. La tua parte perde meno: Baby Bear ti lascia Papa Bear in mano, un Jekyll tenuto in mano è già diventato Hyde, i Tools tornano prima del combattimento successivo, e per tutta la partita hai pescato più carte dell'avversario.
 
@@ -2679,6 +2709,8 @@ Tieni **Ali Baba, Baby Bear, Scarecrow, Van Helsing e Spellbook**. Contro i mazz
       { q: "Cosa fa perdere le partite con questo mazzo?", a: "Lanciare Forbidden Knowledge troppo presto, lasciare Van Helsing's Tools in mano così che lui smetta di aggiungerli, e giocare Phuong Hoang prima che ci sia qualcosa da curare." },
     ],
     body: `
+**Scritta prima della patch 0.7.** Questo mazzo e questa guida sono usciti prima della [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: la lista e il piano di gioco non sono canonici per la 0.7. Le tabelle delle carte mostrano costi e statistiche di oggi.
+
 ## Prima di iniziare
 
 Questa è la seconda parte della guida a **Healing Healsing**, il mazzo controllo di Van Helsing che [Davdas](/it/authors/davdas), staff di OriginsMeta, ha pubblicato il 15 settembre 2026 come primo mazzo della community del sito. La [prima parte](/it/guides/healing-healsing-guide) copre la lista, il piano di gioco, il mulligan e il round per round. Qui guardiamo alle interazioni che decidono le partite, ai matchup e agli errori che costano di più. Le note dell'autore sono nella [scheda del mazzo](/it/decks/community/healing-healsing-9411); la lettura dei matchup qui sotto è di OriginsMeta, basata sui testi delle carte della patch 0.6.3; le modifiche della patch della demo del 21 settembre e della [patch 0.7](/it/news/patch-0-7) del 29 settembre, che ha portato Spellbook a quattro mana, sono nel [MetaShifting](/it/metashifting).
