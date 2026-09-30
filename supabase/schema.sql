@@ -4405,3 +4405,102 @@ comment on column public.community_decks.version is 'Versione delle carte del ma
 comment on column public.community_decks.cards_updated_at is 'Quando sono cambiate le carte l''ultima volta (null: quelle della pubblicazione). La patch del mazzo si ricava da qui (30/09/2026).';
 comment on column public.deck_votes.version is 'Versione del mazzo votata: la scrive il trigger guard_vote_version (30/09/2026).';
 comment on table public.community_deck_versions is 'Versioni di prima delle carte dei mazzi della community, scritte dal trigger guard_deck_version (30/09/2026).';
+
+-- =====================================================================================================
+-- ===== 30/09/2026: PREFERITI E TENDENZA =====
+-- =====================================================================================================
+-- Dal confronto con i siti concorrenti del 30/09/2026 (Pierluigi: "lavoriamo su sti 10 punti, iniziamo dai primi 5"):
+-- un sito rivale ha sui mazzi il tasto "Favorite" e l'ordine "Trending"; noi avevamo solo "Più recenti" e "Più votati".
+--
+--   1) deck_favorites: i mazzi salvati da ogni utente ("Salva", un segnalibro personale, diverso dal voto: si può salvare
+--      anche un proprio mazzo). Ognuno legge, aggiunge e toglie SOLO i suoi (RLS); si salva solo un mazzo pubblicato
+--      (trigger) e al massimo FAVORITE_MAX (500) a testa, come i "Segui". Chi ha salvato un mazzo non è pubblico: il
+--      numero dei salvataggi di ogni mazzo sì, solo come conteggio, dalla funzione deck_favorite_counts.
+--   2) deck_trending: punteggio "Di tendenza" dei mazzi pubblicati, sugli ultimi 7 giorni UTC, con i giorni più vecchi
+--      che pesano meno (oggi 7/7, sei giorni fa 1/7): visite ×1, copie del codice del gioco ×3, clic sulle risorse ×1,
+--      video avviati ×2, più voti ×4 e salvataggi ×5 dati nella settimana. deck_stats_daily resta privata (blocco STATS):
+--      la funzione restituisce SOLO il punteggio arrotondato per mazzo, mai visite o copie, e solo per i mazzi pubblicati
+--      con punteggio positivo. Pesi e finestra sono uguali in src/lib/community/favorites.ts (TRENDING_*), che il test
+--      confronta.
+-- Le due funzioni sono security definer (leggono tabelle private) ma restituiscono solo aggregati. Il codice regge senza
+-- questo blocco (la scheda non mostra il tasto e /decks non offre gli ordini nuovi): l'ordine di rilascio è libero.
+-- =====================================================================================================
+
+create table if not exists public.deck_favorites (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, deck_id)
+);
+create index if not exists deck_favorites_deck_idx on public.deck_favorites (deck_id);
+
+alter table public.deck_favorites enable row level security;
+drop policy if exists "favorites: own rows" on public.deck_favorites;
+create policy "favorites: own rows" on public.deck_favorites for select to authenticated using (user_id = auth.uid());
+drop policy if exists "favorites: add own" on public.deck_favorites;
+create policy "favorites: add own" on public.deck_favorites for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "favorites: remove own" on public.deck_favorites;
+create policy "favorites: remove own" on public.deck_favorites for delete to authenticated using (user_id = auth.uid());
+revoke all on public.deck_favorites from anon, authenticated;
+grant select, insert, delete on public.deck_favorites to authenticated;
+
+-- solo mazzi pubblicati, al massimo 500 a testa, data scritta dal database
+create or replace function public.guard_deck_favorite()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not exists (select 1 from public.community_decks d where d.id = new.deck_id and d.status = 'published') then
+    raise exception 'deck not published' using errcode = '42501';
+  end if;
+  perform pg_advisory_xact_lock(hashtextextended('deck_favorites:' || new.user_id::text, 0));
+  if (select count(*) from public.deck_favorites f where f.user_id = new.user_id) >= 500 then
+    raise exception 'favorite limit' using errcode = '23514';
+  end if;
+  new.created_at := now();
+  return new;
+end $$;
+revoke all on function public.guard_deck_favorite() from public, anon, authenticated;
+drop trigger if exists deck_favorites_guard on public.deck_favorites;
+create trigger deck_favorites_guard before insert on public.deck_favorites
+  for each row execute function public.guard_deck_favorite();
+
+-- quanti hanno salvato ogni mazzo pubblicato (solo i numeri, mai chi)
+create or replace function public.deck_favorite_counts()
+returns table (deck_id uuid, favorites integer) language sql stable security definer set search_path = public, pg_temp as $$
+  select f.deck_id, count(*)::int
+    from public.deck_favorites f join public.community_decks d on d.id = f.deck_id and d.status = 'published'
+   group by f.deck_id;
+$$;
+revoke all on function public.deck_favorite_counts() from public;
+grant execute on function public.deck_favorite_counts() to anon, authenticated;
+
+-- ---------- 2) di tendenza ----------
+create or replace function public.deck_trending()
+returns table (deck_id uuid, score numeric) language sql stable security definer set search_path = public, pg_temp as $$
+  with pub as (select id from public.community_decks where status = 'published'),
+  stats as (
+    select s.deck_id,
+           sum((s.views * 1 + s.code_copies * 3 + s.link_clicks * 1 + s.video_plays * 2)
+               * greatest(0, 7 - ((now() at time zone 'utc')::date - s.day)) / 7.0) as pts
+      from public.deck_stats_daily s
+     where s.day > (now() at time zone 'utc')::date - 7 and s.deck_id in (select id from pub)
+     group by s.deck_id
+  ),
+  votes as (
+    select v.deck_id, count(*) * 4.0 as pts from public.deck_votes v
+     where v.created_at > now() - interval '7 days' and v.deck_id in (select id from pub) group by v.deck_id
+  ),
+  favs as (
+    select f.deck_id, count(*) * 5.0 as pts from public.deck_favorites f
+     where f.created_at > now() - interval '7 days' and f.deck_id in (select id from pub) group by f.deck_id
+  )
+  select x.deck_id, round(sum(x.pts), 1)
+    from (select * from stats union all select * from votes union all select * from favs) x
+   group by x.deck_id
+  having sum(x.pts) > 0;
+$$;
+revoke all on function public.deck_trending() from public;
+grant execute on function public.deck_trending() to anon, authenticated;
+
+comment on table public.deck_favorites is 'Mazzi salvati da ogni utente ("Salva", 30/09/2026): privati, solo il conteggio è pubblico (deck_favorite_counts).';
+comment on function public.deck_favorite_counts() is 'Numero di salvataggi di ogni mazzo pubblicato, senza chi li ha fatti (30/09/2026).';
+comment on function public.deck_trending() is 'Punteggio "Di tendenza" dei mazzi pubblicati sugli ultimi 7 giorni: solo il punteggio, mai visite o copie (30/09/2026).';

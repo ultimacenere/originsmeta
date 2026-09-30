@@ -507,6 +507,7 @@ I primi quattro (online con a9400e8) hanno tenuto nome e parametri quando è arr
 | `video_play` | "riproduci" su un video a clic (`VideoEmbed`, scheda di un mazzo, guida o video in evidenza della vetrina di /u): solo da qui si carica il lettore di YouTube o Twitch | `provider` (youtube \| twitch), `placement` (deck_page \| guide \| profile) |
 | `deck_link_click` | link del riquadro Risorse di un mazzo | `host`, `placement` (deck_resources) |
 | ★ `deck_vote` | voto a un mazzo della community | `stars`, `vote_type` (new \| update) |
+| `deck_save` / `deck_unsave` | "Salva" su un mazzo della community e tolto dai salvati (30/09/2026) | `placement` |
 | `tier_list_share` | link o testo di una tier list copiati | `method`, `kind` |
 | ★ `tournament_create` | torneo creato (non le modifiche) | `visibility`, `deck_mode` |
 | `tournament_join` | iscrizione a un torneo | `size` |

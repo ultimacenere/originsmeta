@@ -11,6 +11,7 @@ import type { ChannelLabels, LiveLabels } from "@/lib/creatorLabels";
 import { ChannelLinks } from "./ChannelLinks";
 import { LiveBadge } from "./LiveBadge";
 import { bumpDeckStat } from "@/lib/community/deckStatsClient";
+import { compareSaved, compareTrending } from "@/lib/community/favorites";
 
 type DeckCard = {
   name: string;
@@ -65,6 +66,9 @@ export type ExplorerDeck = {
   patchLabel?: string;
   /** media e numero dei voti (solo mazzi della community) */
   rating?: { avg: number; votes: number };
+  /** punteggio "Di tendenza" della settimana e numero di salvataggi (blocco PREFERITI E TENDENZA, 30/09/2026; solo mazzi della community) */
+  trend?: number;
+  favorites?: number;
   /** voto pesato sul numero di voti (weightedRating): l'ordine "Più votati", lo stesso della classifica di /decks */
   score?: number;
   /** tipo di mazzo e ruolo di chi l'ha pubblicato (solo mazzi della community) */
@@ -113,11 +117,18 @@ type Labels = {
   sortBy: string;
   sortNewest: string;
   sortRated: string;
+  /** "Di tendenza" e "Più salvati" (30/09/2026): senza, gli ordini non ci sono (migrazione mancante) */
+  sortTrending?: string;
+  sortSaved?: string;
   createdOn: string;
   /** canali e badge LIVE accanto a chi ha pubblicato (pacchetto CREATOR): senza, non si mostrano */
   channels?: ChannelLabels;
   live?: LiveLabels;
 };
+
+/** Ordini dell'elenco: "Di tendenza" e "Più salvati" dal 30/09/2026. */
+type SortKey = "new" | "rated" | "trending" | "saved";
+const toSortKey = (v: string): SortKey => (v === "rated" || v === "trending" || v === "saved" ? v : "new");
 
 /** Tessera "il tuo mazzo qui": primo elemento della griglia finché i mazzi sono pochi. */
 export type ExplorerInvite = { href: string; title: string; text: string; cta: string };
@@ -203,7 +214,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   const [view, setView] = useState<"blocks" | "list">("blocks");
   /* Ordine di partenza: dal più recente al più vecchio (Pierluigi, 23/09/2026). Prima i mazzi erano ordinati per
      voto medio, e con due soli voti la classifica diceva poco; chi arriva vuole vedere l'ultimo mazzo uscito. */
-  const [sort, setSort] = useState<"new" | "rated">("new");
+  const [sort, setSort] = useState<SortKey>("new");
   const firstFilter = useRef<HTMLSelectElement>(null);
 
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);
@@ -229,6 +240,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
     });
     // "più recenti": la data di creazione, con quella di aggiornamento come ripiego per i mazzi editoriali
     const when = (d: ExplorerDeck) => d.created ?? d.updated;
+    if (sort === "trending") return filtered.sort(compareTrending);
+    if (sort === "saved") return filtered.sort(compareSaved);
     return filtered.sort((a, b) =>
       sort === "new"
         ? when(b).localeCompare(when(a))
@@ -310,6 +323,8 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
           ★ {d.rating.avg.toFixed(1)} · {d.rating.votes} {d.rating.votes === 1 ? labels.vote : labels.votes}
         </span>
       ) : null}
+      {/* salvataggi (30/09/2026): la stella vuota come sul tasto "Salva" della scheda */}
+      {d.favorites ? <span className="stat-pill bg-night-3 font-mono text-[11px] text-gold">☆ {d.favorites}</span> : null}
     </>
   );
 
@@ -434,9 +449,11 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 text-xs text-chalk-muted">
             {labels.sortBy}
-            <select value={sort} onChange={(e) => setSort(e.target.value === "rated" ? "rated" : "new")} className={selectCls}>
+            <select value={sort} onChange={(e) => setSort(toSortKey(e.target.value))} className={selectCls}>
               <option value="new">{labels.sortNewest}</option>
+              {labels.sortTrending ? <option value="trending">{labels.sortTrending}</option> : null}
               <option value="rated">{labels.sortRated}</option>
+              {labels.sortSaved ? <option value="saved">{labels.sortSaved}</option> : null}
             </select>
           </label>
         </div>

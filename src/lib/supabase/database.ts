@@ -115,6 +115,8 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
 
 /** `version`: la versione del mazzo votata, scritta dal trigger guard_vote_version (blocco VERSIONI, 30/09/2026) */
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; version: number; created_at: string; updated_at: string };
+/** Mazzo salvato da un utente ("Salva", blocco PREFERITI E TENDENZA, 30/09/2026): ognuno vede solo i suoi. */
+export type DeckFavoriteRow = { user_id: string; deck_id: string; created_at: string };
 /** Versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026): solo lettura, le scrive il trigger. */
 export type CommunityDeckVersionRow = {
   deck_id: string;
@@ -391,6 +393,20 @@ export type Database = {
           },
         ];
       };
+      deck_favorites: {
+        Row: DeckFavoriteRow;
+        Insert: { user_id: string; deck_id: string; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "deck_favorites_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       community_deck_versions: {
         Row: CommunityDeckVersionRow;
         Insert: Record<string, never>;
@@ -661,6 +677,9 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      /** preferiti e "Di tendenza" (blocco PREFERITI E TENDENZA, 30/09/2026): solo aggregati per mazzo pubblicato */
+      deck_favorite_counts: { Args: Record<string, never>; Returns: { deck_id: string; favorites: number }[] };
+      deck_trending: { Args: Record<string, never>; Returns: { deck_id: string; score: number }[] };
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };

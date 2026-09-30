@@ -45,6 +45,8 @@
  *     deck_link_click     link delle Risorse di un mazzo (attributi); uno verso     host, placement (deck_resources)
  *                         Discord o Steam manda anche discord_click / steam_click
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
+ *     deck_save           "Salva" su un mazzo della community (30/09/2026)       placement (deck_page)
+ *     deck_unsave         tolto dai mazzi salvati                                 placement (deck_page | account)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
  *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
@@ -181,6 +183,8 @@ export type EventParams = {
   video_play: { provider: string; placement: string };
   deck_link_click: { host: string; placement: string };
   deck_vote: { stars: number; vote_type: "new" | "update" };
+  deck_save: { placement: string };
+  deck_unsave: { placement: string };
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
   tournament_create: { visibility: string; deck_mode: string };
@@ -224,6 +228,8 @@ export const VERCEL_PROPS = {
   video_play: ["provider", "placement"],
   deck_link_click: ["host", "placement"],
   deck_vote: ["stars", "vote_type"],
+  deck_save: ["placement"],
+  deck_unsave: ["placement"],
   tierlist_created: ["kind"],
   tier_list_share: ["method", "kind"],
   tournament_create: ["visibility", "deck_mode"],

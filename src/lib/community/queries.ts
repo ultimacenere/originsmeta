@@ -6,6 +6,7 @@ import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
 import { guideTableMissing } from "./guides";
 import { versionRatings, type DeckVersion } from "./deckVersions";
+import { popularityMap, popularityMissing, type DeckPopularity } from "./favorites";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -286,6 +287,43 @@ export async function listDeckVersions(deckId: string): Promise<DeckVersion[]> {
   const votes = await client.from("deck_votes").select("version, stars").eq("deck_id", deckId).lte("version", rows[0].version).limit(10000);
   const ratings = versionRatings(rowsOrThrow<{ version: number; stars: number }>("listDeckVersions (voti)", votes));
   return rows.map((r) => ({ ...r, rating: ratings.get(r.version) ?? { avg: 0, votes: 0 } }));
+}
+
+/**
+ * Popolarità dei mazzi pubblicati (blocco PREFERITI E TENDENZA, 30/09/2026): punteggio "Di tendenza" della settimana e
+ * numero di salvataggi, solo aggregati. Vuota se le funzioni non ci sono ancora; con un altro errore lancia, come le
+ * altre letture pubbliche (Next tiene la pagina di prima). `null` quando la community è spenta o la migrazione manca:
+ * allora /decks non offre gli ordini nuovi.
+ */
+export async function listDeckPopularity(): Promise<Map<string, DeckPopularity> | null> {
+  const client = supabasePublic();
+  if (!client) return null;
+  const [trending, favorites] = await Promise.all([client.rpc("deck_trending"), client.rpc("deck_favorite_counts")]);
+  if (popularityMissing(trending.error) || popularityMissing(favorites.error)) return null;
+  return popularityMap(
+    rowsOrThrow<{ deck_id: string; score: number }>("deck_trending", trending),
+    rowsOrThrow<{ deck_id: string; favorites: number }>("deck_favorite_counts", favorites),
+  );
+}
+
+/** Un mazzo salvato dall'utente, per /account: `deck` è null se non è più visibile (nascosto o eliminato dal proprietario). */
+export type SavedDeck = { deck_id: string; created_at: string; deck: { slug: string; name: string; legendary: string | null; status: string } | null };
+
+/**
+ * I mazzi salvati dall'utente (blocco PREFERITI E TENDENZA, 30/09/2026), dal più recente: richiede il client con la sua
+ * sessione (RLS: ognuno legge solo i suoi). `null` se la tabella non c'è ancora (allora la sezione non si mostra); con
+ * un altro errore una lista vuota, come le altre letture del pannello privato.
+ */
+export async function listSavedDecks(client: Db, userId: string): Promise<SavedDeck[] | null> {
+  const { data, error } = await client
+    .from("deck_favorites")
+    .select("deck_id, created_at, deck:community_decks!deck_favorites_deck_id_fkey(slug, name, legendary, status)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (popularityMissing(error)) return null;
+  if (error) console.error("[community] listSavedDecks:", error.message);
+  return ((error ? [] : data) ?? []) as unknown as SavedDeck[];
 }
 
 /** Tabella delle versioni o colonna `version` dei voti non ancora nel database (blocco VERSIONI non applicato). */

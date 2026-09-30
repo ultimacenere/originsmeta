@@ -10,7 +10,9 @@ import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
 import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { getCommunityDeck, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
+import { getCommunityDeck, listDeckPopularity, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { favoriteLabels } from "@/lib/favoriteLabels";
 import { deckCardsDate, deckCardsDiff, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
@@ -173,6 +175,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const version = typeof deck.version === "number" ? deck.version : null;
   const oldVersions = version && version > 1 ? await listDeckVersions(deck.id) : [];
   const versionViews = versionsView(deck, oldVersions, locale);
+  // "Salva" (blocco PREFERITI E TENDENZA, 30/09/2026): quante persone l'hanno salvato; null senza la migrazione (niente tasto)
+  const popularity = await listDeckPopularity();
+  const favoriteCount = popularity ? (popularity.get(deck.id)?.favorites ?? 0) : null;
   // tasto "Aggiorna alla versione …" per il proprietario, quando il mazzo è fermo a una patch di prima (solo con la migrazione)
   const ownerUpdate =
     version && deckOutdated(deckPatch, patchOrder)
@@ -381,6 +386,16 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               voted: c.voted,
               voteError: c.voteError,
             }}
+          />
+        </div>
+
+        <div className="mt-3">
+          <FavoriteButton
+            deckId={deck.id}
+            slug={deck.slug}
+            count={favoriteCount}
+            loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
+            labels={favoriteLabels[locale]}
           />
         </div>
 

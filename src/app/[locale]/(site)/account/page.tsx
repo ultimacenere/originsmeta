@@ -10,7 +10,9 @@ import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { encodeOmCode } from "@/lib/deckcode";
 import { currentUser } from "@/lib/supabase/server";
-import { listUserDecks, publishedDeckLimit } from "@/lib/community/queries";
+import { listSavedDecks, listUserDecks, publishedDeckLimit } from "@/lib/community/queries";
+import { removeFavorite } from "@/lib/community/favoriteActions";
+import { favoriteLabels } from "@/lib/favoriteLabels";
 import { countEntries, listUserTierLists } from "@/lib/community/tierlists";
 import { deleteTierList, setTierListStatus } from "@/lib/community/tierActions";
 import { deleteDeck, setDeckStatus } from "@/lib/community/actions";
@@ -63,12 +65,15 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, created_at").eq("id", user.id).maybeSingle();
   const profile = (profileRow as (Profile & { role: string; created_at: string }) | null) ?? null;
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
-  const [allDecks, tournaments, tierLists, deckLimit] = await Promise.all([
+  const [allDecks, tournaments, tierLists, deckLimit, saved] = await Promise.all([
     listUserDecks(supabase, user.id),
     listUserTournaments(supabase, user.id),
     listUserTierLists(supabase, user.id),
     publishedDeckLimit(supabase, user.id),
+    // mazzi salvati con "Salva" (30/09/2026); null senza la migrazione: la sezione non c'è
+    listSavedDecks(supabase, user.id),
   ]);
+  const FL = favoriteLabels[locale];
   // I mazzi privati ("Salva privato" del deck builder, stato 'draft') hanno la loro sezione: niente voti né scheda pubblica.
   const decks = allDecks.filter((deck) => deck.status !== "draft");
   const drafts = allDecks.filter((deck) => deck.status === "draft");
@@ -243,6 +248,50 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* Mazzi salvati con "Salva" (blocco PREFERITI E TENDENZA, 30/09/2026): visibili solo a chi li ha salvati */}
+      {saved ? (
+        <section id="saved" className="mt-12 scroll-mt-24">
+          <h2 className="t-section">{FL.account.title}</h2>
+          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{FL.account.hint}</p>
+          {saved.length === 0 ? (
+            <div className="card-night mt-4 p-6">
+              <p className="text-pale-muted">{FL.account.empty}</p>
+            </div>
+          ) : (
+            <ul className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+              {saved.map((s) => {
+                const live = s.deck && s.deck.status === "published" ? s.deck : null;
+                const leg = live?.legendary ? getCard(live.legendary) : undefined;
+                return (
+                  <li key={s.deck_id} className="card-night flex flex-wrap items-center gap-3 p-4">
+                    <div className="min-w-0 flex-1 basis-48">
+                      {live ? (
+                        <Link href={href(locale, `/decks/community/${live.slug}`)} className="t-item leading-tight hover:text-mint hover:underline">
+                          {live.name}
+                        </Link>
+                      ) : (
+                        <p className="text-sm text-pale-muted">{FL.account.unpublished}</p>
+                      )}
+                      <p className="mt-1 font-mono text-xs text-pale-muted">
+                        {leg ? `★ ${leg.name} · ` : ""}
+                        {formatDate(locale, s.created_at.slice(0, 10))}
+                      </p>
+                    </div>
+                    <form action={removeFavorite}>
+                      <input type="hidden" name="deck" value={s.deck_id} />
+                      <input type="hidden" name="locale" value={locale} />
+                      <button type="submit" className="btn btn-ghost text-xs">
+                        {FL.account.remove}
+                      </button>
+                    </form>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      ) : null}
 
       {/*
         Le mie tier list (23/09/2026, §1 punto 27.5 della KB: "mazzi e tier list create visibili nel profilo di chi
