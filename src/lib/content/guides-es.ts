@@ -1597,4 +1597,59 @@ Las propias pantallas de carga del estudio lo llaman "real collecting in digital
 Como las cartas de colección son cosméticas, una tier list solo tiene que fijarse en la carta, nunca en la versión. OriginsMeta seguirá los precios del Mercado de Steam desde el primer día en que haya artículos a la venta, para que el coleccionismo cuente con los mismos datos que el juego.
 `,
   },
+  "streaming-tools": {
+    title: "Directos de Origins TCG: overlay para OBS y comando !deck en el chat",
+    metaTitle: "Overlay de OBS y comando !deck para Origins TCG",
+    excerpt: "Herramientas gratis para hacer directos de Origins TCG: overlay para OBS con tu mazo, comando !deck para el chat de Twitch, enlaces cortos e insignia LIVE.",
+    faq: [
+      { q: "¿Tengo que instalar algo?", a: "No. El overlay es una página web que añades a OBS como fuente de navegador, y el comando del chat es una línea para el bot de tu canal de Twitch que apunta a OriginsMeta." },
+      { q: "¿Con qué bots funciona el comando !deck?", a: "Nightbot, StreamElements y Fossabot. En tu cuenta de OriginsMeta tienes la línea lista para cada uno, con tu enlace ya dentro." },
+      { q: "¿Qué tamaño debe tener el overlay en OBS?", a: "360 × 1000 píxeles para el overlay vertical y 1600 × 300 para el horizontal. El fondo es transparente." },
+      { q: "¿El overlay cambia cuando publico un mazo nuevo?", a: "Sí, si usas el enlace de tu cuenta: muestra siempre el último mazo que publicaste y lo vuelve a leer cada minuto." },
+    ],
+    body: `
+## Qué obtienes
+
+OriginsMeta tiene herramientas gratis para quien hace directos o videos de Origins TCG. Funcionan con los mazos que publicas en el sitio y no hay nada que instalar:
+
+- un **overlay para OBS** con la lista de tu mazo sobre fondo transparente;
+- un **comando !deck** para el chat de Twitch que responde con tu mazo;
+- un **enlace corto** y una **imagen del mazo** para descripciones, miniaturas e historias;
+- una **insignia LIVE** junto a tu nombre mientras estás en directo con Origins TCG.
+
+## Antes de empezar
+
+1. Entra en OriginsMeta (Discord o correo, sin contraseña) y publica un mazo desde el [deck builder](/es/deck-builder).
+2. Abre [tu cuenta](/es/account#stream-tools): el panel "Herramientas para directos" tiene los enlaces del overlay y el comando del chat, ya con tu nombre de usuario.
+
+Los enlaces de tu cuenta siguen siempre **el último mazo que publicaste**: publicas uno nuevo y el overlay y el comando pasan a ese en menos de un minuto. Para mostrar un mazo concreto, abre su página y usa el menú "Para directos": en tus mazos tiene el overlay y el comando solo para ese mazo.
+
+## Overlay para OBS
+
+1. Copia uno de los dos enlaces del overlay desde tu cuenta: vertical u horizontal.
+2. En OBS: Fuentes → + → Navegador, y pega el enlace.
+3. Pon el tamaño: **360 × 1000** para el overlay vertical, **1600 × 300** para el horizontal.
+
+El fondo es transparente y el overlay vuelve a leer el mazo cada minuto, así que se mantiene al día sin tocar la fuente. Muestra el nombre del mazo, tu nombre, la Legendaria y las doce cartas con su coste. El idioma es el de la página desde la que lo copiaste: para cambiarlo, pon lang= al final del enlace con en, it o es.
+
+## El comando !deck en el chat
+
+En tu cuenta está la línea para cada bot, con tu enlace ya dentro:
+
+- **Nightbot** y **StreamElements**: escribe la línea en el chat de Twitch como dueño del canal o moderador;
+- **Fossabot**: crea un comando desde su panel y usa la línea como respuesta.
+
+Si !deck ya existe en tu canal, escribe edit en lugar de add. Desde ese momento !deck responde en el chat con una línea: nombre del mazo, Legendaria, enlace corto y código del juego para pegar en Origins TCG. El código falta solo cuando una carta del mazo aún no tiene ID oficial.
+
+## Enlace corto e imagen del mazo
+
+Cada mazo tiene un enlace corto, originsmeta.com/d/ seguido de la dirección del mazo: dilo en directo o ponlo en la descripción del video, y abre el mazo en el idioma de quien mira. Tu perfil también tiene uno, originsmeta.com/@ seguido de tu nombre de usuario.
+
+Desde el menú "Para directos" de cada mazo también puedes descargar una imagen PNG con la Legendaria, las doce cartas con su coste y el enlace corto: 16:9 (1280 × 720) para miniaturas, 9:16 (1080 × 1920) para historias y shorts.
+
+## Insignia LIVE
+
+Los Creator, Autores, Pro y Staff que añaden su canal de Twitch al perfil público tienen la **insignia LIVE** junto a su nombre en el sitio mientras están en directo con Origins TCG: la categoría del juego en Twitch, o un título que nombra el juego. Sus directos aparecen también en la [página de directos](/es/live) y en el [directorio de creators](/es/creators). Los roles los asigna el staff de OriginsMeta: si haces directos de Origins TCG con regularidad, escríbenos en Discord.
+`,
+  },
 };

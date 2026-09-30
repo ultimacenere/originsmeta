@@ -112,12 +112,15 @@ function StreamDetails({
   autoOpen,
   className,
   children,
+  id,
 }: {
   summary: ReactNode;
   placement: Placement;
   autoOpen: boolean;
   className: string;
   children: ReactNode;
+  /** ancora del pannello (/account#stream-tools, 30/09/2026: ci porta la guida pubblica all'overlay) */
+  id?: string;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const automatic = useRef(false);
@@ -133,6 +136,7 @@ function StreamDetails({
   return (
     <details
       ref={ref}
+      id={id}
       className={className}
       onToggle={(e) => {
         if (!e.currentTarget.open) return;
@@ -295,7 +299,8 @@ export function AccountStreamGuide({
     <StreamDetails
       placement={placement}
       autoOpen={hasDecks}
-      className="card-night mt-12 p-5 sm:p-6"
+      id="stream-tools"
+      className="card-night mt-12 scroll-mt-24 p-5 sm:p-6"
       summary={
         <summary className="cursor-pointer">
           <h2 className="t-section inline">{labels.title}</h2>

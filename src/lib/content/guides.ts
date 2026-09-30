@@ -72,6 +72,7 @@ export const guideSlugs = [
   "origins-tcg-explained",
   "roadmap-and-dates",
   "collector-economy",
+  "streaming-tools",
 ] as const;
 export type GuideSlug = (typeof guideSlugs)[number];
 
@@ -1610,6 +1611,72 @@ Backing the Kickstarter buys collectibles, not strength: ranked play in Origins 
 
 Sources: [official pre-registration page](https://founder.origins-tcg.com), [Steam page](https://store.steampowered.com/app/4429430/Origins_TCG/), the AMA announcement on the official Discord (11 September 2026), the [post of Koin Games' CEO on X](https://x.com/TimothyJooste/status/2100700207285445011) (17 September 2026) and the main menu of the demo (read on 25 September 2026).`,
   },
+  /*
+    Guida agli strumenti per le dirette (30/09/2026, dal confronto con i siti concorrenti: uno ha una guida all'overlay
+    per OBS). Solo fatti delle nostre funzioni: misure e aggiornamento da src/lib/stream.ts (OVERLAY_SIZE,
+    OVERLAY_REFRESH_SECONDS, DECK_IMAGE_FORMATS), bot da botCommands, bollino LIVE da src/lib/twitchLive.ts (ruoli con
+    vetrina e diretta su Origins TCG). Se cambiano, si aggiorna la guida nelle tre lingue.
+  */
+  "streaming-tools": {
+    slug: "streaming-tools",
+    category: "game",
+    title: "Streaming Origins TCG: OBS overlay and !deck chat command",
+    metaTitle: "Origins TCG OBS overlay and !deck chat command",
+    excerpt: "Free tools for Origins TCG streamers: an OBS overlay with your deck, a !deck command for Twitch chat, short links, deck images and the LIVE badge.",
+    readTime: 4,
+    updated: "2026-09-30",
+    image: "/media/art-hero-red.webp",
+    faq: [
+      { q: "Do I need to install anything?", a: "No. The overlay is a web page that you add to OBS as a browser source, and the chat command is a line for your Twitch bot that points to OriginsMeta." },
+      { q: "Which bots does the !deck command work with?", a: "Nightbot, StreamElements and Fossabot. Your OriginsMeta account gives you the ready line for each one, with your link already inside." },
+      { q: "What size should the overlay be in OBS?", a: "360 × 1000 pixels for the vertical overlay and 1600 × 300 for the horizontal one. The background is transparent." },
+      { q: "Does the overlay change when I publish a new deck?", a: "Yes, if you use the link from your account: it always shows the deck you published most recently and reloads it every minute." },
+    ],
+    body: `
+## What you get
+
+OriginsMeta has free tools for anyone who streams or makes videos about Origins TCG. They work with the decks you publish on the site, and there is nothing to install:
+
+- an **OBS overlay** with your deck list on a transparent background;
+- a **!deck command** for your Twitch chat that answers with your deck;
+- a **short link** and a **deck image** for descriptions, thumbnails and stories;
+- a **LIVE badge** next to your name while you stream Origins TCG.
+
+## Before you start
+
+1. Sign in to OriginsMeta (Discord or email, no password) and publish a deck from the [deck builder](/en/deck-builder).
+2. Open [your account](/en/account#stream-tools): the "Stream tools" panel has the overlay links and the chat command, already filled in with your username.
+
+The links in your account always follow **the deck you published most recently**: publish a new one and the overlay and the command switch to it within a minute. To show one deck in particular, open its page and use the "For streamers" menu: on your own decks it has the overlay and the command for that deck only.
+
+## OBS overlay
+
+1. Copy one of the two overlay links from your account: vertical or horizontal.
+2. In OBS: Sources → + → Browser, then paste the link.
+3. Set the size: **360 × 1000** for the vertical overlay, **1600 × 300** for the horizontal one.
+
+The background is transparent and the overlay reloads the deck every minute, so it stays up to date without touching the source. It shows the deck name, your name, the Legendary and the twelve cards with their cost. The language is the one of the page you copied it from: to change it, set lang= at the end of the link to en, it or es.
+
+## The !deck chat command
+
+Your account has the line to use for each bot, with your link already inside:
+
+- **Nightbot** and **StreamElements**: type the line in your Twitch chat as the channel owner or a moderator;
+- **Fossabot**: create a command in its dashboard and use the line as the response.
+
+If !deck already exists on your channel, write edit instead of add. From then on !deck answers in chat with one line: the deck name, the Legendary, the short link and the game code to paste into Origins TCG. The code is left out only when a card of the deck has no official ID yet.
+
+## Short link and deck image
+
+Every deck has a short link, originsmeta.com/d/ followed by the deck's address: say it on stream or put it in the video description, and it opens the deck in the viewer's language. Your profile has one too, originsmeta.com/@ followed by your username.
+
+From the "For streamers" menu of any deck you can also download a PNG image with the Legendary, the twelve cards with their cost and the short link: 16:9 (1280 × 720) for thumbnails, 9:16 (1080 × 1920) for stories and shorts.
+
+## LIVE badge
+
+Creators, Authors, Pro players and Staff who add their Twitch channel to their public profile get a **LIVE badge** next to their name on the site while they stream Origins TCG: the game's category on Twitch, or a title that names the game. Their streams also appear on the [live page](/en/live) and in the [creators directory](/en/creators). Roles are assigned by the OriginsMeta staff: if you stream Origins TCG regularly, write to us on Discord.
+`,
+  },
 };
 
 const it: Record<GuideSlug, Guide> = {
@@ -3113,6 +3180,66 @@ Sostenere il Kickstarter compra collezionabili, non forza in partita: la classif
 
 Fonti: [pagina ufficiale di pre-registrazione](https://founder.origins-tcg.com), [pagina Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), l'annuncio dell'AMA nel Discord ufficiale (11 settembre 2026), il [post del CEO di Koin Games su X](https://x.com/TimothyJooste/status/2100700207285445011) (17 settembre 2026) e il menu principale della demo (letto il 25 settembre 2026).`,
   },
+  "streaming-tools": {
+    slug: "streaming-tools",
+    category: "game",
+    title: "Dirette su Origins TCG: overlay per OBS e comando !deck in chat",
+    metaTitle: "Overlay OBS e comando !deck per Origins TCG",
+    excerpt: "Strumenti gratuiti per chi fa dirette su Origins TCG: overlay per OBS con il tuo mazzo, comando !deck per la chat di Twitch, link brevi e bollino LIVE.",
+    readTime: 4,
+    updated: "2026-09-30",
+    image: "/media/art-hero-red.webp",
+    faq: [
+      { q: "Devo installare qualcosa?", a: "No. L'overlay è una pagina web che aggiungi a OBS come sorgente browser, e il comando di chat è una riga per il bot del tuo canale Twitch che punta a OriginsMeta." },
+      { q: "Con quali bot funziona il comando !deck?", a: "Nightbot, StreamElements e Fossabot. Nel tuo account OriginsMeta trovi la riga pronta per ognuno, con il tuo link già dentro." },
+      { q: "Che misure deve avere l'overlay in OBS?", a: "360 × 1000 pixel per l'overlay verticale e 1600 × 300 per quello orizzontale. Lo sfondo è trasparente." },
+      { q: "L'overlay cambia quando pubblico un mazzo nuovo?", a: "Sì, se usi il link del tuo account: mostra sempre l'ultimo mazzo che hai pubblicato e lo rilegge ogni minuto." },
+    ],
+    body: `
+## Che cosa ottieni
+
+OriginsMeta ha strumenti gratuiti per chi fa dirette o video su Origins TCG. Funzionano con i mazzi che pubblichi sul sito e non c'è niente da installare:
+
+- un **overlay per OBS** con la lista del tuo mazzo su sfondo trasparente;
+- un **comando !deck** per la chat di Twitch che risponde con il tuo mazzo;
+- un **link breve** e un'**immagine del mazzo** per descrizioni, miniature e storie;
+- un **bollino LIVE** accanto al tuo nome mentre sei in diretta su Origins TCG.
+
+## Prima di cominciare
+
+1. Accedi a OriginsMeta (Discord o email, senza password) e pubblica un mazzo dal [deck builder](/it/deck-builder).
+2. Apri [il tuo account](/it/account#stream-tools): il riquadro "Strumenti per le dirette" ha i link dell'overlay e il comando di chat, già con il tuo nome utente.
+
+I link del tuo account seguono sempre **l'ultimo mazzo che hai pubblicato**: ne pubblichi uno nuovo e overlay e comando passano a quello entro un minuto. Per mostrare un mazzo preciso, apri la sua pagina e usa il menu "Per le dirette": sui tuoi mazzi ci sono l'overlay e il comando solo per quel mazzo.
+
+## Overlay per OBS
+
+1. Copia uno dei due link dell'overlay dal tuo account: verticale o orizzontale.
+2. In OBS: Fonti → + → Browser, poi incolla il link.
+3. Imposta le misure: **360 × 1000** per l'overlay verticale, **1600 × 300** per quello orizzontale.
+
+Lo sfondo è trasparente e l'overlay rilegge il mazzo ogni minuto, quindi resta aggiornato senza toccare la sorgente. Mostra il nome del mazzo, il tuo nome, la Leggendaria e le dodici carte con il loro costo. La lingua è quella della pagina da cui l'hai copiato: per cambiarla, metti lang= in fondo al link con en, it o es.
+
+## Il comando !deck in chat
+
+Nel tuo account c'è la riga da usare per ogni bot, con il tuo link già dentro:
+
+- **Nightbot** e **StreamElements**: scrivi la riga nella chat di Twitch come proprietario del canale o moderatore;
+- **Fossabot**: crea un comando dalla sua dashboard e usa la riga come risposta.
+
+Se !deck esiste già sul tuo canale, scrivi edit al posto di add. Da quel momento !deck risponde in chat con una riga: nome del mazzo, Leggendaria, link breve e codice del gioco da incollare in Origins TCG. Il codice manca solo quando una carta del mazzo non ha ancora l'ID ufficiale.
+
+## Link breve e immagine del mazzo
+
+Ogni mazzo ha un link breve, originsmeta.com/d/ seguito dall'indirizzo del mazzo: dillo in diretta o mettilo nella descrizione del video, e apre il mazzo nella lingua di chi guarda. Anche il tuo profilo ne ha uno, originsmeta.com/@ seguito dal tuo nome utente.
+
+Dal menu "Per le dirette" di ogni mazzo puoi anche scaricare un'immagine PNG con la Leggendaria, le dodici carte con il loro costo e il link breve: 16:9 (1280 × 720) per le miniature, 9:16 (1080 × 1920) per storie e short.
+
+## Bollino LIVE
+
+Creator, Autori, Pro e Staff che aggiungono il loro canale Twitch al profilo pubblico hanno il **bollino LIVE** accanto al nome sul sito mentre sono in diretta su Origins TCG: la categoria del gioco su Twitch, oppure un titolo che nomina il gioco. Le loro dirette compaiono anche nella [pagina delle dirette](/it/live) e nella [directory dei creator](/it/creators). I ruoli li assegna lo staff di OriginsMeta: se fai dirette su Origins TCG con regolarità, scrivici su Discord.
+`,
+  },
 };
 
 /** I testi di una guida, senza i dati che non cambiano con la lingua: le traduzioni nuove (guides-es.ts) portano solo questi. */
@@ -3147,6 +3274,7 @@ const publishedOn: Record<GuideSlug, string> = {
   "origins-tcg-explained": "2026-09-15",
   "roadmap-and-dates": "2026-09-15",
   "collector-economy": "2026-09-15",
+  "streaming-tools": "2026-09-30",
 };
 
 /**
