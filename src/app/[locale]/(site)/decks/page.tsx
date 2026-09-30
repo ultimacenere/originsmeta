@@ -24,6 +24,7 @@ import { deckArtUrl } from "@/lib/community/deckArt";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 
 /** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
 const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
@@ -124,8 +125,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         // data di creazione e versione del gioco di quel giorno (richiesta di Pierluigi del 23/09/2026)
         created: deck.created_at.slice(0, 10),
         createdLabel: formatDate(locale, deck.created_at.slice(0, 10)),
-        patchId: patchAt(deck.created_at),
-        patchLabel: patchAt(deck.created_at) ? patchLabel(patchAt(deck.created_at)!, locale) : undefined,
+        patchId: patchAt(deckCardsDate(deck)),
+        patchLabel: patchAt(deckCardsDate(deck)) ? patchLabel(patchAt(deckCardsDate(deck))!, locale) : undefined,
         rating: deck.rating,
         // voto pesato per l'ordine "Più votati" dell'elenco (`ExplorerDeck.score`), lo stesso della classifica dei migliori
         // mazzi (Ondata 3): con la media semplice un solo voto da 5 stelle passava davanti al #1 della classifica

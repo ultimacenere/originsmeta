@@ -29,7 +29,7 @@ export function deckEntry(deck: DeckRef, locale: Locale, d: Dictionary): TierDec
   // un tag che il codice non conosce (per esempio `influencer` prima della migrazione del 27/09) vale community
   const badge = normalizeBadge(deck.badge);
   const created = deck.created.slice(0, 10);
-  const patch = patchAt(deck.created);
+  const patch = patchAt(deck.cardsAt ?? deck.created);
   return {
     slug: deck.slug,
     name: deck.name,

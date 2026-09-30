@@ -22,6 +22,7 @@ import { checkDeck, cleanDeckName, isUuid, newSlug, parseGuide, type CheckedDeck
 import { mediaErrorField, mediaNeedsColumns, readDeckMedia } from "@/lib/videos";
 import { PROFILE_MEDIA_BUCKET } from "./profileMedia";
 import { deckArtErrorCode, deckArtPathOk, missingArtColumn, readDeckArtField } from "./deckArt";
+import { sameDeckCards, type DeckCards } from "./deckVersions";
 
 /**
  * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
@@ -316,7 +317,25 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
   const id = formData.get("id");
   if (!isUuid(id)) return { error: "forbidden" };
+  // Carte (blocco VERSIONI, 30/09/2026): con carte diverse il trigger apre una versione nuova e i voti ripartono. Stesse
+  // carte in un altro ordine: si tiene l'ordine salvato, così un riordino del deck builder non apre una versione. Senza
+  // la migrazione (colonna `version` assente) un cambio di carte non passa: i voti resterebbero su carte diverse.
   let row: Record<string, unknown> = p.row;
+  const withVersion = await p.supabase.from("community_decks").select("legendary, cards, custom_cards, status, version").eq("id", id).maybeSingle();
+  const saved = withVersion.error
+    ? await p.supabase.from("community_decks").select("legendary, cards, custom_cards, status").eq("id", id).maybeSingle()
+    : withVersion;
+  if (saved.error) return deckWriteError(saved.error);
+  const before = saved.data as (DeckCards & { status: string; version?: number }) | null;
+  if (!before) return { error: "forbidden" };
+  if (sameDeckCards(before, { legendary: p.row.legendary, cards: p.row.cards, custom_cards: p.row.custom_cards })) {
+    const cards = before.cards;
+    const customCards = (before.custom_cards ?? []) as CheckedDeck["customCards"];
+    row = { ...row, cards, custom_cards: customCards, code_om: encodeOmCode({ name: p.row.name, legendary: p.row.legendary, cards, customCards }) };
+  } else if (before.status !== "draft" && withVersion.error) {
+    console.error("[community] updateDeck: manca community_decks.version, va applicato il blocco VERSIONI di supabase/schema.sql");
+    return { error: "versionsUnavailable" };
+  }
   let res = await p.supabase.from("community_decks").update(row as typeof p.row).eq("id", id).select("slug, status").maybeSingle();
   // colonne dei pacchetti VIDEO e IMMAGINI non ancora nel database: si riprova senza (una volta per gruppo)
   for (let i = 0; i < 2 && res.error; i++) {
@@ -388,7 +407,12 @@ export async function voteDeck(deckId: string, stars: number, path: string): Pro
   if (!user) return { error: "notLoggedIn" };
   const n = Math.round(Number(stars));
   if (!isUuid(deckId) || n < 1 || n > 5) return { error: "invalid" };
-  const { error } = await supabase.from("deck_votes").upsert({ deck_id: deckId, user_id: user.id, stars: n }, { onConflict: "deck_id,user_id" });
+  // Il voto vale per la versione in vigore del mazzo (blocco VERSIONI, 30/09/2026): `version` la scrive il trigger, e la
+  // chiave è (deck_id, user_id, version). Prima della migrazione quella chiave non c'è (42P10): si vota come prima.
+  const vote = { deck_id: deckId, user_id: user.id, stars: n };
+  let { error } = await supabase.from("deck_votes").upsert(vote, { onConflict: "deck_id,user_id,version" });
+  if (error?.code === "42P10" || (error && /\bversion\b/.test(error.message ?? "") && /does not exist|could not find/i.test(error.message ?? "")))
+    ({ error } = await supabase.from("deck_votes").upsert(vote, { onConflict: "deck_id,user_id" }));
   if (error) return { error: error.code === "42501" ? "ownDeck" : "db" };
   const { data } = await supabase.from("deck_ratings").select("avg_stars, votes").eq("deck_id", deckId).maybeSingle();
   if (typeof path === "string" && path.startsWith("/")) revalidatePath(path);

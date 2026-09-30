@@ -12,6 +12,7 @@ import { PageNotes } from "@/components/PageNotes";
 import { contactEmail } from "@/components/Footer";
 import { JsonLd, breadcrumbs, webApplication } from "@/components/JsonLd";
 import { deckBuilderApp } from "@/lib/entityLabels";
+import { deckVersionLabels } from "@/lib/deckVersionLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -58,6 +59,7 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           shareBase={`${siteUrl}${path}`}
           publishHref={href(locale, "/decks/publish")}
           labels={builderLabels(d)}
+          updateLabels={deckVersionLabels[locale].builder}
         />
       </div>
 

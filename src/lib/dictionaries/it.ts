@@ -1031,6 +1031,7 @@ export const it: Dictionary = {
     errors: {
       notLoggedIn: "La sessione è scaduta: accedi di nuovo.",
       disabled: "La pubblicazione non è ancora attiva.",
+      versionsUnavailable: "Il cambio delle carte non è ancora disponibile: riprova fra qualche minuto, o salva senza cambiare le carte.",
       invalidDeck: "Il mazzo non è legale: controlla la Leggendaria e le carte base.",
       invalidName: "Dai un nome al mazzo (3–60 caratteri).",
       archetype: "Scegli un archetipo.",

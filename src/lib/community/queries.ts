@@ -5,6 +5,7 @@ import { normalizeBadge, publishedDeckCap, type Badge } from "./badges";
 import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
 import { guideTableMissing } from "./guides";
+import { versionRatings, type DeckVersion } from "./deckVersions";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -71,7 +72,7 @@ export function rowOrThrow<T>(what: string, res: ReadResult): T | null {
  * un mazzo: le liste (/decks, tier list, profili, sitemap) non li mostrano e non li scaricano. L'artwork della Leggendaria
  * ("art", 29/09/2026) lo chiedono la scheda e le liste che mostrano la Leggendaria (non la sitemap).
  */
-type OptionalGroup = "translations" | "media" | "art";
+type OptionalGroup = "translations" | "media" | "art" | "version";
 /** Per quanto tempo, dopo un 42703, un gruppo di colonne non si chiede più (poi si riprova). */
 const OPTIONAL_RETRY_MS = 5 * 60_000;
 /** `missingUntil`: fino a quando il gruppo si considera mancante (0: si legge). */
@@ -80,6 +81,8 @@ const optionalColumns: { id: OptionalGroup; columns: string[]; missingUntil: num
   { id: "media", columns: ["videos", "links"], missingUntil: 0 },
   // artwork della Leggendaria dei Creator (blocco IMMAGINI, 29/09/2026): la scheda, /decks, i profili e le tier list
   { id: "art", columns: ["art_path"], missingUntil: 0 },
+  // versione delle carte (blocco VERSIONI, 30/09/2026): chi mostra la patch del mazzo la ricava da cards_updated_at
+  { id: "version", columns: ["version", "cards_updated_at"], missingUntil: 0 },
 ];
 
 async function readWithTranslations(
@@ -130,7 +133,7 @@ export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> 
   const res = await readWithTranslations(
     DECK_SELECT,
     (sel) => client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
-    ["translations", "art"],
+    ["translations", "art", "version"],
   );
   return withRatings(client, rowsOrThrow<CommunityDeck>("listPublishedDecks", res));
 }
@@ -143,6 +146,7 @@ export async function getCommunityDeck(slug: string): Promise<CommunityDeck | nu
     "translations",
     "media",
     "art",
+    "version",
   ]);
   const deck = rowOrThrow<CommunityDeck>("getCommunityDeck", res);
   if (!deck) return null;
@@ -156,7 +160,10 @@ export async function getCommunityDeck(slug: string): Promise<CommunityDeck | nu
  * errore resta una lista vuota come prima del 25/09/2026 (la pagina di errore di Next non spiegherebbe di più).
  */
 export async function listUserDecks(client: Db, userId: string): Promise<CommunityDeck[]> {
-  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("owner", userId).order("updated_at", { ascending: false }));
+  const { data, error } = await readWithTranslations(DECK_SELECT, (sel) => client.from("community_decks").select(sel).eq("owner", userId).order("updated_at", { ascending: false }), [
+    "translations",
+    "version",
+  ]);
   if (error) console.error("[community] listUserDecks:", error.message);
   if (error || !Array.isArray(data)) return [];
   return withRatings(client, data as CommunityDeck[], true);
@@ -196,7 +203,7 @@ export async function listDecksByOwner(userId: string, limit = 50): Promise<Comm
   const res = await readWithTranslations(
     DECK_SELECT,
     (sel) => client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
-    ["translations", "art"],
+    ["translations", "art", "version"],
   );
   return withRatings(client, rowsOrThrow<CommunityDeck>("listDecksByOwner", res));
 }
@@ -257,4 +264,33 @@ export async function listPublishedDeckIndex(): Promise<{ decks: SitemapDeck[]; 
   );
   const rows = rowsOrThrow<{ slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }>("listPublishedDeckIndex", res);
   return sitemapDecks(rows, locales);
+}
+
+/**
+ * Le versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026), dalla più recente, ognuna con la media dei
+ * voti che aveva (i voti restano in deck_votes con la loro `version`). Vuoto se il mazzo non è mai cambiato o se la
+ * migrazione non c'è ancora (tabella o colonna mancante); con un altro errore lancia, come le altre letture pubbliche.
+ */
+export async function listDeckVersions(deckId: string): Promise<DeckVersion[]> {
+  const client = supabasePublic();
+  if (!client) return [];
+  const res = await client
+    .from("community_deck_versions")
+    .select("version, legendary, cards, custom_cards, code_om, started_at, ended_at")
+    .eq("deck_id", deckId)
+    .order("version", { ascending: false })
+    .limit(50);
+  if (versionsMissing(res.error)) return [];
+  const rows = rowsOrThrow<Omit<DeckVersion, "rating">>("listDeckVersions", res);
+  if (!rows.length) return [];
+  const votes = await client.from("deck_votes").select("version, stars").eq("deck_id", deckId).lte("version", rows[0].version).limit(10000);
+  const ratings = versionRatings(rowsOrThrow<{ version: number; stars: number }>("listDeckVersions (voti)", votes));
+  return rows.map((r) => ({ ...r, rating: ratings.get(r.version) ?? { avg: 0, votes: 0 } }));
+}
+
+/** Tabella delle versioni o colonna `version` dei voti non ancora nel database (blocco VERSIONI non applicato). */
+export function versionsMissing(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (!error) return false;
+  if (error.code === "42P01" || error.code === "PGRST205") return true;
+  return /community_deck_versions|\bversion\b|cards_updated_at/.test(error.message ?? "") && /does not exist|could not find/i.test(error.message ?? "");
 }

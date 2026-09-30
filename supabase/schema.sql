@@ -4278,3 +4278,130 @@ comment on column public.community_comics.editions is 'Versioni disegnate nelle 
 comment on column public.community_comics.former_slugs is 'Indirizzi dei fumetti uniti in questo (scripts/merge-comics.mjs, 30/09/2026): la pagina /news/comics/<slug> di un indirizzo di prima porta qui con un 308. Nessuna grant: li scrive solo lo script.';
 comment on function public.community_comic_editions_ok(jsonb, uuid, text, boolean) is 'Versioni disegnate di un fumetto valide: le altre lingue del sito, testi e tavole con le regole dell''originale, copertina facoltativa nella cartella del proprietario (30/09/2026).';
 comment on function public.community_comic_files(jsonb, text, jsonb) is 'Tutti i file di un fumetto, versioni disegnate comprese (trigger dei file e profile_media_in_use, 30/09/2026).';
+
+-- =====================================================================================================
+-- ===== 30/09/2026: VERSIONI =====
+-- =====================================================================================================
+-- Aggiornare le carte di un mazzo pubblicato quando esce una patch (richiesta di MagicOfHands sul Discord il 30/09/2026,
+-- "sarebbe molto più comodo mantenere la descrizione e cambiare solo qualcosina"; risposta: "vi tiriamo su un sistema
+-- per aggiornamento deck con anche selettore della versione"). Fino a qui dalla pagina di modifica si cambiavano solo
+-- nome, guida e media; per cambiare le carte bisognava pubblicare un mazzo nuovo e riscrivere la guida.
+--
+--   1) community_decks.version (1 alla pubblicazione) e cards_updated_at (null finché le carte sono quelle pubblicate):
+--      le scrive solo il trigger. Quando un mazzo non privato cambia carte, Leggendaria o carte create, la versione di
+--      prima finisce in community_deck_versions (carte, codice, da quando a quando), `version` sale di uno e
+--      cards_updated_at diventa now(). Nome, guida, video e artwork si cambiano senza nuova versione. Un mazzo privato
+--      ('draft') si riscrive senza versioni: non ha voti né una scheda pubblica.
+--   2) I voti valgono per una versione: deck_votes.version, scritta dal trigger con la versione del mazzo al momento del
+--      voto (mai dal sito né da chi vota), e la chiave primaria diventa (deck_id, user_id, version): sulla versione nuova
+--      si vota da capo (Magic: "perdendo tutti i voti una volta aggiornato"), ma i voti di prima NON si cancellano:
+--      restano nelle statistiche dei creator, nei traguardi e nel "Mazzo del mese", e la versione di prima mostra ancora
+--      la sua media. Un voto di una versione chiusa non si cambia più (si può solo togliere).
+--   3) deck_ratings conta solo i voti della versione in vigore: è la media che il sito mostra ovunque (schede, /decks,
+--      profili, tier list). Le versioni di prima la calcolano dai voti con la loro `version` (listDeckVersions).
+--   4) community_deck_versions: lettura con le stesse regole del mazzo (la policy guarda community_decks, che ha la sua
+--      RLS: chi non vede il mazzo non vede le versioni), nessuna scrittura degli utenti (solo il grant di select e una
+--      policy restrittiva che nega le scritture): le righe le scrive solo il trigger security definer. Si cancellano
+--      con il mazzo (on delete cascade).
+-- ORDINE: questo blocco sta dopo DATE E FOTO (trigger deck_votes_guard_created). Qui, al contrario di altri blocchi, PRIMA
+-- si mette online il codice e POI si migra: il codice nuovo regge senza (colonne facoltative in queries.ts, gruppo
+-- "version"; updateDeck rifiuta un cambio di carte con `versionsUnavailable`; il voto riprova con la chiave di prima),
+-- mentre il voto del codice VECCHIO usa la chiave (deck_id, user_id) che qui sparisce.
+-- =====================================================================================================
+
+alter table public.community_decks add column if not exists version integer not null default 1;
+alter table public.community_decks add column if not exists cards_updated_at timestamptz;
+alter table public.deck_votes add column if not exists version integer not null default 1;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_index i join pg_attribute a on a.attrelid = i.indrelid and a.attnum = any (i.indkey)
+     where i.indrelid = 'public.deck_votes'::regclass and i.indisprimary and a.attname = 'version'
+  ) then
+    alter table public.deck_votes drop constraint if exists deck_votes_pkey;
+    alter table public.deck_votes add constraint deck_votes_pkey primary key (deck_id, user_id, version);
+  end if;
+end $$;
+
+create table if not exists public.community_deck_versions (
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  version integer not null check (version >= 1),
+  legendary text,
+  cards jsonb not null default '[]'::jsonb,
+  custom_cards jsonb not null default '[]'::jsonb,
+  code_om text,
+  -- da quando valevano queste carte (pubblicazione o aggiornamento di prima) e fino a quando
+  started_at timestamptz not null,
+  ended_at timestamptz not null default now(),
+  primary key (deck_id, version)
+);
+
+alter table public.community_deck_versions enable row level security;
+drop policy if exists "deck versions follow the deck" on public.community_deck_versions;
+create policy "deck versions follow the deck" on public.community_deck_versions for select
+  using (exists (select 1 from public.community_decks d where d.id = deck_id));
+drop policy if exists "deck versions are written by the database" on public.community_deck_versions;
+create policy "deck versions are written by the database" on public.community_deck_versions as restrictive for all
+  using (true) with check (false);
+revoke all on public.community_deck_versions from anon, authenticated;
+grant select on public.community_deck_versions to anon, authenticated;
+
+-- ---------- 1) versione del mazzo ----------
+create or replace function public.guard_deck_version()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if tg_op = 'INSERT' then
+    new.version := 1;
+    new.cards_updated_at := null;
+    return new;
+  end if;
+  new.version := old.version;
+  new.cards_updated_at := old.cards_updated_at;
+  if old.status <> 'draft'
+     and (new.cards is distinct from old.cards or new.legendary is distinct from old.legendary or new.custom_cards is distinct from old.custom_cards) then
+    insert into public.community_deck_versions (deck_id, version, legendary, cards, custom_cards, code_om, started_at, ended_at)
+    values (old.id, old.version, old.legendary, old.cards, old.custom_cards, old.code_om, coalesce(old.cards_updated_at, old.created_at), now())
+    on conflict (deck_id, version) do nothing;
+    new.version := old.version + 1;
+    new.cards_updated_at := now();
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_deck_version() from public, anon, authenticated;
+drop trigger if exists community_decks_version on public.community_decks;
+create trigger community_decks_version before insert or update on public.community_decks
+  for each row execute function public.guard_deck_version();
+
+-- ---------- 2) il voto vale per la versione in vigore ----------
+create or replace function public.guard_vote_version()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare current_version integer;
+begin
+  select d.version into current_version from public.community_decks d where d.id = new.deck_id;
+  if tg_op = 'INSERT' then
+    new.version := coalesce(current_version, 1);
+  else
+    new.version := old.version;
+    if new.deck_id is distinct from old.deck_id or old.version is distinct from current_version then
+      raise exception 'vote of a closed deck version' using errcode = '42501';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_vote_version() from public, anon, authenticated;
+drop trigger if exists deck_votes_version on public.deck_votes;
+create trigger deck_votes_version before insert or update on public.deck_votes
+  for each row execute function public.guard_vote_version();
+
+-- ---------- 3) la media mostrata è quella della versione in vigore ----------
+create or replace view public.deck_ratings as
+  select v.deck_id, round(avg(v.stars)::numeric, 2) as avg_stars, count(*)::int as votes
+    from public.deck_votes v join public.community_decks d on d.id = v.deck_id and d.version = v.version
+   group by v.deck_id;
+grant select on public.deck_ratings to anon, authenticated;
+
+comment on column public.community_decks.version is 'Versione delle carte del mazzo: 1 alla pubblicazione, +1 a ogni cambio di carte di un mazzo non privato (trigger guard_deck_version, 30/09/2026).';
+comment on column public.community_decks.cards_updated_at is 'Quando sono cambiate le carte l''ultima volta (null: quelle della pubblicazione). La patch del mazzo si ricava da qui (30/09/2026).';
+comment on column public.deck_votes.version is 'Versione del mazzo votata: la scrive il trigger guard_vote_version (30/09/2026).';
+comment on table public.community_deck_versions is 'Versioni di prima delle carte dei mazzi della community, scritte dal trigger guard_deck_version (30/09/2026).';

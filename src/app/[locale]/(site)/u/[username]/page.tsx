@@ -52,6 +52,7 @@ import { UserComics } from "@/components/comics/UserComics";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { safeAvatarUrl } from "@/lib/community/profileMedia";
 import { supabaseUrl } from "@/lib/supabase/env";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -260,7 +261,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
             <ul className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-2">
               {decks.map((deck) => {
                 const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
-                const patch = patchAt(deck.created_at);
+                const patch = patchAt(deckCardsDate(deck));
                 // artwork della Leggendaria dei Creator e dello Staff (29/09/2026), al posto dell'illustrazione ufficiale
                 const art = deckArtUrl(deck, supabaseUrl);
                 return (

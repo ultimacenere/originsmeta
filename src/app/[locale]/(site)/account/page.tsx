@@ -4,7 +4,10 @@ import { redirect } from "next/navigation";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
-import { getCard } from "@/lib/data/cards";
+import { getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
+import { deckCardsDate, deckOutdated, deckUpdateHref } from "@/lib/community/deckVersions";
+import { deckVersionLabels } from "@/lib/deckVersionLabels";
+import { fillLabel } from "@/lib/community/deckQuality";
 import { encodeOmCode } from "@/lib/deckcode";
 import { currentUser } from "@/lib/supabase/server";
 import { listUserDecks, publishedDeckLimit } from "@/lib/community/queries";
@@ -135,6 +138,12 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {decks.map((deck) => {
               const viewHref = href(locale, `/decks/community/${deck.slug}`);
+              // "Aggiorna alla versione …" (pacchetto VERSIONI, 30/09/2026): mazzi fermi a una patch di prima, con la migrazione
+              const patch = patchAt(deckCardsDate(deck));
+              const updateHref =
+                typeof deck.version === "number" && deck.status !== "draft" && deckOutdated(patch, patchOrder)
+                  ? deckUpdateHref(locale, deck.slug, deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards }))
+                  : null;
               return (
                 <li key={deck.id} className="card-night flex flex-col p-5">
                   <div className="flex flex-wrap items-center gap-2">
@@ -155,6 +164,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
                     <Link href={`${viewHref}/edit`} className="btn btn-ink text-xs">
                       {c.edit}
                     </Link>
+                    {updateHref ? (
+                      <Link href={updateHref} className="btn btn-primary text-xs">
+                        {fillLabel(deckVersionLabels[locale].edit.updateTo, { patch: patchLabel(latestPatch, locale) })}
+                      </Link>
+                    ) : null}
                     <form action={setDeckStatus}>
                       <input type="hidden" name="id" value={deck.id} />
                       <input type="hidden" name="locale" value={locale} />

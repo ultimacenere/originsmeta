@@ -86,7 +86,7 @@ export async function getOwnVetrina(client: Db, userId: string): Promise<OwnVetr
 }
 
 /** Il mazzo in evidenza come lo mostra la vetrina. */
-export type FeaturedDeck = Pick<CommunityDeck, "id" | "slug" | "name" | "legendary" | "archetype" | "created_at"> & { rating?: { avg: number; votes: number } };
+export type FeaturedDeck = Pick<CommunityDeck, "id" | "slug" | "name" | "legendary" | "archetype" | "created_at" | "cards_updated_at"> & { rating?: { avg: number; votes: number } };
 
 /**
  * Il mazzo in evidenza letto da solo, quando non è fra quelli che la pagina /u ha già letto (i 50 più recenti): un

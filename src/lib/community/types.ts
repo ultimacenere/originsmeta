@@ -59,6 +59,10 @@ export type CommunityDeck = {
    *  si mostra con `deckArtUrl` (deckArt.ts); assente finché la migrazione del blocco IMMAGINI non c'è */
   art_path?: string | null;
   code_om: string | null;
+  /** versione delle carte (1 alla pubblicazione) e data dell'ultimo cambio di carte (null: quelle pubblicate); le scrive
+   *  il trigger del blocco VERSIONI (30/09/2026), assenti finché la migrazione non c'è. La patch si ricava con `deckCardsDate`. */
+  version?: number | null;
+  cards_updated_at?: string | null;
   status: DeckStatus;
   created_at: string;
   updated_at: string;
