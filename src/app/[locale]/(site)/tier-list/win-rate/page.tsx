@@ -10,7 +10,7 @@ import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { readWinrate } from "@/lib/community/trackerStatsQueries";
-import { deckListKey, isEarly, percent } from "@/lib/tracker/stats";
+import { deckListKey, isEarly, percent, testThresholds } from "@/lib/tracker/stats";
 import { loadTierData } from "@/lib/tierData";
 import { tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
@@ -170,6 +170,9 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
         ]}
       />
       <TierListHeader locale={locale} dict={d} current="winrate" title={w.h1} state={state} sections={data ? sections : undefined} />
+
+      {/* soglia di prova (01/10/2026): finché è sotto quella del lancio la pagina lo dice, così i testi sui 20 e 3 non ingannano */}
+      {testThresholds ? <p className="mt-6 max-w-3xl rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">{w.testThreshold}</p> : null}
 
       {!data ? (
         <div className="felt-panel-mint mt-8 max-w-3xl p-6">

@@ -517,6 +517,50 @@
     padding: 0.55rem 0.75rem 0.55rem 0.9rem;
     font-size: 0.875rem;
   }
+  /*
+    Sottomenu del menu desktop (01/10/2026, Pierluigi: "tasto tierlist in mouseover si apre un sottomenu con le varie
+    opzioni"): le quattro tier list sotto "Tier list". Si apre al passaggio del mouse e col fuoco da tastiera
+    (focus-within: Tab sulla voce lo apre, Tab ancora entra nelle voci), niente JavaScript. Il pannello esterno è
+    trasparente e attaccato alla voce (padding in alto al posto del margine), così scendendo col mouse non si chiude.
+    Stesso aspetto del menu a tendina dell'header (felt-deep, bordo felt-line, shadow-lift). Su touch non c'è: la voce
+    porta a /tier-list, dove le quattro schede ci sono sempre.
+  */
+  .nav-drop {
+    position: relative;
+  }
+  .nav-drop-panel {
+    position: absolute;
+    top: 100%;
+    left: -0.5rem;
+    z-index: 50;
+    padding-top: 0.4rem;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 120ms ease, transform 120ms ease, visibility 0s linear 120ms;
+  }
+  .nav-drop:hover .nav-drop-panel,
+  .nav-drop:focus-within .nav-drop-panel {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .nav-drop-box {
+    display: grid;
+    min-width: 12.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-felt-line);
+    border-radius: 0.75rem;
+    background: var(--color-felt-deep);
+    box-shadow: var(--shadow-lift);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-drop-panel {
+      transform: none;
+      transition: none;
+    }
+  }
   .nav-link-block[aria-current="page"]::after {
     top: 0.45rem;
     right: auto;

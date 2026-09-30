@@ -54,6 +54,8 @@ const PR: typeof import("./profile") = await import("./profile.ts");
 const C: typeof import("../data/cards") = await import("../data/cards.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const A: typeof import("../archetype") = await import("../archetype.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const TL: typeof import("../trackerLabels") = await import("../trackerLabels.ts");
 const G: typeof import("../../../scripts/schema-guard.mjs") = await import("../../../scripts/schema-guard.mjs");
 
 const NOW = Date.parse("2026-09-30T12:00:00.000Z");
@@ -207,10 +209,16 @@ describe("codice di collegamento, token ed errori", () => {
 /* ---------- statistiche ---------- */
 
 describe("stats: soglie e letture", () => {
-  test("soglia: 20 partite e 3 giocatori; prime stime sotto 100", () => {
-    assert.equal(S.passesThreshold(20, 3), true);
-    assert.equal(S.passesThreshold(19, 3), false);
-    assert.equal(S.passesThreshold(20, 2), false);
+  test("soglia: quella di TRACKER_STATS, al lancio 20 partite e 3 giocatori come nell'informativa; prime stime sotto 100", () => {
+    const { minGames, minPlayers } = S.TRACKER_STATS;
+    assert.equal(S.passesThreshold(minGames, minPlayers), true);
+    assert.equal(S.passesThreshold(minGames - 1, minPlayers), false);
+    assert.equal(S.passesThreshold(minGames, minPlayers - 1), false);
+    // la soglia del lancio è la promessa dell'informativa; quella di prova (01/10/2026) può solo stare sotto, mai sopra
+    assert.deepEqual(S.TRACKER_STATS_LAUNCH, { minGames: 20, minPlayers: 3 });
+    for (const l of ["en", "it", "es"] as const) assert.match(TL.trackerPrivacy[l], /\b20\b[^.]*\b3\b/, l);
+    assert.ok(minGames >= 1 && minPlayers >= 1 && minGames <= 20 && minPlayers <= 3);
+    assert.equal(S.testThresholds, minGames < 20 || minPlayers < 3);
     assert.equal(S.isEarly(99), true);
     assert.equal(S.isEarly(100), false);
     assert.equal(S.percent(13, 21), 62);
@@ -238,9 +246,11 @@ describe("stats: soglie e letture", () => {
   });
 
   test("letture: righe sotto soglia, vittorie impossibili e chiavi strane si scartano", () => {
+    // una partita sotto la soglia del momento (19 al lancio; 0 con la soglia di prova del 01/10/2026)
+    const below = S.TRACKER_STATS.minGames - 1;
     const rows = [
       { legendary: "C00176_MC", games: 21, wins: 13, players: 3 },
-      { legendary: "C00012_MC", games: 19, wins: 10, players: 5 },
+      { legendary: "C00012_MC", games: below, wins: Math.min(10, below), players: 5 },
       { legendary: "C00084_MC", games: "40", wins: "41", players: 4 },
       { legendary: "Mulan", games: 40, wins: 20, players: 4 },
       { legendary: "C00001_MC", games: "40", wins: "20", players: "4" },
@@ -256,7 +266,7 @@ describe("stats: soglie e letture", () => {
     const cardsRows = S.parseCardStats([
       { card: "C00002_MB", deck_games: 21, deck_wins: 13, deck_players: 3, played_games: null, played_wins: null, played_players: null, avg_turn: null },
       { card: "C00029_MB", deck_games: 21, deck_wins: 13, deck_players: 3, played_games: 21, played_wins: 13, played_players: 3, avg_turn: "2.8" },
-      { card: "C00031_MB", deck_games: 5, deck_wins: 1, deck_players: 1, played_games: null, played_wins: null, played_players: null, avg_turn: null },
+      { card: "C00031_MB", deck_games: below, deck_wins: 0, deck_players: 1, played_games: null, played_wins: null, played_players: null, avg_turn: null },
     ]);
     assert.deepEqual(
       cardsRows.map((c) => [c.card, c.deck?.games ?? null, c.played?.avgTurn ?? null]),
@@ -269,7 +279,8 @@ describe("stats: soglie e letture", () => {
     assert.equal(S.parseListStats([{ list, legendary: "C00176_MC", games: 21, wins: 13, players: 3 }, { list: "x", legendary: null, games: 50, wins: 1, players: 9 }]).length, 1);
     assert.equal(S.parseArchetypeStats([{ archetype: "midrange", games: 21, wins: 13, players: 3 }, { archetype: "Mid Range", games: 21, wins: 13, players: 3 }]).length, 1);
     assert.equal(S.parseMatchupStats([{ legendary: "C00176_MC", opponent: "C00012_MC", games: 21, wins: 13, players: 3 }]).length, 1);
-    assert.equal(S.parseOpponentStats([{ opponent: "C00012_MC", games: 20, wins: 3, players: 2 }]).length, 0);
+    // un giocatore sotto la soglia del momento (2 al lancio; 0 con la soglia di prova)
+    assert.equal(S.parseOpponentStats([{ opponent: "C00012_MC", games: 20, wins: 3, players: S.TRACKER_STATS.minPlayers - 1 }]).length, 0);
   });
 });
 

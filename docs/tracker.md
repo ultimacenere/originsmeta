@@ -1,7 +1,10 @@
 # Tracker/overlay
 
 Guida tecnica del tracker di OriginsMeta (stato, decisioni e storia anche nella KB, §1 punto 46). Nome deciso da
-Pierluigi il 26/09/2026: il **tracker** registra le partite, l'**overlay** le mostra.
+Pierluigi il 26/09/2026: il **tracker** registra le partite, l'**overlay** le mostra. **Dal 01/10/2026 il nome pubblico
+è OriginsMeta Analytics** (Pierluigi: "chiamiamolo Analytics e non tracker"): app, finestra, menu dell'icona, overlay e
+testi del sito. Nel codice, negli indirizzi (`/account/tracker`, `/api/tracker/*`), nelle tabelle (`tracker_*`) e in
+questa guida resta "tracker".
 
 ## Cos'è
 
@@ -22,7 +25,7 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 | 0 | Verifiche: permesso, termini d'uso, partite di prova, scelta fra app e pagina web | fatta il 29/09/2026 |
 | 1 | Lettore dei file (cache + replay), funzioni pure con i test: `src/lib/tracker/` | fatta il 29/09/2026 |
 | 2 | App base in `tracker/` (Electron 44): icona nella barra, avvio con Windows, partite registrate da sola, storico sul PC | fatta il 29/09/2026 |
-| 3 | Collegamento al sito: codice → token, invio delle partite, tabella con RLS, `/account/tracker`, statistiche anonime (win rate) | fatta il 30/09/2026, **migrazione da lanciare** |
+| 3 | Collegamento al sito: codice → token, invio delle partite, tabella con RLS, `/account/tracker`, statistiche anonime (win rate) | fatta il 30/09/2026, online e migrata la notte del 01/10/2026, collegamento provato con l'account di Pierluigi |
 | 4 | Overlay: finestra sopra il gioco e sorgente per OBS (servita dall'app su 127.0.0.1) | fatta il 30/09/2026 |
 | 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, pagina per scaricare l'app, prova con pochi giocatori, lancio | da fare |
 
@@ -54,6 +57,17 @@ Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal
    cache veri, se ci sono) e una partita di prova.
 
 ## I file del gioco
+
+**Patch 0.7 (verificato la notte del 01/10/2026 sul PC di Pierluigi)**: il gioco **non scrive più il replay**. A fine
+partita cancella quello della partita prima e non ne crea uno nuovo (3 partite su 3 dal 30/09; cercato in Documenti,
+LocalLow, cartella del gioco e in tutto il profilo; `Player.log` non ne parla; negli annunci Steam non c'è). Le partite si
+registrano con esito, ora, coda e mazzo intero (bastano per i win rate di Leggendarie, liste, archetipi e carte nel
+mazzo); mancano carte giocate, Leggendaria e carte dell'avversario, round e rank, cioè scontri, Leggendarie incontrate e
+colonne "giocata" e "round medio". Pierluigi ne parla con Kevin di Koin; se i replay tornano l'app li rilegge da sola.
+Sempre con la 0.7 esito e id della partita arrivano nelle statistiche qualche secondo prima dell'ora di fine, che per un
+attimo resta quella della partita precedente: `watcher.ts` usa intanto l'ora in cui il gioco ha scritto l'esito e prende
+quella vera appena arriva (`refreshPending`, test in `watcher.test.ts`). Accanto al file delle statistiche la 0.7 ne
+scrive uno con le statistiche vuote (48 byte) e un `stats<uuid>.json` con `offlineDataList`: l'app li ignora.
 
 | File | Dove | Quando cambia | Cosa ci serve |
 |---|---|---|---|
@@ -161,13 +175,25 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
   dell'ultima partita è nuova, aspetta il replay fino a un minuto e registra la partita con il lettore, con la coda dal
   nome del replay e da `BattleMode`; senza replay la registra con esito e mazzo. Al primo avvio registra l'ultima
   partita solo se il suo replay è ancora lì. Cartelle del gioco in `paths.ts`.
-- `src/main/store.ts`: `%APPDATA%\OriginsMeta Tracker\matches.jsonl` (una partita per riga, v1 e v2) e `state.json`.
+- `src/main/store.ts`: `%APPDATA%\OriginsMeta Analytics\matches.jsonl` (una partita per riga, v1 e v2) e `state.json`.
+  Fino al 01/10/2026 la cartella era `OriginsMeta Tracker`: al primo avvio col nome nuovo `main.ts` ne copia i dati
+  (`moveOldData`: storico, stato, invii, collegamento, overlay; la cartella vecchia resta).
 - `src/main/account.ts`, `sync.ts`: collegamento e invio (sotto). `src/main/overlay.ts`: overlay (sotto).
 - `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra che si nasconde invece di chiudersi, una sola
   copia, "Avvia con Windows" spento di default, sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
   permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
 - `src/renderer/`: interfaccia EN/IT/ES con i pannelli "Account OriginsMeta" e "Overlay"; `src/overlay/`: la pagina
   dell'overlay; `src/preload/`: i due ponti (l'overlay può solo leggere i suoi dati).
+- **Grafica del sito (01/10/2026**, Pierluigi: "portiamo nell'app i nostri logo, le palette, i font" e "anche le
+  grafiche delle carte"): font Unbounded, Manrope e JetBrains Mono (`assets/fonts`, sottoinsieme latino preso dalla build
+  del sito, licenza OFL in `assets/fonts/OFL.txt`), il logo disegnato, i token e i pannelli `.card-night`, il bottone
+  primario col gradiente. Carte intere come `.card-tile` del sito: il mazzo scelto nel gioco in grande (Leggendaria
+  intera, numeri, le altre 12 carte), miniature delle Leggendarie in tabelle e partite, "Il tuo mazzo" in carte dentro
+  ogni partita; nell'overlay la Leggendaria del mazzo e, a partita finita, la miniatura di quella avversaria. Le
+  immagini arrivano da `originsmeta.com/cards/<slug>.webp` (le stesse del sito, non copiate nell'app; CSP con
+  `img-src` del sito; detto nel testo sulla privacy dell'app e nell'informativa), mai ritagliate: i crediti restano
+  visibili, gemma e stella stanno negli angoli in alto. Senza rete resta il nome dentro la cornice. Il server locale
+  dell'overlay serve anche logo e font (`overlayFile`).
 - Test: `npm test` in `tracker/` (27 test: watcher con la coda, storico con le v1, invio con una rete finta, token
   cifrato, dati dell'overlay e server locale), `npm run typecheck`.
 
@@ -214,7 +240,14 @@ sviluppo; `ORIGINSMETA_TRACKER_DATA` usa una cartella dati di prova.
 ## Statistiche anonime (win rate)
 
 Richiesta di Pierluigi del 30/09/2026: i win rate di mazzi e carte "sono molto importanti e dobbiamo averli". Le
-calcola il database, al momento, con funzioni `security definer` per anon che restituiscono **solo aggregati**:
+calcola il database, al momento, con funzioni `security definer` per anon che restituiscono **solo aggregati**.
+
+**Soglia di prova dal 01/10/2026** (Pierluigi: "togli il limite delle 20 partite per il momento, voglio vedere le
+statistiche sul sito, poi rimettiamo il limite"): 1 partita e 1 giocatore invece di 20 e 3, in `TRACKER_STATS` di
+`stats.ts` e in `tracker_stats_ok` del blocco TRACKER, con il solo account di Pierluigi collegato. La pagina Win rate lo
+dice (`testThresholds`, avviso "Soglia di prova"); l'informativa resta quella del lancio. **Da rimettere prima della
+build per i tester**: `TRACKER_STATS` uguale a `TRACKER_STATS_LAUNCH` (20 e 3) e `tracker_stats_ok` con 20 e 3, poi
+migrazione; i test e la prova a secco seguono la soglia scritta nello schema.
 
 | Funzione | Numeri (per una patch) |
 |---|---|

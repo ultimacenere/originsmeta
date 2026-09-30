@@ -479,6 +479,7 @@ export const es: Dictionary = {
       empty:
         "Todavía no hay win rate: los números salen de las partidas registradas con OriginsMeta Analytics, la app de OriginsMeta para Windows, ahora en pruebas. Cada número aparece aquí cuando viene de al menos 20 partidas de al menos 3 jugadores.",
       fallback: "El parche en curso ({current}) todavía no tiene suficientes partidas: estos son los números del parche {patch}.",
+      testThreshold: "Umbral de prueba: por ahora los números se ven desde una sola partida, para probar la página. En el lanzamiento cada número volverá a necesitar al menos 20 partidas de al menos 3 jugadores.",
       early: "primeras estimaciones",
       earlyTitle: "Menos de 100 partidas: una primera estimación",
       games: "{n} partidas",

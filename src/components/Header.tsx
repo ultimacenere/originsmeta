@@ -8,10 +8,23 @@ import { NavLink } from "./NavLink";
 import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 
-export function navItems(dict: Dictionary): { label: string; path: string }[] {
+type NavItem = { label: string; path: string; sub?: { label: string; path: string }[] };
+
+export function navItems(dict: Dictionary): NavItem[] {
+  const t = dict.tier;
   return [
     { label: dict.nav.news, path: "/news" },
-    { label: dict.nav.tierList, path: "/tier-list" },
+    {
+      label: dict.nav.tierList,
+      path: "/tier-list",
+      // sottomenu del menu desktop (01/10/2026, Pierluigi): le quattro tier list, come le schede di TierListHeader
+      sub: [
+        { label: t.sourceOfficial, path: "/tier-list" },
+        { label: t.sourceCommunity, path: "/tier-list/community" },
+        { label: t.sourcePlayed, path: "/tier-list/most-played" },
+        { label: t.sourceWinrate, path: "/tier-list/win-rate" },
+      ],
+    },
     { label: dict.nav.guides, path: "/guides" },
     { label: dict.nav.cards, path: "/cards" },
     { label: dict.nav.decks, path: "/decks" },
@@ -47,11 +60,27 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         </Link>
         {/* voce della pagina corrente: aria-current="page"; aspetto (riposo, passaggio, attiva) tutto in .nav-link */}
         <nav className="ml-1 hidden shrink-0 items-center gap-0.5 xl:flex" aria-label={dict.nav.mainNav}>
-          {items.map((it) => (
-            <NavLink key={it.path} href={href(locale, it.path)}>
-              {it.label}
-            </NavLink>
-          ))}
+          {items.map((it) =>
+            it.sub ? (
+              // sottomenu al passaggio del mouse e col fuoco da tastiera, solo CSS (.nav-drop): l'header resta statico
+              <div key={it.path} className="nav-drop">
+                <NavLink href={href(locale, it.path)}>{it.label}</NavLink>
+                <div className="nav-drop-panel">
+                  <div className="nav-drop-box" role="group" aria-label={it.label}>
+                    {it.sub.map((s) => (
+                      <NavLink key={s.path} href={href(locale, s.path)} exact className="nav-link-block">
+                        {s.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <NavLink key={it.path} href={href(locale, it.path)}>
+                {it.label}
+              </NavLink>
+            ),
+          )}
         </nav>
         <form action={href(locale, "/cards")} method="get" role="search" className="ml-auto hidden items-stretch md:flex">
           <label htmlFor="header-card-search" className="sr-only">

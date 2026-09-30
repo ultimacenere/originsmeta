@@ -4807,9 +4807,12 @@ grant execute on function public.tracker_forget() to authenticated;
 
 -- ---------- statistiche anonime (sito, anon) ----------
 -- Soglia di ogni numero: almeno 20 partite di almeno 3 giocatori diversi (TRACKER_STATS di src/lib/tracker/stats.ts).
+-- TEMPORANEO dal 01/10/2026: soglia 1 partita e 1 giocatore per le prove di Pierluigi ("togli il limite delle 20 partite
+-- per il momento"), con il solo suo account collegato. Al lancio 20 e 3, come TRACKER_STATS_LAUNCH di stats.ts e
+-- l'informativa: si rimette qui e in TRACKER_STATS, poi migrazione.
 create or replace function public.tracker_stats_ok(games bigint, players bigint)
 returns boolean language sql immutable set search_path = public, pg_temp as $$
-  select coalesce(games >= 20 and players >= 3, false);
+  select coalesce(games >= 1 and players >= 1, false);
 $$;
 
 -- La coda che conta nelle statistiche: null = tutte le partite (Pierluigi, 30/09/2026: "per ora contano tutte"); con

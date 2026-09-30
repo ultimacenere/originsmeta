@@ -1,6 +1,7 @@
-# OriginsMeta Tracker
+# OriginsMeta Analytics (cartella `tracker/`)
 
-App desktop per Windows che registra da sola le partite di Origins TCG leggendo, in sola lettura, i file che il gioco
+Fino al 01/10/2026 si chiamava OriginsMeta Tracker (Pierluigi: "chiamiamolo Analytics e non tracker"): il nome cambia
+dove si vede, nel codice resta "tracker". App desktop per Windows che registra da sola le partite di Origins TCG leggendo, in sola lettura, i file che il gioco
 salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, collegamento, statistiche, overlay):
 [`../docs/tracker.md`](../docs/tracker.md).
 
@@ -10,7 +11,9 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a un minuto) e salva la partita:
   esito, coda (classificata o normale, non mostrata), mazzo con nome e codice del gioco, rank, Leggendaria
   dell'avversario, carte giocate round per round.
-- Storico sul PC in `%APPDATA%\OriginsMeta Tracker\` (`matches.jsonl`, `state.json`).
+- Storico sul PC in `%APPDATA%\OriginsMeta Analytics\` (`matches.jsonl`, `state.json`; al primo avvio col nome nuovo
+  copiati da `%APPDATA%\OriginsMeta Tracker\`).
+- Grafica del sito (01/10/2026): font, logo e carte intere con le immagini di originsmeta.com (vedi docs/tracker.md).
 - **Account OriginsMeta** (Fase 3): con il codice creato su originsmeta.com/account/tracker l'app si collega
   all'account (token cifrato con la protezione dei dati di Windows in `account.json`) e manda le partite al sito
   (`sync.json` tiene quelle già mandate): dell'avversario solo la Leggendaria e le carte che ha giocato. Le partite di

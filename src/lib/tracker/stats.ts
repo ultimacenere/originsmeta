@@ -3,8 +3,9 @@
  * importanti e dobbiamo averli"). I numeri li calcola il database (funzioni tracker_stats_* del blocco TRACKER di
  * supabase/schema.sql, security definer per anon): qui ci sono le soglie, le etichette e la lettura delle risposte.
  *
- * - Ogni numero si mostra solo sopra la soglia: almeno 20 partite di almeno 3 giocatori diversi (`TRACKER_STATS`,
- *   uguale a `tracker_stats_ok`: un test li confronta), e si mostra appena la supera (decisione di Pierluigi). Finché
+ * - Ogni numero si mostra solo sopra la soglia: al lancio almeno 20 partite di almeno 3 giocatori diversi
+ *   (`TRACKER_STATS_LAUNCH`; dal 01/10/2026 abbassata per le prove, vedi `TRACKER_STATS`), uguale a `tracker_stats_ok`
+ *   (un test li confronta), e si mostra appena la supera (decisione di Pierluigi). Finché
  *   un numero ha meno di 100 partite porta l'etichetta "prime stime" (`isEarly`).
  * - Per patch: la patch in vigore alla fine della partita (`patchAt` di cards.ts, calcolata dal sito all'invio). Mai
  *   somme di più patch o di più code (lo dice il blocco SQL): il totale meno una parte svelerebbe l'altra sotto soglia.
@@ -16,11 +17,19 @@
  */
 import { ARCHETYPE_RE, KEY_RE } from "./upload";
 
+/** Le soglie del lancio, quelle scritte nell'informativa (/privacy#tracker): almeno 20 partite di almeno 3 giocatori. */
+export const TRACKER_STATS_LAUNCH = { minGames: 20, minPlayers: 3 } as const;
+
 export const TRACKER_STATS = {
-  /** partite minime di ogni numero */
-  minGames: 20,
-  /** giocatori diversi minimi di ogni numero */
-  minPlayers: 3,
+  /**
+   * partite minime di ogni numero. TEMPORANEO dal 01/10/2026: 1 invece di 20 (Pierluigi: "togli il limite delle 20
+   * partite per il momento, voglio vedere le statistiche sul sito, poi rimettiamo il limite"), con il solo account di
+   * Pierluigi collegato. Da rimettere a `TRACKER_STATS_LAUNCH`, insieme a `tracker_stats_ok` nel database (blocco
+   * TRACKER di supabase/schema.sql, poi migrazione), prima della build per i tester.
+   */
+  minGames: 1,
+  /** giocatori diversi minimi di ogni numero (TEMPORANEO: 1 invece di 3, come sopra) */
+  minPlayers: 1,
   /** sotto questo numero di partite il numero è una "prima stima" */
   earlyBelow: 100,
   /** coda contata: null = tutte le partite (tracker_stats_queue) */
@@ -32,6 +41,8 @@ export const LIST_SIZE = 13;
 export const LIST_RE = /^(C[0-9]{5}_[A-Z]{2},){12}C[0-9]{5}_[A-Z]{2}$/;
 
 export const passesThreshold = (games: number, players: number) => games >= TRACKER_STATS.minGames && players >= TRACKER_STATS.minPlayers;
+/** true finché le soglie stanno sotto quelle del lancio: la pagina Win rate lo dice ("soglia di prova"). */
+export const testThresholds = TRACKER_STATS.minGames < TRACKER_STATS_LAUNCH.minGames || TRACKER_STATS.minPlayers < TRACKER_STATS_LAUNCH.minPlayers;
 export const isEarly = (games: number) => games < TRACKER_STATS.earlyBelow;
 /** Quota di vittorie fra 0 e 1, null senza partite. */
 export const winRate = (wins: number, games: number): number | null => (games > 0 ? wins / games : null);

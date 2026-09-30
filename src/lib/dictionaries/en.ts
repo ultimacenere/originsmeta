@@ -482,6 +482,7 @@ export const en = {
         "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows, which is being tested. Each number shows up here once it comes from at least 20 games by at least 3 players.",
       /* {current} = the patch in progress, {patch} = the one shown */
       fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
+      testThreshold: "Test threshold: for now the numbers show from a single game, to check the page. At launch each number needs at least 20 games by at least 3 players again.",
       early: "early estimates",
       earlyTitle: "Fewer than 100 games: an early estimate",
       games: "{n} games",

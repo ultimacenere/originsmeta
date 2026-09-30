@@ -168,7 +168,10 @@ try {
   const leg = (await attempt("select * from public.tracker_stats_legendaries($1)", [PATCH])).rows ?? [];
   const A = leg.find((r) => r.legendary === "C00176_MC");
   check("Leggendaria sopra soglia: 20 partite, 12 vinte, 3 giocatori", A && Number(A.games) === 20 && Number(A.wins) === 12 && Number(A.players) === 3, JSON.stringify(A));
-  check("sotto soglia (2 giocatori, 19 partite): nascoste", !leg.some((r) => r.legendary !== "C00176_MC"), JSON.stringify(leg.map((r) => r.legendary)));
+  // la soglia dello schema: 20 e 3 al lancio, 1 e 1 con la soglia di prova del 01/10/2026 (tracker_stats_ok)
+  const [minGames, minPlayers] = (/games >= (\d+) and players >= (\d+)/.exec(sql.slice(sql.indexOf("function public.tracker_stats_ok"))) ?? []).slice(1).map(Number);
+  if (minGames >= 20 && minPlayers >= 3) check("sotto soglia (2 giocatori, 19 partite): nascoste", !leg.some((r) => r.legendary !== "C00176_MC"), JSON.stringify(leg.map((r) => r.legendary)));
+  else check(`soglia di prova (${minGames} partite, ${minPlayers} giocatori): si vedono anche le Leggendarie con meno partite`, leg.some((r) => r.legendary !== "C00176_MC"), JSON.stringify(leg.map((r) => r.legendary)));
   check("nessuna colonna con proprietari o id", leg.length > 0 && Object.keys(leg[0]).join(",") === "legendary,games,wins,players");
   const ov = (await attempt("select * from public.tracker_stats_overview($1)", [PATCH])).rows?.[0];
   check("panoramica: 64 partite di 4 giocatori", ov && Number(ov.games) === 64 && Number(ov.players) === 4, JSON.stringify(ov));
