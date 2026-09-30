@@ -104,3 +104,34 @@ export function announceDeck(slug: string): void {
     void job();
   }
 }
+
+const GOLD = 0xf2d23c;
+
+/**
+ * Mazzo della settimana (30/09/2026): lo stesso messaggio di un mazzo nuovo, con l'intestazione della settimana, il colore
+ * oro e la sua campagna UTM. Lo manda il cron del lunedì (/api/cron/deck-of-the-week) nello stesso canale.
+ */
+export function deckOfWeekPayload(d: AnnouncedDeck): DiscordWebhookPayload {
+  const base = deckPayload(d);
+  const utm = discordUtm("deck-of-the-week", "community-decks");
+  const swap = (u?: string) => (u ? u.replace(UTM, utm) : u);
+  const embed = base.embeds?.[0];
+  return {
+    content: "🏆 **Mazzo della settimana · Deck of the week · Mazo de la semana**",
+    embeds: embed
+      ? [
+          {
+            ...embed,
+            url: swap(embed.url),
+            fields: embed.fields?.map((f) => ({ ...f, value: f.value.replace(UTM, utm) })),
+            color: GOLD,
+          },
+        ]
+      : [],
+  };
+}
+
+/** Il mazzo della settimana come lo vede chiunque, per l'annuncio: null se nel frattempo non è più pubblico. */
+export async function readAnnouncedDeck(slug: string): Promise<AnnouncedDeck | null> {
+  return readPublished(slug);
+}

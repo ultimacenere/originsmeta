@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { deckPeekOf, sharedPeeks } from "@/lib/cardPeek";
@@ -215,6 +215,13 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
   /* Ordine di partenza: dal più recente al più vecchio (Pierluigi, 23/09/2026). Prima i mazzi erano ordinati per
      voto medio, e con due soli voti la classifica diceva poco; chi arriva vuole vedere l'ultimo mazzo uscito. */
   const [sort, setSort] = useState<SortKey>("new");
+  /* ?sort=trending|saved|rated (30/09/2026: il link "Mazzi di tendenza" della home): letto dopo l'idratazione, la pagina resta statica */
+  useEffect(() => {
+    const v = toSortKey(new URLSearchParams(window.location.search).get("sort") ?? "");
+    if (v === "rated" || (v === "trending" && labels.sortTrending) || (v === "saved" && labels.sortSaved))
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSort(v);
+  }, [labels.sortTrending, labels.sortSaved]);
   const firstFilter = useRef<HTMLSelectElement>(null);
 
   const legendaries = useMemo(() => Array.from(new Map(decks.filter((d) => d.legendary).map((d) => [d.legendary!.slug, d.legendary!.name])).entries()), [decks]);

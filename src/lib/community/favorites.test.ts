@@ -103,3 +103,29 @@ describe("etichette di Salva", () => {
     for (const l of ["it", "es"] as const) assert.deepEqual(keys(L.favoriteLabels[l]), keys(L.favoriteLabels.en), l);
   });
 });
+
+describe("mazzo della settimana", async () => {
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+  const W: typeof import("./deckOfWeek") = await import("./deckOfWeek.ts");
+  test("il punteggio più alto sopra la soglia, a pari merito salvataggi e poi il più recente", () => {
+    const min = W.DECK_OF_WEEK_MIN_SCORE;
+    const decks = [
+      { id: "a", created_at: "2026-09-10", trend: min + 10, favorites: 1 },
+      { id: "b", created_at: "2026-09-20", trend: min + 10, favorites: 3 },
+      { id: "c", created_at: "2026-09-29", trend: min + 1 },
+    ];
+    assert.equal(W.pickDeckOfWeek(decks)?.id, "b");
+    assert.equal(W.pickDeckOfWeek([{ id: "x", created_at: "2026-09-29", trend: min - 0.1 }]), null);
+    assert.equal(W.pickDeckOfWeek([]), null);
+  });
+  test("il cron del lunedì è registrato in vercel.json", () => {
+    const cfg = JSON.parse(read("../../../vercel.json")) as { crons: { path: string; schedule: string }[] };
+    assert.ok(cfg.crons.some((c) => c.path === "/api/cron/deck-of-the-week" && /\* \* 1$/.test(c.schedule)));
+  });
+  test("testi nelle tre lingue con gli stessi segnaposto", () => {
+    for (const l of ["it", "es"] as const) {
+      assert.deepEqual(Object.keys(W.deckOfWeekLabels[l]), Object.keys(W.deckOfWeekLabels.en));
+      assert.match(W.deckOfWeekLabels[l].by, /\{author\}/);
+    }
+  });
+});

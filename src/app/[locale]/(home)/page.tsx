@@ -27,6 +27,10 @@ import { fillLabel } from "@/lib/community/deckQuality";
 import { authorName } from "@/lib/community/util";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { comicLabels } from "@/lib/comicLabels";
+import { listDeckPopularity, listPublishedDecks } from "@/lib/community/queries";
+import { deckOfWeekLabels, pickDeckOfWeek } from "@/lib/community/deckOfWeek";
+import { getCard } from "@/lib/data/cards";
+import { CardArt } from "@/components/CardChip";
 
 /**
  * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
@@ -131,6 +135,14 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const startGuides = START_GUIDES.map((s) => getGuide(locale, s)).filter((g): g is Guide => g !== undefined);
   const economyGuide = getGuide(locale, "collector-economy");
   // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, sei in bacheca
+  // Mazzo della settimana (30/09/2026): il più "Di tendenza" degli ultimi 7 giorni; niente striscia senza la migrazione
+  // PREFERITI E TENDENZA o con una settimana ferma (soglia in deckOfWeek.ts)
+  const popularity = supabaseEnabled ? await listDeckPopularity() : null;
+  const deckOfWeek = popularity
+    ? pickDeckOfWeek((await listPublishedDecks()).map((dk) => ({ ...dk, trend: popularity.get(dk.id)?.trend ?? 0, favorites: popularity.get(dk.id)?.favorites ?? 0 })))
+    : null;
+  const dow = deckOfWeekLabels[locale];
+  const dowLegendary = deckOfWeek?.legendary ? getCard(deckOfWeek.legendary) : undefined;
   const feed = mergeFeed(sortedNews, comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
   const featured = feed.slice(0, 3);
   const board = feed.slice(3, 9);
@@ -421,6 +433,45 @@ export default async function Home({ params }: { params: LocaleParams }) {
               {d.tier.trackerTitle} →
             </Link>
           </section>
+
+          {/* Mazzo della settimana (30/09/2026): stessa striscia di tier list e MetaShifting, post-it rosa ruotato come la
+              tier list ma dall'altro verso. Il lunedì lo stesso mazzo va su Discord (/api/cron/deck-of-the-week). */}
+          {deckOfWeek ? (
+            <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-deck-week" data-om-placement="home_deck_week">
+              <h2 id="home-deck-week" className="strip-postit strip-postit-pink" style={{ "--tilt": "3deg", "--scrawl": "2deg" } as CSSProperties}>
+                <span className="strip-postit-text" aria-hidden="true">
+                  {dow.postit} DECK
+                </span>
+                <span className="sr-only">{dow.title}</span>
+              </h2>
+              {dowLegendary ? (
+                <Link href={href(locale, `/decks/community/${deckOfWeek.slug}`)} className="shrink-0" tabIndex={-1} aria-hidden="true">
+                  <CardArt card={dowLegendary} className="!h-[84px] !w-[60px]" />
+                </Link>
+              ) : null}
+              <div className="min-w-[220px] flex-1">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">{dow.title}</span>
+                <p className="t-item mt-1 leading-tight">
+                  <Link href={href(locale, `/decks/community/${deckOfWeek.slug}`)} className="hover:text-mint hover:underline">
+                    {deckOfWeek.name}
+                  </Link>
+                </p>
+                <p className="mt-1 text-xs text-pale-muted">
+                  {dowLegendary ? `★ ${dowLegendary.name} · ` : ""}
+                  {fillLabel(dow.by, { author: authorName(deckOfWeek.profile) })}
+                </p>
+                <p className="mt-1 text-xs text-pale-muted">{dow.sub}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href={href(locale, `/decks/community/${deckOfWeek.slug}`)} className="btn btn-primary text-xs">
+                  {dow.open} →
+                </Link>
+                <Link href={`${href(locale, "/decks")}?sort=trending`} className="btn btn-ghost text-xs">
+                  {dow.all}
+                </Link>
+              </div>
+            </section>
+          ) : null}
         </div>
 
         {/* Bacheca news (patch note comprese) */}

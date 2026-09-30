@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES } from "@/lib/deckrules";
@@ -72,16 +72,16 @@ export function DeckCompare({ catalog, labels, locale }: { catalog: CompareCatal
     });
 
   /* precompilazione da ?a= e ?b= (una volta, dopo il montaggio: la pagina resta statica) */
-  const [prefilled, setPrefilled] = useState(false);
+  const prefilled = useRef(false);
   useEffect(() => {
-    if (prefilled) return;
-    setPrefilled(true);
+    if (prefilled.current) return;
+    prefilled.current = true;
     const q = new URLSearchParams(window.location.search);
     const a = (q.get("a") ?? "").slice(0, 400);
     const b = (q.get("b") ?? "").slice(0, 400);
     if (a || b) run([a, b]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefilled]);
+  }, []);
 
   const setInput = (i: 0 | 1, v: string) => setSides((s) => s.map((x, j) => (j === i ? { ...x, input: v } : x)) as [Side, Side]);
   const [A, B] = sides;
