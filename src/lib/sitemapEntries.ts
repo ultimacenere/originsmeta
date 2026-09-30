@@ -191,6 +191,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/decks", section: "pages", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity] },
     // Il pool del deck builder segue le carte: patch e verifica sul gioco.
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
+    // Confronto fra due mazzi (30/09/2026): pagina statica, solo la data del modello
+    { path: "/decks/compare", section: "pages", route: "/decks/compare", dates: [] },
     // Guide editoriali e, dal 29/09/2026, le guide della community indicizzabili nella lingua: la pagina le mostra tutte in
     // un elenco solo, nell'HTML (ISR; Pierluigi: niente divisione fra guide ufficiali e della community).
     { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.hub[l]] },

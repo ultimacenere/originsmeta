@@ -13,6 +13,7 @@ import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listDeckPopularity, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { favoriteLabels } from "@/lib/favoriteLabels";
+import { deckCompareLabels } from "@/lib/deckCompareLabels";
 import { deckCardsDate, deckCardsDiff, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
@@ -463,6 +464,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           {/* misura (src/lib/analytics.ts): gli attributi data-om-* li legge l'ascoltatore dei clic, anche qui nel componente server */}
           <Link href={builderHref} className="btn btn-ink text-xs" data-om-event="deck_open_builder" data-om-placement="deck_page">
             {c.openInBuilder}
+          </Link>
+          {/* confronto con un altro mazzo (30/09/2026): questo mazzo come primo, il secondo lo sceglie chi legge */}
+          <Link href={`${href(locale, "/decks/compare")}?a=${deck.slug}`} className="btn btn-ink text-xs" rel="nofollow">
+            {deckCompareLabels[locale].compareCta}
           </Link>
           {gameCode.code ? (
             <CopyButton
