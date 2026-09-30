@@ -59,10 +59,10 @@ export const PAGE_UPDATED = {
   "/decks/[slug]": "2026-09-27", // ruoli del 27/09: "Pubblicato da" al posto di "Autore"; 63fa759
   "/decks/community/[slug]": "2026-09-27", // ruoli del 27/09: pastiglia Creator/Autore accanto al nome, "chi ha pubblicato il mazzo" nelle note della guida e delle risorse; CREATOR: ruolo, canali e LIVE accanto al nome; VIDEO: lettore a clic e risorse; STREAM: menu "Per le dirette" e og:image dalla lista del mazzo; Ondata 2: soglia di qualità, JSON-LD di autore e carte, altri mazzi per Leggendaria
   "/deck-builder": "2026-09-30", // 30/09: nota dati con la patch 0.7, uscita dopo la verifica sul gioco; Ondata 2: WebApplication nei dati strutturati
-  "/tier-list": "2026-09-27", // ruoli del 27/09: pastiglia Creator/Autore accanto al nome nei mazzi più votati; Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
-  "/tier-list/community": "2026-09-29", // 29/09: testi in fondo, un solo link verso la tier list di OriginsMeta; ruoli del 27/09 nelle tier list firmate; Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
-  "/tier-list/most-played": "2026-09-25", // Ondata 2: ItemList delle carte più giocate
-  "/tier-list/create": "2026-09-25", // Ondata 1: H1
+  "/tier-list": "2026-09-30", // 30/09: quarta scheda "Win rate" nella testata; ruoli del 27/09: pastiglia Creator/Autore accanto al nome nei mazzi più votati; Ondata 3: mazzi più votati solo fra le schede indicizzabili; Ondata 1: In breve dai dati
+  "/tier-list/community": "2026-09-30", // 30/09: quarta scheda "Win rate" nella testata; 29/09: testi in fondo, un solo link verso la tier list di OriginsMeta; ruoli del 27/09 nelle tier list firmate; Ondata 3: tier list firmate; Ondata 2: ItemList delle carte
+  "/tier-list/most-played": "2026-09-30", // 30/09: quarta scheda "Win rate" nella testata; Ondata 2: ItemList delle carte più giocate
+  "/tier-list/create": "2026-09-30", // 30/09: quarta scheda "Win rate" nella testata; Ondata 1: H1
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
   "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id

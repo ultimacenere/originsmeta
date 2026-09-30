@@ -405,6 +405,11 @@ export const en = {
     /* static state for pages that do not read the database (the maker) */
     sourceCommunityHint: "members' average",
     sourcePlayedHint: "from the site's decks",
+    /* Win rate (30/09/2026): the games recorded with the OriginsMeta Tracker app (docs/tracker.md) */
+    sourceWinrate: "Win rate",
+    sourceWinrateSoon: "coming soon",
+    sourceWinrateGames: "{n} games",
+    sourceWinrateHint: "from the tracker app",
     onThisPage: "On this page",
     /* the line under the tabs: where the ranking comes from and how much it knows */
     lineSource: "Source",
@@ -464,6 +469,49 @@ export const en = {
       showAll: "Show the other {n}",
       unused: "In no published deck",
       noDecks: "No deck published yet: publish the first one from the deck builder.",
+    },
+    /* Win rate (30/09/2026, Pierluigi: win rates "are very important and we must have them"): only anonymous totals of the
+       games recorded with OriginsMeta Tracker, each number from at least 20 games by at least 3 players (stats.ts) */
+    winrate: {
+      title: "Origins TCG win rates by Legendary, deck and card",
+      h1: "Win rates: Legendaries, decks and cards",
+      description: "Origins TCG win rates from the games recorded with the OriginsMeta Tracker app: Legendaries, community decks, archetypes and cards, patch by patch.",
+      intro:
+        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Tracker, our Windows app (being tested). Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
+      empty:
+        "No win rates yet: the numbers come from the games recorded with OriginsMeta Tracker, the OriginsMeta app for Windows, which is being tested. Each number shows up here once it comes from at least 20 games by at least 3 players.",
+      /* {current} = the patch in progress, {patch} = the one shown */
+      fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
+      early: "early estimates",
+      earlyTitle: "Fewer than 100 games: an early estimate",
+      games: "{n} games",
+      /* {p} = percentage */
+      winsAgainst: "{p} won against it",
+      /* under the share of games of the most faced Legendaries */
+      shareNote: "of games",
+      vs: "vs",
+      showAll: "Show all {n}",
+      noneYet: "No number above the threshold yet.",
+      sourceText: "games recorded with OriginsMeta Tracker, patch {patch}",
+      sampleText: "{games} games by {players} players",
+      measureText: "games won out of games played, from the side of whoever records them",
+      notes: [
+        "Only the decks of whoever records count: the opponent's deck is never counted, and the same game counts once.",
+        "Per patch: the one in force when the game ended. Numbers from different patches are never added up.",
+        "For now all games count, normal and ranked; with many more players, only ranked games will.",
+        "Totals only: never names, single games or who played them.",
+      ],
+      sections: {
+        legendaries: { title: "Legendaries", text: "Win rate of the decks built around each Legendary." },
+        decks: { title: "Community decks", text: "Decks published on OriginsMeta, when someone plays their exact 13 cards." },
+        archetypes: { title: "Archetypes", text: "Win rate by archetype, with the same rules as the deck publishing form." },
+        cards: { title: "Cards", text: "For each card: win rate of the games with the card in the deck and of those in which it was played, and the average round of its first play." },
+        matchups: { title: "Matchups", text: "Win rate of one Legendary against another, from the side of whoever records." },
+        opponents: { title: "Most faced Legendaries", text: "How often each Legendary shows up on the other side, and the win rate against it." },
+      },
+      cols: { card: "Card", inDeck: "In the deck", played: "When played", avgRound: "Avg. round" },
+      /* box on the community deck pages, only when the deck's exact list passes the threshold */
+      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} games · patch {patch}", link: "All win rates" },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */
     explorer: {

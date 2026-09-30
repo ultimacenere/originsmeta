@@ -12,9 +12,11 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
  * Dal 29/09/2026 (Pierluigi: i testi "ci creano un problema dal punto di vista della navigabilità") fra l'H1 e le
  * schede non c'è più l'introduzione: ogni pagina la mette in fondo (`PageNotes`), con "In breve", la riga della fonte
  * (`TierSourceLine`) e che cosa contiene ogni sezione (`TierSectionNotes`).
+ * Dal 30/09/2026 la quarta scheda, "Win rate" (/tier-list/win-rate: le partite registrate con OriginsMeta Tracker,
+ * decisione di Pierluigi "fai 1 e 2"); sotto i 640 px le schede stanno due per riga.
  */
 
-export type TierSource = "official" | "community" | "played" | "create";
+export type TierSource = "official" | "community" | "played" | "winrate" | "create";
 
 export function TierListHeader({
   locale,
@@ -28,8 +30,8 @@ export function TierListHeader({
   dict: Dictionary;
   current: TierSource;
   title: string;
-  /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "14 mazzi" */
-  state: { official: string; community: string; played: string };
+  /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "14 mazzi", "in arrivo" */
+  state: { official: string; community: string; played: string; winrate: string };
   /** indice della pagina: ancore e conteggi delle sezioni */
   sections?: { id: string; label: string; count?: number }[];
 }) {
@@ -38,6 +40,7 @@ export function TierListHeader({
     { id: "official", label: t.sourceOfficial, path: "/tier-list" },
     { id: "community", label: t.sourceCommunity, path: "/tier-list/community" },
     { id: "played", label: t.sourcePlayed, path: "/tier-list/most-played" },
+    { id: "winrate", label: t.sourceWinrate, path: "/tier-list/win-rate" },
   ];
   return (
     <>
@@ -52,7 +55,7 @@ export function TierListHeader({
               key={s.id}
               href={href(locale, s.path)}
               aria-current={on ? "page" : undefined}
-              className={`tier-src min-w-0 flex-1 basis-0 sm:flex-none sm:basis-auto ${on ? "is-on" : ""}`}
+              className={`tier-src min-w-0 flex-1 basis-[calc(50%-0.25rem)] sm:flex-none sm:basis-auto ${on ? "is-on" : ""}`}
             >
               <span className="tier-src-name">{s.label}</span>
               {state[s.id] ? <span className="tier-src-state">{state[s.id]}</span> : null}

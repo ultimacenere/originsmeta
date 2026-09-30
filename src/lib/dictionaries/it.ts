@@ -398,6 +398,11 @@ export const it: Dictionary = {
     /* stato fisso per le pagine che non leggono il database (il tool) */
     sourceCommunityHint: "media degli iscritti",
     sourcePlayedHint: "dai mazzi del sito",
+    /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Tracker (docs/tracker.md) */
+    sourceWinrate: "Win rate",
+    sourceWinrateSoon: "in arrivo",
+    sourceWinrateGames: "{n} partite",
+    sourceWinrateHint: "dall'app del tracker",
     onThisPage: "In questa pagina",
     /* la riga sotto le schede: da dove viene la classifica e quanto sa */
     lineSource: "Fonte",
@@ -456,6 +461,44 @@ export const it: Dictionary = {
       showAll: "Mostra le altre {n}",
       unused: "In nessun mazzo pubblicato",
       noDecks: "Nessun mazzo pubblicato: pubblica il primo dal deck builder.",
+    },
+    /* Win rate (30/09/2026): vedi en.ts */
+    winrate: {
+      title: "Win rate di Origins TCG: Leggendarie, mazzi e carte",
+      h1: "Win rate: Leggendarie, mazzi e carte",
+      description: "I win rate di Origins TCG dalle partite registrate con l'app OriginsMeta Tracker: Leggendarie, mazzi della community, archetipi e carte, patch per patch.",
+      intro:
+        "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Tracker, la nostra app per Windows (in prova). Ogni numero viene da almeno 20 partite di almeno 3 giocatori diversi e compare appena ci arriva; sotto le 100 partite è una prima stima.",
+      empty:
+        "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Tracker, l'app per Windows di OriginsMeta, oggi in prova. Ogni numero compare qui quando viene da almeno 20 partite di almeno 3 giocatori.",
+      fallback: "La patch in corso ({current}) non ha ancora abbastanza partite: questi sono i numeri della patch {patch}.",
+      early: "prime stime",
+      earlyTitle: "Meno di 100 partite: una prima stima",
+      games: "{n} partite",
+      winsAgainst: "{p} vinte contro",
+      shareNote: "delle partite",
+      vs: "contro",
+      showAll: "Mostra tutte ({n})",
+      noneYet: "Ancora nessun numero sopra la soglia.",
+      sourceText: "partite registrate con OriginsMeta Tracker, patch {patch}",
+      sampleText: "{games} partite di {players} giocatori",
+      measureText: "partite vinte su partite giocate, dal lato di chi le registra",
+      notes: [
+        "Contano solo i mazzi di chi registra: il mazzo dell'avversario non si conta mai, e la stessa partita conta una volta.",
+        "Per patch: quella in vigore alla fine della partita. I numeri di patch diverse non si sommano mai.",
+        "Per ora contano tutte le partite, normali e classificate; con molti più giocatori conteranno solo le classificate.",
+        "Solo totali: mai nomi, singole partite né chi le ha giocate.",
+      ],
+      sections: {
+        legendaries: { title: "Leggendarie", text: "Win rate dei mazzi costruiti attorno a ogni Leggendaria." },
+        decks: { title: "Mazzi della community", text: "I mazzi pubblicati su OriginsMeta, quando qualcuno gioca le loro stesse 13 carte." },
+        archetypes: { title: "Archetipi", text: "Win rate per archetipo, con le stesse regole del modulo di pubblicazione dei mazzi." },
+        cards: { title: "Carte", text: "Per ogni carta: win rate delle partite con la carta nel mazzo e di quelle in cui è stata giocata, e il round medio della sua prima giocata." },
+        matchups: { title: "Scontri", text: "Win rate di una Leggendaria contro un'altra, dal lato di chi registra." },
+        opponents: { title: "Leggendarie più incontrate", text: "Quanto spesso ogni Leggendaria compare dall'altra parte, e il win rate contro di lei." },
+      },
+      cols: { card: "Carta", inDeck: "Nel mazzo", played: "Giocata", avgRound: "Round medio" },
+      deckBox: { title: "Win rate nelle partite registrate", text: "{rate} su {games} partite · patch {patch}", link: "Tutti i win rate" },
     },
     /* Griglia, elenco, tabella e dettaglio della carta (componente client TierExplorer) */
     explorer: {

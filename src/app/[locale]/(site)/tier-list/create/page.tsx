@@ -157,6 +157,7 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
             : d.tier.sourceOfficialSoon,
           community: d.tier.sourceCommunityHint,
           played: d.tier.sourcePlayedHint,
+          winrate: d.tier.sourceWinrateHint,
         }}
       />
 

@@ -239,28 +239,39 @@ calcola il database, al momento, con funzioni `security definer` per anon che re
   OriginsMeta con lo stesso account di gioco conta una volta), nessun collegamento fra utenti. Una partita fra due
   giocatori che tracciano conta due volte, una per lato, ognuna con il suo mazzo.
 - Una partita cancellata (`tracker_forget`, account eliminato) esce subito dai numeri.
-- Lettura dal sito: `readTrackerStats(patch)` di `src/lib/community/trackerStatsQueries.ts` (client pubblico, cache di
-  60 s), che ricontrolla le risposte con `stats.ts`. Oggi nessuna pagina la usa: vedi la proposta qui sotto.
+- Lettura dal sito: `src/lib/community/trackerStatsQueries.ts` (`readWinrate` per la pagina, `readWinrateGames` per lo
+  stato della scheda, `readDeckWinrate` per il riquadro dei mazzi), che ricontrolla le risposte con `stats.ts`. Le
+  chiamate sono POST (RPC): la data cache di Next le tiene solo con `cache: "force-cache"`, qui per 5 minuti, così le
+  schede dei mazzi rigenerate nello stesso intervallo condividono una risposta. Patch mostrata: quella in corso, oppure
+  la precedente finché quella in corso non ha numeri (la pagina lo dice).
 
 **Patch nuove.** La patch si scrive sulla riga all'invio: se una patch esce prima che sia in `cards.ts`, le partite di
 quelle ore restano sulla patch precedente. Dopo averla registrata (procedura "Patch nuove" di CLAUDE.md) si correggono
 con una riga nel SQL Editor di Supabase (esempio per la 0.8 con l'ora del post):
 `update public.tracked_matches set patch = '0.8' where ended_at >= '2026-10-20T18:00:00Z' and patch is distinct from '0.8';`
 
-### Win rate sul sito: proposta (da decidere con Pierluigi, non ancora fatta)
+### Win rate sul sito
 
-1. **Pagina delle statistiche**, `/tier-list/win-rate` (quarta scheda di `TierListHeader`, "Win rate", accanto a
-   OriginsMeta · Community · Le più giocate): Leggendarie, archetipi, carte (nel mazzo / giocata / turno medio),
-   matrice degli scontri, Leggendarie più incontrate; patch corrente e precedente; "prime stime" dove serve; riga del
-   metodo (soglie, solo chi collega l'app). Noindex finché il campione è piccolo, come l'anteprima della community.
-2. **Scheda di un mazzo della community**: riquadro "Win rate nelle partite registrate" quando la sua lista esatta
-   supera la soglia (patch corrente), con partite e "prime stime"; niente riquadro sotto soglia.
-3. **Scheda carta**: "Nelle partite registrate": win rate nel mazzo, quando giocata, turno medio; sulle Leggendarie
-   anche gli scontri migliori e peggiori e quanto spesso si incontrano.
-4. Più avanti, in home, una striscia "Win rate della patch" quando i numeri sono solidi.
+Proposta del 30/09/2026; Pierluigi: "fai 1 e 2". Fatti:
 
-Consiglio: 1 e 2 per primi (sono i numeri chiesti), poi 3. Tutte le pagine restano statiche o ISR: i numeri arrivano
-con la rigenerazione, come i voti.
+1. **Pagina `/tier-list/win-rate`** (`src/app/[locale]/(site)/tier-list/win-rate/page.tsx`, ISR): quarta scheda della
+   testata della tier list, "Win rate", con lo stato "in arrivo" o "N partite" (`tierSourceState`; sul telefono le
+   schede stanno due per riga). Sezioni Leggendarie, Mazzi della community (lista esatta), Archetipi, Carte (nel
+   mazzo, giocata, round medio della prima giocata), Scontri, Leggendarie più incontrate; "prime stime" sotto le 100
+   partite; testi, fonte, campione e metodo in fondo (`PageNotes`). Senza numeri (o prima della migrazione) un riquadro
+   spiega da dove arriveranno. **Noindex e fuori da hreflang finché la patch mostrata ha meno di 100 partite**; non è
+   in sitemap: quando i numeri saranno solidi va aggiunta (`sitemapEntries.ts`, con la stessa condizione). Testi nei
+   dizionari (`tier.winrate`, `tier.sourceWinrate*`), titolo e description controllati da `hubMeta.test.ts`.
+2. **Riquadro nella scheda dei mazzi della community** (sotto il voto): "Win rate nelle partite registrate", con
+   partite, patch e "prime stime", solo quando la lista esatta del mazzo supera la soglia; link alla sezione dei mazzi
+   della pagina. Un errore o la migrazione mancante = niente riquadro, mai una scheda rotta.
+
+Provati il 30/09 sul server locale: senza migrazione (stato vuoto, scheda "in arrivo", nessun riquadro, nessun errore)
+e con dati d'esempio in memoria, solo locali e non committati (tutte le sezioni, il riquadro, EN/IT/ES, 375 px).
+
+Restano da fare, quando Pierluigi vuole: 3. **scheda carta** ("Nelle partite registrate": win rate nel mazzo, quando
+giocata, round medio; sulle Leggendarie gli scontri migliori e peggiori e quanto spesso si incontrano); 4. più avanti,
+in home, una striscia "Win rate della patch" quando i numeri sono solidi.
 
 ## Overlay (Fase 4)
 
@@ -293,7 +304,8 @@ con la rigenerazione, come i voti.
 
 ## Da decidere
 
-- **Dove mostrare i win rate** (proposta qui sopra).
+- Win rate anche sulle schede carta e in home (punti 3 e 4 qui sopra); quando togliere il noindex e mettere la pagina in
+  sitemap.
 - Quando mostrare il riquadro in `/account` a tutti (`TRACKER_ACCOUNT_LINK_PUBLIC`) e togliere il testo "in prova".
 - Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate.
 - Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.

@@ -405,6 +405,11 @@ export const es: Dictionary = {
     /* static state for pages that do not read the database (the maker) */
     sourceCommunityHint: "promedio de los miembros",
     sourcePlayedHint: "de los mazos del sitio",
+    /* Win rate (30/09/2026): las partidas registradas con la app OriginsMeta Tracker (docs/tracker.md) */
+    sourceWinrate: "Win rate",
+    sourceWinrateSoon: "próximamente",
+    sourceWinrateGames: "{n} partidas",
+    sourceWinrateHint: "de la app del tracker",
     onThisPage: "En esta página",
     /* the line under the tabs: where the ranking comes from and how much it knows */
     lineSource: "Fuente",
@@ -463,6 +468,44 @@ export const es: Dictionary = {
       showAll: "Mostrar las otras {n}",
       unused: "En ningún mazo publicado",
       noDecks: "Aún no hay mazos publicados: publica el primero desde el deck builder.",
+    },
+    /* Win rate (30/09/2026): vedi en.ts */
+    winrate: {
+      title: "Win rate de Origins TCG: Legendarias, mazos y cartas",
+      h1: "Win rate: Legendarias, mazos y cartas",
+      description: "El win rate de Origins TCG según las partidas registradas con la app OriginsMeta Tracker: Legendarias, mazos de la comunidad, arquetipos y cartas, por parche.",
+      intro:
+        "El win rate (porcentaje de victorias) del meta de Origins TCG, según las partidas que los jugadores registran con OriginsMeta Tracker, nuestra app para Windows (en pruebas). Cada número sale de al menos 20 partidas de al menos 3 jugadores distintos y aparece en cuanto llega a ese mínimo; por debajo de 100 partidas es una primera estimación.",
+      empty:
+        "Todavía no hay win rate: los números salen de las partidas registradas con OriginsMeta Tracker, la app de OriginsMeta para Windows, ahora en pruebas. Cada número aparece aquí cuando viene de al menos 20 partidas de al menos 3 jugadores.",
+      fallback: "El parche en curso ({current}) todavía no tiene suficientes partidas: estos son los números del parche {patch}.",
+      early: "primeras estimaciones",
+      earlyTitle: "Menos de 100 partidas: una primera estimación",
+      games: "{n} partidas",
+      winsAgainst: "{p} ganadas contra ella",
+      shareNote: "de las partidas",
+      vs: "contra",
+      showAll: "Mostrar todas ({n})",
+      noneYet: "Todavía ningún número por encima del mínimo.",
+      sourceText: "partidas registradas con OriginsMeta Tracker, parche {patch}",
+      sampleText: "{games} partidas de {players} jugadores",
+      measureText: "partidas ganadas sobre partidas jugadas, desde el lado de quien las registra",
+      notes: [
+        "Solo cuentan los mazos de quien registra: el mazo del rival nunca se cuenta, y la misma partida cuenta una vez.",
+        "Por parche: el vigente al final de la partida. Nunca se suman números de parches distintos.",
+        "Por ahora cuentan todas las partidas, normales y clasificatorias; con muchos más jugadores, solo contarán las clasificatorias.",
+        "Solo totales: nunca nombres, partidas sueltas ni quién las jugó.",
+      ],
+      sections: {
+        legendaries: { title: "Legendarias", text: "Win rate de los mazos construidos alrededor de cada Legendaria." },
+        decks: { title: "Mazos de la comunidad", text: "Los mazos publicados en OriginsMeta, cuando alguien juega sus mismas 13 cartas." },
+        archetypes: { title: "Arquetipos", text: "Win rate por arquetipo, con las mismas reglas del formulario de publicación de mazos." },
+        cards: { title: "Cartas", text: "Para cada carta: win rate de las partidas con la carta en el mazo y de aquellas en las que se jugó, y la ronda media de su primera jugada." },
+        matchups: { title: "Enfrentamientos", text: "Win rate de una Legendaria contra otra, desde el lado de quien registra." },
+        opponents: { title: "Legendarias más enfrentadas", text: "Con qué frecuencia aparece cada Legendaria como rival, y el win rate contra ella." },
+      },
+      cols: { card: "Carta", inDeck: "En el mazo", played: "Jugada", avgRound: "Ronda media" },
+      deckBox: { title: "Win rate en partidas registradas", text: "{rate} en {games} partidas · parche {patch}", link: "Todos los win rate" },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */
     explorer: {
