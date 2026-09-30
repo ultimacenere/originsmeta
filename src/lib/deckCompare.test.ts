@@ -4,6 +4,7 @@
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 type Resolved = { url: string; format?: string | null; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
@@ -81,6 +82,39 @@ describe("etichette", () => {
     for (const l of ["it", "es"] as const) {
       assert.deepEqual(keys(L.deckCompareLabels[l]), keys(L.deckCompareLabels.en), l);
       assert.deepEqual(holes(L.deckCompareLabels[l]), holes(L.deckCompareLabels.en), l);
+    }
+  });
+});
+
+describe("meta dei tornei (/decks/meta, 30/09/2026)", async () => {
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+  const M: typeof import("./eventMeta") = await import("./eventMeta.ts");
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+  const E: typeof import("./data/eventDecklists") = await import("./data/eventDecklists.ts");
+  test("Leggendarie, carte e formazioni contate sulle liste", () => {
+    const deck = (leg: string, ...cards: string[]) => [leg, ...cards];
+    const m = M.eventMeta([
+      { name: "A", placing: "1", decks: [deck("mulan", "x", "y"), deck("merlin", "x"), deck("dracula", "z")] },
+      { name: "B", placing: "2", decks: [deck("merlin", "x"), deck("mulan", "y"), deck("dracula")] },
+      { name: "C", placing: "3-4", decks: [deck("mulan", "x", "x")] },
+    ]);
+    assert.equal(m.players, 3);
+    assert.equal(m.decks, 7);
+    assert.deepEqual(m.legendaries[0], { slug: "mulan", decks: 3, share: 42.9 });
+    assert.deepEqual(m.cards[0], { slug: "x", decks: 4, share: 57.1 });
+    assert.deepEqual(m.lineups, [{ legendaries: ["dracula", "merlin", "mulan"], players: 2 }]);
+  });
+  test("le liste usano carte che esistono, con una fonte e il numero giusto di mazzi", () => {
+    const woo = JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8"));
+    const list = woo.cards as { slug: string }[];
+    assert.ok(list.length > 100, "catalogo delle carte letto");
+    const slugs = new Set(list.map((c) => c.slug));
+    for (const ev of E.eventDecklists) {
+      if (ev.players.length) assert.ok(ev.sources.length > 0, `${ev.slug}: liste senza fonte`);
+      for (const p of ev.players) {
+        assert.equal(p.decks.length, ev.decksPerPlayer, `${ev.slug} ${p.name}: numero di mazzi`);
+        for (const d of p.decks) for (const s of d) assert.ok(slugs.has(s), `${ev.slug} ${p.name}: carta sconosciuta ${s}`);
+      }
     }
   });
 });

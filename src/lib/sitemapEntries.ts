@@ -12,6 +12,8 @@ import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
 import type { IndexEntry, UrlEntry } from "./seoXml";
 import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
+import { eventDecklists } from "./data/eventDecklists";
+import { EVENT_META_MIN_PLAYERS } from "./eventMeta";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -193,6 +195,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
     // Confronto fra due mazzi (30/09/2026): pagina statica, solo la data del modello
     { path: "/decks/compare", section: "pages", route: "/decks/compare", dates: [] },
+    // Meta dei tornei ufficiali (30/09/2026): solo quando le liste trascritte bastano (prima la pagina è noindex)
+    ...eventDecklists
+      .filter((e) => e.players.length >= EVENT_META_MIN_PLAYERS)
+      .map((e) => ({ path: `/decks/meta/${e.slug}`, section: "pages", route: "/decks/meta/[event]", dates: [e.updated] }) satisfies SitemapPage),
     // Guide editoriali e, dal 29/09/2026, le guide della community indicizzabili nella lingua: la pagina le mostra tutte in
     // un elenco solo, nell'HTML (ISR; Pierluigi: niente divisione fra guide ufficiali e della community).
     { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.hub[l]] },
