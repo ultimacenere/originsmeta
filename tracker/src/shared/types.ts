@@ -49,11 +49,12 @@ export type AccountState = {
  * nello storico sul PC, ultima partita finita. Mai bot o persona, mai il rank dell'avversario, mai nomi.
  */
 export type OverlayView = {
-  deck: { name: string | null; legendary: string | null; legendaryName: string | null } | null;
+  /** `legendarySlug`: indirizzo dell'immagine della carta sul sito (originsmeta.com/cards/<slug>.webp), dal 01/10/2026 */
+  deck: { name: string | null; legendary: string | null; legendaryName: string | null; legendarySlug: string | null } | null;
   session: { wins: number; losses: number };
   /** il mazzo scelto adesso, in tutto lo storico sul PC (stesse 13 carte) */
   deckRecord: { wins: number; losses: number; games: number } | null;
-  last: { result: "W" | "L" | null; opponentLegendary: string | null; opponentName: string | null } | null;
+  last: { result: "W" | "L" | null; opponentLegendary: string | null; opponentName: string | null; opponentSlug: string | null } | null;
   updatedAt: string;
 };
 

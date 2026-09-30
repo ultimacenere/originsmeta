@@ -1,6 +1,6 @@
 {
   "name": "originsmeta-tracker",
-  "productName": "OriginsMeta Tracker",
+  "productName": "OriginsMeta Analytics",
   "version": "0.1.0",
   "private": true,
   "description": "Registra da solo le partite di Origins TCG leggendo i file del gioco sul PC (fan project, non affiliato a Koin Games).",

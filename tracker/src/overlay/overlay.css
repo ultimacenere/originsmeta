@@ -1,39 +1,91 @@
-/* Overlay del tracker (Fase 4): palette "ink & mint" del sito, fondo trasparente, leggibile sopra il gioco e in OBS. */
+/*
+ * Overlay del tracker (Fase 4): palette "ink & mint" del sito, fondo trasparente, leggibile sopra il gioco e in OBS.
+ * Dal 01/10/2026 con i font e il logo del sito e la Leggendaria del mazzo come carta intera (mai ritagliata: i crediti
+ * in basso restano). Niente stili nell'HTML: la CSP dell'overlay ammette solo questo file.
+ */
+@font-face {
+  font-family: "Unbounded";
+  src: url("fonts/unbounded-latin.woff2") format("woff2");
+  font-weight: 200 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("fonts/manrope-latin.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+  font-weight: 100 800;
+  font-display: swap;
+}
 :root {
   color-scheme: dark;
-  --panel: rgba(21, 12, 44, 0.86);
+  --panel: rgba(21, 12, 44, 0.88);
+  --night-3: #22304b;
+  --felt-line: #3a2a60;
   --sky: #3fc4e8;
   --mint: #31e3bd;
   --gold: #f2d23c;
   --ink: #16102a;
   --chalk: #d9dfe8;
   --muted: #a9b4c6;
-  --win: #46d369;
-  --loss: #ff5c5c;
-  --body: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+  --good: #46d369;
+  --bad: #ff5c5c;
+  --display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: transparent; color: var(--chalk); font-family: var(--body); font-size: 14px; line-height: 1.35; overflow: hidden; }
-.ov { display: inline-grid; gap: 4px; margin: 6px; padding: 10px 14px 8px; background: var(--panel); border: 2px solid var(--sky); border-radius: 14px; max-width: calc(100vw - 12px); user-select: none; }
-.deck { font-weight: 700; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.deck b { color: var(--chalk); }
-.leg { color: var(--muted); font-weight: 500; font-size: 0.82rem; margin-left: 8px; }
+.ov {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "art info" "brand brand";
+  gap: 5px 12px;
+  margin: 6px;
+  padding: 9px 13px 7px 9px;
+  background: linear-gradient(180deg, rgba(49, 227, 189, 0.1) 0%, rgba(49, 227, 189, 0) 45%), var(--panel);
+  border: 2px solid var(--sky);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.9);
+  max-width: calc(100vw - 12px);
+  user-select: none;
+}
+.art { grid-area: art; align-self: start; }
+.info { grid-area: info; display: grid; gap: 3px; align-content: center; min-width: 0; }
+
+/* carta intera, come nell'app e sul sito */
+.cardimg { position: relative; display: block; aspect-ratio: 1425 / 2048; border: 2px solid var(--sky); border-radius: 6px; background: linear-gradient(160deg, #241645, #0e071f); overflow: hidden; }
+.cardimg.is-legendary { border-color: var(--gold); }
+.cardimg img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.cardimg.noimg img { display: none; }
+.cardimg.empty { border-style: dashed; border-color: var(--felt-line); }
+.art .cardimg { width: 54px; }
+.thumb { display: inline-block; vertical-align: middle; }
+.thumb .cardimg { width: 18px; border-width: 1.5px; border-radius: 3px; }
+
+.deck { font-family: var(--display); font-weight: 700; font-size: 0.98rem; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deck b { color: var(--chalk); font-weight: 700; }
+.leg { display: block; color: var(--muted); font-family: var(--body); font-weight: 600; font-size: 0.78rem; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .star { color: var(--gold); margin-right: 5px; }
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; white-space: nowrap; }
 .pair { display: inline-flex; align-items: center; gap: 6px; }
-.k { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.k { color: var(--muted); font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .v { font-family: var(--mono); font-weight: 700; color: var(--chalk); }
 .pct { font-family: var(--mono); color: var(--mint); font-weight: 700; }
 .muted { color: var(--muted); }
 .res { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-family: var(--mono); font-weight: 700; font-size: 0.7rem; color: var(--ink); }
-.res.W { background: var(--win); }
-.res.L { background: var(--loss); }
-.res.X { background: #22304b; color: var(--muted); }
-.brand { font-size: 0.62rem; color: var(--muted); opacity: 0.85; }
+.res.W { background: var(--good); }
+.res.L { background: var(--bad); }
+.res.X { background: var(--night-3); color: var(--muted); }
+.brand { grid-area: brand; display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: var(--muted); opacity: 0.9; }
+.brand img { height: 11px; width: auto; }
 
-/* verticale (per OBS: ?layout=v) */
-.layout-v .ov { display: grid; width: 240px; }
+/* verticale (per OBS: ?layout=v): la carta accanto al nome, i numeri sotto uno per riga */
+.layout-v .ov { display: grid; width: 250px; }
 .layout-v .row { flex-direction: column; align-items: flex-start; gap: 3px; }
 
 /* finestra sopra il gioco: "Sposta" acceso (non lascia passare i clic) = si trascina */

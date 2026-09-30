@@ -16,7 +16,8 @@ import path from "node:path";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 import type { ActiveDeck, OverlayView } from "../shared/types";
 
-export type CardInfo = { name: string; legendary: boolean };
+/** `slug`: la carta sul sito, per l'immagine (originsmeta.com/cards/<slug>.webp). */
+export type CardInfo = { name: string; legendary: boolean; slug: string };
 export type CardLookup = (key: string) => CardInfo | undefined;
 
 const sortedKey = (cards: readonly string[]) => [...cards].sort().join(",");
@@ -31,15 +32,13 @@ export function overlayView(input: { matches: readonly TrackedMatch[]; activeDec
   const last = matches.length ? [...matches].sort((a, b) => at(b) - at(a))[0] : null;
   const count = (list: readonly TrackedMatch[]) => ({ wins: list.filter((m) => m.result === "W").length, losses: list.filter((m) => m.result === "L").length });
   const deckRecord = count(ofDeck);
+  const legendary = activeDeck?.legendary ? card(activeDeck.legendary) : undefined;
+  const opponent = last?.opponent?.legendary ? card(last.opponent.legendary) : undefined;
   return {
-    deck: activeDeck
-      ? { name: activeDeck.name, legendary: activeDeck.legendary, legendaryName: activeDeck.legendary ? (card(activeDeck.legendary)?.name ?? null) : null }
-      : null,
+    deck: activeDeck ? { name: activeDeck.name, legendary: activeDeck.legendary, legendaryName: legendary?.name ?? null, legendarySlug: legendary?.slug ?? null } : null,
     session: count(session),
     deckRecord: deckKey ? { ...deckRecord, games: deckRecord.wins + deckRecord.losses } : null,
-    last: last
-      ? { result: last.result, opponentLegendary: last.opponent?.legendary ?? null, opponentName: last.opponent?.legendary ? (card(last.opponent.legendary)?.name ?? null) : null }
-      : null,
+    last: last ? { result: last.result, opponentLegendary: last.opponent?.legendary ?? null, opponentName: opponent?.name ?? null, opponentSlug: opponent?.slug ?? null } : null,
     updatedAt: new Date(input.now ?? Date.now()).toISOString(),
   };
 }
@@ -52,11 +51,26 @@ export function hostAllowed(host: string | undefined, port: number): boolean {
 /** Porta della sorgente per OBS, con quattro di riserva se è occupata. */
 export const OVERLAY_PORTS = [47015, 47016, 47017, 47018, 47019] as const;
 
-const TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
+const TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".woff2": "font/woff2",
+  ".webp": "image/webp",
+};
 
 /**
- * Avvia il server della sorgente per OBS: /overlay/ (la pagina), /overlay/overlay.css e overlay.js (dalla cartella
- * `dir`), /overlay/state.json (i dati di adesso). Prova le porte in ordine; null se sono tutte occupate.
+ * Il file della cartella `dir` per un indirizzo, o null: solo la pagina, il suo stile e il suo script, il logo e i font
+ * del sito (01/10/2026). Nomi fissi o minuscole, cifre e trattini: niente `..` né altre cartelle.
+ */
+export function overlayFile(pathname: string): string | null {
+  if (pathname === "/overlay/" || pathname === "/overlay") return "overlay.html";
+  return /^\/overlay\/(overlay\.(?:css|js)|logo-originsmeta(?:-sm)?\.webp|fonts\/[a-z0-9-]+\.woff2)$/.exec(pathname)?.[1] ?? null;
+}
+
+/**
+ * Avvia il server della sorgente per OBS: /overlay/ (la pagina), stile, script, logo e font (dalla cartella `dir`,
+ * `overlayFile`), /overlay/state.json (i dati di adesso). Prova le porte in ordine; null se sono tutte occupate.
  */
 export async function startOverlayServer(opts: { dir: string; view: () => OverlayView; ports?: readonly number[] }): Promise<{ port: number; url: string; close: () => void } | null> {
   for (const port of opts.ports ?? OVERLAY_PORTS) {
@@ -67,15 +81,15 @@ export async function startOverlayServer(opts: { dir: string; view: () => Overla
         return;
       }
       const url = new URL(req.url ?? "/", `http://127.0.0.1:${port}`);
-      const send = (status: number, type: string, body: string) => {
+      const send = (status: number, type: string, body: string | Buffer) => {
         res.writeHead(status, { ...headers, "content-type": type });
         res.end(req.method === "HEAD" ? undefined : body);
       };
       if (url.pathname === "/overlay/state.json") return send(200, "application/json; charset=utf-8", JSON.stringify(opts.view()));
-      const file = url.pathname === "/overlay/" || url.pathname === "/overlay" ? "overlay.html" : /^\/overlay\/(overlay\.(?:css|js))$/.exec(url.pathname)?.[1];
+      const file = overlayFile(url.pathname);
       if (!file) return send(404, "text/plain; charset=utf-8", "404");
       try {
-        send(200, TYPES[path.extname(file)], fs.readFileSync(path.join(opts.dir, file), "utf8"));
+        send(200, TYPES[path.extname(file)], fs.readFileSync(path.join(opts.dir, file)));
       } catch {
         send(404, "text/plain; charset=utf-8", "404");
       }

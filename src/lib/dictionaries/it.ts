@@ -398,11 +398,11 @@ export const it: Dictionary = {
     /* stato fisso per le pagine che non leggono il database (il tool) */
     sourceCommunityHint: "media degli iscritti",
     sourcePlayedHint: "dai mazzi del sito",
-    /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Tracker (docs/tracker.md) */
+    /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Analytics (docs/tracker.md) */
     sourceWinrate: "Win rate",
     sourceWinrateSoon: "in arrivo",
     sourceWinrateGames: "{n} partite",
-    sourceWinrateHint: "dall'app del tracker",
+    sourceWinrateHint: "dall'app Analytics",
     onThisPage: "In questa pagina",
     /* la riga sotto le schede: da dove viene la classifica e quanto sa */
     lineSource: "Fonte",
@@ -466,11 +466,11 @@ export const it: Dictionary = {
     winrate: {
       title: "Win rate di Origins TCG: Leggendarie, mazzi e carte",
       h1: "Win rate: Leggendarie, mazzi e carte",
-      description: "I win rate di Origins TCG dalle partite registrate con l'app OriginsMeta Tracker: Leggendarie, mazzi della community, archetipi e carte, patch per patch.",
+      description: "I win rate di Origins TCG dalle partite registrate con l'app OriginsMeta Analytics: Leggendarie, mazzi della community, archetipi e carte, patch per patch.",
       intro:
-        "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Tracker, la nostra app per Windows (in prova). Ogni numero viene da almeno 20 partite di almeno 3 giocatori diversi e compare appena ci arriva; sotto le 100 partite è una prima stima.",
+        "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Analytics, la nostra app per Windows (in prova). Ogni numero viene da almeno 20 partite di almeno 3 giocatori diversi e compare appena ci arriva; sotto le 100 partite è una prima stima.",
       empty:
-        "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Tracker, l'app per Windows di OriginsMeta, oggi in prova. Ogni numero compare qui quando viene da almeno 20 partite di almeno 3 giocatori.",
+        "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Analytics, l'app per Windows di OriginsMeta, oggi in prova. Ogni numero compare qui quando viene da almeno 20 partite di almeno 3 giocatori.",
       fallback: "La patch in corso ({current}) non ha ancora abbastanza partite: questi sono i numeri della patch {patch}.",
       early: "prime stime",
       earlyTitle: "Meno di 100 partite: una prima stima",
@@ -480,7 +480,7 @@ export const it: Dictionary = {
       vs: "contro",
       showAll: "Mostra tutte ({n})",
       noneYet: "Ancora nessun numero sopra la soglia.",
-      sourceText: "partite registrate con OriginsMeta Tracker, patch {patch}",
+      sourceText: "partite registrate con OriginsMeta Analytics, patch {patch}",
       sampleText: "{games} partite di {players} giocatori",
       measureText: "partite vinte su partite giocate, dal lato di chi le registra",
       notes: [

@@ -23,4 +23,11 @@ fs.copyFileSync(path.join(root, "src/renderer/style.css"), path.join(dist, "rend
 fs.copyFileSync(path.join(root, "src/overlay/overlay.html"), path.join(dist, "overlay/overlay.html"));
 fs.copyFileSync(path.join(root, "src/overlay/overlay.css"), path.join(dist, "overlay/overlay.css"));
 fs.copyFileSync(path.join(root, "assets/icon.ico"), path.join(dist, "icon.ico"));
+// Logo e font del sito (01/10/2026): accanto a ciascuna pagina, così i percorsi relativi valgono sia nella finestra
+// (file://) sia nella sorgente per OBS, che il server locale serve solo da /overlay/ (overlay.ts)
+for (const page of ["renderer", "overlay"]) {
+  fs.mkdirSync(path.join(dist, page, "fonts"), { recursive: true });
+  for (const f of fs.readdirSync(path.join(root, "assets/fonts"))) fs.copyFileSync(path.join(root, "assets/fonts", f), path.join(dist, page, "fonts", f));
+  for (const f of ["logo-originsmeta.webp", "logo-originsmeta-sm.webp"]) fs.copyFileSync(path.join(root, "assets", f), path.join(dist, page, f));
+}
 console.log("build dell'app: dist/");

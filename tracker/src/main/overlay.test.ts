@@ -13,7 +13,7 @@ import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
 const T0 = Date.parse("2026-09-30T20:00:00Z");
 const DECK = ["C00176_MC", "C00002_MB", "C00029_MB"];
-const card: CardLookup = (k) => ({ C00176_MC: { name: "Mulan", legendary: true }, C00012_MC: { name: "Robin Hood", legendary: true } })[k];
+const card: CardLookup = (k) => ({ C00176_MC: { name: "Mulan", legendary: true, slug: "mulan" }, C00012_MC: { name: "Robin Hood", legendary: true, slug: "robin-hood" } })[k];
 
 const match = (min: number, result: "W" | "L", cards = DECK, opp = "C00012_MC"): TrackedMatch => ({
   v: 2,
@@ -36,10 +36,15 @@ describe("overlayView", () => {
 
   test("mazzo scelto, sessione, record del mazzo, ultima partita", () => {
     const v = overlayView({ matches, activeDeck: { name: "On Death", legendary: "C00176_MC", cards: [...DECK].reverse() }, sessionStart: T0, card, now: T0 });
-    assert.deepEqual(v.deck, { name: "On Death", legendary: "C00176_MC", legendaryName: "Mulan" });
+    assert.deepEqual(v.deck, { name: "On Death", legendary: "C00176_MC", legendaryName: "Mulan", legendarySlug: "mulan" });
     assert.deepEqual(v.session, { wins: 2, losses: 1 });
     assert.deepEqual(v.deckRecord, { wins: 3, losses: 1, games: 4 });
-    assert.deepEqual(v.last, { result: "W", opponentLegendary: "C00084_MC", opponentName: null });
+    assert.deepEqual(v.last, { result: "W", opponentLegendary: "C00084_MC", opponentName: null, opponentSlug: null });
+  });
+
+  test("ultima partita contro una Leggendaria che la tabella conosce: nome e immagine", () => {
+    const v = overlayView({ matches: [match(5, "L")], activeDeck: null, sessionStart: T0, card, now: T0 });
+    assert.deepEqual(v.last, { result: "L", opponentLegendary: "C00012_MC", opponentName: "Robin Hood", opponentSlug: "robin-hood" });
   });
 
   test("nessun mazzo scelto e nessuna partita", () => {
@@ -67,6 +72,9 @@ describe("server della sorgente per OBS", () => {
     fs.writeFileSync(path.join(dir, "overlay.html"), "<p>overlay</p>");
     fs.writeFileSync(path.join(dir, "overlay.js"), "void 0;");
     fs.writeFileSync(path.join(dir, "overlay.css"), "p{}");
+    fs.mkdirSync(path.join(dir, "fonts"));
+    fs.writeFileSync(path.join(dir, "fonts", "manrope-latin.woff2"), Buffer.from([0x77, 0x4f, 0x46, 0x32, 0x00, 0xff]));
+    fs.writeFileSync(path.join(dir, "logo-originsmeta-sm.webp"), Buffer.from("RIFF"));
     const port = 47_000 + Math.floor(Math.random() * 900);
     const server = await startOverlayServer({ dir, ports: [port], view: () => overlayView({ matches: [match(1, "W")], activeDeck: null, sessionStart: 0, card, now: T0 }) });
     assert.ok(server, "server partito");
@@ -92,6 +100,11 @@ describe("server della sorgente per OBS", () => {
       assert.equal((await get("/overlay/state.json", { method: "POST" })).status, 403);
       assert.equal((await get("/overlay/../account.json")).status, 404);
       assert.equal((await get("/altro")).status, 404);
+      // logo e font del sito (01/10/2026), anche binari; nient'altro della cartella
+      const font = await get("/overlay/fonts/manrope-latin.woff2");
+      assert.deepEqual([font.status, font.type], [200, "font/woff2"]);
+      assert.equal((await get("/overlay/logo-originsmeta-sm.webp")).type, "image/webp");
+      for (const p of ["/overlay/fonts/../overlay.html", "/overlay/fonts/Manrope.WOFF2", "/overlay/fonts/x.woff2.map", "/overlay/overlay.html", "/overlay/logo.webp"]) assert.equal((await get(p)).status, 404, p);
       // la stessa porta occupata: null, non un errore
       assert.equal(await startOverlayServer({ dir, ports: [port], view: () => overlayView({ matches: [], activeDeck: null, sessionStart: 0, card }) }), null);
     } finally {

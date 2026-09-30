@@ -405,11 +405,11 @@ export const en = {
     /* static state for pages that do not read the database (the maker) */
     sourceCommunityHint: "members' average",
     sourcePlayedHint: "from the site's decks",
-    /* Win rate (30/09/2026): the games recorded with the OriginsMeta Tracker app (docs/tracker.md) */
+    /* Win rate (30/09/2026): the games recorded with the OriginsMeta Analytics app (docs/tracker.md) */
     sourceWinrate: "Win rate",
     sourceWinrateSoon: "coming soon",
     sourceWinrateGames: "{n} games",
-    sourceWinrateHint: "from the tracker app",
+    sourceWinrateHint: "from the Analytics app",
     onThisPage: "On this page",
     /* the line under the tabs: where the ranking comes from and how much it knows */
     lineSource: "Source",
@@ -471,15 +471,15 @@ export const en = {
       noDecks: "No deck published yet: publish the first one from the deck builder.",
     },
     /* Win rate (30/09/2026, Pierluigi: win rates "are very important and we must have them"): only anonymous totals of the
-       games recorded with OriginsMeta Tracker, each number from at least 20 games by at least 3 players (stats.ts) */
+       games recorded with OriginsMeta Analytics, each number from at least 20 games by at least 3 players (stats.ts) */
     winrate: {
       title: "Origins TCG win rates by Legendary, deck and card",
       h1: "Win rates: Legendaries, decks and cards",
-      description: "Origins TCG win rates from the games recorded with the OriginsMeta Tracker app: Legendaries, community decks, archetypes and cards, patch by patch.",
+      description: "Origins TCG win rates from the games recorded with the OriginsMeta Analytics app: Legendaries, community decks, archetypes and cards, patch by patch.",
       intro:
-        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Tracker, our Windows app (being tested). Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
+        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app (being tested). Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
       empty:
-        "No win rates yet: the numbers come from the games recorded with OriginsMeta Tracker, the OriginsMeta app for Windows, which is being tested. Each number shows up here once it comes from at least 20 games by at least 3 players.",
+        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows, which is being tested. Each number shows up here once it comes from at least 20 games by at least 3 players.",
       /* {current} = the patch in progress, {patch} = the one shown */
       fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
       early: "early estimates",
@@ -492,7 +492,7 @@ export const en = {
       vs: "vs",
       showAll: "Show all {n}",
       noneYet: "No number above the threshold yet.",
-      sourceText: "games recorded with OriginsMeta Tracker, patch {patch}",
+      sourceText: "games recorded with OriginsMeta Analytics, patch {patch}",
       sampleText: "{games} games by {players} players",
       measureText: "games won out of games played, from the side of whoever records them",
       notes: [

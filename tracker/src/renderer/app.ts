@@ -11,6 +11,11 @@
  * Fase 3 (30/09/2026): pannello "Account OriginsMeta" (codice di collegamento, stato dell'invio, scollega), con la frase
  * sulle statistiche anonime prima del collegamento. Fase 4: pannello "Overlay" (finestra sopra il gioco, sposta,
  * sessione, indirizzi della sorgente per OBS).
+ *
+ * Grafica del 01/10/2026 (Pierluigi: "portiamo nell'app i nostri logo, le palette, i font" e "anche le grafiche delle
+ * carte"): logo e font del sito, il mazzo scelto con le sue carte intere, miniature delle Leggendarie in tabelle e
+ * partite, il tuo mazzo in carte dentro ogni partita. Le immagini delle carte arrivano da originsmeta.com (le stesse
+ * del sito, non copiate nell'app); senza rete resta il nome della carta dentro la cornice.
  */
 import cardsTable from "../cards.json";
 import type { AppState, LinkProblem, SyncProblem, TrackedMatch, TrackerApi } from "../shared/types";
@@ -34,6 +39,8 @@ const LABELS = {
     waiting: "Waiting for Origins TCG",
     activeDeck: "Deck selected in the game",
     noDeck: "No deck selected yet",
+    noDeckHint: "Choose a deck in Origins TCG: it shows up here with its cards.",
+    yourDeck: "Your deck",
     today: "Today",
     recorded: "Matches recorded",
     record: "Wins–losses",
@@ -63,17 +70,17 @@ const LABELS = {
     copy: "Copy",
     copied: "Copied",
     history: "Results according to the game",
-    historySub: (n: number, w: number) => `The game keeps the results of all your matches (${n}, ${w} won). The tracker also recovers the result of matches played while it was off, only win or loss.`,
-    missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the tracker off`,
+    historySub: (n: number, w: number) => `The game keeps the results of all your matches (${n}, ${w} won). The app also recovers the result of matches played while it was closed, only win or loss.`,
+    missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the app closed`,
     startup: "Start with Windows",
     dataFolder: "Open the data folder",
-    privacy: "The tracker only reads the files Origins TCG saves on this PC and never touches the game. Your matches stay on this PC unless you link the app to your OriginsMeta account.",
+    privacy: "OriginsMeta Analytics only reads the files Origins TCG saves on this PC and never touches the game. Your matches stay on this PC unless you link the app to your OriginsMeta account. Card images load from originsmeta.com.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
     account: "OriginsMeta account",
     accountIntro: "Link the app to your account: your matches also go to originsmeta.com, where you can see your stats.",
     consent:
       "When you link it, the app sends your matches to your account, including the ones already recorded here, and they always go into the site's anonymous stats too: only aggregate numbers, never who played. If you don't want that, don't link it: the app also works on this PC alone.",
-    howTo: "Create a code on originsmeta.com (Account → OriginsMeta Tracker) and type it here.",
+    howTo: "Create a code on originsmeta.com (Account → OriginsMeta Analytics) and type it here.",
     openCodePage: "Create a code on originsmeta.com",
     codeLabel: "Link code",
     link: "Link",
@@ -121,7 +128,7 @@ const LABELS = {
     unknown: "?",
     noToday: "no matches yet",
     problems: {
-      noGame: "I can't find Origins TCG's files on this PC yet. The tracker starts on its own as soon as the game writes them: open the game and play a match.",
+      noGame: "I can't find Origins TCG's files on this PC yet. The app starts on its own as soon as the game writes them: open the game and play a match.",
       badReplay: "The replay of the last match can't be read: a patch may have changed its format. The match is saved with its result and deck.",
       error: "Error reading the game's files: trying again shortly.",
     },
@@ -131,6 +138,8 @@ const LABELS = {
     waiting: "In attesa di Origins TCG",
     activeDeck: "Mazzo scelto nel gioco",
     noDeck: "Nessun mazzo scelto per ora",
+    noDeckHint: "Scegli un mazzo in Origins TCG: compare qui con le sue carte.",
+    yourDeck: "Il tuo mazzo",
     today: "Oggi",
     recorded: "Partite registrate",
     record: "Vittorie–sconfitte",
@@ -160,17 +169,17 @@ const LABELS = {
     copy: "Copia",
     copied: "Copiato",
     history: "Esiti secondo il gioco",
-    historySub: (n: number, w: number) => `Il gioco conserva gli esiti di tutte le tue partite (${n}, ${w} vinte). Il tracker recupera l'esito anche delle partite giocate mentre era spento, solo vittoria o sconfitta.`,
-    missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} a tracker spento`,
+    historySub: (n: number, w: number) => `Il gioco conserva gli esiti di tutte le tue partite (${n}, ${w} vinte). L'app recupera l'esito anche delle partite giocate mentre era chiusa, solo vittoria o sconfitta.`,
+    missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} ad app chiusa`,
     startup: "Avvia con Windows",
     dataFolder: "Apri la cartella dei dati",
-    privacy: "Il tracker legge solo i file che Origins TCG salva su questo PC e non tocca mai il gioco. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta.",
+    privacy: "OriginsMeta Analytics legge solo i file che Origins TCG salva su questo PC e non tocca mai il gioco. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta. Le immagini delle carte arrivano da originsmeta.com.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
     account: "Account OriginsMeta",
     accountIntro: "Collega l'app al tuo account: le tue partite arrivano anche su originsmeta.com, dove vedi le tue statistiche.",
     consent:
       "Collegandola, l'app manda le tue partite al tuo account, anche quelle già registrate qui, ed entrano sempre anche nelle statistiche anonime del sito: solo numeri aggregati, mai chi ha giocato. Se non vuoi, non collegarla: l'app funziona anche solo su questo PC.",
-    howTo: "Crea un codice su originsmeta.com (Account → OriginsMeta Tracker) e scrivilo qui.",
+    howTo: "Crea un codice su originsmeta.com (Account → OriginsMeta Analytics) e scrivilo qui.",
     openCodePage: "Crea un codice su originsmeta.com",
     codeLabel: "Codice di collegamento",
     link: "Collega",
@@ -218,7 +227,7 @@ const LABELS = {
     unknown: "?",
     noToday: "nessuna partita",
     problems: {
-      noGame: "Non trovo ancora i file di Origins TCG su questo PC. Il tracker parte da solo appena il gioco li scrive: apri il gioco e gioca una partita.",
+      noGame: "Non trovo ancora i file di Origins TCG su questo PC. L'app parte da sola appena il gioco li scrive: apri il gioco e gioca una partita.",
       badReplay: "Il replay dell'ultima partita non si legge: forse una patch ne ha cambiato il formato. La partita è salvata con esito e mazzo.",
       error: "Errore nella lettura dei file del gioco: riprovo fra poco.",
     },
@@ -228,6 +237,8 @@ const LABELS = {
     waiting: "Esperando a Origins TCG",
     activeDeck: "Mazo elegido en el juego",
     noDeck: "Todavía no has elegido mazo",
+    noDeckHint: "Elige un mazo en Origins TCG: aparece aquí con sus cartas.",
+    yourDeck: "Tu mazo",
     today: "Hoy",
     recorded: "Partidas registradas",
     record: "Victorias–derrotas",
@@ -258,16 +269,16 @@ const LABELS = {
     copied: "Copiado",
     history: "Resultados según el juego",
     historySub: (n: number, w: number) => `El juego guarda los resultados de todas tus partidas (${n}, ${w} ganadas). El tracker también recupera el resultado de las partidas jugadas con él apagado, solo victoria o derrota.`,
-    missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con el tracker apagado`,
+    missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con la app cerrada`,
     startup: "Iniciar con Windows",
     dataFolder: "Abrir la carpeta de datos",
-    privacy: "El tracker solo lee los archivos que Origins TCG guarda en este PC y nunca toca el juego. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta.",
+    privacy: "OriginsMeta Analytics solo lee los archivos que Origins TCG guarda en este PC y nunca toca el juego. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta. Las imágenes de las cartas se cargan desde originsmeta.com.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
     account: "Cuenta de OriginsMeta",
     accountIntro: "Vincula la app a tu cuenta: tus partidas llegan también a originsmeta.com, donde ves tus estadísticas.",
     consent:
       "Al vincularla, la app envía tus partidas a tu cuenta, también las que ya registró aquí, y entran siempre también en las estadísticas anónimas del sitio: solo números agregados, nunca quién jugó. Si no quieres, no la vincules: la app también funciona solo en este PC.",
-    howTo: "Crea un código en originsmeta.com (Cuenta → OriginsMeta Tracker) y escríbelo aquí.",
+    howTo: "Crea un código en originsmeta.com (Cuenta → OriginsMeta Analytics) y escríbelo aquí.",
     openCodePage: "Crear un código en originsmeta.com",
     codeLabel: "Código de vinculación",
     link: "Vincular",
@@ -315,7 +326,7 @@ const LABELS = {
     unknown: "?",
     noToday: "ninguna partida",
     problems: {
-      noGame: "Todavía no encuentro los archivos de Origins TCG en este PC. El tracker empieza solo en cuanto el juego los escribe: abre el juego y juega una partida.",
+      noGame: "Todavía no encuentro los archivos de Origins TCG en este PC. La app empieza sola en cuanto el juego los escribe: abre el juego y juega una partida.",
       badReplay: "No se puede leer la repetición de la última partida: quizá un parche cambió su formato. La partida se guarda con su resultado y su mazo.",
       error: "Error al leer los archivos del juego: vuelvo a intentarlo en un momento.",
     },
@@ -326,7 +337,37 @@ const L = LABELS[lang];
 /* ---------- aiuti ---------- */
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
-const card = (key: string | null) => (key ? CARDS[key] : undefined);
+const SITE = "https://originsmeta.com";
+// le chiavi del file del gioco possono avere la variante (C00176_MC_V00000); la tabella delle carte no
+const card = (key: string | null) => (key ? CARDS[key.replace(/_V\d+$/, "")] : undefined);
+
+/**
+ * Una carta intera, come .card-tile del sito in piccolo: immagine del sito (mai ritagliata), gemma del mana in alto a
+ * sinistra, stella delle Leggendarie in alto a destra, cornice dorata per le Leggendarie. Sotto i 40 px resta solo la
+ * carta (`tiny`). Link alla scheda sul sito per le carte giocabili (`link: false` dove il clic serve ad altro); il clic
+ * passa dal processo principale.
+ */
+function cardArt(key: string | null, width: number, opts: { mana?: boolean; link?: boolean } = {}) {
+  const c = card(key);
+  const name = c?.n ?? L.created;
+  const tiny = width < 40;
+  const cls = `cardimg${c?.l ? " is-legendary" : ""}${c ? "" : " noimg"}${tiny ? " tiny" : ""}`;
+  const inner =
+    (c ? `<img src="${SITE}/cards/${esc(c.s)}.webp" alt="" loading="lazy" draggable="false" />` : "") +
+    `<span class="fallback">${esc(name)}</span>` +
+    (opts.mana !== false && c?.m != null ? `<span class="mana">${c.m}</span>` : "") +
+    (c?.l ? '<span class="cstar" aria-hidden="true">★</span>' : "");
+  const attrs = `class="${cls}" style="--w:${width}px" title="${esc(name)}"`;
+  return c?.a && opts.link !== false ? `<a ${attrs} href="${SITE}/${lang}/cards/${esc(c.s)}" data-link aria-label="${esc(name)}">${inner}</a>` : `<span ${attrs} role="img" aria-label="${esc(name)}">${inner}</span>`;
+}
+/** Le carte di un mazzo nell'ordine del sito: la Leggendaria per prima, poi per costo e per nome. */
+const sortCards = (keys: readonly string[]) =>
+  [...keys].sort((a, b) => {
+    const ca = card(a);
+    const cb = card(b);
+    return (cb?.l ?? 0) - (ca?.l ?? 0) || (ca?.m ?? 99) - (cb?.m ?? 99) || (ca?.n ?? a).localeCompare(cb?.n ?? b);
+  });
+const deckStrip = (keys: readonly string[], width: number) => `<div class="deckstrip">${sortCards(keys).map((k) => cardArt(k, width)).join("")}</div>`;
 const pct = (w: number, n: number) => (n ? Math.round((100 * w) / n) : 0);
 const star = (key: string | null) => (card(key)?.l ? '<span class="star" aria-hidden="true">★</span>' : "");
 const gem = (key: string | null) => `<span class="gem">${card(key)?.m ?? "?"}</span>`;
@@ -357,23 +398,32 @@ const wl = (list: TrackedMatch[]) => {
 function top(s: AppState) {
   const ok = s.status.cache;
   return `<header class="top">
-      <div class="brand"><img src="../icon.ico" alt="" /><h1>OriginsMeta <span>Tracker</span></h1></div>
-      <span class="pill ${ok ? "ok" : "wait"}">${esc(ok ? L.listening : L.waiting)}</span>
+      <h1 class="brand"><img class="wordmark" src="logo-originsmeta.webp" srcset="logo-originsmeta-sm.webp 320w, logo-originsmeta.webp 640w" sizes="143px" width="143" height="44" alt="OriginsMeta" draggable="false" /><span class="tag">Analytics</span></h1>
+      <span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span>
     </header>
     ${s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
 }
 
-function now(s: AppState) {
+/** Il mazzo scelto adesso nel gioco, in grande: la Leggendaria intera, i numeri e le altre 12 carte. */
+function hero(s: AppState) {
   const all = wl(s.matches);
   const today = new Date().toDateString();
   const t = wl(s.matches.filter((m) => m.endedAt && new Date(m.endedAt).toDateString() === today));
   const d = s.activeDeck;
-  const deck = d ? `${star(d.legendary)}${esc(d.name ?? card(d.legendary)?.n ?? "?")}` : esc(L.noDeck);
-  return `<section class="now" aria-label="${esc(L.today)}">
-      <div class="tile"><span class="v text">${deck}</span><span class="l">${esc(L.activeDeck)}${d?.legendary ? ` · ${esc(card(d.legendary)?.n ?? "")}` : ""}</span></div>
-      <div class="tile"><span class="v">${t.n ? `${t.w}–${t.l}` : "—"}</span><span class="l">${esc(L.today)}${t.n ? "" : ` · ${esc(L.noToday)}`}</span></div>
-      <div class="tile"><span class="v">${all.n}</span><span class="l">${esc(L.recorded)} · ${all.w}–${all.l}</span></div>
-      <div class="tile"><span class="v">${all.n ? `${pct(all.w, all.n)}%` : "—"}</span><span class="l">${esc(L.winRate)}</span></div>
+  const legendary = card(d?.legendary ?? null);
+  const others = d ? d.cards.filter((k) => !card(k)?.l) : [];
+  return `<section class="panel hero" aria-label="${esc(L.activeDeck)}">
+      <div class="hero-card">${d?.legendary ? cardArt(d.legendary, 148) : `<span class="empty-card" aria-hidden="true">?</span>`}</div>
+      <div class="hero-main">
+        <p class="kicker">${esc(L.activeDeck)}</p>
+        ${d ? `<h2 class="deck-name">${esc(d.name ?? legendary?.n ?? "?")}</h2>${legendary && d.name ? `<p class="deck-leg">${star(d.legendary)}${esc(legendary.n)}</p>` : ""}` : `<h2 class="deck-name">${esc(L.noDeck)}</h2><p class="sub">${esc(L.noDeckHint)}</p>`}
+        <div class="tiles">
+          <div class="tile"><span class="v">${t.n ? `${t.w}–${t.l}` : "—"}</span><span class="l">${esc(L.today)}${t.n ? "" : ` · ${esc(L.noToday)}`}</span></div>
+          <div class="tile"><span class="v">${all.n}</span><span class="l">${esc(L.recorded)} · ${all.w}–${all.l}</span></div>
+          <div class="tile"><span class="v rate">${all.n ? `${pct(all.w, all.n)}%` : "—"}</span><span class="l">${esc(L.winRate)}</span></div>
+        </div>
+        ${others.length ? deckStrip(others, 56) : ""}
+      </div>
     </section>`;
 }
 
@@ -382,7 +432,7 @@ function decks(s: AppState) {
     const r = wl(list);
     const legendary = list[0].deck.legendary;
     const rate = pct(r.w, r.n);
-    return `<tr><td><span class="name">${star(legendary)}${esc(name)}</span></td><td class="num">${r.n} · ${r.w}–${r.l}</td><td><span class="bar"><i style="width:${Math.max(rate, 2)}px"></i><b>${rate}%</b></span></td></tr>`;
+    return `<tr><td><span class="name">${cardArt(legendary, 30)}<span>${star(legendary)}${esc(name)}</span></span></td><td class="num">${r.n} · ${r.w}–${r.l}</td><td><span class="bar"><i style="width:${Math.max(rate, 2)}px"></i><b>${rate}%</b></span></td></tr>`;
   });
   return `<section class="panel"><h2>${esc(L.byDeck)}</h2><p class="sub">${esc(L.byDeckSub)}</p>
       ${rows.length ? `<div class="scroll"><table><thead><tr><th>${esc(L.deck)}</th><th class="num">${esc(L.games)}</th><th>${esc(L.winRate)}</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>` : `<p class="empty">—</p>`}
@@ -397,7 +447,7 @@ function opponents(s: AppState) {
       const x = wl(sub);
       return `${esc(card(k)?.n ?? k)} ${x.w}–${x.l}`;
     });
-    return `<tr><td><span class="name">${star(key)}${cardName(key)}</span></td><td class="num">${r.w}–${r.l}</td><td class="sub">${mine.join("<br>")}</td></tr>`;
+    return `<tr><td><span class="name">${cardArt(key, 30)}<span>${star(key)}${cardName(key)}</span></span></td><td class="num">${r.w}–${r.l}</td><td class="sub">${mine.join("<br>")}</td></tr>`;
   });
   return `<section class="panel"><h2>${esc(L.vs)}</h2><p class="sub">${esc(L.vsSub)}</p>
       ${rows.length ? `<div class="scroll"><table><thead><tr><th>${esc(L.oppLegendary)}</th><th class="num">${lang === "en" ? "W–L" : lang === "it" ? "V–S" : "V–D"}</th><th>${esc(L.with)}</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>` : `<p class="empty">—</p>`}
@@ -419,11 +469,14 @@ function matchRow(m: TrackedMatch, index: number) {
   const nums = Array.from({ length: rounds }, (_, i) => i + 1);
   const opp = m.opponent?.legendary ?? null;
   const open = openMatches.has(m.id) || (!userToggled && index === 0);
+  // nel riepilogo la carta non è un link: un clic lì apre la partita
+  const thumb = (key: string | null) => cardArt(key, 30, { link: false });
   return `<details class="match" data-id="${esc(m.id)}"${open ? " open" : ""}>
-      <summary><span class="m-when">${esc(when(m.endedAt))}</span><span class="m-title">${resChip(m.result)} ${star(m.deck.legendary)}${esc(deckLabel(m))}${opp ? `<span class="vs">vs</span>${star(opp)}${esc(card(opp)?.n ?? opp)}` : ""}</span><span class="m-meta">${m.turns ? `${esc(L.rounds(m.turns))} · ${esc(L.plays(m.plays.length))}` : esc(L.noReplay)}</span></summary>
+      <summary><span class="m-when">${esc(when(m.endedAt))}</span><span class="m-title">${resChip(m.result)}<span class="m-side">${thumb(m.deck.legendary)}<span>${star(m.deck.legendary)}${esc(deckLabel(m))}</span></span>${opp ? `<span class="vs">vs</span><span class="m-side">${thumb(opp)}<span>${star(opp)}${esc(card(opp)?.n ?? opp)}</span></span>` : ""}</span><span class="m-meta">${m.turns ? `${esc(L.rounds(m.turns))} · ${esc(L.plays(m.plays.length))}` : esc(L.noReplay)}</span></summary>
       <div class="m-body">
         ${rounds ? `<div class="scroll"><table class="timeline"><thead><tr><th class="who">${esc(L.round)}</th>${nums.map((t) => `<th>${t}</th>`).join("")}</tr></thead><tbody><tr><th class="who">${esc(L.you)}</th>${nums.map((t) => cell(t, true)).join("")}</tr><tr><th class="who">${esc(L.opponent)}</th>${nums.map((t) => cell(t, false)).join("")}</tr></tbody></table></div>` : ""}
         ${m.opponent ? `<div><p class="sub">${esc(L.oppPlayed)}</p><div class="chips">${oppPlayed.length ? oppPlayed.map((k) => `<span class="chip">${gem(k)}${star(k)}${esc(card(k)?.n ?? k)}</span>`).join("") : `<span class="sub">${esc(L.none)}</span>`}</div></div>` : ""}
+        ${m.deck.cards.length ? `<div><p class="sub">${esc(L.yourDeck)}</p>${deckStrip(m.deck.cards, 52)}</div>` : ""}
         ${m.deck.code ? `<div class="row"><span class="sub">${esc(L.code)}</span><code class="code">${esc(m.deck.code)}</code><button type="button" class="btn" data-copy="${esc(m.deck.code)}">${esc(L.copy)}</button></div>` : ""}
       </div>
     </details>`;
@@ -464,18 +517,18 @@ function accountPanel(s: AppState) {
         <p class="sub">${esc(L.howTo)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></p>
         <form id="link-form" class="row" autocomplete="off">
           <label class="field"><span>${esc(L.codeLabel)}</span><input id="link-code" name="code" spellcheck="false" maxlength="20" placeholder="ABCD-EFGH" /></label>
-          <button type="submit" class="btn"${linkBusy ? " disabled" : ""}>${esc(linkBusy ? L.linking : L.link)}</button>
+          <button type="submit" class="btn btn-primary"${linkBusy ? " disabled" : ""}>${esc(linkBusy ? L.linking : L.link)}</button>
         </form>
         ${linkError ? `<p class="problem">${esc(L.linkProblems[linkError])}</p>` : ""}
       </section>`;
   }
   return `<section class="panel" id="account"><h2>${esc(L.account)}</h2>
-      <p><span class="pill ok">${esc(L.linkedAs(a.username))}</span></p>
+      <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
       <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
       ${a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
       ${a.persisted ? "" : `<p class="fine">${esc(L.notPersisted)}</p>`}
       <div class="row">
-        <button type="button" class="btn" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
+        <button type="button" class="btn btn-primary" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
         <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
         <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
       </div>
@@ -504,7 +557,7 @@ function footer(s: AppState) {
   return `<footer class="foot">
       <div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
       <p class="fine">${esc(L.privacy)}</p>
-      <p class="fine">${esc(L.unofficial)} · v${esc(s.version)}</p>
+      <p class="fine foot-brand"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="58" height="18" draggable="false" /><span>${esc(L.unofficial)} · v${esc(s.version)}</span></p>
     </footer>`;
 }
 
@@ -522,7 +575,7 @@ function render(s: AppState) {
   const typed = input?.value ?? "";
   const focused = document.activeElement === input && input !== null;
   const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
-  root.innerHTML = [top(s), now(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  root.innerHTML = [top(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
   const again = document.getElementById("link-code") as HTMLInputElement | null;
   if (again) {
     again.value = typed;
@@ -545,6 +598,16 @@ async function copyWith(button: HTMLButtonElement, text: string) {
   button.textContent = L.copied;
   setTimeout(() => (button.textContent = L.copy), 1500);
 }
+
+// immagine di una carta che non arriva (niente rete, carta senza immagine): resta il nome dentro la cornice. L'evento
+// "error" delle immagini non risale: si ascolta nella fase di cattura.
+root.addEventListener(
+  "error",
+  (e) => {
+    if (e.target instanceof HTMLImageElement) e.target.closest(".cardimg")?.classList.add("noimg");
+  },
+  true,
+);
 
 root.addEventListener("click", async (e) => {
   const target = e.target as HTMLElement;

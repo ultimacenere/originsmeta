@@ -1,5 +1,8 @@
 /**
- * OriginsMeta Tracker, processo principale (Fasi 2–4 del tracker/overlay, 29–30/09/2026; guida in docs/tracker.md).
+ * OriginsMeta Analytics, processo principale (Fasi 2–4 del tracker/overlay, 29–30/09/2026; guida in docs/tracker.md).
+ * Fino al 01/10/2026 si chiamava OriginsMeta Tracker (Pierluigi: "chiamiamolo Analytics e non tracker"): il nome cambia
+ * dove si vede, nel codice e negli indirizzi resta "tracker". Al primo avvio col nome nuovo i dati passano dalla
+ * cartella vecchia (`moveOldData`).
  *
  * - Icona accanto all'orologio: clic = apri la finestra; menu con "Apri", "Overlay sopra il gioco", "Avvia con
  *   Windows" ed "Esci". Chiudere la finestra la nasconde e il tracker continua a registrare.
@@ -17,7 +20,8 @@
  * - Sicurezza: interfaccia senza Node (contextIsolation, sandbox, preload minimi), nessuna navigazione né finestra
  *   nuova, nessun permesso del browser, link esterni solo verso https://originsmeta.com, IPC accettato solo dalla
  *   pagina locale dell'app (la finestra dell'overlay legge solo i suoi dati).
- * - `--capture=<file.png>` (con `--capture-size=LxA` e `--capture-bottom` per il fondo della pagina): apre la finestra,
+ * - `--capture=<file.png>` (con `--capture-size=LxA`, `--capture-bottom` o `--capture-scroll=<px>` per scorrere la
+ *   pagina e `--capture-delay=<ms>` per aspettare le immagini delle carte): apre la finestra,
  *   aspetta che l'interfaccia abbia disegnato, salva uno screenshot ed esce. Serve alle verifiche; con
  *   ORIGINSMETA_TRACKER_DATA si usa una cartella dati di prova. Niente rete né finestra dell'overlay in questa modalità
  *   (la sorgente per OBS sì, per mostrarne gli indirizzi).
@@ -41,7 +45,31 @@ const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--c
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
 
 if (process.env.ORIGINSMETA_TRACKER_DATA) app.setPath("userData", process.env.ORIGINSMETA_TRACKER_DATA);
-app.setAppUserModelId("com.originsmeta.tracker");
+app.setAppUserModelId("com.originsmeta.analytics");
+
+/** I file dei dati dell'app (store.ts, sync.ts, account.ts, overlay.json). */
+const DATA_FILES = ["matches.jsonl", "state.json", "sync.json", "account.json", "overlay.json"];
+
+/**
+ * Cambio di nome del 01/10/2026: con "OriginsMeta Analytics" Electron tiene i dati in %APPDATA%\OriginsMeta Analytics.
+ * Se lì non c'è ancora niente e la cartella vecchia (%APPDATA%\OriginsMeta Tracker) ha i dati, si copiano: storico,
+ * stato, invii, collegamento (il token resta cifrato per lo stesso utente di Windows) e posizione dell'overlay. La
+ * cartella vecchia resta com'è. Con ORIGINSMETA_TRACKER_DATA (prove) non si tocca niente.
+ */
+function moveOldData() {
+  if (process.env.ORIGINSMETA_TRACKER_DATA) return;
+  const target = app.getPath("userData");
+  const old = path.join(app.getPath("appData"), "OriginsMeta Tracker");
+  if (path.resolve(old) === path.resolve(target) || !fs.existsSync(path.join(old, "state.json"))) return;
+  if (DATA_FILES.some((f) => fs.existsSync(path.join(target, f)))) return;
+  try {
+    fs.mkdirSync(target, { recursive: true });
+    for (const f of DATA_FILES) if (fs.existsSync(path.join(old, f))) fs.copyFileSync(path.join(old, f), path.join(target, f));
+  } catch {
+    // se la copia non riesce l'app parte vuota: i dati restano nella cartella vecchia
+  }
+}
+moveOldData();
 
 const SITE = "https://originsmeta.com/";
 const SITE_ORIGIN = siteBase(process.env.ORIGINSMETA_TRACKER_SITE);
@@ -62,11 +90,11 @@ let notice: AccountState["notice"] = null;
 let sessionStart = Date.now();
 let overlayServer: { port: number; url: string; close: () => void } | null = null;
 
-type CardRow = { n: string; l: 0 | 1 };
+type CardRow = { n: string; s: string; l: 0 | 1 };
 const CARDS = cardsTable as Record<string, CardRow>;
 const card: CardLookup = (key) => {
   const c = CARDS[key];
-  return c ? { name: c.n, legendary: c.l === 1 } : undefined;
+  return c ? { name: c.n, legendary: c.l === 1, slug: c.s } : undefined;
 };
 
 /* ---------- lingua del menu dell'icona ---------- */
@@ -76,9 +104,9 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
 /* ---------- avvio con Windows ---------- */
@@ -312,7 +340,7 @@ function todayRecord(): string {
 function refreshTray() {
   if (!tray) return;
   const t = TRAY[lang()];
-  tray.setToolTip(`OriginsMeta Tracker · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}`);
+  tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}`);
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: t.open, click: showWindow },
@@ -344,7 +372,7 @@ function createWindow(show: boolean) {
     minWidth: 420,
     minHeight: 480,
     show: false,
-    title: "OriginsMeta Tracker",
+    title: "OriginsMeta Analytics",
     backgroundColor: "#150c2c",
     icon: ICON,
     autoHideMenuBar: true,
@@ -415,10 +443,18 @@ function registerIpc() {
   ipcMain.handle("overlay:view", (e) => (fromOverlay(e) ? { view: currentView(), clickThrough: overlayPrefs.clickThrough } : null));
   ipcMain.on("tracker:rendered", (e) => {
     if (!CAPTURE || e.sender !== win?.webContents) return;
-    // l'interfaccia ha disegnato lo stato: un attimo per i caratteri, poi lo screenshot
+    // l'interfaccia ha disegnato lo stato: un attimo per i caratteri (e con --capture-delay per le immagini delle carte,
+    // che arrivano da originsmeta.com), poi lo screenshot
+    const delay = Number(process.argv.find((a) => a.startsWith("--capture-delay="))?.slice("--capture-delay=".length)) || 600;
     setTimeout(async () => {
       try {
-        if (process.argv.includes("--capture-bottom")) await win!.webContents.executeJavaScript("window.scrollTo(0, document.body.scrollHeight)");
+        // --capture-bottom: in fondo alla pagina; --capture-scroll=<px>: a un punto preciso. Poi un attimo per il ridisegno
+        const at = process.argv.find((a) => a.startsWith("--capture-scroll="))?.slice("--capture-scroll=".length);
+        const scroll = process.argv.includes("--capture-bottom") ? "document.body.scrollHeight" : at && /^\d{1,6}$/.test(at) ? at : null;
+        if (scroll) {
+          await win!.webContents.executeJavaScript(`window.scrollTo(0, ${scroll})`);
+          await new Promise((r) => setTimeout(r, 500));
+        }
         const image = await win!.webContents.capturePage();
         fs.mkdirSync(path.dirname(path.resolve(CAPTURE)), { recursive: true });
         fs.writeFileSync(path.resolve(CAPTURE), image.toPNG());
@@ -426,7 +462,7 @@ function registerIpc() {
         quitting = true;
         app.exit(0);
       }
-    }, 600);
+    }, Math.min(delay, 30_000));
   });
 }
 
