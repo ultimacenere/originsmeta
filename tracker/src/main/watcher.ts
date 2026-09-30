@@ -43,6 +43,11 @@ type Pending = {
   battleMode: string | null;
   fingerprint: string;
   results: string;
+  /** Gli esiti salvati prima di questa partita: se l'esito arriva dopo l'id, si ricalcola da qui. */
+  prevResults: string;
+  /** L'ora di fine rimasta quella della partita precedente (0.7): finché non cambia, `end.endedAt` è l'ora in cui il
+   * gioco ha scritto l'esito. */
+  staleAt: string | null;
   since: number;
   firstRun: boolean;
 };
@@ -82,6 +87,8 @@ export class MatchWatcher extends EventEmitter {
   private files: { stats: string | null; inventory: string | null } = { stats: null, inventory: null };
   private lastDiscover = -Infinity;
   private statsMtime = -1;
+  /** `lastMatchAt` della lettura precedente delle statistiche (undefined: nessuna lettura ancora). */
+  private seenAt: string | null | undefined = undefined;
   private pending: Pending | null = null;
   private deckKey: string | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -125,7 +132,7 @@ export class MatchWatcher extends EventEmitter {
       this.setStatus({ lastRead: new Date(now).toISOString() });
       this.emit("history", stats.results);
       this.updateDeck(stats);
-      await this.onStats(stats, now);
+      await this.onStats(stats, now, st.mtimeMs);
     } catch {
       failed = true;
       this.setStatus({ problem: PROBLEMS.error });
@@ -190,27 +197,59 @@ export class MatchWatcher extends EventEmitter {
     this.emit("deck", deck);
   }
 
-  private async onStats(stats: ProfileStats, now: number) {
+  /** `writtenAt`: ora di modifica del file letto, cioè quando il gioco l'ha scritto. */
+  private async onStats(stats: ProfileStats, now: number, writtenAt: number) {
+    const prevAt = this.seenAt;
+    this.seenAt = stats.lastMatchAt;
     if (!stats.lastMatchAt) {
       this.saved = { ...this.saved, results: stats.results };
       return;
     }
     const fingerprint = await matchFingerprint(stats.accountId, stats.lastMatchId, stats.lastMatchAt);
-    if (fingerprint === this.saved.lastFingerprint || fingerprint === this.pending?.fingerprint) return;
+    if (this.pending && fingerprint === this.pending.fingerprint) return this.refreshPending(this.pending, stats);
+    if (fingerprint === this.saved.lastFingerprint) return;
+    // Con la 0.7 (verificato il 30/09/2026) il gioco scrive esito e id della partita qualche secondo prima dell'ora di
+    // fine, che per un attimo resta quella della partita precedente: id nuovo con l'ora di prima = ora non ancora
+    // arrivata. Intanto vale l'ora in cui il gioco ha scritto l'esito; quella vera la prende `refreshPending`.
+    const stale = !this.firstRun && prevAt != null && stats.lastMatchAt === prevAt;
+    const endedAt = stale ? new Date(Math.min(writtenAt, now)).toISOString() : stats.lastMatchAt;
     let end: MatchEnd;
     if (this.firstRun) {
       const first = stats.results[0];
-      end = { endedAt: stats.lastMatchAt, result: first === "W" || first === "L" ? first : null, matchId: stats.lastMatchId, deckIndex: stats.activeDeckIndex, missed: "" };
+      end = { endedAt, result: first === "W" || first === "L" ? first : null, matchId: stats.lastMatchId, deckIndex: stats.activeDeckIndex, missed: "" };
     } else {
       const { result, missed } = resultsDelta(this.saved.results, stats.results);
-      end = { endedAt: stats.lastMatchAt, result, matchId: stats.lastMatchId, deckIndex: stats.activeDeckIndex, missed };
+      end = { endedAt, result, matchId: stats.lastMatchId, deckIndex: stats.activeDeckIndex, missed };
     }
     // due partite in meno di un minuto: la prima si chiude subito con quello che c'è
     if (this.pending) await this.finish(this.pending, null);
     const deck = stats.activeDeckIndex === null ? null : (this.decks()[stats.activeDeckIndex] ?? null);
-    this.pending = { end, accountId: stats.accountId, deck, battleMode: stats.battleMode, fingerprint, results: stats.results, since: now, firstRun: this.firstRun };
+    this.pending = {
+      end,
+      accountId: stats.accountId,
+      deck,
+      battleMode: stats.battleMode,
+      fingerprint,
+      results: stats.results,
+      prevResults: this.saved.results,
+      staleAt: stale ? stats.lastMatchAt : null,
+      since: now,
+      firstRun: this.firstRun,
+    };
     this.firstRun = false;
     await this.tryFinish(now);
+  }
+
+  /** La stessa partita riletta mentre si aspetta il replay: prende l'ora di fine e l'esito se arrivano dopo l'id. */
+  private refreshPending(p: Pending, stats: ProfileStats) {
+    if (p.staleAt !== null && stats.lastMatchAt && stats.lastMatchAt !== p.staleAt) {
+      p.end = { ...p.end, endedAt: stats.lastMatchAt };
+      p.staleAt = null;
+    }
+    if (p.firstRun || stats.results === p.results || !stats.results.endsWith(p.prevResults)) return;
+    const { result, missed } = resultsDelta(p.prevResults, stats.results);
+    if (p.end.result === null && result) p.end = { ...p.end, result, missed };
+    p.results = stats.results;
   }
 
   /** Il replay più recente se è quello della partita finita a `endedAt`. */

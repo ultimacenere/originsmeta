@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { MatchWatcher, REPLAY_WAIT_MS } from "./watcher";
+import { MatchWatcher, POLL_MS, REPLAY_WAIT_MS } from "./watcher";
 import { BOT, BOT_DECK, ME, MY_DECK, inventoryJson, statsJson, syntheticReplay } from "../../../src/lib/tracker/testing";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
@@ -238,6 +238,76 @@ describe("MatchWatcher", () => {
       );
       const json = JSON.stringify(out.matches);
       for (const tell of ["BotBattle", "RankedBattle", '"mode"']) assert.ok(!json.includes(tell), tell);
+    } finally {
+      g.cleanup();
+    }
+  });
+
+  // 0.7 (verificato il 30/09/2026 sul PC di Pierluigi): esito e id della partita nuova arrivano qualche secondo prima
+  // dell'ora di fine, che per un attimo resta quella della partita precedente
+  async function afterFirstRun(g: ReturnType<typeof setup>, prevEnd: number) {
+    g.stats({ lastMatchPlayedDateTime: iso(prevEnd), onboardingResults: "WL", onboardingLastMatchId: "offline_prev" }, prevEnd + 300);
+    const w = new MatchWatcher(g.dirs, { lastFingerprint: null, results: "" }, { firstRun: true, now: g.now });
+    const out = listen(w);
+    await w.tick();
+    g.advance(REPLAY_WAIT_MS);
+    await w.tick();
+    assert.equal(out.matches.length, 0);
+    return { w, out };
+  }
+
+  test("0.7: l'ora di fine arriva dopo esito e id: la partita prende l'ora del gioco", async () => {
+    const g = setup();
+    try {
+      const prevEnd = T0 - 3_600_000;
+      const { w, out } = await afterFirstRun(g, prevEnd);
+      const end = g.advance(10 * 60_000); // fine vera della partita
+      g.stats({ lastMatchPlayedDateTime: iso(prevEnd), onboardingResults: "WWL", onboardingLastMatchId: "offline_next" }, end + 300);
+      g.advance(1000);
+      await w.tick(); // per ora vale l'ora del file (end + 300), non quella della partita prima
+      g.advance(POLL_MS);
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "WWL", onboardingLastMatchId: "offline_next" }, end + 2000);
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.matches.length, 1);
+      assert.deepEqual([out.matches[0].endedAt, out.matches[0].result], [iso(end), "W"]);
+    } finally {
+      g.cleanup();
+    }
+  });
+
+  test("0.7: l'ora di fine non arriva: vale l'ora in cui il gioco ha scritto l'esito, mai quella della partita prima", async () => {
+    const g = setup();
+    try {
+      const prevEnd = T0 - 3_600_000;
+      const { w, out } = await afterFirstRun(g, prevEnd);
+      const seen = g.advance(10 * 60_000);
+      g.stats({ lastMatchPlayedDateTime: iso(prevEnd), onboardingResults: "LWL", onboardingLastMatchId: "offline_next" }, seen - 700);
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.matches.length, 1);
+      assert.deepEqual([out.matches[0].endedAt, out.matches[0].result], [iso(seen - 700), "L"]);
+    } finally {
+      g.cleanup();
+    }
+  });
+
+  test("l'esito arriva dopo l'id: si prende alla lettura dopo, e gli esiti salvati sono quelli nuovi", async () => {
+    const g = setup();
+    try {
+      const prevEnd = T0 - 3_600_000;
+      const { w, out } = await afterFirstRun(g, prevEnd);
+      const end = g.advance(10 * 60_000);
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "WL", onboardingLastMatchId: "offline_next" }, end + 300);
+      await w.tick();
+      g.advance(POLL_MS);
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "LWL", onboardingLastMatchId: "offline_next" }, end + 2000);
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.deepEqual([out.matches.length, out.matches[0]?.result, out.saved.at(-1)?.results], [1, "L", "LWL"]);
     } finally {
       g.cleanup();
     }
