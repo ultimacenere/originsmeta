@@ -417,7 +417,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 <span className="font-mono text-lg font-bold text-chalk">{percent(winrate.wins, winrate.games)}%</span>{" "}
                 {d.tier.winrate.deckBox.text
                   .replace("{rate}", "")
-                  .replace("{games}", String(winrate.games))
+                  .replace("{games}", winrate.games === 1 ? d.tier.winrate.gamesOne : d.tier.winrate.games.replace("{n}", String(winrate.games)))
                   .replace("{patch}", patchLabel(winrate.patch, locale))
                   .trim()}
                 {isEarly(winrate.games) ? (

@@ -63,7 +63,7 @@ export function tierExplorerLabels(d: Dictionary): TierExplorerLabels {
 export function tierSourceState(d: Dictionary, n: { lists: number; people: number; decks: number; officialUpdated?: string; winrateGames?: number | null }) {
   const t = d.tier;
   return {
-    winrate: n.winrateGames ? t.sourceWinrateGames.replace("{n}", String(n.winrateGames)) : t.sourceWinrateSoon,
+    winrate: n.winrateGames ? (n.winrateGames === 1 ? t.sourceWinrateGamesOne : t.sourceWinrateGames.replace("{n}", String(n.winrateGames))) : t.sourceWinrateSoon,
     official: n.officialUpdated ? t.sourceOfficialUpdated.replace("{date}", n.officialUpdated) : t.sourceOfficialSoon,
     // niente conteggio sotto "Community" (Pierluigi, 29/09/2026: "rimuovi la dicitura 6 persone"): resta solo il nome.
     // Quante persone hanno salvato una lista si legge ancora nella riga del campione (communitySample di tierstats.ts).

@@ -402,6 +402,7 @@ export const it: Dictionary = {
     sourceWinrate: "Win rate",
     sourceWinrateSoon: "in arrivo",
     sourceWinrateGames: "{n} partite",
+    sourceWinrateGamesOne: "1 partita",
     sourceWinrateHint: "dall'app Analytics",
     onThisPage: "In questa pagina",
     /* la riga sotto le schede: da dove viene la classifica e quanto sa */
@@ -476,13 +477,16 @@ export const it: Dictionary = {
       early: "prime stime",
       earlyTitle: "Meno di 100 partite: una prima stima",
       games: "{n} partite",
+      gamesOne: "1 partita",
+      players: "{n} giocatori",
+      playersOne: "1 giocatore",
       winsAgainst: "{p} vinte contro",
       shareNote: "delle partite",
       vs: "contro",
       showAll: "Mostra tutte ({n})",
       noneYet: "Ancora nessun numero sopra la soglia.",
       sourceText: "partite registrate con OriginsMeta Analytics, patch {patch}",
-      sampleText: "{games} partite di {players} giocatori",
+      sampleText: "{games} di {players}",
       measureText: "partite vinte su partite giocate, dal lato di chi le registra",
       notes: [
         "Contano solo i mazzi di chi registra: il mazzo dell'avversario non si conta mai, e la stessa partita conta una volta.",
@@ -499,7 +503,7 @@ export const it: Dictionary = {
         opponents: { title: "Leggendarie più incontrate", text: "Quanto spesso ogni Leggendaria compare dall'altra parte, e il win rate contro di lei." },
       },
       cols: { card: "Carta", inDeck: "Nel mazzo", played: "Giocata", avgRound: "Round medio" },
-      deckBox: { title: "Win rate nelle partite registrate", text: "{rate} su {games} partite · patch {patch}", link: "Tutti i win rate" },
+      deckBox: { title: "Win rate nelle partite registrate", text: "{rate} su {games} · patch {patch}", link: "Tutti i win rate" },
     },
     /* Griglia, elenco, tabella e dettaglio della carta (componente client TierExplorer) */
     explorer: {

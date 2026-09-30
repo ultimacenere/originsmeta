@@ -124,7 +124,9 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
 
   const nf = (n: number) => n.toLocaleString(locale === "en" ? "en-GB" : locale);
   const pct = (wins: number, games: number) => `${percent(wins, games) ?? 0}%`;
-  const games = (n: number) => w.games.replace("{n}", nf(n));
+  // singolare per 1 (con la soglia di prova del 01/10/2026 i numeri partono da una partita di un giocatore)
+  const games = (n: number) => (n === 1 ? w.gamesOne : w.games.replace("{n}", nf(n)));
+  const players = (n: number) => (n === 1 ? w.playersOne : w.players.replace("{n}", nf(n)));
   const wl = (wins: number, all: number) => `${wins}–${all - wins}`;
   const early = { earlyLabel: w.early, earlyTitle: w.earlyTitle };
   const legendaryLabel = d.common.legendary;
@@ -388,7 +390,7 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
         <TierSourceLine
           items={[
             { label: t.lineSource, text: w.sourceText.replace("{patch}", patchName(data?.patch ?? latestPatch)) },
-            ...(data ? [{ label: t.lineSample, text: w.sampleText.replace("{games}", nf(data.overview.games)).replace("{players}", nf(data.overview.players)) }] : []),
+            ...(data ? [{ label: t.lineSample, text: w.sampleText.replace("{games}", games(data.overview.games)).replace("{players}", players(data.overview.players)) }] : []),
             { label: t.lineMeasure, text: w.measureText },
           ]}
         />

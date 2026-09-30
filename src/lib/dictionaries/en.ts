@@ -409,6 +409,7 @@ export const en = {
     sourceWinrate: "Win rate",
     sourceWinrateSoon: "coming soon",
     sourceWinrateGames: "{n} games",
+    sourceWinrateGamesOne: "1 game",
     sourceWinrateHint: "from the Analytics app",
     onThisPage: "On this page",
     /* the line under the tabs: where the ranking comes from and how much it knows */
@@ -486,6 +487,9 @@ export const en = {
       early: "early estimates",
       earlyTitle: "Fewer than 100 games: an early estimate",
       games: "{n} games",
+      gamesOne: "1 game",
+      players: "{n} players",
+      playersOne: "1 player",
       /* {p} = percentage */
       winsAgainst: "{p} won against it",
       /* under the share of games of the most faced Legendaries */
@@ -494,7 +498,7 @@ export const en = {
       showAll: "Show all {n}",
       noneYet: "No number above the threshold yet.",
       sourceText: "games recorded with OriginsMeta Analytics, patch {patch}",
-      sampleText: "{games} games by {players} players",
+      sampleText: "{games} by {players}",
       measureText: "games won out of games played, from the side of whoever records them",
       notes: [
         "Only the decks of whoever records count: the opponent's deck is never counted, and the same game counts once.",
@@ -512,7 +516,7 @@ export const en = {
       },
       cols: { card: "Card", inDeck: "In the deck", played: "When played", avgRound: "Avg. round" },
       /* box on the community deck pages, only when the deck's exact list passes the threshold */
-      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} games · patch {patch}", link: "All win rates" },
+      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} · patch {patch}", link: "All win rates" },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */
     explorer: {
