@@ -5,13 +5,14 @@
  * - Sempre "non affiliato a Koin Games", nessuna parola su bot o persone (regola del tracker), l'informativa nelle tre
  *   lingue con il contatto per farsi cancellare.
  * - Gli stessi valori del blocco INTERESSE ANALYTICS di schema.sql (lingue, posizioni del tasto, forma del numero del
- *   browser) e le immagini nelle tre lingue.
+ *   browser), il numero degli interessati mai mostrato (il tasto riceve solo vero o falso, i totali solo lo staff) e le
+ *   immagini nelle tre lingue.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { analyticsInterestPrivacy, analyticsLabels, interestCount } from "./analyticsLabels.ts";
+import { analyticsInterestPrivacy, analyticsLabels } from "./analyticsLabels.ts";
 
 const LOCALES = ["en", "it", "es"] as const;
 const TITLE_MAX = 60;
@@ -34,8 +35,8 @@ describe("analytics: testi della pagina", () => {
       // parole intere anche con le lettere accentate ("botón" non è "bot"): confini Unicode, non \b
       const whole = (w: string, flags = "iu") => new RegExp(`(?<!\\p{L})${w}(?!\\p{L})`, flags);
       for (const word of [whole("bots?"), whole("AI", "u"), whole("IA", "u"), whole("humans?"), whole("umani?"), whole("humanos?"), whole("persona")]) assert.ok(!word.test(all), String(word));
-      assert.equal(interestCount(x.interest, 1), x.interest.countOne);
-      assert.ok(interestCount(x.interest, 42).includes("42"));
+      // il numero degli interessati non si mostra (Pierluigi, 02/10/2026): nessun segnaposto di conteggio nei testi
+      assert.ok(!/\{n\}/.test(JSON.stringify(x.interest)));
     });
 
     test(`${l}: informativa con il contatto e l'indirizzo della pagina`, () => {
@@ -60,7 +61,11 @@ describe("analytics: come il blocco INTERESSE ANALYTICS di schema.sql", () => {
     assert.ok(at > 0);
     assert.match(block, /revoke all on public\.analytics_interest from anon, authenticated;/);
     assert.match(block, /grant execute on function public\.analytics_interest_add\(text, text, text\) to anon, authenticated;/);
-    assert.match(block, /grant execute on function public\.analytics_interest_count\(\) to anon, authenticated;/);
+    assert.match(block, /revoke all on function public\.analytics_interest_count\(\) from public, anon;/);
+    assert.match(block, /grant execute on function public\.analytics_interest_count\(\) to authenticated;/);
+    assert.match(block, /if not public\.is_staff\(\) then\s+raise exception 'forbidden'/);
+    assert.match(block, /analytics_interest_add\(p_client text, p_locale text, p_source text\)\nreturns boolean/);
+    assert.ok(!component.includes("analytics_interest_count"), "il tasto non legge i totali");
   });
 
   test("stesse lingue, stesse posizioni del tasto, stesso numero del browser", () => {

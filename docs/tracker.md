@@ -296,17 +296,19 @@ con una riga nel SQL Editor di Supabase (esempio per la 0.8 con l'ora del post):
 
 **Dal 02/10/2026 la pagina dei win rate e il riquadro nelle schede dei mazzi non ci sono più** (Pierluigi: "togliamo la
 pagina del winrate, creiamo una pagina invece"): con la 0.7 i dati non bastano (vedi "I file del gioco"). Al loro posto
-**`/analytics`** (`src/app/[locale]/(site)/analytics/page.tsx`, ISR, indicizzabile, in sitemap): che cosa fa il tool, con
+**`/analytics`** (`src/app/[locale]/(site)/analytics/page.tsx`, statica, indicizzabile, in sitemap): che cosa fa il tool, con
 gli screenshot dell'app e dell'overlay nelle tre lingue (`public/media/analytics/`, fatti con `--capture` su una copia
 dei dati senza collegamento), perché è in pausa, che lo mostreremo a Koin Games, e il tasto **"Sei interessato al
 tool?"** sopra e sotto (`AnalyticsInterest`): conta una volta per browser (numero a caso nel localStorage) e una per
 account con la funzione `analytics_interest_add` (blocco `02/10/2026: INTERESSE ANALYTICS` di schema.sql, tetto di 30 al
-minuto, la tabella non si legge direttamente; totali con `analytics_interest_count`), evento `analytics_interest`,
+minuto, la tabella non si legge direttamente; la funzione dice solo se la persona è nuova), evento `analytics_interest`,
 informativa `#analytics-interest`. Testi in `src/lib/analyticsLabels.ts` (test `analyticsLabels.test.ts`). Il vecchio
 indirizzo porta lì con un 308 (next.config.ts) e la quarta scheda della tier list e la voce del sottomenu sono diventate
 "Analytics · in pausa". Le funzioni `tracker_stats_*` restano nel database e `trackerStatsQueries.ts` resta nel codice,
-per quando i dati torneranno. Quanti si sono iscritti: `select * from public.analytics_interest_count();` (browser e
-account), oppure il numero sotto il tasto.
+per quando i dati torneranno. **Il numero degli interessati non si mostra** sulla pagina (Pierluigi, 02/10/2026: "non
+voglio si vedano il numero di interessati"): dall'editor SQL di Supabase `select count(*), count(user_id) from
+public.analytics_interest;` (browser e account); dal sito, con un account Staff o admin, la funzione
+`analytics_interest_count()` (rifiuta tutti gli altri, anche l'editor SQL, dove non c'è un utente).
 
 Proposta del 30/09/2026; Pierluigi: "fai 1 e 2". Fatti (tolti il 02/10/2026, vedi sopra):
 

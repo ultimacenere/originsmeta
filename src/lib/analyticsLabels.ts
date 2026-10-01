@@ -10,7 +10,8 @@ import type { Locale } from "./i18n";
  * Solo fatti verificati: fino alla 0.6 il gioco salvava a fine partita un replay (mazzi, carte giocate, Leggendaria
  * avversaria); dalla 0.7 (29/09/2026) il replay non c'è più e sul PC restano pochi dati di una parte delle partite
  * (docs/tracker.md, "I file del gioco"). Nessuna intenzione attribuita a Koin Games, e sempre "non affiliato".
- * Regola del tracker: nessuna parola su bot o persone.
+ * Regola del tracker: nessuna parola su bot o persone. Il numero degli interessati non si mostra (Pierluigi: "non
+ * voglio si vedano il numero di interessati"): lo legge solo lo staff.
  */
 const en = {
   meta: {
@@ -28,9 +29,6 @@ const en = {
     sending: "One moment…",
     done: "Thanks! You've been counted.",
     already: "You're already counted: thanks!",
-    countOne: "So far 1 player wants it.",
-    /** {n} */
-    countMany: "So far {n} players want it.",
     error: "Your answer couldn't be saved. Please try again.",
     rateLimited: "Lots of answers at once: try again in a minute.",
     unavailable: "Counting isn't active yet: try again later.",
@@ -95,8 +93,6 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       sending: "Un attimo…",
       done: "Grazie! Ti abbiamo contato.",
       already: "Ti abbiamo già contato: grazie!",
-      countOne: "Finora 1 giocatore lo vuole.",
-      countMany: "Finora {n} giocatori lo vogliono.",
       error: "Non è stato possibile registrare la risposta. Riprova.",
       rateLimited: "Tante risposte tutte insieme: riprova fra un minuto.",
       unavailable: "Il conteggio non è ancora attivo: riprova più tardi.",
@@ -156,8 +152,6 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       sending: "Un momento…",
       done: "¡Gracias! Ya te contamos.",
       already: "Ya te contamos: ¡gracias!",
-      countOne: "Por ahora 1 jugador la quiere.",
-      countMany: "Por ahora {n} jugadores la quieren.",
       error: "No se pudo guardar tu respuesta. Vuelve a intentarlo.",
       rateLimited: "Muchas respuestas a la vez: vuelve a intentarlo en un minuto.",
       unavailable: "El conteo todavía no está activo: vuelve a intentarlo más tarde.",
@@ -203,11 +197,6 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
   },
 };
-
-/** Il numero di interessati in una frase (singolare per 1). */
-export function interestCount(l: AnalyticsLabels["interest"], n: number): string {
-  return n === 1 ? l.countOne : l.countMany.replace("{n}", String(n));
-}
 
 /**
  * Paragrafo dell'informativa (/privacy, ancora #analytics-interest): che cosa si salva quando si preme "Sì, mi

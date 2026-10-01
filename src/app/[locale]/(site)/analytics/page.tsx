@@ -3,7 +3,6 @@ import Image from "next/image";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { analyticsLabels } from "@/lib/analyticsLabels";
-import { supabasePublic } from "@/lib/supabase/public";
 import { AnalyticsInterest } from "@/components/AnalyticsInterest";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
@@ -12,11 +11,11 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   […] in cui spieghiamo anche con screenshot che il tool esiste ed è pronto, ma con la nuova patch son stati rimossi
   tutti i dati di gioco", con il tasto "sei interessato al tool?" sopra e sotto per raccogliere i numeri da mostrare a
   Kevin di Koin Games). Prende il posto di /tier-list/win-rate (redirect permanente in next.config.ts) e della quarta
-  scheda della tier list. ISR: il totale degli interessati si rilegge ogni 5 minuti, il tasto lo aggiorna nel browser.
+  scheda della tier list. Pagina statica: il numero degli interessati non si mostra (Pierluigi: "non voglio si vedano
+  il numero di interessati"), lo legge solo lo staff (analytics_interest_count).
   Screenshot dell'app vera nelle tre lingue (public/media/analytics, fatti con --capture su una copia dei dati, senza
   collegamento: nessun nome utente), con le carte intere e i loro crediti.
 */
-export const revalidate = 300;
 
 const OVERVIEW = { width: 1200, height: 799 };
 const MATCHES = { width: 1200, height: 667 };
@@ -31,25 +30,11 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   });
 }
 
-/** Il totale degli interessati; null prima della migrazione o con un errore (il numero è solo un di più). */
-async function readInterestTotal(): Promise<number | null> {
-  const sb = supabasePublic();
-  if (!sb) return null;
-  try {
-    const { data, error } = await sb.rpc("analytics_interest_count");
-    if (error || !Array.isArray(data) || !data[0]) return null;
-    return Number(data[0].total);
-  } catch {
-    return null;
-  }
-}
-
 export default async function AnalyticsPage({ params }: { params: LocaleParams }) {
   const { locale } = await resolveLocale(params);
   const x = analyticsLabels[locale];
   const path = href(locale, "/analytics");
-  const total = await readInterestTotal();
-  const interest = { locale, labels: x.interest, privacyHref: `${href(locale, "/privacy")}#analytics-interest`, initialTotal: total };
+  const interest = { locale, labels: x.interest, privacyHref: `${href(locale, "/privacy")}#analytics-interest` };
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <JsonLd

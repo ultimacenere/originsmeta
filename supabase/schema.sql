@@ -4976,12 +4976,15 @@ grant execute on function public.tracker_match_ok(jsonb) to authenticated;
 grant execute on function public.tracker_stats_ok(bigint, bigint) to authenticated;
 grant execute on function public.tracker_stats_queue() to authenticated;
 
+
 -- ===== 02/10/2026: INTERESSE ANALYTICS =====
 -- Pagina /analytics (Pierluigi, 02/10/2026: "un bel tasto sia sopra che sotto, 'sei interessato al tool?', così
--- raccogliamo i numeri di chi vorrebbe il tool, poi andrò da Kevin a mostrarglielo"). Si conta una volta per browser
--- (`client_key`, un numero a caso che la pagina tiene nel browser) e una volta per account (chi ha fatto l'accesso);
--- niente email, niente IP. La tabella non si legge né si scrive direttamente: solo le due funzioni, che restituiscono
--- i totali. Contro le raffiche: al massimo 30 iscrizioni al minuto in tutto. Tutto è idempotente.
+-- raccogliamo i numeri di chi vorrebbe il tool, poi andrò da Kevin a mostrarglielo"; e "non voglio si vedano il numero
+-- di interessati"). Si conta una volta per browser (`client_key`, un numero a caso che la pagina tiene nel browser) e
+-- una volta per account (chi ha fatto l'accesso); niente email, niente IP. La tabella non si legge né si scrive
+-- direttamente: il tasto chiama analytics_interest_add, che dice solo se la persona è nuova (mai i totali); i totali li
+-- legge solo lo staff (analytics_interest_count). Contro le raffiche: al massimo 30 iscrizioni al minuto in tutto.
+-- Tutto è idempotente.
 create table if not exists public.analytics_interest (
   id bigint generated always as identity primary key,
   client_key text not null unique check (client_key ~ '^[0-9a-f]{32}$'),
@@ -4995,10 +4998,11 @@ create index if not exists analytics_interest_created_idx on public.analytics_in
 alter table public.analytics_interest enable row level security;
 revoke all on public.analytics_interest from anon, authenticated;
 
--- Iscrive chi preme il tasto. `added` = false se quel browser o quell'account c'era già (i totali non cambiano);
--- un browser già contato senza account prende l'account appena chi lo usa ha fatto l'accesso.
+-- Iscrive chi preme il tasto: true se è nuovo, false se quel browser o quell'account c'era già. Un browser già contato
+-- senza account prende l'account appena chi lo usa ha fatto l'accesso. Nessun totale (il numero non si mostra).
+drop function if exists public.analytics_interest_add(text, text, text);
 create or replace function public.analytics_interest_add(p_client text, p_locale text, p_source text)
-returns table (total bigint, accounts bigint, added boolean)
+returns boolean
 language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   uid uuid := auth.uid();
@@ -5019,18 +5023,22 @@ begin
     on conflict do nothing;
     get diagnostics n = row_count;
   end if;
-  return query select (select count(*) from public.analytics_interest),
-                      (select count(*) from public.analytics_interest a where a.user_id is not null),
-                      n > 0;
+  return n > 0;
 end $$;
 revoke all on function public.analytics_interest_add(text, text, text) from public;
 grant execute on function public.analytics_interest_add(text, text, text) to anon, authenticated;
 
--- I totali, per la pagina (ISR) e per lo staff: quanti browser e quanti account.
+-- I totali, solo per lo staff (is_staff: ruolo admin o tag Staff): quanti browser e quanti account.
+-- Dall'editor SQL di Supabase (proprietario): select count(*), count(user_id) from public.analytics_interest;
+drop function if exists public.analytics_interest_count();
 create or replace function public.analytics_interest_count()
 returns table (total bigint, accounts bigint)
-language sql stable security definer set search_path = public, pg_temp as $$
-  select count(*), count(*) filter (where user_id is not null) from public.analytics_interest;
-$$;
-revoke all on function public.analytics_interest_count() from public;
-grant execute on function public.analytics_interest_count() to anon, authenticated;
+language plpgsql stable security definer set search_path = public, pg_temp as $$
+begin
+  if not public.is_staff() then
+    raise exception 'forbidden';
+  end if;
+  return query select count(*), count(*) filter (where user_id is not null) from public.analytics_interest;
+end $$;
+revoke all on function public.analytics_interest_count() from public, anon;
+grant execute on function public.analytics_interest_count() to authenticated;

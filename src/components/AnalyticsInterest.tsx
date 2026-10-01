@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics";
-import { interestCount, type AnalyticsLabels } from "@/lib/analyticsLabels";
+import type { AnalyticsLabels } from "@/lib/analyticsLabels";
 import type { Locale } from "@/lib/i18n";
 
 /**
  * Tasto "Sei interessato al tool?" della pagina /analytics (02/10/2026, Pierluigi: "un bel tasto sia sopra che sotto
  * […] così raccogliamo i numeri di chi vorrebbe il tool"). Le due copie sono legate: premuta una, anche l'altra dice
- * "ti abbiamo contato" e mostra il totale nuovo.
+ * "ti abbiamo contato". Il numero degli interessati non si mostra (Pierluigi: "non voglio si vedano il numero di
+ * interessati"): la funzione del database dice solo se la persona è nuova, i totali li legge lo staff.
  *
  * Il conteggio lo fa il database (`analytics_interest_add`, blocco INTERESSE ANALYTICS di schema.sql): una volta per
  * browser, con un numero a caso tenuto nel localStorage, e una volta per account se c'è l'accesso. Niente email, niente
@@ -55,29 +56,15 @@ export function AnalyticsInterest({
   placement,
   labels,
   privacyHref,
-  initialTotal,
 }: {
   locale: Locale;
   placement: "top" | "bottom";
   labels: AnalyticsLabels["interest"];
   privacyHref: string;
-  /** totale letto dalla pagina (ISR); null se il conteggio non è ancora attivo */
-  initialTotal: number | null;
 }) {
   // già contato in questo browser (anche dall'altra copia del tasto): letto dal localStorage, mai durante il rendering sul server
   const counted = useSyncExternalStore(subscribe, () => Boolean(readSaved()?.done), () => false);
   const [status, setStatus] = useState<Status>("idle");
-  const [total, setTotal] = useState<number | null>(initialTotal);
-
-  // il totale nuovo arriva anche dall'altra copia del tasto
-  useEffect(() => {
-    const onChange = (e: Event) => {
-      const n = (e as CustomEvent<{ total?: number }>).detail?.total;
-      if (typeof n === "number") setTotal(n);
-    };
-    window.addEventListener(CHANGED, onChange);
-    return () => window.removeEventListener(CHANGED, onChange);
-  }, []);
 
   async function send() {
     const sb = supabaseBrowser();
@@ -87,18 +74,15 @@ export function AnalyticsInterest({
     if (!saved) writeSaved({ key });
     setStatus("sending");
     const { data, error } = await sb.rpc("analytics_interest_add", { p_client: key, p_locale: locale, p_source: placement });
-    const row = Array.isArray(data) ? data[0] : null;
-    if (error || !row) {
+    if (error || typeof data !== "boolean") {
       const missing = ["PGRST202", "42883", "42P01"].includes(error?.code ?? "");
       setStatus(missing ? "unavailable" : /rate_limited/.test(error?.message ?? "") ? "rateLimited" : "error");
       return;
     }
     writeSaved({ key, done: true });
-    const next = Number(row.total);
-    setTotal(next);
-    setStatus(row.added ? "done" : "already");
-    window.dispatchEvent(new CustomEvent(CHANGED, { detail: { total: next } }));
-    trackEvent("analytics_interest", { placement, added: row.added ? "yes" : "no" });
+    setStatus(data ? "done" : "already");
+    window.dispatchEvent(new Event(CHANGED));
+    trackEvent("analytics_interest", { placement, added: data ? "yes" : "no" });
   }
 
   const thanks = status === "done" ? labels.done : status === "already" || counted ? labels.already : null;
@@ -116,7 +100,6 @@ export function AnalyticsInterest({
             {status === "sending" ? labels.sending : labels.button}
           </button>
         )}
-        {total !== null && total > 0 ? <p className="text-sm text-pale">{interestCount(labels, total)}</p> : null}
       </div>
       {problem ? (
         <p className="mt-2 text-sm text-gold" role="alert">
