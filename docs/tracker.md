@@ -245,9 +245,18 @@ calcola il database, al momento, con funzioni `security definer` per anon che re
 **Soglia di prova dal 01/10/2026** (Pierluigi: "togli il limite delle 20 partite per il momento, voglio vedere le
 statistiche sul sito, poi rimettiamo il limite"): 1 partita e 1 giocatore invece di 20 e 3, in `TRACKER_STATS` di
 `stats.ts` e in `tracker_stats_ok` del blocco TRACKER, con il solo account di Pierluigi collegato. La pagina Win rate lo
-dice (`testThresholds`, avviso "Soglia di prova"); l'informativa resta quella del lancio. **Da rimettere prima della
-build per i tester**: `TRACKER_STATS` uguale a `TRACKER_STATS_LAUNCH` (20 e 3) e `tracker_stats_ok` con 20 e 3, poi
-migrazione; i test e la prova a secco seguono la soglia scritta nello schema.
+dice (`testThresholds`, avviso "Soglia di prova"); l'informativa resta quella del lancio. La notte del 01/10, con
+l'app anche a Davdas, Pierluigi ha deciso di tenerla ("niente soglia, restiamo liberi") per le prove dei giorni dopo:
+**si rimette quando lo dice lui**, e comunque prima di collegare persone fuori dallo staff (l'informativa promette 20 e
+3): `TRACKER_STATS` uguale a `TRACKER_STATS_LAUNCH` (20 e 3) e `tracker_stats_ok` con 20 e 3, poi migrazione; i test e
+la prova a secco seguono la soglia scritta nello schema.
+
+**Amichevoli: non si registrano** (verificato la notte del 01/10/2026 con un'amichevole fra Pierluigi e Davdas, tutti
+e due con l'app). Il gioco non scrive niente di loro: statistiche del profilo ferme, nessun replay, nel log solo
+messaggi del motore, nell'inventario (riscritto a fine partita) solo mazzi, carte, cosmetici, ricompense e valute.
+Pierluigi le voleva "come le code normali, senza inventarsi roba in più": non si può, e la domanda dell'esito a fine
+partita (contatore `MatchEndCounter` delle preferenze del gioco più finestrella) l'ha scartata. Quel lavoro sta sul branch
+locale `wip/amichevoli-domanda`, non pubblicato. Se i replay tornano, forse tornano anche le amichevoli.
 
 | Funzione | Numeri (per una patch) |
 |---|---|
