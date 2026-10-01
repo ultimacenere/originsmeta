@@ -40,8 +40,9 @@ export type AccountState = {
   lastSyncAt: string | null;
   problem: SyncProblem | null;
   running: boolean;
-  /** "unlinked": il sito ha scollegato questo PC (resta finché non si ricollega) */
-  notice: "unlinked" | null;
+  /** "unlinked": il sito ha scollegato questo PC (resta finché non si ricollega); "relink": il collegamento salvato
+   *  non si legge più su questo PC (account.ts, `unreadable`) e va rifatto */
+  notice: "unlinked" | "relink" | null;
 };
 
 /**

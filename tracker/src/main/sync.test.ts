@@ -237,4 +237,30 @@ describe("Account (token cifrato)", () => {
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  test("collegamento salvato che non si decifra più (chiave cambiata, 01/10/2026): non collegato e da rifare", () => {
+    const dir = tmp();
+    try {
+      new Account(dir, cipher()).set(TOKEN, "aldrymus", "https://originsmeta.com");
+      // un'altra chiave: il token si decifra in qualcosa che non è un token
+      const other: Cipher = { available: () => true, encrypt: (t) => Buffer.from(t), decrypt: (d) => Buffer.from(d).toString("utf8") };
+      const a = new Account(dir, other);
+      a.load();
+      assert.deepEqual([a.linked, a.unreadable], [false, true]);
+      // una chiave che lancia, come safeStorage con un file d'altri
+      const throwing: Cipher = { available: () => true, encrypt: (t) => Buffer.from(t), decrypt: () => { throw new Error("Error while decrypting the ciphertext provided to safeStorage.decryptString."); } };
+      const b = new Account(dir, throwing);
+      b.load();
+      assert.deepEqual([b.linked, b.unreadable], [false, true]);
+      // ricollegando l'avviso sparisce
+      b.set(TOKEN, "aldrymus", "https://originsmeta.com");
+      assert.deepEqual([b.linked, b.unreadable], [true, false]);
+      // nessun file: né collegato né da rifare
+      const empty = new Account(tmp(), cipher());
+      empty.load();
+      assert.deepEqual([empty.linked, empty.unreadable], [false, false]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });

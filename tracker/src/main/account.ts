@@ -28,30 +28,50 @@ export class Account {
   private readonly cipher: Cipher;
   private data: { token: string; username: string | null; linkedAt: string; site: string } | null = null;
   private stored = false;
+  private broken = false;
 
   constructor(dir: string, cipher: Cipher) {
     this.dir = dir;
     this.cipher = cipher;
   }
 
-  /** Legge il collegamento salvato; un file rotto o che non si decifra (altro utente di Windows) vale "non collegato". */
+  /**
+   * Legge il collegamento salvato; un file rotto o che non si decifra vale "non collegato". Se il file c'è ma il token
+   * non si decifra più (`unreadable`: altro utente di Windows, o la chiave della cartella dei dati è cambiata, come
+   * il 01/10/2026 col cambio di nome dell'app) l'interfaccia chiede di ricollegare: senza, l'app smetteva di mandare
+   * le partite senza dirlo.
+   */
   load(): void {
     this.data = null;
     this.stored = false;
+    this.broken = false;
+    let raw: Partial<AccountFile>;
     try {
-      const raw = JSON.parse(fs.readFileSync(path.join(this.dir, FILE), "utf8")) as Partial<AccountFile>;
-      if (raw?.v !== 1 || typeof raw.token !== "string" || !this.cipher.available()) return;
-      const token = this.cipher.decrypt(Buffer.from(raw.token, "base64"));
-      if (!TOKEN_RE.test(token)) return;
+      raw = JSON.parse(fs.readFileSync(path.join(this.dir, FILE), "utf8")) as Partial<AccountFile>;
+    } catch {
+      return; // nessun collegamento (primo avvio) o file illeggibile
+    }
+    if (raw?.v !== 1 || typeof raw.token !== "string") return;
+    try {
+      const token = this.cipher.available() ? this.cipher.decrypt(Buffer.from(raw.token, "base64")) : "";
+      if (!TOKEN_RE.test(token)) {
+        this.broken = true;
+        return;
+      }
       this.data = { token, username: typeof raw.username === "string" ? raw.username : null, linkedAt: String(raw.linkedAt ?? ""), site: String(raw.site ?? "") };
       this.stored = true;
     } catch {
-      // nessun collegamento (primo avvio) o file illeggibile
+      this.broken = true;
     }
   }
 
   get linked(): boolean {
     return this.data !== null;
+  }
+
+  /** C'è un collegamento salvato che su questo PC non si legge più: va rifatto con un codice nuovo. */
+  get unreadable(): boolean {
+    return this.broken;
   }
 
   get token(): string | null {
@@ -81,6 +101,7 @@ export class Account {
     if (!TOKEN_RE.test(token)) throw new Error("token non valido");
     this.data = { token, username, linkedAt: now.toISOString(), site };
     this.stored = false;
+    this.broken = false;
     fs.mkdirSync(this.dir, { recursive: true });
     const file = path.join(this.dir, FILE);
     if (!this.cipher.available()) {
@@ -99,6 +120,7 @@ export class Account {
   clear(): void {
     this.data = null;
     this.stored = false;
+    this.broken = false;
     fs.rmSync(path.join(this.dir, FILE), { force: true });
   }
 }

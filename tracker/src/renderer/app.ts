@@ -96,6 +96,7 @@ const LABELS = {
     openStats: "Your stats on originsmeta.com",
     notPersisted: "Windows data protection isn't available: the link lasts until you close the app.",
     unlinkedNotice: "The site unlinked this PC: link it again with a new code.",
+    relinkNotice: "The link saved on this PC can no longer be read: link the app again with a new code. The matches recorded in the meantime are sent as soon as you do.",
     linkProblems: {
       invalid_code: "Wrong or expired code: create a new one on the site.",
       too_many_devices: "You already have 10 linked PCs: unlink one on the site.",
@@ -195,6 +196,7 @@ const LABELS = {
     openStats: "Le tue statistiche su originsmeta.com",
     notPersisted: "La protezione dei dati di Windows non è disponibile: il collegamento vale fino alla chiusura dell'app.",
     unlinkedNotice: "Il sito ha scollegato questo PC: collegalo di nuovo con un codice nuovo.",
+    relinkNotice: "Il collegamento salvato su questo PC non si legge più: collega di nuovo l'app con un codice nuovo. Le partite registrate intanto partono appena lo fai.",
     linkProblems: {
       invalid_code: "Codice sbagliato o scaduto: creane uno nuovo sul sito.",
       too_many_devices: "Hai già 10 PC collegati: scollegane uno dal sito.",
@@ -294,6 +296,7 @@ const LABELS = {
     openStats: "Tus estadísticas en originsmeta.com",
     notPersisted: "La protección de datos de Windows no está disponible: la vinculación dura hasta que cierres la app.",
     unlinkedNotice: "El sitio desvinculó este PC: vuelve a vincularlo con un código nuevo.",
+    relinkNotice: "La vinculación guardada en este PC ya no se puede leer: vuelve a vincular la app con un código nuevo. Las partidas registradas mientras tanto se envían en cuanto lo hagas.",
     linkProblems: {
       invalid_code: "Código incorrecto o caducado: crea uno nuevo en el sitio.",
       too_many_devices: "Ya tienes 10 PC vinculados: desvincula uno en el sitio.",
@@ -512,7 +515,7 @@ function accountPanel(s: AppState) {
   const codeUrl = `https://originsmeta.com/${lang}/account/tracker`;
   if (!a.linked) {
     return `<section class="panel" id="account"><h2>${esc(L.account)}</h2><p class="sub">${esc(L.accountIntro)}</p>
-        ${a.notice === "unlinked" ? `<p class="problem">${esc(L.unlinkedNotice)}</p>` : ""}
+        ${a.notice === "unlinked" ? `<p class="problem">${esc(L.unlinkedNotice)}</p>` : a.notice === "relink" ? `<p class="problem">${esc(L.relinkNotice)}</p>` : ""}
         <p class="fine">${esc(L.consent)}</p>
         <p class="sub">${esc(L.howTo)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></p>
         <form id="link-form" class="row" autocomplete="off">

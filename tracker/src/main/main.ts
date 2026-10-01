@@ -53,8 +53,11 @@ const DATA_FILES = ["matches.jsonl", "state.json", "sync.json", "account.json", 
 /**
  * Cambio di nome del 01/10/2026: con "OriginsMeta Analytics" Electron tiene i dati in %APPDATA%\OriginsMeta Analytics.
  * Se lì non c'è ancora niente e la cartella vecchia (%APPDATA%\OriginsMeta Tracker) ha i dati, si copiano: storico,
- * stato, invii, collegamento (il token resta cifrato per lo stesso utente di Windows) e posizione dell'overlay. La
- * cartella vecchia resta com'è. Con ORIGINSMETA_TRACKER_DATA (prove) non si tocca niente.
+ * stato, invii, collegamento e posizione dell'overlay, **più `Local State`**, il file dove Electron tiene la chiave
+ * (cifrata con la protezione di Windows) di safeStorage: senza, il token copiato non si decifra e l'app si ritrova
+ * scollegata (successo il 01/10/2026 sul PC di Pierluigi, prima di questa correzione). Si fa prima che l'app parta,
+ * quindi prima che Electron crei una chiave nuova. La cartella vecchia resta com'è. Con ORIGINSMETA_TRACKER_DATA
+ * (prove) non si tocca niente.
  */
 function moveOldData() {
   if (process.env.ORIGINSMETA_TRACKER_DATA) return;
@@ -65,6 +68,7 @@ function moveOldData() {
   try {
     fs.mkdirSync(target, { recursive: true });
     for (const f of DATA_FILES) if (fs.existsSync(path.join(old, f))) fs.copyFileSync(path.join(old, f), path.join(target, f));
+    if (fs.existsSync(path.join(old, "Local State")) && !fs.existsSync(path.join(target, "Local State"))) fs.copyFileSync(path.join(old, "Local State"), path.join(target, "Local State"));
   } catch {
     // se la copia non riesce l'app parte vuota: i dati restano nella cartella vecchia
   }
@@ -475,6 +479,7 @@ async function boot() {
   const hadState = store.load();
   account = new Account(app.getPath("userData"), cipher);
   account.load();
+  if (account.unreadable) notice = "relink";
   sync = new SyncQueue(app.getPath("userData"), syncDeps);
   sync.load();
   loadOverlayPrefs();
