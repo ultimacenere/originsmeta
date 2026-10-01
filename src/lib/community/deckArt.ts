@@ -37,11 +37,18 @@ export function deckArtPathOk(path: unknown, owner?: string): path is string {
 }
 
 /**
+ * Mazzi con l'artwork sospeso dallo staff: il sito mostra la carta ufficiale, il file e `art_path` restano (basta togliere
+ * lo slug per rimetterlo). 01/10/2026, Pierluigi: il Merlin di Vega, finché non chiede i permessi per l'artwork.
+ */
+export const DECK_ART_HIDDEN: ReadonlySet<string> = new Set(["merlin-origins-tcg-no-es-magia-es-secuen-322b"]);
+
+/**
  * L'indirizzo dell'artwork da mostrare per un mazzo, o null: serve un percorso valido nella cartella del proprietario e un
  * proprietario che OGGI è Creator o Staff (chi perde il ruolo torna alla carta ufficiale senza perdere il file; le
  * letture pubbliche portano il tag, non il ruolo di admin). `base` = URL del progetto Supabase (src/lib/supabase/env.ts).
  */
-export function deckArtUrl(deck: { owner: string; art_path?: string | null; profile?: { badge?: string | null } | null }, base: string): string | null {
+export function deckArtUrl(deck: { owner: string; slug?: string; art_path?: string | null; profile?: { badge?: string | null } | null }, base: string): string | null {
+  if (deck.slug && DECK_ART_HIDDEN.has(deck.slug)) return null;
   if (!canUseDeckArt(deck.profile?.badge) || !deckArtPathOk(deck.art_path, deck.owner)) return null;
   return mediaPublicUrl(base, deck.art_path);
 }
