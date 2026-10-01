@@ -39,7 +39,14 @@ npm start          # build + avvio dell'app
 npm test           # test dell'app (cartelle finte del gioco, rete finta, server locale su 127.0.0.1)
 npm run typecheck  # tipi dell'app e del lettore
 npm run capture    # screenshot della finestra in out/capture.png (verifiche)
+npm run package    # versione portatile non firmata: out/OriginsMeta-Analytics-<versione>-win-x64.zip con LEGGIMI.txt
 ```
+
+- `npm run package` (01/10/2026, prima build per Davdas, 0.2.0): `scripts/package.mjs` compila, impacchetta con
+  `@electron/packager` preso con npx (non è una dipendenza; Electron dalla cache, la versione delle devDependencies),
+  solo `dist/` e `package.json` in asar, e fa lo zip con il LEGGIMI (SmartScreen, collegamento, overlay). Le build
+  condivise si archiviano in `G:\Il mio Drive\OriginsMeta\20_Tracker_build\`. Prima di una build per i tester: soglia
+  delle statistiche a 20 e 3 (docs/tracker.md, "Statistiche anonime").
 
 - `npm run build` rigenera anche `src/cards.json` dal database carte del sito (`../src/lib/data/cards.ts`).
 - Prove senza toccare lo storico vero: `ORIGINSMETA_TRACKER_DATA=<cartella>` (dati dell'app),
