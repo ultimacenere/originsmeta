@@ -7,7 +7,7 @@ import { CopyButton } from "./CopyButton";
 import { ProfileForm } from "./ProfileForm";
 
 /**
- * Sezione "Il tuo profilo pubblico" di /account (pacchetto CREATOR, 26/09/2026), per ogni iscritto: il modulo di bio,
+ * Sezione "Il tuo profilo pubblico" di /account/profile (pacchetto CREATOR, 26/09/2026; in /account fino al 01/10/2026), per ogni iscritto: il modulo di bio,
  * lingue e canali, e il link breve originsmeta.com/@<nome> da copiare. Legge il profilo con la sessione dell'utente
  * che la pagina ha già aperto (niente seconda verifica dell'accesso). Se le colonne non sono ancora nel database o la
  * lettura fallisce, al posto del modulo c'è una riga che lo dice: un modulo vuoto salvato cancellerebbe i canali.

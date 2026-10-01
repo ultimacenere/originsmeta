@@ -43,6 +43,8 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/:locale(en|it|es)/account",
+    // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
+    "/:locale(en|it|es)/account/profile",
     // casella messaggi (26/09/2026, pacchetto INBOX): elenco e conversazione dell'utente, area staff, pagine renderizzate sul server
     "/:locale(en|it|es)/account/messages",
     "/:locale(en|it|es)/account/messages/:id",

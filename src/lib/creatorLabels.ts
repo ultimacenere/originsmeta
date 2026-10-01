@@ -220,7 +220,7 @@ const en: CreatorLabels = {
       streamersEmpty: "Nobody has added a Twitch channel to their profile yet.",
       twitchChannel: "Twitch channel",
       howTo:
-        "Do you stream Origins TCG? Add your Twitch channel in your account, under “Your public profile”. With the Creator, Author, Pro or Staff role you show up here while you're live in the Origins TCG category, or with “Origins TCG” in the stream title.",
+        "Do you stream Origins TCG? Add your Twitch channel in your account, under “Edit my public page”. With the Creator, Author, Pro or Staff role you show up here while you're live in the Origins TCG category, or with “Origins TCG” in the stream title.",
       allCreators: "All creators and authors",
     },
   },
@@ -307,7 +307,7 @@ const en: CreatorLabels = {
   },
   langNames: { en: "English", it: "Italiano", es: "Español" },
   privacy:
-    "Public profile. The bio, channels and languages you write under \"Your public profile\" (My profile) are public: they appear on your /u page and, if you have the Creator, Author, Pro or Staff role, on the Creators and authors page and next to your name on your decks. You can change or delete them at any time. For people with one of these roles and a Twitch channel, our server asks Twitch whether the channel is live on Origins TCG (public channel data) at most once every 90 seconds, when someone opens a page that shows the badge; your browser does not contact Twitch until you open the link.",
+    "Public profile. The bio, channels and languages you write under \"Your public profile\" (My profile › Edit my public page) are public: they appear on your /u page and, if you have the Creator, Author, Pro or Staff role, on the Creators and authors page and next to your name on your decks. You can change or delete them at any time. For people with one of these roles and a Twitch channel, our server asks Twitch whether the channel is live on Origins TCG (public channel data) at most once every 90 seconds, when someone opens a page that shows the badge; your browser does not contact Twitch until you open the link.",
   footer: "Creators and authors",
 };
 
@@ -341,7 +341,7 @@ const it: CreatorLabels = {
       streamersEmpty: "Nessuno ha ancora aggiunto un canale Twitch al profilo.",
       twitchChannel: "Canale Twitch",
       howTo:
-        "Trasmetti Origins TCG? Aggiungi il tuo canale Twitch nel tuo account, in “Il tuo profilo pubblico”. Con il ruolo Creator, Autore, Pro o Staff compari qui mentre sei in diretta nella categoria Origins TCG, oppure con “Origins TCG” nel titolo.",
+        "Trasmetti Origins TCG? Aggiungi il tuo canale Twitch nel tuo account, in “Modifica la mia pagina pubblica”. Con il ruolo Creator, Autore, Pro o Staff compari qui mentre sei in diretta nella categoria Origins TCG, oppure con “Origins TCG” nel titolo.",
       allCreators: "Tutti i creator e gli autori",
     },
   },
@@ -428,7 +428,7 @@ const it: CreatorLabels = {
   },
   langNames: { en: "English", it: "Italiano", es: "Español" },
   privacy:
-    "Profilo pubblico. La bio, i canali e le lingue che scrivi in «Il tuo profilo pubblico» (Il mio profilo) sono pubblici: compaiono sulla tua pagina /u e, se hai il ruolo Creator, Autore, Pro o Staff, nella pagina Creator e autori e accanto al tuo nome nei tuoi mazzi. Puoi cambiarli o cancellarli quando vuoi. Per chi ha uno di questi ruoli e un canale Twitch, il nostro server chiede a Twitch se il canale è in diretta su Origins TCG (dati pubblici del canale) al massimo una volta ogni 90 secondi, quando qualcuno apre una pagina con il bollino; il tuo browser non contatta Twitch finché non apri il link.",
+    "Profilo pubblico. La bio, i canali e le lingue che scrivi in «Il tuo profilo pubblico» (Il mio profilo › Modifica la mia pagina pubblica) sono pubblici: compaiono sulla tua pagina /u e, se hai il ruolo Creator, Autore, Pro o Staff, nella pagina Creator e autori e accanto al tuo nome nei tuoi mazzi. Puoi cambiarli o cancellarli quando vuoi. Per chi ha uno di questi ruoli e un canale Twitch, il nostro server chiede a Twitch se il canale è in diretta su Origins TCG (dati pubblici del canale) al massimo una volta ogni 90 secondi, quando qualcuno apre una pagina con il bollino; il tuo browser non contatta Twitch finché non apri il link.",
   footer: "Creator e autori",
 };
 
@@ -462,7 +462,7 @@ const es: CreatorLabels = {
       streamersEmpty: "Nadie ha añadido todavía un canal de Twitch a su perfil.",
       twitchChannel: "Canal de Twitch",
       howTo:
-        "¿Transmites Origins TCG? Añade tu canal de Twitch en tu cuenta, en “Tu perfil público”. Con el rol Creator, Autor, Pro o Staff apareces aquí mientras estás en directo en la categoría Origins TCG, o con “Origins TCG” en el título.",
+        "¿Transmites Origins TCG? Añade tu canal de Twitch en tu cuenta, en “Editar mi página pública”. Con el rol Creator, Autor, Pro o Staff apareces aquí mientras estás en directo en la categoría Origins TCG, o con “Origins TCG” en el título.",
       allCreators: "Todos los creadores y autores",
     },
   },
@@ -549,7 +549,7 @@ const es: CreatorLabels = {
   },
   langNames: { en: "English", it: "Italiano", es: "Español" },
   privacy:
-    "Perfil público. La bio, los canales y los idiomas que escribes en «Tu perfil público» (Mi perfil) son públicos: aparecen en tu página /u y, si tienes el rol Creator, Autor, Pro o Staff, en la página Creadores y autores y junto a tu nombre en tus mazos. Puedes cambiarlos o borrarlos cuando quieras. Para quien tiene uno de estos roles y un canal de Twitch, nuestro servidor pregunta a Twitch si el canal está en directo con Origins TCG (datos públicos del canal) como mucho una vez cada 90 segundos, cuando alguien abre una página con la etiqueta; tu navegador no contacta con Twitch hasta que abres el enlace.",
+    "Perfil público. La bio, los canales y los idiomas que escribes en «Tu perfil público» (Mi perfil › Editar mi página pública) son públicos: aparecen en tu página /u y, si tienes el rol Creator, Autor, Pro o Staff, en la página Creadores y autores y junto a tu nombre en tus mazos. Puedes cambiarlos o borrarlos cuando quieras. Para quien tiene uno de estos roles y un canal de Twitch, nuestro servidor pregunta a Twitch si el canal está en directo con Origins TCG (datos públicos del canal) como mucho una vez cada 90 segundos, cuando alguien abre una página con la etiqueta; tu navegador no contacta con Twitch hasta que abres el enlace.",
   footer: "Creadores y autores",
 };
 

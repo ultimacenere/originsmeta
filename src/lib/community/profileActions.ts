@@ -33,6 +33,7 @@ export type ProfileActionState = {
 function revalidateProfile(username: string | null, showcase: boolean) {
   for (const l of locales) {
     revalidatePath(`/${l}/account`);
+    revalidatePath(`/${l}/account/profile`);
     if (username) revalidatePath(`/${l}/u/${username}`);
     if (showcase) {
       revalidatePath(`/${l}/creators`);

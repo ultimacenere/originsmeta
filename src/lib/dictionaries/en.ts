@@ -1175,6 +1175,15 @@ export const en = {
       deckQuota: "{used} of {cap} published decks.",
       deckQuotaUnlimited: "{used} published decks. Your role has no cap.",
       publicPage: "Your public page",
+      /* "Edit my public page" (01/10/2026): profile, photo, showcase and public numbers moved to /account/profile */
+      editPublicPage: "Edit my public page",
+      profilePage: {
+        title: "Edit my public page",
+        intro: "Everything people see on your public page: bio, channels and languages, profile photo and, for the Creator, Author, Pro and Staff roles, the showcase and its numbers.",
+        back: "My profile",
+        jump: "On this page",
+        sections: { profile: "Public profile", avatar: "Profile photo", showcase: "Showcase", stats: "Numbers" },
+      },
       myTierLists: "My tier lists",
       newTierList: "Make a tier list",
       tierListsIntro: "One tier list per type: saving another one from the maker replaces this one. Published tier lists count towards the community tier list; hidden ones stay here only.",
