@@ -84,6 +84,7 @@ describe("artwork della Leggendaria: regole pure", () => {
     assert.equal(A.deckArtUrl(deck("staff"), `${BASE}/`), `${BASE}/storage/v1/object/public/profile-media/${OWNER}/deck/${FILE}`);
     for (const badge of ["community", "author", "pro", "influencer", null]) assert.equal(A.deckArtUrl(deck(badge), BASE), null, String(badge));
     assert.equal(A.deckArtUrl(deck("creator", null), BASE), null);
+    for (const slug of A.DECK_ART_HIDDEN) assert.equal(A.deckArtUrl({ ...deck("creator"), slug }, BASE), null, `artwork sospeso: ${slug}`);
     assert.equal(A.deckArtUrl(deck("creator", `${OTHER}/deck/${FILE}`), BASE), null, "file di un altro utente");
     assert.equal(A.deckArtUrl({ owner: OWNER, art_path: `${OWNER}/deck/${FILE}` }, BASE), null, "senza profilo niente artwork");
   });
