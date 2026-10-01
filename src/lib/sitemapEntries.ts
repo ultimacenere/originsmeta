@@ -203,6 +203,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // /faq è l'unica pagina con dati strutturati FAQPage. Le sue date sono quelle del modello.
     { path: "/faq", section: "pages", route: "/faq", dates: [] },
     { path: "/about", section: "pages", route: "/about", dates: [] },
+    // OriginsMeta Analytics (02/10/2026): la pagina del tool in pausa, con il tasto per chi lo vuole. Date del modello.
+    { path: "/analytics", section: "pages", route: "/analytics", dates: [] },
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
     // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
     // e con i mazzi pubblicati, che mostra contati per autore.

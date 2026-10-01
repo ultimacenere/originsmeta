@@ -4975,3 +4975,62 @@ grant execute on function public.tracker_ts_ok(text) to authenticated;
 grant execute on function public.tracker_match_ok(jsonb) to authenticated;
 grant execute on function public.tracker_stats_ok(bigint, bigint) to authenticated;
 grant execute on function public.tracker_stats_queue() to authenticated;
+
+-- ===== 02/10/2026: INTERESSE ANALYTICS =====
+-- Pagina /analytics (Pierluigi, 02/10/2026: "un bel tasto sia sopra che sotto, 'sei interessato al tool?', così
+-- raccogliamo i numeri di chi vorrebbe il tool, poi andrò da Kevin a mostrarglielo"). Si conta una volta per browser
+-- (`client_key`, un numero a caso che la pagina tiene nel browser) e una volta per account (chi ha fatto l'accesso);
+-- niente email, niente IP. La tabella non si legge né si scrive direttamente: solo le due funzioni, che restituiscono
+-- i totali. Contro le raffiche: al massimo 30 iscrizioni al minuto in tutto. Tutto è idempotente.
+create table if not exists public.analytics_interest (
+  id bigint generated always as identity primary key,
+  client_key text not null unique check (client_key ~ '^[0-9a-f]{32}$'),
+  user_id uuid references public.profiles(id) on delete cascade,
+  locale text not null check (locale in ('en', 'it', 'es')),
+  source text not null check (source in ('top', 'bottom')),
+  created_at timestamptz not null default now()
+);
+create unique index if not exists analytics_interest_user_idx on public.analytics_interest (user_id) where user_id is not null;
+create index if not exists analytics_interest_created_idx on public.analytics_interest (created_at);
+alter table public.analytics_interest enable row level security;
+revoke all on public.analytics_interest from anon, authenticated;
+
+-- Iscrive chi preme il tasto. `added` = false se quel browser o quell'account c'era già (i totali non cambiano);
+-- un browser già contato senza account prende l'account appena chi lo usa ha fatto l'accesso.
+create or replace function public.analytics_interest_add(p_client text, p_locale text, p_source text)
+returns table (total bigint, accounts bigint, added boolean)
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  n integer := 0;
+begin
+  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es')
+     or p_source is null or p_source not in ('top', 'bottom') then
+    raise exception 'invalid';
+  end if;
+  if uid is not null and not exists (select 1 from public.analytics_interest a where a.user_id = uid) then
+    update public.analytics_interest set user_id = uid where client_key = p_client and user_id is null;
+  end if;
+  if not exists (select 1 from public.analytics_interest a where a.client_key = p_client or (uid is not null and a.user_id = uid)) then
+    if (select count(*) from public.analytics_interest a where a.created_at > now() - interval '1 minute') >= 30 then
+      raise exception 'rate_limited';
+    end if;
+    insert into public.analytics_interest (client_key, user_id, locale, source) values (p_client, uid, p_locale, p_source)
+    on conflict do nothing;
+    get diagnostics n = row_count;
+  end if;
+  return query select (select count(*) from public.analytics_interest),
+                      (select count(*) from public.analytics_interest a where a.user_id is not null),
+                      n > 0;
+end $$;
+revoke all on function public.analytics_interest_add(text, text, text) from public;
+grant execute on function public.analytics_interest_add(text, text, text) to anon, authenticated;
+
+-- I totali, per la pagina (ISR) e per lo staff: quanti browser e quanti account.
+create or replace function public.analytics_interest_count()
+returns table (total bigint, accounts bigint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select count(*), count(*) filter (where user_id is not null) from public.analytics_interest;
+$$;
+revoke all on function public.analytics_interest_count() from public;
+grant execute on function public.analytics_interest_count() to anon, authenticated;

@@ -407,6 +407,8 @@ export const en = {
     sourcePlayedHint: "from the site's decks",
     /* Win rate (30/09/2026): the games recorded with the OriginsMeta Analytics app (docs/tracker.md) */
     sourceWinrate: "Win rate",
+    sourceAnalytics: "Analytics",
+    sourceAnalyticsState: "paused",
     sourceWinrateSoon: "coming soon",
     sourceWinrateGames: "{n} games",
     sourceWinrateGamesOne: "1 game",

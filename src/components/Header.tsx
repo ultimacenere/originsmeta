@@ -22,7 +22,7 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: t.sourceOfficial, path: "/tier-list" },
         { label: t.sourceCommunity, path: "/tier-list/community" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
-        { label: t.sourceWinrate, path: "/tier-list/win-rate" },
+        { label: t.sourceAnalytics, path: "/analytics" },
       ],
     },
     { label: dict.nav.guides, path: "/guides" },

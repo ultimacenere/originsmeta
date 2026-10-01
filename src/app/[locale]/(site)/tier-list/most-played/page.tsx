@@ -5,7 +5,6 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { loadTierData } from "@/lib/tierData";
 import { usageOrder } from "@/lib/tierstats";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
-import { readWinrateGames } from "@/lib/community/trackerStatsQueries";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
@@ -30,10 +29,10 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
   const { locale, dict: d } = await resolveLocale(params);
   const t = d.tier;
   const p = t.played;
-  const [data, winrateGames] = await Promise.all([loadTierData(locale), readWinrateGames()]);
+  const data = await loadTierData(locale);
   const labels = tierExplorerLabels(d);
   const n = data.decks.length;
-  const state = tierSourceState(d, { lists: Math.max(data.lists.legendaries, data.lists.cards), people: data.lists.people, decks: n, winrateGames });
+  const state = tierSourceState(d, { lists: Math.max(data.lists.legendaries, data.lists.cards), people: data.lists.people, decks: n });
   const legendaries = data.cards.filter((c) => c.legendary);
   const base = data.cards.filter((c) => !c.legendary);
 

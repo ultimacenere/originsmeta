@@ -10,6 +10,7 @@ import { achievementLabels } from "@/lib/achievementLabels";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { comicLabels } from "@/lib/comicLabels";
 import { trackerPrivacy } from "@/lib/trackerLabels";
+import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -82,6 +83,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
             src/lib/trackerLabels.ts, ancora #tracker (link da /account/tracker) */}
         <p id="tracker" className="mt-6 scroll-mt-24">
           {trackerPrivacy[locale]}
+        </p>
+        {/* Interesse per OriginsMeta Analytics (02/10/2026, tasto della pagina /analytics) */}
+        <p id="analytics-interest" className="mt-6 scroll-mt-24">
+          {analyticsInterestPrivacy[locale]}
         </p>
       </article>
     </div>

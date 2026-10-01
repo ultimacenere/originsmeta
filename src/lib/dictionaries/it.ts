@@ -400,6 +400,8 @@ export const it: Dictionary = {
     sourcePlayedHint: "dai mazzi del sito",
     /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Analytics (docs/tracker.md) */
     sourceWinrate: "Win rate",
+    sourceAnalytics: "Analytics",
+    sourceAnalyticsState: "in pausa",
     sourceWinrateSoon: "in arrivo",
     sourceWinrateGames: "{n} partite",
     sourceWinrateGamesOne: "1 partita",

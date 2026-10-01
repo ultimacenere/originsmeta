@@ -294,7 +294,21 @@ con una riga nel SQL Editor di Supabase (esempio per la 0.8 con l'ora del post):
 
 ### Win rate sul sito
 
-Proposta del 30/09/2026; Pierluigi: "fai 1 e 2". Fatti:
+**Dal 02/10/2026 la pagina dei win rate e il riquadro nelle schede dei mazzi non ci sono più** (Pierluigi: "togliamo la
+pagina del winrate, creiamo una pagina invece"): con la 0.7 i dati non bastano (vedi "I file del gioco"). Al loro posto
+**`/analytics`** (`src/app/[locale]/(site)/analytics/page.tsx`, ISR, indicizzabile, in sitemap): che cosa fa il tool, con
+gli screenshot dell'app e dell'overlay nelle tre lingue (`public/media/analytics/`, fatti con `--capture` su una copia
+dei dati senza collegamento), perché è in pausa, che lo mostreremo a Koin Games, e il tasto **"Sei interessato al
+tool?"** sopra e sotto (`AnalyticsInterest`): conta una volta per browser (numero a caso nel localStorage) e una per
+account con la funzione `analytics_interest_add` (blocco `02/10/2026: INTERESSE ANALYTICS` di schema.sql, tetto di 30 al
+minuto, la tabella non si legge direttamente; totali con `analytics_interest_count`), evento `analytics_interest`,
+informativa `#analytics-interest`. Testi in `src/lib/analyticsLabels.ts` (test `analyticsLabels.test.ts`). Il vecchio
+indirizzo porta lì con un 308 (next.config.ts) e la quarta scheda della tier list e la voce del sottomenu sono diventate
+"Analytics · in pausa". Le funzioni `tracker_stats_*` restano nel database e `trackerStatsQueries.ts` resta nel codice,
+per quando i dati torneranno. Quanti si sono iscritti: `select * from public.analytics_interest_count();` (browser e
+account), oppure il numero sotto il tasto.
+
+Proposta del 30/09/2026; Pierluigi: "fai 1 e 2". Fatti (tolti il 02/10/2026, vedi sopra):
 
 1. **Pagina `/tier-list/win-rate`** (`src/app/[locale]/(site)/tier-list/win-rate/page.tsx`, ISR): quarta scheda della
    testata della tier list, "Win rate", con lo stato "in arrivo" o "N partite" (`tierSourceState`; sul telefono le

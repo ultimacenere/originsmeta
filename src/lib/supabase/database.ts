@@ -833,6 +833,9 @@ export type Database = {
       tracker_revoke: { Args: { p_device: string }; Returns: boolean };
       /** cancella tutte le proprie partite; restituisce quante */
       tracker_forget: { Args: Record<string, never>; Returns: number };
+      /* interesse per OriginsMeta Analytics (02/10/2026, pagina /analytics): una volta per browser e per account */
+      analytics_interest_add: { Args: { p_client: string; p_locale: string; p_source: string }; Returns: { total: number; accounts: number; added: boolean }[] };
+      analytics_interest_count: { Args: Record<string, never>; Returns: { total: number; accounts: number }[] };
       /* statistiche anonime (anon): solo aggregati di una patch, ogni numero sopra la soglia (stats.ts le ricontrolla) */
       tracker_stats_overview: { Args: { p_patch: string }; Returns: (TrackerStatCount & { with_opponent: number | null })[] };
       tracker_stats_legendaries: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string })[] };

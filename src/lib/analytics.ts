@@ -93,6 +93,8 @@
  *                         `firstPublish` di saveCommunityGuide)
  *   ★ comic_published     fumetto pubblicato fra le news per la prima volta        comic_lang (lingua dei testi)
  *                         (pacchetto FUMETTI, 29/09/2026: `firstPublish` di saveComic)
+ *   ★ analytics_interest  clic su "Sì, mi interessa" della pagina /analytics       placement (top | bottom), added (yes se
+ *                         (02/10/2026: quanti vogliono OriginsMeta Analytics)     la persona è nuova nel conteggio)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -209,6 +211,7 @@ export type EventParams = {
   deck_image_download: { format: string; placement: string };
   guide_published: { guide_lang: string; category: string };
   comic_published: { comic_lang: string };
+  analytics_interest: { placement: "top" | "bottom"; added: "yes" | "no" };
 };
 export type EventName = keyof EventParams;
 
@@ -254,6 +257,7 @@ export const VERCEL_PROPS = {
   deck_image_download: ["format", "placement"],
   guide_published: ["guide_lang", "category"],
   comic_published: ["comic_lang"],
+  analytics_interest: ["placement", "added"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

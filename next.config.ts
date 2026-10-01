@@ -47,6 +47,7 @@ function rootRedirect(destination: string, language?: string) {
 const sections = [
   "about",
   "account",
+  "analytics",
   "authors",
   "cards",
   "creators",
@@ -146,6 +147,10 @@ const nextConfig: NextConfig = {
       ...rootRedirect("/en"),
       // Sezioni senza lingua (/cards/merlin, /news/<slug>…): la stessa pagina nella lingua del browser.
       ...sectionRedirects(),
+      // La pagina dei win rate (30/09/2026) è stata tolta il 02/10/2026: il tool è in pausa dalla patch 0.7 e la sua
+      // pagina è /analytics (Pierluigi: "togliamo la pagina del winrate, creiamo una pagina invece"). Permanente: la
+      // pagina vecchia era noindex e non torna con lo stesso indirizzo.
+      { source: "/:locale(en|it|es)/tier-list/win-rate", destination: "/:locale/analytics", permanent: true },
       // Il francese è stato ritirato dal sito: chi arriva da vecchi link va sulla versione inglese.
       { source: "/fr", destination: "/en", permanent: true },
       { source: "/fr/:path*", destination: "/en/:path*", permanent: true },
