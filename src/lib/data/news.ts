@@ -70,6 +70,452 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Patch notes dell'aggiornamento del playtest della Demo 2.0 (richiesta di Pierluigi del 01/10/2026: "articolo subito").
+    // Fonte: l'annuncio del team sul Discord ufficiale, incollato da Pierluigi; il 01/10 non c'è un post Steam (API Valve
+    // ISteamNews controllata). I dieci bilanciamenti sono quelli della demo del 21/09 e della 0.7: le statistiche del sito
+    // non cambiano. Le cinque modifiche che le note della demo non avevano (En Passant, Stordito, Tocco letale contro Scudo,
+    // Boitata, Reflection) e i luoghi (Tectonic Decay nuovo, Ashen Grove tolto) non si scrivono nei dati finché non li
+    // vediamo nella demo principale: il playtest è una build a parte.
+    slug: "playtest-patch-notes-1001",
+    image: "/media/ss-board-combat.webp",
+    cards: ["en-passant", "boitata", "reflection", "wicked-stepmother", "don-quixote", "twister-toss", "van-helsings-tools", "silver-bullet", "wooden-stake", "heroic-charge", "spellbook", "humpty", "mummy", "dorothy", "beauty", "christopher-robin", "magic-carpet", "quasimodo", "roo", "bagheera", "mind-palace"],
+    guides: ["origins-tcg-ranked", "origins-tcg-locations", "steam-next-fest-2026", "play-the-demo"],
+    date: "2026-10-01",
+    title: n(
+      "Origins TCG playtest patch notes: missions split from ranked, two new locations, faster animations",
+      "Patch notes del playtest di Origins TCG: missioni separate dalla classificata e due luoghi nuovi",
+      "Notas del parche del playtest de Origins TCG: misiones separadas de la clasificatoria y dos ubicaciones nuevas",
+    ),
+    metaTitle: n(
+      "Origins TCG playtest patch notes: missions and ranked",
+      "Playtest di Origins TCG: missioni, classificata, luoghi",
+      "Playtest de Origins TCG: misiones y clasificatoria",
+    ),
+    description: n(
+      "Origins TCG playtest update of 1 October: PvE missions split from ranked, deck builder filters, two new locations, a tournament pool and new card fixes.",
+      "Aggiornamento del playtest di Origins TCG del 1° ottobre: missioni solo PvE separate dalla classificata, deck builder, due luoghi nuovi e pool dei tornei.",
+      "Actualización del playtest de Origins TCG del 1 de octubre: misiones PvE separadas de la clasificatoria, deck builder, 2 ubicaciones nuevas y pool de torneo.",
+    ),
+    summary: n(
+      "Koin Games has updated the Demo 2.0 playtest build, its biggest update since 0.6.3. Missions become PvE only and no longer stand between you and ranked, the deck builder gets more filters and two locations arrive. The ten balance changes are the ones the main demo already has.",
+      "Koin Games ha aggiornato la build del playtest della Demo 2.0, il suo aggiornamento più grande dalla 0.6.3. Le missioni diventano solo PvE e non bloccano più la classificata, il deck builder ha più filtri e arrivano due luoghi. I dieci bilanciamenti sono quelli che la demo principale ha già.",
+      "Koin Games ha actualizado la build del playtest de la Demo 2.0, su mayor actualización desde la 0.6.3. Las misiones pasan a ser solo PvE y ya no te separan de la clasificatoria, el deck builder tiene más filtros y llegan dos ubicaciones. Los diez cambios de equilibrio son los que la demo principal ya tiene.",
+    ),
+    highlights: {
+      en: [
+        { label: "Missions and ranked are split", text: "missions are PvE only, ranked matchmaking whenever you like", anchor: "missions-ranked" },
+        { label: "A deck builder with more filters", text: "keywords on hover, one or two copies shown clearly", anchor: "deck-builder" },
+        { label: "World rank on the versus screen", text: "for Grandmaster players", anchor: "grandmaster" },
+        { label: "Faster animations", text: "and a separate slider for voice volume", anchor: "speed-audio" },
+        { label: "Ten balance changes", text: "all already in the main demo and on OriginsMeta", anchor: "balance" },
+        { label: "Five card changes new in these notes", text: "En Passant, Stunned, Deathtouch, Boitata, Reflection", anchor: "new-changes" },
+        { label: "Two new locations, one removed", text: "Ballroom and Tectonic Decay in, Ashen Grove out", anchor: "new-locations" },
+        { label: "A location pool for tournaments", text: "room battles use it too", anchor: "tournament-pool" },
+      ],
+      it: [
+        { label: "Missioni e classificata separate", text: "missioni solo PvE, matchmaking della classificata quando vuoi", anchor: "missioni-classificata" },
+        { label: "Un deck builder con più filtri", text: "parole chiave al passaggio del mouse, una o due copie ben segnate", anchor: "deck-builder" },
+        { label: "Rank mondiale nella schermata dello scontro", text: "per i giocatori Grandmaster", anchor: "grandmaster" },
+        { label: "Animazioni più rapide", text: "e un cursore a parte per il volume delle voci", anchor: "velocita-audio" },
+        { label: "Dieci bilanciamenti", text: "tutti già nella demo principale e su OriginsMeta", anchor: "bilanciamento" },
+        { label: "Cinque modifiche nuove alle carte", text: "En Passant, Stordito, Tocco letale, Boitata, Reflection", anchor: "modifiche-nuove" },
+        { label: "Due luoghi nuovi, uno tolto", text: "entrano Ballroom e Tectonic Decay, esce Ashen Grove", anchor: "luoghi-nuovi" },
+        { label: "Un pool di luoghi per i tornei", text: "lo usano anche le partite nelle stanze", anchor: "pool-tornei" },
+      ],
+      es: [
+        { label: "Misiones y clasificatoria separadas", text: "misiones solo PvE, emparejamiento de la clasificatoria cuando quieras", anchor: "misiones-clasificatoria" },
+        { label: "Un deck builder con más filtros", text: "palabras clave al pasar el ratón, una o dos copias bien indicadas", anchor: "deck-builder" },
+        { label: "Rango mundial en la pantalla del enfrentamiento", text: "para los jugadores Grandmaster", anchor: "grandmaster" },
+        { label: "Animaciones más rápidas", text: "y un control aparte para el volumen de las voces", anchor: "velocidad-audio" },
+        { label: "Diez cambios de equilibrio", text: "todos ya en la demo principal y en OriginsMeta", anchor: "equilibrio" },
+        { label: "Cinco cambios nuevos en las cartas", text: "En Passant, Aturdido, Toque mortal, Boitata, Reflection", anchor: "cambios-nuevos" },
+        { label: "Dos ubicaciones nuevas, una eliminada", text: "entran Ballroom y Tectonic Decay, sale Ashen Grove", anchor: "ubicaciones-nuevas" },
+        { label: "Un pool de ubicaciones para los torneos", text: "también lo usan las partidas en sala", anchor: "pool-torneos" },
+      ],
+    },
+    body: n(
+      `## The playtest catches up with the demo {#playtest}
+
+Koin Games has updated the Demo 2.0 playtest, the separate build you join through the official Discord. "This is our biggest update since 0.6.3", the team writes, and it warns that the build is fresh from development: there will be bugs and placeholder things. Many of the changes, the team adds, had already reached the main demo with [the update of 21 September](/en/news/demo-patch-notes-0921) and [patch 0.7](/en/news/patch-0-7).
+
+## Missions and ranked are split {#missions-ranked}
+
+Missions and bosses are now entirely PvE: you only face bots, and they serve only to unlock decks. They have their own Play button on the Missions screen, so the Play button on the home screen is now only for real matchmaking, which you can use whenever you like.
+
+- You no longer have to finish all the missions before the ranked matchmaker will match you: it tries to find you a suitable opponent every time you play ranked. The team is still working on it.
+- **In this playtest, deck missions can't be completed from ranked mode.** The team will turn that back on in a future build. If you still have decks to unlock, play the missions from the Missions area.
+- The reward track spreads the prizes over more missions, and the Missions screen has a deck swap to change your deck.
+
+How ranked works in the demo, and what we know of the ladder, is in [our ranked guide](/en/guides/origins-tcg-ranked).
+
+## Deck builder, news feed and Grandmaster {#interface}
+
+### A deck builder with more filters {#deck-builder}
+
+A new toolbar with more filters. Hovering over a card in the collection shows its keywords. The deck now shows clearly which cards you have two copies of and which only one: new players were struggling with it.
+
+### A news feed in the game {#news-feed}
+
+The game has its own news feed: if you're reading the notes there, the team writes, you've already seen it.
+
+### World rank on the versus screen {#grandmaster}
+
+Players in the Grandmaster division, the top one, now show their world rank on the versus screen.
+
+### Card grading: not yet {#grading}
+
+The card grading visuals are not in this update, and the "How Grading Works" information you'll find is placeholder: the team asks you to ignore it. It does ask for feedback on the pack opening experience, on Discord.
+
+## Speed and audio {#speed-audio}
+
+Animations and the pauses between them are faster. "This still needs a lot more work", the team writes: speed remains one of its highest priorities. The voices are more professional and better mixed, and there is a separate slider for voice volume.
+
+## Card balance: all already on OriginsMeta {#balance}
+
+The ten balance changes in the notes are the ones the main demo received with the update of 21 September and with patch 0.7: card pages, the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) already use them. Format: mana · Power/Health for characters, mana only for spells.
+
+| Card | Before | After | In the demo since |
+| --- | --- | --- | --- |
+| Dorothy | 5 · 1/1 | 4 · 1/1 | 21 September |
+| Wicked Stepmother | 4 · 3/6 | 4 · 4/6 | 21 September |
+| Beauty | 4 · 1/1 | 4 · 2/1 | 21 September |
+| Christopher Robin | 4 · 4/5 | 4 · 5/4 | 21 September |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | 21 September |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | 21 September |
+| Roo | 2 · 2/3 | 2 · 2/4 | 21 September |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | patch 0.7 |
+| Spellbook | 3 | 4 | patch 0.7 |
+| Mind Palace | 2 | 3 | patch 0.7 |
+
+## Cards that change what they do {#card-changes}
+
+### New in these notes {#new-changes}
+
+Five changes don't appear in the demo patch notes of 21 and 29 September:
+
+- **En Passant** can now target occupied spaces: if the space is occupied, your ally stays put but still deals its damage.
+- **Stunned** is now removed at the end of combat.
+- **Deathtouch** no longer destroys characters with Shield.
+- **Boitata** should behave better, especially when both players have one.
+- **Reflection** has slightly clearer wording; the team admits the card may need some surgery to become more intuitive.
+
+We don't know yet whether they are already in the main demo: we'll check in the game before changing the card pages.
+
+### Already in the demo {#already-in-demo}
+
+- Don Quixote has Defender himself, as well as giving it to the enemies at his location (21 September: the demo notes only said he gained Defender).
+- Twister Toss can move an ally into an occupied space, and the two swap places (patch 0.7).
+- Van Helsing's Tools: Silver Bullet can hit barriers; Wooden Stake can target undamaged characters, but only works if the character is damaged when it resolves (21 September).
+- Heroic Charge stacks properly when cast more than once (21 September).
+- Spellbook and Humpty can no longer generate themselves as the random card (patch 0.7).
+- Characters with Choose One can choose again if they return to your hand, and they keep their stats (21 September, for Frog Prince and Magic Carpet).
+- Cards keep their stats in the graveyard: a buffed Mummy comes back with all its Power (21 September).
+
+## Locations {#locations}
+
+### Two new, one removed {#new-locations}
+
+- **Ballroom** (new): after combat, for both players, a random character here returns to its owner's hand.
+- **Tectonic Decay** (new): after combat, deal 1 damage to both barriers here.
+- **Ashen Grove** (removed): when you played a character here, you discarded your rightmost card, then drew a card.
+
+The notes compare the playtest with its previous build. Our [Locations page](/en/locations), the list of the Demo 2.0 as of 21 September, already has Ballroom and still has Ashen Grove, while Tectonic Decay is not there: we'll update it once we've seen which locations are in the main demo.
+
+### Rarity and a tournament pool {#tournament-pool}
+
+Location rarity is now a true rarity, common, rare, very rare or ultra rare, which no longer depends on how many locations exist in the game: the same change the demo got with patch 0.7.
+
+Tournaments now have their own location pool, so locations can be included in or left out of competitions without changing everyday games. The first example is the [Crimson Cup](/en/news/crimson-cup-format-check-in): some of the swingiest locations are out of its pool. The team says the full list is in its latest announcement; we'll report it as soon as we've read it.
+
+In this build, room battles (Create/Join Room Battle) use the tournament pool: they're the way to practise with the Crimson Cup locations.
+
+## What we don't know yet {#unknowns}
+
+- Whether the five new card changes, Tectonic Decay and the removal of Ashen Grove are already in the main demo.
+- Which locations are out of the Crimson Cup pool.
+- When deck missions will count again in ranked.
+- The new wording of Reflection.
+
+## What changes on OriginsMeta {#on-the-site}
+
+- Card stats don't change: all ten balance changes have been in the card database, the deck builder and MetaShifting since 21 and 29 September.
+- The pages of En Passant, Boitata and Reflection keep their current text until we read the new one in the game.
+- The [Locations](/en/locations) page stays as it is until we've checked the new locations in the main demo.
+
+## Where these notes come from {#sources}
+
+The patch notes the team posted on the official [Origins TCG Discord](https://discord.gg/originstcg) on 1 October, with the playtest update; how to join the playtest is explained in the Discord channel demo-v2-playtest-instructions. As of 1 October they are not on Steam.`,
+      `## Il playtest raggiunge la demo {#playtest}
+
+Koin Games ha aggiornato il playtest della Demo 2.0, la build a parte a cui si accede dal Discord ufficiale. "È il nostro aggiornamento più grande dalla 0.6.3", scrive il team, e avverte che la build è fresca di sviluppo: ci saranno bug e cose provvisorie. Molte modifiche, aggiunge il team, erano già arrivate nella demo principale con [l'aggiornamento del 21 settembre](/it/news/demo-patch-notes-0921) e con la [patch 0.7](/it/news/patch-0-7).
+
+## Missioni e classificata separate {#missioni-classificata}
+
+Missioni e boss ora sono interamente PvE: si gioca solo contro i bot, e servono solo a sbloccare i mazzi. Hanno un tasto Gioca tutto loro nella schermata delle Missioni, così il tasto Gioca della schermata principale serve solo al matchmaking vero, che puoi usare quando vuoi.
+
+- Non devi più finire tutte le missioni perché il matchmaking della classificata ti trovi un avversario: ci prova ogni volta che giochi una partita classificata. Il team ci sta ancora lavorando.
+- **In questo playtest le missioni dei mazzi non si completano dalla classificata.** Il team le riattiverà in una build futura. Se hai ancora mazzi da sbloccare, gioca le missioni dall'area Missioni.
+- Il percorso delle ricompense distribuisce i premi su più missioni, e la schermata delle Missioni ha un cambio mazzo.
+
+Come funziona la classificata nella demo, e che cosa sappiamo della ladder, è nella [nostra guida alla classificata](/it/guides/origins-tcg-ranked).
+
+## Deck builder, news e Grandmaster {#interfaccia}
+
+### Un deck builder con più filtri {#deck-builder}
+
+Una barra degli strumenti nuova con più filtri. Al passaggio del mouse su una carta della collezione compaiono le sue parole chiave. Il mazzo ora mostra chiaramente di quali carte hai due copie e di quali una sola: i giocatori nuovi ci inciampavano.
+
+### Le news nel gioco {#news-gioco}
+
+Il gioco ha un suo feed di notizie: se stai leggendo le note lì, scrive il team, l'hai già visto.
+
+### Rank mondiale nella schermata dello scontro {#grandmaster}
+
+I giocatori della divisione Grandmaster, la più alta, ora mostrano il loro rank mondiale nella schermata che precede la partita.
+
+### Gradazione delle carte: non ancora {#gradazione}
+
+La grafica della gradazione delle carte non è in questo aggiornamento, e le informazioni di "How Grading Works" sono provvisorie: il team chiede di ignorarle. Chiede invece pareri sull'apertura dei pacchetti, sul Discord.
+
+## Velocità e audio {#velocita-audio}
+
+Le animazioni e le pause fra l'una e l'altra sono più rapide. "C'è ancora molto da fare", scrive il team: la velocità resta una delle sue priorità più alte. Le voci sono più professionali e mixate meglio, e c'è un cursore a parte per il volume delle voci.
+
+## Bilanciamento: già tutto su OriginsMeta {#bilanciamento}
+
+Le dieci modifiche di bilanciamento delle note sono quelle che la demo principale ha ricevuto con l'aggiornamento del 21 settembre e con la patch 0.7: le schede carta, il [deck builder](/it/deck-builder) e il [MetaShifting](/it/metashifting) le usano già. Formato: mana · Potenza/Salute per i personaggi, solo il mana per le magie.
+
+| Carta | Prima | Dopo | Nella demo dal |
+| --- | --- | --- | --- |
+| Dorothy | 5 · 1/1 | 4 · 1/1 | 21 settembre |
+| Wicked Stepmother | 4 · 3/6 | 4 · 4/6 | 21 settembre |
+| Beauty | 4 · 1/1 | 4 · 2/1 | 21 settembre |
+| Christopher Robin | 4 · 4/5 | 4 · 5/4 | 21 settembre |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | 21 settembre |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | 21 settembre |
+| Roo | 2 · 2/3 | 2 · 2/4 | 21 settembre |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | patch 0.7 |
+| Spellbook | 3 | 4 | patch 0.7 |
+| Mind Palace | 2 | 3 | patch 0.7 |
+
+## Carte che cambiano effetto {#effetti}
+
+### Nuove in queste note {#modifiche-nuove}
+
+Cinque modifiche non compaiono nelle patch notes della demo del 21 e del 29 settembre:
+
+- **En Passant** ora può bersagliare spazi occupati: se lo spazio è occupato, il tuo alleato resta dov'è ma infligge comunque i suoi danni.
+- **Stordito** ora viene tolto alla fine del combattimento.
+- **Tocco letale** non distrugge più i personaggi con Scudo.
+- **Boitata** dovrebbe comportarsi meglio, soprattutto quando ce l'hanno tutti e due i giocatori.
+- **Reflection** ha un testo un po' più chiaro; il team ammette che la carta potrebbe avere bisogno di un intervento più profondo per diventare più intuitiva.
+
+Non sappiamo ancora se sono già nella demo principale: lo verificheremo nel gioco prima di cambiare le schede delle carte.
+
+### Già nella demo {#gia-nella-demo}
+
+- Don Quixote ha lui stesso Difensore, oltre a darlo ai nemici nel suo luogo (21 settembre: le note della demo dicevano solo che aveva ottenuto Difensore).
+- Twister Toss può muovere un alleato in uno spazio occupato, e i due si scambiano di posto (patch 0.7).
+- Van Helsing's Tools: Silver Bullet può colpire le barriere; Wooden Stake può bersagliare personaggi non danneggiati, ma funziona solo se il personaggio è danneggiato quando si risolve (21 settembre).
+- Heroic Charge si somma come deve quando la giochi più di una volta (21 settembre).
+- Spellbook e Humpty non possono più generare sé stessi come carta casuale (patch 0.7).
+- I personaggi con Scegline uno possono scegliere di nuovo se tornano nella tua mano, e tengono le loro statistiche (21 settembre, per Frog Prince e Magic Carpet).
+- Le carte conservano le statistiche nel cimitero: una Mummy potenziata torna con tutta la sua Potenza (21 settembre).
+
+## Luoghi {#luoghi}
+
+### Due nuovi, uno tolto {#luoghi-nuovi}
+
+- **Ballroom** (nuovo): dopo il combattimento, per entrambi i giocatori, un personaggio casuale qui torna nella mano del suo proprietario.
+- **Tectonic Decay** (nuovo): dopo il combattimento, infliggi 1 danno a entrambe le barriere qui.
+- **Ashen Grove** (tolto): quando giocavi un personaggio qui, scartavi la carta più a destra e poi pescavi una carta.
+
+Le note confrontano il playtest con la sua build precedente. La nostra pagina dei [Luoghi](/it/locations), l'elenco della Demo 2.0 al 21 settembre, ha già Ballroom e ha ancora Ashen Grove, mentre Tectonic Decay non c'è: la aggiorneremo quando avremo visto quali luoghi ci sono nella demo principale.
+
+### Rarità e pool dei tornei {#pool-tornei}
+
+La rarità dei luoghi ora è una rarità vera, comune, rara, molto rara o ultra rara, che non dipende più da quanti luoghi ci sono nel gioco: la stessa modifica arrivata nella demo con la patch 0.7.
+
+I tornei ora hanno un loro pool di luoghi, così si possono includere o escludere luoghi dalle competizioni senza cambiare le partite di tutti i giorni. Il primo esempio è la [Crimson Cup](/it/news/crimson-cup-format-check-in): alcuni dei luoghi più capaci di ribaltare una partita sono fuori dal suo pool. Il team dice che l'elenco completo è nel suo ultimo annuncio; lo riporteremo appena l'avremo letto.
+
+In questa build le partite nelle stanze (Create/Join Room Battle) usano il pool dei tornei: sono il modo per allenarsi con i luoghi della Crimson Cup.
+
+## Cosa non sappiamo ancora {#cosa-non-sappiamo}
+
+- Se le cinque modifiche nuove alle carte, Tectonic Decay e l'uscita di Ashen Grove sono già nella demo principale.
+- Quali luoghi sono fuori dal pool della Crimson Cup.
+- Quando le missioni dei mazzi torneranno a contare in classificata.
+- Il testo nuovo di Reflection.
+
+## Cosa cambia su OriginsMeta {#sul-sito}
+
+- Le statistiche delle carte non cambiano: le dieci modifiche di bilanciamento sono nel database carte, nel deck builder e nel MetaShifting dal 21 e dal 29 settembre.
+- Le schede di En Passant, Boitata e Reflection tengono il testo attuale finché non leggiamo quello nuovo nel gioco.
+- La pagina dei [Luoghi](/it/locations) resta com'è finché non avremo verificato i luoghi nuovi nella demo principale.
+
+## Da dove arrivano queste note {#fonti}
+
+Le patch notes che il team ha pubblicato sul [Discord ufficiale di Origins TCG](https://discord.gg/originstcg) il 1° ottobre, con l'aggiornamento del playtest; come entrare nel playtest lo spiega il canale Discord demo-v2-playtest-instructions. Al 1° ottobre non sono su Steam.`,
+      `## El playtest alcanza a la demo {#playtest}
+
+Koin Games ha actualizado el playtest de la Demo 2.0, la build aparte a la que se entra desde el Discord oficial. "Es nuestra mayor actualización desde la 0.6.3", escribe el equipo, y avisa de que la build viene recién salida de desarrollo: habrá errores y elementos provisionales. Muchos de los cambios, añade el equipo, ya habían llegado a la demo principal con [la actualización del 21 de septiembre](/es/news/demo-patch-notes-0921) y con el [parche 0.7](/es/news/patch-0-7).
+
+## Misiones y clasificatoria separadas {#misiones-clasificatoria}
+
+Las misiones y los jefes ahora son completamente PvE: solo te enfrentas a bots, y sirven solo para desbloquear mazos. Tienen su propio botón Jugar en la pantalla de Misiones, así que el botón Jugar de la pantalla principal queda solo para el emparejamiento real, que puedes usar cuando quieras.
+
+- Ya no tienes que completar todas las misiones para que el emparejamiento de la clasificatoria te encuentre rival: lo intenta cada vez que juegas una partida clasificatoria. El equipo sigue trabajando en ello.
+- **En este playtest las misiones de los mazos no se completan desde la clasificatoria.** El equipo las volverá a activar en una build futura. Si aún tienes mazos por desbloquear, juega las misiones desde el área de Misiones.
+- El recorrido de recompensas reparte los premios entre más misiones, y la pantalla de Misiones tiene un cambio de mazo.
+
+Cómo funciona la clasificatoria en la demo, y lo que sabemos de la ladder, está en [nuestra guía de la clasificatoria](/es/guides/origins-tcg-ranked).
+
+## Deck builder, noticias y Grandmaster {#interfaz}
+
+### Un deck builder con más filtros {#deck-builder}
+
+Una barra de herramientas nueva con más filtros. Al pasar el ratón por una carta de la colección aparecen sus palabras clave. El mazo ahora muestra con claridad de qué cartas tienes dos copias y de cuáles una sola: a los jugadores nuevos les costaba verlo.
+
+### Noticias dentro del juego {#noticias-juego}
+
+El juego tiene su propio feed de noticias: si estás leyendo las notas allí, escribe el equipo, ya lo has visto.
+
+### Rango mundial en la pantalla del enfrentamiento {#grandmaster}
+
+Los jugadores de la división Grandmaster, la más alta, ahora muestran su rango mundial en la pantalla previa a la partida.
+
+### Graduación de cartas: todavía no {#graduacion}
+
+Los gráficos de la graduación de cartas no están en esta actualización, y la información de "How Grading Works" es provisional: el equipo pide que no le hagas caso. Sí pide opiniones sobre la apertura de sobres, en Discord.
+
+## Velocidad y audio {#velocidad-audio}
+
+Las animaciones y las pausas entre ellas son más rápidas. "Todavía hace falta mucho trabajo", escribe el equipo: la velocidad sigue siendo una de sus mayores prioridades. Las voces son más profesionales y están mejor mezcladas, y hay un control aparte para el volumen de las voces.
+
+## Equilibrio: todo ya en OriginsMeta {#equilibrio}
+
+Los diez cambios de equilibrio de las notas son los que la demo principal recibió con la actualización del 21 de septiembre y con el parche 0.7: las páginas de las cartas, el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) ya los usan. Formato: maná · Poder/Salud para los personajes, solo el maná para los hechizos.
+
+| Carta | Antes | Después | En la demo desde |
+| --- | --- | --- | --- |
+| Dorothy | 5 · 1/1 | 4 · 1/1 | 21 de septiembre |
+| Wicked Stepmother | 4 · 3/6 | 4 · 4/6 | 21 de septiembre |
+| Beauty | 4 · 1/1 | 4 · 2/1 | 21 de septiembre |
+| Christopher Robin | 4 · 4/5 | 4 · 5/4 | 21 de septiembre |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | 21 de septiembre |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | 21 de septiembre |
+| Roo | 2 · 2/3 | 2 · 2/4 | 21 de septiembre |
+| Bagheera | 1 · 1/1 | 2 · 1/1 | parche 0.7 |
+| Spellbook | 3 | 4 | parche 0.7 |
+| Mind Palace | 2 | 3 | parche 0.7 |
+
+## Cartas que cambian lo que hacen {#efectos}
+
+### Nuevos en estas notas {#cambios-nuevos}
+
+Cinco cambios no aparecen en las notas del parche de la demo del 21 y del 29 de septiembre:
+
+- **En Passant** ahora puede elegir como objetivo espacios ocupados: si el espacio está ocupado, tu aliado se queda donde está, pero inflige igualmente su daño.
+- **Aturdido** ahora se quita al final del combate.
+- **Toque mortal** ya no destruye a los personajes con Escudo.
+- **Boitata** debería comportarse mejor, sobre todo cuando los dos jugadores tienen uno.
+- **Reflection** tiene un texto algo más claro; el equipo admite que la carta quizá necesite una intervención más a fondo para ser más intuitiva.
+
+Todavía no sabemos si ya están en la demo principal: lo comprobaremos en el juego antes de cambiar las páginas de las cartas.
+
+### Ya en la demo {#ya-en-la-demo}
+
+- Don Quixote tiene él mismo Defensor, además de dárselo a los enemigos de su ubicación (21 de septiembre: las notas de la demo solo decían que obtenía Defensor).
+- Twister Toss puede mover a un aliado a un espacio ocupado, y los dos intercambian sus posiciones (parche 0.7).
+- Van Helsing's Tools: Silver Bullet puede golpear barreras; Wooden Stake puede elegir como objetivo a personajes sin daño, pero solo funciona si el personaje está dañado cuando se resuelve (21 de septiembre).
+- Heroic Charge se acumula como debe cuando lo juegas más de una vez (21 de septiembre).
+- Spellbook y Humpty ya no pueden generarse a sí mismos como carta aleatoria (parche 0.7).
+- Los personajes con Elige una pueden volver a elegir si regresan a tu mano, y conservan sus estadísticas (21 de septiembre, para Frog Prince y Magic Carpet).
+- Las cartas conservan sus estadísticas en el cementerio: una Mummy potenciada vuelve con todo su Poder (21 de septiembre).
+
+## Ubicaciones {#ubicaciones}
+
+### Dos nuevas, una eliminada {#ubicaciones-nuevas}
+
+- **Ballroom** (nueva): después del combate, para ambos jugadores, un personaje aleatorio de aquí vuelve a la mano de su dueño.
+- **Tectonic Decay** (nueva): después del combate, inflige 1 de daño a las dos barreras de aquí.
+- **Ashen Grove** (eliminada): cuando jugabas un personaje aquí, descartabas tu carta más a la derecha y luego robabas una carta.
+
+Las notas comparan el playtest con su build anterior. Nuestra página de [Ubicaciones](/es/locations), la lista de la Demo 2.0 a 21 de septiembre, ya tiene Ballroom y todavía tiene Ashen Grove, mientras que Tectonic Decay no está: la actualizaremos cuando hayamos visto qué ubicaciones hay en la demo principal.
+
+### Rareza y pool de torneo {#pool-torneos}
+
+La rareza de las ubicaciones es ahora una rareza real, común, rara, muy rara o ultra rara, que ya no depende de cuántas ubicaciones hay en el juego: el mismo cambio que llegó a la demo con el parche 0.7.
+
+Los torneos ahora tienen su propio pool de ubicaciones, así que se pueden incluir o excluir ubicaciones de las competiciones sin cambiar las partidas de cada día. El primer ejemplo es la [Crimson Cup](/es/news/crimson-cup-format-check-in): algunas de las ubicaciones más capaces de dar la vuelta a una partida están fuera de su pool. El equipo dice que la lista completa está en su último anuncio; la contaremos en cuanto la hayamos leído.
+
+En esta build las partidas en sala (Create/Join Room Battle) usan el pool de torneo: son la forma de practicar con las ubicaciones de la Crimson Cup.
+
+## Lo que todavía no sabemos {#lo-que-no-sabemos}
+
+- Si los cinco cambios nuevos en las cartas, Tectonic Decay y la salida de Ashen Grove ya están en la demo principal.
+- Qué ubicaciones están fuera del pool de la Crimson Cup.
+- Cuándo volverán a contar en la clasificatoria las misiones de los mazos.
+- El nuevo texto de Reflection.
+
+## Qué cambia en OriginsMeta {#en-el-sitio}
+
+- Las estadísticas de las cartas no cambian: los diez cambios de equilibrio están en la base de datos de cartas, en el deck builder y en MetaShifting desde el 21 y el 29 de septiembre.
+- Las páginas de En Passant, Boitata y Reflection mantienen su texto actual hasta que leamos el nuevo en el juego.
+- La página de [Ubicaciones](/es/locations) se queda como está hasta que hayamos comprobado las ubicaciones nuevas en la demo principal.
+
+## De dónde vienen estas notas {#fuentes}
+
+Las notas del parche que el equipo publicó en el [Discord oficial de Origins TCG](https://discord.gg/originstcg) el 1 de octubre, con la actualización del playtest; cómo entrar en el playtest lo explica el canal de Discord demo-v2-playtest-instructions. A 1 de octubre no están en Steam.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Do you need to finish the missions to play ranked in the Origins TCG playtest?",
+          a: "No. Since the playtest update of 1 October 2026 missions are PvE only and serve to unlock decks, and the ranked matchmaker matches you whenever you play ranked. In this playtest, though, deck missions can't be completed from ranked: play them from the Missions screen.",
+        },
+        {
+          q: "Does the playtest update change card stats for the Crimson Cup?",
+          a: "No. Its ten balance changes, such as Dorothy at 4 mana and Bagheera at 2, are the ones the main demo already received on 21 and 29 September 2026; patch 0.7 is the last balance patch before the tournament.",
+        },
+        {
+          q: "How can you practise with the Crimson Cup locations?",
+          a: "In the playtest build, room battles (Create/Join Room Battle) use the tournament location pool, from which some of the swingiest locations have been removed for the Crimson Cup.",
+        },
+      ],
+      it: [
+        {
+          q: "Bisogna finire le missioni per giocare in classificata nel playtest di Origins TCG?",
+          a: "No. Dall'aggiornamento del playtest del 1° ottobre 2026 le missioni sono solo PvE e servono a sbloccare i mazzi, e il matchmaking della classificata ti trova un avversario ogni volta che giochi in classificata. In questo playtest però le missioni dei mazzi non si completano dalla classificata: giocale dalla schermata delle Missioni.",
+        },
+        {
+          q: "L'aggiornamento del playtest cambia le statistiche delle carte per la Crimson Cup?",
+          a: "No. Le sue dieci modifiche di bilanciamento, come Dorothy a 4 mana e Bagheera a 2, sono quelle che la demo principale ha già ricevuto il 21 e il 29 settembre 2026; la patch 0.7 è l'ultima di bilanciamento prima del torneo.",
+        },
+        {
+          q: "Come ci si allena con i luoghi della Crimson Cup?",
+          a: "Nella build del playtest le partite nelle stanze (Create/Join Room Battle) usano il pool di luoghi dei tornei, da cui per la Crimson Cup sono stati tolti alcuni dei luoghi più capaci di ribaltare una partita.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Hay que completar las misiones para jugar la clasificatoria en el playtest de Origins TCG?",
+          a: "No. Desde la actualización del playtest del 1 de octubre de 2026 las misiones son solo PvE y sirven para desbloquear mazos, y el emparejamiento de la clasificatoria te encuentra rival cada vez que juegas una partida clasificatoria. Eso sí, en este playtest las misiones de los mazos no se completan desde la clasificatoria: juégalas desde la pantalla de Misiones.",
+        },
+        {
+          q: "¿La actualización del playtest cambia las estadísticas de las cartas para la Crimson Cup?",
+          a: "No. Sus diez cambios de equilibrio, como Dorothy a 4 de maná y Bagheera a 2, son los que la demo principal ya recibió el 21 y el 29 de septiembre de 2026; el parche 0.7 es el último de equilibrio antes del torneo.",
+        },
+        {
+          q: "¿Cómo se practica con las ubicaciones de la Crimson Cup?",
+          a: "En la build del playtest, las partidas en sala (Create/Join Room Battle) usan el pool de ubicaciones de torneo, del que para la Crimson Cup se han quitado algunas de las ubicaciones más capaces de dar la vuelta a una partida.",
+        },
+      ],
+    },
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
     // Patch 0.7 del 29/09/2026 (richiesta di Pierluigi del 30/09: "uscita la patchnote, bisogna fare subito articolo").
     // Fonti: il post Steam del 29/09 alle 19:37 UTC (gid 1844751498235283, stesso testo che Pierluigi ha incollato, con in
     // più la frase "This time around we've focused on balance and card fixes") e l'immagine ufficiale "Steam Demo Update #2
