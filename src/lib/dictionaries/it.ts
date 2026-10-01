@@ -1155,6 +1155,15 @@ export const it: Dictionary = {
       deckQuota: "{used} mazzi pubblicati su {cap}.",
       deckQuotaUnlimited: "{used} mazzi pubblicati. Con il tuo ruolo non hai un tetto.",
       publicPage: "La tua pagina pubblica",
+      /* "Modifica la mia pagina pubblica" (01/10/2026): profilo, foto, vetrina e numeri pubblici spostati in /account/profile */
+      editPublicPage: "Modifica la mia pagina pubblica",
+      profilePage: {
+        title: "Modifica la mia pagina pubblica",
+        intro: "Tutto quello che si vede sulla tua pagina pubblica: bio, canali e lingue, foto profilo e, per i ruoli Creator, Autore, Pro e Staff, la vetrina e i suoi numeri.",
+        back: "Il mio profilo",
+        jump: "In questa pagina",
+        sections: { profile: "Profilo pubblico", avatar: "Foto profilo", showcase: "Vetrina", stats: "Numeri" },
+      },
       myTierLists: "Le mie tier list",
       newTierList: "Crea una tier list",
       tierListsIntro: "Una tier list per tipo: salvandone un'altra dallo strumento sostituisci questa. Le tier list pubblicate contano nella tier list della community; nascoste, restano solo qui.",

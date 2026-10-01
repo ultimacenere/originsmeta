@@ -17,7 +17,7 @@ const legendaries = cards
   .sort((a, b) => a.name.localeCompare(b.name, "en"));
 
 /**
- * Le due sezioni del pacchetto VETRINA (27/09/2026) in /account, sotto "Il tuo profilo pubblico":
+ * Le due sezioni del pacchetto VETRINA (27/09/2026) in /account/profile (in /account fino al 01/10/2026), sotto "Il tuo profilo pubblico":
  * - "Foto profilo" (#avatar), per TUTTI gli iscritti: la foto caricata dal sito;
  * - "Personalizza la vetrina" (#showcase): il modulo per Creator, Autore, Pro e Staff; agli altri una riga che spiega
  *   che è per i ruoli, con il link alla casella messaggi (/account/messages, "Scrivi allo staff") per chiederne uno, e a chi ha

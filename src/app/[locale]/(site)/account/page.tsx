@@ -23,13 +23,11 @@ import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { FollowingSection } from "@/components/follow/FollowingSection";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { ProfileEditor } from "@/components/ProfileEditor";
+import { AccountHashRedirect } from "@/components/AccountHashRedirect";
 import { AccountStreamGuide } from "@/components/stream/StreamTools";
 import { streamLabels } from "@/lib/streamLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
-import { ShowcaseEditor } from "@/components/showcase/ShowcaseEditor";
-import { ShowStatsSetting } from "@/components/achievements/ShowStatsSetting";
 import { AccountGuides } from "@/components/guides/AccountGuides";
 import { AccountComics } from "@/components/comics/AccountComics";
 import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
@@ -100,21 +98,25 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {profile?.role === "admin" ? ` · ${c.account.role}: admin` : ""}
           </p>
         </div>
-        {/* La pagina pubblica dell'iscritto (23/09/2026): questo pannello resta privato, quella si può mandare in giro. */}
-        <div className="flex flex-wrap items-center gap-2">
-          {profile?.username ? (
-            <Link href={href(locale, `/u/${profile.username}`)} className="btn btn-ink text-xs">
-              {c.account.publicPage}
+        {/* La pagina pubblica dell'iscritto (23/09/2026): questo pannello resta privato, quella si può mandare in giro.
+            Sotto, "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto, vetrina e numeri stanno in
+            /account/profile, perché qui rendevano il profilo innavigabile (Pierluigi). */}
+        <div className="flex flex-wrap items-start gap-2">
+          <div className="flex flex-col gap-2">
+            {profile?.username ? (
+              <Link href={href(locale, `/u/${profile.username}`)} className="btn btn-ink text-xs">
+                {c.account.publicPage}
+              </Link>
+            ) : null}
+            <Link href={href(locale, "/account/profile")} prefetch={false} className="btn btn-primary text-xs">
+              {c.account.editPublicPage}
             </Link>
-          ) : null}
+          </div>
           <SignOutButton locale={locale} label={d.nav.logout} className="btn btn-ink text-xs" />
         </div>
       </section>
+      <AccountHashRedirect target={href(locale, "/account/profile")} />
 
-      {/* Profilo pubblico (pacchetto CREATOR, 26/09/2026): bio, canali, lingue e link breve /@nome */}
-      <ProfileEditor supabase={supabase} userId={user.id} locale={locale} />
-      {/* Foto profilo (tutti) e "Personalizza la vetrina" (Creator, Autore, Pro, Staff): pacchetto VETRINA, 27/09/2026; ancore #avatar e #showcase */}
-      <ShowcaseEditor supabase={supabase} userId={user.id} locale={locale} name={name} />
       {/* La casella messaggi non sta qui: vive tutta in /account/messages, dove porta la busta dell'header (Pierluigi, 27/09/2026:
           "questo modulo deve stare sotto messaggi e non sotto profilo") */}
       {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
@@ -205,9 +207,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       <Suspense fallback={null}>
         <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
       </Suspense>
-      {/* "Mostra i numeri sulla vetrina": solo Creator, Autore, Pro e Staff (pacchetto TRAGUARDI, 27/09/2026) */}
-      <ShowStatsSetting supabase={supabase} userId={user.id} locale={locale} />
-
+      
       {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
       <section id="private" className="mt-12 scroll-mt-24">
         <h2 className="t-section">{c.account.privateTitle}</h2>

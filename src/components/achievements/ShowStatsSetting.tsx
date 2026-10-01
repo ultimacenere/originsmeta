@@ -6,7 +6,7 @@ import { isShowcaseBadge } from "@/lib/community/badges";
 import { ShowStatsToggle } from "./ShowStatsToggle";
 
 /**
- * "I numeri sulla vetrina" in /account (pacchetto TRAGUARDI, 27/09/2026): solo per i ruoli con vetrina (Creator,
+ * "I numeri sulla vetrina" in /account/profile (pacchetto TRAGUARDI, 27/09/2026; in /account fino al 01/10/2026): solo per i ruoli con vetrina (Creator,
  * Autore, Pro, Staff), che possono mostrare sulla pagina pubblica i totali dei mazzi pubblicati. Legge l'impostazione
  * con la sessione che la pagina ha già aperto. Prima della migrazione (colonna `show_stats` assente) al posto della
  * casella c'è una riga che lo dice; per gli altri ruoli non c'è nulla (a meno che il numero fosse acceso da prima di un
