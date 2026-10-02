@@ -38,9 +38,9 @@ export function deckArtPathOk(path: unknown, owner?: string): path is string {
 
 /**
  * Mazzi con l'artwork sospeso dallo staff: il sito mostra la carta ufficiale, il file e `art_path` restano (basta togliere
- * lo slug per rimetterlo). 01/10/2026, Pierluigi: il Merlin di Vega, finché non chiede i permessi per l'artwork.
+ * lo slug per rimetterlo). Il Merlin di Vega, sospeso il 01/10/2026 in attesa dei permessi, è tornato online il 02/10/2026.
  */
-export const DECK_ART_HIDDEN: ReadonlySet<string> = new Set(["merlin-origins-tcg-no-es-magia-es-secuen-322b"]);
+export const DECK_ART_HIDDEN: ReadonlySet<string> = new Set<string>([]);
 
 /**
  * L'indirizzo dell'artwork da mostrare per un mazzo, o null: serve un percorso valido nella cartella del proprietario e un
