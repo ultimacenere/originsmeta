@@ -47,6 +47,9 @@ import { DeckArtImage } from "@/components/DeckArtImage";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { deckArtLabels } from "@/lib/deckArtLabels";
 import { supabaseUrl } from "@/lib/supabase/env";
+import { DeckComments } from "@/components/comments/DeckComments";
+import { commentLabels } from "@/lib/commentLabels";
+import { COMMENTS_ANCHOR } from "@/lib/community/comments";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -399,6 +402,12 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             labels={favoriteLabels[locale]}
           />
         </div>
+        {/* oltre al voto, i commenti (02/10/2026): la sezione sta dopo la scheda, il link ci porta */}
+        <p className="mt-3 text-sm">
+          <a href={`#${COMMENTS_ANCHOR}`} className="link-mint font-bold">
+            {commentLabels[locale].jump} ↓
+          </a>
+        </p>
 
         <OwnerActions
           deckId={deck.id}
@@ -502,6 +511,17 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         {/* statistiche per l'autore (pacchetto STATS): visite, copie del codice, clic e video, solo nel browser */}
         <DeckStatsBeacon slug={deck.slug} />
       </article>
+
+      {/* Commenti (02/10/2026, richiesta di Pierluigi): risposte a un livello, letti nel browser (la scheda resta ISR e i
+          commenti non si indicizzano), scritti con le funzioni deck_comment_* del database. */}
+      <DeckComments
+        deckId={deck.id}
+        ownerId={deck.owner}
+        locale={locale}
+        loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
+        labels={commentLabels[locale]}
+        badges={c.badges}
+      />
 
       {guides.length ? (
         <section className="mt-10">

@@ -48,6 +48,9 @@
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
  *     deck_save           "Salva" su un mazzo della community (30/09/2026)       placement (deck_page)
  *     deck_unsave         tolto dai mazzi salvati                                 placement (deck_page | account)
+ *     deck_comment        commento o risposta pubblicati sotto un mazzo della      kind (comment | reply)
+ *                         community (02/10/2026, solo se il database l'ha salvato)
+ *     deck_comment_report commento segnalato allo staff (02/10/2026)             (nessun parametro)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
  *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
@@ -64,7 +67,8 @@
  *     unfollow            "Segui già" premuto per smettere, o "Smetti di seguire"  placement (profile | deck_page |
  *                         nell'elenco "Chi segui" di /account                       guide_page | account)
  *     notification_open   clic su un avviso nella sezione "Notifiche" di           kind (deck_published | live |
- *                         /account/messages (pacchetto SEGUI)                      guide_published)
+ *                         /account/messages (pacchetto SEGUI)                      guide_published | comic_published |
+ *                                                                                 deck_comment | comment_reply)
  *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
  *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest |
  *                                                                                 community | other), placement, cta
@@ -188,6 +192,8 @@ export type EventParams = {
   deck_vote: { stars: number; vote_type: "new" | "update" };
   deck_save: { placement: string };
   deck_unsave: { placement: string };
+  deck_comment: { kind: "comment" | "reply" };
+  deck_comment_report: Record<string, never>;
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
   tournament_create: { visibility: string; deck_mode: string };
@@ -197,7 +203,7 @@ export type EventParams = {
   message_read: { placement: "account" | "staff_area" };
   follow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" };
   unfollow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" | "account" };
-  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_comment" | "comment_reply" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -234,6 +240,8 @@ export const VERCEL_PROPS = {
   deck_vote: ["stars", "vote_type"],
   deck_save: ["placement"],
   deck_unsave: ["placement"],
+  deck_comment: ["kind"],
+  deck_comment_report: [],
   tierlist_created: ["kind"],
   tier_list_share: ["method", "kind"],
   tournament_create: ["visibility", "deck_mode"],

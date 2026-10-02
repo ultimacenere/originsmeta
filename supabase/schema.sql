@@ -5034,3 +5034,304 @@ language sql stable security definer set search_path = public, pg_temp as $$
 $$;
 revoke all on function public.analytics_interest_count() from public;
 grant execute on function public.analytics_interest_count() to anon, authenticated;
+
+-- ===== 02/10/2026: COMMENTI =====
+-- =====================================================================================================
+-- COMMENTI SUI MAZZI DELLA COMMUNITY (02/10/2026). Pierluigi: "dovremmo dare la possibilità oltre a votare il deck, anche
+-- di poter commentare". Scelte di Pierluigi alle domande del 02/10/2026: risposte a un livello (si risponde a un
+-- commento, anche l'autore del mazzo, ma non a una risposta); chi ha scritto un commento lo modifica o lo cancella; lo
+-- staff lo nasconde o lo cancella, più "Segnala" per tutti con avviso allo staff sul canale Discord privato; avvisi sul
+-- sito (busta dell'header) all'autore del mazzo e a chi riceve una risposta.
+--
+--   deck_comments          i commenti. Si leggono (RLS) quelli non nascosti dei mazzi pubblicati, per tutti; chi ha
+--                          scritto un commento nascosto dallo staff lo vede ancora (con la scritta), lo staff vede tutto.
+--                          Nessuna scrittura diretta: solo le funzioni deck_comment_* qui sotto (security definer), che
+--                          decidono testo, frequenza, chi può fare che cosa e scrivono gli avvisi.
+--                          status: 'visible'; 'hidden' (nascosto dallo staff, testo conservato per rimetterlo);
+--                          'deleted' (cancellato quando ha delle risposte: il testo si svuota e le risposte restano sotto
+--                          "Commento eliminato"; senza risposte la riga si cancella e basta, e quando sparisce l'ultima
+--                          risposta di un commento eliminato sparisce anche lui).
+--   deck_comment_reports   le segnalazioni, una per utente e per commento, mai sul proprio; le legge solo lo staff. Il
+--                          sito avvisa il canale privato dello staff solo alla prima segnalazione di un commento nelle 24
+--                          ore (il valore restituito da deck_comment_report), come le guide.
+--
+-- Testo semplice (mostrato sempre come testo, mai come HTML): pulito da inbox_clean e controllato da inbox_blank del blocco
+-- INBOX, 1-1000 caratteri dopo la pulizia, al massimo 4000 grezzi prima. Frequenza (lo staff no): 10 secondi fra due
+-- commenti, 20 l'ora, 100 al giorno; 10 segnalazioni al giorno. Gli stessi numeri stanno in src/lib/community/comments.ts
+-- (comments.test.ts li confronta). Avvisi: tipi 'deck_comment' (all'autore del mazzo) e 'comment_reply' (a chi riceve una
+-- risposta) nella tabella notifications del blocco SEGUI, uno per commento (event_key 'comment:<id>'), mai a chi scrive;
+-- cancellare o nascondere un commento toglie anche i suoi avvisi. Tutto si cancella con l'account (on delete cascade dal
+-- profilo) e con il mazzo.
+--
+-- Viene dopo INBOX (inbox_clean, inbox_blank, is_staff), SEGUI (notifications) e FUMETTI (ultimo vincolo dei tipi di
+-- avviso, rifatto qui con i due tipi nuovi). Nessuna grant né revoke su public.profiles (scripts/schema-guard.mjs).
+-- Idempotente come tutto il file. Il sito regge anche prima della migrazione: senza tabella la sezione dice che i
+-- commenti non sono ancora disponibili.
+-- =====================================================================================================
+
+create table if not exists public.deck_comments (
+  id bigint generated always as identity primary key,
+  deck_id uuid not null references public.community_decks(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  -- null = commento; altrimenti la risposta a un commento (mai a una risposta) dello stesso mazzo
+  parent_id bigint references public.deck_comments(id) on delete cascade,
+  body text not null default '',
+  status text not null default 'visible',
+  created_at timestamptz not null default now(),
+  -- ultima modifica del testo da parte di chi l'ha scritto (null = mai modificato)
+  edited_at timestamptz
+);
+alter table public.deck_comments drop constraint if exists deck_comments_status_check;
+alter table public.deck_comments add constraint deck_comments_status_check check (status in ('visible', 'hidden', 'deleted'));
+alter table public.deck_comments drop constraint if exists deck_comments_body_check;
+alter table public.deck_comments add constraint deck_comments_body_check
+  check ((status = 'deleted' and body = '') or (status <> 'deleted' and char_length(body) between 1 and 1000));
+alter table public.deck_comments drop constraint if exists deck_comments_not_self_parent;
+alter table public.deck_comments add constraint deck_comments_not_self_parent check (parent_id is null or parent_id <> id);
+create index if not exists deck_comments_deck_idx on public.deck_comments (deck_id, parent_id, created_at desc);
+create index if not exists deck_comments_parent_idx on public.deck_comments (parent_id) where parent_id is not null;
+create index if not exists deck_comments_user_idx on public.deck_comments (user_id, created_at desc);
+
+alter table public.deck_comments enable row level security;
+-- Le policy non chiamano is_staff per anon (che non la può eseguire): la lettura pubblica e quella di autori e staff sono
+-- due policy diverse, la seconda solo per authenticated.
+drop policy if exists "deck comments: public read" on public.deck_comments;
+create policy "deck comments: public read" on public.deck_comments for select to anon, authenticated
+  using (status <> 'hidden' and exists (select 1 from public.community_decks d where d.id = deck_comments.deck_id and d.status = 'published'));
+drop policy if exists "deck comments: own and staff read" on public.deck_comments;
+create policy "deck comments: own and staff read" on public.deck_comments for select to authenticated
+  using (user_id = (select auth.uid()) or (select public.is_staff()));
+drop policy if exists "deck comments no direct insert" on public.deck_comments;
+create policy "deck comments no direct insert" on public.deck_comments as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "deck comments no direct update" on public.deck_comments;
+create policy "deck comments no direct update" on public.deck_comments as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "deck comments no direct delete" on public.deck_comments;
+create policy "deck comments no direct delete" on public.deck_comments as restrictive for delete to anon, authenticated using (false);
+
+revoke all on public.deck_comments from anon, authenticated;
+grant select (id, deck_id, user_id, parent_id, body, status, created_at, edited_at) on public.deck_comments to anon, authenticated;
+
+create table if not exists public.deck_comment_reports (
+  id bigint generated always as identity primary key,
+  comment_id bigint not null references public.deck_comments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  reason text not null default '',
+  created_at timestamptz not null default now(),
+  unique (comment_id, user_id)
+);
+alter table public.deck_comment_reports drop constraint if exists deck_comment_reports_reason_check;
+alter table public.deck_comment_reports add constraint deck_comment_reports_reason_check check (char_length(reason) <= 300);
+create index if not exists deck_comment_reports_user_idx on public.deck_comment_reports (user_id, created_at desc);
+create index if not exists deck_comment_reports_comment_idx on public.deck_comment_reports (comment_id, created_at desc);
+alter table public.deck_comment_reports enable row level security;
+drop policy if exists "deck comment reports: staff read" on public.deck_comment_reports;
+create policy "deck comment reports: staff read" on public.deck_comment_reports for select to authenticated
+  using ((select public.is_staff()));
+drop policy if exists "deck comment reports no direct write" on public.deck_comment_reports;
+create policy "deck comment reports no direct write" on public.deck_comment_reports as restrictive for insert to anon, authenticated with check (false);
+revoke all on public.deck_comment_reports from anon, authenticated;
+grant select on public.deck_comment_reports to authenticated;
+
+-- ---------- avvisi: i due tipi nuovi ----------
+-- Ultimo vincolo dei tipi delle due tabelle del blocco SEGUI (prima rifatto da FUMETTI): uguale a NOTIFICATION_KINDS di
+-- src/lib/community/notifications.ts (notifications.test.ts). Il registro degli invii non riceve righe dei commenti (non
+-- è un invio a chi segue), ma il vincolo resta uguale nelle due tabelle.
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_comment', 'comment_reply'));
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_comment', 'comment_reply'));
+
+-- ---------- funzioni interne ----------
+-- Il testo di un commento pulito e controllato: tetto al testo grezzo prima di ogni regex, poi inbox_clean (a capo
+-- uniformi, niente invisibili, al massimo una riga vuota di fila), almeno un carattere visibile, al massimo 1000.
+create or replace function public.deck_comment_text(p_body text)
+returns text language plpgsql immutable set search_path = public, pg_temp as $$
+declare
+  s text;
+begin
+  if char_length(coalesce(p_body, '')) > 4000 then raise exception 'comment_too_long'; end if;
+  s := public.inbox_clean(p_body, false);
+  if public.inbox_blank(s) then raise exception 'comment_empty'; end if;
+  if char_length(s) > 1000 then raise exception 'comment_too_long'; end if;
+  return s;
+end $$;
+revoke all on function public.deck_comment_text(text) from public, anon, authenticated;
+
+-- Toglie gli avvisi di un commento (cancellato o nascosto dallo staff).
+create or replace function public.deck_comment_forget(p_id bigint)
+returns void language sql security definer set search_path = public, pg_temp as $$
+  delete from public.notifications where kind in ('deck_comment', 'comment_reply') and event_key = 'comment:' || p_id::text;
+$$;
+revoke all on function public.deck_comment_forget(bigint) from public, anon, authenticated;
+
+-- ---------- RPC per il sito (solo authenticated) ----------
+-- Errori con raise exception '<codice>': li traduce `commentErrorCode` in src/lib/community/comments.ts.
+
+-- Un commento (p_parent nullo) o una risposta a un commento dello stesso mazzo. Solo sui mazzi pubblicati; si risponde
+-- solo a un commento visibile e mai a una risposta. Avvisi: a chi riceve la risposta e all'autore del mazzo (se non è
+-- lui ad aver scritto né a ricevere già l'avviso della risposta). Restituisce l'id del commento.
+create or replace function public.deck_comment_add(p_deck uuid, p_body text, p_parent bigint default null)
+returns bigint language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_body text;
+  v_owner uuid;
+  v_slug text;
+  v_parent_user uuid;
+  v_parent_deck uuid;
+  v_parent_parent bigint;
+  v_parent_status text;
+  v_id bigint;
+  v_target text;
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  v_body := public.deck_comment_text(p_body);
+  select d.owner, d.slug into v_owner, v_slug from public.community_decks d where d.id = p_deck and d.status = 'published';
+  if v_owner is null then raise exception 'not_found'; end if;
+  if p_parent is not null then
+    select c.user_id, c.deck_id, c.parent_id, c.status into v_parent_user, v_parent_deck, v_parent_parent, v_parent_status
+      from public.deck_comments c where c.id = p_parent;
+    if v_parent_user is null or v_parent_deck <> p_deck or v_parent_parent is not null or v_parent_status <> 'visible' then
+      raise exception 'bad_parent';
+    end if;
+  end if;
+  if not public.is_staff() then
+    -- il lock per utente mette in fila le richieste parallele: i tetti non si superano con dieci clic insieme
+    perform pg_advisory_xact_lock(hashtext('om_comments:' || me::text));
+    if exists (select 1 from public.deck_comments c where c.user_id = me and c.created_at > now() - interval '10 seconds') then
+      raise exception 'comment_too_fast';
+    end if;
+    select count(*) into n from public.deck_comments c where c.user_id = me and c.created_at > now() - interval '1 hour';
+    if n >= 20 then raise exception 'comment_rate'; end if;
+    select count(*) into n from public.deck_comments c where c.user_id = me and c.created_at > now() - interval '1 day';
+    if n >= 100 then raise exception 'comment_rate'; end if;
+  end if;
+  insert into public.deck_comments (deck_id, user_id, parent_id, body) values (p_deck, me, p_parent, v_body) returning id into v_id;
+  v_target := '/decks/community/' || v_slug;
+  if v_target ~ '^/decks/community/[a-z0-9-]{1,80}$' then
+    if v_parent_user is not null and v_parent_user <> me then
+      insert into public.notifications (user_id, kind, actor_id, target, event_key)
+        values (v_parent_user, 'comment_reply', me, v_target, 'comment:' || v_id::text)
+        on conflict (user_id, kind, event_key) do nothing;
+    end if;
+    if v_owner <> me and v_owner is distinct from v_parent_user then
+      insert into public.notifications (user_id, kind, actor_id, target, event_key)
+        values (v_owner, 'deck_comment', me, v_target, 'comment:' || v_id::text)
+        on conflict (user_id, kind, event_key) do nothing;
+    end if;
+  end if;
+  return v_id;
+end $$;
+revoke all on function public.deck_comment_add(uuid, text, bigint) from public, anon;
+grant execute on function public.deck_comment_add(uuid, text, bigint) to authenticated;
+
+-- Chi l'ha scritto cambia il testo di un suo commento visibile (non uno nascosto dallo staff né uno eliminato), su un
+-- mazzo ancora pubblicato. Lo stesso testo non segna una modifica.
+create or replace function public.deck_comment_edit(p_id bigint, p_body text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_body text;
+  v_user uuid;
+  v_status text;
+  v_old text;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  v_body := public.deck_comment_text(p_body);
+  select c.user_id, c.status, c.body into v_user, v_status, v_old
+    from public.deck_comments c join public.community_decks d on d.id = c.deck_id and d.status = 'published'
+   where c.id = p_id;
+  if v_user is null or v_status = 'deleted' then raise exception 'not_found'; end if;
+  if v_user <> me then raise exception 'forbidden'; end if;
+  if v_status = 'hidden' then raise exception 'comment_hidden'; end if;
+  if v_body = v_old then return; end if;
+  update public.deck_comments set body = v_body, edited_at = now() where id = p_id;
+end $$;
+revoke all on function public.deck_comment_edit(bigint, text) from public, anon;
+grant execute on function public.deck_comment_edit(bigint, text) to authenticated;
+
+-- Cancella un commento: chi l'ha scritto o lo staff. Con delle risposte resta "Commento eliminato" (testo vuoto) e le
+-- risposte restano; senza, la riga sparisce, e con lei un commento eliminato rimasto senza risposte. Gli avvisi del
+-- commento si tolgono.
+create or replace function public.deck_comment_delete(p_id bigint)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_user uuid;
+  v_parent bigint;
+  v_status text;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select c.user_id, c.parent_id, c.status into v_user, v_parent, v_status from public.deck_comments c where c.id = p_id;
+  if v_user is null or v_status = 'deleted' then raise exception 'not_found'; end if;
+  if v_user <> me and not public.is_staff() then raise exception 'forbidden'; end if;
+  perform public.deck_comment_forget(p_id);
+  if exists (select 1 from public.deck_comments r where r.parent_id = p_id) then
+    update public.deck_comments set status = 'deleted', body = '', edited_at = null where id = p_id;
+  else
+    delete from public.deck_comments where id = p_id;
+    if v_parent is not null then
+      delete from public.deck_comments p
+       where p.id = v_parent and p.status = 'deleted'
+         and not exists (select 1 from public.deck_comments r where r.parent_id = v_parent);
+    end if;
+  end if;
+end $$;
+revoke all on function public.deck_comment_delete(bigint) from public, anon;
+grant execute on function public.deck_comment_delete(bigint) to authenticated;
+
+-- Lo staff nasconde un commento (p_hide true: testo conservato, lo vedono solo chi l'ha scritto e lo staff; i suoi avvisi
+-- si tolgono) o lo rimette (false).
+create or replace function public.deck_comment_moderate(p_id bigint, p_hide boolean)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_status text;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  if not public.is_staff() then raise exception 'forbidden'; end if;
+  select c.status into v_status from public.deck_comments c where c.id = p_id;
+  if v_status is null or v_status = 'deleted' then raise exception 'not_found'; end if;
+  update public.deck_comments set status = case when p_hide then 'hidden' else 'visible' end where id = p_id;
+  if p_hide then perform public.deck_comment_forget(p_id); end if;
+end $$;
+revoke all on function public.deck_comment_moderate(bigint, boolean) from public, anon;
+grant execute on function public.deck_comment_moderate(bigint, boolean) to authenticated;
+
+-- Segnala un commento visibile di un mazzo pubblicato (mai il proprio), una volta per commento, al massimo 10 al giorno
+-- (lo staff no). Motivo facoltativo, una riga, fino a 300 caratteri. Restituisce true se è la prima segnalazione di quel
+-- commento nelle 24 ore: solo allora il sito avvisa lo staff su Discord.
+create or replace function public.deck_comment_report(p_id bigint, p_reason text default '')
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_user uuid;
+  v_reason text;
+  v_first boolean;
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if char_length(coalesce(p_reason, '')) > 1200 then raise exception 'reason_too_long'; end if;
+  v_reason := public.inbox_clean(coalesce(p_reason, ''), true);
+  if char_length(v_reason) > 300 then raise exception 'reason_too_long'; end if;
+  select c.user_id into v_user
+    from public.deck_comments c join public.community_decks d on d.id = c.deck_id and d.status = 'published'
+   where c.id = p_id and c.status = 'visible';
+  if v_user is null then raise exception 'not_found'; end if;
+  if v_user = me then raise exception 'own_comment'; end if;
+  perform pg_advisory_xact_lock(hashtext('om_comment_reports:' || me::text));
+  if exists (select 1 from public.deck_comment_reports r where r.comment_id = p_id and r.user_id = me) then raise exception 'duplicate'; end if;
+  if not public.is_staff() then
+    select count(*) into n from public.deck_comment_reports r where r.user_id = me and r.created_at > now() - interval '1 day';
+    if n >= 10 then raise exception 'report_rate'; end if;
+  end if;
+  perform pg_advisory_xact_lock(hashtext('om_comment_report_c:' || p_id::text));
+  v_first := not exists (select 1 from public.deck_comment_reports r where r.comment_id = p_id and r.created_at > now() - interval '1 day');
+  insert into public.deck_comment_reports (comment_id, user_id, reason) values (p_id, me, v_reason);
+  return v_first;
+end $$;
+revoke all on function public.deck_comment_report(bigint, text) from public, anon;
+grant execute on function public.deck_comment_report(bigint, text) to authenticated;
+
+comment on table public.deck_comments is 'Commenti sui mazzi della community (02/10/2026): risposte a un livello, scritture solo con le funzioni deck_comment_*, avvisi deck_comment e comment_reply. Regole in src/lib/community/comments.ts.';
+comment on table public.deck_comment_reports is 'Segnalazioni dei commenti ai mazzi (02/10/2026): una per utente e per commento, le legge solo lo staff; scritte solo da deck_comment_report.';

@@ -5,6 +5,7 @@ import {
   NOTIFICATIONS_SHOWN,
   comicSlugOf,
   deckSlugOf,
+  isCommentKind,
   guideSlugOf,
   isNotificationKind,
   missingHeadCount,
@@ -89,7 +90,9 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   }
   const rows = ((res.data ?? []) as NotificationRow[]).filter((r) => isNotificationKind(r.kind));
   const actorIds = [...new Set(rows.map((r) => r.actor_id))];
-  const slugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_published" ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  // i mazzi pubblicati e quelli commentati (avvisi dei commenti, 02/10/2026)
+  const onDeck = (r: NotificationRow) => r.kind === "deck_published" || isCommentKind(r.kind);
+  const slugs = [...new Set(rows.flatMap((r) => (onDeck(r) ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const guideSlugs = [...new Set(rows.flatMap((r) => (r.kind === "guide_published" ? [guideSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const comicSlugs = [...new Set(rows.flatMap((r) => (r.kind === "comic_published" ? [comicSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const none = Promise.resolve({ data: [], error: null });
@@ -113,7 +116,7 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const titles = new Map(((guides.data ?? []) as { slug: string; title: string }[]).map((g) => [g.slug, g.title]));
   const comicTitles = new Map(((comics.data ?? []) as { slug: string; title: string }[]).map((c) => [c.slug, c.title]));
   const items = rows.map((r) => {
-    const slug = r.kind === "deck_published" ? deckSlugOf(r.target) : null;
+    const slug = onDeck(r) ? deckSlugOf(r.target) : null;
     const guide = r.kind === "guide_published" ? guideSlugOf(r.target) : null;
     const comic = r.kind === "comic_published" ? comicSlugOf(r.target) : null;
     return {

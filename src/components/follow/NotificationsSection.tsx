@@ -2,7 +2,7 @@ import Link from "next/link";
 import { href, type Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
 import { authorName } from "@/lib/community/util";
-import { NOTIFICATIONS_ANCHOR, goneUnreadIds, notificationHref } from "@/lib/community/notifications";
+import { NOTIFICATIONS_ANCHOR, goneUnreadIds, isCommentKind, notificationHref } from "@/lib/community/notifications";
 import { listNotifications, unreadNotificationCount, type NotificationItem } from "@/lib/community/notificationQueries";
 import { fillFollowLabel, followLabels, type FollowLabels } from "@/lib/followLabels";
 import { Avatar } from "@/components/AccountMenu";
@@ -86,7 +86,10 @@ export async function NotificationsJump({ locale, supabase, userId }: { locale: 
 
 /** Il testo di un avviso: chi ha fatto che cosa, con il nome del mazzo o il titolo della guida quando c'è. Solo testo semplice. */
 function notificationText(n: NotificationItem, L: FollowLabels["notifications"]): string {
-  const name = n.actor ? authorName(n.actor) : L.someone;
+  // gli avvisi dei commenti (02/10/2026) arrivano anche da chi non segui
+  const name = n.actor ? authorName(n.actor) : isCommentKind(n.kind) ? L.someoneElse : L.someone;
+  if (n.kind === "deck_comment") return n.deckName ? fillFollowLabel(L.deckComment, { name, deck: n.deckName }) : fillFollowLabel(L.deckCommentGone, { name });
+  if (n.kind === "comment_reply") return n.deckName ? fillFollowLabel(L.commentReply, { name, deck: n.deckName }) : fillFollowLabel(L.commentReplyGone, { name });
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
   if (n.kind === "guide_published") return n.guideTitle ? fillFollowLabel(L.guidePublished, { name, guide: n.guideTitle }) : fillFollowLabel(L.guideGone, { name });
   if (n.kind === "comic_published") return n.comicTitle ? fillFollowLabel(L.comicPublished, { name, comic: n.comicTitle }) : fillFollowLabel(L.comicGone, { name });
@@ -95,10 +98,10 @@ function notificationText(n: NotificationItem, L: FollowLabels["notifications"])
 
 function NotificationCard({ item: n, locale, L }: { item: NotificationItem; locale: Locale; L: FollowLabels["notifications"] }) {
   const unread = !n.read_at;
-  const name = n.actor ? authorName(n.actor) : L.someone;
+  const name = n.actor ? authorName(n.actor) : isCommentKind(n.kind) ? L.someoneElse : L.someone;
   // un mazzo o una guida non più online non ha link (porterebbe a una pagina che non c'è)
-  const gone = (n.kind === "deck_published" && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle) || (n.kind === "comic_published" && !n.comicTitle);
-  const link = gone ? null : notificationHref(locale, n.target);
+  const gone = ((n.kind === "deck_published" || isCommentKind(n.kind)) && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle) || (n.kind === "comic_published" && !n.comicTitle);
+  const link = gone ? null : notificationHref(locale, n.target, n.kind);
   const body = (
     <>
       <Avatar profile={n.actor} name={name} size={36} />

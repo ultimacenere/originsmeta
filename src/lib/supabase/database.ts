@@ -117,6 +117,18 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; version: number; created_at: string; updated_at: string };
 /** Mazzo salvato da un utente ("Salva", blocco PREFERITI E TENDENZA, 30/09/2026): ognuno vede solo i suoi. */
 export type DeckFavoriteRow = { user_id: string; deck_id: string; created_at: string };
+/** commenti ai mazzi (02/10/2026, blocco COMMENTI di supabase/schema.sql): lettura per colonna, scritture solo con le RPC deck_comment_* */
+export type DeckCommentRow = {
+  id: number;
+  deck_id: string;
+  user_id: string;
+  parent_id: number | null;
+  body: string;
+  status: "visible" | "hidden" | "deleted";
+  created_at: string;
+  edited_at: string | null;
+};
+export type DeckCommentReportRow = { id: number; comment_id: number; user_id: string; reason: string; created_at: string };
 /** Versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026): solo lettura, le scrive il trigger. */
 export type CommunityDeckVersionRow = {
   deck_id: string;
@@ -294,7 +306,7 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published" | "comic_published";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_comment" | "comment_reply";
   actor_id: string;
   /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente> */
   target: string;
@@ -436,6 +448,41 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      deck_comments: {
+        Row: DeckCommentRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "deck_comments_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deck_comments_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deck_comments_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "deck_comments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** segnalazioni dei commenti: le legge solo lo staff, si scrivono solo con deck_comment_report */
+      deck_comment_reports: {
+        Row: DeckCommentReportRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [];
       };
       community_deck_versions: {
         Row: CommunityDeckVersionRow;
@@ -781,6 +828,15 @@ export type Database = {
       notifications_cleanup: { Args: { p_key: string }; Returns: undefined };
       /** segna come letti i propri avvisi: tutti (p_ids assente) o quelli indicati; restituisce quanti */
       notifications_mark_read: { Args: { p_ids?: number[] | null }; Returns: number };
+      /* commenti ai mazzi (blocco COMMENTI, 02/10/2026): errori con raise exception '<codice>' (commentErrorCode di comments.ts) */
+      /** commento (p_parent assente) o risposta a un commento dello stesso mazzo; restituisce l'id */
+      deck_comment_add: { Args: { p_deck: string; p_body: string; p_parent?: number | null }; Returns: number };
+      deck_comment_edit: { Args: { p_id: number; p_body: string }; Returns: undefined };
+      deck_comment_delete: { Args: { p_id: number }; Returns: undefined };
+      /** solo lo staff: nasconde (true) o rimette (false) */
+      deck_comment_moderate: { Args: { p_id: number; p_hide: boolean }; Returns: undefined };
+      /** true se è la prima segnalazione del commento nelle 24 ore (allora il sito avvisa lo staff) */
+      deck_comment_report: { Args: { p_id: number; p_reason?: string }; Returns: boolean };
       /* casella messaggi (supabase/schema.sql, blocco INBOX): scritture solo da qui, errori con raise exception '<codice>' */
       is_staff: { Args: Record<string, never>; Returns: boolean };
       inbox_status: { Args: Record<string, never>; Returns: { unread: number; staff: boolean; staff_unread: number } };

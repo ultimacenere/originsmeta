@@ -11,6 +11,7 @@ import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { comicLabels } from "@/lib/comicLabels";
 import { trackerPrivacy } from "@/lib/trackerLabels";
 import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
+import { commentLabels } from "@/lib/commentLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -70,6 +71,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* "Segui" e notifiche (pacchetto SEGUI, 27/09/2026): testo in src/lib/followLabels.ts, ancora #follows */}
         <p id="follows" className="mt-6 scroll-mt-24">
           {followLabels[locale].privacy}
+        </p>
+        {/* Commenti ai mazzi (02/10/2026): testo in src/lib/commentLabels.ts, ancora #deck-comments (link sotto la sezione dei commenti) */}
+        <p id="deck-comments" className="mt-6 scroll-mt-24">
+          {commentLabels[locale].privacy}
         </p>
         {/* Fumetti dei creator (pacchetto FUMETTI, 29/09/2026): testo in src/lib/comicLabels.ts, ancora #community-comics */}
         <p id="community-comics" className="mt-6 scroll-mt-24">

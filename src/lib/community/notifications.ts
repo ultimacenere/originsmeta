@@ -11,15 +11,22 @@ import type { InboxStatus } from "./messages";
  *   - `live`: è andato in diretta su Twitch con Origins TCG (rotta /api/cron/live, cron di Vercel ogni 10 minuti);
  *   - `guide_published`: ha pubblicato una guida della community (pacchetto GUIDE, con `notifyFollowers`);
  *   - `comic_published`: ha pubblicato un fumetto fra le news (pacchetto FUMETTI, 29/09/2026, con `notifyFollowers`).
+ * Più due avvisi che non dipendono da chi si segue (commenti ai mazzi, 02/10/2026, blocco COMMENTI): `deck_comment` a chi
+ * ha pubblicato un mazzo quando qualcuno lo commenta, `comment_reply` a chi riceve una risposta a un suo commento. Li
+ * scrive `deck_comment_add` nel database; portano alla scheda del mazzo, alla sezione dei commenti.
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
  * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_comment", "comment_reply"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
-/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`). */
-export type PublishKind = Exclude<NotificationKind, "live">;
+/** I tipi dei commenti ai mazzi (blocco COMMENTI, 02/10/2026): il percorso è la scheda del mazzo commentato. */
+export const COMMENT_KINDS = ["deck_comment", "comment_reply"] as const satisfies readonly NotificationKind[];
+export type CommentKind = (typeof COMMENT_KINDS)[number];
+export const isCommentKind = (k: unknown): k is CommentKind => typeof k === "string" && (COMMENT_KINDS as readonly string[]).includes(k);
+/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), i commenti da `deck_comment_add`. */
+export type PublishKind = Exclude<NotificationKind, "live" | CommentKind>;
 
 /** Quanti avvisi mostra la sezione "Notifiche" (i più recenti). */
 export const NOTIFICATIONS_SHOWN = 50;
@@ -62,7 +69,7 @@ export function isSafeTarget(target: unknown): target is string {
   return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target));
 }
 
-/** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
+/** Lo slug del mazzo di un avviso `deck_published`, `deck_comment` o `comment_reply` (per leggerne il nome), altrimenti null. */
 export function deckSlugOf(target: string): string | null {
   return DECK_TARGET.exec(target)?.[1] ?? null;
 }
@@ -106,9 +113,13 @@ export function notificationsSince(now: number = Date.now()): string {
   return new Date(now - NOTIFICATION_RETENTION_DAYS * 86_400_000).toISOString();
 }
 
-/** Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. */
-export function notificationHref(locale: string, target: string): string | null {
-  return isSafeTarget(target) ? `/${locale}${target}` : null;
+/**
+ * Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. Gli avvisi dei
+ * commenti portano alla sezione dei commenti della scheda (`#comments`, COMMENTS_ANCHOR di comments.ts).
+ */
+export function notificationHref(locale: string, target: string, kind?: NotificationKind): string | null {
+  if (!isSafeTarget(target)) return null;
+  return isCommentKind(kind) && DECK_TARGET.test(target) ? `/${locale}${target}#comments` : `/${locale}${target}`;
 }
 
 /**
