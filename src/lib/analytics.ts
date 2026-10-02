@@ -24,7 +24,8 @@
  *     login               accesso completato di un account che c'era già         method
  *     login_start         clic su "Accedi con Discord", o link via email spedito  method
  *     login_error         errore mostrato dal pannello di accesso                 kind, method
- *                         (kind: discord_start, email_send, captcha, rate_limited nel pannello; expired, other_browser,
+ *                         (kind: discord_start, email_send, captcha, rate_limited e, per il codice dell'email, code_invalid,
+ *                         code_too_many, code_error, code_format, code_no_email nel pannello; expired, other_browser,
  *                         discord_cancelled, discord, generic al ritorno da /auth/callback, contati solo all'arrivo:
  *                         non a un ricaricamento né tornando con avanti/indietro, vedi `countsOnArrival`)
  *   ★ deck_published      mazzo pubblicato sul sito, solo la prima volta (non le   locale, legendary, source

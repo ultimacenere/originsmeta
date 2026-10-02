@@ -34,6 +34,17 @@ export type LoginLabels = {
   captchaRequired: string;
   disabled: string;
   backHint: string;
+  /** apre il campo del codice quando non è già aperto (chi torna alla pagina con il codice in mano) */
+  codeToggle: string;
+  codeLabel: string;
+  /** sotto il campo: dove si trova il codice e perché usarlo */
+  codeHint: string;
+  codeSubmit: string;
+  codeChecking: string;
+  codeFormat: string;
+  codeNeedsEmail: string;
+  codeInvalid: string;
+  codeTooMany: string;
 };
 
 export function loginLabels(dict: Dictionary): LoginLabels {
@@ -61,6 +72,15 @@ export function loginLabels(dict: Dictionary): LoginLabels {
     captchaRequired: a.captchaRequired,
     disabled: a.disabled,
     backHint: a.backHint,
+    codeToggle: a.codeToggle,
+    codeLabel: a.codeLabel,
+    codeHint: a.codeHint,
+    codeSubmit: a.codeSubmit,
+    codeChecking: a.codeChecking,
+    codeFormat: a.codeFormat,
+    codeNeedsEmail: a.codeNeedsEmail,
+    codeInvalid: a.codeInvalid,
+    codeTooMany: a.codeTooMany,
   };
 }
 
@@ -106,4 +126,37 @@ export function authErrorKind(error: string | null | undefined, code?: string | 
     return "generic";
   }
   return (c ? emailKind(c) : null) ?? (e ? emailKind(e) : null) ?? "generic";
+}
+
+/**
+ * Codice dell'email (dal 02/10/2026): la stessa email del link porta anche un codice (`{{ .Token }}` nei modelli Magic Link e
+ * Confirm signup di Supabase), che si scrive nel pannello e si verifica con `verifyOtp({ email, token, type: "email" })`.
+ * A differenza del link non dipende dal browser che ha chiesto l'accesso (il flusso PKCE): funziona con la posta letta
+ * sul telefono, nel browser interno dell'app di Gmail, in una finestra anonima e nell'app installata.
+ * Supabase lo manda di 6 cifre; la lunghezza si cambia in Authentication → Email (da 6 a 10), quindi qui valgono tutte.
+ */
+export const OTP_MIN_DIGITS = 6;
+export const OTP_MAX_DIGITS = 10;
+
+/**
+ * Il codice come l'ha scritto o incollato l'utente, ridotto alle sole cifre (spazi, trattini, "Il tuo codice è …" via).
+ * null se le cifre non hanno una lunghezza possibile. Il testo si taglia prima di pulirlo: niente regex su incollati enormi.
+ */
+export function cleanOtp(raw: string): string | null {
+  const digits = raw.slice(0, 80).replace(/\D/g, "");
+  return digits.length >= OTP_MIN_DIGITS && digits.length <= OTP_MAX_DIGITS ? digits : null;
+}
+
+/**
+ * Esito di una verifica del codice fallita: "invalid" quando Supabase dice scaduto o sbagliato (per lui sono lo stesso
+ * errore, `otp_expired` con stato 403; il codice muore anche quando il link della stessa email è già stato aperto),
+ * "tooMany" con troppi tentativi (429), "generic" per il resto (rete, servizio).
+ */
+export type OtpErrorKind = "invalid" | "tooMany" | "generic";
+
+export function otpErrorKind(error: { status?: number; code?: string } | null | undefined): OtpErrorKind {
+  if (!error) return "generic";
+  if (error.status === 429 || error.code === "over_request_rate_limit") return "tooMany";
+  if (error.code === "otp_expired" || (error.status === 403 && !error.code)) return "invalid";
+  return "generic";
 }
