@@ -19,6 +19,7 @@ export const en = {
     events: "Tournaments & Events",
     about: "About",
     builder: "Deck builder",
+    draft: "Draft",
     faq: "FAQ",
     language: "Language",
     menu: "Menu",

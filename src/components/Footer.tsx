@@ -100,13 +100,15 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         <div>
           <h2 className="kicker mb-3 text-mint">{dict.footer.links}</h2>
           <ul className="space-y-1.5 text-sm">
-            {navItems(dict).map((it) => (
-              <li key={it.path}>
-                <Link className={linkCls} href={href(locale, it.path)}>
-                  {it.label}
-                </Link>
-              </li>
-            ))}
+            {navItems(dict)
+              .flatMap((it) => [it, ...(it.sub ?? []).filter((s) => s.mobile)])
+              .map((it) => (
+                <li key={it.path}>
+                  <Link className={linkCls} href={href(locale, it.path)}>
+                    {it.label}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </div>
         <div>

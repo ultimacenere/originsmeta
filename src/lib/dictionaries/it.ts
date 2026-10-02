@@ -21,6 +21,7 @@ export const it: Dictionary = {
     events: "Tornei ed Eventi",
     about: "Chi siamo",
     builder: "Deck builder",
+    draft: "Draft",
     faq: "FAQ",
     language: "Lingua",
     menu: "Menu",

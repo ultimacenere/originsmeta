@@ -8,7 +8,8 @@ import { NavLink } from "./NavLink";
 import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 
-type NavItem = { label: string; path: string; sub?: { label: string; path: string }[] };
+/** `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale). */
+type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean }[] };
 
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
@@ -28,7 +29,15 @@ export function navItems(dict: Dictionary): NavItem[] {
     { label: dict.nav.guides, path: "/guides" },
     { label: dict.nav.cards, path: "/cards" },
     { label: dict.nav.decks, path: "/decks" },
-    { label: dict.nav.builder, path: "/deck-builder" },
+    {
+      label: dict.nav.builder,
+      path: "/deck-builder",
+      // sottomenu del menu desktop (02/10/2026): il draft contro il Cervello sta accanto al deck builder
+      sub: [
+        { label: dict.nav.builder, path: "/deck-builder" },
+        { label: dict.nav.draft, path: "/draft", mobile: true },
+      ],
+    },
     { label: dict.nav.events, path: "/tournaments" },
     { label: dict.nav.faq, path: "/faq" },
   ];
@@ -119,11 +128,18 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               <input name="q" type="search" aria-label={dict.common.search} placeholder={dict.nav.search} className="w-full rounded-lg border border-felt-line bg-felt px-3 py-2 text-sm text-chalk" />
             </form>
             {/* nella tendina la pagina corrente ha la barra verticale di .nav-link-block */}
-            {items.map((it) => (
+            {items.flatMap((it) => [
               <NavLink key={it.path} href={href(locale, it.path)} className="nav-link-block">
                 {it.label}
-              </NavLink>
-            ))}
+              </NavLink>,
+              ...(it.sub ?? [])
+                .filter((s) => s.mobile)
+                .map((s) => (
+                  <NavLink key={s.path} href={href(locale, s.path)} className="nav-link-block pl-6">
+                    {s.label}
+                  </NavLink>
+                )),
+            ])}
             <NavLink href={href(locale, "/about")} className="nav-link-block">
               {dict.nav.about}
             </NavLink>
