@@ -385,3 +385,56 @@ export function progress(state: DraftState): { phase: DraftState["phase"]; round
 export function waitingFor(state: DraftState): Seat[] {
   return ([0, 1] as Seat[]).filter((s) => state.seats[s].pending);
 }
+
+/* ------------------------------------------------------------------------------------------------ vista per posto (draft online) */
+
+/** Segnaposto di una carta che chi guarda non può vedere: tiene i conteggi senza dire quale carta sia. */
+export const HIDDEN = "?";
+
+const sharedTable = (s: DraftState) => s.format !== "exchange" && (s.phase === "legendary" || s.format === "triple") && s.table.length > 0;
+
+/** Un evento del registro com'è visibile al posto `seat`, oppure null se non deve vederlo affatto. */
+function visibleEvent(e: DraftEvent, state: DraftState, seat: Seat): DraftEvent | null {
+  if ("seat" in e && e.seat === seat) return e;
+  if (state.format === "triple") return e;
+  if (e.type === "burn") return state.format === "packs" && e.phase === "legendary" ? e : null;
+  if (state.format === "packs") return e.phase === "legendary" || e.type !== "pick" ? e : { ...e, card: HIDDEN };
+  // Scambio: la Leggendaria dell'avversario resta nascosta; del suo giro si sa solo il regalo, a giro chiuso
+  if (e.type === "pick") return { ...e, card: HIDDEN };
+  const closed = e.phase !== state.phase || e.round < state.round || state.phase !== "main";
+  return closed ? { ...e, keep: HIDDEN, burn: HIDDEN } : null;
+}
+
+/**
+ * Lo stato come lo vede il posto `seat` (draft online, fase 2): via il seme e le carte ancora da distribuire (dicono
+ * il futuro), via le opzioni, le buste e le scelte nascoste dell'avversario, sostituite da `HIDDEN` così i conteggi
+ * restano giusti; il registro filtrato con le stesse regole. Nel Tris tutto è sul tavolo. A draft finito si vede tutto.
+ * Il server manda al browser solo questa vista: lo stato intero resta nel database, dove nessun client lo legge.
+ */
+export function viewFor(state: DraftState, seat: Seat): DraftState {
+  const s = clone(state);
+  s.deckBase = [];
+  s.deckLegendary = [];
+  s.sealed = [];
+  if (state.phase === "done") return s;
+  s.seed = 0;
+  const oppSeat = other(seat);
+  const me = state.seats[seat];
+  const opp = s.seats[oppSeat];
+  const hide = (xs: string[]) => xs.map(() => HIDDEN);
+  if (opp.pending && opp.pending.kind !== "build" && !sharedTable(state)) opp.pending = { ...opp.pending, options: hide(opp.pending.options) };
+  opp.outbox = opp.outbox ? HIDDEN : null;
+  opp.deck = null;
+  if (state.format === "exchange") {
+    // dell'avversario si conoscono le carte che gli hai regalato (già arrivate) e quelle che ti ha regalato lui
+    const delivered = new Set(me.given.filter((c) => c !== me.outbox));
+    opp.legendaries = hide(opp.legendaries);
+    opp.pool = opp.pool.map((c) => (delivered.has(c) ? c : HIDDEN));
+    opp.given = opp.given.map((c) => (me.received.includes(c) ? c : HIDDEN));
+  } else if (state.format === "packs") {
+    opp.pool = hide(opp.pool);
+    s.packs[oppSeat] = hide(s.packs[oppSeat]);
+  }
+  s.log = state.log.map((e) => visibleEvent(e, state, seat)).filter((e): e is DraftEvent => e !== null);
+  return s;
+}

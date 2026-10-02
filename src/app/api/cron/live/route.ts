@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { originsLiveStreams, twitchConfigured } from "@/lib/twitch";
 import { CRON_SECRET_MIN, cronAuthorized } from "@/lib/community/notifications";
-import { cleanupNotifications, notifyLive } from "@/lib/community/notify";
+import { cleanupDraftRooms, cleanupNotifications, notifyLive } from "@/lib/community/notify";
 
 /**
  * Avvisi di diretta per chi segue (pacchetto SEGUI, 27/09/2026): chi fra i profili vetrina con un canale Twitch è in
@@ -30,14 +30,16 @@ export async function GET(request: Request) {
   if (!cronAuthorized(request.headers.get("authorization"), secret)) return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401, headers });
   if (!supabaseEnabled) return NextResponse.json({ ok: false, skipped: "no_community" }, { headers });
   const cleaned = await cleanupNotifications(secret);
-  if (!twitchConfigured()) return NextResponse.json({ ok: false, skipped: "no_twitch", cleaned }, { headers });
+  // stanze del draft online scadute (02/10/2026), con lo stesso segreto
+  const rooms = await cleanupDraftRooms(secret);
+  if (!twitchConfigured()) return NextResponse.json({ ok: false, skipped: "no_twitch", cleaned, rooms }, { headers });
 
   let alerts;
   try {
     alerts = (await originsLiveStreams()) ?? [];
   } catch (error) {
     console.error("[cron/live]", error instanceof Error ? error.message : error);
-    return NextResponse.json({ ok: false, error: "twitch", cleaned }, { status: 502, headers });
+    return NextResponse.json({ ok: false, error: "twitch", cleaned, rooms }, { status: 502, headers });
   }
 
   // una chiamata per diretta, una dopo l'altra: pochi profili, e il database tiene il lock per persona
@@ -48,5 +50,5 @@ export async function GET(request: Request) {
     if (n === null) failed += 1;
     else notified += n;
   }
-  return NextResponse.json({ ok: failed === 0, live: alerts.length, notified, failed, cleaned }, { headers });
+  return NextResponse.json({ ok: failed === 0, live: alerts.length, notified, failed, cleaned, rooms }, { headers });
 }

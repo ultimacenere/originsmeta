@@ -26,7 +26,8 @@ describe("testi del draft", () => {
     });
     test(`${l}: segnaposto presenti dove servono`, () => {
       assert.match(x.play.round, /\{n\}.*\{total\}/);
-      assert.match(x.play.botPicked, /\{card\}/);
+      assert.match(x.play.oppPicked, /\{name\}/);
+      assert.match(x.play.oppPicked, /\{card\}/);
       assert.match(x.notes.pool, /\{count\}.*\{patch\}/);
     });
   }

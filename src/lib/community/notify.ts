@@ -109,6 +109,23 @@ export async function notifyLive(secret: string, alert: LiveAlert): Promise<numb
  * Pulizia degli avvisi scaduti (rotta /api/cron/live, a ogni giro): true se il database l'ha fatta, false con un errore
  * (segreto non registrato, database giù) o prima della migrazione. Non lancia.
  */
+/**
+ * Pulizia delle stanze del draft online (blocco DRAFT ONLINE, 02/10/2026): in attesa dopo 2 ore, ferme dopo 6, finite
+ * dopo 24. Gira dallo stesso cron degli avvisi, con lo stesso segreto. Stanze cancellate, o null (prima della
+ * migrazione, con un errore). Non lancia.
+ */
+export async function cleanupDraftRooms(secret: string): Promise<number | null> {
+  if (!supabaseEnabled) return null;
+  try {
+    const { data, error } = await cronClient().rpc("draft_rooms_cleanup", { p_key: secret });
+    if (!error) return typeof data === "number" ? data : 0;
+    if (notificationErrorCode(error) !== "unavailable") console.error("[draft] pulizia delle stanze non riuscita:", error.code ?? "", error.message);
+  } catch (e) {
+    console.error("[draft] pulizia delle stanze non riuscita:", e instanceof Error ? e.message : e);
+  }
+  return null;
+}
+
 export async function cleanupNotifications(secret: string): Promise<boolean> {
   if (!supabaseEnabled || Date.now() < state.missingUntil) return false;
   try {

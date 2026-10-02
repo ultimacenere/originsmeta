@@ -10,6 +10,7 @@ import { achievementLabels } from "@/lib/achievementLabels";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { comicLabels } from "@/lib/comicLabels";
 import { trackerPrivacy } from "@/lib/trackerLabels";
+import { draftPrivacy } from "@/lib/draftLabels";
 import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
@@ -87,6 +88,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Interesse per OriginsMeta Analytics (02/10/2026, tasto della pagina /analytics) */}
         <p id="analytics-interest" className="mt-6 scroll-mt-24">
           {analyticsInterestPrivacy[locale]}
+        </p>
+        {/* Draft contro un amico (02/10/2026, fase 2 del draft): testo in src/lib/draftLabels.ts, ancora #draft */}
+        <p id="draft" className="mt-6 scroll-mt-24">
+          {draftPrivacy[locale]}
         </p>
       </article>
     </div>

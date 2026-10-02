@@ -97,7 +97,7 @@
  *   ★ analytics_interest  clic su "Sì, mi interessa" della pagina /analytics       placement (top | bottom), added (yes se
  *                         (02/10/2026: quanti vogliono OriginsMeta Analytics)     la persona è nuova nel conteggio)
  *     draft_start         draft iniziato su /draft (02/10/2026), anche lo stesso  format (exchange | triple | packs),
- *                         draft rigiocato                                         opponent (bot)
+ *                         draft rigiocato; contro un amico quando la stanza parte  opponent (bot | friend)
  *   ★ draft_complete      mazzo del draft confermato: il draft è finito           format, grade (S | A | B | C | D, il
  *                         (copia del codice e deck builder: game_code_copy e       giudizio del Cervello)
  *                         deck_open_builder con placement=draft)
@@ -218,7 +218,7 @@ export type EventParams = {
   guide_published: { guide_lang: string; category: string };
   comic_published: { comic_lang: string };
   analytics_interest: { placement: "top" | "bottom"; added: "yes" | "no" };
-  draft_start: { format: string; opponent: "bot" };
+  draft_start: { format: string; opponent: "bot" | "friend" };
   draft_complete: { format: string; grade: string };
 };
 export type EventName = keyof EventParams;

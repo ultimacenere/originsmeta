@@ -65,6 +65,8 @@ export const config = {
     "/:locale(en|it|es)/tournaments/:slug/manage",
     "/:locale(en|it|es)/tournaments/:slug/deck",
     "/:locale(en|it|es)/tournaments/:slug/match/:id",
+    // draft online (02/10/2026): stanza fra due giocatori, pagina renderizzata sul server, mosse con la sessione
+    "/:locale(en|it|es)/draft/r/:code",
     // Link breve dei creator: /@<nome> (una cartella di src/app non può chiamarsi "@…", sono le rotte parallele)
     "/@:name",
     // URL di spam sulla radice: solo con entrambi i parametri (la home e le pagine statiche non passano di qui)

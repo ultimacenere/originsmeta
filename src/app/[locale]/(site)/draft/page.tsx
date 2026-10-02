@@ -56,7 +56,14 @@ export default async function DraftPage({ params }: { params: LocaleParams }) {
       </p>
 
       <div className="mt-6">
-        <DraftTable cards={cards} labels={x} builderHref={href(locale, "/deck-builder")} pageUrl={`${siteUrl}${path}`} />
+        <DraftTable
+          cards={cards}
+          labels={x}
+          builderHref={href(locale, "/deck-builder")}
+          pageUrl={`${siteUrl}${path}`}
+          roomBase={href(locale, "/draft/r")}
+          loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
+        />
       </div>
 
       <PageNotes>

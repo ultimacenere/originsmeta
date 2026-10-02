@@ -5034,3 +5034,179 @@ language sql stable security definer set search_path = public, pg_temp as $$
 $$;
 revoke all on function public.analytics_interest_count() from public;
 grant execute on function public.analytics_interest_count() to anon, authenticated;
+
+-- =====================================================================================================
+-- ===== 02/10/2026: DRAFT ONLINE =====
+-- =====================================================================================================
+-- Draft fra due persone su /draft (fase 2; Pierluigi: "ok pusha su main e passa alla fase 2", accesso obbligatorio).
+-- Le regole stanno tutte nel motore TypeScript del sito (src/lib/draft/engine.ts e online.ts), che gira nelle Server
+-- Action: qui il database conserva le stanze e lo stato e accetta le scritture SOLO dal server, cioè con la sessione del
+-- giocatore E con il segreto del cron (CRON_SECRET, la stessa impronta di notify_keys che usa notify_key_ok). Così un
+-- iscritto non può scrivere uno stato inventato via API, e nessun client legge lo stato intero (seme, carte future,
+-- scelte nascoste dell'avversario): al browser arriva solo la vista del suo posto, calcolata dal server.
+-- draft_rooms ha solo dati pubblici fra i due giocatori (formato, stato, chi gioca, versione): ognuno dei due legge
+-- la sua riga e la riceve in tempo reale (pubblicazione supabase_realtime), così il browser sa quando chiedere la vista
+-- nuova. Le stanze si cancellano da sole (draft_rooms_cleanup, dal cron ogni 10 minuti): in attesa dopo 2 ore, ferme
+-- dopo 6, finite dopo 24. Tutto è idempotente.
+create table if not exists public.draft_rooms (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique check (code ~ '^[ABCDEFGHJKMNPQRSTUVWXYZ2-9]{6}$'),
+  format text not null check (format in ('exchange', 'triple', 'packs')),
+  status text not null default 'waiting' check (status in ('waiting', 'drafting', 'done')),
+  creator uuid not null references public.profiles(id) on delete cascade,
+  joiner uuid references public.profiles(id) on delete cascade,
+  -- rivincita: solo l'avversario della stanza di prima può entrare
+  invited uuid references public.profiles(id) on delete set null,
+  -- rivincita proposta da uno dei due a draft finito: il codice della stanza nuova
+  next_code text check (next_code is null or next_code ~ '^[ABCDEFGHJKMNPQRSTUVWXYZ2-9]{6}$'),
+  version integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (joiner is null or joiner <> creator)
+);
+create index if not exists draft_rooms_creator_idx on public.draft_rooms (creator, created_at);
+create index if not exists draft_rooms_joiner_idx on public.draft_rooms (joiner);
+create index if not exists draft_rooms_updated_idx on public.draft_rooms (updated_at);
+alter table public.draft_rooms enable row level security;
+revoke all on public.draft_rooms from anon, authenticated;
+grant select (id, code, format, status, creator, joiner, invited, next_code, version, created_at, updated_at) on public.draft_rooms to authenticated;
+drop policy if exists "draft rooms players read" on public.draft_rooms;
+create policy "draft rooms players read" on public.draft_rooms for select to authenticated using (auth.uid() = creator or auth.uid() = joiner);
+
+create table if not exists public.draft_room_states (
+  room_id uuid primary key references public.draft_rooms(id) on delete cascade,
+  state jsonb not null check (jsonb_typeof(state) = 'object' and pg_column_size(state) < 300000)
+);
+alter table public.draft_room_states enable row level security;
+drop policy if exists "draft room states no direct access" on public.draft_room_states;
+create policy "draft room states no direct access" on public.draft_room_states as restrictive for all to anon, authenticated using (false) with check (false);
+revoke all on public.draft_room_states from anon, authenticated;
+
+-- tempo reale: i due giocatori ricevono i cambi della loro riga (RLS qui sopra). Solo se la pubblicazione c'è (Supabase).
+do $$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime')
+     and not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'draft_rooms') then
+    alter publication supabase_realtime add table public.draft_rooms;
+  end if;
+end $$;
+
+-- Chi chiama è il server per conto di un giocatore con l'accesso fatto? (sessione + segreto del cron)
+create or replace function public.draft_server_ok(p_key text)
+returns uuid language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+begin
+  if uid is null then raise exception 'not_signed_in'; end if;
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  return uid;
+end $$;
+revoke all on function public.draft_server_ok(text) from public, anon, authenticated;
+
+-- Stanza nuova, in attesa dell'avversario. `p_from`: la stanza finita da cui parte la rivincita (solo l'altro giocatore
+-- potrà entrare, e la stanza di prima la segnala ai due). Al massimo 30 stanze create al giorno per persona.
+create or replace function public.draft_room_create(p_key text, p_code text, p_format text, p_from text default null)
+returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := public.draft_server_ok(p_key);
+  prev public.draft_rooms;
+  other uuid;
+  rid uuid;
+begin
+  if (select count(*) from public.draft_rooms r where r.creator = uid and r.created_at > now() - interval '1 day') >= 30 then
+    raise exception 'rate_limited';
+  end if;
+  if p_from is not null then
+    select * into prev from public.draft_rooms r where r.code = p_from for update;
+    if not found or prev.status <> 'done' or uid not in (prev.creator, prev.joiner) then raise exception 'bad_rematch'; end if;
+    if prev.next_code is not null then raise exception 'rematch_exists'; end if;
+    other := case when uid = prev.creator then prev.joiner else prev.creator end;
+  end if;
+  insert into public.draft_rooms (code, format, creator, invited) values (p_code, p_format, uid, other) returning id into rid;
+  if p_from is not null then
+    update public.draft_rooms set next_code = p_code, version = version + 1, updated_at = now() where id = prev.id;
+  end if;
+  return rid;
+end $$;
+revoke all on function public.draft_room_create(text, text, text, text) from public, anon;
+grant execute on function public.draft_room_create(text, text, text, text) to authenticated;
+
+-- La stanza per il server: dati pubblici, nomi dei due giocatori e, solo a chi gioca, lo stato intero e il suo posto
+-- (0 chi l'ha creata, 1 chi è entrato). A chi non gioca la stanza in attesa si mostra senza stato, per entrare.
+create or replace function public.draft_room_get(p_key text, p_code text)
+returns table (id uuid, code text, format text, status text, creator uuid, joiner uuid, invited uuid, next_code text, version integer,
+               created_at timestamptz, updated_at timestamptz, creator_name text, joiner_name text, seat integer, state jsonb)
+language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := public.draft_server_ok(p_key);
+begin
+  return query
+    select r.id, r.code, r.format, r.status, r.creator, r.joiner, r.invited, r.next_code, r.version, r.created_at, r.updated_at,
+           pc.username, pj.username,
+           case when uid = r.creator then 0 when uid = r.joiner then 1 end,
+           case when uid in (r.creator, r.joiner) then s.state end
+    from public.draft_rooms r
+    left join public.profiles pc on pc.id = r.creator
+    left join public.profiles pj on pj.id = r.joiner
+    left join public.draft_room_states s on s.room_id = r.id
+    where r.code = p_code;
+end $$;
+revoke all on function public.draft_room_get(text, text) from public, anon;
+grant execute on function public.draft_room_get(text, text) to authenticated;
+
+-- Entra nella stanza e la fa partire con lo stato iniziale calcolato dal server. Restituisce la versione nuova.
+create or replace function public.draft_room_join(p_key text, p_code text, p_state jsonb)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := public.draft_server_ok(p_key);
+  r public.draft_rooms;
+begin
+  select * into r from public.draft_rooms d where d.code = p_code for update;
+  if not found then raise exception 'not_found'; end if;
+  if r.status <> 'waiting' or r.joiner is not null then raise exception 'room_full'; end if;
+  if uid = r.creator then raise exception 'own_room'; end if;
+  if r.invited is not null and r.invited <> uid then raise exception 'not_invited'; end if;
+  insert into public.draft_room_states (room_id, state) values (r.id, p_state)
+    on conflict (room_id) do update set state = excluded.state;
+  update public.draft_rooms set joiner = uid, status = 'drafting', version = version + 1, updated_at = now() where id = r.id;
+  return r.version + 1;
+end $$;
+revoke all on function public.draft_room_join(text, text, jsonb) from public, anon;
+grant execute on function public.draft_room_join(text, text, jsonb) to authenticated;
+
+-- Salva lo stato dopo una mossa, solo se nessuno l'ha cambiato nel frattempo (`p_version`): altrimenti null e il
+-- server rilegge e riprova. `p_done`: il draft è finito.
+create or replace function public.draft_room_put(p_key text, p_code text, p_version integer, p_state jsonb, p_done boolean)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := public.draft_server_ok(p_key);
+  r public.draft_rooms;
+begin
+  select * into r from public.draft_rooms d where d.code = p_code for update;
+  if not found then raise exception 'not_found'; end if;
+  if uid is distinct from r.creator and uid is distinct from r.joiner then raise exception 'forbidden'; end if;
+  if r.status <> 'drafting' then raise exception 'not_drafting'; end if;
+  if r.version <> p_version then return null; end if;
+  update public.draft_room_states set state = p_state where room_id = r.id;
+  update public.draft_rooms set version = version + 1, status = case when p_done then 'done' else 'drafting' end, updated_at = now() where id = r.id;
+  return r.version + 1;
+end $$;
+revoke all on function public.draft_room_put(text, text, integer, jsonb, boolean) from public, anon;
+grant execute on function public.draft_room_put(text, text, integer, jsonb, boolean) to authenticated;
+
+-- Pulizia dal cron (/api/cron/live, senza sessione): solo il segreto. Restituisce le stanze cancellate.
+create or replace function public.draft_rooms_cleanup(p_key text)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n integer;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  delete from public.draft_rooms
+  where (status = 'waiting' and updated_at < now() - interval '2 hours')
+     or (status = 'drafting' and updated_at < now() - interval '6 hours')
+     or (status = 'done' and updated_at < now() - interval '1 day');
+  get diagnostics n = row_count;
+  return n;
+end $$;
+revoke all on function public.draft_rooms_cleanup(text) from public;
+grant execute on function public.draft_rooms_cleanup(text) to anon, authenticated;

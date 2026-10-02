@@ -332,9 +332,31 @@ export type TrackedMatchRow = {
 export type TrackerDeviceRow = { id: string; owner: string; name: string; created_at: string; last_seen_at: string | null; revoked_at: string | null };
 type TrackerStatCount = { games: number; wins: number; players: number };
 
+/** Stanza del draft online (blocco DRAFT ONLINE di schema.sql): solo dati pubblici fra i due giocatori, lo stato sta altrove. */
+export type DraftRoomRow = {
+  id: string;
+  code: string;
+  format: "exchange" | "triple" | "packs";
+  status: "waiting" | "drafting" | "done";
+  creator: string;
+  joiner: string | null;
+  invited: string | null;
+  next_code: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      /** draft online (blocco DRAFT ONLINE, 02/10/2026): i due giocatori leggono solo la loro riga, per il tempo reale; nessuna scrittura diretta */
+      draft_rooms: {
+        Row: DraftRoomRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       /**
        * si scrivono solo con le RPC inbox_* (nessuna scrittura diretta: policy restrittive e nessun grant); authenticated
        * legge solo alcune colonne (grant per colonna): non created_by, read_by_*_at, last_user/staff_message_at di
@@ -737,6 +759,12 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      /** draft online (02/10/2026): solo dal server, con la sessione del giocatore e il segreto del cron (src/lib/draft/onlineActions.ts) */
+      draft_room_create: { Args: { p_key: string; p_code: string; p_format: string; p_from?: string | null }; Returns: string };
+      draft_room_get: { Args: { p_key: string; p_code: string }; Returns: (DraftRoomRow & { creator_name: string | null; joiner_name: string | null; seat: number | null; state: unknown })[] };
+      draft_room_join: { Args: { p_key: string; p_code: string; p_state: unknown }; Returns: number };
+      draft_room_put: { Args: { p_key: string; p_code: string; p_version: number; p_state: unknown; p_done: boolean }; Returns: number | null };
+      draft_rooms_cleanup: { Args: { p_key: string }; Returns: number };
       /** preferiti e "Di tendenza" (blocco PREFERITI E TENDENZA, 30/09/2026): solo aggregati per mazzo pubblicato */
       deck_favorite_counts: { Args: Record<string, never>; Returns: { deck_id: string; favorites: number }[] };
       deck_trending: { Args: Record<string, never>; Returns: { deck_id: string; score: number }[] };
