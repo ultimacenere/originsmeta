@@ -70,6 +70,261 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Quarta news "Upgrade Meta" (richiesta di Pierluigi del 03/10/2026: "fai un articolo con gli update degli ultimi giorni
+    // sul sito"): solo quello che è su main dopo la news del 29/09 (draft contro il Cervello e contro un amico, versioni dei
+    // mazzi, Salva e Di tendenza, filtri di /cards, prima e dopo di MetaShifting, /analytics, codice dell'email, pagina
+    // per il profilo pubblico, guida alle dirette, fumetti in più lingue). Fuori i commenti ai mazzi (ancora su un branch)
+    // e i numeri degli interessati ad Analytics (non si mostrano). Copertina: key art ufficiale della Queen of Hearts
+    // cyber, mai usata da altre news.
+    slug: "upgrade-meta-1003",
+    image: "/media/keyart-queen-of-hearts-cyber.webp",
+    guides: ["streaming-tools", "origins-tcg-conquest"],
+    date: "2026-10-03",
+    title: n(
+      "Upgrade Meta: draft against the Brain, deck versions, saved decks and new card filters",
+      "Upgrade Meta: draft contro il Cervello, versioni dei mazzi, mazzi salvati e nuovi filtri delle carte",
+      "Upgrade Meta: draft contra el Cerebro, versiones de los mazos, mazos guardados y nuevos filtros de cartas",
+    ),
+    metaTitle: n("Upgrade Meta: Origins TCG draft and deck versions", "Upgrade Meta: draft e versioni dei mazzi", "Upgrade Meta: draft y versiones de los mazos"),
+    description: n(
+      "New on OriginsMeta: an Origins TCG draft against our bot or a friend, deck updates for patch 0.7, saved and trending decks, new card filters.",
+      "Novità su OriginsMeta: il draft di Origins TCG contro il nostro bot o un amico, mazzi aggiornabili alla 0.7, mazzi salvati e di tendenza, nuovi filtri.",
+      "Novedades en OriginsMeta: draft de Origins TCG contra nuestro bot o un amigo, mazos actualizables a la 0.7, mazos guardados y en tendencia, nuevos filtros.",
+    ),
+    summary: n(
+      "In the last few days OriginsMeta got a free Origins TCG draft, against our bot or against a friend, and you can now update your published decks to patch 0.7 without losing name, guide and votes. You can also save the decks you like, find the trending ones, filter cards by cost, keyword, power and health, and see the cards changed by each patch before and after.",
+      "Negli ultimi giorni OriginsMeta si è preso un draft di Origins TCG gratuito, contro il nostro bot o contro un amico, e ora puoi aggiornare i tuoi mazzi pubblicati alla patch 0.7 senza perdere nome, guida e voti. Puoi anche salvare i mazzi che ti piacciono, trovare quelli di tendenza, filtrare le carte per costo, parola chiave, potenza e salute e vedere prima e dopo le carte cambiate da ogni patch.",
+      "En los últimos días OriginsMeta estrena un draft de Origins TCG gratuito, contra nuestro bot o contra un amigo, y ahora puedes actualizar tus mazos publicados al parche 0.7 sin perder nombre, guía y votos. También puedes guardar los mazos que te gustan, ver los que son tendencia, filtrar las cartas por coste, palabra clave, poder y salud y ver el antes y el después de las cartas que cambia cada parche.",
+    ),
+    highlights: {
+      en: [
+        { label: "Draft", text: "three formats against the Brain, our bot, or against a friend in an online room", anchor: "draft" },
+        { label: "Deck versions", text: "update a published deck to patch 0.7 and keep its name, guide and link", anchor: "deck-versions" },
+        { label: "Saved and trending decks", text: "the Save button, the Trending and Most saved orders and the game version filter", anchor: "saved-decks" },
+        { label: "Cards and MetaShifting", text: "filters by cost, keyword, power and health, and every patch before and after", anchor: "cards" },
+        { label: "OriginsMeta Analytics", text: "our match tracker, paused since patch 0.7: tell us if you want it", anchor: "analytics" },
+        { label: "Sign-in and profile", text: "the code from the email next to the link and a page of its own for your public profile", anchor: "account" },
+        { label: "Guides and comics", text: "the guide to stream tools and comics drawn in more than one language", anchor: "guides-comics" },
+      ],
+      it: [
+        { label: "Draft", text: "tre formati contro il Cervello, il nostro bot, o contro un amico in una stanza online", anchor: "draft" },
+        { label: "Versioni dei mazzi", text: "aggiorna un mazzo pubblicato alla patch 0.7 tenendo nome, guida e link", anchor: "versioni-mazzi" },
+        { label: "Mazzi salvati e di tendenza", text: "il tasto Salva, gli ordini Di tendenza e Più salvati e il filtro per versione del gioco", anchor: "mazzi-salvati" },
+        { label: "Carte e MetaShifting", text: "filtri per costo, parola chiave, potenza e salute, e il prima e dopo di ogni patch", anchor: "carte" },
+        { label: "OriginsMeta Analytics", text: "il nostro tracker delle partite, in pausa dalla patch 0.7: dicci se ti interessa", anchor: "analytics" },
+        { label: "Accesso e profilo", text: "il codice dell'email accanto al link e una pagina tutta sua per il profilo pubblico", anchor: "account" },
+        { label: "Guide e fumetti", text: "la guida agli strumenti per le dirette e i fumetti disegnati in più lingue", anchor: "guide-fumetti" },
+      ],
+      es: [
+        { label: "Draft", text: "tres formatos contra el Cerebro, nuestro bot, o contra un amigo en una sala online", anchor: "draft" },
+        { label: "Versiones de los mazos", text: "actualiza un mazo publicado al parche 0.7 sin perder nombre, guía y enlace", anchor: "versiones-mazos" },
+        { label: "Mazos guardados y en tendencia", text: "el botón Guardar, los órdenes Tendencia y Más guardados y el filtro por versión del juego", anchor: "mazos-guardados" },
+        { label: "Cartas y MetaShifting", text: "filtros por coste, palabra clave, poder y salud, y el antes y el después de cada parche", anchor: "cartas" },
+        { label: "OriginsMeta Analytics", text: "nuestro tracker de partidas, en pausa desde el parche 0.7: dinos si te interesa", anchor: "analytics" },
+        { label: "Acceso y perfil", text: "el código del correo junto al enlace y una página propia para tu perfil público", anchor: "cuenta" },
+        { label: "Guías y cómics", text: "la guía de las herramientas para directos y los cómics dibujados en varios idiomas", anchor: "guias-comics" },
+      ],
+    },
+    body: n(
+      `## Draft against the Brain or a friend {#draft}
+
+The [Draft](/en/draft) is a free way to build an Origins TCG deck from cards you pick one at a time. You choose your Legendary and your cards, then build a deck with the game's rules (1 Legendary and 12 cards, each counting twice: 25 cards). There are three formats:
+
+- **Exchange**: you see 3 cards, keep one, give one to your opponent and the third is burned.
+- **Triple**: 3 shared cards, one player picks, then the other, and the third is burned. You see everything your opponent takes.
+- **Packs**: packs of 6 cards that you pass back and forth, like a paper TCG. You don't see your opponent's picks.
+
+**Against the Brain** you play right away, with no account: the Brain is our bot and it only knows what a player in its seat would know. **Against a friend** you create a room and send the link or the code: the draft starts as soon as your friend joins, with a timer on every pick (when time runs out, the Brain picks for whoever hasn't chosen). You both need to be signed in.
+
+At the end the Brain gives its verdict on both decks, from Outstanding to Weak, based on curve, removal and synergies: it's the bot's opinion, the real match is played in the game. You can copy the game code, open the deck in the [deck builder](/en/deck-builder) or challenge a friend on the same draft, with the same cards in the same order.
+
+## Deck versions {#deck-versions}
+
+After [patch 0.7](/en/news/patch-0-7) many published decks had cards that now cost more. You can now **update the cards of a published deck** and keep its name, guide, videos and link: on your deck's page, or in [your account](/en/account), press "Update to version 0.7", change the cards in the deck builder and save. Before saving you see what goes in and what comes out.
+
+The previous versions stay on the deck's page, under "Versions of this deck", with their changes and their rating. Votes are never deleted: the rating shown is the one of the current version, while older votes stay with the version they were given to.
+
+## Saved and trending decks {#saved-decks}
+
+- **Save**: on every deck's page there's a button to save it. You'll find your saved decks in [your account](/en/account), under "Saved decks". Only you can see the list.
+- **New orders** in [Decks](/en/decks): **Trending**, the decks that got the most attention this week (views, copied codes, votes and saves), and **Most saved**.
+- **Game version**: the filter panel of Decks now has the game version, with the number of decks for each one. Every deck shows the patch it was built for.
+
+## Cards and MetaShifting {#cards}
+
+- In [Cards](/en/cards) there's a row of cost filters (0 to 6, and 7+) always in view, and under "More filters" the keyword and the power and health ranges, plus a button to clear them all.
+- In [MetaShifting](/en/metashifting), every patch now opens with "Before and after": each card whose cost, power or health changed, side by side, with the changed values highlighted.
+
+## OriginsMeta Analytics {#analytics}
+
+[OriginsMeta Analytics](/en/analytics) is our Windows app that records your Origins TCG matches on its own while you play: the deck, the result, the Legendaries you faced, with an overlay above the game and for OBS. It's ready and it works, but since patch 0.7 the game no longer saves on your PC the match data the app read, so for now it's paused, and the win rate pages are switched off.
+
+We want to show it to the Koin Games team and ask whether that data can be made available again. If you're interested, press **"Yes, I want it"** on the page: the more players ask, the more the request counts.
+
+## Sign-in and profile {#account}
+
+- **Code from the email**: the sign-in email now has a code next to the link. If the link opens in another browser (your phone, the Gmail app) or doesn't work, type the code in the sign-in panel, under "Already have the code from the email?".
+- **Your public page**: in your account, under your public page, the "Edit my public page" button takes you to a page of its own with your bio, channels, photo and, for Creators, Authors, Pro players and Staff, the showcase.
+- **Menu**: on a computer, Tier list and Deck builder open a submenu, with the tier list pages, Analytics and the Draft.
+
+## Guides and comics {#guides-comics}
+
+- A new guide: [streaming Origins TCG](/en/guides/streaming-tools), with the OBS overlay, the !deck chat command, the short links and the LIVE badge, step by step.
+- Comics can now have versions drawn in each language: readers see the version drawn in their language instead of the automatic translation.
+- The guides to the decks published before patch 0.7 keep their strategy as it was written, with a note at the top: the card tables show the new costs.
+
+## Join in {#join}
+
+[Sign up](/en/login) for free with Discord or your email, try the [Draft](/en/draft) and update your decks to patch 0.7. And [join our Discord](https://discord.gg/RAG7nnrNGP): everything that goes live on the site gets posted there.`,
+      `## Draft contro il Cervello o contro un amico {#draft}
+
+Il [Draft](/it/draft) è un modo gratuito per costruire un mazzo di Origins TCG con carte scelte una alla volta. Scegli la Leggendaria e le carte, poi costruisci il mazzo con le regole del gioco (1 Leggendaria e 12 carte, ognuna conta due volte: 25 carte). I formati sono tre:
+
+- **Scambio**: vedi 3 carte, ne tieni una, una la regali all'avversario e la terza si brucia.
+- **Tris**: 3 carte in comune, sceglie uno, poi l'altro, e la terza si brucia. Vedi tutto quello che prende l'avversario.
+- **Buste**: buste da 6 carte che vi passate avanti e indietro, come in un TCG di carta. Le scelte dell'avversario non le vedi.
+
+**Contro il Cervello** giochi subito, senza account: il Cervello è il nostro bot e sa solo quello che saprebbe un giocatore al suo posto. **Contro un amico** crei una stanza e mandi il link o il codice: il draft parte appena il tuo amico entra, con un tempo per ogni scelta (allo scadere sceglie il Cervello per chi non l'ha fatto). Serve l'accesso a tutti e due.
+
+Alla fine il Cervello dà il suo giudizio sui due mazzi, da Eccezionale a Debole, in base a curva, rimozioni e sinergie: è l'opinione del bot, la partita vera si gioca nel gioco. Puoi copiare il codice del gioco, aprire il mazzo nel [deck builder](/it/deck-builder) o sfidare un amico sullo stesso draft, con le stesse carte nello stesso ordine.
+
+## Versioni dei mazzi {#versioni-mazzi}
+
+Dopo la [patch 0.7](/it/news/patch-0-7) molti mazzi pubblicati avevano carte che ora costano di più. Adesso puoi **aggiornare le carte di un mazzo pubblicato** tenendo nome, guida, video e link: nella pagina del tuo mazzo, o nel [tuo account](/it/account), premi "Aggiorna alla versione 0.7", cambia le carte nel deck builder e salva. Prima di salvare vedi che cosa entra e che cosa esce.
+
+Le versioni precedenti restano nella pagina del mazzo, in "Versioni del mazzo", con i cambi e il loro voto. I voti non si cancellano mai: il voto mostrato è quello della versione in vigore, quelli vecchi restano alla versione a cui sono stati dati.
+
+## Mazzi salvati e di tendenza {#mazzi-salvati}
+
+- **Salva**: nella pagina di ogni mazzo c'è il tasto per salvarlo. I mazzi salvati li trovi nel [tuo account](/it/account), in "Mazzi salvati". L'elenco lo vedi solo tu.
+- **Nuovi ordini** in [Mazzi](/it/decks): **Di tendenza**, i mazzi che hanno avuto più attenzione questa settimana (visite, codici copiati, voti e salvataggi), e **Più salvati**.
+- **Versione del gioco**: nel pannello dei filtri di Mazzi c'è la versione del gioco, con il numero di mazzi di ognuna. Ogni mazzo mostra la patch per cui è stato costruito.
+
+## Carte e MetaShifting {#carte}
+
+- In [Carte](/it/cards) c'è una fila di filtri per costo (da 0 a 6, e 7+) sempre in vista, e in "Altri filtri" la parola chiave e gli intervalli di potenza e salute, più un tasto per azzerarli tutti.
+- In [MetaShifting](/it/metashifting) ogni patch ora si apre con "Prima e dopo": ogni carta con costo, potenza o salute cambiati, affiancata, con i valori cambiati evidenziati.
+
+## OriginsMeta Analytics {#analytics}
+
+[OriginsMeta Analytics](/it/analytics) è la nostra app per Windows che registra da sola le tue partite di Origins TCG mentre giochi: il mazzo, l'esito, le Leggendarie che hai incontrato, con un overlay sopra il gioco e per OBS. È pronta e funziona, ma dalla patch 0.7 il gioco non salva più sul PC i dati delle partite che l'app leggeva, quindi per ora è in pausa e le pagine dei win rate sono spente.
+
+Vogliamo mostrarla al team di Koin Games e chiedere se quei dati possono tornare disponibili. Se ti interessa, premi **"Sì, mi interessa"** sulla pagina: più giocatori lo chiedono, più la richiesta conta.
+
+## Accesso e profilo {#account}
+
+- **Codice dell'email**: l'email di accesso ora ha un codice accanto al link. Se il link si apre in un altro browser (il telefono, l'app di Gmail) o non funziona, scrivi il codice nel pannello di accesso, in "Hai già il codice dell'email?".
+- **La tua pagina pubblica**: nel tuo account, sotto la tua pagina pubblica, il tasto "Modifica la mia pagina pubblica" porta a una pagina tutta sua con bio, canali, foto e, per Creator, Autori, Pro e Staff, la vetrina.
+- **Menu**: dal computer, Tier list e Deck builder aprono un sottomenu, con le pagine della tier list, Analytics e il Draft.
+
+## Guide e fumetti {#guide-fumetti}
+
+- Una guida nuova: [le dirette su Origins TCG](/it/guides/streaming-tools), con l'overlay per OBS, il comando !deck in chat, i link brevi e il bollino LIVE, passo per passo.
+- I fumetti ora possono avere una versione disegnata per ogni lingua: chi legge vede la versione disegnata nella sua lingua al posto della traduzione automatica.
+- Le guide ai mazzi pubblicati prima della patch 0.7 tengono la strategia com'era stata scritta, con una nota in cima: le tabelle delle carte mostrano i costi nuovi.
+
+## Partecipa {#partecipa}
+
+[Iscriviti](/it/login) gratis con Discord o con la tua email, prova il [Draft](/it/draft) e aggiorna i tuoi mazzi alla patch 0.7. E [entra nel nostro Discord](https://discord.gg/RAG7nnrNGP): tutto quello che esce sul sito arriva anche lì.`,
+      `## Draft contra el Cerebro o contra un amigo {#draft}
+
+El [Draft](/es/draft) es una forma gratuita de construir un mazo de Origins TCG con cartas que eliges una a una. Eliges tu Legendaria y tus cartas, y luego construyes el mazo con las reglas del juego (1 Legendaria y 12 cartas, cada una cuenta dos veces: 25 cartas). Hay tres formatos:
+
+- **Intercambio**: ves 3 cartas, te quedas una, le regalas otra a tu rival y la tercera se quema.
+- **Trío**: 3 cartas en común, elige uno, luego el otro, y la tercera se quema. Ves todo lo que se lleva tu rival.
+- **Sobres**: sobres de 6 cartas que os vais pasando, como en un TCG de papel. No ves lo que elige tu rival.
+
+**Contra el Cerebro** juegas al momento, sin cuenta: el Cerebro es nuestro bot y solo sabe lo que sabría un jugador en su lugar. **Contra un amigo** creas una sala y envías el enlace o el código: el draft empieza en cuanto tu amigo entra, con un tiempo para cada elección (cuando se acaba, el Cerebro elige por quien no lo ha hecho). Los dos necesitáis iniciar sesión.
+
+Al final el Cerebro da su veredicto sobre los dos mazos, de Excepcional a Débil, según la curva, las eliminaciones y las sinergias: es la opinión del bot, la partida de verdad se juega en el juego. Puedes copiar el código del juego, abrir el mazo en el [deck builder](/es/deck-builder) o retar a un amigo con el mismo draft, con las mismas cartas en el mismo orden.
+
+## Versiones de los mazos {#versiones-mazos}
+
+Después del [parche 0.7](/es/news/patch-0-7) muchos mazos publicados tenían cartas que ahora cuestan más. Ahora puedes **actualizar las cartas de un mazo publicado** sin perder nombre, guía, vídeos y enlace: en la página de tu mazo, o en [tu cuenta](/es/account), pulsa "Actualizar a la versión 0.7", cambia las cartas en el deck builder y guarda. Antes de guardar ves qué entra y qué sale.
+
+Las versiones anteriores siguen en la página del mazo, en "Versiones del mazo", con sus cambios y su valoración. Los votos nunca se borran: la valoración que se muestra es la de la versión actual, y los votos antiguos se quedan con la versión a la que se dieron.
+
+## Mazos guardados y en tendencia {#mazos-guardados}
+
+- **Guardar**: en la página de cada mazo hay un botón para guardarlo. Tus mazos guardados están en [tu cuenta](/es/account), en "Mazos guardados". Solo tú ves la lista.
+- **Nuevos órdenes** en [Mazos](/es/decks): **Tendencia**, los mazos que más atención han tenido esta semana (visitas, códigos copiados, votos y guardados), y **Más guardados**.
+- **Versión del juego**: el panel de filtros de Mazos tiene ahora la versión del juego, con el número de mazos de cada una. Cada mazo muestra el parche para el que se construyó.
+
+## Cartas y MetaShifting {#cartas}
+
+- En [Cartas](/es/cards) hay una fila de filtros por coste (de 0 a 6, y 7+) siempre a la vista, y en "Más filtros" la palabra clave y los intervalos de poder y salud, además de un botón para borrarlos todos.
+- En [MetaShifting](/es/metashifting) cada parche empieza ahora con "Antes y después": cada carta a la que le cambiaron el coste, el poder o la salud, lado a lado, con los valores cambiados resaltados.
+
+## OriginsMeta Analytics {#analytics}
+
+[OriginsMeta Analytics](/es/analytics) es nuestra app para Windows que registra sola tus partidas de Origins TCG mientras juegas: el mazo, el resultado, las Legendarias a las que te enfrentaste, con un overlay sobre el juego y para OBS. Está lista y funciona, pero desde el parche 0.7 el juego ya no guarda en tu PC los datos de las partidas que leía la app, así que por ahora está en pausa y las páginas de win rate están apagadas.
+
+Queremos enseñársela al equipo de Koin Games y preguntar si esos datos pueden volver a estar disponibles. Si te interesa, pulsa **"Sí, la quiero"** en la página: cuantos más jugadores lo pidan, más cuenta la petición.
+
+## Acceso y perfil {#cuenta}
+
+- **Código del correo**: el correo de acceso trae ahora un código junto al enlace. Si el enlace se abre en otro navegador (el móvil, la app de Gmail) o no funciona, escribe el código en el panel de acceso, en "¿Ya tienes el código del correo?".
+- **Tu página pública**: en tu cuenta, debajo de tu página pública, el botón "Editar mi página pública" lleva a una página propia con tu biografía, tus canales, tu foto y, para Creators, Autores, Pro y Staff, el escaparate.
+- **Menú**: desde el ordenador, Tier list y Deck builder abren un submenú, con las páginas de la tier list, Analytics y el Draft.
+
+## Guías y cómics {#guias-comics}
+
+- Una guía nueva: [los directos de Origins TCG](/es/guides/streaming-tools), con el overlay para OBS, el comando !deck en el chat, los enlaces cortos y la etiqueta LIVE, paso a paso.
+- Los cómics pueden tener ahora una versión dibujada para cada idioma: cada lector ve la versión dibujada en su idioma en lugar de la traducción automática.
+- Las guías de los mazos publicados antes del parche 0.7 conservan la estrategia tal como se escribió, con una nota arriba: las tablas de cartas muestran los costes nuevos.
+
+## Participa {#participa}
+
+[Regístrate](/es/login) gratis con Discord o con tu correo electrónico, prueba el [Draft](/es/draft) y actualiza tus mazos al parche 0.7. Y [únete a nuestro Discord](https://discord.gg/RAG7nnrNGP): todo lo que se publica en el sitio llega también allí.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Is there a draft mode for Origins TCG?",
+          a: "Not in the game yet, but OriginsMeta has a free one at originsmeta.com/en/draft: three formats against the Brain, our bot, with no account, or against a friend in an online room. At the end you can copy the game code of your deck.",
+        },
+        {
+          q: "How do I update my published deck to patch 0.7?",
+          a: "On your deck's page or in your account, press \"Update to version 0.7\", change the cards in the deck builder and save. Name, guide, videos and link stay the same, and the previous version stays on the page with its rating.",
+        },
+        {
+          q: "Why are the win rates switched off?",
+          a: "Since patch 0.7 the game no longer saves on your PC the match data that OriginsMeta Analytics read. The app is paused: if you want it, say so on the Analytics page, and we'll show it to Koin Games.",
+        },
+      ],
+      it: [
+        {
+          q: "C'è una modalità draft per Origins TCG?",
+          a: "Nel gioco non ancora, ma OriginsMeta ne ha una gratuita su originsmeta.com/it/draft: tre formati contro il Cervello, il nostro bot, senza account, o contro un amico in una stanza online. Alla fine puoi copiare il codice del gioco del tuo mazzo.",
+        },
+        {
+          q: "Come aggiorno il mio mazzo pubblicato alla patch 0.7?",
+          a: "Nella pagina del tuo mazzo o nel tuo account premi \"Aggiorna alla versione 0.7\", cambia le carte nel deck builder e salva. Nome, guida, video e link restano gli stessi, e la versione precedente resta nella pagina con il suo voto.",
+        },
+        {
+          q: "Perché i win rate sono spenti?",
+          a: "Dalla patch 0.7 il gioco non salva più sul PC i dati delle partite che OriginsMeta Analytics leggeva. L'app è in pausa: se ti interessa, diccelo dalla pagina Analytics, e la mostreremo a Koin Games.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Hay un modo draft para Origins TCG?",
+          a: "En el juego todavía no, pero OriginsMeta tiene uno gratuito en originsmeta.com/es/draft: tres formatos contra el Cerebro, nuestro bot, sin cuenta, o contra un amigo en una sala online. Al final puedes copiar el código del juego de tu mazo.",
+        },
+        {
+          q: "¿Cómo actualizo mi mazo publicado al parche 0.7?",
+          a: "En la página de tu mazo o en tu cuenta pulsa \"Actualizar a la versión 0.7\", cambia las cartas en el deck builder y guarda. El nombre, la guía, los vídeos y el enlace no cambian, y la versión anterior sigue en la página con su valoración.",
+        },
+        {
+          q: "¿Por qué están apagados los win rates?",
+          a: "Desde el parche 0.7 el juego ya no guarda en tu PC los datos de las partidas que leía OriginsMeta Analytics. La app está en pausa: si te interesa, dínoslo en la página de Analytics y se la enseñaremos a Koin Games.",
+        },
+      ],
+    },
+    url: "/draft",
+    source: "site",
+  },
+  {
     // Patch notes dell'aggiornamento del playtest della Demo 2.0 (richiesta di Pierluigi del 01/10/2026: "articolo subito").
     // Fonte: l'annuncio del team sul Discord ufficiale, incollato da Pierluigi; il 01/10 non c'è un post Steam (API Valve
     // ISteamNews controllata). I dieci bilanciamenti sono quelli della demo del 21/09 e della 0.7: le statistiche del sito
