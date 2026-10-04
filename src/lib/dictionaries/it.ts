@@ -22,6 +22,7 @@ export const it: Dictionary = {
     about: "Chi siamo",
     builder: "Deck builder",
     draft: "Draft",
+    comics: "Fumetti",
     faq: "FAQ",
     language: "Lingua",
     menu: "Menu",

@@ -20,6 +20,7 @@ export const en = {
     about: "About",
     builder: "Deck builder",
     draft: "Draft",
+    comics: "Comics",
     faq: "FAQ",
     language: "Language",
     menu: "Menu",
