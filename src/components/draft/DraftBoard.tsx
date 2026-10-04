@@ -83,7 +83,7 @@ function CardName({ c, className = "" }: { c: DraftUiCard; className?: string })
 }
 
 /** Carta grande: illustrazione ufficiale intera (mai ritagliata, i crediti restano), nome, costo, testo nella lingua. */
-function BigCard({ c, children, dim = false, mark }: { c: DraftUiCard; children?: React.ReactNode; dim?: boolean; mark?: string }) {
+function BigCard({ c, al, children, dim = false, mark }: { c: DraftUiCard; al: DraftLabels["alignment"]; children?: React.ReactNode; dim?: boolean; mark?: string }) {
   return (
     <div className={`flex flex-col gap-2 ${dim ? "opacity-45" : ""}`}>
       <div className={`relative overflow-hidden rounded-xl border-[3px] bg-night-2 ${c.legendary ? "border-gold" : "border-sky"}`}>
@@ -99,7 +99,11 @@ function BigCard({ c, children, dim = false, mark }: { c: DraftUiCard; children?
         <p className="text-sm font-bold text-sky">
           <CardName c={c} />
         </p>
-        <p className="font-mono text-xs text-chalk-muted">{stats(c)}</p>
+        {/* allineamento accanto a costo e statistiche (04/10/2026, Pierluigi): la pastiglia dell'anteprima delle carte */}
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-chalk-muted">
+          <span>{stats(c)}</span>
+          {c.alignment ? <span className={`deck-peek-align is-${c.alignment} font-sans`}>{al[c.alignment]}</span> : null}
+        </p>
         {/* sul telefono la carta è stretta: il testo resta sull'immagine, sotto solo nome e numeri */}
         {c.ability ? (
           <p className="mt-1 hidden sm:block">
@@ -133,13 +137,24 @@ function Row({ c, note }: { c: DraftUiCard; note?: string }) {
 const byMana = (bySlug: Map<string, DraftUiCard>) => (a: string, b: string) =>
   (bySlug.get(a)?.mana ?? 99) - (bySlug.get(b)?.mana ?? 99) || (bySlug.get(a)?.name ?? a).localeCompare(bySlug.get(b)?.name ?? b);
 
-function Curve({ slugs, bySlug, label }: { slugs: string[]; bySlug: Map<string, DraftUiCard>; label: string }) {
+/** Curva di mana più quanti personaggi e quante magie (04/10/2026, Pierluigi). */
+function Curve({ slugs, bySlug, L }: { slugs: string[]; bySlug: Map<string, DraftUiCard>; L: DraftLabels }) {
+  const label = L.play.curve;
   const counts = [0, 0, 0, 0, 0, 0];
   for (const s of slugs) counts[Math.max(0, Math.min(5, (bySlug.get(s)?.mana ?? 3) - 1))]++;
   const max = Math.max(1, ...counts);
   const names = ["≤1", "2", "3", "4", "5", "6+"];
+  const spells = slugs.filter((s) => bySlug.get(s)?.spell).length;
   return (
     <figure>
+      <p className="mb-3 flex flex-wrap gap-2 text-xs">
+        <span className="deck-peek-stats">
+          {L.play.characters} {slugs.length - spells}
+        </span>
+        <span className="deck-peek-stats">
+          {L.play.spells} {spells}
+        </span>
+      </p>
       <figcaption className="kicker text-chalk-muted">{label}</figcaption>
       <div className="mt-2 flex h-16 items-end gap-1.5" role="img" aria-label={`${label}: ${names.map((n, i) => `${n}: ${counts[i]}`).join(", ")}`}>
         {counts.map((n, i) => (
@@ -193,7 +208,7 @@ function Turn({ L, draft, me, oppName, bySlug, onAct }: { L: DraftLabels; draft:
           return (
             <li key={s}>
               <button type="button" className="block w-full text-left transition-transform hover:-translate-y-1 focus-visible:outline-3 focus-visible:outline-mint" onClick={() => onAct({ seat: me, type: "pick", card: s })}>
-                <BigCard c={c} />
+                <BigCard al={L.alignment} c={c} />
               </button>
             </li>
           );
@@ -213,7 +228,7 @@ function Turn({ L, draft, me, oppName, bySlug, onAct }: { L: DraftLabels; draft:
             const burned = keep !== null && give !== null && !isKeep && !isGive;
             return (
               <li key={s}>
-                <BigCard c={c} dim={burned} mark={isKeep ? L.play.kept : isGive ? L.play.given : burned ? L.play.burned : undefined}>
+                <BigCard al={L.alignment} c={c} dim={burned} mark={isKeep ? L.play.kept : isGive ? L.play.given : burned ? L.play.burned : undefined}>
                   <div className="flex flex-col gap-1.5 sm:flex-row sm:gap-2">
                     <button type="button" aria-pressed={isKeep} className={`btn flex-1 justify-center px-2 text-xs ${isKeep ? "btn-mint" : "btn-ghost"}`} onClick={() => { setKeep(s); if (give === s) setGive(null); }}>
                       {L.play.keep}
@@ -240,7 +255,7 @@ function Turn({ L, draft, me, oppName, bySlug, onAct }: { L: DraftLabels; draft:
           const c = card(s);
           return c ? (
             <li key={s}>
-              <BigCard c={c} dim />
+              <BigCard al={L.alignment} c={c} dim />
             </li>
           ) : null;
         })}
@@ -299,7 +314,7 @@ function Side({ L, draft, seat, oppName, bySlug }: { L: DraftLabels; draft: Draf
         )}
         {sorted.length ? (
           <div className="mt-4">
-            <Curve slugs={me.pool} bySlug={bySlug} label={L.play.curve} />
+            <Curve slugs={me.pool} bySlug={bySlug} L={L} />
           </div>
         ) : null}
       </div>
@@ -401,7 +416,7 @@ function Build({
               const on = legendary === s;
               return (
                 <button key={s} type="button" aria-pressed={on} onClick={() => setLegendary(s)} className={`rounded-2xl p-1 text-left ${on ? "ring-4 ring-mint" : "opacity-70 hover:opacity-100"}`}>
-                  <BigCard c={c} />
+                  <BigCard al={L.alignment} c={c} />
                 </button>
               );
             })}
@@ -444,13 +459,14 @@ function Build({
                     )}
                   </span>
                   <span className="mt-1 block truncate text-[11px] text-chalk">{c.name}</span>
+                  {c.alignment ? <span className={`deck-peek-align is-${c.alignment} mt-1 inline-block !text-[9px]`}>{L.alignment[c.alignment]}</span> : null}
                 </button>
               </li>
             );
           })}
         </ul>
         <div className="felt-panel h-fit p-4">
-          <Curve slugs={chosen} bySlug={bySlug} label={L.play.curve} />
+          <Curve slugs={chosen} bySlug={bySlug} L={L} />
         </div>
       </div>
     </section>
@@ -573,7 +589,7 @@ function DeckPanel({
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
         {legend ? (
           <div className="max-w-[9rem]">
-            <BigCard c={legend} />
+            <BigCard al={L.alignment} c={legend} />
           </div>
         ) : null}
         <ul className="space-y-1.5">
@@ -593,7 +609,7 @@ function DeckPanel({
         </li>
       </ul>
       <div className="mt-4">
-        <Curve slugs={deck.cards} bySlug={bySlug} label={L.play.curve} />
+        <Curve slugs={deck.cards} bySlug={bySlug} L={L} />
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {code ? (

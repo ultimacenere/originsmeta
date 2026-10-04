@@ -14,7 +14,15 @@ type NavItem = { label: string; path: string; sub?: { label: string; path: strin
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
   return [
-    { label: dict.nav.news, path: "/news" },
+    {
+      label: dict.nav.news,
+      path: "/news",
+      // sottomenu (04/10/2026, Pierluigi): l'elenco dei fumetti dei creator, anche nella tendina del telefono e nel footer
+      sub: [
+        { label: dict.nav.news, path: "/news" },
+        { label: dict.nav.comics, path: "/news/comics", mobile: true },
+      ],
+    },
     {
       label: dict.nav.tierList,
       path: "/tier-list",

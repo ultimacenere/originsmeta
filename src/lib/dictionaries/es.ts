@@ -30,6 +30,7 @@ export const es: Dictionary = {
     /** sottomenu "Mazzi" (04/10/2026): mazzi singoli e Mazzi torneo; uguali a deckSetLabels.nav */
     decksSingle: "Mazos individuales",
     decksTournament: "Mazos de torneo",
+    comics: "Cómics",
     faq: "FAQ",
     language: "Idioma",
     menu: "Menú",
