@@ -90,6 +90,7 @@ function notificationText(n: NotificationItem, L: FollowLabels["notifications"])
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
   if (n.kind === "guide_published") return n.guideTitle ? fillFollowLabel(L.guidePublished, { name, guide: n.guideTitle }) : fillFollowLabel(L.guideGone, { name });
   if (n.kind === "comic_published") return n.comicTitle ? fillFollowLabel(L.comicPublished, { name, comic: n.comicTitle }) : fillFollowLabel(L.comicGone, { name });
+  if (n.kind === "deck_set_published") return n.setName ? fillFollowLabel(L.deckSetPublished, { name, deck: n.setName }) : fillFollowLabel(L.deckSetGone, { name });
   return n.deckName ? fillFollowLabel(L.deckPublished, { name, deck: n.deckName }) : fillFollowLabel(L.deckGone, { name });
 }
 
@@ -97,7 +98,7 @@ function NotificationCard({ item: n, locale, L }: { item: NotificationItem; loca
   const unread = !n.read_at;
   const name = n.actor ? authorName(n.actor) : L.someone;
   // un mazzo o una guida non più online non ha link (porterebbe a una pagina che non c'è)
-  const gone = (n.kind === "deck_published" && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle) || (n.kind === "comic_published" && !n.comicTitle);
+  const gone = (n.kind === "deck_published" && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle) || (n.kind === "comic_published" && !n.comicTitle) || (n.kind === "deck_set_published" && !n.setName);
   const link = gone ? null : notificationHref(locale, n.target);
   const body = (
     <>

@@ -15,10 +15,11 @@ import { splitColumns, type DeckImageFormat } from "@/lib/stream";
  * dal server e a ogni disegno, un font da Google Fonts o un'emoji da jsDelivr con il testo dentro l'indirizzo: per
  * questo i testi scritti dagli utenti (nome del mazzo, dell'autore, carte inserite a mano) arrivano qui già passati
  * da `imageSafe` (src/lib/stream.ts, nella rotta), e le etichette nostre usano solo caratteri del font. La stella è
- * un SVG. Righe delle carte senza cornice (niente righette sottili), su blu notte più chiaro.
+ * un SVG. Righe delle carte senza cornice (niente righette sottili), su blu notte più chiaro. Colori, ruoli, stella,
+ * gemma e riga della carta sono esportati: li riusa l'immagine dei Mazzi torneo (`DeckSetImage`, 04/10/2026).
  */
 
-const C = {
+export const C = {
   felt: "#150c2c",
   night: "#182238",
   night2: "#121a2c",
@@ -36,7 +37,7 @@ const C = {
  * Ruolo sull'immagine: gli stessi colori di `badgeStyle` (cardArt.ts, ruoli del 27/09/2026: Creator col gradiente,
  * Autore in celeste); la community non si mostra, e nemmeno un tag che il codice non conosce.
  */
-const BADGE: Record<string, { background: string; color: string }> = {
+export const BADGE: Record<string, { background: string; color: string }> = {
   staff: { background: C.gold, color: C.ink },
   creator: { background: "linear-gradient(45deg, #dc2743 0%, #cc2366 50%, #bc1888 100%)", color: "#ffffff" },
   author: { background: C.sky, color: C.ink },
@@ -53,7 +54,7 @@ export type DeckImageLabels = {
   archetype: string;
 };
 
-function Star({ size }: { size: number }) {
+export function Star({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24">
       <path d="M12 1.8l3 6.9 7.4.6-5.6 4.9 1.7 7.3L12 17.6l-6.5 3.9 1.7-7.3L1.6 9.3 9 8.7z" fill={C.gold} />
@@ -61,7 +62,7 @@ function Star({ size }: { size: number }) {
   );
 }
 
-function Gem({ mana, size }: { mana?: number; size: number }) {
+export function Gem({ mana, size }: { mana?: number; size: number }) {
   return (
     <div
       style={{
@@ -83,7 +84,7 @@ function Gem({ mana, size }: { mana?: number; size: number }) {
   );
 }
 
-function CardRow({ card, u, height, font, gem }: { card: StreamCard; u: number; height: number; font: number; gem: number }) {
+export function CardRow({ card, u, height, font, gem }: { card: StreamCard; u: number; height: number; font: number; gem: number }) {
   return (
     <div
       style={{
@@ -105,7 +106,7 @@ function CardRow({ card, u, height, font, gem }: { card: StreamCard; u: number; 
 }
 
 /** Misura di un testo che può essere lungo (nome del mazzo, della Leggendaria, link breve): scende di corpo invece di andare su troppe righe. */
-function scaled(text: string, big: number, short: number, medium: number): number {
+export function scaled(text: string, big: number, short: number, medium: number): number {
   if (text.length <= short) return big;
   if (text.length <= medium) return Math.round(big * 0.84);
   return Math.round(big * 0.72);

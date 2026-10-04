@@ -7,13 +7,16 @@ import {
   botCommands,
   chatEndpoint,
   deckImagePath,
+  deckSetImagePath,
   fill,
   imageVersion,
+  OVERLAY_SET_SIZE,
   OVERLAY_SIZE,
   overlayUrl,
   shortLinkUrl,
   type DeckImageFormat,
   type OverlayLayout,
+  type OverlaySize,
 } from "@/lib/stream";
 import type { StreamLabels } from "@/lib/streamLabels";
 import { CopyButton } from "@/components/CopyButton";
@@ -36,9 +39,13 @@ import { CopyButton } from "@/components/CopyButton";
  * pagina, così nelle anteprime di Vercel e in locale i link copiati e le anteprime puntano allo stesso sito della demo.
  * In produzione i due indirizzi coincidono. Misura: `stream_tools_open`, `stream_tool_copy`, `deck_image_download`
  * (catalogo in src/lib/analytics.ts).
+ *
+ * Dal 04/10/2026 lo stesso menu sta nella scheda di un mazzo torneo (`target="set"`, placement `deck_set_page`): stesso
+ * link breve /d/<slug> (porta alla scheda del trio), comando ?set=<slug> (senza codici del gioco), overlay
+ * /overlay/deck-set/<slug> e immagini /api/deck-set-image/<slug>, con le stesse regole per il proprietario.
  */
 
-type Placement = "deck_page" | "account";
+type Placement = "deck_page" | "deck_set_page" | "account";
 
 /** L'indirizzo del sito da usare nei link: `site` sul server e al primo disegno, poi quello della pagina. */
 function useSiteOrigin(site: string): string {
@@ -156,16 +163,17 @@ function StreamDetails({
   );
 }
 
-function overlayHint(labels: StreamLabels["tools"]): string {
-  const v = OVERLAY_SIZE.vertical;
-  const h = OVERLAY_SIZE.horizontal;
+function overlayHint(labels: StreamLabels["tools"], size: OverlaySize = OVERLAY_SIZE): string {
+  const v = size.vertical;
+  const h = size.horizontal;
   return fill(labels.overlayHint, { vw: String(v.width), vh: String(v.height), hw: String(h.width), hh: String(h.height) });
 }
 
 /**
  * Menu "Per le dirette" nella scheda di un mazzo pubblicato: link breve e le due immagini da scaricare per tutti; per il
  * proprietario anche il comando di chat per questo mazzo e l'overlay per OBS (verticale e orizzontale), agli altri il
- * rimando agli strumenti del loro account. Chiuso per tutti, aperto da solo per il proprietario.
+ * rimando agli strumenti del loro account. Chiuso per tutti, aperto da solo per il proprietario. `target="set"`: la
+ * scheda di un mazzo torneo (04/10/2026), con il comando, l'overlay e le immagini dei trii.
  */
 export function DeckStreamTools({
   slug,
@@ -174,6 +182,7 @@ export function DeckStreamTools({
   locale,
   site,
   labels,
+  target = "deck",
 }: {
   slug: string;
   ownerId: string;
@@ -181,6 +190,8 @@ export function DeckStreamTools({
   locale: string;
   site: string;
   labels: StreamLabels["tools"];
+  /** "set" per un mazzo torneo (/decks/tournament/<slug>) */
+  target?: "deck" | "set";
 }) {
   const origin = useSiteOrigin(site);
   const [isOwner, setIsOwner] = useState(false);
@@ -196,9 +207,11 @@ export function DeckStreamTools({
     };
   }, [ownerId]);
 
-  const placement: Placement = "deck_page";
-  const chat = botCommands(chatEndpoint(origin, { deck: slug }, locale));
-  const overlay = (layout: OverlayLayout) => overlayUrl(origin, { deck: slug }, layout, locale);
+  const isSet = target === "set";
+  const placement: Placement = isSet ? "deck_set_page" : "deck_page";
+  const chat = botCommands(chatEndpoint(origin, isSet ? { set: slug } : { deck: slug }, locale));
+  const overlay = (layout: OverlayLayout) => overlayUrl(origin, isSet ? { set: slug } : { deck: slug }, layout, locale);
+  const imagePath = isSet ? deckSetImagePath : deckImagePath;
   const version = imageVersion(updatedAt);
   const images: { format: DeckImageFormat; label: string }[] = [
     { format: "16x9", label: labels.download16x9 },
@@ -210,7 +223,8 @@ export function DeckStreamTools({
     <StreamDetails
       placement={placement}
       autoOpen={isOwner}
-      className="card-night mt-6 p-4 text-sm"
+      // nella scheda del trio il menu sta dentro l'<article> (già un pannello card-night): riquadro interno come il riassunto
+      className={isSet ? "mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-4 text-sm" : "card-night mt-6 p-4 text-sm"}
       summary={
         <summary className="cursor-pointer marker:text-mint">
           <h2 className="inline font-body text-sm font-semibold text-pale">{labels.summary}</h2>
@@ -219,16 +233,16 @@ export function DeckStreamTools({
     >
       <div className="mt-3 space-y-5">
         <p className="max-w-2xl text-xs text-pale-muted">{labels.intro}</p>
-        <Block title={labels.shortLink} hint={labels.shortLinkHint}>
+        <Block title={labels.shortLink} hint={isSet ? labels.setShortLinkHint : labels.shortLinkHint}>
           <CopyRow {...row} label={labels.shortLink} value={shortLinkUrl(origin, slug)} tool="short_link" />
         </Block>
         {isOwner ? (
           <>
-            <Block title={labels.chat} hint={labels.chatHint}>
+            <Block title={isSet ? labels.setChat : labels.chat} hint={isSet ? labels.setChatHint : labels.chatHint}>
               <CopyRow {...row} label={labels.nightbot} value={chat.nightbot} tool="chat_nightbot" />
               <CopyRow {...row} label={labels.streamelements} value={chat.streamelements} tool="chat_streamelements" />
             </Block>
-            <Block title={labels.overlay} hint={overlayHint(labels)}>
+            <Block title={labels.overlay} hint={overlayHint(labels, isSet ? OVERLAY_SET_SIZE : OVERLAY_SIZE)}>
               {(["vertical", "horizontal"] as const).map((layout) => (
                 <CopyRow
                   {...row}
@@ -242,12 +256,12 @@ export function DeckStreamTools({
             </Block>
           </>
         ) : null}
-        <Block title={labels.image} hint={labels.imageHint}>
+        <Block title={isSet ? labels.setImage : labels.image} hint={isSet ? labels.setImageHint : labels.imageHint}>
           <div className="flex flex-wrap gap-2">
             {images.map(({ format, label }) => (
               <a
                 key={format}
-                href={deckImagePath(slug, format, locale, version, true)}
+                href={imagePath(slug, format, locale, version, true)}
                 download
                 rel="nofollow"
                 className="btn btn-ink text-xs"

@@ -101,6 +101,11 @@ export type CommunityData = {
    * lastmod di /news (li mostra in tutte le lingue) e dell'elenco /news/comics. Assente: nessun fumetto.
    */
   communityComics?: { comics: SitemapComic[]; latest?: string };
+  /**
+   * Mazzi torneo (04/10/2026, `listDeckSetIndex`): quelli sopra la soglia di parole, con le lingue in cui la scheda si
+   * indicizza; `latest` è l'ultimo pubblicato o modificato (lastmod di /decks/tournament). Assente: nessun trio.
+   */
+  deckSets?: { sets: { slug: string; updated_at: string; locales: Locale[] }[]; latest?: string };
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -189,6 +194,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.
     { path: "/locations", section: "pages", route: "/locations", dates: [patches[locationsPatch].date, locationsVerified?.date] },
     { path: "/decks", section: "pages", route: "/decks", dates: [...decks.map((d) => d.updated), latestCommunity] },
+    // Mazzi torneo (04/10/2026): l'elenco entra solo quando c'è almeno un trio (vuoto è noindex)
+    ...(data.deckSets?.latest
+      ? [{ path: "/decks/tournament", section: "pages", route: "/decks/tournament", dates: [data.deckSets.latest] } satisfies SitemapPage]
+      : []),
     // Il pool del deck builder segue le carte: patch e verifica sul gioco.
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
     // Il draft (02/10/2026) pesca dallo stesso pool del deck builder.
@@ -273,6 +282,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // versioni della scheda sono noindex finché la traduzione non c'è.
     ...data.decks.map(
       (c): SitemapPage => ({ path: `/decks/community/${c.slug}`, section: "decks", route: "/decks/community/[slug]", dates: [c.updated_at], locales: c.locales }),
+    ),
+    // Mazzi torneo (04/10/2026): come i mazzi singoli, solo nelle lingue in cui la scheda si indicizza
+    ...(data.deckSets?.sets ?? []).map(
+      (c): SitemapPage => ({ path: `/decks/tournament/${c.slug}`, section: "decks", route: "/decks/tournament/[slug]", dates: [c.updated_at], locales: c.locales }),
     ),
     // Pagine pubbliche degli iscritti con qualcosa di loro (23/09/2026; tier list dal 25/09, guide della community dal 27/09).
     ...data.profiles.map(

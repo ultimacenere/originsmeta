@@ -18,10 +18,13 @@ const en = {
     line: "Deck by {author}: {deck}",
     legendary: "Legendary",
     code: "Game code",
+    /** mazzo torneo (?set=, 04/10/2026): tre mazzi, niente codici del gioco */
+    setLine: "Tournament deck by {author}: {set}",
     noDecks: "{user} has no public decks on OriginsMeta yet.",
     noUser: "There is no OriginsMeta user called {user}.",
     noDeck: "Deck not found on OriginsMeta: check the command's URL.",
-    usage: "Add ?u=<OriginsMeta username> or ?deck=<deck> to the command's URL.",
+    noSet: "Tournament deck not found on OriginsMeta: check the command's URL.",
+    usage: "Add ?u=<OriginsMeta username>, ?deck=<deck> or ?set=<tournament deck> to the command's URL.",
     unavailable: "OriginsMeta is not reachable right now: try again in a minute.",
   },
   /** pagina trasparente per OBS */
@@ -36,6 +39,10 @@ const en = {
     usage: "Add ?u=<OriginsMeta username> to the URL, or use /overlay/deck/<deck>.",
     unavailable: "OriginsMeta is not reachable right now: the overlay tries again every minute.",
     unofficial: "Unofficial fan site, not affiliated with Koin Games",
+    /** overlay di un mazzo torneo (/overlay/deck-set/<slug>, 04/10/2026) */
+    set: "Tournament deck",
+    deck: "Deck {letter}",
+    noSet: "Tournament deck not found: check the browser source URL.",
   },
   /** immagine PNG del mazzo (next/og) */
   image: {
@@ -46,6 +53,10 @@ const en = {
     unofficial: "Unofficial fan site, not affiliated with Koin Games",
     alt: "Deck list of {deck} by {author}, with the Legendary {legendary}: the twelve cards and their mana cost.",
     altNoLegendary: "Deck list of {deck} by {author}: the cards and their mana cost.",
+    /** immagine di un mazzo torneo (/api/deck-set-image, 04/10/2026) */
+    setKicker: "Origins TCG · Tournament deck · Conquest",
+    deck: "Deck {letter}",
+    setAlt: "Tournament deck {set} by {author}: the lists of its three Conquest decks, with the Legendaries {legendaries} and the mana cost of every card.",
   },
   /** menu "Per le dirette" nella scheda del mazzo */
   tools: {
@@ -72,6 +83,13 @@ const en = {
     accountLink: "Stream tools in your account",
     copy: "Copy",
     copied: "Copied",
+    /** menu di un mazzo torneo (04/10/2026) */
+    setShortLinkHint: "Say it on stream or put it in the video description: it opens this tournament deck in the viewer's language.",
+    setChat: "Chat command for this tournament deck",
+    setChatHint:
+      "Type it in your Twitch chat as the channel owner or a moderator: from then on !deck answers with this tournament deck, its three Legendaries and the short link (the game codes are on the page, one per deck). If !deck already exists, write edit instead of add (!commands edit for Nightbot, !command edit for StreamElements).",
+    setImage: "Tournament deck image",
+    setImageHint: "PNG ready for thumbnails, posts and stories: the three decks with their Legendary, their twelve cards with the cost and the short link.",
   },
   /** istruzioni nel pannello privato /account */
   account: {
@@ -95,10 +113,12 @@ const it: StreamLabels = {
     line: "Mazzo di {author}: {deck}",
     legendary: "Leggendaria",
     code: "Codice del gioco",
+    setLine: "Mazzo torneo di {author}: {set}",
     noDecks: "{user} non ha ancora mazzi pubblici su OriginsMeta.",
     noUser: "Su OriginsMeta non c'è nessun utente {user}.",
     noDeck: "Mazzo non trovato su OriginsMeta: controlla il link del comando.",
-    usage: "Aggiungi al link del comando ?u=<nome utente di OriginsMeta> oppure ?deck=<mazzo>.",
+    noSet: "Mazzo torneo non trovato su OriginsMeta: controlla il link del comando.",
+    usage: "Aggiungi al link del comando ?u=<nome utente di OriginsMeta>, ?deck=<mazzo> oppure ?set=<mazzo torneo>.",
     unavailable: "OriginsMeta non risponde in questo momento: riprova fra un minuto.",
   },
   overlay: {
@@ -112,6 +132,9 @@ const it: StreamLabels = {
     usage: "Aggiungi al link ?u=<nome utente di OriginsMeta>, oppure usa /overlay/deck/<mazzo>.",
     unavailable: "OriginsMeta non risponde in questo momento: l'overlay riprova ogni minuto.",
     unofficial: "Sito di fan non ufficiale, non affiliato a Koin Games",
+    set: "Mazzo torneo",
+    deck: "Mazzo {letter}",
+    noSet: "Mazzo torneo non trovato: controlla il link della fonte browser.",
   },
   image: {
     kicker: "Origins TCG · Mazzo della community",
@@ -121,6 +144,9 @@ const it: StreamLabels = {
     unofficial: "Sito di fan non ufficiale, non affiliato a Koin Games",
     alt: "Lista del mazzo {deck} di {author}, con la Leggendaria {legendary}: le dodici carte con il costo in mana.",
     altNoLegendary: "Lista del mazzo {deck} di {author}: le carte con il costo in mana.",
+    setKicker: "Origins TCG · Mazzo torneo · Conquest",
+    deck: "Mazzo {letter}",
+    setAlt: "Mazzo torneo {set} di {author}: le liste dei suoi tre mazzi Conquest, con le Leggendarie {legendaries} e il costo in mana di ogni carta.",
   },
   tools: {
     summary: "Per le dirette: link breve, comando di chat, overlay per OBS, immagine",
@@ -146,6 +172,12 @@ const it: StreamLabels = {
     accountLink: "Strumenti per le dirette nel tuo account",
     copy: "Copia",
     copied: "Copiato",
+    setShortLinkHint: "Da dire in diretta o da mettere nella descrizione del video: apre questo mazzo torneo nella lingua di chi guarda.",
+    setChat: "Comando di chat per questo mazzo torneo",
+    setChatHint:
+      "Scrivilo nella chat di Twitch da proprietario del canale o da moderatore: da lì in poi !deck risponde con questo mazzo torneo, le sue tre Leggendarie e il link breve (i codici del gioco sono nella scheda, uno per mazzo). Se !deck esiste già, al posto di add scrivi edit (!commands edit per Nightbot, !command edit per StreamElements).",
+    setImage: "Immagine del mazzo torneo",
+    setImageHint: "PNG pronto per miniature, post e storie: i tre mazzi con la loro Leggendaria, le dodici carte di ognuno con il costo e il link breve.",
   },
   account: {
     title: "Strumenti per le dirette",
@@ -166,10 +198,12 @@ const es: StreamLabels = {
     line: "Mazo de {author}: {deck}",
     legendary: "Legendaria",
     code: "Código del juego",
+    setLine: "Mazo de torneo de {author}: {set}",
     noDecks: "{user} todavía no tiene mazos públicos en OriginsMeta.",
     noUser: "En OriginsMeta no hay ningún usuario {user}.",
     noDeck: "No se encontró el mazo en OriginsMeta: revisa el enlace del comando.",
-    usage: "Añade al enlace del comando ?u=<nombre de usuario de OriginsMeta> o ?deck=<mazo>.",
+    noSet: "No se encontró el mazo de torneo en OriginsMeta: revisa el enlace del comando.",
+    usage: "Añade al enlace del comando ?u=<nombre de usuario de OriginsMeta>, ?deck=<mazo> o ?set=<mazo de torneo>.",
     unavailable: "OriginsMeta no responde en este momento: vuelve a intentarlo en un minuto.",
   },
   overlay: {
@@ -183,6 +217,9 @@ const es: StreamLabels = {
     usage: "Añade al enlace ?u=<nombre de usuario de OriginsMeta>, o usa /overlay/deck/<mazo>.",
     unavailable: "OriginsMeta no responde en este momento: el overlay vuelve a intentarlo cada minuto.",
     unofficial: "Sitio de fans no oficial, sin afiliación con Koin Games",
+    set: "Mazo de torneo",
+    deck: "Mazo {letter}",
+    noSet: "No se encontró el mazo de torneo: revisa el enlace de la fuente de navegador.",
   },
   image: {
     kicker: "Origins TCG · Mazo de la comunidad",
@@ -192,6 +229,9 @@ const es: StreamLabels = {
     unofficial: "Sitio de fans no oficial, sin afiliación con Koin Games",
     alt: "Lista del mazo {deck} de {author}, con la Legendaria {legendary}: las doce cartas con su coste de maná.",
     altNoLegendary: "Lista del mazo {deck} de {author}: las cartas con su coste de maná.",
+    setKicker: "Origins TCG · Mazo de torneo · Conquest",
+    deck: "Mazo {letter}",
+    setAlt: "Mazo de torneo {set} de {author}: las listas de sus tres mazos de Conquest, con las Legendarias {legendaries} y el coste de maná de cada carta.",
   },
   tools: {
     summary: "Para directos: enlace corto, comando de chat, overlay para OBS, imagen",
@@ -217,6 +257,12 @@ const es: StreamLabels = {
     accountLink: "Herramientas para directos en tu cuenta",
     copy: "Copiar",
     copied: "Copiado",
+    setShortLinkHint: "Para decirlo en directo o ponerlo en la descripción del video: abre este mazo de torneo en el idioma de quien lo mira.",
+    setChat: "Comando de chat para este mazo de torneo",
+    setChatHint:
+      "Escríbelo en el chat de Twitch como dueño del canal o moderador: a partir de ahí, !deck responde con este mazo de torneo, sus tres Legendarias y el enlace corto (los códigos del juego están en la página, uno por mazo). Si !deck ya existe, en lugar de add escribe edit (!commands edit para Nightbot, !command edit para StreamElements).",
+    setImage: "Imagen del mazo de torneo",
+    setImageHint: "PNG listo para miniaturas, publicaciones e historias: los tres mazos con su Legendaria, las doce cartas de cada uno con su coste y el enlace corto.",
   },
   account: {
     title: "Herramientas para directos",

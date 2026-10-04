@@ -64,7 +64,8 @@
  *     unfollow            "Segui già" premuto per smettere, o "Smetti di seguire"  placement (profile | deck_page |
  *                         nell'elenco "Chi segui" di /account                       guide_page | account)
  *     notification_open   clic su un avviso nella sezione "Notifiche" di           kind (deck_published | live |
- *                         /account/messages (pacchetto SEGUI)                      guide_published)
+ *                         /account/messages (pacchetto SEGUI)                      guide_published | comic_published |
+ *                                                                                 deck_set_published)
  *     faq_ask             domanda all'assistente della FAQ, risposta arrivata     sources (fonti citate nella risposta)
  *   ★ steam_click         clic su un link verso Steam, tasti e link di testo      target (store | demo | news | next_fest |
  *                                                                                 community | other), placement, cta
@@ -82,16 +83,22 @@
  *                         discord_click (server=other), come deck_link_click;      e dal 28/09/2026 live_page (la pagina /live)
  *     live_now_open       clic su "Ora live" nella striscia del calendario        placement (calendar)
  *                         (28/09/2026, compare solo se qualcuno è in diretta; attributi sul link, TickerMarquee)
- *     stream_tools_open   apertura del menu "Per le dirette" di un mazzo, o delle placement (deck_page | account)
- *                         istruzioni per le dirette in /account (pacchetto STREAM, 26/09/2026)
+ *     stream_tools_open   apertura del menu "Per le dirette" di un mazzo, o delle placement (deck_page | account |
+ *                         istruzioni per le dirette in /account (pacchetto STREAM, deck_set_page: la scheda di un
+ *                         26/09/2026)                                             mazzo torneo, 04/10/2026)
  *     stream_tool_copy    copia RIUSCITA di un link o comando per le dirette      tool (short_link | chat_nightbot |
  *                                                                                 chat_streamelements | chat_fossabot |
  *                                                                                 overlay_vertical | overlay_horizontal),
- *                                                                                 placement (deck_page | account)
+ *                                                                                 placement (deck_page | account |
+ *                                                                                 deck_set_page)
  *     deck_image_download clic su "Scarica" dell'immagine di un mazzo            format (16x9 | 9x16), placement
+ *                         (o di un mazzo torneo)                                  (deck_page | deck_set_page)
  *   ★ guide_published     guida della community pubblicata per la prima volta     guide_lang (lingua della guida), category
  *                         (pacchetto GUIDE, 27/09/2026; non le modifiche né una guida riportata tra le bozze e ripubblicata:
  *                         `firstPublish` di saveCommunityGuide)
+ *   ★ deck_set_published  mazzo torneo pubblicato (tre mazzi Conquest con una      locale, legendary (le tre Leggendarie,
+ *                         guida, 04/10/2026), solo la prima pubblicazione          separate da "|")
+ *     deck_set_vote       voto a un mazzo torneo (1–5 stelle)                     stars, vote_type (new | update)
  *   ★ comic_published     fumetto pubblicato fra le news per la prima volta        comic_lang (lingua dei testi)
  *                         (pacchetto FUMETTI, 29/09/2026: `firstPublish` di saveComic)
  *   ★ analytics_interest  clic su "Sì, mi interessa" della pagina /analytics       placement (top | bottom), added (yes se
@@ -202,7 +209,7 @@ export type EventParams = {
   message_read: { placement: "account" | "staff_area" };
   follow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" };
   unfollow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" | "account" };
-  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -216,6 +223,8 @@ export type EventParams = {
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
   guide_published: { guide_lang: string; category: string };
+  deck_set_published: { locale: string; legendary: string };
+  deck_set_vote: { stars: number; vote_type: "new" | "update" };
   comic_published: { comic_lang: string };
   analytics_interest: { placement: "top" | "bottom"; added: "yes" | "no" };
   draft_start: { format: string; opponent: "bot" | "friend" };
@@ -264,6 +273,8 @@ export const VERCEL_PROPS = {
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],
   guide_published: ["guide_lang", "category"],
+  deck_set_published: ["legendary", "locale"],
+  deck_set_vote: ["stars", "vote_type"],
   comic_published: ["comic_lang"],
   analytics_interest: ["placement", "added"],
   draft_start: ["format", "opponent"],

@@ -84,8 +84,9 @@ export function addSeen(list: readonly string[], key: string, max: number = SEEN
  * nostro tasto, non dentro l'iframe, quindi senza questa riga il video si conterebbe solo al secondo clic.
  */
 export function statKindForEvent(name: string, params: Record<string, unknown>): DeckStatKind | null {
-  if (name === "game_code_copy" && params.placement === "deck_page") return "code";
-  if (name === "video_play" && params.placement === "deck_page") return "video";
+  // anche la scheda di un mazzo torneo (04/10/2026, placement deck_set_page): la ascolta il suo DeckStatsBeacon
+  if (name === "game_code_copy" && (params.placement === "deck_page" || params.placement === "deck_set_page")) return "code";
+  if (name === "video_play" && (params.placement === "deck_page" || params.placement === "deck_set_page")) return "video";
   return null;
 }
 

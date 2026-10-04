@@ -10,6 +10,7 @@ import { activeCards, getCard, patchAt, patchLabel, patchOrder, statLine, type P
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { PageNotes } from "@/components/PageNotes";
+import { DeckSectionTabs } from "@/components/DeckSectionTabs";
 import { listDeckPopularity, listPublishedDecks } from "@/lib/community/queries";
 import { favoriteLabels } from "@/lib/favoriteLabels";
 import { creatorExtras, creatorIndex, listCreators } from "@/lib/community/creators";
@@ -27,8 +28,14 @@ import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { deckCardsDate } from "@/lib/community/deckVersions";
 
-/** Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. */
-const shorten = (s: string, max: number) => (s.length > max ? `${s.slice(0, max).trimEnd()}…` : s);
+/**
+ * Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. Per punti di codice e non per unità UTF-16 (04/10/2026):
+ * `slice` spezzava a metà un'emoji in fondo al taglio, la pagina mostrava "�" e React segnalava un errore di idratazione.
+ */
+const shorten = (s: string, max: number) => {
+  const chars = Array.from(s);
+  return chars.length > max ? `${chars.slice(0, max).join("").trimEnd()}…` : s;
+};
 
 /** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
 type CardLike = {
@@ -283,6 +290,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
           collection,
         ]}
       />
+      {/* le due sezioni dei mazzi (04/10/2026): mazzi singoli e Mazzi torneo */}
+      <DeckSectionTabs locale={locale} active="single" />
       <p className="kicker text-mint">{d.nav.decks}</p>
       <h1 className="t-page mt-2">{d.decks.title}</h1>
       {/*

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { onTrackedEvent } from "@/lib/analytics";
 import { VIEW_DELAY_MS, embedFocusIsPlay, isDeckStatKind, statKindForEvent, statKindForHref } from "@/lib/community/deckStats";
-import { bumpDeckStat } from "@/lib/community/deckStatsClient";
+import { bumpDeckSetStat, bumpDeckStat } from "@/lib/community/deckStatsClient";
 
 /**
  * Contatori della scheda di un mazzo per il suo autore (pacchetto STATS, 26/09/2026; regole in
@@ -20,10 +20,10 @@ import { bumpDeckStat } from "@/lib/community/deckStatsClient";
  * - video incorporato: il primo clic dentro il lettore già aperto (la finestra perde il focus e l'elemento attivo è
  *   l'iframe), ma non quando ci si arriva col Tab. Un video conta comunque una volta sola per scheda.
  */
-export function DeckStatsBeacon({ slug }: { slug: string }) {
+export function DeckStatsBeacon({ slug, target = "deck" }: { slug: string; /** mazzo singolo o mazzo torneo (04/10/2026) */ target?: "deck" | "set" }) {
   useEffect(() => {
     if (!slug) return;
-    const bump = (kind: Parameters<typeof bumpDeckStat>[1]) => bumpDeckStat(slug, kind);
+    const bump = (kind: Parameters<typeof bumpDeckStat>[1]) => (target === "set" ? bumpDeckSetStat(slug, kind) : bumpDeckStat(slug, kind));
 
     // Visita: tempo di pagina visibile, sommato fra una scheda nascosta e l'altra.
     let visibleFor = 0;
@@ -103,6 +103,6 @@ export function DeckStatsBeacon({ slug }: { slug: string }) {
       window.removeEventListener("blur", onBlur);
       off();
     };
-  }, [slug]);
+  }, [slug, target]);
   return null;
 }

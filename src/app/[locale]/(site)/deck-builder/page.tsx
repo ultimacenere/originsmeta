@@ -13,6 +13,7 @@ import { contactEmail } from "@/components/Footer";
 import { JsonLd, breadcrumbs, webApplication } from "@/components/JsonLd";
 import { deckBuilderApp } from "@/lib/entityLabels";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
+import { deckSetLabels } from "@/lib/deckSetLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -60,6 +61,7 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           publishHref={href(locale, "/decks/publish")}
           labels={builderLabels(d)}
           updateLabels={deckVersionLabels[locale].builder}
+          setPublish={{ href: href(locale, "/decks/tournament/publish"), label: deckSetLabels[locale].builder.publish, hint: deckSetLabels[locale].builder.hint }}
         />
       </div>
 

@@ -9,6 +9,7 @@ import type { Locale } from "@/lib/i18n";
 import type { DeckLink, StoredVideo } from "@/lib/videos";
 import type { CommunityGuideTranslations } from "@/lib/community/guides";
 import type { ComicEditions, ComicTranslations } from "@/lib/community/comics";
+import type { DeckSetDeck, DeckSetGuide, DeckSetTranslations } from "@/lib/community/deckSets";
 
 export type ProfileRow = {
   id: string;
@@ -91,6 +92,26 @@ export type CommunityDeckInsert = Omit<CommunityDeckRow, "id" | "created_at" | "
   legendary?: string | null;
   art_path?: string | null;
 };
+
+/* ---------- mazzi torneo (blocco MAZZI TORNEO, 04/10/2026): tre mazzi Conquest con una guida ---------- */
+export type CommunityDeckSetRow = {
+  id: string;
+  slug: string;
+  owner: string;
+  name: string;
+  decks: DeckSetDeck[];
+  /** le tre Leggendarie nell'ordine dei mazzi: le scrive solo il trigger guard_deck_set */
+  legendaries: string[];
+  guide: DeckSetGuide;
+  translations: DeckSetTranslations | null;
+  videos: StoredVideo[];
+  links: DeckLink[];
+  status: "published" | "hidden";
+  created_at: string;
+  updated_at: string;
+};
+export type CommunityDeckSetInsert = Pick<CommunityDeckSetRow, "slug" | "owner" | "name" | "decks" | "guide"> &
+  Partial<Pick<CommunityDeckSetRow, "translations" | "videos" | "links" | "status">>;
 
 /* ---------- tier list salvate nel profilo (23/09/2026, §1 punto 27.5 della KB) ---------- */
 export type TierListRow = {
@@ -294,7 +315,7 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published" | "comic_published";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published";
   actor_id: string;
   /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente> */
   target: string;
@@ -469,6 +490,49 @@ export type Database = {
             columns: ["deck_id"];
             isOneToOne: false;
             referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_deck_sets: {
+        Row: CommunityDeckSetRow;
+        Insert: CommunityDeckSetInsert;
+        Update: Partial<CommunityDeckSetInsert>;
+        Relationships: [
+          {
+            foreignKeyName: "community_deck_sets_owner_fkey";
+            columns: ["owner"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      deck_set_votes: {
+        Row: { set_id: string; user_id: string; stars: number; created_at: string; updated_at: string };
+        Insert: { set_id: string; user_id: string; stars: number };
+        Update: { stars?: number };
+        Relationships: [
+          {
+            foreignKeyName: "deck_set_votes_set_id_fkey";
+            columns: ["set_id"];
+            isOneToOne: false;
+            referencedRelation: "community_deck_sets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** la leggono l'autore del trio e lo staff; nessuna scrittura diretta: solo la RPC bump_deck_set_stat */
+      deck_set_stats_daily: {
+        Row: { set_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "deck_set_stats_daily_set_id_fkey";
+            columns: ["set_id"];
+            isOneToOne: false;
+            referencedRelation: "community_deck_sets";
             referencedColumns: ["id"];
           },
         ];
@@ -746,6 +810,10 @@ export type Database = {
       };
     };
     Views: {
+      deck_set_ratings: {
+        Row: { set_id: string; avg_stars: number; votes: number };
+        Relationships: [];
+      };
       deck_ratings: {
         Row: { deck_id: string; avg_stars: number; votes: number };
         Relationships: [];
@@ -792,6 +860,9 @@ export type Database = {
       deck_videos_ok: { Args: { v: StoredVideo[] }; Returns: boolean };
       deck_links_ok: { Args: { v: DeckLink[] }; Returns: boolean };
       /** +1 al contatore di oggi di un mazzo pubblicato (p_kind: view, code, link, video); anon e authenticated */
+      /** mazzi torneo (04/10/2026): +1 al contatore di oggi di un trio pubblicato; anon e authenticated */
+      bump_deck_set_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
+      deck_set_stats_owns: { Args: { sid: string }; Returns: boolean };
       bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
       deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
       deck_stats_owns: { Args: { did: string }; Returns: boolean };
@@ -802,7 +873,7 @@ export type Database = {
        * avviso ai follower dell'autore (p_actor, assente = chi chiama) per un mazzo o una guida appena pubblicati: la riga
        * deve essere pubblicata e sua, chi chiama deve essere l'autore o lo staff; restituisce i destinatari
        */
-      notify_followers: { Args: { p_kind: "deck_published" | "guide_published" | "comic_published"; p_target: string; p_actor?: string | null }; Returns: number };
+      notify_followers: { Args: { p_kind: "deck_published" | "guide_published" | "comic_published" | "deck_set_published"; p_target: string; p_actor?: string | null }; Returns: number };
       /** avviso di diretta, dal cron (anon) con il segreto CRON_SECRET; restituisce i destinatari */
       notify_live: { Args: { p_key: string; p_actor: string; p_stream_id: string }; Returns: number };
       /** pulizia degli avvisi scaduti (90 giorni) e del registro degli invii (180), dal cron con il segreto CRON_SECRET */

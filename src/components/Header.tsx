@@ -28,7 +28,16 @@ export function navItems(dict: Dictionary): NavItem[] {
     },
     { label: dict.nav.guides, path: "/guides" },
     { label: dict.nav.cards, path: "/cards" },
-    { label: dict.nav.decks, path: "/decks" },
+    {
+      label: dict.nav.decks,
+      path: "/decks",
+      // sottomenu (04/10/2026, Pierluigi: "avremo mazzi singoli e mazzi tornei sotto il menu mazzi"): i mazzi singoli della
+      // community e i Mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida
+      sub: [
+        { label: dict.nav.decksSingle, path: "/decks" },
+        { label: dict.nav.decksTournament, path: "/decks/tournament", mobile: true },
+      ],
+    },
     {
       label: dict.nav.builder,
       path: "/deck-builder",

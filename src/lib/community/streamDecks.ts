@@ -67,8 +67,11 @@ async function memoFetch(input: RequestInfo | URL, init?: RequestInit): Promise<
   return new Response(body, { status: res.status, statusText: res.statusText, headers: kept });
 }
 
-/** Client anonimo come `supabasePublic`, ma senza la cache dei dati di Next (solo per rotte dinamiche): `memoFetch`. */
-function freshClient(): Db | null {
+/**
+ * Client anonimo come `supabasePublic`, ma senza la cache dei dati di Next (solo per rotte dinamiche): `memoFetch`. Lo usano
+ * anche le letture dei mazzi torneo (streamDeckSets.ts, 04/10/2026).
+ */
+export function freshClient(): Db | null {
   if (!supabaseEnabled) return null;
   return createClient<Database>(supabaseUrl, supabaseKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },

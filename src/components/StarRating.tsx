@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { voteDeck } from "@/lib/community/actions";
+import { voteDeckSet } from "@/lib/community/deckSetActions";
 import { trackEvent } from "@/lib/analytics";
 
 export type RatingLabels = {
@@ -20,7 +21,10 @@ export type RatingLabels = {
   voteError: string;
 };
 
-/** Media e voto dell'utente (1–5 stelle). La pagina è statica: chi è loggato lo scopriamo nel browser. */
+/**
+ * Media e voto dell'utente (1–5 stelle). La pagina è statica: chi è loggato lo scopriamo nel browser. `kind = "set"` per i
+ * Mazzi torneo (04/10/2026): voti in deck_set_votes, Server Action voteDeckSet, evento deck_set_vote.
+ */
 export function StarRating({
   deckId,
   ownerId,
@@ -30,6 +34,7 @@ export function StarRating({
   loginHref,
   labels,
   version,
+  kind = "deck",
 }: {
   deckId: string;
   ownerId: string;
@@ -40,6 +45,8 @@ export function StarRating({
   labels: RatingLabels;
   /** versione del mazzo in vigore (blocco VERSIONI, 30/09/2026): il voto dell'utente si legge su quella; assente prima della migrazione */
   version?: number | null;
+  /** mazzo singolo (default) o mazzo torneo */
+  kind?: "deck" | "set";
 }) {
   const [userId, setUserId] = useState<string | null | undefined>(supabaseEnabled ? undefined : null);
   const [mine, setMine] = useState<number | null>(null);
@@ -60,15 +67,20 @@ export function StarRating({
       if (!alive) return;
       setUserId(uid);
       if (uid) {
-        const q = sb.from("deck_votes").select("stars").eq("deck_id", deckId).eq("user_id", uid);
-        const { data } = await (version ? q.eq("version", version) : q).maybeSingle();
+        let data: unknown = null;
+        if (kind === "set") {
+          ({ data } = await sb.from("deck_set_votes").select("stars").eq("set_id", deckId).eq("user_id", uid).maybeSingle());
+        } else {
+          const q = sb.from("deck_votes").select("stars").eq("deck_id", deckId).eq("user_id", uid);
+          ({ data } = await (version ? q.eq("version", version) : q).maybeSingle());
+        }
         if (alive && data) setMine((data as { stars: number }).stars);
       }
     })();
     return () => {
       alive = false;
     };
-  }, [deckId, version]);
+  }, [deckId, version, kind]);
 
   const isOwner = Boolean(userId) && userId === ownerId;
   const canVote = Boolean(userId) && !isOwner && !pending;
@@ -76,11 +88,11 @@ export function StarRating({
   const cast = (n: number) => {
     if (!canVote) return;
     start(async () => {
-      const r = await voteDeck(deckId, n, path);
+      const r = kind === "set" ? await voteDeckSet(deckId, n, path) : await voteDeck(deckId, n, path);
       if (r.error) setMsg({ kind: "err", text: r.error === "ownDeck" ? labels.ownDeck : labels.voteError });
       else {
         // misura: voto nuovo o cambiato (`mine` è ancora quello di prima del clic)
-        trackEvent("deck_vote", { stars: n, vote_type: mine ? "update" : "new" });
+        trackEvent(kind === "set" ? "deck_set_vote" : "deck_vote", { stars: n, vote_type: mine ? "update" : "new" });
         setMine(n);
         if (r.avg !== undefined && r.votes !== undefined) setStats({ avg: r.avg, votes: r.votes });
         setMsg({ kind: "ok", text: labels.voted });

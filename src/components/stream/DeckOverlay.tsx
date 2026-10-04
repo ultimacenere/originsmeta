@@ -18,13 +18,14 @@ import { initials, sagaHue } from "@/lib/cardArt";
  * senza illustrazione (inserite a mano dall'autore) hanno il fondale della saga con le iniziali, come nel sito.
  * Pannello blu notte leggermente trasparente, perché resti leggibile sopra il gioco. In fondo, sempre, la dicitura
  * "non affiliato a Koin Games" (regola di CLAUDE.md: l'overlay è una pagina del sito che va in onda con le carte).
- * Righe della lista senza cornice (niente righette sottili), su blu notte più chiaro.
+ * Righe della lista senza cornice (niente righette sottili), su blu notte più chiaro. Pannello, gemma, nota e carta
+ * intera sono esportati: li riusa l'overlay dei Mazzi torneo (`DeckSetOverlay`, 04/10/2026).
  */
-const panel = "rounded-2xl border-[3px] border-sky shadow-card";
-const panelBg = { background: "linear-gradient(180deg, rgba(24, 34, 56, 0.94) 0%, rgba(18, 26, 44, 0.94) 100%)" };
-const gem = "grid shrink-0 place-items-center rounded-full bg-mint font-mono font-bold text-ink";
+export const panel = "rounded-2xl border-[3px] border-sky shadow-card";
+export const panelBg = { background: "linear-gradient(180deg, rgba(24, 34, 56, 0.94) 0%, rgba(18, 26, 44, 0.94) 100%)" };
+export const gem = "grid shrink-0 place-items-center rounded-full bg-mint font-mono font-bold text-ink";
 
-const note = "text-[10px] leading-snug text-pale-muted";
+export const note = "text-[10px] leading-snug text-pale-muted";
 
 export function OverlayMessage({ text, lang, note: unofficial }: { text: string; lang: string; note: string }) {
   return (
@@ -39,7 +40,7 @@ export function OverlayMessage({ text, lang, note: unofficial }: { text: string;
 }
 
 /** Carta intera rimpicciolita (mai ritagliata) con la gemma del costo; fondale della saga se manca l'illustrazione. */
-function WholeCard({ card, src, width, gemSize }: { card: StreamCard; src?: string; width: number; gemSize: number }) {
+export function WholeCard({ card, src, width, gemSize }: { card: StreamCard; src?: string; width: number; gemSize: number }) {
   return (
     <span className="relative block overflow-hidden rounded-lg" style={{ width }}>
       {src ? (

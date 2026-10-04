@@ -4,6 +4,7 @@ import type { Profile } from "./types";
 import {
   NOTIFICATIONS_SHOWN,
   comicSlugOf,
+  deckSetSlugOf,
   deckSlugOf,
   guideSlugOf,
   isNotificationKind,
@@ -31,7 +32,7 @@ export type NotificationActor = Profile & { id: string };
  * guida il titolo (null se la guida non è più online: riportata tra le bozze, nascosta dallo staff o eliminata).
  * `gone`: il mazzo o la guida sono stati cercati e non ci sono più (con un errore di lettura resta false).
  */
-export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null; comicTitle: string | null; gone: boolean };
+export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null; comicTitle: string | null; setName?: string | null; gone: boolean };
 
 export type NotificationsResult = { ok: true; data: { items: NotificationItem[]; unread: number } } | { ok: false; error: NotificationErrorCode };
 
@@ -92,14 +93,17 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const slugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_published" ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const guideSlugs = [...new Set(rows.flatMap((r) => (r.kind === "guide_published" ? [guideSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const comicSlugs = [...new Set(rows.flatMap((r) => (r.kind === "comic_published" ? [comicSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  const setSlugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_set_published" ? [deckSetSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const none = Promise.resolve({ data: [], error: null });
-  const [actors, decks, guides, comics, unread] = await Promise.all([
+  const [actors, decks, guides, comics, sets, unread] = await Promise.all([
     actorIds.length ? client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", actorIds) : none,
     slugs.length ? client.from("community_decks").select("slug, name").in("slug", slugs).eq("status", "published") : none,
     // guide ancora online (revisione del 27/09/2026): prima l'avviso portava anche a una guida tornata tra le bozze
     guideSlugs.length ? client.from("community_guides").select("slug, title").in("slug", guideSlugs).eq("status", "published") : none,
     // fumetti ancora online (pacchetto FUMETTI, 29/09/2026), come le guide
     comicSlugs.length ? client.from("community_comics").select("slug, title").in("slug", comicSlugs).eq("status", "published") : none,
+    // mazzi torneo ancora online (04/10/2026), come i mazzi
+    setSlugs.length ? client.from("community_deck_sets").select("slug, name").in("slug", setSlugs).eq("status", "published") : none,
     unreadNotificationCount(client, userId),
   ]);
   // profili, nomi dei mazzi e titoli delle guide sono un di più: con un errore (anche la tabella delle guide che non c'è
@@ -108,21 +112,25 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   if (decks.error) console.error("[follows] mazzi degli avvisi:", decks.error.message);
   if (guides.error) console.error("[follows] guide degli avvisi:", guides.error.message);
   if (comics.error) console.error("[follows] fumetti degli avvisi:", comics.error.message);
+  if (sets.error) console.error("[follows] mazzi torneo degli avvisi:", sets.error.message);
   const byId = new Map(((actors.data ?? []) as NotificationActor[]).map((p) => [p.id, p]));
   const names = new Map(((decks.data ?? []) as { slug: string; name: string }[]).map((d) => [d.slug, d.name]));
   const titles = new Map(((guides.data ?? []) as { slug: string; title: string }[]).map((g) => [g.slug, g.title]));
   const comicTitles = new Map(((comics.data ?? []) as { slug: string; title: string }[]).map((c) => [c.slug, c.title]));
+  const setNames = new Map(((sets.data ?? []) as { slug: string; name: string }[]).map((x) => [x.slug, x.name]));
   const items = rows.map((r) => {
     const slug = r.kind === "deck_published" ? deckSlugOf(r.target) : null;
     const guide = r.kind === "guide_published" ? guideSlugOf(r.target) : null;
     const comic = r.kind === "comic_published" ? comicSlugOf(r.target) : null;
+    const set = r.kind === "deck_set_published" ? deckSetSlugOf(r.target) : null;
     return {
       ...r,
       actor: byId.get(r.actor_id) ?? null,
       deckName: slug ? (names.get(slug) ?? null) : null,
       guideTitle: guide ? (titles.get(guide) ?? null) : null,
       comicTitle: comic ? (comicTitles.get(comic) ?? null) : null,
-      gone: slug ? !decks.error && !names.has(slug) : guide ? !guides.error && !titles.has(guide) : comic ? !comics.error && !comicTitles.has(comic) : false,
+      setName: set ? (setNames.get(set) ?? null) : null,
+      gone: slug ? !decks.error && !names.has(slug) : guide ? !guides.error && !titles.has(guide) : comic ? !comics.error && !comicTitles.has(comic) : set ? !sets.error && !setNames.has(set) : false,
     };
   });
   return { ok: true, data: { items, unread: Math.max(unread, rows.filter((r) => !r.read_at).length) } };

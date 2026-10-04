@@ -23,6 +23,7 @@ import { Avatar, SignOutButton } from "@/components/AccountMenu";
 import { FollowingSection } from "@/components/follow/FollowingSection";
 import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { AccountDeckSets } from "@/components/AccountDeckSets";
 import { AccountHashRedirect } from "@/components/AccountHashRedirect";
 import { AccountStreamGuide } from "@/components/stream/StreamTools";
 import { streamLabels } from "@/lib/streamLabels";
@@ -201,6 +202,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </ul>
         )}
       </section>
+
+      {/* I tuoi mazzi torneo (04/10/2026): tre mazzi Conquest con una guida; ancora #tournament-decks */}
+      <Suspense fallback={null}>
+        <AccountDeckSets locale={locale} supabase={supabase} userId={user.id} dict={d} />
+      </Suspense>
 
       {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica.
           Dentro <Suspense>: il resto della pagina non aspetta le sue letture. */}

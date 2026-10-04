@@ -2,8 +2,9 @@ import type { NextRequest } from "next/server";
 import { defaultLocale, locales, siteUrl } from "@/lib/i18n";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { getStreamDeck, latestDeckOfUser, type StreamDeck } from "@/lib/community/streamDecks";
-import { streamDeckView } from "@/lib/community/streamView";
-import { chatLine, cleanDeckSlug, displayHost, fill, isDeckSlug, normalizeUsername, pickLang } from "@/lib/stream";
+import { getStreamDeckSet, type StreamDeckSet } from "@/lib/community/streamDeckSets";
+import { streamDeckSetView, streamDeckView } from "@/lib/community/streamView";
+import { chatLine, chatSetLine, cleanDeckSlug, displayHost, fill, isDeckSlug, normalizeUsername, pickLang } from "@/lib/stream";
 import { streamLabels } from "@/lib/streamLabels";
 
 /**
@@ -13,6 +14,9 @@ import { streamLabels } from "@/lib/streamLabels";
  *
  *   /api/chat/deck?u=<nome utente>[&lang=it]   l'ultimo mazzo pubblicato di quell'utente (anche ?user=, ?username=)
  *   /api/chat/deck?deck=<slug>[&lang=it]       un mazzo preciso
+ *   /api/chat/deck?set=<slug>[&lang=it]        un mazzo torneo (tre mazzi Conquest, 04/10/2026): "Mazzo torneo di
+ *                                              coachcrono: Trio X (Merlin · Mulan · Alice) → originsmeta.com/d/<slug>",
+ *                                              senza codici del gioco (tre non stanno nella riga: `chatSetLine`)
  *
  * Risposta: "Mazzo di coachcrono: Spellcast (Leggendaria: Merlin) → originsmeta.com/d/<slug> · Codice del gioco:
  * KGBLDC…", sotto i 400 caratteri (limite di Nightbot); il codice del gioco solo se ci sta (`chatLine`, che ripulisce
@@ -41,6 +45,15 @@ async function line(deck: StreamDeck, lang: keyof typeof streamLabels): Promise<
   return chatLine({ name: view.name, author: view.author, slug: view.slug, legendary: view.legendary?.name, gameCode: code }, streamLabels[lang].chat, displayHost(siteUrl));
 }
 
+function setLine(set: StreamDeckSet, lang: keyof typeof streamLabels): string {
+  const view = streamDeckSetView(set);
+  return chatSetLine(
+    { name: view.name, author: view.author, slug: view.slug, legendaries: view.decks.map((d) => d.legendary?.name) },
+    streamLabels[lang].chat,
+    displayHost(siteUrl),
+  );
+}
+
 /** Il primo valore di ciascun parametro, con il nome in minuscolo (?U= e ?u= sono lo stesso parametro). */
 function params(sp: URLSearchParams): Map<string, string> {
   const out = new Map<string, string>();
@@ -56,6 +69,7 @@ export async function GET(req: NextRequest) {
   const lang = pickLang(q.get("lang"), locales, defaultLocale);
   const L = streamLabels[lang].chat;
   const deckParam = q.get("deck");
+  const setParam = q.get("set");
   const userParam = q.get("u") ?? q.get("user") ?? q.get("username");
   try {
     if (deckParam !== undefined) {
@@ -63,6 +77,12 @@ export async function GET(req: NextRequest) {
       if (!slug) return reply(L.usage, CACHE_USAGE);
       const deck = isDeckSlug(slug) ? await getStreamDeck(slug, { fresh: true }) : null;
       return deck ? reply(await line(deck, lang)) : reply(L.noDeck);
+    }
+    if (setParam !== undefined) {
+      const slug = cleanDeckSlug(setParam);
+      if (!slug) return reply(L.usage, CACHE_USAGE);
+      const set = isDeckSlug(slug) ? await getStreamDeckSet(slug, { fresh: true }) : null;
+      return set ? reply(setLine(set, lang)) : reply(L.noSet);
     }
     if (userParam !== undefined) {
       const user = normalizeUsername(userParam);

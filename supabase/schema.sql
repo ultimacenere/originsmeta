@@ -5210,3 +5210,341 @@ begin
 end $$;
 revoke all on function public.draft_rooms_cleanup(text) from public;
 grant execute on function public.draft_rooms_cleanup(text) to anon, authenticated;
+
+-- =====================================================================================================
+-- ===== 04/10/2026: MAZZI TORNEO =====
+-- =====================================================================================================
+-- Mazzi torneo (Pierluigi, 04/10/2026: "nella sezione mazzi creiamo una sezione Mazzi torneo dove gli utenti potranno
+-- inserire 3 mazzi insieme con relativa guida"; scelte: tre liste nuove nel pacchetto, regole Conquest obbligatorie,
+-- voti, traduzione, Discord, statistiche e strumenti per le dirette). Un "mazzo torneo" è un trio di mazzi giocabile
+-- in un torneo Conquest come la Crimson Cup: tre Leggendarie diverse e almeno 8 carte uniche diverse fra ogni coppia
+-- di mazzi (RULES.conquestMinDifferent in src/lib/deckrules.ts, DECK_SET_MIN_DIFFERENT in deckSets.ts: il test
+-- deckSets.test.ts confronta i numeri). Le regole del gioco (carte che esistono, Leggendarie vere) le controlla il sito
+-- con il database delle carte (`checkDeck`); qui il database tiene la forma dei tre mazzi e le regole Conquest, così
+-- nessuno pubblica un trio non valido via API. Niente mazzi privati: stati 'published' e 'hidden'.
+-- Tetto: lo stesso numero dei mazzi singoli (max_published_decks: 5 per la community, 20 per l'Autore, nessuno per
+-- Creator, Pro, Staff e admin), contato a parte. Voti 1–5 come i mazzi (mai sul proprio trio), statistiche per
+-- l'autore come il blocco STATS (solo totali), avvisi a chi segue con il tipo nuovo `deck_set_published`.
+-- Codice in src/lib/community/deckSets.ts (regole pure, test), deckSetQueries.ts, deckSetActions.ts; pagine in
+-- src/app/[locale]/(site)/decks/tournament/. Tutto è idempotente.
+
+create table if not exists public.community_deck_sets (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  owner uuid not null references public.profiles(id) on delete cascade,
+  name text not null,
+  -- i tre mazzi, nell'ordine dell'autore: [{ name, legendary, cards: [12 slug], custom_cards, archetype, code_om }]
+  decks jsonb not null,
+  -- le tre Leggendarie, nell'ordine dei mazzi: le scrive solo il trigger guard_deck_set (filtri e ricerca)
+  legendaries text[] not null default '{}',
+  guide jsonb not null default '{}'::jsonb,
+  translations jsonb,
+  videos jsonb not null default '[]'::jsonb,
+  links jsonb not null default '[]'::jsonb,
+  status text not null default 'published',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_slug_check;
+alter table public.community_deck_sets add constraint community_deck_sets_slug_check check (char_length(slug) between 3 and 80 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_name_check;
+alter table public.community_deck_sets add constraint community_deck_sets_name_check check (char_length(name) between 3 and 60);
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_status_check;
+alter table public.community_deck_sets add constraint community_deck_sets_status_check check (status in ('published', 'hidden'));
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_decks_check;
+alter table public.community_deck_sets add constraint community_deck_sets_decks_check check (jsonb_typeof(decks) = 'array' and jsonb_array_length(decks) = 3);
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_media_check;
+alter table public.community_deck_sets add constraint community_deck_sets_media_check check (public.deck_videos_ok(videos) and public.deck_links_ok(links));
+create index if not exists community_deck_sets_status_idx on public.community_deck_sets (status, created_at desc);
+create index if not exists community_deck_sets_owner_idx on public.community_deck_sets (owner);
+create index if not exists community_deck_sets_legendaries_idx on public.community_deck_sets using gin (legendaries);
+
+-- Guida del trio: lingua (en, it, es), riassunto 20–600 caratteri, sezioni facoltative fino a 2000 (le chiavi di
+-- DECK_SET_GUIDE_SECTIONS in deckSets.ts: il ruolo di ogni mazzo, punti di forza e deboli, scontri, note).
+create or replace function public.deck_set_guide_ok(g jsonb)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select jsonb_typeof(g) = 'object'
+     and coalesce(g->>'lang', '') in ('en', 'it', 'es')
+     and jsonb_typeof(g->'summary') = 'string'
+     and char_length(g->>'summary') between 20 and 600
+     and not exists (
+       select 1 from jsonb_each(g) e
+       where e.key not in ('lang', 'summary', 'deck_1', 'deck_2', 'deck_3', 'strengths', 'weaknesses', 'matchups', 'notes')
+          or (e.key not in ('lang', 'summary') and (jsonb_typeof(e.value) <> 'string' or char_length(e.value #>> '{}') > 2000))
+     );
+$$;
+alter table public.community_deck_sets drop constraint if exists community_deck_sets_guide_check;
+alter table public.community_deck_sets add constraint community_deck_sets_guide_check check (public.deck_set_guide_ok(guide));
+
+-- Le carte uniche di un mazzo (Leggendaria compresa): ogni carta conta una volta, come `physicalCards` di deckrules.ts.
+create or replace function public.deck_set_unique_cards(d jsonb)
+returns text[] language sql immutable set search_path = public, pg_temp as $$
+  select array(select distinct x from (select d->>'legendary' as x union all select jsonb_array_elements_text(d->'cards')) s where x is not null);
+$$;
+
+-- Forma dei tre mazzi e regole Conquest. Scrive anche `legendaries`. Errori: 'deck_set_invalid' (forma),
+-- 'deck_set_legendaries' (Leggendarie ripetute), 'deck_set_similar' (meno di 8 carte uniche diverse fra due mazzi).
+create or replace function public.guard_deck_set()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+declare
+  d jsonb;
+  i int;
+  j int;
+  a text[];
+  b text[];
+  min_different constant int := 8;
+begin
+  if jsonb_typeof(new.decks) is distinct from 'array' or jsonb_array_length(new.decks) <> 3 then
+    raise exception 'deck_set_invalid' using errcode = 'check_violation';
+  end if;
+  for d in select value from jsonb_array_elements(new.decks) loop
+    if jsonb_typeof(d) <> 'object'
+       or jsonb_typeof(d->'legendary') is distinct from 'string' or char_length(d->>'legendary') not between 1 and 80
+       or jsonb_typeof(d->'cards') is distinct from 'array' or jsonb_array_length(d->'cards') <> 12
+       or (d ? 'name' and (jsonb_typeof(d->'name') <> 'string' or char_length(d->>'name') > 60))
+       or (d ? 'custom_cards' and jsonb_typeof(d->'custom_cards') <> 'array')
+       or (d ? 'archetype' and (jsonb_typeof(d->'archetype') <> 'string' or char_length(d->>'archetype') > 40))
+       or (d ? 'code_om' and (jsonb_typeof(d->'code_om') <> 'string' or char_length(d->>'code_om') > 4000))
+       or exists (select 1 from jsonb_array_elements(d->'cards') c where jsonb_typeof(c) <> 'string' or char_length(c #>> '{}') not between 1 and 80)
+    then
+      raise exception 'deck_set_invalid' using errcode = 'check_violation';
+    end if;
+    if (select count(distinct c) from jsonb_array_elements_text(d->'cards') c) <> 12 or (d->'cards') ? (d->>'legendary') then
+      raise exception 'deck_set_invalid' using errcode = 'check_violation';
+    end if;
+  end loop;
+  new.legendaries := array(select e.value->>'legendary' from jsonb_array_elements(new.decks) with ordinality as e(value, n) order by e.n);
+  if (select count(distinct x) from unnest(new.legendaries) x) <> 3 then
+    raise exception 'deck_set_legendaries' using errcode = 'check_violation';
+  end if;
+  for i in 0..1 loop
+    for j in (i + 1)..2 loop
+      a := public.deck_set_unique_cards(new.decks->i);
+      b := public.deck_set_unique_cards(new.decks->j);
+      if (select count(*) from unnest(a) x where not (x = any (b))) < min_different then
+        raise exception 'deck_set_similar' using errcode = 'check_violation';
+      end if;
+    end loop;
+  end loop;
+  return new;
+end $$;
+revoke all on function public.guard_deck_set() from public, anon, authenticated;
+drop trigger if exists community_deck_sets_guard on public.community_deck_sets;
+create trigger community_deck_sets_guard before insert or update of decks on public.community_deck_sets
+  for each row execute function public.guard_deck_set();
+
+-- updated_at: come i mazzi (blocco delle traduzioni), le sole traduzioni non spostano la data della pagina.
+create or replace function public.touch_deck_set()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if (to_jsonb(new) - 'translations' - 'updated_at') = (to_jsonb(old) - 'translations' - 'updated_at') then
+    new.updated_at := old.updated_at;
+  else
+    new.updated_at := now();
+  end if;
+  return new;
+end $$;
+revoke all on function public.touch_deck_set() from public, anon, authenticated;
+drop trigger if exists community_deck_sets_touch on public.community_deck_sets;
+create trigger community_deck_sets_touch before update on public.community_deck_sets
+  for each row execute function public.touch_deck_set();
+
+drop trigger if exists community_deck_sets_guard_created on public.community_deck_sets;
+create trigger community_deck_sets_guard_created before insert or update on public.community_deck_sets
+  for each row execute function public.guard_created_at();
+
+-- Tetto ai mazzi torneo: lo stesso numero dei mazzi singoli, contato a parte (pubblicati e nascosti insieme).
+create or replace function public.enforce_deck_set_limit()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  used int;
+  cap int;
+begin
+  if tg_op = 'UPDATE' and old.owner = new.owner then return new; end if;
+  cap := coalesce(public.max_published_decks(new.owner), 5);
+  select count(*) into used from public.community_deck_sets where owner = new.owner and id <> new.id;
+  if used >= cap then raise exception 'deck_set_limit' using errcode = 'check_violation'; end if;
+  return new;
+end $$;
+revoke all on function public.enforce_deck_set_limit() from public, anon, authenticated;
+drop trigger if exists community_deck_sets_limit on public.community_deck_sets;
+create trigger community_deck_sets_limit before insert or update of owner on public.community_deck_sets
+  for each row execute function public.enforce_deck_set_limit();
+
+alter table public.community_deck_sets enable row level security;
+drop policy if exists "deck sets: published are public" on public.community_deck_sets;
+create policy "deck sets: published are public" on public.community_deck_sets for select
+  using (status = 'published' or owner = auth.uid() or public.is_admin());
+drop policy if exists "deck sets: users insert own" on public.community_deck_sets;
+create policy "deck sets: users insert own" on public.community_deck_sets for insert to authenticated
+  with check (owner = auth.uid());
+drop policy if exists "deck sets: owners update" on public.community_deck_sets;
+create policy "deck sets: owners update" on public.community_deck_sets for update to authenticated
+  using (owner = auth.uid() or public.is_admin()) with check (owner = auth.uid() or public.is_admin());
+drop policy if exists "deck sets: owners delete" on public.community_deck_sets;
+create policy "deck sets: owners delete" on public.community_deck_sets for delete to authenticated
+  using (owner = auth.uid() or public.is_admin());
+revoke all on public.community_deck_sets from anon, authenticated;
+grant select on public.community_deck_sets to anon, authenticated;
+grant insert, update, delete on public.community_deck_sets to authenticated;
+
+-- ---------- voti dei mazzi torneo (1–5 stelle, uno per utente, mai sul proprio trio) ----------
+create table if not exists public.deck_set_votes (
+  set_id uuid not null references public.community_deck_sets(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  stars smallint not null check (stars between 1 and 5),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (set_id, user_id)
+);
+create index if not exists deck_set_votes_user_idx on public.deck_set_votes (user_id);
+drop trigger if exists deck_set_votes_touch on public.deck_set_votes;
+create trigger deck_set_votes_touch before update on public.deck_set_votes
+  for each row execute function public.touch_updated_at();
+drop trigger if exists deck_set_votes_guard_created on public.deck_set_votes;
+create trigger deck_set_votes_guard_created before insert or update on public.deck_set_votes
+  for each row execute function public.guard_created_at();
+
+alter table public.deck_set_votes enable row level security;
+drop policy if exists "deck set votes are public" on public.deck_set_votes;
+create policy "deck set votes are public" on public.deck_set_votes for select using (true);
+drop policy if exists "deck set votes: users vote once" on public.deck_set_votes;
+create policy "deck set votes: users vote once" on public.deck_set_votes for insert to authenticated
+  with check (user_id = auth.uid() and exists (select 1 from public.community_deck_sets s where s.id = set_id and s.status = 'published' and s.owner <> auth.uid()));
+drop policy if exists "deck set votes: users change own" on public.deck_set_votes;
+create policy "deck set votes: users change own" on public.deck_set_votes for update to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid() and exists (select 1 from public.community_deck_sets s where s.id = set_id and s.status = 'published' and s.owner <> auth.uid()));
+drop policy if exists "deck set votes: users remove own" on public.deck_set_votes;
+create policy "deck set votes: users remove own" on public.deck_set_votes for delete to authenticated using (user_id = auth.uid());
+revoke all on public.deck_set_votes from anon, authenticated;
+grant select on public.deck_set_votes to anon, authenticated;
+grant insert, update, delete on public.deck_set_votes to authenticated;
+
+create or replace view public.deck_set_ratings as
+  select set_id, round(avg(stars)::numeric, 2) as avg_stars, count(*)::int as votes
+  from public.deck_set_votes group by set_id;
+revoke all on public.deck_set_ratings from anon, authenticated;
+grant select on public.deck_set_ratings to anon, authenticated;
+
+-- ---------- statistiche dei mazzi torneo per l'autore (come il blocco STATS: solo totali, stime) ----------
+create table if not exists public.deck_set_stats_daily (
+  set_id uuid not null references public.community_deck_sets(id) on delete cascade,
+  day date not null,
+  views int not null default 0 check (views >= 0),
+  code_copies int not null default 0 check (code_copies >= 0),
+  link_clicks int not null default 0 check (link_clicks >= 0),
+  video_plays int not null default 0 check (video_plays >= 0),
+  primary key (set_id, day)
+);
+create index if not exists deck_set_stats_daily_day_idx on public.deck_set_stats_daily (day);
+alter table public.deck_set_stats_daily enable row level security;
+
+create or replace function public.deck_set_stats_owns(sid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (select 1 from public.community_deck_sets s where s.id = sid and s.owner = auth.uid());
+$$;
+revoke all on function public.deck_set_stats_owns(uuid) from public, anon;
+grant execute on function public.deck_set_stats_owns(uuid) to authenticated;
+
+drop policy if exists "deck set stats: owners and staff read" on public.deck_set_stats_daily;
+create policy "deck set stats: owners and staff read" on public.deck_set_stats_daily for select to authenticated
+  using ((select public.deck_stats_is_staff()) or public.deck_set_stats_owns(set_id));
+revoke all on public.deck_set_stats_daily from anon, authenticated;
+grant select on public.deck_set_stats_daily to authenticated;
+
+-- +1 al contatore di oggi (UTC) di un mazzo torneo pubblicato, con le regole di bump_deck_stat (tetto 2.000).
+create or replace function public.bump_deck_set_stat(p_slug text, p_kind text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  sid uuid;
+  sowner uuid;
+  today date := (now() at time zone 'utc')::date;
+  cap constant int := 2000;
+begin
+  if p_kind is null or p_kind not in ('view', 'code', 'link', 'video') then return; end if;
+  if p_slug is null or char_length(p_slug) not between 1 and 120 then return; end if;
+  select s.id, s.owner into sid, sowner from public.community_deck_sets s where s.slug = p_slug and s.status = 'published';
+  if sid is null then return; end if;
+  if sowner = auth.uid() then return; end if;
+  if exists (
+    select 1 from public.deck_set_stats_daily st
+    where st.set_id = sid and st.day = today
+      and case p_kind when 'view' then st.views when 'code' then st.code_copies when 'link' then st.link_clicks else st.video_plays end >= cap
+  ) then return; end if;
+  insert into public.deck_set_stats_daily as st (set_id, day, views, code_copies, link_clicks, video_plays)
+  values (sid, today, (p_kind = 'view')::int, (p_kind = 'code')::int, (p_kind = 'link')::int, (p_kind = 'video')::int)
+  on conflict (set_id, day) do update set
+    views = st.views + excluded.views,
+    code_copies = st.code_copies + excluded.code_copies,
+    link_clicks = st.link_clicks + excluded.link_clicks,
+    video_plays = st.video_plays + excluded.video_plays
+  where case p_kind when 'view' then st.views when 'code' then st.code_copies when 'link' then st.link_clicks else st.video_plays end < cap;
+end $$;
+revoke all on function public.bump_deck_set_stat(text, text) from public;
+grant execute on function public.bump_deck_set_stat(text, text) to anon, authenticated;
+
+-- ---------- avvisi a chi segue: un mazzo torneo nuovo ----------
+-- Il tipo `deck_set_published` (NOTIFICATION_KINDS di notifications.ts) nei vincoli delle due tabelle del blocco SEGUI e
+-- in notify_followers, che vuole `/decks/tournament/<slug>` di un mazzo torneo pubblicato dell'autore. Il resto della
+-- funzione è quello del blocco FUMETTI.
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published'));
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published'));
+
+create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  v_actor uuid := coalesce(p_actor, auth.uid());
+  v_target text := btrim(coalesce(p_target, ''));
+  v_owner uuid;
+  v_badge text;
+  n integer;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  if p_kind is null or p_kind not in ('deck_published', 'guide_published', 'comic_published', 'deck_set_published') then raise exception 'bad_kind'; end if;
+  if char_length(v_target) > 160 then raise exception 'bad_target'; end if;
+  if v_actor <> me and not public.is_staff() then raise exception 'forbidden'; end if;
+  if p_kind = 'deck_published' then
+    if v_target !~ '^/decks/community/[a-z0-9-]{1,80}$' then raise exception 'bad_target'; end if;
+    -- '/decks/community/' sono 17 caratteri: lo slug comincia dal diciottesimo
+    select d.owner into v_owner from public.community_decks d where d.slug = substr(v_target, 18) and d.status = 'published';
+  elsif p_kind = 'deck_set_published' then
+    if v_target !~ '^/decks/tournament/[a-z0-9-]{1,80}$' then raise exception 'bad_target'; end if;
+    -- '/decks/tournament/' sono 18 caratteri: lo slug comincia dal diciannovesimo
+    select s.owner into v_owner from public.community_deck_sets s where s.slug = substr(v_target, 19) and s.status = 'published';
+  elsif p_kind = 'guide_published' then
+    -- '/guides/community/' sono 18 caratteri: lo slug (3-60) comincia dal diciannovesimo
+    if v_target !~ '^/guides/community/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 21 and 78 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_guides') is null then raise exception 'not_found'; end if;
+    execute 'select g.owner from public.community_guides g where g.slug = $1 and g.status = ''published'''
+      into v_owner using substr(v_target, 19);
+  else
+    -- '/news/comics/' sono 13 caratteri: lo slug (3-60) comincia dal quattordicesimo
+    if v_target !~ '^/news/comics/[a-z0-9]+(-[a-z0-9]+)*$' or char_length(v_target) not between 16 and 73 then
+      raise exception 'bad_target';
+    end if;
+    if to_regclass('public.community_comics') is null then raise exception 'not_found'; end if;
+    execute 'select c.owner from public.community_comics c where c.slug = $1 and c.status = ''published'''
+      into v_owner using substr(v_target, 14);
+  end if;
+  if v_owner is null or v_owner <> v_actor then raise exception 'not_found'; end if;
+  select p.badge into v_badge from public.profiles p where p.id = v_actor;
+  if v_badge is null or v_badge not in ('creator', 'author', 'pro', 'staff') then return 0; end if;
+  perform pg_advisory_xact_lock(hashtext('om_notify:' || v_actor::text));
+  if exists (select 1 from public.notification_events e where e.kind = p_kind and e.actor_id = v_actor and e.event_key = v_target) then return 0; end if;
+  select count(*) into n from public.notification_events e
+   where e.actor_id = v_actor and e.kind = p_kind and e.created_at > now() - interval '1 day';
+  if n >= 10 then return 0; end if;
+  return public.notify_fanout(v_actor, p_kind, v_target, v_target);
+end $$;
+revoke all on function public.notify_followers(text, text, uuid) from public, anon;
+grant execute on function public.notify_followers(text, text, uuid) to authenticated;
+
+comment on table public.community_deck_sets is 'Mazzi torneo (04/10/2026): tre mazzi Conquest con una guida, pubblicati dagli utenti. Regole in src/lib/community/deckSets.ts; forma e regole Conquest nel trigger guard_deck_set.';
+comment on table public.deck_set_votes is 'Voti 1–5 dei mazzi torneo: uno per utente, mai sul proprio trio, solo su un trio pubblicato.';
+comment on table public.deck_set_stats_daily is 'Statistiche giornaliere dei mazzi torneo per l''autore (solo totali): le scrive solo bump_deck_set_stat.';

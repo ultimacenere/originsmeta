@@ -8,6 +8,7 @@ import { SHOWCASE_BADGES, isShowcaseBadge } from "@/lib/community/badges";
 import { listedInDirectory } from "@/lib/community/creatorDirectory";
 import { listGuideIndex } from "@/lib/community/guideQueries";
 import { listComicIndex } from "@/lib/community/comicQueries";
+import { listDeckSetIndex } from "@/lib/community/deckSetQueries";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -65,7 +66,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 8; // 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
+export const SITEMAP_DATA_VERSION = 9; // 9: mazzi torneo (04/10/2026); 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -160,7 +161,7 @@ async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> 
  * sito acceso come le altre letture.
  */
 async function readCommunity(): Promise<CommunityData> {
-  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides, communityComics] = await Promise.all([
+  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides, communityComics, deckSets] = await Promise.all([
     listPublishedDeckIndex(),
     tournamentSlugs(),
     listPublicProfiles(),
@@ -171,8 +172,10 @@ async function readCommunity(): Promise<CommunityData> {
     listGuideIndex(),
     // fumetti dei creator (pacchetto FUMETTI, 29/09/2026): come le guide
     listComicIndex(),
+    // mazzi torneo (04/10/2026): tabella mancante = nessun trio, ogni altro errore lancia
+    listDeckSetIndex(),
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

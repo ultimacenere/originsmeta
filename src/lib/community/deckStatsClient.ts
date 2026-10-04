@@ -14,6 +14,8 @@ import { SEEN_KEY, addSeen, isLikelyBot, parseSeen, rpcIsMissing, seenKey, type 
 const sentHere = new Set<string>();
 /** La funzione non c'è (migrazione non applicata): non si chiama più fino al prossimo caricamento. */
 let missing = false;
+/** Lo stesso per i mazzi torneo (04/10/2026), che hanno una funzione loro. */
+let setMissing = false;
 let bot: boolean | null = null;
 
 function isBot(): boolean {
@@ -59,6 +61,31 @@ export function bumpDeckStat(slug: string, kind: DeckStatKind): void {
     void sb.rpc("bump_deck_stat", { p_slug: slug, p_kind: kind }).then(
       (res) => {
         if (rpcIsMissing(res)) missing = true;
+      },
+      () => undefined,
+    );
+  } catch {
+    /* il contatore non deve mai rompere la pagina */
+  }
+}
+
+/**
+ * +1 al contatore `kind` del mazzo torneo `slug` per oggi (04/10/2026, funzione bump_deck_set_stat del blocco MAZZI
+ * TORNEO): stesse regole di `bumpDeckStat`, con le chiavi della scheda separate da quelle dei mazzi singoli.
+ */
+export function bumpDeckSetStat(slug: string, kind: DeckStatKind): void {
+  try {
+    if (!slug || setMissing || isBot()) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    if (isInternalTraffic()) {
+      console.info("[OriginsMeta · traffico interno] contatore del mazzo torneo non inviato:", slug, kind);
+      return;
+    }
+    if (!claim(seenKey(`set:${slug}`, kind))) return;
+    void sb.rpc("bump_deck_set_stat", { p_slug: slug, p_kind: kind }).then(
+      (res) => {
+        if (rpcIsMissing(res)) setMissing = true;
       },
       () => undefined,
     );

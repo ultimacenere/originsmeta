@@ -14,6 +14,7 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import { useMounted } from "@/lib/useMounted";
 import { CardPeek, hasPeek } from "./CardPeek";
 import { DECK_SLUG_RE, deckSaveCardsHref } from "@/lib/community/deckVersions";
+import { DECK_SET_MIN_DIFFERENT, DECK_SET_PENDING_KEY, joinSetCodes, splitSetCodes } from "@/lib/community/deckSets";
 import type { DeckVersionLabels } from "@/lib/deckVersionLabels";
 
 type Issues = {
@@ -166,6 +167,8 @@ const sameDeck = (a: Partial<DeckState>, b: DeckState) => encodeOmCode({ ...empt
 /** Regole imposte da un torneo (Tournament Organizer): modalità, numero di mazzi e carte diverse non modificabili, memoria separata. */
 export type BuilderPreset = { mode: "single" | "tournament"; deckCount: number; minDifferent: number; storageKey: string };
 export type SubmitLabels = { submit: string; submitting: string; saved: string; incomplete: string; errors: Record<string, string> };
+/** "Pubblica i 3 mazzi" della modalità Torneo (Mazzi torneo, 04/10/2026): pagina di pubblicazione, testo del tasto e riga che dice che cosa manca. */
+export type SetPublish = { href: string; label: string; hint: string };
 
 export function DeckBuilder({
   pool,
@@ -178,6 +181,7 @@ export function DeckBuilder({
   onSubmit,
   submitLabels,
   updateLabels,
+  setPublish,
 }: {
   pool: BuilderCard[];
   labels: BuilderLabels;
@@ -193,6 +197,8 @@ export function DeckBuilder({
   submitLabels?: SubmitLabels;
   /** testi della modalità aggiornamento (?update=<slug>, blocco VERSIONI del 30/09/2026); senza, la modalità non c'è */
   updateLabels?: DeckVersionLabels["builder"];
+  /** in modalità Torneo il tasto principale pubblica i tre mazzi insieme come mazzo torneo (04/10/2026); senza, resta "Pubblica" */
+  setPublish?: SetPublish;
 }) {
   const count = preset?.deckCount ?? 3;
   const locked = Boolean(preset);
@@ -297,12 +303,21 @@ export function DeckBuilder({
     }
 
     let linked: DeckState | null = null;
+    let linkedSet: DeckState[] | null = null;
+    let wantTournament = false;
     let updateSlug = "";
     try {
       const url = new URL(window.location.href);
       const params = url.searchParams;
       const hash = url.hash.slice(1);
-      const fromHash = hash.startsWith(OM_PREFIX);
+      // tre mazzi nel link ("Apri i tre mazzi nel deck builder" di un mazzo torneo, 04/10/2026): si aprono tutti e tre
+      const setCodes = !locked && count >= 3 ? splitSetCodes(hash) : [];
+      if (setCodes.length === 3) {
+        const decoded = setCodes.map((c) => decodeOmCode(c));
+        if (decoded.every(Boolean)) linkedSet = decoded as DeckState[];
+      }
+      if (!locked && params.get("mode") === "tournament") wantTournament = true;
+      const fromHash = hash.startsWith(OM_PREFIX) && !linkedSet;
       const code = fromHash ? hash : (params.get("deck") ?? "");
       linked = code.startsWith(OM_PREFIX) ? decodeOmCode(code) : null;
       if (params.get("intent") === "save") pendingSave.current = true;
@@ -313,17 +328,39 @@ export function DeckBuilder({
       if (!locked && updateLabels && DECK_SLUG_RE.test(upd)) updateSlug = upd;
       // Il mazzo del link passa nello stato (e nel salvataggio automatico): lo si toglie dall'indirizzo, così un
       // ricaricamento non rimette la versione del link sopra le modifiche fatte nel frattempo.
-      if (fromHash || params.has("deck") || params.has("intent") || params.has("draft")) {
+      if (linkedSet || fromHash || params.has("deck") || params.has("intent") || params.has("draft") || params.has("mode")) {
+        params.delete("mode");
         params.delete("deck");
         params.delete("intent");
         params.delete("draft");
         const qs = params.toString();
-        window.history.replaceState(null, "", `${url.pathname}${qs ? `?${qs}` : ""}${fromHash ? "" : url.hash}`);
+        window.history.replaceState(null, "", `${url.pathname}${qs ? `?${qs}` : ""}${fromHash || linkedSet ? "" : url.hash}`);
       }
     } catch {
       /* indirizzo non leggibile: si prosegue con il salvataggio del browser */
     }
 
+    if (linkedSet) {
+      // il trio prende le prime tre caselle; i mazzi che c'erano restano recuperabili con "Torna al mazzo di prima"
+      dirty.current = true;
+      const prevDecks = Array.isArray(saved?.decks) ? saved.decks : [];
+      if (saved && prevDecks.some((d) => !isEmptyDeck(d)) && !linkedSet.every((d, i) => prevDecks[i] && sameDeck(prevDecks[i], d))) {
+        try {
+          localStorage.setItem(backupKey, JSON.stringify(saved));
+          setHasBackup(true);
+        } catch {
+          /* storage non disponibile */
+        }
+      }
+      if (saved?.keyMap && typeof saved.keyMap === "object") setKeyMap(saved.keyMap);
+      const base = Array.from({ length: count }, (_, i) => ({ ...emptyDeck(), ...(linkedSet[i] ?? prevDecks[i] ?? {}) }));
+      setDecks(base);
+      setActive(0);
+      setMode("tournament");
+      setNotice({ text: labels.restored, bad: false });
+      setHydrated(true);
+      return;
+    }
     if (linked) {
       // lo stato che arriva da un link non è ancora nel browser: il salvataggio automatico lo scrive subito
       dirty.current = true;
@@ -368,6 +405,8 @@ export function DeckBuilder({
       // i mazzi mostrati sono quelli del browser: sono già salvati
       if (Array.isArray(saved.decks) && saved.decks.some((d) => !isEmptyDeck(d))) setAutoSaved(true);
     }
+    // "Pubblica un mazzo torneo" di /decks/tournament apre il builder già in modalità Torneo
+    if (wantTournament) setMode("tournament");
     setHydrated(true);
   }, [labels.restored, storageKey, backupKey, count, locked, applySaved, updateLabels]);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -585,6 +624,10 @@ export function DeckBuilder({
   const conquestIssues = mode === "tournament" ? validateConquest(decks, minDifferent) : [];
   /* consegna al torneo: tutti i mazzi richiesti completi e regole Conquest rispettate */
   const submittable = mode === "tournament" ? decks.slice(0, count).every((d) => isComplete(d)) && conquestIssues.length === 0 : complete;
+  /* mazzo torneo (04/10/2026): tre mazzi completi con le regole della Crimson Cup, a prescindere dal minimo scelto qui */
+  const setFlow = Boolean(setPublish && mode === "tournament" && !onSubmit && count >= 3);
+  const setReady = setFlow && decks.slice(0, 3).every((d) => isComplete(d)) && validateConquest(decks.slice(0, 3), DECK_SET_MIN_DIFFERENT).length === 0;
+  const setCodes = setFlow ? joinSetCodes(decks.slice(0, 3).map((d) => encodeOmCode(d))) : "";
 
   /* --- misura (src/lib/analytics.ts): builder del sito o di un torneo --- */
   const placement = preset ? "tournament_builder" : "builder";
@@ -761,6 +804,39 @@ export function DeckBuilder({
         >
           {submitting ? submitLabels.submitting : submitLabels.submit}
         </button>
+      );
+    }
+    // "Pubblica i 3 mazzi": la pagina dei mazzi torneo riceve i tre codici nell'hash (o, dopo l'accesso, in ?decks=)
+    if (setPublish && setFlow && !updateHere) {
+      if (!setReady) {
+        return (
+          <button type="button" disabled aria-describedby={compact ? undefined : "builder-set-hint"} className={`btn btn-primary ${size}`}>
+            {setPublish.label}
+          </button>
+        );
+      }
+      if (loggedIn === false) {
+        return (
+          <a
+            className={`btn btn-primary ${size}`}
+            href={loginUrl(`${setPublish.href}?decks=${encodeURIComponent(setCodes)}`)}
+            onClick={() => {
+              try {
+                localStorage.setItem(DECK_SET_PENDING_KEY, setCodes);
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            <Lock label={labels.loginRequired} />
+            {setPublish.label}
+          </a>
+        );
+      }
+      return (
+        <a className={`btn btn-primary ${size}`} href={`${setPublish.href}#${setCodes}`}>
+          {setPublish.label}
+        </a>
       );
     }
     // aggiornamento di un mazzo pubblicato: si torna alla sua pagina di modifica (che chiede l'accesso, se serve)
@@ -1069,7 +1145,13 @@ export function DeckBuilder({
               !submittable ? <p className="mt-2 text-xs text-pale-muted">{submitLabels.incomplete}</p> : null
             ) : (
               <>
-                {!complete ? (
+                {setPublish && setFlow && !updateHere ? (
+                  !setReady ? (
+                    <p id="builder-set-hint" className="mt-2 text-xs text-pale-muted">
+                      {setPublish.hint}
+                    </p>
+                  ) : null
+                ) : !complete ? (
                   <p id="builder-complete-hint" className="mt-2 text-xs text-pale-muted">
                     {labels.completeHint}
                   </p>

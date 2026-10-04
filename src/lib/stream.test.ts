@@ -7,10 +7,16 @@ import assert from "node:assert/strict";
 import {
   CHAT_MAX,
   DECK_IMAGE_FORMATS,
+  OVERLAY_SET_SIZE,
   botCommands,
   chatEndpoint,
   chatLine,
   chatSafe,
+  chatSetLine,
+  deckSetImageAlt,
+  deckSetImagePath,
+  deckSetOgImage,
+  deckSetShortLinkTarget,
   cleanDeckSlug,
   clip,
   deckImageAlt,
@@ -114,6 +120,13 @@ describe("indirizzi", () => {
     // un UTM vuoto non cancella quello di default
     assert.equal(deckShortLinkTarget("en", "a", new URLSearchParams("utm_medium=")), "/en/decks/community/a?utm_source=stream&utm_medium=shortlink");
   });
+
+  test("link breve di un mazzo torneo: scheda del trio, con le stesse regole sugli UTM", () => {
+    assert.equal(deckSetShortLinkTarget("it", "trio-crimson-ab12", new URLSearchParams()), "/it/decks/tournament/trio-crimson-ab12?utm_source=stream&utm_medium=shortlink");
+    const target = deckSetShortLinkTarget("es", "trio-ab12", new URLSearchParams("utm_source=youtube&utm_campaign=conquest&utm_source=x&ref=spam"));
+    assert.equal(target, "/es/decks/tournament/trio-ab12?utm_source=youtube&utm_medium=shortlink&utm_campaign=conquest");
+    assert.equal(deckSetShortLinkTarget("en", "a", new URLSearchParams("utm_medium=")), "/en/decks/tournament/a?utm_source=stream&utm_medium=shortlink");
+  });
 });
 
 describe("comando di chat", () => {
@@ -213,6 +226,49 @@ describe("comando di chat", () => {
   });
 });
 
+describe("comando di chat dei mazzi torneo", () => {
+  const set = { name: "Trio Crimson", author: "coachcrono", slug: "trio-crimson-ab12", legendaries: ["Merlin", "Mulan", "Alice"] };
+
+  test("riga completa: trio, autore, tre Leggendarie e link breve, senza codici del gioco", () => {
+    assert.equal(chatSetLine(set, streamLabels.it.chat, "originsmeta.com"), "Mazzo torneo di coachcrono: Trio Crimson (Merlin · Mulan · Alice) → originsmeta.com/d/trio-crimson-ab12");
+    assert.equal(chatSetLine(set, streamLabels.en.chat, "originsmeta.com"), "Tournament deck by coachcrono: Trio Crimson (Merlin · Mulan · Alice) → originsmeta.com/d/trio-crimson-ab12");
+    assert.equal(chatSetLine(set, streamLabels.es.chat, "originsmeta.com"), "Mazo de torneo de coachcrono: Trio Crimson (Merlin · Mulan · Alice) → originsmeta.com/d/trio-crimson-ab12");
+    for (const l of locales) assert.ok(!chatSetLine(set, streamLabels[l].chat, "originsmeta.com").includes("KGBLDC"));
+  });
+
+  test("Leggendarie mancanti saltate; se la riga non sta cadono le Leggendarie, poi si accorcia", () => {
+    assert.equal(
+      chatSetLine({ ...set, legendaries: ["Merlin", null, undefined] }, streamLabels.en.chat, "originsmeta.com"),
+      "Tournament deck by coachcrono: Trio Crimson (Merlin) → originsmeta.com/d/trio-crimson-ab12",
+    );
+    assert.equal(chatSetLine({ ...set, legendaries: [] }, streamLabels.en.chat, "originsmeta.com"), "Tournament deck by coachcrono: Trio Crimson → originsmeta.com/d/trio-crimson-ab12");
+    assert.equal(chatSetLine(set, streamLabels.en.chat, "originsmeta.com", 90), "Tournament deck by coachcrono: Trio Crimson → originsmeta.com/d/trio-crimson-ab12");
+    const tiny = chatSetLine(set, streamLabels.en.chat, "originsmeta.com", 40);
+    assert.ok(tiny.length <= 40);
+    assert.ok(tiny.endsWith("…"));
+  });
+
+  test("testi degli utenti ripuliti e riga sempre sotto i 400 caratteri, col testo fisso in testa", () => {
+    for (const l of locales) {
+      assert.ok(!streamLabels[l].chat.setLine.startsWith("{"), `${l}: ${streamLabels[l].chat.setLine}`);
+      const line = chatSetLine(
+        { name: "N".repeat(300), author: ". /me @everyone", slug: `${"s".repeat(85)}-ab12`, legendaries: ["https://evil.com", "L".repeat(200), "$(urlfetch x)"] },
+        streamLabels[l].chat,
+        "originsmeta.com",
+      );
+      assert.ok(line.length <= CHAT_MAX, `${l}: ${line.length}`);
+      assert.ok(!/^[/.!]/.test(line), line);
+      assert.ok(!line.includes("/me") && !line.includes("@") && !line.includes("evil.com") && !line.includes("$("), line);
+    }
+  });
+
+  test("indirizzo del comando di un mazzo torneo", () => {
+    const url = chatEndpoint(SITE, { set: "trio-crimson-ab12" }, "es");
+    assert.equal(url, "https://originsmeta.com/api/chat/deck?set=trio-crimson-ab12&lang=es");
+    assert.equal(botCommands(url).nightbot, "!commands add !deck $(urlfetch https://originsmeta.com/api/chat/deck?set=trio-crimson-ab12&lang=es)");
+  });
+});
+
 describe("overlay", () => {
   test("orientamento: verticale di default", () => {
     assert.equal(overlayLayout(undefined), "vertical");
@@ -225,6 +281,12 @@ describe("overlay", () => {
   test("indirizzi dell'overlay", () => {
     assert.equal(overlayUrl(SITE, { deck: "control-2c2b" }, "vertical", "it"), "https://originsmeta.com/overlay/deck/control-2c2b?layout=vertical&lang=it");
     assert.equal(overlayUrl(SITE, { user: "coachcrono" }, "horizontal", "es"), "https://originsmeta.com/overlay/deck?u=coachcrono&layout=horizontal&lang=es");
+    assert.equal(overlayUrl(SITE, { set: "trio-crimson-ab12" }, "vertical", "it"), "https://originsmeta.com/overlay/deck-set/trio-crimson-ab12?layout=vertical&lang=it");
+  });
+
+  test("misure dell'overlay dei mazzi torneo: stessa striscia orizzontale, colonna verticale più larga", () => {
+    assert.deepEqual(OVERLAY_SET_SIZE.horizontal, { width: 1600, height: 300 });
+    assert.ok(OVERLAY_SET_SIZE.vertical.width > 360 && OVERLAY_SET_SIZE.vertical.height <= 1080);
   });
 });
 
@@ -341,6 +403,26 @@ describe("immagine del mazzo", () => {
     assert.match(deckImageCacheControl(true), /s-maxage=86400/);
     assert.match(deckImageCacheControl(false), /s-maxage=600/);
     assert.doesNotMatch(deckImageCacheControl(true), /immutable/);
+  });
+
+  test("immagine di un mazzo torneo: indirizzo, og:image, rimando canonico, nome del file e testo alternativo", () => {
+    assert.equal(deckSetImagePath("trio-ab12", "og", "it", "t3abc"), "/api/deck-set-image/trio-ab12?format=og&lang=it&v=t3abc");
+    assert.equal(deckSetImagePath("trio-ab12", "9x16", "es", "", true), "/api/deck-set-image/trio-ab12?format=9x16&lang=es&download=1");
+    const og = deckSetOgImage("trio-ab12", "2026-10-04T10:00:00Z", "en");
+    assert.equal(og.width, 1200);
+    assert.equal(og.height, 630);
+    assert.equal(og.url, `/api/deck-set-image/trio-ab12?format=og&lang=en&v=${imageVersion("2026-10-04T10:00:00Z")}`);
+    const cur = { slug: "trio-ab12", version: "t3abc" };
+    const langs = ["en", "it", "es"] as const;
+    assert.equal(deckImageRedirect("trio-ab12", new URLSearchParams("format=og&lang=it&v=t3abc"), cur, langs, "en", "set"), null);
+    assert.equal(deckImageRedirect("Trio-AB12", new URLSearchParams("format=og&lang=it&v=old"), cur, langs, "en", "set"), "/api/deck-set-image/trio-ab12?format=og&lang=it&v=t3abc");
+    // senza target resta la rotta dei mazzi singoli
+    assert.equal(deckImageRedirect("trio-ab12", new URLSearchParams("format=og&lang=it"), cur, langs, "en"), "/api/deck-image/trio-ab12?format=og&lang=it&v=t3abc");
+    assert.equal(deckImageFilename("trio-ab12", "16x9", "set"), "originsmeta-tournament-trio-ab12-16x9.png");
+    assert.equal(
+      deckSetImageAlt(streamLabels.it.image, { set: "Trio Crimson", author: "coachcrono", legendaries: ["Merlin", "Mulan", "Alice"] }),
+      "Mazzo torneo Trio Crimson di coachcrono: le liste dei suoi tre mazzi Conquest, con le Leggendarie Merlin, Mulan, Alice e il costo in mana di ogni carta.",
+    );
   });
 });
 

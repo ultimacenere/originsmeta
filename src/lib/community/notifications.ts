@@ -10,13 +10,15 @@ import type { InboxStatus } from "./messages";
  *   - `deck_published`: ha pubblicato un mazzo (Server Action di pubblicazione, dentro after());
  *   - `live`: è andato in diretta su Twitch con Origins TCG (rotta /api/cron/live, cron di Vercel ogni 10 minuti);
  *   - `guide_published`: ha pubblicato una guida della community (pacchetto GUIDE, con `notifyFollowers`);
- *   - `comic_published`: ha pubblicato un fumetto fra le news (pacchetto FUMETTI, 29/09/2026, con `notifyFollowers`).
+ *   - `comic_published`: ha pubblicato un fumetto fra le news (pacchetto FUMETTI, 29/09/2026, con `notifyFollowers`);
+ *   - `deck_set_published`: ha pubblicato un mazzo torneo, tre mazzi Conquest con una guida (04/10/2026,
+ *     `/decks/tournament/<slug>`).
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
  * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 /** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`). */
 export type PublishKind = Exclude<NotificationKind, "live">;
@@ -41,6 +43,8 @@ export function isNotificationKind(v: unknown): v is NotificationKind {
 }
 
 const DECK_TARGET = /^\/decks\/community\/([a-z0-9-]{1,80})$/;
+/** I mazzi torneo (04/10/2026): stessa forma degli slug dei mazzi, come in notify_followers. */
+const DECK_SET_TARGET = /^\/decks\/tournament\/([a-z0-9-]{1,80})$/;
 /** Le guide della community (pacchetto GUIDE): slug di 3-60 caratteri, parole separate da un trattino (community_guides_slug_check). */
 const GUIDE_TARGET = /^\/guides\/community\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const PROFILE_TARGET = /^\/u\/([a-z0-9_-]{1,60})$/;
@@ -59,12 +63,17 @@ function isComicTarget(target: string): boolean {
 
 /** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u. */
 export function isSafeTarget(target: unknown): target is string {
-  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target));
+  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || DECK_SET_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target));
 }
 
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
 export function deckSlugOf(target: string): string | null {
   return DECK_TARGET.exec(target)?.[1] ?? null;
+}
+
+/** Lo slug del mazzo torneo di un avviso `deck_set_published` (per leggerne il nome), altrimenti null. */
+export function deckSetSlugOf(target: string): string | null {
+  return DECK_SET_TARGET.exec(target)?.[1] ?? null;
 }
 
 /** Lo slug della guida di un avviso `guide_published` (per leggerne il titolo e sapere se è ancora online), altrimenti null. */
@@ -89,6 +98,10 @@ export function publishTarget(kind: PublishKind, raw: string): string | null {
   if (kind === "deck_published") {
     if (!t.startsWith("/")) t = `/decks/community/${t}`;
     return DECK_TARGET.test(t) ? t : null;
+  }
+  if (kind === "deck_set_published") {
+    if (!t.startsWith("/")) t = `/decks/tournament/${t}`;
+    return DECK_SET_TARGET.test(t) ? t : null;
   }
   if (kind === "comic_published") {
     if (!t.startsWith("/")) t = `/news/comics/${t}`;

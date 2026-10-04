@@ -25,6 +25,7 @@ import { Avatar } from "@/components/AccountMenu";
 import { FollowButton } from "@/components/follow/FollowButton";
 import { CardArt } from "@/components/CardChip";
 import { DeckArtImage } from "@/components/DeckArtImage";
+import { ProfileDeckSets } from "@/components/ProfileDeckSets";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { deckArtLabels } from "@/lib/deckArtLabels";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
@@ -299,6 +300,9 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
           )}
         </section>
       )}
+
+      {/* I mazzi torneo pubblicati (04/10/2026): tre mazzi Conquest con una guida */}
+      <ProfileDeckSets ownerId={profile.id} locale={locale} dict={d} />
 
       {/* Le tier list salvate: una per tipo, aperte nello strumento con il loro codice */}
       {tierLists.length === 0 && hideEmpty ? null : (

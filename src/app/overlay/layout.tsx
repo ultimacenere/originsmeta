@@ -5,7 +5,8 @@ import { OverlayRefresh } from "@/components/stream/OverlayRefresh";
 import { OVERLAY_REFRESH_SECONDS } from "@/lib/stream";
 
 /**
- * Layout radice dell'overlay per OBS (pacchetto STREAM, 26/09/2026): /overlay/deck/<slug> e /overlay/deck?u=<nome>.
+ * Layout radice dell'overlay per OBS (pacchetto STREAM, 26/09/2026): /overlay/deck/<slug> e /overlay/deck?u=<nome>, e dal
+ * 04/10/2026 /overlay/deck-set/<slug> (Mazzi torneo).
  * Sta fuori da [locale] perché deve essere nudo: niente header, footer, banner dei cookie, pulsante dei feedback,
  * analytics né dati strutturati, e sfondo trasparente (la sorgente browser di OBS lo sovrappone al gioco). Il sito non
  * ha un layout in src/app, quindi questo è un secondo layout radice, come [locale]/layout.tsx: passare da uno all'altro

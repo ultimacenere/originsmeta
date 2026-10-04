@@ -20,6 +20,9 @@ export const en = {
     about: "About",
     builder: "Deck builder",
     draft: "Draft",
+    /** sottomenu "Mazzi" (04/10/2026): mazzi singoli e Mazzi torneo; uguali a deckSetLabels.nav */
+    decksSingle: "Single decks",
+    decksTournament: "Tournament decks",
     faq: "FAQ",
     language: "Language",
     menu: "Menu",

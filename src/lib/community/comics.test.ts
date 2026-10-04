@@ -551,8 +551,10 @@ describe("database: blocco FUMETTI di supabase/schema.sql", () => {
 
   test("avvisi: notify_followers conosce i fumetti (/news/comics/<slug>)", () => {
     const fn = last(/^create or replace function public\.notify_followers\(/);
-    assert.ok(stmts.some((s) => s === fn), "l'ultima definizione è in questo blocco");
-    assert.ok(fn.includes("p_kind not in ('deck_published', 'guide_published', 'comic_published')"));
+    // dal 04/10/2026 l'ultima definizione sta nel blocco MAZZI TORNEO, che aggiunge deck_set_published e tiene i fumetti
+    const later = schema.indexOf("-- ===== 04/10/2026: MAZZI TORNEO =====");
+    assert.ok(stmts.some((s) => s === fn) || (later > 0 && fn.includes("deck_set_published") && schema.slice(later).includes("create or replace function public.notify_followers(")), "l'ultima definizione è in questo blocco o in quello dei mazzi torneo");
+    assert.ok(fn.includes("p_kind not in ('deck_published', 'guide_published', 'comic_published'"));
     assert.ok(fn.includes("'^/news/comics/[a-z0-9]+(-[a-z0-9]+)*$'"));
     assert.ok(fn.includes("into v_owner using substr(v_target, 14)"), "'/news/comics/' sono 13 caratteri");
     assert.equal("/news/comics/".length, 13);

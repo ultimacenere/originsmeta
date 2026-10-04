@@ -53,6 +53,8 @@ export const config = {
     // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
     "/:locale(en|it|es)/account/tracker",
     "/:locale(en|it|es)/decks/community/:slug/edit",
+    // mazzi torneo (04/10/2026): modifica, pagina renderizzata sul server
+    "/:locale(en|it|es)/decks/tournament/:slug/edit",
     // guide della community (pacchetto GUIDE, 27/09/2026): scrittura e modifica, pagine renderizzate sul server
     "/:locale(en|it|es)/guides/new",
     "/:locale(en|it|es)/guides/community/:slug/edit",

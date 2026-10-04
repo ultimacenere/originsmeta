@@ -13,6 +13,12 @@
  *   4. immagine del mazzo  /api/deck-image/<slug>?format=og|16x9|9x16&lang=it  (next/og): miniature, post e og:image
  *                                                della scheda del mazzo (src/app/api/deck-image/[slug]/route.tsx)
  *
+ * Dal 04/10/2026 gli stessi quattro strumenti valgono per i Mazzi torneo (tre mazzi Conquest con una guida, voluti da
+ * Pierluigi al lancio): /d/<slug> porta alla scheda del trio se lo slug non è un mazzo singolo
+ * (`deckSetShortLinkTarget`), il comando risponde a ?set=<slug> (`chatSetLine`, senza codici del gioco), l'overlay è
+ * /overlay/deck-set/<slug> (`OVERLAY_SET_SIZE`) e l'immagine /api/deck-set-image/<slug> (`deckSetImagePath`,
+ * `deckSetOgImage`); letture in `src/lib/community/streamDeckSets.ts`.
+ *
  * Il "codice corto" del mazzo è lo slug (niente tabelle nuove). Qui stanno le regole, in funzioni pure senza import a
  * runtime (solo tipi): le prova `src/lib/stream.test.ts` (`node --test src/lib/stream.test.ts`, e `npm test` quando
  * l'integratore lo aggiunge all'elenco di package.json). Le etichette nelle tre lingue sono in `streamLabels.ts`, le
@@ -75,6 +81,19 @@ export const STREAM_UTM = { utm_source: "stream", utm_medium: "shortlink" } as c
  * nella descrizione di un video); gli altri parametri si scartano. Di ogni parametro vale il primo valore.
  */
 export function deckShortLinkTarget(locale: string, slug: string, incoming: URLSearchParams): string {
+  return `/${locale}/decks/community/${slug}?${shortLinkUtm(incoming)}`;
+}
+
+/**
+ * Destinazione del link breve /d/<slug> quando lo slug è un mazzo torneo (tre mazzi Conquest con una guida, 04/10/2026)
+ * e non un mazzo singolo: la scheda del trio, con gli stessi UTM di `deckShortLinkTarget`.
+ */
+export function deckSetShortLinkTarget(locale: string, slug: string, incoming: URLSearchParams): string {
+  return `/${locale}/decks/tournament/${slug}?${shortLinkUtm(incoming)}`;
+}
+
+/** Gli UTM del link breve: quelli di default, con sopra quelli scritti nel link (primo valore, al massimo 100 caratteri). */
+function shortLinkUtm(incoming: URLSearchParams): string {
   const utm = new Map<string, string>(Object.entries(STREAM_UTM));
   const seen = new Set<string>();
   for (const [k, v] of incoming) {
@@ -83,7 +102,7 @@ export function deckShortLinkTarget(locale: string, slug: string, incoming: URLS
     const value = v.trim().slice(0, 100);
     if (value) utm.set(k, value);
   }
-  return `/${locale}/decks/community/${slug}?${new URLSearchParams([...utm]).toString()}`;
+  return new URLSearchParams([...utm]).toString();
 }
 
 /** Link breve completo (da copiare) e da mostrare (senza protocollo). */
@@ -163,9 +182,30 @@ export function chatLine(deck: ChatDeck, labels: ChatLabels, host: string, max =
   return clip(base, max);
 }
 
-/** Indirizzo del comando di chat: per un utente (il suo ultimo mazzo) o per un mazzo preciso. */
-export function chatEndpoint(site: string, target: { user: string } | { deck: string }, lang: string): string {
-  const q = "user" in target ? `u=${encodeURIComponent(target.user)}` : `deck=${encodeURIComponent(target.deck)}`;
+export type ChatDeckSet = { name: string; author: string; slug: string; legendaries: readonly (string | null | undefined)[] };
+export type ChatSetLabels = { setLine: string };
+
+/**
+ * La riga del comando per un mazzo torneo (04/10/2026): "Mazzo torneo di coachcrono: Trio X (Merlin · Mulan · Alice)
+ * → originsmeta.com/d/<slug>". Niente codici del gioco: tre codici non stanno in 400 caratteri, e il link porta alla
+ * scheda del trio, che ha il tasto "Copia codice del gioco" per ogni mazzo. Stesse difese di `chatLine`: comincia col
+ * testo fisso dell'etichetta, i testi degli utenti passano da `chatSafe`. Se la riga non sta in `max` (non succede con
+ * i limiti di `chatSafe`, ma `max` può essere più corto) cadono prima le Leggendarie, poi si accorcia.
+ */
+export function chatSetLine(set: ChatDeckSet, labels: ChatSetLabels, host: string, max = CHAT_MAX): string {
+  const head = fill(labels.setLine, { author: chatSafe(set.author, 40) || "player", set: chatSafe(set.name, 60) || set.slug });
+  const legendaries = set.legendaries.map((l) => (l ? chatSafe(l, 30) : "")).filter(Boolean);
+  const link = ` → ${host}/d/${set.slug}`;
+  const full = `${head}${legendaries.length ? ` (${legendaries.join(" · ")})` : ""}${link}`;
+  if (full.length <= max) return full;
+  const short = `${head}${link}`;
+  return short.length <= max ? short : clip(short, max);
+}
+
+/** Indirizzo del comando di chat: per un utente (il suo ultimo mazzo), per un mazzo preciso o per un mazzo torneo. */
+export function chatEndpoint(site: string, target: { user: string } | { deck: string } | { set: string }, lang: string): string {
+  const q =
+    "user" in target ? `u=${encodeURIComponent(target.user)}` : "deck" in target ? `deck=${encodeURIComponent(target.deck)}` : `set=${encodeURIComponent(target.set)}`;
   return `${site.replace(/\/+$/, "")}/api/chat/deck?${q}&lang=${encodeURIComponent(lang)}`;
 }
 
@@ -192,16 +232,31 @@ export function overlayLayout(raw: string | null | undefined): OverlayLayout {
   return ["horizontal", "h", "landscape", "row", "orizzontale", "horizontal-strip"].includes(v) ? "horizontal" : "vertical";
 }
 
-/** Indirizzo dell'overlay di un mazzo preciso o dell'ultimo mazzo di un utente (`?u=`). */
-export function overlayUrl(site: string, target: { deck: string } | { user: string }, layout: OverlayLayout, lang: string): string {
+/**
+ * Indirizzo dell'overlay di un mazzo preciso, dell'ultimo mazzo di un utente (`?u=`) o di un mazzo torneo
+ * (/overlay/deck-set/<slug>, 04/10/2026).
+ */
+export function overlayUrl(site: string, target: { deck: string } | { user: string } | { set: string }, layout: OverlayLayout, lang: string): string {
   const base = site.replace(/\/+$/, "");
   const query = `layout=${layout}&lang=${encodeURIComponent(lang)}`;
+  if ("set" in target) return `${base}/overlay/deck-set/${target.set}?${query}`;
   return "deck" in target ? `${base}/overlay/deck/${target.deck}?${query}` : `${base}/overlay/deck?u=${encodeURIComponent(target.user)}&${query}`;
 }
 
+export type OverlaySize = Record<OverlayLayout, { width: number; height: number }>;
+
 /** Misura consigliata della sorgente browser in OBS per ogni orientamento (larghezza × altezza, in pixel). */
-export const OVERLAY_SIZE: Record<OverlayLayout, { width: number; height: number }> = {
+export const OVERLAY_SIZE: OverlaySize = {
   vertical: { width: 360, height: 1000 },
+  horizontal: { width: 1600, height: 300 },
+};
+
+/**
+ * Misura dell'overlay di un mazzo torneo: i tre mazzi uno sotto l'altro (verticale, le dodici carte di ognuno in due
+ * colonne da sei) o affiancati (orizzontale, stessa striscia dei mazzi singoli). Conti in `DeckSetOverlay`.
+ */
+export const OVERLAY_SET_SIZE: OverlaySize = {
+  vertical: { width: 420, height: 1000 },
   horizontal: { width: 1600, height: 300 },
 };
 
@@ -261,12 +316,26 @@ export function isNewerVersion(requested: string | null | undefined, current: st
   return Number.isFinite(a) && a > b;
 }
 
-/** Indirizzo (relativo al sito) dell'immagine del mazzo; `download` la fa scaricare con un nome di file. */
-export function deckImagePath(slug: string, format: DeckImageFormat, lang: string, version?: string, download = false): string {
+/** Di chi è l'immagine: un mazzo singolo (/api/deck-image) o un mazzo torneo (/api/deck-set-image, 04/10/2026). */
+export type DeckImageTarget = "deck" | "set";
+
+const IMAGE_ROUTE: Record<DeckImageTarget, string> = { deck: "/api/deck-image", set: "/api/deck-set-image" };
+
+function imagePath(target: DeckImageTarget, slug: string, format: DeckImageFormat, lang: string, version?: string, download = false): string {
   const q = new URLSearchParams({ format, lang });
   if (version) q.set("v", version);
   if (download) q.set("download", "1");
-  return `/api/deck-image/${slug}?${q.toString()}`;
+  return `${IMAGE_ROUTE[target]}/${slug}?${q.toString()}`;
+}
+
+/** Indirizzo (relativo al sito) dell'immagine del mazzo; `download` la fa scaricare con un nome di file. */
+export function deckImagePath(slug: string, format: DeckImageFormat, lang: string, version?: string, download = false): string {
+  return imagePath("deck", slug, format, lang, version, download);
+}
+
+/** Indirizzo (relativo al sito) dell'immagine di un mazzo torneo: stessi formati e parametri di `deckImagePath`. */
+export function deckSetImagePath(slug: string, format: DeckImageFormat, lang: string, version?: string, download = false): string {
+  return imagePath("set", slug, format, lang, version, download);
 }
 
 /**
@@ -274,7 +343,7 @@ export function deckImagePath(slug: string, format: DeckImageFormat, lang: strin
  * (`version`, da `imageVersion`) e `download=1` solo se chiesto. La rotta risponde con l'immagine solo a questo
  * indirizzo e rimanda lì ogni altra forma (versione vecchia o inventata, parametri in più, slug con le maiuscole):
  * la cache lunga copre un solo indirizzo per mazzo, formato e lingua, e un `?v=<a caso>` non fa ridisegnare il PNG.
- * null se la richiesta è già canonica.
+ * null se la richiesta è già canonica. `target` "set" per l'immagine di un mazzo torneo (stesse regole, altra rotta).
  */
 export function deckImageRedirect(
   requestedSlug: string,
@@ -282,10 +351,11 @@ export function deckImageRedirect(
   current: { slug: string; version: string },
   supportedLangs: readonly string[],
   fallbackLang: string,
+  target: DeckImageTarget = "deck",
 ): string | null {
   const format = deckImageFormat(sp.get("format"));
   const lang = pickLang(sp.get("lang"), supportedLangs, fallbackLang);
-  const canonical = deckImagePath(current.slug, format, lang, current.version, sp.get("download") === "1");
+  const canonical = imagePath(target, current.slug, format, lang, current.version, sp.get("download") === "1");
   const want = new URLSearchParams(canonical.split("?")[1]);
   const keys = [...sp.keys()];
   const same =
@@ -331,9 +401,19 @@ export function deckImageAlt(labels: { alt: string; altNoLegendary: string }, v:
   return v.legendary ? fill(labels.alt, { deck: v.deck, legendary: v.legendary, author: v.author }) : fill(labels.altNoLegendary, { deck: v.deck, author: v.author });
 }
 
-/** Nome del file scaricato: originsmeta-<slug>-16x9.png. */
-export function deckImageFilename(slug: string, format: DeckImageFormat): string {
-  return `originsmeta-${slug}-${format}.png`;
+/** L'og:image della scheda di un mazzo torneo: come `deckOgImage`, con l'immagine dei tre mazzi. */
+export function deckSetOgImage(slug: string, updatedAt: string, lang: string): { url: string; width: number; height: number } {
+  return { url: deckSetImagePath(slug, "og", lang, imageVersion(updatedAt)), ...DECK_IMAGE_FORMATS.og };
+}
+
+/** Testo alternativo dell'immagine di un mazzo torneo: nome, autore e le Leggendarie dei tre mazzi. */
+export function deckSetImageAlt(labels: { setAlt: string }, v: { set: string; author: string; legendaries: readonly string[] }): string {
+  return fill(labels.setAlt, { set: v.set, author: v.author, legendaries: v.legendaries.join(", ") });
+}
+
+/** Nome del file scaricato: originsmeta-<slug>-16x9.png (un mazzo torneo: originsmeta-tournament-<slug>-16x9.png). */
+export function deckImageFilename(slug: string, format: DeckImageFormat, target: DeckImageTarget = "deck"): string {
+  return `originsmeta-${target === "set" ? "tournament-" : ""}${slug}-${format}.png`;
 }
 
 /**
