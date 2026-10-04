@@ -70,6 +70,233 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Quinta news "Upgrade Meta" (richiesta di Pierluigi del 05/10/2026: "fai una news Upgrade Meta sui mazzi torneo"): i Mazzi
+    // torneo, online dal 04/10/2026 (main 05c5ebd). Solo quello che c'è davvero: tre mazzi Conquest con una guida, regole
+    // della Crimson Cup controllate dal sito, voti, traduzione, Discord, avvisi, statistiche e strumenti per le dirette.
+    // Copertina: key art ufficiale di Winnie the Pooh, mai usata da news, guide editoriali e slider. Niente link alla news
+    // sulle regole della Crimson Cup: con la guida Conquest in comune la toglieva dalle correlate del suo annuncio (relatedNews.test).
+    slug: "upgrade-meta-1005",
+    image: "/media/keyart-winnie-the-pooh.webp",
+    guides: ["origins-tcg-conquest", "streaming-tools"],
+    date: "2026-10-05",
+    title: n(
+      "Upgrade Meta: tournament decks, three Conquest decks published together with one guide",
+      "Upgrade Meta: i mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida",
+      "Upgrade Meta: los mazos de torneo, tres mazos Conquest publicados juntos con una guía",
+    ),
+    metaTitle: n("Upgrade Meta: Origins TCG tournament decks", "Upgrade Meta: i mazzi torneo di Origins TCG", "Upgrade Meta: mazos de torneo de Origins TCG"),
+    description: n(
+      "New on OriginsMeta: tournament decks, three Origins TCG Conquest decks published together with one guide, Crimson Cup rules checked for you.",
+      "Novità su OriginsMeta: i mazzi torneo, tre mazzi Conquest di Origins TCG pubblicati insieme con una guida, con le regole della Crimson Cup già controllate.",
+      "Novedades en OriginsMeta: los mazos de torneo, tres mazos Conquest de Origins TCG publicados juntos con una guía y las reglas de la Crimson Cup ya revisadas.",
+    ),
+    summary: n(
+      "The Decks section now has two parts: single decks and tournament decks. A tournament deck is a set of three Conquest decks published together with one guide that explains how they work as a team, and the site checks the Crimson Cup rules for you before you publish.",
+      "La sezione Mazzi ora ha due parti: mazzi singoli e mazzi torneo. Un mazzo torneo è un trio di mazzi Conquest pubblicato insieme con una guida che spiega come lavorano in squadra, e il sito controlla per te le regole della Crimson Cup prima di pubblicarlo.",
+      "La sección Mazos ahora tiene dos partes: mazos individuales y mazos de torneo. Un mazo de torneo es un trío de mazos Conquest publicado junto con una guía que explica cómo trabajan en equipo, y el sitio revisa por ti las reglas de la Crimson Cup antes de publicarlo.",
+    ),
+    highlights: {
+      en: [
+        { label: "Tournament decks", text: "three Conquest decks and one guide in a single page, under Decks", anchor: "tournament-decks" },
+        { label: "How to publish", text: "Tournament mode in the deck builder, then “Publish the 3 decks”", anchor: "publish" },
+        { label: "Conquest rules", text: "three different Legendaries and at least 8 different cards between any two decks", anchor: "rules" },
+        { label: "The page of a set", text: "the role of each deck, the three game codes, votes and translated guide", anchor: "set-page" },
+        { label: "For streamers", text: "short link, !deck chat command, OBS overlay and image for your set", anchor: "streamers" },
+      ],
+      it: [
+        { label: "Mazzi torneo", text: "tre mazzi Conquest e una guida in una sola pagina, sotto Mazzi", anchor: "mazzi-torneo" },
+        { label: "Come si pubblica", text: "modalità Torneo nel deck builder, poi “Pubblica i 3 mazzi”", anchor: "pubblicare" },
+        { label: "Regole Conquest", text: "tre Leggendarie diverse e almeno 8 carte diverse fra ogni coppia di mazzi", anchor: "regole" },
+        { label: "La pagina di un trio", text: "il ruolo di ogni mazzo, i tre codici del gioco, voti e guida tradotta", anchor: "pagina-trio" },
+        { label: "Per chi fa dirette", text: "link breve, comando !deck in chat, overlay per OBS e immagine del trio", anchor: "dirette" },
+      ],
+      es: [
+        { label: "Mazos de torneo", text: "tres mazos Conquest y una guía en una sola página, dentro de Mazos", anchor: "mazos-torneo" },
+        { label: "Cómo se publica", text: "modo Torneo en el deck builder y luego “Publicar los 3 mazos”", anchor: "publicar" },
+        { label: "Reglas Conquest", text: "tres Legendarias distintas y al menos 8 cartas distintas entre cada par de mazos", anchor: "reglas" },
+        { label: "La página de un trío", text: "el papel de cada mazo, los tres códigos del juego, votos y guía traducida", anchor: "pagina-trio" },
+        { label: "Para quien hace directos", text: "enlace corto, comando !deck en el chat, overlay para OBS e imagen del trío", anchor: "directos" },
+      ],
+    },
+    body: n(
+      `## Tournament decks {#tournament-decks}
+
+In a Conquest tournament like the Crimson Cup you don't bring one deck, you bring three. Until now OriginsMeta only had single decks, so a set of three had to be published as three separate pages, each with its own guide. Now the [Decks](/en/decks) menu has two parts: **Single decks** and **[Tournament decks](/en/decks/tournament)**.
+
+A tournament deck is three decks published together, with **one guide** for the whole set: the game plan for the three decks and the role of each one (when you pick it, which matchups it covers), plus strengths, weaknesses, matchups and notes if you want to add them.
+
+## How to publish a tournament deck {#publish}
+
+1. Open the [deck builder](/en/deck-builder) and switch to **Tournament (3 decks)**. The "Publish a tournament deck" button on the [Tournament decks](/en/decks/tournament) page opens it already in that mode.
+2. Build decks A, B and C. The table under the decks shows how many different cards each pair has.
+3. When the three decks are complete and follow the rules, press **Publish the 3 decks**.
+4. Give the set a name, write the game plan and the role of each deck, and publish.
+
+You need to be [signed in](/en/login). Your tournament decks are in [your account](/en/account), where you can edit, hide or delete them, and on your public profile. Each account can publish as many tournament decks as single decks (5 for community accounts, 20 for Authors, no limit for Creators, Pro players and Staff), counted separately.
+
+## The Conquest rules, checked for you {#rules}
+
+Every set follows the rules of the Crimson Cup, the same ones the deck builder already uses:
+
+- **three different Legendaries**, one per deck;
+- **at least 8 different unique cards between any two decks**: each card counts once, Legendary included, so two decks can share at most 5 cards.
+
+If a set doesn't follow them, the button stays off and the deck builder tells you what's wrong; the site checks again when you publish. Our [Conquest guide](/en/guides/origins-tcg-conquest) explains how to build three decks that hold together.
+
+## The page of a set {#set-page}
+
+- The game plan at the top, then **the three decks**: for each one its role in the set, the full cards, the **game code** to paste into Origins TCG and "Open in the deck builder".
+- A box with the Conquest rules and the different cards between each pair of decks.
+- **Votes** from 1 to 5 stars, as for single decks (never on your own set).
+- The guide is written in one language and **translated automatically** into the other two.
+- When you publish, the set is posted live on our [Discord](https://discord.gg/RAG7nnrNGP), in #community-decks, and whoever follows you gets a notification if you are a Creator, Author, Pro player or Staff.
+- In your account you see the visits, the copied codes and the clicks of your sets: they are estimates, like the ones for single decks.
+
+## For streamers {#streamers}
+
+Every tournament deck has the same tools as single decks, in the "For streamers" menu of its page:
+
+- a **short link**, originsmeta.com/d/ followed by the code of the set, to say on stream;
+- the **!deck chat command** for Nightbot, StreamElements and Fossabot, which writes the set and its three Legendaries in chat;
+- an **overlay for OBS** with the three decks, vertical or horizontal;
+- an **image** of the set to download in 16:9 or 9:16.
+
+Command and overlay are shown only to whoever published the set. The [streaming guide](/en/guides/streaming-tools) explains step by step how to add them.
+
+## Join in {#join}
+
+Build your three decks in the [deck builder](/en/deck-builder), publish them and send the link to your team before the tournament. Be among the first to publish in [Tournament decks](/en/decks/tournament).`,
+      `## Mazzi torneo {#mazzi-torneo}
+
+In un torneo Conquest come la Crimson Cup non porti un mazzo, ne porti tre. Finora OriginsMeta aveva solo i mazzi singoli, quindi un trio andava pubblicato come tre pagine separate, ognuna con la sua guida. Adesso il menu [Mazzi](/it/decks) ha due parti: **Mazzi singoli** e **[Mazzi torneo](/it/decks/tournament)**.
+
+Un mazzo torneo sono tre mazzi pubblicati insieme, con **una guida sola** per tutto il trio: il piano di gioco dei tre mazzi e il ruolo di ognuno (quando lo scegli, quali scontri copre), più punti di forza, punti deboli, scontri e note se vuoi aggiungerli.
+
+## Come si pubblica un mazzo torneo {#pubblicare}
+
+1. Apri il [deck builder](/it/deck-builder) e passa a **Torneo (3 mazzi)**. Il tasto "Pubblica un mazzo torneo" della pagina [Mazzi torneo](/it/decks/tournament) lo apre già in questa modalità.
+2. Costruisci i mazzi A, B e C. La tabella sotto i mazzi dice quante carte diverse ha ogni coppia.
+3. Quando i tre mazzi sono completi e rispettano le regole, premi **Pubblica i 3 mazzi**.
+4. Dai un nome al trio, scrivi il piano di gioco e il ruolo di ogni mazzo, e pubblica.
+
+Serve l'[accesso](/it/login). I tuoi mazzi torneo li trovi nel [tuo account](/it/account), dove puoi modificarli, nasconderli o eliminarli, e nel tuo profilo pubblico. Ogni account può pubblicare tanti mazzi torneo quanti mazzi singoli (5 per gli account della community, 20 per gli Autori, senza limite per Creator, Pro e Staff), contati a parte.
+
+## Le regole Conquest, controllate per te {#regole}
+
+Ogni trio rispetta le regole della Crimson Cup, le stesse che usa già il deck builder:
+
+- **tre Leggendarie diverse**, una per mazzo;
+- **almeno 8 carte uniche diverse fra ogni coppia di mazzi**: ogni carta conta una volta, Leggendaria compresa, quindi due mazzi possono avere al massimo 5 carte in comune.
+
+Se un trio non le rispetta il tasto resta spento e il deck builder ti dice che cosa non va; il sito ricontrolla quando pubblichi. La nostra [guida al Conquest](/it/guides/origins-tcg-conquest) spiega come costruire tre mazzi che stanno in piedi insieme.
+
+## La pagina di un trio {#pagina-trio}
+
+- In cima il piano di gioco, poi **i tre mazzi**: per ognuno il ruolo nel trio, le carte intere, il **codice del gioco** da incollare in Origins TCG e "Apri nel deck builder".
+- Un riquadro con le regole Conquest e le carte diverse fra ogni coppia di mazzi.
+- **Voti** da 1 a 5 stelle, come per i mazzi singoli (mai sul proprio trio).
+- La guida si scrive in una lingua e si **traduce da sola** nelle altre due.
+- Quando pubblichi, il trio arriva in diretta sul nostro [Discord](https://discord.gg/RAG7nnrNGP), in #community-decks, e chi ti segue riceve un avviso se sei Creator, Autore, Pro o Staff.
+- Nel tuo account vedi le visite, i codici copiati e i clic dei tuoi trii: sono stime, come quelle dei mazzi singoli.
+
+## Per chi fa dirette {#dirette}
+
+Ogni mazzo torneo ha gli stessi strumenti dei mazzi singoli, nel menu "Per le dirette" della sua pagina:
+
+- un **link breve**, originsmeta.com/d/ seguito dal codice del trio, da dire in diretta;
+- il **comando !deck** per Nightbot, StreamElements e Fossabot, che scrive in chat il trio e le sue tre Leggendarie;
+- un **overlay per OBS** con i tre mazzi, verticale o orizzontale;
+- un'**immagine** del trio da scaricare in 16:9 o 9:16.
+
+Comando e overlay li vede solo chi ha pubblicato il trio. La [guida alle dirette](/it/guides/streaming-tools) spiega passo per passo come aggiungerli.
+
+## Partecipa {#partecipa}
+
+Costruisci i tuoi tre mazzi nel [deck builder](/it/deck-builder), pubblicali e manda il link alla tua squadra prima del torneo. Sii fra i primi a pubblicare nei [Mazzi torneo](/it/decks/tournament).`,
+      `## Mazos de torneo {#mazos-torneo}
+
+En un torneo Conquest como la Crimson Cup no llevas un mazo, llevas tres. Hasta ahora OriginsMeta solo tenía mazos individuales, así que un trío había que publicarlo como tres páginas separadas, cada una con su guía. Ahora el menú [Mazos](/es/decks) tiene dos partes: **Mazos individuales** y **[Mazos de torneo](/es/decks/tournament)**.
+
+Un mazo de torneo son tres mazos publicados juntos, con **una sola guía** para todo el trío: el plan de juego de los tres mazos y el papel de cada uno (cuándo lo eliges, qué enfrentamientos cubre), más puntos fuertes, puntos débiles, enfrentamientos y notas si quieres añadirlos.
+
+## Cómo se publica un mazo de torneo {#publicar}
+
+1. Abre el [deck builder](/es/deck-builder) y cambia a **Torneo (3 mazos)**. El botón "Publica un mazo de torneo" de la página [Mazos de torneo](/es/decks/tournament) lo abre ya en ese modo.
+2. Construye los mazos A, B y C. La tabla debajo de los mazos dice cuántas cartas distintas tiene cada par.
+3. Cuando los tres mazos estén completos y cumplan las reglas, pulsa **Publicar los 3 mazos**.
+4. Ponle un nombre al trío, escribe el plan de juego y el papel de cada mazo, y publica.
+
+Tienes que [iniciar sesión](/es/login). Tus mazos de torneo están en [tu cuenta](/es/account), donde puedes editarlos, ocultarlos o eliminarlos, y en tu perfil público. Cada cuenta puede publicar tantos mazos de torneo como mazos individuales (5 para las cuentas de la comunidad, 20 para los Autores, sin límite para Creators, Pro y Staff), contados aparte.
+
+## Las reglas Conquest, comprobadas por el sitio {#reglas}
+
+Cada trío cumple las reglas de la Crimson Cup, las mismas que ya usa el deck builder:
+
+- **tres Legendarias distintas**, una por mazo;
+- **al menos 8 cartas únicas distintas entre cada par de mazos**: cada carta cuenta una vez, Legendaria incluida, así que dos mazos pueden compartir como mucho 5 cartas.
+
+Si un trío no las cumple, el botón se queda apagado y el deck builder te dice qué falla; el sitio lo vuelve a revisar al publicar. Nuestra [guía de Conquest](/es/guides/origins-tcg-conquest) explica cómo construir tres mazos que funcionen juntos.
+
+## La página de un trío {#pagina-trio}
+
+- Arriba el plan de juego y después **los tres mazos**: para cada uno su papel en el trío, las cartas completas, el **código del juego** para pegar en Origins TCG y "Abrir en el deck builder".
+- Un recuadro con las reglas Conquest y las cartas distintas entre cada par de mazos.
+- **Votos** de 1 a 5 estrellas, como en los mazos individuales (nunca en tu propio trío).
+- La guía se escribe en un idioma y se **traduce sola** a los otros dos.
+- Cuando publicas, el trío llega en directo a nuestro [Discord](https://discord.gg/RAG7nnrNGP), en #community-decks, y quien te sigue recibe un aviso si eres Creator, Autor, Pro o Staff.
+- En tu cuenta ves las visitas, los códigos copiados y los clics de tus tríos: son estimaciones, como las de los mazos individuales.
+
+## Para quien hace directos {#directos}
+
+Cada mazo de torneo tiene las mismas herramientas que los mazos individuales, en el menú "Para directos" de su página:
+
+- un **enlace corto**, originsmeta.com/d/ seguido del código del trío, para decirlo en directo;
+- el **comando !deck** para Nightbot, StreamElements y Fossabot, que escribe en el chat el trío y sus tres Legendarias;
+- un **overlay para OBS** con los tres mazos, vertical u horizontal;
+- una **imagen** del trío para descargar en 16:9 o 9:16.
+
+El comando y el overlay solo los ve quien publicó el trío. La [guía de los directos](/es/guides/streaming-tools) explica paso a paso cómo añadirlos.
+
+## Participa {#participa}
+
+Construye tus tres mazos en el [deck builder](/es/deck-builder), publícalos y manda el enlace a tu equipo antes del torneo. Sé de los primeros en publicar en [Mazos de torneo](/es/decks/tournament).`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "How do I publish three Conquest decks together on OriginsMeta?",
+          a: "In the deck builder switch to Tournament mode, build decks A, B and C with three different Legendaries and at least 8 different cards between any two decks, then press \"Publish the 3 decks\" and write one guide for the set.",
+        },
+        {
+          q: "Do tournament decks follow the Crimson Cup rules?",
+          a: "Yes. Every set has three different Legendaries and at least 8 different unique cards between any two decks, Legendary included. The deck builder and the site check it before the set goes online.",
+        },
+      ],
+      it: [
+        {
+          q: "Come pubblico tre mazzi Conquest insieme su OriginsMeta?",
+          a: "Nel deck builder passa alla modalità Torneo, costruisci i mazzi A, B e C con tre Leggendarie diverse e almeno 8 carte diverse fra ogni coppia, poi premi \"Pubblica i 3 mazzi\" e scrivi una guida per il trio.",
+        },
+        {
+          q: "I mazzi torneo rispettano le regole della Crimson Cup?",
+          a: "Sì. Ogni trio ha tre Leggendarie diverse e almeno 8 carte uniche diverse fra ogni coppia di mazzi, Leggendaria compresa. Il deck builder e il sito lo controllano prima che il trio vada online.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Cómo publico tres mazos Conquest juntos en OriginsMeta?",
+          a: "En el deck builder cambia al modo Torneo, construye los mazos A, B y C con tres Legendarias distintas y al menos 8 cartas distintas entre cada par, pulsa \"Publicar los 3 mazos\" y escribe una guía para el trío.",
+        },
+        {
+          q: "¿Los mazos de torneo cumplen las reglas de la Crimson Cup?",
+          a: "Sí. Cada trío tiene tres Legendarias distintas y al menos 8 cartas únicas distintas entre cada par de mazos, Legendaria incluida. El deck builder y el sitio lo revisan antes de que el trío se publique.",
+        },
+      ],
+    },
+    url: "/decks/tournament",
+    source: "site",
+  },
+  {
     // Quarta news "Upgrade Meta" (richiesta di Pierluigi del 03/10/2026: "fai un articolo con gli update degli ultimi giorni
     // sul sito"): solo quello che è su main dopo la news del 29/09 (draft contro il Cervello e contro un amico, versioni dei
     // mazzi, Salva e Di tendenza, filtri di /cards, prima e dopo di MetaShifting, /analytics, codice dell'email, pagina
