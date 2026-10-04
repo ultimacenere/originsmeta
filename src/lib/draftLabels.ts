@@ -92,6 +92,8 @@ const en = {
     yourLegendaries: "Your Legendaries",
     received: "gift",
     curve: "Mana curve",
+    characters: "Characters",
+    spells: "Spells",
     oppCards: "Your opponent's cards",
     /** {n} */
     oppHidden: "{n} cards taken, hidden until the end",
@@ -144,6 +146,8 @@ const en = {
     challengeHint: "Same cards in the same order against the Brain: compare your verdicts.",
     deckName: "Draft",
   },
+  // allineamento della carta: Good, Evil e Neutral come nel gioco e in /cards, uguali nelle tre lingue
+  alignment: { good: "Good", evil: "Evil", neutral: "Neutral" },
   grades: {
     S: "Outstanding",
     A: "Very strong",
@@ -317,6 +321,8 @@ const it: DraftLabels = {
     yourLegendaries: "Le tue Leggendarie",
     received: "regalata",
     curve: "Curva di mana",
+    characters: "Personaggi",
+    spells: "Magie",
     oppCards: "Le carte dell'avversario",
     oppHidden: "{n} carte prese, nascoste fino alla fine",
     youGave: "Gli hai regalato",
@@ -362,6 +368,8 @@ const it: DraftLabels = {
     challengeHint: "Stesse carte nello stesso ordine contro il Cervello: confrontate i giudizi.",
     deckName: "Draft",
   },
+  // allineamento della carta, con i nomi del gioco (in italiano e spagnolo il gioco li lascia in inglese, come /cards)
+  alignment: { good: "Good", evil: "Evil", neutral: "Neutral" },
   grades: {
     S: "Eccezionale",
     A: "Molto forte",
@@ -524,6 +532,8 @@ const es: DraftLabels = {
     yourLegendaries: "Tus Legendarias",
     received: "regalo",
     curve: "Curva de maná",
+    characters: "Personajes",
+    spells: "Hechizos",
     oppCards: "Las cartas del rival",
     oppHidden: "{n} cartas tomadas, ocultas hasta el final",
     youGave: "Le regalaste",
@@ -569,6 +579,8 @@ const es: DraftLabels = {
     challengeHint: "Las mismas cartas en el mismo orden contra el Cerebro: comparen sus veredictos.",
     deckName: "Draft",
   },
+  // allineamento della carta, con i nomi del gioco (in italiano e spagnolo il gioco li lascia in inglese, come /cards)
+  alignment: { good: "Good", evil: "Evil", neutral: "Neutral" },
   grades: {
     S: "Excepcional",
     A: "Muy fuerte",
