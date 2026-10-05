@@ -24,7 +24,9 @@ import {
 
 type Label = { it: string; es: string; game?: true };
 const labels = keywordLabels as Record<string, Label>;
-const woo = JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8")) as { cards: { name: string; keywords?: string[] }[] };
+const woo = JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8")) as {
+  cards: { slug: string; name: string; status: string; keywords?: string[]; ability?: string }[];
+};
 
 describe("keywordLabel", () => {
   test("in inglese resta il tag", () => {
@@ -53,6 +55,39 @@ describe("copertura", () => {
     for (const lore of Object.values(cardLore as Record<string, { keywords?: string[] }>)) for (const k of lore.keywords ?? []) tags.add(k);
     const missing = [...tags].filter((t) => !labels[t]?.it?.trim() || !labels[t]?.es?.trim());
     assert.deepEqual(missing, [], `tag senza etichetta: ${missing.join(", ")}`);
+  });
+});
+
+describe("tag e testo delle carte della demo", () => {
+  // 05/10/2026: Ali Baba ("draw a card") non aveva nessun tag e il filtro "Pesca" di /cards non la mostrava. Il filtro
+  // guarda i tag, non il testo: se il testo inglese di una carta della demo dice una di queste parole, il tag ci deve
+  // essere, nei dati importati o corretto a mano nel campo `keywords` di `card-lore.ts`.
+  const said: [string, RegExp][] = [
+    ...Object.entries(labels)
+      .filter(([, l]) => l.game)
+      .map(([tag]): [string, RegExp] => [tag, new RegExp(`\\b${tag}`, "i")]),
+    ["Deal Damage", /\bdeals? \d+ damage/i],
+    ["Summon", /\bsummon/i],
+    ["Discard", /\bdiscard/i],
+    ["Draw", /\bdraw/i],
+    ["Add", /\badd\b/i],
+    ["Destroy", /\bdestroy/i],
+    ["Return", /\breturn/i],
+    ["Heal", /\bheal/i],
+    ["Transform", /\btransform/i],
+    ["Shuffle", /\bshuffle/i],
+    ["Choose", /\bchoose/i],
+  ];
+  test("se il testo dice la parola, la carta ha il tag", () => {
+    const lore = cardLore as Record<string, { en?: string; keywords?: string[] }>;
+    const missing: string[] = [];
+    for (const c of woo.cards) {
+      if (c.status !== "active") continue;
+      const text = lore[c.slug]?.en ?? c.ability ?? "";
+      const tags = lore[c.slug]?.keywords ?? c.keywords ?? [];
+      for (const [tag, re] of said) if (re.test(text) && !tags.includes(tag)) missing.push(`${c.name}: ${tag}`);
+    }
+    assert.deepEqual(missing, [], `tag che il testo dice e la carta non ha: ${missing.join("; ")}`);
   });
 });
 
