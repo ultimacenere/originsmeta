@@ -4029,9 +4029,13 @@ end $$;
 -- scritti dentro create table, che su un database esistente non si riapplica) e in notify_followers, che per i fumetti
 -- vuole `/news/comics/<slug>` di un fumetto pubblicato dell'autore. Il resto della funzione è quello del blocco SEGUI.
 alter table public.notifications drop constraint if exists notifications_kind_check;
-alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published'));
+-- `not valid` (05/10/2026): schema.sql si riapplica intero a ogni migrazione e questo elenco è quello del 29/09. Senza,
+-- Postgres ricontrolla le righe già scritte e la migrazione si ferma appena esiste un avviso di un tipo nato dopo (il
+-- 05/10/2026, con i `deck_set_published` dei primi mazzi torneo). Le righe nuove restano controllate. Vale per ogni
+-- blocco che rifà questi due vincoli: lo controlla notifications.test.ts.
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published')) not valid;
 alter table public.notification_events drop constraint if exists notification_events_kind_check;
-alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published'));
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published')) not valid;
 
 create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
@@ -5489,9 +5493,10 @@ grant execute on function public.bump_deck_set_stat(text, text) to anon, authent
 -- in notify_followers, che vuole `/decks/tournament/<slug>` di un mazzo torneo pubblicato dell'autore. Il resto della
 -- funzione è quello del blocco FUMETTI.
 alter table public.notifications drop constraint if exists notifications_kind_check;
-alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published'));
+-- `not valid`: vedi il blocco FUMETTI (lo schema riapplicato non deve ricontrollare le righe con un elenco vecchio)
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published')) not valid;
 alter table public.notification_events drop constraint if exists notification_events_kind_check;
-alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published'));
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published')) not valid;
 
 create or replace function public.notify_followers(p_kind text, p_target text, p_actor uuid default null)
 returns integer language plpgsql security definer set search_path = public, pg_temp as $$
@@ -5732,10 +5737,11 @@ grant select on public.tournament_judges to anon, authenticated;
 
 -- ---------- avviso "la tua partita è pronta" ----------
 alter table public.notifications drop constraint if exists notifications_kind_check;
-alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready'));
+-- `not valid`: vedi il blocco FUMETTI (anche l'ultimo elenco, che domani sarà quello vecchio di un blocco nuovo)
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready')) not valid;
 -- il registro degli invii ha lo stesso elenco (i test lo confrontano), anche se gli avvisi del tabellone non ci passano
 alter table public.notification_events drop constraint if exists notification_events_kind_check;
-alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready'));
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready')) not valid;
 
 -- Un avviso a ciascuno dei due giocatori (chi l'ha "causato" è l'avversario). Uno per partita e avversario: dopo uno
 -- scambio arriva quello nuovo. Un errore qui non deve mai fermare il tabellone.

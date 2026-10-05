@@ -207,6 +207,15 @@ describe("database: avvisi nel blocco SEGUI di supabase/schema.sql", () => {
     }
     assert.match(table, /constraint notifications_once unique \(user_id, kind, event_key\)/);
   });
+  test("i vincoli dei tipi si rifanno sempre con not valid: lo schema riapplicato non ricontrolla le righe con un elenco vecchio", () => {
+    // 05/10/2026: la migrazione si fermava nel blocco FUMETTI appena in produzione c'era un avviso `deck_set_published`
+    const all = sqlStatements(read("../../../supabase/schema.sql"));
+    for (const t of ["notifications", "notification_events"]) {
+      const adds = all.filter((s) => s.startsWith(`alter table public.${t} add constraint ${t}_kind_check`));
+      assert.ok(adds.length >= 3, `${t}: ${adds.length} vincoli rifatti`);
+      for (const s of adds) assert.match(s, /\)\) not valid$/, s);
+    }
+  });
   test("nessuna scrittura diretta: policy restrittive, lettura per colonna senza event_key", () => {
     for (const op of ["insert", "update", "delete"]) {
       assert.ok(stmts.some((s) => s.startsWith(`create policy "notifications no direct ${op}" on public.notifications as restrictive for ${op}`)), op);

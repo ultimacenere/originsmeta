@@ -77,9 +77,24 @@ await db.query("begin");
 try {
   const before = await db.query(`select to_regclass('public.tournament_judges') is not null as there`);
   if (before.rows[0].there) console.log("nota: la tabella tournament_judges c'è già (migrazione già fatta?)");
+  // i tipi di avviso già scritti: lo schema rifà più volte i vincoli dei tipi, e il 05/10/2026 la prima prova a secco si
+  // è fermata lì (elenco vecchio del blocco FUMETTI contro gli avvisi dei mazzi torneo)
+  const kindsNow = await attempt(`select kind, count(*)::int as n from public.notifications group by kind order by kind`);
+  if (kindsNow.rows) console.log(`avvisi nel database per tipo: ${kindsNow.rows.map((r) => `${r.kind} ${r.n}`).join(", ") || "nessuno"}`);
   for (const part of splitSchema(sql)) {
     const r = await attempt(part.sql);
     check(`schema: ${part.name.slice(0, 70)}`, !r.error, r.error ?? "");
+  }
+  const allowed = ([...sql.matchAll(/notifications_kind_check check \(kind in \(([^)]*)\)\)/g)].at(-1)?.[1] ?? "").split(",").map((k) => k.trim().replace(/'/g, ""));
+  const present = await attempt(`select kind from public.notifications union select kind from public.notification_events`);
+  const strangers = (present.rows ?? []).map((r) => r.kind).filter((k) => !allowed.includes(k));
+  check("i tipi di avviso già nel database stanno tutti nell'elenco nuovo", !present.error && strangers.length === 0, present.error ?? strangers.join(", "));
+  if (failures) {
+    // senza lo schema nuovo i controlli del torneo sarebbero tutti falsi NO: ci si ferma qui
+    await db.query("rollback");
+    await db.end();
+    console.log(`\nLo schema non si applica: ${failures} controlli NON passati, il torneo non è stato provato (rollback fatto: il database non è cambiato). Non migrare.`);
+    process.exit(1);
   }
 
   await as("postgres");
