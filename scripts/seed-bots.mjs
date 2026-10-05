@@ -2,8 +2,11 @@
 // Crea utenti finti in auth.users (email bot<n>@bots.originsmeta.local, mai in grado di accedere), il trigger
 // crea i profili (username bot-<n>); li iscrive al torneo con liste legali già consegnate (Conquest: Leggendarie
 // diverse e mazzi con carte tutte diverse tra loro). La connessione diretta scavalca RLS e RPC: usare solo in test.
-// Uso: node scripts/seed-bots.mjs <TAG> [numero=7]      → iscrive i bot al torneo (crea quelli mancanti)
+// Uso: node scripts/seed-bots.mjs <TAG> [numero=7] [--checkin] → iscrive i bot al torneo (crea quelli mancanti);
+//                                                                 con --checkin fanno anche il check-in (tornei con il
+//                                                                 check-in, 05/10/2026: senza, all'avvio restano fuori)
 //      node scripts/seed-bots.mjs --remove               → elimina tutti i bot (profili, iscrizioni, mazzi, inviti)
+// Per far giocare le partite fra bot durante una prova: node scripts/bot-play.mjs <TAG>
 import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import pg from "pg";
@@ -18,21 +21,24 @@ const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE
 await db.connect();
 
 const BOT_DOMAIN = "bots.originsmeta.local";
-const [arg, countArg] = process.argv.slice(2);
+const argv = process.argv.slice(2);
+const flags = new Set(argv.filter((a) => a.startsWith("--")));
+const [arg, countArg] = argv.filter((a) => !a.startsWith("--"));
+const withCheckin = flags.has("--checkin");
 
-if (arg === "--remove") {
+if (flags.has("--remove")) {
   const r = await db.query("delete from auth.users where email like $1 returning email", [`%@${BOT_DOMAIN}`]);
   console.log(`Bot eliminati: ${r.rowCount}`);
   await db.end();
   process.exit(0);
 }
 if (!arg) {
-  console.error("Uso: node scripts/seed-bots.mjs <TAG> [numero] | --remove");
+  console.error("Uso: node scripts/seed-bots.mjs <TAG> [numero] [--checkin] | --remove");
   process.exit(1);
 }
 
 const tag = arg.toUpperCase().startsWith("OM-") ? arg.toUpperCase() : `OM-${arg.toUpperCase()}`;
-const n = Math.max(1, Math.min(64, Number(countArg || 7)));
+const n = Math.max(1, Math.min(128, Number(countArg || 7)));
 const { rows: trows } = await db.query("select id, name, size, deck_mode, conquest_decks, status from public.tournaments where tag = $1", [tag]);
 if (!trows.length) {
   console.error(`Nessun torneo con tag ${tag}`);
@@ -85,10 +91,10 @@ let added = 0;
 for (let i = 0; i < botIds.length; i++) {
   if (taken.has(botIds[i])) continue;
   if (taken.size >= t.size) break;
-  await db.query("insert into public.tournament_players (tournament_id, user_id, status, decks_submitted) values ($1, $2, 'registered', true)", [t.id, botIds[i]]);
+  await db.query("insert into public.tournament_players (tournament_id, user_id, status, decks_submitted, checked_in_at) values ($1, $2, 'registered', true, case when $3 then now() end)", [t.id, botIds[i], withCheckin]);
   await db.query("insert into public.tournament_decks (tournament_id, user_id, codes) values ($1, $2, $3::jsonb) on conflict (tournament_id, user_id) do update set codes = excluded.codes", [t.id, botIds[i], JSON.stringify(decksFor(`Bot ${i + 1}`))]);
   taken.add(botIds[i]);
   added++;
 }
-console.log(`Torneo "${t.name}" (${tag}): bot aggiunti ${added}, iscritti totali ${taken.size}/${t.size}, formato ${t.deck_mode}${t.deck_mode === "conquest" ? ` × ${t.conquest_decks}` : ""}.`);
+console.log(`Torneo "${t.name}" (${tag}): bot aggiunti ${added}${withCheckin ? " (con il check-in)" : ""}, iscritti totali ${taken.size}/${t.size}, formato ${t.deck_mode}${t.deck_mode === "conquest" ? ` × ${t.conquest_decks}` : ""}.`);
 await db.end();

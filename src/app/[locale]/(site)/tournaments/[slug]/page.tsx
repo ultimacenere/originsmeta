@@ -112,6 +112,10 @@ export default async function TournamentPage({ params, searchParams }: { params:
   // staff: organizzatore e admin leggono il codice d'invito (policy), gli arbitri sono nella loro tabella (05/10/2026)
   const isStaff = Boolean(viewer && (inviteCode || judges.some((j) => j.user_id === viewer)));
   const rounds = totalRounds(matches);
+  // con le liste segrete, a torneo in corso, la sezione mostra solo i semifinalisti: la policy dà anche le proprie liste
+  // a chi gioca e tutte allo staff, che qui devono vedere quello che vedono tutti
+  const top4 = new Set(matches.filter((m) => m.round >= rounds - 1).flatMap((m) => [m.player_a, m.player_b]).filter((u): u is string => Boolean(u)));
+  const shownDecks = t.status === "running" && t.hidden_decklists ? decks.filter((row) => top4.has(row.user_id)) : decks;
 
   // Banner "il tabellone è partito" (UX-8): la partita del turno più alto di chi guarda, se è ancora da giocare.
   // Chi ha perso (ultima partita confermata) o ha vinto la finale non vede il banner.
@@ -397,9 +401,9 @@ export default async function TournamentPage({ params, searchParams }: { params:
 
           <section className="mt-8">
             <h2 className="t-section">{t.status === "running" && t.hidden_decklists ? x.top4Decklists : x.decklists}</h2>
-            {decks.length ? (
+            {shownDecks.length ? (
               <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {decks.map((row) => (
+                {shownDecks.map((row) => (
                   <li key={row.user_id} className="rounded-lg border-2 border-sky bg-night-2/70 p-3">
                     <p className="t-item text-base">{nameOf.get(row.user_id) ?? "?"}</p>
                     <ul className="mt-2 flex flex-col gap-2">

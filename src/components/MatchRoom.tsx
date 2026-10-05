@@ -53,8 +53,14 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const [pending, start] = useTransition();
   const lastId = useRef(initialMessages.length ? initialMessages[initialMessages.length - 1].id : 0);
   const listRef = useRef<HTMLOListElement>(null);
-  const [live, setLive] = useState<Live>({ status: match.status, seen_a: match.seen_a, seen_b: match.seen_b, ready_at: match.ready_at, reported_by: match.reported_by });
-  const liveRef = useRef<Live>(live);
+  const fromMatch = (mt: TournamentMatch): Live => ({ status: mt.status, seen_a: mt.seen_a, seen_b: mt.seen_b, ready_at: mt.ready_at, reported_by: mt.reported_by });
+  const [live, setLive] = useState<Live>(() => fromMatch(match));
+  // dopo un ricaricamento (referto, tavolino, avversario arrivato) vale la partita appena letta dal server
+  const [seenMatch, setSeenMatch] = useState(match);
+  if (seenMatch !== match) {
+    setSeenMatch(match);
+    setLive(fromMatch(match));
+  }
   const ready = Boolean(match.player_a && match.player_b);
   const active = running && ready && (live.status === "pending" || live.status === "reported" || live.status === "disputed");
   const opponentId = side === "a" ? match.player_b : side === "b" ? match.player_a : null;
@@ -81,17 +87,17 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
     };
   }, [side, active, mySeen, matchId]);
 
-  // Stato della partita: presenza dell'avversario e referti; se lo stato cambia, la pagina si ricarica.
+  // Stato della partita: presenza dell'avversario e referti; se cambiano stato o giocatori (l'avversario arriva mentre
+  // la stanza è già aperta), la pagina si ricarica e la partita diventa "pronta" anche qui.
   useEffect(() => {
     const sb = supabaseBrowser();
-    if (!sb || !running || !ready) return;
+    if (!sb || !running) return;
     let alive = true;
     const poll = async () => {
-      const { data } = await sb.from("tournament_matches").select("status, seen_a, seen_b, ready_at, reported_by").eq("id", matchId).maybeSingle();
-      const row = data as Live | null;
+      const { data } = await sb.from("tournament_matches").select("status, seen_a, seen_b, ready_at, reported_by, player_a, player_b").eq("id", matchId).maybeSingle();
+      const row = data as (Live & { player_a: string | null; player_b: string | null }) | null;
       if (!alive || !row) return;
-      const changed = liveRef.current.status !== row.status || liveRef.current.reported_by !== row.reported_by;
-      liveRef.current = row;
+      const changed = row.status !== match.status || row.reported_by !== match.reported_by || row.player_a !== match.player_a || row.player_b !== match.player_b;
       setLive(row);
       if (changed) router.refresh();
     };
@@ -100,7 +106,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       alive = false;
       clearInterval(timer);
     };
-  }, [matchId, running, ready, router]);
+  }, [matchId, running, match.status, match.reported_by, match.player_a, match.player_b, router]);
 
   const opponentSeen = side === "a" ? Boolean(live.seen_b) : side === "b" ? Boolean(live.seen_a) : false;
   const opponentWrote = opponentId ? messages.some((msg) => msg.user_id === opponentId) : false;
