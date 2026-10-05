@@ -4,9 +4,11 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { reportMatchResult, sendMessage } from "@/lib/tournament/actions";
+import { claimNoShow, markMatchSeen, reportMatchResult, sendMessage } from "@/lib/tournament/actions";
 import { SCREENSHOT_BUCKET, SCREENSHOTS_PER_PLAYER, fill, type TournamentMatch, type TournamentMessage } from "@/lib/tournament/types";
+import { formatCountdown, noShowAt } from "@/lib/tournament/rules";
 import { shrinkImage } from "@/lib/shrinkImage";
+import { useNow } from "@/lib/useNow";
 
 type Screens = { a: string[]; b: string[] };
 
@@ -18,7 +20,10 @@ type Props = {
   side: "a" | "b" | null;
   match: TournamentMatch;
   names: { a: string; b: string };
-  bestOf: number;
+  /** vittorie che servono in questa partita (la finale può essere più lunga: matchNeed in rules.ts) */
+  need: number;
+  /** minuti di assenza prima della vittoria a tavolino (null = niente tavolino) */
+  noShowMinutes: number | null;
   running: boolean;
   initialMessages: TournamentMessage[];
   /** URL firmati degli screenshot dei due giocatori (generati sul server) */
@@ -27,14 +32,18 @@ type Props = {
 };
 
 const POLL_MS = 5000;
+/** stato della partita (presenza dell'avversario, referti): ogni 10 secondi */
+const MATCH_POLL_MS = 10_000;
 const MAX_UPLOAD = 2 * 1024 * 1024;
+
+type Live = Pick<TournamentMatch, "status" | "seen_a" | "seen_b" | "ready_at" | "reported_by">;
 
 /**
  * Stanza della partita: chat tra le parti (polling ogni 5 s sotto RLS), referto con doppia conferma e
  * screenshot caricati dal browser nel bucket privato (percorso <partita>/<utente>/<n>.webp; le policy
  * fanno da guardia). Dopo referto o upload la pagina (dinamica) si ricarica.
  */
-export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, running, initialMessages, screens, labels }: Props) {
+export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, labels }: Props) {
   const x = labels;
   const l = x.match;
   const router = useRouter();
@@ -44,7 +53,11 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
   const [pending, start] = useTransition();
   const lastId = useRef(initialMessages.length ? initialMessages[initialMessages.length - 1].id : 0);
   const listRef = useRef<HTMLOListElement>(null);
-  const need = (bestOf + 1) / 2;
+  const [live, setLive] = useState<Live>({ status: match.status, seen_a: match.seen_a, seen_b: match.seen_b, ready_at: match.ready_at, reported_by: match.reported_by });
+  const liveRef = useRef<Live>(live);
+  const ready = Boolean(match.player_a && match.player_b);
+  const active = running && ready && (live.status === "pending" || live.status === "reported" || live.status === "disputed");
+  const opponentId = side === "a" ? match.player_b : side === "b" ? match.player_a : null;
   const myName = side === "a" ? names.a : side === "b" ? names.b : null;
   const theirName = side === "a" ? names.b : side === "b" ? names.a : null;
   const [mine, setMine] = useState<number>(need);
@@ -54,6 +67,61 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
   const theirScreens = side === "a" ? screens.b : side === "b" ? screens.a : [];
 
   const errText = (code: string) => x.errors[code as keyof typeof x.errors] ?? x.errors.db;
+
+  // Presenza (05/10/2026): chi gioca ha aperto la stanza. Si segna dal browser, una volta, solo a partita pronta.
+  const mySeen = side === "a" ? live.seen_a : side === "b" ? live.seen_b : null;
+  useEffect(() => {
+    if (!side || !active || mySeen) return;
+    let alive = true;
+    markMatchSeen(matchId).then((r) => {
+      if (alive && r.ok) setLive((v) => ({ ...v, [side === "a" ? "seen_a" : "seen_b"]: new Date().toISOString() }));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [side, active, mySeen, matchId]);
+
+  // Stato della partita: presenza dell'avversario e referti; se lo stato cambia, la pagina si ricarica.
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    if (!sb || !running || !ready) return;
+    let alive = true;
+    const poll = async () => {
+      const { data } = await sb.from("tournament_matches").select("status, seen_a, seen_b, ready_at, reported_by").eq("id", matchId).maybeSingle();
+      const row = data as Live | null;
+      if (!alive || !row) return;
+      const changed = liveRef.current.status !== row.status || liveRef.current.reported_by !== row.reported_by;
+      liveRef.current = row;
+      setLive(row);
+      if (changed) router.refresh();
+    };
+    const timer = setInterval(poll, MATCH_POLL_MS);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, [matchId, running, ready, router]);
+
+  const opponentSeen = side === "a" ? Boolean(live.seen_b) : side === "b" ? Boolean(live.seen_a) : false;
+  const opponentWrote = opponentId ? messages.some((msg) => msg.user_id === opponentId) : false;
+  const opponentHere = opponentSeen || opponentWrote || (live.status === "reported" && live.reported_by === opponentId);
+  const deadline = noShowAt(live.ready_at, noShowMinutes);
+  const watchNoShow = Boolean(side && active && deadline !== null && !opponentHere && (live.status === "pending" || (live.status === "reported" && live.reported_by === me)));
+  const now = useNow(1000, watchNoShow);
+  const left = watchNoShow && deadline !== null && now !== null ? deadline - now : null;
+
+  const claim = () => {
+    if (!window.confirm(l.claimConfirm)) return;
+    start(async () => {
+      setError(null);
+      const r = await claimNoShow(matchId, slug);
+      if (r.error) {
+        setError(errText(r.error));
+        return;
+      }
+      router.refresh();
+    });
+  };
 
   useEffect(() => {
     const sb = supabaseBrowser();
@@ -160,6 +228,26 @@ export function MatchRoom({ slug, matchId, me, side, match, names, bestOf, runni
                       ? l.tbd
                       : l.statusPending}
         </p>
+        {side && active && noShowMinutes ? (
+          <div className={`mt-4 rounded-lg border-2 p-3 text-sm ${opponentHere ? "border-good/60" : "border-gold bg-gold/10"}`}>
+            {opponentHere ? (
+              <p className="text-good">✓ {l.opponentHere}</p>
+            ) : left !== null && left > 0 ? (
+              <p className="text-pale">
+                {l.opponentNotYet} {fill(l.noShowWait, { time: formatCountdown(left), n: noShowMinutes })}
+              </p>
+            ) : watchNoShow ? (
+              <>
+                <p className="text-pale">{fill(l.noShowReady, { n: noShowMinutes })}</p>
+                <button type="button" disabled={pending} onClick={claim} className="btn btn-gold mt-2 text-xs">
+                  {l.claim}
+                </button>
+              </>
+            ) : (
+              <p className="text-pale-muted">{l.opponentNotYet}</p>
+            )}
+          </div>
+        ) : null}
         {canReport ? (
           <div className="mt-4 border-t border-sky/40 pt-4">
             <p className="text-xs text-pale-muted">{l.reportHint}</p>

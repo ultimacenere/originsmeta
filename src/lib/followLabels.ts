@@ -36,7 +36,7 @@ const en = {
     markAll: "Mark all as read",
     marking: "Marking…",
     newBadge: "New",
-    kinds: { deck_published: "Deck", live: "Live", guide_published: "Guide", comic_published: "Comic", deck_set_published: "Tournament deck" } satisfies Record<NotificationKind, string>,
+    kinds: { deck_published: "Deck", live: "Live", guide_published: "Guide", comic_published: "Comic", deck_set_published: "Tournament deck", match_ready: "Tournament" } satisfies Record<NotificationKind, string>,
     /** {name} = chi ha pubblicato o è in diretta, {deck} = nome del mazzo */
     deckPublished: "{name} published a deck: {deck}",
     deckGone: "{name} published a deck that is no longer online",
@@ -50,6 +50,8 @@ const en = {
     /** {deck} = nome del mazzo torneo (04/10/2026) */
     deckSetPublished: "{name} published a tournament deck: {deck}",
     deckSetGone: "{name} published a tournament deck that is no longer online",
+    /** avviso del tabellone (05/10/2026): {name} = l'avversario */
+    matchReady: "Your tournament match against {name} is ready: open the match room",
     /** quando il profilo di chi ha fatto la cosa non si legge */
     someone: "A profile you follow",
     empty: "No notifications yet. Follow Creators and Authors to know when they publish a deck or go live.",
@@ -93,7 +95,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
       markAll: "Segna tutte come lette",
       marking: "Un momento…",
       newBadge: "Nuova",
-      kinds: { deck_published: "Mazzo", live: "Diretta", guide_published: "Guida", comic_published: "Fumetto", deck_set_published: "Mazzo torneo" },
+      kinds: { deck_published: "Mazzo", live: "Diretta", guide_published: "Guida", comic_published: "Fumetto", deck_set_published: "Mazzo torneo", match_ready: "Torneo" },
       deckPublished: "{name} ha pubblicato un mazzo: {deck}",
       deckGone: "{name} ha pubblicato un mazzo che non è più online",
       live: "{name} ha avviato una diretta su Twitch con Origins TCG",
@@ -103,6 +105,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
       comicGone: "{name} ha pubblicato un fumetto che non è più online",
       deckSetPublished: "{name} ha pubblicato un mazzo torneo: {deck}",
       deckSetGone: "{name} ha pubblicato un mazzo torneo che non è più online",
+      matchReady: "La tua partita di torneo contro {name} è pronta: apri la stanza partita",
       someone: "Un profilo che segui",
       empty: "Nessuna notifica per ora. Segui Creator e Autori per sapere quando pubblicano un mazzo o vanno in diretta.",
       browse: "Scopri Creator e Autori",
@@ -139,7 +142,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
       markAll: "Marcar todas como leídas",
       marking: "Un momento…",
       newBadge: "Nueva",
-      kinds: { deck_published: "Mazo", live: "Directo", guide_published: "Guía", comic_published: "Cómic", deck_set_published: "Mazo de torneo" },
+      kinds: { deck_published: "Mazo", live: "Directo", guide_published: "Guía", comic_published: "Cómic", deck_set_published: "Mazo de torneo", match_ready: "Torneo" },
       deckPublished: "{name} publicó un mazo: {deck}",
       deckGone: "{name} publicó un mazo que ya no está en línea",
       live: "{name} empezó un directo en Twitch con Origins TCG",
@@ -149,6 +152,7 @@ export const followLabels: Record<Locale, FollowLabels> = {
       comicGone: "{name} publicó un cómic que ya no está en línea",
       deckSetPublished: "{name} publicó un mazo de torneo: {deck}",
       deckSetGone: "{name} publicó un mazo de torneo que ya no está en línea",
+      matchReady: "Tu partida de torneo contra {name} está lista: abre la sala de la partida",
       someone: "Un perfil que sigues",
       empty: "Todavía no hay notificaciones. Sigue a Creators y Autores para saber cuándo publican un mazo o empiezan un directo.",
       browse: "Descubre Creators y Autores",

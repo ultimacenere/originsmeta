@@ -10,6 +10,7 @@ import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DEF
 import { createTournament, updateTournament, type TournamentActionState } from "@/lib/tournament/actions";
 import { useMounted } from "@/lib/useMounted";
 import { RULES } from "@/lib/deckrules";
+import { CRIMSON_PRESET, NO_SHOW_RANGE } from "@/lib/tournament/rules";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { trackEvent, type EventParams } from "@/lib/analytics";
 
@@ -25,6 +26,11 @@ export type TournamentInitial = {
   conquest_decks: number;
   conquest_min_different: number;
   best_of: number;
+  /** 05/10/2026: finale, check-in, liste segrete, minuti di assenza */
+  final_best_of: number | null;
+  checkin: boolean;
+  hidden_decklists: boolean;
+  no_show_minutes: number | null;
   lang: Locale;
   description: string;
   rules: string;
@@ -100,6 +106,25 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
   /* misura: il torneo inviato, per l'evento tournament_create quando l'azione risponde "fatto" (solo in creazione) */
   const sent = useRef<EventParams["tournament_create"] | null>(null);
   const [deckMode, setDeckMode] = useState<DeckMode>(initial?.deck_mode ?? "free");
+  // regole del torneo: valori iniziali dei campi (non controllati); "Usa le regole della Crimson Cup" li cambia e
+  // rimonta i campi con una chiave nuova (05/10/2026)
+  const [rules, setRules] = useState(() => ({
+    conquest_decks: initial?.conquest_decks ?? CONQUEST_DECKS_RANGE.default,
+    conquest_min_different: initial?.conquest_min_different ?? RULES.conquestMinDifferent,
+    best_of: initial?.best_of ?? 1,
+    final_best_of: initial?.final_best_of ?? null,
+    checkin: initial?.checkin ?? false,
+    hidden_decklists: initial?.hidden_decklists ?? false,
+    no_show_minutes: initial?.no_show_minutes ?? null,
+  }));
+  const [rulesKey, setRulesKey] = useState(0);
+  const [presetApplied, setPresetApplied] = useState(false);
+  const applyCrimson = () => {
+    setDeckMode("conquest");
+    setRules({ ...CRIMSON_PRESET });
+    setRulesKey((k) => k + 1);
+    setPresetApplied(true);
+  };
   const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
   const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
   const [visibility, setVisibility] = useState<Visibility>(initial?.visibility ?? "public");
@@ -211,6 +236,10 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           <input type="hidden" name="conquest_decks" value={initial.conquest_decks} />
           <input type="hidden" name="conquest_min_different" value={initial.conquest_min_different} />
           <input type="hidden" name="best_of" value={initial.best_of} />
+          <input type="hidden" name="final_best_of" value={initial.final_best_of ?? ""} />
+          <input type="hidden" name="checkin" value={initial.checkin ? "on" : ""} />
+          <input type="hidden" name="hidden_decklists" value={initial.hidden_decklists ? "on" : ""} />
+          <input type="hidden" name="no_show_minutes" value={initial.no_show_minutes ?? ""} />
         </>
       ) : null}
 
@@ -258,7 +287,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             </fieldset>
             <label className="block text-sm">
               <span className="kicker text-mint">{c.bestOf}</span>
-              <select name="best_of" defaultValue={initial?.best_of ?? 1} disabled={lockRules} className={inputCls}>
+              <select key={`bo-${rulesKey}`} name="best_of" defaultValue={rules.best_of} disabled={lockRules} className={inputCls}>
                 {BEST_OF_OPTIONS.map((b) => (
                   <option key={b} value={b}>
                     {bestOfLabel(x, b)}
@@ -271,14 +300,59 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="text-pale-muted">{c.conquestDecks}</span>
-                <input type="number" name="conquest_decks" min={CONQUEST_DECKS_RANGE.min} max={CONQUEST_DECKS_RANGE.max} defaultValue={initial?.conquest_decks ?? CONQUEST_DECKS_RANGE.default} disabled={lockRules} className={inputCls} />
+                <input key={`cd-${rulesKey}`} type="number" name="conquest_decks" min={CONQUEST_DECKS_RANGE.min} max={CONQUEST_DECKS_RANGE.max} defaultValue={rules.conquest_decks} disabled={lockRules} className={inputCls} />
               </label>
               <label className="block text-sm">
                 <span className="text-pale-muted">{c.conquestMin}</span>
-                <input type="number" name="conquest_min_different" min={0} max={13} defaultValue={initial?.conquest_min_different ?? RULES.conquestMinDifferent} disabled={lockRules} className={inputCls} />
+                <input key={`cm-${rulesKey}`} type="number" name="conquest_min_different" min={0} max={13} defaultValue={rules.conquest_min_different} disabled={lockRules} className={inputCls} />
               </label>
             </div>
           ) : null}
+
+          {/* Regole del torneo (05/10/2026): finale, check-in e lista d'attesa, liste segrete, assenza */}
+          <fieldset className="grid gap-4 rounded-xl border-2 border-sky/60 p-4">
+            <legend className="kicker px-1 text-mint">{c.rulesTitle}</legend>
+            {!lockRules ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={applyCrimson} className="btn btn-gold text-xs">
+                  {c.crimsonPreset}
+                </button>
+                <span className="text-xs text-pale-muted">{presetApplied ? c.crimsonApplied : c.crimsonPresetHint}</span>
+              </div>
+            ) : null}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm">
+                <span className="text-pale-muted">{c.finalBestOf}</span>
+                <select key={`fb-${rulesKey}`} name="final_best_of" defaultValue={rules.final_best_of ?? ""} disabled={lockRules} className={inputCls}>
+                  <option value="">{c.finalSame}</option>
+                  {BEST_OF_OPTIONS.map((b) => (
+                    <option key={b} value={b}>
+                      {bestOfLabel(x, b)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="text-pale-muted">{c.noShow}</span>
+                <input key={`ns-${rulesKey}`} type="number" name="no_show_minutes" min={NO_SHOW_RANGE.min} max={NO_SHOW_RANGE.max} placeholder={c.noShowOff} defaultValue={rules.no_show_minutes ?? ""} disabled={lockRules} className={inputCls} />
+                <span className="mt-1 block text-xs text-pale-muted">{c.noShowHint}</span>
+              </label>
+            </div>
+            <label className="flex items-start gap-2 text-sm">
+              <input key={`ci-${rulesKey}`} type="checkbox" name="checkin" defaultChecked={rules.checkin} disabled={lockRules} className="mt-1 accent-mint" />
+              <span>
+                <span className="font-semibold text-pale">{c.checkin}</span>
+                <span className="mt-0.5 block text-xs text-pale-muted">{c.checkinHint}</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-2 text-sm">
+              <input key={`hd-${rulesKey}`} type="checkbox" name="hidden_decklists" defaultChecked={rules.hidden_decklists} disabled={lockRules} className="mt-1 accent-mint" />
+              <span>
+                <span className="font-semibold text-pale">{c.hiddenDecklists}</span>
+                <span className="mt-0.5 block text-xs text-pale-muted">{c.hiddenDecklistsHint}</span>
+              </span>
+            </label>
+          </fieldset>
         </div>
       </fieldset>
 

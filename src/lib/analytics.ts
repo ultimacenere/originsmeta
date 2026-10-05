@@ -209,7 +209,7 @@ export type EventParams = {
   message_read: { placement: "account" | "staff_area" };
   follow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" };
   unfollow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" | "account" };
-  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };

@@ -4,8 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getMatch, getTournament, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { SCREENSHOT_BUCKET, bestOfLabel, fill } from "@/lib/tournament/types";
+import { getMatch, getTournament, listLegendaries, listMatches, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { SCREENSHOT_BUCKET, bestOfLabel, fill, totalRounds } from "@/lib/tournament/types";
+import { matchBestOf, matchNeed } from "@/lib/tournament/rules";
 import { authorName } from "@/lib/community/util";
 import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
@@ -16,7 +17,7 @@ import { withCarriedParams } from "@/lib/analytics";
 type Params = Promise<{ locale: string; slug: string; id: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** Stanza della partita: solo i due giocatori, l'organizzatore e gli admin. Dinamica (sessione), passa dal proxy. */
+/** Stanza della partita: solo i due giocatori e lo staff del torneo (organizzatore, arbitri, admin). Dinamica (sessione), passa dal proxy. */
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -51,15 +52,17 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   const match = await getMatch(id, supabase);
   if (!match || match.tournament_id !== t.id) notFound();
 
-  const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  const isAdmin = (prof as { role: string } | null)?.role === "admin";
   const side: "a" | "b" | null = match.player_a === user.id ? "a" : match.player_b === user.id ? "b" : null;
+  // organizzatore, arbitri e admin (05/10/2026: anche gli arbitri) vedono tutte le partite
+  const { data: staff } = side === null ? await supabase.rpc("is_tournament_staff", { tid: t.id }) : { data: false };
   // chi non gioca la partita torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
-  if (side === null && t.organizer !== user.id && !isAdmin) redirect(withCarriedParams(back, await searchParams));
+  if (side === null && staff !== true) redirect(withCarriedParams(back, await searchParams));
 
-  const [players, decks, messages, screensA, screensB] = await Promise.all([
+  const [players, decks, legendaries, allMatches, messages, screensA, screensB] = await Promise.all([
     listPlayers(t.id, supabase),
     listVisibleDecks(t.id, supabase),
+    listLegendaries(t.id, supabase),
+    listMatches(t.id, supabase),
     listMessages(match.id, supabase),
     signedScreens(supabase, match.id, match.player_a),
     signedScreens(supabase, match.id, match.player_b),
@@ -67,9 +70,29 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
   const names = { a: match.player_a ? nameOf.get(match.player_a) ?? "?" : l.tbd, b: match.player_b ? nameOf.get(match.player_b) ?? "?" : match.status === "bye" ? "bye" : l.tbd };
 
+  const rounds = totalRounds(allMatches);
+  const need = matchNeed(t.best_of, t.final_best_of, match.round, rounds);
+  const isFinal = Boolean(t.final_best_of) && match.round === rounds;
+
   const deckBlock = (uid: string | null, title: string) => {
     if (!uid) return null;
     const row = decks.find((r) => r.user_id === uid);
+    // liste segrete (05/10/2026): dell'avversario si vedono solo le Leggendarie, come nel ban della Crimson Cup
+    const legs = row ? [] : (legendaries.get(uid) ?? []);
+    if (!row && legs.length)
+      return (
+        <div className="rounded-lg border-2 border-sky bg-night-2/70 p-3">
+          <p className="kicker text-mint">{title}</p>
+          <p className="mt-1 text-sm font-semibold text-pale">{nameOf.get(uid) ?? "?"}</p>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {legs.map((slug, i) => {
+              const leg = getCard(slug);
+              return <li key={i}>{leg ? <CardChip slug={leg.slug} locale={locale} /> : null}</li>;
+            })}
+          </ul>
+          <p className="mt-2 text-xs text-pale-muted">{l.hiddenNote}</p>
+        </div>
+      );
     return (
       <div className="rounded-lg border-2 border-sky bg-night-2/70 p-3">
         <p className="kicker text-mint">{title}</p>
@@ -110,7 +133,8 @@ export default async function MatchPage({ params, searchParams }: { params: Para
         {names.a} <span className="text-pale-muted">{l.vs}</span> {names.b}
       </h1>
       <p className="mt-2 text-sm text-pale-muted">
-        {x.deckModes[t.deck_mode]} · {bestOfLabel(x, t.best_of)}
+        {x.deckModes[t.deck_mode]} · {bestOfLabel(x, matchBestOf(t.best_of, t.final_best_of, match.round, rounds))}
+        {isFinal ? ` · ${l.finalNote}` : ""}
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -126,7 +150,8 @@ export default async function MatchPage({ params, searchParams }: { params: Para
           side={side}
           match={match}
           names={names}
-          bestOf={t.best_of}
+          need={need}
+          noShowMinutes={t.no_show_minutes}
           running={t.status === "running"}
           initialMessages={messages}
           screens={{ a: screensA, b: screensB }}

@@ -70,6 +70,19 @@ const RPC_ERRORS = [
   "bad_invite",
   "user_not_found",
   "private_not_listed",
+  // 05/10/2026, blocco TORNEO CRIMSON
+  "checkin_off",
+  "checkin_not_open",
+  "checkin_closed",
+  "checkin_still_open",
+  "decks_missing",
+  "decks_closed",
+  "no_show_off",
+  "no_show_too_early",
+  "opponent_present",
+  "already_staff",
+  "judge_is_player",
+  "too_many_judges",
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
@@ -95,11 +108,11 @@ export async function createTournament(_prev: TournamentActionState, formData: F
   if (!parsed.ok) return { error: parsed.error };
   for (let attempt = 0; attempt < 4; attempt++) {
     const slug = newSlug(parsed.row.name);
-    const { data, error } = await ctx.supabase
-      .from("tournaments")
-      .insert({ ...parsed.row, slug, organizer: ctx.user.id })
-      .select("id, slug")
-      .single();
+    // 05/10/2026: niente .select() sull'insert. Con "insert … returning" Postgres controlla la riga nuova anche con la
+    // policy di lettura (can_view_tournament), che dentro la stessa istruzione non la vede ancora: l'inserimento veniva
+    // rifiutato ("new row violates row-level security policy", provato su PGlite). Si inserisce e poi si rilegge.
+    const { error } = await ctx.supabase.from("tournaments").insert({ ...parsed.row, slug, organizer: ctx.user.id });
+    const { data } = error ? { data: null } : await ctx.supabase.from("tournaments").select("id, slug").eq("slug", slug).maybeSingle();
     if (!error && data) {
       const { id, slug: s } = data as { id: string; slug: string };
       revalidateTournamentPaths(s);
@@ -135,9 +148,12 @@ export async function leaveTournament(id: string, slug: string): Promise<{ error
   if (!supabase) return { error: "disabled" };
   if (!user) return { error: "notLoggedIn" };
   if (!UUID.test(id)) return { error: "not_found" };
+  const { data: before } = await supabase.from("tournaments").select("status").eq("id", id).maybeSingle();
   const { error } = await supabase.rpc("leave_tournament", { tid: id });
   if (error) return { error: rpcError(error) };
   revalidateTournamentPaths(slug);
+  // a torneo in corso è un ritiro vero: la partita persa a tavolino va su Discord come le altre
+  if ((before as { status: string } | null)?.status === "running") await notifyDropResult(supabase, id, user.id);
   return { ok: true };
 }
 
@@ -164,6 +180,8 @@ async function storeDecks(id: string, raw: string[]): Promise<{ error?: string; 
     if (!decoded) return { error: "decks_invalid" };
     const checked = checkDeck(decoded);
     if (!checked.ok) return { error: "decks_invalid" };
+    // le carte inventate del deck builder vanno bene nei mazzi della community, mai in un torneo (05/10/2026)
+    if (checked.deck.customCards.length) return { error: "decks_custom" };
     const clean: DeckState = { name: decoded.name.slice(0, 60), legendary: checked.deck.legendary, cards: checked.deck.cards, customCards: checked.deck.customCards };
     decks.push(clean);
     codes.push(encodeOmCode(clean));
@@ -286,7 +304,77 @@ export async function rotateInviteCode(id: string, slug: string): Promise<Simple
 
 export async function dropPlayer(id: string, slug: string, uid: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("drop_player", { tid: id, uid }));
+  const r = await organizerRpc(slug, (sb) => sb.rpc("drop_player", { tid: id, uid }));
+  if (r.ok) {
+    const { supabase } = await currentUser();
+    if (supabase) await notifyDropResult(supabase, id, uid);
+  }
+  return r;
+}
+
+/** Dopo un ritiro a torneo in corso: annuncia la partita persa a tavolino (se c'era già l'avversario). */
+async function notifyDropResult(sb: Client, tid: string, uid: string): Promise<void> {
+  const { data } = await sb
+    .from("tournament_matches")
+    .select("id")
+    .eq("tournament_id", tid)
+    .eq("note", "drop")
+    .or(`player_a.eq.${uid},player_b.eq.${uid}`)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const mid = (data as { id: string } | null)?.id;
+  if (mid) notifyMatchResult(mid);
+}
+
+/* ---------- 05/10/2026: check-in, presenza, tavolino, arbitri (blocco TORNEO CRIMSON di schema.sql) ---------- */
+
+/** Check-in del giocatore (dalle 2 ore prima; gli iscritti fino a 5 minuti prima, la lista d'attesa fino all'avvio). */
+export async function checkIn(id: string, slug: string): Promise<Simple> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("check_in", { tid: id }));
+}
+
+/** Check-in fatto (o tolto) dallo staff per un giocatore, a qualsiasi ora prima dell'avvio. */
+export async function staffCheckIn(id: string, slug: string, uid: string, undo = false): Promise<Simple> {
+  if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("staff_check_in", { tid: id, uid, undo: Boolean(undo) }));
+}
+
+/**
+ * Chi gioca ha aperto la stanza partita: da qui risulta presente (conta per la vittoria a tavolino). La chiama il browser
+ * quando la stanza si apre davvero, mai il server durante il rendering (un prefetch segnerebbe presente chi non c'è).
+ */
+export async function markMatchSeen(matchId: string): Promise<{ ok: boolean }> {
+  if (!UUID.test(matchId)) return { ok: false };
+  const { supabase, user } = await currentUser();
+  if (!supabase || !user) return { ok: false };
+  const { data, error } = await supabase.rpc("mark_match_seen", { mid: matchId });
+  return { ok: !error && data === true };
+}
+
+/** Vittoria a tavolino: passato il tempo di assenza, se l'avversario non è mai entrato nella stanza. */
+export async function claimNoShow(matchId: string, slug: string): Promise<Simple> {
+  if (!UUID.test(matchId)) return { error: "not_found" };
+  const r = await organizerRpc(slug, (sb) => sb.rpc("claim_no_show", { mid: matchId }));
+  if (r.ok) notifyMatchResult(matchId);
+  return r;
+}
+
+/** Arbitro per nome utente (solo organizzatore e admin, al massimo 10). */
+export async function addJudge(id: string, slug: string, username: string): Promise<Simple> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const uname = String(username ?? "")
+    .trim()
+    .replace(/^@/, "")
+    .slice(0, 60);
+  if (!uname) return { error: "user_not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("add_judge", { tid: id, uname }));
+}
+
+export async function removeJudge(id: string, slug: string, uid: string): Promise<Simple> {
+  if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
+  return organizerRpc(slug, (sb) => sb.rpc("remove_judge", { tid: id, uid }));
 }
 
 export async function finishTournament(id: string, slug: string, report: string): Promise<Simple> {
@@ -315,13 +403,15 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
   const locale = localeOf(formData);
   const id = String(formData.get("id") ?? "");
   if (!UUID.test(id)) return { error: "not_found" };
-  const { data: cur } = await ctx.supabase.from("tournaments").select("slug, status, organizer, cover_url, players:tournament_players(count)").eq("id", id).maybeSingle();
-  const current = cur as { slug: string; status: string; organizer: string; cover_url: string | null; players: { count: number }[] | null } | null;
+  const { data: cur } = await ctx.supabase.from("tournaments").select("slug, status, organizer, cover_url").eq("id", id).maybeSingle();
+  const current = cur as { slug: string; status: string; organizer: string; cover_url: string | null } | null;
   if (!current) return { error: "not_found" };
   // la copertina già salvata resta valida anche per chi non può più caricarne (per esempio un Creator diventato Autore)
   const parsed = parseTournamentForm(formData, { userId: ctx.user.id, profile: ctx.profile, allowPast: true, currentCover: current.cover_url });
   if (!parsed.ok) return { error: parsed.error };
-  const registered = Number(current.players?.[0]?.count ?? 0);
+  // solo gli iscritti veri: chi è in lista d'attesa (05/10/2026) non occupa un posto
+  const { count } = await ctx.supabase.from("tournament_players").select("user_id", { count: "exact", head: true }).eq("tournament_id", id).eq("status", "registered");
+  const registered = Number(count ?? 0);
   const { name, cover_url, description, rules, discord_url, listed, lang, visibility } = parsed.row;
   const patch =
     current.status === "open"

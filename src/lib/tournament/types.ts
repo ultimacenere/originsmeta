@@ -1,5 +1,5 @@
 import type { Profile } from "@/lib/community/types";
-import type { TournamentDecksRow, TournamentInviteRow, TournamentMatchRow, TournamentMessageRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
+import type { TournamentDecksRow, TournamentInviteRow, TournamentJudgeRow, TournamentMatchRow, TournamentMessageRow, TournamentPlayerRow, TournamentRow } from "@/lib/supabase/database";
 
 /**
  * Tournament Organizer (16/09/2026, richiesta del coach e di Davdas): tipi e costanti condivisi tra
@@ -24,6 +24,8 @@ export type TournamentStatus = TournamentRow["status"];
 export const VISIBILITIES = ["public", "private"] as const;
 export type Visibility = (typeof VISIBILITIES)[number];
 export type TournamentInvite = TournamentInviteRow & { profile?: Profile | null };
+/** Arbitri (05/10/2026): gestiscono partite, ritiri, check-in e avvio; li nomina l'organizzatore. */
+export type TournamentJudge = TournamentJudgeRow & { profile?: Profile | null };
 
 /** Link d'invito di un torneo privato: /t/<tag>/<codice>. Per i tornei pubblici il codice è ignorato. */
 export function tournamentInviteLink(siteUrl: string, tag: string, code: string): string {
@@ -93,6 +95,11 @@ export function normalizeTag(raw: string): string | null {
   return TAG_RE.test(tag) ? tag : null;
 }
 
+/** Torneo a eliminazione diretta: numero di turni dal numero di partite del primo turno (0 se il tabellone non c'è). */
+export function totalRounds(matches: Pick<TournamentMatch, "round">[]): number {
+  return matches.reduce((max, m) => Math.max(max, m.round), 0);
+}
+
 /** Quanti mazzi deve consegnare ogni giocatore. */
 export function decksRequired(t: Pick<Tournament, "deck_mode" | "conquest_decks">): number {
   return t.deck_mode === "conquest" ? t.conquest_decks : 1;
@@ -120,4 +127,10 @@ export function tournamentShortLink(siteUrl: string, tag: string): string {
  */
 export function bestOfLabel(labels: { bestOf: string; singleGame: string }, n: number): string {
   return n === 1 ? labels.singleGame : fill(labels.bestOf, { n });
+}
+
+/** "Al meglio delle 3 · finale al meglio delle 5" quando la finale ha una lunghezza sua (05/10/2026). */
+export function bestOfSummary(labels: { bestOf: string; singleGame: string; finalBestOf: string }, bestOf: number, finalBestOf: number | null | undefined): string {
+  const base = bestOfLabel(labels, bestOf);
+  return finalBestOf && finalBestOf !== bestOf ? `${base} · ${fill(labels.finalBestOf, { label: bestOfLabel(labels, finalBestOf).toLowerCase() })}` : base;
 }

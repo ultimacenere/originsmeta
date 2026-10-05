@@ -88,6 +88,7 @@ export async function NotificationsJump({ locale, supabase, userId }: { locale: 
 function notificationText(n: NotificationItem, L: FollowLabels["notifications"]): string {
   const name = n.actor ? authorName(n.actor) : L.someone;
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
+  if (n.kind === "match_ready") return fillFollowLabel(L.matchReady, { name });
   if (n.kind === "guide_published") return n.guideTitle ? fillFollowLabel(L.guidePublished, { name, guide: n.guideTitle }) : fillFollowLabel(L.guideGone, { name });
   if (n.kind === "comic_published") return n.comicTitle ? fillFollowLabel(L.comicPublished, { name, comic: n.comicTitle }) : fillFollowLabel(L.comicGone, { name });
   if (n.kind === "deck_set_published") return n.setName ? fillFollowLabel(L.deckSetPublished, { name, deck: n.setName }) : fillFollowLabel(L.deckSetGone, { name });
@@ -106,7 +107,7 @@ function NotificationCard({ item: n, locale, L }: { item: NotificationItem; loca
       <span className="flex min-w-0 flex-1 basis-48 flex-col gap-1.5">
         <span className="flex flex-wrap items-center gap-2">
           {unread ? <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{L.newBadge}</span> : null}
-          <span className={`stat-pill text-[11px] font-semibold uppercase ${n.kind === "live" ? "bg-crimson-deep text-chalk" : "bg-sky text-ink"}`}>{L.kinds[n.kind]}</span>
+          <span className={`stat-pill text-[11px] font-semibold uppercase ${n.kind === "live" ? "bg-crimson-deep text-chalk" : n.kind === "match_ready" ? "bg-gold text-ink" : "bg-sky text-ink"}`}>{L.kinds[n.kind]}</span>
         </span>
         <span className={`break-words leading-snug ${unread ? "font-bold text-pale" : "text-pale-muted"}`}>{notificationText(n, L)}</span>
         <span className="font-mono text-xs text-pale-muted">

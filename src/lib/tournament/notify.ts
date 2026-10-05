@@ -155,10 +155,10 @@ function nameOf(names: Map<string, string>, id: string | null, fallback = "?"): 
   return id ? names.get(id) ?? fallback : fallback;
 }
 
-type CreatedInfo = TInfo & { starts_at: string; size: number; deck_mode: string; conquest_decks: number; best_of: number; listed: boolean };
+type CreatedInfo = TInfo & { starts_at: string; size: number; deck_mode: string; conquest_decks: number; best_of: number; final_best_of: number | null; checkin: boolean; listed: boolean };
 
 async function createdMessage(sb: Client, tid: string): Promise<string | null> {
-  const { data } = await sb.from("tournaments").select("id, slug, tag, name, lang, status, visibility, starts_at, size, deck_mode, conquest_decks, best_of, listed").eq("id", tid).maybeSingle();
+  const { data } = await sb.from("tournaments").select("id, slug, tag, name, lang, status, visibility, starts_at, size, deck_mode, conquest_decks, best_of, final_best_of, checkin, listed").eq("id", tid).maybeSingle();
   const t = data as unknown as CreatedInfo | null;
   // come readTournament: mai un torneo privato, e solo finché è aperto alle iscrizioni
   if (!t || t.visibility !== "public" || t.status !== "open") return null;
@@ -168,12 +168,17 @@ async function createdMessage(sb: Client, tid: string): Promise<string | null> {
     t.deck_mode === "conquest"
       ? { en: `Conquest, ${t.conquest_decks} decks`, it: `Conquest, ${t.conquest_decks} mazzi`, es: `Conquest, ${t.conquest_decks} mazos` }
       : { en: "one deck", it: "un mazzo", es: "un mazo" };
+  // finale con una lunghezza sua e check-in (05/10/2026)
+  const bo = t.final_best_of && t.final_best_of !== t.best_of ? { en: `Bo${t.best_of}, final Bo${t.final_best_of}`, it: `Bo${t.best_of}, finale Bo${t.final_best_of}`, es: `Bo${t.best_of}, final Bo${t.final_best_of}` } : { en: `Bo${t.best_of}`, it: `Bo${t.best_of}`, es: `Bo${t.best_of}` };
+  const checkin = t.checkin
+    ? { en: " Check-in opens 2 hours before the start and closes 5 minutes before: miss it and you don't play.", it: " Il check-in apre 2 ore prima dell'inizio e chiude 5 minuti prima: chi non lo fa non gioca.", es: " El check-in abre 2 horas antes del inicio y cierra 5 minutos antes: si no lo haces, no juegas." }
+    : { en: "", it: "", es: "" };
   return [
     header(t),
     ...inLanguages(t.lang, {
-      en: `New tournament, sign-ups are open: ${when} · ${mode.en} · Bo${t.best_of} · ${t.size} players.`,
-      it: `Nuovo torneo, iscrizioni aperte: ${when} · ${mode.it} · Bo${t.best_of} · ${t.size} giocatori.`,
-      es: `Nuevo torneo, inscripciones abiertas: ${when} · ${mode.es} · Bo${t.best_of} · ${t.size} jugadores.`,
+      en: `New tournament, sign-ups are open: ${when} · ${mode.en} · ${bo.en} · ${t.size} players.${checkin.en}`,
+      it: `Nuovo torneo, iscrizioni aperte: ${when} · ${mode.it} · ${bo.it} · ${t.size} giocatori.${checkin.it}`,
+      es: `Nuevo torneo, inscripciones abiertas: ${when} · ${mode.es} · ${bo.es} · ${t.size} jugadores.${checkin.es}`,
     }),
     ...links(t),
   ].join("\n");
@@ -273,16 +278,43 @@ async function finishedMessage(sb: Client, tid: string): Promise<string | null> 
 
 /* ---------- invio ---------- */
 
+/** Nuovi tentativi quando Discord rallenta (429) o sbaglia (5xx): a 64 giocatori sono 63 risultati in una sera (05/10/2026). */
+const RETRIES = 2;
+/** Attesa massima prima di riprovare: oltre, il messaggio si perde (meglio che tenere occupata la funzione). */
+const MAX_WAIT_MS = 8000;
+
+/** Quanto aspettare secondo Discord (`retry_after` in secondi nel corpo, o l'intestazione Retry-After), entro MAX_WAIT_MS. */
+async function retryDelay(res: Response, attempt: number): Promise<number> {
+  let seconds = Number(res.headers.get("retry-after"));
+  try {
+    const j = (await res.clone().json()) as { retry_after?: number };
+    if (typeof j.retry_after === "number") seconds = j.retry_after;
+  } catch {
+    // corpo non JSON: resta l'intestazione
+  }
+  const ms = Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : 1000 * (attempt + 1);
+  return Math.min(MAX_WAIT_MS, Math.ceil(ms) + 100);
+}
+
 async function post(url: string, content: string): Promise<void> {
   const body = content.length > DISCORD_MAX ? `${content.slice(0, DISCORD_MAX - 1)}…` : content;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ content: body, allowed_mentions: { parse: [] } }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-  });
-  if (!res.ok) console.error("[tournaments] notify: Discord ha risposto", res.status);
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ content: body, allowed_mentions: { parse: [] } }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (res.ok) return;
+    const again = (res.status === 429 || res.status >= 500) && attempt < RETRIES;
+    if (!again) {
+      console.error("[tournaments] notify: Discord ha risposto", res.status, attempt ? `dopo ${attempt} tentativi` : "");
+      return;
+    }
+    const wait = await retryDelay(res, attempt);
+    await new Promise((r) => setTimeout(r, wait));
+  }
 }
 
 /** Stesso annuncio due volte dalla stessa istanza (due azioni quasi simultanee): il secondo si scarta. */

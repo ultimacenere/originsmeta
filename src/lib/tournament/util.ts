@@ -3,11 +3,12 @@ import { isLocale } from "@/lib/i18n";
 import { RULES } from "@/lib/deckrules";
 import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
+import { NO_SHOW_RANGE } from "./rules";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
 
 /** Validazione lato server del modulo "Organizza un torneo" (creazione e modifica). Solo testo semplice, niente HTML. */
 
-export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "lang" | "discord" | "cover" | "listing" | "visibility";
+export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "finalBestOf" | "noShow" | "lang" | "discord" | "cover" | "listing" | "visibility";
 
 const LIMITS = { nameMin: 3, nameMax: 60, textMax: 2000 };
 const DISCORD_HOSTS = ["discord.gg", "discord.com", "discordapp.com"];
@@ -90,6 +91,18 @@ export function parseTournamentForm(
 
   const bestOf = Number(fd.get("best_of"));
   if (!(BEST_OF_OPTIONS as readonly number[]).includes(bestOf)) return { ok: false, error: "bestOf" };
+  // 05/10/2026 (regole della Crimson Cup): finale con una lunghezza sua, check-in e lista d'attesa, liste segrete,
+  // vittoria a tavolino dopo N minuti di assenza. Vuoto = spento.
+  const finalRaw = String(fd.get("final_best_of") ?? "").trim();
+  const finalBestOf = finalRaw ? Number(finalRaw) : null;
+  if (finalBestOf !== null && !(BEST_OF_OPTIONS as readonly number[]).includes(finalBestOf)) return { ok: false, error: "finalBestOf" };
+  const noShowRaw = String(fd.get("no_show_minutes") ?? "").trim();
+  const noShow = noShowRaw ? Number(noShowRaw) : null;
+  if (noShow !== null && (!Number.isInteger(noShow) || noShow < NO_SHOW_RANGE.min || noShow > NO_SHOW_RANGE.max)) return { ok: false, error: "noShow" };
+  const on = (key: string) => {
+    const v = fd.get(key);
+    return v === "on" || v === "true";
+  };
 
   const lang = String(fd.get("lang") ?? "");
   if (!isLocale(lang)) return { ok: false, error: "lang" };
@@ -124,6 +137,10 @@ export function parseTournamentForm(
       conquest_decks: conquestDecks,
       conquest_min_different: conquestMin,
       best_of: bestOf,
+      final_best_of: finalBestOf === bestOf ? null : finalBestOf,
+      checkin: on("checkin"),
+      hidden_decklists: on("hidden_decklists"),
+      no_show_minutes: noShow,
       discord_url: discord.value,
       listed,
       visibility,

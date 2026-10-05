@@ -241,10 +241,18 @@ export type TournamentRow = {
   report: string | null;
   /** pubblico per tutti; privato solo per organizzatore, admin, iscritti e invitati */
   visibility: "public" | "private";
+  /** 05/10/2026 (blocco TORNEO CRIMSON): check-in 2 ore / 5 minuti prima e lista d'attesa */
+  checkin: boolean;
+  /** l'avversario vede solo le Leggendarie; liste pubbliche dalla top 4 */
+  hidden_decklists: boolean;
+  /** lunghezza della finale (null = come le altre partite) */
+  final_best_of: number | null;
+  /** minuti di assenza prima della vittoria a tavolino (null = niente tavolino) */
+  no_show_minutes: number | null;
   created_at: string;
   updated_at: string;
 };
-export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "report" | "created_at" | "updated_at" | "listed" | "cover_url" | "discord_url" | "format" | "visibility"> & {
+export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "report" | "created_at" | "updated_at" | "listed" | "cover_url" | "discord_url" | "format" | "visibility" | "checkin" | "hidden_decklists" | "final_best_of" | "no_show_minutes"> & {
   id?: string;
   tag?: string;
   status?: TournamentRow["status"];
@@ -254,18 +262,24 @@ export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "re
   discord_url?: string | null;
   format?: "single_elim";
   visibility?: TournamentRow["visibility"];
+  checkin?: boolean;
+  hidden_decklists?: boolean;
+  final_best_of?: number | null;
+  no_show_minutes?: number | null;
 };
 export type TournamentInviteRow = { tournament_id: string; user_id: string; invited_by: string | null; created_at: string };
 export type TournamentSecretRow = { tournament_id: string; invite_code: string; updated_at: string };
 export type TournamentPlayerRow = {
   tournament_id: string;
   user_id: string;
-  status: "registered" | "dropped" | "disqualified";
+  status: "registered" | "waitlist" | "dropped" | "disqualified";
   decks_submitted: boolean;
+  checked_in_at: string | null;
   created_at: string;
   updated_at: string;
 };
-export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; created_at: string; updated_at: string };
+export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; legendaries: string[]; created_at: string; updated_at: string };
+export type TournamentJudgeRow = { tournament_id: string; user_id: string; added_by: string | null; created_at: string };
 export type TournamentMessageRow = { id: number; match_id: string; user_id: string; body: string; created_at: string };
 export type TournamentMatchRow = {
   id: string;
@@ -281,6 +295,11 @@ export type TournamentMatchRow = {
   reported_by: string | null;
   forfeit: boolean;
   note: string | null;
+  /** 05/10/2026: quando la partita ha avuto i due giocatori, quando ciascuno ha aperto la stanza, quando è arrivato il primo referto */
+  ready_at: string | null;
+  seen_a: string | null;
+  seen_b: string | null;
+  reported_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -315,9 +334,9 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready";
   actor_id: string;
-  /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente> */
+  /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente>, /tournaments/<slug>/match/<id> */
   target: string;
   created_at: string;
   read_at: string | null;
@@ -672,6 +691,27 @@ export type Database = {
           },
         ];
       };
+      tournament_judges: {
+        Row: TournamentJudgeRow;
+        Insert: { tournament_id: string; user_id: string; added_by?: string | null };
+        Update: Partial<TournamentJudgeRow>;
+        Relationships: [
+          {
+            foreignKeyName: "tournament_judges_tournament_id_fkey";
+            columns: ["tournament_id"];
+            isOneToOne: false;
+            referencedRelation: "tournaments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tournament_judges_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tournament_matches: {
         Row: TournamentMatchRow;
         Insert: Partial<TournamentMatchRow> & { tournament_id: string; round: number; position: number };
@@ -853,6 +893,15 @@ export type Database = {
       invite_player: { Args: { tid: string; uname: string }; Returns: undefined };
       revoke_invite: { Args: { tid: string; uid: string }; Returns: undefined };
       rotate_invite_code: { Args: { tid: string }; Returns: string };
+      /* 05/10/2026, blocco TORNEO CRIMSON */
+      check_in: { Args: { tid: string }; Returns: undefined };
+      is_tournament_staff: { Args: { tid: string }; Returns: boolean };
+      staff_check_in: { Args: { tid: string; uid: string; undo?: boolean }; Returns: undefined };
+      mark_match_seen: { Args: { mid: string }; Returns: boolean };
+      claim_no_show: { Args: { mid: string }; Returns: undefined };
+      add_judge: { Args: { tid: string; uname: string }; Returns: undefined };
+      remove_judge: { Args: { tid: string; uid: string }; Returns: undefined };
+      tournament_legendaries: { Args: { tid: string }; Returns: { user_id: string; legendaries: string[] }[] };
       /** vincoli di video e risorse dei mazzi (schema.sql, blocco VIDEO): funzioni pure, il sito non le chiama */
       deck_text_ok: { Args: { t: string; maxlen: number }; Returns: boolean };
       deck_video_url_ok: { Args: { u: string }; Returns: boolean };

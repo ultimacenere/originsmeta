@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
-import { getInviteCode, getTournament, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getInviteCode, getTournament, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
 import { roundLabel } from "@/lib/tournament/bracket";
-import { bestOfLabel, fill, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
+import { bestOfSummary, fill, totalRounds, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
+import { seatPlan, waitlistPosition } from "@/lib/tournament/rules";
+import { MatchReadyWatcher, type WatchedMatch } from "@/components/MatchReadyWatcher";
 import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
@@ -55,9 +57,10 @@ function PlayerRow({ p, dict }: { p: TournamentPlayer; dict: Awaited<ReturnType<
   return (
     <li className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
       <Avatar profile={p.profile} name={name} size={24} />
-      <span className={`min-w-0 truncate ${p.status === "registered" ? "text-pale" : "text-pale-muted line-through"}`}>{name}</span>
+      <span className={`min-w-0 truncate ${p.status === "registered" || p.status === "waitlist" ? "text-pale" : "text-pale-muted line-through"}`}>{name}</span>
       {badge ? <span className={`${badgePill} ${badgeStyle[badge]} !px-2 !py-0.5 !text-[10px]`}>{dict.community.badges[badge]}</span> : null}
-      {p.decks_submitted ? <span className="ml-auto font-mono text-[11px] text-good">✓</span> : null}
+      {p.checked_in_at ? <span className="ml-auto font-mono text-[10px] uppercase text-good">{dict.tournaments.checkin.pill}</span> : null}
+      {p.decks_submitted ? <span className={`${p.checked_in_at ? "" : "ml-auto "}font-mono text-[11px] text-good`}>✓</span> : null}
     </li>
   );
 }
@@ -83,16 +86,19 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const t = await getTournament(slug, client);
   if (!t) notFound();
 
-  const [players, matches, others, decks, inviteCode] = await Promise.all([
+  const [players, matches, others, decks, inviteCode, judges] = await Promise.all([
     listPlayers(t.id, client),
     listMatches(t.id, client),
     listListedTournaments(30),
-    t.status === "finished" ? listVisibleDecks(t.id, client) : Promise.resolve([]),
+    // a torneo finito tutte le liste; con le liste segrete, a torneo in corso, quelle della top 4 (policy)
+    t.status === "finished" || (t.status === "running" && t.hidden_decklists) ? listVisibleDecks(t.id, client) : Promise.resolve([]),
     // il codice del link d'invito lo leggono solo organizzatore e admin (policy): per gli altri è null
     getInviteCode(client, t.id),
+    listJudges(t.id, client),
   ]);
   const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
   const active = players.filter((p) => p.status === "registered");
+  const waitlist = players.filter((p) => p.status === "waitlist");
   const registeredIds = active.map((p) => p.user_id);
   const submittedIds = active.filter((p) => p.decks_submitted).map((p) => p.user_id);
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
@@ -103,12 +109,32 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const pageUrl = `${siteUrl}${path}`;
   const shortLink = tournamentShortLink(siteUrl, t.tag);
   const viewer = user?.id ?? null;
+  // staff: organizzatore e admin leggono il codice d'invito (policy), gli arbitri sono nella loro tabella (05/10/2026)
+  const isStaff = Boolean(viewer && (inviteCode || judges.some((j) => j.user_id === viewer)));
+  const rounds = totalRounds(matches);
 
   // Banner "il tabellone è partito" (UX-8): la partita del turno più alto di chi guarda, se è ancora da giocare.
   // Chi ha perso (ultima partita confermata) o ha vinto la finale non vede il banner.
   const myMatch = viewer && t.status === "running" && registeredIds.includes(viewer) ? [...matches].filter((m) => m.player_a === viewer || m.player_b === viewer).sort((a, b) => b.round - a.round)[0] : undefined;
   const liveMatch = myMatch && (myMatch.status === "pending" || myMatch.status === "reported" || myMatch.status === "disputed") ? myMatch : undefined;
-  const liveOpponent = liveMatch ? (liveMatch.player_a === viewer ? liveMatch.player_b : liveMatch.player_a) : null;
+  // 05/10/2026: il riquadro "la tua partita è pronta" si aggiorna da solo nel browser (MatchReadyWatcher)
+  const watched: WatchedMatch | null = myMatch ? { id: myMatch.id, round: myMatch.round, player_a: myMatch.player_a, player_b: myMatch.player_b, status: myMatch.status, ready_at: myMatch.ready_at, seen_a: myMatch.seen_a, seen_b: myMatch.seen_b } : null;
+  const roundNames = Object.fromEntries(Array.from({ length: rounds }, (_, i) => [i + 1, roundName(x, i + 1, matches)]));
+  // check-in e lista d'attesa di chi guarda
+  const me = viewer ? players.find((p) => p.user_id === viewer) : undefined;
+  const plan = t.checkin ? seatPlan(players, t.size) : null;
+  const checkinInfo =
+    t.checkin && t.status === "open"
+      ? {
+          locale,
+          startsAt: t.starts_at,
+          status: me?.status === "registered" || me?.status === "waitlist" ? me.status : null,
+          checkedIn: Boolean(me?.checked_in_at),
+          waitlistPosition: viewer ? waitlistPosition(players, viewer) : null,
+          free: plan?.free ?? 0,
+          queuePosition: viewer && plan ? plan.waitlistQueue.indexOf(viewer) + 1 || null : null,
+        }
+      : null;
 
   // Pannello "Torneo creato" (UX-9): solo per l'organizzatore appena arrivato dalla creazione. Per un torneo
   // privato il link da condividere è quello d'invito (il link breve porterebbe a un 404 chi non è invitato).
@@ -122,7 +148,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
     const unix = Math.floor(new Date(t.starts_at).getTime() / 1000);
     readyMessage = fill(td.createdPanel.message, {
       name: t.name,
-      format: `${td.formats[t.format]} · ${td.deckModes[t.deck_mode]} · ${bestOfLabel(td, t.best_of)}`,
+      format: `${td.formats[t.format]} · ${td.deckModes[t.deck_mode]} · ${bestOfSummary(td, t.best_of, t.final_best_of)}`,
       slots: t.size,
       date: `<t:${unix}:F>`,
       link: shareLink,
@@ -203,19 +229,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
         </section>
       ) : null}
 
-      {liveMatch ? (
-        <section className="card-night mt-6 flex flex-wrap items-center justify-between gap-4 p-5" aria-label={x.statuses.running}>
-          <div className="min-w-0">
-            <p className="kicker text-mint">
-              {x.statuses.running} · {roundName(x, liveMatch.round, matches)}
-            </p>
-            <p className="mt-1 font-display text-lg font-extrabold text-chalk">{liveOpponent ? x.liveBanner.title : x.liveBanner.titleWaiting}</p>
-            {liveOpponent ? <p className="mt-1 text-sm text-pale">{fill(x.liveBanner.detail, { name: nameOf.get(liveOpponent) ?? "?" })}</p> : null}
-          </div>
-          <Link href={`${path}/match/${liveMatch.id}`} className="btn btn-primary">
-            {x.liveBanner.cta}
-          </Link>
-        </section>
+      {viewer && t.status === "running" && registeredIds.includes(viewer) ? (
+        <MatchReadyWatcher tournamentId={t.id} viewerId={viewer} initial={watched} names={Object.fromEntries(nameOf)} roundNames={roundNames} matchHrefBase={`${path}/match/`} noShowMinutes={t.no_show_minutes} labels={x} />
       ) : null}
 
       <article className="card-night mt-6 overflow-hidden">
@@ -242,6 +257,11 @@ export default async function TournamentPage({ params, searchParams }: { params:
             </span>
             {badge ? <span className={`${badgePill} ${badgeStyle[badge]}`}>{d.community.badges[badge]}</span> : null}
           </p>
+          {judges.length ? (
+            <p className="mt-2 text-sm text-pale-muted">
+              {x.judges}: <span className="text-pale">{judges.map((j) => authorName(j.profile)).join(", ")}</span>
+            </p>
+          ) : null}
 
           <div className="mt-5 flex flex-wrap gap-2 text-sm">
             <span className="stat-pill border-2 border-sky text-pale">
@@ -249,12 +269,19 @@ export default async function TournamentPage({ params, searchParams }: { params:
             </span>
             <span className="stat-pill bg-night-3 text-pale">{x.formats[t.format]}</span>
             <span className="stat-pill bg-night-3 text-pale">{x.deckModes[t.deck_mode]}</span>
-            <span className="stat-pill bg-night-3 text-pale">{bestOfLabel(x, t.best_of)}</span>
+            <span className="stat-pill bg-night-3 text-pale">{bestOfSummary(x, t.best_of, t.final_best_of)}</span>
+            {t.checkin ? <span className="stat-pill bg-night-3 text-pale">{x.checkin.pillRequired}</span> : null}
+            {t.hidden_decklists ? <span className="stat-pill bg-night-3 text-pale">{x.hiddenPill}</span> : null}
+            {t.no_show_minutes ? <span className="stat-pill bg-night-3 text-pale">{fill(x.noShowPill, { n: t.no_show_minutes })}</span> : null}
             <span className="stat-pill border-2 border-sky font-mono text-pale">
               {active.length} {x.of} {t.size} {x.players}
             </span>
+            {waitlist.length ? <span className="stat-pill border-2 border-gold font-mono text-pale">{fill(x.checkin.waitlistCount, { n: waitlist.length })}</span> : null}
           </div>
           {t.deck_mode === "conquest" ? <p className="mt-2 text-sm text-pale-muted">{fill(x.conquestRule, { n: t.conquest_decks, min: t.conquest_min_different })}</p> : null}
+          {t.checkin ? <p className="mt-1 text-sm text-pale-muted">{x.checkin.rule}</p> : null}
+          {t.hidden_decklists ? <p className="mt-1 text-sm text-pale-muted">{x.hiddenRule}</p> : null}
+          {t.no_show_minutes ? <p className="mt-1 text-sm text-pale-muted">{fill(x.noShowRule, { n: t.no_show_minutes })}</p> : null}
 
           {/* Link breve sempre in chiaro (UX-9): è quello da incollare su Discord */}
           <div className="mt-5 rounded-lg border-2 border-sky bg-night-2/70 p-3">
@@ -300,6 +327,9 @@ export default async function TournamentPage({ params, searchParams }: { params:
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               deckHref={`${path}/deck`}
               manageHref={`${path}/manage`}
+              isStaff={isStaff}
+              checkin={checkinInfo}
+              canWithdraw={Boolean(liveMatch)}
               matches={matches.map((m) => ({ id: m.id, round: m.round, a: m.player_a, b: m.player_b }))}
               matchHrefBase={`${path}/match/`}
               labels={x}
@@ -329,30 +359,44 @@ export default async function TournamentPage({ params, searchParams }: { params:
             </h2>
             {players.length ? (
               <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {players.map((p) => (
-                  <PlayerRow key={p.user_id} p={p} dict={d} />
-                ))}
+                {players
+                  .filter((p) => p.status !== "waitlist")
+                  .map((p) => (
+                    <PlayerRow key={p.user_id} p={p} dict={d} />
+                  ))}
               </ul>
             ) : (
               <p className="mt-2 text-sm text-pale-muted">{x.noPlayers}</p>
             )}
+            {waitlist.length ? (
+              <>
+                <h3 className="mt-5 kicker text-gold">
+                  {x.checkin.waitlistTitle} <span className="font-mono text-pale-muted">{waitlist.length}</span>
+                </h3>
+                <ol className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {waitlist.map((p) => (
+                    <PlayerRow key={p.user_id} p={p} dict={d} />
+                  ))}
+                </ol>
+              </>
+            ) : null}
           </section>
 
           {/* ancora #bracket: la usano i messaggi Discord del tabellone (src/lib/tournament/notify.ts) */}
           <section id="bracket" className="mt-8 scroll-mt-24">
             <h2 className="t-section">{x.bracket}</h2>
             {t.status === "open" || !matches.length ? (
-              <p className="mt-2 text-sm text-pale-muted">{x.bracketSoon}</p>
+              <p className="mt-2 text-sm text-pale-muted">{t.checkin ? x.checkin.bracketSoon : x.bracketSoon}</p>
             ) : (
               <div className="mt-3">
                 {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
-                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: Boolean(inviteCode) }} />
+                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
               </div>
             )}
           </section>
 
           <section className="mt-8">
-            <h2 className="t-section">{x.decklists}</h2>
+            <h2 className="t-section">{t.status === "running" && t.hidden_decklists ? x.top4Decklists : x.decklists}</h2>
             {decks.length ? (
               <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {decks.map((row) => (
@@ -376,7 +420,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-pale-muted">{x.decklistsHidden}</p>
+              <p className="mt-2 text-sm text-pale-muted">{t.hidden_decklists ? x.hiddenRule : x.decklistsHidden}</p>
             )}
           </section>
 

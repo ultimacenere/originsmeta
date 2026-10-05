@@ -13,15 +13,17 @@ import type { InboxStatus } from "./messages";
  *   - `comic_published`: ha pubblicato un fumetto fra le news (pacchetto FUMETTI, 29/09/2026, con `notifyFollowers`);
  *   - `deck_set_published`: ha pubblicato un mazzo torneo, tre mazzi Conquest con una guida (04/10/2026,
  *     `/decks/tournament/<slug>`).
+ *   - `match_ready`: la tua partita di torneo è pronta (05/10/2026, blocco TORNEO CRIMSON): non arriva da chi segui ma
+ *     dal tabellone (`tm_notify_ready`), chi l'ha "causato" è l'avversario; porta alla stanza `/tournaments/<slug>/match/<id>`.
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
  * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published", "match_ready"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
-/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`). */
-export type PublishKind = Exclude<NotificationKind, "live">;
+/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), la partita pronta dal tabellone. */
+export type PublishKind = Exclude<NotificationKind, "live" | "match_ready">;
 
 /** Quanti avvisi mostra la sezione "Notifiche" (i più recenti). */
 export const NOTIFICATIONS_SHOWN = 50;
@@ -50,6 +52,8 @@ const GUIDE_TARGET = /^\/guides\/community\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const PROFILE_TARGET = /^\/u\/([a-z0-9_-]{1,60})$/;
 /** I fumetti (pacchetto FUMETTI): slug di 3-60 caratteri come le guide (community_comics_slug_check). */
 const COMIC_TARGET = /^\/news\/comics\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+/** La stanza di una partita di torneo (05/10/2026, avviso `match_ready`), come la scrive tm_notify_ready. */
+const MATCH_TARGET = /^\/tournaments\/[a-z0-9-]{1,90}\/match\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 function isGuideTarget(target: string): boolean {
   const slug = GUIDE_TARGET.exec(target)?.[1];
@@ -61,9 +65,9 @@ function isComicTarget(target: string): boolean {
   return Boolean(slug && slug.length >= 3 && slug.length <= 60);
 }
 
-/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u. */
+/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u, stanza partita. */
 export function isSafeTarget(target: unknown): target is string {
-  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || DECK_SET_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target));
+  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || DECK_SET_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target) || MATCH_TARGET.test(target));
 }
 
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */

@@ -5548,3 +5548,753 @@ grant execute on function public.notify_followers(text, text, uuid) to authentic
 comment on table public.community_deck_sets is 'Mazzi torneo (04/10/2026): tre mazzi Conquest con una guida, pubblicati dagli utenti. Regole in src/lib/community/deckSets.ts; forma e regole Conquest nel trigger guard_deck_set.';
 comment on table public.deck_set_votes is 'Voti 1–5 dei mazzi torneo: uno per utente, mai sul proprio trio, solo su un trio pubblicato.';
 comment on table public.deck_set_stats_daily is 'Statistiche giornaliere dei mazzi torneo per l''autore (solo totali): le scrive solo bump_deck_set_stat.';
+
+-- =====================================================================================================
+-- ===== 05/10/2026: TORNEO CRIMSON =====
+-- =====================================================================================================
+-- Il torneo di OriginsMeta di metà ottobre (Pierluigi, 05/10/2026: "64+ iscritti con le regole esatte della Crimson
+-- Cup"; decisioni con Davdas: eliminazione diretta, al meglio delle tre con un'ora a turno, sconfitta a tavolino dopo
+-- 15 minuti di assenza, tetto di 64 con lista d'attesa, arbitri). Tutto è facoltativo per torneo: i tornei già creati
+-- hanno le opzioni spente e funzionano come prima.
+--   - check-in (`checkin`): apre 2 ore prima dell'inizio e chiude 5 minuti prima, insieme alla consegna dei mazzi; con
+--     il torneo pieno ci si iscrive in lista d'attesa (`status = 'waitlist'`). Un posto che si libera prima della
+--     chiusura va al primo in lista; all'avvio i posti di chi non ha fatto il check-in vanno a chi è in lista e ha fatto
+--     il check-in, in ordine di arrivo. Niente avvio automatico: avvia l'organizzatore (o un arbitro) all'ora d'inizio.
+--   - liste segrete (`hidden_decklists`): l'avversario vede solo le Leggendarie (`tournament_legendaries`); le liste
+--     complete di chi arriva in semifinale diventano pubbliche, le altre a torneo finito.
+--   - finale al meglio di N (`final_best_of`): vale per l'ultima partita del tabellone (`tm_need`).
+--   - assenza (`no_show_minutes`): dal momento in cui una partita ha i due giocatori (`ready_at`; dal secondo turno,
+--     quando sono finite le due partite che la precedono) chi c'è può chiedere la vittoria a tavolino
+--     (`claim_no_show`) se l'avversario non ha mai aperto la stanza partita (`seen_a`/`seen_b`, segnati da
+--     `mark_match_seen`), né scritto in chat, né refertato.
+--   - arbitri (`tournament_judges`): gestiscono partite, ritiri, scambi, check-in e avvio come l'organizzatore, vedono
+--     mazzi, chat e screenshot; non annullano il torneo, non ne cambiano i dettagli, non gestiscono inviti e arbitri.
+--   - ritiri: chi si ritira a torneo in corso (lui o lo staff) perde la partita in corso; se l'avversario non è ancora
+--     noto, la perde appena arriva (`tm_propagate`).
+--   - avviso "la tua partita è pronta" nella busta del sito (tipo `match_ready`).
+-- Codice: src/lib/tournament/ (types.ts, util.ts, actions.ts, queries.ts), componenti ManagePanel, MatchRoom,
+-- JoinTournament, TournamentForm, MatchReadyWatcher. Tutto è idempotente.
+
+alter table public.tournaments add column if not exists checkin boolean not null default false;
+alter table public.tournaments add column if not exists hidden_decklists boolean not null default false;
+alter table public.tournaments add column if not exists final_best_of int;
+alter table public.tournaments add column if not exists no_show_minutes int;
+alter table public.tournaments drop constraint if exists tournaments_final_best_of_check;
+alter table public.tournaments add constraint tournaments_final_best_of_check check (final_best_of is null or final_best_of in (1, 3, 5));
+alter table public.tournaments drop constraint if exists tournaments_no_show_minutes_check;
+alter table public.tournaments add constraint tournaments_no_show_minutes_check check (no_show_minutes is null or no_show_minutes between 5 and 60);
+
+alter table public.tournament_players add column if not exists checked_in_at timestamptz;
+alter table public.tournament_players drop constraint if exists tournament_players_status_check;
+alter table public.tournament_players add constraint tournament_players_status_check check (status in ('registered', 'waitlist', 'dropped', 'disqualified'));
+
+-- le Leggendarie dei mazzi consegnati, nell'ordine dei codici: le scrive solo il trigger tournament_decks_legendaries
+alter table public.tournament_decks add column if not exists legendaries text[] not null default '{}';
+
+alter table public.tournament_matches add column if not exists ready_at timestamptz;
+alter table public.tournament_matches add column if not exists seen_a timestamptz;
+alter table public.tournament_matches add column if not exists seen_b timestamptz;
+alter table public.tournament_matches add column if not exists reported_at timestamptz;
+
+create table if not exists public.tournament_judges (
+  tournament_id uuid not null references public.tournaments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  added_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  primary key (tournament_id, user_id)
+);
+create index if not exists tournament_judges_user_idx on public.tournament_judges (user_id);
+
+-- ---------- Leggendarie dal codice OM1 (base64url del JSON { n, l, c, x }, src/lib/deckcode.ts) ----------
+create or replace function public.om_code_legendary(code text)
+returns text language plpgsql immutable as $$
+declare
+  at int;
+  b text;
+begin
+  at := position('OM1.' in coalesce(code, ''));
+  if at = 0 then return null; end if;
+  b := translate(substr(code, at + 4), '-_', '+/');
+  b := b || repeat('=', (4 - length(b) % 4) % 4);
+  return left(convert_from(decode(b, 'base64'), 'UTF8')::jsonb ->> 'l', 80);
+exception when others then
+  return null;
+end $$;
+
+create or replace function public.tournament_decks_legendaries()
+returns trigger language plpgsql as $$
+begin
+  new.legendaries := coalesce((
+    select array_agg(coalesce(public.om_code_legendary(c.value), '') order by c.ordinality)
+    from jsonb_array_elements_text(case when jsonb_typeof(new.codes) = 'array' then new.codes else '[]'::jsonb end) with ordinality as c(value, ordinality)
+  ), '{}');
+  return new;
+end $$;
+drop trigger if exists tournament_decks_legendaries on public.tournament_decks;
+create trigger tournament_decks_legendaries before insert or update of codes on public.tournament_decks
+  for each row execute function public.tournament_decks_legendaries();
+update public.tournament_decks set codes = codes where legendaries = '{}' and jsonb_typeof(codes) = 'array' and jsonb_array_length(codes) > 0;
+
+-- ---------- chi gestisce: organizzatore, arbitri, admin ----------
+create or replace function public.is_tournament_staff(tid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and (
+    public.is_admin()
+    or exists (select 1 from public.tournaments t where t.id = tid and t.organizer = auth.uid())
+    or exists (select 1 from public.tournament_judges j where j.tournament_id = tid and j.user_id = auth.uid())
+  );
+$$;
+
+-- Chi chiama è uno dei due giocatori della partita o lo staff del torneo (chat, screenshot).
+create or replace function public.is_match_party(mid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.tournament_matches m
+    where m.id = mid and (m.player_a = auth.uid() or m.player_b = auth.uid() or public.is_tournament_staff(m.tournament_id))
+  );
+$$;
+
+-- Un torneo privato lo vedono anche i suoi arbitri.
+create or replace function public.can_view_tournament(tid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from public.tournaments t
+    where t.id = tid and (
+      t.visibility = 'public'
+      or (auth.uid() is not null and (
+        t.organizer = auth.uid()
+        or public.is_admin()
+        or exists (select 1 from public.tournament_players p where p.tournament_id = t.id and p.user_id = auth.uid())
+        or exists (select 1 from public.tournament_invites i where i.tournament_id = t.id and i.user_id = auth.uid())
+        or exists (select 1 from public.tournament_judges j where j.tournament_id = t.id and j.user_id = auth.uid())
+      ))
+    )
+  );
+$$;
+
+-- Vittorie che servono in una partita: la finale può avere una lunghezza sua (final_best_of).
+create or replace function public.tm_need(tid uuid, rnd int)
+returns int language sql stable set search_path = public, pg_temp as $$
+  select (case
+            when t.final_best_of is not null and rnd = (select max(m.round) from public.tournament_matches m where m.tournament_id = tid) then t.final_best_of
+            else t.best_of
+          end + 1) / 2
+  from public.tournaments t where t.id = tid;
+$$;
+revoke all on function public.tm_need(uuid, int) from public, anon, authenticated;
+
+-- Un giocatore è fra i quattro semifinalisti (o oltre): con le liste segrete, da lì le sue liste sono pubbliche.
+create or replace function public.tm_in_top4(tid uuid, uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from public.tournament_matches m
+    where m.tournament_id = tid and (m.player_a = uid or m.player_b = uid)
+      and m.round >= (select max(r.round) from public.tournament_matches r where r.tournament_id = tid) - 1
+  );
+$$;
+
+-- Chi chiama può leggere le liste complete di uid? Sue, staff, torneo finito; senza liste segrete gli avversari; con le
+-- liste segrete, a torneo in corso, i semifinalisti per tutti.
+create or replace function public.tm_can_see_deck(tid uuid, uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from public.tournaments t
+    where t.id = tid and (
+      uid = auth.uid()
+      or public.is_tournament_staff(tid)
+      or t.status = 'finished'
+      or (not t.hidden_decklists and public.is_opponent_of(tid, uid))
+      or (t.hidden_decklists and t.status = 'running' and public.tm_in_top4(tid, uid))
+    )
+  );
+$$;
+
+drop policy if exists "tournament decks visibility" on public.tournament_decks;
+create policy "tournament decks visibility" on public.tournament_decks for select using (
+  public.can_view_tournament(tournament_id) and public.tm_can_see_deck(tournament_id, user_id)
+);
+
+-- Le Leggendarie dei mazzi: a chi vede le liste e agli avversari (con le liste segrete è tutto quello che vedono).
+create or replace function public.tournament_legendaries(tid uuid)
+returns table (user_id uuid, legendaries text[]) language sql stable security definer set search_path = public, pg_temp as $$
+  select d.user_id, d.legendaries from public.tournament_decks d
+  where d.tournament_id = tid and public.can_view_tournament(tid)
+    and (public.tm_can_see_deck(tid, d.user_id) or public.is_opponent_of(tid, d.user_id));
+$$;
+revoke all on function public.tournament_legendaries(uuid) from public;
+grant execute on function public.tournament_legendaries(uuid) to anon, authenticated;
+
+alter table public.tournament_judges enable row level security;
+drop policy if exists "tournament judges are public" on public.tournament_judges;
+create policy "tournament judges are public" on public.tournament_judges for select using (public.can_view_tournament(tournament_id));
+grant select on public.tournament_judges to anon, authenticated;
+-- si scrive solo con add_judge / remove_judge
+
+-- ---------- avviso "la tua partita è pronta" ----------
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready'));
+-- il registro degli invii ha lo stesso elenco (i test lo confrontano), anche se gli avvisi del tabellone non ci passano
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready'));
+
+-- Un avviso a ciascuno dei due giocatori (chi l'ha "causato" è l'avversario). Uno per partita e avversario: dopo uno
+-- scambio arriva quello nuovo. Un errore qui non deve mai fermare il tabellone.
+create or replace function public.tm_notify_ready(mid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  s text;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.player_a is null or m.player_b is null or m.status <> 'pending' then return; end if;
+  select t.slug into s from public.tournaments t where t.id = m.tournament_id;
+  if s is null or s !~ '^[a-z0-9-]{1,90}$' then return; end if;
+  insert into public.notifications (user_id, kind, actor_id, target, event_key) values
+    (m.player_a, 'match_ready', m.player_b, '/tournaments/' || s || '/match/' || m.id, 'match:' || m.id || ':' || m.player_b),
+    (m.player_b, 'match_ready', m.player_a, '/tournaments/' || s || '/match/' || m.id, 'match:' || m.id || ':' || m.player_a)
+  on conflict (user_id, kind, event_key) do nothing;
+exception when others then
+  raise notice 'tm_notify_ready: %', sqlerrm;
+end $$;
+revoke all on function public.tm_notify_ready(uuid) from public, anon, authenticated;
+
+-- ---------- tabellone: propagazione, partita pronta, ritiri ----------
+-- Scrive il vincitore nello slot della partita successiva. Se lo slot cambia, la presenza di quel lato si azzera; quando
+-- la partita ha i due giocatori diventa "pronta" (ready_at, avviso). Se uno dei due si è ritirato, la partita va
+-- all'altro a tavolino e si propaga ancora (ritirati tutti e due: passa player_a, che perderà la prossima).
+create or replace function public.tm_propagate(mid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  drop_a boolean;
+  drop_b boolean;
+  w uuid;
+  need int;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.winner is null then return; end if;
+  select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2 for update;
+  if not found then return; end if;
+  if m.position % 2 = 0 then
+    if nm.player_a is distinct from m.winner then
+      update public.tournament_matches set player_a = m.winner, seen_a = null, ready_at = null where id = nm.id;
+    end if;
+  else
+    if nm.player_b is distinct from m.winner then
+      update public.tournament_matches set player_b = m.winner, seen_b = null, ready_at = null where id = nm.id;
+    end if;
+  end if;
+  select * into nm from public.tournament_matches where id = nm.id;
+  if nm.player_a is null or nm.player_b is null or nm.status <> 'pending' then return; end if;
+  select coalesce(bool_or(p.user_id = nm.player_a and p.status = 'dropped'), false), coalesce(bool_or(p.user_id = nm.player_b and p.status = 'dropped'), false)
+    into drop_a, drop_b
+    from public.tournament_players p where p.tournament_id = nm.tournament_id and p.user_id in (nm.player_a, nm.player_b);
+  if drop_a or drop_b then
+    need := public.tm_need(nm.tournament_id, nm.round);
+    w := case when drop_a and not drop_b then nm.player_b else nm.player_a end;
+    update public.tournament_matches
+       set winner = w, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop',
+           score_a = case when w = nm.player_a then need else 0 end, score_b = case when w = nm.player_b then need else 0 end
+     where id = nm.id;
+    perform public.tm_propagate(nm.id);
+    return;
+  end if;
+  if nm.ready_at is null then
+    update public.tournament_matches set ready_at = now() where id = nm.id;
+    perform public.tm_notify_ready(nm.id);
+  end if;
+end $$;
+revoke all on function public.tm_propagate(uuid) from public, anon, authenticated;
+
+-- Dopo la creazione del tabellone: le partite del primo turno con due giocatori sono pronte da subito.
+create or replace function public.tm_after_start(tid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare r record;
+begin
+  for r in
+    update public.tournament_matches set ready_at = now()
+     where tournament_id = tid and round = 1 and status = 'pending' and player_a is not null and player_b is not null and ready_at is null
+    returning id
+  loop
+    perform public.tm_notify_ready(r.id);
+  end loop;
+end $$;
+revoke all on function public.tm_after_start(uuid) from public, anon, authenticated;
+
+-- Ritiro a torneo in corso (lui stesso o lo staff): perde la partita in corso; se l'avversario non è ancora noto la
+-- perderà appena arriva (tm_propagate). Chiamare con la riga del torneo già bloccata.
+create or replace function public.tm_drop(tid uuid, uid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  need int;
+begin
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and user_id = uid;
+  select * into m from public.tournament_matches where tournament_id = tid and status in ('pending', 'reported', 'disputed') and (player_a = uid or player_b = uid) order by round limit 1 for update;
+  if not found or m.player_a is null or m.player_b is null then return; end if;
+  need := public.tm_need(tid, m.round);
+  if m.player_a = uid then
+    update public.tournament_matches set score_a = 0, score_b = need, winner = m.player_b, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop' where id = m.id;
+  else
+    update public.tournament_matches set score_a = need, score_b = 0, winner = m.player_a, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop' where id = m.id;
+  end if;
+  perform public.tm_propagate(m.id);
+end $$;
+revoke all on function public.tm_drop(uuid, uuid) from public, anon, authenticated;
+
+-- Un posto libero prima della chiusura del check-in va al primo della lista d'attesa (ordine di iscrizione).
+create or replace function public.tm_promote_waitlist(tid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+begin
+  select * into t from public.tournaments where id = tid;
+  if not found or not t.checkin or t.status <> 'open' or now() > t.starts_at - interval '5 minutes' then return; end if;
+  select count(*) into n from public.tournament_players where tournament_id = tid and status = 'registered';
+  if n >= t.size then return; end if;
+  update public.tournament_players set status = 'registered'
+   where tournament_id = tid and user_id in (
+     select w.user_id from public.tournament_players w where w.tournament_id = tid and w.status = 'waitlist' order by w.created_at, w.user_id limit t.size - n
+   );
+end $$;
+revoke all on function public.tm_promote_waitlist(uuid) from public, anon, authenticated;
+
+-- Avvio automatico (torneo pieno, mazzi di tutti): mai con il check-in, che parte all'ora d'inizio.
+create or replace function public.tm_autostart(tid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  total int;
+  ready int;
+  seeded uuid[];
+begin
+  select * into t from public.tournaments where id = tid;
+  if not found or t.status <> 'open' or t.checkin then return; end if;
+  select count(*), count(*) filter (where decks_submitted) into total, ready from public.tournament_players where tournament_id = tid and status = 'registered';
+  if total < t.size or ready < total then return; end if;
+  select array_agg(user_id order by random()) into seeded from public.tournament_players where tournament_id = tid and status = 'registered';
+  perform public.tm_start(tid, seeded);
+  perform public.tm_after_start(tid);
+end $$;
+revoke all on function public.tm_autostart(uuid) from public, anon, authenticated;
+
+-- ---------- RPC: iscrizione, lista d'attesa, check-in, consegna dei mazzi ----------
+create or replace function public.join_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+  w int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if t.visibility = 'private' and t.organizer <> auth.uid() and not public.is_admin()
+     and not exists (select 1 from public.tournament_invites i where i.tournament_id = tid and i.user_id = auth.uid()) then
+    raise exception 'invite_required';
+  end if;
+  if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
+  if exists (select 1 from public.tournament_judges where tournament_id = tid and user_id = auth.uid()) then raise exception 'judge_is_player'; end if;
+  select count(*) filter (where status = 'registered'), count(*) filter (where status = 'waitlist') into n, w from public.tournament_players where tournament_id = tid;
+  if n >= t.size then
+    -- lista d'attesa solo con il check-in, al massimo quanto i posti
+    if not t.checkin or w >= t.size then raise exception 'full'; end if;
+    insert into public.tournament_players (tournament_id, user_id, status) values (tid, auth.uid(), 'waitlist');
+    return;
+  end if;
+  insert into public.tournament_players (tournament_id, user_id) values (tid, auth.uid());
+  perform public.tm_autostart(tid);
+end $$;
+revoke all on function public.join_tournament(uuid) from public, anon;
+grant execute on function public.join_tournament(uuid) to authenticated;
+
+-- Ritiro: a iscrizioni aperte toglie l'iscrizione (e i mazzi) e libera il posto per la lista d'attesa; a torneo in
+-- corso è un ritiro vero (tm_drop).
+create or replace function public.leave_tournament(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  p public.tournament_players%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status = 'running' then
+    select * into p from public.tournament_players where tournament_id = tid and user_id = auth.uid();
+    if not found or p.status <> 'registered' then raise exception 'not_registered'; end if;
+    perform public.tm_drop(tid, auth.uid());
+    return;
+  end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  delete from public.tournament_decks where tournament_id = tid and user_id = auth.uid();
+  delete from public.tournament_players where tournament_id = tid and user_id = auth.uid();
+  perform public.tm_promote_waitlist(tid);
+end $$;
+revoke all on function public.leave_tournament(uuid) from public, anon;
+grant execute on function public.leave_tournament(uuid) to authenticated;
+
+-- Con il check-in la consegna dei mazzi chiude insieme al check-in (5 minuti prima dell'inizio).
+create or replace function public.submit_tournament_decks(tid uuid, codes jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  expected int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if not exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid() and status in ('registered', 'waitlist')) then raise exception 'not_registered'; end if;
+  if t.checkin and now() > t.starts_at - interval '5 minutes' then raise exception 'decks_closed'; end if;
+  expected := case when t.deck_mode = 'conquest' then t.conquest_decks else 1 end;
+  if jsonb_typeof(codes) <> 'array' or jsonb_array_length(codes) <> expected then raise exception 'decks_count'; end if;
+  insert into public.tournament_decks (tournament_id, user_id, codes) values (tid, auth.uid(), codes)
+    on conflict (tournament_id, user_id) do update set codes = excluded.codes;
+  update public.tournament_players set decks_submitted = true where tournament_id = tid and user_id = auth.uid();
+  perform public.tm_autostart(tid);
+end $$;
+revoke all on function public.submit_tournament_decks(uuid, jsonb) from public, anon;
+grant execute on function public.submit_tournament_decks(uuid, jsonb) to authenticated;
+
+-- Check-in del giocatore: dalle 2 ore prima; per gli iscritti fino a 5 minuti prima, per la lista d'attesa fino
+-- all'avvio. Servono i mazzi consegnati.
+create or replace function public.check_in(tid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  p public.tournament_players%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if not t.checkin then raise exception 'checkin_off'; end if;
+  select * into p from public.tournament_players where tournament_id = tid and user_id = auth.uid();
+  if not found or p.status not in ('registered', 'waitlist') then raise exception 'not_registered'; end if;
+  if not p.decks_submitted then raise exception 'decks_missing'; end if;
+  if now() < t.starts_at - interval '2 hours' then raise exception 'checkin_not_open'; end if;
+  if p.status = 'registered' and now() > t.starts_at - interval '5 minutes' then raise exception 'checkin_closed'; end if;
+  update public.tournament_players set checked_in_at = coalesce(checked_in_at, now()) where tournament_id = tid and user_id = auth.uid();
+end $$;
+revoke all on function public.check_in(uuid) from public, anon;
+grant execute on function public.check_in(uuid) to authenticated;
+
+-- Check-in fatto dallo staff (un giocatore con problemi di connessione, un ritardo concesso): a qualsiasi ora prima
+-- dell'avvio, sempre con i mazzi consegnati. `undo` lo toglie.
+create or replace function public.staff_check_in(tid uuid, uid uuid, undo boolean default false)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  p public.tournament_players%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if not t.checkin then raise exception 'checkin_off'; end if;
+  select * into p from public.tournament_players where tournament_id = tid and user_id = uid;
+  if not found or p.status not in ('registered', 'waitlist') then raise exception 'not_registered'; end if;
+  if undo then
+    update public.tournament_players set checked_in_at = null where tournament_id = tid and user_id = uid;
+    return;
+  end if;
+  if not p.decks_submitted then raise exception 'decks_missing'; end if;
+  update public.tournament_players set checked_in_at = coalesce(checked_in_at, now()) where tournament_id = tid and user_id = uid;
+end $$;
+revoke all on function public.staff_check_in(uuid, uuid, boolean) from public, anon;
+grant execute on function public.staff_check_in(uuid, uuid, boolean) to authenticated;
+
+-- ---------- RPC dello staff (organizzatore, arbitri, admin) ----------
+-- Avvio. Con il check-in l'ordine lo decide il database: entrano gli iscritti con il check-in, poi chi è in lista
+-- d'attesa e l'ha fatto, in ordine di arrivo, fino ai posti; ordine casuale; `seeded` è ignorato. Si può avviare solo
+-- dopo la chiusura del check-in.
+create or replace function public.start_tournament(tid uuid, seeded uuid[])
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  picked uuid[];
+  free int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if t.checkin then
+    if now() < t.starts_at - interval '5 minutes' then raise exception 'checkin_still_open'; end if;
+    select coalesce(array_agg(user_id), '{}') into picked from public.tournament_players
+     where tournament_id = tid and status = 'registered' and checked_in_at is not null and decks_submitted;
+    free := t.size - coalesce(array_length(picked, 1), 0);
+    if free > 0 then
+      picked := picked || coalesce((
+        select array_agg(w.user_id order by w.checked_in_at, w.created_at) from (
+          select user_id, checked_in_at, created_at from public.tournament_players
+           where tournament_id = tid and status = 'waitlist' and checked_in_at is not null and decks_submitted
+           order by checked_in_at, created_at limit free
+        ) w
+      ), '{}');
+    end if;
+    update public.tournament_players set status = 'registered' where tournament_id = tid and status = 'waitlist' and user_id = any(picked);
+    select array_agg(x order by random()) into picked from unnest(picked) x;
+    perform public.tm_start(tid, coalesce(picked, '{}'));
+  else
+    perform public.tm_start(tid, seeded);
+  end if;
+  perform public.tm_after_start(tid);
+end $$;
+revoke all on function public.start_tournament(uuid, uuid[]) from public, anon;
+grant execute on function public.start_tournament(uuid, uuid[]) to authenticated;
+
+-- Scambio di due giocatori fra partite ancora da giocare dello stesso turno: le due partite ripartono (presenza
+-- azzerata, nuova ora "pronta", nuovo avviso).
+create or replace function public.swap_players(tid uuid, u1 uuid, u2 uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  m1 public.tournament_matches%rowtype;
+  m2 public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if u1 = u2 then raise exception 'bad_swap'; end if;
+  select * into m1 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u1 or player_b = u1) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  select * into m2 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u2 or player_b = u2) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  if m1.round <> m2.round then raise exception 'bad_swap'; end if;
+  if m1.id = m2.id then
+    update public.tournament_matches set player_a = player_b, player_b = player_a, seen_a = seen_b, seen_b = seen_a where id = m1.id;
+    return;
+  end if;
+  if m1.player_a = u1 then update public.tournament_matches set player_a = u2 where id = m1.id; else update public.tournament_matches set player_b = u2 where id = m1.id; end if;
+  if m2.player_a = u2 then update public.tournament_matches set player_a = u1 where id = m2.id; else update public.tournament_matches set player_b = u1 where id = m2.id; end if;
+  update public.tournament_matches
+     set seen_a = null, seen_b = null, ready_at = case when player_a is not null and player_b is not null then now() else null end
+   where id in (m1.id, m2.id);
+  perform public.tm_notify_ready(m1.id);
+  perform public.tm_notify_ready(m2.id);
+end $$;
+revoke all on function public.swap_players(uuid, uuid, uuid) from public, anon;
+grant execute on function public.swap_players(uuid, uuid, uuid) to authenticated;
+
+-- Referto di un giocatore (conta anche come presenza). Su una partita contestata si può refertare di nuovo: il nuovo
+-- referto riparte da capo (reported) e l'avversario conferma o contesta.
+create or replace function public.report_match_result(mid uuid, a int, b int)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  me uuid := auth.uid();
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if me <> m.player_a and me <> m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if m.status not in ('pending', 'reported', 'disputed') then raise exception 'already_confirmed'; end if;
+  need := public.tm_need(t.id, m.round);
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  update public.tournament_matches
+     set seen_a = case when me = player_a then coalesce(seen_a, now()) else seen_a end,
+         seen_b = case when me = player_b then coalesce(seen_b, now()) else seen_b end
+   where id = mid;
+  if m.status in ('pending', 'disputed') then
+    update public.tournament_matches set score_a = a, score_b = b, status = 'reported', reported_by = me, reported_at = now(), note = null where id = mid;
+  elsif m.reported_by = me then
+    update public.tournament_matches set score_a = a, score_b = b, reported_at = now() where id = mid;
+  elsif m.score_a = a and m.score_b = b then
+    update public.tournament_matches set status = 'confirmed', winner = case when a > b then m.player_a else m.player_b end where id = mid;
+    perform public.tm_propagate(mid);
+  else
+    update public.tournament_matches set status = 'disputed', note = format('%s-%s vs %s-%s', m.score_a, m.score_b, a, b) where id = mid;
+  end if;
+end $$;
+revoke all on function public.report_match_result(uuid, int, int) from public, anon;
+grant execute on function public.report_match_result(uuid, int, int) to authenticated;
+
+-- Risultato imposto dallo staff (anche forfait / assenza). Ripropaga solo se la partita successiva è ancora da giocare.
+create or replace function public.set_match_result(mid uuid, a int, b int, forfeit boolean default false)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  w uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if not public.is_tournament_staff(t.id) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  need := public.tm_need(t.id, m.round);
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  if forfeit and least(a, b) <> 0 then raise exception 'bad_score'; end if;
+  w := case when a > b then m.player_a else m.player_b end;
+  select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2;
+  if found and nm.status <> 'pending' then raise exception 'next_match_started'; end if;
+  if found and m.winner is not null and m.winner <> w then
+    -- lo slot deve contenere ancora il vecchio vincitore, altrimenti qualcuno l'ha già spostato
+    if (m.position % 2 = 0 and nm.player_a is distinct from m.winner) or (m.position % 2 = 1 and nm.player_b is distinct from m.winner) then raise exception 'next_match_started'; end if;
+  end if;
+  update public.tournament_matches set score_a = a, score_b = b, winner = w, status = 'confirmed', forfeit = set_match_result.forfeit, reported_by = null where id = mid;
+  perform public.tm_propagate(mid);
+end $$;
+revoke all on function public.set_match_result(uuid, int, int, boolean) from public, anon;
+grant execute on function public.set_match_result(uuid, int, int, boolean) to authenticated;
+
+-- Ritiro deciso dallo staff: prima dell'avvio toglie l'iscrizione (e il posto va alla lista d'attesa), dopo è tm_drop.
+create or replace function public.drop_player(tid uuid, uid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status = 'open' then
+    delete from public.tournament_decks where tournament_id = tid and user_id = uid;
+    delete from public.tournament_players where tournament_id = tid and user_id = uid;
+    perform public.tm_promote_waitlist(tid);
+    return;
+  end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if not exists (select 1 from public.tournament_players where tournament_id = tid and user_id = uid and status = 'registered') then raise exception 'not_registered'; end if;
+  perform public.tm_drop(tid, uid);
+end $$;
+revoke all on function public.drop_player(uuid, uuid) from public, anon;
+grant execute on function public.drop_player(uuid, uuid) to authenticated;
+
+create or replace function public.finish_tournament(tid uuid, report text default null)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  last_round int;
+  f public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  select max(round) into last_round from public.tournament_matches where tournament_id = tid;
+  select * into f from public.tournament_matches where tournament_id = tid and round = last_round and position = 0;
+  if not found or f.winner is null or f.status not in ('confirmed', 'bye') then raise exception 'final_not_played'; end if;
+  update public.tournaments set status = 'finished', report = left(coalesce(finish_tournament.report, ''), 2000) where id = tid;
+end $$;
+revoke all on function public.finish_tournament(uuid, text) from public, anon;
+grant execute on function public.finish_tournament(uuid, text) to authenticated;
+
+-- ---------- presenza e assenza ----------
+-- Chi gioca apre la stanza partita: da quel momento è "presente" (una volta sola). Solo su una partita pronta.
+create or replace function public.mark_match_seen(mid uuid)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  me uuid := auth.uid();
+begin
+  if me is null then return false; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.player_a is null or m.player_b is null or m.status not in ('pending', 'reported', 'disputed') then return false; end if;
+  if not exists (select 1 from public.tournaments t where t.id = m.tournament_id and t.status = 'running') then return false; end if;
+  if me = m.player_a and m.seen_a is null then
+    update public.tournament_matches set seen_a = now() where id = mid and seen_a is null;
+    return true;
+  elsif me = m.player_b and m.seen_b is null then
+    update public.tournament_matches set seen_b = now() where id = mid and seen_b is null;
+    return true;
+  end if;
+  return false;
+end $$;
+revoke all on function public.mark_match_seen(uuid) from public, anon;
+grant execute on function public.mark_match_seen(uuid) to authenticated;
+
+-- Vittoria a tavolino: passati no_show_minutes da quando la partita è pronta, se l'avversario non ha mai aperto la stanza
+-- né scritto in chat né refertato, chi c'è la chiede e la partita si chiude subito (lo staff può correggerla finché la
+-- successiva non è partita).
+create or replace function public.claim_no_show(mid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  me uuid := auth.uid();
+  opp uuid;
+  need int;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if me <> m.player_a and me <> m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if t.no_show_minutes is null then raise exception 'no_show_off'; end if;
+  if m.status not in ('pending', 'reported') then raise exception 'already_confirmed'; end if;
+  if m.status = 'reported' and m.reported_by <> me then raise exception 'opponent_present'; end if;
+  if m.ready_at is null or now() < m.ready_at + make_interval(mins => t.no_show_minutes) then raise exception 'no_show_too_early'; end if;
+  opp := case when me = m.player_a then m.player_b else m.player_a end;
+  if (me = m.player_a and m.seen_b is not null) or (me = m.player_b and m.seen_a is not null) then raise exception 'opponent_present'; end if;
+  if exists (select 1 from public.tournament_messages x where x.match_id = mid and x.user_id = opp) then raise exception 'opponent_present'; end if;
+  need := public.tm_need(t.id, m.round);
+  update public.tournament_matches
+     set winner = me, status = 'confirmed', forfeit = true, reported_by = null, note = 'no_show',
+         score_a = case when me = m.player_a then need else 0 end, score_b = case when me = m.player_b then need else 0 end,
+         seen_a = case when me = m.player_a then coalesce(seen_a, now()) else seen_a end,
+         seen_b = case when me = m.player_b then coalesce(seen_b, now()) else seen_b end
+   where id = mid;
+  perform public.tm_propagate(mid);
+end $$;
+revoke all on function public.claim_no_show(uuid) from public, anon;
+grant execute on function public.claim_no_show(uuid) to authenticated;
+
+-- ---------- arbitri (solo organizzatore e admin) ----------
+create or replace function public.add_judge(tid uuid, uname text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  target uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  if t.status not in ('open', 'running') then raise exception 'not_open'; end if;
+  select id into target from public.profiles where lower(username) = lower(btrim(replace(uname, '@', ''))) limit 1;
+  if target is null then raise exception 'user_not_found'; end if;
+  if target = t.organizer then raise exception 'already_staff'; end if;
+  if exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = target and p.status in ('registered', 'waitlist')) then raise exception 'judge_is_player'; end if;
+  if (select count(*) from public.tournament_judges j where j.tournament_id = tid) >= 10 then raise exception 'too_many_judges'; end if;
+  insert into public.tournament_judges (tournament_id, user_id, added_by) values (tid, target, auth.uid()) on conflict (tournament_id, user_id) do nothing;
+end $$;
+revoke all on function public.add_judge(uuid, text) from public, anon;
+grant execute on function public.add_judge(uuid, text) to authenticated;
+
+create or replace function public.remove_judge(tid uuid, uid uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare t public.tournaments%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid;
+  if not found then raise exception 'not_found'; end if;
+  if t.organizer <> auth.uid() and not public.is_admin() then raise exception 'forbidden'; end if;
+  delete from public.tournament_judges where tournament_id = tid and user_id = uid;
+end $$;
+revoke all on function public.remove_judge(uuid, uuid) from public, anon;
+grant execute on function public.remove_judge(uuid, uuid) to authenticated;
+
+comment on table public.tournament_judges is 'Arbitri di un torneo (05/10/2026): gestiscono partite, ritiri, check-in e avvio; li nominano solo organizzatore e admin (add_judge, remove_judge).';

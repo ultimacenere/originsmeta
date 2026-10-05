@@ -1,6 +1,6 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { Locale } from "@/lib/i18n";
-import { canListTournaments, type Tournament, type TournamentInvite, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
+import { canListTournaments, type Tournament, type TournamentInvite, type TournamentJudge, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
 
 /**
  * Letture dei tornei. Con il client anonimo (`supabasePublic`, pagine ISR) si vede quello che le policy
@@ -10,9 +10,9 @@ import { canListTournaments, type Tournament, type TournamentInvite, type Tourna
 
 const ORGANIZER = "profile:profiles!tournaments_organizer_fkey(username, display_name, avatar_url, badge, role)";
 /** Colonne di una scheda torneo (`TournamentCard`); esportata per la vetrina dei creator (src/lib/community/creators.ts). */
-export const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
-const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
-const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, created_at, updated_at";
+export const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, final_best_of, checkin, hidden_decklists, no_show_minutes, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
+const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, checked_in_at, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
+const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, ready_at, seen_a, seen_b, reported_at, created_at, updated_at";
 
 type RawTournament = Omit<Tournament, "players"> & { players?: { count: number }[] | number | null };
 
@@ -58,6 +58,26 @@ export async function listVisibleDecks(tid: string, client: Db | null = supabase
   const { data, error } = await client.from("tournament_decks").select("user_id, codes").eq("tournament_id", tid);
   if (error) console.error("[tournaments] listVisibleDecks:", error.message);
   return ((data ?? []) as { user_id: string; codes: unknown }[]).map((r) => ({ user_id: r.user_id, codes: Array.isArray(r.codes) ? r.codes.filter((c): c is string => typeof c === "string") : [] }));
+}
+
+/**
+ * Le Leggendarie dei mazzi consegnati (05/10/2026): quelle che il client può vedere, cioè di chi può leggere le liste
+ * e degli avversari (con le liste segrete l'avversario vede solo queste). Mappa utente → Leggendarie nell'ordine dei mazzi.
+ */
+export async function listLegendaries(tid: string, client: Db | null): Promise<Map<string, string[]>> {
+  if (!client) return new Map();
+  const { data, error } = await client.rpc("tournament_legendaries", { tid });
+  if (error) console.error("[tournaments] listLegendaries:", error.message);
+  const rows = (Array.isArray(data) ? data : []) as { user_id: string; legendaries: unknown }[];
+  return new Map(rows.map((r) => [r.user_id, Array.isArray(r.legendaries) ? r.legendaries.filter((s): s is string => typeof s === "string" && s.length > 0) : []]));
+}
+
+/** Arbitri del torneo con il profilo (pubblici come il torneo). */
+export async function listJudges(tid: string, client: Db | null = supabasePublic()): Promise<TournamentJudge[]> {
+  if (!client) return [];
+  const { data, error } = await client.from("tournament_judges").select("tournament_id, user_id, added_by, created_at, profile:profiles!tournament_judges_user_id_fkey(username, display_name, avatar_url, badge)").eq("tournament_id", tid).order("created_at", { ascending: true });
+  if (error) console.error("[tournaments] listJudges:", error.message);
+  return ((data ?? []) as unknown as TournamentJudge[]) ?? [];
 }
 
 export async function listPlayers(tid: string, client: Db | null = supabasePublic()): Promise<TournamentPlayer[]> {

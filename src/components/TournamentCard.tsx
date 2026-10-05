@@ -39,7 +39,7 @@ export function TournamentCard({ t, locale, dict, compact = false }: { t: Tourna
           <span className="stat-pill bg-night-3 text-pale">{x.deckModes[t.deck_mode]}</span>
           <span className="stat-pill bg-night-3 text-pale">{bestOfLabel(x, t.best_of)}</span>
           <span className="stat-pill border border-sky font-mono text-pale">
-            {t.players ?? 0} {x.of} {t.size} {x.players}
+            {Math.min(t.players ?? 0, t.size)} {x.of} {t.size} {x.players}
           </span>
         </p>
       </div>
