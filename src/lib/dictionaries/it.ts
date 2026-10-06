@@ -40,6 +40,9 @@ export const it: Dictionary = {
     /* il nostro server Discord (24/09/2026): loghino nell'header, tasto nel menu sul telefono */
     discord: "Discord di OriginsMeta",
     discordJoin: "Unisciti al nostro Discord",
+    /* tasto delle donazioni PayPal (06/10/2026): nell'header dopo il selettore lingua, nel menu sul telefono */
+    donate: "Dona ora",
+    donateAria: "Dona ora con PayPal",
   },
   faq: {
     kicker: "Domande",

@@ -6,6 +6,7 @@ import { AccountMenu } from "./AccountMenu";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
 import { DiscordButton, DiscordIconLink } from "./DiscordButton";
+import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 
 /** `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale). */
@@ -133,6 +134,12 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout, player: dict.nav.playerFallback }}
           />
           <LocaleSwitcher locale={locale} label={dict.nav.language} className="hidden sm:flex" />
+          {/* "Dona ora" verso PayPal (Pierluigi, 06/10/2026: "in alto sul menu dopo i selettori"); sotto 640 px sta nel menu.
+              Da 640 a 1535 px la riga è piena e il tasto si accorcia per fasce (vedi PayPalButton.tsx): solo il testo,
+              testo e marchio, e fra 1280 e 1535 px il tondo col monogramma, come il loghino Discord. */}
+          <PayPalButton label={dict.nav.donateAria} placement="header" size="sm" className="hidden shrink-0 sm:inline-flex">
+            {dict.nav.donate}
+          </PayPalButton>
         </div>
         <AutoCloseDetails
           className="relative xl:hidden"
@@ -165,10 +172,13 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               <span className="text-xs text-chalk-muted">{dict.nav.language}</span>
               <LocaleSwitcher locale={locale} label={dict.nav.language} />
             </div>
-            <div className="mt-3 px-3 pb-1 sm:hidden">
+            <div className="mt-3 flex flex-col gap-2 px-3 pb-1 sm:hidden">
               <DiscordButton href={ORIGINSMETA_DISCORD} size="sm" className="w-full justify-center">
                 {dict.nav.discordJoin}
               </DiscordButton>
+              <PayPalButton label={dict.nav.donateAria} placement="menu" size="sm" className="w-full justify-center">
+                {dict.nav.donate}
+              </PayPalButton>
             </div>
           </nav>
         </AutoCloseDetails>
