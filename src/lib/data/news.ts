@@ -70,6 +70,240 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // Post su X del fondatore e CEO di Koin Games, Tim Jooste, del 06/10/2026 (richiesta di Pierluigi del 07/10/2026: "crea una
+    // news su questo tweet del fondatore"): il Digital LGS Program, cioè tornei settimanali, promo e preordini dei set nei negozi
+    // di giochi locali, eventi dal vivo da inizio 2027 e il Set 1 su Kickstarter il 27/10. Solo quello che il post dice; "il primo
+    // gioco di carte digitale a distribuire i set nei negozi" resta un'affermazione sua, non verificata. Al 07/10 nessun post sul
+    // programma nel feed della pagina Steam (controllato). Copertina: key art ufficiale "The Club" (giocatori al tavolo di un
+    // locale), mai usata da una news né dallo slider; è la copertina della guida roadmap-and-dates.
+    slug: "digital-lgs-program",
+    image: "/media/art-the-club.webp",
+    guides: ["origins-tcg-kickstarter", "collector-economy", "roadmap-and-dates"],
+    date: "2026-10-06",
+    title: n(
+      "Digital LGS Program: Origins TCG wants local game stores to host weekly tournaments and sell its sets",
+      "Digital LGS Program: Origins TCG porta tornei settimanali e set in preordine nei negozi di giochi",
+      "Digital LGS Program: Origins TCG lleva torneos semanales y sets en preventa a las tiendas de juegos",
+    ),
+    metaTitle: n("Origins TCG Digital LGS Program: game stores", "Origins TCG nei negozi: il Digital LGS Program", "Origins TCG en tiendas: el Digital LGS Program"),
+    description: n(
+      "Koin Games' founder presents the Digital LGS Program for Origins TCG: weekly tournaments, in-store-only promos and pre-orders of sets at local game stores.",
+      "Il fondatore di Koin Games presenta il Digital LGS Program di Origins TCG: tornei settimanali, promo solo in negozio e preordini dei set nei negozi di giochi.",
+      "El fundador de Koin Games presenta el Digital LGS Program de Origins TCG: torneos semanales, promos solo en tienda y preventas de sets en tiendas de juegos.",
+    ),
+    summary: n(
+      "On 6 October Tim Jooste, founder and CEO of Koin Games, presented the Digital LGS Program on X: local game stores will host weekly Origins tournaments, sell store-only packs and promos and take pre-orders of collectible sets that will not be available in game. In-person events start in early 2027; Set 1 goes live on Kickstarter on 27 October, with stores involved in the launch.",
+      "Il 6 ottobre Tim Jooste, fondatore e CEO di Koin Games, ha presentato su X il Digital LGS Program: i negozi di giochi locali ospiteranno tornei settimanali di Origins, venderanno pacchetti e promo solo in negozio e raccoglieranno i preordini di set da collezione che non saranno disponibili nel gioco. Gli eventi dal vivo partono a inizio 2027; il Set 1 arriva su Kickstarter il 27 ottobre, con i negozi coinvolti nel lancio.",
+      "El 6 de octubre Tim Jooste, fundador y CEO de Koin Games, presentó en X el Digital LGS Program: las tiendas de juegos locales organizarán torneos semanales de Origins, venderán sobres y promos solo en tienda y recogerán preventas de sets de colección que no estarán disponibles en el juego. Los eventos presenciales empiezan a principios de 2027; el Set 1 llega a Kickstarter el 27 de octubre, con las tiendas implicadas en el lanzamiento.",
+    ),
+    highlights: {
+      en: [
+        { label: "The Digital LGS Program", text: "Koin Games' founder presents it on X: Origins sets distributed through local game stores", anchor: "program" },
+        { label: "Tournaments, promos, pre-orders", text: "weekly store tournaments, in-person-only packs and promos, pre-orders of sets not available in game", anchor: "stores" },
+        { label: "Early 2027, Kickstarter on 27 October", text: "in-person events start in early 2027; Set 1 launches on Kickstarter with stores on board, over 30 already interested", anchor: "dates" },
+        { label: "A version for creators", text: "streamers and content creators get a program of their own", anchor: "creators" },
+        { label: "What we don't know", text: "which stores and countries, prices, how a digital set reaches the shelves", anchor: "unknowns" },
+      ],
+      it: [
+        { label: "Il Digital LGS Program", text: "il fondatore di Koin Games lo presenta su X: i set di Origins distribuiti attraverso i negozi di giochi locali", anchor: "programma" },
+        { label: "Tornei, promo, preordini", text: "tornei settimanali in negozio, pacchetti e promo solo dal vivo, preordini di set che nel gioco non ci saranno", anchor: "negozi" },
+        { label: "Inizio 2027, Kickstarter il 27 ottobre", text: "gli eventi dal vivo partono a inizio 2027; il Set 1 arriva su Kickstarter con i negozi a bordo, più di 30 già interessati", anchor: "date" },
+        { label: "Una versione per i creator", text: "streamer e creator di contenuti hanno un programma tutto loro", anchor: "creator" },
+        { label: "Cosa non sappiamo", text: "quali negozi e quali paesi, i prezzi, come un set digitale arriva sugli scaffali", anchor: "cosa-non-sappiamo" },
+      ],
+      es: [
+        { label: "El Digital LGS Program", text: "el fundador de Koin Games lo presenta en X: los sets de Origins, distribuidos a través de tiendas de juegos locales", anchor: "programa" },
+        { label: "Torneos, promos, preventas", text: "torneos semanales en tienda, sobres y promos solo presenciales, preventas de sets que no estarán en el juego", anchor: "tiendas" },
+        { label: "Principios de 2027, Kickstarter el 27 de octubre", text: "los eventos presenciales empiezan a principios de 2027; el Set 1 llega a Kickstarter con las tiendas a bordo, más de 30 ya interesadas", anchor: "fechas" },
+        { label: "Una versión para creadores", text: "streamers y creadores de contenido tienen un programa propio", anchor: "creadores" },
+        { label: "Lo que no sabemos", text: "qué tiendas y qué países, los precios, cómo llega un set digital a las estanterías", anchor: "lo-que-no-sabemos" },
+      ],
+    },
+    body: n(
+      `## The Digital LGS Program {#program}
+
+On 6 October 2026 **Tim Jooste**, founder and CEO of Koin Games, published a long post on X with a short video. He describes an evening at your local game store (LGS) with nothing but your phone: a night of Origins matches against the players of your town, a store-exclusive promo to compete for and a booster of the next collector set to pre-order. The studio calls it the **Digital LGS Program** and, in his words, it makes Origins "the 1st digital card game to distribute sets through local game stores around the world".
+
+That is the founder's claim, not something we can check. What the post does say clearly is the shape of the program: a digital card game with a physical network of stores that run its events and sell its sets.
+
+## What stores get and what players get {#stores}
+
+The post lists four things:
+
+- **Local weekly tournaments**, played at the store.
+- **Exclusive in-person-only packs and promos**: cards you only get by showing up.
+- **Pre-orders of the upcoming collectible sets**, which will not be available in game, with rewards for supporting your store.
+- And, as the post puts it, meeting real people, playing and making friends in person.
+
+Stores interested in joining are invited to contact Jooste directly: his direct messages on X are open, and he offers a call.
+
+## Dates: early 2027, with the Kickstarter on 27 October {#dates}
+
+- The **in-person events officially start in early 2027**. Stores, the post says, don't have to wait until then.
+- **Set 1 goes live on Kickstarter on 27 October 2026**: the same date the founder gave on 17 September and the demo shows in its menu (our [Kickstarter guide](/en/guides/origins-tcg-kickstarter) collects everything confirmed so far). Unlike most card game campaigns, Jooste writes, Koin is working with local stores on the launch itself.
+- In **two months** the studio has already talked with **more than 30 stores** interested in joining.
+
+## Creators have a version of their own {#creators}
+
+The post adds that a version of the program exists for streamers and content creators, without details. The call to action is for players and collectors too: tag your favourite store or TCG creator under the post.
+
+## Why it matters {#why}
+
+Origins has always described itself as free to compete and built for collectors: ranked play costs nothing and the collection lives on [two tiers of cards](/en/guides/collector-economy), competitive and collectible. Until now the collectible side had only been announced in digital form: the Alpha Edition packs on Kickstarter, trading on the Steam Community Market; the only physical hint was the [metal cards](/en/news/metal-cards-tease) filmed in March. A store program gives it a physical place: the Tuesday-night tournament, the promo you can only win there, the set you pre-order at the counter. For a digital game it is also a way to find players where card games are already played.
+
+Two caveats. The post is the founder's announcement, not an official page with terms and a list of stores, and nothing says yet how a digital set sold through a store works in practice. And if you want to run tournaments before 2027, you don't need to wait for the program: our [tournament organizer](/en/tournaments) is free and the community already uses it.
+
+## What we don't know yet {#unknowns}
+
+- Which countries and stores take part, and whether there is a list.
+- How a digital set is distributed through a store: codes, physical packs with digital cards, or something else.
+- What "sets not available in game" means for the collection: whether those cards will exist only through stores.
+- Prices, the rewards for pre-ordering through a store and how the promos are awarded.
+- How the store tournaments are played (private rooms in the game, a dedicated mode) and whether results count anywhere.
+- The terms of the creator version.
+
+## Where this comes from {#source}
+
+The [post by Tim Jooste on X](https://x.com/TimothyJooste/status/2107532013687418943) of 6 October 2026, with a 15-second video. As of 7 October there is no post about the program on the game's Steam page; we will update this article when Koin Games publishes the official terms.`,
+      `## Il Digital LGS Program {#programma}
+
+Il 6 ottobre 2026 **Tim Jooste**, fondatore e CEO di Koin Games, ha pubblicato su X un post lungo con un breve video. Descrive una serata nel proprio negozio di giochi di zona (LGS, local game store) con in mano solo il telefono: una sera di partite a Origins contro i giocatori della propria città, una promo esclusiva del negozio da conquistare e un pacchetto del prossimo set da collezione da preordinare. Lo studio lo chiama **Digital LGS Program** e, parole sue, fa di Origins "the 1st digital card game to distribute sets through local game stores around the world", il primo gioco di carte digitale a distribuire i set attraverso i negozi di giochi locali di tutto il mondo.
+
+È un'affermazione del fondatore, non qualcosa che possiamo verificare. Quello che il post dice con chiarezza è la forma del programma: un gioco di carte digitale con una rete fisica di negozi che ne organizzano gli eventi e ne vendono i set.
+
+## Cosa hanno i negozi e cosa hanno i giocatori {#negozi}
+
+Il post elenca quattro cose:
+
+- **Tornei settimanali locali**, giocati in negozio.
+- **Pacchetti e promo esclusivi solo dal vivo**: carte che si ottengono solo presentandosi.
+- **Preordini dei prossimi set da collezione**, che non saranno disponibili nel gioco, con ricompense per chi sostiene il proprio negozio.
+- E, come scrive il post, incontrare persone vere, giocare e farsi degli amici di persona.
+
+I negozi interessati sono invitati a contattare Jooste direttamente: i suoi messaggi privati su X sono aperti e propone una chiamata.
+
+## Le date: inizio 2027, con il Kickstarter il 27 ottobre {#date}
+
+- Gli **eventi dal vivo partono ufficialmente a inizio 2027**. I negozi, dice il post, non devono aspettare fino ad allora.
+- Il **Set 1 arriva su Kickstarter il 27 ottobre 2026**: la stessa data che il fondatore aveva dato il 17 settembre e che la demo mostra nel menu (la nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter) raccoglie tutto quello che è confermato finora). A differenza di quasi tutte le campagne dei giochi di carte, scrive Jooste, Koin sta lavorando con i negozi locali al lancio stesso.
+- In **due mesi** lo studio ha già parlato con **più di 30 negozi** interessati a entrare.
+
+## I creator hanno una versione tutta loro {#creator}
+
+Il post aggiunge che esiste una versione del programma per streamer e creator di contenuti, senza dettagli. L'invito vale anche per giocatori e collezionisti: taggare sotto il post il proprio negozio o il proprio creator di TCG preferito.
+
+## Perché conta {#perche-conta}
+
+Origins si è sempre descritto come gratuito per competere e pensato per i collezionisti: la classificata non costa nulla e la collezione vive su [due livelli di carte](/it/guides/collector-economy), competitive e da collezione. Finora la parte da collezione era stata annunciata solo in digitale: i pacchetti dell'Alpha Edition su Kickstarter, gli scambi sul Mercato della Comunità di Steam; l'unico accenno al fisico erano le [carte di metallo](/it/news/metal-cards-tease) filmate a marzo. Un programma per i negozi le dà un luogo fisico: il torneo del martedì sera, la promo che si vince solo lì, il set che si preordina al banco. Per un gioco digitale è anche un modo di trovare giocatori dove ai giochi di carte si gioca già.
+
+Due avvertenze. Il post è l'annuncio del fondatore, non una pagina ufficiale con le condizioni e l'elenco dei negozi, e nulla dice ancora come funzioni in pratica un set digitale venduto in negozio. E chi vuole organizzare tornei prima del 2027 non deve aspettare il programma: il nostro [organizzatore di tornei](/it/tournaments) è gratuito e la community lo usa già.
+
+## Cosa non sappiamo ancora {#cosa-non-sappiamo}
+
+- Quali paesi e quali negozi partecipano, e se esiste un elenco.
+- Come un set digitale viene distribuito da un negozio: codici, pacchetti fisici con carte digitali o altro.
+- Che cosa vuol dire "set non disponibili nel gioco" per la collezione: se quelle carte esisteranno solo attraverso i negozi.
+- Prezzi, ricompense per chi preordina in negozio e come si assegnano le promo.
+- Come si giocano i tornei in negozio (stanze private nel gioco, una modalità dedicata) e se i risultati contano da qualche parte.
+- Le condizioni della versione per i creator.
+
+## Da dove viene {#fonte}
+
+Il [post di Tim Jooste su X](https://x.com/TimothyJooste/status/2107532013687418943) del 6 ottobre 2026, con un video di 15 secondi. Al 7 ottobre sulla pagina Steam del gioco non c'è nessun post sul programma; aggiorneremo l'articolo quando Koin Games pubblicherà le condizioni ufficiali.`,
+      `## El Digital LGS Program {#programa}
+
+El 6 de octubre de 2026 **Tim Jooste**, fundador y CEO de Koin Games, publicó en X un texto largo con un video breve. Describe una noche en tu tienda de juegos de barrio (LGS, local game store) solo con el teléfono en la mano: una velada de partidas de Origins contra los jugadores de tu ciudad, una promo exclusiva de la tienda por la que competir y un sobre del próximo set de colección que reservar. El estudio lo llama **Digital LGS Program** y, en sus palabras, convierte a Origins en "the 1st digital card game to distribute sets through local game stores around the world", el primer juego de cartas digital que distribuye sets a través de tiendas de juegos locales de todo el mundo.
+
+Es una afirmación del fundador, no algo que podamos comprobar. Lo que la publicación sí dice con claridad es la forma del programa: un juego de cartas digital con una red física de tiendas que organizan sus eventos y venden sus sets.
+
+## Qué reciben las tiendas y qué reciben los jugadores {#tiendas}
+
+La publicación enumera cuatro cosas:
+
+- **Torneos semanales locales**, jugados en la tienda.
+- **Sobres y promos exclusivos solo presenciales**: cartas que solo se consiguen yendo.
+- **Preventas de los próximos sets de colección**, que no estarán disponibles en el juego, con recompensas por apoyar a tu tienda.
+- Y, como escribe la publicación, conocer a personas reales, jugar y hacer amigos en persona.
+
+Las tiendas interesadas pueden contactar con Jooste directamente: sus mensajes privados en X están abiertos y propone una llamada.
+
+## Las fechas: principios de 2027, con el Kickstarter el 27 de octubre {#fechas}
+
+- Los **eventos presenciales empiezan oficialmente a principios de 2027**. Las tiendas, dice la publicación, no tienen que esperar hasta entonces.
+- El **Set 1 llega a Kickstarter el 27 de octubre de 2026**: la misma fecha que el fundador dio el 17 de septiembre y que la demo muestra en su menú (nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter) reúne todo lo confirmado hasta ahora). A diferencia de casi todas las campañas de juegos de cartas, escribe Jooste, Koin está trabajando con las tiendas locales en el propio lanzamiento.
+- En **dos meses** el estudio ya ha hablado con **más de 30 tiendas** interesadas en participar.
+
+## Los creadores tienen una versión propia {#creadores}
+
+La publicación añade que existe una versión del programa para streamers y creadores de contenido, sin detalles. La llamada va también para jugadores y coleccionistas: etiquetar bajo la publicación a su tienda o a su creador de TCG favorito.
+
+## Por qué importa {#por-que-importa}
+
+Origins siempre se ha descrito como gratuito para competir y pensado para coleccionistas: la clasificatoria no cuesta nada y la colección vive en [dos niveles de cartas](/es/guides/collector-economy), competitivas y de colección. Hasta ahora la parte de colección se había anunciado solo en digital: los sobres de la Alpha Edition en Kickstarter, los intercambios en el Mercado de la Comunidad de Steam; la única pista física eran las [cartas de metal](/es/news/metal-cards-tease) grabadas en marzo. Un programa para tiendas le da un lugar físico: el torneo del martes por la noche, la promo que solo se gana allí, el set que se reserva en el mostrador. Para un juego digital es también una manera de encontrar jugadores donde ya se juega a cartas.
+
+Dos advertencias. La publicación es el anuncio del fundador, no una página oficial con condiciones y lista de tiendas, y nada dice todavía cómo funciona en la práctica un set digital vendido en tienda. Y quien quiera organizar torneos antes de 2027 no tiene que esperar al programa: nuestro [organizador de torneos](/es/tournaments) es gratuito y la comunidad ya lo usa.
+
+## Lo que no sabemos todavía {#lo-que-no-sabemos}
+
+- Qué países y qué tiendas participan, y si existe una lista.
+- Cómo se distribuye un set digital a través de una tienda: códigos, sobres físicos con cartas digitales u otra cosa.
+- Qué significa "sets no disponibles en el juego" para la colección: si esas cartas existirán solo a través de las tiendas.
+- Precios, recompensas por reservar en tienda y cómo se entregan las promos.
+- Cómo se juegan los torneos en tienda (salas privadas en el juego, un modo dedicado) y si los resultados cuentan en algún sitio.
+- Las condiciones de la versión para creadores.
+
+## De dónde sale {#fuente}
+
+La [publicación de Tim Jooste en X](https://x.com/TimothyJooste/status/2107532013687418943) del 6 de octubre de 2026, con un video de 15 segundos. A 7 de octubre no hay ninguna publicación sobre el programa en la página de Steam del juego; actualizaremos el artículo cuando Koin Games publique las condiciones oficiales.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "What is the Origins TCG Digital LGS Program?",
+          a: "A program announced on X by Koin Games' founder and CEO, Tim Jooste, on 6 October 2026: local game stores host weekly Origins tournaments, sell exclusive in-person-only packs and promos and take pre-orders of the upcoming collectible sets, which will not be available in game. The official terms have not been published yet.",
+        },
+        {
+          q: "When do in-store Origins TCG events start?",
+          a: "According to the post, the in-person events officially kick off in early 2027, but stores can join before that: Set 1 goes live on Kickstarter on 27 October 2026 and Koin Games says it is working with local stores on the launch.",
+        },
+        {
+          q: "How can a game store join the Origins TCG program?",
+          a: "By contacting Tim Jooste directly: in the post he says his direct messages on X are open and offers a call. In two months, according to the post, more than 30 stores had already been in touch. There is also a version of the program for streamers and content creators.",
+        },
+      ],
+      it: [
+        {
+          q: "Che cos'è il Digital LGS Program di Origins TCG?",
+          a: "Un programma annunciato su X dal fondatore e CEO di Koin Games, Tim Jooste, il 6 ottobre 2026: i negozi di giochi locali ospitano tornei settimanali di Origins, vendono pacchetti e promo esclusivi solo dal vivo e raccolgono i preordini dei prossimi set da collezione, che non saranno disponibili nel gioco. Le condizioni ufficiali non sono ancora state pubblicate.",
+        },
+        {
+          q: "Quando iniziano gli eventi di Origins TCG nei negozi?",
+          a: "Secondo il post, gli eventi dal vivo partono ufficialmente a inizio 2027, ma i negozi possono aderire prima: il Set 1 arriva su Kickstarter il 27 ottobre 2026 e Koin Games dice di lavorare con i negozi locali al lancio.",
+        },
+        {
+          q: "Come fa un negozio di giochi a entrare nel programma di Origins TCG?",
+          a: "Contattando direttamente Tim Jooste: nel post scrive che i suoi messaggi privati su X sono aperti e propone una chiamata. In due mesi, secondo il post, si erano già fatti avanti più di 30 negozi. Esiste anche una versione del programma per streamer e creator di contenuti.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Qué es el Digital LGS Program de Origins TCG?",
+          a: "Un programa anunciado en X por el fundador y CEO de Koin Games, Tim Jooste, el 6 de octubre de 2026: las tiendas de juegos locales organizan torneos semanales de Origins, venden sobres y promos exclusivos solo presenciales y recogen preventas de los próximos sets de colección, que no estarán disponibles en el juego. Las condiciones oficiales todavía no se han publicado.",
+        },
+        {
+          q: "¿Cuándo empiezan los eventos de Origins TCG en tiendas?",
+          a: "Según la publicación, los eventos presenciales empiezan oficialmente a principios de 2027, pero las tiendas pueden sumarse antes: el Set 1 llega a Kickstarter el 27 de octubre de 2026 y Koin Games dice que está trabajando con las tiendas locales en el lanzamiento.",
+        },
+        {
+          q: "¿Cómo puede una tienda de juegos entrar en el programa de Origins TCG?",
+          a: "Contactando directamente con Tim Jooste: en la publicación dice que sus mensajes privados en X están abiertos y propone una llamada. En dos meses, según la publicación, ya se habían interesado más de 30 tiendas. También existe una versión del programa para streamers y creadores de contenido.",
+        },
+      ],
+    },
+    url: "https://x.com/TimothyJooste/status/2107532013687418943",
+    source: "press",
+  },
+  {
     // Quinta news "Upgrade Meta" (richiesta di Pierluigi del 05/10/2026: "fai una news Upgrade Meta sui mazzi torneo"): i Mazzi
     // torneo, online dal 04/10/2026 (main 05c5ebd). Solo quello che c'è davvero: tre mazzi Conquest con una guida, regole
     // della Crimson Cup controllate dal sito, voti, traduzione, Discord, avvisi, statistiche e strumenti per le dirette.
