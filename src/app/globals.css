@@ -3562,3 +3562,19 @@
     color: var(--color-mint);
   }
 }
+
+/* Voti degli iscritti sotto la carta nel database /cards (7/10/2026): seconda riga del piede, con la fascia se c'è.
+   Il piede va a capo: senza, la riga dei voti si metteva accanto alle statistiche e il nome (che si tronca) spariva. */
+@layer components {
+  .card-tile-foot {
+    flex-wrap: wrap;
+  }
+  .card-tile-rating {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: center;
+    gap: 0.35rem;
+    font: 600 11px/1.2 var(--font-mono);
+    color: var(--color-mint);
+  }
+}

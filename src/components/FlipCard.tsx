@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { alignStyle } from "@/lib/cardArt";
+import { tierTone, type Tier } from "@/lib/tiercode";
 
 /**
  * Carta intera che si gira: UNA sola implementazione per il database /cards (CardExplorer), la scheda di un mazzo
@@ -53,6 +54,8 @@ export type FlipCardData = {
   removedLabel?: string;
   /** testo dell'abilità già nella lingua della pagina */
   ability?: string;
+  /** voti degli iscritti (07/10/2026, Pierluigi: "nella pagina carte non vedo i voti"): riga già scritta ("9,0/10 · 1 voto") e fascia, se c'è */
+  rating?: { text: string; tier?: Tier };
 };
 
 export type FlipCardLabels = { legendary: string; mana: string; power: string; health: string };
@@ -158,6 +161,13 @@ export function FlipCard({
           {c.name}
         </span>
         {stats ? <span className="shrink-0 font-mono text-xs tabular text-pale">{stats}</span> : null}
+        {/* voti degli iscritti (07/10/2026): seconda riga, con la lettera della fascia quando la carta ce l'ha */}
+        {c.rating ? (
+          <span className="card-tile-rating">
+            {c.rating.tier ? <span className={`tier-letter is-small ${tierTone[c.rating.tier]}`}>{c.rating.tier}</span> : null}
+            {c.rating.text}
+          </span>
+        ) : null}
       </span>
     </Link>
   );
