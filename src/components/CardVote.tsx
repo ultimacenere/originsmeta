@@ -17,7 +17,10 @@ export type CardVoteWidgetLabels = CardVoteLabels["widget"];
  * loggato e il suo voto si leggono nel browser (`card_votes`, RLS: ognuno vede solo i suoi). Il clic chiama la Server
  * Action `voteCard`; la risposta porta media e voti aggiornati, che il widget mostra subito (`onChange` li passa a chi
  * lo ospita, per esempio al dettaglio del TierExplorer). Senza accesso il tasto è il link alla pagina di accesso, con il
- * ritorno; `available = false` (migrazione non ancora applicata) dice solo che i voti non sono attivi.
+ * ritorno. I tasti non dipendono mai dai dati della pagina: se la migrazione manca è la Server Action a rispondere
+ * "non ancora attivi" (la notte del 6/10 la scheda carta aveva in cache per un'ora lo stato di prima della migrazione e
+ * teneva i tasti spenti anche a voti attivi).
+ * `compact`: sotto la carta nella sua scheda (colonna da 230 px): media e voti su una riga, tasti più piccoli.
  * Lo stesso schema di StarRating (voti ai mazzi), senza il caso "mazzo proprio": una carta si può sempre votare.
  */
 export function CardVote({
@@ -28,7 +31,7 @@ export function CardVote({
   loginHref,
   placement,
   locale,
-  available = true,
+  compact = false,
   onChange,
 }: {
   slug: string;
@@ -38,7 +41,7 @@ export function CardVote({
   loginHref: string;
   placement: "card_page" | "tier_list";
   locale: string;
-  available?: boolean;
+  compact?: boolean;
   onChange?: (r: { avg: number; votes: number }) => void;
 }) {
   const [userId, setUserId] = useState<string | null | undefined>(supabaseEnabled ? undefined : null);
@@ -50,7 +53,7 @@ export function CardVote({
 
   useEffect(() => {
     const sb = supabaseBrowser();
-    if (!sb || !available) return;
+    if (!sb) return;
     let alive = true;
     (async () => {
       const {
@@ -67,9 +70,9 @@ export function CardVote({
     return () => {
       alive = false;
     };
-  }, [slug, available]);
+  }, [slug]);
 
-  const canVote = available && Boolean(userId) && !pending;
+  const canVote = Boolean(userId) && !pending;
   const oneDecimal = (n: number) => new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n);
 
   const cast = (n: number) => {
@@ -91,9 +94,7 @@ export function CardVote({
   };
 
   const shown = hover || mine || 0;
-  const status = !supabaseEnabled || !available ? (
-    available ? null : labels.unavailable
-  ) : userId === undefined ? null : !userId ? (
+  const status = !supabaseEnabled ? null : userId === undefined ? null : !userId ? (
     <Link href={loginHref} className="font-semibold text-mint underline underline-offset-2 hover:text-sky">
       {labels.loginToVote}
     </Link>
@@ -102,16 +103,18 @@ export function CardVote({
   ) : (
     labels.rate
   );
+  const count = stats.votes ? votesWord({ one: labels.votesOne, many: labels.votesMany }, stats.votes) : labels.noVotes;
 
   return (
-    <div className="card-vote">
+    <div className={`card-vote${compact ? " is-compact" : ""}`}>
       <div className="card-vote-stats">
         <p className="kicker text-pale-muted">{labels.title}</p>
         <p className="card-vote-avg">
           {stats.votes ? oneDecimal(stats.avg) : "–"}
           <span className="card-vote-max">/ 10</span>
+          {compact ? <span className="card-vote-n"> · {count}</span> : null}
         </p>
-        <p className="card-vote-n">{stats.votes ? votesWord({ one: labels.votesOne, many: labels.votesMany }, stats.votes) : labels.noVotes}</p>
+        {compact ? null : <p className="card-vote-n">{count}</p>}
       </div>
       <div className="card-vote-scale-wrap">
         <div className="card-vote-scale" role="group" aria-label={labels.rate} onMouseLeave={() => setHover(0)}>

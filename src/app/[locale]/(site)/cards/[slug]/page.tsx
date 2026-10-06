@@ -221,6 +221,9 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : (
             <p className="text-center text-[11px] text-pale-muted">{d.common.noImage}</p>
           )}
+          {/* Voti alle carte da 1 a 10 (06/10/2026, Pierluigi: "subito sotto la carta la possibilità del voto"): il widget
+              compatto, la fascia nella tier list dei voti e il link alla pagina, nella colonna della carta */}
+          {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} /> : null}
         </div>
         <div>
           <p className="kicker text-mint">
@@ -380,9 +383,6 @@ export default async function CardPage({ params }: { params: Params }) {
       <CardBrief card={card} locale={locale} items={brief} />
 
       {playable ? <CardCommunityScore card={card} locale={locale} scores={scores} /> : null}
-
-      {/* Voti alle carte da 1 a 10 (06/10/2026): il widget per votare e la fascia nella tier list dei voti */}
-      {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} /> : null}
 
       {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
           builderLabels.ts). Sulle carte create l'invito è a costruire un mazzo con la carta che le genera; le rimosse

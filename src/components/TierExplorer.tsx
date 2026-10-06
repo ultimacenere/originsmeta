@@ -94,7 +94,7 @@ type Filters = { q: string; type: "" | "unit" | "spell"; cost: CostBand; align: 
 type SortKey = "name" | "mana" | "community" | "used" | "rating";
 
 /** Quello che serve alla fonte `votes`: testi del dettaglio e del widget, link d'accesso, voti per entrare in fascia. */
-export type TierVotes = { labels: CardVoteLabels["explorer"]; widget: CardVoteLabels["widget"]; loginHref: string; minVotes: number; available: boolean };
+export type TierVotes = { labels: CardVoteLabels["explorer"]; widget: CardVoteLabels["widget"]; loginHref: string; minVotes: number };
 
 const USAGE_LIMIT = 20;
 const DECKS_IN_DETAIL = 6;
@@ -230,6 +230,14 @@ export function TierExplorer({
       </>
     ) : null;
 
+  /* fonte `votes` (7/10/2026, Pierluigi: "il voto deve apparire anche nell'anteprima della carta senza doverla aprire"):
+     media e voti sotto ogni carta nelle fasce (`voteCaption`) e nell'anteprima al passaggio del mouse (`voteNote`) */
+  const voteCount = (n: number) => (votes ? votesWord({ one: votes.labels.votesOne, many: votes.labels.votesMany }, n) : String(n));
+  const voteCaption = (e: TierCardEntry): string | undefined =>
+    source === "votes" && votes ? (e.rating ? `${oneDecimal(e.rating.avg)} · ${voteCount(e.rating.votes)}` : votes.labels.noVotesShort) : undefined;
+  const voteNote = (e: TierCardEntry): string | undefined =>
+    source === "votes" && votes && e.rating ? fillVoteText(votes.labels.peekNote, { avg: oneDecimal(e.rating.avg), votes: voteCount(e.rating.votes) }) : undefined;
+
   const peekOf = (e: TierCardEntry): PeekCard => ({
     name: e.name,
     legendary: e.legendary,
@@ -242,6 +250,7 @@ export function TierExplorer({
     typeLabel: e.typeLabel,
     alignment: e.alignment,
     alignmentLabel: e.alignmentLabel,
+    note: voteNote(e),
   });
 
   const tile = (e: TierCardEntry, caption?: string) => (
@@ -371,7 +380,7 @@ export function TierExplorer({
                 <span className="tier-band-mean">{l.tiers[t]}</span>
                 <span className="tier-band-count">{items.length}</span>
               </h3>
-              {items.length ? <ul className="tier-tiles">{items.map((e) => tile(e))}</ul> : <p className="tier-band-empty">{l.emptyTier}</p>}
+              {items.length ? <ul className="tier-tiles">{items.map((e) => tile(e, voteCaption(e)))}</ul> : <p className="tier-band-empty">{l.emptyTier}</p>}
             </section>
           );
         })}
@@ -380,7 +389,7 @@ export function TierExplorer({
             <summary>
               {l.unranked} · {unranked.length}
             </summary>
-            <ul className="tier-tiles">{unranked.map((e) => tile(e))}</ul>
+            <ul className="tier-tiles">{unranked.map((e) => tile(e, voteCaption(e)))}</ul>
           </details>
         ) : null}
       </div>
@@ -636,7 +645,6 @@ export function TierExplorer({
                       loginHref={votes.loginHref}
                       placement="tier_list"
                       locale={locale}
-                      available={votes.available}
                       onChange={(next) => setFresh((prev) => ({ ...prev, [e.slug]: next }))}
                     />
                   </div>

@@ -71,7 +71,6 @@ export default async function CardVotesTierListPage({ params }: { params: Locale
     widget: l.widget,
     loginHref: `${href(locale, "/login")}?next=${encodeURIComponent(path)}`,
     minVotes: CARD_RANKED_MIN_VOTES,
-    available: votes !== null,
   };
   // ItemList vera (come /tier-list/community) solo a regime: le carte in fascia, fascia per fascia, nell'ordine visibile
   const ranked = stage === "live" ? kinds.flatMap((k) => TIER_ORDER.flatMap((tier) => k.entries.filter((e) => e.rating?.tier === tier).sort(ratingOrder))) : [];

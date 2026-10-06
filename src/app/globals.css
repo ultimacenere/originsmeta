@@ -3522,3 +3522,43 @@
     color: var(--color-chalk-muted);
   }
 }
+
+/* Widget compatto sotto la carta nella sua scheda (7/10/2026): media e voti su una riga, tasti più piccoli nei 230 px */
+@layer components {
+  .card-vote.is-compact {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.6rem 0.7rem;
+  }
+  .card-vote.is-compact .card-vote-avg {
+    font-size: 1.375rem;
+  }
+  .card-vote.is-compact .card-vote-n {
+    display: inline;
+    margin: 0;
+  }
+  .card-vote.is-compact .card-vote-scale-wrap {
+    flex-basis: auto;
+  }
+  .card-vote.is-compact .card-vote-scale {
+    gap: 3px;
+    max-width: none;
+  }
+  .card-vote.is-compact .card-vote-btn {
+    padding: 0.3rem 0;
+    border-width: 1px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+  }
+  .card-vote.is-compact .card-vote-ends {
+    max-width: none;
+  }
+  /* riga dei voti nell'anteprima al passaggio del mouse (deck-peek-note, buildDeckPeek di cardPeek.ts) */
+  .deck-peek-note {
+    display: block;
+    margin-top: 0.4rem;
+    font: 600 11px/1.3 var(--font-mono);
+    color: var(--color-mint);
+  }
+}

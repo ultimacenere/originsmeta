@@ -62,6 +62,10 @@ const en = {
     unranked: "No votes yet: be the first.",
     needMore: "Gets a tier from {min} votes ({n} so far).",
     scale: "1 = weak · 10 = excellent",
+    /** sotto la carta nelle fasce e nell'anteprima, quando nessuno l'ha votata */
+    noVotesShort: "no votes yet",
+    /** riga nell'anteprima al passaggio del mouse: {avg} media, {votes} "5 votes" */
+    peekNote: "Members' score: {avg}/10 · {votes}",
   },
   widget: {
     title: "Your vote",
@@ -143,6 +147,8 @@ const it: CardVoteLabels = {
     unranked: "Ancora nessun voto: puoi dare il primo.",
     needMore: "Entra in fascia da {min} voti ({n} finora).",
     scale: "1 = scarsa · 10 = ottima",
+    noVotesShort: "nessun voto",
+    peekNote: "Voto degli iscritti: {avg}/10 · {votes}",
   },
   widget: {
     title: "Il tuo voto",
@@ -222,6 +228,8 @@ const es: CardVoteLabels = {
     unranked: "Aún sin votos: puedes dar el primero.",
     needMore: "Entra en un tier a partir de {min} votos ({n} por ahora).",
     scale: "1 = floja · 10 = excelente",
+    noVotesShort: "sin votos",
+    peekNote: "Voto de los miembros: {avg}/10 · {votes}",
   },
   widget: {
     title: "Tu voto",

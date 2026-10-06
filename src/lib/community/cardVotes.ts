@@ -19,7 +19,10 @@ import { CommunityReadError } from "./queries";
 export const CARD_VOTES_TAG = "community-card-votes";
 export const CARD_VOTES_REVALIDATE = 3600;
 /** Da aggiornare (v2, v3…) se cambia la forma di `CardVotesData`: la cache dei dati di Vercel sopravvive ai deploy. */
-const CACHE_KEY = "card-pages-card-votes-v1";
+const CACHE_KEY = "card-pages-card-votes-v2";
+
+/** La migrazione non c'è: lo stato NON va in cache (la notte del 6/10 è rimasto un'ora sulle schede dopo la migrazione). */
+class CardVotesUnavailable extends Error {}
 
 const building = process.env.NEXT_PHASE === "phase-production-build";
 
@@ -62,23 +65,26 @@ let buildVotes: Promise<CardVotesData | null> | undefined;
 
 const cachedCardVotes = unstable_cache(
   async () => {
-    if (!building) return fetchCardVotes();
     // durante la build una lettura sola per processo, come i mazzi delle schede carta
-    buildVotes ??= fetchCardVotes();
-    return buildVotes;
+    const data = building ? await (buildVotes ??= fetchCardVotes()) : await fetchCardVotes();
+    // `null` (migrazione non applicata) non si mette in cache: un errore non viene conservato, e alla visita dopo si rilegge
+    if (data === null) throw new CardVotesUnavailable();
+    return data;
   },
   [CACHE_KEY],
   { tags: [CARD_VOTES_TAG], revalidate: CARD_VOTES_REVALIDATE },
 );
 
 /**
- * Voti alle carte per le schede carta, dalla cache condivisa. Durante la build un errore diventa `null` (la scheda esce
- * senza il riquadro dei voti); a sito acceso si rilancia, così l'ISR tiene l'ultima versione riuscita della pagina.
+ * Voti alle carte per le schede carta, dalla cache condivisa. `null` con la community spenta o prima della migrazione
+ * (senza metterlo in cache). Durante la build un errore diventa `null` (la scheda esce senza i numeri dei voti); a sito
+ * acceso si rilancia, così l'ISR tiene l'ultima versione riuscita della pagina.
  */
 export async function loadCardRatings(): Promise<CardVotesData | null> {
   try {
     return await cachedCardVotes();
   } catch (e) {
+    if (e instanceof CardVotesUnavailable) return null;
     console.error(e instanceof Error ? e.message : e);
     if (!building) throw e;
     return null;

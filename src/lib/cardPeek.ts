@@ -43,6 +43,8 @@ export type PeekCard = {
   typeLabel?: string;
   alignment?: "good" | "evil" | "neutral";
   alignmentLabel?: string;
+  /** una riga in più sotto il testo, già scritta (06/10/2026: i voti alle carte nella tier list dei voti, "7,9 su 10 · 5 voti") */
+  note?: string;
 };
 
 /** C'è qualcosa da mostrare? Le carte inserite a mano (senza testo, statistiche né immagine) non hanno anteprima. */
@@ -63,6 +65,8 @@ export type DeckPeek = {
   align?: "good" | "evil" | "neutral";
   alignLabel?: string;
   ability?: string;
+  /** riga in più sotto il testo (i voti alle carte, 06/10/2026) */
+  note?: string;
 };
 
 /** Solo i campi che il pannello mostra: `BuilderCard` e le carte dei mazzi portano altro che nell'attributo non serve. */
@@ -78,6 +82,7 @@ export function deckPeekOf(card: PeekCard): DeckPeek {
     align,
     alignLabel: align ? card.alignmentLabel : undefined,
     ability: card.ability || undefined,
+    ...(card.note ? { note: card.note } : {}),
   };
 }
 
@@ -326,6 +331,7 @@ export function buildDeckPeek(doc: Document, d: DeckPeek): HTMLElement {
     ),
     tags,
     ...(d.ability ? [el(doc, "span", "deck-peek-text", d.ability)] : []),
+    ...(d.note ? [el(doc, "span", "deck-peek-note", d.note)] : []),
   );
   return el(doc, "span", `deck-peek-panel${d.legendary ? " is-legendary" : ""}`, ...(d.art ? [art(doc, "deck-peek-art", d.art)] : []), body);
 }
