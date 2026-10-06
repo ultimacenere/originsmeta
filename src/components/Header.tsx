@@ -77,11 +77,10 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
     // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
     <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
-      {/* da 1280 px la riga ospita menu completo, ricerca, Discord, Accedi e lingua: spazi e ricerca più stretti, anche
-          sopra i 1536 px (il contenitore resta di 1280: lì ricerca da 208 px e spazi da 12 facevano sforare la riga);
-          sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti, altrimenti la riga sbordava di 18 px.
-          25/09/2026, tre lingue: a 768 px il tasto "Acceder" e il terzo tasto lingua facevano sforare lo spagnolo di 11 px,
-          quindi la ricerca fra 768 e 1279 px è da 160 px invece di 176 */}
+      {/* da 1280 px la riga ospita menu completo, Discord, Accedi, lingua e "Dona ora": spazi più stretti, anche sopra i
+          1536 px (il contenitore resta di 1280); sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti,
+          altrimenti la riga sbordava di 18 px. La ricerca delle carte, che stava qui dal 15/09/2026 (fra 768 e 1279 px da
+          160 px, oltre da 112), è stata tolta il 07/10/2026 per fare posto al tasto PayPal: si cerca da /cards. */}
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 max-[359px]:gap-1 max-[359px]:px-3 sm:gap-3 sm:px-6 xl:gap-2">
         <Link href={href(locale)} className="flex shrink-0 items-center gap-2" aria-label={dict.meta.siteName}>
           {/* il nome del sito lo dice l'aria-label del link qui sopra: l'immagine resta muta */}
@@ -111,24 +110,11 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             ),
           )}
         </nav>
-        <form action={href(locale, "/cards")} method="get" role="search" className="ml-auto hidden items-stretch md:flex">
-          <label htmlFor="header-card-search" className="sr-only">
-            {dict.common.search}
-          </label>
-          <input
-            id="header-card-search"
-            name="q"
-            type="search"
-            placeholder={dict.nav.search}
-            className="w-40 rounded-l-full border border-felt-line bg-felt px-4 py-2 text-sm text-chalk placeholder:text-chalk-muted/70 focus:border-mint xl:w-28"
-          />
-          <button type="submit" className="rounded-r-full border border-l-0 border-felt-line bg-felt-soft px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-mint hover:bg-felt-line">
-            {dict.nav.searchButton}
-          </button>
-        </form>
-        {/* min-w-0 (27/09/2026, busta dei messaggi accanto all'avatar): quando la riga è piena (768–850 px con la ricerca)
-            si accorcia il nome dell'account, che si tronca, invece di far sforare la riga */}
-        <div className="ml-auto flex min-w-0 items-center gap-2 md:ml-2">
+        {/* La ricerca delle carte non sta più nell'header dal 07/10/2026 (Pierluigi: "il tasto paypal ci manda in conflitto
+            quindi recuperiamo spazio rimuovendo la searchbar che oggi la ritengo abbastanza inutile"): si cerca da /cards.
+            min-w-0 (27/09/2026, busta dei messaggi accanto all'avatar): quando la riga è piena si accorcia il nome
+            dell'account, che si tronca, invece di far sforare la riga */}
+        <div className="ml-auto flex min-w-0 items-center gap-2">
           {/* Loghino del NOSTRO Discord (Pierluigi, 24/09/2026); sotto 640 px la riga è piena e il tasto sta nel menu */}
           <DiscordIconLink href={ORIGINSMETA_DISCORD} label={dict.nav.discord} className="max-sm:!hidden" />
           <AccountMenu
@@ -150,9 +136,6 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           summary={dict.nav.menu}
         >
           <nav className="absolute right-0 mt-2 w-60 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={dict.nav.menu}>
-            <form action={href(locale, "/cards")} method="get" role="search" className="mb-2 md:hidden">
-              <input name="q" type="search" aria-label={dict.common.search} placeholder={dict.nav.search} className="w-full rounded-lg border border-felt-line bg-felt px-3 py-2 text-sm text-chalk" />
-            </form>
             {/* nella tendina la pagina corrente ha la barra verticale di .nav-link-block */}
             {items.flatMap((it) => [
               <NavLink key={it.path} href={href(locale, it.path)} className="nav-link-block">
