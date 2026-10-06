@@ -32,7 +32,7 @@ export default async function MostPlayedPage({ params }: { params: LocaleParams 
   const data = await loadTierData(locale);
   const labels = tierExplorerLabels(d);
   const n = data.decks.length;
-  const state = tierSourceState(d, { lists: Math.max(data.lists.legendaries, data.lists.cards), people: data.lists.people, decks: n });
+  const state = tierSourceState(d, { lists: Math.max(data.lists.legendaries, data.lists.cards), people: data.lists.people, decks: n, cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null });
   const legendaries = data.cards.filter((c) => c.legendary);
   const base = data.cards.filter((c) => !c.legendary);
 

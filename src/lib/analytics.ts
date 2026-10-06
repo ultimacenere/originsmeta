@@ -48,6 +48,8 @@
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
  *     deck_save           "Salva" su un mazzo della community (30/09/2026)       placement (deck_page)
  *     deck_unsave         tolto dai mazzi salvati                                 placement (deck_page | account)
+ *   ★ card_vote           voto a una carta da 1 a 10 (06/10/2026), dalla scheda   score (1-10), vote_type (new | update),
+ *                         carta o dal dettaglio della tier list dei voti           placement (card_page | tier_list)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
  *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
@@ -111,7 +113,7 @@
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
- *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars,
+ *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars, score,
  *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, comic_lang, provider,
  *     host, tool, format, category;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
@@ -200,6 +202,7 @@ export type EventParams = {
   deck_vote: { stars: number; vote_type: "new" | "update" };
   deck_save: { placement: string };
   deck_unsave: { placement: string };
+  card_vote: { score: number; vote_type: "new" | "update"; placement: "card_page" | "tier_list" };
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
   tournament_create: { visibility: string; deck_mode: string };
@@ -250,6 +253,7 @@ export const VERCEL_PROPS = {
   deck_vote: ["stars", "vote_type"],
   deck_save: ["placement"],
   deck_unsave: ["placement"],
+  card_vote: ["score", "placement"],
   tierlist_created: ["kind"],
   tier_list_share: ["method", "kind"],
   tournament_create: ["visibility", "deck_mode"],

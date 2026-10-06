@@ -138,6 +138,8 @@ export type TierListInsert = Omit<TierListRow, "id" | "created_at" | "updated_at
 export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; version: number; created_at: string; updated_at: string };
 /** Mazzo salvato da un utente ("Salva", blocco PREFERITI E TENDENZA, 30/09/2026): ognuno vede solo i suoi. */
 export type DeckFavoriteRow = { user_id: string; deck_id: string; created_at: string };
+/** Voto a una carta da 1 a 10 (blocco VOTI ALLE CARTE, 06/10/2026): `card` è lo slug della scheda; ognuno legge solo i suoi. */
+export type CardVoteRow = { card: string; user_id: string; score: number; created_at: string; updated_at: string };
 /** Versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026): solo lettura, le scrive il trigger. */
 export type CommunityDeckVersionRow = {
   deck_id: string;
@@ -495,6 +497,21 @@ export type Database = {
             columns: ["deck_id"];
             isOneToOne: false;
             referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** voti alle carte da 1 a 10 (blocco VOTI ALLE CARTE, 06/10/2026): ognuno legge e scrive solo i suoi; gli aggregati da card_ratings */
+      card_votes: {
+        Row: CardVoteRow;
+        Insert: { card: string; user_id: string; score: number; created_at?: string; updated_at?: string };
+        Update: Partial<CardVoteRow>;
+        Relationships: [
+          {
+            foreignKeyName: "card_votes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -984,6 +1001,11 @@ export type Database = {
       /* interesse per OriginsMeta Analytics (02/10/2026, pagina /analytics): una volta per browser e per account */
       analytics_interest_add: { Args: { p_client: string; p_locale: string; p_source: string }; Returns: { total: number; accounts: number; added: boolean }[] };
       analytics_interest_count: { Args: Record<string, never>; Returns: { total: number; accounts: number }[] };
+      /* voti alle carte (06/10/2026, blocco VOTI ALLE CARTE): solo aggregati, per anon e authenticated; chi ha votato cosa non esce mai */
+      /** media, voti e distribuzione (punteggio → quanti) di ogni carta votata, o di una sola con p_card */
+      card_ratings: { Args: { p_card?: string | null }; Returns: { card: string; avg_score: number | string; votes: number; dist: Record<string, number> }[] };
+      /** voti, votanti, carte votate e ora dell'ultimo voto */
+      card_vote_totals: { Args: Record<string, never>; Returns: { votes: number; voters: number; cards: number; latest: string | null }[] };
       /* statistiche anonime (anon): solo aggregati di una patch, ogni numero sopra la soglia (stats.ts le ricontrolla) */
       tracker_stats_overview: { Args: { p_patch: string }; Returns: (TrackerStatCount & { with_opponent: number | null })[] };
       tracker_stats_legendaries: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string })[] };

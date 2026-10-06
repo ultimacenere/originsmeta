@@ -106,6 +106,8 @@ export type CommunityData = {
    * indicizza; `latest` è l'ultimo pubblicato o modificato (lastmod di /decks/tournament). Assente: nessun trio.
    */
   deckSets?: { sets: { slug: string; updated_at: string; locales: Locale[] }[]; latest?: string };
+  /** voti alle carte (06/10/2026): l'ora dell'ultimo voto, per /tier-list/votes; assente prima della migrazione */
+  cardVotes?: { latest?: string };
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -189,6 +191,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/create", section: "pages", route: "/tier-list/create", dates: [patchDay, cardsVerified.date] },
     // Tier list della community: cambia quando qualcuno salva la sua.
     { path: "/tier-list/community", section: "pages", route: "/tier-list/community", dates: [data.tierLists.latest] },
+    // Tier list dei voti alle carte (06/10/2026): cambia a ogni voto (l'ora dell'ultimo voto, da card_vote_totals).
+    { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
     // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
     { path: "/cards", section: "pages", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())] },
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.

@@ -410,6 +410,13 @@ export const es: Dictionary = {
     /* static state for pages that do not read the database (the maker) */
     sourceCommunityHint: "promedio de los miembros",
     sourcePlayedHint: "de los mazos del sitio",
+    /* Votos a las cartas (06/10/2026): la tier list creada con los votos del 1 al 10 que los miembros dan a cada carta (src/lib/cardVoteLabels.ts) */
+    sourceVotes: "Votos a las cartas",
+    sourceVotesNone: "aún sin votos",
+    sourceVotesOne: "1 voto",
+    sourceVotesMany: "{n} votos",
+    sourceVotesHint: "del 1 al 10 por los miembros",
+    sourceVotesSoon: "próximamente",
     /* Win rate (30/09/2026): las partidas registradas con la app OriginsMeta Analytics (docs/tracker.md) */
     sourceWinrate: "Win rate",
     sourceAnalytics: "Analytics",

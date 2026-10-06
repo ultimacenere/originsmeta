@@ -1,4 +1,5 @@
 import type { Tier } from "./tierstats";
+import type { CardRating } from "./cardVotes";
 
 /**
  * Tipi condivisi dalla sezione Tier list (riprogettazione del 24/09/2026): li costruisce `tierData.ts` sul server e
@@ -28,6 +29,8 @@ export type TierCardEntry = {
   used: number;
   /** la media delle tier list salvate dagli iscritti, se qualcuno l'ha classificata */
   community?: { tier: Tier; avg: number; votes: number; dist: Record<Tier, number> };
+  /** i voti da 1 a 10 degli iscritti (06/10/2026, `cardRatingsFrom`): media, voti, distribuzione e la fascia da 3 voti in su */
+  rating?: CardRating;
   /** mazzi pubblicati che la usano, dal più votato */
   decks: { name: string; href: string }[];
   /** guide che la citano */

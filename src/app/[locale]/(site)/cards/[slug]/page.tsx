@@ -29,6 +29,8 @@ import {
   type CardFacts,
 } from "@/lib/cardPage";
 import { loadCommunityScores, loadDeckRefs } from "@/lib/community/decksByCard";
+import { loadCardRatings } from "@/lib/community/cardVotes";
+import { CardVoteBox } from "@/components/card/CardVoteBox";
 import { cardJsonLd } from "@/lib/jsonld/card";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardName, legendaryFirst } from "@/components/CardChip";
@@ -112,7 +114,13 @@ export default async function CardPage({ params }: { params: Params }) {
 
   // Mazzi pubblicati e tier list della community, dalla cache condivisa fra tutte le schede. Le rimosse (e le create
   // che nessun testo della demo genera) non ne mostrano: non leggono niente.
-  const [allDecks, scores] = await Promise.all([deckSlugs.length ? loadDeckRefs() : Promise.resolve(null), playable ? loadCommunityScores() : Promise.resolve(null)]);
+  // I voti alle carte da 1 a 10 (06/10/2026, `loadCardRatings`): stessa cache condivisa fra le schede, un'ora; solo sulle
+  // carte votabili (attive e non create, come il tool /tier-list/create).
+  const [allDecks, scores, cardVotes] = await Promise.all([
+    deckSlugs.length ? loadDeckRefs() : Promise.resolve(null),
+    playable ? loadCommunityScores() : Promise.resolve(null),
+    playable ? loadCardRatings() : Promise.resolve(null),
+  ]);
   const withCard = allDecks ? decksByCard(allDecks, deckSlugs) : [];
   // Elenco, JSON-LD e date guardano gli stessi mazzi (`listedDecks`): indicizzabili in questa lingua, al massimo 12.
   const { listed, others } = allDecks && playable ? listedDecks(allDecks, card.slug, locale) : { listed: [], others: 0 };
@@ -372,6 +380,9 @@ export default async function CardPage({ params }: { params: Params }) {
       <CardBrief card={card} locale={locale} items={brief} />
 
       {playable ? <CardCommunityScore card={card} locale={locale} scores={scores} /> : null}
+
+      {/* Voti alle carte da 1 a 10 (06/10/2026): il widget per votare e la fascia nella tier list dei voti */}
+      {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} /> : null}
 
       {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
           builderLabels.ts). Sulle carte create l'invito è a costruire un mazzo con la carta che le genera; le rimosse

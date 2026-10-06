@@ -3330,3 +3330,124 @@
     grid-column: 1 / -1;
   }
 }
+
+/*
+  Voti alle carte da 1 (scarsa) a 10 (ottima), 06/10/2026 (`CardVote`): media grande a sinistra, dieci tasti numerati
+  a destra, con la scala che si accende fino al tasto sotto il mouse o al proprio voto (come le stelle dei mazzi). Niente
+  bianco pieno: tasti blu notte con cornice celeste, accesi in menta con il testo scuro, il proprio voto in oro.
+*/
+@layer components {
+  .card-vote {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-sky);
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--color-night-2) 60%, transparent);
+  }
+  .card-vote-stats {
+    min-width: 5.5rem;
+  }
+  /* la scala vuole almeno 16 rem: sul telefono (343 px di scheda) va a capo sotto la media, invece di schiacciarsi accanto */
+  .card-vote-scale-wrap {
+    flex: 1 1 16rem;
+    min-width: 0;
+  }
+  .card-vote-avg {
+    margin-top: 0.125rem;
+    font: 800 1.875rem/1 var(--font-display);
+    color: var(--color-sky);
+  }
+  .card-vote-max {
+    margin-left: 0.25rem;
+    font: 500 0.875rem/1 var(--font-body);
+    color: var(--color-pale-muted);
+  }
+  .card-vote-n {
+    margin-top: 0.25rem;
+    font: 12px/1.2 var(--font-mono);
+    color: var(--color-pale-muted);
+  }
+  .card-vote-scale {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 4px;
+    max-width: 24rem;
+  }
+  .card-vote-btn {
+    min-width: 0;
+    padding: 0.4rem 0;
+    border: 2px solid var(--color-sky);
+    border-radius: 8px;
+    background: var(--color-night);
+    font: 700 0.875rem/1 var(--font-mono);
+    color: var(--color-pale);
+    transition: background-color 0.12s, color 0.12s, transform 0.12s;
+  }
+  .card-vote-btn:not(:disabled) {
+    cursor: pointer;
+  }
+  .card-vote-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+  .card-vote-btn.is-on {
+    background: var(--color-mint);
+    border-color: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .card-vote-btn.is-mine {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .card-vote-btn:disabled {
+    opacity: 0.6;
+  }
+  .card-vote-ends {
+    display: flex;
+    justify-content: space-between;
+    max-width: 24rem;
+    margin-top: 0.3rem;
+    font: 10px/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-chalk-muted);
+  }
+  .card-vote-status {
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+  }
+  /* distribuzione dei voti da 1 a 10 nel dettaglio della tier list dei voti: dieci colonne basse */
+  .card-vote-dist {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    align-items: end;
+    gap: 3px;
+    height: 3.25rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card-vote-dist li {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    min-width: 0;
+  }
+  .card-vote-dist-bar {
+    display: block;
+    width: 100%;
+    min-height: 2px;
+    border-radius: 3px 3px 0 0;
+    background: var(--color-sky);
+  }
+  .card-vote-dist-n {
+    margin-top: 2px;
+    text-align: center;
+    font: 10px/1 var(--font-mono);
+    color: var(--color-chalk-muted);
+  }
+}

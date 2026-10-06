@@ -17,7 +17,7 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
  * winrate, creiamo una pagina invece").
  */
 
-export type TierSource = "official" | "community" | "played" | "analytics" | "create";
+export type TierSource = "official" | "community" | "votes" | "played" | "analytics" | "create";
 
 export function TierListHeader({
   locale,
@@ -31,8 +31,8 @@ export function TierListHeader({
   dict: Dictionary;
   current: TierSource;
   title: string;
-  /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "14 mazzi", "in arrivo" */
-  state: { official: string; community: string; played: string; analytics: string };
+  /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "12 voti", "14 mazzi", "in pausa" */
+  state: { official: string; community: string; votes: string; played: string; analytics: string };
   /** indice della pagina: ancore e conteggi delle sezioni */
   sections?: { id: string; label: string; count?: number }[];
 }) {
@@ -40,6 +40,8 @@ export function TierListHeader({
   const sources: { id: Exclude<TierSource, "create">; label: string; path: string }[] = [
     { id: "official", label: t.sourceOfficial, path: "/tier-list" },
     { id: "community", label: t.sourceCommunity, path: "/tier-list/community" },
+    // voti alle carte da 1 a 10 (06/10/2026): quinta scheda, fra la community (liste intere) e le più giocate
+    { id: "votes", label: t.sourceVotes, path: "/tier-list/votes" },
     { id: "played", label: t.sourcePlayed, path: "/tier-list/most-played" },
     { id: "analytics", label: t.sourceAnalytics, path: "/analytics" },
   ];

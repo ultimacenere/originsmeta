@@ -60,10 +60,21 @@ export function tierExplorerLabels(d: Dictionary): TierExplorerLabels {
  * Lo stato di ogni fonte sotto il suo nome, nella testata della sezione. La scheda "Analytics" (02/10/2026) dice solo
  * che il tool è in pausa.
  */
-export function tierSourceState(d: Dictionary, n: { lists: number; people: number; decks: number; officialUpdated?: string }) {
+export function tierSourceState(d: Dictionary, n: { lists: number; people: number; decks: number; officialUpdated?: string; cardVotes?: number | null }) {
   const t = d.tier;
   return {
     analytics: t.sourceAnalyticsState,
+    // voti alle carte (06/10/2026): quanti voti da 1 a 10 sono stati dati; null = migrazione non ancora applicata ("in arrivo")
+    votes:
+      n.cardVotes === undefined
+        ? t.sourceVotesHint
+        : n.cardVotes === null
+          ? t.sourceVotesSoon
+          : n.cardVotes === 0
+            ? t.sourceVotesNone
+            : n.cardVotes === 1
+              ? t.sourceVotesOne
+              : t.sourceVotesMany.replace("{n}", String(n.cardVotes)),
     official: n.officialUpdated ? t.sourceOfficialUpdated.replace("{date}", n.officialUpdated) : t.sourceOfficialSoon,
     // niente conteggio sotto "Community" (Pierluigi, 29/09/2026: "rimuovi la dicitura 6 persone"): resta solo il nome.
     // Quante persone hanno salvato una lista si legge ancora nella riga del campione (communitySample di tierstats.ts).

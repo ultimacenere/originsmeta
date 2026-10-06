@@ -3,6 +3,7 @@ import { isLocale } from "@/lib/i18n";
 import { listPublicProfiles, listPublishedDeckIndex } from "@/lib/community/queries";
 import { loadDeckRefs } from "@/lib/community/decksByCard";
 import { supabasePublic } from "@/lib/supabase/public";
+import { cardVotesMissing } from "@/lib/community/cardVotes";
 import { parseStoredLinks } from "@/lib/community/profileLinks";
 import { SHOWCASE_BADGES, isShowcaseBadge } from "@/lib/community/badges";
 import { listedInDirectory } from "@/lib/community/creatorDirectory";
@@ -122,6 +123,22 @@ async function tierListDates(): Promise<CommunityData["tierLists"]> {
 }
 
 /**
+ * Voti alle carte (06/10/2026): solo l'ora dell'ultimo voto (lastmod di /tier-list/votes), dalla funzione
+ * card_vote_totals, che non dice chi ha votato. Prima della migrazione (funzione o tabella mancanti) nessun dato, come
+ * se la pagina non avesse voti; ogni altro errore lancia.
+ */
+async function cardVoteDate(): Promise<CommunityData["cardVotes"]> {
+  const client = supabasePublic();
+  if (!client) return undefined;
+  const { data, error } = await client.rpc("card_vote_totals");
+  if (error) {
+    if (cardVotesMissing(error)) return undefined;
+    throw new SitemapReadError("card_vote_totals", error.message);
+  }
+  return { latest: data?.[0]?.latest ?? undefined };
+}
+
+/**
  * Profilo pubblico (pacchetto CREATOR, 26/09/2026): le schede della directory /creators (profili con il ruolo Creator,
  * Autore, Pro o Staff, ruoli del 27/09/2026, e il profilo compilato, `listedInDirectory` come la pagina: quante sono
  * decide se /creators entra in sitemap; versione 5 delle letture dal 27/09, per l'elenco dei ruoli cambiato) e il
@@ -175,7 +192,7 @@ async function readCommunity(): Promise<CommunityData> {
     // mazzi torneo (04/10/2026): tabella mancante = nessun trio, ogni altro errore lancia
     listDeckSetIndex(),
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets, cardVotes: await cardVoteDate() };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

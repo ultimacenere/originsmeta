@@ -12,6 +12,7 @@ import { comicLabels } from "@/lib/comicLabels";
 import { trackerPrivacy } from "@/lib/trackerLabels";
 import { draftPrivacy } from "@/lib/draftLabels";
 import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
+import { cardVoteLabels } from "@/lib/cardVoteLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -92,6 +93,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Draft contro un amico (02/10/2026, fase 2 del draft): testo in src/lib/draftLabels.ts, ancora #draft */}
         <p id="draft" className="mt-6 scroll-mt-24">
           {draftPrivacy[locale]}
+        </p>
+        {/* Voti alle carte da 1 a 10 (06/10/2026): testo in src/lib/cardVoteLabels.ts, ancora #card-votes */}
+        <p id="card-votes" className="mt-6 scroll-mt-24">
+          {cardVoteLabels[locale].privacy}
         </p>
       </article>
     </div>

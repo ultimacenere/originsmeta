@@ -12,6 +12,7 @@ import { supabaseUrl } from "@/lib/supabase/env";
 import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedRating, type CardScore, type SignedAuthor } from "@/lib/tierstats";
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 import { deckCardsDate } from "@/lib/community/deckVersions";
+import { readCardVotes, type CardVotesData } from "@/lib/community/cardVotes";
 
 /**
  * Dati della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB): una sola lettura di Supabase
@@ -40,11 +41,14 @@ export type TierData = {
   lists: { legendaries: number; cards: number; people: number; updated?: string };
   /** tier list firmate da Staff, Creator, Autori e Pro, per autore (Ondata 3, TOOL-01; ruoli del 27/09): dalla stessa lettura */
   signed: SignedAuthor[];
+  /** voti alle carte da 1 a 10 (06/10/2026): totali per la riga di stato; `null` prima della migrazione (o community spenta) */
+  cardVotes: CardVotesData | null;
 };
 
 export async function loadTierData(locale: Locale): Promise<TierData> {
   const d = getDictionary(locale);
-  const [rawDecks, lists] = await Promise.all([listPublishedDecks(), listPublishedTierLists()]);
+  // mazzi pubblicati, tier list salvate e voti alle carte (06/10/2026: null prima della migrazione), in parallelo
+  const [rawDecks, lists, cardVotes] = await Promise.all([listPublishedDecks(), listPublishedTierLists(), readCardVotes()]);
 
   // Mazzi: dal più votato (voto pesato sul numero di voti), quelli senza voti in fondo dal più recente
   const decks: TierRankedDeck[] = rawDecks
@@ -109,6 +113,7 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
       ability: c.ability?.[locale],
       used,
       community: score ? { tier: score.tier, avg: score.avg, votes: score.votes, dist: score.dist } : undefined,
+      rating: cardVotes?.ratings[c.slug],
       decks: inDecks.map((deck) => ({ name: deck.name, href: href(locale, `/decks/community/${deck.slug}`) })),
       guides: guides.filter((g) => g.tags?.cards?.includes(c.slug)).map((g) => ({ title: g.title, href: href(locale, `/guides/${g.slug}`) })),
     };
@@ -129,5 +134,6 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
     // conteggi con la stessa funzione dell'invito in home (`tierListCounts`), così i due numeri non divergono
     lists: { ...tierListCounts(lists), updated: updated ? formatDate(locale, updated) : undefined },
     signed: signedTierLists(lists),
+    cardVotes,
   };
 }

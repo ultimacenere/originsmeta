@@ -156,6 +156,7 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
             ? d.tier.sourceOfficialUpdated.replace("{date}", formatDate(locale, tierList.updated))
             : d.tier.sourceOfficialSoon,
           community: d.tier.sourceCommunityHint,
+          votes: d.tier.sourceVotesHint,
           played: d.tier.sourcePlayedHint,
           analytics: d.tier.sourceAnalyticsState,
         }}

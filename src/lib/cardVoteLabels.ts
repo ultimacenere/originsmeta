@@ -1,0 +1,253 @@
+import type { Locale } from "./i18n";
+
+/**
+ * Testi dei voti alle carte e della tier list dei voti (/tier-list/votes), 06/10/2026 (richiesta di Pierluigi: "la
+ * possibilità per gli utenti di votare le carte da 1 (scarsa) a 10 (ottima) e sulla base delle votazioni si generasse una
+ * tierlist"). Un modulo solo nelle tre lingue, l'inglese è il tipo di riferimento; spagnolo neutro col tú
+ * (docs/spagnolo.md). Le soglie nei testi arrivano dai numeri di src/lib/cardVotes.ts ({min}, {tierS}…): qui solo le frasi.
+ * Nel menu e nella testata della sezione la scheda si chiama con `tier.sourceVotes` dei dizionari.
+ */
+const en = {
+  page: {
+    /** titolo della SERP: contiene "Origins TCG", quindi `pageTitle` lo lascia com'è (entro 60 caratteri, test) */
+    title: "Origins TCG card tier list from member votes (1–10)",
+    titlePreview: "Origins TCG card votes tier list (preview)",
+    description: "Rate every Origins TCG card from 1 (weak) to 10 (excellent): the average of OriginsMeta members' votes builds a tier list of Legendaries and base cards.",
+    h1: "Card votes tier list",
+    h1Preview: "Card votes tier list (preview)",
+    intro:
+      "Every member can rate each Demo 2.0 card from 1 (weak) to 10 (excellent), one vote per card, changeable at any time. A card lands in the tier of its average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below. It is not the community tier list, which averages the full lists saved with the maker: here every single card gets its own score.",
+    sourceText: "votes from 1 to 10 given by members to each card",
+    /** {votes} = "12 votes", {cards} = "9 cards", {voters} = "4 people" */
+    sample: "{votes} on {cards} from {voters}",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    cardsOne: "1 card",
+    cardsMany: "{n} cards",
+    votersOne: "1 person",
+    votersMany: "{n} people",
+    updatedText: "latest on {date}",
+    /** {n} = voters so far, {min} = voters needed */
+    preview: "Preview: it becomes the card votes tier list at {min} voters ({n} of {min} so far).",
+    previewBadge: "Preview",
+    previewShort: "it becomes the card votes tier list at {min} voters ({n} of {min} so far)",
+    rankedRule: "A card gets its tier from {min} votes; below that its average shows in its detail, without a tier.",
+    empty: "Nobody has rated a card yet: the first vote could be yours. Open a card below and give it a score.",
+    unavailable: "Card votes aren't active on this site yet.",
+    disclaimer: "It is the opinion of the people who vote on this site, not a game statistic: it weighs as much as the votes behind each card.",
+    howTitle: "How it works",
+    how: [
+      "Sign in, open a card here or on its page and pick a score from 1 (weak) to 10 (excellent).",
+      "One vote per card: pressing another number replaces it.",
+      "Tiers come from the average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below; a card needs {min} votes to get a tier.",
+      "The page refreshes within a few minutes after a vote.",
+    ],
+    sections: {
+      legendaries: { title: "Legendaries", text: "The Legendaries, ranked by their average score." },
+      cards: { title: "Base cards", text: "Units and spells, ranked by their average score." },
+    },
+    /** riquadro di rimando su /tier-list, accanto a Le più giocate e Community */
+    goTitle: "Card votes",
+    goText: "Each card rated from 1 to 10 by members",
+    communityText: "For the full lists saved by members:",
+    communityAnchor: "community tier list",
+  },
+  explorer: {
+    colRating: "Score",
+    tier: "Tier {tier}",
+    average: "average {avg} out of 10",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    distribution: "Votes by score",
+    unranked: "No votes yet: be the first.",
+    needMore: "Gets a tier from {min} votes ({n} so far).",
+    scale: "1 = weak · 10 = excellent",
+  },
+  widget: {
+    title: "Your vote",
+    rate: "Rate this card from 1 (weak) to 10 (excellent)",
+    yourVote: "Your vote: {n}/10",
+    loginToVote: "Sign in to vote",
+    voted: "Thanks, vote saved",
+    voteError: "Could not save the vote",
+    unavailable: "Voting isn't active yet.",
+    limit: "You've reached the voting limit.",
+    average: "Average {avg}/10",
+    noVotes: "No votes yet",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    low: "weak",
+    high: "excellent",
+    updateNote: "Tiers refresh within a few minutes.",
+  },
+  cardPage: {
+    kicker: "Card votes",
+    text: "Rate {name} from 1 (weak) to 10 (excellent): the members' average builds the card votes tier list.",
+    tier: "Tier {tier} in the card votes tier list.",
+    open: "Open the card votes tier list",
+  },
+  privacy:
+    "Card votes (from 6 October 2026): signed-in members can rate each card from 1 to 10 on its page or on /tier-list/votes. The vote is stored with your account (card, score, date) so you can change it; the pages show only averages, counts and the distribution of scores, never who voted what. No IP address is stored. Your votes are deleted with your account; to have them removed earlier, write to staff@originsmeta.com.",
+};
+
+export type CardVoteLabels = typeof en;
+
+const it: CardVoteLabels = {
+  page: {
+    title: "Tier list delle carte di Origins TCG dai voti (1–10)",
+    titlePreview: "Tier list dei voti alle carte di Origins TCG (anteprima)",
+    description: "Vota ogni carta di Origins TCG da 1 (scarsa) a 10 (ottima): la media dei voti degli iscritti a OriginsMeta crea una tier list di Leggendarie e carte base.",
+    h1: "Tier list dei voti alle carte",
+    h1Preview: "Tier list dei voti alle carte (anteprima)",
+    intro:
+      "Ogni iscritto può votare ogni carta della Demo 2.0 da 1 (scarsa) a 10 (ottima), un voto per carta, che si cambia quando si vuole. La carta finisce nella fascia della sua media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto. Non è la tier list della community, che fa la media delle liste intere salvate con lo strumento: qui ogni singola carta ha il suo punteggio.",
+    sourceText: "voti da 1 a 10 dati dagli iscritti a ogni carta",
+    sample: "{votes} su {cards} da {voters}",
+    votesOne: "1 voto",
+    votesMany: "{n} voti",
+    cardsOne: "1 carta",
+    cardsMany: "{n} carte",
+    votersOne: "1 persona",
+    votersMany: "{n} persone",
+    updatedText: "l'ultimo il {date}",
+    preview: "Anteprima: diventa la tier list dei voti da {min} votanti ({n} su {min} finora).",
+    previewBadge: "Anteprima",
+    previewShort: "diventa la tier list dei voti da {min} votanti ({n} su {min} finora)",
+    rankedRule: "Una carta entra in fascia da {min} voti; sotto, la sua media si legge nel dettaglio, senza fascia.",
+    empty: "Nessuno ha ancora votato una carta: il primo voto può essere il tuo. Apri una carta qui sotto e dalle un punteggio.",
+    unavailable: "I voti alle carte non sono ancora attivi su questo sito.",
+    disclaimer: "È l'opinione di chi vota su questo sito, non un dato del gioco: pesa quanto i voti dietro a ogni carta.",
+    howTitle: "Come funziona",
+    how: [
+      "Fai l'accesso, apri una carta qui o nella sua scheda e scegli un punteggio da 1 (scarsa) a 10 (ottima).",
+      "Un voto per carta: premendo un altro numero lo sostituisci.",
+      "Le fasce vengono dalla media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto; una carta entra in fascia da {min} voti.",
+      "La pagina si aggiorna entro pochi minuti dopo un voto.",
+    ],
+    sections: {
+      legendaries: { title: "Leggendarie", text: "Le Leggendarie, ordinate per la media dei voti." },
+      cards: { title: "Carte base", text: "Personaggi e magie, ordinati per la media dei voti." },
+    },
+    goTitle: "Voti alle carte",
+    goText: "Ogni carta votata da 1 a 10 dagli iscritti",
+    communityText: "Per le liste intere salvate dagli iscritti:",
+    communityAnchor: "tier list della community",
+  },
+  explorer: {
+    colRating: "Voto",
+    tier: "Fascia {tier}",
+    average: "media {avg} su 10",
+    votesOne: "1 voto",
+    votesMany: "{n} voti",
+    distribution: "Voti per punteggio",
+    unranked: "Ancora nessun voto: puoi dare il primo.",
+    needMore: "Entra in fascia da {min} voti ({n} finora).",
+    scale: "1 = scarsa · 10 = ottima",
+  },
+  widget: {
+    title: "Il tuo voto",
+    rate: "Vota questa carta da 1 (scarsa) a 10 (ottima)",
+    yourVote: "Il tuo voto: {n}/10",
+    loginToVote: "Accedi per votare",
+    voted: "Grazie, voto salvato",
+    voteError: "Non siamo riusciti a salvare il voto",
+    unavailable: "I voti non sono ancora attivi.",
+    limit: "Hai raggiunto il limite di voti.",
+    average: "Media {avg}/10",
+    noVotes: "Ancora nessun voto",
+    votesOne: "1 voto",
+    votesMany: "{n} voti",
+    low: "scarsa",
+    high: "ottima",
+    updateNote: "Le fasce si aggiornano entro pochi minuti.",
+  },
+  cardPage: {
+    kicker: "Voti alle carte",
+    text: "Vota {name} da 1 (scarsa) a 10 (ottima): la media degli iscritti costruisce la tier list dei voti alle carte.",
+    tier: "Fascia {tier} nella tier list dei voti alle carte.",
+    open: "Apri la tier list dei voti alle carte",
+  },
+  privacy:
+    "Voti alle carte (dal 6 ottobre 2026): chi ha fatto l'accesso può votare ogni carta da 1 a 10 dalla sua scheda o da /tier-list/votes. Il voto resta collegato al tuo account (carta, punteggio, data), così puoi cambiarlo; le pagine mostrano solo medie, conteggi e distribuzione dei punteggi, mai chi ha votato cosa. Nessun indirizzo IP viene salvato. I tuoi voti si cancellano con l'account; per toglierli prima scrivi a staff@originsmeta.com.",
+};
+
+const es: CardVoteLabels = {
+  page: {
+    title: "Tier list de cartas de Origins TCG por votos (1–10)",
+    titlePreview: "Tier list de votos a cartas de Origins TCG (vista previa)",
+    description: "Vota cada carta de Origins TCG del 1 (floja) al 10 (excelente): el promedio de los miembros de OriginsMeta crea una tier list de Legendarias y cartas base.",
+    h1: "Tier list de votos a las cartas",
+    h1Preview: "Tier list de votos a las cartas (vista previa)",
+    intro:
+      "Cada miembro puede votar cada carta de la Demo 2.0 del 1 (floja) al 10 (excelente), un voto por carta, que se cambia cuando quieras. La carta queda en el tier de su promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo. No es la tier list de la comunidad, que promedia las listas completas guardadas con la herramienta: aquí cada carta tiene su propia puntuación.",
+    sourceText: "votos del 1 al 10 que los miembros dan a cada carta",
+    sample: "{votes} en {cards} de {voters}",
+    votesOne: "1 voto",
+    votesMany: "{n} votos",
+    cardsOne: "1 carta",
+    cardsMany: "{n} cartas",
+    votersOne: "1 persona",
+    votersMany: "{n} personas",
+    updatedText: "el último del {date}",
+    preview: "Vista previa: se convierte en la tier list de votos con {min} votantes ({n} de {min} por ahora).",
+    previewBadge: "Vista previa",
+    previewShort: "se convierte en la tier list de votos con {min} votantes ({n} de {min} por ahora)",
+    rankedRule: "Una carta entra en un tier a partir de {min} votos; por debajo, su promedio se ve en el detalle, sin tier.",
+    empty: "Nadie ha votado una carta todavía: el primer voto puede ser el tuyo. Abre una carta aquí abajo y dale una puntuación.",
+    unavailable: "Los votos a las cartas aún no están activos en este sitio.",
+    disclaimer: "Es la opinión de quienes votan en este sitio, no una estadística del juego: pesa tanto como los votos detrás de cada carta.",
+    howTitle: "Cómo funciona",
+    how: [
+      "Inicia sesión, abre una carta aquí o en su página y elige una puntuación del 1 (floja) al 10 (excelente).",
+      "Un voto por carta: si pulsas otro número, lo sustituyes.",
+      "Los tiers salen del promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo; una carta entra en un tier a partir de {min} votos.",
+      "La página se actualiza a los pocos minutos de un voto.",
+    ],
+    sections: {
+      legendaries: { title: "Legendarias", text: "Las Legendarias, ordenadas por el promedio de los votos." },
+      cards: { title: "Cartas base", text: "Personajes y hechizos, ordenados por el promedio de los votos." },
+    },
+    goTitle: "Votos a las cartas",
+    goText: "Cada carta votada del 1 al 10 por los miembros",
+    communityText: "Para las listas completas guardadas por los miembros:",
+    communityAnchor: "tier list de la comunidad",
+  },
+  explorer: {
+    colRating: "Voto",
+    tier: "Tier {tier}",
+    average: "promedio {avg} sobre 10",
+    votesOne: "1 voto",
+    votesMany: "{n} votos",
+    distribution: "Votos por puntuación",
+    unranked: "Aún sin votos: puedes dar el primero.",
+    needMore: "Entra en un tier a partir de {min} votos ({n} por ahora).",
+    scale: "1 = floja · 10 = excelente",
+  },
+  widget: {
+    title: "Tu voto",
+    rate: "Vota esta carta del 1 (floja) al 10 (excelente)",
+    yourVote: "Tu voto: {n}/10",
+    loginToVote: "Inicia sesión para votar",
+    voted: "Gracias, voto guardado",
+    voteError: "No se pudo guardar el voto",
+    unavailable: "Los votos aún no están activos.",
+    limit: "Has llegado al límite de votos.",
+    average: "Promedio {avg}/10",
+    noVotes: "Aún sin votos",
+    votesOne: "1 voto",
+    votesMany: "{n} votos",
+    low: "floja",
+    high: "excelente",
+    updateNote: "Los tiers se actualizan a los pocos minutos.",
+  },
+  cardPage: {
+    kicker: "Votos a las cartas",
+    text: "Vota {name} del 1 (floja) al 10 (excelente): el promedio de los miembros crea la tier list de votos a las cartas.",
+    tier: "Tier {tier} en la tier list de votos a las cartas.",
+    open: "Abre la tier list de votos a las cartas",
+  },
+  privacy:
+    "Votos a las cartas (desde el 6 de octubre de 2026): con la sesión iniciada puedes votar cada carta del 1 al 10 desde su página o desde /tier-list/votes. El voto queda vinculado a tu cuenta (carta, puntuación, fecha), así puedes cambiarlo; las páginas muestran solo promedios, recuentos y la distribución de las puntuaciones, nunca quién votó qué. No se guarda ninguna dirección IP. Tus votos se borran con la cuenta; para quitarlos antes, escribe a staff@originsmeta.com.",
+};
+
+export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es };

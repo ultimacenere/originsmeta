@@ -403,6 +403,13 @@ export const it: Dictionary = {
     /* stato fisso per le pagine che non leggono il database (il tool) */
     sourceCommunityHint: "media degli iscritti",
     sourcePlayedHint: "dai mazzi del sito",
+    /* Voti alle carte (06/10/2026): la tier list costruita dai voti da 1 a 10 che gli iscritti danno a ogni carta (src/lib/cardVoteLabels.ts) */
+    sourceVotes: "Voti alle carte",
+    sourceVotesNone: "ancora nessun voto",
+    sourceVotesOne: "1 voto",
+    sourceVotesMany: "{n} voti",
+    sourceVotesHint: "da 1 a 10 dagli iscritti",
+    sourceVotesSoon: "in arrivo",
     /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Analytics (docs/tracker.md) */
     sourceWinrate: "Win rate",
     sourceAnalytics: "Analytics",

@@ -5,8 +5,11 @@ import Link from "next/link";
 import { CardPeek, type PeekCard } from "./CardPeek";
 import { tierTone } from "@/lib/tiercode";
 import { TIER_ORDER, communityOrder, usageOrder, type Tier } from "@/lib/tierstats";
+import { CARD_SCORES, fillVoteText, ratingOrder, votesWord } from "@/lib/cardVotes";
+import type { CardVoteLabels } from "@/lib/cardVoteLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
 import { trackNamedEvent } from "@/lib/analytics";
+import { CardVote } from "./CardVote";
 
 /*
   Carte della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB). Un solo componente per le
@@ -80,10 +83,18 @@ export type TierExplorerLabels = {
   tiers: Record<Tier, string>;
 };
 
-type Source = "official" | "community" | "played";
+/*
+  `votes` (06/10/2026): la tier list dei voti alle carte, da 1 a 10. Le fasce vengono da `rating.tier` (cardVotes.ts), il
+  dettaglio mostra media, voti e distribuzione dei dieci punteggi e il widget `CardVote` per votare lì (le pagine
+  passano `votes`: etichette, link d'accesso e soglia); in tabella la colonna "Voto" prende il posto di "Community".
+*/
+type Source = "official" | "community" | "played" | "votes";
 type CostBand = "" | "0-2" | "3" | "4" | "5+";
 type Filters = { q: string; type: "" | "unit" | "spell"; cost: CostBand; align: "" | "good" | "evil" | "neutral" };
-type SortKey = "name" | "mana" | "community" | "used";
+type SortKey = "name" | "mana" | "community" | "used" | "rating";
+
+/** Quello che serve alla fonte `votes`: testi del dettaglio e del widget, link d'accesso, voti per entrare in fascia. */
+export type TierVotes = { labels: CardVoteLabels["explorer"]; widget: CardVoteLabels["widget"]; loginHref: string; minVotes: number; available: boolean };
 
 const USAGE_LIMIT = 20;
 const DECKS_IN_DETAIL = 6;
@@ -117,9 +128,12 @@ export function TierExplorer({
   table: withTable = false,
   official,
   locale,
+  votes,
 }: {
   /** lingua della pagina: serve alla virgola dei decimali (4,3 in italiano, 4.3 in inglese) */
   locale: string;
+  /** fonte `votes`: testi, link d'accesso e soglia del widget del voto nel dettaglio */
+  votes?: TierVotes;
   /** prefisso degli id nella pagina (una pagina ha più esploratori: Leggendarie e carte) */
   id: string;
   /** fasce, "Le più giocate" a righe, o una striscia di anteprima (le carte nell'ordine ricevuto, col numero di mazzi) */
@@ -136,9 +150,11 @@ export function TierExplorer({
   const [f, setF] = useState<Filters>({ q: "", type: "", cost: "", align: "" });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<"grid" | "table">("grid");
-  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: source === "community" ? "community" : "used", dir: -1 });
+  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: source === "community" ? "community" : source === "votes" ? "rating" : "used", dir: -1 });
   const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  /* fonte `votes`: media e voti appena cambiati da un voto dato nel dettaglio (la pagina si rigenera dopo, entro pochi minuti) */
+  const [fresh, setFresh] = useState<Record<string, { avg: number; votes: number }>>({});
   const dialog = useRef<HTMLDialogElement>(null);
   /* voce su cui è stata premuta la barra spaziatrice: il dettaglio si apre al rilascio sulla stessa voce */
   const spaceOn = useRef<string | null>(null);
@@ -333,14 +349,16 @@ export function TierExplorer({
   );
 
   /* ---------- fasce ---------- */
-  const tierOfEntry = (e: TierCardEntry): Tier | undefined => (official ? official[e.slug] : e.community?.tier);
+  const tierOfEntry = (e: TierCardEntry): Tier | undefined => (official ? official[e.slug] : source === "votes" ? e.rating?.tier : e.community?.tier);
   const bands = () => {
     if (!pool.length) return nothing;
-    // le fasce di OriginsMeta tengono l'ordine scritto dalla redazione; quelle della community l'ordine della media
+    // le fasce di OriginsMeta tengono l'ordine scritto dalla redazione; quelle della community e dei voti l'ordine della media
     const ranked = (t: Tier) =>
       official
         ? pool.filter((e) => official[e.slug] === t).sort((a, b) => Object.keys(official).indexOf(a.slug) - Object.keys(official).indexOf(b.slug))
-        : pool.filter((e) => e.community?.tier === t).sort(communityOrder);
+        : source === "votes"
+          ? pool.filter((e) => e.rating?.tier === t).sort(ratingOrder)
+          : pool.filter((e) => e.community?.tier === t).sort(communityOrder);
     const unranked = pool.filter((e) => !tierOfEntry(e));
     return (
       <div className="tier-board">
@@ -434,7 +452,19 @@ export function TierExplorer({
   const tableView = () => {
     if (!pool.length) return nothing;
     const val = (e: TierCardEntry, k: SortKey): number | string =>
-      k === "name" ? e.name : k === "mana" ? (e.mana ?? 99) : k === "community" ? (e.community ? TIER_RANK[e.community.tier] * 10 + e.community.avg : 0) : e.used;
+      k === "name"
+        ? e.name
+        : k === "mana"
+          ? (e.mana ?? 99)
+          : k === "community"
+            ? e.community
+              ? TIER_RANK[e.community.tier] * 10 + e.community.avg
+              : 0
+            : k === "rating"
+              ? e.rating
+                ? e.rating.avg * 1000 + e.rating.votes
+                : 0
+              : e.used;
     const rows = pool.slice().sort((a, b) => {
       const va = val(a, sort.key);
       const vb = val(b, sort.key);
@@ -466,7 +496,7 @@ export function TierExplorer({
               <th scope="col" className="tier-hide-sm">
                 {l.colType}
               </th>
-              {th("community", l.colCommunity)}
+              {source === "votes" && votes ? th("rating", votes.labels.colRating) : th("community", l.colCommunity)}
               {th("used", l.colDecks, "is-num")}
             </tr>
           </thead>
@@ -487,7 +517,21 @@ export function TierExplorer({
                 </th>
                 <td className="is-num tier-hide-sm">{e.mana ?? "—"}</td>
                 <td className="tier-hide-sm">{e.typeLabel}</td>
-                <td>{e.community ? <span className={`tier-letter ${tierTone[e.community.tier]}`}>{e.community.tier}</span> : "—"}</td>
+                {source === "votes" ? (
+                  <td>
+                    {e.rating ? (
+                      <span className="inline-flex items-center gap-2">
+                        {e.rating.tier ? <span className={`tier-letter ${tierTone[e.rating.tier]}`}>{e.rating.tier}</span> : null}
+                        <span className="font-mono text-sm text-pale">{oneDecimal(e.rating.avg)}</span>
+                        <span className="text-xs text-chalk-muted">({e.rating.votes})</span>
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                ) : (
+                  <td>{e.community ? <span className={`tier-letter ${tierTone[e.community.tier]}`}>{e.community.tier}</span> : "—"}</td>
+                )}
                 <td className="is-num">
                   {e.used}
                   <span className="text-chalk-muted"> / {deckCount}</span>
@@ -543,7 +587,63 @@ export function TierExplorer({
         {e.ability ? <p className="tier-dialog-text">{e.ability}</p> : null}
 
         <div className="tier-dialog-box">
-          {source === "community" ? (
+          {source === "votes" && votes ? (
+            (() => {
+              // media e voti: quelli della pagina, o quelli appena arrivati da un voto dato qui
+              const r = e.rating ? { ...e.rating, ...(fresh[e.slug] ?? {}) } : fresh[e.slug] ? { ...fresh[e.slug], dist: [] as number[] } : undefined;
+              const maxN = r ? Math.max(0, ...r.dist) : 0;
+              const vl = votes.labels;
+              return (
+                <>
+                  {r ? (
+                    <p className="flex flex-wrap items-center gap-2">
+                      {r.tier ? (
+                        <>
+                          <span className={`tier-letter ${tierTone[r.tier]}`}>{r.tier}</span>
+                          <b className="text-chalk">{fillVoteText(vl.tier, { tier: r.tier })}</b>
+                        </>
+                      ) : null}
+                      <span className="text-chalk-muted">
+                        {fillVoteText(vl.average, { avg: oneDecimal(r.avg) })} · {votesWord({ one: vl.votesOne, many: vl.votesMany }, r.votes)}
+                      </span>
+                      {!r.tier ? <span className="basis-full text-sm text-chalk-muted">{fillVoteText(vl.needMore, { min: votes.minVotes, n: r.votes })}</span> : null}
+                    </p>
+                  ) : (
+                    <p>{vl.unranked}</p>
+                  )}
+                  {r && r.dist.length ? (
+                    <>
+                      <p className="kicker mt-3 text-chalk-muted">
+                        {vl.distribution} <span className="font-normal normal-case tracking-normal">· {vl.scale}</span>
+                      </p>
+                      <ul className="card-vote-dist" aria-hidden="true">
+                        {CARD_SCORES.map((s, i) => (
+                          <li key={s}>
+                            <span className="card-vote-dist-bar" style={{ height: `${maxN ? Math.max(4, (r.dist[i] / maxN) * 100) : 4}%` }} />
+                            <span className="card-vote-dist-n">{s}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                  <div className="mt-4">
+                    <CardVote
+                      key={e.slug}
+                      slug={e.slug}
+                      avg={r?.avg ?? 0}
+                      votes={r?.votes ?? 0}
+                      labels={votes.widget}
+                      loginHref={votes.loginHref}
+                      placement="tier_list"
+                      locale={locale}
+                      available={votes.available}
+                      onChange={(next) => setFresh((prev) => ({ ...prev, [e.slug]: next }))}
+                    />
+                  </div>
+                </>
+              );
+            })()
+          ) : source === "community" ? (
             c ? (
               <>
                 <p className="flex flex-wrap items-center gap-2">

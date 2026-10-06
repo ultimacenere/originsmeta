@@ -410,6 +410,13 @@ export const en = {
     /* static state for pages that do not read the database (the maker) */
     sourceCommunityHint: "members' average",
     sourcePlayedHint: "from the site's decks",
+    /* Card votes (06/10/2026): the tier list built from the votes members give to each card, 1 to 10 (src/lib/cardVoteLabels.ts) */
+    sourceVotes: "Card votes",
+    sourceVotesNone: "no votes yet",
+    sourceVotesOne: "1 vote",
+    sourceVotesMany: "{n} votes",
+    sourceVotesHint: "1 to 10 by members",
+    sourceVotesSoon: "coming soon",
     /* Win rate (30/09/2026): the games recorded with the OriginsMeta Analytics app (docs/tracker.md) */
     sourceWinrate: "Win rate",
     sourceAnalytics: "Analytics",

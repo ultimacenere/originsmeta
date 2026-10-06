@@ -9,6 +9,7 @@ import { tierTone } from "@/lib/tiercode";
 import { deckBrief, pickPreview, type Tier } from "@/lib/tierstats";
 import { loadTierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
+import { cardVoteLabels } from "@/lib/cardVoteLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
@@ -70,7 +71,14 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   const legendaries = data.cards.filter((c) => c.legendary);
   const base = data.cards.filter((c) => !c.legendary);
   const lists = Math.max(data.lists.legendaries, data.lists.cards);
-  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length, officialUpdated: ranked ? formatDate(locale, tierList.updated) : undefined });
+  const state = tierSourceState(d, {
+    lists,
+    people: data.lists.people,
+    decks: data.decks.length,
+    officialUpdated: ranked ? formatDate(locale, tierList.updated) : undefined,
+    cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null,
+  });
+  const voteLabels = cardVoteLabels[locale].page;
 
   // Le voci di "In breve" e delle anteprime, le stesse: carte contate dai mazzi pubblicati, mazzi col voto pesato
   const legendaryItems = usedItems(legendaries);
@@ -225,8 +233,8 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         );
       })}
 
-      {/* Le altre due fonti, sempre raggiungibili anche dal fondo della pagina */}
-      <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {/* Le altre fonti, sempre raggiungibili anche dal fondo della pagina (dal 06/10/2026 anche i voti alle carte) */}
+      <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link href={href(locale, "/tier-list/most-played")} className="tier-go">
           <b>{t.goPlayed.title}</b>
           {t.goPlayed.text.replace("{n}", String(data.decks.length))}
@@ -234,6 +242,10 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         <Link href={href(locale, "/tier-list/community")} className="tier-go">
           <b>{t.goCommunity.title}</b>
           {t.goCommunity.text}
+        </Link>
+        <Link href={href(locale, "/tier-list/votes")} className="tier-go">
+          <b>{voteLabels.goTitle}</b>
+          {voteLabels.goText}
         </Link>
       </div>
 

@@ -30,6 +30,8 @@ export function navItems(dict: Dictionary): NavItem[] {
       sub: [
         { label: t.sourceOfficial, path: "/tier-list" },
         { label: t.sourceCommunity, path: "/tier-list/community" },
+        // voti alle carte da 1 a 10 (06/10/2026): la tier list costruita dai voti degli iscritti
+        { label: t.sourceVotes, path: "/tier-list/votes" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
         { label: t.sourceAnalytics, path: "/analytics" },
       ],

@@ -6304,3 +6304,100 @@ revoke all on function public.remove_judge(uuid, uuid) from public, anon;
 grant execute on function public.remove_judge(uuid, uuid) to authenticated;
 
 comment on table public.tournament_judges is 'Arbitri di un torneo (05/10/2026): gestiscono partite, ritiri, check-in e avvio; li nominano solo organizzatore e admin (add_judge, remove_judge).';
+
+-- =====================================================================================================
+-- ===== 06/10/2026: VOTI ALLE CARTE =====
+-- Richiesta di Pierluigi del 06/10/2026: "la possibilità per gli utenti di votare le carte da 1 (scarsa) a 10 (ottima)
+-- e sulla base delle votazioni si generasse una tierlist". Un voto per iscritto e per carta, che si può cambiare quando
+-- si vuole (l'upsert di voteCard, src/lib/community/cardVoteActions.ts). `card` è lo slug della scheda carta: la Server
+-- Action accetta solo le carte attive della Demo 2.0 non create (le stesse del tool /tier-list/create); qui si
+-- controllano la forma dello slug, il punteggio (1–10) e un tetto di righe per iscritto (guard_card_vote: 300, le
+-- carte votabili sono 122, oltre sono righe sporche; lo stesso numero sta in CARD_VOTES_PER_USER_MAX di
+-- src/lib/cardVotes.ts, che il test confronta).
+-- Chi ha votato che cosa NON è pubblico: ognuno legge solo i propri voti (RLS, select per authenticated), anon non
+-- legge la tabella. Il sito legge gli aggregati dalle due funzioni security definer: card_ratings (media, voti e
+-- distribuzione punteggio → quanti, per ogni carta o per una sola) e card_vote_totals (voti, votanti, carte votate e
+-- data dell'ultimo voto: riga di stato della pagina e lastmod della sitemap). La fascia S–D la calcola il sito dalla
+-- media (src/lib/cardVotes.ts: fascia da CARD_RANKED_MIN_VOTES voti, pagina "anteprima" sotto CARD_VOTES_MIN_VOTERS
+-- votanti), così le soglie si cambiano senza migrazione. Il sito regge senza questo blocco: la pagina
+-- /tier-list/votes dice che i voti non sono ancora attivi e il widget lo stesso. Tutto idempotente, come il resto.
+-- Date di creazione scritte solo dal database (guard_created_at, blocco DATE E FOTO), updated_at dal trigger touch.
+-- =====================================================================================================
+
+create table if not exists public.card_votes (
+  card text not null check (card ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and char_length(card) <= 80),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  score smallint not null check (score between 1 and 10),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (card, user_id)
+);
+create index if not exists card_votes_user_idx on public.card_votes (user_id);
+create index if not exists card_votes_updated_idx on public.card_votes (updated_at desc);
+drop trigger if exists card_votes_touch on public.card_votes;
+create trigger card_votes_touch before update on public.card_votes
+  for each row execute function public.touch_updated_at();
+drop trigger if exists card_votes_guard_created on public.card_votes;
+create trigger card_votes_guard_created before insert or update on public.card_votes
+  for each row execute function public.guard_created_at();
+
+-- tetto di righe per iscritto (security definer: conta anche sotto RLS); il lock evita due inserimenti in parallelo
+create or replace function public.guard_card_vote()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  perform pg_advisory_xact_lock(hashtextextended('card_votes:' || new.user_id::text, 0));
+  if (select count(*) from public.card_votes v where v.user_id = new.user_id) >= 300 then
+    raise exception 'card_vote_limit' using errcode = '23514';
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_card_vote() from public, anon, authenticated;
+drop trigger if exists card_votes_guard on public.card_votes;
+create trigger card_votes_guard before insert on public.card_votes
+  for each row execute function public.guard_card_vote();
+
+alter table public.card_votes enable row level security;
+drop policy if exists "card votes: own rows" on public.card_votes;
+create policy "card votes: own rows" on public.card_votes for select to authenticated using (user_id = auth.uid());
+drop policy if exists "card votes: users vote once" on public.card_votes;
+create policy "card votes: users vote once" on public.card_votes for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "card votes: users change own" on public.card_votes;
+create policy "card votes: users change own" on public.card_votes for update to authenticated
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "card votes: users remove own" on public.card_votes;
+create policy "card votes: users remove own" on public.card_votes for delete to authenticated using (user_id = auth.uid());
+revoke all on public.card_votes from anon, authenticated;
+grant select, insert, update, delete on public.card_votes to authenticated;
+
+-- media, numero di voti e distribuzione (punteggio → quanti) di ogni carta votata, o di una sola (p_card)
+create or replace function public.card_ratings(p_card text default null)
+returns table (card text, avg_score numeric, votes integer, dist jsonb)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with per as (
+    select v.card as c, v.score as s, count(*)::int as n
+      from public.card_votes v
+     where p_card is null or v.card = p_card
+     group by v.card, v.score
+  )
+  select per.c,
+         round(sum(per.s * per.n)::numeric / sum(per.n), 2),
+         sum(per.n)::int,
+         jsonb_object_agg(per.s::text, per.n)
+    from per
+   group by per.c;
+$$;
+revoke all on function public.card_ratings(text) from public;
+grant execute on function public.card_ratings(text) to anon, authenticated;
+
+-- quanti voti, quanti votanti e quante carte votate, e l'ora dell'ultimo voto (riga di stato, sitemap)
+create or replace function public.card_vote_totals()
+returns table (votes bigint, voters bigint, cards bigint, latest timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select count(*), count(distinct cv.user_id), count(distinct cv.card), max(cv.updated_at) from public.card_votes cv;
+$$;
+revoke all on function public.card_vote_totals() from public;
+grant execute on function public.card_vote_totals() to anon, authenticated;
+
+comment on table public.card_votes is 'Voti alle carte da 1 a 10 (06/10/2026): uno per iscritto e per carta; ognuno legge solo i suoi, gli aggregati escono da card_ratings e card_vote_totals.';
+comment on function public.card_ratings(text) is 'Media, voti e distribuzione dei voti di ogni carta (o di una sola): è la base della tier list dei voti, /tier-list/votes (06/10/2026).';
+comment on function public.card_vote_totals() is 'Voti, votanti, carte votate e ultimo voto, senza nomi (06/10/2026).';

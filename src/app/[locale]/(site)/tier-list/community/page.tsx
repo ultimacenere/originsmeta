@@ -46,7 +46,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
   const data = await loadData(locale);
   const labels = tierExplorerLabels(d);
   const lists = savedLists(data);
-  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length });
+  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length, cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null });
   const kinds = [
     { id: "legendaries" as const, title: t.sections.legendaries.title, text: t.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary), n: data.lists.legendaries },
     { id: "cards" as const, title: t.sections.cards.title, text: t.sections.cards.text, entries: data.cards.filter((x) => !x.legendary), n: data.lists.cards },
