@@ -2556,6 +2556,77 @@
 }
 
 /*
+  Tasto "Dona ora" verso la pagina di donazione di PayPal (06/10/2026, PayPalButton.tsx): il giallo del tasto PayPal
+  (#FFC439, al passaggio #F2BA36) con la scritta in blu PayPal (#003087, 9,4:1 sul giallo) e il marchio a due colori
+  ("Pay" #003087, "Pal" #009CDE) in corsivo grassetto. Pillola come i tasti PayPal; Verdana per il marchio, che è il
+  carattere più vicino al logotipo fra quelli di sistema. Giallo pieno di un marchio esterno, come i colori di Steam e
+  Discord: non è un colore del sito.
+*/
+@layer components {
+  .btn-paypal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    color: #003087;
+    background: #ffc439;
+    border-radius: 9999px;
+    padding: 0.62rem 1rem;
+    text-decoration: none;
+    transition: background 120ms ease;
+  }
+  .btn-paypal:hover {
+    background: #f2ba36;
+    color: #003087;
+  }
+  .btn-paypal-sm {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.7rem;
+  }
+  .btn-paypal-mark {
+    font-family: Verdana, "DejaVu Sans", Geneva, sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .btn-paypal-pay {
+    color: #003087;
+  }
+  .btn-paypal-pal {
+    color: #009cde;
+  }
+  /* Monogramma "PP" per il tondo dell'header: due P in corsivo grassetto che si sovrappongono un po', la seconda azzurra */
+  .btn-paypal-pp {
+    align-items: baseline;
+    font-family: Verdana, "DejaVu Sans", Geneva, sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  .btn-paypal-pp .btn-paypal-pal {
+    margin-left: -0.3em;
+    position: relative;
+    top: 0.12em;
+  }
+  /* Nell'header fra 1280 e 1535 px (menu completo, ricerca e account nella stessa riga) il tasto diventa un tondo da
+     32 px come il loghino Discord accanto: testo e marchio sono nascosti dalle utility, qui solo la forma. */
+  @media (min-width: 1280px) and (max-width: 1535.98px) {
+    .btn-paypal-collapse {
+      justify-content: center;
+      gap: 0;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+    }
+  }
+}
+
+/*
   Campi dei moduli a 16 px sul telefono. Sotto i 16 px iOS ingrandisce la pagina a ogni tocco su un campo (e non
   torna indietro da solo); i campi del sito erano a 12-14 px. La regola sta FUORI dai @layer di proposito: così
   vince sulle utility di Tailwind come `text-sm` scritte sui singoli campi, senza bisogno di !important.

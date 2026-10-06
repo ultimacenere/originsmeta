@@ -38,6 +38,9 @@ export const en = {
     /* our own Discord server (24/09/2026): logo in the header, button in the menu on phones */
     discord: "OriginsMeta Discord",
     discordJoin: "Join our Discord",
+    /* PayPal donation button (06/10/2026): in the header after the language switcher, in the menu on phones */
+    donate: "Donate now",
+    donateAria: "Donate now with PayPal",
   },
   faq: {
     kicker: "Questions",

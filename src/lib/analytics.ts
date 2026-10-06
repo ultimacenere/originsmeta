@@ -110,6 +110,8 @@
  *   ★ draft_complete      mazzo del draft confermato: il draft è finito           format, grade (S | A | B | C | D, il
  *                         (copia del codice e deck builder: game_code_copy e       giudizio del Cervello)
  *                         deck_open_builder con placement=draft)
+ *   ★ donate_click        clic su "Dona ora" verso la pagina di donazione di      placement (header | menu: la tendina
+ *                         PayPal (06/10/2026, PayPalButton; attributi sul link)   del telefono)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -232,6 +234,7 @@ export type EventParams = {
   analytics_interest: { placement: "top" | "bottom"; added: "yes" | "no" };
   draft_start: { format: string; opponent: "bot" | "friend" };
   draft_complete: { format: string; grade: string };
+  donate_click: { placement: string };
 };
 export type EventName = keyof EventParams;
 
@@ -283,6 +286,7 @@ export const VERCEL_PROPS = {
   analytics_interest: ["placement", "added"],
   draft_start: ["format", "opponent"],
   draft_complete: ["format", "grade"],
+  donate_click: ["placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);
