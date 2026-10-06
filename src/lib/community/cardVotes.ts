@@ -10,12 +10,13 @@ import { CommunityReadError } from "./queries";
  * - `readCardVotes`: per la sezione Tier list (`loadTierData`, pagine in ISR) e per la sitemap; `null` prima della
  *   migrazione (funzioni o tabella mancanti), così la pagina dice che i voti non sono ancora attivi; con un altro errore
  *   lancia (DECKS-12: la rigenerazione fallisce e resta la pagina di prima, non una tier list vuota).
- * - `loadCardRatings`: per le 690 schede carta, una lettura sola condivisa nella cache dei dati di Next (un'ora, come
- *   i mazzi delle schede in decksByCard.ts); `voteCard` non la rinnova (un voto per richiesta non deve rigenerare 430
- *   pagine: il widget mostra subito i numeri nuovi dalla risposta della Server Action).
+ * - `loadCardRatings`: per le 690 schede carta, una lettura sola condivisa nella cache dei dati di Next (un'ora di
+ *   riserva, come i mazzi delle schede in decksByCard.ts); `voteCard` la segna vecchia a ogni voto (`revalidateTag` con
+ *   il profilo "max", dal 7/10/2026): le schede si rigenerano in background alla visita successiva, una per una, mai
+ *   tutte insieme. Il widget mostra comunque subito media e voti dalla risposta della Server Action.
  */
 
-/** Etichetta della cache dei voti alle carte nelle schede: nessuna azione la invalida, scade con `CARD_VOTES_REVALIDATE`. */
+/** Etichetta della cache dei voti alle carte nelle schede: la invalida `voteCard` a ogni voto; `CARD_VOTES_REVALIDATE` è la riserva. */
 export const CARD_VOTES_TAG = "community-card-votes";
 export const CARD_VOTES_REVALIDATE = 3600;
 /** Da aggiornare (v2, v3…) se cambia la forma di `CardVotesData`: la cache dei dati di Vercel sopravvive ai deploy. */
