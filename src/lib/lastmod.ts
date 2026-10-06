@@ -69,9 +69,9 @@ export const PAGE_UPDATED = {
   "/tier-list/create": "2026-10-06", // 06/10: scheda "Voti alle carte" nella testata; 02/10: la quarta scheda diventa "Analytics"; 30/09: quarta scheda "Win rate" nella testata; Ondata 1: H1
   "/analytics": "2026-10-02", // 02/10: nascita della pagina di OriginsMeta Analytics (al posto di /tier-list/win-rate)
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
-  "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
+  "/tournaments": "2026-10-07", // 07/10: Crimson Cup con cinque qualificazioni, montepremi del 05/10 e luoghi esclusi (events.ts); Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
-  "/faq": "2026-09-30", // 30/09: patch 0.7, risposte "languages" (13 lingue) e "where-cards"; 28/09: risposta "kickstarter" con la data confermata dal CEO di Koin Games; Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
+  "/faq": "2026-10-07", // 07/10: risposta "crimson-cup" con le cinque qualificazioni e il montepremi del 05/10; 30/09: patch 0.7, risposte "languages" (13 lingue) e "where-cards"; 28/09: risposta "kickstarter" con la data confermata dal CEO di Koin Games; Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-27", // 27/09: la pagina si chiama Redazione (decisione di Pierluigi); Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-27", // 27/09: "Tutta la redazione"; Ondata 2: Person unica, link al profilo della community, tagline di Davdas

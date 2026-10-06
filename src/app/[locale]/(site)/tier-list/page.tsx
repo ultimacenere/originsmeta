@@ -25,7 +25,7 @@ import { changeLabel } from "@/lib/linkLabels";
 
 /*
   Tier list di OriginsMeta (riprogettazione del 24/09/2026, §1 punto 32 della KB, decisioni di Pierluigi).
-  La classifica arriva dai risultati dei tornei ufficiali: fino alla Crimson Cup (20–25 ottobre) le fasce sono
+  La classifica arriva dai risultati dei tornei ufficiali: fino alla Crimson Cup (19–25 ottobre) le fasce sono
   vuote e la pagina non le finge. Prima occupava la prima schermata con stato, metodo e legenda e poi il 60%
   dell'altezza con il tracker delle patch (ora su /metashifting); adesso, per ogni sezione, una riga di stato e
   subito un contenuto vero: i mazzi più votati, le Leggendarie e le carte più presenti nei mazzi pubblicati, con i

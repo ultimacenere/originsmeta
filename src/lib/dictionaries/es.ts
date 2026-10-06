@@ -204,7 +204,7 @@ export const es: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Mazos, Legendarias, cartas base",
-    tierStatus: "Clasificación de OriginsMeta tras la Crimson Cup (20–25 oct.). Mientras tanto: las cartas más jugadas.",
+    tierStatus: "Clasificación de OriginsMeta tras la Crimson Cup (19–25 oct.). Mientras tanto: las cartas más jugadas.",
     tierSoon: "Las más jugadas",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {n} persone che hanno salvato la scheda più salvata,
        {min} la soglia, {people} "2 personas"; `intro` senza numeri per l'HTML statico (vedi en.ts) */
@@ -435,8 +435,8 @@ export const es: Dictionary = {
     lineStatus: "Estado",
     lineMeasure: "Medida",
     officialSourceText: "resultados de torneos oficiales y listas de lo más alto de la clasificatoria",
-    officialStatusText: "primera clasificación tras la Crimson Cup (del 20 al 25 de octubre de 2026)",
-    officialEmpty: "La clasificación de OriginsMeta sale después de la Crimson Cup (del 20 al 25 de octubre): nada de tiers por corazonada.",
+    officialStatusText: "primera clasificación tras la Crimson Cup (del 19 al 25 de octubre de 2026)",
+    officialEmpty: "La clasificación de OriginsMeta sale después de la Crimson Cup (del 19 al 25 de octubre): nada de tiers por corazonada.",
     meanwhileDecks: "Mientras tanto: los mazos mejor valorados por la comunidad",
     meanwhileLegendaries: "Mientras tanto: las Legendarias presentes en más mazos publicados",
     meanwhileCards: "Mientras tanto: las cartas base presentes en más mazos publicados",
@@ -765,8 +765,8 @@ export const es: Dictionary = {
     /* finché la Crimson Cup è in calendario (events.ts, slug next-fest-tournament): description e prima riga la nominano,
        con l'evento e le date; posti, premi e regole sono della news delle regole, la pagina primaria, a cui rimandano
        (revisione dell'Ondata 1). Il titolo resta generico */
-    descriptionCup: "Torneos de Origins TCG: la Crimson Cup se juega del 20 al 25 de octubre de 2026 en el Steam Next Fest; reglas, premios y check-in, en nuestro artículo.",
-    cupLead: "La Crimson Cup, el torneo oficial de Origins TCG organizado por Koin Games, se juega del 20 al 25 de octubre de 2026 durante el Steam Next Fest. Las reglas, los premios y el check-in están en nuestro artículo.",
+    descriptionCup: "Torneos de Origins TCG: la Crimson Cup se juega del 19 al 25 de octubre de 2026 en el Steam Next Fest; reglas, premios y check-in, en nuestro artículo.",
+    cupLead: "La Crimson Cup, el torneo oficial de Origins TCG organizado por Koin Games, se juega del 19 al 25 de octubre de 2026 durante el Steam Next Fest. Las reglas, los premios y el check-in están en nuestro artículo.",
     cupRules: "Reglas, formato y check-in de la Crimson Cup",
     cupSignup: "Inscríbete en el Discord oficial",
     submitCta: "Envía tu evento",

@@ -134,7 +134,7 @@ const en: Faq[] = [
   {
     id: "crimson-cup",
     q: "When is the Crimson Cup and what do you win?",
-    a: "From 20 to 25 October 2026, during Steam Next Fest: three qualifiers of 512 spots each on the 20th, 21st and 22nd, playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total — an exclusive 1/1 tournament promo card, other promo cards, digital packs, Alpha booster boxes and cases, and cash; the exact prize pool was promised for the week after 24 September. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play.",
+    a: "From 19 to 25 October 2026, during Steam Next Fest: five qualifiers of 512 spots each between the 19th and the 22nd (AMER on the 19th at 7pm EST, EMEA on the 20th at 7pm CEST, AMER on the 21st at 9pm EST, APAC and EMEA on the 22nd), playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total, split between cash, collectibles and promo cards: the winner gets a 1/1 Dracula promo card, two booster box cases and $1,500, promo cards go down to the top 32 and packs to the top 256. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play.",
     guides: ["steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
     keywords: ["prize", "prizes", "prize pool", "qualifier", "qualifiers", "check-in", "check in", "playoffs"],
@@ -262,7 +262,7 @@ const it: Faq[] = [
   {
     id: "crimson-cup",
     q: "Quando è la Crimson Cup e che cosa si vince?",
-    a: "Dal 20 al 25 ottobre 2026, durante lo Steam Next Fest: tre qualificazioni da 512 posti il 20, 21 e 22, playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $ — una carta promo 1/1 esclusiva del torneo, altre carte promo, pacchetti digitali, booster box e case Alpha, premi in denaro; la ripartizione esatta è promessa per la settimana dopo il 24 settembre. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca.",
+    a: "Dal 19 al 25 ottobre 2026, durante lo Steam Next Fest: cinque qualificazioni da 512 posti fra il 19 e il 22 (AMER il 19 alle 19 EST, EMEA il 20 alle 19 CEST, AMER il 21 alle 21 EST, APAC ed EMEA il 22), playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $, divisi fra denaro, collezionabili e carte promo: chi vince prende una carta promo Dracula 1/1, due case di booster box e 1.500 $, le carte promo arrivano fino alla top 32 e i pacchetti fino alla top 256. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca.",
     guides: ["steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
     keywords: ["premi", "premio", "montepremi", "qualificazioni", "qualificazione", "check-in", "check in", "playoff"],
@@ -390,7 +390,7 @@ const es: Faq[] = [
   {
     id: "crimson-cup",
     q: "¿Cuándo es la Crimson Cup y qué se gana?",
-    a: "Del 20 al 25 de octubre de 2026, durante el Steam Next Fest: tres clasificatorios de 512 plazas cada uno los días 20, 21 y 22, playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares: una carta promo 1/1 exclusiva del torneo, otras cartas promo, sobres digitales, cajas y cases de sobres Alpha, y dinero en efectivo; el reparto exacto de la bolsa de premios se prometió para la semana siguiente al 24 de septiembre. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar.",
+    a: "Del 19 al 25 de octubre de 2026, durante el Steam Next Fest: cinco clasificatorios de 512 plazas cada uno entre el 19 y el 22 (AMER el 19 a las 19:00 EST, EMEA el 20 a las 19:00 CEST, AMER el 21 a las 21:00 EST, APAC y EMEA el 22), playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares, repartidos entre dinero, coleccionables y cartas promo: el ganador se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares, las cartas promo llegan hasta el top 32 y los sobres hasta el top 256. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar.",
     guides: ["steam-next-fest-2026"],
     news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
     keywords: ["premios", "premio", "bolsa de premios", "check-in", "check in", "playoffs"],

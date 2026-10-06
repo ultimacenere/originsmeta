@@ -70,6 +70,306 @@ export type NewsItem = {
 
 export const news: NewsItem[] = [
   {
+    // News sul post Steam del 05/10/2026 "Prizepool announcement & key update to our biggest tournament ever" (letto con
+    // l'API ISteamNews, gid 1845383656394214, 17:29 UTC). Il testo del post dice solo: montepremi diviso fra denaro,
+    // collezionabili e carte promo (top 256 per i primi premi, promo dalla top 32), le due qualificazioni nuove, i sette
+    // luoghi esclusi e i tornei di prova. La ripartizione dei premi (vincitore, 2°, 3°-4°, top 8…256) e il calendario a
+    // cinque qualificazioni (AMER del 21 alle 21 EST con 32 che passano al posto di 64, 96 wild card al posto di 128)
+    // stanno solo nelle due grafiche allegate: l'articolo dice che cosa viene dal testo e che cosa dalle grafiche.
+    // Copertina: la grafica ufficiale 16:9 del calendario allegata al post (public/media/news-crimson-cup-prizepool.webp,
+    // ridotta a 1600×900, niente ritagli). Linka le regole del 24/9 (aggiornate il 07/10 con questi dati), l'annuncio del
+    // 9/9 e il playtest del 1/10: relatedNews.test.ts resta verde (regole e annuncio restano correlati fra loro).
+    slug: "crimson-cup-prizepool-qualifiers",
+    image: "/media/news-crimson-cup-prizepool.webp",
+    guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
+    date: "2026-10-05",
+    title: n(
+      "Crimson Cup: the prize pool revealed, two more qualifiers and seven locations out of the tournament",
+      "Crimson Cup: svelato il montepremi, due qualificazioni in più e sette luoghi fuori dal torneo",
+      "Crimson Cup: la bolsa de premios revelada, dos clasificatorios más y siete ubicaciones fuera del torneo",
+    ),
+    metaTitle: n("Origins TCG Crimson Cup prize pool and new qualifiers", "Crimson Cup di Origins TCG: montepremi e qualificazioni", "Crimson Cup de Origins TCG: premios y clasificatorios"),
+    description: n(
+      "Koin Games reveals the Origins TCG Crimson Cup prize pool: 1/1 Dracula promo card and $1,500 to the winner, packs down to the top 256, two more qualifiers.",
+      "I premi della Crimson Cup di Origins TCG: carta promo Dracula 1/1 e 1.500 $ al vincitore, pacchetti fino alla top 256, due qualificazioni in più.",
+      "Premios de la Crimson Cup de Origins TCG: carta promo Dracula 1/1 y 1.500 dólares para el ganador, sobres hasta el top 256 y dos clasificatorios más.",
+    ),
+    summary: n(
+      "On 5 October Koin Games published the Crimson Cup prize breakdown: the winner takes a 1/1 Dracula promo card, two booster box cases and $1,500 in cash, and everyone in the top 256 gets at least two packs. The post also adds two qualifiers, AMER on 19 October at 7pm EST and EMEA on 22 October at 7pm CEST, removes seven RNG-heavy locations from the tournament pool and announces weekly practice tournaments.",
+      "Il 5 ottobre Koin Games ha pubblicato la ripartizione dei premi della Crimson Cup: chi vince prende una carta promo Dracula 1/1, due case di booster box e 1.500 $ in contanti, e tutti nella top 256 ricevono almeno due pacchetti. Il post aggiunge anche due qualificazioni, AMER il 19 ottobre alle 19 EST ed EMEA il 22 ottobre alle 19 CEST, toglie dal pool del torneo sette luoghi troppo legati al caso e annuncia tornei di prova settimanali.",
+      "El 5 de octubre Koin Games publicó el reparto de premios de la Crimson Cup: quien gane se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares en efectivo, y todos los del top 256 reciben al menos dos sobres. La publicación también añade dos clasificatorios, AMER el 19 de octubre a las 19:00 EST y EMEA el 22 de octubre a las 19:00 CEST, retira del pool del torneo siete ubicaciones muy dependientes del azar y anuncia torneos de práctica semanales.",
+    ),
+    highlights: {
+      en: [
+        { label: "The prize pool", text: "1/1 Dracula promo card, two cases and $1,500 to the winner; packs down to the top 256", anchor: "prizes" },
+        { label: "Two more qualifiers", text: "AMER on 19 October at 7pm EST and EMEA on 22 October at 7pm CEST, 32 advance from each", anchor: "qualifiers" },
+        { label: "What changes in the schedule", text: "AMER on the 21st at 9pm EST with 32 advancing, 96 wild cards", anchor: "schedule" },
+        { label: "Seven locations out", text: "Junkyard, Cloning Lab, Reflecting Pool and four more, already off in room battles", anchor: "locations" },
+        { label: "Practice tournaments", text: "weekly, no stakes, the next one this week", anchor: "practice" },
+      ],
+      it: [
+        { label: "I premi", text: "carta promo Dracula 1/1, due case e 1.500 $ al vincitore; pacchetti fino alla top 256", anchor: "premi" },
+        { label: "Due qualificazioni in più", text: "AMER il 19 ottobre alle 19 EST ed EMEA il 22 ottobre alle 19 CEST, 32 passano da ciascuna", anchor: "qualificazioni" },
+        { label: "Cosa cambia nel calendario", text: "AMER del 21 alle 21 EST con 32 che passano, 96 wild card", anchor: "calendario" },
+        { label: "Sette luoghi fuori", text: "Junkyard, Cloning Lab, Reflecting Pool e altri quattro, già esclusi nelle partite nelle stanze", anchor: "luoghi" },
+        { label: "Tornei di prova", text: "settimanali, niente in palio, il prossimo questa settimana", anchor: "tornei-di-prova" },
+      ],
+      es: [
+        { label: "Los premios", text: "carta promo Dracula 1/1, dos cases y 1.500 dólares para el ganador; sobres hasta el top 256", anchor: "premios" },
+        { label: "Dos clasificatorios más", text: "AMER el 19 de octubre a las 19:00 EST y EMEA el 22 de octubre a las 19:00 CEST, pasan 32 de cada uno", anchor: "clasificatorios" },
+        { label: "Qué cambia en el calendario", text: "AMER del 21 a las 21:00 EST con 32 que pasan, 96 wild cards", anchor: "calendario" },
+        { label: "Siete ubicaciones fuera", text: "Junkyard, Cloning Lab, Reflecting Pool y cuatro más, ya excluidas en las partidas en sala", anchor: "ubicaciones" },
+        { label: "Torneos de práctica", text: "semanales, sin nada en juego, el próximo esta semana", anchor: "torneos-de-practica" },
+      ],
+    },
+    body: n(
+      `## The prize pool {#prizes}
+
+The pool, in the team's words, "consists of a split between prize money, collectibles and exclusive promo cards". Everyone who reaches the top 256 is eligible for the first batch of prizes; promo cards start from the top 32. The rewards graphic attached to the post gives the breakdown:
+
+| Place | Promo card | Product | Cash |
+|---|---|---|---|
+| Winner | 1/1 Dracula promo card | 2 booster box cases | $1,500 |
+| 2nd | 1/8 Dracula promo card | 1 booster box case | $750 |
+| 3rd and 4th | 1/8 Dracula promo card | 2 booster boxes | $350 |
+| Top 8 | 1/8 Dracula promo card | 1 booster box | $125 |
+| Top 16 | Finalist Plus card | 1 booster box | – |
+| Top 32 | Finalist card | 10 packs | – |
+| Top 64 | – | 8 packs | – |
+| Top 128 | – | 4 packs | – |
+| Top 256 | – | 2 packs | – |
+
+The promo card on the graphic is a gold Dracula labelled "Tournament Winner", Myths & Legends #209, shown in a graded slab. The "Prizes worth $10,000" line of the September announcement is still on the new calendar graphic. The playoffs have 256 spots, so by Koin's own numbers whoever gets through a qualifier or enters with a wild card already takes home at least two packs.
+
+## Two more qualifiers {#qualifiers}
+
+"Due to popular demand", Koin adds two qualifiers during Steam Next Fest, one for the Americas and one for EMEA time zones:
+
+1. **AMER, Monday 19 October at 7pm EST.**
+2. **EMEA, Thursday 22 October at 7pm CEST**, which closes the qualifiers.
+
+Each sends 32 players to the playoffs, like the other three. The team's request is the same as in September: sign up only for the tournaments you can actually attend, and leave the spots to other players. Sign-ups are on the [official Discord](https://discord.gg/originstcg). Check-in works as before: it opens two hours before each qualifier and closes five minutes before the start, together with deck submission ([the rules](/en/news/crimson-cup-format-check-in#check-in)).
+
+## What changes in the schedule {#schedule}
+
+The post only talks about the two new qualifiers, but the calendar graphic attached to it changes other numbers too. The five qualifiers, 512 spots each and 32 advancing from each:
+
+- AMER, 19 October at 7pm EST (new);
+- EMEA, 20 October at 7pm CEST;
+- AMER, 21 October at 9pm EST: the September graphic said 7pm EST and 64 advancing, now struck out;
+- APAC, 22 October at 7pm SGT;
+- EMEA, 22 October at 7pm CEST (new).
+
+The wild cards drop from 128 to 96: five times 32 plus 96 makes 256, the playoff field. Playoffs and finals don't move: playoffs on 24 October at 10am EST (4pm CEST, 10pm SGT), four players through to the finals on 25 October at 10am EST. The tournament now starts on 19 October, the first day of Steam Next Fest, instead of the 20th. Dates and times, as always on this site, are those of the official graphic, without conversions of ours.
+
+## Seven locations out of the tournament {#locations}
+
+"There are a select few locations in Origins which are very RNG heavy", the post says, so seven are disabled for the tournament: [Junkyard](/en/locations#junkyard), [Cloning Lab](/en/locations#cloning-lab), [Reflecting Pool](/en/locations#reflecting-pool), [Amplifying Amphitheatre](/en/locations#amplifying-amphitheatre), [Giant's Beacon](/en/locations#giants-beacon), [The Colosseum](/en/locations#the-colosseum) and [Nostradamus' Call](/en/locations#nostradamus-call). What each one does is on our [Locations page](/en/locations).
+
+This tournament pool is already live in the demo when you play room battles (Create/Join Room Battle): that is where to practise with the Crimson Cup locations. The pool was introduced by the [playtest update of 1 October](/en/news/playtest-patch-notes-1001#tournament-pool), which had not yet said which locations were out.
+
+## Practice tournaments {#practice}
+
+Since most demo matches are against bots, Koin is hosting weekly practice tournaments: no stakes, just a place to play against real people and test your decks. The next one is this week; the day and time will be announced soon, and the sign-up is on the same [Discord](https://discord.gg/originstcg). If you want to run your own with the Crimson Cup rules, the [tournament organizer](/en/tournaments) of OriginsMeta supports check-in, hidden decklists and best-of-three matches.
+
+## What it means for players {#what-it-means}
+
+- **More spots and more time slots.** Five qualifiers instead of three, two in European time slots and two in American ones: pick the one you will really play.
+- **Everyone in the playoffs gets something.** Two packs from the top 256, a Finalist card from the top 32, cash from the top 8.
+- **Build your decks without the seven locations in mind.** The copies of Cloning Lab and Reflecting Pool won't be there at the Crimson Cup. Our [Conquest guide](/en/guides/origins-tcg-conquest) and the [deck builder](/en/deck-builder) help with the three decks.
+
+## What we don't know yet {#unknowns}
+
+- The day and time of this week's practice tournament.
+- Whether the Top 8 line of the prize graphic means places 5 to 8, one set of prizes each: that is how we read it.
+- Why the AMER qualifier of 21 October is at 9pm EST on the new graphic and at 7pm EST on the September one: the post doesn't say.
+- How the unique cards between two decks are counted, still open since the [rules of 24 September](/en/news/crimson-cup-format-check-in#format).
+
+## Where this comes from {#sources}
+
+- The [official Steam post](https://store.steampowered.com/news/app/4429430/view/1845383656394214) of 5 October 2026, "Prizepool announcement & key update to our biggest tournament ever", with its two graphics: the rewards and the updated calendar.
+- The [announcement of 9 September](/en/news/biggest-tournament-ever) and the [rules of 24 September](/en/news/crimson-cup-format-check-in), for the numbers that have changed.`,
+      `## I premi {#premi}
+
+Il montepremi, nelle parole del team, "è una ripartizione fra premi in denaro, collezionabili e carte promo esclusive". Chi arriva nella top 256 ha diritto alla prima fascia di premi; le carte promo partono dalla top 32. La grafica dei premi allegata al post dà la ripartizione:
+
+| Piazzamento | Carta promo | Prodotto | Denaro |
+|---|---|---|---|
+| Vincitore | carta promo Dracula 1/1 | 2 case di booster box | 1.500 $ |
+| 2° | carta promo Dracula 1/8 | 1 case di booster box | 750 $ |
+| 3° e 4° | carta promo Dracula 1/8 | 2 booster box | 350 $ |
+| Top 8 | carta promo Dracula 1/8 | 1 booster box | 125 $ |
+| Top 16 | carta Finalist Plus | 1 booster box | – |
+| Top 32 | carta Finalist | 10 pacchetti | – |
+| Top 64 | – | 8 pacchetti | – |
+| Top 128 | – | 4 pacchetti | – |
+| Top 256 | – | 2 pacchetti | – |
+
+La carta promo sulla grafica è un Dracula dorato con la scritta "Tournament Winner", Myths & Legends #209, mostrato in una custodia con valutazione. La scritta "Prizes worth $10,000" (premi per 10.000 $) dell'annuncio di settembre resta anche sulla nuova grafica del calendario. I playoff hanno 256 posti: con i numeri di Koin, chi passa una qualificazione o entra con una wild card porta a casa almeno due pacchetti.
+
+## Due qualificazioni in più {#qualificazioni}
+
+"A grande richiesta", Koin aggiunge due qualificazioni durante lo Steam Next Fest, una per il fuso delle Americhe e una per l'EMEA:
+
+1. **AMER, lunedì 19 ottobre alle 19 EST.**
+2. **EMEA, giovedì 22 ottobre alle 19 CEST**, che chiude le qualificazioni.
+
+Da ciascuna passano 32 giocatori ai playoff, come dalle altre tre. La richiesta del team è la stessa di settembre: iscriversi solo ai tornei a cui si può davvero partecipare e lasciare i posti agli altri. Le iscrizioni sono sul [Discord ufficiale](https://discord.gg/originstcg). Il check-in funziona come prima: apre due ore prima di ogni qualificazione e chiude cinque minuti prima dell'inizio, insieme alla consegna dei mazzi ([le regole](/it/news/crimson-cup-format-check-in#check-in)).
+
+## Cosa cambia nel calendario {#calendario}
+
+Il post parla solo delle due qualificazioni nuove, ma la grafica del calendario allegata cambia anche altri numeri. Le cinque qualificazioni, da 512 posti ciascuna e con 32 che passano da ognuna:
+
+- AMER, 19 ottobre alle 19 EST (nuova);
+- EMEA, 20 ottobre alle 19 CEST;
+- AMER, 21 ottobre alle 21 EST: la grafica di settembre diceva le 19 EST e 64 che passavano, ora barrati;
+- APAC, 22 ottobre alle 19 SGT;
+- EMEA, 22 ottobre alle 19 CEST (nuova).
+
+Le wild card scendono da 128 a 96: cinque volte 32 più 96 fa 256, i posti dei playoff. Playoff e finali non si spostano: playoff il 24 ottobre alle 10 EST (16 CEST, 22 SGT), quattro giocatori alle finali del 25 ottobre alle 10 EST. Il torneo ora parte il 19 ottobre, primo giorno dello Steam Next Fest, invece del 20. Date e orari, come sempre su questo sito, sono quelli della grafica ufficiale, senza conversioni nostre.
+
+## Sette luoghi fuori dal torneo {#luoghi}
+
+"Ci sono alcuni luoghi di Origins che dipendono moltissimo dal caso", scrive il post, e così sette vengono disattivati per il torneo: [Junkyard](/it/locations#junkyard), [Cloning Lab](/it/locations#cloning-lab), [Reflecting Pool](/it/locations#reflecting-pool), [Amplifying Amphitheatre](/it/locations#amplifying-amphitheatre), [Giant's Beacon](/it/locations#giants-beacon), [The Colosseum](/it/locations#the-colosseum) e [Nostradamus' Call](/it/locations#nostradamus-call). Che cosa fa ognuno è nella nostra pagina dei [Luoghi](/it/locations).
+
+Questo pool del torneo è già attivo nella demo nelle partite nelle stanze (Create/Join Room Battle): è lì che ci si allena con i luoghi della Crimson Cup. Il pool era stato introdotto dall'[aggiornamento del playtest del 1° ottobre](/it/news/playtest-patch-notes-1001#pool-tornei), che non diceva ancora quali luoghi fossero esclusi.
+
+## Tornei di prova {#tornei-di-prova}
+
+Visto che nella demo si gioca soprattutto contro i bot, Koin organizza tornei di prova settimanali: niente in palio, solo un posto dove giocare contro persone vere e provare i propri mazzi. Il prossimo è questa settimana; giorno e ora saranno annunciati a breve, e l'iscrizione è sullo stesso [Discord](https://discord.gg/originstcg). Chi vuole organizzarne uno con le regole della Crimson Cup trova nel [Tournament Organizer](/it/tournaments) di OriginsMeta check-in, liste segrete e partite al meglio delle tre.
+
+## Cosa vuol dire per chi gioca {#cosa-vuol-dire}
+
+- **Più posti e più orari.** Cinque qualificazioni invece di tre, due in orario europeo e due in orario americano: scegli quella che giocherai davvero.
+- **Chi entra nei playoff porta a casa qualcosa.** Due pacchetti dalla top 256, una carta Finalist dalla top 32, denaro dalla top 8.
+- **Mazzi costruiti senza i sette luoghi.** Le copie di Cloning Lab e Reflecting Pool alla Crimson Cup non ci saranno. La nostra [guida al Conquest](/it/guides/origins-tcg-conquest) e il [deck builder](/it/deck-builder) aiutano con i tre mazzi.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- Giorno e ora del torneo di prova di questa settimana.
+- Se la riga Top 8 della grafica dei premi vale per i piazzamenti dal 5° all'8°, un premio ciascuno: è così che la leggiamo.
+- Perché la qualificazione AMER del 21 ottobre è alle 21 EST sulla grafica nuova e alle 19 EST su quella di settembre: il post non lo dice.
+- Come si contano le carte uniche fra due mazzi, domanda aperta dalle [regole del 24 settembre](/it/news/crimson-cup-format-check-in#formato).
+
+## Da dove arriva {#fonti}
+
+- Il [post ufficiale su Steam](https://store.steampowered.com/news/app/4429430/view/1845383656394214) del 5 ottobre 2026, "Prizepool announcement & key update to our biggest tournament ever", con le sue due grafiche: i premi e il calendario aggiornato.
+- L'[annuncio del 9 settembre](/it/news/biggest-tournament-ever) e le [regole del 24 settembre](/it/news/crimson-cup-format-check-in), per i numeri che sono cambiati.`,
+      `## Los premios {#premios}
+
+La bolsa de premios, en palabras del equipo, "se reparte entre dinero, coleccionables y cartas promo exclusivas". Quien llega al top 256 opta al primer grupo de premios; las cartas promo empiezan en el top 32. La imagen de los premios adjunta a la publicación da el reparto:
+
+| Puesto | Carta promo | Producto | Dinero |
+|---|---|---|---|
+| Ganador | carta promo Dracula 1/1 | 2 cases de cajas de sobres | 1.500 dólares |
+| 2.º | carta promo Dracula 1/8 | 1 case de cajas de sobres | 750 dólares |
+| 3.º y 4.º | carta promo Dracula 1/8 | 2 cajas de sobres | 350 dólares |
+| Top 8 | carta promo Dracula 1/8 | 1 caja de sobres | 125 dólares |
+| Top 16 | carta Finalist Plus | 1 caja de sobres | – |
+| Top 32 | carta Finalist | 10 sobres | – |
+| Top 64 | – | 8 sobres | – |
+| Top 128 | – | 4 sobres | – |
+| Top 256 | – | 2 sobres | – |
+
+La carta promo de la imagen es un Dracula dorado con el texto "Tournament Winner", Myths & Legends #209, dentro de una funda con calificación. La frase "Prizes worth $10,000" (premios por un valor de 10.000 dólares) del anuncio de septiembre sigue en la nueva imagen del calendario. Los playoffs tienen 256 plazas: con los números de Koin, quien pasa un clasificatorio o entra con una wild card ya se lleva al menos dos sobres.
+
+## Dos clasificatorios más {#clasificatorios}
+
+"Por petición popular", Koin añade dos clasificatorios durante el Steam Next Fest, uno para el horario de América y otro para el de EMEA:
+
+1. **AMER, lunes 19 de octubre a las 19:00 EST.**
+2. **EMEA, jueves 22 de octubre a las 19:00 CEST**, que cierra los clasificatorios.
+
+De cada uno pasan 32 jugadores a los playoffs, como de los otros tres. La petición del equipo es la misma que en septiembre: inscríbete solo en los torneos que de verdad puedas jugar y deja las plazas a otros jugadores. Las inscripciones están en el [Discord oficial](https://discord.gg/originstcg). El check-in funciona como antes: abre dos horas antes de cada clasificatorio y cierra cinco minutos antes del inicio, junto con la entrega de mazos ([las reglas](/es/news/crimson-cup-format-check-in#check-in)).
+
+## Qué cambia en el calendario {#calendario}
+
+La publicación solo habla de los dos clasificatorios nuevos, pero la imagen del calendario adjunta cambia también otros números. Los cinco clasificatorios, de 512 plazas cada uno y con 32 que pasan de cada uno:
+
+- AMER, 19 de octubre a las 19:00 EST (nuevo);
+- EMEA, 20 de octubre a las 19:00 CEST;
+- AMER, 21 de octubre a las 21:00 EST: la imagen de septiembre decía 19:00 EST y 64 que pasaban, ahora tachados;
+- APAC, 22 de octubre a las 19:00 SGT;
+- EMEA, 22 de octubre a las 19:00 CEST (nuevo).
+
+Las wild cards bajan de 128 a 96: cinco por 32 más 96 son 256, las plazas de los playoffs. Playoffs y finales no se mueven: playoffs el 24 de octubre a las 10:00 EST (16:00 CEST, 22:00 SGT) y cuatro jugadores a las finales del 25 de octubre a las 10:00 EST. El torneo empieza ahora el 19 de octubre, primer día del Steam Next Fest, en lugar del 20. Las fechas y los horarios son, como siempre en este sitio, los de la imagen oficial, sin conversiones nuestras.
+
+## Siete ubicaciones fuera del torneo {#ubicaciones}
+
+"Hay unas pocas ubicaciones en Origins que dependen muchísimo del azar", dice la publicación, así que siete quedan desactivadas para el torneo: [Junkyard](/es/locations#junkyard), [Cloning Lab](/es/locations#cloning-lab), [Reflecting Pool](/es/locations#reflecting-pool), [Amplifying Amphitheatre](/es/locations#amplifying-amphitheatre), [Giant's Beacon](/es/locations#giants-beacon), [The Colosseum](/es/locations#the-colosseum) y [Nostradamus' Call](/es/locations#nostradamus-call). Lo que hace cada una está en nuestra página de [Ubicaciones](/es/locations).
+
+Este pool del torneo ya está activo en la demo en las partidas en sala (Create/Join Room Battle): ahí es donde se practica con las ubicaciones de la Crimson Cup. El pool lo introdujo la [actualización del playtest del 1 de octubre](/es/news/playtest-patch-notes-1001#pool-torneos), que todavía no decía qué ubicaciones quedaban fuera.
+
+## Torneos de práctica {#torneos-de-practica}
+
+Como en la demo se juega sobre todo contra bots, Koin organiza torneos de práctica semanales: sin nada en juego, solo un lugar para jugar contra personas reales y probar tus mazos. El próximo es esta semana; el día y la hora se anunciarán pronto, y la inscripción está en el mismo [Discord](https://discord.gg/originstcg). Si quieres organizar uno con las reglas de la Crimson Cup, el [organizador de torneos](/es/tournaments) de OriginsMeta tiene check-in, listas ocultas y enfrentamientos al mejor de tres.
+
+## Qué significa para los jugadores {#que-significa}
+
+- **Más plazas y más horarios.** Cinco clasificatorios en lugar de tres, dos en horario europeo y dos en horario americano: elige el que de verdad vayas a jugar.
+- **Todos los que entran en los playoffs se llevan algo.** Dos sobres desde el top 256, una carta Finalist desde el top 32 y dinero desde el top 8.
+- **Mazos construidos sin las siete ubicaciones.** Las copias de Cloning Lab y Reflecting Pool no estarán en la Crimson Cup. Nuestra [guía de Conquest](/es/guides/origins-tcg-conquest) y el [deck builder](/es/deck-builder) ayudan con los tres mazos.
+
+## Lo que aún no sabemos {#lo-que-no-sabemos}
+
+- El día y la hora del torneo de práctica de esta semana.
+- Si la línea Top 8 de la imagen de los premios vale para los puestos del 5.º al 8.º, un premio cada uno: así la leemos.
+- Por qué el clasificatorio AMER del 21 de octubre está a las 21:00 EST en la imagen nueva y a las 19:00 EST en la de septiembre: la publicación no lo dice.
+- Cómo se cuentan las cartas únicas entre dos mazos, pregunta abierta desde las [reglas del 24 de septiembre](/es/news/crimson-cup-format-check-in#formato).
+
+## De dónde viene {#fuentes}
+
+- La [publicación oficial en Steam](https://store.steampowered.com/news/app/4429430/view/1845383656394214) del 5 de octubre de 2026, "Prizepool announcement & key update to our biggest tournament ever", con sus dos imágenes: los premios y el calendario actualizado.
+- El [anuncio del 9 de septiembre](/es/news/biggest-tournament-ever) y las [reglas del 24 de septiembre](/es/news/crimson-cup-format-check-in), para los números que han cambiado.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "What does the Crimson Cup winner get?",
+          a: "A 1/1 Dracula promo card, two booster box cases and $1,500 in cash, according to the rewards graphic Koin Games published on 5 October 2026. Second place gets a 1/8 Dracula promo card, one case and $750; third and fourth a 1/8 promo card, two booster boxes and $350.",
+        },
+        {
+          q: "When are the Crimson Cup qualifiers now?",
+          a: "Five qualifiers of 512 spots each: AMER on 19 October at 7pm EST, EMEA on 20 October at 7pm CEST, AMER on 21 October at 9pm EST, APAC on 22 October at 7pm SGT and EMEA on 22 October at 7pm CEST. 32 players advance from each, plus 96 wild cards, to the playoffs of 24 October.",
+        },
+        {
+          q: "Which locations are out of the Crimson Cup?",
+          a: "Seven: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum and Nostradamus' Call, disabled because they depend too much on luck. Room battles in the demo already use the tournament pool.",
+        },
+      ],
+      it: [
+        {
+          q: "Che cosa vince chi vince la Crimson Cup?",
+          a: "Una carta promo Dracula 1/1, due case di booster box e 1.500 $ in contanti, secondo la grafica dei premi pubblicata da Koin Games il 5 ottobre 2026. Il secondo prende una carta promo Dracula 1/8, un case e 750 $; terzo e quarto una promo 1/8, due booster box e 350 $.",
+        },
+        {
+          q: "Quando sono adesso le qualificazioni della Crimson Cup?",
+          a: "Cinque qualificazioni da 512 posti ciascuna: AMER il 19 ottobre alle 19 EST, EMEA il 20 ottobre alle 19 CEST, AMER il 21 ottobre alle 21 EST, APAC il 22 ottobre alle 19 SGT ed EMEA il 22 ottobre alle 19 CEST. Da ciascuna passano 32 giocatori, più 96 wild card, ai playoff del 24 ottobre.",
+        },
+        {
+          q: "Quali luoghi sono fuori dalla Crimson Cup?",
+          a: "Sette: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum e Nostradamus' Call, disattivati perché dipendono troppo dal caso. Le partite nelle stanze della demo usano già il pool del torneo.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Qué gana el ganador de la Crimson Cup?",
+          a: "Una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares en efectivo, según la imagen de los premios que Koin Games publicó el 5 de octubre de 2026. El segundo se lleva una carta promo Dracula 1/8, un case y 750 dólares; el tercero y el cuarto, una promo 1/8, dos cajas de sobres y 350 dólares.",
+        },
+        {
+          q: "¿Cuándo son ahora los clasificatorios de la Crimson Cup?",
+          a: "Cinco clasificatorios de 512 plazas cada uno: AMER el 19 de octubre a las 19:00 EST, EMEA el 20 de octubre a las 19:00 CEST, AMER el 21 de octubre a las 21:00 EST, APAC el 22 de octubre a las 19:00 SGT y EMEA el 22 de octubre a las 19:00 CEST. De cada uno pasan 32 jugadores, más 96 wild cards, a los playoffs del 24 de octubre.",
+        },
+        {
+          q: "¿Qué ubicaciones quedan fuera de la Crimson Cup?",
+          a: "Siete: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum y Nostradamus' Call, desactivadas porque dependen demasiado del azar. Las partidas en sala de la demo ya usan el pool del torneo.",
+        },
+      ],
+    },
+    url: "https://store.steampowered.com/news/app/4429430/view/1845383656394214",
+    source: "steam",
+  },
+  {
     // Quinta news "Upgrade Meta" (richiesta di Pierluigi del 05/10/2026: "fai una news Upgrade Meta sui mazzi torneo"): i Mazzi
     // torneo, online dal 04/10/2026 (main 05c5ebd). Solo quello che c'è davvero: tre mazzi Conquest con una guida, regole
     // della Crimson Cup controllate dal sito, voti, traduzione, Discord, avvisi, statistiche e strumenti per le dirette.
@@ -558,11 +858,13 @@ Queremos enseñársela al equipo de Koin Games y preguntar si esos datos pueden 
     // non cambiano. Le cinque modifiche che le note della demo non avevano (En Passant, Stordito, Tocco letale contro Scudo,
     // Boitata, Reflection) e i luoghi (Tectonic Decay nuovo, Ashen Grove tolto) non si scrivono nei dati finché non li
     // vediamo nella demo principale: il playtest è una build a parte.
+    // 07/10/2026: i luoghi fuori dal pool della Crimson Cup sono nel post Steam del 05/10 (news crimson-cup-prizepool-qualifiers)
     slug: "playtest-patch-notes-1001",
     image: "/media/ss-board-combat.webp",
     cards: ["en-passant", "boitata", "reflection", "wicked-stepmother", "don-quixote", "twister-toss", "van-helsings-tools", "silver-bullet", "wooden-stake", "heroic-charge", "spellbook", "humpty", "mummy", "dorothy", "beauty", "christopher-robin", "magic-carpet", "quasimodo", "roo", "bagheera", "mind-palace"],
     guides: ["origins-tcg-ranked", "origins-tcg-locations", "steam-next-fest-2026", "play-the-demo"],
     date: "2026-10-01",
+    updated: "2026-10-07",
     title: n(
       "Origins TCG playtest patch notes: missions split from ranked, two new locations, faster animations",
       "Patch notes del playtest di Origins TCG: missioni separate dalla classificata e due luoghi nuovi",
@@ -709,12 +1011,14 @@ Location rarity is now a true rarity, common, rare, very rare or ultra rare, whi
 
 Tournaments now have their own location pool, so locations can be included in or left out of competitions without changing everyday games. The first example is the [Crimson Cup](/en/news/crimson-cup-format-check-in): some of the swingiest locations are out of its pool. The team says the full list is in its latest announcement; we'll report it as soon as we've read it.
 
+**Update, 7 October:** the list came with the Steam post of 5 October: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum and Nostradamus' Call are out of the Crimson Cup pool ([our article](/en/news/crimson-cup-prizepool-qualifiers#locations)).
+
 In this build, room battles (Create/Join Room Battle) use the tournament pool: they're the way to practise with the Crimson Cup locations.
 
 ## What we don't know yet {#unknowns}
 
 - Whether the five new card changes, Tectonic Decay and the removal of Ashen Grove are already in the main demo.
-- Which locations are out of the Crimson Cup pool.
+- Which locations are out of the Crimson Cup pool: answered on 5 October, see the update above.
 - When deck missions will count again in ranked.
 - The new wording of Reflection.
 
@@ -820,12 +1124,14 @@ La rarità dei luoghi ora è una rarità vera, comune, rara, molto rara o ultra 
 
 I tornei ora hanno un loro pool di luoghi, così si possono includere o escludere luoghi dalle competizioni senza cambiare le partite di tutti i giorni. Il primo esempio è la [Crimson Cup](/it/news/crimson-cup-format-check-in): alcuni dei luoghi più capaci di ribaltare una partita sono fuori dal suo pool. Il team dice che l'elenco completo è nel suo ultimo annuncio; lo riporteremo appena l'avremo letto.
 
+**Aggiornamento del 7 ottobre:** l'elenco è arrivato con il post Steam del 5 ottobre: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum e Nostradamus' Call sono fuori dal pool della Crimson Cup ([il nostro articolo](/it/news/crimson-cup-prizepool-qualifiers#luoghi)).
+
 In questa build le partite nelle stanze (Create/Join Room Battle) usano il pool dei tornei: sono il modo per allenarsi con i luoghi della Crimson Cup.
 
 ## Cosa non sappiamo ancora {#cosa-non-sappiamo}
 
 - Se le cinque modifiche nuove alle carte, Tectonic Decay e l'uscita di Ashen Grove sono già nella demo principale.
-- Quali luoghi sono fuori dal pool della Crimson Cup.
+- Quali luoghi sono fuori dal pool della Crimson Cup: risposta arrivata il 5 ottobre, vedi l'aggiornamento qui sopra.
 - Quando le missioni dei mazzi torneranno a contare in classificata.
 - Il testo nuovo di Reflection.
 
@@ -931,12 +1237,14 @@ La rareza de las ubicaciones es ahora una rareza real, común, rara, muy rara o 
 
 Los torneos ahora tienen su propio pool de ubicaciones, así que se pueden incluir o excluir ubicaciones de las competiciones sin cambiar las partidas de cada día. El primer ejemplo es la [Crimson Cup](/es/news/crimson-cup-format-check-in): algunas de las ubicaciones más capaces de dar la vuelta a una partida están fuera de su pool. El equipo dice que la lista completa está en su último anuncio; la contaremos en cuanto la hayamos leído.
 
+**Actualización del 7 de octubre:** la lista llegó con la publicación de Steam del 5 de octubre: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum y Nostradamus' Call quedan fuera del pool de la Crimson Cup ([nuestro artículo](/es/news/crimson-cup-prizepool-qualifiers#ubicaciones)).
+
 En esta build las partidas en sala (Create/Join Room Battle) usan el pool de torneo: son la forma de practicar con las ubicaciones de la Crimson Cup.
 
 ## Lo que todavía no sabemos {#lo-que-no-sabemos}
 
 - Si los cinco cambios nuevos en las cartas, Tectonic Decay y la salida de Ashen Grove ya están en la demo principal.
-- Qué ubicaciones están fuera del pool de la Crimson Cup.
+- Qué ubicaciones están fuera del pool de la Crimson Cup: respondido el 5 de octubre, ver la actualización de arriba.
 - Cuándo volverán a contar en la clasificatoria las misiones de los mazos.
 - El nuevo texto de Reflection.
 
@@ -1854,7 +2162,9 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
     guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-09-24",
     // 30/09/2026: l'ultima patch di bilanciamento è uscita il 29/09 (patch 0.7): "In breve", sezione #balance e "Cosa non sappiamo"
-    updated: "2026-09-30",
+    // 07/10/2026: post Steam del 05/10 (news crimson-cup-prizepool-qualifiers): montepremi, due qualificazioni in più e sette
+    // luoghi esclusi; "In breve", sezioni #check-in e #prizes, "Cosa non sappiamo", description con le qualificazioni dal 19
+    updated: "2026-10-07",
     title: n(
       "Crimson Cup rules: three-deck Conquest, decklists hidden until the top 4 and a check-in you can't miss",
       "Regole della Crimson Cup: Conquest a tre mazzi, liste segrete fino alla top 4 e check-in obbligatorio",
@@ -1864,9 +2174,9 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
     // le altre pagine sulla coppa (annuncio del 9/9, aggiornamento della demo) nominano la coppa ma non questi dettagli.
     metaTitle: n("Origins TCG Crimson Cup: rules, dates, prizes, check-in", "Crimson Cup di Origins TCG: regole, date, premi, check-in", "Crimson Cup de Origins TCG: reglas, fechas y premios"),
     description: n(
-      "Origins TCG Crimson Cup rules: three-deck Conquest, 8 unique cards between decks, qualifiers on 20–22 October, prizes worth $10,000 and check-in times.",
-      "Regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, 8 carte uniche fra i mazzi, qualificazioni dal 20 al 22 ottobre, premi per 10.000 $ e check-in.",
-      "Crimson Cup de Origins TCG: Conquest con 3 mazos, 8 cartas únicas entre mazos, clasificatorios del 20 al 22 de octubre, premios por 10.000 dólares y check-in.",
+      "Origins TCG Crimson Cup rules: three-deck Conquest, 8 unique cards between decks, qualifiers on 19–22 October, prizes worth $10,000 and check-in times.",
+      "Regole della Crimson Cup di Origins TCG: Conquest a tre mazzi, 8 carte uniche fra i mazzi, qualificazioni dal 19 al 22 ottobre, premi per 10.000 $ e check-in.",
+      "Crimson Cup de Origins TCG: Conquest con 3 mazos, 8 cartas únicas entre mazos, clasificatorios del 19 al 22 de octubre, premios por 10.000 dólares y check-in.",
     ),
     summary: n(
       "After the player survey, Koin Games has set the Crimson Cup rules: three-deck Conquest, at least 8 unique cards between each pair of decks, decklists hidden until the top 4 and no ban in best-of-five matches. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you don't play. The tournament runs on the demo, not on the playtest.",
@@ -1881,7 +2191,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Check-in", text: "opens two hours before, closes five minutes before the start with deck submission", anchor: "check-in" },
         { label: "Practise on the demo", text: "the playtest will get updates the tournament won't have", anchor: "demo-playtest" },
         { label: "Last balance patch", text: "out on 29 September: patch 0.7", anchor: "balance" },
-        { label: "Prizes", text: "10,000 dollars, the exact prize pool next week", anchor: "prizes" },
+        { label: "Prizes", text: "10,000 dollars; the full breakdown came on 5 October", anchor: "prizes" },
       ],
       it: [
         { label: "Conquest a tre mazzi", text: "almeno 8 carte uniche fra ogni coppia di mazzi", anchor: "formato" },
@@ -1890,7 +2200,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Check-in", text: "apre due ore prima, chiude cinque minuti prima dell'inizio con la consegna dei mazzi", anchor: "check-in" },
         { label: "Allenarsi sulla demo", text: "il playtest avrà aggiornamenti che il torneo non avrà", anchor: "demo-playtest" },
         { label: "Ultima patch di bilanciamento", text: "uscita il 29 settembre: è la patch 0.7", anchor: "bilanciamento" },
-        { label: "Premi", text: "10.000 dollari, la ripartizione esatta la settimana prossima", anchor: "premi" },
+        { label: "Premi", text: "10.000 dollari; la ripartizione completa è arrivata il 5 ottobre", anchor: "premi" },
       ],
       es: [
         { label: "Conquest con tres mazos", text: "al menos 8 cartas únicas entre cada par de mazos", anchor: "formato" },
@@ -1899,7 +2209,7 @@ OriginsMeta está en línea desde el 15 de septiembre. En diez días, la comunid
         { label: "Check-in", text: "abre dos horas antes y cierra cinco minutos antes del inicio, con la entrega de mazos", anchor: "check-in" },
         { label: "Entrena en la demo", text: "el playtest tendrá actualizaciones que el torneo no tendrá", anchor: "demo-playtest" },
         { label: "Último parche de equilibrio", text: "salió el 29 de septiembre: es el parche 0.7", anchor: "equilibrio" },
-        { label: "Premios", text: "10.000 dólares; el reparto exacto de la bolsa de premios, la próxima semana", anchor: "premios" },
+        { label: "Premios", text: "10.000 dólares; el reparto completo llegó el 5 de octubre", anchor: "premios" },
       ],
     },
     body: n(
@@ -1929,6 +2239,8 @@ The planned schedule for each qualifier:
 
 If you don't check in, you can't play. For the EMEA qualifier on 20 October, which starts at 7pm CEST, that means checking in between 5pm and 6:55pm CEST. The AMER qualifier is on the 21st and the APAC one on the 22nd: times and spots are in our [Steam Next Fest guide](/en/guides/steam-next-fest-2026).
 
+**Update, 7 October:** there are now five qualifiers. On 5 October Koin added AMER on 19 October at 7pm EST and EMEA on 22 October at 7pm CEST, and its new calendar graphic puts the AMER qualifier of the 21st at 9pm EST, with 32 advancing instead of 64 and 96 wild cards instead of 128. Seven locations are also out of the tournament pool. Everything is in [our article on the prize pool and the new qualifiers](/en/news/crimson-cup-prizepool-qualifiers).
+
 ## Demo or playtest: where to practise {#demo-playtest}
 
 - The **demo** has the tournament card list. Ranked switches on there for Steam Next Fest, with new ranked rewards. This is the build to practise on.
@@ -1946,9 +2258,11 @@ The last balance patch will arrive two weeks before Steam Next Fest, which start
 
 The official post on X talks about a 10,000-dollar prize pool, and the Discord announcement says the exact prize pool will be shared next week. In September Koin described prizes worth 10,000 dollars in total, between an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash ([our article](/en/news/biggest-tournament-ever)).
 
+**Update, 7 October:** the breakdown arrived on 5 October. The winner takes a 1/1 Dracula promo card, two booster box cases and $1,500 in cash; promo cards go down to the top 32 and packs to the top 256. The full table is in [our article on the prize pool](/en/news/crimson-cup-prizepool-qualifiers#prizes).
+
 ## What we don't know yet {#unknowns}
 
-- The exact prize pool, due next week.
+- The exact prize pool, due next week: it came on 5 October, see the update above.
 - How the unique cards between two decks are counted.
 
 ## Where this comes from {#sources}
@@ -1981,6 +2295,8 @@ Il programma previsto per ogni qualificazione:
 
 Chi non fa il check-in non gioca. Per la qualificazione EMEA del 20 ottobre, che parte alle 19 ora italiana, vuol dire fare il check-in fra le 17 e le 18:55. L'AMER è il 21 e l'APAC il 22: orari e posti sono nella nostra [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026).
 
+**Aggiornamento del 7 ottobre:** le qualificazioni ora sono cinque. Il 5 ottobre Koin ha aggiunto AMER il 19 ottobre alle 19 EST ed EMEA il 22 ottobre alle 19 CEST, e la sua nuova grafica del calendario mette la qualificazione AMER del 21 alle 21 EST, con 32 che passano invece di 64 e 96 wild card invece di 128. Anche sette luoghi sono fuori dal pool del torneo. Tutto nel [nostro articolo sul montepremi e sulle nuove qualificazioni](/it/news/crimson-cup-prizepool-qualifiers).
+
 ## Demo o playtest: dove allenarsi {#demo-playtest}
 
 - La **demo** ha la lista carte del torneo. Lì la classificata si accende per lo Steam Next Fest, con nuove ricompense. È la build su cui allenarsi.
@@ -1998,9 +2314,11 @@ L'ultima patch di bilanciamento arriverà due settimane prima dello Steam Next F
 
 Il post ufficiale su X parla di un montepremi da 10.000 dollari, e l'annuncio su Discord dice che la ripartizione esatta arriverà la settimana prossima. A settembre Koin aveva descritto premi per un valore complessivo di 10.000 dollari, fra una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha e premi in denaro ([il nostro articolo](/it/news/biggest-tournament-ever)).
 
+**Aggiornamento del 7 ottobre:** la ripartizione è arrivata il 5 ottobre. Chi vince prende una carta promo Dracula 1/1, due case di booster box e 1.500 $ in contanti; le carte promo arrivano fino alla top 32 e i pacchetti fino alla top 256. La tabella completa è nel [nostro articolo sul montepremi](/it/news/crimson-cup-prizepool-qualifiers#premi).
+
 ## Cosa non sappiamo ancora {#da-sapere}
 
-- La ripartizione esatta dei premi, attesa la settimana prossima.
+- La ripartizione esatta dei premi, attesa la settimana prossima: è arrivata il 5 ottobre, vedi l'aggiornamento qui sopra.
 - Come si contano le carte uniche fra due mazzi.
 
 ## Da dove arriva {#fonti}
@@ -2033,6 +2351,8 @@ El programa previsto para cada clasificatorio:
 
 Si no haces el check-in, no puedes jugar. Para el clasificatorio EMEA del 20 de octubre, que empieza a las 19:00 CEST, eso significa hacer el check-in entre las 17:00 y las 18:55 CEST. El clasificatorio AMER es el 21 y el APAC el 22: los horarios y las plazas están en nuestra [guía del Steam Next Fest](/es/guides/steam-next-fest-2026).
 
+**Actualización del 7 de octubre:** ahora los clasificatorios son cinco. El 5 de octubre Koin añadió AMER el 19 de octubre a las 19:00 EST y EMEA el 22 de octubre a las 19:00 CEST, y su nueva imagen del calendario pone el clasificatorio AMER del 21 a las 21:00 EST, con 32 que pasan en lugar de 64 y 96 wild cards en lugar de 128. También siete ubicaciones quedan fuera del pool del torneo. Todo está en [nuestro artículo sobre la bolsa de premios y los nuevos clasificatorios](/es/news/crimson-cup-prizepool-qualifiers).
+
 ## Demo o playtest: dónde entrenar {#demo-playtest}
 
 - La **demo** tiene la lista de cartas del torneo. Allí la clasificatoria se activa para el Steam Next Fest, con nuevas recompensas de clasificatoria. Es la build en la que hay que entrenar.
@@ -2050,9 +2370,11 @@ El último parche de equilibrio llegará dos semanas antes del Steam Next Fest, 
 
 La publicación oficial en X habla de una bolsa de premios de 10.000 dólares, y el anuncio en Discord dice que el reparto exacto de la bolsa de premios se dará a conocer la próxima semana. En septiembre Koin describió premios por un valor total de 10.000 dólares, entre una carta promo 1/1 exclusiva, otras cartas promo, sobres digitales, cajas y cases de Alpha, y dinero en efectivo ([nuestro artículo](/es/news/biggest-tournament-ever)).
 
+**Actualización del 7 de octubre:** el reparto llegó el 5 de octubre. El ganador se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares en efectivo; las cartas promo llegan hasta el top 32 y los sobres hasta el top 256. La tabla completa está en [nuestro artículo sobre la bolsa de premios](/es/news/crimson-cup-prizepool-qualifiers#premios).
+
 ## Lo que aún no sabemos {#lo-que-no-sabemos}
 
-- El reparto exacto de la bolsa de premios, previsto para la próxima semana.
+- El reparto exacto de la bolsa de premios, previsto para la próxima semana: llegó el 5 de octubre, ver la actualización de arriba.
 - Cómo se cuentan las cartas únicas entre dos mazos.
 
 ## De dónde viene {#fuentes}
@@ -3601,9 +3923,12 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     // sulla Crimson Cup, mappa delle query C12) e il paragrafo di aggiornamento in fondo. Title e sottotitoli raccontano
     // l'annuncio: "regole, date, premi" restano a quell'articolo. L'aggiornamento, testo compreso, l'ha approvato
     // Pierluigi il 25/09/2026, in deroga alla regola della KB (§1 p.34, 24/9) per cui le news vecchie restano com'erano.
+    // 07/10/2026: anche la guida al Conquest, perché la sezione "Aggiornamento del 25 settembre" racconta il formato a tre mazzi e
+    // perché le news sulla coppa con le due guide (regole, montepremi) altrimenti tolgono questo annuncio dalle correlate delle
+    // regole del 24/9 (relatedNews.test.ts: regole e annuncio restano l'una fra le correlate dell'altro)
     slug: "biggest-tournament-ever",
     image: "/media/news-crimson-cup.webp",
-    guides: ["steam-next-fest-2026"],
+    guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-09-09",
     updated: "2026-09-25",
     title: n("Crimson Cup announced: the biggest tournament ever for Steam Next Fest", "Annunciata la Crimson Cup: il torneo più grande di sempre per lo Steam Next Fest", "Anunciada la Crimson Cup: el torneo más grande de la historia para el Steam Next Fest", "La Crimson Cup annoncée : le plus grand tournoi jamais organisé pour le Steam Next Fest"),
