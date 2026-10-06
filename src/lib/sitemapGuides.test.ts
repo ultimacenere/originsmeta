@@ -93,14 +93,15 @@ describe("guide della community nelle sitemap", () => {
     const itDay = addDays(EDITORIAL_LATEST, 1);
     const esDay = addDays(EDITORIAL_LATEST, 2);
     const today = addDays(EDITORIAL_LATEST, 4);
-    const later: Data = { ...community, communityGuides: { ...community.communityGuides, hub: { en: `${esDay}T07:00:00.000Z`, it: `${itDay}T08:00:00+00:00`, es: `${esDay}T09:00:00+00:00` } } };
+    const laterGuides = { ...community.communityGuides, hub: { en: `${esDay}T07:00:00.000Z`, it: `${itDay}T08:00:00+00:00`, es: `${esDay}T09:00:00+00:00` } };
+    const later: Data = { ...community, communityGuides: laterGuides };
     const hub = (l: Locale, data: Data = later) => sectionEntries(sitemapPages(data), "pages", l, today).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
     assert.equal(hub("es"), esDay);
     assert.equal(hub("it"), itDay);
     // senza la guida spagnola di esDay la data resta quella del modello e delle editoriali, cioè prima
     assert.ok(hub("es", EMPTY_COMMUNITY)! < esDay, "senza guide della community la data del modello e delle editoriali");
     // una lingua senza guide della community da mostrare resta com'era
-    const noIt: Data = { ...later, communityGuides: { ...later.communityGuides, hub: { es: `${esDay}T09:00:00+00:00` } } };
+    const noIt: Data = { ...later, communityGuides: { ...laterGuides, hub: { es: `${esDay}T09:00:00+00:00` } } };
     for (const l of ["en", "it"] as const) assert.equal(hub(l, noIt), hub(l, EMPTY_COMMUNITY), l);
   });
 
