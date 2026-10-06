@@ -1,14 +1,28 @@
 // Conteggi della community in sola lettura (iscritti, mazzi, tornei, draft, voti, tier list, segui, messaggi…).
-// Uso: node scripts/kpi-counts.mjs   (dal checkout con .env.local: SUPABASE_PROJECT_REF e SUPABASE_DB_PASSWORD, come db-migrate)
+// Uso: node scripts/kpi-counts.mjs   (.env.local con SUPABASE_PROJECT_REF e SUPABASE_DB_PASSWORD, come db-migrate;
+// da un worktree vale quello del checkout principale)
 //
 // Stampa, per ogni misura, il totale, gli ultimi 7 giorni e oggi (giorno di Roma). Non scrive nulla: la sessione è
 // aperta con default_transaction_read_only. Ogni misura è una query a sé: se una tabella o una colonna non c'è ancora
 // (migrazione non lanciata), la riga dice l'errore e le altre vengono stampate lo stesso.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { dirname, resolve } from "node:path";
 import pg from "pg";
 
+// .env.local non è in git: in un worktree si prende quello del checkout principale (la cartella sopra .git).
+function envFile() {
+  if (existsSync(".env.local")) return ".env.local";
+  try {
+    const common = execSync("git rev-parse --git-common-dir", { encoding: "utf8" }).trim();
+    const main = resolve(dirname(resolve(common)), ".env.local");
+    if (existsSync(main)) return main;
+  } catch {}
+  throw new Error(".env.local non trovato né qui né nel checkout principale");
+}
+
 const env = Object.fromEntries(
-  readFileSync(".env.local", "utf8")
+  readFileSync(envFile(), "utf8")
     .split(/\r?\n/)
     .filter((l) => l && !l.startsWith("#") && l.includes("="))
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
