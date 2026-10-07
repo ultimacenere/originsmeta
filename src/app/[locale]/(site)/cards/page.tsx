@@ -7,9 +7,19 @@ import { CardExplorer, type ExplorerCard } from "@/components/CardExplorer";
 import { RemovedCardsArchive, removedArchiveId } from "@/components/RemovedCardsArchive";
 import { PageNotes } from "@/components/PageNotes";
 import { flipOf } from "@/components/CardChip";
+import { loadCardRatings } from "@/lib/community/cardVotes";
+import { cardVoteLabels } from "@/lib/cardVoteLabels";
+import { votesWord } from "@/lib/cardVotes";
 import { keywordLabel, keywordLabels } from "@/lib/keywordLabels";
 import { cardFilterLabels } from "@/lib/cardFilterLabels";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+
+/*
+  Dal 07/10/2026 la pagina legge i voti degli iscritti alle carte (Pierluigi: "nella pagina carte non vedo i voti alle
+  carte votate"): media, numero di voti e fascia sotto ogni carta, dalla stessa cache condivisa delle schede carta
+  (`loadCardRatings`, rinnovata a ogni voto). Quindi è in ISR come /decks; prima era statica.
+*/
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -21,6 +31,14 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
   const rarityLabel = { common: d.common.common, rare: d.common.rare, epic: d.common.epic, legendary: d.common.legendary } as const;
+  // Voti degli iscritti (07/10/2026): "9,0/10 · 1 voto" e la fascia sotto le carte votate; null = community spenta o voti non attivi
+  const votes = await loadCardRatings();
+  const vw = cardVoteLabels[locale].widget;
+  const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const ratingOf = (slug: string) => {
+    const r = votes?.ratings[slug];
+    return r ? { text: `${oneDecimal.format(r.avg)}/10 · ${votesWord({ one: vw.votesOne, many: vw.votesMany }, r.votes)}`, tier: r.tier } : undefined;
+  };
   // Dati della carta che si gira dallo stesso `flipOf` della scheda dei mazzi (stesso retro), più i campi dei filtri
   const list: ExplorerCard[] = cards.map((c) => ({
     ...flipOf(c, locale),
@@ -35,6 +53,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
     // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
     abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
     removed: c.status === "removed",
+    rating: ratingOf(c.slug),
   }));
   // Filtro "Parola chiave" (30/09/2026): i tag che le carte usano davvero, prima le parole chiave del gioco (nomi ufficiali)
   const usedTags = Array.from(new Set(cards.flatMap((c) => c.keywords ?? [])));

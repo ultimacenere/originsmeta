@@ -258,7 +258,7 @@ describe("eventi", () => {
       assert.equal(node["@id"], eventId("next-fest-tournament", l), l);
       assert.equal(node.name, "Crimson Cup", l);
       assert.match(String(node.alternateName), /Origins TCG/, l);
-      assert.equal(node.startDate, "2026-10-20T19:00:00+02:00", l);
+      assert.equal(node.startDate, "2026-10-19T19:00:00-04:00", l);
       assert.equal(node.endDate, "2026-10-25", l);
       assert.equal((node.organizer as Json)["@id"], koinGamesId, l);
       assert.equal(node.image, "https://originsmeta.com/media/news-crimson-cup.webp", l);

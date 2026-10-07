@@ -53,7 +53,7 @@ export const PAGE_UPDATED = {
   "/guides/community": "2026-09-29", // 29/09: titoli tradotti nelle schede; GUIDE: nascita dell'elenco delle guide della community
   "/guides/community/[slug]": "2026-09-29", // 29/09: titolo tradotto (H1, title, dati strutturati); niente più "Guida della community" nel kicker e nelle briciole, copertina caricata; GUIDE: nascita delle guide della community
   "/guides/[slug]": "2026-09-25", // Ondata 2: firma e "Tutti gli autori", Event del Next Fest, Davdas linkato nelle sue guide
-  "/cards": "2026-09-29", // 29/09: sotto il titolo solo il tasto "Esplora i luoghi", introduzione e note in fondo; Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
+  "/cards": "2026-10-07", // 07/10: voti degli iscritti (media, voti e fascia) sotto le carte votate, pagina in ISR; 29/09: sotto il titolo solo il tasto "Esplora i luoghi", introduzione e note in fondo; Ondata 1: archivio delle carte rimosse; 25/09: righe dei dati senza World of Origins (solo verificato/patch notes)
   "/cards/[slug]": "2026-10-06", // 06/10: riquadro "Voti alle carte" (voto da 1 a 10 e fascia nella tier list dei voti); Ondata 2: mazzi, frase d'attacco, In breve, JSON-LD a due nodi; 25/09: via World of Origins e "Carte collegate"
   "/locations": "2026-09-30", // 30/09: nota in fondo sulla rarità dei luoghi (patch 0.7); 71a6dad: effetti con il glossario ufficiale del gioco; 25/09: riga della fonte senza World of Origins
   "/decks": "2026-10-04", // 04/10: schede "Mazzi singoli · Mazzi torneo" in cima; 30/09: filtro per versione del gioco nel pannello, con tutte le versioni; 29/09: via il riquadro "Pubblica il tuo mazzo" (resta il tasto), tasto verso i migliori mazzi, classifica dopo l'elenco, introduzione e In breve in fondo; ruoli del 27/09: filtri "Ruolo" e "Pubblicato da", Creator e Autore nelle pastiglie; CREATOR: ruolo, canali e LIVE accanto al nome; Ondata 3: i migliori mazzi di Origins TCG adesso; Ondata 2: ItemList con la soglia di qualità
@@ -70,9 +70,9 @@ export const PAGE_UPDATED = {
   "/tier-list/create": "2026-10-06", // 06/10: scheda "Voti alle carte" nella testata; 02/10: la quarta scheda diventa "Analytics"; 30/09: quarta scheda "Win rate" nella testata; Ondata 1: H1
   "/analytics": "2026-10-02", // 02/10: nascita della pagina di OriginsMeta Analytics (al posto di /tier-list/win-rate)
   "/metashifting": "2026-09-25", // Ondata 1: title "patch notes" e riga sull'ultima patch
-  "/tournaments": "2026-09-25", // Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
+  "/tournaments": "2026-10-07", // 07/10: Crimson Cup con cinque qualificazioni, montepremi del 05/10 e luoghi esclusi (events.ts); Ondata 2: formato della Crimson Cup con orari e fusi, voci collegate agli Event
   "/tournaments/[slug]": "2026-09-25", // Ondata 2: Event solo per i tornei pubblici, organizzatore per @id
-  "/faq": "2026-09-30", // 30/09: patch 0.7, risposte "languages" (13 lingue) e "where-cards"; 28/09: risposta "kickstarter" con la data confermata dal CEO di Koin Games; Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
+  "/faq": "2026-10-07", // 07/10: risposta "crimson-cup" con le cinque qualificazioni e il montepremi del 05/10; 30/09: patch 0.7, risposte "languages" (13 lingue) e "where-cards"; 28/09: risposta "kickstarter" con la data confermata dal CEO di Koin Games; Ondata 3: 15 risposte, ognuna con la sua pagina primaria; Ondata 1: H1, link alle news
   "/about": "2026-09-25", // Ondata 2: description, come verifichiamo i dati, disclaimer, link agli autori; 25/09: via World of Origins da fonti e metodo
   "/authors": "2026-09-27", // 27/09: la pagina si chiama Redazione (decisione di Pierluigi); Ondata 2: voci collegate alle Person
   "/authors/[slug]": "2026-09-27", // 27/09: "Tutta la redazione"; Ondata 2: Person unica, link al profilo della community, tagline di Davdas

@@ -337,12 +337,14 @@ La rareté des lieux est désormais une vraie rareté, commun, rare, très rare 
 
 Les tournois ont désormais leur propre pool de lieux, si bien qu'on peut inclure ou exclure des lieux des compétitions sans changer les parties de tous les jours. Le premier exemple est la [Crimson Cup](/fr/news/crimson-cup-format-check-in) : certains des lieux les plus capables de renverser une partie sont hors de son pool. L'équipe dit que la liste complète est dans sa dernière annonce ; nous la rapporterons dès que nous l'aurons lue.
 
+**Mise à jour du 7 octobre :** la liste est arrivée avec le post Steam du 5 octobre : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call sont hors du pool de la Crimson Cup ([notre article](/fr/news/crimson-cup-prizepool-qualifiers#lieux)).
+
 Dans cette build, les parties en salon (Create/Join Room Battle) utilisent le pool de tournoi : c'est le moyen de s'entraîner avec les lieux de la Crimson Cup.
 
 ## Ce que nous ne savons pas encore {#inconnues}
 
 - Si les cinq nouveaux changements de cartes, Tectonic Decay et le retrait d'Ashen Grove sont déjà dans la démo principale.
-- Quels lieux sont hors du pool de la Crimson Cup.
+- Quels lieux sont hors du pool de la Crimson Cup : réponse arrivée le 5 octobre, voir la mise à jour ci-dessus.
 - Quand les missions de deck compteront de nouveau en classé.
 - Le nouveau texte de Reflection.
 
@@ -646,7 +648,7 @@ OriginsMeta est en ligne depuis le 15 septembre. En dix jours, vous vous êtes i
     title: "Règles de la Crimson Cup : Conquest à trois decks, listes cachées jusqu'au top 4 et check-in obligatoire",
     metaTitle: "Crimson Cup d'Origins TCG : règles, dates, prix, check-in",
     description:
-      "Crimson Cup d'Origins TCG : Conquest à trois decks, 8 cartes uniques entre les decks, qualifications du 20 au 22 octobre, 10 000 dollars de prix et check-in.",
+      "Crimson Cup d'Origins TCG : Conquest à trois decks, 8 cartes uniques entre les decks, qualifications du 19 au 22 octobre, 10 000 dollars de prix et check-in.",
     summary:
       "Après le sondage auprès des joueurs, Koin Games a fixé les règles de la Crimson Cup : Conquest à trois decks, au moins 8 cartes uniques entre chaque paire de decks, listes cachées jusqu'au top 4 et aucun ban dans les matchs au meilleur des cinq manches. Le check-in ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la remise des decks : si vous le ratez, vous ne jouez pas. Le tournoi se joue sur la démo, pas sur le playtest.",
     highlights: [
@@ -656,7 +658,7 @@ OriginsMeta est en ligne depuis le 15 septembre. En dix jours, vous vous êtes i
       { label: "Check-in", text: "ouvre deux heures avant, ferme cinq minutes avant le début avec la remise des decks", anchor: "check-in" },
       { label: "Entraînez-vous sur la démo", text: "le playtest recevra des mises à jour que le tournoi n'aura pas", anchor: "demo-playtest" },
       { label: "Dernier patch d'équilibrage", text: "sorti le 29 septembre : le patch 0.7", anchor: "equilibrage" },
-      { label: "Prix", text: "10 000 dollars, la cagnotte exacte la semaine prochaine", anchor: "prix" },
+      { label: "Prix", text: "10 000 dollars ; la répartition complète est arrivée le 5 octobre", anchor: "prix" },
     ],
     body: `## Conquest à trois decks {#format}
 
@@ -684,6 +686,8 @@ Le programme prévu pour chaque qualification :
 
 Si vous ne faites pas le check-in, vous ne pouvez pas jouer. Pour la qualification EMEA du 20 octobre, qui commence à 19:00 CEST, cela veut dire faire le check-in entre 17:00 et 18:55 CEST. La qualification AMER a lieu le 21 et l'APAC le 22 : horaires et places sont dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026).
 
+**Mise à jour du 7 octobre :** il y a désormais cinq qualifications. Le 5 octobre, Koin a ajouté AMER le 19 octobre à 19:00 EST et EMEA le 22 octobre à 19:00 CEST, et son nouveau calendrier place la qualification AMER du 21 à 21:00 EST, avec 32 qualifiés au lieu de 64 et 96 wild cards au lieu de 128. Sept lieux sont aussi hors du pool du tournoi. Tout est dans [notre article sur la cagnotte et les nouvelles qualifications](/fr/news/crimson-cup-prizepool-qualifiers).
+
 ## Démo ou playtest : où s'entraîner {#demo-playtest}
 
 - La **démo** a la liste des cartes du tournoi. Le mode classé s'y active pour le Steam Next Fest, avec de nouvelles récompenses de classé. C'est la version sur laquelle s'entraîner.
@@ -701,9 +705,11 @@ Le dernier patch d'équilibrage arrivera deux semaines avant le Steam Next Fest,
 
 Le post officiel sur X parle d'une cagnotte de 10 000 dollars, et l'annonce sur Discord dit que la cagnotte exacte sera communiquée la semaine prochaine. En septembre, Koin décrivait des prix d'une valeur totale de 10 000 dollars, entre une carte promo 1/1 exclusive, d'autres cartes promo, des boosters numériques, des boîtes et des cases Alpha, et de l'argent ([notre article](/fr/news/biggest-tournament-ever)).
 
+**Mise à jour du 7 octobre :** la répartition est arrivée le 5 octobre. Le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces ; les cartes promo vont jusqu'au top 32 et les boosters jusqu'au top 256. Le tableau complet est dans [notre article sur la cagnotte](/fr/news/crimson-cup-prizepool-qualifiers#prix).
+
 ## Ce que nous ne savons pas encore {#inconnues}
 
-- La cagnotte exacte, attendue la semaine prochaine.
+- La cagnotte exacte, attendue la semaine prochaine : elle est arrivée le 5 octobre, voir la mise à jour ci-dessus.
 - Comment sont comptées les cartes uniques entre deux decks.
 
 ## D'où vient l'information {#sources}
@@ -1280,5 +1286,174 @@ Les règles, les horaires du check-in et ce que nous ne savons pas encore sont d
     metaTitle: "Page Steam d'Origins TCG : liste de souhaits ouverte",
     description: "Page Steam d'Origins TCG en ligne, liste de souhaits ouverte. Premier post de l'équipe : parties tactiques rapides et collection inspirée des TCG physiques.",
     summary: "Premier post Steam de l'équipe : un jeu de cartes à collectionner construit autour de parties tactiques rapides et d'un système de collection inspiré des TCG physiques.",
+  },
+  "digital-lgs-program": {
+    title: "Digital LGS Program : Origins TCG veut des tournois hebdomadaires et ses sets dans les boutiques de jeux",
+    metaTitle: "Origins TCG en boutique : Digital LGS Program",
+    description:
+      "Le fondateur de Koin Games présente le Digital LGS Program d'Origins TCG : tournois hebdomadaires, promos exclusives et précommandes de sets en boutique.",
+    summary:
+      "Le 6 octobre, Tim Jooste, fondateur et CEO de Koin Games, a présenté sur X le Digital LGS Program : les boutiques de jeux locales accueilleront des tournois hebdomadaires d'Origins, vendront des boosters et des promos réservés à la boutique et prendront les précommandes de sets de collection qui ne seront pas disponibles dans le jeu. Les événements en présentiel commencent début 2027 ; le Set 1 arrive sur Kickstarter le 27 octobre, avec les boutiques associées au lancement.",
+    highlights: [
+      { label: "Le Digital LGS Program", text: "le fondateur de Koin Games le présente sur X : les sets d'Origins distribués par les boutiques de jeux locales", anchor: "programme" },
+      { label: "Tournois, promos, précommandes", text: "tournois hebdomadaires en boutique, boosters et promos réservés aux joueurs sur place, précommandes de sets absents du jeu", anchor: "boutiques" },
+      { label: "Début 2027, Kickstarter le 27 octobre", text: "les événements en présentiel commencent début 2027 ; le Set 1 arrive sur Kickstarter avec les boutiques à bord, plus de 30 déjà intéressées", anchor: "dates" },
+      { label: "Une version pour les créateurs", text: "les streamers et les créateurs de contenu ont un programme à eux", anchor: "createurs" },
+      { label: "Ce que nous ne savons pas", text: "quelles boutiques et quels pays, les prix, comment un set numérique arrive en rayon", anchor: "inconnues" },
+    ],
+    body: `## Le Digital LGS Program {#programme}
+
+Le 6 octobre 2026, **Tim Jooste**, fondateur et CEO de Koin Games, a publié sur X un long post accompagné d'une courte vidéo. Il y décrit une soirée dans votre boutique de jeux locale (LGS, local game store) avec, pour seul bagage, votre téléphone : une soirée de parties d'Origins contre les joueurs de votre ville, une promo exclusive à la boutique à aller décrocher et un booster du prochain set de collection à précommander. Le studio l'appelle le **Digital LGS Program** et, selon ses mots, il fait d'Origins « le 1er jeu de cartes numérique à distribuer ses sets par les boutiques de jeux locales du monde entier ».
+
+C'est une affirmation du fondateur, pas quelque chose que nous pouvons vérifier. Ce que le post dit clairement, c'est la forme du programme : un jeu de cartes numérique avec un réseau physique de boutiques qui organisent ses événements et vendent ses sets.
+
+## Ce que reçoivent les boutiques et ce que reçoivent les joueurs {#boutiques}
+
+Le post énumère quatre choses :
+
+- **Des tournois hebdomadaires locaux**, joués en boutique.
+- **Des boosters et des promos exclusifs, réservés aux joueurs sur place** : des cartes que l'on n'obtient qu'en se déplaçant.
+- **Les précommandes des prochains sets de collection**, qui ne seront pas disponibles dans le jeu, avec des récompenses pour qui soutient sa boutique.
+- Et, comme l'écrit le post, rencontrer de vraies personnes, jouer et se faire des amis en personne.
+
+Les boutiques intéressées sont invitées à contacter Jooste directement : ses messages privés sur X sont ouverts, et il propose un appel.
+
+## Les dates : début 2027, avec le Kickstarter le 27 octobre {#dates}
+
+- Les **événements en présentiel commencent officiellement début 2027**. Les boutiques, dit le post, n'ont pas à attendre jusque-là.
+- Le **Set 1 arrive sur Kickstarter le 27 octobre 2026** : la même date que le fondateur avait donnée le 17 septembre et que la démo affiche dans son menu (notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter) rassemble tout ce qui est confirmé à ce jour). Contrairement à la plupart des campagnes de jeux de cartes, écrit Jooste, Koin travaille avec les boutiques locales sur le lancement lui-même.
+- En **deux mois**, le studio a déjà parlé avec **plus de 30 boutiques** intéressées.
+
+## Les créateurs ont une version à eux {#createurs}
+
+Le post ajoute qu'une version du programme existe pour les streamers et les créateurs de contenu, sans détails. L'appel s'adresse aussi aux joueurs et aux collectionneurs : taguer sous le post sa boutique ou son créateur de TCG préféré.
+
+## Pourquoi c'est important {#pourquoi}
+
+Origins s'est toujours décrit comme free-to-compete, gratuit pour la compétition, et pensé pour les collectionneurs : le mode classé ne coûte rien et la collection repose sur [deux niveaux de cartes](/fr/guides/collector-economy), compétitives et de collection. Jusqu'ici, la partie collection n'avait été annoncée qu'en numérique : les boosters de l'Alpha Edition sur Kickstarter, les échanges sur le Marché de la communauté Steam ; le seul indice physique était les [cartes en métal](/fr/news/metal-cards-tease) filmées en mars. Un programme pour les boutiques lui donne un lieu physique : le tournoi du mardi soir, la promo que l'on ne gagne que là, le set que l'on précommande au comptoir. Pour un jeu numérique, c'est aussi une façon de trouver des joueurs là où l'on joue déjà aux cartes.
+
+Deux réserves. Le post est l'annonce du fondateur, pas une page officielle avec les conditions et la liste des boutiques, et rien ne dit encore comment fonctionne en pratique un set numérique vendu en boutique. Et si vous voulez organiser des tournois avant 2027, vous n'avez pas besoin d'attendre le programme : notre [organisateur de tournois](/fr/tournaments) est gratuit et la communauté l'utilise déjà.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Quels pays et quelles boutiques participent, et s'il existe une liste.
+- Comment un set numérique est distribué par une boutique : des codes, des boosters physiques avec des cartes numériques, ou autre chose.
+- Ce que veut dire « sets non disponibles dans le jeu » pour la collection : si ces cartes n'existeront que par les boutiques.
+- Les prix, les récompenses pour une précommande en boutique et la façon dont les promos sont attribuées.
+- Comment se jouent les tournois en boutique (salons privés dans le jeu, un mode dédié) et si les résultats comptent quelque part.
+- Les conditions de la version pour les créateurs.
+
+## D'où vient l'information {#source}
+
+Le [post de Tim Jooste sur X](https://x.com/TimothyJooste/status/2107532013687418943) du 6 octobre 2026, avec une vidéo de 15 secondes. Au 7 octobre, il n'y a aucun post sur le programme sur la page Steam du jeu ; nous mettrons cet article à jour quand Koin Games publiera les conditions officielles.`,
+    faq: [
+      {
+        q: "Qu'est-ce que le Digital LGS Program d'Origins TCG ?",
+        a: "Un programme annoncé sur X par le fondateur et CEO de Koin Games, Tim Jooste, le 6 octobre 2026 : les boutiques de jeux locales accueillent des tournois hebdomadaires d'Origins, vendent des boosters et des promos exclusifs réservés aux joueurs sur place et prennent les précommandes des prochains sets de collection, qui ne seront pas disponibles dans le jeu. Les conditions officielles n'ont pas encore été publiées.",
+      },
+      {
+        q: "Quand commencent les événements Origins TCG en boutique ?",
+        a: "D'après le post, les événements en présentiel commencent officiellement début 2027, mais les boutiques peuvent rejoindre le programme avant : le Set 1 arrive sur Kickstarter le 27 octobre 2026 et Koin Games dit travailler avec les boutiques locales sur le lancement.",
+      },
+      {
+        q: "Comment une boutique de jeux peut-elle rejoindre le programme d'Origins TCG ?",
+        a: "En contactant directement Tim Jooste : dans le post, il écrit que ses messages privés sur X sont ouverts et propose un appel. En deux mois, selon le post, plus de 30 boutiques s'étaient déjà manifestées. Il existe aussi une version du programme pour les streamers et les créateurs de contenu.",
+      },
+    ],
+  },
+  "crimson-cup-prizepool-qualifiers": {
+    title: "Crimson Cup : la cagnotte dévoilée, deux qualifications de plus et sept lieux hors du tournoi",
+    metaTitle: "Crimson Cup d'Origins TCG : cagnotte et qualifications",
+    description:
+      "Cagnotte de la Crimson Cup d'Origins TCG : carte promo Dracula 1/1 et 1 500 dollars au vainqueur, boosters jusqu'au top 256, deux qualifications de plus.",
+    summary:
+      "Le 5 octobre, Koin Games a publié la répartition des lots de la Crimson Cup : le vainqueur remporte une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces, et tous les joueurs du top 256 reçoivent au moins deux boosters. Le post ajoute aussi deux qualifications, AMER le 19 octobre à 19:00 EST et EMEA le 22 octobre à 19:00 CEST, retire du pool du tournoi sept lieux trop dépendants du hasard et annonce des tournois d'entraînement hebdomadaires.",
+    highlights: [
+      { label: "La cagnotte", text: "carte promo Dracula 1/1, deux cases et 1 500 dollars au vainqueur ; des boosters jusqu'au top 256", anchor: "prix" },
+      { label: "Deux qualifications de plus", text: "AMER le 19 octobre à 19:00 EST et EMEA le 22 octobre à 19:00 CEST, 32 qualifiés dans chacune", anchor: "qualifications" },
+      { label: "Ce qui change dans le calendrier", text: "AMER du 21 à 21:00 EST avec 32 qualifiés, 96 wild cards", anchor: "calendrier" },
+      { label: "Sept lieux exclus", text: "Junkyard, Cloning Lab, Reflecting Pool et quatre autres, déjà retirés des parties en salon", anchor: "lieux" },
+      { label: "Tournois d'entraînement", text: "chaque semaine, rien en jeu, le prochain cette semaine", anchor: "entrainement" },
+    ],
+    body: `## La cagnotte {#prix}
+
+La cagnotte, selon les mots de l'équipe, « se compose d'une répartition entre prix en argent, objets de collection et cartes promo exclusives ». Tous les joueurs qui atteignent le top 256 ont droit à la première série de lots ; les cartes promo commencent au top 32. Le visuel des récompenses joint au post donne la répartition :
+
+| Place | Carte promo | Produit | Argent |
+|---|---|---|---|
+| Vainqueur | carte promo Dracula 1/1 | 2 cases de boîtes de boosters | 1 500 dollars |
+| 2e | carte promo Dracula 1/8 | 1 case de boîtes de boosters | 750 dollars |
+| 3e et 4e | carte promo Dracula 1/8 | 2 boîtes de boosters | 350 dollars |
+| Top 8 | carte promo Dracula 1/8 | 1 boîte de boosters | 125 dollars |
+| Top 16 | carte Finalist Plus | 1 boîte de boosters | – |
+| Top 32 | carte Finalist | 10 boosters | – |
+| Top 64 | – | 8 boosters | – |
+| Top 128 | – | 4 boosters | – |
+| Top 256 | – | 2 boosters | – |
+
+La carte promo du visuel est un Dracula doré portant la mention « Tournament Winner », Myths & Legends #209, présenté dans un boîtier de gradation. La ligne de l'annonce de septembre sur « des lots d'une valeur de 10 000 dollars » figure toujours sur le nouveau visuel du calendrier. Les playoffs ont 256 places : d'après les chiffres de Koin, quiconque passe une qualification ou entre avec une wild card repart déjà avec au moins deux boosters.
+
+## Deux qualifications de plus {#qualifications}
+
+« À la demande générale », Koin ajoute deux qualifications pendant le Steam Next Fest, une pour les fuseaux horaires des Amériques et une pour ceux de l'EMEA :
+
+1. **AMER, lundi 19 octobre à 19:00 EST.**
+2. **EMEA, jeudi 22 octobre à 19:00 CEST**, qui clôt les qualifications.
+
+Chacune envoie 32 joueurs en playoffs, comme les trois autres. La demande de l'équipe est la même qu'en septembre : ne vous inscrivez qu'aux tournois auxquels vous pourrez vraiment participer, et laissez les places aux autres joueurs. Les inscriptions se font sur le [Discord officiel](https://discord.gg/originstcg). Le check-in fonctionne comme avant : il ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la remise des decks ([les règles](/fr/news/crimson-cup-format-check-in#check-in)).
+
+## Ce qui change dans le calendrier {#calendrier}
+
+Le post ne parle que des deux nouvelles qualifications, mais le visuel du calendrier qui l'accompagne change aussi d'autres chiffres. Les cinq qualifications, 512 places chacune et 32 qualifiés dans chacune :
+
+- AMER, 19 octobre à 19:00 EST (nouvelle) ;
+- EMEA, 20 octobre à 19:00 CEST ;
+- AMER, 21 octobre à 21:00 EST : le visuel de septembre disait 19:00 EST et 64 qualifiés, désormais barrés ;
+- APAC, 22 octobre à 19:00 SGT ;
+- EMEA, 22 octobre à 19:00 CEST (nouvelle).
+
+Les wild cards passent de 128 à 96 : cinq fois 32 plus 96 font 256, le nombre de places des playoffs. Playoffs et finales ne bougent pas : playoffs le 24 octobre à 10:00 EST (16:00 CEST, 22:00 SGT), quatre joueurs qualifiés pour les finales du 25 octobre à 10:00 EST. Le tournoi commence désormais le 19 octobre, premier jour du Steam Next Fest, au lieu du 20. Les dates et les horaires, comme toujours sur ce site, sont ceux du visuel officiel, sans conversion de notre part.
+
+## Sept lieux hors du tournoi {#lieux}
+
+« Il y a quelques lieux dans Origins qui dépendent très fortement du hasard », dit le post, et sept sont donc désactivés pour le tournoi : [Junkyard](/fr/locations#junkyard), [Cloning Lab](/fr/locations#cloning-lab), [Reflecting Pool](/fr/locations#reflecting-pool), [Amplifying Amphitheatre](/fr/locations#amplifying-amphitheatre), [Giant's Beacon](/fr/locations#giants-beacon), [The Colosseum](/fr/locations#the-colosseum) et [Nostradamus' Call](/fr/locations#nostradamus-call). Ce que fait chacun d'eux est sur notre page des [Lieux](/fr/locations).
+
+Ce pool du tournoi est déjà actif dans la démo dans les parties en salon (Create/Join Room Battle) : c'est là que l'on s'entraîne avec les lieux de la Crimson Cup. Le pool avait été introduit par la [mise à jour du playtest du 1er octobre](/fr/news/playtest-patch-notes-1001#pool-tournois), qui ne disait pas encore quels lieux étaient exclus.
+
+## Tournois d'entraînement {#entrainement}
+
+Comme la plupart des parties de la démo se jouent contre des bots, Koin organise des tournois d'entraînement hebdomadaires : rien en jeu, juste un endroit où jouer contre de vraies personnes et tester vos decks. Le prochain a lieu cette semaine ; le jour et l'heure seront annoncés bientôt, et l'inscription se fait sur le même [Discord](https://discord.gg/originstcg). Si vous voulez organiser le vôtre avec les règles de la Crimson Cup, l'[organisateur de tournois](/fr/tournaments) d'OriginsMeta prend en charge le check-in, les listes cachées et les matchs au meilleur des trois manches.
+
+## Ce que cela change pour les joueurs {#pour-les-joueurs}
+
+- **Plus de places et plus de créneaux.** Cinq qualifications au lieu de trois, deux à des horaires européens et deux à des horaires américains : choisissez celle que vous jouerez vraiment.
+- **Tout le monde en playoffs repart avec quelque chose.** Deux boosters à partir du top 256, une carte Finalist à partir du top 32, de l'argent à partir du top 8.
+- **Construisez vos decks sans penser aux sept lieux.** Les copies de Cloning Lab et de Reflecting Pool ne seront pas là à la Crimson Cup. Notre [guide du Conquest](/fr/guides/origins-tcg-conquest) et le [deck builder](/fr/deck-builder) vous aident pour les trois decks.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Le jour et l'heure du tournoi d'entraînement de cette semaine.
+- Si la ligne Top 8 du visuel des lots désigne les places 5 à 8, avec un lot chacune : c'est ainsi que nous la lisons.
+- Pourquoi la qualification AMER du 21 octobre est à 21:00 EST sur le nouveau visuel et à 19:00 EST sur celui de septembre : le post ne le dit pas.
+- Comment sont comptées les cartes uniques entre deux decks, question ouverte depuis les [règles du 24 septembre](/fr/news/crimson-cup-format-check-in#format).
+
+## D'où vient l'information {#sources}
+
+- Le [post officiel sur Steam](https://store.steampowered.com/news/app/4429430/view/1845383656394214) du 5 octobre 2026, « Prizepool announcement & key update to our biggest tournament ever », avec ses deux visuels : les récompenses et le calendrier mis à jour.
+- L'[annonce du 9 septembre](/fr/news/biggest-tournament-ever) et les [règles du 24 septembre](/fr/news/crimson-cup-format-check-in), pour les chiffres qui ont changé.`,
+    faq: [
+      {
+        q: "Que remporte le vainqueur de la Crimson Cup ?",
+        a: "Une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces, d'après le visuel des récompenses publié par Koin Games le 5 octobre 2026. Le deuxième reçoit une carte promo Dracula 1/8, une case et 750 dollars ; les troisième et quatrième une carte promo 1/8, deux boîtes de boosters et 350 dollars.",
+      },
+      {
+        q: "Quand ont lieu désormais les qualifications de la Crimson Cup ?",
+        a: "Cinq qualifications de 512 places chacune : AMER le 19 octobre à 19:00 EST, EMEA le 20 octobre à 19:00 CEST, AMER le 21 octobre à 21:00 EST, APAC le 22 octobre à 19:00 SGT et EMEA le 22 octobre à 19:00 CEST. 32 joueurs se qualifient dans chacune, plus 96 wild cards, pour les playoffs du 24 octobre.",
+      },
+      {
+        q: "Quels lieux sont exclus de la Crimson Cup ?",
+        a: "Sept : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call, désactivés parce qu'ils dépendent trop du hasard. Les parties en salon de la démo utilisent déjà le pool du tournoi.",
+      },
+    ],
   },
 };

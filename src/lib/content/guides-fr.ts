@@ -338,7 +338,7 @@ Les posts officiels de Koin Games sur Steam : [patch 0.6.1](https://store.steam
 ## En bref {#en-bref}
 
 - **Conquest** veut dire apporter plus d'un deck, assez différents les uns des autres, et bannir un deck de votre adversaire (Koin Games, 25 août 2026) ; à Big Bob's Playtest Battle, chaque deck devait aussi avoir une Légendaire différente.
-- À la **Crimson Cup** (20–25 octobre 2026), vous apportez trois decks avec au moins 8 cartes uniques entre chaque paire. Règles, dates, prix et check-in sont dans [notre article sur les règles de la Crimson Cup](/fr/news/crimson-cup-format-check-in) : ce guide explique comment construire les trois decks.
+- À la **Crimson Cup** (19–25 octobre 2026), vous apportez trois decks avec au moins 8 cartes uniques entre chaque paire. Règles, dates, prix et check-in sont dans [notre article sur les règles de la Crimson Cup](/fr/news/crimson-cup-format-check-in) : ce guide explique comment construire les trois decks.
 - Koin n'a pas précisé comment les cartes uniques sont comptées. OriginsMeta compte chaque carte une fois, quel que soit son nombre d'exemplaires, Légendaire comprise : deux decks peuvent alors partager au plus 5 cartes.
 - Le [deck builder](/fr/deck-builder) vérifie tout cela dans son mode « Tournoi (3 decks) ».
 - Parmi les 20 decks publiés sur OriginsMeta à 20:00 CEST le 25 septembre 2026, 174 des 176 paires avec des Légendaires différentes respectent la règle ; les deux qui échouent, toutes deux avec Buff, la manquent d'une carte.
@@ -1234,7 +1234,7 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
       },
       {
         q: "Quand a lieu la Crimson Cup ?",
-        a: "Du 20 au 25 octobre 2026, pendant le Steam Next Fest : qualifications régionales les 20, 21 et 22, puis playoffs et finales. Les prix valent 10 000 dollars et comprennent une carte promo 1/1 exclusive.",
+        a: "Du 19 au 25 octobre 2026, pendant le Steam Next Fest : cinq qualifications régionales du 19 au 22, puis playoffs le 24 et finales le 25. Les prix valent 10 000 dollars et comprennent une carte promo 1/1 exclusive.",
       },
       {
         q: "Existe-t-il une version mobile d'Origins TCG ?",
@@ -1280,7 +1280,7 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
 ## Ce qui vient ensuite
 
 - **19–26 octobre 2026.** Steam Next Fest : le mode classé s'active dans la démo, avec des récompenses classées exclusives.
-- **20–25 octobre 2026.** La Crimson Cup, le tournoi du Steam Next Fest : qualifications régionales les 20, 21 et 22, puis playoffs et finales. Des prix d'une valeur de 10 000 dollars, dont une carte promo 1/1 exclusive.
+- **19–25 octobre 2026.** La Crimson Cup, le tournoi du Steam Next Fest : cinq qualifications régionales du 19 au 22, puis playoffs et finales. Des prix d'une valeur de 10 000 dollars, dont une carte promo 1/1 exclusive.
 - **27 octobre 2026.** Le Kickstarter de l'Alpha Edition, annoncé par le CEO de Koin Games le 17 septembre ; le menu principal de la démo l'affiche aussi comme « Coming soon – Oct 27 ». Tout ce qu'il faut savoir dans notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter).
 - **Quatrième trimestre 2026.** Sortie sur Steam, selon la page de la boutique, qui ne donne pas de date plus précise.
 - **2027.** Version mobile et ouverture de boosters sur téléphone. Dans les AMA, l'équipe a décrit un lancement complet avec l'ensemble des Légendaires, dont King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein et Sherlock Holmes.
@@ -1342,7 +1342,7 @@ Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucie
   "steam-next-fest-2026": {
     title: "Origins TCG au Steam Next Fest 2026 : Demo 2.0, dates et tournoi",
     metaTitle: "Origins TCG au Steam Next Fest 2026 : dates",
-    excerpt: "Origins TCG au Steam Next Fest, du 19 au 26 octobre 2026 : le mode classé dans la démo, la Crimson Cup du 20 au 25 octobre, les prix et comment s'inscrire.",
+    excerpt: "Origins TCG au Steam Next Fest, du 19 au 26 octobre 2026 : le mode classé dans la démo, la Crimson Cup du 19 au 25 octobre, les prix et comment s'inscrire.",
     faq: [
       {
         q: "Quand a lieu le Steam Next Fest d'octobre 2026 ?",
@@ -1350,7 +1350,7 @@ Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucie
       },
       {
         q: "Quand a lieu le tournoi d'Origins TCG ?",
-        a: "Du 20 au 25 octobre 2026 : trois qualifications les 20, 21 et 22 (une par grande région), puis playoffs et finales.",
+        a: "Du 19 au 25 octobre 2026 : cinq qualifications de 512 places entre le 19 et le 22 (deux AMER, deux EMEA, une APAC), puis playoffs le 24 et finales le 25.",
       },
       {
         q: "Puis-je participer à une qualification depuis l'Europe ?",
@@ -1369,7 +1369,7 @@ Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucie
 ## Les deux dates à retenir
 
 - **Steam Next Fest, édition d'octobre 2026 : 19–26 octobre.** Le [festival de démos jouables de Valve](https://store.steampowered.com/sale/nextfest) va du lundi 19 octobre à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre. [Origins TCG](https://store.steampowered.com/app/4429430/Origins_TCG/) y participe avec sa démo gratuite, qui a reçu sa première grosse mise à jour le 21 septembre : avec le festival, Koin active le **mode classé**, avec des récompenses classées exclusives.
-- **Tournoi d'Origins TCG : 20–25 octobre.** Koin Games l'appelle « notre plus grand tournoi à ce jour » : un événement sur plusieurs jours qui enchaîne Qualification → Playoffs → Finales, entièrement en ligne et dans le jeu.
+- **Tournoi d'Origins TCG : 19–25 octobre.** Koin Games l'appelle « notre plus grand tournoi à ce jour » : un événement sur plusieurs jours qui enchaîne Qualification → Playoffs → Finales, entièrement en ligne et dans le jeu.
 
 ## Ce que la démo apporte au festival
 
@@ -1381,12 +1381,14 @@ Avec le début du Steam Next Fest, Koin active le **mode classé**, « qui vien
 
 ## Le tournoi, étape par étape
 
-1. **Qualifications, 20–22 octobre.** Trois, de 512 places chacune : EMEA le 20 à 19:00 CEST (32 qualifiés), AMER le 21 à 19:00 EST (64), APAC le 22 à 19:00 SGT (32), plus 128 wild cards. Dans les mots de Koin, « vous pouvez rejoindre N'IMPORTE LAQUELLE des qualifications, où que vous habitiez » : choisissez celle dont l'horaire vous convient, et ne vous inscrivez qu'à celles que vous jouerez vraiment ; vous pouvez en jouer plus d'une.
+1. **Qualifications, 19–22 octobre.** Cinq, de 512 places chacune et avec 32 qualifiés dans chacune : AMER le 19 à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC le 22 à 19:00 SGT et EMEA le 22 à 19:00 CEST, plus 96 wild cards. La qualification AMER du 19 et l'EMEA du 22 ont été ajoutées le 5 octobre, quand le calendrier officiel a aussi déplacé l'AMER du 21 à 21:00 EST avec 32 qualifiés au lieu de 64, et les wild cards de 128 à 96 ([notre article](/fr/news/crimson-cup-prizepool-qualifiers)). Dans les mots de Koin, « vous pouvez rejoindre N'IMPORTE LAQUELLE des qualifications, où que vous habitiez » : choisissez celle dont l'horaire vous convient, et ne vous inscrivez qu'à celles que vous jouerez vraiment ; vous pouvez en jouer plus d'une.
 2. **Playoffs et finales, 24–25 octobre.** La phase de playoffs a 256 places le 24 (10:00 EST / 16:00 CEST / 22:00 SGT) et quatre joueurs en sortent pour les finales du 25 à 10:00 EST (15:00 CET / 22:00 SGT). Attention aux horloges : l'Europe quitte l'heure d'été dans la nuit du 24 tandis que les États-Unis la gardent jusqu'au 1er novembre, donc le même horaire de départ de la côte Est tombe une heure plus tôt sur les horloges européennes le dimanche. Les créateurs de contenu reçoivent des invitations wildcard directement pour les playoffs (demandez sur Discord).
 3. **Format.** Officiel, d'après les annonces des 9 et 24 septembre : **Conquest à trois decks**, avec au moins 8 cartes uniques entre chaque paire de decks ; les listes restent cachées jusqu'au top 4, donc quand vous bannissez un des decks de votre adversaire, vous n'en voyez que la Légendaire. **Matchs au meilleur des trois manches, grande finale au meilleur des cinq** : au meilleur des cinq, il n'y a pas de ban et vous devez gagner avec les trois decks. Les détails dans [notre article sur les règles](/fr/news/crimson-cup-format-check-in).
 4. **Check-in.** Il ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la soumission des decks ; puis une courte fenêtre « premier arrivé, premier servi » donne les places libres aux joueurs en liste d'attente. Sans check-in, vous ne jouez pas : pour la qualification EMEA de 19:00 CEST, faites le check-in entre 17:00 et 18:55.
 5. **Quelle version.** Le tournoi se joue sur la démo principale, avec les seules cartes disponibles là : entraînez-vous dessus. Le playtest recevra d'autres mises à jour et sera différent de la version du tournoi. Le dernier patch d'équilibrage avant le tournoi, le [patch 0.7](/fr/news/patch-0-7), est arrivé le 29 septembre 2026, trois semaines avant la première qualification.
-6. **Prix.** **Des prix d'une valeur de 10 000 dollars**, dans les mots de Koin : une carte promo 1/1 exclusive du tournoi, d'autres cartes promo, des boosters numériques, des boîtes et des cases de boosters Alpha, et des prix en argent. Ce n'est pas une cagnotte en espèces : l'argent est l'une des quatre catégories, et Koin a promis la cagnotte exacte pour la semaine suivant le 24 septembre. Le tournoi s'appelle la **Crimson Cup** : le nom figure sur l'illustration officielle de Koin, ce n'est pas un surnom de la communauté.
+6. **Prix.** **Des prix d'une valeur de 10 000 dollars**, dans les mots de Koin, répartis entre argent, objets de collection et cartes promo exclusives. La répartition est arrivée le 5 octobre : le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces ; le 2e une carte promo Dracula 1/8, une case et 750 dollars ; les 3e et 4e une carte promo 1/8, deux boîtes de boosters et 350 dollars ; le top 8 une boîte de boosters, une carte promo 1/8 et 125 dollars ; le top 16 une boîte de boosters et une carte Finalist Plus ; le top 32 dix boosters et une carte Finalist ; puis 8, 4 et 2 boosters jusqu'au top 256 ([le tableau complet](/fr/news/crimson-cup-prizepool-qualifiers#prix)). Le tournoi s'appelle la **Crimson Cup** : le nom figure sur l'illustration officielle de Koin, ce n'est pas un surnom de la communauté.
+7. **Pool de lieux.** Sept lieux sont exclus du tournoi, « très dépendants du hasard » dans les mots de Koin : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call. Les parties en salon de la démo utilisent déjà ce pool : entraînez-vous là. Ce que fait chaque lieu est sur notre page des [Lieux](/fr/locations).
+8. **Tournois d'entraînement.** Koin organise des tournois d'entraînement hebdomadaires sans enjeu, annoncés sur Discord, pour jouer contre de vraies personnes plutôt que contre des bots avant la Cup.
 
 Les inscriptions se font sur le [Discord officiel](https://discord.gg/originstcg).
 
@@ -1400,7 +1402,7 @@ Les inscriptions se font sur le [Discord officiel](https://discord.gg/originstcg
 
 ## Comment OriginsMeta couvrira la semaine
 
-Notre plan, au 25 septembre 2026 : nous publierons une actu par jour pendant le festival, les decks du tournoi avec leurs graphiques de composition dès que les listes seront publiques (à partir du top 4), et la première tier list d'OriginsMeta après les finales de la Crimson Cup du 25 octobre, construite sur les résultats du tournoi et le haut du ladder classé. Sources : les posts officiels sur Steam des 4 août, 25 août, [9 septembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278), [21 septembre](https://store.steampowered.com/news/app/4429430/view/1844115010502611) et [29 septembre 2026](https://store.steampowered.com/news/app/4429430/view/1844751498235283), et le [calendrier du Steam Next Fest](https://store.steampowered.com/sale/nextfest).
+Notre plan, au 25 septembre 2026 : nous publierons une actu par jour pendant le festival, les decks du tournoi avec leurs graphiques de composition dès que les listes seront publiques (à partir du top 4), et la première tier list d'OriginsMeta après les finales de la Crimson Cup du 25 octobre, construite sur les résultats du tournoi et le haut du ladder classé. Sources : les posts officiels sur Steam des 4 août, 25 août, [9 septembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278), [21 septembre](https://store.steampowered.com/news/app/4429430/view/1844115010502611), [29 septembre](https://store.steampowered.com/news/app/4429430/view/1844751498235283) et [5 octobre 2026](https://store.steampowered.com/news/app/4429430/view/1845383656394214), et le [calendrier du Steam Next Fest](https://store.steampowered.com/sale/nextfest).
 `,
   },
   "is-origins-tcg-pay-to-win": {
@@ -1587,7 +1589,7 @@ Soutenir le Kickstarter achète des objets de collection, pas de la force : le 
 
 - 15 juillet 2026 : démo gratuite sur Steam.
 - 21 septembre 2026 : première grosse mise à jour de la démo.
-- 19–26 octobre 2026 : Steam Next Fest, avec le mode classé dans la démo et la Crimson Cup (20–25 octobre).
+- 19–26 octobre 2026 : Steam Next Fest, avec le mode classé dans la démo et la Crimson Cup (19–25 octobre).
 - 27 octobre 2026 : Kickstarter de l'Alpha Edition (date donnée par le CEO de Koin Games le 17 septembre et affichée dans le menu de la démo).
 - Quatrième trimestre 2026 : sortie sur Steam, selon la page de la boutique.
 - 2027 : mobile.

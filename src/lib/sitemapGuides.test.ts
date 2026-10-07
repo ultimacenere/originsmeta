@@ -31,13 +31,19 @@ registerHooks({
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const mod: typeof import("./sitemapEntries") = await import("./sitemapEntries.ts");
 const { COMMUNITY_SECTIONS, EMPTY_COMMUNITY, sectionEntries, sitemapIndexEntries, sitemapPages } = mod;
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const { getGuides }: typeof import("./content/guides") = await import("./content/guides.ts");
 
-type Locale = "en" | "it" | "es";
+type Locale = "en" | "it" | "es" | "fr";
 type Data = Parameters<typeof sitemapPages>[0];
 const SITE = "https://originsmeta.com";
 // dopo il 29/09/2026, ultimo cambio del modello delle pagine delle guide (PAGE_UPDATED): le date dei dati si vedono
 // dopo il 07/10/2026 (nascita del francese, soglia di tutto il sito), così le date dei contenuti si vedono
 const TODAY = "2026-10-13";
+// Le guide editoriali si aggiornano a ogni patch o annuncio (`updated` in guides.ts): il test di /guides mette le date della
+// community DOPO l'ultima editoriale, così è la community a spostare il lastmod e il test non scade al prossimo aggiornamento.
+const addDays = (day: string, n: number) => new Date(Date.parse(day) + n * 86_400_000).toISOString().slice(0, 10);
+const EDITORIAL_LATEST = (["en", "it", "es", "fr"] as Locale[]).flatMap((l) => getGuides(l).map((g) => g.updated)).sort().at(-1)!;
 
 const community = {
   ...EMPTY_COMMUNITY,
@@ -83,14 +89,20 @@ describe("guide della community nelle sitemap", () => {
   });
 
   test("/guides si sposta con le guide della community che mostra nella lingua", () => {
-    // dal 29/09/2026 le guide della community indicizzabili stanno nell'HTML di /guides (ISR), quindi ne spostano il lastmod
-    const hub = (l: Locale, data: Data = community) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
-    assert.equal(hub("es"), "2026-10-11");
-    assert.equal(hub("it"), "2026-10-10");
-    // le guide editoriali arrivano al 30/09/2026 (patch 0.7): senza la guida spagnola del 01/10 la data resta prima
-    assert.ok(hub("es", EMPTY_COMMUNITY)! < "2026-10-11", "senza guide della community la data del modello e delle editoriali");
+    // dal 29/09/2026 le guide della community indicizzabili stanno nell'HTML di /guides (ISR), quindi ne spostano il lastmod.
+    // Date dopo l'ultima guida editoriale (EDITORIAL_LATEST): l'italiano un giorno dopo, lo spagnolo due, "oggi" quattro.
+    const itDay = addDays(EDITORIAL_LATEST, 1);
+    const esDay = addDays(EDITORIAL_LATEST, 2);
+    const today = addDays(EDITORIAL_LATEST, 4);
+    const laterGuides = { ...community.communityGuides, hub: { en: `${esDay}T07:00:00.000Z`, it: `${itDay}T08:00:00+00:00`, es: `${esDay}T09:00:00+00:00` } };
+    const later: Data = { ...community, communityGuides: laterGuides };
+    const hub = (l: Locale, data: Data = later) => sectionEntries(sitemapPages(data), "pages", l, today).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
+    assert.equal(hub("es"), esDay);
+    assert.equal(hub("it"), itDay);
+    // senza la guida spagnola di esDay la data resta quella del modello e delle editoriali, cioè prima
+    assert.ok(hub("es", EMPTY_COMMUNITY)! < esDay, "senza guide della community la data del modello e delle editoriali");
     // una lingua senza guide della community da mostrare resta com'era
-    const noIt: Data = { ...community, communityGuides: { ...community.communityGuides, hub: { es: "2026-10-11T09:00:00+00:00" } } };
+    const noIt: Data = { ...later, communityGuides: { ...laterGuides, hub: { es: `${esDay}T09:00:00+00:00` } } };
     for (const l of ["en", "it"] as const) assert.equal(hub(l, noIt), hub(l, EMPTY_COMMUNITY), l);
   });
 
