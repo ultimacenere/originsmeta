@@ -4,7 +4,14 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { SERVICE_NOTICE, serviceNoticeActive, serviceNoticeKey } from "./serviceNotice.ts";
+import {
+  SERVICE_NOTICE,
+  serviceNoticeActive,
+  serviceNoticeKey,
+  // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
+  // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in lastmod.test.ts.
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+} from "./serviceNotice.ts";
 
 const locales = ["en", "it", "es"] as const;
 
