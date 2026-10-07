@@ -11,12 +11,16 @@
 //   node scripts/translate-guides.mjs --dry-run            elenca che cosa manca e quanto testo va tradotto, non scrive nulla
 //   node scripts/translate-guides.mjs                      traduce con l'API (serve ANTHROPIC_API_KEY) e salva
 //   node scripts/translate-guides.mjs --only <slug>        solo quella guida
+//   node scripts/translate-guides.mjs --export <file>      scrive in un JSON i pezzi da tradurre (per tradurli fuori, senza chiave):
+//                                                          { "<slug>": { lang, missing, names, chunks: { "<lingua>": [ {campo: testo, …}, … ] } } }
+//   node scripts/translate-guides.mjs --from <file>        salva traduzioni già pronte, nella stessa forma con i pezzi tradotti
+//                                                          (gli stessi campi di ogni pezzo); --model <nome> per etichettarle
 //   --redo <lingue>                                        rifà da capo anche le traduzioni ancora valide in quelle lingue
 //                                                          (es. "it,es"), dopo un cambio del prompt
 //   --env <file>                                           .env.local da usare (di default quello del repo principale)
 // Le traduzioni si scrivono solo se il testo della guida è ancora quello da cui sono state fatte (impronta), e il
 // trigger del database le ricontrolla (testo semplice, stesse sezioni dell'originale).
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 import * as nodeModule from "node:module";
 import path from "node:path";
@@ -143,6 +147,55 @@ async function save(r, done) {
 }
 
 if (flag("--dry-run")) {
+  await db.end();
+} else if (opt("--export")) {
+  // I pezzi da tradurre, lingua per lingua, come li manderebbe all'API (stesso piano: parti già tradotte riusate).
+  const out = Object.fromEntries(
+    todo.map((r) => [
+      r.slug,
+      {
+        lang: r.g.lang,
+        missing: r.missing,
+        names: namesIn(G.guideTranslationDoc(r.g), NAMES),
+        chunks: Object.fromEntries(r.missing.map((l) => [l, G.planGuideTranslation(r.source, r.source.translations[l]).chunks])),
+      },
+    ]),
+  );
+  writeFileSync(opt("--export"), JSON.stringify(out, null, 1));
+  console.log(`pezzi da tradurre scritti in ${opt("--export")}`);
+  await db.end();
+} else if (opt("--from")) {
+  // Traduzioni preparate fuori (07/10/2026, arretrati del francese senza chiave API): stessi pezzi, stessi campi.
+  const ready = JSON.parse(readFileSync(opt("--from"), "utf8"));
+  let saved = 0;
+  for (const r of todo) {
+    const done = {};
+    for (const l of r.missing) {
+      const docs = ready[r.slug]?.chunks?.[l];
+      if (!Array.isArray(docs)) continue;
+      const plan = G.planGuideTranslation(r.source, r.source.translations[l]);
+      const sameKeys = docs.length === plan.chunks.length && docs.every((d, i) => d && typeof d === "object" && JSON.stringify(Object.keys(d).sort()) === JSON.stringify(Object.keys(plan.chunks[i]).sort()));
+      if (!sameKeys) {
+        console.log(`  ${r.slug} ${l}: pezzi o campi diversi dal piano, traduzione scartata`);
+        continue;
+      }
+      const text = G.assembleGuideTranslation(r.source, plan, docs);
+      if (!text) {
+        console.log(`  ${r.slug} ${l}: testo non valido (regole del testo semplice), traduzione scartata`);
+        continue;
+      }
+      done[l] = { hash: G.communityGuideHash(r.g), at: new Date().toISOString(), model: opt("--model") ?? "manual", parts: plan.parts, ...(text.title !== undefined ? { title_hash: plan.titleHash } : {}), guide: text };
+    }
+    if (!Object.keys(done).length) continue;
+    try {
+      const n = await save(r, done);
+      saved += n;
+      if (n) console.log(`  ${r.slug}: salvate ${Object.keys(done).join(", ")}`);
+    } catch (e) {
+      console.log(`  ${r.slug}: salvataggio non riuscito: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+  console.log(`${saved} traduzioni salvate (le pagine si aggiornano da sole entro qualche minuto: ISR)`);
   await db.end();
 } else {
   const key = process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY;
