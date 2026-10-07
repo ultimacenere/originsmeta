@@ -37,9 +37,9 @@ export function translationEnabled(): boolean {
  * traduzioni solo dopo la migrazione (blocco "07/10/2026: FRANCESE" di schema.sql). Finché il database la rifiuta
  * (errcode 23514, violazione di un check), `saveTranslations` salva senza, così le traduzioni nelle altre lingue non si
  * perdono e la pagina francese mostra l'originale con la sua nota; `scripts/translate-guides.mjs` recupera gli arretrati
- * dopo la migrazione. Da mettere a null quando la migrazione è passata in produzione.
+ * dopo la migrazione. Messo a null l'08/10/2026, a migrazione applicata; torna a una lingua quando ne nasce un'altra.
  */
-export const DB_PENDING_LOCALE: Locale | null = "fr";
+export const DB_PENDING_LOCALE: Locale | null = null; // migrazione FRANCESE applicata in produzione l'08/10/2026
 
 type SaveResult = PromiseLike<{ error: { code?: string; message: string } | null }>;
 
