@@ -29,11 +29,11 @@ type Params = Promise<{ locale: string; slug: string }>;
 const HEADLINE_MAX = 110;
 
 /**
- * Etichetta della firma quando la data di modifica è solo la nascita della versione tradotta (`newsDates`, oggi lo
- * spagnolo dal 25/09/2026): "Traducido el …" al posto di "Actualizado", che promette un paragrafo di aggiornamento
- * nel testo. La usa solo questa pagina.
+ * Etichetta della firma quando la data di modifica è solo la nascita della versione tradotta (`newsDates`: lo
+ * spagnolo dal 25/09/2026, il francese dal 07/10/2026): "Traducido el …" al posto di "Actualizado", che promette un
+ * paragrafo di aggiornamento nel testo. La usa solo questa pagina.
  */
-const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradotto il", es: "Traducido el" };
+const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradotto il", es: "Traducido el", fr: "Traduit le" };
 
 /** Le news che raccontano una patch (campo `news` delle patch in cards.ts): per le news correlate sono dello stesso tipo. */
 const patchNews = new Set(patchOrder.map((id) => patches[id].news).filter((s): s is string => Boolean(s)));

@@ -54,11 +54,13 @@ export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
           `**${legendary}**${arch ? ` · ${arch.it}` : ""} · di ${author}`,
           `${legendary}${arch ? ` · ${arch.en}` : ""} · by ${author}`,
           `${legendary}${arch ? ` · ${arch.es}` : ""} · de ${author}`,
+          `${legendary}${arch ? ` · ${arch.fr}` : ""} · par ${author}`,
         ].join("\n"),
         // stesso formato dei messaggi della GitHub Action: titoli inglese e spagnolo collegati alle loro pagine
         fields: [
           { name: "🇬🇧 English", value: `[${name}](${siteUrl}/en/decks/community/${d.slug}?${UTM})` },
           { name: "🇪🇸 Español", value: `[${name}](${siteUrl}/es/decks/community/${d.slug}?${UTM})` },
+          { name: "🇫🇷 Français", value: `[${name}](${siteUrl}/fr/decks/community/${d.slug}?${UTM})` },
         ],
         ...(image ? { image: { url: `${siteUrl}${image}` } } : {}),
         color: MINT,

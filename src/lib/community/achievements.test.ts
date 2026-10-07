@@ -345,8 +345,8 @@ describe("etichette nelle tre lingue", () => {
     // i testi lo dicono invece di promettere "mai per giorno o per mazzo"
     for (const l of Object.values(achievementLabels)) {
       assert.doesNotMatch(l.privacy, /mai i numeri per giorno|never the figures per day|nunca las cifras por día/i);
-      assert.match(l.privacy, /single deck|solo mazzo|solo mazo/);
-      assert.match(l.account.intro, /single published deck|solo mazzo pubblicato|solo mazo publicado/);
+      assert.match(l.privacy, /single deck|solo mazzo|solo mazo|un seul deck/);
+      assert.match(l.account.intro, /single published deck|solo mazzo pubblicato|solo mazo publicado|un seul deck publié/);
     }
   });
 });

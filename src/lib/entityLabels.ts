@@ -161,6 +161,44 @@ export const entityLabels: Record<Locale, EntityLabels> = {
       ],
     },
   },
+  fr: {
+    about: {
+      description:
+        "Qui fait OriginsMeta, le site de fans indépendant sur Origins TCG : sources officielles, cartes de la démo vérifiées une par une dans le jeu et contact.",
+      p2: "Nous sommes des joueurs, pas l'éditeur. Les dates, les règles et les événements viennent uniquement de sources officielles ; les cartes de la Demo 2.0 sont vérifiées une par une dans le jeu ; et chaque page indique la date de sa dernière mise à jour.",
+      newToGame: "Vous découvrez le jeu ? Commencez par {link}.",
+      newToGameLink: "ce qu'est Origins TCG",
+      checkTitle: "Comment nous vérifions nos données",
+      check: [
+        "Les dates, les règles, les événements et les changements d'équilibrage viennent uniquement de sources officielles : la page Steam, les notes de patch sur Steam, le Discord officiel et les communiqués de Koin Games. Quand un détail n'existe que sur Discord, l'article le précise.",
+        "Les changements d'équilibrage de chaque nouveau patch sont recopiés des notes de patch officielles sur les pages des cartes, avec la date et le lien vers la publication.",
+        "Le {date}, nous avons comparé une par une les {count} cartes de la démo avec la collection du jeu : coûts, statistiques et alignements concordaient, et les textes anglais restés en retard sont désormais ceux du jeu. Les textes italiens et espagnols des cartes sont eux aussi les textes officiels, lus dans le jeu le {textsDate}. Nous refaisons la vérification après chaque patch, dans ces trois langues. Les textes français des cartes sont pour l'instant une traduction d'OriginsMeta, non vérifiée dans le jeu.",
+        "Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu : elles n'ont donc pas été vérifiées dans le jeu, et leurs pages le disent ; leurs textes italiens et espagnols sont les nôtres, écrits avec le glossaire officiel du jeu. Les lieux n'ont pas encore été vérifiés un par un dans le jeu non plus : la page des lieux le dira quand ce sera fait, et leurs effets en italien et en espagnol sont les nôtres, avec le même glossaire. Les sagas et les notes sur chaque légende sont également les nôtres.",
+      ],
+      checkErrors: "Vous avez trouvé une erreur ? Écrivez à {email} : nous la corrigeons, et la page affiche la nouvelle date.",
+      disclaimer:
+        "OriginsMeta n'est pas affilié à Koin Games, ni approuvé ou sponsorisé par Koin Games. Origins TCG est une marque de son propriétaire. Les noms des cartes, les illustrations et les données du jeu appartiennent à Koin Games ; le matériel officiel présent sur ce site (illustrations des cartes, key art, captures d'écran) est utilisé comme contenu, pour informer et commenter, et jamais comme identité visuelle d'OriginsMeta.",
+      disclaimerPermission:
+        "OriginsMeta n'est pas affilié à Koin Games, ni approuvé ou sponsorisé par Koin Games. Origins TCG est une marque de son propriétaire. Les noms des cartes, les illustrations et les données du jeu appartiennent à Koin Games ; le matériel officiel présent sur ce site (illustrations des cartes, key art, captures d'écran) est utilisé comme contenu, avec l'autorisation que Koin Games nous a donnée le 19 septembre 2026, et jamais comme identité visuelle d'OriginsMeta.",
+    },
+    author: {
+      communityProfile: "Profil dans la communauté",
+      allAuthors: "Toute la rédaction",
+    },
+    builder: {
+      appDescription:
+        "Deck builder gratuit pour Origins TCG, le jeu de cartes numérique de Koin Games : il vérifie les règles du deck ({legendary} Légendaire plus {cards} cartes de base, chacune en {copies} exemplaires : {size} cartes), lit et écrit les codes de deck du jeu et vérifie {decks} decks ensemble pour le format Conquest de la Crimson Cup.",
+      features: [
+        "Vérification des règles du deck : {legendary} Légendaire plus {cards} cartes de base, chacune en {copies} exemplaires ({size} cartes)",
+        "Import et export des codes de deck du jeu Origins TCG",
+        "Mode Conquest : {decks} decks vérifiés ensemble, une Légendaire différente dans chacun et au moins {min} cartes uniques entre chaque paire",
+        "Import et export des listes de deck en texte",
+        "Courbe de mana du deck",
+        "Lien de partage et sauvegarde automatique dans le navigateur",
+        "Sauvegarde privée et publication avec un guide, avec un compte gratuit",
+      ],
+    },
+  },
 };
 
 /**

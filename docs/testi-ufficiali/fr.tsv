@@ -1,0 +1,5 @@
+# Testi ufficiali delle carte in FRANCESE: ANCORA DA LEGGERE NEL GIOCO (07/10/2026). Il gioco è tradotto in francese (pagina Steam),
+# ma i testi francesi del sito (src/lib/data/card-lore-fr.ts) sono una traduzione nostra con il glossario provvisorio di docs/francese.md.
+# Quando si apre il gioco in francese: una riga per carta, "Nome carta<TAB>testo", \n = a capo nella carta, statistiche nella notazione
+# del sito (⚔️ ❤️), le carte senza testo con il solo nome; poi `node scripts/official-texts.mjs fr` (con --apply scrive card-lore-fr.ts).
+# Finché il file ha solo commenti, lo script elenca tutte le carte come mancanti: è il promemoria.

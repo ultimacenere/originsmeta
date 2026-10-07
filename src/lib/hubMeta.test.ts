@@ -18,12 +18,15 @@ import { en } from "./dictionaries/en.ts";
 import { it } from "./dictionaries/it.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { es } from "./dictionaries/es.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { fr } from "./dictionaries/fr.ts";
 
 type Dict = typeof en;
 const dicts: [string, Dict][] = [
   ["en", en],
   ["it", it],
   ["es", es],
+  ["fr", fr],
 ];
 
 /** Stesse costanti di src/lib/page.ts (TITLE_MAX, DESCRIPTION_MAX). */
@@ -146,7 +149,7 @@ for (const [locale, d] of dicts) {
     });
 
     test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
-      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games/);
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games/);
     });
 
     test("le frasi costruite con i dati hanno i loro segnaposto", () => {

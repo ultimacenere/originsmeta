@@ -1,9 +1,10 @@
 import { en } from "./dictionaries/en";
 import { it } from "./dictionaries/it";
 import { es } from "./dictionaries/es";
+import { fr } from "./dictionaries/fr";
 
-/** Lingue del sito: inglese (riferimento dei dizionari), italiano e, dal 25/09/2026, spagnolo. */
-export const locales = ["en", "it", "es"] as const;
+/** Lingue del sito: inglese (riferimento dei dizionari), italiano, dal 25/09/2026 spagnolo e dal 07/10/2026 francese. */
+export const locales = ["en", "it", "es", "fr"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
@@ -11,12 +12,14 @@ export const localeNames: Record<Locale, string> = {
   en: "English",
   it: "Italiano",
   es: "Español",
+  fr: "Français",
 };
 
 export const ogLocale: Record<Locale, string> = {
   en: "en_US",
   it: "it_IT",
   es: "es_ES",
+  fr: "fr_FR",
 };
 
 export function isLocale(value: string): value is Locale {
@@ -25,7 +28,7 @@ export function isLocale(value: string): value is Locale {
 
 export type Dictionary = typeof en;
 
-const dictionaries: Record<Locale, Dictionary> = { en, it, es };
+const dictionaries: Record<Locale, Dictionary> = { en, it, es, fr };
 
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];

@@ -202,6 +202,69 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
     },
   },
+  // Francese dal 07/10/2026 (docs/francese.md): vous; "l'outil" (maschile) per il tool, "tracker de parties" nel title
+  // come lo spagnolo; frasi senza genere ("Votre réponse est comptée"); regola del tracker: niente parole su bot o persone.
+  fr: {
+    meta: {
+      title: "OriginsMeta Analytics : tracker de parties d'Origins TCG",
+      description: "OriginsMeta Analytics enregistre seul vos parties d'Origins TCG : decks, résultats, overlay OBS. En pause depuis le patch 0.7 : dites-nous si vous le voulez.",
+    },
+    kicker: "Notre outil",
+    h1: "OriginsMeta Analytics",
+    lead: "Une application Windows qui enregistre seule vos parties d'Origins TCG pendant que vous jouez : votre deck, le résultat, les cartes jouées manche par manche, la Légendaire que vous affrontiez. Elle est prête et elle fonctionne, mais avec la mise à jour 0.7 de la démo, le jeu a cessé d'enregistrer sur votre PC les données de partie que l'outil lisait : il est donc en pause pour l'instant.",
+    paused: "En pause depuis le patch 0.7",
+    interest: {
+      question: "L'outil vous intéresse ?",
+      button: "Oui, je le veux",
+      sending: "Un instant…",
+      done: "Merci ! Votre réponse est comptée.",
+      already: "Votre réponse est déjà comptée : merci !",
+      countOne: "Pour l'instant, 1 joueur le veut.",
+      countMany: "Pour l'instant, {n} joueurs le veulent.",
+      error: "Votre réponse n'a pas pu être enregistrée. Réessayez.",
+      rateLimited: "Beaucoup de réponses en même temps : réessayez dans une minute.",
+      unavailable: "Le comptage n'est pas encore actif : réessayez plus tard.",
+      note: "Nous comptons une fois par navigateur et, avec une session ouverte, une fois par compte. Ni e-mail ni autre donnée.",
+      privacyLink: "Détails dans la politique de confidentialité",
+    },
+    what: {
+      title: "Ce qu'il fait",
+      items: [
+        "Il enregistre chaque partie tout seul, sans toucher au jeu : il lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC.",
+        "Il affiche le deck sélectionné dans le jeu avec toutes ses cartes, les parties du jour et votre win rate, deck par deck.",
+        "Pour chaque partie : votre deck en cartes, le code du jeu à copier et, quand le jeu l'enregistrait, la partie manche par manche.",
+        "Un overlay au-dessus du jeu et une source pour OBS, pour les streamers : deck, session et dernière partie.",
+        "Associé à votre compte OriginsMeta, il envoie vos parties sur le site : vos statistiques et, pour tout le monde, les win rates anonymes des Légendaires, des decks et des cartes.",
+      ],
+    },
+    shots: {
+      overview: {
+        alt: "La fenêtre d'OriginsMeta Analytics : le deck sélectionné dans le jeu avec sa Légendaire et ses 12 cartes, les parties enregistrées et le win rate",
+        caption: "Le deck sélectionné dans le jeu, avec ses cartes, et vos chiffres.",
+      },
+      matches: {
+        alt: "Les parties enregistrées : vos decks avec leur win rate, les Légendaires adverses et chaque partie avec votre deck en cartes",
+        caption: "Vos decks, les Légendaires affrontées et chaque partie avec votre deck en cartes.",
+      },
+      overlay: {
+        alt: "L'overlay d'OriginsMeta Analytics : la Légendaire du deck, la session, le bilan du deck et la dernière partie",
+        caption: "L'overlay, au-dessus du jeu ou comme source OBS.",
+      },
+    },
+    why: {
+      title: "Pourquoi il est en pause",
+      paragraphs: [
+        "L'outil ne lit pas les serveurs du jeu et ne touche jamais au jeu : il lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC. Jusqu'au patch 0.6, à la fin de chaque partie, le jeu enregistrait un replay avec les deux decks, les cartes jouées et la Légendaire adverse.",
+        "Avec la mise à jour 0.7 de la démo (29 septembre 2026), ce replay a disparu, et le PC ne garde que peu de données sur certaines parties : trop peu pour des statistiques fiables. C'est pourquoi les pages de win rate sont désactivées.",
+        "L'outil reste prêt : si les données de partie redeviennent disponibles, il repart aussitôt.",
+      ],
+    },
+    koin: {
+      title: "Nous le montrerons à Koin Games",
+      text: "Nous voulons le présenter à l'équipe de Koin Games et demander si les données de partie peuvent redevenir disponibles pour des outils comme celui-ci. Plus les joueurs le demandent, plus la demande compte : si l'outil vous intéresse, appuyez sur le bouton ci-dessous.",
+      unofficial: "OriginsMeta est un site de fans non officiel, non affilié à Koin Games.",
+    },
+  },
 };
 
 /** Il numero di interessati in una frase (singolare per 1). */
@@ -217,4 +280,5 @@ export const analyticsInterestPrivacy: Record<Locale, string> = {
   en: "Interest in OriginsMeta Analytics (/analytics): when you press “Yes, I want it”, the site saves a random number that your browser keeps so you aren't counted twice, the page language, which of the two buttons you pressed, the date and, if you're signed in, your account (so you're counted only once from other devices too). No email and no IP address. We use it only to know how many people want the tool and to show the total to Koin Games. It is stored on Supabase (Ireland, EU); to have it deleted, write to staff@originsmeta.com; if you delete your account, the row linked to it is deleted too.",
   it: "Interesse per OriginsMeta Analytics (/analytics): quando premi «Sì, mi interessa», il sito salva un numero a caso che il tuo browser tiene per non contarti due volte, la lingua della pagina, quale dei due tasti hai premuto, la data e, se hai fatto l'accesso, il tuo account (per contarti una volta sola anche da altri dispositivi). Niente email né indirizzo IP. Lo usiamo solo per sapere quante persone vogliono il tool e per mostrarne il totale a Koin Games. Si salva su Supabase (Irlanda, UE); per farlo cancellare scrivi a staff@originsmeta.com; se cancelli l'account, la riga legata all'account si cancella con lui.",
   es: "Interés en OriginsMeta Analytics (/analytics): cuando pulsas «Sí, la quiero», el sitio guarda un número al azar que tu navegador conserva para no contarte dos veces, el idioma de la página, cuál de los dos botones pulsaste, la fecha y, si iniciaste sesión, tu cuenta (para contarte una sola vez también desde otros dispositivos). Ni email ni dirección IP. Lo usamos solo para saber cuántas personas quieren la herramienta y para mostrar el total a Koin Games. Se guarda en Supabase (Irlanda, UE); para que lo borremos, escribe a staff@originsmeta.com; si borras tu cuenta, la fila vinculada a ella se borra también.",
+  fr: "Intérêt pour OriginsMeta Analytics (/analytics) : quand vous appuyez sur « Oui, je le veux », le site enregistre un nombre aléatoire que votre navigateur conserve pour ne pas vous compter deux fois, la langue de la page, lequel des deux boutons vous avez pressé, la date et, si votre session est ouverte, votre compte (pour ne vous compter qu'une fois, même depuis d'autres appareils). Ni e-mail ni adresse IP. Nous l'utilisons uniquement pour savoir combien de personnes veulent l'outil et pour en montrer le total à Koin Games. Il est stocké sur Supabase (Irlande, UE) ; pour le faire supprimer, écrivez à staff@originsmeta.com ; si vous supprimez votre compte, la ligne liée au compte est supprimée aussi.",
 };

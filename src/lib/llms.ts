@@ -192,7 +192,7 @@ export function llmsFullText(data: LlmsFullData): string {
     `- Short index: ${siteUrl}/llms.txt`,
     `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the Demo 2.0 collection and ${created.length} created cards.`,
     `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the Demo 2.0 collection were checked one by one in the game on ${longDate(cardsVerified.date)}. Created cards are not in the game's collection, so they have not been checked in the game.`,
-    "- Every guide and article is also on the site in Italian (/it/) and Spanish (/es/), with the same slug.",
+    "- Every guide and article is also on the site in Italian (/it/), Spanish (/es/) and French (/fr/), with the same slug.",
     "- For rules, dates and announcements the official sources win: the Steam pages of Origins TCG, Koin Games' posts and the official Discord.",
     "- Card art and card text © Koin Games.",
     "",
@@ -230,7 +230,7 @@ export function llmsFull(): string {
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.`,
+    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…) and French (/fr/cards/…) with the same slug, the official text in Italian and Spanish, our translation in French, and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");
@@ -250,7 +250,7 @@ export function guidesSection(guides: Guide[] = getGuides("en")): string {
   };
   const ordered = guides.map((g, i) => ({ g, i })).sort((a, b) => rank(a.g) - rank(b.g) || a.i - b.i);
   return [
-    "Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…) and Spanish (/es/guides/…) with the same slug.",
+    "Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…) and French (/fr/guides/…) with the same slug.",
     "",
     ...ordered.map(({ g }) => `- [${g.title}](${siteUrl}/en/guides/${g.slug}): ${g.excerpt}`),
   ].join("\n");

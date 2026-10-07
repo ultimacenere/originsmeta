@@ -1,8 +1,14 @@
 import type { Locale } from "../i18n";
 import type { GuideSlug } from "../content/guides";
+import { frText, type NewsCopy } from "./news-fr";
 
-type L10n = Record<Locale, string> & { fr?: string };
-const n = (en: string, it: string, es: string, fr?: string): L10n => (fr ? { en, it, es, fr } : { en, it, es });
+/** Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e si unisce in fondo (`withFrench`). */
+type Base = Exclude<Locale, "fr">;
+type BaseL10n = Record<Base, string>;
+type L10n = Record<Locale, string>;
+type Highlight = { label: string; text?: string; anchor: string };
+type Qa = { q: string; a: string };
+const n = (en: string, it: string, es: string): BaseL10n => ({ en, it, es });
 
 /**
  * Una news è un articolo con una pagina propria, `/news/<slug>`, firmata come le guide (regola del
@@ -37,9 +43,9 @@ export type NewsItem = {
    * alla sezione del testo che ne parla. `anchor` è l'ancora di un titolo del `body`, scritta nel Markdown
    * come `## Titolo {#ancora}` (vedi Markdown.tsx); `text` è la sintesi dopo i due punti, facoltativa.
    */
-  highlights?: Record<Locale, { label: string; text?: string; anchor: string }[]>;
+  highlights?: Record<Locale, Highlight[]>;
   /** domande e risposte in fondo all'articolo, anche come dati strutturati FAQPage */
-  faq?: Record<Locale, { q: string; a: string }[]>;
+  faq?: Record<Locale, Qa[]>;
   /** slug dell'autore che firma (src/lib/data/authors.ts); se manca firma chi risponde dei contenuti */
   author?: string;
   /**
@@ -68,7 +74,214 @@ export type NewsItem = {
   guides?: GuideSlug[];
 };
 
-export const news: NewsItem[] = [
+/** Una news come è scritta qui sotto: inglese, italiano e spagnolo; il francese arriva da news-fr.ts. */
+type RawNews = Omit<NewsItem, "title" | "metaTitle" | "summary" | "description" | "body" | "highlights" | "faq"> & {
+  title: BaseL10n;
+  metaTitle: BaseL10n;
+  summary: BaseL10n;
+  description: BaseL10n;
+  body?: BaseL10n;
+  highlights?: Record<Base, Highlight[]>;
+  faq?: Record<Base, Qa[]>;
+};
+
+/**
+ * Unisce a una news i suoi testi francesi (news-fr.ts). Lancia alla build se il francese manca o se ha un campo che
+ * l'articolo non ha nelle altre lingue (o viceversa): una news nuova si scrive sempre nelle quattro lingue.
+ */
+function withFrench(item: RawNews): NewsItem {
+  const fr: NewsCopy | undefined = frText[item.slug];
+  if (!fr) throw new Error(`news "${item.slug}": manca il francese in src/lib/data/news-fr.ts`);
+  for (const field of ["body", "highlights", "faq"] as const) {
+    if (Boolean(item[field]) !== Boolean(fr[field])) throw new Error(`news "${item.slug}": il campo ${field} c'è solo in ${item[field] ? "news.ts" : "news-fr.ts"}`);
+  }
+  const { title, metaTitle, summary, description, body, highlights, faq, ...rest } = item;
+  return {
+    ...rest,
+    title: { ...title, fr: fr.title },
+    metaTitle: { ...metaTitle, fr: fr.metaTitle },
+    summary: { ...summary, fr: fr.summary },
+    description: { ...description, fr: fr.description },
+    ...(body && fr.body ? { body: { ...body, fr: fr.body } } : {}),
+    ...(highlights && fr.highlights ? { highlights: { ...highlights, fr: fr.highlights } } : {}),
+    ...(faq && fr.faq ? { faq: { ...faq, fr: fr.faq } } : {}),
+  };
+}
+
+const raw: RawNews[] = [
+  {
+    // Sesta news "Upgrade Meta" (07/10/2026): il francese, quarta lingua del sito. Solo quello che c'è davvero: le pagine
+    // in /fr, i testi delle carte in francese dichiarati come traduzione nostra con il glossario provvisorio
+    // (docs/francese.md), le traduzioni automatiche della community, il perché (il gioco è tradotto in francese) e
+    // l'invito a segnalare gli errori. Copertina: key art ufficiale di Goldi, mai usata da una news (la usa la guida
+    // Conquest, che non è fra le guide correlate di questo articolo).
+    slug: "upgrade-meta-1007",
+    image: "/media/ss-board-sea.webp",
+    guides: ["play-the-demo", "origins-tcg-explained"],
+    date: "2026-10-07",
+    title: n(
+      "Upgrade Meta: OriginsMeta speaks French, the site's fourth language, with every card, guide and news",
+      "Upgrade Meta: OriginsMeta parla francese, quarta lingua del sito, con tutte le carte, le guide e le news",
+      "Upgrade Meta: OriginsMeta habla francés, cuarto idioma del sitio, con todas las cartas, guías y noticias",
+    ),
+    metaTitle: n("Upgrade Meta: OriginsMeta for Origins TCG, now in French", "Upgrade Meta: OriginsMeta per Origins TCG ora in francese", "Upgrade Meta: OriginsMeta para Origins TCG, ya en francés"),
+    description: n(
+      "OriginsMeta is now in French: interface, news, guides, 230 cards, 44 locations, deck builder and tier lists. French card texts are our translation, for now.",
+      "OriginsMeta è anche in francese: interfaccia, news, guide, 230 carte, 44 luoghi, deck builder e tier list. I testi delle carte, per ora, li traduciamo noi.",
+      "OriginsMeta está en francés: interfaz, noticias, guías, 230 cartas, 44 ubicaciones y deck builder. El texto de las cartas, por ahora, es traducción nuestra.",
+    ),
+    summary: n(
+      "As of 7 October 2026, OriginsMeta is also in French: interface, news, the 20 guides, the 230 cards, the 44 locations, FAQ, events, MetaShifting, deck builder, tier lists and community pages, at originsmeta.com/fr with the same addresses as the other languages. One thing to know: the French card texts are our translation with a provisional glossary, until we read the cards in the game in French. Deck guides, community guides and comics are translated into French automatically, and if you read French and spot a mistake, write to us.",
+      "Dal 7 ottobre 2026 OriginsMeta è anche in francese: interfaccia, news, le 20 guide, le 230 carte, i 44 luoghi, FAQ, eventi, MetaShifting, deck builder, tier list e pagine della community, su originsmeta.com/fr con gli stessi indirizzi delle altre lingue. Una cosa da sapere: i testi francesi delle carte sono una nostra traduzione con un glossario provvisorio, finché non leggeremo le carte nel gioco in francese. Guide dei mazzi, guide della community e fumetti si traducono in francese in automatico, e se leggi il francese e trovi un errore, scrivici.",
+      "Desde el 7 de octubre de 2026 OriginsMeta también está en francés: interfaz, noticias, las 20 guías, las 230 cartas, las 44 ubicaciones, FAQ, eventos, MetaShifting, deck builder, tier lists y páginas de la comunidad, en originsmeta.com/fr con las mismas direcciones que los demás idiomas. Una cosa que debes saber: los textos de las cartas en francés son traducción nuestra con un glosario provisional, hasta que leamos las cartas en el juego en francés. Las guías de los mazos, las guías de la comunidad y los cómics se traducen al francés automáticamente, y si lees francés y encuentras un error, escríbenos.",
+    ),
+    highlights: {
+      en: [
+        { label: "French is here", text: "the whole site at /fr: interface, news, guides, cards, locations, FAQ, events, MetaShifting, deck builder, tier lists and community", anchor: "french" },
+        { label: "Card texts, honestly", text: "in French they are our translation with a provisional glossary; the card pages say so, and we'll align them to the game's text", anchor: "card-texts" },
+        { label: "Community in French", text: "deck guides, community guides and comics translated automatically, tournaments in French, Discord with the French link", anchor: "community" },
+        { label: "Why French", text: "the game is translated into French, and after Spanish it's the site's fourth language", anchor: "why-french" },
+        { label: "Help us", text: "if you read French and spot a mistake, write to us: the Feedback button or our Discord", anchor: "help" },
+      ],
+      it: [
+        { label: "Il francese è arrivato", text: "tutto il sito su /fr: interfaccia, news, guide, carte, luoghi, FAQ, eventi, MetaShifting, deck builder, tier list e community", anchor: "francese" },
+        { label: "I testi delle carte, onestamente", text: "in francese sono una nostra traduzione con un glossario provvisorio; le schede lo dicono, e li allineeremo al testo del gioco", anchor: "testi-delle-carte" },
+        { label: "La community in francese", text: "guide dei mazzi, guide della community e fumetti tradotti in automatico, tornei in francese, Discord con il link francese", anchor: "community" },
+        { label: "Perché il francese", text: "il gioco è tradotto in francese, e dopo lo spagnolo è la quarta lingua del sito", anchor: "perche-il-francese" },
+        { label: "Aiutaci", text: "se leggi il francese e trovi un errore, scrivici: il tasto Dicci la tua o il nostro Discord", anchor: "aiutaci" },
+      ],
+      es: [
+        { label: "Llega el francés", text: "todo el sitio en /fr: interfaz, noticias, guías, cartas, ubicaciones, FAQ, eventos, MetaShifting, deck builder, tier lists y comunidad", anchor: "frances" },
+        { label: "Los textos de las cartas, con honestidad", text: "en francés son traducción nuestra con un glosario provisional; las fichas lo dicen, y los alinearemos con el texto del juego", anchor: "textos-de-las-cartas" },
+        { label: "La comunidad en francés", text: "guías de mazos, guías de la comunidad y cómics traducidos automáticamente, torneos en francés, Discord con el enlace francés", anchor: "comunidad" },
+        { label: "Por qué el francés", text: "el juego está traducido al francés y, después del español, es el cuarto idioma del sitio", anchor: "por-que-el-frances" },
+        { label: "Ayúdanos", text: "si lees francés y encuentras un error, escríbenos: el botón Tu opinión o nuestro Discord", anchor: "ayudanos" },
+      ],
+    },
+    body: n(
+      `## French is here {#french}
+
+As of 7 October 2026, OriginsMeta is also in French, the fourth language of the site after English, Italian and Spanish. Switch language with EN · IT · ES · FR at the top of every page (on a phone, inside Menu). Every page keeps the same address as in the other languages, with the /fr/ prefix: originsmeta.com/fr/cards, /fr/guides, /fr/deck-builder. If your browser is in French, originsmeta.com takes you straight to the French version, and hreflang and sitemap list the four versions of each page.
+
+What is in French: the interface, the 32 news published so far, the 20 [guides](/en/guides), the pages of the 230 [cards](/en/cards) (card text and origin note), the 44 [locations](/en/locations), the [FAQ](/en/faq), the [events](/en/tournaments), the balance history ([MetaShifting](/en/metashifting)), the [deck builder](/en/deck-builder), the [tier lists](/en/tier-list) and the community pages. We write standard French, readable in every French-speaking country, and card names stay in English, as in the game.
+
+French had already appeared in the first version of the site, in September 2026, and was withdrawn on 15 September: it comes back rebuilt from scratch, with the same SEO rules as the other languages (one H1 per page, its own title and description, internal links, structured data).
+
+## Card texts in French: our translation, for now {#card-texts}
+
+In Italian and Spanish, each card page shows the game's official text, read in the game card by card on 25 September. In French we haven't done that yet: the texts of the 230 cards are an OriginsMeta translation, written with a provisional glossary of the keywords (On Reveal becomes "À la révélation", Shield "Bouclier", Trample "Piétinement", Deathtouch "Contact mortel", Defender "Défenseur", First Strike "Initiative"). Every French card page says so, with the line "Traduction d'OriginsMeta" under the text, and those texts are not presented as the game's. The same goes for the 44 locations, which we haven't checked in the game in any language yet.
+
+As soon as we read the cards in the game in French, we'll align every text and every keyword to the official wording, on the card pages, in the guides and in the news, and we'll say so here.
+
+## The community in French {#community}
+
+What the community publishes is translated into French too, automatically, after publication, as already happens between English, Italian and Spanish: the guides of published decks (single and tournament decks), community guides and the creators' comics. The translations of what is already online arrive over the next few days. Tournaments can be created in French too, and [our Discord](https://discord.gg/RAG7nnrNGP) announces new content with the link to the French page as well.
+
+## Why French {#why-french}
+
+Origins TCG is translated into French: the game's Steam page lists French among its 13 languages, interface and audio included. After [Spanish, which arrived on 25 September](/en/news/upgrade-meta-0925), French is the fourth language of OriginsMeta, for the same reason: being read in the languages the game speaks.
+
+## Help us get it right {#help}
+
+If you read French and find a mistake, a clumsy sentence or a keyword that doesn't match the game, tell us: with the Feedback button, on every page, or on our Discord. We read everything and fix it in the next update.`,
+      `## Il francese è arrivato {#francese}
+
+Dal 7 ottobre 2026 OriginsMeta è anche in francese, quarta lingua del sito dopo inglese, italiano e spagnolo. La lingua si cambia con EN · IT · ES · FR in alto su ogni pagina (sul telefono dentro Menu). Ogni pagina tiene lo stesso indirizzo delle altre lingue, con il prefisso /fr/: originsmeta.com/fr/cards, /fr/guides, /fr/deck-builder. Se il browser è in francese, originsmeta.com porta direttamente alla versione francese, e hreflang e sitemap elencano le quattro versioni di ogni pagina.
+
+Che cosa c'è in francese: l'interfaccia, le 32 news pubblicate finora, le 20 [guide](/it/guides), le schede delle 230 [carte](/it/cards) (testo della carta e riga sull'origine), i 44 [luoghi](/it/locations), le [FAQ](/it/faq), gli [eventi](/it/tournaments), lo storico dei bilanciamenti ([MetaShifting](/it/metashifting)), il [deck builder](/it/deck-builder), le [tier list](/it/tier-list) e le pagine della community. Scriviamo un francese standard, leggibile in tutti i paesi francofoni, e i nomi delle carte restano in inglese, come nel gioco.
+
+Il francese era già comparso nella prima versione del sito, a settembre 2026, ed era stato ritirato il 15 settembre: torna rifatto da zero, con le stesse regole SEO delle altre lingue (un solo H1 per pagina, title e description propri, link interni, dati strutturati).
+
+## I testi delle carte in francese: per ora una nostra traduzione {#testi-delle-carte}
+
+In italiano e in spagnolo ogni scheda carta mostra il testo ufficiale del gioco, letto nel gioco carta per carta il 25 settembre. In francese non l'abbiamo ancora fatto: i testi delle 230 carte sono una traduzione di OriginsMeta, scritta con un glossario provvisorio delle parole chiave (Alla rivelazione diventa "À la révélation", Scudo "Bouclier", Travolgere "Piétinement", Tocco letale "Contact mortel", Difensore "Défenseur", Primo colpo "Initiative"). Ogni scheda carta in francese lo dice, con la riga "Traduction d'OriginsMeta" sotto il testo, e quei testi non vengono presentati come quelli del gioco. Lo stesso vale per i 44 luoghi, che non abbiamo ancora confrontato nel gioco in nessuna lingua.
+
+Appena leggeremo le carte nel gioco in francese, allineeremo ogni testo e ogni parola chiave alla formulazione ufficiale, nelle schede, nelle guide e nelle news, e lo diremo qui.
+
+## La community in francese {#community}
+
+Anche quello che pubblica la community si traduce in francese, in automatico, dopo la pubblicazione, come già succede fra inglese, italiano e spagnolo: le guide dei mazzi pubblicati (mazzi singoli e mazzi torneo), le guide della community e i fumetti dei creator. Le traduzioni di quello che è già online arrivano nei prossimi giorni. I tornei si possono creare anche in francese, e il [nostro Discord](https://discord.gg/RAG7nnrNGP) annuncia le novità anche con il link alla pagina francese.
+
+## Perché il francese {#perche-il-francese}
+
+Origins TCG è tradotto in francese: la pagina Steam del gioco elenca il francese fra le sue 13 lingue, interfaccia e audio compresi. Dopo [lo spagnolo, arrivato il 25 settembre](/it/news/upgrade-meta-0925), il francese è la quarta lingua di OriginsMeta, per la stessa ragione: farsi leggere nelle lingue che parla il gioco.
+
+## Aiutaci a farlo bene {#aiutaci}
+
+Se leggi il francese e trovi un errore, una frase che suona male o una parola chiave che non corrisponde al gioco, diccelo: con il tasto Dicci la tua, su ogni pagina, o sul nostro Discord. Leggiamo tutto e correggiamo al primo aggiornamento utile.`,
+      `## Llega el francés {#frances}
+
+Desde el 7 de octubre de 2026 OriginsMeta también está en francés, el cuarto idioma del sitio después del inglés, el italiano y el español. Cambia de idioma con EN · IT · ES · FR en la parte superior de cada página (en el teléfono, dentro de Menú). Cada página conserva la misma dirección que en los demás idiomas, con el prefijo /fr/: originsmeta.com/fr/cards, /fr/guides, /fr/deck-builder. Si tu navegador está en francés, originsmeta.com te lleva directamente a la versión francesa, y hreflang y sitemap recogen las cuatro versiones de cada página.
+
+Qué hay en francés: la interfaz, las 32 noticias publicadas hasta hoy, las 20 [guías](/es/guides), las fichas de las 230 [cartas](/es/cards) (texto de la carta y nota sobre el origen), las 44 [ubicaciones](/es/locations), las [FAQ](/es/faq), los [eventos](/es/tournaments), el historial de cambios de equilibrio ([MetaShifting](/es/metashifting)), el [deck builder](/es/deck-builder), las [tier lists](/es/tier-list) y las páginas de la comunidad. Escribimos un francés estándar, legible en todos los países francófonos, y los nombres de las cartas siguen en inglés, como en el juego.
+
+El francés ya había aparecido en la primera versión del sitio, en septiembre de 2026, y se retiró el 15 de septiembre: vuelve rehecho desde cero, con las mismas reglas SEO que los demás idiomas (un solo H1 por página, title y description propios, enlaces internos, datos estructurados).
+
+## Los textos de las cartas en francés: por ahora, traducción nuestra {#textos-de-las-cartas}
+
+En italiano y en español, cada ficha de carta muestra el texto oficial del juego, leído en el juego carta por carta el 25 de septiembre. En francés todavía no lo hemos hecho: los textos de las 230 cartas son una traducción de OriginsMeta, escrita con un glosario provisional de las palabras clave (Al revelar pasa a ser "À la révélation", Escudo "Bouclier", Arrollar "Piétinement", Toque mortal "Contact mortel", Defensor "Défenseur", Primer golpe "Initiative"). Cada ficha de carta en francés lo dice, con la línea "Traduction d'OriginsMeta" bajo el texto, y esos textos no se presentan como los del juego. Lo mismo vale para las 44 ubicaciones, que aún no hemos comparado en el juego en ningún idioma.
+
+En cuanto leamos las cartas en el juego en francés, alinearemos cada texto y cada palabra clave con la redacción oficial, en las fichas, en las guías y en las noticias, y lo diremos aquí.
+
+## La comunidad en francés {#comunidad}
+
+Lo que publica la comunidad también se traduce al francés, automáticamente, después de la publicación, como ya ocurre entre el inglés, el italiano y el español: las guías de los mazos publicados (mazos individuales y mazos de torneo), las guías de la comunidad y los cómics de los creators. Las traducciones de lo que ya está en línea llegan en los próximos días. Los torneos también se pueden crear en francés, y [nuestro Discord](https://discord.gg/RAG7nnrNGP) anuncia las novedades también con el enlace a la página francesa.
+
+## Por qué el francés {#por-que-el-frances}
+
+Origins TCG está traducido al francés: la página de Steam del juego incluye el francés entre sus 13 idiomas, interfaz y audio incluidos. Después del [español, que llegó el 25 de septiembre](/es/news/upgrade-meta-0925), el francés es el cuarto idioma de OriginsMeta, por la misma razón: que nos lean en los idiomas que habla el juego.
+
+## Ayúdanos a hacerlo bien {#ayudanos}
+
+Si lees francés y encuentras un error, una frase que suena mal o una palabra clave que no coincide con el juego, dínoslo: con el botón Tu opinión, en cada página, o en nuestro Discord. Leemos todo y lo corregimos en la siguiente actualización.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Is OriginsMeta available in French?",
+          a: "Yes, since 7 October 2026: the whole site, with guides, news, cards, locations, tier lists and the deck builder. Switch language with EN · IT · ES · FR at the top of the page; community deck guides, guides and comics are translated automatically.",
+        },
+        {
+          q: "Are the French card texts official?",
+          a: "Not yet: they are OriginsMeta translations, written with a provisional glossary of the keywords, and every card page says so. The Italian and Spanish texts are the game's, read in the game on 25 September 2026. As soon as we read the cards in the game in French, we'll align the French texts to the official wording.",
+        },
+        {
+          q: "Are community decks and guides translated into French?",
+          a: "Yes, automatically after publication: the guides of published decks, community guides and the creators' comics. The translations of what is already online arrive over the next few days, and tournaments can be created in French too.",
+        },
+      ],
+      it: [
+        {
+          q: "OriginsMeta è disponibile in francese?",
+          a: "Sì, dal 7 ottobre 2026: tutto il sito, con guide, news, carte, luoghi, tier list e deck builder. La lingua si cambia con EN · IT · ES · FR in alto; le guide dei mazzi della community, le guide e i fumetti vengono tradotti in automatico.",
+        },
+        {
+          q: "I testi francesi delle carte sono ufficiali?",
+          a: "Non ancora: sono traduzioni di OriginsMeta, scritte con un glossario provvisorio delle parole chiave, e ogni scheda carta lo dice. I testi italiani e spagnoli sono quelli del gioco, letti nel gioco il 25 settembre 2026. Appena leggeremo le carte nel gioco in francese, allineeremo i testi francesi alla formulazione ufficiale.",
+        },
+        {
+          q: "I mazzi e le guide della community vengono tradotti in francese?",
+          a: "Sì, in automatico dopo la pubblicazione: le guide dei mazzi pubblicati, le guide della community e i fumetti dei creator. Le traduzioni di quello che è già online arrivano nei prossimi giorni, e i tornei si possono creare anche in francese.",
+        },
+      ],
+      es: [
+        {
+          q: "¿OriginsMeta está disponible en francés?",
+          a: "Sí, desde el 7 de octubre de 2026: todo el sitio, con guías, noticias, cartas, ubicaciones, tier lists y el deck builder. Cambia de idioma con EN · IT · ES · FR arriba en la página; las guías de los mazos de la comunidad, las guías y los cómics se traducen automáticamente.",
+        },
+        {
+          q: "¿Los textos de las cartas en francés son oficiales?",
+          a: "Todavía no: son traducciones de OriginsMeta, escritas con un glosario provisional de las palabras clave, y cada ficha de carta lo dice. Los textos en italiano y en español son los del juego, leídos en el juego el 25 de septiembre de 2026. En cuanto leamos las cartas en el juego en francés, alinearemos los textos franceses con la redacción oficial.",
+        },
+        {
+          q: "¿Los mazos y las guías de la comunidad se traducen al francés?",
+          a: "Sí, automáticamente después de la publicación: las guías de los mazos publicados, las guías de la comunidad y los cómics de los creators. Las traducciones de lo que ya está en línea llegan en los próximos días, y los torneos también se pueden crear en francés.",
+        },
+      ],
+    },
+    url: "/",
+    source: "site",
+  },
   {
     // Quinta news "Upgrade Meta" (richiesta di Pierluigi del 05/10/2026: "fai una news Upgrade Meta sui mazzi torneo"): i Mazzi
     // torneo, online dal 04/10/2026 (main 05c5ebd). Solo quello che c'è davvero: tre mazzi Conquest con una guida, regole
@@ -3444,7 +3657,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "3 Pigs Mid Range: a Three Not So Little Pigs midrange deck for ladder and competitive play",
       "3 Pigs Mid Range: un mazzo midrange dei Three Not So Little Pigs per la ladder e il gioco competitivo",
       "3 Pigs Mid Range: un mazo midrange de Three Not So Little Pigs para la ladder y el juego competitivo",
-      "3 Pigs Mid Range : un deck midrange Three Not So Little Pigs pour le ladder et le jeu compétitif",
     ),
     // Title e description dal 25/09/2026 (prima il titolo usciva tagliato con "…"): senza il nome dell'autore, regola del
     // 16/09. La news resta l'annuncio (mappa delle query, C34): il nome del mazzo con la Leggendaria o l'archetipo è il
@@ -3460,7 +3672,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "The second deck by Davdas, OriginsMeta staff, is a midrange list led by Three Not So Little Pigs, tagged for ladder and competitive play. The plan: take the board in the first rounds, win at least one location, then close with En Passant, Ellen Trechend's Trample and the Lightning Strikes that Impundulu generates. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
       "Il secondo mazzo di Davdas, staff di OriginsMeta, è una lista midrange guidata dai Three Not So Little Pigs, segnata per la ladder e il gioco competitivo. Il piano: prendere il tabellone nei primi round, vincere almeno un luogo e chiudere con En Passant, Ellen Trechend con Travolgere e i Lightning Strike generati da Impundulu. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan dell'autore, il codice del gioco e il tasto per aprirla nel deck builder, e due guide su come giocarla.",
       "El segundo mazo de Davdas, del staff de OriginsMeta, es una lista midrange liderada por Three Not So Little Pigs y etiquetada para la ladder y el juego competitivo. El plan: hacerse con el tablero en las primeras rondas, ganar al menos una ubicación y cerrar con En Passant, Ellen Trechend con Arrollar y los Lightning Strike que genera Impundulu. En la ficha del mazo tienes la lista completa con los gráficos de composición, las notas de mulligan del autor, el código del juego y el botón para abrirla en el deck builder, además de dos guías sobre cómo jugarla.",
-      "Le deuxième deck de Davdas, membre du staff d'OriginsMeta, est une liste midrange menée par Three Not So Little Pigs, prévue pour le ladder et le jeu compétitif. Le plan : prendre le plateau dans les premiers tours, gagner au moins un lieu, puis conclure avec En Passant, le Trample d'Ellen Trechend et les Lightning Strike générés par Impundulu. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code du jeu et le bouton pour l'ouvrir dans le deck builder, et deux guides pour le jouer.",
     ),
     url: "/decks/community/3-pigs-mid-range-6311",
     source: "staff",
@@ -3475,7 +3686,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Healing Healsing, the first community deck: a Van Helsing control list for the ladder",
       "Healing Healsing, il primo mazzo della community: una lista controllo di Van Helsing per la ladder",
       "Healing Healsing, el primer mazo de la comunidad: una lista de control de Van Helsing para la ladder",
-      "Healing Healsing, le premier deck de la communauté : une liste contrôle Van Helsing pour le ladder",
     ),
     // L'annuncio, come per 3 Pigs (C34): solo i fatti della news (primo mazzo pubblicato sul sito, Leggendaria, tipo
     // di mazzo quando ci sta), senza l'autore e senza il nome del mazzo in testa, che spetta al title della scheda.
@@ -3489,7 +3699,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "The first deck published on OriginsMeta is by Davdas, OriginsMeta staff: a control list led by Van Helsing for the ranked ladder. The plan: take early value with Spellbook and Ali Baba, heal through the damage while Phuong Hoang grows with every heal, then reach round 8 or 9 and reset the board with Forbidden Knowledge. The deck page has the full list with composition charts, the author's mulligan notes, the game code and the button to open it in the deck builder, and two guides on how to play it.",
       "Il primo mazzo pubblicato su OriginsMeta è di Davdas, staff del sito: una lista controllo guidata da Van Helsing per la ladder classificata. Il piano: prendere valore presto con Spellbook e Ali Baba, curare i danni mentre Phuong Hoang cresce a ogni cura, poi arrivare al round 8 o 9 e azzerare il tabellone con Forbidden Knowledge. Nella scheda trovi la lista completa con i grafici di composizione, le note di mulligan dell'autore, il codice del gioco e il tasto per aprirla nel deck builder, e due guide su come giocarla.",
       "El primer mazo publicado en OriginsMeta es de Davdas, del staff del sitio: una lista de control liderada por Van Helsing para la ladder clasificatoria. El plan: sacar valor pronto con Spellbook y Ali Baba, aguantar el daño a base de curaciones mientras Phuong Hoang crece con cada una, y luego llegar a la ronda 8 o 9 y vaciar el tablero con Forbidden Knowledge. En la ficha del mazo tienes la lista completa con los gráficos de composición, las notas de mulligan del autor, el código del juego y el botón para abrirla en el deck builder, además de dos guías sobre cómo jugarla.",
-      "Le premier deck publié sur OriginsMeta est signé Davdas, membre du staff : une liste contrôle menée par Van Helsing pour le ladder classé. Le plan : prendre de la valeur tôt avec Spellbook et Ali Baba, soigner les dégâts pendant que Phuong Hoang grandit à chaque soin, puis atteindre le tour 8 ou 9 et remettre le plateau à zéro avec Forbidden Knowledge. La page du deck contient la liste complète avec les graphiques de composition, les notes de mulligan de l'auteur, le code du jeu et le bouton pour l'ouvrir dans le deck builder, et deux guides pour le jouer.",
     ),
     url: "/decks/community/healing-healsing-9411",
     source: "staff",
@@ -3504,7 +3713,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Playtest feedback: Koin reads the Steam forum and may move deck unlocks to PvE",
       "Feedback del playtest: Koin legge il forum Steam e valuta di spostare gli sblocchi dei mazzi nel PvE",
       "Feedback del playtest: Koin lee el foro de Steam y podría llevar los desbloqueos de mazos al PvE",
-      "Retours du playtest : Koin lit le forum Steam et envisage de déplacer les déblocages de decks en PvE",
     ),
     metaTitle: n("Origins TCG playtest: Koin may move deck unlocks to PvE", "Playtest di Origins TCG: sblocco dei mazzi forse in PvE", "Playtest de Origins TCG: Koin estudia desbloqueos en PvE"),
     description: n(
@@ -3516,7 +3724,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "In the current playtest you unlock a deck by winning three ranked matches and then beating an AI boss; players call it punishing when they meet full collections with a starter deck. Developer Fenchurch replied that the team reads every Steam forum post and is considering making deck-unlock matches PvE-only. Also reported: cards that generate random cards (Humpty, Spellbook) can add extra Legendaries to a deck, requests to redesign Spellbook, and Asanbosam's On Reveal not repeating at the Cloning Lab location.",
       "Nel playtest attuale un mazzo si sblocca vincendo tre partite classificate e poi battendo un boss IA; i giocatori lo trovano punitivo quando incontrano collezioni complete con un mazzo iniziale. Lo sviluppatore Fenchurch ha risposto che il team legge ogni post del forum Steam e valuta di rendere le partite di sblocco solo PvE. Segnalati anche: le carte che generano carte casuali (Humpty, Spellbook) possono aggiungere Leggendarie extra al mazzo, richieste di ridisegnare Spellbook e l'abilità Alla rivelazione di Asanbosam che non si ripete nel luogo Cloning Lab.",
       "En el playtest actual desbloqueas un mazo ganando tres partidas clasificatorias y derrotando después a un jefe controlado por la IA; los jugadores lo consideran castigador cuando se cruzan con colecciones completas llevando un mazo inicial. El desarrollador Fenchurch respondió que el equipo lee todas las publicaciones del foro de Steam y está estudiando que las partidas de desbloqueo sean solo PvE. También se señalaron: las cartas que generan cartas aleatorias (Humpty, Spellbook), que pueden añadir Legendarias de más a un mazo; las peticiones de rediseñar Spellbook; y la habilidad Al revelar de Asanbosam, que no se repite en la ubicación Cloning Lab.",
-      "Dans le playtest actuel, un deck se débloque en gagnant trois parties classées puis en battant un boss IA ; les joueurs trouvent cela punitif face à des collections complètes. Le développeur Fenchurch a répondu que l'équipe lit chaque post du forum Steam et envisage des parties de déblocage uniquement PvE. Signalés aussi : les cartes qui génèrent des cartes aléatoires (Humpty, Spellbook) peuvent ajouter des Légendaires, des demandes de refonte de Spellbook et l'On Reveal d'Asanbosam qui ne se répète pas au lieu Cloning Lab.",
     ),
     url: "https://steamcommunity.com/app/4429430/discussions/0/617711086156647978/",
     source: "steam",
@@ -3529,13 +3736,11 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "Kickstarter AMA held: pre-registration open, Alpha Edition boxes preorder-only",
       "AMA sul Kickstarter: pre-registrazione aperta, box Alpha Edition solo in preordine",
       "AMA sobre el Kickstarter: prerregistro abierto y cajas de la Alpha Edition solo en preventa",
-      "AMA Kickstarter : préinscription ouverte, boîtes Alpha Edition en précommande uniquement",
     ),
     summary: n(
       "Koin Games answered questions about the upcoming Kickstarter on the official Discord on 10 September. The campaign date is still unannounced; the official pre-registration page offers 15% off at launch for a 1 dollar deposit, fully refundable before launch. The Origins Myths & Legends Alpha Edition comes as collector packs of 5 cards (at least one Rare or better guaranteed), boxes of 24 packs and cases of 6 boxes; boxes and cases are preorder-only and the print run will not be repeated. Cards trade on the Steam Community Market; mobile pack opening is planned for 2027.",
       "Il 10 settembre Koin Games ha risposto sul Discord ufficiale alle domande sul Kickstarter in arrivo. La data della campagna non è ancora annunciata; la pagina ufficiale di pre-registrazione offre il 15% di sconto al lancio con un deposito di 1 dollaro, rimborsabile prima del lancio. La Origins Myths & Legends Alpha Edition si compone di pacchetti collector da 5 carte (almeno una Rara o superiore garantita), box da 24 pacchetti e case da 6 box; box e case sono solo in preordine e la tiratura non verrà ripetuta. Le carte si scambiano sul Mercato della Comunità di Steam; l'apertura dei pacchetti su mobile è prevista per il 2027.",
       "El 10 de septiembre Koin Games respondió en el Discord oficial a las preguntas sobre el próximo Kickstarter. La fecha de la campaña aún no se ha anunciado; la página oficial de prerregistro ofrece un 15 % de descuento en el lanzamiento a cambio de un depósito de 1 dólar, reembolsable por completo antes del lanzamiento. La Origins Myths & Legends Alpha Edition se compone de sobres collector de 5 cartas (con al menos una Rara o superior garantizada), cajas de 24 sobres y cases de 6 cajas; las cajas y los cases solo se venden en preventa y la tirada no se repetirá. Las cartas se intercambian en el Mercado de la Comunidad de Steam; la apertura de sobres en dispositivos móviles está prevista para 2027.",
-      "Le 10 septembre, Koin Games a répondu sur le Discord officiel aux questions sur le Kickstarter à venir. La date de la campagne n'est pas annoncée ; la page officielle de préinscription offre 15 % de réduction au lancement pour un dépôt de 1 dollar, remboursable avant le lancement. L'Alpha Edition Origins Myths & Legends se compose de packs collector de 5 cartes (au moins une Rare ou mieux garantie), de boîtes de 24 packs et de caisses de 6 boîtes ; boîtes et caisses sont en précommande uniquement, sans réimpression. Les cartes s'échangent sur le Marché de la communauté Steam ; l'ouverture de packs sur mobile est prévue pour 2027.",
     ),
     metaTitle: n("Kickstarter AMA: Alpha boxes are preorder-only", "AMA Kickstarter: box Alpha solo in preordine", "AMA Kickstarter: cajas Alpha solo en preventa"),
     description: n(
@@ -3552,7 +3757,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     image: "/media/news-trailer.webp",
     guides: ["origins-tcg-explained"],
     date: "2026-09-03",
-    title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Tráiler oficial de gameplay publicado en YouTube", "Bande-annonce de gameplay officielle sur YouTube"),
+    title: n("Official gameplay trailer released on YouTube", "Trailer di gameplay ufficiale su YouTube", "Tráiler oficial de gameplay publicado en YouTube"),
     metaTitle: n("Origins TCG official gameplay trailer on YouTube", "Trailer di gameplay ufficiale di Origins TCG su YouTube", "Tráiler oficial de gameplay de Origins TCG en YouTube"),
     description: n(
       "The first official Origins TCG gameplay trailer is on YouTube: the quickest way to see the pace of a match and the interface before Demo 2.0.",
@@ -3563,7 +3768,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "The first trailer dedicated to gameplay is up on the official Origins TCG YouTube channel: the quickest way to see the pace of a match and the interface before Demo 2.0 arrives at Steam Next Fest.",
       "Il primo trailer dedicato al gameplay è sul canale YouTube ufficiale Origins TCG: il modo più rapido per vedere il ritmo di una partita e l'interfaccia prima che la Demo 2.0 arrivi allo Steam Next Fest.",
       "El primer tráiler dedicado al gameplay ya está en el canal oficial de YouTube de Origins TCG: la forma más rápida de ver el ritmo de una partida y la interfaz antes de que la Demo 2.0 llegue al Steam Next Fest.",
-      "La première bande-annonce consacrée au gameplay est sur la chaîne YouTube officielle Origins TCG : le moyen le plus rapide de voir le rythme d'une partie et l'interface avant la Demo 2.0 au Steam Next Fest.",
     ),
     url: "https://www.youtube.com/watch?v=7EFg0DN9MnI",
     source: "press",
@@ -3580,7 +3784,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     image: "/media/ss-board-hand-full.webp",
     guides: ["steam-next-fest-2026"],
     date: "2026-08-28",
-    title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt gana el Big Bob's Playtest Battle, el primer torneo Conquest", "itzBolt remporte le Big Bob's Playtest Battle, premier tournoi Conquest"),
+    title: n("itzBolt wins Big Bob's Playtest Battle, the first Conquest tournament", "itzBolt vince il Big Bob's Playtest Battle, primo torneo Conquest", "itzBolt gana el Big Bob's Playtest Battle, el primer torneo Conquest"),
     metaTitle: n("Origins TCG: itzBolt wins the first Conquest tournament", "Origins TCG: itzBolt vince il primo torneo Conquest", "Origins TCG: itzBolt gana el primer torneo Conquest"),
     description: n(
       "itzBolt won Big Bob's Playtest Battle, the first Origins TCG tournament in Conquest format, played on the 0.6.3 playtest with best-of-three matches.",
@@ -3591,7 +3795,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "The community tournament played on the 0.6.3 playtest build with full deckbuilding and the Conquest format (several decks with different Legendaries, best-of-3) was won by itzBolt, according to the results shared by the community (we have not found an official post with the result). It was the first public test of the format that Koin has since chosen for the Crimson Cup.",
       "Il torneo community giocato sulla build 0.6.3 del playtest con deckbuilding completo e formato Conquest (più mazzi con Leggendarie diverse, al meglio delle tre) è stato vinto da itzBolt, secondo i risultati condivisi dalla community (non abbiamo trovato un post ufficiale con il risultato). È stato il primo test pubblico del formato che Koin ha poi scelto per la Crimson Cup.",
       "El torneo de la comunidad jugado en la build 0.6.3 del playtest, con construcción de mazos completa y formato Conquest (varios mazos con Legendarias distintas, al mejor de tres), lo ganó itzBolt, según los resultados que compartió la comunidad (no hemos encontrado una publicación oficial con el resultado). Fue la primera prueba pública del formato que Koin ha elegido después para la Crimson Cup.",
-      "Le tournoi communautaire joué sur la build 0.6.3 du playtest, avec deckbuilding complet et format Conquest (plusieurs decks aux Légendaires différentes, au meilleur des trois), a été remporté par itzBolt, selon les résultats partagés par la communauté (nous n'avons pas trouvé de publication officielle du résultat). Premier test public du format retenu ensuite par Koin pour la Crimson Cup.",
     ),
     source: "press",
   },
@@ -3606,7 +3809,7 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
     guides: ["steam-next-fest-2026"],
     date: "2026-09-09",
     updated: "2026-09-25",
-    title: n("Crimson Cup announced: the biggest tournament ever for Steam Next Fest", "Annunciata la Crimson Cup: il torneo più grande di sempre per lo Steam Next Fest", "Anunciada la Crimson Cup: el torneo más grande de la historia para el Steam Next Fest", "La Crimson Cup annoncée : le plus grand tournoi jamais organisé pour le Steam Next Fest"),
+    title: n("Crimson Cup announced: the biggest tournament ever for Steam Next Fest", "Annunciata la Crimson Cup: il torneo più grande di sempre per lo Steam Next Fest", "Anunciada la Crimson Cup: el torneo más grande de la historia para el Steam Next Fest"),
     metaTitle: n("Crimson Cup announced for Steam Next Fest", "Annunciata la Crimson Cup per il Next Fest", "Anunciada la Crimson Cup para el Next Fest"),
     description: n(
       "On 9 September Koin Games announced the Origins TCG Crimson Cup: 20–25 October, regional qualifiers, prizes worth $10,000. Updated with the final rules.",
@@ -3617,7 +3820,6 @@ Esos mismos días circulaba una frase en redes sociales: una "Demo Season 2" par
       "A multi-day event from 20 to 25 October: qualifiers for each of the three major regions on the 20th, 21st and 22nd, then playoffs and finals. Prizes worth $10,000: an exclusive 1/1 promo card, other promo cards, digital packs, Alpha boxes and cases, and cash prizes. Sign-ups on Discord; creators can request wildcard invites straight into the playoffs.",
       "Un evento su più giorni dal 20 al 25 ottobre: qualificazioni per le tre macro-regioni il 20, 21 e 22, poi playoff e finali. Premi per un valore complessivo di 10.000 $: una carta promo 1/1 esclusiva, altre carte promo, pacchetti digitali, box e case Alpha, premi in denaro. Iscrizioni su Discord; i creator possono chiedere inviti wildcard diretti ai playoff.",
       "Un evento de varios días, del 20 al 25 de octubre: clasificatorios para cada una de las tres grandes regiones los días 20, 21 y 22, y después playoffs y finales. Premios por valor de 10.000 dólares: una carta promo 1/1 exclusiva, otras cartas promo, sobres digitales, cajas y cases Alpha y premios en efectivo. Inscripciones en Discord; los creadores de contenido pueden pedir invitaciones wildcard directas a los playoffs.",
-      "Un événement sur plusieurs jours du 20 au 25 octobre : qualifications pour les trois grandes régions les 20, 21 et 22, puis playoffs et finales. Des lots d'une valeur totale de 10 000 $ : une carte promo 1/1 exclusive, d'autres cartes promo, des packs numériques, des boîtes et cases Alpha, et des prix en argent. Inscriptions sur Discord ; les créateurs peuvent demander une invitation wildcard directe pour les playoffs.",
     ),
     highlights: {
       en: [
@@ -3736,7 +3938,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-27",
     // Nomi delle carte in inglese anche in italiano (docs/testi-di-gioco.md): "King Arthur", non più "Re Artù".
-    title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, King Arthur a 7/7", "Parche 0.6.3 del playtest: dieciséis cartas ajustadas, King Arthur sube a 7/7", "Patch 0.6.3 du playtest : seize cartes ajustées, le roi Arthur à 7/7"),
+    title: n("Playtest patch 0.6.3: sixteen cards tuned, King Arthur up to 7/7", "Patch 0.6.3 del playtest: sedici carte ritoccate, King Arthur a 7/7", "Parche 0.6.3 del playtest: dieciséis cartas ajustadas, King Arthur sube a 7/7"),
     metaTitle: n("Origins TCG patch 0.6.3: King Arthur up to 7/7, 16 cards", "Patch 0.6.3 di Origins TCG: King Arthur a 7/7, 16 carte", "Parche 0.6.3 de Origins TCG: King Arthur a 7/7, 16 cartas"),
     description: n(
       "Origins TCG playtest patch 0.6.3, 27 August: buffs to King Arthur, Merlin and Lancelot, nerfs to Bandersnatch and Bigfoot, three reworks, smarter bosses.",
@@ -3747,7 +3949,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "A tuning-and-fixes patch, used for Big Bob's tournament two days later. Buffs to King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll and Blow the House Down; nerfs to Bandersnatch, Bigfoot, Scarecrow and Merlin's Prophecy; Bagheera, Christopher Robin and Sandman reworked. Bosses got smarter AI.",
       "Una patch di tuning e correzioni, usata per il torneo di Big Bob due giorni dopo. Buff a King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll e Blow the House Down; nerf a Bandersnatch, Bigfoot, Scarecrow e Merlin's Prophecy; Bagheera, Christopher Robin e Sandman rivisti. I boss hanno un'IA più intelligente.",
       "Un parche de ajustes y correcciones, usado en el torneo de Big Bob dos días después. Buffs a King Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll y Blow the House Down; nerfs a Bandersnatch, Bigfoot, Scarecrow y Merlin's Prophecy; rework de Bagheera, Christopher Robin y Sandman. Los jefes tienen una IA más inteligente.",
-      "Un patch d'ajustements et de correctifs, utilisé pour le tournoi de Big Bob deux jours plus tard. Buffs pour le roi Arthur, Merlin, Lancelot, Old MacDonald, Rumple, Thumbelina, White Queen, Bridge Troll et Blow the House Down ; nerfs pour Bandersnatch, Bigfoot, Scarecrow et Merlin's Prophecy ; Bagheera, Christopher Robin et Sandman retravaillés. Les boss ont une IA plus maligne.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1842212951301184",
     source: "steam",
@@ -3757,7 +3958,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/ss-versus.webp",
     guides: ["steam-next-fest-2026", "origins-tcg-conquest"],
     date: "2026-08-25",
-    title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle trae el formato Conquest", "Big Bob's Playtest Battle inaugure le format Conquest"),
+    title: n("Big Bob's Playtest Battle brings the Conquest format", "Big Bob's Playtest Battle porta il formato Conquest", "Big Bob's Playtest Battle trae el formato Conquest"),
     metaTitle: n("Big Bob's Playtest Battle brings Conquest to Origins TCG", "Big Bob's Playtest Battle: il Conquest arriva su Origins TCG", "Big Bob's Playtest Battle: el Conquest llega a Origins TCG"),
     description: n(
       "Big Bob's Playtest Battle, 28 August: the first Origins TCG tournament in Conquest format, best-of-three single elimination, with Next Fest wildcards.",
@@ -3768,7 +3969,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Tournament on 28 August on the playtest build with full deckbuilding. Best-of-3, single elimination, and the first use of Conquest: submit several decks with different Legendaries and at least nine different cards, ban one of your opponent's. Prizes: wildcards for the Next Fest tournament and Collector Packs.",
       "Torneo il 28 agosto sulla build del playtest con deckbuilding completo. Best-of-3, eliminazione diretta e primo uso del Conquest: si registrano più mazzi con Leggendarie diverse e almeno nove carte differenti, si banna un mazzo avversario. Premi: wildcard per il torneo del Next Fest e Collector Pack.",
       "Torneo el 28 de agosto en la build del playtest con construcción de mazos completa. Al mejor de tres, eliminación directa y primer uso del Conquest: presentas varios mazos con Legendarias distintas y al menos nueve cartas diferentes, y vetas uno de los mazos de tu rival. Premios: wildcards para el torneo del Next Fest y Collector Packs.",
-      "Tournoi le 28 août sur la build du playtest avec deckbuilding complet. Best-of-3, élimination directe et première utilisation du Conquest : plusieurs decks avec des Légendaires différentes et au moins neuf cartes différentes, un ban chez l'adversaire. Récompenses : wildcards pour le tournoi du Next Fest et Collector Packs.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
     source: "steam",
@@ -3779,7 +3979,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     cards: ["mulan", "queen-of-hearts", "ellen-trechend", "van-helsings-tools", "banshee", "piglet", "wicked-witch-of-the-west", "three-not-so-little-pigs", "bandersnatch", "basilisk", "brides-of-dracula", "card-soldier", "flying-monkey", "guy-of-gisborne", "humpty", "huntsman", "imhotep", "kanga", "little-lamb", "marian", "pegasus", "stroke-of-midnight"],
     guides: ["roadmap-and-dates", "steam-next-fest-2026"],
     date: "2026-08-21",
-    title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Parche 0.6.2 del playtest: cambios de equilibrio en 23 cartas", "Patch 0.6.2 du playtest : équilibrage de 23 cartes"),
+    title: n("Playtest patch 0.6.2: balance pass on 23 cards", "Patch 0.6.2 del playtest: bilanciamento di 23 carte", "Parche 0.6.2 del playtest: cambios de equilibrio en 23 cartas"),
     metaTitle: n("Origins TCG patch 0.6.2 notes: 23 cards rebalanced", "Patch 0.6.2 di Origins TCG: 23 carte ribilanciate", "Parche 0.6.2 de Origins TCG: 23 cartas reequilibradas"),
     description: n(
       "Origins TCG playtest patch 0.6.2, 21 August: Mulan gains Double Attack, Queen of Hearts drops to 4 mana, Van Helsing's Tools is free. 23 cards changed.",
@@ -3790,7 +3990,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Eight cards changed what their ability does. Mulan gains Double Attack, the Queen of Hearts drops to 4 Mana 3/3 with First Strike, Ellen Trechend becomes an 8-Mana 3/3 that grows +3/+3 per enemy. Van Helsing's Tools is free but the Silver Bullet deals 1. The collection is now scoped to the ten playtest decks.",
       "Otto carte hanno cambiato abilità. Mulan ottiene Doppio attacco, la Queen of Hearts scende a 4 Mana 3/3 con Primo colpo, Ellen Trechend diventa un 3/3 da 8 Mana che cresce +3/+3 per nemico. Van Helsing's Tools è gratis ma la Silver Bullet fa 1 danno. La collezione è ora limitata ai dieci mazzi del playtest.",
       "Ocho cartas cambiaron lo que hace su habilidad. Mulan obtiene Ataque doble, la Queen of Hearts baja a 4 de maná y 3/3 con Primer golpe, Ellen Trechend pasa a ser una 3/3 de 8 de maná que crece +3/+3 por enemigo. Van Helsing's Tools es gratis, pero la Silver Bullet inflige 1 de daño. La colección se limita ahora a los diez mazos del playtest.",
-      "Huit cartes ont changé de capacité. Mulan gagne Double Attaque, la Reine de Cœur passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Balle d'argent inflige 1. La collection est désormais limitée aux dix decks du playtest.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1841579228669961",
     source: "steam",
@@ -3801,7 +4000,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     cards: ["huntsman", "mowgli", "first-aid", "count-orlok", "bandersnatch", "genie", "mind-palace", "koschei"],
     guides: ["roadmap-and-dates", "steam-next-fest-2026", "origins-tcg-ranked"],
     date: "2026-08-14",
-    title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Parche 0.6.1: ladder clasificatoria, ranking Grandmaster y tres mazos reajustados", "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés"),
+    title: n("Patch 0.6.1: ranked ladder, Grandmaster leaderboard, three decks retuned", "Patch 0.6.1: ladder classificata, classifica Grandmaster, tre mazzi ritoccati", "Parche 0.6.1: ladder clasificatoria, ranking Grandmaster y tres mazos reajustados"),
     metaTitle: n("Patch 0.6.1: ranked ladder and Grandmaster", "Patch 0.6.1: classificata e Grandmaster", "Parche 0.6.1: clasificatoria y Grandmaster"),
     description: n(
       "Origins TCG patch 0.6.1, 14 August: ranked mode with a world leaderboard for the Grandmaster division, quality-of-life options, Huntsman at 6 mana.",
@@ -3812,7 +4011,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Ranked mode arrives with a world leaderboard for the Grandmaster division, plus quality of life: skip the tutorial, preview the opponent's Legendary during mulligan, mute emotes. Huntsman moves to 6 Mana 6/6; Swarm, Evil and Discard each swap one card.",
       "Arriva la modalità classificata con una classifica mondiale per la divisione Grandmaster, più comodità: salta il tutorial, anteprima della Leggendaria avversaria durante il mulligan, silenzia le emote. Huntsman passa a 6 Mana 6/6; Swarm, Evil e Discard cambiano una carta ciascuno.",
       "Llega el modo clasificatorio con un ranking mundial para la división Grandmaster, además de mejoras de calidad de vida: saltar el tutorial, ver la Legendaria del rival durante el mulligan y silenciar los emotes. Huntsman pasa a 6 de maná, 6/6; Swarm, Evil y Discard cambian una carta cada uno.",
-      "Le mode classé arrive avec un classement mondial pour la division Grandmaster, plus du confort : passer le tutoriel, aperçu de la Légendaire adverse pendant le mulligan, couper les émotes. Huntsman passe à 6 Mana 6/6 ; Swarm, Evil et Discard échangent une carte chacun.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1840944183780414",
     source: "steam",
@@ -3822,7 +4020,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/news-demo2-playtest.webp",
     guides: ["play-the-demo", "steam-next-fest-2026"],
     date: "2026-08-05",
-    title: n("Demo 2.0 playtest: 5 new decks, 70+ new cards, deckbuilding", "Playtest della Demo 2.0: 5 nuovi mazzi, oltre 70 carte nuove, deckbuilding", "Playtest de la Demo 2.0: 5 mazos nuevos, más de 70 cartas nuevas y construcción de mazos", "Playtest de la Démo 2.0 : 5 nouveaux decks, plus de 70 cartes, deckbuilding"),
+    title: n("Demo 2.0 playtest: 5 new decks, 70+ new cards, deckbuilding", "Playtest della Demo 2.0: 5 nuovi mazzi, oltre 70 carte nuove, deckbuilding", "Playtest de la Demo 2.0: 5 mazos nuevos, más de 70 cartas nuevas y construcción de mazos"),
     metaTitle: n("Origins TCG Demo 2.0 playtest: 5 decks, 70+ cards", "Playtest della Demo 2.0 di Origins TCG: 5 mazzi, 70+ carte", "Playtest de la Demo 2.0 de Origins TCG: 5 mazos, 70+ cartas"),
     description: n(
       "The Origins TCG update for Steam Next Fest goes to community playtests from 7 August: 5 new decks, 70+ new cards and deckbuilding, open to all via Discord.",
@@ -3833,7 +4031,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "The update that will ship for Steam Next Fest in October goes to community playtests, starting Friday 7 August at 9pm UTC with a game night. Open to everyone through Discord.",
       "L'aggiornamento che uscirà per lo Steam Next Fest di ottobre va nei playtest della community, da venerdì 7 agosto alle 21 UTC con una game night. Aperto a tutti tramite Discord.",
       "La actualización que saldrá para el Steam Next Fest de octubre llega a los playtests de la comunidad, a partir del viernes 7 de agosto a las 21:00 UTC con una noche de partidas. Abierto a todos a través de Discord.",
-      "La mise à jour prévue pour le Steam Next Fest d'octobre part en playtests communautaires, dès le vendredi 7 août à 21 h UTC avec une game night. Ouvert à tous via Discord.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1840310314338383",
     source: "steam",
@@ -3843,7 +4040,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/news-card-party.webp",
     guides: ["play-the-demo", "roadmap-and-dates"],
     date: "2026-07-21",
-    title: n("First demo numbers: 1,000+ players, 13,000+ matches, 1h51m median", "Primi numeri della demo: oltre 1.000 giocatori, 13.000 partite, mediana 1h51m", "Primeras cifras de la demo: más de 1.000 jugadores, más de 13.000 partidas y 1h51m de mediana", "Premiers chiffres de la démo : 1 000+ joueurs, 13 000+ parties, médiane 1 h 51"),
+    title: n("First demo numbers: 1,000+ players, 13,000+ matches, 1h51m median", "Primi numeri della demo: oltre 1.000 giocatori, 13.000 partite, mediana 1h51m", "Primeras cifras de la demo: más de 1.000 jugadores, más de 13.000 partidas y 1h51m de mediana"),
     metaTitle: n("Origins TCG demo numbers: 1,000+ players, 13,000+ matches", "Demo di Origins TCG: oltre 1.000 giocatori e 13.000 partite", "Demo de Origins TCG: 1.000+ jugadores y 13.000+ partidas"),
     description: n(
       "Six days after launch, the Origins TCG demo passed 1,000 players and 13,000 matches, with a 1h51m median. Plus an AMA, a first tournament and Card Party.",
@@ -3854,7 +4051,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Six days after launch the team shares the demo stats and lines up an AMA with CEO Tim Jooste and head of game design Kevin Lambert (22 July), the first demo tournament (24 July) and a booth at Card Party in Fort Lauderdale (24–26 July).",
       "Sei giorni dopo il lancio il team condivide i numeri della demo e annuncia un AMA con il CEO Tim Jooste e il capo del game design Kevin Lambert (22 luglio), il primo torneo della demo (24 luglio) e uno stand al Card Party di Fort Lauderdale (24–26 luglio).",
       "Seis días después del lanzamiento, el equipo comparte las estadísticas de la demo y anuncia un AMA con el CEO Tim Jooste y el responsable de diseño de juego Kevin Lambert (22 de julio), el primer torneo de la demo (24 de julio) y un stand en la Card Party de Fort Lauderdale (del 24 al 26 de julio).",
-      "Six jours après le lancement, l'équipe partage les chiffres de la démo et annonce un AMA avec le CEO Tim Jooste et le responsable du game design Kevin Lambert (22 juillet), le premier tournoi de la démo (24 juillet) et un stand au Card Party de Fort Lauderdale (24–26 juillet).",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
     source: "steam",
@@ -3864,7 +4060,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/news-demo-live.webp",
     guides: ["play-the-demo", "roadmap-and-dates"],
     date: "2026-07-16",
-    title: n("The Origins TCG demo is live on Steam", "La demo di Origins TCG è disponibile su Steam", "La demo de Origins TCG ya está disponible en Steam", "La démo d'Origins TCG est disponible sur Steam"),
+    title: n("The Origins TCG demo is live on Steam", "La demo di Origins TCG è disponibile su Steam", "La demo de Origins TCG ya está disponible en Steam"),
     // La guida play-the-demo è la pagina primaria su "demo di Origins TCG" (download, come si gioca): qui l'angolo è l'uscita.
     metaTitle: n("Origins TCG demo launches with exclusive collectibles", "Esce la demo di Origins TCG, con collezionabili esclusivi", "Sale la demo de Origins TCG, con coleccionables exclusivos"),
     description: n(
@@ -3876,7 +4072,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Free demo with exclusive collectibles that will not be available later and will be tradeable on the Steam marketplace once the full game launches. Launch party on Discord the same day.",
       "Demo gratuita con collezionabili esclusivi che non saranno più disponibili in seguito e saranno scambiabili sul marketplace Steam al lancio del gioco completo. Festa di lancio su Discord lo stesso giorno.",
       "Demo gratuita con coleccionables exclusivos que no estarán disponibles más adelante y que se podrán intercambiar en el mercado de Steam cuando se lance el juego completo. Fiesta de lanzamiento en Discord el mismo día.",
-      "Démo gratuite avec des objets de collection exclusifs, indisponibles plus tard et échangeables sur le marketplace Steam au lancement du jeu complet. Soirée de lancement sur Discord le jour même.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1838407329257018",
     source: "steam",
@@ -3886,7 +4081,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/keyart-robin-hood.webp",
     guides: ["steam-next-fest-2026", "roadmap-and-dates"],
     date: "2026-08-19",
-    title: n("Creator Program announced, details in a Discord AMA", "Annunciato il Creator Program, dettagli in un AMA su Discord", "Anunciado el Creator Program, con los detalles en un AMA en Discord", "Creator Program annoncé, détails lors d'un AMA sur Discord"),
+    title: n("Creator Program announced, details in a Discord AMA", "Annunciato il Creator Program, dettagli in un AMA su Discord", "Anunciado el Creator Program, con los detalles en un AMA en Discord"),
     metaTitle: n("Origins TCG Creator Program announced, AMA on Discord", "Creator Program di Origins TCG: annuncio e AMA su Discord", "Creator Program de Origins TCG: anuncio y AMA en Discord"),
     description: n(
       "Koin Games opens the Origins TCG Creator Program ahead of Steam Next Fest. Details came in an AMA on 19 August, recorded on Discord. OriginsMeta applied.",
@@ -3897,7 +4092,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Koin Games opens a creator program ahead of Steam Next Fest. Details were given in an AMA on 19 August at 8pm UTC; the recording is on Discord. OriginsMeta has applied.",
       "Koin Games apre un programma per creator in vista dello Steam Next Fest. I dettagli sono stati dati in un AMA il 19 agosto alle 20 UTC; la registrazione è su Discord. OriginsMeta ha fatto richiesta.",
       "Koin Games abre un programa para creadores de contenido de cara al Steam Next Fest. Los detalles se dieron en un AMA el 19 de agosto a las 20:00 UTC; la grabación está en Discord. OriginsMeta ha presentado su solicitud.",
-      "Koin Games ouvre un programme pour créateurs avant le Steam Next Fest. Les détails ont été donnés lors d'un AMA le 19 août à 20 h UTC ; l'enregistrement est sur Discord. OriginsMeta a candidaté.",
     ),
     url: "https://egamers.io/origins-tcg-launches-creator-program-ama-set-for-aug-19/",
     source: "press",
@@ -3907,7 +4101,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/news-community-open.webp",
     guides: ["roadmap-and-dates", "play-the-demo"],
     date: "2026-06-03",
-    title: n("Official Discord opens to everyone", "Il Discord ufficiale apre a tutti", "El Discord oficial se abre a todos", "Le Discord officiel s'ouvre à tous"),
+    title: n("Official Discord opens to everyone", "Il Discord ufficiale apre a tutti", "El Discord oficial se abre a todos"),
     metaTitle: n("Origins TCG official Discord opens to everyone", "Il Discord ufficiale di Origins TCG apre a tutti", "El Discord oficial de Origins TCG se abre a todos"),
     description: n(
       "The official Origins TCG Discord, home of the early alpha testers, opens to everyone, with a demo announced as coming soon and a first look at collectibles.",
@@ -3918,7 +4112,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "The server that hosted the early alpha testers opens up, with a demo announced as coming soon and a first look at the collectibles.",
       "Il server che ospitava i tester dell'alpha si apre a tutti, con una demo annunciata in arrivo e un primo sguardo ai collezionabili.",
       "El servidor que acogía a los primeros testers de la alfa se abre a todos, con una demo anunciada para muy pronto y un primer vistazo a los coleccionables.",
-      "Le serveur qui accueillait les testeurs de l'alpha s'ouvre à tous, avec une démo annoncée et un premier aperçu des objets de collection.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1834602721185275",
     source: "steam",
@@ -3928,7 +4121,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/ls-real-collecting.webp",
     guides: ["collector-economy", "roadmap-and-dates"],
     date: "2026-03-13",
-    title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "El CEO adelanta cartas físicas de metal", "Le CEO dévoile des cartes physiques en métal"),
+    title: n("Physical metal cards teased by the CEO", "Il CEO mostra carte fisiche in metallo", "El CEO adelanta cartas físicas de metal"),
     metaTitle: n("Origins TCG physical metal cards teased by the CEO", "Carte in metallo di Origins TCG: il teaser del CEO", "Cartas de metal de Origins TCG: el adelanto del CEO"),
     description: n(
       "Koin Games CEO Tim Jooste was filmed with metal collectible cards based on Origins TCG. No product or date announced: a signal of intent, nothing more yet.",
@@ -3939,7 +4132,6 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "Tim Jooste was filmed with metal collectible cards based on the game's IP. No product or date announced: a signal of intent from a digital-first studio.",
       "Tim Jooste è stato filmato con carte da collezione in metallo basate sull'IP del gioco. Nessun prodotto né data annunciati: un segnale di intenzione da uno studio nato digitale.",
       "Tim Jooste fue grabado con cartas coleccionables de metal basadas en la IP del juego. No se ha anunciado ningún producto ni fecha: una señal de intenciones de un estudio nacido en lo digital.",
-      "Tim Jooste a été filmé avec des cartes de collection en métal basées sur l'univers du jeu. Ni produit ni date annoncés : un signal d'intention d'un studio né numérique.",
     ),
     url: "https://playtoearn.com/news/origins-tcg-teases-physical-metal-cards-as-koin-games-eyes-real-world-expansion",
     source: "press",
@@ -3949,7 +4141,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
     image: "/media/news-steam-page.webp",
     guides: ["roadmap-and-dates", "play-the-demo"],
     date: "2026-05-06",
-    title: n("Steam page live: wishlist open, demo on the way", "Pagina Steam online: wishlist aperta, demo in arrivo", "Página de Steam publicada: lista de deseados abierta y demo en camino", "Page Steam en ligne : wishlist ouverte, démo en route"),
+    title: n("Steam page live: wishlist open, demo on the way", "Pagina Steam online: wishlist aperta, demo in arrivo", "Página de Steam publicada: lista de deseados abierta y demo en camino"),
     metaTitle: n("Origins TCG Steam page live: wishlist open", "Pagina Steam di Origins TCG online: wishlist aperta", "Página de Steam de Origins TCG: lista de deseados abierta"),
     description: n(
       "The Origins TCG Steam page goes live and the wishlist opens, with the team's first post: fast tactical matches and collecting modelled on physical TCGs.",
@@ -3960,12 +4152,13 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
       "First Steam post from the team: a trading card game built around fast tactical matches and a collectible system modelled on physical TCGs.",
       "Primo post su Steam del team: un gioco di carte costruito su partite tattiche veloci e un sistema da collezione modellato sui TCG fisici.",
       "Primera publicación del equipo en Steam: un juego de cartas coleccionables construido en torno a partidas tácticas rápidas y a un sistema de coleccionismo que toma como modelo los TCG físicos.",
-      "Premier message Steam de l'équipe : un jeu de cartes construit autour de parties tactiques rapides et d'un système de collection inspiré des TCG physiques.",
     ),
     url: "https://store.steampowered.com/news/app/4429430/view/1832065502808213",
     source: "steam",
   },
 ];
+
+export const news: NewsItem[] = raw.map(withFrench);
 
 export const sortedNews = [...news].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -3988,13 +4181,14 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Date delle versioni tradotte, una sola regola per news e guide (revisione dell'Ondata 1, 25/09/2026): la data di
  * pubblicazione (`datePublished`, "Pubblicato il") resta quella originale dell'articolo in ogni lingua; la data di
  * modifica di una lingua nata dopo gli articoli non va mai prima del giorno in cui quella lingua è andata online.
- * Oggi vale solo per lo spagnolo, dal 25/09/2026: lo stesso giorno di `LOCALE_SINCE.es` in src/lib/lastmod.ts, che
- * vale per la sitemap (lo controlla `newsMeta.test.ts`). Inglese e italiano sono le lingue degli originali.
+ * Vale per lo spagnolo, dal 25/09/2026, e per il francese, dal 07/10/2026: gli stessi giorni di `LOCALE_SINCE` in
+ * src/lib/lastmod.ts, che vale per la sitemap (lo controlla `newsMeta.test.ts`). Inglese e italiano sono le lingue
+ * degli originali.
  * La usano la pagina della news (con `newsDates`: dati strutturati, Open Graph e firma) e `getGuides` in guides.ts.
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

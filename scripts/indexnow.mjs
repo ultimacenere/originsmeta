@@ -9,7 +9,8 @@
  *      confronta fra BEFORE e AFTER, letti da GitHub, i file di `FILES`:
  *        - news e guide nuove: le pagine nelle tre lingue, più /news o /guides e le home che le mostrano;
  *        - news e guide con le date cambiate (`updated`: un articolo rivisto);
- *        - guide con il testo spagnolo cambiato (guides-es.ts): la sola pagina /es;
+ *        - guide con il testo spagnolo cambiato (guides-es.ts): la sola pagina /es; lo stesso per il francese
+ *          (guides-fr.ts, news-fr.ts e card-lore-fr.ts, dal 07/10/2026): la sola pagina /fr;
  *        - carte con lo storico o i testi cambiati (una patch, una rilettura nel gioco): le schede, più /metashifting
  *          quando cambia lo storico. Un testo cambiato in una lingua sola segnala solo quella (`changedLocales`): il
  *          protocollo chiede gli URL cambiati, e le schede nelle altre lingue non cambiano né di contenuto né di data;
@@ -37,7 +38,7 @@ import { pathToFileURL } from "node:url";
 import { INDEXNOW_SITE, indexNowUrls, keyFileUrl, localizedPaths, submitIndexNow } from "../src/lib/indexnow.ts";
 
 /** Le lingue del sito, come `locales` in src/lib/i18n.ts (il test controlla che coincidano). */
-export const LOCALES = ["en", "it", "es"];
+export const LOCALES = ["en", "it", "es", "fr"];
 
 const SITE = (process.env.SITE_URL || INDEXNOW_SITE).replace(/\/+$/, "");
 const DRY_RUN = process.env.DRY_RUN === "1";
@@ -55,8 +56,11 @@ export const FILES = {
   news: "src/lib/data/news.ts",
   guides: "src/lib/content/guides.ts",
   guidesEs: "src/lib/content/guides-es.ts",
+  guidesFr: "src/lib/content/guides-fr.ts",
+  newsFr: "src/lib/data/news-fr.ts",
   history: "src/lib/data/card-history.ts",
   lore: "src/lib/data/card-lore.ts",
+  loreFr: "src/lib/data/card-lore-fr.ts",
   locations: "src/lib/data/locations.ts",
 };
 
@@ -227,10 +231,16 @@ export function pushPaths({
   guidesB = "",
   guidesEsA = "",
   guidesEsB = "",
+  guidesFrA = "",
+  guidesFrB = "",
+  newsFrA = "",
+  newsFrB = "",
   historyA = "",
   historyB = "",
   loreA = "",
   loreB = "",
+  loreFrA = "",
+  loreFrB = "",
   locationsA = "",
   locationsB = "",
 }) {
@@ -257,6 +267,9 @@ export function pushPaths({
   const esBefore = recordChunks(guidesEsA);
   const esAfter = recordChunks(guidesEsB);
   for (const slug of changedKeys(esBefore, esAfter)) if (guidesAfter.has(slug) && !addedGuides.includes(slug)) changed.push(`/es/guides/${slug}`);
+  // Lo stesso per il francese (dal 07/10/2026): guides-fr.ts e news-fr.ts hanno solo i testi, una voce per slug.
+  for (const slug of changedKeys(recordChunks(guidesFrA), recordChunks(guidesFrB))) if (guidesAfter.has(slug) && !addedGuides.includes(slug)) changed.push(`/fr/guides/${slug}`);
+  for (const slug of changedKeys(recordChunks(newsFrA), recordChunks(newsFrB))) if (newsAfter.has(slug) && !addedNews.includes(slug)) changed.push(`/fr/news/${slug}`);
 
   // Carte: lo storico (una patch) cambia la scheda in tutte le lingue; i testi di card-lore.ts solo nelle lingue toccate.
   const historyChanged = new Set(changedKeys(recordChunks(historyA), recordChunks(historyB)));
@@ -267,6 +280,8 @@ export function pushPaths({
     const langs = historyChanged.has(slug) ? LOCALES : changedLocales(loreBefore.get(slug), loreAfter.get(slug), loreEverywhere);
     changed.push(...langs.map((l) => `/${l}/cards/${slug}`));
   }
+  // I testi francesi delle carte stanno in card-lore-fr.ts (dal 07/10/2026): una voce cambiata tocca la sola scheda /fr.
+  for (const slug of changedKeys(recordChunks(loreFrA), recordChunks(loreFrB))) if (!historyChanged.has(slug)) changed.push(`/fr/cards/${slug}`);
   if (historyChanged.size) changed.push(...at("/metashifting"));
 
   // Luoghi: una pagina sola, /locations, nelle lingue i cui effetti sono cambiati.

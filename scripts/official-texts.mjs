@@ -36,18 +36,29 @@ for (const line of fs.readFileSync(source, "utf8").split(/\r?\n/)) {
 
 const woo = JSON.parse(fs.readFileSync(path.join(ROOT, "src/lib/data/woo-cards.json"), "utf8"));
 const active = woo.cards.filter((c) => c.status === "active" && c.type !== "token" && !c.tokenOnly);
-const file = path.join(ROOT, "src/lib/data/card-lore.ts");
-const src = fs.readFileSync(file, "utf8");
-const eol = src.includes("\r\n") ? "\r\n" : "\n";
-const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true);
 
-const lore = new Map();
-sf.forEachChild(function visit(node) {
-  if (ts.isVariableDeclaration(node) && node.name.getText(sf) === "cardLore") {
-    for (const p of node.initializer.properties) lore.set(p.name.text ?? p.name.getText(sf), p.initializer);
-  }
-  ts.forEachChild(node, visit);
-});
+/** Le voci per slug di un file di dati (`cardLore` in card-lore.ts, `frLore` in card-lore-fr.ts), con il sorgente per riscriverlo. */
+function readLore(relative, variable) {
+  const file = path.join(ROOT, relative);
+  const src = fs.readFileSync(file, "utf8");
+  const eol = src.includes("\r\n") ? "\r\n" : "\n";
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true);
+  const lore = new Map();
+  sf.forEachChild(function visit(node) {
+    if (ts.isVariableDeclaration(node) && node.name.getText(sf) === variable) {
+      for (const p of node.initializer.properties) lore.set(p.name.text ?? p.name.getText(sf), p.initializer);
+    }
+    ts.forEachChild(node, visit);
+  });
+  return { file, src, eol, sf, lore };
+}
+
+// Italiano e spagnolo stanno in card-lore.ts (campo con il nome della lingua); il francese (dal 07/10/2026) in
+// card-lore-fr.ts, campo `text`. L'inglese di riferimento (gli a capo) è sempre quello di card-lore.ts o dell'import.
+const base = readLore("src/lib/data/card-lore.ts", "cardLore");
+const target = lang === "fr" ? readLore("src/lib/data/card-lore-fr.ts", "frLore") : base;
+const field = lang === "fr" ? "text" : lang;
+const { file, src, eol, sf, lore } = target;
 
 const template = (s) => "`" + s.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${") + "`";
 const literal = (s) => (s.includes("\n") ? template(s) : JSON.stringify(s));
@@ -66,12 +77,14 @@ for (const card of active) {
   if (!text) continue; // carta senza testo
   const entry = lore.get(card.slug);
   const props = entry ? new Map(entry.properties.filter(ts.isPropertyAssignment).map((p) => [p.name.getText(sf), p])) : new Map();
-  const prop = props.get(lang);
+  const prop = props.get(field);
   if (!prop) {
-    problems.push(`${card.name}: nessun campo ${lang} in card-lore.ts`);
+    problems.push(`${card.name}: nessun campo ${field} in ${path.basename(file)}`);
     continue;
   }
-  const en = props.get("en") ? value(props.get("en").initializer) : card.ability ?? "";
+  const baseEntry = base.lore.get(card.slug);
+  const baseProps = baseEntry ? new Map(baseEntry.properties.filter(ts.isPropertyAssignment).map((p) => [p.name.getText(base.sf), p])) : new Map();
+  const en = baseProps.get("en") ? baseProps.get("en").initializer.text.replace(/\r\n/g, "\n") : card.ability ?? "";
   if (en.split("\n").length !== text.split("\n").length) {
     problems.push(`${card.name}: ${en.split("\n").length} righe in inglese, ${text.split("\n").length} nella trascrizione`);
   }
@@ -96,5 +109,5 @@ if (apply) {
   let out = src;
   for (const e of edits) out = out.slice(0, e.start) + e.text.replace(/\r?\n/g, eol) + out.slice(e.end);
   fs.writeFileSync(file, out);
-  console.log(`card-lore.ts aggiornato (${edits.length} testi).`);
+  console.log(`${path.basename(file)} aggiornato (${edits.length} testi).`);
 }

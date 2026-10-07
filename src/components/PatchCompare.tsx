@@ -14,6 +14,7 @@ const L: Record<Locale, { title: string; before: string; after: string; mana: st
   en: { title: "Before and after", before: "Before", after: "After", mana: "Cost", power: "Power", health: "Health" },
   it: { title: "Prima e dopo", before: "Prima", after: "Dopo", mana: "Costo", power: "Potenza", health: "Salute" },
   es: { title: "Antes y después", before: "Antes", after: "Después", mana: "Coste", power: "Poder", health: "Salud" },
+  fr: { title: "Avant et après", before: "Avant", after: "Après", mana: "Coût", power: "Puissance", health: "Santé" },
 };
 
 type Item = { card: Card; change: Change };

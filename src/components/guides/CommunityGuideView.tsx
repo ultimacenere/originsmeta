@@ -28,12 +28,18 @@ import { CommunityGuideActions } from "./CommunityGuideActions";
 import { GuideReportForm } from "./GuideReportForm";
 import { CommunityGuideCard } from "./CommunityGuideList";
 
+/**
+ * `langNames` e `langFrom` dei dizionari non hanno ancora tutte le lingue del sito (il francese dal 07/10/2026): il
+ * codice della lingua fa da ripiego, come già faceva, e il tipo lo dice.
+ */
+const langNamesOf = (names: Partial<Record<Locale, string>>): Partial<Record<Locale, string>> => names;
+
 /** Description nella lingua della pagina: il riassunto quando si legge in questa lingua, altrimenti una frase coi fatti. */
 export function guideDescription(g: CommunityGuide, locale: Locale): string {
   const view = localizedCommunityGuide(g, locale);
   if (view.lang === locale) return view.text.summary;
   const L = communityGuideLabels[locale];
-  const lang = getDictionary(locale).community.langNames[g.lang] ?? g.lang;
+  const lang = langNamesOf(getDictionary(locale).community.langNames)[g.lang] ?? g.lang;
   return fillLabel(L.page.metaFallback, { title: g.title, author: authorName(g.profile), lang });
 }
 
@@ -55,7 +61,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
   const words = communityGuideWords(guide);
   const author = authorName(guide.profile);
   const handle = authorHandle(guide.profile);
-  const langName = c.langNames[guide.lang] ?? guide.lang;
+  const langName = langNamesOf(c.langNames)[guide.lang] ?? guide.lang;
   const published = guide.published_at ?? guide.created_at;
   const category = d.guides.categories[guide.category];
   const cards = guide.cards.filter((s) => getCard(s));
@@ -159,7 +165,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
             versione della pagina nella lingua dell'autore (le stesse regole delle guide dei mazzi). */}
         {view.translated ? (
           <p className="mt-6 rounded-lg border-2 border-sky bg-sky/10 p-3 text-xs text-pale">
-            {c.translatedNote.replace("{from}", c.langFrom[guide.lang] ?? guide.lang)}{" "}
+            {c.translatedNote.replace("{from}", langNamesOf(c.langFrom)[guide.lang] ?? guide.lang)}{" "}
             <Link href={href(guide.lang, `/guides/community/${guide.slug}`)} hrefLang={guide.lang} className="font-semibold text-mint underline-offset-2 hover:underline">
               {c.originalText.replace("{lang}", langName)} →
             </Link>

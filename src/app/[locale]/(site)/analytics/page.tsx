@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { href } from "@/lib/i18n";
+import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { analyticsLabels } from "@/lib/analyticsLabels";
 import { supabasePublic } from "@/lib/supabase/public";
@@ -20,12 +20,19 @@ export const revalidate = 300;
 
 const OVERVIEW = { width: 1200, height: 799 };
 const MATCHES = { width: 1200, height: 667 };
-const OVERLAY = { en: { width: 638, height: 243 }, it: { width: 688, height: 243 }, es: { width: 626, height: 243 } } as const;
+/**
+ * Lingua degli screenshot: l'app esiste in inglese, italiano e spagnolo, e gli screenshot sono quelli (fatti il
+ * 02/10/2026). Il francese (07/10/2026) non ha screenshot propri e mostra quelli inglesi, senza copiare i file: le
+ * didascalie restano nella lingua della pagina.
+ */
+type ShotLocale = "en" | "it" | "es";
+const SHOT_LOCALE: Record<Locale, ShotLocale> = { en: "en", it: "it", es: "es", fr: "en" };
+const OVERLAY: Record<ShotLocale, { width: number; height: number }> = { en: { width: 638, height: 243 }, it: { width: 688, height: 243 }, es: { width: 626, height: 243 } };
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale } = await resolveLocale(params);
   const x = analyticsLabels[locale];
-  return pageMeta(locale, "/analytics", x.meta.title, x.meta.description, `/media/analytics/app-overview-${locale}.webp`, {
+  return pageMeta(locale, "/analytics", x.meta.title, x.meta.description, `/media/analytics/app-overview-${SHOT_LOCALE[locale]}.webp`, {
     imageSize: OVERVIEW,
     imageAlt: x.shots.overview.alt,
   });
@@ -47,6 +54,7 @@ async function readInterestTotal(): Promise<number | null> {
 export default async function AnalyticsPage({ params }: { params: LocaleParams }) {
   const { locale } = await resolveLocale(params);
   const x = analyticsLabels[locale];
+  const shot = SHOT_LOCALE[locale];
   const path = href(locale, "/analytics");
   const total = await readInterestTotal();
   const interest = { locale, labels: x.interest, privacyHref: `${href(locale, "/privacy")}#analytics-interest`, initialTotal: total };
@@ -89,16 +97,16 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
         </ul>
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <figure className="card-night overflow-hidden p-2 lg:col-span-2">
-            <Image src={`/media/analytics/app-overview-${locale}.webp`} {...OVERVIEW} alt={x.shots.overview.alt} sizes="(min-width: 1024px) 960px, 100vw" className="h-auto w-full rounded-lg" priority />
+            <Image src={`/media/analytics/app-overview-${shot}.webp`} {...OVERVIEW} alt={x.shots.overview.alt} sizes="(min-width: 1024px) 960px, 100vw" className="h-auto w-full rounded-lg" priority />
             <figcaption className="px-2 py-2 text-sm text-pale-muted">{x.shots.overview.caption}</figcaption>
           </figure>
           <figure className="card-night overflow-hidden p-2">
-            <Image src={`/media/analytics/app-matches-${locale}.webp`} {...MATCHES} alt={x.shots.matches.alt} sizes="(min-width: 1024px) 470px, 100vw" className="h-auto w-full rounded-lg" />
+            <Image src={`/media/analytics/app-matches-${shot}.webp`} {...MATCHES} alt={x.shots.matches.alt} sizes="(min-width: 1024px) 470px, 100vw" className="h-auto w-full rounded-lg" />
             <figcaption className="px-2 py-2 text-sm text-pale-muted">{x.shots.matches.caption}</figcaption>
           </figure>
           <figure className="card-night flex flex-col justify-between overflow-hidden p-2">
             <div className="grid flex-1 place-items-center rounded-lg bg-felt-deep p-4">
-              <Image src={`/media/analytics/overlay-${locale}.webp`} {...OVERLAY[locale]} alt={x.shots.overlay.alt} sizes="(min-width: 1024px) 400px, 90vw" className="h-auto w-full max-w-[400px]" />
+              <Image src={`/media/analytics/overlay-${shot}.webp`} {...OVERLAY[shot]} alt={x.shots.overlay.alt} sizes="(min-width: 1024px) 400px, 90vw" className="h-auto w-full max-w-[400px]" />
             </div>
             <figcaption className="px-2 py-2 text-sm text-pale-muted">{x.shots.overlay.caption}</figcaption>
           </figure>

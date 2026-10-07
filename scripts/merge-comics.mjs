@@ -146,7 +146,7 @@ try {
   console.log(`Avvisi a chi segue: ${moved.rowCount} spostati sul fumetto che resta, ${dropped.rowCount} doppioni tolti`);
   console.log(`Righe cancellate: ${gone.rows.map((x) => x.slug).join(", ")} (i file restano: ora li usa ${main.slug})`);
   console.log("Pagine:");
-  for (const l of ["en", "it", "es"]) console.log(`  ${SITE}/${l}/news/comics/${main.slug}`);
+  for (const l of ["en", "it", "es", "fr"]) console.log(`  ${SITE}/${l}/news/comics/${main.slug}`);
   for (const o of others) console.log(`  ${SITE}/${o.lang}/news/comics/${o.slug} → 308 verso ${main.slug}`);
   ok = true;
 } catch (e) {

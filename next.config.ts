@@ -12,13 +12,15 @@ const spamKeys = ["r", "channel"] as const;
 
 /**
  * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
- * galiziano e basco, che leggono lo spagnolo; altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
+ * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
  * solo la prima lingua dell'header (è un'espressione regolare); i link brevi dei tornei pesano tutto l'elenco
  * (`preferredLocale` in src/app/t/locale.ts).
  */
 const browserLocales = [
   { locale: "it", acceptLanguage: "^it.*" },
   { locale: "es", acceptLanguage: "^(?:es|ca|gl|eu).*" },
+  // francese dal 07/10/2026 (quarta lingua): anche per chi legge il francese del Canada, del Belgio o della Svizzera (fr-CA, fr-BE…)
+  { locale: "fr", acceptLanguage: "^fr.*" },
 ] as const;
 
 const acceptLanguage = (value: string) => [{ type: "header" as const, key: "accept-language", value }];
@@ -110,7 +112,7 @@ const nextConfig: NextConfig = {
       // viene incorniciata altrove; il sito incornicia altri (YouTube, Twitch, Turnstile), e questo non cambia.
       // X-Frame-Options per i browser che non leggono frame-ancestors. L'overlay (/overlay/…) non rientra nel percorso.
       {
-        source: "/:locale(en|it|es)/:path*",
+        source: "/:locale(en|it|es|fr)/:path*",
         headers: [
           { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -151,10 +153,9 @@ const nextConfig: NextConfig = {
       // La pagina dei win rate (30/09/2026) è stata tolta il 02/10/2026: il tool è in pausa dalla patch 0.7 e la sua
       // pagina è /analytics (Pierluigi: "togliamo la pagina del winrate, creiamo una pagina invece"). Permanente: la
       // pagina vecchia era noindex e non torna con lo stesso indirizzo.
-      { source: "/:locale(en|it|es)/tier-list/win-rate", destination: "/:locale/analytics", permanent: true },
-      // Il francese è stato ritirato dal sito: chi arriva da vecchi link va sulla versione inglese.
-      { source: "/fr", destination: "/en", permanent: true },
-      { source: "/fr/:path*", destination: "/en/:path*", permanent: true },
+      { source: "/:locale(en|it|es|fr)/tier-list/win-rate", destination: "/:locale/analytics", permanent: true },
+      // Il francese, ritirato il 15/09/2026 (allora /fr mandava a /en con un 308), è tornato il 07/10/2026 come quarta lingua:
+      // /fr è di nuovo una lingua vera, nessun redirect.
     ];
   },
 };

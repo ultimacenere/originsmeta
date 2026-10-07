@@ -42,7 +42,7 @@ export const LINK_URL_MAX = 200;
 export const MAIN_CHANNELS = 3;
 
 /** Lingue in cui un iscritto dichiara di fare contenuti: le lingue del sito (il test lo confronta con `locales`). */
-export const CONTENT_LANGS = ["en", "it", "es"] as const;
+export const CONTENT_LANGS = ["en", "it", "es", "fr"] as const;
 export type ContentLang = (typeof CONTENT_LANGS)[number];
 
 /**

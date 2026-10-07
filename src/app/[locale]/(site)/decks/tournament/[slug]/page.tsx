@@ -116,7 +116,11 @@ export default async function DeckSetPage({ params }: { params: Params }) {
   const handle = authorHandle(set.profile);
   const patch = patchAt(set.created_at);
   const view = localizedSetGuide(set, locale);
-  const langName = c.langNames[set.guide.lang] ?? set.guide.lang;
+  // `langNames` e `langFrom` dei dizionari non hanno ancora tutte le lingue del sito (il francese dal 07/10/2026): il
+  // codice della lingua fa da ripiego, come già faceva, e il tipo lo dice
+  const langNames: Partial<Record<Locale, string>> = c.langNames;
+  const langFrom: Partial<Record<Locale, string>> = c.langFrom;
+  const langName = langNames[set.guide.lang] ?? set.guide.lang;
   const builderAll = `${href(locale, "/deck-builder")}#${setCodesOf(set.decks)}`;
   const gameCodes = await Promise.all(set.decks.map((deck) => deckGameCode(deck)));
   const states = set.decks.map((deck) => ({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards ?? [] }));
@@ -212,7 +216,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
         {/* traduzione automatica o guida nella lingua dell'autore: stesse note dei mazzi singoli */}
         {view.translated ? (
           <p className="mt-6 rounded-lg border-2 border-sky bg-sky/10 p-3 text-xs text-pale">
-            {c.translatedNote.replace("{from}", c.langFrom[set.guide.lang] ?? set.guide.lang)}{" "}
+            {c.translatedNote.replace("{from}", langFrom[set.guide.lang] ?? set.guide.lang)}{" "}
             <Link href={href(set.guide.lang, `/decks/tournament/${set.slug}`)} hrefLang={set.guide.lang} className="font-semibold text-mint underline-offset-2 hover:underline">
               {c.originalText.replace("{lang}", langName)} →
             </Link>

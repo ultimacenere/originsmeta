@@ -138,6 +138,15 @@ describe("messaggi", () => {
     assert.equal(split(mdHref(body.embeds[0].fields[1].value)).clean, "https://originsmeta.com/es/news/patch-x");
     assert.match(payload("news", { kind: "news", slug: "x" }, html, en, es).content, /Nueva noticia/);
   });
+  test("francese: titolo collegato alla pagina /fr, dopo lo spagnolo e prima del link di MetaShifting (dal 07/10/2026)", () => {
+    const es = `<h1>La última</h1>`;
+    const fr = `<h1>Le dernier</h1>`;
+    const body = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en, es, "metashifting", fr);
+    assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "🇫🇷 Français", "MetaShifting"]);
+    assert.equal(split(mdHref(body.embeds[0].fields[2].value)).clean, "https://originsmeta.com/fr/news/patch-x");
+    // senza la pagina francese (HTML vuoto) il campo non c'è, come per lo spagnolo
+    assert.deepEqual(payload("news", { kind: "news", slug: "x" }, html, en, es).embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español"]);
+  });
   test("UTM su ogni link al sito: sorgente discord, mezzo social, campagna = tipo di contenuto, content = canale", () => {
     const es = `<h1>La última</h1>`;
     const news = payload("announcements", { kind: "news", slug: "prova" }, html, en, es).embeds[0];

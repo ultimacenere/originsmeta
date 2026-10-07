@@ -21,13 +21,15 @@ import { it as dictIt } from "./dictionaries/it.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { es as dictEs } from "./dictionaries/es.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { fr as dictFr } from "./dictionaries/fr.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { videoLabels, videoPrivacyText } from "./videoLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { streamLabels } from "./streamLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { deckStatsPrivacy } from "./deckStatsLabels.ts";
 
-const dictionaries = { en: dictEn, it: dictIt, es: dictEs } as const;
+const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr } as const;
 
 type Tree = { [key: string]: string | Tree };
 
@@ -46,7 +48,7 @@ const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1
 
 describe("etichette dei creator", () => {
   const en = leaves(creatorLabels.en as unknown as Tree);
-  for (const locale of ["it", "es"] as const) {
+  for (const locale of ["it", "es", "fr"] as const) {
     test(`${locale}: stesse chiavi e stessi segnaposto dell'inglese, nessun testo vuoto`, () => {
       const other = leaves(creatorLabels[locale] as unknown as Tree);
       assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort());
@@ -103,7 +105,7 @@ describe("etichette dei creator", () => {
     }
   });
   test("chi ha pubblicato un mazzo non si chiama né Creator né Autore: Pubblicato da / Published by / Publicado por", () => {
-    const expected = { en: ["Published by", "Role"], it: ["Pubblicato da", "Ruolo"], es: ["Publicado por", "Rol"] } as const;
+    const expected = { en: ["Published by", "Role"], it: ["Pubblicato da", "Ruolo"], es: ["Publicado por", "Rol"], fr: ["Publié par", "Rôle"] } as const;
     for (const [locale, d] of Object.entries(dictionaries)) {
       const [publishedBy, role] = expected[locale as keyof typeof expected];
       assert.equal(d.common.publishedBy, publishedBy, locale);
@@ -114,8 +116,8 @@ describe("etichette dei creator", () => {
   });
   test("chi ha pubblicato un mazzo non è l'Autore nemmeno nelle note della scheda, dei tool per le dirette e della privacy", () => {
     // 27/09/2026: "Autore" è un ruolo; le note che parlavano dell'"autore del mazzo" ora dicono "chi ha pubblicato il mazzo"
-    const role = /\b(autore|autori|autor|autores|author|authors|creator|creators)\b|author's/i;
-    for (const locale of ["en", "it", "es"] as const) {
+    const role = /\b(autore|autori|autor|autores|author|authors|auteur|auteurs|creator|creators)\b|author's/i;
+    for (const locale of ["en", "it", "es", "fr"] as const) {
       const d = dictionaries[locale];
       const texts: Record<string, string> = {
         "community.guideLangNote": d.community.guideLangNote,

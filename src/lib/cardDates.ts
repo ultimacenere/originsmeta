@@ -51,7 +51,8 @@ export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] =
   return [
     ...card.history.map((h) => patches[h.patch].date),
     lore?.en || lore?.keywords ? cardsVerified.date : undefined,
-    locale !== "en" && lore?.[locale] ? localizedTextsRead[locale] : undefined,
+    // italiano e spagnolo letti nel gioco il 25/09/2026; il francese non ha una lettura nel gioco (card-lore-fr.ts): nessuna data
+    (locale === "it" || locale === "es") && lore?.[locale] ? localizedTextsRead[locale] : undefined,
     ...guides.filter((g) => g.tags?.cards?.includes(card.slug)).map((g) => g.updated),
     tier && tier !== "unranked" ? tierList.updated : undefined,
   ];

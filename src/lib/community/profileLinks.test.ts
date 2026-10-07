@@ -292,7 +292,8 @@ describe("bio e lingue", () => {
     }
   });
   test("lingue dei contenuti: solo quelle del sito, senza doppioni, nell'ordine del sito", () => {
-    assert.deepEqual(cleanContentLangs(["it", "fr", "en", "it", 3]), ["en", "it"]);
+    assert.deepEqual(cleanContentLangs(["it", "de", "en", "it", 3]), ["en", "it"]);
+    assert.deepEqual(cleanContentLangs(["fr", "en"]), ["en", "fr"]);
     assert.deepEqual(cleanContentLangs("it"), []);
   });
   test("le lingue dei contenuti sono le lingue del sito (src/lib/i18n.ts)", () => {

@@ -66,7 +66,7 @@ function guessTimeZone(locale: Locale): string {
   } catch {
     // niente: si sceglie per lingua
   }
-  return locale === "it" ? "Europe/Rome" : locale === "es" ? "Europe/Madrid" : "Europe/London";
+  return locale === "it" ? "Europe/Rome" : locale === "es" ? "Europe/Madrid" : locale === "fr" ? "Europe/Paris" : "Europe/London";
 }
 
 /**

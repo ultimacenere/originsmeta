@@ -1,6 +1,6 @@
 # OriginsMeta
 
-> Unofficial companion site for Origins TCG, the digital trading card game by Koin Games: news, tier list, guides, the full card database, community decks and a tournament calendar, in English, Italian and Spanish.
+> Unofficial companion site for Origins TCG, the digital trading card game by Koin Games: news, tier list, guides, the full card database, community decks and a tournament calendar, in English, Italian, Spanish and French.
 
 OriginsMeta is a fan project run by players and is not affiliated with Koin Games. For rules, dates and announcements the official sources always win; everything here is sourced from them and says so on the page.
 
@@ -38,7 +38,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…) and Spanish (/es/cards/…) with the same slug, the official text in that language and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…) and French (/fr/cards/…) with the same slug, the official text in Italian and Spanish, our translation in French, and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -61,7 +61,7 @@ The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of th
 - [Community tier list](https://originsmeta.com/en/tier-list/community): the average of the tier lists saved by members, with votes per card; a preview until 5 lists.
 - [Tier list maker](https://originsmeta.com/en/tier-list/create): make your own Origins TCG tier list by dragging the Demo 2.0 cards into tiers S to D, with the Legendaries on their own list, and share it with a link. Free, no account needed.
 - [MetaShifting](https://originsmeta.com/en/metashifting): Origins TCG patch notes: every balance change, card by card and patch by patch, newest first, taken from Koin Games' official posts.
-- [Card list](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game, balance history and the legend it comes from.
+- [Card list](https://originsmeta.com/en/cards): every Demo 2.0 card with current stats, the official text in English, Italian and Spanish as it reads in the game (French: our translation, to be checked in the game), balance history and the legend it comes from.
 - [Locations](https://originsmeta.com/en/locations): the locations of the Demo 2.0 with their effects, searchable and filterable.
 - [Decks](https://originsmeta.com/en/decks): deck lists published by the community from the deck builder, each with a guide and 1–5 star ratings. At the top, the [best Origins TCG decks right now](https://originsmeta.com/en/decks#best-decks): the community ranking by weighted rating, not a win rate.
 - [Deck builder](https://originsmeta.com/en/deck-builder): build a legal deck in the browser — one Legendary plus twelve different base cards in two copies each, 25 cards — then export the game code or publish the list. Free, no account needed to build.
@@ -73,7 +73,7 @@ The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of th
 
 ## Guides
 
-Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…) and Spanish (/es/guides/…) with the same slug.
+Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…) and French (/fr/guides/…) with the same slug.
 
 - [The 11 Legendaries of Origins TCG: cards, stats, patches and decks](https://originsmeta.com/en/guides/origins-tcg-legendaries): All 11 Legendary cards of the Origins TCG Demo 2.0: cost, stats, official text, the cards they create, patch changes and the decks that use them.
 - [Origins TCG locations: how the three lanes change every game](https://originsmeta.com/en/guides/origins-tcg-locations): Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.
@@ -134,10 +134,29 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Quién escribe aquí](https://originsmeta.com/es/authors): las personas que firman las guías, los mazos y las noticias, y de qué se ocupa cada una.
 - [Quiénes somos](https://originsmeta.com/es/about): quiénes somos, cómo trabajamos y qué fuentes usamos.
 
+## Pages en français
+
+- [Accueil](https://originsmeta.com/fr): les nouveautés du site — actus, calendrier, tier list et MetaShifting.
+- [FAQ](https://originsmeta.com/fr/faq): les réponses que nous avons écrites et vérifiées, chacune avec sa source et sa date : date de sortie, langues, version mobile, progression de la démo, mode classé, Légendaires, codes de deck, Crimson Cup et Kickstarter.
+- [Tier list](https://originsmeta.com/fr/tier-list): decks, Légendaires et cartes de base ; le classement d'OriginsMeta commence après la Crimson Cup (20–25 octobre 2026), avec les résultats des tournois.
+- [Les plus jouées](https://originsmeta.com/fr/tier-list/most-played): dans combien de decks publiés sur OriginsMeta apparaît chaque Légendaire et chaque carte, avec les archétypes des decks. Popularité, pas win rate.
+- [Tier list de la communauté](https://originsmeta.com/fr/tier-list/community): la moyenne des tier lists enregistrées par les membres, avec les votes carte par carte ; un aperçu jusqu'à 5 listes.
+- [Créez votre tier list](https://originsmeta.com/fr/tier-list/create): votre propre tier list d'Origins TCG, en glissant les cartes de la Demo 2.0 dans les tiers de S à D, Légendaires à part, à partager avec un lien. Gratuit, sans compte.
+- [MetaShifting](https://originsmeta.com/fr/metashifting): les notes de patch d'Origins TCG : chaque changement d'équilibrage, carte par carte et patch par patch, du plus récent au plus ancien, d'après les publications officielles de Koin Games.
+- [Liste des cartes](https://originsmeta.com/fr/cards): toutes les cartes de la Demo 2.0 avec leurs statistiques actuelles, le texte officiel en anglais et notre traduction en français, l'historique des changements et la légende dont vient chacune.
+- [Lieux](https://originsmeta.com/fr/locations): les lieux de la Demo 2.0 avec leur effet, avec recherche et filtres.
+- [Decks](https://originsmeta.com/fr/decks): les listes publiées par la communauté depuis le deck builder, chacune avec son guide et une note de 1 à 5 étoiles.
+- [Deck builder](https://originsmeta.com/fr/deck-builder): construisez un deck légal dans le navigateur — une Légendaire plus douze cartes de base différentes en deux exemplaires chacune, 25 cartes — puis exportez le code du jeu ou publiez la liste. Gratuit, sans compte pour construire.
+- [Guides](https://originsmeta.com/fr/guides): comment fonctionne le jeu, la feuille de route, l'économie de collection, comment jouer la démo, guides de decks et matchups.
+- [Tournois et événements](https://originsmeta.com/fr/tournaments): événements officiels et communautaires, plus l'organisateur de tournois de la communauté.
+- [Actus](https://originsmeta.com/fr/news): annonces officielles, mises à jour de la démo, événements et decks publiés sur le site ; chaque patch a aussi son article. Chaque actu a sa propre page signée, avec la date, la source officielle et les cartes concernées.
+- [Rédaction](https://originsmeta.com/fr/authors): les personnes qui signent les guides, les decks et les actus, et ce dont chacune s'occupe.
+- [À propos](https://originsmeta.com/fr/about): qui nous sommes, comment nous travaillons et quelles sources nous utilisons.
+
 ## Feeds, sitemaps and full text
 
 - [Full text (llms-full.txt)](https://originsmeta.com/llms-full.txt): every guide and news article in English as plain Markdown, plus every card of the Demo 2.0 collection with its official English text and, apart, the created cards (not checked in the game). Generated from the site's data at every deploy.
-- [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml) and Spanish (/es/news/feed.xml).
+- [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml), Spanish (/es/news/feed.xml) and French (/fr/news/feed.xml).
 - [Sitemap index](https://originsmeta.com/sitemap.xml): one sitemap per section and language.
 
 ## Sources

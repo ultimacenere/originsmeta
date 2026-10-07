@@ -29,7 +29,8 @@ registerHooks({
 const mod: typeof import("./sitemapEntries") = await import("./sitemapEntries.ts");
 const { sectionEntries, sitemapPages } = mod;
 
-const TODAY = "2026-09-30";
+// dopo il 07/10/2026 (nascita del francese, soglia di tutto il sito), così le date dei contenuti si vedono
+const TODAY = "2026-10-15";
 const SITE = "https://originsmeta.com";
 const base = {
   decks: [],
@@ -44,19 +45,19 @@ describe("sitemap del profilo pubblico e della directory dei creator", () => {
     assert.ok(!few.some((p) => p.path === "/creators"));
     const none = sitemapPages(base);
     assert.ok(!none.some((p) => p.path === "/creators"), "senza dati del profilo pubblico (migrazione non applicata) niente directory");
-    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-09-27T08:00:00+00:00", byUser: [] } });
-    for (const locale of ["en", "it", "es"] as const) {
+    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-10-09T08:00:00+00:00", byUser: [] } });
+    for (const locale of ["en", "it", "es", "fr"] as const) {
       const entry = sectionEntries(many, "pages", locale, TODAY).find((e) => e.url === `${SITE}/${locale}/creators`);
       assert.ok(entry, `manca /${locale}/creators`);
-      assert.equal(entry.lastmod, "2026-09-27");
-      assert.equal(Object.keys(entry.alternates ?? {}).length, 4, "hreflang delle tre lingue più x-default");
+      assert.equal(entry.lastmod, "2026-10-09");
+      assert.equal(Object.keys(entry.alternates ?? {}).length, 5, "hreflang delle quattro lingue più x-default");
     }
   });
   test("il lastmod di /u/<nome> segue la modifica del profilo, mai nel futuro", () => {
-    const edited = sitemapPages({ ...base, showcase: { creators: 1, byUser: [["coachcrono", "2026-09-28T09:00:00+00:00"]] } });
+    const edited = sitemapPages({ ...base, showcase: { creators: 1, byUser: [["coachcrono", "2026-10-11T09:00:00+00:00"]] } });
     const u = sectionEntries(edited, "community", "it", TODAY).find((e) => e.url.endsWith("/it/u/coachcrono"));
-    assert.equal(u?.lastmod, "2026-09-28");
-    const future = sitemapPages({ ...base, showcase: { creators: 1, byUser: [["coachcrono", "2026-10-05T09:00:00+00:00"]] } });
+    assert.equal(u?.lastmod, "2026-10-11");
+    const future = sitemapPages({ ...base, showcase: { creators: 1, byUser: [["coachcrono", "2026-10-25T09:00:00+00:00"]] } });
     assert.equal(sectionEntries(future, "community", "it", TODAY).find((e) => e.url.endsWith("/it/u/coachcrono"))?.lastmod, TODAY);
   });
 });

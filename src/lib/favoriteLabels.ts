@@ -84,4 +84,30 @@ const es: FavoriteLabels = {
   },
 };
 
-export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es };
+/* "Favoris" per i preferiti (docs/francese.md): il tasto porta già la stella, il testo dice l'azione. */
+const fr: FavoriteLabels = {
+  save: "Ajouter aux favoris",
+  saved: "Dans vos favoris",
+  countOne: "dans les favoris de 1 joueur",
+  count: "dans les favoris de {n} joueurs",
+  countNone: "Ajoutez-le à vos favoris pour le retrouver dans votre profil",
+  loginToSave: "Connectez-vous pour l'ajouter aux favoris",
+  errors: {
+    limit: "Vous avez 500 decks en favoris, le maximum : retirez-en quelques-uns depuis votre profil.",
+    invalid: "Ce deck ne peut pas être ajouté aux favoris.",
+    unavailable: "Les favoris ne sont pas encore disponibles : réessayez dans quelques minutes.",
+    db: "Une erreur s'est produite : réessayez.",
+  },
+  sortTrending: "Tendances",
+  sortSaved: "Les plus mis en favoris",
+  favoritesShort: "☆ {n}",
+  account: {
+    title: "Favoris",
+    hint: "Les decks que vous avez ajoutés à vos favoris. Vous êtes la seule personne à voir cette liste.",
+    empty: "Aucun favori pour le moment : ouvrez un deck et appuyez sur « Ajouter aux favoris ».",
+    remove: "Retirer",
+    unpublished: "N'est plus publié",
+  },
+};
+
+export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr };

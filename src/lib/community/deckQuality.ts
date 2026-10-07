@@ -151,6 +151,10 @@ export const guideMeterLabels: Record<Locale, { below: string; ok: string }> = {
     below: "{n} de {min} palabras. Con al menos {min} palabras de guía (plan de juego más secciones), la página del mazo puede aparecer en Google; con menos, se queda solo en el sitio.",
     ok: "{n} palabras: guía completa, la página del mazo puede aparecer en Google.",
   },
+  fr: {
+    below: "{n} mots sur {min}. Avec au moins {min} mots de guide (plan de jeu plus sections), la page du deck peut apparaître sur Google ; avec moins, elle reste seulement sur le site.",
+    ok: "{n} mots : guide complet, la page du deck peut apparaître sur Google.",
+  },
 };
 
 /** La frase dell'indicatore per un numero di parole. */
@@ -302,6 +306,34 @@ const profileWords: Record<Locale, ProfileWords> = {
     kinds: { legendaries: "Legendarias", cards: "cartas base" },
     and: " y ",
     tails: ["Perfil de la comunidad en OriginsMeta, sitio fan no oficial de Origins TCG.", "Perfil de la comunidad en OriginsMeta.", "Perfil de la comunidad."],
+  },
+  fr: {
+    title: {
+      both: "{name} : decks et tier lists d'Origins TCG",
+      decks: "{name} : decks d'Origins TCG",
+      deck: "{name} : deck d'Origins TCG",
+      decksGuides: "{name} : decks et guides d'Origins TCG",
+      guides: "{name} : guides d'Origins TCG",
+      guide: "{name} : guide d'Origins TCG",
+      none: "{name} : profil de la communauté d'Origins TCG",
+      short: "{name} : Origins TCG",
+    },
+    decks: ({ name, n, list }) =>
+      n === 1
+        ? `Un deck Origins TCG de ${name}${list} avec son plan de jeu et sa liste complète`
+        : `${n} decks Origins TCG de ${name}${list} avec plans de jeu et listes complètes`,
+    plusTiers: (k) => (k === 1 ? ", plus une tier list enregistrée" : `, plus ${k} tier lists enregistrées`),
+    plusGuides: (g) => (g === 1 ? ", plus un guide" : `, plus ${g} guides`),
+    guidesOnly: ({ name, g }) => (g === 1 ? `Un guide Origins TCG écrit par ${name} pour les autres joueurs` : `${g} guides Origins TCG écrits par ${name} pour les autres joueurs`),
+    tiersOnly: ({ name, k, kinds }) => {
+      // "classée" concorda con "Une tier list", "classées" con "… tier lists"
+      const head = `${k === 1 ? "Une tier list Origins TCG" : `${k} tier lists Origins TCG`} de ${name} (${kinds}), ${k === 1 ? "classée" : "classées"} de S à D`;
+      return [`${head}, à ouvrir dans l'outil Créez votre tier list.`, `${head}.`];
+    },
+    none: (name) => `Le profil de ${name} sur OriginsMeta, le site de la communauté Origins TCG : pas encore de deck publié ni de tier list.`,
+    kinds: { legendaries: "Légendaires", cards: "cartes de base" },
+    and: " et ",
+    tails: ["Profil de la communauté sur OriginsMeta, site de fans non officiel d'Origins TCG.", "Profil de la communauté sur OriginsMeta.", "Profil de la communauté."],
   },
 };
 
@@ -524,5 +556,12 @@ export const communityPageLabels: Record<Locale, CommunityPageLabels> = {
     guideCallout: "La guía de OriginsMeta sobre este mazo",
     authorPage: "Redacción de OriginsMeta: {name}",
     tierList: "Tier list de Origins TCG",
+  },
+  fr: {
+    sameLegendary: "D'autres decks avec {legendary}",
+    moreAfter: "Autres decks",
+    guideCallout: "Le guide d'OriginsMeta sur ce deck",
+    authorPage: "Rédaction d'OriginsMeta : {name}",
+    tierList: "Tier list d'Origins TCG",
   },
 };

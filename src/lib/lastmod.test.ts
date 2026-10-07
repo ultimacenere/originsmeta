@@ -50,10 +50,15 @@ describe("lastmod di un URL", () => {
   test("vince la data più recente del contenuto", () => {
     assert.equal(lastmodFor("en", ["2026-10-02", "2026-10-15", "2026-09-30"], today), "2026-10-15");
   });
-  test("nessuna pagina spagnola prima del 25/09/2026, qualunque data abbia il contenuto", () => {
+  test("nessuna pagina spagnola prima del 25/09/2026 né francese prima del 07/10/2026, qualunque data abbia il contenuto", () => {
     assert.equal(LOCALE_SINCE.es, "2026-09-25");
-    assert.equal(lastmodFor("es", ["2026-08-27"], today), "2026-09-25");
-    assert.equal(lastmodFor("es", [], today), "2026-09-25");
+    assert.equal(LOCALE_SINCE.fr, "2026-10-07");
+    // dal 07/10/2026 la soglia di tutto il sito (hreflang fr) supera la nascita dello spagnolo
+    assert.equal(lastmodFor("es", ["2026-08-27"], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("es", [], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("fr", ["2026-09-25"], today), "2026-10-07");
+    assert.equal(lastmodFor("fr", [], today), "2026-10-07");
+    assert.equal(lastmodFor("fr", ["2026-10-12"], today), "2026-10-12");
   });
   test("la soglia comune è la nascita della lingua più recente, non un cambio di header o footer", () => {
     assert.equal(SITE_WIDE_CHANGE, latestDay(Object.values(LOCALE_SINCE)));
@@ -68,7 +73,7 @@ describe("lastmod di un URL", () => {
     assert.equal(lastmodFor("es", [], "2026-09-24"), "2026-09-24");
   });
   test("i timestamp dei mazzi (Supabase) diventano giorni", () => {
-    assert.equal(lastmodFor("it", ["2026-10-03T21:45:10.5+00:00"], today), "2026-10-03");
+    assert.equal(lastmodFor("it", ["2026-10-12T21:45:10.5+00:00"], today), "2026-10-12");
   });
   test("sempre e solo un giorno", () => {
     for (const locale of ["en", "it", "es"] as const) {

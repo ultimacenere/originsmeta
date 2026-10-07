@@ -3,6 +3,7 @@
  * `node --test src/lib/relatedNews.test.ts`. Come per `tiercode.test.ts`, gli import hanno l'estensione `.ts`.
  * Oltre ai casi costruiti a mano, un gruppo di test gira sulle news vere di `news.ts`.
  */
+import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -18,10 +19,26 @@ import {
   // TypeScript segnala TS5097 sulla riga seguente e la ignoriamo apposta, come in tiercode.test.ts.
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./relatedNews.ts";
-import {
-  news,
-  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-} from "./data/news.ts";
+
+type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
+type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
+// news.ts importa news-fr.ts (i testi francesi, dal 07/10/2026) senza estensione: come in newsMeta.test.ts, un hook di
+// risoluzione dei moduli di Node aggiunge `.ts` agli import relativi, e news.ts si carica dopo.
+const { registerHooks } = nodeModule as unknown as { registerHooks: (hooks: { resolve: ResolveHook }) => void };
+registerHooks({
+  resolve(specifier, context, next) {
+    if (/^\.\.?\//.test(specifier) && !/\.(?:[cm]?[jt]sx?|json)$/.test(specifier)) {
+      try {
+        return next(`${specifier}.ts`, context);
+      } catch {
+        // non è un modulo .ts: si risolve com'è scritto
+      }
+    }
+    return next(specifier, context);
+  },
+});
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const { news }: typeof import("./data/news") = await import("./data/news.ts");
 
 const item = (slug: string, date: string, extra: Partial<NewsLinkFields> = {}): NewsLinkFields => ({ slug, date, source: "steam", ...extra });
 const slugs = (list: NewsLinkFields[]) => list.map((x) => x.slug);

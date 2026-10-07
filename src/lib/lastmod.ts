@@ -20,11 +20,12 @@ import type { Locale } from "./i18n";
 export type Day = string;
 
 /** Primo giorno online di ogni lingua: nessuna pagina può dichiararsi cambiata prima di esistere. */
-export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25" };
+export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25", fr: "2026-10-07" };
 
 /**
  * Soglia comune a tutte le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni URL l'hreflang `es` (e la voce del
- * selettore della lingua), cioè un cambio dei segnali di lingua di tutto il sito.
+ * selettore della lingua), cioè un cambio dei segnali di lingua di tutto il sito; il 07/10/2026 il francese ha fatto lo
+ * stesso con l'hreflang `fr`.
  * Si sposta SOLO quando nasce una lingua nuova o cambia l'hreflang di tutte le pagine. Mai per i link di navigazione
  * nell'header o nel footer (la colonna "Esplora" compresa) né per altri ritocchi del contorno: Google non li considera
  * un cambio del contenuto, e portare ogni URL allo stesso giorno per il contorno toglierebbe credibilità al lastmod
@@ -32,7 +33,7 @@ export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-0
  * modelli (`PAGE_UPDATED`). Il test la vuole uguale alla nascita della lingua più recente: se un giorno si sposta per
  * un cambio di hreflang senza lingue nuove, si aggiorna anche il test, spiegando perché.
  */
-export const SITE_WIDE_CHANGE: Day = "2026-09-25";
+export const SITE_WIDE_CHANGE: Day = "2026-10-07";
 
 /** Ogni news ha una pagina propria dal 21/09/2026: prima esisteva solo la scheda nell'elenco. */
 export const NEWS_PAGES_SINCE: Day = "2026-09-21";

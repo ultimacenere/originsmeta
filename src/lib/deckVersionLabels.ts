@@ -154,4 +154,50 @@ const es: DeckVersionLabels = {
   },
 };
 
-export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es };
+const fr: DeckVersionLabels = {
+  edit: {
+    title: "Cartes du deck",
+    current: "Version {n} · patch {patch} · ces cartes depuis le {date}",
+    intro:
+      "Un nouveau patch est sorti ? Changez les cartes ici et gardez le nom, le guide, les vidéos et le lien. De nouvelles cartes ouvrent la version {next} : les votes repartent de zéro, et la version précédente reste sur la page du deck avec ses propres votes.",
+    openBuilder: "Changer les cartes dans le deck builder",
+    updateTo: "Mettre à jour vers la version {patch}",
+    outdated: "Ce deck a été construit pour le patch {old} : la version {patch} est sortie.",
+    changedTitle: "Nouvelles cartes, pas encore enregistrées",
+    added: "Entrent",
+    removed: "Sortent",
+    legendary: "Légendaire : {from} → {to}",
+    saveNotice: "En enregistrant, le deck devient la version {next} (patch {patch}) et les votes repartent de zéro. Le guide ne change pas tout seul : vérifiez qu'il correspond encore aux nouvelles cartes.",
+    discard: "Garder les cartes actuelles",
+    same: "Le deck builder a renvoyé les mêmes cartes que celles du deck : rien ne change.",
+    invalid: "Les cartes du lien sont illisibles : le deck garde ses cartes actuelles.",
+    unavailable: "Le changement de cartes n'est pas encore disponible : vous pouvez tout de même modifier le nom, le guide et les vidéos.",
+  },
+  builder: {
+    banner: "Vous mettez à jour les cartes de « {name} », un deck publié. Quand vous avez terminé, revenez en arrière pour enregistrer : jusque-là, le guide et les votes restent en place.",
+    bannerNoName: "Vous mettez à jour les cartes d'un deck publié. Quand vous avez terminé, revenez en arrière pour enregistrer.",
+    update: "Enregistrer dans le deck publié",
+    cancel: "Arrêter la mise à jour",
+  },
+  deck: {
+    version: "Version {n}",
+    title: "Versions de ce deck",
+    hint: "Les votes comptent pour la version en vigueur. Les versions précédentes gardent leurs cartes et leurs votes.",
+    current: "actuelle",
+    option: "v{n} · {patch}",
+    optionNoPatch: "v{n}",
+    range: "{from} → {to}",
+    since: "depuis le {date}",
+    votes: "{avg} ★ · {n} votes",
+    oneVote: "{avg} ★ · 1 vote",
+    noVotes: "Aucun vote",
+    changes: "Changements par rapport à la v{n}",
+    cards: "Cartes de la version {n}",
+    openInBuilder: "Ouvrir la v{n} dans le deck builder",
+  },
+  errors: {
+    versionsUnavailable: "Le changement de cartes n'est pas encore disponible : réessayez dans quelques minutes, ou enregistrez sans changer les cartes.",
+  },
+};
+
+export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr };

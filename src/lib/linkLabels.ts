@@ -108,6 +108,31 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     deckChange: "Cambio de mazo",
     guideNews: "Noticias sobre este tema",
   },
+  fr: {
+    explore: {
+      title: "Explorer",
+      metashifting: "Notes de patch (MetaShifting)",
+      locations: "Lieux",
+      mostPlayed: "Les plus jouées",
+      communityTierList: "Tier list de la communauté",
+      makeTierList: "Créez votre tier list",
+      authors: "Rédaction",
+    },
+    relatedNews: "Actus liées",
+    patch: {
+      title: "Ce qui change dans ce patch",
+      introOne: "1 carte change dans ce patch.",
+      introMany: "{n} cartes changent dans ce patch.",
+      swapsOne: "1 carte fait partie des changements des decks préconstruits du playtest.",
+      swapsMany: "{n} cartes font partie des changements des decks préconstruits du playtest.",
+      linksOne: "Son nom ouvre la page de la carte avec tout son historique d'équilibrage.",
+      linksMany: "Chaque nom ouvre la page de la carte avec tout son historique d'équilibrage.",
+      numbers: "Les chiffres indiquent mana · Puissance/Santé, avant et après.",
+      metashifting: "Tous les changements d'équilibrage dans MetaShifting",
+    },
+    deckChange: "Changement de deck",
+    guideNews: "Actus sur ce sujet",
+  },
 };
 
 // ---------- Modifiche di bilanciamento ----------

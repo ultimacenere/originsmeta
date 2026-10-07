@@ -258,4 +258,87 @@ const es: CardVoteLabels = {
     "Votos a las cartas (desde el 6 de octubre de 2026): con la sesión iniciada puedes votar cada carta del 1 al 10 desde su página o desde /tier-list/votes. El voto queda vinculado a tu cuenta (carta, puntuación, fecha), así puedes cambiarlo; las páginas muestran solo promedios, recuentos y la distribución de las puntuaciones, nunca quién votó qué. No se guarda ninguna dirección IP. Tus votos se borran con la cuenta; para quitarlos antes, escribe a staff@originsmeta.com.",
 };
 
-export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es };
+// Francese dal 07/10/2026 (docs/francese.md): vous, "Votes des membres" per la sezione, "Votez de 1 à 10", "Votre vote",
+// "tier" come in spagnolo (fascia); i segnaposto e la scala 1–10 restano uguali all'inglese.
+const fr: CardVoteLabels = {
+  page: {
+    title: "Tier list des cartes Origins TCG par les votes (1–10)",
+    titlePreview: "Tier list des votes sur les cartes Origins TCG (aperçu)",
+    description: "Notez chaque carte d'Origins TCG de 1 à 10 : la moyenne des votes des membres d'OriginsMeta forme une tier list des Légendaires et des cartes de base.",
+    h1: "Tier list des votes sur les cartes",
+    h1Preview: "Tier list des votes sur les cartes (aperçu)",
+    intro:
+      "Chaque membre peut noter chaque carte de la Demo 2.0 de 1 (faible) à 10 (excellente), un vote par carte, modifiable à tout moment. Une carte rejoint le tier de sa moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous. Ce n'est pas la tier list de la communauté, qui fait la moyenne des listes complètes enregistrées avec l'outil : ici, chaque carte a sa propre note.",
+    sourceText: "votes de 1 à 10 donnés par les membres à chaque carte",
+    sample: "{votes} sur {cards} par {voters}",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    cardsOne: "1 carte",
+    cardsMany: "{n} cartes",
+    votersOne: "1 personne",
+    votersMany: "{n} personnes",
+    updatedText: "le dernier le {date}",
+    preview: "Aperçu : elle devient la tier list des votes à {min} votants ({n} sur {min} pour l'instant).",
+    previewBadge: "Aperçu",
+    previewShort: "elle devient la tier list des votes à {min} votants ({n} sur {min} pour l'instant)",
+    rankedRule: "Une carte obtient son tier à partir de {min} votes ; en dessous, sa moyenne s'affiche dans le détail, sans tier.",
+    empty: "Personne n'a encore noté de carte : le premier vote peut être le vôtre. Ouvrez une carte ci-dessous et donnez-lui une note.",
+    unavailable: "Les votes sur les cartes ne sont pas encore actifs sur ce site.",
+    disclaimer: "C'est l'avis des personnes qui votent sur ce site, pas une statistique du jeu : il pèse autant que les votes derrière chaque carte.",
+    howTitle: "Comment ça marche",
+    how: [
+      "Connectez-vous, ouvrez une carte ici ou sur sa page et choisissez une note de 1 (faible) à 10 (excellente).",
+      "Un vote par carte : appuyer sur un autre chiffre le remplace.",
+      "Les tiers viennent de la moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous ; une carte a besoin de {min} votes pour obtenir un tier.",
+      "La page se met à jour quelques minutes après un vote.",
+    ],
+    sections: {
+      legendaries: { title: "Légendaires", text: "Les Légendaires, classées par note moyenne." },
+      cards: { title: "Cartes de base", text: "Unités et sorts, classés par note moyenne." },
+    },
+    goTitle: "Votes des membres",
+    goText: "Chaque carte notée de 1 à 10 par les membres",
+    communityText: "Pour les listes complètes enregistrées par les membres :",
+    communityAnchor: "tier list de la communauté",
+  },
+  explorer: {
+    colRating: "Note",
+    tier: "Tier {tier}",
+    average: "moyenne {avg} sur 10",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    distribution: "Votes par note",
+    unranked: "Aucun vote pour l'instant : donnez le premier.",
+    needMore: "Obtient un tier à partir de {min} votes ({n} pour l'instant).",
+    scale: "1 = faible · 10 = excellente",
+    noVotesShort: "aucun vote",
+    peekNote: "Note des membres : {avg}/10 · {votes}",
+  },
+  widget: {
+    title: "Votre vote",
+    rate: "Votez de 1 (faible) à 10 (excellente) pour cette carte",
+    yourVote: "Votre vote : {n}/10",
+    loginToVote: "Connectez-vous pour voter",
+    voted: "Merci, vote enregistré",
+    voteError: "Impossible d'enregistrer le vote",
+    unavailable: "Les votes ne sont pas encore actifs.",
+    limit: "Vous avez atteint la limite de votes.",
+    average: "Moyenne {avg}/10",
+    noVotes: "Aucun vote pour l'instant",
+    votesOne: "1 vote",
+    votesMany: "{n} votes",
+    low: "faible",
+    high: "excellente",
+    updateNote: "Les tiers se mettent à jour en quelques minutes.",
+  },
+  cardPage: {
+    kicker: "Votes des membres",
+    text: "Votez de 1 (faible) à 10 (excellente) pour {name} : la moyenne des membres construit la tier list des votes sur les cartes.",
+    tier: "Tier {tier} dans la tier list des votes sur les cartes.",
+    open: "Ouvrir la tier list des votes sur les cartes",
+  },
+  privacy:
+    "Votes sur les cartes (depuis le 6 octobre 2026) : les membres connectés peuvent noter chaque carte de 1 à 10 depuis sa page ou depuis /tier-list/votes. Le vote est enregistré avec votre compte (carte, note, date) pour que vous puissiez le modifier ; les pages n'affichent que des moyennes, des décomptes et la répartition des notes, jamais qui a voté quoi. Aucune adresse IP n'est enregistrée. Vos votes sont supprimés avec votre compte ; pour les faire retirer plus tôt, écrivez à staff@originsmeta.com.",
+};
+
+export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es, fr };

@@ -111,7 +111,7 @@ export const GUIDE_COVER_MIN = { width: 1200, height: 675 } as const;
 export const GUIDE_COVER_MAX_BYTES = 2 * 1024 * 1024;
 
 /** Lingue in cui si scrive una guida: quelle del sito (`locales` di i18n.ts, il test le confronta). */
-export const GUIDE_LANGS = ["en", "it", "es"] as const;
+export const GUIDE_LANGS = ["en", "it", "es", "fr"] as const;
 
 /**
  * Parole di testo (riassunto più sezioni, nella lingua dell'autore) sotto cui una guida non si indicizza in nessuna

@@ -14,7 +14,7 @@ import { CardName, legendaryFirst } from "./CardChip";
  * sono comunque nell'HTML per i motori. Il titolo è un H2 dentro il <summary> (su /cards l'unico titolo sopra è
  * l'H1) e le saghe sono H3.
  *
- * Componente server senza stato; le etichette sono qui nelle tre lingue (niente dizionario da toccare), il resto
+ * Componente server senza stato; le etichette sono qui nelle lingue del sito (niente dizionario da toccare), il resto
  * (saghe, "Leggendaria") viene dai dati e dai dizionari che il sito ha già.
  */
 
@@ -33,6 +33,11 @@ const labels: Record<Locale, { title: string; text: string; link: string }> = {
     title: "Cartas fuera de la demo",
     text: "Estas cartas se retiraron en builds anteriores y no están en la Demo 2.0, así que el deck builder no las acepta. Cada una conserva su ficha, con el último texto y las últimas estadísticas conocidas y la leyenda de la que viene.",
     link: "Todas las cartas fuera de la demo",
+  },
+  fr: {
+    title: "Cartes absentes de la démo",
+    text: "Ces cartes ont été retirées dans des versions précédentes et ne sont pas dans la Demo 2.0 : le deck builder ne les accepte donc pas. Chacune garde sa page, avec son dernier texte et ses dernières statistiques connus et la légende dont elle est issue.",
+    link: "Toutes les cartes absentes de la démo",
   },
 };
 

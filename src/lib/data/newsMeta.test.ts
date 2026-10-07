@@ -25,13 +25,6 @@ import {
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./newsMeta.ts";
 import {
-  TRANSLATED_SINCE,
-  modifiedIn,
-  news,
-  newsDates,
-  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-} from "./news.ts";
-import {
   LOCALE_SINCE,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "../lastmod.ts";
@@ -66,6 +59,10 @@ registerHooks({
 });
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const guidesModule: typeof import("../content/guides") = await import("../content/guides.ts");
+// news.ts importa news-fr.ts (i testi francesi, dal 07/10/2026) senza estensione: anche lui si carica dopo l'hook
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const newsModule: typeof import("./news") = await import("./news.ts");
+const { TRANSLATED_SINCE, modifiedIn, news, newsDates } = newsModule;
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
@@ -145,7 +142,7 @@ describe("funzioni di supporto", () => {
 });
 
 describe("newsProblems", () => {
-  const l10n = (s: string) => ({ en: s, it: s, es: s });
+  const l10n = (s: string) => ({ en: s, it: s, es: s, fr: s });
   const ok = {
     slug: "prova",
     date: "2026-09-25",
@@ -167,7 +164,7 @@ describe("newsProblems", () => {
       metaTitle: { ...ok.metaTitle, it: "x".repeat(47) },
       description: { ...ok.description, en: "corta" },
       body: l10n("## Sezione {#sezione}\n\nVedi [la guida](/en/guides/play-the-demo) e [le regole](/en/news/non-esiste)."),
-      highlights: { en: [{ label: "A", anchor: "sezione" }], it: [{ label: "B", anchor: "manca" }], es: [] },
+      highlights: { en: [{ label: "A", anchor: "sezione" }], it: [{ label: "B", anchor: "manca" }], es: [], fr: [] },
       guides: ["guida-che-non-esiste"],
     };
     const problems = newsProblems(bad as unknown as Parameters<typeof newsProblems>[0], two, checks);
@@ -180,7 +177,7 @@ describe("newsProblems", () => {
     assert.ok(problems.some((p) => p.includes('"guida-che-non-esiste" non esiste')));
   });
   test("una news aggiornata senza il paragrafo dell'aggiornamento", () => {
-    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí." } };
+    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí.", fr: "## A\n\nMise à jour du 25 septembre : oui." } };
     assert.deepEqual(newsProblems(upd, locales, checks), ["prova [it]: aggiornata il 2026-09-25 ma il testo non ha il paragrafo \"Aggiornamento del 25 settembre…\""]);
   });
   test("un title senza Origins TCG in SERP", () => {
@@ -238,11 +235,14 @@ describe("date delle versioni tradotte (news e guide)", () => {
     assert.equal(modifiedIn("es", "2026-03-13"), "2026-09-25");
     assert.equal(modifiedIn("es", "2026-09-25"), "2026-09-25");
     assert.equal(modifiedIn("es", "2026-10-02"), "2026-10-02");
+    assert.equal(modifiedIn("fr", "2026-09-25"), "2026-10-07");
+    assert.equal(modifiedIn("fr", "2026-10-07"), "2026-10-07");
+    assert.equal(modifiedIn("fr", "2026-10-20"), "2026-10-20");
     assert.equal(modifiedIn("en", "2026-03-13"), "2026-03-13");
     assert.equal(modifiedIn("it", "2026-09-09"), "2026-09-09");
   });
   test("la soglia di ogni lingua tradotta è il giorno in cui è nata, lo stesso della sitemap", () => {
-    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es"]);
+    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es", "fr"]);
     for (const [l, day] of Object.entries(TRANSLATED_SINCE)) assert.equal(day, LOCALE_SINCE[l as Locale], l);
   });
   test("news: pubblicata alla data dell'articolo in ogni lingua; la modifica spagnola non va prima del 25/09/2026 e, se è solo la traduzione, la firma lo dice", () => {

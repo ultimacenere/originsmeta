@@ -109,7 +109,38 @@ const es: DeckArtLabels = {
   },
 };
 
-export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es };
+const fr: DeckArtLabels = {
+  form: {
+    title: "Artwork de la Légendaire",
+    roles: "Creator et Staff",
+    hint: "Remplacez l'illustration de {legendary} sur ce deck par la vôtre : sur la page du deck, dans les listes de decks, sur votre profil et dans les tier lists. Format carte 5:7, au moins {minw} × {minh} px ({w} × {h} est l'idéal), PNG, JPG ou WebP jusqu'à 2 Mo : nous la recadrons au centre en 5:7. Uniquement des images qui vous appartiennent ou que vous avez le droit d'utiliser. La carte officielle reste sur sa propre page et dans l'aperçu.",
+    upload: "Importer l'artwork",
+    replace: "Changer l'artwork",
+    uploading: "Envoi en cours…",
+    remove: "Utiliser la carte officielle",
+    official: "Carte officielle",
+    custom: "Votre artwork",
+    notOwner: "Seule la personne qui a publié le deck peut importer son artwork ; vous pouvez le retirer ici.",
+    noRole: "L'artwork de la Légendaire est réservé aux Creators et au Staff : ici, vous pouvez seulement le retirer.",
+    errors: {
+      type: "Ce fichier n'est pas une image PNG, JPG ou WebP.",
+      tooBig: "L'image est trop lourde même après compression : essayez-en une plus petite.",
+      upload: "L'envoi a échoué : vérifiez votre connexion et réessayez.",
+      limit: "Vous avez atteint la limite d'images importées : retirez celles que vous n'utilisez plus, ou écrivez au staff.",
+    },
+  },
+  errors: {
+    artFile: "L'artwork est introuvable ou inutilisable : importez-le de nouveau, ou utilisez la carte officielle.",
+    artRole: "L'artwork de la Légendaire est réservé aux Creators et au Staff.",
+    artUnavailable: "L'artwork du deck ne peut pas encore être enregistré : réessayez dans quelques minutes, ou publiez avec la carte officielle.",
+  },
+  deck: {
+    caption: "Artwork du Creator",
+    alt: "{legendary} : artwork du deck de {author}",
+  },
+};
+
+export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr };
 
 /** Le etichette del modulo nella lingua della pagina, con gli errori delle Server Action. */
 export function deckArtFormLabels(locale: Locale): DeckArtFormLabels {

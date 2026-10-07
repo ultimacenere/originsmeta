@@ -54,7 +54,7 @@ export const COMIC_SOURCE_MAX_BYTES = 20 * 1024 * 1024;
 export const COMIC_COVER_SIZE = { width: 1600, height: 900 } as const;
 export const COMIC_COVER_MIN = { width: 1200, height: 675 } as const;
 /** Lingue in cui si scrivono i testi (quella dei balloon): le tre del sito. */
-export const COMIC_LANGS = ["en", "it", "es"] as const;
+export const COMIC_LANGS = ["en", "it", "es", "fr"] as const;
 
 export type ComicStatus = "draft" | "published" | "hidden";
 export type ComicPage = { path: string; width: number; height: number; text: string };

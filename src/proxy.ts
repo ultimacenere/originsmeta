@@ -42,33 +42,33 @@ export async function proxy(request: NextRequest) {
 // nuova va aggiunta a mano su ogni riga, come lo spagnolo il 25/09/2026 (ES-06).
 export const config = {
   matcher: [
-    "/:locale(en|it|es)/account",
+    "/:locale(en|it|es|fr)/account",
     // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
-    "/:locale(en|it|es)/account/profile",
+    "/:locale(en|it|es|fr)/account/profile",
     // casella messaggi (26/09/2026, pacchetto INBOX): elenco e conversazione dell'utente, area staff, pagine renderizzate sul server
-    "/:locale(en|it|es)/account/messages",
-    "/:locale(en|it|es)/account/messages/:id",
-    "/:locale(en|it|es)/account/staff/messages",
-    "/:locale(en|it|es)/account/staff/messages/:id",
+    "/:locale(en|it|es|fr)/account/messages",
+    "/:locale(en|it|es|fr)/account/messages/:id",
+    "/:locale(en|it|es|fr)/account/staff/messages",
+    "/:locale(en|it|es|fr)/account/staff/messages/:id",
     // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
-    "/:locale(en|it|es)/account/tracker",
-    "/:locale(en|it|es)/decks/community/:slug/edit",
+    "/:locale(en|it|es|fr)/account/tracker",
+    "/:locale(en|it|es|fr)/decks/community/:slug/edit",
     // mazzi torneo (04/10/2026): modifica, pagina renderizzata sul server
-    "/:locale(en|it|es)/decks/tournament/:slug/edit",
+    "/:locale(en|it|es|fr)/decks/tournament/:slug/edit",
     // guide della community (pacchetto GUIDE, 27/09/2026): scrittura e modifica, pagine renderizzate sul server
-    "/:locale(en|it|es)/guides/new",
-    "/:locale(en|it|es)/guides/community/:slug/edit",
+    "/:locale(en|it|es|fr)/guides/new",
+    "/:locale(en|it|es|fr)/guides/community/:slug/edit",
     // fumetti dei creator (pacchetto FUMETTI, 29/09/2026): pubblicazione e modifica, pagine renderizzate sul server
-    "/:locale(en|it|es)/news/comics/new",
-    "/:locale(en|it|es)/news/comics/:slug/edit",
+    "/:locale(en|it|es|fr)/news/comics/new",
+    "/:locale(en|it|es|fr)/news/comics/:slug/edit",
     // Tournament Organizer: pagine renderizzate sul server (la scheda è dinamica dal 16/09: i tornei privati dipendono dalla sessione)
-    "/:locale(en|it|es)/tournaments/new",
-    "/:locale(en|it|es)/tournaments/:slug",
-    "/:locale(en|it|es)/tournaments/:slug/manage",
-    "/:locale(en|it|es)/tournaments/:slug/deck",
-    "/:locale(en|it|es)/tournaments/:slug/match/:id",
+    "/:locale(en|it|es|fr)/tournaments/new",
+    "/:locale(en|it|es|fr)/tournaments/:slug",
+    "/:locale(en|it|es|fr)/tournaments/:slug/manage",
+    "/:locale(en|it|es|fr)/tournaments/:slug/deck",
+    "/:locale(en|it|es|fr)/tournaments/:slug/match/:id",
     // draft online (02/10/2026): stanza fra due giocatori, pagina renderizzata sul server, mosse con la sessione
-    "/:locale(en|it|es)/draft/r/:code",
+    "/:locale(en|it|es|fr)/draft/r/:code",
     // Link breve dei creator: /@<nome> (una cartella di src/app non può chiamarsi "@…", sono le rotte parallele)
     "/@:name",
     // URL di spam sulla radice: solo con entrambi i parametri (la home e le pagine statiche non passano di qui)

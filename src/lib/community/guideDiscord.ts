@@ -1,3 +1,4 @@
+import type { Locale } from "../i18n";
 import { escapeDiscord, type DiscordWebhookPayload } from "../discordWebhook";
 import { discordUtm } from "../analytics";
 
@@ -17,9 +18,9 @@ const SITE = "https://originsmeta.com";
 /** UTM dei link del messaggio, come gli annunci dei mazzi (MIS-07): le pagine hanno comunque il canonical pulito. */
 const UTM = discordUtm("guide", "guides");
 
-type Lang = "en" | "it" | "es";
-const FLAGS: Record<Lang, string> = { en: "🇬🇧 English", it: "🇮🇹 Italiano", es: "🇪🇸 Español" };
-const BY: Record<Lang, string> = { en: "by", it: "di", es: "de" };
+type Lang = Locale;
+const FLAGS: Record<Lang, string> = { en: "🇬🇧 English", it: "🇮🇹 Italiano", es: "🇪🇸 Español", fr: "🇫🇷 Français" };
+const BY: Record<Lang, string> = { en: "by", it: "di", es: "de", fr: "par" };
 
 /** Un testo tagliato all'ultima parola intera entro `max` caratteri, con l'ellissi. */
 export function cut(text: string, max: number): string {
@@ -69,7 +70,7 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
   const author = escapeDiscord(cut(g.author, 60));
   const image = announcedImage(g.image);
   return {
-    content: "📘 **Nuova guida · New guide · Nueva guía**",
+    content: "📘 **Nuova guida · New guide · Nueva guía · Nouveau guide**",
     embeds: [
       {
         // il titolo di un embed non interpreta il Markdown: resta com'è, solo accorciato
@@ -78,7 +79,7 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
         description: [
           escapeDiscord(cut(g.summary, 300)),
           "",
-          ...(["it", "en", "es"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
+          ...(["it", "en", "es", "fr"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
         ].join("\n"),
         fields: [{ name: FLAGS[g.lang], value: `[${escapeDiscord(g.title.replace(/[[\]]/g, "").slice(0, 200))}](${SITE}/${g.lang}/guides/community/${g.slug}?${UTM})` }],
         ...(image ? { image: { url: image } } : {}),

@@ -197,26 +197,30 @@ export function h1Of(html) {
 const titleOf = (html) => h1Of(html) || ogValue(html, "title").replace(/\s+·\s+(?:OriginsMeta|Origins TCG)$/, "");
 
 /**
- * Messaggio per un canale: italiano per primo, poi i titoli inglese e spagnolo collegati alle loro pagine (lo spagnolo
- * dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN), copertina; su
+ * Messaggio per un canale: italiano per primo, poi i titoli inglese, spagnolo e francese collegati alle loro pagine (lo
+ * spagnolo dal 25/09/2026, Ondata 1: prima i lettori ispanofoni arrivavano solo alle versioni IT ed EN; il francese dal
+ * 07/10/2026, quarta lingua), copertina; su
  * #metashifting il link alla patch. Una lingua di cui non si è letta la pagina (HTML vuoto) resta fuori.
  * Tutti i link al sito hanno gli UTM (`withUtm`); l'immagine no. `delivered` è il canale in cui il messaggio esce
  * davvero (`deliveredChannel`), per utm_content; testo e campagna restano quelli della voce.
  */
-export function payload(channel, item, itHtml, enHtml, esHtml = "", delivered = channel) {
+export function payload(channel, item, itHtml, enHtml, esHtml = "", delivered = channel, frHtml = "") {
   const path = PATHS[item.kind];
   const utm = (url) => withUtm(url, utmCampaign(item), (CHANNELS[delivered] ?? CHANNELS[channel]).name.replace(/^#/, ""));
   const itUrl = utm(`${SITE}/it/${path}/${item.slug}`);
   const enUrl = utm(`${SITE}/en/${path}/${item.slug}`);
   const esUrl = utm(`${SITE}/es/${path}/${item.slug}`);
+  const frUrl = utm(`${SITE}/fr/${path}/${item.slug}`);
   const image = ogValue(itHtml, "image");
   const enTitle = titleOf(enHtml);
   const esTitle = titleOf(esHtml);
+  const frTitle = titleOf(frHtml);
   const fields = [];
   if (enTitle) fields.push({ name: "🇬🇧 English", value: `[${enTitle.replace(/[[\]]/g, "")}](${enUrl})`.slice(0, 1024) });
   if (esTitle) fields.push({ name: "🇪🇸 Español", value: `[${esTitle.replace(/[[\]]/g, "")}](${esUrl})`.slice(0, 1024) });
+  if (frTitle) fields.push({ name: "🇫🇷 Français", value: `[${frTitle.replace(/[[\]]/g, "")}](${frUrl})`.slice(0, 1024) });
   if (channel === "metashifting" && item.patch) {
-    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios](${utm(`${SITE}/it/metashifting#patch-${item.patch}`)})` });
+    fields.push({ name: "MetaShifting", value: `[Tutte le modifiche della patch · All the changes · Todos los cambios · Tous les changements](${utm(`${SITE}/it/metashifting#patch-${item.patch}`)})` });
   }
   return {
     content: CHANNELS[channel].label,
@@ -399,8 +403,9 @@ async function main() {
     }
     const enHtml = (await waitForPage(`${SITE}/en/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
     const esHtml = (await waitForPage(`${SITE}/es/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
+    const frHtml = (await waitForPage(`${SITE}/fr/${path}/${item.slug}`, SIBLING_WAIT_MS)) ?? "";
     for (const { channel, webhook } of targets) {
-      const body = payload(channel, item, itHtml, enHtml, esHtml, deliveredChannel(channel));
+      const body = payload(channel, item, itHtml, enHtml, esHtml, deliveredChannel(channel), frHtml);
       if (DRY_RUN) {
         console.log(`[prova] ${CHANNELS[channel].name.padEnd(17)} ← ${item.kind}/${item.slug}${item.date ? ` (${item.date})` : ""} · ${body.embeds[0].title}`);
         if (process.env.DRY_RUN_JSON === "1") console.log(JSON.stringify(body, null, 2));

@@ -66,7 +66,8 @@ describe("catalogo degli eventi", () => {
   test("langOf e legendaryParam", () => {
     assert.equal(A.langOf("/it/decks/community/x"), "it");
     assert.equal(A.langOf("/es"), "es");
-    assert.equal(A.langOf("/fr/cards"), "");
+    assert.equal(A.langOf("/fr/cards"), "fr");
+    assert.equal(A.langOf("/de/cards"), "");
     assert.equal(A.langOf("/"), "");
     assert.equal(A.legendaryParam("merlin"), "merlin");
     assert.equal(A.legendaryParam("custom:il-mio-nome"), "custom", "il nome di una carta inserita a mano lo scrive l'utente");

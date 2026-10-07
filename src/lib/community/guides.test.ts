@@ -461,7 +461,7 @@ describe("readGuideForm", () => {
     assert.deepEqual(err({ ...base }), { code: "sections" });
     assert.deepEqual(err({ ...base, section_heading_0: "A", section_body_0: "B", section_heading_1: "", section_body_1: "Testo senza titolo" }), { code: "heading", index: 1 });
     assert.deepEqual(err({ ...base, section_heading_0: "Solo il titolo" }), { code: "body", index: 0 });
-    assert.deepEqual(err({ ...base, lang: "fr", section_heading_0: "A", section_body_0: "B" }), { code: "lang" });
+    assert.deepEqual(err({ ...base, lang: "de", section_heading_0: "A", section_body_0: "B" }), { code: "lang" });
     assert.deepEqual(err({ ...base, category: "altro", section_heading_0: "A", section_body_0: "B" }), { code: "category" });
     // i vecchi disegni a gradiente non sono più copertine
     assert.deepEqual(err({ ...base, cover_preset: "mint", section_heading_0: "A", section_body_0: "B" }), { code: "cover" });
@@ -926,7 +926,7 @@ describe("messaggi Discord", () => {
     lang: "es" as const,
     author: "Vega @everyone",
     summary: "Una **guía** con [link](https://evil.example)",
-    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos" },
+    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos", fr: "Guides de decks" },
     image: "/media/keyart-mulan.webp",
   };
 
@@ -1026,8 +1026,9 @@ describe("etichette", () => {
   test("un nome per ogni copertina; il riquadro dice \"nelle altre due lingue\" e non è al maschile", () => {
     for (const locale of ["en", "it", "es"] as const) assert.deepEqual(sorted(Object.keys(L.communityGuideLabels[locale].editor.covers)), sorted(G.GUIDE_COVER_PRESETS));
     assert.doesNotMatch(L.communityGuideLabels.it.cta.text, /da solo|inglese, italiano e spagnolo/);
-    assert.match(L.communityGuideLabels.it.cta.text, /altre due lingue/);
-    assert.match(L.communityGuideLabels.en.cta.text, /other two languages/);
-    assert.match(L.communityGuideLabels.es.cta.text, /otros dos idiomas/);
+    assert.match(L.communityGuideLabels.it.cta.text, /altre lingue del sito/);
+    assert.match(L.communityGuideLabels.en.cta.text, /other languages of the site/);
+    assert.match(L.communityGuideLabels.es.cta.text, /otros idiomas del sitio/);
+    assert.match(L.communityGuideLabels.fr.cta.text, /autres langues/);
   });
 });

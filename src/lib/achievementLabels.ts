@@ -217,4 +217,69 @@ export const achievementLabels: Record<Locale, AchievementLabels> = {
     privacy:
       "Logros y números públicos de los perfiles: los logros de cada perfil público se calculan con datos que ya son públicos en el sitio (fecha de registro, mazos publicados y sus votos, tier lists públicas, torneos públicos jugados hasta la final). Quien tiene el rol Creator, Autor, Pro o Staff también puede elegir, desde la página de su cuenta, mostrar en su página pública los totales de todos sus mazos publicados juntos (mazos, visitas, copias del código del juego, votos recibidos; con un solo mazo coinciden con los números de ese mazo). Las tablas por día y por mazo siguen siendo privadas, y los números se pueden ocultar de nuevo cuando se quiera.",
   },
+  // Francese dal 07/10/2026 (docs/francese.md): vous, "succès" per i traguardi, "vitrine" per la vetrina, "tableau" per
+  // il tabellone del torneo; nomi dei traguardi senza genere ("Tournoi gagné"), descrizioni entro 160 caratteri (test).
+  fr: {
+    achievements: {
+      title: "Succès",
+      intro: "Les étapes franchies sur OriginsMeta, calculées à partir des données publiques : decks, votes, tier lists et tournois.",
+      count: "{n} sur {total}",
+      listOf: "Succès de {name}",
+      hint: "Survolez une médaille ou touchez-la pour voir le détail.",
+      earnedOn: "Obtenu le {date}",
+      since: "Première fois : {date}",
+      times: "{n} fois",
+      months: "Mois : {months}",
+      items: {
+        demo2: { name: "Depuis la Demo 2.0", description: "Compte créé avant le Steam Next Fest (19 octobre 2026), à l'époque de la Demo 2.0." },
+        first_deck: { name: "Premier deck", description: "A publié un premier deck sur OriginsMeta." },
+        decks_5: { name: "Cinq decks", description: "Cinq decks publiés sur OriginsMeta." },
+        decks_10: { name: "Dix decks", description: "Dix decks publiés sur OriginsMeta." },
+        full_guide: { name: "Guide complet", description: "Un deck publié avec un guide d'au moins {words} mots." },
+        well_rated: { name: "Deck apprécié", description: "Un deck publié avec au moins {votes} votes et une moyenne de {avg} étoiles ou plus." },
+        deck_of_month: { name: "Deck du mois", description: "Le deck avec le plus de votes positifs ({stars} ou 5 étoiles) du site sur un mois, au moins {min} ce mois-là." },
+        tier_list: { name: "Première tier list", description: "A enregistré une tier list publique avec l'outil de tier list." },
+        tournament_played: { name: "Tournoi joué", description: "A joué dans le tableau d'un tournoi public d'OriginsMeta arrivé jusqu'à sa finale." },
+        tournament_organized: { name: "Tournoi organisé", description: "A organisé sur OriginsMeta un tournoi public joué jusqu'à la finale." },
+        tournament_won: { name: "Tournoi gagné", description: "A gagné la finale d'un tournoi public sur OriginsMeta." },
+      },
+    },
+    stats: {
+      title: "En chiffres",
+      estimates: "Estimations",
+      decks: "Decks publiés",
+      views: "Visites des decks",
+      codeCopies: "Copies du code du jeu",
+      votes: "Votes reçus",
+      note: "Affichés au choix de {name} : totaux de tous les decks publiés réunis. Les visites et les copies du code du jeu sont comptées depuis le {date} : chaque onglet du navigateur compte une fois par deck, et les bots et le trafic du staff sont exclus.",
+      noteNoDate: "Affichés au choix de {name} : totaux de tous les decks publiés réunis. Visites et copies du code du jeu : chaque onglet du navigateur compte une fois par deck, et les bots et le trafic du staff sont exclus.",
+    },
+    tournaments: {
+      intro: "Les tournois publics organisés sur OriginsMeta : d'abord ceux à venir ou en cours, puis les tournois terminés avec leur vainqueur.",
+      upcoming: "À venir et en cours",
+      finished: "Terminés",
+      wonBy: "Remporté par {name}",
+    },
+    account: {
+      title: "Les chiffres sur votre vitrine",
+      intro:
+        "Votre rôle a un profil vitrine : vous pouvez afficher sur votre page publique les totaux de tous vos decks publiés réunis (decks, visites, copies du code du jeu, votes reçus). Avec un seul deck publié, les totaux sont les chiffres de ce deck. Les tableaux par jour et par deck restent privés, et vous pouvez masquer à nouveau les chiffres à tout moment.",
+      checkbox: "Afficher mes chiffres sur la vitrine de mon profil",
+      save: "Enregistrer",
+      saving: "Enregistrement…",
+      savedOn: "Enregistré : les chiffres sont visibles sur votre page publique.",
+      savedOff: "Enregistré : les chiffres sont masqués.",
+      missing: "Cette option n'est pas encore disponible. Réessayez plus tard.",
+      readError: "Nous n'avons pas pu lire vos réglages. Réessayez plus tard.",
+      errors: {
+        disabled: "Les comptes sont désactivés sur ce site.",
+        notLoggedIn: "Reconnectez-vous pour modifier ce réglage.",
+        notAllowed: "Seuls les profils Creator, Auteur, Pro et Staff peuvent afficher leurs chiffres.",
+        missing: "Cette option n'est pas encore disponible. Réessayez plus tard.",
+        db: "L'enregistrement a échoué. Réessayez dans un instant.",
+      },
+    },
+    privacy:
+      "Succès et chiffres publics des profils : les succès de chaque profil public sont calculés à partir de données déjà publiques sur le site (date d'inscription, decks publiés et leurs votes, tier lists publiques, tournois publics joués jusqu'à la finale). Les personnes ayant le rôle Creator, Auteur, Pro ou Staff peuvent aussi choisir, depuis la page de leur compte, d'afficher sur leur page publique les totaux de tous leurs decks publiés réunis (decks, visites, copies du code du jeu, votes reçus ; avec un seul deck, ils correspondent aux chiffres de ce deck). Les tableaux par jour et par deck restent privés, et les chiffres peuvent être masqués à nouveau à tout moment.",
+  },
 };

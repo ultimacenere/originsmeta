@@ -23,8 +23,11 @@ on:
       - src/lib/content/guides.ts
       # i file seguenti servono solo a IndexNow: per loro il job degli annunci non parte
       - src/lib/content/guides-es.ts
+      - src/lib/content/guides-fr.ts
+      - src/lib/data/news-fr.ts
       - src/lib/data/card-history.ts
       - src/lib/data/card-lore.ts
+      - src/lib/data/card-lore-fr.ts
       - src/lib/data/locations.ts
   workflow_dispatch:
     inputs:

@@ -77,6 +77,25 @@ export const followNavLabels: Record<Locale, FollowNavLabels> = {
     notifOne: "1 notificación nueva",
     notifMany: "{n} notificaciones nuevas",
   },
+  fr: {
+    follow: "Suivre",
+    following: "Abonné",
+    followAria: "Suivre {name}",
+    followingAria: "Abonné à {name}. Appuyez pour ne plus suivre",
+    loginAria: "Suivre {name} : connectez-vous d'abord",
+    followersOne: "1 abonné",
+    followersMany: "{n} abonnés",
+    errors: {
+      notLoggedIn: "Connectez-vous pour suivre ce profil.",
+      notFollowable: "Ce profil ne peut pas être suivi.",
+      self: "Vous ne pouvez pas vous suivre vous-même.",
+      tooMany: "Vous suivez déjà {max} profils : désabonnez-vous d'abord de quelqu'un depuis votre profil.",
+      unavailable: "Le bouton Suivre n'est pas disponible pour le moment. Réessayez dans quelques minutes.",
+      db: "Une erreur s'est produite : réessayez.",
+    },
+    notifOne: "1 nouvelle notification",
+    notifMany: "{n} nouvelles notifications",
+  },
 };
 
 /**

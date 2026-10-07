@@ -133,7 +133,7 @@ describe("fumetti: modulo", () => {
       const r = C.readComicForm(form({ ...ok, ...f }), intent, OWNER);
       return r.ok ? null : r.error;
     };
-    assert.deepEqual(err({ lang: "fr" }), { code: "lang" });
+    assert.deepEqual(err({ lang: "de" }), { code: "lang" });
     assert.deepEqual(err({ title: "ab" }), { code: "title" });
     assert.deepEqual(err({ summary: "Corta." }), { code: "summary" });
     assert.deepEqual(err({ pages: "[]" }), { code: "pages" });
@@ -255,7 +255,7 @@ describe("fumetti: versioni disegnate in altre lingue (30/09/2026)", () => {
   const comic = { lang: "en" as const, title: "Week one", summary: SUMMARY, pages: [page(1, "Hi!"), page(2)], cover_path: file(3), translations: null, editions: { it, es } };
 
   test("dal database: solo le altre lingue, file del proprietario, anche a metà", () => {
-    const raw = { it, es: { ...es, cover_path: `${OTHER}/comic/7f3c2a10-9b8e-4d6c-a5f4-3e2d1c0b9a87.webp` }, en: it, fr: it, xx: "no" };
+    const raw = { it, es: { ...es, cover_path: `${OTHER}/comic/7f3c2a10-9b8e-4d6c-a5f4-3e2d1c0b9a87.webp` }, en: it, de: it, xx: "no" };
     const stored = C.storedEditions(raw, OWNER, "en");
     assert.deepEqual(Object.keys(stored).sort(), ["es", "it"], "mai la lingua del fumetto, mai lingue che non ci sono");
     assert.equal(stored.es?.cover_path, null, "copertina di un'altra cartella: niente");
@@ -304,7 +304,7 @@ describe("fumetti: versioni disegnate in altre lingue (30/09/2026)", () => {
       return x.ok ? null : x.error;
     };
     assert.deepEqual(err({ en: it }), { code: "editions" }, "la lingua del fumetto");
-    assert.deepEqual(err({ fr: it }), { code: "editions" });
+    assert.deepEqual(err({ de: it }), { code: "editions" });
     assert.deepEqual(err([it]), { code: "editions" });
     assert.deepEqual(C.readComicForm(form({ ...base, editions: "{rotto" }), "publish", OWNER), { ok: false, error: { code: "editions" } });
     assert.deepEqual(err({ it: { ...it, title: "ab" } }), { code: "edition_title", edition: "it" });
@@ -656,8 +656,8 @@ describe("fumetti: script per unire i fumetti di più lingue (scripts/merge-comi
 describe("fumetti: collegamenti", () => {
   test("proxy, privacy, /account e set-badge", () => {
     const proxy = read("../../proxy.ts");
-    assert.ok(proxy.includes('"/:locale(en|it|es)/news/comics/new"'));
-    assert.ok(proxy.includes('"/:locale(en|it|es)/news/comics/:slug/edit"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr)/news/comics/new"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr)/news/comics/:slug/edit"'));
     const privacy = read("../../app/[locale]/(site)/privacy/page.tsx");
     assert.match(privacy, /id="community-comics"/);
     assert.match(privacy, /comicLabels\[locale\]\.privacy/);

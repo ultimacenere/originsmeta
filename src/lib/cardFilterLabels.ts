@@ -52,4 +52,18 @@ const es: CardFilterLabels = {
   active: "{n} activos",
 };
 
-export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es };
+const fr: CardFilterLabels = {
+  cost: "Coût",
+  more: "Plus de filtres",
+  keyword: "Mot-clé",
+  gameKeywords: "Mots-clés du jeu",
+  effects: "Effets",
+  power: "Puissance",
+  health: "Santé",
+  min: "min",
+  max: "max",
+  clear: "Effacer les filtres",
+  active: "{n} actifs",
+};
+
+export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr };

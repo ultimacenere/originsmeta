@@ -1,6 +1,7 @@
 /**
  * Test della lingua dei link brevi dei tornei (`locale.ts`): `node --test src/app/t/locale.test.ts`.
- * Prima lingua del sito nell'Accept-Language, in ordine di preferenza; catalano, galiziano e basco valgono spagnolo.
+ * Prima lingua del sito nell'Accept-Language, in ordine di preferenza; catalano, galiziano e basco valgono spagnolo;
+ * il francese è una lingua del sito dal 07/10/2026.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -12,7 +13,7 @@ import {
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./locale.ts";
 
-const locales = ["en", "it", "es"] as const;
+const locales = ["en", "it", "es", "fr"] as const;
 const pick = (header: string | null) => preferredLocale(header, locales, "en", LANGUAGE_ALIASES);
 
 describe("lingua dei link brevi", () => {
@@ -30,7 +31,9 @@ describe("lingua dei link brevi", () => {
   test("una lingua che il sito non parla lascia il posto alla successiva", () => {
     assert.equal(pick("pt-BR,pt;q=0.9,es;q=0.8,en;q=0.7"), "es");
     assert.equal(pick("de-DE,de;q=0.9,it;q=0.8"), "it");
-    assert.equal(pick("fr-FR,fr;q=0.9"), "en");
+    assert.equal(pick("pt-PT,pt;q=0.9,fr;q=0.8"), "fr");
+    assert.equal(pick("fr-FR,fr;q=0.9"), "fr");
+    assert.equal(pick("fr-CA,fr;q=0.9,en;q=0.8"), "fr");
   });
   test("conta il peso q, non solo l'ordine scritto", () => {
     assert.equal(pick("en;q=0.5,es;q=0.9"), "es");

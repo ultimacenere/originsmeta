@@ -14,7 +14,7 @@
  */
 
 /** Le lingue del sito, come `locales` di src/lib/i18n.ts (il test controlla che coincidano). */
-export const SHORT_LINK_LOCALES = ["en", "it", "es"] as const;
+export const SHORT_LINK_LOCALES = ["en", "it", "es", "fr"] as const;
 export type ShortLinkLocale = (typeof SHORT_LINK_LOCALES)[number];
 
 /** UTM di default del link breve (utm_campaign è il nome utente). */

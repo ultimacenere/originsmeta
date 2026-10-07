@@ -190,7 +190,11 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // La guida nella lingua della pagina: la traduzione del sito quando è aggiornata, altrimenti l'originale.
   const view = localizedGuide(deck, locale);
   const sections = guideSections.filter((k) => view.text[k]);
-  const langName = c.langNames[deck.guide.lang] ?? deck.guide.lang;
+  // `langNames` e `langFrom` dei dizionari non hanno ancora tutte le lingue del sito (il francese dal 07/10/2026): il
+  // codice della lingua fa da ripiego, come già faceva, e il tipo lo dice
+  const langNames: Partial<Record<Locale, string>> = c.langNames;
+  const langFrom: Partial<Record<Locale, string>> = c.langFrom;
+  const langName = langNames[deck.guide.lang] ?? deck.guide.lang;
   // Guide editoriali che trattano questo mazzo (tags.communityDecks in src/lib/content/guides.ts)
   const guides = getGuides(locale).filter((g) => g.tags?.communityDecks?.some((x) => x.slug === deck.slug));
 
@@ -343,7 +347,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             e di evitare le traduzioni affiancate (Search Central, "Managing multi-regional and multilingual sites"). */}
         {view.translated ? (
           <p className="mt-6 rounded-lg border-2 border-sky bg-sky/10 p-3 text-xs text-pale">
-            {c.translatedNote.replace("{from}", c.langFrom[deck.guide.lang] ?? deck.guide.lang)}{" "}
+            {c.translatedNote.replace("{from}", langFrom[deck.guide.lang] ?? deck.guide.lang)}{" "}
             <Link
               href={href(deck.guide.lang, `/decks/community/${deck.slug}`)}
               hrefLang={deck.guide.lang}

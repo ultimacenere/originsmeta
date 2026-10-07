@@ -354,8 +354,9 @@ describe("testi del pacchetto (entityLabels.ts)", () => {
       en: /^OriginsMeta is not affiliated with, endorsed by or sponsored by Koin Games\./,
       it: /^OriginsMeta non è affiliato a Koin Games, né approvato o sponsorizzato da Koin Games\./,
       es: /^OriginsMeta no está afiliado a Koin Games/,
+      fr: /^OriginsMeta n'est pas affilié à Koin Games/,
     };
-    const permission: Record<Locale, RegExp> = { en: /19 September 2026/, it: /19 settembre 2026/, es: /19 de septiembre de 2026/ };
+    const permission: Record<Locale, RegExp> = { en: /19 September 2026/, it: /19 settembre 2026/, es: /19 de septiembre de 2026/, fr: /19 septembre 2026/ };
     for (const l of locales) {
       const { disclaimer, disclaimerPermission } = entityLabels[l].about;
       for (const text of [disclaimer, disclaimerPermission]) {
@@ -370,7 +371,7 @@ describe("testi del pacchetto (entityLabels.ts)", () => {
   });
 
   test("description di /about fra 120 e 158 caratteri, con la verifica nel gioco come la pagina e senza nominare la fonte dei dati importati", () => {
-    const checked: Record<Locale, RegExp> = { en: /checked .*in the game/, it: /verificate .*nel gioco/, es: /comprobadas .*en el juego/ };
+    const checked: Record<Locale, RegExp> = { en: /checked .*in the game/, it: /verificate .*nel gioco/, es: /comprobadas .*en el juego/, fr: /vérifiées .*dans le jeu/ };
     for (const l of locales) {
       const text = entityLabels[l].about.description;
       assert.ok(text.length >= 120 && text.length <= 158, `${l}: ${text.length} caratteri`);

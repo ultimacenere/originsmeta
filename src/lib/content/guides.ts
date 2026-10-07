@@ -1,6 +1,7 @@
 import type { Locale } from "../i18n";
 import { modifiedIn } from "../data/news";
 import { esText } from "./guides-es";
+import { frText } from "./guides-fr";
 import type { GuideVideo } from "../videos";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
@@ -3242,16 +3243,18 @@ Creator, Autori, Pro e Staff che aggiungono il loro canale Twitch al profilo pub
   },
 };
 
-/** I testi di una guida, senza i dati che non cambiano con la lingua: le traduzioni nuove (guides-es.ts) portano solo questi. */
+/** I testi di una guida, senza i dati che non cambiano con la lingua: le traduzioni nuove (guides-es.ts, guides-fr.ts) portano solo questi. */
 export type GuideCopy = Pick<Guide, "title" | "excerpt" | "body"> & Partial<Pick<Guide, "metaTitle" | "faq">>;
 
 /**
- * Spagnolo (25/09/2026): i testi di guides-es.ts sopra i dati della versione inglese (categoria, carte, lista del mazzo,
- * copertina, data, tempo di lettura), così quei dati restano scritti una volta sola.
+ * Spagnolo (25/09/2026) e francese (07/10/2026): i testi di guides-es.ts e guides-fr.ts sopra i dati della versione
+ * inglese (categoria, carte, lista del mazzo, copertina, data, tempo di lettura), così quei dati restano scritti una
+ * volta sola.
  */
 const es = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...esText[s] }])) as Record<GuideSlug, Guide>;
+const fr = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...frText[s] }])) as Record<GuideSlug, Guide>;
 
-const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es };
+const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es, fr };
 
 /** Giorno di prima pubblicazione di ogni guida (il primo commit che la contiene). Una guida nuova si aggiunge qui. */
 const publishedOn: Record<GuideSlug, string> = {
@@ -3279,7 +3282,8 @@ const publishedOn: Record<GuideSlug, string> = {
 
 /**
  * Date di una guida nella sua lingua, con la regola delle news (`modifiedIn` in news.ts): la prima pubblicazione resta
- * quella originale in ogni lingua, l'aggiornamento di una versione nata dopo (lo spagnolo) non va prima della sua nascita.
+ * quella originale in ogni lingua, l'aggiornamento di una versione nata dopo (lo spagnolo, il francese) non va prima
+ * della sua nascita.
  */
 function withDates(locale: Locale, g: Guide): Guide {
   return { ...g, published: publishedOn[g.slug as GuideSlug], updated: modifiedIn(locale, g.updated) };

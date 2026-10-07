@@ -73,10 +73,17 @@ const IT_FAQ = [
 const ES_FAQ = [
   "el", "la", "los", "las", "un", "una", "uno", "unos", "unas", "de", "del", "a", "al", "en", "con", "por", "para", "sin", "sobre", "entre", "desde", "hasta", "que", "quien", "cual", "cuales", "cuando", "donde", "como", "cuanto", "cuanta", "cuantos", "cuantas", "y", "o", "pero", "si", "no", "mi", "mis", "tu", "tus", "su", "sus", "se", "me", "te", "lo", "le", "les", "es", "son", "esta", "este", "esto", "estan", "hay", "puedo", "puede", "pueden", "tiene", "tienen", "tengo", "hace", "hacer", "juego", "jugar", "carta", "cartas", "mazo", "mazos", "todas", "todos", "todo", "cada", "otra", "otro", "otras", "otros", "tambien", "todavia", "empieza", "empiezan", "funciona", "funcionan", "bien", "mejor", "parche",
 ];
+// francese (07/10/2026): senza accenti come escono da `normalizza` ("ou" vale sia per "ou" sia per "où", "a" per "à",
+// "deja" per "déjà"); gli articoli elisi (l', d', qu') arrivano già separati da `paroleDi`, che divide sull'apostrofo
+const FR_FAQ = [
+  ...["le", "la", "les", "l", "un", "une", "des", "du", "de", "d", "et", "ou", "que", "qu", "qui", "quoi", "quel", "quelle", "quels", "quelles", "comment", "quand", "combien", "pourquoi", "est", "sont", "ete", "etre", "a", "ai", "as", "avez", "avons", "ont", "avoir", "peut", "peux", "peuvent", "faut", "fait", "faire", "on", "je", "tu", "il", "elle", "nous", "vous", "ils", "elles", "me", "te", "se", "moi", "lui", "leur", "leurs", "mon", "ma", "mes", "ton", "ta", "tes", "son", "sa", "ses", "notre", "nos", "votre", "vos", "ce", "cette", "ces", "cet", "ca", "cela"],
+  ...["dans", "sur", "pour", "avec", "sans", "par", "en", "au", "aux", "chez", "vers", "entre", "depuis", "y", "ne", "pas", "plus", "moins", "tres", "si", "non", "oui", "jeu", "jouer", "joue", "jouent", "carte", "cartes", "deck", "decks", "tous", "toutes", "tout", "toute", "chaque", "autre", "autres", "aussi", "encore", "deja", "meme", "memes", "bien", "mieux", "meilleur", "meilleure", "meilleurs", "meilleures", "patch", "commence", "commencent", "fonctionne", "fonctionnent", "marche", "apres", "avant", "quand", "trouve", "trouver", "sert", "servent", "sais", "savoir", "veux", "voulez", "dois", "devez"],
+];
 const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   en: new Set([...COMUNI_FAQ, ...EN_FAQ]),
   it: new Set([...COMUNI_FAQ, ...EN_FAQ, ...IT_FAQ]),
   es: new Set([...COMUNI_FAQ, ...EN_FAQ, ...ES_FAQ]),
+  fr: new Set([...COMUNI_FAQ, ...EN_FAQ, ...FR_FAQ]),
 };
 
 /** Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità"). */

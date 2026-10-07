@@ -1,17 +1,17 @@
 import type { Locale } from "../i18n";
 
-type L10n = Record<Locale, string> & { fr?: string };
-const n = (en: string, it: string, es: string, fr?: string): L10n => (fr ? { en, it, es, fr } : { en, it, es });
+type L10n = Record<Locale, string>;
+const n = (en: string, it: string, es: string, fr: string): L10n => ({ en, it, es, fr });
 
 /** Archetipi (tag obbligatorio su ogni mazzo). */
 export const archetypeLabels: Record<string, L10n> = {
-  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho"),
-  evil: n("Evil / big bodies", "Evil / grossi corpi", "Evil / cuerpos grandes"),
-  discard: n("Discard", "Scarto", "Descarte"),
-  midrange: n("Midrange", "Midrange", "Midrange"),
-  control: n("Control", "Controllo", "Control"),
-  aggro: n("Aggro", "Aggro", "Aggro"),
-  combo: n("Combo", "Combo", "Combo"),
+  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large"),
+  evil: n("Evil / big bodies", "Evil / grossi corpi", "Evil / cuerpos grandes", "Evil / gros gabarits"),
+  discard: n("Discard", "Scarto", "Descarte", "Défausse"),
+  midrange: n("Midrange", "Midrange", "Midrange", "Midrange"),
+  control: n("Control", "Controllo", "Control", "Contrôle"),
+  aggro: n("Aggro", "Aggro", "Aggro", "Aggro"),
+  combo: n("Combo", "Combo", "Combo", "Combo"),
 };
 
 export type DeckSource = "playtest" | "official" | "community";

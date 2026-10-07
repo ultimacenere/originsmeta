@@ -108,10 +108,14 @@ describe("testi per lingua", () => {
     assert.deepEqual(changedLocales("", entry, loreEverywhere), LOCALES);
     assert.deepEqual(changedLocales(entry, undefined, loreEverywhere), LOCALES);
   });
-  test("sulle voci vere di card-lore.ts: ogni carta con testi per lingua, e una rilettura uguale non cambia nulla", () => {
+  test("sulle voci vere di card-lore.ts: ogni carta con testi per lingua (il francese in card-lore-fr.ts), e una rilettura uguale non cambia nulla", () => {
     const lore = recordChunks(read("src/lib/data/card-lore.ts"));
     const arthur = localeFields(lore.get("king-arthur"));
-    assert.deepEqual(new Set(arthur.fields.map((f) => f.lang)), new Set(LOCALES));
+    assert.deepEqual(new Set(arthur.fields.map((f) => f.lang)), new Set(LOCALES.filter((l) => l !== "fr")));
+    const loreFr = recordChunks(read("src/lib/data/card-lore-fr.ts"));
+    assert.match(loreFr.get("king-arthur") ?? "", /text:/);
+    const loreFrText = read("src/lib/data/card-lore-fr.ts").replace(/\r\n/g, "\n");
+    assert.deepEqual(pushPaths({ loreFrA: loreFrText, loreFrB: loreFrText.replace(/\n/g, "\r\n") }), { fresh: [], changed: [] });
     for (const [slug, chunk] of lore) assert.deepEqual(changedLocales(chunk, chunk.replace(/\n/g, "\r\n"), loreEverywhere), [], slug);
     const locations = read("src/lib/data/locations.ts");
     assert.ok(localeFields(locations).fields.filter((f) => f.path.endsWith("effect.es")).length >= 40);
@@ -121,17 +125,17 @@ describe("testi per lingua", () => {
 describe("percorsi dopo un push", () => {
   const newsA = `export const news = [\n  {\n    slug: "vecchia",\n    date: "2026-09-20",\n  },\n  {\n    slug: "rivista",\n    date: "2026-09-19",\n  },\n];`;
   const newsB = `export const news = [\n  {\n    slug: "nuova",\n    date: "2026-09-25",\n  },\n  {\n    slug: "vecchia",\n    date: "2026-09-20",\n  },\n  {\n    slug: "rivista",\n    date: "2026-09-19",\n    updated: "2026-09-25",\n  },\n];`;
-  test("news nuova: pagina nelle tre lingue, più home e /news; news rivista: la sua pagina", () => {
+  test("news nuova: pagina nelle quattro lingue, più home e /news; news rivista: la sua pagina", () => {
     const { fresh, changed } = pushPaths({ newsA, newsB });
-    assert.deepEqual(fresh, ["/en/news/nuova", "/it/news/nuova", "/es/news/nuova"]);
-    assert.deepEqual(changed, ["/en/news/rivista", "/it/news/rivista", "/es/news/rivista", "/en", "/it", "/es", "/en/news", "/it/news", "/es/news"]);
+    assert.deepEqual(fresh, ["/en/news/nuova", "/it/news/nuova", "/es/news/nuova", "/fr/news/nuova"]);
+    assert.deepEqual(changed, ["/en/news/rivista", "/it/news/rivista", "/es/news/rivista", "/fr/news/rivista", "/en", "/it", "/es", "/fr", "/en/news", "/it/news", "/es/news", "/fr/news"]);
   });
   test("guida nuova e guida aggiornata", () => {
     const guidesA = `export const guideSlugs = [\n  "g1",\n] as const;\nconst en = {\n  g1: {\n    slug: "g1",\n    updated: "2026-09-20",\n  },\n};`;
     const guidesB = `export const guideSlugs = [\n  "g2",\n  "g1",\n] as const;\nconst en = {\n  g2: {\n    slug: "g2",\n    updated: "2026-09-25",\n  },\n  g1: {\n    slug: "g1",\n    updated: "2026-09-25",\n  },\n};`;
     const { fresh, changed } = pushPaths({ guidesA, guidesB });
-    assert.deepEqual(fresh, ["/en/guides/g2", "/it/guides/g2", "/es/guides/g2"]);
-    assert.deepEqual(changed, ["/en/guides/g1", "/it/guides/g1", "/es/guides/g1", "/en/guides", "/it/guides", "/es/guides"]);
+    assert.deepEqual(fresh, ["/en/guides/g2", "/it/guides/g2", "/es/guides/g2", "/fr/guides/g2"]);
+    assert.deepEqual(changed, ["/en/guides/g1", "/it/guides/g1", "/es/guides/g1", "/fr/guides/g1", "/en/guides", "/it/guides", "/es/guides", "/fr/guides"]);
   });
   test("patch: le schede toccate dallo storico o dai testi, più MetaShifting", () => {
     const historyA = `export const cardHistory = {\n  mulan: [\n    { patch: "0.6.2" },\n  ],\n};`;
@@ -142,9 +146,10 @@ describe("percorsi dopo un push", () => {
     assert.deepEqual(fresh, []);
     // lo storico cambia la scheda in tutte le lingue; il testo italiano di Merlin solo la scheda italiana
     for (const slug of ["mulan", "king-arthur"]) for (const l of LOCALES) assert.ok(changed.includes(`/${l}/cards/${slug}`), `${l} ${slug}`);
-    assert.ok(changed.includes("/it/cards/merlin") && !changed.includes("/en/cards/merlin") && !changed.includes("/es/cards/merlin"));
-    assert.ok(changed.includes("/es/metashifting"));
-    assert.equal(changed.length, 6 + 1 + 3);
+    assert.ok(changed.includes("/it/cards/merlin") && !changed.includes("/en/cards/merlin") && !changed.includes("/es/cards/merlin") && !changed.includes("/fr/cards/merlin"));
+    assert.ok(changed.includes("/es/metashifting") && changed.includes("/fr/metashifting"));
+    // due carte in tutte le lingue, Merlin solo in italiano, MetaShifting in tutte le lingue
+    assert.equal(changed.length, 2 * LOCALES.length + 1 + LOCALES.length);
   });
   test("solo testi cambiati: niente MetaShifting, e solo le lingue toccate", () => {
     const { changed } = pushPaths({ loreA: `const x = {\n  merlin: { it: "a" },\n};`, loreB: `const x = {\n  merlin: { it: "b" },\n};` });
@@ -152,7 +157,7 @@ describe("percorsi dopo un push", () => {
   });
   test("testo inglese letto nel gioco: tutte le lingue (si vede sotto le traduzioni)", () => {
     const { changed } = pushPaths({ loreA: `const x = {\n  merlin: { saga: "a", en: "Old", it: "b" },\n};`, loreB: `const x = {\n  merlin: { saga: "a", en: "New", it: "b" },\n};` });
-    assert.deepEqual(changed, ["/en/cards/merlin", "/it/cards/merlin", "/es/cards/merlin"]);
+    assert.deepEqual(changed, ["/en/cards/merlin", "/it/cards/merlin", "/es/cards/merlin", "/fr/cards/merlin"]);
   });
   test("guida con il solo testo spagnolo cambiato: la pagina /es; una guida nuova resta fra le nuove", () => {
     const guidesA = `export const guideSlugs = [\n  "g1",\n] as const;`;
@@ -160,15 +165,15 @@ describe("percorsi dopo un push", () => {
     const guidesEsA = `export const esText = {\n  "g1": {\n    title: "Viejo",\n  },\n};`;
     const guidesEsB = `export const esText = {\n  "g2": {\n    title: "Nueva",\n  },\n  "g1": {\n    title: "Nuevo",\n  },\n};`;
     const { fresh, changed } = pushPaths({ guidesA, guidesB, guidesEsA, guidesEsB });
-    assert.deepEqual(fresh, ["/en/guides/g2", "/it/guides/g2", "/es/guides/g2"]);
-    assert.deepEqual(changed, ["/en/guides", "/it/guides", "/es/guides", "/es/guides/g1"]);
+    assert.deepEqual(fresh, ["/en/guides/g2", "/it/guides/g2", "/es/guides/g2", "/fr/guides/g2"]);
+    assert.deepEqual(changed, ["/en/guides", "/it/guides", "/es/guides", "/fr/guides", "/es/guides/g1"]);
     assert.deepEqual(pushPaths({ guidesA, guidesB: guidesA, guidesEsA, guidesEsB: guidesEsA.replace(/\n/g, "\r\n") }), { fresh: [], changed: [] });
   });
   test("luoghi: /locations nelle lingue il cui effetto è cambiato, in tutte se cambia il resto", () => {
     const loc = (es, tags = '"damage"') =>
       `export const locations = [\n  {\n    slug: "a",\n    name: "A",\n    effect: { en: "Double.", it: "Doppio.", es: "${es}" },\n    tags: [${tags}],\n  },\n];`;
     assert.deepEqual(pushPaths({ locationsA: loc("Doble."), locationsB: loc("Se duplica.") }).changed, ["/es/locations"]);
-    assert.deepEqual(pushPaths({ locationsA: loc("Doble."), locationsB: loc("Doble.", '"damage", "buff"') }).changed, ["/en/locations", "/it/locations", "/es/locations"]);
+    assert.deepEqual(pushPaths({ locationsA: loc("Doble."), locationsB: loc("Doble.", '"damage", "buff"') }).changed, ["/en/locations", "/it/locations", "/es/locations", "/fr/locations"]);
     assert.deepEqual(pushPaths({ locationsA: loc("Doble."), locationsB: loc("Doble.") }).changed, []);
   });
   test("niente di cambiato, niente da segnalare", () => {
@@ -178,21 +183,23 @@ describe("percorsi dopo un push", () => {
 });
 
 describe("voci scritte a mano", () => {
-  test("slug nelle tre lingue, percorsi, URL e sitemap", () => {
+  test("slug nelle quattro lingue, percorsi, URL e sitemap", () => {
     assert.deepEqual(parseTargets("news:upgrade-meta-0925, decks:mazzo-1a2b ,/es/cards,https://originsmeta.com/it/faq#domande,sitemap:/es,sitemap:"), {
       paths: [
         "/en/news/upgrade-meta-0925",
         "/it/news/upgrade-meta-0925",
         "/es/news/upgrade-meta-0925",
+        "/fr/news/upgrade-meta-0925",
         "/en/decks/community/mazzo-1a2b",
         "/it/decks/community/mazzo-1a2b",
         "/es/decks/community/mazzo-1a2b",
+        "/fr/decks/community/mazzo-1a2b",
         "/es/cards",
         "/it/faq",
       ],
       sitemaps: ["/es", "all"],
     });
-    assert.deepEqual(parseTargets("cards:merlin").paths, ["/en/cards/merlin", "/it/cards/merlin", "/es/cards/merlin"]);
+    assert.deepEqual(parseTargets("cards:merlin").paths, ["/en/cards/merlin", "/it/cards/merlin", "/es/cards/merlin", "/fr/cards/merlin"]);
   });
   test("una voce che non si capisce ferma tutto", () => {
     assert.throws(() => parseTargets("mazzi:x"), /Voce non valida/);

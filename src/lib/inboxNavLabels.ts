@@ -57,6 +57,19 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     feedbackNotSaved: "Esta vez no pudimos guardarlo en tu bandeja de mensajes: si quieres una respuesta, escribe al staff desde allí.",
     openInbox: "Abrir la bandeja de mensajes",
   },
+  fr: {
+    messages: "Messagerie",
+    envelopeOne: "Messagerie, 1 non lu",
+    envelopeMany: "Messagerie, {n} non lus",
+    staffInbox: "Messagerie du staff",
+    unreadOne: "1 conversation non lue",
+    unreadMany: "{n} conversations non lues",
+    writeToUser: "Écrire à cet utilisateur",
+    feedbackNote: "Votre session est ouverte : votre retour sera lié à votre compte et nous vous répondrons dans votre messagerie sur OriginsMeta.",
+    feedbackSaved: "Nous l'avons aussi enregistré dans votre messagerie : vous y trouverez notre réponse.",
+    feedbackNotSaved: "Cette fois, nous n'avons pas pu l'enregistrer dans votre messagerie : si vous souhaitez une réponse, écrivez au staff depuis la messagerie.",
+    openInbox: "Ouvrir la messagerie",
+  },
 };
 
 /**

@@ -15,7 +15,7 @@ const MODELLO = "claude-opus-5";
 
 /** Il modello risponde a chi gioca, con i nostri dati e i nostri limiti. */
 function istruzioni(locale: Locale): string {
-  const lingua = ({ en: "inglese", it: "italiano", es: "spagnolo (neutro, con il tú)" } as Record<string, string>)[locale] ?? "inglese";
+  const lingua = ({ en: "inglese", it: "italiano", es: "spagnolo (neutro, con il tú)", fr: "francese (standard, dando del vous)" } as Record<string, string>)[locale] ?? "inglese";
   return `Sei l'assistente di OriginsMeta, sito community non ufficiale su Origins TCG di Koin Games.
 Rispondi in ${lingua}, a chi gioca, in modo diretto e concreto.
 

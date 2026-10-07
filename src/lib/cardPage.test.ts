@@ -59,8 +59,8 @@ type BriefCompanion = import("./cardPage").BriefCompanion;
 const { cardRelations } = synergy;
 const { cards, cardSource, getCard } = cardsModule;
 
-type Locale = "en" | "it" | "es";
-const locales: Locale[] = ["en", "it", "es"];
+type Locale = "en" | "it" | "es" | "fr";
+const locales: Locale[] = ["en", "it", "es", "fr"];
 
 const card = (slug: string) => {
   const c = getCard(slug);
@@ -183,12 +183,12 @@ describe("frase d'attacco: tutte le carte", () => {
           !text.includes("Koin Games") && "Koin Games",
           /undefined|NaN|\?|\{|\}| {2}|\s[.,;]/.test(text) && "buchi",
           // "verificata nel gioco" solo sulle carte della collezione della demo (CARDS-09)
-          !playable && /checked in the game|verificat|verificad/.test(text) && "verificata",
-          playable && !/checked in the game|verificat|verificad/.test(text) && "stato",
-          c.status === "removed" && !/is not in Demo 2\.0|non è nella Demo 2\.0|no está en la Demo 2\.0/.test(text.slice(c.name.length, c.name.length + 30)) && "prima riga",
+          !playable && /checked in the game|verificat|verificad|vérifié/.test(text) && "verificata",
+          playable && !/checked in the game|verificat|verificad|vérifié/.test(text) && "stato",
+          c.status === "removed" && !/is not in Demo 2\.0|non è nella Demo 2\.0|no está en la Demo 2\.0|n'est pas dans la Demo 2\.0/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
           c.type === "token" &&
             c.status === "active" &&
-            !/cannot be added to a deck in the deck builder|non si può mettere nel mazzo con il deck builder|no se puede añadir a un mazo en el deck builder/.test(text) &&
+            !/cannot be added to a deck in the deck builder|non si può mettere nel mazzo con il deck builder|no se puede añadir a un mazo en el deck builder|impossible de l'ajouter à un deck dans le deck builder/.test(text) &&
             "deck builder",
         ].filter(Boolean);
         if (problems.length) bad.push(`${l} ${c.slug}: ${problems.join(", ")} — ${text}`);
@@ -297,7 +297,7 @@ describe("In breve", () => {
         const items = cardBrief(c, { decks: playable ? { n: 0, total: 16 } : undefined, ...cardRelations(c, cards) }, l);
         if (items.length < 2 || items.length > 3) bad.push(`${l} ${c.slug}: ${items.length} domande`);
         for (const it of items) if (/undefined|NaN|\{|\}| {2}/.test(it.q + partsText(it.a))) bad.push(`${l} ${c.slug}: ${it.q} ${partsText(it.a)}`);
-        if (c.status === "removed" && !/^(No|No:)/.test(partsText(items[0].a))) bad.push(`${l} ${c.slug}: demo`);
+        if (c.status === "removed" && !/^(No|No:|Non)/.test(partsText(items[0].a))) bad.push(`${l} ${c.slug}: demo`);
       }
     assert.deepEqual(bad, []);
   });
@@ -379,7 +379,12 @@ describe("etichette e fonti", () => {
 
   test("riga sotto le statistiche: le carte create e rimosse non si dicono verificate nel gioco, e nessuna fonte è nominata", () => {
     assert.equal(asOfLine(card("merlin"), "it", cardSource), undefined);
-    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game|cannot be checked in the game/, it: /non sono stati verificati nel gioco|non si può verificare nel gioco/, es: /no se han verificado en el juego|no se puede verificar en el juego/ };
+    const notChecked: Record<Locale, RegExp> = {
+      en: /not been checked in the game|cannot be checked in the game/,
+      it: /non sono stati verificati nel gioco|non si può verificare nel gioco/,
+      es: /no se han verificado en el juego|no se puede verificar en el juego/,
+      fr: /n'ont pas été vérifiés dans le jeu|impossible à vérifier dans le jeu|pas vérifié[es]* dans le jeu/,
+    };
     for (const l of locales) {
       for (const slug of ["garlic", "baker"]) {
         const line = asOfLine(card(slug), l, cardSource) ?? "";
@@ -396,7 +401,7 @@ describe("etichette e fonti", () => {
     const later = { patch: "demo-0921" };
     for (const l of locales) {
       const text = asOfLine(card("baker"), l, later) ?? "";
-      assert.match(text, /Demo · 21/, l);
+      assert.match(text, /D[ée]mo · 21/, l);
       assert.doesNotMatch(text, /demo-0921/, l);
     }
     // una patch che il sito non conosce resta com'è

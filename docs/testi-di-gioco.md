@@ -1,8 +1,16 @@
-# Testi di gioco in italiano e spagnolo (dal 25/09/2026)
+# Testi di gioco in italiano e spagnolo (dal 25/09/2026) e in francese (provvisori, dal 07/10/2026)
 
 Il gioco è tradotto: nella Demo 2.0 le carte hanno un testo ufficiale anche in italiano e in spagnolo, con le parole
 chiave tradotte. Il 25/09/2026 li abbiamo letti tutti nel gioco (122 carte, collezione con le carte non possedute) e
 ora sono quelli del sito. Questo file dice cosa ne segue e come rifare la verifica.
+
+**Francese (07/10/2026)**: il gioco è tradotto anche in francese, ma le carte non sono ancora state lette nel gioco in
+quella lingua. I testi francesi di carte (`src/lib/data/card-lore-fr.ts`), carte create e luoghi sono nostri, con il
+**glossario provvisorio** di `docs/francese.md` (À la révélation, Bouclier, Piétinement, Contact mortel, Défenseur,
+Initiative, Double attaque, Renaissance, Tir de précision, Déplacer, Étourdir, "emplacement", "lieu", Puissance/Santé),
+e le schede li etichettano come traduzione non verificata (`officialTextLocales` in `cards.ts`). La verifica si fa
+con la stessa procedura qui sotto, con la lingua francese nel gioco e `node scripts/official-texts.mjs fr`
+(trascrizione in `docs/testi-ufficiali/fr.tsv`, oggi vuota); dopo, glossario ed etichette si allineano al gioco.
 
 ## La regola
 
@@ -83,6 +91,7 @@ Stile del gioco da imitare nei testi nostri:
 2. Si trascrive in `docs/testi-ufficiali/<lingua>.tsv`, una carta per riga ("Nome<TAB>testo", `\n` per gli a capo,
    statistiche come nel sito: `[5⚔️/3❤️]`). Il file com'è oggi è la lettura del 25/09/2026: basta correggere le righe
    che cambiano.
-3. `node scripts/official-texts.mjs it` (o `es`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
-   controlla che ci siano tutte le carte e gli stessi a capo dell'inglese; con `--apply` scrive in `card-lore.ts`.
+3. `node scripts/official-texts.mjs it` (o `es`, o `fr`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
+   controlla che ci siano tutte le carte e gli stessi a capo dell'inglese; con `--apply` scrive in `card-lore.ts` (per il
+   francese in `card-lore-fr.ts`, campo `text`).
 4. Le carte nuove della patch prendono anche la riga `origin` e il resto della voce, come sempre.

@@ -64,7 +64,7 @@ describe("analytics: come il blocco INTERESSE ANALYTICS di schema.sql", () => {
   });
 
   test("stesse lingue, stesse posizioni del tasto, stesso numero del browser", () => {
-    assert.match(block, /locale in \('en', 'it', 'es'\)/);
+    assert.match(block, /locale in \('en', 'it', 'es', 'fr'\)/);
     assert.match(block, /source in \('top', 'bottom'\)/);
     assert.ok(block.includes("'^[0-9a-f]{32}$'"));
     assert.ok(component.includes("/^[0-9a-f]{32}$/"));

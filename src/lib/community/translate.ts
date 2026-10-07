@@ -33,6 +33,39 @@ export function translationEnabled(): boolean {
 }
 
 /**
+ * Lingua appena nata (il francese, 07/10/2026), che i trigger delle guide e dei fumetti della community ammettono nelle
+ * traduzioni solo dopo la migrazione (blocco "07/10/2026: FRANCESE" di schema.sql). Finché il database la rifiuta
+ * (errcode 23514, violazione di un check), `saveTranslations` salva senza, così le traduzioni nelle altre lingue non si
+ * perdono e la pagina francese mostra l'originale con la sua nota; `scripts/translate-guides.mjs` recupera gli arretrati
+ * dopo la migrazione. Da mettere a null quando la migrazione è passata in produzione.
+ */
+export const DB_PENDING_LOCALE: Locale | null = "fr";
+
+type SaveResult = PromiseLike<{ error: { code?: string; message: string } | null }>;
+
+/**
+ * Scrive le traduzioni di una riga con `save` e restituisce le lingue davvero salvate (null se il salvataggio non è
+ * riuscito, già scritto nel log con `tag`). Se il database rifiuta la lingua in attesa di migrazione, riprova senza.
+ */
+export async function saveTranslations<T extends Partial<Record<Locale, unknown>>>(save: (translations: T) => SaveResult, next: T, written: readonly Locale[], tag: string): Promise<Locale[] | null> {
+  const { error } = await save(next);
+  if (!error) return [...written];
+  if (error.code === "23514" && DB_PENDING_LOCALE && DB_PENDING_LOCALE in next) {
+    const retry = { ...next };
+    delete retry[DB_PENDING_LOCALE];
+    const { error: again } = await save(retry);
+    if (!again) {
+      console.error(`[${tag}] il database non ammette ancora la lingua "${DB_PENDING_LOCALE}" nelle traduzioni (migrazione del 07/10/2026 da lanciare): salvate le altre.`);
+      return written.filter((l) => l !== DB_PENDING_LOCALE);
+    }
+    console.error(`[${tag}] salvataggio delle traduzioni non riuscito:`, again.message);
+    return null;
+  }
+  console.error(`[${tag}] salvataggio delle traduzioni non riuscito:`, error.message);
+  return null;
+}
+
+/**
  * Nomi ufficiali che il modello non deve tradurre: carte (anche rimosse e create) e luoghi. Esportati dal 27/09/2026
  * per le guide della community (guideTranslate.ts, pacchetto GUIDE), che seguono la stessa regola.
  */

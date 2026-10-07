@@ -61,18 +61,21 @@ const MONTHS: Record<Locale, readonly string[]> = {
   en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   it: ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"],
   es: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"],
+  fr: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
 };
 
 /**
  * Come si apre il paragrafo di aggiornamento di una news (regola di CLAUDE.md: `updated` va con un paragrafo
  * "Aggiornamento del …"), nelle forme già usate negli articoli: "Update, 21 September" o "Update of 25 September",
- * "Aggiornamento del 21 settembre", "Actualización del 21 de septiembre".
+ * "Aggiornamento del 21 settembre", "Actualización del 21 de septiembre", "Mise à jour du 25 septembre" (il primo del
+ * mese in francese è "1er": si accettano tutte e due le forme).
  */
 export function updateMarkers(locale: Locale, isoDate: string): string[] {
   const day = Number(isoDate.slice(8, 10));
   const month = MONTHS[locale][Number(isoDate.slice(5, 7)) - 1];
   if (locale === "it") return [`Aggiornamento del ${day} ${month}`];
   if (locale === "es") return [`Actualización del ${day} de ${month}`];
+  if (locale === "fr") return [`Mise à jour du ${day} ${month}`, ...(day === 1 ? [`Mise à jour du 1er ${month}`] : [])];
   return [`Update, ${day} ${month}`, `Update of ${day} ${month}`];
 }
 

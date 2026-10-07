@@ -146,8 +146,9 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
   });
 
-  test("le istruzioni dei mazzi sono le stesse di prima (stessa impronta SHA-256)", () => {
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413");
+  test("le istruzioni dei mazzi sono quelle del 07/10/2026 (impronta SHA-256: glossario con il francese e regola 3 in quattro lingue)", () => {
+    // fino al 06/10/2026: cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413 (tre lingue)
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 
@@ -156,7 +157,7 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /heading_N/);
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /"title" is the title of the guide/);
     assert.doesNotMatch(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
-    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar/);
+    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar = À la révélation/);
   });
 
   test("translationRequestFor: campi qualsiasi, lingua di partenza e istruzioni scelte da chi chiama", () => {

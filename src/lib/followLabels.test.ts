@@ -18,8 +18,10 @@ import { en as dictEn } from "./dictionaries/en.ts";
 import { it as dictIt } from "./dictionaries/it.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { es as dictEs } from "./dictionaries/es.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { fr as dictFr } from "./dictionaries/fr.ts";
 
-const dictionaries = { en: dictEn, it: dictIt, es: dictEs } as const;
+const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr } as const;
 type Tree = { [key: string]: string | Tree };
 
 function leaves(obj: Tree, prefix = ""): Map<string, string> {
@@ -90,7 +92,8 @@ describe("contenuti", () => {
   test("followNavLabelsFor: lingua sconosciuta → inglese; fillFollowLabel lascia i segnaposto sconosciuti", () => {
     assert.equal(followNavLabelsFor("it").follow, "Segui");
     assert.equal(followNavLabelsFor("es").follow, "Seguir");
-    assert.equal(followNavLabelsFor("fr").follow, "Follow");
+    assert.equal(followNavLabelsFor("de").follow, "Follow");
+    assert.equal(followNavLabelsFor("fr").follow, "Suivre");
     assert.equal(followNavLabelsFor("toString").follow, "Follow");
     assert.equal(fillFollowLabel("{name} · {x}", { name: "Vega" }), "Vega · {x}");
   });

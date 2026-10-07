@@ -36,19 +36,19 @@ const en = {
   hub: {
     title: "Origins TCG comics",
     metaTitle: "Origins TCG comics by the community creators",
-    description: "Comics about Origins TCG drawn by the creators of the OriginsMeta community: news, stories and life in the game, with the texts in English, Italian and Spanish.",
+    description: "Comics about Origins TCG drawn by the creators of the OriginsMeta community: news, stories and life in the game, with the texts in English, Italian, Spanish and French.",
     intro: "Comics about Origins TCG drawn by the creators of the community: news, stories and life in the game. They also come out among the news.",
     empty: "No comics yet: the first one is on its way.",
   },
   /** riquadro in /news per chi può pubblicare (Creator e Staff), deciso nel browser */
   cta: {
     title: "Publish a comic",
-    text: "As a Creator you can publish your comics among the news: pages, cover and texts, translated by the site into the other two languages.",
+    text: "As a Creator you can publish your comics among the news: pages, cover and texts, translated by the site into the other languages of the site.",
     button: "Publish a comic",
   },
   newTitle: "Publish a comic",
   newDescription: "Publish an Origins TCG comic on OriginsMeta: pages, cover and texts, among the news, under your name and translated automatically.",
-  newIntro: "Pages, cover and texts: the comic comes out among the news, under your name, with its own page. The site translates the title, the presentation and the texts of the pages into the other two languages.",
+  newIntro: "Pages, cover and texts: the comic comes out among the news, under your name, with its own page. The site translates the title, the presentation and the texts of the pages into the other languages of the site.",
   editTitle: "Edit the comic",
   notAllowed: {
     title: "Comics are for Creators and Staff",
@@ -56,7 +56,7 @@ const en = {
   },
   editor: {
     lang: "Language of the texts",
-    langHint: "The language of the balloons and of the texts below. The site translates the title, the presentation and the page texts into the other two languages; if you also drew the comic in another language, add that version further down.",
+    langHint: "The language of the balloons and of the texts below. The site translates the title, the presentation and the page texts into the other languages of the site; if you also drew the comic in another language, add that version further down.",
     title: "Title",
     summary: "Presentation",
     summaryHint: "2 or 3 sentences, from {min} to {max} characters: they appear in the news list, on the home page and when the link is shared.",
@@ -162,7 +162,7 @@ const en = {
   },
   /** paragrafo della privacy (#community-comics) */
   privacy:
-    "Comics. Creators and Staff can publish comics among the news. The pages and the cover are stored like the other images you upload on the site (see above: your browser shrinks and re-encodes them, removing data such as the location); the title, the presentation and the texts of the pages are public on the comic's page, with your name and a link to your profile, and the site translates the title, the presentation and the texts into the other two languages with the same service used for the guides. When a comic comes out, whoever follows you receives a notice and our Discord announces it. You can edit a comic, move it back to drafts or delete it at any time: deleting it deletes its images too. The staff can hide a comic that breaks the site rules.",
+    "Comics. Creators and Staff can publish comics among the news. The pages and the cover are stored like the other images you upload on the site (see above: your browser shrinks and re-encodes them, removing data such as the location); the title, the presentation and the texts of the pages are public on the comic's page, with your name and a link to your profile, and the site translates the title, the presentation and the texts into the other languages of the site with the same service used for the guides. When a comic comes out, whoever follows you receives a notice and our Discord announces it. You can edit a comic, move it back to drafts or delete it at any time: deleting it deletes its images too. The staff can hide a comic that breaks the site rules.",
 };
 
 export type ComicLabels = typeof en;
@@ -199,12 +199,12 @@ const it: ComicLabels = {
   },
   cta: {
     title: "Pubblica un fumetto",
-    text: "Come Creator puoi pubblicare i tuoi fumetti fra le news: tavole, copertina e testi, tradotti dal sito nelle altre due lingue.",
+    text: "Come Creator puoi pubblicare i tuoi fumetti fra le news: tavole, copertina e testi, tradotti dal sito nelle altre lingue del sito.",
     button: "Pubblica un fumetto",
   },
   newTitle: "Pubblica un fumetto",
   newDescription: "Pubblica un fumetto su Origins TCG su OriginsMeta: tavole, copertina e testi, fra le news, con il tuo nome e tradotto in automatico.",
-  newIntro: "Tavole, copertina e testi: il fumetto esce fra le news, con il tuo nome e una pagina sua. Il sito traduce titolo, presentazione e testi delle tavole nelle altre due lingue.",
+  newIntro: "Tavole, copertina e testi: il fumetto esce fra le news, con il tuo nome e una pagina sua. Il sito traduce titolo, presentazione e testi delle tavole nelle altre lingue del sito.",
   editTitle: "Modifica il fumetto",
   notAllowed: {
     title: "I fumetti sono per i Creator e lo Staff",
@@ -212,7 +212,7 @@ const it: ComicLabels = {
   },
   editor: {
     lang: "Lingua dei testi",
-    langHint: "La lingua dei balloon e dei testi qui sotto. Il sito traduce titolo, presentazione e testi delle tavole nelle altre due lingue; se hai disegnato il fumetto anche in un'altra lingua, aggiungi quella versione più in basso.",
+    langHint: "La lingua dei balloon e dei testi qui sotto. Il sito traduce titolo, presentazione e testi delle tavole nelle altre lingue del sito; se hai disegnato il fumetto anche in un'altra lingua, aggiungi quella versione più in basso.",
     title: "Titolo",
     summary: "Presentazione",
     summaryHint: "2 o 3 frasi, da {min} a {max} caratteri: compaiono nell'elenco delle news, in home e quando si condivide il link.",
@@ -315,7 +315,7 @@ const it: ComicLabels = {
     title: "Fumetti",
   },
   privacy:
-    "Fumetti. I Creator e lo Staff possono pubblicare fumetti fra le news. Tavole e copertina si salvano come le altre immagini che carichi sul sito (vedi sopra: il tuo browser le riduce e le ricodifica, togliendo dati come la posizione); titolo, presentazione e testi delle tavole sono pubblici nella pagina del fumetto, con il tuo nome e il link al tuo profilo, e il sito traduce titolo, presentazione e testi nelle altre due lingue con lo stesso servizio usato per le guide. Quando esce un fumetto, chi ti segue riceve un avviso e il nostro Discord lo annuncia. Puoi modificare un fumetto, riportarlo tra le bozze o eliminarlo quando vuoi: eliminandolo si cancellano anche le sue immagini. Lo staff può nascondere un fumetto che non rispetta le regole del sito.",
+    "Fumetti. I Creator e lo Staff possono pubblicare fumetti fra le news. Tavole e copertina si salvano come le altre immagini che carichi sul sito (vedi sopra: il tuo browser le riduce e le ricodifica, togliendo dati come la posizione); titolo, presentazione e testi delle tavole sono pubblici nella pagina del fumetto, con il tuo nome e il link al tuo profilo, e il sito traduce titolo, presentazione e testi nelle altre lingue del sito con lo stesso servizio usato per le guide. Quando esce un fumetto, chi ti segue riceve un avviso e il nostro Discord lo annuncia. Puoi modificare un fumetto, riportarlo tra le bozze o eliminarlo quando vuoi: eliminandolo si cancellano anche le sue immagini. Lo staff può nascondere un fumetto che non rispetta le regole del sito.",
 };
 
 const es: ComicLabels = {
@@ -350,12 +350,12 @@ const es: ComicLabels = {
   },
   cta: {
     title: "Publica un cómic",
-    text: "Como Creator puedes publicar tus cómics entre las noticias: páginas, portada y textos, traducidos por el sitio a los otros dos idiomas.",
+    text: "Como Creator puedes publicar tus cómics entre las noticias: páginas, portada y textos, traducidos por el sitio a los otros idiomas del sitio.",
     button: "Publica un cómic",
   },
   newTitle: "Publica un cómic",
   newDescription: "Publica un cómic sobre Origins TCG en OriginsMeta: páginas, portada y textos, entre las noticias, con tu nombre y traducido automáticamente.",
-  newIntro: "Páginas, portada y textos: el cómic sale entre las noticias, con tu nombre y una página propia. El sitio traduce el título, la presentación y los textos de las páginas a los otros dos idiomas.",
+  newIntro: "Páginas, portada y textos: el cómic sale entre las noticias, con tu nombre y una página propia. El sitio traduce el título, la presentación y los textos de las páginas a los otros idiomas del sitio.",
   editTitle: "Edita el cómic",
   notAllowed: {
     title: "Los cómics son para los Creators y el Staff",
@@ -363,7 +363,7 @@ const es: ComicLabels = {
   },
   editor: {
     lang: "Idioma de los textos",
-    langHint: "El idioma de los globos y de los textos de abajo. El sitio traduce el título, la presentación y los textos de las páginas a los otros dos idiomas; si también dibujaste el cómic en otro idioma, añade esa versión más abajo.",
+    langHint: "El idioma de los globos y de los textos de abajo. El sitio traduce el título, la presentación y los textos de las páginas a los otros idiomas del sitio; si también dibujaste el cómic en otro idioma, añade esa versión más abajo.",
     title: "Título",
     summary: "Presentación",
     summaryHint: "2 o 3 frases, de {min} a {max} caracteres: aparecen en la lista de noticias, en la portada del sitio y al compartir el enlace.",
@@ -466,14 +466,167 @@ const es: ComicLabels = {
     title: "Cómics",
   },
   privacy:
-    "Cómics. Los Creators y el Staff pueden publicar cómics entre las noticias. Las páginas y la portada se guardan como las demás imágenes que subes al sitio (mira arriba: tu navegador las reduce y las vuelve a codificar, quitando datos como la ubicación); el título, la presentación y los textos de las páginas son públicos en la página del cómic, con tu nombre y el enlace a tu perfil, y el sitio traduce el título, la presentación y los textos a los otros dos idiomas con el mismo servicio que usa para las guías. Cuando sale un cómic, quien te sigue recibe un aviso y nuestro Discord lo anuncia. Puedes editar un cómic, volver a dejarlo como borrador o eliminarlo cuando quieras: al eliminarlo se borran también sus imágenes. El staff puede ocultar un cómic que no respete las reglas del sitio.",
+    "Cómics. Los Creators y el Staff pueden publicar cómics entre las noticias. Las páginas y la portada se guardan como las demás imágenes que subes al sitio (mira arriba: tu navegador las reduce y las vuelve a codificar, quitando datos como la ubicación); el título, la presentación y los textos de las páginas son públicos en la página del cómic, con tu nombre y el enlace a tu perfil, y el sitio traduce el título, la presentación y los textos a los otros idiomas del sitio con el mismo servicio que usa para las guías. Cuando sale un cómic, quien te sigue recibe un aviso y nuestro Discord lo anuncia. Puedes editar un cómic, volver a dejarlo como borrador o eliminarlo cuando quieras: al eliminarlo se borran también sus imágenes. El staff puede ocultar un cómic que no respete las reglas del sitio.",
 };
 
-export const comicLabels: Record<Locale, ComicLabels> = { en, it, es };
+/** Francese (07/10/2026, docs/francese.md): "vous", i fumetti sono "BD" e le pagine "planches"; spazio insecabile prima di : ; ? ! */
+const fr: ComicLabels = {
+  pill: "BD",
+  by: "BD de {name}",
+  read: "Lire la BD",
+  page: {
+    metaSuffix: "BD Origins TCG",
+    published: "Publiée le {date}",
+    updated: "mise à jour le {date}",
+    pagesOne: "1 planche",
+    pagesMany: "{n} planches",
+    pageAlt: "Planche {n} sur {total}",
+    pageAltText: "Planche {n} sur {total}. {text}",
+    open: "Ouvrir la planche {n} en taille réelle",
+    transcript: "Transcription",
+    transcriptIntro: "Le texte de chaque planche, dans l'ordre : pour les lecteurs d'écran et pour qui préfère le lire.",
+    noText: "Aucun texte sur cette planche.",
+    translatedNote: "Textes traduits automatiquement (version originale en {lang}) : les bulles restent dans la langue d'origine.",
+    originalNote: "Les textes sont en {lang} : la traduction sera prête dans quelques minutes.",
+    moreTitle: "D'autres BD",
+    allComics: "Toutes les BD",
+    allNews: "Toutes les actus",
+    unavailable: "Les BD ne sont pas encore disponibles : réessayez dans quelques minutes.",
+  },
+  hub: {
+    title: "BD Origins TCG",
+    metaTitle: "BD Origins TCG des créateurs de la communauté",
+    description: "BD sur Origins TCG dessinées par les créateurs de la communauté OriginsMeta : actus, histoires et vie du jeu, textes traduits dans les langues du site.",
+    intro: "Des BD sur Origins TCG dessinées par les créateurs de la communauté : actus, histoires et vie du jeu. Elles paraissent aussi parmi les actus.",
+    empty: "Pas encore de BD : la première arrive.",
+  },
+  cta: {
+    title: "Publier une BD",
+    text: "En tant que Creator, vous pouvez publier vos BD parmi les actus : planches, couverture et textes, traduits par le site dans les autres langues.",
+    button: "Publier une BD",
+  },
+  newTitle: "Publier une BD",
+  newDescription: "Publiez une BD Origins TCG sur OriginsMeta : planches, couverture et textes, parmi les actus, sous votre nom et traduite automatiquement.",
+  newIntro: "Planches, couverture et textes : la BD paraît parmi les actus, sous votre nom, avec sa propre page. Le site traduit le titre, la présentation et les textes des planches dans les autres langues.",
+  editTitle: "Modifier la BD",
+  notAllowed: {
+    title: "Les BD sont réservées aux Creators et au Staff",
+    text: "Publier des BD parmi les actus est réservé aux rôles Creator et Staff. Si vous dessinez des BD sur Origins TCG, écrivez au staff depuis votre messagerie.",
+  },
+  editor: {
+    lang: "Langue des textes",
+    langHint: "La langue des bulles et des textes ci-dessous. Le site traduit le titre, la présentation et les textes des planches dans les autres langues ; si vous avez aussi dessiné la BD dans une autre langue, ajoutez cette version plus bas.",
+    title: "Titre",
+    summary: "Présentation",
+    summaryHint: "2 ou 3 phrases, de {min} à {max} caractères : elles apparaissent dans la liste des actus, sur la page d'accueil et quand le lien est partagé.",
+    cover: "Couverture",
+    coverHint: "16:9, au moins {minw} × {minh} px (l'idéal est {w} × {h}), PNG, JPG ou WebP : nous la recadrons au centre en 16:9. Elle apparaît dans la liste des actus, sur la page d'accueil et quand le lien est partagé.",
+    coverUpload: "Importer la couverture",
+    coverReplace: "Changer la couverture",
+    coverAlt: "Couverture de la BD",
+    uploading: "Envoi en cours…",
+    pages: "Planches",
+    pagesHint: "Des images verticales à lire de haut en bas : {w} px de large et jusqu'à {h} px de haut (9:16). Une histoire plus longue se répartit sur plusieurs images, jusqu'à {max} ; les cases isolées en 1080 × 1350 (4:5) conviennent aussi. PNG, JPG ou WebP jusqu'à 20 Mo : le site les réduit et les convertit.",
+    pagesAdd: "Ajouter des planches",
+    pagesUploading: "Envoi de la planche {n} sur {total}…",
+    pagesCount: "{n} planches sur {max}",
+    pageLabel: "Planche {n}",
+    pageText: "Texte de la planche {n}",
+    pageTextHint: "Dialogues, cartouches et onomatopées, dans l'ordre de lecture. Facultatif, mais c'est ce que lisent les lecteurs d'écran et Google, et c'est ce que nous traduisons.",
+    pageUp: "Monter",
+    pageDown: "Descendre",
+    pageRemove: "Retirer",
+    uploadErrors: {
+      type: "Ce fichier n'est pas une image PNG, JPG ou WebP.",
+      tooBig: "L'image est encore trop lourde après compression : essayez-en une plus légère.",
+      upload: "L'envoi a échoué : vérifiez votre connexion et réessayez.",
+      limit: "Vous avez atteint la limite d'images importées : supprimez une BD dont vous n'avez plus besoin, ou écrivez au staff.",
+      source: "Ce fichier dépasse 20 Mo : exportez une version plus légère.",
+      full: "Une BD compte au plus {max} planches.",
+    },
+    rights: "Uniquement des dessins qui sont les vôtres ou que vous avez le droit de publier, et aucune carte pas encore annoncée.",
+    saveDraft: "Enregistrer le brouillon",
+    publish: "Publier",
+    update: "Enregistrer les modifications",
+    unpublish: "Remettre en brouillon",
+    saving: "Enregistrement…",
+    saved: "Brouillon enregistré.",
+    statusDraft: "Brouillon : vous seul pouvez le voir.",
+    statusPublished: "Publiée : chaque modification est en ligne immédiatement.",
+    statusHidden: "Masquée par le staff : écrivez au staff depuis votre messagerie pour en connaître la raison.",
+    counter: "{n}/{max}",
+    consent: "En publiant, la BD est mise en ligne parmi les actus, sous votre nom, avec les traductions automatiques des textes faites par le site, et annoncée sur notre Discord. Vous pouvez la remettre en brouillon ou la supprimer quand vous voulez.",
+    editions: {
+      title: "Versions dessinées dans d'autres langues",
+      hint: "Vous avez aussi dessiné la BD dans une autre langue, avec les bulles réécrites ? Ajoutez cette version ici : ses lecteurs voient ses planches, son titre et sa présentation à la place de la traduction automatique. Cela reste une seule BD, une seule actu, une seule adresse.",
+      heading: "Version en {lang}",
+      add: "Ajouter la version en {lang}",
+      remove: "Retirer la version en {lang}",
+      confirmRemove: "Retirer la version en {lang} et ses images ?",
+      cover: "Couverture de cette version (facultative)",
+      coverHint: "Seulement si la couverture comporte du texte : sans, c'est celle de la BD qui est utilisée.",
+    },
+  },
+  errors: {
+    lang: "Choisissez la langue des textes.",
+    title: "Titre : de {min} à {max} caractères sur une ligne (un brouillon n'en demande qu'un).",
+    summary: "Présentation : de {min} à {max} caractères pour publier (un brouillon peut la laisser vide).",
+    pages: "Planches : de 1 à {max} pour publier.",
+    page: "Planche {n} : l'image ou son texte ne peut pas être utilisé. Importez-la de nouveau.",
+    cover: "Importez une couverture pour publier.",
+    notLoggedIn: "Connectez-vous pour publier une BD.",
+    forbidden: "Publier des BD est réservé aux Creators et au Staff.",
+    disabled: "Les comptes sont désactivés sur cette copie du site.",
+    unavailable: "Les BD ne sont pas encore disponibles : réessayez dans quelques minutes.",
+    comic_daily_limit: "Vous avez déjà publié 3 nouvelles BD ces dernières 24 heures : enregistrez celle-ci en brouillon et publiez-la demain.",
+    comic_limit: "Vous avez atteint 500 BD : supprimez-en une ancienne pour en publier une nouvelle.",
+    comic_rate: "Vous avez commencé 10 BD ces dernières 24 heures : réessayez demain.",
+    comic_hidden: "Le staff a masqué cette BD : écrivez au staff depuis votre messagerie.",
+    comic_hidden_recent: "Le staff a masqué l'une de vos BD ces dernières 24 heures : vous pourrez publier de nouveau demain. En attendant, enregistrez celle-ci en brouillon.",
+    comic_status: "Cette modification est réservée au staff.",
+    comic_file: "L'une des images est introuvable : importez-la de nouveau.",
+    comic_translation: "La traduction n'a pas pu être enregistrée : les textes restent tels quels.",
+    comic_reserved_fields: "Cette modification n'est pas autorisée.",
+    duplicate: "Un problème est survenu avec l'adresse de la BD : réessayez.",
+    db: "L'enregistrement a échoué : réessayez dans un instant.",
+    tooFast: "Attendez {n} secondes avant d'enregistrer de nouveau.",
+    editions: "Les versions dans d'autres langues ne peuvent pas être utilisées : vérifiez-les et réessayez.",
+    edition_title: "Version en {lang}, titre : de {min} à {max} caractères sur une ligne.",
+    edition_summary: "Version en {lang}, présentation : de {min} à {max} caractères pour publier.",
+    edition_pages: "Version en {lang}, planches : de 1 à {max} pour publier.",
+    edition_page: "Version en {lang}, planche {n} : l'image ou son texte ne peut pas être utilisé. Importez-la de nouveau.",
+    edition_cover: "Version en {lang} : la couverture ne peut pas être utilisée. Importez-la de nouveau.",
+  },
+  account: {
+    title: "Mes BD",
+    intro: "Brouillons, BD publiées et BD masquées par le staff. Seules les BD publiées apparaissent sur le site, parmi les actus.",
+    none: "Pas encore de BD.",
+    write: "Publier une BD",
+    view: "Voir",
+    edit: "Modifier",
+    status: { draft: "Brouillon", published: "Publiée", hidden: "Masquée par le staff" },
+  },
+  owner: {
+    edit: "Modifier",
+    unpublish: "Remettre en brouillon",
+    delete: "Supprimer",
+    confirmDelete: "Supprimer cette BD et ses images ? Cette action est irréversible.",
+    hide: "Masquer (staff)",
+    unhide: "Remettre en ligne (staff)",
+  },
+  profile: {
+    title: "BD",
+  },
+  privacy:
+    "BD. Les Creators et le Staff peuvent publier des BD parmi les actus. Les planches et la couverture sont stockées comme les autres images que vous importez sur le site (voir plus haut : votre navigateur les réduit et les réencode, en retirant des données comme la position) ; le titre, la présentation et les textes des planches sont publics sur la page de la BD, avec votre nom et un lien vers votre profil, et le site traduit le titre, la présentation et les textes dans les autres langues avec le même service que pour les guides. Quand une BD paraît, les personnes qui vous suivent reçoivent une notification et notre Discord l'annonce. Vous pouvez modifier une BD, la remettre en brouillon ou la supprimer à tout moment : la supprimer supprime aussi ses images. Le staff peut masquer une BD qui ne respecte pas les règles du site.",
+};
+
+export const comicLabels: Record<Locale, ComicLabels> = { en, it, es, fr };
 
 /** Nomi delle lingue nella lingua della pagina, per le note sulla traduzione dei testi ("l'originale è in spagnolo"). */
 export const COMIC_LANG_NAMES: Record<Locale, Record<Locale, string>> = {
-  en: { en: "English", it: "Italian", es: "Spanish" },
-  it: { en: "inglese", it: "italiano", es: "spagnolo" },
-  es: { en: "inglés", it: "italiano", es: "español" },
+  en: { en: "English", it: "Italian", es: "Spanish", fr: "French" },
+  it: { en: "inglese", it: "italiano", es: "spagnolo", fr: "francese" },
+  es: { en: "inglés", it: "italiano", es: "español", fr: "francés" },
+  fr: { en: "anglais", it: "italien", es: "espagnol", fr: "français" },
 };

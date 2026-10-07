@@ -6,7 +6,7 @@ import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
 import { revalidateSitemaps } from "@/lib/sitemapData";
 import type { Db } from "@/lib/supabase/public";
 import { namesIn } from "./deckTranslation";
-import { officialNames, translationEnabled } from "./translate";
+import { officialNames, saveTranslations, translationEnabled } from "./translate";
 import { translateGuideText } from "./guideTranslateCore";
 import {
   communityGuideHash,
@@ -58,7 +58,7 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
   const done = await translateGuideText(new Anthropic({ maxRetries: 1 }), row, targets, names, {
     onError: (to, e) => console.error(`[guides] traduzione ${row.lang}→${to} non riuscita:`, e instanceof Error ? e.message : e),
   });
-  const written = (Object.keys(done) as Locale[]).filter((l) => done[l]);
+  let written = (Object.keys(done) as Locale[]).filter((l) => done[l]);
   if (!written.length) return [];
 
   // Rilettura: se la guida è cambiata (o non è più pubblicata) mentre traducevamo, queste traduzioni non servono.
@@ -66,11 +66,9 @@ export async function translateCommunityGuide(supabase: Db, guideId: string): Pr
   if (!fresh || fresh.status !== "published" || communityGuideHash(fresh) !== hash || fresh.title !== row.title) return [];
   const next: CommunityGuideTranslations = { ...(fresh.translations ?? {}), ...done };
   delete next[fresh.lang];
-  const { error } = await supabase.from("community_guides").update({ translations: next }).eq("id", guideId);
-  if (error) {
-    console.error("[guides] salvataggio delle traduzioni non riuscito:", error.message);
-    return [];
-  }
+  const saved = await saveTranslations((t) => supabase.from("community_guides").update({ translations: t }).eq("id", guideId), next, written, "guides");
+  if (!saved) return [];
+  written = saved;
   // /guides dal 29/09/2026 elenca le guide della community (ISR): una traduzione nuova la fa entrare in quella lingua
   const paths = locales.flatMap((l) => [`/${l}/guides/community/${fresh.slug}`, `/${l}/guides/community`, `/${l}/guides`]);
   for (const p of paths) {

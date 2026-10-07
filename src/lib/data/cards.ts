@@ -2,6 +2,7 @@ import type { Locale } from "../i18n";
 import woo from "./woo-cards.json";
 import cardArt from "./card-art.json";
 import { cardLore } from "./card-lore";
+import { frLore } from "./card-lore-fr";
 import { cardHistory } from "./card-history";
 import { cardCredits, type CardCredit } from "./card-credits";
 
@@ -16,7 +17,16 @@ import { cardCredits, type CardCredit } from "./card-credits";
  * - `card-art.json`: illustrazioni ufficiali Koin convertite da `npm run import:art`, indicizzate per chiave.
  */
 
-export type L10n = Record<Locale, string> & { fr?: string };
+export type L10n = Record<Locale, string>;
+
+/**
+ * Lingue in cui il testo delle carte della collezione della demo è quello UFFICIALE letto nel gioco: inglese (22/09/2026),
+ * italiano e spagnolo (25/09/2026, card-lore.ts). Il francese (card-lore-fr.ts, dal 07/10/2026) è una traduzione nostra
+ * con il glossario provvisorio di docs/francese.md finché nessuno legge il gioco in francese: fuori da questo elenco le
+ * schede etichettano il testo come traduzione non verificata nel gioco e il JSON-LD non lo dichiara (cardLdTexts).
+ * Quando la verifica sarà fatta (docs/testi-ufficiali/fr.tsv, scripts/official-texts.mjs fr), "fr" entra qui.
+ */
+export const officialTextLocales: readonly Locale[] = ["en", "it", "es"];
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
@@ -101,7 +111,7 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
     date: "2026-09-21",
     url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
     title: "The first big update to the Origins demo just landed!",
-    label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep" },
+    label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep", fr: "Démo · 21 sept." },
     news: "demo-patch-notes-0921",
   },
   // Secondo aggiornamento della demo: post Steam del 29/09/2026 alle 19:37 UTC, "l'ultima patch di bilanciamento prima
@@ -294,8 +304,10 @@ export const cards: Card[] = data.cards.map((w) => {
   if (keywords.length) card.keywords = keywords;
   // Il testo letto nel gioco (`card-lore.ts`, campo `en`) vince su quello di World of Origins quando è rimasto indietro.
   const abilityEn = lore?.en ?? w.ability;
-  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn };
-  if (lore?.origin) card.origin = lore.origin;
+  // Il francese sta in card-lore-fr.ts (traduzione nostra, provvisoria): senza voce resta l'inglese, come per le altre lingue.
+  const fr = frLore[w.slug];
+  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn };
+  if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en };
   return card;
 });
 

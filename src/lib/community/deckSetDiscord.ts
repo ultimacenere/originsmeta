@@ -28,15 +28,16 @@ export function deckSetPayload(d: AnnouncedDeckSet): DiscordWebhookPayload {
   const name = d.name.replace(/[[\]]/g, "").slice(0, 200);
   const trio = legs.map((l) => `**${l}**`).join(" · ");
   return {
-    content: "🏆 **Nuovo mazzo torneo · New tournament deck · Nuevo mazo de torneo**",
+    content: "🏆 **Nuovo mazzo torneo · New tournament deck · Nuevo mazo de torneo · Nouveau deck de tournoi**",
     embeds: [
       {
         title: d.name.slice(0, 256),
         url: `${siteUrl}/it/decks/tournament/${d.slug}?${UTM}`,
-        description: [`${trio}`, `Conquest · di ${author}`, `Conquest · by ${author}`, `Conquest · de ${author}`].join("\n"),
+        description: [`${trio}`, `Conquest · di ${author}`, `Conquest · by ${author}`, `Conquest · de ${author}`, `Conquest · par ${author}`].join("\n"),
         fields: [
           { name: "🇬🇧 English", value: `[${name}](${siteUrl}/en/decks/tournament/${d.slug}?${UTM})` },
           { name: "🇪🇸 Español", value: `[${name}](${siteUrl}/es/decks/tournament/${d.slug}?${UTM})` },
+          { name: "🇫🇷 Français", value: `[${name}](${siteUrl}/fr/decks/tournament/${d.slug}?${UTM})` },
         ],
         ...(image ? { image: { url: `${siteUrl}${image}` } } : {}),
         color: GOLD,

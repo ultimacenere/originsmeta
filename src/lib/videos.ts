@@ -1,3 +1,5 @@
+import type { Locale } from "./i18n";
+
 /**
  * Video e risorse nei mazzi della community e nelle guide editoriali (pacchetto VIDEO, richiesta di Pierluigi del
  * 26/09/2026: funzioni per i creator, a partire da coachcrono). Funzioni pure e senza import: le esegue anche
@@ -589,7 +591,7 @@ export type GuideVideo = {
   /** miniatura salvata nel sito (public/media/…): la usa l'anteprima prima del clic e VideoObject */
   thumbnail?: string;
   at?: "top" | "end";
-  before?: Partial<Record<"en" | "it" | "es", string>>;
+  before?: Partial<Record<Locale, string>>;
 };
 
 export type GuideVideoItem = { video: GuideVideo; parsed: ParsedVideo };
@@ -615,7 +617,7 @@ export function guideVideoLayout(body: string, videos: readonly GuideVideo[] | u
     const parsed = storedToParsed(video);
     if (!parsed) continue;
     const item = { video, parsed };
-    const anchor = video.before?.[locale as "en" | "it" | "es"];
+    const anchor = video.before?.[locale as Locale];
     const at = anchor ? anchorLine(lines, anchor) : -1;
     if (at >= 0) inline.set(at, [...(inline.get(at) ?? []), item]);
     else if (video.at === "end") end.push(item);

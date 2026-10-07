@@ -6,7 +6,7 @@ import { indexNowEnabled, submitIndexNow } from "@/lib/indexnow";
 import { revalidateSitemaps } from "@/lib/sitemapData";
 import type { Db } from "@/lib/supabase/public";
 import { TRANSLATION_MODEL, namesIn, translateDocWith } from "./deckTranslation";
-import { officialNames, translationEnabled } from "./translate";
+import { officialNames, saveTranslations, translationEnabled } from "./translate";
 import { translationMaxTokens } from "./guides";
 import {
   COMIC_TRANSLATION_SYSTEM,
@@ -89,7 +89,7 @@ export async function translateComic(supabase: Db, comicId: string): Promise<Loc
     }),
   );
   const done = Object.fromEntries(results.filter((r): r is [Locale, ComicTranslation] => r !== null)) as ComicTranslations;
-  const written = Object.keys(done) as Locale[];
+  let written = Object.keys(done) as Locale[];
   if (!written.length) return [];
 
   // Rilettura: se il fumetto è cambiato (o non è più pubblicato) mentre traducevamo, queste traduzioni non servono.
@@ -97,11 +97,9 @@ export async function translateComic(supabase: Db, comicId: string): Promise<Loc
   if (!fresh || fresh.status !== "published" || comicHash(fresh) !== hash) return [];
   const next: ComicTranslations = { ...(fresh.translations ?? {}), ...done };
   delete next[fresh.lang];
-  const { error } = await supabase.from("community_comics").update({ translations: next }).eq("id", comicId);
-  if (error) {
-    console.error("[comics] salvataggio delle traduzioni non riuscito:", error.message);
-    return [];
-  }
+  const saved = await saveTranslations((t) => supabase.from("community_comics").update({ translations: t }).eq("id", comicId), next, written, "comics");
+  if (!saved) return [];
+  written = saved;
   // la presentazione tradotta compare nelle news e nella home di quella lingua
   const paths = locales.flatMap((l) => [`/${l}${comicPath(fresh.slug)}`, `/${l}/news/comics`, `/${l}/news`, `/${l}`]);
   for (const p of paths) {

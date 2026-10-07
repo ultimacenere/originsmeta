@@ -12,9 +12,10 @@ export function newsFeedPath(locale: Locale): string {
 }
 
 /**
- * Titolo e descrizione del canale nelle tre lingue ("patch notes" in italiano, "notas del parche" in spagnolo, come
- * in docs/spagnolo.md; "sito di fan" / "sitio de fans" come nei dizionari). La descrizione dice sempre che il sito
- * non è affiliato a Koin Games. Il titolo serve anche al `<link rel="alternate">` delle pagine.
+ * Titolo e descrizione del canale nelle lingue del sito ("patch notes" in italiano, "notas del parche" in spagnolo,
+ * "notes de patch" in francese, come in docs/spagnolo.md e docs/francese.md; "sito di fan" / "sitio de fans" / "site
+ * de fans" come nei dizionari; "Actus" è il nome francese della sezione). La descrizione dice sempre che il sito non è
+ * affiliato a Koin Games. Il titolo serve anche al `<link rel="alternate">` delle pagine.
  */
 export const newsFeedLabels: Record<Locale, { title: string; description: string }> = {
   en: {
@@ -28,5 +29,9 @@ export const newsFeedLabels: Record<Locale, { title: string; description: string
   es: {
     title: "Noticias de Origins TCG · OriginsMeta",
     description: "Noticias de Origins TCG en OriginsMeta: notas del parche, eventos, novedades de la demo y del sitio. Sitio de fans no oficial, no afiliado a Koin Games.",
+  },
+  fr: {
+    title: "Actus Origins TCG · OriginsMeta",
+    description: "Les actus d'OriginsMeta sur Origins TCG : notes de patch, événements, nouveautés de la démo et du site. Site de fans non officiel, non affilié à Koin Games.",
   },
 };
