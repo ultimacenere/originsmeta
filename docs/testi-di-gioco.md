@@ -1,16 +1,15 @@
-# Testi di gioco in italiano e spagnolo (dal 25/09/2026) e in francese (provvisori, dal 07/10/2026)
+# Testi di gioco in italiano e spagnolo (dal 25/09/2026) e in francese (dall'08/10/2026)
 
 Il gioco è tradotto: nella Demo 2.0 le carte hanno un testo ufficiale anche in italiano e in spagnolo, con le parole
 chiave tradotte. Il 25/09/2026 li abbiamo letti tutti nel gioco (122 carte, collezione con le carte non possedute) e
 ora sono quelli del sito. Questo file dice cosa ne segue e come rifare la verifica.
 
-**Francese (07/10/2026)**: il gioco è tradotto anche in francese, ma le carte non sono ancora state lette nel gioco in
-quella lingua. I testi francesi di carte (`src/lib/data/card-lore-fr.ts`), carte create e luoghi sono nostri, con il
-**glossario provvisorio** di `docs/francese.md` (À la révélation, Bouclier, Piétinement, Contact mortel, Défenseur,
-Initiative, Double attaque, Renaissance, Tir de précision, Déplacer, Étourdir, "emplacement", "lieu", Puissance/Santé),
-e le schede li etichettano come traduzione non verificata (`officialTextLocales` in `cards.ts`). La verifica si fa
-con la stessa procedura qui sotto, con la lingua francese nel gioco e `node scripts/official-texts.mjs fr`
-(trascrizione in `docs/testi-ufficiali/fr.tsv`, oggi vuota); dopo, glossario ed etichette si allineano al gioco.
+**Francese (08/10/2026)**: il gioco è tradotto anche in francese. Il sito è partito il 07/10/2026 con testi nostri e un
+glossario provvisorio; l'08/10/2026 abbiamo letto nel gioco in francese le 122 carte della collezione (patch 0.7,
+trascrizione in `docs/testi-ufficiali/fr.tsv`, `node scripts/official-texts.mjs fr --apply` scrive in
+`src/lib/data/card-lore-fr.ts`) e allineato glossario, etichette, carte create, luoghi, guide e news. Il glossario
+francese del gioco sta in `docs/francese.md` (Première frappe, case, Mauvais, "se produire"). In francese Twister Toss
+ha già il testo della patch 0.7, che in inglese, italiano e spagnolo non abbiamo ancora riletto nel gioco.
 
 ## La regola
 

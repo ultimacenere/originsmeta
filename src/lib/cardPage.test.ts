@@ -352,7 +352,7 @@ describe("etichette e fonti", () => {
     const merlin = cardLdTexts(card("merlin"), false);
     assert.deepEqual(
       merlin.map((t) => t.lang),
-      ["en", "it", "es"],
+      ["en", "it", "es", "fr"],
     );
     assert.ok(merlin.every((t) => !/\n| {2}/.test(t.text)));
     // carte create e rimosse: il solo inglese, mai la nostra traduzione

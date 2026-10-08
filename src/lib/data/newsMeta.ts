@@ -73,7 +73,8 @@ const MONTHS: Record<Locale, readonly string[]> = {
 export function updateMarkers(locale: Locale, isoDate: string): string[] {
   const day = Number(isoDate.slice(8, 10));
   const month = MONTHS[locale][Number(isoDate.slice(5, 7)) - 1];
-  if (locale === "it") return [`Aggiornamento del ${day} ${month}`];
+  // l'8 e l'11 vogliono l'apostrofo: "Aggiornamento dell'8 ottobre"
+  if (locale === "it") return [day === 8 || day === 11 ? `Aggiornamento dell'${day} ${month}` : `Aggiornamento del ${day} ${month}`];
   if (locale === "es") return [`Actualización del ${day} de ${month}`];
   if (locale === "fr") return [`Mise à jour du ${day} ${month}`, ...(day === 1 ? [`Mise à jour du 1er ${month}`] : [])];
   return [`Update, ${day} ${month}`, `Update of ${day} ${month}`];

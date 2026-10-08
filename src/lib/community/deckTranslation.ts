@@ -127,7 +127,7 @@ export const GAME_KEYWORDS: readonly (readonly [en: string, it: string, es: stri
   ["Deathtouch", "Tocco letale", "Toque mortal", "Contact mortel"],
   ["Defender", "Difensore", "Defensor", "Défenseur"],
   ["Rebirth", "Rinascita", "Renacer", "Renaissance"],
-  ["First Strike", "Primo colpo", "Primer golpe", "Initiative"],
+  ["First Strike", "Primo colpo", "Primer golpe", "Première frappe"],
   ["Double Attack", "Doppio attacco", "Ataque doble", "Double attaque"],
   ["Snipe", "Tiro di precisione", "Disparo certero", "Tir de précision"],
   ["Move", "Muovere", "Mover", "Déplacer"],
@@ -155,7 +155,7 @@ const DECK_GUIDE_INTRO =
 export const TRANSLATION_RULES = `Rules:
 1. Translate faithfully: same meaning, same tone, same level of detail. Do not add, remove, summarize, explain, correct or comment anything.
 2. Keep exactly as written, in English: card names, location names and deck names. The names found in this guide are listed under NAMES. Good, Evil, Neutral and Conquest also stay in English.
-3. The game is officially translated: write its keywords with the official name of the target language from GLOSSARY, with the initial capital as in the game, even when the guide uses the English name or another language ("with Trample" becomes "con Travolgere" in Italian, "con Arrollar" in Spanish, "avec Piétinement" in French). When the keyword stands for the ability itself, say so: "its On Reveal" becomes "la sua abilità Alla rivelazione" in Italian, "su habilidad Al revelar" in Spanish, "sa capacité À la révélation" in French. In English use the English names. The space a card occupies on the board is "spazio" in Italian, "espacio" in Spanish and "emplacement" in French (never "casella", "casilla" or "case"); a location is "luogo", "ubicación", "lieu"; Power and Health are "Potenza/Salute", "Poder/Salud", "Puissance/Santé".
+3. The game is officially translated: write its keywords with the official name of the target language from GLOSSARY, with the initial capital as in the game, even when the guide uses the English name or another language ("with Trample" becomes "con Travolgere" in Italian, "con Arrollar" in Spanish, "avec Piétinement" in French). When the keyword stands for the ability itself, say so: "its On Reveal" becomes "la sua abilità Alla rivelazione" in Italian, "su habilidad Al revelar" in Spanish, "sa capacité À la révélation" in French. In English use the English names. The space a card occupies on the board is "spazio" in Italian, "espacio" in Spanish and "case" in French (never "casella", "casilla" or "emplacement"); a location is "luogo", "ubicación", "lieu"; Power and Health are "Potenza/Salute", "Poder/Salud", "Puissance/Santé".
 4. Keep numbers, stats such as 3/2 or +2⚔️/+2❤️, emoji, line breaks, list markers ("-", "•", "1.") and the order of the lines.
 5. Player jargon (mulligan, midrange, aggro, control, combo, tempo, value, ladder, meta, buff, nerf) stays the way players say it in the target language.
 6. Plain text only: no Markdown, no HTML.

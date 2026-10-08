@@ -11,14 +11,14 @@ import type { Locale } from "./i18n";
  *   testo (Evoca / Invoca, Pesca / Roba…), così l'etichetta si ritrova nel testo.
  * - "Ongoing" resta in inglese: c'era solo in una carta rimossa (Firebird) e il gioco tradotto non ha un nome da cui
  *   prenderlo.
- * - Il francese (07/10/2026) usa il glossario PROVVISORIO di docs/francese.md: il gioco è tradotto in francese ma
- *   nessuno ha ancora letto le carte nel gioco; quando si leggono, le etichette si allineano alle parole del gioco.
+ * - Il francese (07/10/2026) usa le parole del gioco lette l'08/10/2026 (docs/francese.md): fino a quel giorno era un
+ *   glossario provvisorio nostro (First Strike era "Initiative", ora "Première frappe").
  * Un tag nuovo portato da `npm run import:woo` senza etichetta qui si mostra in inglese e fa fallire il test.
  */
 type Label = { it: string; es: string; fr: string; game?: true };
 
 export const keywordLabels: Record<string, Label> = {
-  // parole chiave del gioco: nomi ufficiali (francese provvisorio)
+  // parole chiave del gioco: nomi ufficiali
   "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", game: true },
   "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", game: true },
   "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", game: true },
@@ -27,7 +27,7 @@ export const keywordLabels: Record<string, Label> = {
   Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", game: true },
   Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", game: true },
   Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", game: true },
-  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Initiative", game: true },
+  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", game: true },
   "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", game: true },
   Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", game: true },
   Move: { it: "Muovere", es: "Mover", fr: "Déplacer", game: true },
@@ -55,7 +55,7 @@ export const keywordLabels: Record<string, Label> = {
   Graveyard: { it: "Cimitero", es: "Cementerio", fr: "Cimetière" },
   Location: { it: "Luogo", es: "Ubicación", fr: "Lieu" },
   Good: { it: "Personaggi Buoni", es: "Personajes Buenos", fr: "Personnages Bons" },
-  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Maléfiques" },
+  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Mauvais" },
 };
 
 /** Etichetta di un tag nella lingua della pagina; l'inglese è il tag stesso, un tag sconosciuto resta com'è. */

@@ -2,8 +2,8 @@ import type { Dictionary } from "../i18n";
 
 /**
  * Dizionario francese (07/10/2026): stessa struttura di en.ts, che resta il tipo di riferimento. Francese standard
- * con il "vous"; nomi delle carte, dei mazzi e degli eventi in inglese; parole chiave del gioco con il glossario
- * provvisorio di docs/francese.md (da verificare nel gioco). Tipografia francese: spazio insecabile prima di : ; ? !
+ * con il "vous"; nomi delle carte, dei mazzi e degli eventi in inglese; parole chiave del gioco con i nomi del gioco
+ * (docs/francese.md, letti l'08/10/2026). Tipografia francese: spazio insecabile prima di : ; ? !
  */
 export const fr: Dictionary = {
   meta: {
@@ -271,7 +271,7 @@ export const fr: Dictionary = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP, costruito sulla ricerca "origins tcg cartes / liste des cartes" (piano SEO del 25/09/2026) */
     title: "Liste des cartes d'Origins TCG",
     metaTitle: "Cartes Origins TCG : la liste complète de la Demo 2.0",
-    intro: "Toutes les cartes de la Demo 2.0, plus les cartes qu'elles créent et celles retirées des builds précédentes : stats actuelles, texte officiel en anglais, italien et espagnol tel qu'il se lit dans le jeu, historique d'équilibrage et légende dont chaque carte est tirée.",
+    intro: "Toutes les cartes de la Demo 2.0, plus les cartes qu'elles créent et celles retirées des builds précédentes : stats actuelles, texte officiel en français, anglais, italien et espagnol tel qu'il se lit dans le jeu, historique d'équilibrage et légende dont chaque carte est tirée.",
     description: "Toutes les cartes de la Demo 2.0 d'Origins TCG (Koin Games) : texte officiel, stats et historique d'équilibrage, filtres par type, saga et rareté.",
     /* placeholder della ricerca: la ricerca legge anche il testo della carta (24/09/2026) */
     searchHint: "Nom ou texte : Merlin, À la révélation…",
@@ -283,7 +283,7 @@ export const fr: Dictionary = {
     legendNote: "Les cartes Légendaires mènent le deck : une par deck, marquée de l'étoile. Les sagas sont un classement propre à OriginsMeta, par légende d'origine ; le jeu ne les affiche pas.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Les coûts, les stats, les alignements et les textes des cartes de la Demo 2.0 sont vérifiés dans le jeu, en anglais, italien et espagnol ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées. Texte des cartes © Koin Games. Les sagas, les notes d'origine, le texte français des cartes et le texte italien et espagnol des cartes créées et retirées sont d'OriginsMeta.",
+      "Les coûts, les stats, les alignements et les textes des cartes de la Demo 2.0 sont vérifiés dans le jeu, en français, anglais, italien et espagnol ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées. Texte des cartes © Koin Games. Les sagas, les notes d'origine et le texte français, italien et espagnol des cartes créées et retirées sont d'OriginsMeta.",
     detailKicker: "Carte",
     collectible: "Carte à collectionner",
     changesTitle: "Historique des équilibrages",
@@ -672,7 +672,7 @@ export const fr: Dictionary = {
     noResults: "Aucun lieu ne correspond à cette recherche.",
     related: "Cartes liées",
     clear: "Effacer les filtres",
-    source: "Les noms et les effets des lieux se réfèrent à la version {patch} ; les effets en français sont une traduction d'OriginsMeta, avec un glossaire provisoire des mots-clés du jeu.",
+    source: "Les noms et les effets des lieux se réfèrent à la version {patch} ; les effets en français sont une traduction d'OriginsMeta, avec le glossaire officiel du jeu.",
     notVerified: "Nous ne les avons pas encore vérifiés un par un dans le jeu : nous le ferons, comme pour les cartes, et cette ligne le dira.",
     rarity: "Depuis le patch 0.7 du 29 septembre 2026, chaque lieu a une rareté, commun, rare, très rare ou ultra rare, qui décide de sa fréquence d'apparition. Les patch notes ne disent pas quel lieu a quelle rareté.",
     verified: "Vérifiés un par un dans le jeu : {n} lieux.",

@@ -264,7 +264,7 @@ export const it: Dictionary = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP con "Koin Games": su "origins tcg carte" c'è un omonimo italiano (piano SEO del 25/09/2026) */
     title: "Lista carte di Origins TCG",
     metaTitle: "Carte di Origins TCG (Koin Games): lista completa",
-    intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese, italiano e spagnolo come si legge nel gioco, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
+    intro: "Tutte le carte della Demo 2.0, più quelle che generano e quelle rimosse nelle build precedenti: statistiche attuali, testo ufficiale in inglese, italiano, spagnolo e francese come si legge nel gioco, storico dei bilanciamenti e la leggenda da cui viene ogni carta.",
     description: "Tutte le carte della Demo 2.0 di Origins TCG, il gioco di carte di Koin Games: testo ufficiale, statistiche e bilanciamenti, filtri per tipo, saga e rarità.",
     /* segnaposto della ricerca: si cerca anche nel testo della carta (24/09/2026) */
     searchHint: "Nome o testo: Merlin, Alla rivelazione…",
@@ -275,7 +275,7 @@ export const it: Dictionary = {
     countRemoved: "rimosse nelle build precedenti",
     legendNote: "Le carte Leggendarie guidano il mazzo: una per mazzo, segnate con la stella. Le saghe sono una classificazione di OriginsMeta per leggenda d'origine; il gioco non le espone.",
     sourceNote:
-      "Costi, statistiche, allineamenti e testi delle carte della Demo 2.0 sono verificati nel gioco, in inglese, italiano e spagnolo; i bilanciamenti vengono dalle patch notes ufficiali. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi italiani e spagnoli delle carte generate e rimosse sono di OriginsMeta.",
+      "Costi, statistiche, allineamenti e testi delle carte della Demo 2.0 sono verificati nel gioco, in inglese, italiano, spagnolo e francese; i bilanciamenti vengono dalle patch notes ufficiali. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi italiani, spagnoli e francesi delle carte generate e rimosse sono di OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta da collezione",
     changesTitle: "Storico bilanciamenti",

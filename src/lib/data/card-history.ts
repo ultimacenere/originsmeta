@@ -21,7 +21,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 5, power: 3, health: 5 },
       to: { mana: 4, power: 3, health: 3 },
-      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo colpo oltre a ripetere le abilità Alla morte degli alleati.", es: "Más barata y más pequeña; obtiene Primer golpe además de repetir las habilidades Al morir de los aliados.", fr: "Moins chère et plus petite ; gagne Initiative en plus de répéter les capacités À la mort des alliés." },
+      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo colpo oltre a ripetere le abilità Alla morte degli alleati.", es: "Más barata y más pequeña; obtiene Primer golpe además de repetir las habilidades Al morir de los aliados.", fr: "Moins chère et plus petite ; gagne Première frappe en plus de répéter les capacités À la mort des alliés." },
     },
   ],
   "king-arthur": [
@@ -66,7 +66,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 1, power: 1, health: 2 },
       to: { mana: 1, power: 1, health: 1 },
-      note: { en: "Loses 1 Health; On Reveal bonus on a middle space rises from +1/+1 to +2/+2.", it: "Perde 1 Salute; il bonus dell'abilità Alla rivelazione su spazio centrale sale da +1/+1 a +2/+2.", es: "Pierde 1 de Salud; la bonificación de su habilidad Al revelar en un espacio central sube de +1/+1 a +2/+2.", fr: "Perd 1 Santé ; le bonus de sa capacité À la révélation sur un emplacement central passe de +1/+1 à +2/+2." },
+      note: { en: "Loses 1 Health; On Reveal bonus on a middle space rises from +1/+1 to +2/+2.", it: "Perde 1 Salute; il bonus dell'abilità Alla rivelazione su spazio centrale sale da +1/+1 a +2/+2.", es: "Pierde 1 de Salud; la bonificación de su habilidad Al revelar en un espacio central sube de +1/+1 a +2/+2.", fr: "Perd 1 Santé ; le bonus de sa capacité À la révélation sur une case centrale passe de +1/+1 à +2/+2." },
     },
     {
       patch: "0.7",
@@ -513,7 +513,7 @@ export const cardHistory: Record<string, Change[]> = {
       patch: "demo-0921",
       kind: "rework",
       alignment: { from: "neutral", to: "evil" },
-      note: { en: "Now Evil instead of Neutral.", it: "Ora è Malvagia invece che Neutrale.", es: "Ahora es Evil en lugar de Neutral.", fr: "Désormais Maléfique au lieu de Neutre." },
+      note: { en: "Now Evil instead of Neutral.", it: "Ora è Malvagia invece che Neutrale.", es: "Ahora es Evil en lugar de Neutral.", fr: "Désormais Evil au lieu de Neutral." },
     },
   ],
   "don-quixote": [
@@ -579,7 +579,7 @@ export const cardHistory: Record<string, Change[]> = {
         en: "Now moves an ally to any space; if another card is already there, the two swap places. It can also target occupied spaces.",
         it: "Ora muove un alleato in qualsiasi spazio; se lì c'è già un'altra carta, le due si scambiano di posto. Può anche bersagliare spazi occupati.",
         es: "Ahora mueve a un aliado a cualquier espacio; si ya hay otra carta allí, las dos intercambian sus posiciones. También puede elegir como objetivo espacios ocupados.",
-        fr: "Déplace désormais un allié vers n'importe quel emplacement ; si une autre carte s'y trouve déjà, les deux échangent leur place. Peut aussi cibler des emplacements occupés.",
+        fr: "Déplace désormais un allié vers n'importe quelle case ; si une autre carte s'y trouve déjà, les deux échangent leur place. Peut aussi cibler des cases occupées.",
       },
     },
   ],

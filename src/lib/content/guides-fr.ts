@@ -6,8 +6,7 @@ import type { GuideCopy, GuideSlug } from "./guides";
  * (guides-es.ts). Una guida nuova si scrive nelle quattro lingue: inglese e italiano in guides.ts, spagnolo in
  * guides-es.ts, francese qui (il tipo lo pretende). Stesse regole delle altre lingue: link interni con /fr/, ancore
  * {#…} in francese senza accenti, nomi delle carte in inglese, "vous" al lettore e tipografia francese
- * (docs/francese.md). Le parole chiave del gioco usano il glossario francese provvisorio, da allineare al gioco quando
- * lo leggeremo in francese.
+ * (docs/francese.md). Le parole chiave del gioco usano i nomi francesi del gioco, letti l'08/10/2026.
  */
 export const frText: Record<GuideSlug, GuideCopy> = {
   "origins-tcg-legendaries": {
@@ -67,15 +66,15 @@ La dernière colonne compte les decks que chaque Légendaire mène parmi les 20 
 - **Votre adversaire la voit.** Le patch 0.6.1 du playtest fermé (14 août 2026) a ajouté un aperçu de la Légendaire adverse pendant le mulligan, d'après les [notes de patch officielles](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **En Conquest, elle donne son nom au deck.** À la Crimson Cup, chaque joueur apporte trois decks, et quand vous bannissez un deck de votre adversaire, vous n'en voyez que la Légendaire ([règles de la Crimson Cup](/fr/news/crimson-cup-format-check-in)). Les annonces ne disent pas si les trois Légendaires doivent être différentes ; à Big Bob's Playtest Battle, elles devaient l'être. Comment assembler les trois decks : notre [guide du Conquest](/fr/guides/origins-tcg-conquest).
 
-Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du texte officiel anglais lu dans le jeu, avec notre glossaire provisoire des mots-clés : nous n'avons pas encore relu les cartes dans le jeu en français. Coûts et statistiques ont été vérifiés carte par carte le 22 septembre 2026. Les sagas et les notes sur chaque légende sont d'OriginsMeta. Les patchs sont ceux suivis dans [MetaShifting](/fr/metashifting) : les mises à jour 0.6.1, 0.6.2 et 0.6.3 du playtest (août 2026), le patch de la démo du 21 septembre 2026 et le patch 0.7 du 29 septembre 2026, qui n'a rééquilibré aucune Légendaire. Le pouvoir légendaire n'est pas traité ici : nous ne l'avons pas encore transcrit du jeu, et la fiche de chaque carte le montrera quand ce sera fait.
+Les textes de cartes cités ci-dessous sont les textes officiels du jeu, lus dans le jeu en français le 8 octobre 2026. Coûts et statistiques ont été vérifiés carte par carte le 22 septembre 2026. Les sagas et les notes sur chaque légende sont d'OriginsMeta. Les patchs sont ceux suivis dans [MetaShifting](/fr/metashifting) : les mises à jour 0.6.1, 0.6.2 et 0.6.3 du playtest (août 2026), le patch de la démo du 21 septembre 2026 et le patch 0.7 du 29 septembre 2026, qui n'a rééquilibré aucune Légendaire. Le pouvoir légendaire n'est pas traité ici : nous ne l'avons pas encore transcrit du jeu, et la fiche de chaque carte le montrera quand ce sera fait.
 
 ## Dorothy {#dorothy}
 
 **4 mana · 1/1 · unité · Good** · Saga : Pays d'Oz
 
-> Je peux me Déplacer à chaque manche.
+> Je peux me Déplacer chaque manche.
 >
-> J'ai +1⚔️/+1❤️ pour chaque fois qu'un allié s'est déplacé au cours de cette partie.
+> J'ai +1⚔️/+1❤️ pour chaque déplacement d'un allié cette partie.
 
 - **La légende.** La fillette du Kansas emportée à Oz par une tornade dans le roman de L. Frank Baum de 1900.
 - **Patchs.** Patch de la démo du 21 septembre 2026 : mana 5 → 4 ([notes de patch](/fr/news/demo-patch-notes-0921)).
@@ -89,7 +88,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Quand vous défaussez, je reviens de votre cimetière dans votre main.
 >
-> À la révélation : Invoquez Brides of Dracula [2⚔️/2❤️] sur un emplacement aléatoire ici.
+> À la révélation : Invoquez Brides of Dracula [2⚔️/2❤️] sur une case aléatoire ici.
 
 - **La légende.** Le comte transylvain du roman de Bram Stoker de 1897.
 - **Cartes créées.** [Brides of Dracula](/fr/cards/brides-of-dracula), une 2/2 qui, d'après son texte, inflige 1 dégât à la barrière de l'adversaire dans son lieu et gagne +1❤️ chaque fois que vous défaussez une carte (carte créée : texte non vérifié dans le jeu).
@@ -104,7 +103,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Double attaque
 >
-> Quand une capacité À la révélation d'un allié se déclenche, répétez-la.
+> Quand une capacité À la révélation d'un allié se produit, répétez-la.
 
 - **La légende.** La guerrière qui prend la place de son père dans l'armée, d'après une ballade chinoise du VIe siècle.
 - **Patchs.** Patch 0.6.2 : statistiques inchangées, elle gagne Double attaque en plus de répéter les capacités À la révélation des alliés ([notes de patch](/fr/news/patch-0-6-2)).
@@ -116,12 +115,12 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 **4 mana · 3/3 · unité · Evil** · Saga : Pays des Merveilles
 
-> Initiative
+> Première frappe
 >
-> Quand une capacité À la mort d'un allié se déclenche, répétez-la.
+> Quand une capacité À la mort d'un allié se produit, répétez-la.
 
 - **La légende.** La souveraine furieuse du Pays des Merveilles, dont la réponse à tout est « Qu'on leur coupe la tête ! ».
-- **Patchs.** Patch 0.6.2 : de 5 mana 3/5 à 4 mana 3/3, et elle gagne Initiative en plus de répéter les capacités À la mort des alliés ([notes de patch](/fr/news/patch-0-6-2)).
+- **Patchs.** Patch 0.6.2 : de 5 mana 3/5 à 4 mana 3/3, et elle gagne Première frappe en plus de répéter les capacités À la mort des alliés ([notes de patch](/fr/news/patch-0-6-2)).
 - **Decks sur OriginsMeta au 25 septembre 2026.** Deux : [Qoh](/fr/decks/community/qoh-f876) et [Just f\\*\\*\\*in em](/fr/decks/community/just-f-in-em-bdf2).
 - **Guide.** Pas encore : [envoyez-nous le vôtre](/fr/guides/submit).
 - **Fiche.** [Queen of Hearts, carte Légendaire : statistiques et texte](/fr/cards/queen-of-hearts).
@@ -130,7 +129,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 **4 mana · 3/4 · unité · Good** · Saga : Horreur gothique
 
-> Avant le combat, ajoutez Van Helsing's Tools à votre main si elle n'y est pas déjà.
+> Avant le combat, ajoutez Van Helsing's Tools à votre main s'il n'y est pas déjà.
 
 - **La légende.** Abraham Van Helsing, le professeur néerlandais qui mène la chasse à Dracula.
 - **Cartes créées.** [Van Helsing's Tools](/fr/cards/van-helsings-tools), qui vous fait choisir et jouer l'une de quatre cartes créées : [Holy Water](/fr/cards/holy-water), [Silver Bullet](/fr/cards/silver-bullet), [Garlic](/fr/cards/garlic) ou [Wooden Stake](/fr/cards/wooden-stake) (cartes créées : textes non vérifiés dans le jeu, et la fiche de Silver Bullet montre encore son texte d'avant le patch 0.6.2 ; les changements sont dans son historique d'équilibrage).
@@ -145,7 +144,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Contact mortel
 >
-> À la révélation : Donnez Contact mortel à vos personnages Maléfiques.
+> À la révélation : Donne Contact mortel à vos personnages Mauvais.
 
 - **La légende.** La belle-mère cruelle des contes de fées, de la maison de Cendrillon à la cour de Blanche-Neige.
 - **Patchs.** Patch de la démo du 21 septembre 2026 : Puissance 3 → 4 ([notes de patch](/fr/news/demo-patch-notes-0921)).
@@ -171,7 +170,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Bouclier
 >
-> À la révélation : Donnez Bouclier à vos personnages Bons.
+> À la révélation : Donne Bouclier à vos personnages Bons.
 
 - **La légende.** Le roi passé et futur de Bretagne, qui tira l'épée du rocher et réunit la Table ronde.
 - **Patchs.** Patch 0.6.3 : de 5/5 à 7/7 ([notes de patch](/fr/news/patch-0-6-3)).
@@ -199,7 +198,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Piétinement
 >
-> À la révélation : Invoquez un Not So Little Pig [3⚔️/3❤️] avec Piétinement sur un emplacement aléatoire de chaque autre lieu.
+> À la révélation : Invoquez un Not So Little Pig [3⚔️/3❤️] avec Piétinement sur une case aléatoire de chaque autre lieu.
 
 - **La légende.** Les trois cochons de paille, de bois et de briques, devenus grands et plus si faciles à renverser d'un souffle.
 - **Cartes créées.** [Not So Little Pig](/fr/cards/not-so-little-pig), un 3/3 avec Piétinement, un dans chacun des deux autres lieux.
@@ -214,7 +213,7 @@ Les textes de cartes cités ci-dessous sont des traductions d'OriginsMeta du tex
 
 > Tir de précision 3
 >
-> À la révélation : Infligez 2 dégâts à tous les ennemis.
+> À la révélation : Inflige 2 dégâts à tous les ennemis.
 
 - **La seule Légendaire à 8 mana** de la Demo 2.0.
 - **La légende.** L'archer hors-la-loi de la forêt de Sherwood qui vole aux riches pour nourrir les pauvres, chanté dans les ballades depuis le XIVe siècle.
@@ -478,7 +477,7 @@ Dans notre liste, les lieux sont groupés d'après ce qu'ils font à la partie, 
 - **Mana et coûts.** Gold Spinning Wheel retire un à tout, Castle in the Clouds seulement aux cartes qui coûtent sept ou plus, Treasurer's Office ajoute un, Mana Battery vous laisse garder ce que vous n'avez pas dépensé. Ce sont eux qui décident qui prend l'avantage au tempo.
 - **Pioche et défausse.** The Sultan's Court donne chaque manche une carte qu'il faut dépenser, Knowledge Vault récompense celui qui remplit la ligne le premier, Junkyard en retire une aux deux joueurs, Nostradamus' Call détruit les deux decks au début de la sixième manche.
 - **Déplacement.** Conveyor Belt fait glisser tout le monde vers la droite après le combat, Ballroom renvoie un personnage aléatoire dans la main, Open Meadow accorde Déplacer (Move).
-- **Invocations et copies.** Cloning Lab remplit vos emplacements de copies de ce que vous venez de jouer, Reflecting Pool le copie dans un autre lieu, Sherwood Forest produit sans arrêt des [Merry Man](/fr/cards/merry-man), Hundred Acre Woods met un [Christopher Robin](/fr/cards/christopher-robin) des deux côtés.
+- **Invocations et copies.** Cloning Lab remplit vos cases de copies de ce que vous venez de jouer, Reflecting Pool le copie dans un autre lieu, Sherwood Forest produit sans arrêt des [Merry Man](/fr/cards/merry-man), Hundred Acre Woods met un [Christopher Robin](/fr/cards/christopher-robin) des deux côtés.
 - **Mots-clés accordés.** Stomping Grounds donne Piétinement (Trample), The Colosseum Double attaque (Double Attack), Windmill Ridge Défenseur (Defender), Poison Grounds donne Contact mortel (Deathtouch) aux personnages Evil, Blessed Grounds donne Bouclier (Shield) aux personnages Good.
 - **Capacités.** Mirror Dimension répète les capacités À la révélation (On Reveal), Burial Grounds répète les capacités À la mort (On Death), Anti-Magic Vault retire entièrement les capacités, Wonderland inverse l'ordre d'attaque.
 - **Destruction et barrières.** The Gallows détruit l'ennemi en face de tout ce qui y arrive, The Hill tue après le combat tout ce qui est à égalité à la Puissance la plus basse, Wall of Dumpty avale le premier personnage que vous jouez, Broken Gate fait revenir les barrières avec 10 de Santé au lieu de 40.
@@ -487,8 +486,8 @@ Dans notre liste, les lieux sont groupés d'après ce qu'ils font à la partie, 
 
 Quelques-uns valent la peine d'être reconnus dès qu'ils apparaissent, parce qu'ils changent ce que vous devez faire de votre main.
 
-- **Cloning Lab.** Tout ce que vous y jouez est copié dans vos emplacements libres de cette ligne. Un corps bon marché avec une bonne capacité À la révélation devient trois, et la ligne se décide en un tour.
-- **Mirror Dimension.** Chaque capacité À la révélation se déclenche deux fois. Il fait pour une ligne entière ce que [Mulan](/fr/cards/mulan) fait pour un deck, et il se cumule avec elle.
+- **Cloning Lab.** Tout ce que vous y jouez est copié dans vos cases libres de cette ligne. Un corps bon marché avec une bonne capacité À la révélation devient trois, et la ligne se décide en un tour.
+- **Mirror Dimension.** Chaque capacité À la révélation se produit deux fois. Il fait pour une ligne entière ce que [Mulan](/fr/cards/mulan) fait pour un deck, et il se cumule avec elle.
 - **The Gallows.** Tout ce qui y entre en jeu détruit l'ennemi en face. Il transforme votre personnage le moins cher en élimination, et il punit celui qui s'engage le premier.
 - **Anti-Magic Vault.** Les personnages perdent toutes leurs capacités. Un deck bâti sur les déclencheurs n'a rien à y faire ; un deck de simples corps s'y retrouve soudain chez lui.
 - **Amplifying Amphitheatre.** Tous les dégâts doublés, dans les deux sens. Un finisseur avec Piétinement comme [Ellen Trechend](/fr/cards/ellen-trechend) termine la partie à travers la barrière ; le leur aussi.
@@ -541,7 +540,7 @@ La promesse, c'est le **free-to-compete** : chaque carte nécessaire pour jouer
 - **Trois lignes.** Vous et votre adversaire combattez sur trois plateaux à la fois. Chaque ligne a son propre lieu, tiré d'une réserve de plus d'une centaine qui tournent et changent les règles de ce plateau.
 - **Tours simultanés.** Les deux joueurs agissent en même temps, donc pas d'attente. Une partie dure environ sept minutes.
 - **Les cartes attaquent.** Contrairement aux jeux de pur « comptage de lignes », les unités se battent entre elles : la Puissance est ce que vous infligez, la Santé ce que vous encaissez.
-- **Mots-clés.** La démo utilise, entre autres, À la révélation (On Reveal), qui se déclenche quand la carte est jouée, À la mort (On Death), Initiative (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch).
+- **Mots-clés.** La démo utilise, entre autres, À la révélation (On Reveal), qui se produit quand la carte est jouée, À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch).
 - **Une Légendaire mène le deck.** Dans la démo actuelle, les decks font 25 cartes et chacun est construit autour d'une carte Légendaire dotée d'une capacité signature : Mulan répète les capacités À la révélation de vos alliés, la Queen of Hearts répète leurs capacités À la mort. La Demo 2.0 en compte onze : [les 11 Légendaires, carte par carte](/fr/guides/origins-tcg-legendaries).
 
 ## Modes
@@ -566,11 +565,11 @@ La page Steam indique la sortie pour le quatrième trimestre 2026, sans date plu
     faq: [
       {
         q: "Que fait Mulan dans ce deck ?",
-        a: "Mulan est une 2/4 à 4 mana avec Double attaque et, quand la capacité À la révélation d'un allié se déclenche, elle la répète. Neuf cartes de la liste ont une capacité À la révélation : elle transforme chacune d'elles en deux.",
+        a: "Mulan est une 2/4 à 4 mana avec Double attaque et, quand la capacité À la révélation d'un allié se produit, elle la répète. Neuf cartes de la liste ont une capacité À la révélation : elle transforme chacune d'elles en deux.",
       },
       {
         q: "Que garder au mulligan ?",
-        a: "Une courbe qui arrive à Mulan à la quatrième manche : Bagheera sur un emplacement central, Baby Bear, puis Black Knight ou Frog Prince. Mary vaut la peine d'être gardée quand vous attendez une partie longue.",
+        a: "Une courbe qui arrive à Mulan à la quatrième manche : Bagheera sur une case centrale, Baby Bear, puis Black Knight ou Frog Prince. Mary vaut la peine d'être gardée quand vous attendez une partie longue.",
       },
       {
         q: "Quelle capacité À la révélation gagne le plus avec Mulan ?",
@@ -594,8 +593,8 @@ Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaire
 
 | Carte | Coût | Ce qu'elle fait |
 | --- | --- | --- |
-| [Mulan](/fr/cards/mulan) ★ | 4 | 2/4, Double attaque ; quand une capacité À la révélation d'un allié se déclenche, elle la répète |
-| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur un emplacement central, il gagne +2⚔️/+2❤️ |
+| [Mulan](/fr/cards/mulan) ★ | 4 | 2/4, Double attaque ; quand une capacité À la révélation d'un allié se produit, elle la répète |
+| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur une case centrale, il gagne +2⚔️/+2❤️ |
 | [Baby Bear](/fr/cards/baby-bear) | 2 | 1/1 ; riposte pour 1 quand un ennemi endommage votre barrière ici, et À la mort ajoute un Papa Bear 4/4 à votre main |
 | [Mary](/fr/cards/mary) | 3 | 1/1 ; À la révélation ajoute un Little Lamb à votre main, À la mort vos Lambs gagnent +3⚔️/+3❤️ de façon permanente |
 | [Black Knight](/fr/cards/black-knight) | 3 | 2/2 ; À la révélation inflige 2 dégâts à l'ennemi en face |
@@ -622,7 +621,7 @@ Mulan a aussi **Double attaque**, donc son propre corps de 2/4 échange mieux qu
 
 ## Mulligan
 
-Cherchez une courbe qui vous amène à Mulan à la quatrième manche sans prendre de retard : **Bagheera** sur un emplacement central (un 3/3 pour un mana), puis **Baby Bear**, puis **Black Knight** ou **Frog Prince**. Gardez **Mary** quand vous attendez une partie longue : le Lamb qu'elle ajoute à votre main est un corps bon marché et, si Mary meurt, les Lambs que vous avez déjà joués grandissent de façon permanente.
+Cherchez une courbe qui vous amène à Mulan à la quatrième manche sans prendre de retard : **Bagheera** sur une case centrale (un 3/3 pour un mana), puis **Baby Bear**, puis **Black Knight** ou **Frog Prince**. Gardez **Mary** quand vous attendez une partie longue : le Lamb qu'elle ajoute à votre main est un corps bon marché et, si Mary meurt, les Lambs que vous avez déjà joués grandissent de façon permanente.
 
 ## Manche par manche
 
@@ -660,7 +659,7 @@ La page du deck en liste deux : **une bonne courbe est souvent essentielle** et
     faq: [
       {
         q: "Qu'est-ce qu'un échange de valeur dans Origins TCG ?",
-        a: "Faire répondre une de vos cartes à deux cartes de l'adversaire, ou échanger une carte bon marché contre une carte chère. Ce deck est construit autour de cette idée : Bouclier, Initiative et les buffs font survivre vos personnages au combat qu'ils gagnent.",
+        a: "Faire répondre une de vos cartes à deux cartes de l'adversaire, ou échanger une carte bon marché contre une carte chère. Ce deck est construit autour de cette idée : Bouclier, Première frappe et les buffs font survivre vos personnages au combat qu'ils gagnent.",
       },
       {
         q: "Que garder au mulligan ?",
@@ -689,8 +688,8 @@ Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaire
 | Carte | Coût | Ce qu'elle fait |
 | --- | --- | --- |
 | [King Arthur](/fr/cards/king-arthur) ★ | 7 | 7/7 avec Bouclier ; À la révélation il donne Bouclier à vos personnages Good |
-| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur un emplacement central, il gagne +2⚔️/+2❤️ |
-| [Musketeer](/fr/cards/musketeer) | 2 | 2/1 avec Initiative |
+| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur une case centrale, il gagne +2⚔️/+2❤️ |
+| [Musketeer](/fr/cards/musketeer) | 2 | 2/1 avec Première frappe |
 | [Roo](/fr/cards/roo) | 2 | 2/4 avec Déplacer |
 | [Shahrazad](/fr/cards/shahrazad) | 2 | 1/4 ; soigne 1 dégât à votre barrière ici chaque fois qu'une carte entre dans votre main |
 | [Shield Maiden](/fr/cards/shield-maiden) | 3 | 3/1 avec Bouclier |
@@ -709,7 +708,7 @@ Dix unités et deux sorts, et dix des treize cartes sont des personnages Good :
 Trois mots-clés font le travail.
 
 - **Bouclier** absorbe les premiers dégâts. King Arthur le donne à tous vos personnages Good d'un coup, et [Shield Maiden](/fr/cards/shield-maiden) apporte le sien : un 3/1 avec Bouclier échange avec un 3/3 et reste sur le plateau.
-- **Initiative** sur [Musketeer](/fr/cards/musketeer) signifie que l'ennemi subit les dégâts avant de pouvoir répondre : deux mana qui éliminent un corps plus gros.
+- **Première frappe** sur [Musketeer](/fr/cards/musketeer) signifie que l'ennemi subit les dégâts avant de pouvoir répondre : deux mana qui éliminent un corps plus gros.
 - **Les buffs** de [Lancelot](/fr/cards/lancelot) et de [Fairy Godmother](/fr/cards/fairy-godmother) transforment un combat équilibré en un combat à sens unique. Lancelot renforce chaque personnage Good joué dans son lieu, donc il vous récompense de continuer sur la même ligne au lieu de vous disperser.
 
 [Ali Baba](/fr/cards/ali-baba) est le moteur : chaque fois qu'il endommage une barrière, vous piochez. [Shahrazad](/fr/cards/shahrazad) est l'autre moitié de la même idée : elle soigne un dégât à votre barrière dans son lieu chaque fois qu'une carte entre dans votre main, donc piocher vous garde en vie autant qu'en avance.
@@ -759,7 +758,7 @@ La page du deck en liste trois : **aucune élimination de zone**, **Dark Omen d
       },
       {
         q: "Quels combos de déplacement le deck cherche-t-il ?",
-        a: "Card Soldier, qui invoque une copie de lui-même sur son emplacement précédent après s'être déplacé ; Pegasus, qui double sa Puissance après s'être déplacé ; et Magic Carpet, qui à la révélation déplace vos autres alliés d'un emplacement vers la gauche ou vers la droite.",
+        a: "Card Soldier, qui invoque une copie de lui-même sur sa case précédent après s'être déplacé ; Pegasus, qui double sa Puissance après s'être déplacé ; et Magic Carpet, qui à la révélation déplace vos autres alliés d'une case vers la gauche ou vers la droite.",
       },
       {
         q: "Le deck est-il compétitif ?",
@@ -784,18 +783,18 @@ Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaire
 | Carte | Coût | Ce qu'elle fait |
 | --- | --- | --- |
 | [Dorothy](/fr/cards/dorothy) ★ | 4 | 1/1 ; peut se Déplacer à chaque manche et gagne +1⚔️/+1❤️ pour chaque fois qu'un allié s'est déplacé dans cette partie |
-| [Twister Toss](/fr/cards/twister-toss) | 1 | Sort : déplacez un allié vers n'importe quel emplacement ; si une autre carte s'y trouve déjà, les deux échangent leur place |
-| [Card Soldier](/fr/cards/card-soldier) | 2 | 3/1 ; après s'être déplacé, il invoque une copie de lui-même sur son emplacement précédent |
+| [Twister Toss](/fr/cards/twister-toss) | 1 | Sort : déplacez un allié vers n'importe quelle case ; si une autre carte s'y trouve déjà, les deux échangent leur place |
+| [Card Soldier](/fr/cards/card-soldier) | 2 | 3/1 ; après s'être déplacé, il invoque une copie de lui-même sur sa case précédent |
 | [Roo](/fr/cards/roo) | 2 | 2/4 avec Déplacer |
 | [Basilisk](/fr/cards/basilisk) | 2 | 1/2 avec Contact mortel |
 | [Pegasus](/fr/cards/pegasus) | 3 | 2/4 ; après s'être déplacé, il double sa Puissance |
 | [Flying Monkey](/fr/cards/flying-monkey) | 3 | 4/1 ; À la révélation déplace N'IMPORTE QUEL autre personnage vers un emplacement aléatoire ici |
-| [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) | 3 | 1/5 ; quand elle survit à des dégâts, elle ajoute un Flying Monkey à votre main et se déplace d'un emplacement vers la gauche |
+| [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) | 3 | 1/5 ; quand elle survit à des dégâts, elle ajoute un Flying Monkey à votre main et se déplace d'une case vers la gauche |
 | [Kanga](/fr/cards/kanga) | 3 | 2/3 ; avant le combat, les alliés qui se sont déplacés cette manche gagnent +1⚔️/+1❤️ |
 | [En Passant](/fr/cards/en-passant) | 3 | Sort : déplacez un allié et infligez sa Puissance au personnage en face |
 | [Spellbook](/fr/cards/spellbook) | 4 | Sort : désormais, un sort aléatoire en main à chaque manche, défaussé avant le combat |
-| [Magic Carpet](/fr/cards/magic-carpet) | 4 | 4/4 ; À la révélation déplace vos autres alliés d'un emplacement vers la gauche, ou d'un emplacement vers la droite |
-| [Hare](/fr/cards/hare) | 5 | 4/1 avec Initiative et Déplacer |
+| [Magic Carpet](/fr/cards/magic-carpet) | 4 | 4/4 ; À la révélation déplace vos autres alliés d'une case vers la gauche, ou d'une case vers la droite |
+| [Hare](/fr/cards/hare) | 5 | 4/1 avec Première frappe et Déplacer |
 
 Neuf unités et trois sorts, et presque tout se déplace ou récompense un déplacement.
 
@@ -807,7 +806,7 @@ Trois combos font le sens de la liste :
 
 1. **Card Soldier plus n'importe quel déplacement.** Un 3/1 pour deux mana qui laisse une copie de lui-même derrière lui chaque fois qu'il se déplace : avec Twister Toss ou Magic Carpet, il remplit une ligne à lui seul.
 2. **Pegasus plus n'importe quel déplacement.** Après s'être déplacé, il double sa Puissance : le 2/4 devient 4/4, et avec le +1⚔️ de Kanga avant le combat c'est un corps de 5 de Puissance que l'adversaire avait évalué à trois mana.
-3. **Magic Carpet comme moteur.** Il déplace *tous* vos autres alliés d'un emplacement, dans la direction que vous choisissez : une carte, plusieurs déclenchements — une copie de Card Soldier, un Pegasus doublé, des points sur Dorothy et le buff de Kanga sur tout ce qui s'est déplacé.
+3. **Magic Carpet comme moteur.** Il déplace *tous* vos autres alliés d'une case, dans la direction que vous choisissez : une carte, plusieurs déclenchements — une copie de Card Soldier, un Pegasus doublé, des points sur Dorothy et le buff de Kanga sur tout ce qui s'est déplacé.
 
 ## Mulligan
 
@@ -816,13 +815,13 @@ L'auteur ne laisse aucune note sur le mulligan, donc ceci est la lecture d'Origi
 ## Manche par manche
 
 1. **Manches 1–2 : lancer le compteur.** Card Soldier ou Roo, puis Twister Toss sur lui. Chaque déplacement est un point permanent sur Dorothy, même quand le plateau semble calme.
-2. **Manche 3 : choisir la ligne.** Pegasus, la Witch ou Kanga. [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) est celle qui génère toute seule : un 1/5 qui survit à la plupart des coups et, chaque fois qu'elle survit, vous obtenez un Flying Monkey en main et elle se déplace d'un emplacement vers la gauche — un point de plus pour Dorothy.
-3. **Manche 4 : Magic Carpet.** Choisissez la direction qui pousse vos Card Soldiers vers un emplacement libre et emmène Pegasus dans un combat qu'il va maintenant gagner.
-4. **À partir de la manche 5 : Dorothy, puis conclure.** Elle coûte 4 depuis le patch du 21 septembre, mais la quatrième manche appartient à Magic Carpet, et une manche plus tard elle arrive avec un compteur plus haut. Hare a Initiative et Déplacer : il frappe avant la réponse et fait tourner le compteur. [Basilisk](/fr/cards/basilisk) avec Contact mortel est la réponse bon marché à un corps trop gros pour être affronté à la loyale, et En Passant transforme un Pegasus doublé en élimination.
+2. **Manche 3 : choisir la ligne.** Pegasus, la Witch ou Kanga. [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) est celle qui génère toute seule : un 1/5 qui survit à la plupart des coups et, chaque fois qu'elle survit, vous obtenez un Flying Monkey en main et elle se déplace d'une case vers la gauche — un point de plus pour Dorothy.
+3. **Manche 4 : Magic Carpet.** Choisissez la direction qui pousse vos Card Soldiers vers une case libre et emmène Pegasus dans un combat qu'il va maintenant gagner.
+4. **À partir de la manche 5 : Dorothy, puis conclure.** Elle coûte 4 depuis le patch du 21 septembre, mais la quatrième manche appartient à Magic Carpet, et une manche plus tard elle arrive avec un compteur plus haut. Hare a Première frappe et Déplacer : il frappe avant la réponse et fait tourner le compteur. [Basilisk](/fr/cards/basilisk) avec Contact mortel est la réponse bon marché à un corps trop gros pour être affronté à la loyale, et En Passant transforme un Pegasus doublé en élimination.
 
 ## Ce que le deck ne sait pas faire
 
-L'auteur liste deux faiblesses, et elles sont honnêtes : **on peut se retrouver très mal coincé avec ses cartes** et **certains combos ne sont pas constants**. Les deux viennent du même endroit : [Flying Monkey](/fr/cards/flying-monkey) déplace un personnage vers un emplacement *aléatoire*, la copie de Card Soldier va sur l'emplacement qu'il a quitté et Magic Carpet déplace tout, y compris les alliés que vous vouliez là où ils étaient. Décidez la direction avant de jouer Magic Carpet, et ne comptez pas sur un emplacement précis pour rester libre.
+L'auteur liste deux faiblesses, et elles sont honnêtes : **on peut se retrouver très mal coincé avec ses cartes** et **certains combos ne sont pas constants**. Les deux viennent du même endroit : [Flying Monkey](/fr/cards/flying-monkey) déplace un personnage vers une case *aléatoire*, la copie de Card Soldier va sur la case qu'il a quittée et Magic Carpet déplace tout, y compris les alliés que vous vouliez là où ils étaient. Décidez la direction avant de jouer Magic Carpet, et ne comptez pas sur un emplacement précis pour rester libre.
 
 ## Matchups
 
@@ -846,11 +845,11 @@ Les données du mode classé ne sont pas publiques : ceci est une lecture des l
     faq: [
       {
         q: "Que fait Legion of the Dead ?",
-        a: "C'est un sort Légendaire à 7 mana : il remplit votre plateau de Zombies (2⚔️/2❤️). Une carte, et tous les emplacements libres sont pris.",
+        a: "C'est un sort Légendaire à 7 mana : il remplit votre plateau de Zombies (2⚔️/2❤️). Une carte, et toutes les cases libres sont pris.",
       },
       {
         q: "Quel est le combo Golden Egg et Boogeyman ?",
-        a: "Boogeyman est un 7/7 à 4 mana dont la capacité À la révélation détruit l'allié de son lieu avec la Puissance la plus basse, même lui-même. Golden Egg est un 0/1 qui invoque une Golden Goose 5/5 sur son emplacement quand il meurt : posez l'Œuf d'abord, et la capacité de Boogeyman le transforme en Goose au lieu de tuer un de vos propres corps.",
+        a: "Boogeyman est un 7/7 à 4 mana dont la capacité À la révélation détruit l'allié de son lieu avec la Puissance la plus basse, même lui-même. Golden Egg est un 0/1 qui invoque une Golden Goose 5/5 sur sa case quand il meurt : posez l'Œuf d'abord, et la capacité de Boogeyman le transforme en Goose au lieu de tuer un de vos propres corps.",
       },
       {
         q: "Que garder au mulligan ?",
@@ -877,11 +876,11 @@ Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaire
 | [Legion of the Dead](/fr/cards/legion-of-the-dead) ★ | 7 | Sort Légendaire : remplissez votre plateau de Zombies (2⚔️/2❤️) |
 | [Bullseye](/fr/cards/bullseye) | 1 | Sort : 3 dégâts à N'IMPORTE QUEL personnage |
 | [Thumbelina](/fr/cards/thumbelina) | 1 | 2/2, sans capacité |
-| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur un emplacement central, il gagne +2⚔️/+2❤️ |
+| [Bagheera](/fr/cards/bagheera) | 2 | 1/1 ; À la révélation sur une case centrale, il gagne +2⚔️/+2❤️ |
 | [Morgiana](/fr/cards/morgiana) | 2 | 2/3 ; empêche TOUTES les capacités À la révélation de se déclencher dans son lieu |
 | [Mind Palace](/fr/cards/mind-palace) | 3 | Sort : piochez 2 cartes |
 | [Asanbosam](/fr/cards/asanbosam) | 3 | 5/5 ; À la révélation défausse une carte aléatoire de coût pair |
-| [Golden Egg](/fr/cards/golden-egg) | 3 | 0/1 ; À la mort il invoque une Golden Goose (5/5) sur son emplacement |
+| [Golden Egg](/fr/cards/golden-egg) | 3 | 0/1 ; À la mort il invoque une Golden Goose (5/5) sur sa case |
 | [Flying Monkey](/fr/cards/flying-monkey) | 3 | 4/1 ; À la révélation déplace N'IMPORTE QUEL autre personnage vers un emplacement aléatoire ici |
 | [En Passant](/fr/cards/en-passant) | 3 | Sort : déplacez un allié et infligez sa Puissance au personnage en face |
 | [Boogeyman](/fr/cards/boogeyman) | 4 | 7/7 ; À la révélation détruit l'allié ici avec la Puissance la plus basse, même lui-même |
@@ -894,25 +893,25 @@ Dix unités et trois sorts. Les trois cartes bon marché ne sont pas du rempliss
 
 Trois cartes font les dégâts — **Boogeyman, Asanbosam et Impundulu** — et tout le reste existe pour les protéger ou leur ouvrir la voie.
 
-- **Boogeyman** est un 7/7 pour quatre mana, le meilleur rapport de la liste, avec un piège : à la révélation, il détruit l'allié de son lieu avec la Puissance la plus basse, lui compris. Posez-le dans une ligne vide et il se tue lui-même ; posez-le à côté d'un [Golden Egg](/fr/cards/golden-egg) et c'est l'Œuf qui meurt, laissant une Golden Goose 5/5 sur son emplacement. C'est le combo que l'auteur désigne : deux cartes, un 7/7 et un 5/5.
+- **Boogeyman** est un 7/7 pour quatre mana, le meilleur rapport de la liste, avec un piège : à la révélation, il détruit l'allié de son lieu avec la Puissance la plus basse, lui compris. Posez-le dans une ligne vide et il se tue lui-même ; posez-le à côté d'un [Golden Egg](/fr/cards/golden-egg) et c'est l'Œuf qui meurt, laissant une Golden Goose 5/5 sur sa case. C'est le combo que l'auteur désigne : deux cartes, un 7/7 et un 5/5.
 - **Asanbosam** est un 5/5 pour trois, et à la révélation il fait défausser à l'adversaire une carte aléatoire de coût pair.
 - **Impundulu** transforme chaque attaque en un [Lightning Strike](/fr/cards/lightning-strike) dans votre main : des dégâts répétables, à condition de les dépenser avant le combat suivant.
 
-La **Légendaire** clôt la partie plus qu'elle ne l'ouvre : à sept mana, *Remplissez votre plateau de Zombies* prend tous les emplacements libres d'un coup. Elle est à son meilleur la manche qui suit un échange qui a vidé votre côté, ou dans les deux lieux que vous ne disputiez pas.
+La **Légendaire** clôt la partie plus qu'elle ne l'ouvre : à sept mana, *Remplissez votre plateau de Zombies* prend toutes les cases libres d'un coup. Elle est à son meilleur la manche qui suit un échange qui a vidé votre côté, ou dans les deux lieux que vous ne disputiez pas.
 
 ## Les « farces »
 
 [En Passant](/fr/cards/en-passant), [Flying Monkey](/fr/cards/flying-monkey) et [White Queen](/fr/cards/white-queen) sont ce que l'auteur entend par jouer une farce à chaque manche.
 
 - **En Passant** déplace un allié et inflige sa Puissance au personnage en face : sur Boogeyman ou une Golden Goose, ce sont cinq à sept dégâts qui repositionnent en même temps.
-- **Flying Monkey** déplace N'IMPORTE QUEL autre personnage vers un emplacement aléatoire de son lieu : il tire un bloqueur ennemi hors de la ligne, ou amène votre propre corps là où se joue le combat. L'emplacement est aléatoire, donc c'est une farce, pas un plan.
+- **Flying Monkey** déplace N'IMPORTE QUEL autre personnage vers une case aléatoire de son lieu : il tire un bloqueur ennemi hors de la ligne, ou amène votre propre corps là où se joue le combat. La case est aléatoire, donc c'est une farce, pas un plan.
 - **White Queen** renvoie N'IMPORTE QUEL personnage dans la main de son propriétaire : un finisseur ennemi disparaît pour une manche, ou votre propre Golden Egg revient pour être rejoué à côté d'un deuxième Boogeyman.
 
-[Morgiana](/fr/cards/morgiana) est la discrète : dans son lieu, aucune capacité À la révélation ne se déclenche, pour aucun des deux camps. Jouez-la là où les capacités À la révélation de l'adversaire font le plus mal — mais rappelez-vous qu'elle arrête aussi les vôtres, y compris celle de Boogeyman.
+[Morgiana](/fr/cards/morgiana) est la discrète : dans son lieu, aucune capacité À la révélation ne se produit, pour aucun des deux camps. Jouez-la là où les capacités À la révélation de l'adversaire font le plus mal — mais rappelez-vous qu'elle arrête aussi les vôtres, y compris celle de Boogeyman.
 
 ## Mulligan
 
-La note de l'auteur est courte et claire : **Bagheera et Thumbelina sont des départs parfaits aux côtés de Bullseye**, et **Golden Egg plus Boogeyman peuvent décider la partie même depuis la main de départ**. Bagheera sur un emplacement central est un 3/3 pour un mana ; Thumbelina est un simple 2/2, ce qui, pour un mana, est une présence sur le plateau à laquelle vous n'avez pas à réfléchir.
+La note de l'auteur est courte et claire : **Bagheera et Thumbelina sont des départs parfaits aux côtés de Bullseye**, et **Golden Egg plus Boogeyman peuvent décider la partie même depuis la main de départ**. Bagheera sur une case centrale est un 3/3 pour un mana ; Thumbelina est un simple 2/2, ce qui, pour un mana, est une présence sur le plateau à laquelle vous n'avez pas à réfléchir.
 
 ## Manche par manche
 
@@ -920,13 +919,13 @@ La note de l'auteur est courte et claire : **Bagheera et Thumbelina sont des d�
 2. **Manche 3 : la première menace.** Asanbosam en 5/5, ou le Golden Egg dans la ligne où Boogeyman arrivera la manche suivante.
 3. **Manche 4 : Boogeyman.** Sur l'Œuf si vous l'avez, sinon à côté du plus petit corps que vous pouvez vous permettre de perdre — et jamais dans une ligne vide.
 4. **Manches 5–6 : pression et cartes.** Impundulu commence à produire des Strikes ; Mind Palace recharge la main. L'auteur est explicite là-dessus : sans Mind Palace, le deck se retrouve sans cartes trop tôt.
-5. **Manche 7 : Legion of the Dead.** Chaque emplacement libre devient un 2/2. Comptez les emplacements avant de la jouer : après une manche où vous avez beaucoup échangé, elle vaut deux ou trois corps de plus.
+5. **Manche 7 : Legion of the Dead.** Chaque case libre devient un 2/2. Comptez les cases avant de la jouer : après une manche où vous avez beaucoup échangé, elle vaut deux ou trois corps de plus.
 
 ## Matchups
 
 Les données du mode classé ne sont pas publiques : ceci est la lecture qu'OriginsMeta fait des listes.
 
-- **Contre les decks qui remplissent le plateau.** Les Zombies arrivent sur les emplacements libres, donc plus l'adversaire s'étale, moins la Légendaire fait pour vous. Utilisez d'abord Bullseye et Boogeyman pour ouvrir le plateau, et gardez Flying Monkey pour le corps renforcé.
+- **Contre les decks qui remplissent le plateau.** Les Zombies arrivent sur les cases libres, donc plus l'adversaire s'étale, moins la Légendaire fait pour vous. Utilisez d'abord Bullseye et Boogeyman pour ouvrir le plateau, et gardez Flying Monkey pour le corps renforcé.
 - **Contre les decks contrôle.** La défausse d'Asanbosam et les Strikes d'Impundulu sont la pression qui ne dépend pas de la survie du plateau. Gardez un Boogeyman en réserve après un nettoyage : un 7/7 pour quatre est la façon la plus rapide de reconstruire.
 - **Contre les decks basés sur les capacités À la révélation** (par exemple [On Reveal Mid Range](/fr/decks/community/on-reveal-mid-range-772e), qui répète chaque capacité À la révélation avec Mulan). C'est ici que Morgiana gagne sa place : mettez-la dans le lieu où ils empilent les capacités, acceptez que vos propres capacités À la révélation s'arrêtent là aussi, et combattez normalement sur les deux autres lignes.
 
@@ -976,13 +975,13 @@ Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaire
 | Carte | Coût | Rôle |
 | --- | --- | --- |
 | [Three Not So Little Pigs](/fr/cards/three-not-so-little-pigs) ★ | 7 | Légendaire : Piétinement, et À la révélation elle invoque un Not So Little Pig avec Piétinement dans chaque autre lieu |
-| [Bagheera](/fr/cards/bagheera) | 2 | Carte à deux mana qui grandit quand elle est jouée sur un emplacement central |
+| [Bagheera](/fr/cards/bagheera) | 2 | Carte à deux mana qui grandit quand elle est jouée sur une case centrale |
 | [Rumple](/fr/cards/rumple) | 2 | 2/2 qui vous donne +1 mana la manche suivante |
 | [Axe Throw](/fr/cards/axe-throw) | 2 | 4 dégâts à n'importe quel personnage |
 | [Piglet](/fr/cards/piglet) | 2 | À la révélation : buff aux autres alliés de son lieu |
 | [Mind Palace](/fr/cards/mind-palace) | 3 | Piochez 2 cartes |
 | [Big Bad Wolf](/fr/cards/big-bad-wolf) | 3 | 3/3 qui gagne +1/+1 après chaque combat |
-| [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) | 3 | 1/5 : quand elle survit à des dégâts, elle ajoute un Flying Monkey à votre main et se déplace d'un emplacement vers la gauche |
+| [Wicked Witch of the West](/fr/cards/wicked-witch-of-the-west) | 3 | 1/5 : quand elle survit à des dégâts, elle ajoute un Flying Monkey à votre main et se déplace d'une case vers la gauche |
 | [En Passant](/fr/cards/en-passant) | 3 | Déplacez un allié et infligez des dégâts égaux à sa Puissance au personnage en face |
 | [Ali Baba](/fr/cards/ali-baba) | 3 | 2/3 qui pioche une carte quand il endommage la barrière adverse |
 | [Frog Prince](/fr/cards/frog-prince) | 3 | Choisissez +3 Puissance ou +3 Santé à la révélation |
@@ -1007,7 +1006,7 @@ Cherchez toujours **Bagheera, Ali Baba, Big Bad Wolf et Rumple** : ils donnent 
 
 ## Manche par manche
 
-1. **Manches 1–3 : prendre le plateau.** Bagheera sur un emplacement central, puis Rumple ou Piglet, puis une carte à trois. Rumple à la manche deux signifie quatre mana à la manche trois, soit un Wolf plus Bagheera, ou une Witch plus un sort. La Wicked Witch of the West est le mur du deck : avec cinq de Santé, elle survit à la plupart des premiers coups, et chaque fois qu'elle le fait vous obtenez un Flying Monkey en main et elle glisse d'un emplacement vers la gauche.
+1. **Manches 1–3 : prendre le plateau.** Bagheera sur une case centrale, puis Rumple ou Piglet, puis une carte à trois. Rumple à la manche deux signifie quatre mana à la manche trois, soit un Wolf plus Bagheera, ou une Witch plus un sort. La Wicked Witch of the West est le mur du deck : avec cinq de Santé, elle survit à la plupart des premiers coups, et chaque fois qu'elle le fait vous obtenez un Flying Monkey en main et elle glisse d'une case vers la gauche.
 2. **Manches 4–6 : choisir une ligne et presser.** Ali Baba veut frapper une barrière : chaque fois qu'il le fait, vous piochez. Frog Prince est soit un 5/2 qui échange à son avantage, soit un 2/5 qui tient une ligne ; choisissez après avoir vu ce que l'adversaire a révélé. Impundulu descend à cinq et commence à produire des Lightning Strikes dès sa première attaque.
 3. **Manches 7–8 : les finisseurs.** Les Pigs à sept (ou à six avec un Rumple la manche d'avant), Ellen Trechend à huit dans le lieu où l'adversaire a le plus de cartes. Utilisez En Passant la même manche pour déplacer une menace là où on ne l'attend pas, ou pour éliminer le seul bloqueur qui gêne.
 
@@ -1050,7 +1049,7 @@ Ceci est la seconde partie du guide de **3 Pigs Mid Range**, le deck midrange me
 ## Cinq interactions à connaître
 
 1. **Rumple vers les finisseurs.** Rumple vous donne +1 mana la manche suivante. Joué à la manche cinq, il vous permet de révéler Three Not So Little Pigs à la manche six, une manche entière avant que l'adversaire attende une carte à sept ; joué à la manche six, il met Ellen Trechend sur le plateau à la manche sept.
-2. **La Wicked Witch et son Flying Monkey.** La Witch est un 1/5 : elle meurt rarement d'un seul coup, et chaque fois qu'elle survit à des dégâts vous obtenez un [Flying Monkey](/fr/cards/flying-monkey) en main et elle se déplace d'un emplacement vers la gauche. La capacité À la révélation du Monkey déplace n'importe quel autre personnage, le vôtre ou le leur, vers un emplacement aléatoire de son lieu : utilisez-la pour tirer un bloqueur ennemi hors de la ligne où vous piétinez, ou pour amener un Wolf là où se joue le combat.
+2. **La Wicked Witch et son Flying Monkey.** La Witch est un 1/5 : elle meurt rarement d'un seul coup, et chaque fois qu'elle survit à des dégâts vous obtenez un [Flying Monkey](/fr/cards/flying-monkey) en main et elle se déplace d'une case vers la gauche. La capacité À la révélation du Monkey déplace n'importe quel autre personnage, le vôtre ou le leur, vers une case aléatoire de son lieu : utilisez-la pour tirer un bloqueur ennemi hors de la ligne où vous piétinez, ou pour amener un Wolf là où se joue le combat.
 3. **En Passant sur un corps qui a grandi.** Le sort déplace un allié et inflige des dégâts égaux à sa Puissance au personnage en face. Sur un Big Bad Wolf qui a combattu deux fois, ce sont cinq dégâts plus un repositionnement ; sur Ellen Trechend, c'est une élimination qui déplace aussi son Piétinement là où la barrière est la plus faible. C'est aussi la réponse à un bloqueur garé devant l'un de vos cochons.
 4. **Les Lightning Strikes d'Impundulu.** Chaque attaque ajoute un [Lightning Strike](/fr/cards/lightning-strike), deux mana pour trois dégâts à n'importe quel personnage ou barrière, à utiliser avant le combat suivant. Ce sont trois dégâts ciblés et répétables : assez pour la plupart des cartes de début de partie du pool actuel, ou un coup direct sur une barrière quand le plateau est déjà à vous.
 5. **Piglet sur les cochons.** La capacité À la révélation de Piglet renforce les autres alliés de son lieu. La manche après les Pigs, un Piglet à côté d'un Not So Little Pig fait un corps avec Piétinement qui frappe plus fort : la page du deck note que les cartes du mulligan « soutiennent les cochons déjà sur le plateau ».
@@ -1067,7 +1066,7 @@ Les données du mode classé ne sont pas encore publiques : ce qui suit est une
 
 ## Les erreurs à éviter
 
-- **Jouer les Pigs en sauvetage.** La Légendaire invoque des cochons sur des emplacements aléatoires des autres lieux : elle est à son meilleur quand ces lignes ont déjà un Wolf ou une Witch avec qui combattre, pas quand tout est déjà perdu.
+- **Jouer les Pigs en sauvetage.** La Légendaire invoque des cochons sur des cases aléatoires des autres lieux : elle est à son meilleur quand ces lignes ont déjà un Wolf ou une Witch avec qui combattre, pas quand tout est déjà perdu.
 - **Garder Rumple.** C'est un corps 2/2 avec un bonus, et le bonus vaut le plus entre les manches deux et six.
 - **Gaspiller les Lightning Strikes.** Ils sont défaussés avant le combat suivant : un Strike dans une barrière vaut mieux qu'un Strike perdu.
 - **Oublier les faiblesses.** La page du deck les liste : aucune élimination de masse et aucun soin pour vos barrières. Ne faites pas la course contre un deck qui soigne si vous n'êtes pas déjà devant sur le plateau.
@@ -1509,7 +1508,7 @@ Langues : depuis le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026, le je
 1. **Installez Steam** et connectez-vous (un compte gratuit suffit).
 2. **Ouvrez la [page d'Origins TCG Demo](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/)** et cliquez sur « Download Origins TCG Demo » ; ou cherchez « Origins TCG » dans Steam et choisissez la Demo. L'installation prend deux ou trois minutes.
 3. **Choisissez votre langue** si Steam ne l'a pas fait : clic droit sur le jeu dans votre bibliothèque, Propriétés, Langue. Les voix sont en anglais ; les autres langues traduisent l'interface et les textes.
-4. **Jouez le tutoriel**, puis les missions : ils enseignent les trois lignes, les tours simultanés et les mots-clés À la révélation (On Reveal), À la mort (On Death), Initiative (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch). Notre [guide en cinq minutes](/fr/guides/origins-tcg-explained) couvre le même terrain par écrit.
+4. **Jouez le tutoriel**, puis les missions : ils enseignent les trois lignes, les tours simultanés et les mots-clés À la révélation (On Reveal), À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch). Notre [guide en cinq minutes](/fr/guides/origins-tcg-explained) couvre le même terrain par écrit.
 5. **Passez en ligne** et essayez les decks préconstruits. Quand vous en voulez plus, lisez les [decks publiés par la communauté](/fr/decks), reconstruisez-les dans le [Deck builder](/fr/deck-builder) et vérifiez les statistiques actuelles des cartes dans la [base de données des cartes](/fr/cards) (Demo 2.0 avec le patch 0.7 du 29 septembre 2026).
 
 ## Ce que les joueurs de la démo débloquent

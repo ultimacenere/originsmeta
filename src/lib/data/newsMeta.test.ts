@@ -127,6 +127,7 @@ describe("funzioni di supporto", () => {
   test("paragrafo dell'aggiornamento nelle tre lingue", () => {
     assert.deepEqual(updateMarkers("en", "2026-09-05"), ["Update, 5 September", "Update of 5 September"]);
     assert.deepEqual(updateMarkers("it", "2026-09-25"), ["Aggiornamento del 25 settembre"]);
+    assert.deepEqual(updateMarkers("it", "2026-10-08"), ["Aggiornamento dell'8 ottobre"]);
     assert.deepEqual(updateMarkers("es", "2026-10-01"), ["Actualización del 1 de octubre"]);
   });
   test("destinazione dei link", () => {

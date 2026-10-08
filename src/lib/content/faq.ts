@@ -75,7 +75,7 @@ const en: Faq[] = [
   {
     id: "languages",
     q: "What languages is Origins TCG in?",
-    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish and, since 7 October 2026, French, with the game's own card texts in Italian and Spanish; the French card texts are our translation until we read the game in French.",
+    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish and, since 7 October 2026, French, with the game's own card texts in Italian, Spanish and French.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch 0.7 notes" }],
     keywords: ["language", "english", "italian", "spanish", "french", "german", "translated", "translation", "subtitles", "voice", "espanol", "italiano"],
@@ -176,7 +176,7 @@ const en: Faq[] = [
   {
     id: "card-list",
     q: "Where can I see every Origins TCG card?",
-    a: "In our card database: the 122 cards of the Demo 2.0 with their current stats, the official text in English, Italian and Spanish as it reads in the game and the balance history of each one, plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection is under My Decks → Cards: turn on the “Unowned” filter to see the cards you don't own yet as well.",
+    a: "In our card database: the 122 cards of the Demo 2.0 with their current stats, the official text in English, Italian, Spanish and French as it reads in the game and the balance history of each one, plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection is under My Decks → Cards: turn on the “Unowned” filter to see the cards you don't own yet as well.",
     links: [{ path: "/cards", label: "Card database" }],
     keywords: ["card list", "list of cards", "all cards", "all the cards", "every card", "card database", "database", "collection", "unowned"],
   },
@@ -203,7 +203,7 @@ const it: Faq[] = [
   {
     id: "languages",
     q: "In che lingue è Origins TCG?",
-    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo e, dal 7 ottobre 2026, francese, con i testi delle carte del gioco in italiano e spagnolo; in francese i testi delle carte sono una nostra traduzione finché non leggiamo il gioco in francese.",
+    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo e, dal 7 ottobre 2026, francese, con i testi delle carte del gioco in italiano, spagnolo e francese.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch notes della 0.7" }],
     keywords: ["lingua", "lingue", "italiano", "inglese", "spagnolo", "francese", "tedesco", "tradotto", "traduzione", "sottotitoli", "doppiaggio", "ita"],
@@ -304,7 +304,7 @@ const it: Faq[] = [
   {
     id: "card-list",
     q: "Dove si vedono tutte le carte di Origins TCG?",
-    a: "Nel nostro database carte: le 122 carte della Demo 2.0 con le statistiche attuali, il testo ufficiale in inglese, italiano e spagnolo come nel gioco e lo storico dei bilanciamenti di ognuna, più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco la collezione sta in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
+    a: "Nel nostro database carte: le 122 carte della Demo 2.0 con le statistiche attuali, il testo ufficiale in inglese, italiano, spagnolo e francese come nel gioco e lo storico dei bilanciamenti di ognuna, più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco la collezione sta in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
     links: [{ path: "/cards", label: "Database carte" }],
     keywords: ["lista delle carte", "lista carte", "elenco delle carte", "tutte le carte", "database", "collezione", "non posseduto"],
   },
@@ -331,7 +331,7 @@ const es: Faq[] = [
   {
     id: "languages",
     q: "¿Origins TCG está en español?",
-    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano y, desde el 7 de octubre de 2026, francés, con los textos de las cartas del juego en español e italiano; en francés los textos de las cartas son una traducción nuestra hasta que leamos el juego en francés.",
+    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano y, desde el 7 de octubre de 2026, francés, con los textos de las cartas del juego en español, italiano y francés.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notas del parche 0.7" }],
     keywords: ["idioma", "idiomas", "espanol", "castellano", "ingles", "italiano", "frances", "aleman", "traducido", "traduccion", "subtitulos", "doblaje"],
@@ -432,7 +432,7 @@ const es: Faq[] = [
   {
     id: "card-list",
     q: "¿Dónde puedo ver todas las cartas de Origins TCG?",
-    a: "En nuestra base de datos de cartas: las 122 cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés, italiano y español tal como aparece en el juego y el historial de cambios de cada una, además de 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
+    a: "En nuestra base de datos de cartas: las 122 cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés, italiano, español y francés tal como aparece en el juego y el historial de cambios de cada una, además de 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
     keywords: ["lista de cartas", "todas las cartas", "base de datos", "coleccion", "no poseido"],
   },
@@ -459,7 +459,7 @@ const fr: Faq[] = [
   {
     id: "languages",
     q: "Origins TCG est-il en français ?",
-    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. Le 30 septembre 2026, la page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement. Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien et espagnol ; les textes des cartes sont ceux du jeu en anglais, en italien et en espagnol, et en français une traduction d'OriginsMeta, pas encore vérifiée dans le jeu.",
+    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. Le 30 septembre 2026, la page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement. Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien et espagnol ; les textes des cartes sont ceux du jeu, en français comme en anglais, en italien et en espagnol.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notes du patch 0.7" }],
     keywords: ["langue", "langues", "francais", "anglais", "italien", "espagnol", "allemand", "traduit", "traduction", "sous-titres", "doublage"],
@@ -560,7 +560,7 @@ const fr: Faq[] = [
   {
     id: "card-list",
     q: "Où voir toutes les cartes d'Origins TCG ?",
-    a: "Dans notre base de données des cartes : les 122 cartes de la Demo 2.0 avec leurs statistiques actuelles, le texte officiel en anglais, en italien et en espagnol tel qu'il se lit dans le jeu (et notre traduction française, pas encore vérifiée dans le jeu) et l'historique des équilibrages de chacune, plus 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, la collection se trouve dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
+    a: "Dans notre base de données des cartes : les 122 cartes de la Demo 2.0 avec leurs statistiques actuelles, le texte officiel en français, en anglais, en italien et en espagnol tel qu'il se lit dans le jeu et l'historique des équilibrages de chacune, plus 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, la collection se trouve dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
     links: [{ path: "/cards", label: "Base de données des cartes" }],
     keywords: ["liste des cartes", "toutes les cartes", "base de donnees", "collection", "non possedees", "unowned"],
   },

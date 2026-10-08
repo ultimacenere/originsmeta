@@ -671,8 +671,8 @@ const es: DraftLabels = {
   },
 };
 
-// Francese dal 07/10/2026 (docs/francese.md): vous, tipografia francese (spazio insecabile prima di : ; ? !), glossario
-// provvisorio delle parole chiave (À la révélation, À la mort, Déplacer); il bot è "le Cerveau", i formati Échange,
+// Francese dal 07/10/2026 (docs/francese.md): vous, tipografia francese (spazio insecabile prima di : ; ? !), parole
+// chiave del gioco (À la révélation, À la mort, Déplacer); il bot è "le Cerveau", i formati Échange,
 // Triple e Boosters; "tour" è il giro di scelta del draft, "manche" il round della partita.
 const fr: DraftLabels = {
   meta: {
@@ -809,7 +809,7 @@ const fr: DraftLabels = {
     move: "Déplacer",
     reveal: "À la révélation",
     death: "À la mort",
-    evil: "personnages Maléfiques",
+    evil: "personnages Mauvais",
     good: "personnages Bons",
     wide: "beaucoup de personnages",
     ally: "alliés",
@@ -872,7 +872,7 @@ const fr: DraftLabels = {
     formatsTitle: "Les trois formats",
     botTitle: "Comment joue le Cerveau",
     bot: [
-      "Il évalue chaque carte avec nos notes de jeu : ce qu'elle fait, ce qu'elle coûte, à quels axes elle appartient (défausse, sorts, soins, Déplacer, À la révélation, À la mort, personnages Bons et Maléfiques).",
+      "Il évalue chaque carte avec nos notes de jeu : ce qu'elle fait, ce qu'elle coûte, à quels axes elle appartient (défausse, sorts, soins, Déplacer, À la révélation, À la mort, personnages Bons et Mauvais).",
       "Plus le draft avance, plus il regarde les besoins de son deck : des cartes à 2 pour la première manche, des removals, des dégâts à la barrière, de la pioche.",
       "Quand vous choisissez juste après lui, il vous prend la carte que vous voudriez le plus si le prix est juste ; en Échange, il vous offre la carte qui vous sert le moins.",
       "Il monte son deck en cherchant les 12 meilleures ensemble, pas une par une.",

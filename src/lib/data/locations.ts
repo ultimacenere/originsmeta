@@ -23,8 +23,7 @@ import type { PatchId } from "./cards";
  * - `effect`: il testo dell'effetto in inglese, italiano, spagnolo e francese (dal 07/10/2026). Italiano e spagnolo sono
  *   nostri ma usano il glossario ufficiale del gioco, come i testi delle carte in `card-lore.ts` (Alla rivelazione / Al
  *   revelar, Travolgere / Arrollar, Muovere / Mover, spazio / espacio…): vedi `docs/testi-di-gioco.md`. Il francese usa il
- *   glossario provvisorio di `docs/francese.md` (À la révélation, Piétinement, Déplacer, emplacement, lieu…), finché le
- *   carte non si leggono nel gioco in francese.
+ *   glossario del gioco letto l'08/10/2026 (`docs/francese.md`: À la révélation, Piétinement, Déplacer, case, lieu…).
  * - `tags`: come si comporta il luogo, per i filtri della pagina. Un luogo può averne più d'uno.
  * - `cards`: slug delle carte del nostro database citate dall'effetto, per i collegamenti incrociati.
  */
@@ -139,7 +138,7 @@ export const locations: GameLocation[] = [
   {
     slug: "burial-grounds",
     name: "Burial Grounds",
-    effect: { en: "On Death abilities happen twice here.", it: "Le abilità Alla morte avvengono due volte qui.", es: "Las habilidades Al morir ocurren dos veces aquí.", fr: "Les capacités À la mort se déclenchent deux fois ici." },
+    effect: { en: "On Death abilities happen twice here.", it: "Le abilità Alla morte avvengono due volte qui.", es: "Las habilidades Al morir ocurren dos veces aquí.", fr: "Les capacités À la mort se produisent deux fois ici." },
     tags: ["ability"],
   },
   {
@@ -161,14 +160,14 @@ export const locations: GameLocation[] = [
       en: "After you play a character here, fill your spaces here with copies of it.",
       it: "Dopo che giochi un personaggio qui, riempi i tuoi spazi qui con sue copie.",
       es: "Después de jugar un personaje aquí, llena tus espacios de esta ubicación con copias suyas.",
-      fr: "Après que vous avez joué un personnage ici, remplissez vos emplacements ici avec des copies de celui-ci.",
+      fr: "Après que vous avez joué un personnage ici, remplissez vos cases ici avec des copies de celui-ci.",
     },
     tags: ["summon"],
   },
   {
     slug: "conveyor-belt",
     name: "Conveyor Belt",
-    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, muovi tutti i personaggi qui di uno spazio a destra.", es: "Después del combate, mueve a todos los personajes de aquí un espacio a la derecha.", fr: "Après le combat, déplacez tous les personnages ici d'un emplacement vers la droite." },
+    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, muovi tutti i personaggi qui di uno spazio a destra.", es: "Después del combate, mueve a todos los personajes de aquí un espacio a la derecha.", fr: "Après le combat, déplacez tous les personnages ici d'une case vers la droite." },
     tags: ["move"],
   },
   {
@@ -234,7 +233,7 @@ export const locations: GameLocation[] = [
   {
     slug: "mirror-dimension",
     name: "Mirror Dimension",
-    effect: { en: "On Reveal abilities happen twice here.", it: "Le abilità Alla rivelazione avvengono due volte qui.", es: "Las habilidades Al revelar ocurren dos veces aquí.", fr: "Les capacités À la révélation se déclenchent deux fois ici." },
+    effect: { en: "On Reveal abilities happen twice here.", it: "Le abilità Alla rivelazione avvengono due volte qui.", es: "Las habilidades Al revelar ocurren dos veces aquí.", fr: "Les capacités À la révélation se produisent deux fois ici." },
     tags: ["ability"],
   },
   {
@@ -263,7 +262,7 @@ export const locations: GameLocation[] = [
   {
     slug: "poison-grounds",
     name: "Poison Grounds",
-    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Malvagi qui hanno Tocco letale.", es: "Los personajes Malvados de aquí tienen Toque mortal.", fr: "Les personnages Maléfiques ici ont Contact mortel." },
+    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Malvagi qui hanno Tocco letale.", es: "Los personajes Malvados de aquí tienen Toque mortal.", fr: "Les personnages Mauvais ici ont Contact mortel." },
     tags: ["keyword"],
   },
   {
@@ -328,7 +327,7 @@ export const locations: GameLocation[] = [
   {
     slug: "the-well",
     name: "The Well",
-    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegas un personaje aquí, cura 1 de daño de tu barrera aquí.", fr: "Quand vous jouez un personnage ici, soignez 1 dégât à votre barrière ici." },
+    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegas un personaje aquí, cura 1 de daño de tu barrera aquí.", fr: "Quand vous jouez un personnage ici, soignez 1 dégât de votre barrière ici." },
     tags: ["barrier"],
   },
   {

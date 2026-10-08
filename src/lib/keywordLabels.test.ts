@@ -37,7 +37,7 @@ describe("keywordLabel", () => {
     assert.equal(keywordLabel("Trample", "it"), "Travolgere");
     assert.equal(keywordLabel("Trample", "es"), "Arrollar");
   });
-  test("in francese il glossario provvisorio di docs/francese.md (da allineare al gioco quando lo leggeremo in francese)", () => {
+  test("in francese i nomi del gioco letti l'08/10/2026", () => {
     assert.equal(keywordLabel("On Reveal", "fr"), "À la révélation");
     assert.equal(keywordLabel("Trample", "fr"), "Piétinement");
     assert.equal(keywordLabel("Summon", "fr"), "Invoquez");

@@ -270,7 +270,7 @@ export const es: Dictionary = {
        (piano SEO del 25/09/2026) */
     title: "Lista de cartas de Origins TCG",
     metaTitle: "Cartas de Origins TCG (Koin Games): lista completa",
-    intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés, italiano y español tal como aparece en el juego, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
+    intro: "Todas las cartas de la Demo 2.0, más las cartas que crean y las retiradas en builds anteriores: estadísticas actuales, texto oficial en inglés, italiano, español y francés tal como aparece en el juego, historial de cambios de equilibrio y la leyenda de la que viene cada carta.",
     description: "Todas las cartas de la Demo 2.0 de Origins TCG, el juego de cartas de Koin Games: texto oficial, estadísticas y cambios, con filtros por tipo, saga y rareza.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Nombre o texto: Merlin, Al revelar…",
@@ -281,7 +281,7 @@ export const es: Dictionary = {
     countRemoved: "retiradas en builds anteriores",
     legendNote: "Las cartas Legendarias lideran el mazo: una por mazo, marcadas con la estrella. Las sagas son una clasificación propia de OriginsMeta según la leyenda de origen; el juego no las muestra.",
     sourceNote:
-      "Los costes, las estadísticas, los alineamientos y los textos de las cartas de la Demo 2.0 están verificados en el juego, en inglés, italiano y español; los cambios de equilibrio vienen de las notas oficiales de los parches. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han verificado en el juego. Texto de las cartas © Koin Games. Las sagas, las notas sobre el origen y los textos en italiano y español de las cartas creadas y retiradas son de OriginsMeta.",
+      "Los costes, las estadísticas, los alineamientos y los textos de las cartas de la Demo 2.0 están verificados en el juego, en inglés, italiano, español y francés; los cambios de equilibrio vienen de las notas oficiales de los parches. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han verificado en el juego. Texto de las cartas © Koin Games. Las sagas, las notas sobre el origen y los textos en italiano, español y francés de las cartas creadas y retiradas son de OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta coleccionable",
     changesTitle: "Historial de cambios de equilibrio",

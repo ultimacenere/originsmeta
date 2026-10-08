@@ -11,7 +11,7 @@ import { initials, sagaHue } from "@/lib/cardArt";
 /**
  * Parole chiave del gioco da evidenziare nel testo. I testi italiani e spagnoli delle carte sono quelli ufficiali del
  * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle quattro lingue (glossario in `docs/testi-di-gioco.md`;
- * il francese è il glossario provvisorio di `docs/francese.md`, da allineare al gioco quando lo leggeremo in francese).
+ * il francese, letto nel gioco l'08/10/2026, in `docs/francese.md`).
  */
 const KEYWORDS = [
   // inglese
@@ -23,8 +23,8 @@ const KEYWORDS = [
   // spagnolo
   ...["Al revelar", "Al morir", "Al matar", "Primer golpe", "Ataque doble", "Toque mortal", "Defensor", "Renacer", "Escudo"],
   ...["Disparo certero", "Aturde", "Arrollar"],
-  // francese (provvisorio)
-  ...["À la révélation", "À la mort", "À l'élimination", "Initiative", "Double attaque", "Contact mortel", "Défenseur", "Renaissance"],
+  // francese
+  ...["À la révélation", "À la mort", "À l'élimination", "Première frappe", "Double attaque", "Contact mortel", "Défenseur", "Renaissance"],
   ...["Bouclier", "Tir de précision", "Étourdissez", "Piétinement"],
 ];
 /** Le più lunghe prima: nell'alternativa della regex vince la prima che combacia. */

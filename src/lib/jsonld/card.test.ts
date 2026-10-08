@@ -118,9 +118,9 @@ describe("JSON-LD della scheda carta", () => {
     assert.ok(!("@context" in (p.breadcrumb as Json)));
   });
 
-  test("testi del gioco con la loro lingua: tre per le carte della demo, il solo inglese per create e rimosse", () => {
+  test("testi del gioco con la loro lingua: quattro per le carte della demo, il solo inglese per create e rimosse", () => {
     const langs = (slug: string) => ((nodes(slug, "es")[1].text as { "@language": string }[] | undefined) ?? []).map((t) => t["@language"]);
-    assert.deepEqual(langs("merlin"), ["en", "it", "es"]);
+    assert.deepEqual(langs("merlin"), ["en", "it", "es", "fr"]);
     assert.deepEqual(langs("garlic"), ["en"]);
   });
 

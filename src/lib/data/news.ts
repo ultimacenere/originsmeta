@@ -112,13 +112,14 @@ const raw: RawNews[] = [
   {
     // Sesta news "Upgrade Meta" (07/10/2026): il francese, quarta lingua del sito. Solo quello che c'è davvero: le pagine
     // in /fr, i testi delle carte in francese dichiarati come traduzione nostra con il glossario provvisorio
-    // (docs/francese.md), le traduzioni automatiche della community, il perché (il gioco è tradotto in francese) e
+    // (docs/francese.md; aggiornata l'08/10/2026: letti nel gioco in francese, ora sono quelli ufficiali), le traduzioni automatiche della community, il perché (il gioco è tradotto in francese) e
     // l'invito a segnalare gli errori. Copertina: key art ufficiale di Goldi, mai usata da una news (la usa la guida
     // Conquest, che non è fra le guide correlate di questo articolo).
     slug: "upgrade-meta-1007",
     image: "/media/ss-board-sea.webp",
     guides: ["play-the-demo", "origins-tcg-explained"],
     date: "2026-10-07",
+    updated: "2026-10-08",
     title: n(
       "Upgrade Meta: OriginsMeta speaks French, the site's fourth language, with every card, guide and news",
       "Upgrade Meta: OriginsMeta parla francese, quarta lingua del sito, con tutte le carte, le guide e le news",
@@ -126,33 +127,33 @@ const raw: RawNews[] = [
     ),
     metaTitle: n("Upgrade Meta: OriginsMeta for Origins TCG, now in French", "Upgrade Meta: OriginsMeta per Origins TCG ora in francese", "Upgrade Meta: OriginsMeta para Origins TCG, ya en francés"),
     description: n(
-      "OriginsMeta is now in French: interface, news, guides, 230 cards, 44 locations, deck builder and tier lists. French card texts are our translation, for now.",
-      "OriginsMeta è anche in francese: interfaccia, news, guide, 230 carte, 44 luoghi, deck builder e tier list. I testi delle carte, per ora, li traduciamo noi.",
-      "OriginsMeta está en francés: interfaz, noticias, guías, 230 cartas, 44 ubicaciones y deck builder. El texto de las cartas, por ahora, es traducción nuestra.",
+      "OriginsMeta is now in French: interface, news, guides, 230 cards, 44 locations, deck builder and tier lists, with the card texts read in the game in French.",
+      "OriginsMeta è in francese: interfaccia, news, guide, 230 carte, 44 luoghi, deck builder e tier list, con i testi delle carte letti nel gioco in francese.",
+      "OriginsMeta está en francés: interfaz, noticias, guías, 230 cartas, 44 ubicaciones y deck builder, con los textos de las cartas leídos en el juego en francés.",
     ),
     summary: n(
-      "As of 7 October 2026, OriginsMeta is also in French: interface, news, the 20 guides, the 230 cards, the 44 locations, FAQ, events, MetaShifting, deck builder, tier lists and community pages, at originsmeta.com/fr with the same addresses as the other languages. One thing to know: the French card texts are our translation with a provisional glossary, until we read the cards in the game in French. Deck guides, community guides and comics are translated into French automatically, and if you read French and spot a mistake, write to us.",
-      "Dal 7 ottobre 2026 OriginsMeta è anche in francese: interfaccia, news, le 20 guide, le 230 carte, i 44 luoghi, FAQ, eventi, MetaShifting, deck builder, tier list e pagine della community, su originsmeta.com/fr con gli stessi indirizzi delle altre lingue. Una cosa da sapere: i testi francesi delle carte sono una nostra traduzione con un glossario provvisorio, finché non leggeremo le carte nel gioco in francese. Guide dei mazzi, guide della community e fumetti si traducono in francese in automatico, e se leggi il francese e trovi un errore, scrivici.",
-      "Desde el 7 de octubre de 2026 OriginsMeta también está en francés: interfaz, noticias, las 20 guías, las 230 cartas, las 44 ubicaciones, FAQ, eventos, MetaShifting, deck builder, tier lists y páginas de la comunidad, en originsmeta.com/fr con las mismas direcciones que los demás idiomas. Una cosa que debes saber: los textos de las cartas en francés son traducción nuestra con un glosario provisional, hasta que leamos las cartas en el juego en francés. Las guías de los mazos, las guías de la comunidad y los cómics se traducen al francés automáticamente, y si lees francés y encuentras un error, escríbenos.",
+      "As of 7 October 2026, OriginsMeta is also in French: interface, news, the 20 guides, the 230 cards, the 44 locations, FAQ, events, MetaShifting, deck builder, tier lists and community pages, at originsmeta.com/fr with the same addresses as the other languages. Since 8 October the French card texts are the game's official ones, read in the game card by card. Deck guides, community guides and comics are translated into French automatically, and if you read French and spot a mistake, write to us.",
+      "Dal 7 ottobre 2026 OriginsMeta è anche in francese: interfaccia, news, le 20 guide, le 230 carte, i 44 luoghi, FAQ, eventi, MetaShifting, deck builder, tier list e pagine della community, su originsmeta.com/fr con gli stessi indirizzi delle altre lingue. Dall'8 ottobre i testi francesi delle carte sono quelli ufficiali del gioco, letti nel gioco carta per carta. Guide dei mazzi, guide della community e fumetti si traducono in francese in automatico, e se leggi il francese e trovi un errore, scrivici.",
+      "Desde el 7 de octubre de 2026 OriginsMeta también está en francés: interfaz, noticias, las 20 guías, las 230 cartas, las 44 ubicaciones, FAQ, eventos, MetaShifting, deck builder, tier lists y páginas de la comunidad, en originsmeta.com/fr con las mismas direcciones que los demás idiomas. Desde el 8 de octubre, los textos de las cartas en francés son los oficiales del juego, leídos en el juego carta por carta. Las guías de los mazos, las guías de la comunidad y los cómics se traducen al francés automáticamente, y si lees francés y encuentras un error, escríbenos.",
     ),
     highlights: {
       en: [
         { label: "French is here", text: "the whole site at /fr: interface, news, guides, cards, locations, FAQ, events, MetaShifting, deck builder, tier lists and community", anchor: "french" },
-        { label: "Card texts, honestly", text: "in French they are our translation with a provisional glossary; the card pages say so, and we'll align them to the game's text", anchor: "card-texts" },
+        { label: "Card texts, now the game's", text: "since 8 October the French card pages show the official text, read in the game, and the whole site uses the game's keywords", anchor: "card-texts" },
         { label: "Community in French", text: "deck guides, community guides and comics translated automatically, tournaments in French, Discord with the French link", anchor: "community" },
         { label: "Why French", text: "the game is translated into French, and after Spanish it's the site's fourth language", anchor: "why-french" },
         { label: "Help us", text: "if you read French and spot a mistake, write to us: the Feedback button or our Discord", anchor: "help" },
       ],
       it: [
         { label: "Il francese è arrivato", text: "tutto il sito su /fr: interfaccia, news, guide, carte, luoghi, FAQ, eventi, MetaShifting, deck builder, tier list e community", anchor: "francese" },
-        { label: "I testi delle carte, onestamente", text: "in francese sono una nostra traduzione con un glossario provvisorio; le schede lo dicono, e li allineeremo al testo del gioco", anchor: "testi-delle-carte" },
+        { label: "I testi delle carte, ora quelli del gioco", text: "dall'8 ottobre le schede in francese mostrano il testo ufficiale, letto nel gioco, e tutto il sito usa le parole chiave del gioco", anchor: "testi-delle-carte" },
         { label: "La community in francese", text: "guide dei mazzi, guide della community e fumetti tradotti in automatico, tornei in francese, Discord con il link francese", anchor: "community" },
         { label: "Perché il francese", text: "il gioco è tradotto in francese, e dopo lo spagnolo è la quarta lingua del sito", anchor: "perche-il-francese" },
         { label: "Aiutaci", text: "se leggi il francese e trovi un errore, scrivici: il tasto Dicci la tua o il nostro Discord", anchor: "aiutaci" },
       ],
       es: [
         { label: "Llega el francés", text: "todo el sitio en /fr: interfaz, noticias, guías, cartas, ubicaciones, FAQ, eventos, MetaShifting, deck builder, tier lists y comunidad", anchor: "frances" },
-        { label: "Los textos de las cartas, con honestidad", text: "en francés son traducción nuestra con un glosario provisional; las fichas lo dicen, y los alinearemos con el texto del juego", anchor: "textos-de-las-cartas" },
+        { label: "Los textos de las cartas, ya los del juego", text: "desde el 8 de octubre las fichas en francés muestran el texto oficial, leído en el juego, y todo el sitio usa las palabras clave del juego", anchor: "textos-de-las-cartas" },
         { label: "La comunidad en francés", text: "guías de mazos, guías de la comunidad y cómics traducidos automáticamente, torneos en francés, Discord con el enlace francés", anchor: "comunidad" },
         { label: "Por qué el francés", text: "el juego está traducido al francés y, después del español, es el cuarto idioma del sitio", anchor: "por-que-el-frances" },
         { label: "Ayúdanos", text: "si lees francés y encuentras un error, escríbenos: el botón Tu opinión o nuestro Discord", anchor: "ayudanos" },
@@ -167,11 +168,11 @@ What is in French: the interface, the 32 news published so far, the 20 [guides](
 
 French had already appeared in the first version of the site, in September 2026, and was withdrawn on 15 September: it comes back rebuilt from scratch, with the same SEO rules as the other languages (one H1 per page, its own title and description, internal links, structured data).
 
-## Card texts in French: our translation, for now {#card-texts}
+## Card texts in French: the game's, since 8 October {#card-texts}
 
-In Italian and Spanish, each card page shows the game's official text, read in the game card by card on 25 September. In French we haven't done that yet: the texts of the 230 cards are an OriginsMeta translation, written with a provisional glossary of the keywords (On Reveal becomes "À la révélation", Shield "Bouclier", Trample "Piétinement", Deathtouch "Contact mortel", Defender "Défenseur", First Strike "Initiative"). Every French card page says so, with the line "Traduction d'OriginsMeta" under the text, and those texts are not presented as the game's. The same goes for the 44 locations, which we haven't checked in the game in any language yet.
+Update, 8 October: we read the cards in the game in French. The 122 cards of the Demo 2.0 collection now show the official French text on their pages, as in Italian and Spanish, and the whole site (card pages, keyword tags, guides, news, deck builder) uses the game's keywords. Three differ from the provisional glossary we started with: First Strike is "Première frappe" (not "Initiative"), a space on the board is a "case" and Evil characters, in the rules text, are "Mauvais". The created cards and the removed cards, which the game's collection doesn't show, are still our translation, now with the game's glossary, and their pages say so. The 44 locations have not been checked in the game in any language yet.
 
-As soon as we read the cards in the game in French, we'll align every text and every keyword to the official wording, on the card pages, in the guides and in the news, and we'll say so here.
+When French arrived, on 7 October, the card texts were an OriginsMeta translation, written with a provisional glossary of the keywords (On Reveal "À la révélation", Shield "Bouclier", Trample "Piétinement", Deathtouch "Contact mortel", Defender "Défenseur", First Strike "Initiative"), and every French card page said so.
 
 ## The community in French {#community}
 
@@ -192,11 +193,11 @@ Che cosa c'è in francese: l'interfaccia, le 32 news pubblicate finora, le 20 [g
 
 Il francese era già comparso nella prima versione del sito, a settembre 2026, ed era stato ritirato il 15 settembre: torna rifatto da zero, con le stesse regole SEO delle altre lingue (un solo H1 per pagina, title e description propri, link interni, dati strutturati).
 
-## I testi delle carte in francese: per ora una nostra traduzione {#testi-delle-carte}
+## I testi delle carte in francese: quelli del gioco, dall'8 ottobre {#testi-delle-carte}
 
-In italiano e in spagnolo ogni scheda carta mostra il testo ufficiale del gioco, letto nel gioco carta per carta il 25 settembre. In francese non l'abbiamo ancora fatto: i testi delle 230 carte sono una traduzione di OriginsMeta, scritta con un glossario provvisorio delle parole chiave (Alla rivelazione diventa "À la révélation", Scudo "Bouclier", Travolgere "Piétinement", Tocco letale "Contact mortel", Difensore "Défenseur", Primo colpo "Initiative"). Ogni scheda carta in francese lo dice, con la riga "Traduction d'OriginsMeta" sotto il testo, e quei testi non vengono presentati come quelli del gioco. Lo stesso vale per i 44 luoghi, che non abbiamo ancora confrontato nel gioco in nessuna lingua.
+Aggiornamento dell'8 ottobre: abbiamo letto le carte nel gioco in francese. Le 122 carte della collezione della Demo 2.0 ora mostrano nella loro scheda il testo ufficiale francese, come in italiano e in spagnolo, e tutto il sito (schede, pastiglie delle parole chiave, guide, news, deck builder) usa le parole chiave del gioco. Tre sono diverse dal glossario provvisorio con cui eravamo partiti: Primo colpo è "Première frappe" (non "Initiative"), uno spazio del tabellone è una "case" e i personaggi Malvagi, nel testo delle regole, sono "Mauvais". Le carte generate e quelle rimosse, che la collezione del gioco non mostra, restano una nostra traduzione, ora con il glossario del gioco, e le loro schede lo dicono. I 44 luoghi non li abbiamo ancora confrontati nel gioco in nessuna lingua.
 
-Appena leggeremo le carte nel gioco in francese, allineeremo ogni testo e ogni parola chiave alla formulazione ufficiale, nelle schede, nelle guide e nelle news, e lo diremo qui.
+Quando è arrivato il francese, il 7 ottobre, i testi delle carte erano una traduzione di OriginsMeta, scritta con un glossario provvisorio delle parole chiave (Alla rivelazione "À la révélation", Scudo "Bouclier", Travolgere "Piétinement", Tocco letale "Contact mortel", Difensore "Défenseur", Primo colpo "Initiative"), e ogni scheda carta in francese lo diceva.
 
 ## La community in francese {#community}
 
@@ -217,11 +218,11 @@ Qué hay en francés: la interfaz, las 32 noticias publicadas hasta hoy, las 20 
 
 El francés ya había aparecido en la primera versión del sitio, en septiembre de 2026, y se retiró el 15 de septiembre: vuelve rehecho desde cero, con las mismas reglas SEO que los demás idiomas (un solo H1 por página, title y description propios, enlaces internos, datos estructurados).
 
-## Los textos de las cartas en francés: por ahora, traducción nuestra {#textos-de-las-cartas}
+## Los textos de las cartas en francés: los del juego, desde el 8 de octubre {#textos-de-las-cartas}
 
-En italiano y en español, cada ficha de carta muestra el texto oficial del juego, leído en el juego carta por carta el 25 de septiembre. En francés todavía no lo hemos hecho: los textos de las 230 cartas son una traducción de OriginsMeta, escrita con un glosario provisional de las palabras clave (Al revelar pasa a ser "À la révélation", Escudo "Bouclier", Arrollar "Piétinement", Toque mortal "Contact mortel", Defensor "Défenseur", Primer golpe "Initiative"). Cada ficha de carta en francés lo dice, con la línea "Traduction d'OriginsMeta" bajo el texto, y esos textos no se presentan como los del juego. Lo mismo vale para las 44 ubicaciones, que aún no hemos comparado en el juego en ningún idioma.
+Actualización del 8 de octubre: hemos leído las cartas en el juego en francés. Las 122 cartas de la colección de la Demo 2.0 ya muestran en su ficha el texto oficial en francés, como en italiano y en español, y todo el sitio (fichas, etiquetas de palabras clave, guías, noticias, deck builder) usa las palabras clave del juego. Tres son distintas del glosario provisional con el que empezamos: Primer golpe es "Première frappe" (no "Initiative"), un espacio del tablero es una "case" y los personajes Malvados, en el texto de las reglas, son "Mauvais". Las cartas creadas y las retiradas, que la colección del juego no muestra, siguen siendo traducción nuestra, ahora con el glosario del juego, y sus fichas lo dicen. Las 44 ubicaciones todavía no las hemos comparado en el juego en ningún idioma.
 
-En cuanto leamos las cartas en el juego en francés, alinearemos cada texto y cada palabra clave con la redacción oficial, en las fichas, en las guías y en las noticias, y lo diremos aquí.
+Cuando llegó el francés, el 7 de octubre, los textos de las cartas eran una traducción de OriginsMeta, escrita con un glosario provisional de las palabras clave (Al revelar "À la révélation", Escudo "Bouclier", Arrollar "Piétinement", Toque mortal "Contact mortel", Defensor "Défenseur", Primer golpe "Initiative"), y cada ficha de carta en francés lo decía.
 
 ## La comunidad en francés {#comunidad}
 
@@ -243,7 +244,7 @@ Si lees francés y encuentras un error, una frase que suena mal o una palabra cl
         },
         {
           q: "Are the French card texts official?",
-          a: "Not yet: they are OriginsMeta translations, written with a provisional glossary of the keywords, and every card page says so. The Italian and Spanish texts are the game's, read in the game on 25 September 2026. As soon as we read the cards in the game in French, we'll align the French texts to the official wording.",
+          a: "Yes, since 8 October 2026: we read the 122 cards of the Demo 2.0 collection in the game in French, and their pages show the official text, as in Italian and Spanish (read on 25 September). Created and removed cards, which the game's collection doesn't show, are still our translation with the game's glossary, and their pages say so.",
         },
         {
           q: "Are community decks and guides translated into French?",
@@ -257,7 +258,7 @@ Si lees francés y encuentras un error, una frase que suena mal o una palabra cl
         },
         {
           q: "I testi francesi delle carte sono ufficiali?",
-          a: "Non ancora: sono traduzioni di OriginsMeta, scritte con un glossario provvisorio delle parole chiave, e ogni scheda carta lo dice. I testi italiani e spagnoli sono quelli del gioco, letti nel gioco il 25 settembre 2026. Appena leggeremo le carte nel gioco in francese, allineeremo i testi francesi alla formulazione ufficiale.",
+          a: "Sì, dall'8 ottobre 2026: abbiamo letto nel gioco in francese le 122 carte della collezione della Demo 2.0, e le loro schede mostrano il testo ufficiale, come in italiano e in spagnolo (letti il 25 settembre). Le carte generate e quelle rimosse, che la collezione del gioco non mostra, restano una nostra traduzione con il glossario del gioco, e le schede lo dicono.",
         },
         {
           q: "I mazzi e le guide della community vengono tradotti in francese?",
@@ -271,7 +272,7 @@ Si lees francés y encuentras un error, una frase que suena mal o una palabra cl
         },
         {
           q: "¿Los textos de las cartas en francés son oficiales?",
-          a: "Todavía no: son traducciones de OriginsMeta, escritas con un glosario provisional de las palabras clave, y cada ficha de carta lo dice. Los textos en italiano y en español son los del juego, leídos en el juego el 25 de septiembre de 2026. En cuanto leamos las cartas en el juego en francés, alinearemos los textos franceses con la redacción oficial.",
+          a: "Sí, desde el 8 de octubre de 2026: hemos leído en el juego en francés las 122 cartas de la colección de la Demo 2.0, y sus fichas muestran el texto oficial, como en italiano y en español (leídos el 25 de septiembre). Las cartas creadas y las retiradas, que la colección del juego no muestra, siguen siendo traducción nuestra con el glosario del juego, y sus fichas lo dicen.",
         },
         {
           q: "¿Los mazos y las guías de la comunidad se traducen al francés?",

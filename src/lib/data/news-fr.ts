@@ -24,12 +24,12 @@ export const frText: Record<string, NewsCopy> = {
     title: "Upgrade Meta : OriginsMeta parle français, quatrième langue du site, avec toutes les cartes, guides et actus",
     metaTitle: "Upgrade Meta : OriginsMeta pour Origins TCG, en français",
     description:
-      "OriginsMeta est en français : interface, actus, guides, 230 cartes, 44 lieux et Deck builder. Les textes des cartes sont, pour l'instant, notre traduction.",
+      "OriginsMeta est en français : interface, actus, guides, 230 cartes, 44 lieux et Deck builder, avec les textes des cartes lus dans le jeu en français.",
     summary:
-      "Depuis le 7 octobre 2026, OriginsMeta est aussi en français : l'interface, les actus, les 20 guides, les 230 cartes, les 44 lieux, la FAQ, les événements, MetaShifting, le Deck builder, les tier lists et les pages de la communauté, sur originsmeta.com/fr avec les mêmes adresses que les autres langues. Une chose à savoir : les textes français des cartes sont notre traduction, avec un glossaire provisoire, jusqu'à ce que nous lisions les cartes dans le jeu en français. Les guides des decks, les guides de la communauté et les BD sont traduits en français automatiquement, et si vous lisez le français et trouvez une erreur, écrivez-nous.",
+      "Depuis le 7 octobre 2026, OriginsMeta est aussi en français : l'interface, les actus, les 20 guides, les 230 cartes, les 44 lieux, la FAQ, les événements, MetaShifting, le Deck builder, les tier lists et les pages de la communauté, sur originsmeta.com/fr avec les mêmes adresses que les autres langues. Depuis le 8 octobre, les textes français des cartes sont les textes officiels du jeu, lus dans le jeu carte par carte. Les guides des decks, les guides de la communauté et les BD sont traduits en français automatiquement, et si vous lisez le français et trouvez une erreur, écrivez-nous.",
     highlights: [
       { label: "Le français est arrivé", text: "tout le site sur /fr : interface, actus, guides, cartes, lieux, FAQ, événements, MetaShifting, Deck builder, tier lists et communauté", anchor: "francais" },
-      { label: "Les textes des cartes, en toute honnêteté", text: "en français, c'est notre traduction avec un glossaire provisoire ; les pages des cartes le disent, et nous les alignerons sur le texte du jeu", anchor: "textes-des-cartes" },
+      { label: "Les textes des cartes, désormais ceux du jeu", text: "depuis le 8 octobre, les pages des cartes en français affichent le texte officiel, lu dans le jeu, et tout le site utilise les mots-clés du jeu", anchor: "textes-des-cartes" },
       { label: "La communauté en français", text: "guides des decks, guides de la communauté et BD traduits automatiquement, tournois en français, Discord avec le lien français", anchor: "communaute" },
       { label: "Pourquoi le français", text: "le jeu est traduit en français et, après l'espagnol, c'est la quatrième langue du site", anchor: "pourquoi-le-francais" },
       { label: "Aidez-nous", text: "si vous lisez le français et trouvez une erreur, écrivez-nous : le bouton Votre avis ou notre Discord", anchor: "aidez-nous" },
@@ -42,11 +42,11 @@ Ce qui est en français : l'interface, les 32 actus déjà publiées, les 20 [g
 
 Le français était déjà apparu dans la première version du site, en septembre 2026, et avait été retiré le 15 septembre : il revient refait de zéro, avec les mêmes règles SEO que les autres langues (un seul H1 par page, un title et une description propres, des liens internes, des données structurées).
 
-## Les textes des cartes en français : notre traduction, pour l'instant {#textes-des-cartes}
+## Les textes des cartes en français : ceux du jeu, depuis le 8 octobre {#textes-des-cartes}
 
-En italien et en espagnol, chaque page de carte affiche le texte officiel du jeu, lu dans le jeu carte par carte le 25 septembre. En français, nous ne l'avons pas encore fait : les textes des 230 cartes sont une traduction d'OriginsMeta, écrite avec un glossaire provisoire des mots-clés (On Reveal devient « À la révélation », Shield « Bouclier », Trample « Piétinement », Deathtouch « Contact mortel », Defender « Défenseur », First Strike « Initiative »). Chaque page de carte en français le dit, avec la ligne « Traduction d'OriginsMeta » sous le texte, et ces textes ne sont pas présentés comme ceux du jeu. Il en va de même pour les 44 lieux, que nous n'avons encore vérifiés dans le jeu dans aucune langue.
+Mise à jour du 8 octobre : nous avons lu les cartes dans le jeu en français. Les 122 cartes de la collection de la Demo 2.0 affichent désormais sur leur page le texte officiel français, comme en italien et en espagnol, et tout le site (pages des cartes, étiquettes des mots-clés, guides, actus, Deck builder) utilise les mots-clés du jeu. Trois diffèrent du glossaire provisoire de départ : First Strike se dit « Première frappe » (et non « Initiative »), un emplacement du plateau est une « case » et les personnages Evil, dans le texte des règles, sont « Mauvais ». Les cartes créées et les cartes retirées, que la collection du jeu n'affiche pas, restent notre traduction, désormais avec le glossaire du jeu, et leurs pages le disent. Les 44 lieux n'ont encore été vérifiés dans le jeu dans aucune langue.
 
-Dès que nous aurons lu les cartes dans le jeu en français, nous alignerons chaque texte et chaque mot-clé sur la formulation officielle, sur les pages des cartes, dans les guides et dans les actus, et nous le dirons ici.
+À l'arrivée du français, le 7 octobre, les textes des cartes étaient une traduction d'OriginsMeta, écrite avec un glossaire provisoire des mots-clés (On Reveal « À la révélation », Shield « Bouclier », Trample « Piétinement », Deathtouch « Contact mortel », Defender « Défenseur », First Strike « Initiative »), et chaque page de carte en français le disait.
 
 ## La communauté en français {#communaute}
 
@@ -66,7 +66,7 @@ Si vous lisez le français et trouvez une erreur, une phrase maladroite ou un mo
       },
       {
         q: "Les textes français des cartes sont-ils officiels ?",
-        a: "Pas encore : ce sont des traductions d'OriginsMeta, écrites avec un glossaire provisoire des mots-clés, et chaque page de carte le dit. Les textes italiens et espagnols sont ceux du jeu, lus dans le jeu le 25 septembre 2026. Dès que nous aurons lu les cartes dans le jeu en français, nous alignerons les textes français sur la formulation officielle.",
+        a: "Oui, depuis le 8 octobre 2026 : nous avons lu dans le jeu en français les 122 cartes de la collection de la Demo 2.0, et leurs pages affichent le texte officiel, comme en italien et en espagnol (lus le 25 septembre). Les cartes créées et les cartes retirées, que la collection du jeu n'affiche pas, restent notre traduction avec le glossaire du jeu, et leurs pages le disent.",
       },
       {
         q: "Les decks et les guides de la communauté sont-ils traduits en français ?",
@@ -303,7 +303,7 @@ Les dix changements d'équilibrage des notes sont ceux que la démo principale a
 
 Cinq changements n'apparaissent pas dans les notes de patch de la démo du 21 et du 29 septembre :
 
-- **En Passant** peut désormais cibler des emplacements occupés : si l'emplacement est occupé, votre allié reste où il est mais inflige quand même ses dégâts.
+- **En Passant** peut désormais cibler des cases occupées : si la case est occupée, votre allié reste où il est mais inflige quand même ses dégâts.
 - **Étourdi** est désormais retiré à la fin du combat.
 - **Contact mortel** ne détruit plus les personnages avec Bouclier.
 - **Boitata** devrait mieux se comporter, surtout quand les deux joueurs en ont un.
@@ -314,7 +314,7 @@ Nous ne savons pas encore s'ils sont déjà dans la démo principale : nous vé
 ### Déjà dans la démo {#deja-dans-la-demo}
 
 - Don Quixote a lui-même Défenseur, en plus de le donner aux ennemis de son lieu (21 septembre : les notes de la démo disaient seulement qu'il gagnait Défenseur).
-- Twister Toss peut déplacer un allié vers un emplacement occupé, et les deux échangent leur place (patch 0.7).
+- Twister Toss peut déplacer un allié vers une case occupée, et les deux échangent leur place (patch 0.7).
 - Van Helsing's Tools : Silver Bullet peut toucher les barrières ; Wooden Stake peut cibler des personnages non blessés, mais ne fonctionne que si le personnage est blessé au moment où il se résout (21 septembre).
 - Heroic Charge se cumule correctement quand il est lancé plus d'une fois (21 septembre).
 - Spellbook et Humpty ne peuvent plus se générer eux-mêmes comme carte aléatoire (patch 0.7).
@@ -381,7 +381,7 @@ Les notes de patch que l'équipe a publiées sur le [Discord officiel d'Origins 
       "Le patch 0.7, deuxième mise à jour de la démo, est le dernier patch d'équilibrage avant la Crimson Cup. Twister Toss reçoit un rework, Bagheera, Mind Palace et Spellbook coûtent 1 mana de plus, et les lieux apparaissent désormais selon leur rareté. Il corrige aussi Humpty, Spellbook, Heroic Charge et les Défenseurs multiples, et porte le jeu à 13 langues.",
     highlights: [
       { label: "Le dernier patch d'équilibrage avant la Crimson Cup", text: "sorti le 29 septembre, trois semaines avant la première qualification", anchor: "crimson-cup" },
-      { label: "Rework de Twister Toss", text: "le sort déplace un allié vers n'importe quel emplacement et l'échange avec la carte déjà présente", anchor: "twister-toss" },
+      { label: "Rework de Twister Toss", text: "le sort déplace un allié vers n'importe quelle case et l'échange avec la carte déjà présente", anchor: "twister-toss" },
       { label: "Trois cartes coûtent 1 de plus", text: "Bagheera 2, Mind Palace 3, Spellbook 4", anchor: "couts" },
       { label: "Humpty et Spellbook ne se donnent plus eux-mêmes", anchor: "humpty-spellbook" },
       { label: "Main pleine", text: "une carte renvoyée brûle désormais au lieu de faire échouer la capacité", anchor: "main-pleine" },
@@ -405,18 +405,18 @@ Format : mana · Puissance/Santé pour les personnages, mana seul pour les sort
 | Bagheera | 1 · 1/1 | 2 · 1/1 | coûte 1 de plus |
 | Mind Palace | 2 | 3 | coûte 1 de plus |
 | Spellbook | 3 | 4 | coûte 1 de plus ; ses sorts aléatoires ne peuvent plus être Spellbook |
-| Twister Toss | 1 | 1 | rework : déplace un allié vers n'importe quel emplacement et l'échange avec la carte déjà présente |
+| Twister Toss | 1 | 1 | rework : déplace un allié vers n'importe quelle case et l'échange avec la carte déjà présente |
 
 Aucune Légendaire ne change de coût, de statistiques ni de capacité : Dorothy reçoit seulement une explication plus claire de ses mots-clés.
 
 ## Rework de Twister Toss {#twister-toss}
 
-Jusqu'ici Twister Toss, un sort à 1 mana, ne faisait qu'une chose : déplacer un allié. Après le rework, il déplace un allié vers n'importe quel emplacement et, si une autre carte s'y trouve déjà, les deux échangent leur place.
+Jusqu'ici Twister Toss, un sort à 1 mana, ne faisait qu'une chose : déplacer un allié. Après le rework, il déplace un allié vers n'importe quelle case et, si une autre carte s'y trouve déjà, les deux échangent leur place.
 
-Il peut aussi cibler des emplacements occupés. L'équipe donne deux exemples :
+Il peut aussi cibler des cases occupées. L'équipe donne deux exemples :
 
 - éloigner un personnage puis le ramener à sa place dans la même manche ;
-- détruire votre personnage avec Trash for Treasure et déplacer aussitôt un autre personnage sur son emplacement.
+- détruire votre personnage avec Trash for Treasure et déplacer aussitôt un autre personnage sur sa case.
 
 Sur OriginsMeta, Twister Toss est dans trois decks publiés, dont le [Dorothy Combo](/fr/guides/dorothy-combo-guide) : Dorothy grandit chaque fois qu'un allié se déplace. Les notes de patch ne donnent pas le nouveau texte de la carte : sa page affiche l'ancien, avec un avertissement, jusqu'à ce que nous lisions le nouveau dans le jeu.
 
@@ -426,7 +426,7 @@ Parmi les 35 decks publiés sur OriginsMeta (décompte à 00:13 CEST le 30 septe
 
 ### Bagheera : 2 mana {#bagheera}
 
-Bagheera reste un 1/1 dont la capacité À la révélation lui donne +2⚔️/+2❤️ sur un emplacement central. À 1 mana, c'était un 3/3 dès la première manche ; désormais, il arrive au plus tôt à la deuxième manche.
+Bagheera reste un 1/1 dont la capacité À la révélation lui donne +2⚔️/+2❤️ sur une case centrale. À 1 mana, c'était un 3/3 dès la première manche ; désormais, il arrive au plus tôt à la deuxième manche.
 
 ### Mind Palace : 3 mana {#mind-palace}
 
@@ -500,7 +500,7 @@ Le résumé en tête des notes de patch dit que « Twister Toss, Heroic Charge 
       },
       {
         q: "Comment fonctionne Twister Toss après le patch 0.7 ?",
-        a: "Le sort coûte toujours 1 mana. Il déplace un allié vers n'importe quel emplacement et, si une autre carte s'y trouve déjà, les deux échangent leur place. Il peut aussi cibler des emplacements occupés : vous pouvez éloigner un personnage et le ramener dans la même manche, ou en détruire un avec Trash for Treasure et déplacer un autre sur son emplacement.",
+        a: "Le sort coûte toujours 1 mana. Il déplace un allié vers n'importe quelle case et, si une autre carte s'y trouve déjà, les deux échangent leur place. Il peut aussi cibler des cases occupées : vous pouvez éloigner un personnage et le ramener dans la même manche, ou en détruire un avec Trash for Treasure et déplacer un autre sur sa case.",
       },
     ],
   },
@@ -822,13 +822,13 @@ Le formulaire de feedback est ouvert depuis quelques jours et le staff lit chaqu
     description:
       "Le patch de la démo d'Origins TCG du 21 septembre : Dorothy à 4 mana, statistiques et textes de 14 cartes, deux règles du jeu et le lieu The Gallows.",
     summary:
-      "Les changements d'équilibrage de la mise à jour de la démo du 21 septembre, comparés à la dernière version du playtest : Dorothy descend à 4 mana, huit cartes changent de statistiques, Itsy Bitsy Spider devient Maléfique, six cartes changent d'effet, et deux règles du jeu et The Gallows sont corrigés.",
+      "Les changements d'équilibrage de la mise à jour de la démo du 21 septembre, comparés à la dernière version du playtest : Dorothy descend à 4 mana, huit cartes changent de statistiques, Itsy Bitsy Spider devient Evil, six cartes changent d'effet, et deux règles du jeu et The Gallows sont corrigés.",
     highlights: [
       { label: "Dorothy coûte 4", text: "un mana de moins pour la Légendaire qui grandit chaque fois qu'un allié se déplace", anchor: "dorothy" },
       { label: "Wicked Stepmother monte à 4 de Puissance", text: "la Légendaire avec Contact mortel passe de 3/6 à 4/6", anchor: "wicked-stepmother" },
       { label: "Christopher Robin revient à 5/4", text: "les statistiques qu'il avait avant le patch 0.6.3", anchor: "christopher-robin" },
       { label: "Cinq autres changements de statistiques", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet et Roo", anchor: "statistiques" },
-      { label: "Itsy Bitsy Spider devient Maléfique", text: "de Neutre, avec toutes les synergies Maléfiques qui en découlent", anchor: "itsy-bitsy-spider" },
+      { label: "Itsy Bitsy Spider devient Evil", text: "auparavant Neutral, avec toutes les synergies des personnages Mauvais qui en découlent", anchor: "itsy-bitsy-spider" },
       { label: "Six cartes changent d'effet", text: "Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet, Wooden Stake", anchor: "effets" },
       { label: "Deux règles du jeu", text: "statistiques conservées au cimetière, Before combat avant les défausses Temporary", anchor: "regles" },
       { label: "The Gallows corrigé", text: "ne détruit plus dans le lieu où un personnage est déplacé", anchor: "the-gallows" },
@@ -857,15 +857,15 @@ Dorothy peut se Déplacer à chaque manche et a +1/+1 pour chaque fois qu'un all
 
 ### Wicked Stepmother monte à 4 de Puissance {#wicked-stepmother}
 
-La Légendaire avec Contact mortel, dont la capacité À la révélation donne Contact mortel à vos personnages Maléfiques, passe de 3/6 à 4/6.
+La Légendaire avec Contact mortel, dont la capacité À la révélation donne Contact mortel à vos personnages Mauvais, passe de 3/6 à 4/6.
 
 ## Christopher Robin revient à 5/4 {#christopher-robin}
 
 Le patch 0.6.3 l'avait fait passer de 5/4 à 4/5, plus solide mais frappant moins fort. Le patch de la démo remet les anciennes statistiques. Cette ligne figure dans les notes de patch publiées sur le Discord officiel, pas dans le post Steam.
 
-## Itsy Bitsy Spider devient Maléfique {#itsy-bitsy-spider}
+## Itsy Bitsy Spider devient Evil {#itsy-bitsy-spider}
 
-La 1/1 à 0 mana passe de Neutre à Maléfique. Cela importe pour toutes les cartes qui comptent les personnages Maléfiques : la capacité À la révélation de Wicked Stepmother, par exemple, lui donne désormais aussi Contact mortel.
+La 1/1 à 0 mana passe de Neutral à Evil. Cela importe pour toutes les cartes qui comptent les personnages Mauvais : la capacité À la révélation de Wicked Stepmother, par exemple, lui donne désormais aussi Contact mortel.
 
 ## Six cartes changent d'effet {#effets}
 
@@ -901,7 +901,7 @@ Les capacités « Before combat » se déclenchent désormais avant que les ca
 
 ## The Gallows {#the-gallows}
 
-Le lieu détruit toujours l'ennemi en face de l'emplacement où un personnage est entré. Si une capacité À la révélation déplace ce personnage vers un autre lieu, The Gallows ne détruit plus le personnage adverse dans le nouveau lieu.
+Le lieu détruit toujours l'ennemi en face de la case où un personnage est entré. Si une capacité À la révélation déplace ce personnage vers un autre lieu, The Gallows ne détruit plus le personnage adverse dans le nouveau lieu.
 
 ## D'où viennent ces notes {#sources}
 
@@ -925,7 +925,7 @@ Tout le reste de la mise à jour, de la nouvelle interface au mode classé penda
     faq: [
       {
         q: "Qu'est-ce qui change avec le patch de la démo d'Origins TCG du 21 septembre ?",
-        a: "Dorothy coûte 4 au lieu de 5 ; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet et Roo changent de statistiques ; Itsy Bitsy Spider devient Maléfique ; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet et Wooden Stake changent d'effet ; deux règles du jeu et le lieu The Gallows sont corrigés.",
+        a: "Dorothy coûte 4 au lieu de 5 ; Wicked Stepmother, Christopher Robin, Guy of Gisborne, Quasimodo, Beauty, Magic Carpet et Roo changent de statistiques ; Itsy Bitsy Spider devient Evil ; Silver Bullet, Don Quixote, Heroic Charge, Frog Prince, Magic Carpet et Wooden Stake changent d'effet ; deux règles du jeu et le lieu The Gallows sont corrigés.",
       },
       {
         q: "Est-ce le patch 0.7 d'Origins TCG ?",
@@ -964,7 +964,7 @@ La mise à jour ajoute de nouvelles répliques vocales ; l'annonce n'en dit pas
 
 ### Les changements d'équilibrage {#equilibrage}
 
-Le détail est sorti le soir même, dans le post Steam et sur Discord : Dorothy passe à 4 mana, huit cartes changent de statistiques, Itsy Bitsy Spider devient Maléfique, six cartes changent d'effet, et deux règles du jeu et le lieu The Gallows sont corrigés. Tout est dans [l'article sur les notes de patch](/fr/news/demo-patch-notes-0921), et déjà dans le [MetaShifting](/fr/metashifting) et dans l'historique d'équilibrage de chaque carte concernée.
+Le détail est sorti le soir même, dans le post Steam et sur Discord : Dorothy passe à 4 mana, huit cartes changent de statistiques, Itsy Bitsy Spider devient Evil, six cartes changent d'effet, et deux règles du jeu et le lieu The Gallows sont corrigés. Tout est dans [l'article sur les notes de patch](/fr/news/demo-patch-notes-0921), et déjà dans le [MetaShifting](/fr/metashifting) et dans l'historique d'équilibrage de chaque carte concernée.
 
 ## Le mode classé s'ouvre avec le Steam Next Fest {#classe}
 
@@ -1040,7 +1040,7 @@ Le 19 septembre, un autre joueur a décrit un combat au lieu Colosseum :
 2. l'œuf a invoqué la Golden Goose, une 5/5, sur le même emplacement ;
 3. au combat, la Goose n'a infligé aucun dégât : Black Knight, un 2/2, a survécu, et la Goose s'est retrouvée à 5/3.
 
-Cela ressemble à la règle expliquée sur le forum par le développeur Fenchurch le 15 septembre : un personnage invoqué en plein combat, sur l'emplacement où il apparaît, n'attaque pas avant la manche suivante. Être invoqué ne le protège pas des dégâts, ce qui explique le 5/3. Ce que le Colosseum ajoute n'est pas encore clair : le fil n'a pas de réponse pour l'instant.
+Cela ressemble à la règle expliquée sur le forum par le développeur Fenchurch le 15 septembre : un personnage invoqué en plein combat, sur la case où il apparaît, n'attaque pas avant la manche suivante. Être invoqué ne le protège pas des dégâts, ce qui explique le 5/3. Ce que le Colosseum ajoute n'est pas encore clair : le fil n'a pas de réponse pour l'instant.
 
 ## Un bouton de revanche pour les parties privées {#revanche}
 
@@ -1237,7 +1237,7 @@ Les règles, les horaires du check-in et ce que nous ne savons pas encore sont d
     title: "Patch 0.6.2 du playtest : passe d'équilibrage sur 23 cartes",
     metaTitle: "Patch 0.6.2 d'Origins TCG : 23 cartes rééquilibrées",
     description: "Patch 0.6.2 du playtest d'Origins TCG, 21 août : Mulan gagne Double attaque, Queen of Hearts à 4 mana, Van Helsing's Tools gratuit. 23 cartes changent.",
-    summary: "Huit cartes ont changé de capacité. Mulan gagne Double attaque, la Queen of Hearts passe à 4 Mana 3/3 avec Initiative, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Silver Bullet inflige 1. La collection est désormais limitée aux dix decks du playtest.",
+    summary: "Huit cartes ont changé de capacité. Mulan gagne Double attaque, la Queen of Hearts passe à 4 Mana 3/3 avec Première frappe, Ellen Trechend devient un 3/3 à 8 Mana qui grandit de +3/+3 par ennemi. Van Helsing's Tools est gratuit mais la Silver Bullet inflige 1. La collection est désormais limitée aux dix decks du playtest.",
   },
   "patch-0-6-1-ranked": {
     title: "Patch 0.6.1 : ladder classé, classement Grandmaster, trois decks retouchés",

@@ -21,12 +21,11 @@ export type L10n = Record<Locale, string>;
 
 /**
  * Lingue in cui il testo delle carte della collezione della demo è quello UFFICIALE letto nel gioco: inglese (22/09/2026),
- * italiano e spagnolo (25/09/2026, card-lore.ts). Il francese (card-lore-fr.ts, dal 07/10/2026) è una traduzione nostra
- * con il glossario provvisorio di docs/francese.md finché nessuno legge il gioco in francese: fuori da questo elenco le
- * schede etichettano il testo come traduzione non verificata nel gioco e il JSON-LD non lo dichiara (cardLdTexts).
- * Quando la verifica sarà fatta (docs/testi-ufficiali/fr.tsv, scripts/official-texts.mjs fr), "fr" entra qui.
+ * italiano e spagnolo (25/09/2026, card-lore.ts), francese (08/10/2026, card-lore-fr.ts; trascrizione in
+ * docs/testi-ufficiali/fr.tsv, prima era una traduzione nostra con un glossario provvisorio). Una lingua fuori da questo
+ * elenco avrebbe il testo etichettato come traduzione nostra, e il JSON-LD non lo dichiarerebbe (cardLdTexts).
  */
-export const officialTextLocales: readonly Locale[] = ["en", "it", "es"];
+export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr"];
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
@@ -304,7 +303,7 @@ export const cards: Card[] = data.cards.map((w) => {
   if (keywords.length) card.keywords = keywords;
   // Il testo letto nel gioco (`card-lore.ts`, campo `en`) vince su quello di World of Origins quando è rimasto indietro.
   const abilityEn = lore?.en ?? w.ability;
-  // Il francese sta in card-lore-fr.ts (traduzione nostra, provvisoria): senza voce resta l'inglese, come per le altre lingue.
+  // Il francese sta in card-lore-fr.ts (testo ufficiale letto nel gioco l'08/10/2026; traduzione nostra per create e rimosse): senza voce resta l'inglese, come per le altre lingue.
   const fr = frLore[w.slug];
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn };
   if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en };

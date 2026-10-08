@@ -146,9 +146,10 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
   });
 
-  test("le istruzioni dei mazzi sono quelle del 07/10/2026 (impronta SHA-256: glossario con il francese e regola 3 in quattro lingue)", () => {
+  test("le istruzioni dei mazzi sono quelle dell'08/10/2026 (impronta SHA-256: glossario francese letto nel gioco)", () => {
     // fino al 06/10/2026: cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413 (tre lingue)
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882");
+    // 07/10/2026: 20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882 (francese con il glossario provvisorio)
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "4bc9eff49034ca648f06a32c32f63a986f35abb34e2805d2806e440e25ebcee4");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 

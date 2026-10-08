@@ -18,8 +18,8 @@ const ts = require("typescript");
 
 const args = process.argv.slice(2);
 const lang = args[0];
-if (!["it", "es"].includes(lang)) {
-  console.error("Uso: node scripts/official-texts.mjs <it|es> [--apply] [--file <trascrizione>]");
+if (!["it", "es", "fr"].includes(lang)) {
+  console.error("Uso: node scripts/official-texts.mjs <it|es|fr> [--apply] [--file <trascrizione>]");
   process.exit(1);
 }
 const apply = args.includes("--apply");

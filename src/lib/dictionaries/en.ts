@@ -268,7 +268,7 @@ export const en = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP, costruito sulla ricerca "origins tcg cards / card list" (piano SEO del 25/09/2026) */
     title: "Origins TCG card list",
     metaTitle: "Origins TCG cards: full Demo 2.0 card list",
-    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian and Spanish as it reads in the game, balance history and the legend each card comes from.",
+    intro: "Every card in Demo 2.0, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian, Spanish and French as it reads in the game, balance history and the legend each card comes from.",
     description: "Every Demo 2.0 card of Origins TCG, the Koin Games card game: official text, stats and balance history, with filters by type, saga and rarity.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
@@ -280,7 +280,7 @@ export const en = {
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Costs, stats, alignments and texts of the Demo 2.0 cards are checked in the game, in English, Italian and Spanish; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian and Spanish text of created and removed cards are by OriginsMeta.",
+      "Costs, stats, alignments and texts of the Demo 2.0 cards are checked in the game, in English, Italian, Spanish and French; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish and French text of created and removed cards are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",

@@ -7,9 +7,8 @@ import { cardLabels } from "@/lib/cardPage";
  * spagnole, il testo inglese compariva sotto la traduzione senza etichetta e senza `lang`, e né un lettore né un
  * assistente potevano sapere quale fosse il testo del gioco.
  * - Le 122 carte della collezione della Demo 2.0: il testo nella lingua della pagina è quello ufficiale del gioco
- *   (letto nel gioco il 25/09/2026 in italiano e spagnolo, `card-lore.ts`) nelle lingue di `officialTextLocales`; in
- *   francese (dal 07/10/2026, `card-lore-fr.ts`) è ancora una traduzione di OriginsMeta con il glossario provvisorio,
- *   etichettata come tale finché il gioco non si legge in francese.
+ *   (letto nel gioco il 25/09/2026 in italiano e spagnolo, `card-lore.ts`, e l'08/10/2026 in francese, `card-lore-fr.ts`)
+ *   nelle lingue di `officialTextLocales`.
  * - Carte create e rimosse: la collezione non le mostra, quindi in italiano e spagnolo il testo è una traduzione di
  *   OriginsMeta fatta con il glossario ufficiale del gioco (docs/testi-di-gioco.md); in inglese è quello dei dati
  *   importati, che nel gioco non si può verificare.

@@ -1,5 +1,125 @@
-# Testi ufficiali delle carte in FRANCESE: ANCORA DA LEGGERE NEL GIOCO (07/10/2026). Il gioco è tradotto in francese (pagina Steam),
-# ma i testi francesi del sito (src/lib/data/card-lore-fr.ts) sono una traduzione nostra con il glossario provvisorio di docs/francese.md.
-# Quando si apre il gioco in francese: una riga per carta, "Nome carta<TAB>testo", \n = a capo nella carta, statistiche nella notazione
-# del sito (⚔️ ❤️), le carte senza testo con il solo nome; poi `node scripts/official-texts.mjs fr` (con --apply scrive card-lore-fr.ts).
-# Finché il file ha solo commenti, lo script elenca tutte le carte come mancanti: è il promemoria.
+# Testi ufficiali delle carte in FRANCESE letti nel gioco l'08/10/2026 (Demo 2.0, patch 0.7): collezione con le carte non possedute.
+# Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
+# Tipografia: spazio insecabile prima dei due punti, come nel gioco; il testo è trascritto com'è, anche dove il gioco non è coerente (Inflige/Infligez).
+Itsy Bitsy Spider
+Bullseye	Inflige 3 dégâts à N'IMPORTE QUEL personnage.
+Defense Matrix	Donnez Bouclier à N'IMPORTE QUEL personnage.
+Freeze!	Étourdissez N'IMPORTE QUEL personnage.
+Mummy	Renaissance
+Poison Apple	Donnez Contact mortel à N'IMPORTE QUEL personnage.
+Reinforcements	Invoquez un Merry Man [1⚔️/1❤️] sur deux cases aléatoires.
+Stroke of Midnight	Renvoyez N'IMPORTE QUEL personnage dans la main de son propriétaire.
+Thumbelina
+Toto	Après qu'un ennemi est joué ici, je me déplace vers un autre lieu et je gagne +1⚔️.
+Trash for Treasure	Détruisez un allié pour piocher 2 cartes.
+Twister Toss	Déplacez un allié sur n'importe quelle case. Si une carte s'y trouve déjà, ils échangent leurs cases.
+Animate Object	Choisissez une case. Invoquez un Broomstick là.
+Axe Throw	Inflige 4 dégâts à N'IMPORTE QUEL personnage.
+Baby Bear	Quand un ennemi endommage votre barrière ici, infligez 1 dégât à cet ennemi.\nÀ la mort : Ajoutez Papa Bear [4⚔️/4❤️] à votre main.
+Bagheera	À la révélation : Si je suis sur une case centrale, je gagne +2⚔️/+2❤️.
+Banshee	À la mort : Les alliés gagnent +1⚔️.
+Basilisk	Contact mortel
+Billy	À la mort : Infligez 2 dégâts à un ennemi aléatoire ici.
+Card Soldier	Après mon déplacement, invoquez une copie de moi sur ma case précédente.
+Don Quixote	Défenseur\nLes ennemis ici ont Défenseur.
+Esmeralda	Quand je suis défaussé, donnez Bouclier à un allié aléatoire.
+First Aid	Soignez 6 dégâts de N'IMPORTE QUEL personnage ou barrière.
+Huck Finn
+Jack-in-the-Box	À la mort : Infligez 2 dégâts à la barrière adverse ici.
+Lady of the Lake	Quand vous jouez un personnage Bon, donnez-lui Défenseur.
+Lightning Strike	Infligez 3 dégâts à N'IMPORTE QUEL personnage ou barrière.
+Merlin's Prophecy	Répétez le prochain sort que vous jouez cette manche.
+Morgiana	Empêchez TOUTES les capacités À la révélation de se produire ici.
+Musketeer	Première frappe
+Piglet	À la révélation : Donnez +1⚔️ aux autres alliés ici.
+Roo	Déplacer
+Rumple	À la révélation : Vous gagnez +1 mana à la manche suivante.
+Sandman	Vos sorts coûtent 1 de moins à jouer.
+Scarecrow	À la révélation : Piochez une carte.
+Shahrazad	Quand une carte entre dans votre main, soignez 1 dégât de votre barrière ici.
+Three Blind Mice	À la mort : Invoque une Mouse [1⚔️/1❤️] sur deux cases au hasard.
+Ugly Duckling	Quand vous défaussez une carte, je me transforme en Beautiful Swan [4⚔️/4❤️].
+Aladdin	Quand je suis défaussé, invoquez-moi sur une case aléatoire.
+Ali Baba	Quand j'endommage une barrière adverse, piochez une carte.
+Asanbosam	À la révélation : Défaussez une carte aléatoire de coût pair.
+Beast	Quand vous jouez un allié, je gagne +1⚔️/+1❤️.
+Big Bad Wolf	Après le combat, je gagne +1⚔️/+1❤️.
+Black Knight	À la révélation : Inflige 2 dégâts à l'ennemi en face de moi.
+Cowardly Lion	Défenseur
+Dark Omen	Détruisez N'IMPORTE QUEL personnage.
+Davy Crockett	Défenseur\nÀ la mort : Le personnage du dessus de votre deck gagne +2⚔️/+2❤️.
+En Passant	Déplacez un allié. Il inflige des dégâts égaux à sa ⚔️ au personnage en face de lui.
+Flying Monkey	À la révélation : Déplacez N'IMPORTE QUEL autre personnage vers une case aléatoire ici.
+Frog Prince	Au choix : À la révélation : Je gagne +3⚔️ OU À la révélation : Je gagne +3❤️.
+Golden Egg	À la mort : Invoque un Golden Goose [5⚔️/5❤️] sur cette case.
+Humpty	À la mort : Ajoutez une carte aléatoire à votre main.
+Jack	À la révélation : Détruisez un ennemi aléatoire ayant 7 ⚔️ ou plus.
+Jill	Quand je subis des dégâts, soignez 2 dégâts de votre barrière ici.
+Kanga	Avant le combat, donnez +1⚔️/+1❤️ aux alliés qui se sont déplacés cette manche.
+King Shahryar	Au début de la manche, piochez une carte. Défaussez-la avant le combat.
+Mary	À la révélation : Ajoutez un Little Lamb [1⚔️/1❤️] à votre main.\nÀ la mort : Vos Little Lambs partout gagnent +3⚔️/+3❤️ de façon permanente.
+Mind Palace	Piochez 2 cartes.
+Pegasus	Après mon déplacement, je double ma ⚔️.
+Piggy Bank	Vous gagnez +1 mana de façon permanente.
+Quasimodo	À la révélation : Défaussez votre carte au coût le plus bas. Piochez une carte.
+Queen of the Night	Quand vous jouez un sort, infligez 2 dégâts à la barrière adverse ici.
+Shield Maiden	Bouclier
+Wicked Stepsisters
+Wicked Witch of the West	Quand je survis à des dégâts, ajoutez un Flying Monkey [4⚔️/1❤️] à votre main et je me déplace d'une case vers la gauche.
+Beauty	Quand vous jouez un allié, piochez une carte.
+Blow the House Down	Choisissez un allié. Il inflige des dégâts égaux à sa ⚔️ à TOUS les ennemis là-bas.
+Boogeyman	À la révélation : Détruisez l'allié ici avec la plus faible ⚔️, même si c'est moi.
+Christopher Robin
+Dorothy	Je peux me Déplacer chaque manche.\nJ'ai +1⚔️/+1❤️ pour chaque déplacement d'un allié cette partie.
+Dracula	Quand vous défaussez, je reviens de votre cimetière dans votre main.\nÀ la révélation : Invoquez Brides of Dracula [2⚔️/2❤️] sur une case aléatoire ici.
+Glinda	Quand vous jouez un sort, donnez +1⚔️ aux alliés.
+Huntsman	À l'élimination : Je gagne +1⚔️/+1❤️.
+Imhotep	À la mort : Infligez 2 dégâts à tous les ennemis ici.
+Jekyll	À la révélation : Soignez 3 dégâts de N'IMPORTE QUEL autre personnage ou barrière ici.\nSi je suis en main après le combat, je me transforme en Hyde [5⚔️/3❤️].
+Lancelot	Quand vous jouez un personnage Bon ici, donnez-lui +2⚔️/+2❤️.
+Little John	À la révélation : Si un ennemi a été joué ici cette manche, je gagne +2⚔️/+2❤️.
+Magic Carpet	Choisissez : À la révélation : Déplacez les autres alliés d'une case vers la gauche OU À la révélation : Déplacez les autres alliés d'une case vers la droite.
+Marian	Tir de précision 2
+Mothman	À la révélation : Ruinez ce lieu.
+Mulan	Double attaque\nQuand une capacité À la révélation d'un allié se produit, répétez-la.
+Old MacDonald	La première fois que N'IMPORTE QUEL joueur défausse chaque manche, mélangez trois Pumpkins dans le deck adverse.
+Phuong Hoang	Renaissance, Déplacer\nQuand un allié ou une barrière est soigné, je gagne +1⚔️/+1❤️.
+Puck	Quand un ennemi ou la barrière de l'adversaire reçoit des soins, infligez-lui autant de dégâts à la place.
+Queen of Hearts	Première frappe\nQuand une capacité À la mort d'un allié se produit, répétez-la.
+Searing Light	Infligez 4 dégâts à un ennemi. Soignez 4 dégâts de votre barrière là-bas.
+Spellbook	Pour le reste de la partie, ajoutez un sort aléatoire à votre main au début de la manche. Défaussez-le avant le combat.
+Tweedledum	À la révélation : Invoquez Tweedledee, qui est une copie de moi, à un autre lieu aléatoire.
+Underworld Flare	Infligez 6 dégâts à un ennemi. Quand cette carte est défaussée, infligez 6 dégâts à un ennemi aléatoire.
+Van Helsing	Avant le combat, ajoutez Van Helsing's Tools à votre main s'il n'y est pas déjà.
+White Queen	À la révélation : Renvoyez N'IMPORTE QUEL personnage dans la main de son propriétaire
+Wicked Stepmother	Contact mortel\nÀ la révélation : Donne Contact mortel à vos personnages Mauvais.
+Baloo
+Bigfoot	Piétinement
+Boitata	Si un sort ou une capacité devait endommager l'une de vos barrières, infligez ces dégâts à la barrière adverse là-bas à la place.
+Bridge Troll	Défenseur
+Captain Ahab	À la révélation : Défaussez votre carte au coût le plus élevé pour infliger son coût en dégâts à un ennemi.
+Fairy Godmother	À la révélation : Accorde +3⚔️/+3❤️ à un autre allié.
+Galahad	À la révélation : Accorde +1⚔️/+1❤️ aux autres alliés.
+Hare	Première frappe, Déplacer
+Impundulu	Quand j'attaque, ajoutez un Lightning Strike à votre main. Défaussez-le avant le combat de la manche suivante.
+Merlin	Répétez le premier sort que vous jouez chaque manche.
+Rain of Arrows	Infligez 2 dégâts à tous les ennemis.
+Sorcerer's Apprentice	Quand vous jouez un sort, invoquez un Broomstick [1⚔️/1❤️] sur une case aléatoire.
+The Green Knight	Après le combat, je soigne tous les dégâts sur moi-même.
+Three Musketeers	Première frappe\nÀ la révélation : Invoquez un Musketeer [2⚔️/1❤️] avec Première frappe sur chaque case ici.
+Cockatrice	Contact mortel\nÀ la mort : Détruisez un ennemi au hasard.
+Genie	À la révélation : Défaussez votre main. Ajoutez 3 sorts aléatoires à votre main.
+Guy of Gisborne	Double attaque, Tir de précision 1
+Heroic Charge	Les alliés ont +2⚔️ et Piétinement cette manche.
+Koschei	À la mort ou quand je suis défaussé : je reviens dans votre main et je gagne +2⚔️/+2❤️ de façon permanente.
+Mowgli	À la révélation : Invoquez Baloo [6⚔️/6❤️] à un autre lieu aléatoire.
+Tin Woodman	À la révélation : Soignez 8 dégâts de N'IMPORTE QUEL autre personnage ou barrière ici.
+King Arthur	Bouclier\nÀ la révélation : Donne Bouclier à vos personnages Bons.
+Legion of the Dead	Remplissez votre plateau de Zombies [2⚔️/2❤️].
+Paul Bunyan
+Three Not So Little Pigs	Piétinement\nÀ la révélation : Invoquez un Not So Little Pig [3⚔️/3❤️] avec Piétinement sur une case aléatoire de chaque autre lieu.
+Bandersnatch	Piétinement
+Ellen Trechend	Piétinement\nÀ la révélation : Je gagne +3⚔️/+3❤️ pour chaque carte ennemie ici.
+Forbidden Knowledge	Détruisez TOUS les personnages.
+Robin Hood	Tir de précision 3\nÀ la révélation : Inflige 2 dégâts à tous les ennemis.
+Obliterate	Infligez 10 dégâts à N'IMPORTE QUEL personnage ou barrière.

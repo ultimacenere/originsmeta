@@ -11,8 +11,8 @@ pochi testi rimasti nei dati (storico dei bilanciamenti, saghe, eventi) sono sta
 - **Francese standard**, leggibile in Francia, Belgio, Svizzera, Québec e Africa francofona: niente regionalismi
   ("courriel" no, "e-mail"/"mail" sì; "chandail" no), niente anglicismi evitabili fuori dal gergo del gioco.
 - Si dà del **vous** al lettore, come fanno i siti e i giochi di carte in francese (MTG, Hearthstone, Marvel Snap).
-  Mai "tu" nell'interfaccia e nei testi editoriali. Nei testi delle carte si usa l'imperativo alla seconda plurale
-  ("Infligez 3 dégâts", "Piochez une carte") finché il gioco in francese non si legge: vedi "Testi di gioco".
+  Mai "tu" nell'interfaccia e nei testi editoriali. Nei testi delle carte, come il gioco, l'imperativo alla seconda
+  plurale ("Infligez 3 dégâts", "Piochez une carte"): vedi "Testi di gioco".
 - Stessa voce dell'inglese e dell'italiano: diretta, concreta, frasi brevi, niente enfasi. OriginsMeta parla al "nous".
 - Titoli e intestazioni con la sola iniziale maiuscola ("Les 11 Légendaires d'Origins TCG").
 - **Tipografia francese**: spazio insecabile (U+00A0) prima di `:` `;` `?` `!` e dentro le virgolette « … »;
@@ -31,21 +31,23 @@ pochi testi rimasti nei dati (storico dei bilanciamenti, saghe, eventi) sono sta
 - **Gergo** che i giocatori francesi usano in inglese: deck, decklist (ma anche "liste du deck"), tier list, meta,
   midrange, combo, buff, nerf, rework, win rate, ladder, "deck move" (l'archetipo Move/Combo). "Deck builder" è il nome
   dello strumento. Le etichette di allineamento restano **Good / Evil / Neutral** come sulla carta del gioco; nel testo
-  si scrive "un personnage Bon", "les personnages Maléfiques".
+  si scrive "un personnage Bon", "les personnages Mauvais", come il gioco.
 - Segnaposto tra graffe ({n}, {lang}, {from}…), emoji e notazioni delle statistiche ("+2⚔️/+2❤️", "[5⚔️/3❤️]").
 
-## Testi di gioco: glossario provvisorio, da verificare nel gioco
+## Testi di gioco: il glossario del gioco (letto l'08/10/2026)
 
-Il gioco **è tradotto in francese** (pagina Steam: interfaccia e audio in francese), quindi vale la stessa regola di
-italiano e spagnolo: carte, carte create, luoghi, guide, news e interfaccia usano i nomi francesi delle parole chiave.
-Il 07/10/2026 però nessuno ha ancora letto le carte nel gioco in francese: il glossario qui sotto è **nostro e
-provvisorio**, scelto sul modello degli altri giochi di carte in francese, e le schede carta lo dicono ("Traduction
-d'OriginsMeta, non vérifiée dans le jeu"). **Da fare**: aprire il gioco in francese, trascrivere le 122 carte in
-`docs/testi-ufficiali/fr.tsv` (procedura in `docs/testi-di-gioco.md`), `node scripts/official-texts.mjs fr --apply`,
-poi allineare glossario, `keywordLabels.ts`, `GAME_KEYWORDS` di `deckTranslation.ts`, `GameCard.tsx`, guide, news e
-interfaccia alle parole del gioco, e aggiungere `fr` a `officialTextLocales` in `src/lib/data/cards.ts`.
+Il gioco **è tradotto in francese**, quindi vale la stessa regola di italiano e spagnolo: carte, carte create, luoghi,
+guide, news e interfaccia usano i nomi francesi delle parole chiave. Il 07/10/2026 il sito è partito con un glossario
+**nostro e provvisorio**; l'08/10/2026 abbiamo letto nel gioco in francese le 122 carte della collezione della Demo 2.0
+(patch 0.7, trascrizione in `docs/testi-ufficiali/fr.tsv`, scritte in `card-lore-fr.ts` da
+`node scripts/official-texts.mjs fr --apply`), `fr` è entrato in `officialTextLocales` (`cards.ts`) e glossario,
+pastiglie (`keywordLabels.ts`), `GAME_KEYWORDS` di `deckTranslation.ts`, `GameCard.tsx`, carte create, luoghi, guide,
+news e storico sono stati allineati. Cambiavano tre cose: First Strike è **Première frappe** (non "Initiative"), lo
+spazio del tabellone è una **case** (non "emplacement"), i personaggi Evil nel testo sono **Mauvais** (non
+"Maléfiques"); le abilità "se produisent" (non "se déclenchent"). Carte create e rimosse (la collezione non le mostra)
+e i 44 luoghi restano una traduzione nostra, con questo glossario.
 
-| inglese | francese (provvisorio) |
+| inglese | francese (gioco) |
 |---|---|
 | On Reveal: | À la révélation : |
 | On Death: | À la mort : |
@@ -55,33 +57,40 @@ interfaccia alle parole del gioco, e aggiungere `fr` a `officialTextLocales` in 
 | Deathtouch | Contact mortel |
 | Defender | Défenseur |
 | Rebirth | Renaissance |
-| First Strike | Initiative |
+| First Strike | Première frappe |
 | Double Attack | Double attaque |
 | Snipe 2 | Tir de précision 2 |
 | Move (parola chiave) | Déplacer |
-| Move an ally / I move | Déplacez un allié / je me déplace |
-| I can Move each round | Je peux me Déplacer à chaque manche |
+| Move an ally / I move | Déplacez un allié / je me déplace ("Après mon déplacement") |
+| I can Move each round | Je peux me Déplacer chaque manche |
 | Stun ANY character | Étourdissez N'IMPORTE QUEL personnage |
-| space | emplacement ("un emplacement aléatoire", "l'emplacement central") |
-| location | lieu |
-| barrier / opponent's barrier | barrière / barrière de l'adversaire |
+| space | case, femminile ("une case aléatoire", "une case centrale", "ma case précédente", "sur cette case") |
+| location | lieu ("à un autre lieu aléatoire") |
+| barrier / opponent's barrier | barrière / barrière adverse (anche "la barrière de l'adversaire") |
 | graveyard, board | cimetière, plateau |
-| a Good / Evil character (nel testo) | un personnage Bon / les personnages Maléfiques |
-| ANY, ALL | N'IMPORTE QUEL / N'IMPORTE QUELLE, TOUS / TOUTES |
-| Choose one: … OR … | Choisissez : … OU … |
-| deal 3 damage | Infligez 3 dégâts ("1 dégât") |
-| heal 3 damage from | Soignez 3 dégâts à |
+| a Good / Evil character (nel testo) | un personnage Bon / vos personnages Bons, vos personnages Mauvais |
+| ANY, ALL | N'IMPORTE QUEL, TOUS / TOUTES (in corsivo maiuscolo nel gioco) |
+| Choose one: … OR … | Au choix : … OU … (Frog Prince) / Choisissez : … OU … (Magic Carpet) |
+| deal 3 damage | Infligez 3 dégâts (anche "Inflige 3 dégâts": il gioco non è coerente), "1 dégât" |
+| heal 3 damage from | Soignez 3 dégâts de |
 | return … to its owner's hand | Renvoyez … dans la main de son propriétaire |
+| random | aléatoire (anche "au hasard") |
 | permanently | de façon permanente |
 | this round, each round, next round | cette manche, chaque manche, la manche suivante |
+| in front of me | en face de moi |
 | +1 mana | +1 mana |
 | Summon, Draw, Discard, Destroy | Invoquez, Piochez, Défaussez, Détruisez |
+| Ruin this location | Ruinez ce lieu |
 | Power, Health | Puissance, Santé |
 | Ongoing | Ongoing (resta in inglese, come in italiano e spagnolo) |
 
-Stile dei testi delle carte: il personaggio parla in prima persona al maschile ("Quand je suis défaussé"); ⚔️ e ❤️
-restano come nelle altre lingue ("+2⚔️/+2❤️"); le abilità "se déclenchent" ("Quand une capacité À la révélation se
-déclenche ici"); la parola chiave ha la maiuscola anche a metà frase, come nel gioco ("avec Piétinement").
+Stile dei testi delle carte, come nel gioco: imperativo alla seconda plurale per il giocatore ("Infligez", "Piochez"),
+ma il gioco usa anche la terza persona in alcune carte ("Inflige 3 dégâts", "Donne Bouclier", "Accorde +3⚔️/+3❤️",
+"Invoque une Mouse") e i testi trascritti restano come sono; il personaggio parla in prima persona al maschile ("Quand je
+suis défaussé"); ⚔️ e ❤️ restano come nelle altre lingue ("+2⚔️/+2❤️", "sa ⚔️", femminile); le abilità "se
+produisent" ("Quand une capacité À la mort d'un allié se produit, répétez-la"); la parola chiave ha la maiuscola anche
+a metà frase ("avec Piétinement"). Nomi delle carte create al maschile o femminile come li scrive il gioco: "un
+Broomstick", "une Mouse", "un Golden Goose", "un Merry Man". Spazio insecabile prima dei due punti, come nel gioco.
 
 Nelle tre guide introduttive (`origins-tcg-explained`, `play-the-demo`, `origins-tcg-locations`) la prima citazione di
 ogni parola chiave porta il nome inglese tra parentesi: "À la révélation (On Reveal)". Quando la parola chiave sta per
@@ -100,7 +109,7 @@ ogni parola chiave porta il nome inglese tra parentesi: "À la révélation (On 
 | character, ally, enemy | personnage, allié, ennemi | |
 | barrier | barrière | |
 | location | lieu | sezione "Lieux" |
-| lane, space | ligne, emplacement | mai "case" nei testi di gioco |
+| lane, space | ligne, case | "case" come il gioco, mai "emplacement" |
 | mana, cost | mana, coût | |
 | Power, Health | Puissance, Santé | |
 | round, turn, combat | manche, tour, combat | |
@@ -147,16 +156,16 @@ Lieux · Les plus jouées · Créez votre tier list · Rédaction · Créateurs 
 - Guide: solo i testi in `src/lib/content/guides-fr.ts` (`frText`: `title`, `metaTitle`, `excerpt`, `faq`, `body`);
   categoria, carte, lista del mazzo, copertina, data e tempo di lettura vengono dalla versione inglese in `guides.ts`.
 - Carte: `src/lib/data/card-lore-fr.ts` (`origin` e `text` per slug, uniti da `cards.ts`); saghe in `cards.ts`; storico
-  in `card-history.ts` (`note.fr`). I testi francesi delle carte sono **nostri, con il glossario provvisorio**: finché
-  `fr` non è in `officialTextLocales` (`cards.ts`) le schede li etichettano come traduzione non verificata e il
-  JSON-LD non li dichiara.
+  in `card-history.ts` (`note.fr`). Dall'08/10/2026 i testi delle 122 carte della collezione sono
+  quelli **ufficiali letti nel gioco** (`fr` in `officialTextLocales` di `cards.ts`, come per italiano e spagnolo);
+  carte create e rimosse restano nostre, con il glossario del gioco, e le schede lo dicono.
 - Luoghi (`locations.ts`), eventi (`events.ts`), autori (`authorsCore.ts`), archetipi (`decks.ts`), FAQ approvate e
   domande suggerite (`src/lib/content/faq.ts`), etichette (`src/lib/*Labels.ts`, `cardPage.ts`, `cardTitles.ts`):
   chiave `fr` accanto a `es`.
 - Messaggi Discord dei tornei (`src/lib/tournament/notify.ts`): i tornei in francese hanno anche il francese, in testa
   (ordine FR, EN, IT), come lo spagnolo.
 - Pastiglie delle parole chiave (`src/lib/keywordLabels.ts`) e glossario del traduttore dei mazzi (`GAME_KEYWORDS` in
-  `deckTranslation.ts`): colonna `fr` con il glossario provvisorio, un test li tiene uguali.
+  `deckTranslation.ts`): colonna `fr` con i nomi del gioco, un test li tiene uguali.
 
 ## SEO del francese
 
