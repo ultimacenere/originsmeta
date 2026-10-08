@@ -1,0 +1,61 @@
+{
+  "_nota": "Mazzo di coachcrono dal suo video del 08/10/2026 (https://www.youtube.com/watch?v=ms1JfH4rVa4): lista letta dal fotogramma a 3:20, guida riassunta dalla spiegazione del video (3:13-5:43). Lo pubblica scripts/publish-deck-as.mjs, richiesta di Pierluigi dell'08/10/2026 (coachcrono ha dato il via libera).",
+  "name": "Van Helsing Control",
+  "legendary": "van-helsing",
+  "cards": [
+    "baby-bear",
+    "shahrazad",
+    "roo",
+    "ali-baba",
+    "jill",
+    "phuong-hoang",
+    "jekyll",
+    "tin-woodman",
+    "dark-omen",
+    "searing-light",
+    "spellbook",
+    "forbidden-knowledge"
+  ],
+  "archetype": "control",
+  "deck_types": [
+    "ladder"
+  ],
+  "videos": [
+    {
+      "url": "https://www.youtube.com/watch?v=ms1JfH4rVa4",
+      "title": "Che mazzo il Van Helsing! Il control per eccellenza di Origins TCG"
+    }
+  ],
+  "links": [],
+  "guide": {
+    "lang": "it",
+    "summary": "Van Helsing Control è control puro, non combo: si vince per esaurimento delle risorse dell'avversario, curando la barriera, facendo scambi favorevoli e portandolo alla fatica. Le partite sono lunghe e vanno pensate molti turni in anticipo: non è un mazzo per chi inizia né per chi cerca partite veloci. Nel video la spiegazione del mazzo carta per carta e le partite commentate.",
+    "strengths": "Van Helsing è la carta che con una sola copia dà più valore nel gioco: prima di ogni combattimento rimette in mano Van Helsing's Tools, che ogni round ti fa scegliere fra quattro effetti e ti permette di vincere gli scambi. Baby Bear vale due carte, perché alla morte aggiunge Papa Bear alla tua mano. Le cure tengono in piedi la barriera: Shahrazad, Jill, Jekyll, Tin Woodman e Searing Light. Dark Omen distrugge i personaggi che altrimenti non vanno giù, come Boogeyman e Asanbosam. Forbidden Knowledge, anche due volte, azzera il tabellone quando sei alle strette.",
+    "weaknesses": "Le partite sono molto lunghe e ogni scambio sbagliato si paga quindici turni dopo. Il mazzo ha poche risposte agli effetti che colpiscono tutto il campo (AoE), come si dice a fine video. Se Van Helsing arriva in campo troppo presto e viene tolto, perdi la fonte principale di valore.",
+    "combos": "Shahrazad con Spellbook e Ali Baba: ogni carta che entra in mano cura la barriera. Phuong Hoang con Shahrazad, Jill, Jekyll e Tin Woodman: prende +1/+1 a ogni cura, si muove e ha Rinascita. Ali Baba sostituisce le carte che pescano due: pesca una carta garantita e in più lascia un corpo in campo, utile per gli scambi dei primi turni. Roo, due mana con Muovere, fa doppio scambio con i maialini. Spellbook dà una magia casuale ogni round: basta che ne arrivi uno e sul lungo la partita si vince di valore.",
+    "notes": "Van Helsing non va buttato in campo senza un vero vantaggio sul tabellone. Contro i mazzi aggro si può giocare presto e usare subito gli strumenti; negli altri casi conviene tenerlo per dopo Forbidden Knowledge, così resta in campo due o tre turni e dà il suo valore. Se serve, comunque, si gioca."
+  },
+  "translations": {
+    "en": {
+      "summary": "Van Helsing Control is pure control, not combo: you win by exhausting your opponent's resources, healing your barrier, making favourable trades and dragging them into fatigue. Games are long and need planning many turns ahead: this is not a deck for beginners or for anyone after quick games. The video walks through the deck card by card, with commented matches.",
+      "strengths": "Van Helsing is the single card that gives the most value in the game: before every combat it puts Van Helsing's Tools back in your hand, which lets you choose one of four effects every round and win your trades. Baby Bear is worth two cards, because On Death it adds Papa Bear to your hand. Healing keeps your barrier standing: Shahrazad, Jill, Jekyll, Tin Woodman and Searing Light. Dark Omen destroys the characters that would not go down otherwise, such as Boogeyman and Asanbosam. Forbidden Knowledge, even twice, wipes the board when you are cornered.",
+      "weaknesses": "Games are very long and every bad trade costs you fifteen turns later. The deck has few answers to effects that hit the whole board (AoE), as the end of the video points out. If Van Helsing comes down too early and gets removed, you lose your main source of value.",
+      "combos": "Shahrazad with Spellbook and Ali Baba: every card that enters your hand heals your barrier. Phuong Hoang with Shahrazad, Jill, Jekyll and Tin Woodman: it gets +1/+1 on every heal, can Move and has Rebirth. Ali Baba replaces the draw-two cards: it draws one guaranteed card and leaves a body on the board, useful for early trades. Roo, two mana with Move, trades twice into the little pigs. Spellbook gives you a random spell every round: one is enough, and over a long game you win on value.",
+      "notes": "Do not throw Van Helsing onto the board without a real board advantage. Against aggro decks you can play it early and use the Tools right away; otherwise keep it for after Forbidden Knowledge, so it stays on the board for two or three turns and pays off. If you need it, though, play it."
+    },
+    "es": {
+      "summary": "Van Helsing Control es control puro, no combo: ganas agotando los recursos del rival, curando tu barrera, haciendo intercambios favorables y llevándolo a la fatiga. Las partidas son largas y hay que pensarlas muchos turnos por delante: no es un mazo para quien empieza ni para quien busca partidas rápidas. En el video, la explicación del mazo carta por carta y las partidas comentadas.",
+      "strengths": "Van Helsing es la carta que más valor da en el juego con una sola copia: antes de cada combate vuelve a poner Van Helsing's Tools en tu mano, que cada ronda te deja elegir entre cuatro efectos y te permite ganar los intercambios. Baby Bear vale dos cartas, porque al morir añade Papa Bear a tu mano. Las curas mantienen en pie la barrera: Shahrazad, Jill, Jekyll, Tin Woodman y Searing Light. Dark Omen destruye los personajes que de otra forma no caen, como Boogeyman y Asanbosam. Forbidden Knowledge, incluso dos veces, limpia el tablero cuando estás contra las cuerdas.",
+      "weaknesses": "Las partidas son muy largas y cada intercambio equivocado se paga quince turnos después. El mazo tiene pocas respuestas a los efectos que golpean todo el campo (AoE), como se dice al final del video. Si Van Helsing llega al campo demasiado pronto y lo eliminan, pierdes tu principal fuente de valor.",
+      "combos": "Shahrazad con Spellbook y Ali Baba: cada carta que entra en tu mano cura la barrera. Phuong Hoang con Shahrazad, Jill, Jekyll y Tin Woodman: gana +1/+1 con cada cura, puede Moverse y tiene Renacer. Ali Baba sustituye a las cartas que roban dos: roba una carta segura y además deja un cuerpo en el campo, útil para los intercambios de los primeros turnos. Roo, dos de maná con Mover, hace doble intercambio con los cerditos. Spellbook te da un hechizo aleatorio cada ronda: basta con que llegue uno y, a la larga, la partida se gana por valor.",
+      "notes": "No lances a Van Helsing al campo sin una ventaja real en el tablero. Contra mazos aggro puedes jugarlo pronto y usar enseguida las herramientas; en los demás casos conviene guardarlo para después de Forbidden Knowledge, así se queda en el campo dos o tres turnos y da su valor. Aun así, si hace falta, se juega."
+    },
+    "fr": {
+      "summary": "Van Helsing Control est du contrôle pur, pas du combo : vous gagnez en épuisant les ressources de l'adversaire, en soignant votre barrière, en faisant des échanges favorables et en le poussant à la fatigue. Les parties sont longues et se préparent de nombreux tours à l'avance : ce n'est pas un deck pour débuter ni pour qui cherche des parties rapides. Dans la vidéo, l'explication du deck carte par carte et des parties commentées.",
+      "strengths": "Van Helsing est la carte qui, à elle seule, apporte le plus de valeur dans le jeu : avant chaque combat, il remet Van Helsing's Tools dans votre main, qui vous laisse choisir entre quatre effets à chaque manche et vous permet de gagner les échanges. Baby Bear vaut deux cartes, car à sa mort il ajoute Papa Bear à votre main. Les soins maintiennent votre barrière debout : Shahrazad, Jill, Jekyll, Tin Woodman et Searing Light. Dark Omen détruit les personnages qui ne tomberaient pas autrement, comme Boogeyman et Asanbosam. Forbidden Knowledge, même deux fois, vide le plateau quand vous êtes acculé.",
+      "weaknesses": "Les parties sont très longues et chaque mauvais échange se paie quinze tours plus tard. Le deck a peu de réponses aux effets qui touchent tout le plateau (AoE), comme le dit la fin de la vidéo. Si Van Helsing arrive trop tôt sur le plateau et se fait retirer, vous perdez votre principale source de valeur.",
+      "combos": "Shahrazad avec Spellbook et Ali Baba : chaque carte qui entre dans votre main soigne la barrière. Phuong Hoang avec Shahrazad, Jill, Jekyll et Tin Woodman : il gagne +1/+1 à chaque soin, peut se Déplacer et a Renaissance. Ali Baba remplace les cartes qui piochent deux : il pioche une carte à coup sûr et laisse en plus un corps sur le plateau, utile pour les échanges des premiers tours. Roo, deux de mana avec Déplacer, fait un double échange avec les petits cochons. Spellbook vous donne un sort aléatoire à chaque manche : il suffit qu'il arrive une fois et, sur la durée, la partie se gagne à la valeur.",
+      "notes": "Ne jetez pas Van Helsing sur le plateau sans un vrai avantage. Contre les decks aggro, vous pouvez le jouer tôt et utiliser tout de suite les outils ; sinon, gardez-le pour après Forbidden Knowledge, afin qu'il reste deux ou trois tours sur le plateau et rapporte sa valeur. Si besoin, jouez-le quand même."
+    }
+  }
+}

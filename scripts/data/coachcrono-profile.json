@@ -1,0 +1,12 @@
+{
+  "_nota": "Profilo pubblico di coachcrono (08/10/2026, richiesta di Pierluigi: via libera di coachcrono a collegare Twitch e YouTube; Instagram, TikTok e Discord aggiunti lo stesso giorno su richiesta di Pierluigi, dagli indirizzi delle descrizioni di coachcrono). Bio ripresa dalle sue descrizioni di Twitch (twitch.tv/coachcrono/about) e YouTube (descrizione del canale e dei video). Lo scrive scripts/set-profile.mjs.",
+  "bio": "TCG e strategic gamer da sempre: pro player di Yu-Gi-Oh! da quando avevo 8-9 anni, poi ho scoperto i PC e lo streaming.\nHo castato tornei di Teamfight Tactics come Riot Partner, sono stato coach dei team QLASH e Mkers, ho giocato e castato tornei di Marvel Snap come Marvel Partner (top 3 Europa) e su The Bazaar sono arrivato in top 35 EUW.\nSu Origins TCG porto mazzi, partite e tornei: live ogni giorno su Twitch dalle 10, video su YouTube.",
+  "links": [
+    { "kind": "twitch", "url": "https://www.twitch.tv/coachcrono" },
+    { "kind": "youtube", "url": "https://www.youtube.com/@CoachCrono" },
+    { "kind": "instagram", "url": "https://www.instagram.com/coachcrono" },
+    { "kind": "tiktok", "url": "https://www.tiktok.com/@coachcronoofficial" },
+    { "kind": "discord", "url": "https://discord.gg/jw9W7aJWJq" }
+  ],
+  "content_langs": ["it"]
+}

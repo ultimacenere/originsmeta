@@ -42,7 +42,7 @@
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
  *     video_play          "riproduci" su un video a clic (VideoEmbed, 26/09/2026): provider (youtube | twitch),
  *                         solo da qui si carica il lettore di YouTube o Twitch;     placement (deck_page | guide | profile |
- *                         anche la diretta a clic della pagina /live (LivePlayer)   live_page)
+ *                         anche la diretta a clic della pagina /live (LivePlayer)   live_page | home: video dei creator, 08/10/2026)
  *     deck_link_click     link delle Risorse di un mazzo (attributi); uno verso     host, placement (deck_resources)
  *                         Discord o Steam manda anche discord_click / steam_click
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)

@@ -44,7 +44,7 @@ export const NEWS_PAGES_SINCE: Day = "2026-09-21";
  * Le pagine senza dati propri (FAQ, chi siamo, deck builder…) hanno solo questa data.
  */
 export const PAGE_UPDATED = {
-  "/": "2026-09-30", // 30/09: prima slide con la copertina della patch 0.7 e il tasto all'articolo; FUMETTI: i fumetti dei creator fra le news in evidenza e in bacheca (ISR); Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
+  "/": "2026-10-08", // 08/10: video dei creator sotto le news in evidenza, riassunti delle news a tre righe; 30/09: prima slide con la copertina della patch 0.7 e il tasto all'articolo; FUMETTI: i fumetti dei creator fra le news in evidenza e in bacheca (ISR); Ondata 3: invito alla tier list della community (TierInvite); Ondata 1: title sul marchio, "In breve"
   "/news": "2026-09-29", // FUMETTI: i fumetti dei creator nell'elenco (ISR) e il link a /news/comics; Ondata 1: title senza "patch notes", link a MetaShifting; 25/09: news senza fonte citabile senza "Fonte"
   "/news/comics": "2026-09-29", // FUMETTI: nascita dell'elenco dei fumetti dei creator
   "/news/comics/[slug]": "2026-09-30", // 30/09: versioni disegnate in altre lingue (tavole, titolo, presentazione e copertina della lingua della pagina) e 308 dagli indirizzi dei fumetti uniti; FUMETTI: nascita delle pagine dei fumetti

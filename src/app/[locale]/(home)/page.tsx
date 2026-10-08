@@ -27,6 +27,10 @@ import { fillLabel } from "@/lib/community/deckQuality";
 import { authorName } from "@/lib/community/util";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { comicLabels } from "@/lib/comicLabels";
+import { loadCreatorVideos } from "@/lib/community/creatorVideoQueries";
+import { creatorVideoLabels } from "@/lib/creatorVideoLabels";
+import { videoLabels } from "@/lib/videoLabels";
+import { CreatorVideoRail, type RailVideo } from "@/components/CreatorVideoRail";
 
 /**
  * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
@@ -135,6 +139,15 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const featured = feed.slice(0, 3);
   const board = feed.slice(3, 9);
   const C = comicLabels[locale];
+  // Video dei creator sotto le news in evidenza (08/10/2026): dai feed YouTube dei profili vetrina, cache di mezz'ora
+  const VL = creatorVideoLabels[locale];
+  const railVideos: RailVideo[] = (await loadCreatorVideos()).map((v) => ({
+    id: v.id,
+    title: v.title,
+    date: formatDateShort(locale, v.published.slice(0, 10)),
+    name: v.name,
+    profileHref: href(locale, `/u/${v.username}`),
+  }));
   const comicHref = (c: ComicFeedCard) => href(locale, c.path);
   const sectionTitle = { decks: d.tier.sections.decks.title, legendaries: d.tier.sections.legendaries.title, cards: d.tier.sections.cards.title } as const;
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
@@ -216,7 +229,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                         </Link>
                       </h3>
                       <p className="mt-1 text-sm text-pale-muted">{fillLabel(C.by, { name: c.author.name })}</p>
-                      <p className="mt-3 line-clamp-4 text-sm text-pale md:line-clamp-6 lg:line-clamp-none" lang={c.summaryLang}>
+                      <p className="mt-3 line-clamp-3 text-sm text-pale" lang={c.summaryLang}>
                         {c.summary}
                       </p>
                       <p className="mt-3">
@@ -255,10 +268,11 @@ export default async function Home({ params }: { params: LocaleParams }) {
                       </Link>
                     </h3>
                     {/*
-                      Sul telefono (una colonna) e sul tablet (tre colonne strette) le schede diventavano lunghissime:
-                      riassunto accorciato e tre carte (con il "+N"); il resto è nell'articolo. Da lg in su la news resta "aperta".
+                      Riassunto a tre righe a ogni misura (08/10/2026, Pierluigi: "in home le news hanno un anteprima troppo
+                      lunga"; prima da lg in su era intero, 9-10 righe), tre carte sotto lg (con il "+N"); il testo intero resta
+                      nell'HTML e nell'articolo. Prima: sul telefono e sul tablet le schede diventavano lunghissime.
                     */}
-                    <p className="mt-3 line-clamp-4 text-sm text-pale md:line-clamp-6 lg:line-clamp-none">{item.summary[locale]}</p>
+                    <p className="mt-3 line-clamp-3 text-sm text-pale">{item.summary[locale]}</p>
                     <p className="mt-3">
                       <Link href={newsHref(item)} className="text-sm font-bold text-mint hover:underline">
                         {d.news.readArticle} →
@@ -288,6 +302,28 @@ export default async function Home({ params }: { params: LocaleParams }) {
               })}
             </div>
           </section>
+
+          {/*
+            Video dei creator (08/10/2026, Pierluigi: "sotto le news vorrei creare uno slider di video di youtube dei
+            nostri influencer che si popola dei video ogni volta che lo pubblicano"): gli ultimi video su Origins TCG dei
+            canali YouTube dei profili vetrina (src/lib/creatorVideos.ts). Senza video la sezione non c'è.
+          */}
+          {railVideos.length ? (
+            <section className="mt-12" aria-labelledby="home-creator-videos" data-om-placement="home_creator_videos">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div className="max-w-2xl">
+                  <h2 id="home-creator-videos" className="t-section">
+                    {VL.title}
+                  </h2>
+                  <p className="mt-2 text-chalk-muted">{VL.sub}</p>
+                </div>
+                <Link href={href(locale, "/creators")} className="btn btn-ghost text-xs">
+                  {VL.all} →
+                </Link>
+              </div>
+              <CreatorVideoRail videos={railVideos} labels={VL} player={videoLabels[locale].player} privacyHref={`${href(locale, "/privacy")}#video`} />
+            </section>
+          ) : null}
 
           {/*
             Fai la tua mossa (UX-1, 21/09/2026): la home non conteneva un solo invito a costruire, pubblicare o
@@ -438,7 +474,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                         {entry.comic.title}
                       </Link>
                     </h3>
-                    <p className="mt-1 text-sm text-chalk-muted" lang={entry.comic.summaryLang}>
+                    <p className="mt-1 line-clamp-2 text-sm text-chalk-muted" lang={entry.comic.summaryLang}>
                       {entry.comic.summary}
                     </p>
                     <p className="mt-1 flex flex-wrap items-center gap-2 text-xs">
@@ -458,7 +494,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
                         {entry.item.title[locale]}
                       </Link>
                     </h3>
-                    <p className="mt-1 text-sm text-chalk-muted">{entry.item.summary[locale]}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-chalk-muted">{entry.item.summary[locale]}</p>
                     <NewsSourceLink item={entry.item} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
                   </div>
                 </li>
