@@ -28,6 +28,8 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 | 3 | Collegamento al sito: codice → token, invio delle partite, tabella con RLS, `/account/tracker`, statistiche anonime (win rate) | fatta il 30/09/2026, online e migrata la notte del 01/10/2026, collegamento provato con l'account di Pierluigi |
 | 4 | Overlay: finestra sopra il gioco e sorgente per OBS (servita dall'app su 127.0.0.1) | fatta il 30/09/2026 |
 | 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, pagina per scaricare l'app, prova con pochi giocatori, lancio | da fare |
+| S1 | Scanner dello schermo, modalità cattura: fotogrammi della finestra del gioco sul PC, per tarare il riconoscitore (vedi "Scanner dello schermo") | fatta il 10/10/2026, in attesa delle partite di prova |
+| S2–S4 | Riconoscitore delle carte nei fotogrammi, partita ricostruita (giocate, Leggendaria e mazzo probabile dell'avversario), invio e statistiche | da fare |
 
 Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal 12 al 18/10, Next Fest dal 19/10.
 
@@ -64,6 +66,9 @@ LocalLow, cartella del gioco e in tutto il profilo; `Player.log` non ne parla; n
 registrano con esito, ora, coda e mazzo intero (bastano per i win rate di Leggendarie, liste, archetipi e carte nel
 mazzo); mancano carte giocate, Leggendaria e carte dell'avversario, round e rank, cioè scontri, Leggendarie incontrate e
 colonne "giocata" e "round medio". Pierluigi ne parla con Kevin di Koin; se i replay tornano l'app li rilegge da sola.
+Ricontrollato il 10/10/2026: niente replay neanche con la build pubblica del 04/10 (25610387, uscita senza annuncio;
+partita dell'08/10, cartella `Replays` ferma al 30/09) né sul ramo Steam `communityplaytest` (con password, aggiornato
+il 01/10; partita giocata da Pierluigi).
 Sempre con la 0.7 esito e id della partita arrivano nelle statistiche qualche secondo prima dell'ora di fine, che per un
 attimo resta quella della partita precedente: `watcher.ts` usa intanto l'ora in cui il gioco ha scritto l'esito e prende
 quella vera appena arriva (`refreshPending`, test in `watcher.test.ts`). Accanto al file delle statistiche la 0.7 ne
@@ -343,6 +348,34 @@ in home, una striscia "Win rate della patch" quando i numeri sono solidi.
   avversaria. Sempre "non affiliato a Koin Games". Niente bot o persona, rank, nomi.
 - L'overlay per OBS del sito (`/overlay/deck`, pacchetto STREAM) resta per chi non usa l'app: mostra un mazzo
   pubblicato, non le partite.
+
+## Scanner dello schermo (dal 10/10/2026)
+
+Il replay non c'è più (vedi "I file del gioco"), quindi carte giocate, Leggendaria e carte dell'avversario si
+leggeranno dallo schermo (Pierluigi, 10/10/2026: "procediamo a svilupparla", senza chiedere a Kevin). Come OBS: l'app
+riprende la finestra del gioco, mai il processo, la memoria o la rete (regola 1). Il riconoscimento gira sul PC, con le
+immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun fotogramma lascia il PC.
+
+- **S1, modalità cattura** (fatta): `npm run frames` nella cartella `tracker/` (cioè l'app con `--frames`), solo per lo
+  staff, nessuna voce nell'interfaccia. `src/main/frames.ts` cerca ogni 5 s la finestra del gioco per titolo esatto
+  (`GAME_WINDOWS` di `src/shared/frames.ts`, "Origins TCG Demo" dal file `app.info` del gioco); una finestra nascosta
+  (`src/frames/`, sessione separata `frames`, unico permesso "media") la riprende a piena risoluzione e salva un JPEG
+  ogni mezzo secondo, solo se lo schermo è cambiato (impronta 48 × 27 in grigi, `SAME_FRAME_DIFF`). File in
+  `%APPDATA%\OriginsMeta Analytics\frames\<data_ora>\` con `events.jsonl` (inizio e fine della ripresa, mazzo scelto,
+  partite registrate dal tracker con esito e mazzo) per etichettarli; tetto di 4 GB per sessione. Nel tooltip
+  dell'icona "REC ● <fotogrammi>". Il gioco va in finestra o a finestra senza bordi (come per l'overlay). Prova
+  senza il gioco: `ORIGINSMETA_FRAMES_WINDOW=<titolo esatto di un'altra finestra>`. Provata il 10/10 su un'altra
+  finestra (1920 × 1032, doppioni scartati). **I fotogrammi contengono i nomi dei giocatori: restano sul PC.**
+- **S2, riconoscitore**: carte in campo e in mano dai fotogrammi, tarato sulle partite catturate.
+- **S3, partita ricostruita**: giocate per round, Leggendaria e carte viste dell'avversario, mazzo probabile confrontando
+  le carte viste con i mazzi pubblicati e con le liste delle partite registrate.
+- **S4**: invio al sito e statistiche (win rate di mazzi e carte, win rate quando una carta viene giocata).
+
+**Nome dell'avversario: decisione aperta.** Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
+sue partite con il nome dell'avversario, i mazzi e le statistiche della partita. Va contro la regola 3, che cita i
+termini di Koin (Terms of Use §2.3: niente dati di altri utenti senza consenso), e contro la regola 2 (i nomi dei bot si
+riconoscono). Finché Pierluigi non decide su questo punto, il nome non si legge; tutto il resto dello scanner non ne
+dipende.
 
 ## Migrazione e prove
 

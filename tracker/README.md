@@ -39,6 +39,7 @@ npm start          # build + avvio dell'app
 npm test           # test dell'app (cartelle finte del gioco, rete finta, server locale su 127.0.0.1)
 npm run typecheck  # tipi dell'app e del lettore
 npm run capture    # screenshot della finestra in out/capture.png (verifiche)
+npm run frames     # app con la modalità cattura dello scanner: fotogrammi del gioco in %APPDATA%\OriginsMeta Analytics\frames\ (solo staff, docs/tracker.md)
 npm run package    # versione portatile non firmata: out/OriginsMeta-Analytics-<versione>-win-x64.zip con LEGGIMI.txt
 ```
 

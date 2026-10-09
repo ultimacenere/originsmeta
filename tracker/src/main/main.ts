@@ -25,6 +25,8 @@
  *   aspetta che l'interfaccia abbia disegnato, salva uno screenshot ed esce. Serve alle verifiche; con
  *   ORIGINSMETA_TRACKER_DATA si usa una cartella dati di prova. Niente rete né finestra dell'overlay in questa modalità
  *   (la sorgente per OBS sì, per mostrarne gli indirizzi).
+ * - `--frames` (`npm run frames`, 10/10/2026): modalità cattura dello scanner, solo per lo staff. Riprende la finestra del
+ *   gioco e salva i fotogrammi sul PC (frames.ts) per tarare il riconoscimento delle carte; niente voce nell'interfaccia.
  */
 import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
@@ -37,10 +39,12 @@ import { MatchWatcher } from "./watcher";
 import { Account, type Cipher } from "./account";
 import { SyncQueue, claimCode, siteBase, unlinkRemote, type SyncDeps } from "./sync";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
+import { FrameRecorder } from "./frames";
 import type { AccountState, ActiveDeck, AppState, LinkResult, OverlayView } from "../shared/types";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
+const FRAMES = process.argv.includes("--frames");
 const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--capture=".length) ?? null;
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
 
@@ -93,6 +97,7 @@ let activeDeck: ActiveDeck = null;
 let notice: AccountState["notice"] = null;
 let sessionStart = Date.now();
 let overlayServer: { port: number; url: string; close: () => void } | null = null;
+let frames: FrameRecorder | null = null;
 
 type CardRow = { n: string; s: string; l: 0 | 1 };
 const CARDS = cardsTable as Record<string, CardRow>;
@@ -344,7 +349,9 @@ function todayRecord(): string {
 function refreshTray() {
   if (!tray) return;
   const t = TRAY[lang()];
-  tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}`);
+  const f = frames?.status;
+  const rec = f ? ` · REC ${f.capturing ? "●" : "○"} ${f.frames}${f.full ? " (4 GB)" : ""}` : "";
+  tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}${rec}`);
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: t.open, click: showWindow },
@@ -486,6 +493,8 @@ async function boot() {
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (m) => {
     if (store.add(m)) {
+      // modalità cattura: la partita finita etichetta i fotogrammi (esito e mazzo, gli stessi dati dello storico)
+      frames?.event("match", { endedAt: m.endedAt, result: m.result, queue: m.queue, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [] });
       push();
       // la partita parte per il sito pochi secondi dopo (il tempo di altre righe dello stesso giro)
       scheduleSync(5000);
@@ -503,6 +512,7 @@ async function boot() {
   });
   watcher.on("deck", (d: GameDeck | null) => {
     activeDeck = deckView(d);
+    frames?.event("deck", { deck: activeDeck });
     push();
   });
 
@@ -517,6 +527,10 @@ async function boot() {
     if (overlayPrefs.open) openOverlay();
     scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
+    if (FRAMES) {
+      frames = new FrameRecorder(app.getPath("userData"), refreshTray);
+      frames.start();
+    }
   }
   createWindow(!HIDDEN);
   watcher.start();
@@ -532,6 +546,7 @@ if (!CAPTURE && !app.requestSingleInstanceLock()) {
   app.on("before-quit", () => {
     quitting = true;
     watcher?.stop();
+    frames?.stop();
     overlayServer?.close();
   });
   // la finestra si nasconde invece di chiudersi: l'app resta nella barra finché non si sceglie "Esci"

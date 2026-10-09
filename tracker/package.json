@@ -11,8 +11,9 @@
     "build": "node scripts/cards.mjs && node build.mjs",
     "start": "npm run build && electron .",
     "capture": "npm run build && electron . --capture=out/capture.png",
+    "frames": "npm run build && electron . --frames",
     "package": "node scripts/package.mjs",
-    "test": "node --import ./scripts/ts-hooks.mjs --test src/main/watcher.test.ts src/main/store.test.ts src/main/sync.test.ts src/main/overlay.test.ts",
+    "test": "node --import ./scripts/ts-hooks.mjs --test src/main/watcher.test.ts src/main/store.test.ts src/main/sync.test.ts src/main/overlay.test.ts src/shared/frames.test.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {

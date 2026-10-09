@@ -14,14 +14,18 @@ const browser = { bundle: true, platform: "browser", format: "iife", target: "ch
 await build({ ...node, entryPoints: [path.join(root, "src/main/main.ts")], outfile: path.join(dist, "main.js") });
 await build({ ...node, entryPoints: [path.join(root, "src/preload/preload.ts")], outfile: path.join(dist, "preload.js"), sourcemap: false });
 await build({ ...node, entryPoints: [path.join(root, "src/preload/overlay-preload.ts")], outfile: path.join(dist, "overlay-preload.js"), sourcemap: false });
+await build({ ...node, entryPoints: [path.join(root, "src/preload/frames-preload.ts")], outfile: path.join(dist, "frames-preload.js"), sourcemap: false });
 await build({ ...browser, entryPoints: [path.join(root, "src/renderer/app.ts")], outfile: path.join(dist, "renderer/app.js") });
 // la pagina dell'overlay: nella finestra sopra il gioco e nella sorgente per OBS (servita da overlay.ts)
 await build({ ...browser, entryPoints: [path.join(root, "src/overlay/overlay.ts")], outfile: path.join(dist, "overlay/overlay.js") });
+// la finestra nascosta della modalità cattura dello scanner (main/frames.ts, solo con --frames)
+await build({ ...browser, entryPoints: [path.join(root, "src/frames/frames.ts")], outfile: path.join(dist, "frames/frames.js") });
 
 fs.copyFileSync(path.join(root, "src/renderer/index.html"), path.join(dist, "renderer/index.html"));
 fs.copyFileSync(path.join(root, "src/renderer/style.css"), path.join(dist, "renderer/style.css"));
 fs.copyFileSync(path.join(root, "src/overlay/overlay.html"), path.join(dist, "overlay/overlay.html"));
 fs.copyFileSync(path.join(root, "src/overlay/overlay.css"), path.join(dist, "overlay/overlay.css"));
+fs.copyFileSync(path.join(root, "src/frames/frames.html"), path.join(dist, "frames/frames.html"));
 fs.copyFileSync(path.join(root, "assets/icon.ico"), path.join(dist, "icon.ico"));
 // Logo e font del sito (01/10/2026): accanto a ciascuna pagina, così i percorsi relativi valgono sia nella finestra
 // (file://) sia nella sorgente per OBS, che il server locale serve solo da /overlay/ (overlay.ts)

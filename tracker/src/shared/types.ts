@@ -119,3 +119,14 @@ export type TrackerApi = {
   /** Copia un testo negli appunti (l'indirizzo per OBS). */
   copyText(text: string): Promise<void>;
 };
+
+/** Finestra nascosta della modalità cattura dello scanner (main/frames.ts, 10/10/2026). */
+export type FramesApi = {
+  /** L'id della finestra del gioco da riprendere (desktopCapturer). */
+  onStart(listener: (sourceId: string) => void): void;
+  onStop(listener: () => void): void;
+  /** Un fotogramma JPEG; false se il processo principale non l'ha salvato. */
+  save(jpeg: Uint8Array): Promise<boolean>;
+  /** La ripresa si è chiusa da sola. */
+  ended(): void;
+};
