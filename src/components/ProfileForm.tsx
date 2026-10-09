@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveProfile, type ProfileActionState } from "@/lib/community/profileActions";
-import { BIO_MAX, BIO_MAX_BREAKS, CONTENT_LANGS, bioLineCount, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
+import { BIO_MAX, BIO_MAX_BREAKS, CONTENT_LANGS, bioLineCount, detectLinkKind, LINK_KINDS, LINK_KIND_NAMES, MAX_LINKS, type ContentLang, type LinkKind, type ProfileFormErrors, type ProfileLink } from "@/lib/community/profileLinks";
 import { fillCreator, type ProfileFormLabels } from "@/lib/creatorLabels";
 
 /**
@@ -13,7 +13,12 @@ import { fillCreator, type ProfileFormLabels } from "@/lib/creatorLabels";
  * Tutti i campi sono controllati: React 19 svuota i moduli dopo un'azione riuscita, e qui il modulo deve restare pieno.
  */
 
-type Row = { key: number; kind: LinkKind; url: string };
+/**
+ * `kind` vuoto = piattaforma non ancora scelta. Fino all'08/10/2026 la riga nuova partiva su Twitch (e la seconda su
+ * YouTube): un nome scritto lì senza cambiare la tendina diventava un canale Twitch ("mi mette Twitch", Nicolò).
+ * Ora si parte senza piattaforma e un indirizzo incollato la sceglie da solo (`detectLinkKind`, la stessa regola del server).
+ */
+type Row = { key: number; kind: LinkKind | ""; url: string };
 
 const PLACEHOLDER: Record<LinkKind, string> = {
   twitch: "https://www.twitch.tv/…",
@@ -33,7 +38,8 @@ const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 te
 const bioLimits = { max: BIO_MAX, lines: BIO_MAX_BREAKS + 1 };
 
 let nextKey = 1;
-const toRows = (links: readonly ProfileLink[]): Row[] => (links.length ? links : [{ kind: "twitch" as LinkKind, url: "" }]).map((l) => ({ key: nextKey++, kind: l.kind, url: l.url }));
+const emptyRow = (): Row => ({ key: nextKey++, kind: "", url: "" });
+const toRows = (links: readonly ProfileLink[]): Row[] => (links.length ? links.map((l) => ({ key: nextKey++, kind: l.kind, url: l.url })) : [emptyRow()]);
 
 export function ProfileForm({
   initial,
@@ -68,14 +74,14 @@ export function ProfileForm({
     return res;
   }, {});
 
-  const kindName = (k: LinkKind) => (k === "website" ? websiteLabel : LINK_KIND_NAMES[k]);
+  const kindName = (k: LinkKind | "") => (k === "" ? labels.kind : k === "website" ? websiteLabel : LINK_KIND_NAMES[k]);
   const edit = (next: Row[]) => {
     setRows(next);
     setErrors(null);
     setDirty(true);
   };
   const rowError = (i: number) => errors?.links?.find((e) => e.index === i);
-  const errorText = (err: NonNullable<ReturnType<typeof rowError>>, kind: LinkKind) => {
+  const errorText = (err: NonNullable<ReturnType<typeof rowError>>, kind: LinkKind | "") => {
     const e = labels.errors;
     switch (err.error) {
       case "http":
@@ -161,9 +167,10 @@ export function ProfileForm({
                   <select
                     name="link_kind"
                     value={row.kind}
-                    onChange={(e) => edit(rows.map((r) => (r.key === row.key ? { ...r, kind: e.target.value as LinkKind } : r)))}
+                    onChange={(e) => edit(rows.map((r) => (r.key === row.key ? { ...r, kind: e.target.value as LinkKind | "" } : r)))}
                     className={`${inputCls} !mt-0`}
                   >
+                    <option value="">{labels.kind}…</option>
                     {LINK_KINDS.map((k) => (
                       <option key={k} value={k}>
                         {kindName(k)}
@@ -183,8 +190,12 @@ export function ProfileForm({
                     spellCheck={false}
                     maxLength={300}
                     value={row.url}
-                    onChange={(e) => edit(rows.map((r) => (r.key === row.key ? { ...r, url: e.target.value } : r)))}
-                    placeholder={PLACEHOLDER[row.kind]}
+                    onChange={(e) => {
+                      // un indirizzo di una piattaforma nota sceglie la piattaforma della riga, come farà il server
+                      const url = e.target.value;
+                      edit(rows.map((r) => (r.key === row.key ? { ...r, url, kind: detectLinkKind(url) ?? r.kind } : r)));
+                    }}
+                    placeholder={row.kind ? PLACEHOLDER[row.kind] : PLACEHOLDER.website}
                     aria-invalid={err ? true : undefined}
                     aria-describedby={err ? `profile-link-err-${row.key}` : undefined}
                     className={`${inputCls} !mt-0 font-mono text-sm ${err ? "!border-bad" : ""}`}
@@ -215,7 +226,7 @@ export function ProfileForm({
           })}
         </ol>
         {rows.length < MAX_LINKS ? (
-          <button type="button" onClick={() => edit([...rows, { key: nextKey++, kind: "youtube", url: "" }])} className="btn btn-ink mt-3 text-xs">
+          <button type="button" onClick={() => edit([...rows, emptyRow()])} className="btn btn-ink mt-3 text-xs">
             + {labels.add}
           </button>
         ) : null}

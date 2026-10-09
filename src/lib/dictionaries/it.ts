@@ -997,8 +997,11 @@ export const it: Dictionary = {
     ok: "OK",
     restored: "Mazzo ripristinato dal link.",
     undoLink: "Torna al mazzo di prima",
+    /* filtri a pulsanti del pool (08/10/2026, feedback di Nicolò): plurali, Leggendarie a parte e la didascalia sotto i pulsanti */
     typeUnit: "Unità",
-    typeSpell: "Magia",
+    typeSpell: "Magie",
+    typeLegendary: "Leggendarie",
+    typeHint: "Unità: carte con potere e salute che vanno sul tabellone. Magie: solo un effetto, senza potere né salute.",
     viewDeck: "Vai al mazzo",
     summaryBar: "Riepilogo del mazzo",
   },

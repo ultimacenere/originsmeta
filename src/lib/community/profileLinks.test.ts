@@ -31,6 +31,7 @@ import {
   linkHandle,
   mainChannels,
   normalizeLink,
+  detectLinkKind,
   parseProfileForm,
   parseStoredLinks,
   sameShowcase,
@@ -326,8 +327,8 @@ describe("modulo di /account", () => {
     const r = parseProfileForm({
       bio: "x".repeat(BIO_MAX + 5),
       langs: [],
-      kinds: ["twitch", "website", "myspace", "website"],
-      urls: ["https://evil.com/x", "https://bit.ly/x", "https://myspace.com/x", "https://www.twitch.tv/coachcrono"],
+      kinds: ["twitch", "website", "myspace", ""],
+      urls: ["https://evil.com/x", "https://bit.ly/x", "https://myspace.com/x", "coachcrono"],
     });
     assert.deepEqual(r, {
       ok: false,
@@ -337,10 +338,50 @@ describe("modulo di /account", () => {
           { index: 0, error: "invalid" },
           { index: 1, error: "shortener" },
           { index: 2, error: "kind" },
-          { index: 3, error: "platform", platform: "twitch" },
+          // un nome scritto da solo non dice la piattaforma: serve sceglierla
+          { index: 3, error: "kind" },
         ],
       },
     });
+  });
+  test("l'indirizzo decide la piattaforma, anche se nel modulo è scelta un'altra (feedback di Nicolò, 08/10/2026)", () => {
+    const r = parseProfileForm({
+      bio: "",
+      langs: [],
+      kinds: ["twitch", "", "website", "youtube"],
+      urls: ["instagram.com/Nicolo", "https://m.twitch.tv/coachcrono", "https://www.twitch.tv/coachcrono_two", "https://x.com/coach"],
+    });
+    assert.deepEqual(r, {
+      ok: true,
+      value: {
+        bio: null,
+        links: [
+          { kind: "instagram", url: "https://www.instagram.com/nicolo" },
+          { kind: "twitch", url: "https://www.twitch.tv/coachcrono" },
+          { kind: "twitch", url: "https://www.twitch.tv/coachcrono_two" },
+          { kind: "x", url: "https://x.com/coach" },
+        ],
+        content_langs: [],
+      },
+    });
+    // un nome scritto da solo resta della piattaforma scelta
+    const handle = parseProfileForm({ bio: "", langs: [], kinds: ["instagram"], urls: ["@nicolo"] });
+    assert.deepEqual(handle.ok && handle.value.links, [{ kind: "instagram", url: "https://www.instagram.com/nicolo" }]);
+  });
+  test("detectLinkKind: host delle piattaforme, sottodomini compresi; niente per nomi e siti qualsiasi", () => {
+    assert.equal(detectLinkKind("https://www.instagram.com/nicolo"), "instagram");
+    assert.equal(detectLinkKind("instagram.com/nicolo"), "instagram");
+    assert.equal(detectLinkKind("youtu.be/abc"), "youtube");
+    assert.equal(detectLinkKind("twitter.com/coach"), "x");
+    assert.equal(detectLinkKind("https://m.twitch.tv/coach"), "twitch");
+    assert.equal(detectLinkKind("discord.gg/abc"), "discord");
+    assert.equal(detectLinkKind("nicolo"), null);
+    assert.equal(detectLinkKind("@nicolo"), null);
+    assert.equal(detectLinkKind("coach.crono"), null);
+    assert.equal(detectLinkKind("https://example.com/twitch.tv"), null);
+    assert.equal(detectLinkKind("https://user@twitch.tv/x"), null);
+    assert.equal(detectLinkKind("https://notinstagram.com/x"), null);
+    assert.equal(detectLinkKind(""), null);
   });
   test("salvataggio identico a quello che c'è: niente scrittura (sameShowcase)", () => {
     const value = { bio: "Streamer", links: [{ kind: "twitch" as const, url: "https://www.twitch.tv/coachcrono" }], content_langs: ["en" as const, "it" as const] };

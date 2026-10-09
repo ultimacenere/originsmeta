@@ -7,7 +7,7 @@ import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, v
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
 import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY } from "@/lib/community/types";
 import { saveDeckPrivate, type ActionState } from "@/lib/community/actions";
-import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
+import { matchesPoolFilters, matchesSearch, POOL_COST_MAX, poolCost, searchHaystack, searchTerms, type PoolType } from "@/lib/cardSearch";
 import { legendaryParam, trackEvent, trackSearch } from "@/lib/analytics";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled } from "@/lib/supabase/env";
@@ -124,6 +124,9 @@ export type BuilderLabels = {
   ok: string;
   typeUnit: string;
   typeSpell: string;
+  typeLegendary: string;
+  /** didascalia sotto i pulsanti del tipo: che cosa sono unità e magie */
+  typeHint: string;
   spell: string;
 };
 
@@ -215,8 +218,9 @@ export function DeckBuilder({
   const [submitState, setSubmitState] = useState<"idle" | "saved" | string>("idle");
   const [submitting, startSubmit] = useTransition();
   const [q, setQ] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "unit" | "spell">("all");
-  const [costFilter, setCostFilter] = useState<"all" | string>("all");
+  const [typeFilter, setTypeFilter] = useState<PoolType>("all");
+  /** costi scelti, anche più di uno; vuoto = tutti */
+  const [costFilter, setCostFilter] = useState<number[]>([]);
   const [importText, setImportText] = useState("");
   /** messaggio sotto la casella "Importa": `bad` per gli errori (codice illeggibile, nessuna carta riconosciuta) */
   const [notice, setNotice] = useState<{ text: string; bad: boolean } | null>(null);
@@ -465,18 +469,19 @@ export function DeckBuilder({
       .filter((c) => c.type !== "token")
       // scelta la Leggendaria, le altre spariscono dalla lista
       .filter((c) => !c.legendary || !deck.legendary || c.slug === deck.legendary)
-      .filter((c) => (typeFilter === "all" ? true : c.type === typeFilter))
-      .filter((c) => (costFilter === "all" ? true : costFilter === "8" ? (c.mana ?? 0) >= 8 : String(c.mana ?? "?") === costFilter))
+      .filter((c) => matchesPoolFilters(c, typeFilter, costFilter))
       .filter((c) => matchesSearch(haystacks.get(c.slug) ?? "", terms))
       .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
   }, [pool, haystacks, q, typeFilter, costFilter, deck.legendary]);
-  const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter !== "all";
+  const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter.length > 0;
+  /* i pulsanti del costo: solo i costi che le carte del pool hanno davvero (8 = da 8 in su) */
+  const poolCosts = useMemo(() => [...new Set(pool.filter((c) => c.type !== "token").map((c) => poolCost(c.mana)).filter((c): c is number => c !== null))].sort((a, b) => a - b), [pool]);
   /* misura della ricerca nel pool (view_search_results): parte quando si smette di scrivere, vedi trackSearch */
   useEffect(() => trackSearch("deck_builder", q, visiblePool.length), [q, visiblePool.length]);
   const clearFilters = () => {
     setQ("");
     setTypeFilter("all");
-    setCostFilter("all");
+    setCostFilter([]);
   };
 
   const addCard = (c: BuilderCard) => {
@@ -888,6 +893,8 @@ export function DeckBuilder({
   const slotCard = (slug: string) => lookup(slug);
   const h3 = "mt-6 text-base font-bold text-chalk";
   const fieldCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk";
+  /* pastiglie dei filtri del pool, come quelle del costo in /cards */
+  const chipCls = (on: boolean) => `min-h-9 rounded-full border-2 text-sm font-bold ${on ? "border-mint bg-mint text-ink" : "border-felt-line bg-felt-deep text-chalk hover:border-mint"}`;
 
   return (
     <div className="relative">
@@ -1345,24 +1352,34 @@ export function DeckBuilder({
             {labels.pool}
           </h2>
           <p className="mt-1 text-xs text-chalk-muted">{labels.poolHint}</p>
-          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[1.5fr_1fr_1fr]">
-            <input id="pool-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.searchPoolHint} aria-label={labels.searchPool} className={fieldCls} />
-            <select id="pool-type" aria-label={labels.filterType} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)} className={fieldCls}>
-              <option value="all">{labels.all}</option>
-              <option value="unit">{labels.typeUnit}</option>
-              <option value="spell">{labels.typeSpell}</option>
-            </select>
-            <select id="pool-cost" aria-label={labels.filterCost} value={costFilter} onChange={(e) => setCostFilter(e.target.value)} className={fieldCls}>
-              <option value="all">
-                {labels.cost}: {labels.all}
-              </option>
-              {[0, 1, 2, 3, 4, 5, 6, 7].map((c) => (
-                <option key={c} value={String(c)}>
-                  {c}
-                </option>
-              ))}
-              <option value="8">8+</option>
-            </select>
+          {/* Nome in un campo a sé, sotto tipo e costo come pulsanti sempre in vista (08/10/2026, feedback di Nicolò: le
+              tendine erano poco chiare). Tipo: una scelta sola; costo: più valori insieme, di nuovo sullo stesso per toglierlo. */}
+          <input id="pool-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.searchPoolHint} aria-label={labels.searchPool} className={`${fieldCls} mt-3 w-full`} />
+          <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={labels.filterType}>
+            {(
+              [
+                ["all", labels.all],
+                ["legendary", labels.typeLegendary],
+                ["unit", labels.typeUnit],
+                ["spell", labels.typeSpell],
+              ] as const
+            ).map(([t, label]) => (
+              <button key={t} type="button" aria-pressed={typeFilter === t} onClick={() => setTypeFilter(t)} className={`${chipCls(typeFilter === t)} px-3`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-chalk-muted">{labels.typeHint}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2" role="group" aria-label={labels.filterCost}>
+            <span className="kicker text-chalk-muted">{labels.cost}</span>
+            {poolCosts.map((c) => {
+              const on = costFilter.includes(c);
+              return (
+                <button key={c} type="button" aria-pressed={on} onClick={() => setCostFilter((x) => (on ? x.filter((v) => v !== c) : [...x, c]))} className={`${chipCls(on)} min-w-9 px-2 font-mono`}>
+                  {c === POOL_COST_MAX ? `${c}+` : c}
+                </button>
+              );
+            })}
           </div>
           {/* Quante carte restano e "Azzera i filtri", solo mentre si filtra. Il conteggio sta in una regione che resta
               montata, così il lettore di schermo annuncia anche il primo cambio. */}

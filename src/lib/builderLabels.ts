@@ -97,6 +97,8 @@ export function builderLabels(d: Dictionary): BuilderLabels {
     ok: b.ok,
     typeUnit: b.typeUnit,
     typeSpell: b.typeSpell,
+    typeLegendary: b.typeLegendary,
+    typeHint: b.typeHint,
     spell: d.common.spell,
   };
 }

@@ -5,6 +5,8 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  matchesPoolFilters,
+  poolCost,
   matchesSearch,
   normalizeSearch,
   searchHaystack,
@@ -76,5 +78,34 @@ describe("matchesSearch", () => {
     assert.equal(hay, "baloo giungla");
     assert.ok(find("baloo", hay));
     assert.equal(find("undefined", hay), false);
+  });
+});
+
+describe("filtri a pulsanti del deck builder", () => {
+  const legend = { type: "unit", legendary: true, mana: 6 };
+  const unit = { type: "unit", legendary: false, mana: 2 };
+  const spell = { type: "spell", legendary: false, mana: 1 };
+  const big = { type: "unit", legendary: false, mana: 10 };
+  test("tipo: le Leggendarie a parte, le unità sono quelle base", () => {
+    assert.ok(matchesPoolFilters(legend, "legendary", []));
+    assert.equal(matchesPoolFilters(unit, "legendary", []), false);
+    assert.equal(matchesPoolFilters(legend, "unit", []), false);
+    assert.ok(matchesPoolFilters(unit, "unit", []));
+    assert.ok(matchesPoolFilters(spell, "spell", []));
+    assert.equal(matchesPoolFilters(unit, "spell", []), false);
+    for (const c of [legend, unit, spell, big]) assert.ok(matchesPoolFilters(c, "all", []));
+  });
+  test("costi: più valori insieme, 8 vale da 8 in su, nessuno = tutti", () => {
+    assert.ok(matchesPoolFilters(unit, "all", [1, 2]));
+    assert.ok(matchesPoolFilters(spell, "all", [1, 2]));
+    assert.equal(matchesPoolFilters(legend, "all", [1, 2]), false);
+    assert.ok(matchesPoolFilters(big, "all", [8]));
+    assert.equal(poolCost(10), 8);
+    assert.equal(poolCost(undefined), null);
+    assert.equal(matchesPoolFilters({ type: "unit", legendary: false }, "all", [0]), false);
+  });
+  test("tipo e costo insieme", () => {
+    assert.ok(matchesPoolFilters(unit, "unit", [2]));
+    assert.equal(matchesPoolFilters(unit, "unit", [3]), false);
   });
 });

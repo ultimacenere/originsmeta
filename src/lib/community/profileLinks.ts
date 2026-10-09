@@ -299,6 +299,20 @@ function websiteUrl(url: URL): Normalized {
 }
 
 /**
+ * La piattaforma di un indirizzo scritto o incollato, dal suo host ("instagram.com/nome", "https://m.twitch.tv/x" e
+ * sottodomini); null per un nome scritto da solo, un sito qualsiasi o un valore che non si legge. Dall'08/10/2026
+ * (feedback di Nicolò: "mi mette Twitch, non so perché") l'indirizzo vince sulla piattaforma scelta nel modulo: chi
+ * incolla il suo Instagram nella riga che parte su Twitch salva Instagram, invece di un errore o di un canale sbagliato.
+ */
+export function detectLinkKind(raw: string): Exclude<LinkKind, "website"> | null {
+  const m = /^(?:https?:\/\/)?([^/?#@:]+)(?:[:/?#]|$)/i.exec(squeeze(String(raw ?? "")));
+  if (!m || !m[1].includes(".")) return null;
+  const host = m[1].toLowerCase().replace(/\.$/, "");
+  const platform = Object.keys(PLATFORM_HOSTS).find((h) => onHost(host, h));
+  return platform ? PLATFORM_HOSTS[platform] : null;
+}
+
+/**
  * Un canale scritto nel modulo, nella forma canonica della piattaforma. Valore vuoto: nessun canale (`link: null`).
  * Si accettano l'indirizzo intero, l'indirizzo senza https:// e, per le piattaforme a nome, il solo nome.
  */
@@ -490,7 +504,8 @@ export function parseProfileForm(input: ProfileFormInput): { ok: true; value: Pr
   for (let i = 0; i < rows; i++) {
     const url = input.urls[i] ?? "";
     if (!squeeze(url)) continue;
-    const kind = input.kinds[i];
+    // l'host dell'indirizzo decide la piattaforma; per un nome scritto da solo vale quella scelta (`detectLinkKind`)
+    const kind = detectLinkKind(url) ?? input.kinds[i];
     if (!isLinkKind(kind)) {
       rowErrors.push({ index: i, error: "kind" });
       continue;

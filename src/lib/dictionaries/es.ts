@@ -1004,8 +1004,11 @@ export const es: Dictionary = {
     ok: "OK",
     restored: "Mazo recuperado desde el enlace.",
     undoLink: "Volver a mi mazo anterior",
-    typeUnit: "Unidad",
-    typeSpell: "Hechizo",
+    /* filtri a pulsanti del pool (08/10/2026, feedback di Nicolò): plurali, Leggendarie a parte e la didascalia sotto i pulsanti */
+    typeUnit: "Unidades",
+    typeSpell: "Hechizos",
+    typeLegendary: "Legendarias",
+    typeHint: "Unidades: cartas con poder y salud que van al tablero. Hechizos: solo un efecto, sin poder ni salud.",
     viewDeck: "Ir al mazo",
     summaryBar: "Resumen del mazo",
   },

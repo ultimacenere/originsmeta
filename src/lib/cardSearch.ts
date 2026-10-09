@@ -36,3 +36,27 @@ export function searchHaystack(fields: readonly (string | undefined)[]): string 
 export function matchesSearch(haystack: string, terms: readonly string[]): boolean {
   return terms.every((t) => haystack.includes(t));
 }
+
+/**
+ * Filtri a pulsanti del pool del deck builder (08/10/2026, feedback di Nicolò in call con Pierluigi: le tendine di tipo
+ * e costo erano poco chiare). Tipo: una scelta sola, con le Leggendarie a parte (le "Unità" sono allora le unità base);
+ * costo: più valori insieme ("1" e "2"), `POOL_COST_MAX` vale "da 8 in su". Nessun valore scelto = nessun filtro.
+ */
+export type PoolType = "all" | "legendary" | "unit" | "spell";
+export const POOL_COST_MAX = 8;
+
+/** Il valore del pulsante di costo di una carta: il costo, fermato a `POOL_COST_MAX`; null senza costo. */
+export function poolCost(mana: number | null | undefined): number | null {
+  return typeof mana === "number" ? Math.min(mana, POOL_COST_MAX) : null;
+}
+
+/** Vero se la carta passa il filtro del tipo e quello dei costi scelti. */
+export function matchesPoolFilters(card: { type: string; legendary: boolean; mana?: number | null }, type: PoolType, costs: readonly number[]): boolean {
+  if (type === "legendary" && !card.legendary) return false;
+  if ((type === "unit" || type === "spell") && (card.legendary || card.type !== type)) return false;
+  if (costs.length) {
+    const c = poolCost(card.mana);
+    if (c === null || !costs.includes(c)) return false;
+  }
+  return true;
+}

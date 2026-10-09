@@ -1011,8 +1011,11 @@ export const en = {
     ok: "OK",
     restored: "Deck restored from the link.",
     undoLink: "Back to my previous deck",
-    typeUnit: "Unit",
-    typeSpell: "Spell",
+    /* filtri a pulsanti del pool (08/10/2026, feedback di Nicolò): plurali, Leggendarie a parte e la didascalia sotto i pulsanti */
+    typeUnit: "Units",
+    typeSpell: "Spells",
+    typeLegendary: "Legendaries",
+    typeHint: "Units: cards with power and health that go on the board. Spells: an effect only, no power or health.",
     viewDeck: "Go to the deck",
     summaryBar: "Deck summary",
   },

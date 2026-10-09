@@ -1011,8 +1011,11 @@ export const fr: Dictionary = {
     ok: "OK",
     restored: "Deck restauré depuis le lien.",
     undoLink: "Revenir à mon deck précédent",
-    typeUnit: "Unité",
-    typeSpell: "Sort",
+    /* filtri a pulsanti del pool (08/10/2026, feedback di Nicolò): plurali, Leggendarie a parte e la didascalia sotto i pulsanti */
+    typeUnit: "Unités",
+    typeSpell: "Sorts",
+    typeLegendary: "Légendaires",
+    typeHint: "Unités : cartes avec Puissance et Santé qui vont sur le plateau. Sorts : un effet seulement, sans Puissance ni Santé.",
     viewDeck: "Aller au deck",
     summaryBar: "Résumé du deck",
   },
