@@ -7,7 +7,6 @@ import { getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
-import { ServiceNotice } from "@/components/ServiceNotice";
 import { GoogleAnalytics, VercelAnalytics } from "@/components/GoogleAnalytics";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { feedbackLabels } from "@/lib/feedbackLabels";
@@ -88,8 +87,6 @@ export default async function LocaleLayout({ children, params }: Props) {
           {d.nav.skipToContent}
         </a>
         <Header locale={l} dict={d} />
-        {/* Avviso di servizio chiudibile (07/10/2026, guasto DNS di Register.it): finestra e testi in src/lib/serviceNotice.ts */}
-        <ServiceNotice locale={l} />
         {children}
         <Footer locale={l} dict={d} />
         {/* Segnalazioni e suggerimenti dei visitatori: su ogni pagina, fuori dal <main>, prima del banner dei cookie */}
