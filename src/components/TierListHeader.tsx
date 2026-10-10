@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { WinrateTab } from "./AnalyticsOnly";
 
 /**
  * Testata unica della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB), al posto della
@@ -68,6 +69,10 @@ export function TierListHeader({
             </Link>
           );
         })}
+        {/* in prova (ANALYTICS_PUBLIC spento): la scheda "Win rate" la vede nel browser solo chi ha un ruolo ammesso */}
+        {ANALYTICS_PUBLIC ? null : (
+          <WinrateTab locale={locale} label={t.sourceWinrate} state={state.winrate || undefined} on={current === "winrate"} />
+        )}
         {/* sul tool stesso il tasto non serve: ci si è già */}
         {current === "create" ? null : (
           <Link href={href(locale, "/tier-list/create")} className="btn btn-primary w-full justify-center self-center sm:ml-auto sm:w-auto">

@@ -9,9 +9,13 @@ import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { AnalyticsNavLink } from "./AnalyticsOnly";
 
-/** `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale). */
-type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean }[] };
+/**
+ * `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale).
+ * `testOnly`: voce di OriginsMeta Analytics in prova, mostrata nel browser solo ai ruoli ammessi (`AnalyticsOnly`).
+ */
+type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean; testOnly?: boolean }[] };
 
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
@@ -36,8 +40,10 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: t.sourceVotes, path: "/tier-list/votes" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
         // win rate dalle partite registrate con OriginsMeta Analytics: "Analytics · in pausa" dal 02/10, riaperti il 10/10/2026
-        // ma in prova (solo Creator, Autore, Pro, Staff e admin): la voce compare quando si aprono a tutti (ANALYTICS_PUBLIC)
-        ...(ANALYTICS_PUBLIC ? [{ label: t.sourceWinrate, path: "/tier-list/win-rate" }] : []),
+        // ma in prova (solo Creator, Autore, Pro, Staff e admin): finché ANALYTICS_PUBLIC è spento la voce la vede nel
+        // browser solo chi ha il ruolo (Pierluigi, 10/10: "la vedo sotto tierlist ma non c'è un percorso sul menu")
+        // (l'indirizzo della voce in prova lo costruisce AnalyticsNavLink nel browser: qui non deve finire nell'HTML)
+        ANALYTICS_PUBLIC ? { label: t.sourceWinrate, path: "/tier-list/win-rate" } : { label: t.sourceWinrate, path: "#winrate", testOnly: true },
       ],
     },
     { label: dict.nav.guides, path: "/guides" },
@@ -98,11 +104,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 <NavLink href={href(locale, it.path)}>{it.label}</NavLink>
                 <div className="nav-drop-panel">
                   <div className="nav-drop-box" role="group" aria-label={it.label}>
-                    {it.sub.map((s) => (
-                      <NavLink key={s.path} href={href(locale, s.path)} exact className="nav-link-block">
-                        {s.label}
-                      </NavLink>
-                    ))}
+                    {it.sub.map((s) =>
+                      s.testOnly ? (
+                        <AnalyticsNavLink key={s.path} locale={locale} page="winrate" label={s.label} exact className="nav-link-block" />
+                      ) : (
+                        <NavLink key={s.path} href={href(locale, s.path)} exact className="nav-link-block">
+                          {s.label}
+                        </NavLink>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>

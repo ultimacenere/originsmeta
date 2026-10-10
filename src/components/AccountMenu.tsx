@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
+import { AnalyticsNavLink } from "./AnalyticsOnly";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 // foto profilo caricata dal sito prima di quella di Discord (pacchetto VETRINA, 27/09/2026)
 import { PROFILE_UPDATED_EVENT, avatarSrc } from "@/lib/community/profileMedia";
 import type { Profile } from "@/lib/community/types";
@@ -171,6 +173,10 @@ function AccountDetails({
         <NavLink href={`/${locale}/deck-builder`} className="nav-link-block">
           {labels.builder}
         </NavLink>
+        {/* OriginsMeta Analytics in prova (10/10/2026): la pagina dell'app con il download, solo per i ruoli ammessi */}
+        {ANALYTICS_PUBLIC ? null : (
+          <AnalyticsNavLink locale={locale} page="app" label="OriginsMeta Analytics" className="nav-link-block" />
+        )}
         <SignOutButton locale={locale} label={labels.logout} className="nav-link nav-link-block text-chalk-muted hover:text-pink" />
       </nav>
     </AutoCloseDetails>
