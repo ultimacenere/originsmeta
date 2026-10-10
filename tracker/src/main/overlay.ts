@@ -14,10 +14,10 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
-import type { ActiveDeck, OverlayView } from "../shared/types";
+import type { ActiveDeck, DeckTrackerView, OverlayView } from "../shared/types";
 
 /** `slug`: la carta sul sito, per l'immagine (originsmeta.com/cards/<slug>.webp). */
-export type CardInfo = { name: string; legendary: boolean; slug: string };
+export type CardInfo = { name: string; legendary: boolean; slug: string; mana?: number | null; type?: string };
 export type CardLookup = (key: string) => CardInfo | undefined;
 
 const sortedKey = (cards: readonly string[]) => [...cards].sort().join(",");
@@ -65,14 +65,16 @@ const TYPES: Record<string, string> = {
  */
 export function overlayFile(pathname: string): string | null {
   if (pathname === "/overlay/" || pathname === "/overlay") return "overlay.html";
-  return /^\/overlay\/(overlay\.(?:css|js)|logo-originsmeta(?:-sm)?\.webp|fonts\/[a-z0-9-]+\.woff2)$/.exec(pathname)?.[1] ?? null;
+  // il pannello del mazzo (10/10/2026): /overlay/deck
+  if (pathname === "/overlay/deck") return "deck.html";
+  return /^\/overlay\/((?:overlay|deck)\.(?:css|js)|logo-originsmeta(?:-sm)?\.webp|fonts\/[a-z0-9-]+\.woff2)$/.exec(pathname)?.[1] ?? null;
 }
 
 /**
  * Avvia il server della sorgente per OBS: /overlay/ (la pagina), stile, script, logo e font (dalla cartella `dir`,
  * `overlayFile`), /overlay/state.json (i dati di adesso). Prova le porte in ordine; null se sono tutte occupate.
  */
-export async function startOverlayServer(opts: { dir: string; view: () => OverlayView; ports?: readonly number[] }): Promise<{ port: number; url: string; close: () => void } | null> {
+export async function startOverlayServer(opts: { dir: string; view: () => OverlayView; deckView?: () => DeckTrackerView; ports?: readonly number[] }): Promise<{ port: number; url: string; close: () => void } | null> {
   for (const port of opts.ports ?? OVERLAY_PORTS) {
     const server = http.createServer((req, res) => {
       const headers = { "cache-control": "no-store", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer" };
@@ -86,6 +88,7 @@ export async function startOverlayServer(opts: { dir: string; view: () => Overla
         res.end(req.method === "HEAD" ? undefined : body);
       };
       if (url.pathname === "/overlay/state.json") return send(200, "application/json; charset=utf-8", JSON.stringify(opts.view()));
+      if (url.pathname === "/overlay/deck.json" && opts.deckView) return send(200, "application/json; charset=utf-8", JSON.stringify(opts.deckView()));
       const file = overlayFile(url.pathname);
       if (!file) return send(404, "text/plain; charset=utf-8", "404");
       try {

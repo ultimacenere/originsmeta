@@ -72,6 +72,10 @@ export type OverlayState = {
   sessionStart: string;
   /** quello che l'overlay mostra adesso */
   view: OverlayView;
+  /** la finestra del pannello del mazzo è aperta (10/10/2026) */
+  deckWindow: boolean;
+  /** indirizzo del pannello del mazzo per OBS, null se il server locale non è partito */
+  deckObsUrl: string | null;
 };
 
 export type AppState = {
@@ -113,6 +117,8 @@ export type TrackerApi = {
   syncNow(): Promise<void>;
   /** Apre o chiude la finestra sopra il gioco. */
   setOverlayWindow(on: boolean): Promise<boolean>;
+  /** Apre o chiude il pannello del mazzo (10/10/2026). */
+  setDeckWindow(on: boolean): Promise<boolean>;
   /** La finestra sopra il gioco lascia passare i clic (true) o si può spostare (false). */
   setOverlayClickThrough(on: boolean): Promise<boolean>;
   /** Azzera vittorie e sconfitte della sessione dell'overlay. */
@@ -132,4 +138,27 @@ export type FramesApi = {
   ended(): void;
   /** Un fotogramma letto dal riconoscitore (shared/reconstruct.ts). */
   scan(frame: ScanFrame): void;
+};
+
+/** Una carta del pannello del mazzo (deckTracker.ts): `copies` nel mazzo, `played` quelle viste giocare in questa partita. */
+export type DeckCard = { key: string; name: string; slug: string | null; mana: number | null; spell: boolean; legendary: boolean; copies: number; played: number };
+
+/**
+ * Il pannello del mazzo (10/10/2026, "Deck tracker"): il mazzo scelto nel gioco, aggiornato dal vivo dallo scanner
+ * durante la partita. Mostra solo quello che il gioco mostra: le mie carte, il round, la Leggendaria dell'avversario
+ * (schermata VS) e le sue carte rivelate. Mai nomi, mai bot o persona, mai il rank.
+ */
+export type DeckTrackerView = {
+  deck: { name: string | null; legendary: DeckCard | null; cards: DeckCard[] } | null;
+  record: { wins: number; losses: number; games: number } | null;
+  /** lo scanner è acceso (senza, il pannello mostra solo il mazzo) */
+  scanner: boolean;
+  /** la partita in corso o appena finita, dallo scanner */
+  live: { inMatch: boolean; round: number | null; opponent: { legendary: DeckCard | null; seen: DeckCard[] } } | null;
+  updatedAt: string;
+};
+
+export type DeckApi = {
+  getView(): Promise<DeckTrackerView | null>;
+  onView(listener: (view: DeckTrackerView) => void): () => void;
 };

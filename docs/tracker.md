@@ -350,6 +350,28 @@ in home, una striscia "Win rate della patch" quando i numeri sono solidi.
 - L'overlay per OBS del sito (`/overlay/deck`, pacchetto STREAM) resta per chi non usa l'app: mostra un mazzo
   pubblicato, non le partite.
 
+## Deck tracker (dal 10/10/2026)
+
+Pierluigi, 10/10/2026: "una seconda dashboard che fa vedere il deck in uso e se possibile aggiornarlo live, come un
+tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata del mazzo del gioco:
+
+- **Cosa mostra** (`deckTrackerView` in `src/main/deckTracker.ts`, test `deckTracker.test.ts`): il mazzo scelto nel
+  gioco (dai file, cambia appena lo si sceglie) con la Leggendaria intera, nome, record del mazzo nello storico sul PC e
+  le 12 carte per costo, ognuna con miniatura intera (mai ritagliata), costo e due pallini per le copie. Con lo
+  scanner acceso (`--scan`/`--frames`) si aggiorna dal vivo: round, copie giocate spente (mai oltre le copie del mazzo),
+  Leggendaria segnata "giocata", e sotto l'avversario con la Leggendaria della schermata VS e le carte che ha rivelato,
+  con le copie viste. La partita resta nel pannello fino a 10 minuti dopo l'ultima lettura del mana (`LIVE_MS` di
+  `frames.ts`, "Ultima partita"); "Round N" con il pallino verde finché il mana si legge (30 s). Solo quello che il gioco
+  mostra: niente nomi, rank, bot o boss. Senza scanner il pannello mostra il mazzo e lo dice.
+- **Finestra** (`main.ts`): accanto al gioco, sempre in primo piano, ridimensionabile, posizione e misure in
+  `deck.json`; si accende dall'app (riquadro Overlay, "Mostra il deck tracker") o dal menu dell'icona, e torna aperta
+  all'avvio se era aperta. Si aggiorna al massimo una volta al secondo. Con il gioco a schermo intero esclusivo
+  Windows non la mostra sopra il gioco.
+- **OBS**: la stessa pagina su `http://127.0.0.1:47015/overlay/deck?lang=it|en|es`, dati da `/overlay/deck.json`
+  ogni 2 secondi (stesso server e stesse difese dell'overlay). Pagina in `src/overlay/deck.{html,ts,css}`.
+- **Da fare**: le carte in mano e quindi quelle ancora nel mazzo (la mano si vede in basso, ma la sua disposizione
+  cambia col numero di carte); le magie (vedi "Scanner dello schermo").
+
 ## Scanner dello schermo (dal 10/10/2026)
 
 Il replay non c'è più (vedi "I file del gioco"), quindi carte giocate, Leggendaria e carte dell'avversario si

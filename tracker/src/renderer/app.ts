@@ -116,6 +116,10 @@ const LABELS = {
     overlayWindow: "Show above the game",
     overlayMove: "Move it (while this is on, clicks don't go through to the game)",
     overlayFullscreen: "It shows above the game in windowed or borderless mode, not in exclusive fullscreen.",
+    deckTitle: "Deck tracker",
+    deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: cards you played, round, the opponent's Legendary and the cards they reveal.",
+    deckWindow: "Show the deck tracker",
+    deckObs: "Deck tracker for OBS",
     session: "Session",
     sessionSince: (t: string) => `since ${t}`,
     newSession: "New session",
@@ -216,6 +220,10 @@ const LABELS = {
     overlayWindow: "Mostra sopra il gioco",
     overlayMove: "Spostala (finché è acceso, i clic non passano al gioco)",
     overlayFullscreen: "Si vede sopra il gioco in modalità finestra o finestra senza bordi, non a schermo intero esclusivo.",
+    deckTitle: "Deck tracker",
+    deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato, round, Leggendaria dell'avversario e carte che rivela.",
+    deckWindow: "Mostra il deck tracker",
+    deckObs: "Deck tracker per OBS",
     session: "Sessione",
     sessionSince: (t: string) => `dalle ${t}`,
     newSession: "Nuova sessione",
@@ -316,6 +324,10 @@ const LABELS = {
     overlayWindow: "Mostrar sobre el juego",
     overlayMove: "Moverla (mientras esté activo, los clics no pasan al juego)",
     overlayFullscreen: "Se ve sobre el juego en modo ventana o ventana sin bordes, no en pantalla completa exclusiva.",
+    deckTitle: "Deck tracker",
+    deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activo se actualiza en vivo durante la partida: cartas que jugaste, ronda, la Legendaria del rival y las cartas que revela.",
+    deckWindow: "Mostrar el deck tracker",
+    deckObs: "Deck tracker para OBS",
     session: "Sesión",
     sessionSince: (t: string) => `desde las ${t}`,
     newSession: "Nueva sesión",
@@ -553,6 +565,10 @@ function overlayPanel(s: AppState) {
       <div class="row"><span class="sub">${esc(L.session)} ${v.session.wins}–${v.session.losses} · ${esc(L.sessionSince(clock(o.sessionStart)))}</span><button type="button" class="btn" id="ov-session">${esc(L.newSession)}</button></div>
       <h3>${esc(L.obs)}</h3>
       ${o.obsUrl ? `<p class="sub">${esc(L.obsHow)}</p>${obsRow(L.obsH, "h")}${obsRow(L.obsV, "v")}` : `<p class="problem">${esc(L.obsOff)}</p>`}
+      <h3>${esc(L.deckTitle)}</h3>
+      <p class="sub">${esc(L.deckIntro)}</p>
+      <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
+      ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
     </section>`;
 }
 
@@ -635,6 +651,7 @@ root.addEventListener("change", async (e) => {
   const t = e.target as HTMLInputElement;
   if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
+  if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic
   if (t.id === "ov-move") t.checked = !(await window.tracker.setOverlayClickThrough(!t.checked));
 });

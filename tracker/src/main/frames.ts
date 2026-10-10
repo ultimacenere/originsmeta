@@ -20,7 +20,12 @@ import { BrowserWindow, desktopCapturer, ipcMain, session, type IpcMainEvent, ty
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
-import { readScanFrame, scanFor, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
+import { readScanFrame, reconstruct, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
+
+/** La partita resta "dal vivo" nel pannello del mazzo fino a 10 minuti dopo l'ultimo fotogramma con il mana letto. */
+export const LIVE_MS = 10 * 60_000;
+/** Si gioca ancora se il mana si è letto negli ultimi 30 secondi. */
+export const IN_MATCH_MS = 30_000;
 
 export const POLL_MS = 5000;
 const PARTITION = "frames";
@@ -48,7 +53,11 @@ export class FrameRecorder {
   private scans: ScanFrame[] = [];
 
   /** `save`: modalità cattura (anche i JPEG e `events.jsonl` sul PC). */
-  constructor(userData: string, opts: { save: boolean; cards: CardInfo }, onChange: () => void = () => {}) {
+  private onScan: () => void;
+  private liveCache: { at: number; value: { scan: ScannedMatch; inMatch: boolean } | null } | null = null;
+
+  constructor(userData: string, opts: { save: boolean; cards: CardInfo; onScan?: () => void }, onChange: () => void = () => {}) {
+    this.onScan = opts.onScan ?? (() => {});
     this.root = path.join(userData, "frames");
     this.save = opts.save;
     this.cards = opts.cards;
@@ -60,6 +69,20 @@ export class FrameRecorder {
   }
 
   /** La partita letta dallo schermo che corrisponde a una partita finita a `endedAtMs` (ora del PC). */
+  /**
+   * La partita di adesso per il pannello del mazzo: l'ultima della memoria, se il suo mana si è letto da poco. Ricalcolata
+   * al massimo una volta al secondo (le letture arrivano due volte al secondo).
+   */
+  live(now = Date.now()): { scan: ScannedMatch; inMatch: boolean } | null {
+    if (this.liveCache && now - this.liveCache.at < 1000) return this.liveCache.value;
+    const pieces = splitMatches(this.scans);
+    const piece = pieces[pieces.length - 1];
+    const lastMana = piece ? [...piece].reverse().find((f) => f.maxMana !== null)?.ms : undefined;
+    const value = piece && lastMana !== undefined && now - lastMana <= LIVE_MS ? { scan: reconstruct(piece, this.cards), inMatch: now - lastMana <= IN_MATCH_MS } : null;
+    this.liveCache = { at: now, value };
+    return value;
+  }
+
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }
@@ -166,6 +189,7 @@ export class FrameRecorder {
     const f = readScanFrame(raw, now);
     if (!f) return;
     this.scans.push(f);
+    this.onScan();
     // modalità cattura: anche le letture sul PC, accanto ai fotogrammi, per confrontarle con quelle di scan-frames.mjs
     if (this.save && this.dir) {
       try {

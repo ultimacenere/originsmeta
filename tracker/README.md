@@ -21,6 +21,9 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Overlay** (Fase 4): finestrella sopra il gioco (sempre in primo piano, lascia passare i clic finché non si sceglie
   "Sposta", posizione in `overlay.json`) e la stessa pagina come sorgente Browser per OBS su
   `http://127.0.0.1:47015/overlay/` (`?lang=`, `&layout=v`), solo su questo PC.
+- **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
+  con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
+  posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
 - Interfaccia e menu dell'icona in inglese, italiano e spagnolo secondo la lingua di Windows.
 - "Avvia con Windows" è spento finché il giocatore non lo accende (nella finestra o nel menu dell'icona).
 
