@@ -185,7 +185,7 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
   Fino al 01/10/2026 la cartella era `OriginsMeta Tracker`: al primo avvio col nome nuovo `main.ts` ne copia i dati
   (`moveOldData`: storico, stato, invii, collegamento, overlay; la cartella vecchia resta).
 - `src/main/account.ts`, `sync.ts`: collegamento e invio (sotto). `src/main/overlay.ts`: overlay (sotto).
-- `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra che si nasconde invece di chiudersi, una sola
+- `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra la cui X chiude tutta l'app con overlay e Deck tracker (dal 10/10/2026, prima la nascondeva), una sola
   copia, "Avvia con Windows" spento di default, sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
   permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
 - `src/renderer/`: interfaccia EN/IT/ES con i pannelli "Account OriginsMeta" e "Overlay"; `src/overlay/`: la pagina

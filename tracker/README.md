@@ -7,7 +7,8 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 
 ## Cosa fa
 
-- Icona accanto all'orologio; clic = finestra. Chiudere la finestra la nasconde: il tracker continua a registrare.
+- Icona accanto all'orologio; clic = finestra. La X della finestra chiude tutta l'app, overlay e Deck tracker compresi
+  (dal 10/10/2026; prima la nascondeva). Avviata con Windows resta solo nell'icona e registra finché non si sceglie "Esci".
 - Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a 15 secondi) e salva la partita:
   esito, coda (classificata o normale, non mostrata), mazzo con nome e codice del gioco, rank, Leggendaria
   dell'avversario, carte giocate round per round.

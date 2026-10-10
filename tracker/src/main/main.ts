@@ -5,7 +5,8 @@
  * cartella vecchia (`moveOldData`).
  *
  * - Icona accanto all'orologio: clic = apri la finestra; menu con "Apri", "Overlay sopra il gioco", "Avvia con
- *   Windows" ed "Esci". Chiudere la finestra la nasconde e il tracker continua a registrare.
+ *   Windows" ed "Esci". Dal 10/10/2026 la X della finestra chiude tutta l'app (prima la nascondeva); avviata con
+ *   Windows l'app resta solo nella barra finché non si apre la finestra o si sceglie "Esci".
  * - "Avvia con Windows" è spento finché il giocatore non lo accende (voce di Windows "Esegui all'avvio"), e parte con
  *   `--hidden`, cioè solo nella barra.
  * - Una sola copia aperta: la seconda riporta in primo piano la prima.
@@ -519,11 +520,11 @@ function createWindow(show: boolean) {
     return { action: "deny" };
   });
   win.webContents.on("will-navigate", (e) => e.preventDefault());
-  win.on("close", (e) => {
-    if (!quitting && !CAPTURE) {
-      e.preventDefault();
-      win?.hide();
-    }
+  // la X della finestra chiude tutta l'app, con overlay, Deck tracker e scanner (Pierluigi, 10/10/2026: "i due layer si
+  // devono chiudere quando si chiude l'app e non rimanere attivi"; fino ad allora la X nascondeva la finestra e l'app
+  // restava nella barra). Le finestre aperte si riaprono al prossimo avvio.
+  win.on("close", () => {
+    if (!quitting && !CAPTURE) app.quit();
   });
   win.once("ready-to-show", () => {
     if (CAPTURE) win?.showInactive();
@@ -675,7 +676,7 @@ if (!CAPTURE && !app.requestSingleInstanceLock()) {
     frames?.stop();
     overlayServer?.close();
   });
-  // la finestra si nasconde invece di chiudersi: l'app resta nella barra finché non si sceglie "Esci"
+  // senza finestre (avvio con Windows, solo l'icona nella barra) l'app resta accesa finché non si sceglie "Esci"
   app.on("window-all-closed", () => {
     if (CAPTURE) app.quit();
   });
