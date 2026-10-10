@@ -62,6 +62,16 @@ Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal
 
 ## I file del gioco
 
+**Playtest (verificato l'11/10/2026)**: il ramo Steam `communityplaytest` (stessa app 4756630, password) scrive in
+`LocalLow\Koin Games\Origins TCG Playtest\` (realm `DE_1929669118877841`, versione 0.7.1 il 03/10), con gli stessi file
+della demo: il lettore li legge (statistiche e inventario provati sui file veri) e il watcher usa la cartella scritta
+più di recente fra "Origins TCG Demo", "Origins TCG" e "Origins TCG Playtest" (`PRODUCTS` di `paths.ts`), quindi segue
+da solo chi passa dall'una all'altro; la partita del 02/10 alle 23:10 UTC nello storico di Pierluigi viene dal playtest.
+Lo scanner cerca anche la finestra "Origins TCG Playtest" (`GAME_WINDOWS`), non ancora provato dal vivo: carte che
+esistono solo nel playtest non si riconoscono (niente immagine sul sito) e una grafica diversa del tabellone sposterebbe
+gli spazi. **Le partite del playtest vanno al sito come le altre** e entrano negli stessi win rate (Pierluigi,
+11/10/2026: "mandiamole come le altre"): la partita non dice da quale build viene.
+
 **Patch 0.7 (verificato la notte del 01/10/2026 sul PC di Pierluigi)**: il gioco **non scrive più il replay**. A fine
 partita cancella quello della partita prima e non ne crea uno nuovo (3 partite su 3 dal 30/09; cercato in Documenti,
 LocalLow, cartella del gioco e in tutto il profilo; `Player.log` non ne parla; negli annunci Steam non c'è). Le partite si
