@@ -67,10 +67,15 @@ Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal
 della demo: il lettore li legge (statistiche e inventario provati sui file veri) e il watcher usa la cartella scritta
 più di recente fra "Origins TCG Demo", "Origins TCG" e "Origins TCG Playtest" (`PRODUCTS` di `paths.ts`), quindi segue
 da solo chi passa dall'una all'altro; la partita del 02/10 alle 23:10 UTC nello storico di Pierluigi viene dal playtest.
-Lo scanner cerca anche la finestra "Origins TCG Playtest" (`GAME_WINDOWS`), non ancora provato dal vivo: carte che
-esistono solo nel playtest non si riconoscono (niente immagine sul sito) e una grafica diversa del tabellone sposterebbe
-gli spazi. **Le partite del playtest vanno al sito come le altre** e entrano negli stessi win rate (Pierluigi,
-11/10/2026: "mandiamole come le altre"): la partita non dice da quale build viene.
+Lo scanner riprende la finestra "Origins TCG Playtest" (`GAME_WINDOWS`), provato dal vivo l'11/10 (build 25799961):
+stesso tabellone, stesso pannello del mana, stesse carte; carte che esistono solo nel playtest non si riconoscerebbero
+(niente immagine sul sito). **Nel playtest le partite online e classificate non lasciano niente nei file del PC**: le
+statistiche (`onboardingResults`, `onboardingLastMatchId` "offline_…") contano solo le partite offline, quindi il
+watcher non vede finire le altre. Dalla 0.3.1 le registra l'app dallo schermo (`readResult` e `finishFromScreen`, vedi
+"Scanner dello schermo"). Al cambio di cartella (demo ↔ playtest) la prima lettura fa da punto di partenza (`rebase` di
+watcher.ts): prima l'ultima partita dell'altra build diventava una partita nuova senza esito. **Le partite del playtest
+vanno al sito come le altre** e entrano negli stessi win rate (Pierluigi, 11/10/2026: "mandiamole come le altre"): la
+partita non dice da quale build viene.
 
 **Patch 0.7 (verificato la notte del 01/10/2026 sul PC di Pierluigi)**: il gioco **non scrive più il replay**. A fine
 partita cancella quello della partita prima e non ne crea uno nuovo (3 partite su 3 dal 30/09; cercato in Documenti,
@@ -383,6 +388,11 @@ tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata
   Windows non la mostra sopra il gioco.
 - **OBS**: la stessa pagina su `http://127.0.0.1:47015/overlay/deck?lang=it|en|es`, dati da `/overlay/deck.json`
   ogni 2 secondi (stesso server e stesse difese dell'overlay). Pagina in `src/overlay/deck.{html,ts,css}`.
+- **Carte dell'avversario** (11/10/2026, Pierluigi: "il deck avversario crea un'altra tab dove si popola con le carte
+  avversario", in una finestra separata): la stessa pagina con `view=opp`, in una seconda finestra a sinistra dello
+  schermo (`opponent.json`), con la Leggendaria dell'avversario e le carte che rivela, che si riempiono man mano; per
+  OBS `/overlay/deck?view=opp`. Il Deck tracker mostra solo il mio mazzo. In main.ts i due pannelli sono `panels.deck`
+  e `panels.opp` (`openPanel`, `setPanel`).
 - **Da fare**: le carte in mano e quindi quelle ancora nel mazzo (la mano si vede in basso, ma la sua disposizione
   cambia col numero di carte); le magie (vedi "Scanner dello schermo").
 
@@ -446,6 +456,15 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   punta a `releases/latest/download/OriginsMeta-Analytics-win-x64.zip`; Discord no: i link degli allegati scadono e lo
   zip supera il limite senza Nitro). Pubblicare la release va confermato da Pierluigi. Soglia delle statistiche ancora
   quella di prova (Pierluigi, 10/10: "resta libera per ora").
+- **Esito dallo schermo (0.3.1, 11/10/2026)**: lo stendardo di fine partita (testo bianco su fascia scura, parte alta
+  scurita, pennellata menta per la vittoria e magenta per la sconfitta; uguale in demo e playtest e in ogni lingua) dà
+  esito e ora della fine (`readResult`/`resultFromBanner` in recognize.ts, griglia 320 × 180; confermato da 2 fotogrammi,
+  `RESULT_FRAMES` di reconstruct.ts). Taratura su 3.700 fotogrammi: 53 stendardi su 55, nessun esito sbagliato.
+  `finishFromScreen` (main.ts): 30 s dopo lo stendardo, se il watcher non ha registrato una partita entro 3 minuti, la
+  registra l'app con esito, mazzo scelto, giocate e carte dell'avversario (solo partite viste intere); se poi arriva
+  quella del watcher si scarta. Provato dal vivo sul playtest l'11/10 (vittoria in 9 round, registrata da sola). Le 3
+  partite della notte del 10/10 e la vittoria sul playtest dell'11/10 sono state completate o aggiunte nello storico di
+  Pierluigi con uno script una tantum dai fotogrammi salvati: l'esito letto dallo schermo coincideva con quello dei file.
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
   statistiche per carta sul sito (win rate quando una carta viene giocata).
 

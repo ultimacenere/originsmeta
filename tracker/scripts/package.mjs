@@ -53,12 +53,15 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 4. Per mandare le partite al tuo account OriginsMeta: su https://originsmeta.com/it/account/tracker (con l'accesso
    fatto) premi "Crea un codice"; nell'app apri "Account OriginsMeta", scrivi il codice e premi "Collega".
    Collegandola, le partite entrano anche nelle statistiche anonime del sito (win rate).
-5. Overlay e Deck tracker: nel pannello "Overlay" dell'app, "Mostra sopra il gioco" e "Mostra il deck tracker" (si
-   vedono sopra il gioco in modalità finestra o finestra senza bordi, oppure su un secondo schermo). Per OBS copia gli
+5. Overlay, Deck tracker e carte dell'avversario: nel pannello "Overlay" dell'app, "Mostra sopra il gioco",
+   "Mostra il deck tracker" e "Mostra le carte dell'avversario" (si vedono sopra il gioco in modalità finestra o
+   finestra senza bordi, oppure su un secondo schermo). Per OBS copia gli
    indirizzi della sorgente Browser che trovi nello stesso pannello.
 6. Scanner dello schermo (acceso): dalla patch 0.7 il gioco non salva più i replay, quindi l'app legge le carte giocate
    dalla finestra di Origins TCG. Guarda solo quella finestra, le immagini restano sul PC e al sito arrivano solo gli id
    delle carte, mai i nomi dei giocatori. Si spegne dal riquadro "Scanner dello schermo" o dal menu dell'icona.
+7. Funziona con la demo e con il playtest di Steam: sul playtest l'esito delle partite online e classificate lo legge
+   dallo schermo di fine partita, quindi lascia lo scanner acceso.
 
 Guida passo per passo: https://originsmeta.com/it/analytics
 L'app legge i file che il gioco salva sul PC e, con lo scanner acceso, la finestra del gioco: non tocca mai il gioco.
