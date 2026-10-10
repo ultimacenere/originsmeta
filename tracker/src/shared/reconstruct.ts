@@ -37,6 +37,12 @@ export type ScannedMatch = {
   plays: ScannedPlay[];
   /** Le carte dell'avversario viste in partita (Leggendaria compresa, niente carte create), in ordine di comparsa. */
   opponentCards: string[];
+  /**
+   * La partita è stata vista dal round 1. Falso se la ripresa è cominciata a partita in corso (l'app avviata durante la
+   * partita, 10/10/2026 alle 15:34): il pannello del mazzo la mostra lo stesso, ma nello storico e nelle statistiche
+   * non entra, perché le carte giocate prima mancherebbero (`applyScan`).
+   */
+  complete: boolean;
 };
 
 export type CardInfo = { token: (key: string) => boolean; legendary: (key: string) => boolean };
@@ -67,17 +73,23 @@ export function confirmMana(frames: readonly ScanFrame[]): ScanFrame[] {
 /**
  * Una partita comincia con un mana massimo basso (fino a `START_MAX_MANA`, cioè i primi round): prima, il tabellone
  * appena aperto mostra "0/10" come segnaposto (10/10, prima della seconda partita), e quel 10 farebbe partire la
- * partita dal round 9. Anche la ripresa accesa a partita già cominciata ne perde il resto.
+ * partita dal round 9. Eccezione: la ripresa cominciata a partita in corso (primo pezzo della ripresa, mana letto entro
+ * `MIDGAME_START_MS` dal primo fotogramma con carte sul tabellone, nessuna schermata VS), che comincia dal primo mana
+ * letto e resta incompleta.
  */
 export const START_MAX_MANA = 3;
+export const MIDGAME_START_MS = 60_000;
 
 /** Divide i fotogrammi di una sessione in partite: una schermata VS dopo il gioco, il mana che riparte o una pausa. */
 export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
   const frames = confirmMana(all);
   const out: ScanFrame[][] = [];
+  const keep: boolean[] = [];
   let cur: ScanFrame[] = [];
   let lastMax: number | null = null;
   let played = false;
+  let sawVs = false;
+  const firstMs = frames[0]?.ms ?? 0;
   for (const f of frames) {
     const prev = cur[cur.length - 1];
     const restart =
@@ -85,19 +97,27 @@ export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
       ((prev && f.ms - prev.ms > MATCH_GAP_MS) || (f.vs !== null && played) || (f.maxMana !== null && lastMax !== null && f.maxMana < lastMax - 1));
     if (restart) {
       out.push(cur);
+      keep.push(played);
       cur = [];
       lastMax = null;
       played = false;
+      sawVs = false;
     }
     cur.push(f);
-    if (f.maxMana !== null && (played || f.maxMana <= START_MAX_MANA)) {
+    if (f.vs) sawVs = true;
+    // una partita in corso ha carte sul tabellone; il tabellone d'apertura ("0/10") è vuoto
+    const midgame = out.length === 0 && !sawVs && f.ms - firstMs <= MIDGAME_START_MS && f.board.some(Boolean);
+    if (f.maxMana !== null && (played || f.maxMana <= START_MAX_MANA || midgame)) {
       lastMax = f.maxMana;
       played = true;
     }
   }
-  if (cur.length) out.push(cur);
-  // solo i pezzi in cui si è giocato davvero (mana letto almeno una volta)
-  return out.filter((m) => m.some((f) => f.maxMana !== null && f.maxMana <= START_MAX_MANA));
+  if (cur.length) {
+    out.push(cur);
+    keep.push(played);
+  }
+  // solo i pezzi in cui si è giocato davvero
+  return out.filter((_, i) => keep[i]);
 }
 
 const sideOf = (i: number): Side => BOARD_SLOTS[i].side;
@@ -132,11 +152,15 @@ function mode<T>(list: readonly T[]): T | null {
 /** La partita dai suoi fotogrammi (uno dei pezzi di `splitMatches`). */
 export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): ScannedMatch {
   const frames = confirmMana(raw);
-  // round di ogni fotogramma: il mana massimo portato avanti; prima del primo mana letto la partita non è cominciata
+  // round di ogni fotogramma: il mana massimo portato avanti, dal primo mana dei primi round (o dal primo mana letto, se
+  // la ripresa è cominciata a partita in corso); prima la partita non è cominciata
+  const start = frames.findIndex((f) => f.maxMana !== null && f.maxMana <= START_MAX_MANA);
+  const from = start >= 0 ? start : frames.findIndex((f) => f.maxMana !== null);
   let max: number | null = null;
   const byRound = new Map<number, ScanFrame[]>();
-  for (const f of frames) {
-    if (f.maxMana !== null && (max === null ? f.maxMana <= START_MAX_MANA : f.maxMana >= max)) max = f.maxMana;
+  for (const [i, f] of frames.entries()) {
+    if (i < from || from < 0) continue;
+    if (f.maxMana !== null && (max === null || f.maxMana >= max)) max = f.maxMana;
     if (max === null) continue;
     const r = roundOf(max);
     if (r < 1) continue;
@@ -184,6 +208,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     turns: rounds.length ? rounds[rounds.length - 1] : null,
     plays,
     opponentCards,
+    complete: rounds[0] === 1,
   };
 }
 
@@ -194,10 +219,10 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
  * viste dell'avversario, round e giocate. Delle mie giocate restano solo le carte del mio mazzo: quelle generate da
  * effetti o evocate da un luogo (Christopher Robin, Ali Baba e Big Bad Wolf nelle partite del 10/10) non sono carte
  * giocate dal mazzo e sporcherebbero le statistiche. Il luogo passa da 1–3 a 0–2, come nel replay. Se il replay c'è,
- * vince lui.
+ * vince lui; una partita vista solo a metà (`complete` falso) non cambia niente.
  */
 export function applyScan(match: TrackedMatch, scan: ScannedMatch | null): TrackedMatch {
-  if (!scan || match.plays.length || match.opponent) return match;
+  if (!scan || !scan.complete || match.plays.length || match.opponent) return match;
   const mine = new Set(match.deck.cards);
   const plays = scan.plays
     .filter((p) => !p.me || mine.has(p.card))

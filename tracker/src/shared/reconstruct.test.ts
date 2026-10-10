@@ -123,3 +123,23 @@ test("fotogrammi dalla finestra nascosta: solo la forma attesa, l'ora la mette i
   assert.equal(readScanFrame(null, 0), null);
   assert.deepEqual(readScanFrame({ ...ok, vs: null, maxMana: null }, 7)?.vs, null);
 });
+
+test("ripresa cominciata a partita in corso: si legge dal primo mana, ma la partita resta incompleta e non va nello storico", () => {
+  const mid = [
+    frame(0, 4, { "me 1 1": "A", "opp 3 1": "X" }),
+    frame(1000, 4, { "me 1 1": "A", "opp 3 1": "X" }),
+    frame(10_000, 5, { "me 1 1": "A", "me 2 1": "B", "opp 3 1": "X" }),
+    frame(11_000, 5, { "me 1 1": "A", "me 2 1": "B", "opp 3 1": "X" }),
+  ];
+  const parts = splitMatches(mid);
+  assert.equal(parts.length, 1);
+  const m = reconstruct(parts[0], info);
+  assert.equal(m.complete, false);
+  assert.equal(m.turns, 4);
+  assert.ok(m.plays.some((p) => p.card === "B" && p.turn === 4));
+  assert.equal(applyScan(tracked(), m).opponent, null, "incompleta: lo storico non cambia");
+  // la partita intera di prima resta completa
+  assert.equal(reconstruct(game(0), info).complete, true);
+  // il primo pezzo comincia a metà solo se il mana arriva subito: dopo un minuto di menu, un "0/10" non apre una partita
+  assert.equal(splitMatches([frame(0, null), frame(70_000, 10), frame(71_000, 10)]).length, 0);
+});

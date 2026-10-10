@@ -49,6 +49,7 @@ const scan: ScannedMatch = {
     { turn: 4, me: true, card: "B", lane: 3 }, // una terza copia letta per errore non va oltre le copie del mazzo
   ],
   opponentCards: ["L_OPP", "X"],
+  complete: true,
 };
 
 test("mazzo scelto: Leggendaria a parte, carte per costo, due copie, record del mazzo", () => {

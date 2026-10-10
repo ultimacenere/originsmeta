@@ -411,7 +411,11 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   **Limiti noti**: le magie non restano sul tabellone e non si leggono (il riquadro grande a sinistra mostra anche le
   anteprime al passaggio del mouse, quindi non distingue le rivelazioni); una carta giocata e distrutta nello stesso
   round senza restare a schermo 2 fotogrammi non si vede; le carte dell'avversario evocate o generate da effetti non si
-  distinguono da quelle giocate; posizioni misurate solo a 16:9 con l'interfaccia della demo 0.7.
+  distinguono da quelle giocate; posizioni misurate solo a 16:9 con l'interfaccia della demo 0.7; il round è il mana
+  massimo del giocatore meno uno, e gli effetti sul mana lo spostano (partita del 10/10 alle 15:44: "5/10" con un "-5" al
+  round 10, l'avversario "11/11"). Ripresa cominciata a partita in corso (l'app avviata durante la partita): la partita
+  si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e non entra
+  nello storico.
 - **Nell'app**: `npm run scan` (l'app con `--scan`) legge senza salvare niente; `npm run frames` legge e salva. La
   finestra nascosta manda al processo principale solo le letture (`readScanFrame` ne controlla la forma), che restano
   in memoria un'ora; quando il tracker chiude una partita senza replay, `scanFor` + `applyScan` la completano e la
