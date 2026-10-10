@@ -1,7 +1,13 @@
 /**
- * Modalità cattura dello scanner (10/10/2026; regole in ../shared/frames.ts, guida in docs/tracker.md "Scanner dello
- * schermo"). Solo con `--frames` (`npm run frames`): niente voce nell'interfaccia, è uno strumento per lo staff.
+ * Scanner dello schermo (10/10/2026; regole in ../shared/frames.ts, riconoscitore in ../shared/recognize.ts e
+ * reconstruct.ts, guida in docs/tracker.md "Scanner dello schermo"). Per ora solo con `--scan` (`npm run scan`) o
+ * `--frames` (`npm run frames`, che salva anche i fotogrammi): niente voce nell'interfaccia, è in prova con lo staff.
  *
+ * La finestra nascosta legge ogni fotogramma cambiato e manda qui solo il risultato (`ScanFrame`: carte dei 18 spazi,
+ * Leggendarie della schermata VS, mana massimo), che resta in memoria per `KEEP_MS`; quando il tracker chiude una
+ * partita, `scanFor` ne ricostruisce giocate e carte dell'avversario (main.ts, `applyScan`).
+ *
+ * Modalità cattura:
  * Ogni `POLL_MS` cerca la finestra del gioco per titolo esatto; quando c'è, una finestra nascosta la riprende (sola
  * lettura dello schermo, come OBS: niente processo del gioco) e manda qui un JPEG ogni `FRAME_MS`, solo se lo schermo
  * è cambiato. I fotogrammi vanno in `<dati dell'app>\frames\<sessione>\`, accanto a `events.jsonl` (inizio e fine
@@ -14,12 +20,17 @@ import { BrowserWindow, desktopCapturer, ipcMain, session, type IpcMainEvent, ty
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
+import { readScanFrame, scanFor, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
 export const POLL_MS = 5000;
 const PARTITION = "frames";
 const TEST_WINDOW = process.env.ORIGINSMETA_FRAMES_WINDOW || null;
 
-export type FramesStatus = { capturing: boolean; frames: number; bytes: number; dir: string; full: boolean };
+export type FramesStatus = { capturing: boolean; frames: number; bytes: number; dir: string; full: boolean; scanned: number };
+
+/** I fotogrammi letti restano in memoria un'ora (una partita dura 10–15 minuti), al massimo `KEEP_FRAMES`. */
+export const KEEP_MS = 60 * 60_000;
+export const KEEP_FRAMES = 20_000;
 
 export class FrameRecorder {
   private readonly root: string;
@@ -32,14 +43,25 @@ export class FrameRecorder {
   private bytes = 0;
   private full = false;
   private onChange: () => void;
+  private readonly save: boolean;
+  private readonly cards: CardInfo;
+  private scans: ScanFrame[] = [];
 
-  constructor(userData: string, onChange: () => void = () => {}) {
+  /** `save`: modalità cattura (anche i JPEG e `events.jsonl` sul PC). */
+  constructor(userData: string, opts: { save: boolean; cards: CardInfo }, onChange: () => void = () => {}) {
     this.root = path.join(userData, "frames");
+    this.save = opts.save;
+    this.cards = opts.cards;
     this.onChange = onChange;
   }
 
   get status(): FramesStatus {
-    return { capturing: Boolean(this.sourceId), frames: this.frames, bytes: this.bytes, dir: this.dir ?? this.root, full: this.full };
+    return { capturing: Boolean(this.sourceId), frames: this.frames, bytes: this.bytes, dir: this.dir ?? this.root, full: this.full, scanned: this.scans.length };
+  }
+
+  /** La partita letta dallo schermo che corrisponde a una partita finita a `endedAtMs` (ora del PC). */
+  matchFor(endedAtMs: number): ScannedMatch | null {
+    return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }
 
   start(): void {
@@ -48,8 +70,9 @@ export class FrameRecorder {
     // la ripresa dello schermo la chiede solo la finestra nascosta di questo modulo
     ses.setPermissionRequestHandler((wc, perm, cb) => cb(perm === "media" && wc === this.win?.webContents));
     ses.setPermissionCheckHandler((wc, perm) => perm === "media" && wc === this.win?.webContents);
-    ipcMain.handle("frames:save", (e, data: unknown) => this.save(e, data));
+    ipcMain.handle("frames:save", (e, data: unknown) => this.saveFrame(e, data));
     ipcMain.on("frames:ended", (e) => this.ended(e));
+    ipcMain.on("frames:scan", (e, raw: unknown) => this.scan(e, raw));
     void this.poll();
     this.timer = setInterval(() => void this.poll(), POLL_MS);
   }
@@ -94,11 +117,12 @@ export class FrameRecorder {
     if (game.id === this.sourceId) return;
     this.release("window-changed");
     this.sourceId = game.id;
-    this.sessionDir();
+    if (this.save) this.sessionDir();
     this.event("start", { window: game.name });
     const win = this.window();
-    if (win.webContents.isLoading()) win.webContents.once("did-finish-load", () => this.sourceId && win.webContents.send("frames:start", this.sourceId));
-    else win.webContents.send("frames:start", game.id);
+    const opts = { save: this.save };
+    if (win.webContents.isLoading()) win.webContents.once("did-finish-load", () => this.sourceId && win.webContents.send("frames:start", this.sourceId, opts));
+    else win.webContents.send("frames:start", game.id, opts);
     this.onChange();
   }
 
@@ -136,8 +160,27 @@ export class FrameRecorder {
     return Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(this.win) && e.sender === this.win?.webContents;
   }
 
-  private save(e: IpcMainInvokeEvent, data: unknown): boolean {
-    if (!this.fromFrames(e) || !this.sourceId || this.full) return false;
+  private scan(e: IpcMainEvent, raw: unknown) {
+    if (!this.fromFrames(e) || !this.sourceId) return;
+    const now = Date.now();
+    const f = readScanFrame(raw, now);
+    if (!f) return;
+    this.scans.push(f);
+    // modalità cattura: anche le letture sul PC, accanto ai fotogrammi, per confrontarle con quelle di scan-frames.mjs
+    if (this.save && this.dir) {
+      try {
+        fs.appendFileSync(path.join(this.dir, "scan.jsonl"), JSON.stringify({ ...f, ms: f.ms - this.startedAt }) + "\n");
+      } catch {
+        // non essenziale
+      }
+    }
+    const old = this.scans.findIndex((x) => x.ms >= now - KEEP_MS);
+    if (old > 0) this.scans.splice(0, old);
+    if (this.scans.length > KEEP_FRAMES) this.scans.splice(0, this.scans.length - KEEP_FRAMES);
+  }
+
+  private saveFrame(e: IpcMainInvokeEvent, data: unknown): boolean {
+    if (!this.save || !this.fromFrames(e) || !this.sourceId || this.full) return false;
     const bytes = data instanceof Uint8Array ? data : data instanceof ArrayBuffer ? new Uint8Array(data) : null;
     if (!bytes || !isJpegFrame(bytes)) return false;
     if (this.bytes + bytes.length > MAX_SESSION_BYTES) {

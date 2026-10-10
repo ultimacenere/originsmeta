@@ -29,7 +29,8 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 | 4 | Overlay: finestra sopra il gioco e sorgente per OBS (servita dall'app su 127.0.0.1) | fatta il 30/09/2026 |
 | 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, pagina per scaricare l'app, prova con pochi giocatori, lancio | da fare |
 | S1 | Scanner dello schermo, modalità cattura: fotogrammi della finestra del gioco sul PC, per tarare il riconoscitore (vedi "Scanner dello schermo") | fatta il 10/10/2026, in attesa delle partite di prova |
-| S2–S4 | Riconoscitore delle carte nei fotogrammi, partita ricostruita (giocate, Leggendaria e mazzo probabile dell'avversario), invio e statistiche | da fare |
+| S2–S3 | Riconoscitore delle carte nei fotogrammi e partita ricostruita (giocate per round, Leggendaria e carte dell'avversario) dentro l'app | fatte il 10/10/2026, da provare con una partita vera nell'app (`npm run scan`) |
+| S4 | Mazzo probabile dell'avversario, magie, statistiche sul sito, accensione per tutti | da fare |
 
 Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal 12 al 18/10, Next Fest dal 19/10.
 
@@ -363,13 +364,41 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   ogni mezzo secondo, solo se lo schermo è cambiato (impronta 48 × 27 in grigi, `SAME_FRAME_DIFF`). File in
   `%APPDATA%\OriginsMeta Analytics\frames\<data_ora>\` con `events.jsonl` (inizio e fine della ripresa, mazzo scelto,
   partite registrate dal tracker con esito e mazzo) per etichettarli; tetto di 4 GB per sessione. Nel tooltip
-  dell'icona "REC ● <fotogrammi>". Il gioco va in finestra o a finestra senza bordi (come per l'overlay). Prova
-  senza il gioco: `ORIGINSMETA_FRAMES_WINDOW=<titolo esatto di un'altra finestra>`. Provata il 10/10 su un'altra
-  finestra (1920 × 1032, doppioni scartati). **I fotogrammi contengono i nomi dei giocatori: restano sul PC.**
-- **S2, riconoscitore**: carte in campo e in mano dai fotogrammi, tarato sulle partite catturate.
-- **S3, partita ricostruita**: giocate per round, Leggendaria e carte viste dell'avversario, mazzo probabile confrontando
-  le carte viste con i mazzi pubblicati e con le liste delle partite registrate.
-- **S4**: invio al sito e statistiche (win rate di mazzi e carte, win rate quando una carta viene giocata).
+  dell'icona "SCAN ● <fotogrammi>". Funziona anche a schermo intero (3 partite del 10/10 a 2560 × 1440). Prova
+  senza il gioco: `ORIGINSMETA_FRAMES_WINDOW=<titolo esatto di un'altra finestra>`. **I fotogrammi contengono i nomi
+  dei giocatori: restano sul PC.** In modalità cattura anche `scan.jsonl`, le letture dell'app fotogramma per fotogramma.
+- **S2, riconoscitore** (fatto il 10/10, `src/shared/recognize.ts`, test `recognize.test.ts`): la zona
+  dell'illustrazione ridotta a 20 × 20 colori medi, confrontata per correlazione con i riferimenti presi dalle immagini
+  del sito (`src/card-art.json`, 220 carte su 230: le 10 senza immagine non si riconoscono; si rigenera con
+  `npm run card-art` quando cambiano carte o immagini, con sharp che il sito ha già). Si accetta la carta con
+  correlazione ≥ 0,5 e distacco ≥ 0,2 dalla seconda: sulle 3 partite carte vere 0,62–0,96 con la seconda sotto 0,57,
+  spazi vuoti e dorsi scartati; la coppia più simile (Mama Bear e Papa Bear, 0,71) fallisce "non riconosciuta", mai
+  scambiata. Legge i 18 spazi del tabellone (posizioni fisse in frazioni dell'area 16:9), le due Leggendarie della
+  schermata VS (anche nella teca della carta gradata) e il mana del giocatore (cifre bianche con componenti connesse e
+  modelli presi dai fotogrammi: indipendente dalla lingua del gioco). Il mana massimo è il round + 1 in tutte e 3 le
+  partite (2 → 10, 9 round). 25 ms a fotogramma 2560 × 1440 compresa la decodifica del JPEG.
+- **S3, partita ricostruita** (fatta il 10/10, `src/shared/reconstruct.ts`, test `reconstruct.test.ts`): divisione in
+  partite (VS, mana che riparte, pause; una partita comincia con mana massimo ≤ 3, perché il tabellone d'apertura mostra
+  "0/10"), letture del mana confermate da un'altra uguale entro 20 s, per round le copie di ogni carta per lato
+  stabili per 2 fotogrammi contro il tabellone a fine del round prima: le copie in più sono giocate (regge sparizioni
+  momentanee, carte spostate dagli effetti e le mie carte piazzate prima della rivelazione). Le carte create (tipo
+  "token") non sono giocate. `applyScan` riempie la partita dello storico senza replay: Leggendaria e carte viste
+  dell'avversario, round, giocate (mie solo le carte del mazzo: Christopher Robin evocato dal luogo, Ali Baba e Big
+  Bad Wolf generati da effetti restano fuori; luoghi 0–2 come nel replay). Le partite del 10/10 ricostruite: io Queen of
+  Hearts contro Merlin, Dracula e Three Not So Little Pigs, 9 round ciascuna, giocate di tutti e due i lati.
+  **Limiti noti**: le magie non restano sul tabellone e non si leggono (il riquadro grande a sinistra mostra anche le
+  anteprime al passaggio del mouse, quindi non distingue le rivelazioni); una carta giocata e distrutta nello stesso
+  round senza restare a schermo 2 fotogrammi non si vede; le carte dell'avversario evocate o generate da effetti non si
+  distinguono da quelle giocate; posizioni misurate solo a 16:9 con l'interfaccia della demo 0.7.
+- **Nell'app**: `npm run scan` (l'app con `--scan`) legge senza salvare niente; `npm run frames` legge e salva. La
+  finestra nascosta manda al processo principale solo le letture (`readScanFrame` ne controlla la forma), che restano
+  in memoria un'ora; quando il tracker chiude una partita senza replay, `scanFor` + `applyScan` la completano e la
+  partita parte per il sito con le carte giocate dall'avversario (regola 4). Lo scanner **non legge** la scritta
+  "Battaglia Boss" né il nome dell'avversario (regola 2, regola 3). Taratura fuori dall'app:
+  `node scripts/scan-frames.mjs <cartella sessione> <uscita.jsonl>` (dalla cartella `tracker/`).
+- **Da fare**: provarlo dentro l'app con una partita vera; mazzo probabile dell'avversario (le carte viste contro i
+  mazzi pubblicati e le liste registrate); magie; poi S4, statistiche sul sito (win rate di mazzi e carte, win rate
+  quando una carta viene giocata), e la decisione su quando accenderlo per tutti, con l'informativa aggiornata.
 
 **Nome dell'avversario: decisione aperta.** Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
 sue partite con il nome dell'avversario, i mazzi e le statistiche della partita. Va contro la regola 3, che cita i

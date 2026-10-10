@@ -3,6 +3,7 @@
  * Nessun nome né id di giocatori o partite: le partite sono i `TrackedMatch` del lettore (src/lib/tracker/match.ts).
  */
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
+import type { ScanFrame } from "./reconstruct";
 
 export type { TrackedMatch };
 
@@ -120,13 +121,15 @@ export type TrackerApi = {
   copyText(text: string): Promise<void>;
 };
 
-/** Finestra nascosta della modalità cattura dello scanner (main/frames.ts, 10/10/2026). */
+/** Finestra nascosta dello scanner (main/frames.ts, 10/10/2026). */
 export type FramesApi = {
-  /** L'id della finestra del gioco da riprendere (desktopCapturer). */
-  onStart(listener: (sourceId: string) => void): void;
+  /** L'id della finestra del gioco da riprendere (desktopCapturer); `save`: modalità cattura, si salvano anche i JPEG. */
+  onStart(listener: (sourceId: string, opts: { save: boolean }) => void): void;
   onStop(listener: () => void): void;
   /** Un fotogramma JPEG; false se il processo principale non l'ha salvato. */
   save(jpeg: Uint8Array): Promise<boolean>;
   /** La ripresa si è chiusa da sola. */
   ended(): void;
+  /** Un fotogramma letto dal riconoscitore (shared/reconstruct.ts). */
+  scan(frame: ScanFrame): void;
 };

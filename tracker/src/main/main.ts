@@ -25,8 +25,10 @@
  *   aspetta che l'interfaccia abbia disegnato, salva uno screenshot ed esce. Serve alle verifiche; con
  *   ORIGINSMETA_TRACKER_DATA si usa una cartella dati di prova. Niente rete né finestra dell'overlay in questa modalità
  *   (la sorgente per OBS sì, per mostrarne gli indirizzi).
- * - `--frames` (`npm run frames`, 10/10/2026): modalità cattura dello scanner, solo per lo staff. Riprende la finestra del
- *   gioco e salva i fotogrammi sul PC (frames.ts) per tarare il riconoscimento delle carte; niente voce nell'interfaccia.
+ * - `--scan` (`npm run scan`, 10/10/2026): scanner dello schermo, in prova con lo staff. Riprende la finestra del gioco,
+ *   riconosce le carte (frames.ts) e, quando una partita finisce senza replay, ne aggiunge giocate e carte
+ *   dell'avversario (`applyScan`). `--frames` (`npm run frames`) fa lo stesso e salva anche i fotogrammi sul PC, per
+ *   tarare il riconoscitore. Niente voce nell'interfaccia.
  */
 import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
@@ -40,11 +42,13 @@ import { Account, type Cipher } from "./account";
 import { SyncQueue, claimCode, siteBase, unlinkRemote, type SyncDeps } from "./sync";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { FrameRecorder } from "./frames";
-import type { AccountState, ActiveDeck, AppState, LinkResult, OverlayView } from "../shared/types";
+import { applyScan } from "../shared/reconstruct";
+import type { AccountState, ActiveDeck, AppState, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
 const FRAMES = process.argv.includes("--frames");
+const SCAN = FRAMES || process.argv.includes("--scan");
 const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--capture=".length) ?? null;
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
 
@@ -99,7 +103,7 @@ let sessionStart = Date.now();
 let overlayServer: { port: number; url: string; close: () => void } | null = null;
 let frames: FrameRecorder | null = null;
 
-type CardRow = { n: string; s: string; l: 0 | 1 };
+type CardRow = { n: string; s: string; l: 0 | 1; t?: string };
 const CARDS = cardsTable as Record<string, CardRow>;
 const card: CardLookup = (key) => {
   const c = CARDS[key];
@@ -350,7 +354,7 @@ function refreshTray() {
   if (!tray) return;
   const t = TRAY[lang()];
   const f = frames?.status;
-  const rec = f ? ` · REC ${f.capturing ? "●" : "○"} ${f.frames}${f.full ? " (4 GB)" : ""}` : "";
+  const rec = f ? ` · SCAN ${f.capturing ? "●" : "○"} ${FRAMES ? f.frames : f.scanned}${f.full ? " (4 GB)" : ""}` : "";
   tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}${rec}`);
   tray.setContextMenu(
     Menu.buildFromTemplate([
@@ -491,10 +495,12 @@ async function boot() {
   sync.load();
   loadOverlayPrefs();
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
-  watcher.on("match", (m) => {
+  watcher.on("match", (raw: TrackedMatch) => {
+    // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
+    const m = frames ? applyScan(raw, frames.matchFor(raw.endedAt ? Date.parse(raw.endedAt) : Date.now())) : raw;
     if (store.add(m)) {
-      // modalità cattura: la partita finita etichetta i fotogrammi (esito e mazzo, gli stessi dati dello storico)
-      frames?.event("match", { endedAt: m.endedAt, result: m.result, queue: m.queue, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [] });
+      // modalità cattura: la partita finita etichetta i fotogrammi (esito, mazzo e quello che lo scanner ha letto)
+      frames?.event("match", { endedAt: m.endedAt, result: m.result, queue: m.queue, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
       push();
       // la partita parte per il sito pochi secondi dopo (il tempo di altre righe dello stesso giro)
       scheduleSync(5000);
@@ -527,8 +533,9 @@ async function boot() {
     if (overlayPrefs.open) openOverlay();
     scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
-    if (FRAMES) {
-      frames = new FrameRecorder(app.getPath("userData"), refreshTray);
+    if (SCAN) {
+      const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
+      frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards }, refreshTray);
       frames.start();
     }
   }
