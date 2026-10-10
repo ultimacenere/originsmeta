@@ -76,6 +76,9 @@ export type OverlayState = {
   deckWindow: boolean;
   /** indirizzo del pannello del mazzo per OBS, null se il server locale non è partito */
   deckObsUrl: string | null;
+  /** la finestra con le carte dell'avversario è aperta (11/10/2026) e il suo indirizzo per OBS */
+  oppWindow: boolean;
+  oppObsUrl: string | null;
 };
 
 export type AppState = {
@@ -121,6 +124,8 @@ export type TrackerApi = {
   setOverlayWindow(on: boolean): Promise<boolean>;
   /** Apre o chiude il pannello del mazzo (10/10/2026). */
   setDeckWindow(on: boolean): Promise<boolean>;
+  /** Apre o chiude la finestra con le carte dell'avversario (11/10/2026). */
+  setOppWindow(on: boolean): Promise<boolean>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
   setScanner(on: boolean): Promise<boolean>;
   /** L'avviso del primo avvio sullo scanner è stato letto. */

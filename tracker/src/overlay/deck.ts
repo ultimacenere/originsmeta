@@ -4,7 +4,8 @@
  * `deck.json` ogni 2 secondi). Parametro dell'indirizzo per OBS: `lang` (en, it, es).
  *
  * Il nome del mazzo (con il round durante la partita) e le 13 carte tutte uguali, la Leggendaria per prima, con le
- * copie (le giocate in questa partita si spengono), poi l'avversario con le stesse righe: Leggendaria e carte rivelate.
+ * copie (le giocate in questa partita si spengono). Con `view=opp` (11/10/2026, finestra separata e sorgente per OBS
+ * /overlay/deck?view=opp) le stesse righe per l'avversario: Leggendaria e carte rivelate, che si riempiono man mano.
  * Il meno spazio possibile (Pierluigi, 10/10/2026: "metti la leggendaria come le altre carte, il nome del deck e le
  * carte tutte uguali, fine"). Le carte sono sempre intere (immagini di
  * originsmeta.com, mai ritagliate: i crediti restano). Sempre "non affiliato a Koin Games".
@@ -18,7 +19,10 @@ declare global {
 }
 
 type Lang = "en" | "it" | "es";
-const asked = new URLSearchParams(location.search).get("lang");
+const params = new URLSearchParams(location.search);
+const asked = params.get("lang");
+/** `view=opp`: il pannello delle carte dell'avversario (11/10/2026, finestra separata); altrimenti il mio mazzo. */
+const view: "me" | "opp" = params.get("view") === "opp" ? "opp" : "me";
 const lang: Lang = asked === "en" || asked === "it" || asked === "es" ? asked : /^it\b/i.test(navigator.language) ? "it" : /^es\b/i.test(navigator.language) ? "es" : "en";
 document.documentElement.lang = lang;
 document.body.classList.add(window.deckApi ? "in-window" : "in-obs");
@@ -28,6 +32,8 @@ const LABELS = {
     choose: "Choose a deck in the game",
     round: (n: number) => `Round ${n}`,
     opponent: "Opponent",
+    oppWaiting: "The opponent's Legendary and cards show up here during the match.",
+    oppTitle: "OriginsMeta · Opponent",
     played: (p: number, c: number) => `${p} of ${c} played`,
     noScanner: "Turn on the screen scanner in the app for live updates.",
     brand: "Analytics · not affiliated with Koin Games",
@@ -36,6 +42,8 @@ const LABELS = {
     choose: "Scegli un mazzo nel gioco",
     round: (n: number) => `Round ${n}`,
     opponent: "Avversario",
+    oppWaiting: "Durante la partita qui compaiono la Leggendaria e le carte dell'avversario.",
+    oppTitle: "OriginsMeta · Avversario",
     played: (p: number, c: number) => `${p} giocate su ${c}`,
     noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
     brand: "Analytics · non affiliato a Koin Games",
@@ -44,12 +52,15 @@ const LABELS = {
     choose: "Elige un mazo en el juego",
     round: (n: number) => `Ronda ${n}`,
     opponent: "Rival",
+    oppWaiting: "Durante la partida aquí aparecen la Legendaria y las cartas del rival.",
+    oppTitle: "OriginsMeta · Rival",
     played: (p: number, c: number) => `${p} jugadas de ${c}`,
     noScanner: "Activa el escáner de pantalla en la app para las actualizaciones en vivo.",
     brand: "Analytics · sin afiliación con Koin Games",
   },
 } as const;
 const L = LABELS[lang];
+if (view === "opp") document.title = L.oppTitle;
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 
@@ -93,15 +104,11 @@ function render(v: DeckTrackerView) {
     ? `<div class="dhead"><span class="dname">${esc(v.deck.name ?? v.deck.legendary?.name ?? "?")}</span>${round}</div>
       <ul class="list">${[...(v.deck.legendary ? [v.deck.legendary] : []), ...v.deck.cards].map((c) => row(c, Boolean(live))).join("")}</ul>`
     : `<p class="muted pad">${esc(L.choose)}</p>`;
-  const opp = live
-    ? `<section class="opp">
-        <div class="dhead"><span class="dname">${esc(L.opponent)}</span></div>
-        <ul class="list">${[...(live.opponent.legendary ? [{ ...live.opponent.legendary, copies: 1, played: 0 }] : []), ...live.opponent.seen.map((c) => ({ ...c, played: 0 }))]
-          .map((c) => row(c, false))
-          .join("")}</ul>
-      </section>`
-    : "";
-  root.innerHTML = `${mine}${opp}${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}<footer class="brand">${esc(L.brand)}</footer>`;
+  // le carte dell'avversario: Leggendaria e carte rivelate, con le copie viste; si riempie man mano
+  const oppCards = live ? [...(live.opponent.legendary ? [{ ...live.opponent.legendary, copies: 1, played: 0 }] : []), ...live.opponent.seen.map((c) => ({ ...c, played: 0 }))] : [];
+  const opp = `<div class="dhead"><span class="dname">${esc(L.opponent)}</span>${round}</div>
+      ${oppCards.length ? `<ul class="list">${oppCards.map((c) => row(c, false)).join("")}</ul>` : `<p class="muted pad">${esc(L.oppWaiting)}</p>`}`;
+  root.innerHTML = `${view === "opp" ? opp : mine}${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}<footer class="brand">${esc(L.brand)}</footer>`;
 }
 
 if (window.deckApi) {

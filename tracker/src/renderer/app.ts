@@ -127,8 +127,10 @@ const LABELS = {
     noticeOk: "Got it",
     noticeOff: "Turn it off",
     deckTitle: "Deck tracker",
-    deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: cards you played, round, the opponent's Legendary and the cards they reveal.",
+    deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: the cards you played and the round. A second panel shows the opponent's Legendary and the cards they reveal.",
     deckWindow: "Show the deck tracker",
+    oppWindow: "Show the opponent's cards",
+    oppObs: "Opponent's cards for OBS",
     deckObs: "Deck tracker for OBS",
     session: "Session",
     sessionSince: (t: string) => `since ${t}`,
@@ -241,8 +243,10 @@ const LABELS = {
     noticeOk: "Ho capito",
     noticeOff: "Spegnilo",
     deckTitle: "Deck tracker",
-    deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato, round, Leggendaria dell'avversario e carte che rivela.",
+    deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato e round. Un secondo pannello mostra la Leggendaria dell'avversario e le carte che rivela.",
     deckWindow: "Mostra il deck tracker",
+    oppWindow: "Mostra le carte dell'avversario",
+    oppObs: "Carte dell'avversario per OBS",
     deckObs: "Deck tracker per OBS",
     session: "Sessione",
     sessionSince: (t: string) => `dalle ${t}`,
@@ -355,8 +359,10 @@ const LABELS = {
     noticeOk: "Entendido",
     noticeOff: "Desactivarlo",
     deckTitle: "Deck tracker",
-    deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activo se actualiza en vivo durante la partida: cartas que jugaste, ronda, la Legendaria del rival y las cartas que revela.",
+    deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activado se actualiza en vivo durante la partida: cartas que jugaste y ronda. Un segundo panel muestra la Legendaria del rival y las cartas que revela.",
     deckWindow: "Mostrar el deck tracker",
+    oppWindow: "Mostrar las cartas del rival",
+    oppObs: "Cartas del rival para OBS",
     deckObs: "Deck tracker para OBS",
     session: "Sesión",
     sessionSince: (t: string) => `desde las ${t}`,
@@ -617,7 +623,9 @@ function overlayPanel(s: AppState) {
       <h3>${esc(L.deckTitle)}</h3>
       <p class="sub">${esc(L.deckIntro)}</p>
       <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
+      <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
+      ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}
     </section>`;
 }
 
@@ -703,6 +711,7 @@ root.addEventListener("change", async (e) => {
   if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
+  if (t.id === "opp-window") t.checked = await window.tracker.setOppWindow(t.checked);
   if (t.id === "scanner-on") t.checked = await window.tracker.setScanner(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic
   if (t.id === "ov-move") t.checked = !(await window.tracker.setOverlayClickThrough(!t.checked));

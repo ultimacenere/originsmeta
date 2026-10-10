@@ -18,9 +18,11 @@
  *   finché il giocatore non sceglie "Sposta") e la sorgente per OBS servita solo su 127.0.0.1 (overlay.ts). Mai
  *   agganciata alla grafica del gioco: è una finestra separata. Con il gioco a schermo intero esclusivo Windows non la
  *   mostra: serve la modalità a finestra o a finestra senza bordi.
- * - Pannello del mazzo, "Deck tracker" (10/10/2026, deckTracker.ts): una finestra accanto al gioco, sempre in primo
- *   piano, con il mazzo scelto, aggiornata dal vivo dallo scanner (carte giocate, round, carte dell'avversario), e la
- *   stessa pagina per OBS su /overlay/deck. Si accende dall'app o dal menu dell'icona; posizione e misure in deck.json.
+ * - Pannelli (deckTracker.ts): "Deck tracker" (10/10/2026), una finestra accanto al gioco, sempre in primo piano, con il
+ *   mazzo scelto aggiornato dal vivo dallo scanner (carte giocate, round), e dall'11/10/2026 "Carte dell'avversario",
+ *   una seconda finestra con la Leggendaria e le carte rivelate dall'avversario. La stessa pagina per OBS su
+ *   /overlay/deck e /overlay/deck?view=opp. Si accendono dall'app o dal menu dell'icona; posizione e misure in
+ *   deck.json e opponent.json.
  * - Sicurezza: interfaccia senza Node (contextIsolation, sandbox, preload minimi), nessuna navigazione né finestra
  *   nuova, nessun permesso del browser, link esterni solo verso https://originsmeta.com, IPC accettato solo dalla
  *   pagina locale dell'app (la finestra dell'overlay legge solo i suoi dati).
@@ -98,7 +100,6 @@ const SYNC_EVERY_MS = 5 * 60_000;
 
 let win: BrowserWindow | null = null;
 let overlayWin: BrowserWindow | null = null;
-let deckWin: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let quitting = false;
 let store: Store;
@@ -126,9 +127,9 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", deck: "Deck tracker", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", deck: "Deck tracker", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", deck: "Deck tracker", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
 /* ---------- avvio con Windows ---------- */
@@ -248,8 +249,10 @@ function state(): AppState {
       window: Boolean(overlayWin && !overlayWin.isDestroyed()),
       clickThrough: overlayPrefs.clickThrough,
       obsUrl: overlayServer ? `${overlayServer.url}?lang=${lang()}` : null,
-      deckWindow: Boolean(deckWin && !deckWin.isDestroyed()),
+      deckWindow: panelOpen("deck"),
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}` : null,
+      oppWindow: panelOpen("opp"),
+      oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}` : null,
       sessionStart: new Date(sessionStart).toISOString(),
       view: currentView(),
     },
@@ -274,62 +277,79 @@ function push() {
   }, 100);
 }
 
-/* ---------- pannello del mazzo ---------- */
+/* ---------- pannelli: Deck tracker e carte dell'avversario ---------- */
+
+/**
+ * Due finestre con la stessa pagina (overlay/deck.html): `deck` con il mio mazzo, a destra dello schermo, e `opp` con
+ * la Leggendaria e le carte rivelate dall'avversario, a sinistra (Pierluigi, 11/10/2026: "il deck avversario crea
+ * un'altra tab dove si popola con le carte avversario", in una finestra separata). Ognuna con posizione, misure e
+ * apertura salvate a parte (deck.json, opponent.json).
+ */
+type PanelKind = "deck" | "opp";
+type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean };
+const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean }> = {
+  deck: { win: null, prefs: { open: false }, file: "deck.json", left: false },
+  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: true },
+};
+const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
+const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
 function pushDeckNow() {
-  if (deckWin && !deckWin.isDestroyed()) deckWin.webContents.send("deck:view", currentDeckView());
+  if (!PANEL_KINDS.some(panelOpen)) return;
+  const view = currentDeckView();
+  for (const k of PANEL_KINDS) if (panelOpen(k)) panels[k].win!.webContents.send("deck:view", view);
 }
-// le letture dello scanner arrivano due volte al secondo: il pannello si aggiorna al massimo una volta al secondo
+// le letture dello scanner arrivano due volte al secondo: i pannelli si aggiornano al massimo una volta al secondo
 let deckTimer: ReturnType<typeof setTimeout> | null = null;
 function pushDeck() {
-  if (deckTimer || !deckWin || deckWin.isDestroyed()) return;
+  if (deckTimer || !PANEL_KINDS.some(panelOpen)) return;
   deckTimer = setTimeout(() => {
     deckTimer = null;
     pushDeckNow();
   }, 1000);
 }
 
-type DeckPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean };
-let deckPrefs: DeckPrefs = { open: false };
-const deckPrefsFile = () => path.join(app.getPath("userData"), "deck.json");
-function loadDeckPrefs() {
-  try {
-    const raw = JSON.parse(fs.readFileSync(deckPrefsFile(), "utf8")) as Partial<DeckPrefs>;
-    const int = (v: unknown) => (Number.isInteger(v) ? (v as number) : undefined);
-    deckPrefs = { open: raw.open === true, x: int(raw.x), y: int(raw.y), width: int(raw.width), height: int(raw.height) };
-  } catch {
-    // prima volta: a destra dello schermo principale
+function loadPanelPrefs() {
+  for (const k of PANEL_KINDS) {
+    try {
+      const raw = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), panels[k].file), "utf8")) as Partial<PanelPrefs>;
+      const int = (v: unknown) => (Number.isInteger(v) ? (v as number) : undefined);
+      panels[k].prefs = { open: raw.open === true, x: int(raw.x), y: int(raw.y), width: int(raw.width), height: int(raw.height) };
+    } catch {
+      // prima volta: il Deck tracker a destra dello schermo principale, l'avversario a sinistra
+    }
   }
 }
-function saveDeckPrefs() {
+function savePanelPrefs(k: PanelKind) {
   try {
-    fs.writeFileSync(deckPrefsFile(), JSON.stringify(deckPrefs));
+    fs.writeFileSync(path.join(app.getPath("userData"), panels[k].file), JSON.stringify(panels[k].prefs));
   } catch {
     // non essenziale
   }
 }
 
-function deckBounds() {
+function panelBounds(k: PanelKind) {
+  const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  const width = Math.min(Math.max(deckPrefs.width ?? 330, 260), 600);
-  const height = Math.min(Math.max(deckPrefs.height ?? Math.min(820, area.height - 48), 360), 1600);
-  const { x, y } = deckPrefs;
+  const width = Math.min(Math.max(p.width ?? 330, 260), 600);
+  const height = Math.min(Math.max(p.height ?? Math.min(820, area.height - 48), 360), 1600);
+  const { x, y } = p;
   // la posizione salvata vale solo se sta ancora su uno schermo
   if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
-  return { x: area.x + area.width - width - 24, y: area.y + 24, width, height };
+  return { x: panels[k].left ? area.x + 24 : area.x + area.width - width - 24, y: area.y + 24, width, height };
 }
 
-function openDeckWindow() {
-  if (deckWin && !deckWin.isDestroyed()) return;
-  deckWin = new BrowserWindow({
-    ...deckBounds(),
+function openPanel(k: PanelKind) {
+  if (panelOpen(k)) return;
+  const win = new BrowserWindow({
+    ...panelBounds(k),
     minWidth: 260,
     minHeight: 360,
     alwaysOnTop: true,
     fullscreenable: false,
     maximizable: false,
     show: false,
-    title: "OriginsMeta · Deck tracker",
+    title: k === "deck" ? "OriginsMeta · Deck tracker" : "OriginsMeta · Opponent",
     backgroundColor: "#150c2c",
     icon: ICON,
     autoHideMenuBar: true,
@@ -341,36 +361,37 @@ function openDeckWindow() {
       spellcheck: false,
     },
   });
-  deckWin.removeMenu();
-  deckWin.setAlwaysOnTop(true, "screen-saver");
-  deckWin.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
-  deckWin.webContents.on("will-navigate", (e) => e.preventDefault());
+  panels[k].win = win;
+  win.removeMenu();
+  win.setAlwaysOnTop(true, "screen-saver");
+  win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  win.webContents.on("will-navigate", (e) => e.preventDefault());
   const remember = () => {
-    if (!deckWin || deckWin.isDestroyed()) return;
-    const b = deckWin.getBounds();
-    deckPrefs = { ...deckPrefs, x: b.x, y: b.y, width: b.width, height: b.height };
-    saveDeckPrefs();
+    if (win.isDestroyed()) return;
+    const b = win.getBounds();
+    panels[k].prefs = { ...panels[k].prefs, x: b.x, y: b.y, width: b.width, height: b.height };
+    savePanelPrefs(k);
   };
-  deckWin.on("moved", remember);
-  deckWin.on("resized", remember);
-  deckWin.on("closed", () => {
-    deckWin = null;
+  win.on("moved", remember);
+  win.on("resized", remember);
+  win.on("closed", () => {
+    panels[k].win = null;
     // chiusa con la X: resta spenta anche al prossimo avvio
     if (!quitting) {
-      deckPrefs = { ...deckPrefs, open: false };
-      saveDeckPrefs();
+      panels[k].prefs = { ...panels[k].prefs, open: false };
+      savePanelPrefs(k);
     }
     push();
   });
-  deckWin.once("ready-to-show", () => deckWin?.showInactive());
-  void deckWin.loadFile(path.join(__dirname, "overlay", "deck.html"));
+  win.once("ready-to-show", () => win.showInactive());
+  void win.loadFile(path.join(__dirname, "overlay", "deck.html"), { query: { view: k === "deck" ? "me" : "opp" } });
 }
 
-function setDeckWindow(on: boolean): boolean {
-  if (on) openDeckWindow();
-  else if (deckWin && !deckWin.isDestroyed()) deckWin.close();
-  deckPrefs = { ...deckPrefs, open: on };
-  saveDeckPrefs();
+function setPanel(k: PanelKind, on: boolean): boolean {
+  if (on) openPanel(k);
+  else if (panelOpen(k)) panels[k].win!.close();
+  panels[k].prefs = { ...panels[k].prefs, open: on };
+  savePanelPrefs(k);
   push();
   return on;
 }
@@ -550,7 +571,8 @@ function refreshTray() {
       { label: t.open, click: showWindow },
       { type: "separator" },
       { label: t.overlay, type: "checkbox", checked: Boolean(overlayWin && !overlayWin.isDestroyed()), click: (item) => setOverlayWindow(item.checked) },
-      { label: t.deck, type: "checkbox", checked: Boolean(deckWin && !deckWin.isDestroyed()), click: (item) => setDeckWindow(item.checked) },
+      { label: t.deck, type: "checkbox", checked: panelOpen("deck"), click: (item) => setPanel("deck", item.checked) },
+      { label: t.opp, type: "checkbox", checked: panelOpen("opp"), click: (item) => setPanel("opp", item.checked) },
       { label: t.scanner, type: "checkbox", checked: Boolean(frames?.running), click: (item) => setScanner(item.checked) },
       { label: t.startup, type: "checkbox", checked: openAtLogin(), click: (item) => setOpenAtLogin(item.checked) },
       { type: "separator" },
@@ -617,7 +639,7 @@ function openLink(url: unknown) {
 
 const fromApp = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && e.sender === win?.webContents;
 const fromOverlay = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(overlayWin) && e.sender === overlayWin?.webContents;
-const fromDeck = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(deckWin) && e.sender === deckWin?.webContents;
+const fromDeck = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
 
 function registerIpc() {
   ipcMain.handle("tracker:state", (e) => (fromApp(e) ? state() : null));
@@ -643,7 +665,8 @@ function registerIpc() {
     saveScanPrefs();
     push();
   });
-  ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setDeckWindow(on === true) : Boolean(deckWin)));
+  ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
+  ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
@@ -695,7 +718,7 @@ async function boot() {
   sync = new SyncQueue(app.getPath("userData"), syncDeps);
   sync.load();
   loadOverlayPrefs();
-  loadDeckPrefs();
+  loadPanelPrefs();
   loadScanPrefs();
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
@@ -740,7 +763,7 @@ async function boot() {
     tray.on("click", showWindow);
     refreshTray();
     if (overlayPrefs.open) openOverlay();
-    if (deckPrefs.open) openDeckWindow();
+    for (const k of PANEL_KINDS) if (panels[k].prefs.open) openPanel(k);
     scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
