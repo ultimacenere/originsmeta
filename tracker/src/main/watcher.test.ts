@@ -62,6 +62,46 @@ function listen(w: MatchWatcher) {
 }
 
 describe("MatchWatcher", () => {
+  test("cambio di build (demo → playtest): l'ultima partita dell'altra build non diventa una partita nuova", async () => {
+    const g = setup();
+    try {
+      const w = new MatchWatcher(g.dirs, { lastFingerprint: "x", results: "" }, { firstRun: false, now: g.now });
+      const out = listen(w);
+      // la demo: una partita finita, registrata
+      const end = g.advance(1000);
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "W", onboardingLastMatchId: "offline_demo1" }, end + 200);
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.matches.length, 1);
+      // si apre il playtest: un'altra cartella, con l'ultima partita giocata giorni prima e un altro storico
+      const ptDir = path.join(g.root, "playtest-cache", "1618175429308424", "DE_1929669118877841", "0.7.1");
+      fs.mkdirSync(ptDir, { recursive: true });
+      const ptStats = path.join(ptDir, "9a86b9e6fec1a50d30e92b7293b1fc3e.json");
+      const old = T0 - 7 * 86_400_000;
+      fs.writeFileSync(ptStats, statsJson({ BattleMode: "0", ActiveUserDeckIndex: "0", lastMatchPlayedDateTime: iso(old), onboardingResults: "L", onboardingLastMatchId: "offline_pt_old" }));
+      const opened = g.advance(60_000);
+      fs.utimesSync(ptStats, new Date(opened), new Date(opened));
+      g.dirs.cacheRoots.push(path.join(g.root, "playtest-cache"));
+      g.advance(30_000); // il watcher ricerca i file ogni DISCOVER_MS
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.matches.length, 1, "nessuna partita fantasma all'apertura del playtest");
+      // una partita vera sul playtest si registra come sempre
+      const end2 = g.advance(5 * 60_000);
+      fs.writeFileSync(ptStats, statsJson({ BattleMode: "0", ActiveUserDeckIndex: "0", lastMatchPlayedDateTime: iso(end2), onboardingResults: "WL", onboardingLastMatchId: "offline_pt_new" }));
+      fs.utimesSync(ptStats, new Date(end2 + 200), new Date(end2 + 200));
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.matches.length, 2);
+      assert.equal(out.matches[1].result, "W");
+    } finally {
+      g.cleanup();
+    }
+  });
+
   test("primo avvio con il replay dell'ultima partita ancora lì: la registra, senza partite perse", async () => {
     const g = setup();
     try {

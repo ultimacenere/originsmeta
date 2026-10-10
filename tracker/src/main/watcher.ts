@@ -96,6 +96,13 @@ export class MatchWatcher extends EventEmitter {
   private seenAt: string | null | undefined = undefined;
   private pending: Pending | null = null;
   private deckKey: string | null = null;
+  /**
+   * Il file delle statistiche è cambiato (demo ↔ playtest, 11/10/2026): le statistiche nuove sono di un'altra build,
+   * con un altro storico. La prima lettura fa da punto di partenza e non registra niente: prima l'app prendeva l'ultima
+   * partita dell'altra build per una partita appena finita (la partita del playtest del 02/10, registrata senza esito
+   * all'apertura del playtest l'11/10).
+   */
+  private rebase = false;
   private timer: ReturnType<typeof setInterval> | null = null;
   private busy = false;
 
@@ -179,7 +186,10 @@ export class MatchWatcher extends EventEmitter {
         }
       }
     }
-    if (stats?.file !== this.files.stats) this.statsMtime = -1;
+    if (stats?.file !== this.files.stats) {
+      this.statsMtime = -1;
+      if (this.files.stats && stats) this.rebase = true;
+    }
     this.files = { stats: stats?.file ?? null, inventory: inventory?.file ?? null };
     const replays = this.dirs.replayDirs.some((d) => statOf(d)?.dir);
     this.setStatus({
@@ -207,10 +217,19 @@ export class MatchWatcher extends EventEmitter {
     const prevAt = this.seenAt;
     this.seenAt = stats.lastMatchAt;
     if (!stats.lastMatchAt) {
+      this.rebase = false;
       this.saved = { ...this.saved, results: stats.results };
       return;
     }
     const fingerprint = await matchFingerprint(stats.accountId, stats.lastMatchId, stats.lastMatchAt);
+    if (this.rebase) {
+      // altra build: si chiude quello che restava in attesa e si riparte da qui, senza registrare l'ultima partita
+      this.rebase = false;
+      if (this.pending) await this.finish(this.pending, null);
+      this.saved = { lastFingerprint: fingerprint, results: stats.results };
+      this.emit("saved", this.saved);
+      return;
+    }
     if (this.pending && fingerprint === this.pending.fingerprint) return this.refreshPending(this.pending, stats);
     if (fingerprint === this.saved.lastFingerprint) return;
     // Con la 0.7 (verificato il 30/09/2026) il gioco scrive esito e id della partita qualche secondo prima dell'ora di
