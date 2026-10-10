@@ -8,7 +8,7 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 ## Cosa fa
 
 - Icona accanto all'orologio; clic = finestra. Chiudere la finestra la nasconde: il tracker continua a registrare.
-- Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a un minuto) e salva la partita:
+- Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a 15 secondi) e salva la partita:
   esito, coda (classificata o normale, non mostrata), mazzo con nome e codice del gioco, rank, Leggendaria
   dell'avversario, carte giocate round per round.
 - Storico sul PC in `%APPDATA%\OriginsMeta Analytics\` (`matches.jsonl`, `state.json`; al primo avvio col nome nuovo

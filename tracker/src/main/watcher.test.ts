@@ -126,7 +126,7 @@ describe("MatchWatcher", () => {
     }
   });
 
-  test("il replay non arriva: dopo un minuto la partita si registra con esito e mazzo", async () => {
+  test("il replay non arriva: dopo 15 secondi la partita si registra con esito e mazzo", async () => {
     const g = setup();
     try {
       const w = new MatchWatcher(g.dirs, { lastFingerprint: "x", results: "" }, { firstRun: false, now: g.now });

@@ -3,7 +3,7 @@
  *
  * Ogni `POLL_MS` controlla l'ora di modifica del file delle statistiche (una sola `stat`, niente di più pesante).
  * Quando cambia lo rilegge; se l'ultima partita è nuova (impronta diversa da quella salvata) aspetta il replay, che
- * il gioco scrive a un secondo dalla cache, fino a `REPLAY_WAIT_MS`, e poi costruisce la partita con il lettore
+ * il gioco scrive a un secondo dalla cache, fino a `REPLAY_WAIT_MS` (15 s), e poi costruisce la partita con il lettore
  * (src/lib/tracker/). Senza replay la partita si registra con esito e mazzo. I file si riconoscono dal contenuto
  * (`discover`, ogni `DISCOVER_MS` o quando spariscono). Tutto in sola lettura: nessun blocco sui file, niente processo
  * del gioco, niente token (regole in docs/tracker.md).
@@ -28,7 +28,12 @@ import type { TrackerStatus } from "../shared/types";
 
 export const POLL_MS = 2000;
 export const DISCOVER_MS = 30_000;
-export const REPLAY_WAIT_MS = 60_000;
+/**
+ * Attesa del replay dopo la fine della partita: 15 secondi dal 10/10/2026 (prima un minuto; Pierluigi: "riduciamo sto
+ * tempo di attesa, 15 secondi max"). Il replay arrivava a 1–2 s dalla cache, e con la 0.7 non arriva più: la partita
+ * compare nello storico 15 secondi dopo la fine, con i dati dello scanner se è acceso.
+ */
+export const REPLAY_WAIT_MS = 15_000;
 
 /** Codici dei problemi: i testi, nelle tre lingue, stanno nell'interfaccia (renderer/app.ts). */
 export const PROBLEMS = { noGame: "noGame", badReplay: "badReplay", error: "error" } as const;

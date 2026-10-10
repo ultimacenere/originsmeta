@@ -178,7 +178,7 @@ Pacchetto a sé nella cartella `tracker/` del repo (package.json, tsconfig e tes
 esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracker/README.md`:
 
 - `src/main/watcher.ts`: ogni 2 s una `stat` sul file delle statistiche; quando cambia lo rilegge e, se l'impronta
-  dell'ultima partita è nuova, aspetta il replay fino a un minuto e registra la partita con il lettore, con la coda dal
+  dell'ultima partita è nuova, aspetta il replay fino a 15 secondi (un minuto fino al 10/10/2026) e registra la partita con il lettore, con la coda dal
   nome del replay e da `BattleMode`; senza replay la registra con esito e mazzo. Al primo avvio registra l'ultima
   partita solo se il suo replay è ancora lì. Cartelle del gioco in `paths.ts`.
 - `src/main/store.ts`: `%APPDATA%\OriginsMeta Analytics\matches.jsonl` (una partita per riga, v1 e v2) e `state.json`.
