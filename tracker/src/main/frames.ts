@@ -1,7 +1,8 @@
 /**
  * Scanner dello schermo (10/10/2026; regole in ../shared/frames.ts, riconoscitore in ../shared/recognize.ts e
- * reconstruct.ts, guida in docs/tracker.md "Scanner dello schermo"). Per ora solo con `--scan` (`npm run scan`) o
- * `--frames` (`npm run frames`, che salva anche i fotogrammi): niente voce nell'interfaccia, è in prova con lo staff.
+ * reconstruct.ts, guida in docs/tracker.md "Scanner dello schermo"). Acceso di default dalla 0.3.0 (10/10/2026,
+ * Pierluigi), si spegne e si riaccende dall'app senza riavviarla (`start`/`stop`, preferenza in scan.json di main.ts);
+ * `--frames` (`npm run frames`) salva anche i fotogrammi, per la taratura.
  *
  * La finestra nascosta legge ogni fotogramma cambiato e manda qui solo il risultato (`ScanFrame`: carte dei 18 spazi,
  * Leggendarie della schermata VS, mana massimo), che resta in memoria per `KEEP_MS`; quando il tracker chiude una
@@ -87,25 +88,41 @@ export class FrameRecorder {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }
 
-  start(): void {
-    if (this.timer) return;
-    const ses = session.fromPartition(PARTITION);
-    // la ripresa dello schermo la chiede solo la finestra nascosta di questo modulo
-    ses.setPermissionRequestHandler((wc, perm, cb) => cb(perm === "media" && wc === this.win?.webContents));
-    ses.setPermissionCheckHandler((wc, perm) => perm === "media" && wc === this.win?.webContents);
-    ipcMain.handle("frames:save", (e, data: unknown) => this.saveFrame(e, data));
-    ipcMain.on("frames:ended", (e) => this.ended(e));
-    ipcMain.on("frames:scan", (e, raw: unknown) => this.scan(e, raw));
-    void this.poll();
-    this.timer = setInterval(() => void this.poll(), POLL_MS);
+  private ready = false;
+
+  /** Lo scanner sta guardando (acceso), anche se il gioco non è aperto. */
+  get running(): boolean {
+    return this.timer !== null;
   }
 
+  start(): void {
+    if (this.timer) return;
+    if (!this.ready) {
+      // una volta sola: i gestori restano anche quando lo scanner si spegne e si riaccende
+      this.ready = true;
+      const ses = session.fromPartition(PARTITION);
+      // la ripresa dello schermo la chiede solo la finestra nascosta di questo modulo
+      ses.setPermissionRequestHandler((wc, perm, cb) => cb(perm === "media" && wc === this.win?.webContents));
+      ses.setPermissionCheckHandler((wc, perm) => perm === "media" && wc === this.win?.webContents);
+      ipcMain.handle("frames:save", (e, data: unknown) => this.saveFrame(e, data));
+      ipcMain.on("frames:ended", (e) => this.ended(e));
+      ipcMain.on("frames:scan", (e, raw: unknown) => this.scan(e, raw));
+    }
+    void this.poll();
+    this.timer = setInterval(() => void this.poll(), POLL_MS);
+    this.onChange();
+  }
+
+  /** Spegne la ripresa e dimentica le letture in memoria (spento vuol dire spento). */
   stop(): void {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
     this.release("stop");
     if (this.win && !this.win.isDestroyed()) this.win.destroy();
     this.win = null;
+    this.scans = [];
+    this.liveCache = null;
+    this.onChange();
   }
 
   /** Una riga di `events.jsonl` (partite, mazzo scelto): solo mentre si riprende o se la sessione è già aperta. */
@@ -127,7 +144,7 @@ export class FrameRecorder {
   }
 
   private async poll() {
-    if (this.full) return;
+    if (this.full || !this.timer) return;
     let game: { id: string; name: string } | null = null;
     try {
       // senza miniature: Electron non riprende le altre finestre per elencarle

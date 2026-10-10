@@ -22,6 +22,8 @@ const api: TrackerApi & { rendered(): void } = {
   // overlay (Fase 4)
   setOverlayWindow: (on) => ipcRenderer.invoke("tracker:overlay-window", on),
   setDeckWindow: (on) => ipcRenderer.invoke("tracker:deck-window", on),
+  setScanner: (on) => ipcRenderer.invoke("tracker:scanner", on),
+  dismissScannerNotice: () => ipcRenderer.invoke("tracker:scanner-notice"),
   setOverlayClickThrough: (on) => ipcRenderer.invoke("tracker:overlay-click-through", on),
   resetSession: () => ipcRenderer.invoke("tracker:overlay-session"),
   copyText: (text) => ipcRenderer.invoke("tracker:copy", text),

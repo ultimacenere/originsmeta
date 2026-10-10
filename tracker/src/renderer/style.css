@@ -346,3 +346,9 @@ details.match > summary:hover .m-title { color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* avviso del primo avvio sullo scanner dello schermo (0.3.0, 10/10/2026) */
+.notice { display: grid; gap: 8px; margin: 0; padding: 12px 14px; background: var(--night-2); border: 2px solid var(--mint); border-radius: 12px; }
+.notice h2 { margin: 0; font-family: var(--display); font-size: 0.95rem; color: var(--mint); }
+.notice p { margin: 0; font-size: 0.86rem; color: var(--chalk); }
+.fine.live { color: var(--mint); }

@@ -29,10 +29,10 @@
  *   aspetta che l'interfaccia abbia disegnato, salva uno screenshot ed esce. Serve alle verifiche; con
  *   ORIGINSMETA_TRACKER_DATA si usa una cartella dati di prova. Niente rete né finestra dell'overlay in questa modalità
  *   (la sorgente per OBS sì, per mostrarne gli indirizzi).
- * - `--scan` (`npm run scan`, 10/10/2026): scanner dello schermo, in prova con lo staff. Riprende la finestra del gioco,
- *   riconosce le carte (frames.ts) e, quando una partita finisce senza replay, ne aggiunge giocate e carte
- *   dell'avversario (`applyScan`). `--frames` (`npm run frames`) fa lo stesso e salva anche i fotogrammi sul PC, per
- *   tarare il riconoscitore. Niente voce nell'interfaccia.
+ * - Scanner dello schermo (10/10/2026, frames.ts): riprende la finestra del gioco, riconosce le carte e, quando una
+ *   partita finisce senza replay, ne aggiunge giocate e carte dell'avversario (`applyScan`). Acceso di default dalla
+ *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
+ *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
  */
 import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
@@ -53,7 +53,9 @@ import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
 const FRAMES = process.argv.includes("--frames");
-const SCAN = FRAMES || process.argv.includes("--scan");
+/** `--scan`/`--frames` accendono lo scanner anche se il giocatore l'ha spento; `--no-scan` lo spegne per le prove. */
+const FORCE_SCAN = FRAMES || process.argv.includes("--scan");
+const NO_SCAN = process.argv.includes("--no-scan");
 const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--capture=".length) ?? null;
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
 
@@ -123,9 +125,9 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", deck: "Deck tracker", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", deck: "Deck tracker", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", deck: "Deck tracker", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", deck: "Deck tracker", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", deck: "Deck tracker", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", deck: "Deck tracker", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
 /* ---------- avvio con Windows ---------- */
@@ -146,7 +148,36 @@ function currentView(): OverlayView {
 }
 
 function currentDeckView(): DeckTrackerView {
-  return deckTrackerView({ activeDeck, matches: store.matches, live: frames?.live() ?? null, scanner: Boolean(frames), card });
+  return deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
+}
+
+/* ---------- scanner dello schermo: acceso di default, avviso al primo avvio ---------- */
+
+type ScanPrefs = { on: boolean; noticeSeen: boolean };
+let scanPrefs: ScanPrefs = { on: true, noticeSeen: false };
+const scanPrefsFile = () => path.join(app.getPath("userData"), "scan.json");
+function loadScanPrefs() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(scanPrefsFile(), "utf8")) as Partial<ScanPrefs>;
+    scanPrefs = { on: raw.on !== false, noticeSeen: raw.noticeSeen === true };
+  } catch {
+    // prima volta: acceso, con l'avviso
+  }
+}
+function saveScanPrefs() {
+  try {
+    fs.writeFileSync(scanPrefsFile(), JSON.stringify(scanPrefs));
+  } catch {
+    // non essenziale
+  }
+}
+function setScanner(on: boolean): boolean {
+  scanPrefs = { ...scanPrefs, on, noticeSeen: true };
+  saveScanPrefs();
+  if (on) frames?.start();
+  else frames?.stop();
+  push();
+  return Boolean(frames?.running);
 }
 
 function accountState(): AccountState {
@@ -183,6 +214,12 @@ function state(): AppState {
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}` : null,
       sessionStart: new Date(sessionStart).toISOString(),
       view: currentView(),
+    },
+    scanner: {
+      // negli screenshot di verifica (--capture) lo scanner non parte: si mostra la preferenza
+      on: CAPTURE ? scanPrefs.on : Boolean(frames?.running),
+      capturing: Boolean(frames?.status.capturing),
+      noticeSeen: scanPrefs.noticeSeen,
     },
   };
 }
@@ -468,7 +505,7 @@ function refreshTray() {
   if (!tray) return;
   const t = TRAY[lang()];
   const f = frames?.status;
-  const rec = f ? ` · SCAN ${f.capturing ? "●" : "○"} ${FRAMES ? f.frames : f.scanned}${f.full ? " (4 GB)" : ""}` : "";
+  const rec = f && frames?.running ? ` · SCAN ${f.capturing ? "●" : "○"}${FRAMES ? ` ${f.frames}` : ""}${f.full ? " (4 GB)" : ""}` : "";
   tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}${rec}`);
   tray.setContextMenu(
     Menu.buildFromTemplate([
@@ -476,6 +513,7 @@ function refreshTray() {
       { type: "separator" },
       { label: t.overlay, type: "checkbox", checked: Boolean(overlayWin && !overlayWin.isDestroyed()), click: (item) => setOverlayWindow(item.checked) },
       { label: t.deck, type: "checkbox", checked: Boolean(deckWin && !deckWin.isDestroyed()), click: (item) => setDeckWindow(item.checked) },
+      { label: t.scanner, type: "checkbox", checked: Boolean(frames?.running), click: (item) => setScanner(item.checked) },
       { label: t.startup, type: "checkbox", checked: openAtLogin(), click: (item) => setOpenAtLogin(item.checked) },
       { type: "separator" },
       { label: t.quit, click: () => app.quit() },
@@ -560,6 +598,13 @@ function registerIpc() {
     if (fromApp(e)) await runSync(true);
   });
   ipcMain.handle("tracker:overlay-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setOverlayWindow(on === true) : Boolean(overlayWin)));
+  ipcMain.handle("tracker:scanner", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setScanner(on === true) : Boolean(frames?.running)));
+  ipcMain.handle("tracker:scanner-notice", (e) => {
+    if (!fromApp(e)) return;
+    scanPrefs = { ...scanPrefs, noticeSeen: true };
+    saveScanPrefs();
+    push();
+  });
   ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setDeckWindow(on === true) : Boolean(deckWin)));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
@@ -613,6 +658,7 @@ async function boot() {
   sync.load();
   loadOverlayPrefs();
   loadDeckPrefs();
+  loadScanPrefs();
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
@@ -653,11 +699,9 @@ async function boot() {
     if (deckPrefs.open) openDeckWindow();
     scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
-    if (SCAN) {
-      const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
-      frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: pushDeck }, refreshTray);
-      frames.start();
-    }
+    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
+    frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: pushDeck }, push);
+    if (!NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
   }
   createWindow(!HIDDEN);
   watcher.start();

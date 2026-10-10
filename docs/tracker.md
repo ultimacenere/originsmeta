@@ -30,7 +30,8 @@ Permesso: Kevin di Koin Games (Pierluigi, 29/09/2026: "il permesso lo abbiamo"; 
 | 5 | Installer firmato (certificato o Microsoft Store), aggiornamenti automatici, pagina per scaricare l'app, prova con pochi giocatori, lancio | da fare |
 | S1 | Scanner dello schermo, modalità cattura: fotogrammi della finestra del gioco sul PC, per tarare il riconoscitore (vedi "Scanner dello schermo") | fatta il 10/10/2026, in attesa delle partite di prova |
 | S2–S3 | Riconoscitore delle carte nei fotogrammi e partita ricostruita (giocate per round, Leggendaria e carte dell'avversario) dentro l'app | fatte il 10/10/2026, da provare con una partita vera nell'app (`npm run scan`) |
-| S4 | Mazzo probabile dell'avversario, magie, statistiche sul sito, accensione per tutti | da fare |
+| S4 | Scanner acceso di default con avviso e interruttore (0.3.0), zip per GitHub Releases, win rate riaperti sul sito | fatta il 10/10/2026 |
+| S5 | Mazzo probabile dell'avversario, magie, win rate per carta giocata | da fare |
 
 Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal 12 al 18/10, Next Fest dal 19/10.
 
@@ -419,15 +420,24 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   round 10, l'avversario "11/11"). Ripresa cominciata a partita in corso (l'app avviata durante la partita): la partita
   si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e non entra
   nello storico.
-- **Nell'app**: `npm run scan` (l'app con `--scan`) legge senza salvare niente; `npm run frames` legge e salva. La
-  finestra nascosta manda al processo principale solo le letture (`readScanFrame` ne controlla la forma), che restano
+- **Nell'app** (dalla 0.3.0 del 10/10/2026, Pierluigi: "acceso"): **acceso di default**, con un avviso al primo avvio
+  (che cosa legge, che le immagini non escono dal PC, niente nomi; tasti "Ho capito" e "Spegnilo"), il riquadro
+  "Scanner dello schermo" con l'interruttore e la voce nel menu dell'icona; preferenza in `scan.json` (`on`,
+  `noticeSeen`), spento = ripresa ferma e letture in memoria cancellate. `--scan`/`--frames` lo accendono comunque,
+  `--no-scan` lo spegne per le prove; `npm run frames` salva anche i fotogrammi. La finestra nascosta manda al processo principale solo le letture (`readScanFrame` ne controlla la forma), che restano
   in memoria un'ora; quando il tracker chiude una partita senza replay, `scanFor` + `applyScan` la completano e la
   partita parte per il sito con le carte giocate dall'avversario (regola 4). Lo scanner **non legge** la scritta
   "Battaglia Boss" né il nome dell'avversario (regola 2, regola 3). Taratura fuori dall'app:
   `node scripts/scan-frames.mjs <cartella sessione> <uscita.jsonl>` (dalla cartella `tracker/`).
-- **Da fare**: provarlo dentro l'app con una partita vera; mazzo probabile dell'avversario (le carte viste contro i
-  mazzi pubblicati e le liste registrate); magie; poi S4, statistiche sul sito (win rate di mazzi e carte, win rate
-  quando una carta viene giocata), e la decisione su quando accenderlo per tutti, con l'informativa aggiornata.
+- **Provato dentro l'app il 10/10**: letture uguali a quelle di `scan-frames.mjs` (tabellone 1.223 fotogrammi su
+  1.224), partita intera nello storico con giocate e carte dell'avversario (Mulan contro Legion of the Dead).
+- **Distribuzione (10/10/2026)**: `npm run package` fa lo zip della 0.3.0 e una copia con il nome fisso
+  `OriginsMeta-Analytics-win-x64.zip`, da caricare su GitHub Releases del repo (il tasto di download di `/analytics`
+  punta a `releases/latest/download/OriginsMeta-Analytics-win-x64.zip`; Discord no: i link degli allegati scadono e lo
+  zip supera il limite senza Nitro). Pubblicare la release va confermato da Pierluigi. Soglia delle statistiche ancora
+  quella di prova (Pierluigi, 10/10: "resta libera per ora").
+- **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
+  statistiche per carta sul sito (win rate quando una carta viene giocata).
 
 **Nome dell'avversario: decisione aperta.** Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
 sue partite con il nome dell'avversario, i mazzi e le statistiche della partita. Va contro la regola 3, che cita i

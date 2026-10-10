@@ -1,7 +1,9 @@
 // Versione portatile per Windows (01/10/2026, Pierluigi: "fammi un eseguibile rapido che lo condivido via wa a dav"):
 // `npm run package` dalla cartella tracker/. Compila (build.mjs), impacchetta con @electron/packager (preso con npx,
 // non è una dipendenza del progetto; Electron dalla cache di @electron/get, la stessa versione delle devDependencies),
-// aggiunge LEGGIMI.txt e fa lo zip in out/OriginsMeta-Analytics-<versione>-win-x64.zip.
+// aggiunge LEGGIMI.txt e fa lo zip in out/OriginsMeta-Analytics-<versione>-win-x64.zip, più una copia con il nome fisso
+// out/OriginsMeta-Analytics-win-x64.zip: è quella da caricare su GitHub Releases, perché il tasto di download di
+// originsmeta.com/analytics punta a releases/latest/download/OriginsMeta-Analytics-win-x64.zip (10/10/2026).
 //
 // Non firmata (Fase 5: certificato o Microsoft Store): Windows mostra "Windows ha protetto il PC" e si apre con
 // "Ulteriori informazioni" → "Esegui comunque". Dentro il pacchetto solo dist/ e package.json (asar): niente sorgenti.
@@ -16,6 +18,7 @@ const version = pkg.version;
 const out = path.join(root, "out");
 const folder = path.join(out, "package", `${name}-win32-x64`);
 const zip = path.join(out, `OriginsMeta-Analytics-${version}-win-x64.zip`);
+const stableZip = path.join(out, "OriginsMeta-Analytics-win-x64.zip");
 const run = (cmd, args) => execFileSync(cmd, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
 
 run("node", ["build.mjs"]);
@@ -44,17 +47,21 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 1. Scompatta lo zip in una cartella, per esempio Documenti\\${name}.
 2. Apri "${name}.exe". Windows può dire "Windows ha protetto il PC": premi "Ulteriori informazioni"
    e poi "Esegui comunque" (l'app non è ancora firmata).
-3. L'app resta nell'area di notifica, accanto all'orologio: mentre giochi a Origins TCG registra da sola le partite.
-   La X della finestra chiude l'app (anche overlay e Deck tracker); se parte con Windows resta nell'icona: per
-   uscire, tasto destro sull'icona e "Esci".
+3. L'app si apre e mette un'icona accanto all'orologio: mentre giochi a Origins TCG registra da sola le partite,
+   15 secondi dopo la fine. La X della finestra chiude l'app (anche overlay e Deck tracker); se parte con Windows
+   resta nell'icona: per uscire, tasto destro sull'icona e "Esci".
 4. Per mandare le partite al tuo account OriginsMeta: su https://originsmeta.com/it/account/tracker (con l'accesso
    fatto) premi "Crea un codice"; nell'app apri "Account OriginsMeta", scrivi il codice e premi "Collega".
    Collegandola, le partite entrano anche nelle statistiche anonime del sito (win rate).
-5. Overlay: nel pannello "Overlay" dell'app, "Mostra sopra il gioco" (gioco in finestra o finestra senza bordi).
-   Per OBS copia l'indirizzo della sorgente Browser che trovi nello stesso pannello.
+5. Overlay e Deck tracker: nel pannello "Overlay" dell'app, "Mostra sopra il gioco" e "Mostra il deck tracker" (si
+   vedono sopra il gioco in modalità finestra o finestra senza bordi, oppure su un secondo schermo). Per OBS copia gli
+   indirizzi della sorgente Browser che trovi nello stesso pannello.
+6. Scanner dello schermo (acceso): dalla patch 0.7 il gioco non salva più i replay, quindi l'app legge le carte giocate
+   dalla finestra di Origins TCG. Guarda solo quella finestra, le immagini restano sul PC e al sito arrivano solo gli id
+   delle carte, mai i nomi dei giocatori. Si spegne dal riquadro "Scanner dello schermo" o dal menu dell'icona.
 
-Con la patch 0.7 il gioco non salva i replay: per ora l'app registra esito, ora e mazzo, non le carte giocate.
-L'app legge solo i file che il gioco salva sul PC e non tocca mai il gioco.
+Guida passo per passo: https://originsmeta.com/it/analytics
+L'app legge i file che il gioco salva sul PC e, con lo scanner acceso, la finestra del gioco: non tocca mai il gioco.
 OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.
 `;
 fs.writeFileSync(path.join(folder, "LEGGIMI.txt"), readme.split("\n").join("\r\n"));
@@ -64,4 +71,5 @@ fs.rmSync(zip, { force: true });
 const bsdtar = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe");
 if (fs.existsSync(bsdtar)) execFileSync(bsdtar, ["-a", "-c", "-f", zip, "-C", path.dirname(folder), path.basename(folder)], { stdio: "inherit" });
 else run("powershell", ["-NoProfile", "-Command", `Compress-Archive -Path '${folder}' -DestinationPath '${zip}'`]);
-console.log(`\n${zip} (${Math.round(fs.statSync(zip).size / 1024 / 1024)} MB)`);
+fs.copyFileSync(zip, stableZip);
+console.log(`\n${zip} (${Math.round(fs.statSync(zip).size / 1024 / 1024)} MB)\n${stableZip} (per GitHub Releases)`);

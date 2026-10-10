@@ -74,7 +74,7 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the app closed`,
     startup: "Start with Windows",
     dataFolder: "Open the data folder",
-    privacy: "OriginsMeta Analytics only reads the files Origins TCG saves on this PC and never touches the game. Your matches stay on this PC unless you link the app to your OriginsMeta account. Card images load from originsmeta.com.",
+    privacy: "OriginsMeta Analytics reads the files Origins TCG saves on this PC and, with the screen scanner on, the game window; it never touches the game. Screen images never leave this PC. Your matches stay on this PC unless you link the app to your OriginsMeta account. Card images load from originsmeta.com.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
     account: "OriginsMeta account",
     accountIntro: "Link the app to your account: your matches also go to originsmeta.com, where you can see your stats.",
@@ -116,6 +116,16 @@ const LABELS = {
     overlayWindow: "Show above the game",
     overlayMove: "Move it (while this is on, clicks don't go through to the game)",
     overlayFullscreen: "It shows above the game in windowed or borderless mode, not in exclusive fullscreen.",
+    scannerTitle: "Screen scanner",
+    scannerIntro: "Since patch 0.7 the game no longer saves match replays: the scanner reads the cards from the game window instead (board, Legendaries on the VS screen, mana). It only watches the Origins TCG window, never other windows. Images stay in this PC's memory and are never sent anywhere: only the card ids go to your account. Player names are never read.",
+    scannerSwitch: "Read played cards from the game window",
+    scannerWatching: "Reading the game window",
+    scannerWaiting: "On · waiting for the game",
+    scannerOffNote: "Off: matches are saved with result and deck only, and the Deck tracker doesn't update live.",
+    noticeTitle: "The screen scanner is on",
+    noticeText: "To record the cards played by you and your opponent, OriginsMeta Analytics reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in the Screen scanner box.",
+    noticeOk: "Got it",
+    noticeOff: "Turn it off",
     deckTitle: "Deck tracker",
     deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: cards you played, round, the opponent's Legendary and the cards they reveal.",
     deckWindow: "Show the deck tracker",
@@ -178,7 +188,7 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} ad app chiusa`,
     startup: "Avvia con Windows",
     dataFolder: "Apri la cartella dei dati",
-    privacy: "OriginsMeta Analytics legge solo i file che Origins TCG salva su questo PC e non tocca mai il gioco. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta. Le immagini delle carte arrivano da originsmeta.com.",
+    privacy: "OriginsMeta Analytics legge i file che Origins TCG salva su questo PC e, con lo scanner dello schermo acceso, la finestra del gioco; non tocca mai il gioco. Le immagini dello schermo non lasciano mai questo PC. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta. Le immagini delle carte arrivano da originsmeta.com.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
     account: "Account OriginsMeta",
     accountIntro: "Collega l'app al tuo account: le tue partite arrivano anche su originsmeta.com, dove vedi le tue statistiche.",
@@ -220,6 +230,16 @@ const LABELS = {
     overlayWindow: "Mostra sopra il gioco",
     overlayMove: "Spostala (finché è acceso, i clic non passano al gioco)",
     overlayFullscreen: "Si vede sopra il gioco in modalità finestra o finestra senza bordi, non a schermo intero esclusivo.",
+    scannerTitle: "Scanner dello schermo",
+    scannerIntro: "Dalla patch 0.7 il gioco non salva più i replay delle partite: lo scanner legge le carte dalla finestra del gioco (tabellone, Leggendarie della schermata VS, mana). Guarda solo la finestra di Origins TCG, mai altre finestre. Le immagini restano nella memoria di questo PC e non vengono mai inviate: al tuo account arrivano solo gli id delle carte. I nomi dei giocatori non vengono mai letti.",
+    scannerSwitch: "Leggi le carte giocate dalla finestra del gioco",
+    scannerWatching: "Sta leggendo la finestra del gioco",
+    scannerWaiting: "Acceso · in attesa del gioco",
+    scannerOffNote: "Spento: le partite si salvano solo con esito e mazzo, e il Deck tracker non si aggiorna dal vivo.",
+    noticeTitle: "Lo scanner dello schermo è acceso",
+    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Analytics legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o nel riquadro Scanner dello schermo.",
+    noticeOk: "Ho capito",
+    noticeOff: "Spegnilo",
     deckTitle: "Deck tracker",
     deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato, round, Leggendaria dell'avversario e carte che rivela.",
     deckWindow: "Mostra il deck tracker",
@@ -282,7 +302,7 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con la app cerrada`,
     startup: "Iniciar con Windows",
     dataFolder: "Abrir la carpeta de datos",
-    privacy: "OriginsMeta Analytics solo lee los archivos que Origins TCG guarda en este PC y nunca toca el juego. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta. Las imágenes de las cartas se cargan desde originsmeta.com.",
+    privacy: "OriginsMeta Analytics lee los archivos que Origins TCG guarda en este PC y, con el escáner de pantalla activado, la ventana del juego; nunca toca el juego. Las imágenes de la pantalla nunca salen de este PC. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta. Las imágenes de las cartas se cargan desde originsmeta.com.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
     account: "Cuenta de OriginsMeta",
     accountIntro: "Vincula la app a tu cuenta: tus partidas llegan también a originsmeta.com, donde ves tus estadísticas.",
@@ -324,6 +344,16 @@ const LABELS = {
     overlayWindow: "Mostrar sobre el juego",
     overlayMove: "Moverla (mientras esté activo, los clics no pasan al juego)",
     overlayFullscreen: "Se ve sobre el juego en modo ventana o ventana sin bordes, no en pantalla completa exclusiva.",
+    scannerTitle: "Escáner de pantalla",
+    scannerIntro: "Desde el parche 0.7 el juego ya no guarda las repeticiones de las partidas: el escáner lee las cartas de la ventana del juego (tablero, Legendarias de la pantalla VS, maná). Solo mira la ventana de Origins TCG, nunca otras ventanas. Las imágenes se quedan en la memoria de este PC y nunca se envían: a tu cuenta solo llegan los id de las cartas. Los nombres de los jugadores nunca se leen.",
+    scannerSwitch: "Leer las cartas jugadas de la ventana del juego",
+    scannerWatching: "Leyendo la ventana del juego",
+    scannerWaiting: "Activado · esperando al juego",
+    scannerOffNote: "Desactivado: las partidas se guardan solo con resultado y mazo, y el Deck tracker no se actualiza en vivo.",
+    noticeTitle: "El escáner de pantalla está activado",
+    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Analytics lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en el recuadro Escáner de pantalla.",
+    noticeOk: "Entendido",
+    noticeOff: "Desactivarlo",
     deckTitle: "Deck tracker",
     deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activo se actualiza en vivo durante la partida: cartas que jugaste, ronda, la Legendaria del rival y las cartas que revela.",
     deckWindow: "Mostrar el deck tracker",
@@ -550,6 +580,25 @@ function accountPanel(s: AppState) {
     </section>`;
 }
 
+/** Avviso del primo avvio: lo scanner è acceso (0.3.0, 10/10/2026), che cosa fa e come si spegne. */
+function scannerNotice(s: AppState) {
+  if (!s.scanner.on || s.scanner.noticeSeen) return "";
+  return `<section class="notice" role="status">
+      <h2>${esc(L.noticeTitle)}</h2>
+      <p>${esc(L.noticeText)}</p>
+      <div class="row"><button type="button" class="btn btn-primary" id="scan-ok">${esc(L.noticeOk)}</button><button type="button" class="btn" id="scan-off">${esc(L.noticeOff)}</button></div>
+    </section>`;
+}
+
+function scannerPanel(s: AppState) {
+  const sc = s.scanner;
+  const state = sc.on ? (sc.capturing ? L.scannerWatching : L.scannerWaiting) : L.scannerOffNote;
+  return `<section class="panel" id="scanner"><h2>${esc(L.scannerTitle)}</h2><p class="sub">${esc(L.scannerIntro)}</p>
+      <div class="row"><label class="switch"><input type="checkbox" id="scanner-on"${sc.on ? " checked" : ""} /> ${esc(L.scannerSwitch)}</label></div>
+      <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>
+    </section>`;
+}
+
 function overlayPanel(s: AppState) {
   const o = s.overlay;
   const v = o.view;
@@ -594,7 +643,7 @@ function render(s: AppState) {
   const typed = input?.value ?? "";
   const focused = document.activeElement === input && input !== null;
   const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
-  root.innerHTML = [top(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  root.innerHTML = [top(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
   const again = document.getElementById("link-code") as HTMLInputElement | null;
   if (again) {
     again.value = typed;
@@ -642,6 +691,8 @@ root.addEventListener("click", async (e) => {
   if (target.id === "folder") void window.tracker.openDataFolder();
   if (target.id === "sync-now") void window.tracker.syncNow();
   if (target.id === "ov-session") void window.tracker.resetSession();
+  if (target.id === "scan-ok") void window.tracker.dismissScannerNotice();
+  if (target.id === "scan-off") void window.tracker.setScanner(false);
   if (target.id === "unlink" && window.confirm(L.unlinkConfirm)) {
     linkError = null;
     void window.tracker.unlinkAccount();
@@ -652,6 +703,7 @@ root.addEventListener("change", async (e) => {
   if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
+  if (t.id === "scanner-on") t.checked = await window.tracker.setScanner(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic
   if (t.id === "ov-move") t.checked = !(await window.tracker.setOverlayClickThrough(!t.checked));
 });

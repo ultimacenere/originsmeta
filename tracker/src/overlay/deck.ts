@@ -29,7 +29,7 @@ const LABELS = {
     round: (n: number) => `Round ${n}`,
     opponent: "Opponent",
     played: (p: number, c: number) => `${p} of ${c} played`,
-    noScanner: "Live updates need the screen scanner (staff test).",
+    noScanner: "Turn on the screen scanner in the app for live updates.",
     brand: "Analytics · not affiliated with Koin Games",
   },
   it: {
@@ -37,7 +37,7 @@ const LABELS = {
     round: (n: number) => `Round ${n}`,
     opponent: "Avversario",
     played: (p: number, c: number) => `${p} giocate su ${c}`,
-    noScanner: "Gli aggiornamenti dal vivo vogliono lo scanner dello schermo (in prova con lo staff).",
+    noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
     brand: "Analytics · non affiliato a Koin Games",
   },
   es: {
@@ -45,7 +45,7 @@ const LABELS = {
     round: (n: number) => `Ronda ${n}`,
     opponent: "Rival",
     played: (p: number, c: number) => `${p} jugadas de ${c}`,
-    noScanner: "Las actualizaciones en vivo necesitan el escáner de pantalla (en prueba con el staff).",
+    noScanner: "Activa el escáner de pantalla en la app para las actualizaciones en vivo.",
     brand: "Analytics · sin afiliación con Koin Games",
   },
 } as const;

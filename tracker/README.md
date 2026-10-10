@@ -43,10 +43,11 @@ npm start          # build + avvio dell'app
 npm test           # test dell'app (cartelle finte del gioco, rete finta, server locale su 127.0.0.1)
 npm run typecheck  # tipi dell'app e del lettore
 npm run capture    # screenshot della finestra in out/capture.png (verifiche)
-npm run scan       # app con lo scanner dello schermo: carte giocate lette dal gioco (in prova con lo staff, docs/tracker.md)
+npm run scan       # app con lo scanner acceso anche se spento nelle preferenze (dalla 0.3.0 è acceso di default)
 npm run frames     # come scan, e salva anche i fotogrammi in %APPDATA%\OriginsMeta Analytics\frames\ per la taratura
 npm run card-art   # rigenera src/card-art.json (riferimenti dello scanner) dalle immagini delle carte del sito
-npm run package    # versione portatile non firmata: out/OriginsMeta-Analytics-<versione>-win-x64.zip con LEGGIMI.txt
+npm run package    # versione portatile non firmata: out/OriginsMeta-Analytics-<versione>-win-x64.zip con LEGGIMI.txt,
+                   # più OriginsMeta-Analytics-win-x64.zip (nome fisso) da caricare su GitHub Releases
 ```
 
 - `npm run package` (01/10/2026, prima build per Davdas, 0.2.0): `scripts/package.mjs` compila, impacchetta con

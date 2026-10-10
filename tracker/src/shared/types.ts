@@ -92,6 +92,8 @@ export type AppState = {
   dataFolder: string;
   account: AccountState;
   overlay: OverlayState;
+  /** Scanner dello schermo (10/10/2026): acceso, finestra del gioco ripresa adesso, avviso del primo avvio già visto. */
+  scanner: { on: boolean; capturing: boolean; noticeSeen: boolean };
 };
 
 export type LinkResult = { ok: true; username: string | null } | { ok: false; problem: LinkProblem };
@@ -119,6 +121,10 @@ export type TrackerApi = {
   setOverlayWindow(on: boolean): Promise<boolean>;
   /** Apre o chiude il pannello del mazzo (10/10/2026). */
   setDeckWindow(on: boolean): Promise<boolean>;
+  /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
+  setScanner(on: boolean): Promise<boolean>;
+  /** L'avviso del primo avvio sullo scanner è stato letto. */
+  dismissScannerNotice(): Promise<void>;
   /** La finestra sopra il gioco lascia passare i clic (true) o si può spostare (false). */
   setOverlayClickThrough(on: boolean): Promise<boolean>;
   /** Azzera vittorie e sconfitte della sessione dell'overlay. */
