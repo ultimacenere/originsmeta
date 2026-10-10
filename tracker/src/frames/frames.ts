@@ -7,7 +7,7 @@
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { loadRefs, readBoard, readMana, readVersus, type Img } from "../shared/recognize";
+import { loadRefs, readBoard, readMana, readResult, readVersus, type Img } from "../shared/recognize";
 import cardArt from "../card-art.json";
 
 declare global {
@@ -88,7 +88,7 @@ function grab() {
     const img: Img = { data: fullCtx.getImageData(0, 0, w, h).data, width: w, height: h, channels: 4 };
     const vs = readVersus(img, refs);
     const mana = readMana(img);
-    api.scan({ ms, board: readBoard(img, refs).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null });
+    api.scan({ ms, board: readBoard(img, refs).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img) });
   } catch {
     // un fotogramma che non si legge si salta
   }

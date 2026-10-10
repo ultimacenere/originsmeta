@@ -47,7 +47,8 @@ import { SyncQueue, claimCode, siteBase, unlinkRemote, type SyncDeps } from "./s
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { FrameRecorder } from "./frames";
 import { deckTrackerView } from "./deckTracker";
-import { applyScan } from "../shared/reconstruct";
+import { applyScan, type ScanFrame } from "../shared/reconstruct";
+import { buildMatch } from "../../../src/lib/tracker/match";
 import type { AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
@@ -149,6 +150,43 @@ function currentView(): OverlayView {
 
 function currentDeckView(): DeckTrackerView {
   return deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
+}
+
+/* ---------- partite che solo lo schermo vede (11/10/2026) ---------- */
+
+/**
+ * Nel playtest le partite online e classificate non lasciano niente nei file del PC (le statistiche contano solo le
+ * "offline"), quindi il watcher non le vede finire. Lo stendardo di fine partita sì: `RESULT_WAIT_MS` dopo, se il
+ * watcher non ha registrato una partita finita lì vicino (`NEAR_MS`), la registra l'app con quello che ha letto lo
+ * schermo: esito, ora, mazzo scelto, giocate e carte dell'avversario. Solo partite viste per intero (`complete`). Se poi
+ * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni.
+ */
+const RESULT_WAIT_MS = 30_000;
+const NEAR_MS = 3 * 60_000;
+let lastBannerAt = 0;
+let gameDeck: GameDeck | null = null;
+const fromScreen: number[] = [];
+const nearTo = (iso: string | null, at: number) => Boolean(iso) && Math.abs(Date.parse(iso as string) - at) <= NEAR_MS;
+
+function noteFrame(f: ScanFrame) {
+  pushDeck();
+  if (!f.result || f.ms - lastBannerAt < NEAR_MS) return;
+  lastBannerAt = f.ms;
+  setTimeout(() => void finishFromScreen(f.ms), RESULT_WAIT_MS);
+}
+
+async function finishFromScreen(at: number) {
+  if (!frames || store.matches.some((m) => nearTo(m.endedAt, at))) return;
+  const scan = frames.matchFor(at + 10_000);
+  if (!scan || !scan.complete || !scan.result) return;
+  const endedAt = new Date(scan.resultAt ?? at).toISOString();
+  const base = await buildMatch({ end: { endedAt, result: scan.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
+  const m = applyScan(base, scan);
+  if (!store.add(m)) return;
+  fromScreen.push(at);
+  frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
+  push();
+  scheduleSync(5000);
 }
 
 /* ---------- scanner dello schermo: acceso di default, avviso al primo avvio ---------- */
@@ -661,6 +699,11 @@ async function boot() {
   loadScanPrefs();
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
+    // la stessa partita già registrata dallo schermo (statistiche arrivate in ritardo): si tiene quella
+    if (fromScreen.some((at) => nearTo(raw.endedAt, at))) {
+      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result });
+      return;
+    }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
     const m = frames ? applyScan(raw, frames.matchFor(raw.endedAt ? Date.parse(raw.endedAt) : Date.now())) : raw;
     if (store.add(m)) {
@@ -682,6 +725,7 @@ async function boot() {
     push();
   });
   watcher.on("deck", (d: GameDeck | null) => {
+    gameDeck = d;
     activeDeck = deckView(d);
     frames?.event("deck", { deck: activeDeck });
     push();
@@ -700,7 +744,7 @@ async function boot() {
     scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
-    frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: pushDeck }, push);
+    frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     if (!NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
   }
   createWindow(!HIDDEN);

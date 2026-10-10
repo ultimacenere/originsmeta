@@ -323,3 +323,97 @@ export function readMana(img: Img): { current: number; max: number } | null {
 
 /** Il round stimato dal mana massimo (vedi `MANA_TEXT`). */
 export const roundOf = (maxMana: number): number => maxMana - 1;
+
+/* ---------- esito dallo stendardo di fine partita ---------- */
+
+/**
+ * Lo stendardo di fine partita (11/10/2026): testo bianco enorme su una fascia scura, con la parte alta dello schermo
+ * scurita, e una pennellata **menta** per la vittoria ("VITTORIA!", "VICTORY!") o **magenta** per la sconfitta
+ * ("SCONFITTA!"). Uguale nella demo e nel playtest, e il colore non dipende dalla lingua. Serve dove il gioco non
+ * scrive l'esito sul PC: nel playtest le partite online e classificate non lasciano traccia nei file (solo le
+ * "offline"). Soglie tarate l'11/10 su 3.700 fotogrammi (3 vittorie e 1 sconfitta della demo, 1 vittoria del
+ * playtest): 53 stendardi su 55 riconosciuti, nessun esito sbagliato, l'unico falso stendardo (una dissolvenza) senza
+ * colore e quindi senza esito. I conti si fanno su una griglia di 320 × 180 medie, come nella taratura.
+ */
+export const BANNER = {
+  text: { x: 0.04, y: 0.42, w: 0.92, h: 0.2 } as Rect,
+  top: { x: 0.04, y: 0.05, w: 0.92, h: 0.2 } as Rect,
+  swoosh: { x: 0, y: 0.25, w: 1, h: 0.53 } as Rect,
+  minWhite: 20,
+  minDark: 10,
+  minTopDark: 80,
+  minColor: 0.3,
+  colorRatio: 1.5,
+} as const;
+const GRID_W = 320;
+const GRID_H = 180;
+
+/** Le medie di colore dell'area di gioco su una griglia 320 × 180 (RGB uno dopo l'altro). */
+function colorGrid(img: Img): Uint8Array {
+  const area = gameArea(img.width, img.height);
+  const out = new Uint8Array(GRID_W * GRID_H * 3);
+  const ch = img.channels;
+  const d = img.data;
+  for (let gy = 0; gy < GRID_H; gy++) {
+    const ya = Math.floor(area.y + (area.h * gy) / GRID_H);
+    const yb = Math.max(ya + 1, Math.floor(area.y + (area.h * (gy + 1)) / GRID_H));
+    for (let gx = 0; gx < GRID_W; gx++) {
+      const xa = Math.floor(area.x + (area.w * gx) / GRID_W);
+      const xb = Math.max(xa + 1, Math.floor(area.x + (area.w * (gx + 1)) / GRID_W));
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let n = 0;
+      // ogni secondo pixel: la media cambia di poco e il conto si dimezza due volte
+      for (let y = ya; y < yb && y < img.height; y += 2)
+        for (let x = xa; x < xb && x < img.width; x += 2) {
+          const p = (y * img.width + x) * ch;
+          r += d[p];
+          g += d[p + 1];
+          b += d[p + 2];
+          n++;
+        }
+      const o = (gy * GRID_W + gx) * 3;
+      out[o] = n ? r / n : 0;
+      out[o + 1] = n ? g / n : 0;
+      out[o + 2] = n ? b / n : 0;
+    }
+  }
+  return out;
+}
+
+/** Percentuale delle celle di un rettangolo (frazioni dell'area di gioco) che passano il controllo. */
+function share(grid: Uint8Array, r: Rect, test: (r: number, g: number, b: number) => boolean): number {
+  let c = 0;
+  let n = 0;
+  for (let y = Math.round(GRID_H * r.y); y < Math.round(GRID_H * (r.y + r.h)); y++)
+    for (let x = Math.round(GRID_W * r.x); x < Math.round(GRID_W * (r.x + r.w)); x++) {
+      const p = (y * GRID_W + x) * 3;
+      n++;
+      if (test(grid[p], grid[p + 1], grid[p + 2])) c++;
+    }
+  return n ? (100 * c) / n : 0;
+}
+
+export type BannerFeatures = { white: number; dark: number; topDark: number; mint: number; magenta: number };
+
+export function bannerFeatures(img: Img): BannerFeatures {
+  const g = colorGrid(img);
+  return {
+    white: share(g, BANNER.text, (r, gg, b) => r > 200 && gg > 200 && b > 200),
+    dark: share(g, BANNER.text, (r, gg, b) => r + gg + b < 150),
+    topDark: share(g, BANNER.top, (r, gg, b) => r + gg + b < 150),
+    mint: share(g, BANNER.swoosh, (r, gg, b) => gg > 170 && b > 120 && r < 120 && gg - r > 90),
+    magenta: share(g, BANNER.swoosh, (r, gg, b) => r > 170 && b > 100 && gg < 90 && r - gg > 110),
+  };
+}
+
+/** L'esito dalle misure dello stendardo: "W", "L" o null (niente stendardo, o colore incerto). */
+export function resultFromBanner(f: BannerFeatures): "W" | "L" | null {
+  if (f.white < BANNER.minWhite || f.dark < BANNER.minDark || f.topDark < BANNER.minTopDark) return null;
+  if (f.mint >= BANNER.minColor && f.mint > f.magenta * BANNER.colorRatio) return "W";
+  if (f.magenta >= BANNER.minColor && f.magenta > f.mint * BANNER.colorRatio) return "L";
+  return null;
+}
+
+export const readResult = (img: Img): "W" | "L" | null => resultFromBanner(bannerFeatures(img));

@@ -24,6 +24,8 @@ export type ScanFrame = {
   board: readonly (string | null)[];
   vs: { me: string; opp: string } | null;
   maxMana: number | null;
+  /** Esito letto dallo stendardo di fine partita (recognize.ts, `readResult`); assente nei fotogrammi più vecchi. */
+  result?: "W" | "L" | null;
 };
 
 export type ScannedPlay = { turn: number; me: boolean; card: string; lane: number };
@@ -43,7 +45,14 @@ export type ScannedMatch = {
    * non entra, perché le carte giocate prima mancherebbero (`applyScan`).
    */
   complete: boolean;
+  /** Esito dello stendardo di fine partita, confermato da `RESULT_FRAMES` fotogrammi; null se non si è visto. */
+  result: "W" | "L" | null;
+  /** Quando è comparso lo stendardo (ora del PC): la fine della partita. */
+  resultAt: number | null;
 };
+
+/** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
+export const RESULT_FRAMES = 2;
 
 export type CardInfo = { token: (key: string) => boolean; legendary: (key: string) => boolean };
 
@@ -209,7 +218,18 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     plays,
     opponentCards,
     complete: rounds[0] === 1,
+    ...resultOf(frames),
   };
+}
+
+/** L'esito più visto fra i fotogrammi dello stendardo, se lo confermano almeno `RESULT_FRAMES` fotogrammi. */
+function resultOf(frames: readonly ScanFrame[]): { result: "W" | "L" | null; resultAt: number | null } {
+  const seen = frames.filter((f) => f.result === "W" || f.result === "L");
+  const w = seen.filter((f) => f.result === "W");
+  const l = seen.filter((f) => f.result === "L");
+  const best = w.length >= l.length ? w : l;
+  if (best.length < RESULT_FRAMES || best.length === seen.length - best.length) return { result: null, resultAt: null };
+  return { result: best[0].result as "W" | "L", resultAt: best[0].ms };
 }
 
 /* ---------- dalla partita letta dallo schermo alla partita dello storico ---------- */
@@ -259,5 +279,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   if (vs !== null && !(vs && typeof vs === "object" && key(vs.me) && key(vs.opp))) return null;
   const max = f.maxMana;
   if (max !== null && !(Number.isInteger(max) && (max as number) >= 1 && (max as number) <= 20)) return null;
-  return { ms: now, board: f.board as (string | null)[], vs: vs ? { me: vs.me as string, opp: vs.opp as string } : null, maxMana: max as number | null };
+  const result = f.result === "W" || f.result === "L" ? f.result : null;
+  if (f.result !== undefined && f.result !== null && result === null) return null;
+  return { ms: now, board: f.board as (string | null)[], vs: vs ? { me: vs.me as string, opp: vs.opp as string } : null, maxMana: max as number | null, result };
 }

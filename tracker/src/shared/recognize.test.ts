@@ -16,6 +16,7 @@ import {
   packVector,
   readBoard,
   readMana,
+  resultFromBanner,
   readVersus,
   unpackVector,
   VEC,
@@ -154,4 +155,17 @@ test("mana: legge 'attuale/massimo' e scarta il resto", () => {
   const c = blank();
   writeMana(c, "6/3");
   assert.equal(readMana(c), null, "attuale oltre il massimo");
+});
+
+test("stendardo di fine partita: menta vittoria, magenta sconfitta, niente stendardo niente esito", () => {
+  // misure prese dai fotogrammi veri dell'11/10 (demo e playtest)
+  assert.equal(resultFromBanner({ white: 58, dark: 34, topDark: 95, mint: 4.1, magenta: 0 }), "W");
+  assert.equal(resultFromBanner({ white: 55, dark: 37, topDark: 92, mint: 5.4, magenta: 0 }), "W");
+  assert.equal(resultFromBanner({ white: 46, dark: 36, topDark: 100, mint: 0, magenta: 6.2 }), "L");
+  // tabellone o menu con molto bianco: la parte alta non è scura
+  assert.equal(resultFromBanner({ white: 75, dark: 10, topDark: 31, mint: 1.2, magenta: 0 }), null);
+  // dissolvenza simile allo stendardo ma senza colore
+  assert.equal(resultFromBanner({ white: 32, dark: 30, topDark: 97, mint: 0, magenta: 0 }), null);
+  // colori quasi pari: incerto
+  assert.equal(resultFromBanner({ white: 50, dark: 30, topDark: 95, mint: 1, magenta: 0.9 }), null);
 });

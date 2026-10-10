@@ -54,10 +54,10 @@ export class FrameRecorder {
   private scans: ScanFrame[] = [];
 
   /** `save`: modalità cattura (anche i JPEG e `events.jsonl` sul PC). */
-  private onScan: () => void;
+  private onScan: (f: ScanFrame) => void;
   private liveCache: { at: number; value: { scan: ScannedMatch; inMatch: boolean } | null } | null = null;
 
-  constructor(userData: string, opts: { save: boolean; cards: CardInfo; onScan?: () => void }, onChange: () => void = () => {}) {
+  constructor(userData: string, opts: { save: boolean; cards: CardInfo; onScan?: (f: ScanFrame) => void }, onChange: () => void = () => {}) {
     this.onScan = opts.onScan ?? (() => {});
     this.root = path.join(userData, "frames");
     this.save = opts.save;
@@ -206,7 +206,7 @@ export class FrameRecorder {
     const f = readScanFrame(raw, now);
     if (!f) return;
     this.scans.push(f);
-    this.onScan();
+    this.onScan(f);
     // modalità cattura: anche le letture sul PC, accanto ai fotogrammi, per confrontarle con quelle di scan-frames.mjs
     if (this.save && this.dir) {
       try {

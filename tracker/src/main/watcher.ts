@@ -103,6 +103,8 @@ export class MatchWatcher extends EventEmitter {
    * all'apertura del playtest l'11/10).
    */
   private rebase = false;
+  /** L'id dell'account dell'ultima lettura delle statistiche: sale dell'impronta delle partite lette dallo schermo. */
+  lastAccountId: string | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
   private busy = false;
 
@@ -215,6 +217,7 @@ export class MatchWatcher extends EventEmitter {
   /** `writtenAt`: ora di modifica del file letto, cioè quando il gioco l'ha scritto. */
   private async onStats(stats: ProfileStats, now: number, writtenAt: number) {
     const prevAt = this.seenAt;
+    if (stats.accountId) this.lastAccountId = stats.accountId;
     this.seenAt = stats.lastMatchAt;
     if (!stats.lastMatchAt) {
       this.rebase = false;

@@ -5,7 +5,7 @@ import "./ts-hooks.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { loadRefs, readBoard, readMana, readVersus } from "../src/shared/recognize.ts";
+import { loadRefs, readBoard, readMana, readResult, readVersus } from "../src/shared/recognize.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const sharp = createRequire(path.join(root, "..", "package.json"))("sharp");
@@ -27,6 +27,7 @@ for (const f of files) {
       low: board.map((m) => (m.key ? Number(m.score.toFixed(2)) : null)),
       vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
       mana: readMana(img),
+      result: readResult(img),
     }) + "\n",
   );
   if (++i % 500 === 0) console.log(i, "/", files.length, `${Math.round((Date.now() - t0) / i)} ms a fotogramma`);

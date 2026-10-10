@@ -50,6 +50,8 @@ const scan: ScannedMatch = {
   ],
   opponentCards: ["L_OPP", "X"],
   complete: true,
+  result: null,
+  resultAt: null,
 };
 
 test("mazzo scelto: Leggendaria a parte, carte per costo, due copie, record del mazzo", () => {

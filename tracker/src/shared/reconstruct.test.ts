@@ -114,7 +114,9 @@ test("storico: le carte lette riempiono la partita senza replay; mie solo quelle
 
 test("fotogrammi dalla finestra nascosta: solo la forma attesa, l'ora la mette il processo principale", () => {
   const ok = { ms: 1, board: BOARD_SLOTS.map((_, i) => (i === 3 ? "C00032_MB" : null)), vs: { me: "C00176_MC", opp: "C00118_MC" }, maxMana: 6 };
-  assert.deepEqual(readScanFrame(ok, 500), { ...ok, ms: 500 });
+  assert.deepEqual(readScanFrame(ok, 500), { ...ok, ms: 500, result: null });
+  assert.equal(readScanFrame({ ...ok, result: "W" }, 1)?.result, "W");
+  assert.equal(readScanFrame({ ...ok, result: "vittoria" }, 1), null, "esito non valido");
   assert.equal(readScanFrame({ ...ok, board: ok.board.slice(1) }, 0), null, "spazi mancanti");
   assert.equal(readScanFrame({ ...ok, board: ok.board.map((k, i) => (i === 0 ? "<script>" : k)) }, 0), null, "chiave non valida");
   assert.equal(readScanFrame({ ...ok, vs: { me: "C00176_MC" } }, 0), null);
@@ -142,4 +144,16 @@ test("ripresa cominciata a partita in corso: si legge dal primo mana, ma la part
   assert.equal(reconstruct(game(0), info).complete, true);
   // il primo pezzo comincia a metà solo se il mana arriva subito: dopo un minuto di menu, un "0/10" non apre una partita
   assert.equal(splitMatches([frame(0, null), frame(70_000, 10), frame(71_000, 10)]).length, 0);
+});
+
+test("esito dallo stendardo: confermato da due fotogrammi, il più visto, l'ora del primo", () => {
+  const g = game(0);
+  const end = 40_000;
+  const banner = (ms: number, result: "W" | "L"): ScanFrame => ({ ...frame(ms, null), result });
+  const m = reconstruct([...g, banner(end, "W"), banner(end + 500, "W"), banner(end + 1000, "L")], info);
+  assert.equal(m.result, "W", "una dissolvenza letta male non cambia l'esito");
+  assert.equal(m.resultAt, end);
+  assert.equal(reconstruct([...g, banner(end, "L")], info).result, null, "un fotogramma solo non basta");
+  assert.equal(reconstruct([...g, banner(end, "W"), banner(end + 1, "W"), banner(end + 2, "L"), banner(end + 3, "L")], info).result, null, "parità");
+  assert.equal(reconstruct(g, info).result, null);
 });
