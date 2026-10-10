@@ -159,7 +159,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // dati di Next condivide (una al minuto), invece di una query per scheda. Accanto, il win rate del mazzo nelle
   // partite registrate con OriginsMeta Analytics quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
   // al 10/10/2026, quando la patch 0.7 aveva tolto i replay): null sotto la soglia, prima della migrazione o con un
-  // errore (il riquadro è facoltativo). In prova dal 10/10/2026 (solo Creator, Pro, Staff e admin): la scheda è ISR e non sa
+  // errore (il riquadro è facoltativo). In prova dal 10/10/2026 (solo Creator, Autore, Pro, Staff e admin): la scheda è ISR e non sa
   // chi guarda, quindi niente riquadro né lettura finché ANALYTICS_PUBLIC è spento.
   const [published, winrate] = await Promise.all([
     listPublishedDecks(),

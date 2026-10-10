@@ -6,7 +6,7 @@ import { ANALYTICS_PUBLIC, canSeeAnalytics } from "./badges";
 /**
  * Chi vede OriginsMeta Analytics durante la prova (10/10/2026, Pierluigi: "la pagina deve essere visibile solo ai
  * creators e top players, lo facciamo testare prima di renderlo pubblico"): con `ANALYTICS_PUBLIC` spento, solo chi ha
- * fatto l'accesso e ha il ruolo Creator, Pro o Staff, o è admin (`canSeeAnalytics` di badges.ts). Una lettura per
+ * fatto l'accesso e ha il ruolo Creator, Autore, Pro o Staff, o è admin (`canSeeAnalytics` di badges.ts). Una lettura per
  * richiesta (cache di React), condivisa da generateMetadata e dalla pagina.
  *
  * Leggere la sessione rende dinamiche le pagine che la chiamano (/analytics, /tier-list/win-rate): quando

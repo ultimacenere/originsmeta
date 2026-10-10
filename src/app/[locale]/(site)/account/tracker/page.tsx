@@ -70,7 +70,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
     );
   }
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/account/tracker"))}`);
-  // in prova dal 10/10/2026 (ANALYTICS_PUBLIC spento): solo Creator, Pro, Staff e admin, gli altri ricevono un 404
+  // in prova dal 10/10/2026 (ANALYTICS_PUBLIC spento): solo Creator, Autore, Pro, Staff e admin, gli altri ricevono un 404
   if (!(await analyticsAccess())) notFound();
 
   const [devices, matches] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id)]);

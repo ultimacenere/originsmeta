@@ -75,12 +75,13 @@ export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
 
 /**
  * OriginsMeta Analytics in prova (10/10/2026, Pierluigi: "la pagina deve essere visibile solo ai creators e top players,
- * lo facciamo testare prima di renderlo pubblico"; top players = Pro): finché `ANALYTICS_PUBLIC` è false, le pagine
+ * lo facciamo testare prima di renderlo pubblico"; top players = Pro; poi "dai accesso anche agli autori alle pagine e
+ * al dl", stesso giorno): finché `ANALYTICS_PUBLIC` è false, le pagine
  * /analytics, /tier-list/win-rate e /account/tracker, il riquadro di /account e il codice per collegare l'app sono solo
- * per Creator, Pro, Staff e admin (gli altri ricevono un 404), e nessuna pagina pubblica le linka (testata della tier
+ * per Creator, Autore, Pro, Staff e admin (gli altri ricevono un 404), e nessuna pagina pubblica le linka (testata della tier
  * list, sottomenu, riquadro dei win rate nei mazzi, sitemap). Per aprire tutto a tutti: `ANALYTICS_PUBLIC = true`.
  */
-export const ANALYTICS_BADGES: readonly Badge[] = ["creator", "pro", "staff"];
+export const ANALYTICS_BADGES: readonly Badge[] = ["creator", "author", "pro", "staff"];
 /** L'interruttore unico dell'apertura di OriginsMeta Analytics (vedi ANALYTICS_BADGES). */
 export const ANALYTICS_PUBLIC = false;
 
@@ -138,7 +139,7 @@ export function canUseDeckArt(badge: string | null | undefined, role?: string | 
 }
 
 /**
- * Vede OriginsMeta Analytics durante la prova (10/10/2026): Creator, Pro, Staff e admin. Non guarda `ANALYTICS_PUBLIC`:
+ * Vede OriginsMeta Analytics durante la prova (10/10/2026): Creator, Autore, Pro, Staff e admin. Non guarda `ANALYTICS_PUBLIC`:
  * è la regola dei ruoli, l'apertura a tutti la decide chi la chiama (src/lib/community/analyticsAccess.ts).
  */
 export function canSeeAnalytics(badge: string | null | undefined, role?: string | null): boolean {

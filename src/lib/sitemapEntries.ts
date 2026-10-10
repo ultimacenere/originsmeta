@@ -203,7 +203,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
     // Win rate (riaperti il 10/10/2026): solo quando la pagina si indicizza (almeno 100 partite nella patch mostrata);
     // sotto è noindex e fuori da hreflang. I numeri cambiano a ogni partita: le date sono quelle del modello.
-    // In prova dal 10/10/2026 (solo Creator, Pro, Staff e admin): mai in sitemap finché ANALYTICS_PUBLIC è spento.
+    // In prova dal 10/10/2026 (solo Creator, Autore, Pro, Staff e admin): mai in sitemap finché ANALYTICS_PUBLIC è spento.
     ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
       ? [{ path: "/tier-list/win-rate", section: "pages", route: "/tier-list/win-rate", dates: [] } satisfies SitemapPage]
       : []),

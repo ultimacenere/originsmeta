@@ -89,10 +89,10 @@ describe("ruoli e permessi", () => {
     for (const b of ["community", "influencer", null]) assert.ok(!canPublishGuides(b, "user"), String(b));
     assert.ok(!canPublishGuides(undefined));
   });
-  test("OriginsMeta Analytics in prova (10/10/2026): Creator, Pro, Staff e admin; l'Autore e la community no", () => {
-    for (const b of ["creator", "pro", "staff"]) assert.ok(canSeeAnalytics(b, "user"), b);
+  test("OriginsMeta Analytics in prova (10/10/2026): Creator, Autore, Pro, Staff e admin; la community no", () => {
+    for (const b of ["creator", "author", "pro", "staff"]) assert.ok(canSeeAnalytics(b, "user"), b);
     assert.ok(canSeeAnalytics("community", "admin"));
-    for (const b of ["author", "community", "influencer", null]) assert.ok(!canSeeAnalytics(b, "user"), String(b));
+    for (const b of ["community", "influencer", null]) assert.ok(!canSeeAnalytics(b, "user"), String(b));
     assert.ok(!canSeeAnalytics(undefined));
   });
   test("gli elenchi dei permessi usano solo tag esistenti", () => {

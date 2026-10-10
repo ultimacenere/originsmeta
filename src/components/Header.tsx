@@ -36,7 +36,7 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: t.sourceVotes, path: "/tier-list/votes" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
         // win rate dalle partite registrate con OriginsMeta Analytics: "Analytics · in pausa" dal 02/10, riaperti il 10/10/2026
-        // ma in prova (solo Creator, Pro, Staff e admin): la voce compare quando si aprono a tutti (ANALYTICS_PUBLIC)
+        // ma in prova (solo Creator, Autore, Pro, Staff e admin): la voce compare quando si aprono a tutti (ANALYTICS_PUBLIC)
         ...(ANALYTICS_PUBLIC ? [{ label: t.sourceWinrate, path: "/tier-list/win-rate" }] : []),
       ],
     },

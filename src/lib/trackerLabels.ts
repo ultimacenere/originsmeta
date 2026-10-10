@@ -4,7 +4,7 @@ import { ANALYTICS_PUBLIC } from "./community/badges";
 /**
  * Il riquadro "OriginsMeta Analytics" di /account a tutti: segue `ANALYTICS_PUBLIC` di badges.ts, l'interruttore unico
  * dell'apertura (spento: in prova dal 10/10/2026, Pierluigi: "visibile solo ai creators e top players"). Finché è spento
- * il riquadro, con il link al download, lo vedono solo Creator, Pro, Staff e admin (`canSeeAnalytics`).
+ * il riquadro, con il link al download, lo vedono solo Creator, Autore, Pro, Staff e admin (`canSeeAnalytics`).
  */
 export const TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC;
 

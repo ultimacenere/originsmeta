@@ -27,7 +27,7 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   riaperta il 10/10/2026, quando l'app ha ricominciato a leggere le carte giocate dallo schermo (Pierluigi: "la pagina
   del tracker e tutte le stat le avevamo nascoste, vanno riaperte"); in cima e in fondo il rimando a /analytics, la
   pagina dell'app con il download e la guida all'installazione. In prova dal 10/10/2026 (Pierluigi: "visibile solo ai
-  creators e top players"): con ANALYTICS_PUBLIC spento solo Creator, Pro, Staff e admin con l'accesso fatto (gli altri
+  creators e top players"): con ANALYTICS_PUBLIC spento solo Creator, Autore, Pro, Staff e admin con l'accesso fatto (gli altri
   ricevono un 404), sempre noindex e fuori da hreflang e sitemap; la sessione letta rende la pagina dinamica. I numeri vengono dalle partite registrate con l'app OriginsMeta Tracker e li
   calcola il database (funzioni tracker_stats_* del blocco TRACKER di supabase/schema.sql): solo totali anonimi di una
   patch, ogni numero da almeno 20 partite di almeno 3 giocatori, mostrato appena supera la soglia; sotto le 100 partite

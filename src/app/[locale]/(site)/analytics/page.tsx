@@ -17,7 +17,7 @@ import { dropHreflang } from "@/lib/community/deckQuality";
   guida all'installazione passo per passo (Pierluigi: "nella pagina del tracker mettiamo un tutorial step by step per
   l'installazione"). Il tasto "Sei interessato?" non c'è più (componente, tabella e informativa restano).
   In prova dal 10/10/2026 (Pierluigi: "visibile solo ai creators e top players"): con ANALYTICS_PUBLIC spento la vedono
-  solo Creator, Pro, Staff e admin con l'accesso fatto (gli altri ricevono un 404), noindex e fuori da hreflang e
+  solo Creator, Autore, Pro, Staff e admin con l'accesso fatto (gli altri ricevono un 404), noindex e fuori da hreflang e
   sitemap; la sessione letta la rende dinamica. Con ANALYTICS_PUBLIC acceso torna statica e indicizzabile. Lo zip arriva da GitHub Releases (`TRACKER_DOWNLOAD_URL`, un solo posto); i clic
   sul download contano come `analytics_download` (attributi data-om-*, analytics.ts).
   Screenshot dell'app vera nelle tre lingue dell'app (public/media/analytics, fatti il 02/10/2026 con --capture su una

@@ -67,7 +67,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, badge, created_at").eq("id", user.id).maybeSingle();
   const profile = (profileRow as (Profile & { role: string; badge: string | null; created_at: string }) | null) ?? null;
   // il tracker in /account: a tutti quando si apre (TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC); in prova dal 10/10/2026
-  // solo Creator, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
+  // solo Creator, Autore, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
   const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || canSeeAnalytics(profile?.badge, profile?.role);
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   const [allDecks, tournaments, tierLists, deckLimit, saved] = await Promise.all([
