@@ -25,6 +25,12 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **Aggiornamento automatico** (0.3.2, 11/10/2026, `updater.ts` e `updateRules.ts`): l'app impacchettata controlla le
+  release `analytics-v…` su GitHub 30 s dopo l'avvio e ogni 3 ore, scarica lo zip dal nome fisso (solo da github.com,
+  dimensione controllata), lo scompatta con il tar di Windows e, fuori dalle partite, si chiude: uno script
+  (`Wait-Process`, robocopy) copia i file nuovi e la riapre. Registro in `%TEMP%\OriginsMeta-Analytics-update-<v>\`.
+  Prove: `ORIGINSMETA_UPDATE_FROM=<versione finta>`, `ORIGINSMETA_UPDATE_DELAY_MS`; spento con `ORIGINSMETA_NO_UPDATE=1`.
+- Tasto "Chiudi l'app" in alto a destra (11/10/2026), come la X e "Esci".
 - Interfaccia e menu dell'icona in inglese, italiano e spagnolo secondo la lingua di Windows.
 - "Avvia con Windows" è spento finché il giocatore non lo accende (nella finestra o nel menu dell'icona).
 

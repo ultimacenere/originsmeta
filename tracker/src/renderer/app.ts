@@ -122,6 +122,10 @@ const LABELS = {
     scannerWatching: "Reading the game window",
     scannerWaiting: "On · waiting for the game",
     scannerOffNote: "Off: matches are saved with result and deck only, and the Deck tracker doesn't update live.",
+    updateDownloading: (v: string) => "Downloading version " + v + "…",
+    updateReady: (v: string) => "Version " + v + " is ready: the app restarts by itself as soon as you're not in a match.",
+    updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment.",
+    quitApp: "Close the app",
     noticeTitle: "The screen scanner is on",
     noticeText: "To record the cards played by you and your opponent, OriginsMeta Analytics reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in the Screen scanner box.",
     noticeOk: "Got it",
@@ -238,6 +242,10 @@ const LABELS = {
     scannerWatching: "Sta leggendo la finestra del gioco",
     scannerWaiting: "Acceso · in attesa del gioco",
     scannerOffNote: "Spento: le partite si salvano solo con esito e mazzo, e il Deck tracker non si aggiorna dal vivo.",
+    updateDownloading: (v: string) => "Sto scaricando la versione " + v + "…",
+    updateReady: (v: string) => "La versione " + v + " è pronta: l'app si riavvia da sola appena non sei in partita.",
+    updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo.",
+    quitApp: "Chiudi l'app",
     noticeTitle: "Lo scanner dello schermo è acceso",
     noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Analytics legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o nel riquadro Scanner dello schermo.",
     noticeOk: "Ho capito",
@@ -354,6 +362,10 @@ const LABELS = {
     scannerWatching: "Leyendo la ventana del juego",
     scannerWaiting: "Activado · esperando al juego",
     scannerOffNote: "Desactivado: las partidas se guardan solo con resultado y mazo, y el Deck tracker no se actualiza en vivo.",
+    updateDownloading: (v: string) => "Descargando la versión " + v + "…",
+    updateReady: (v: string) => "La versión " + v + " está lista: la app se reinicia sola en cuanto no estés en una partida.",
+    updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento.",
+    quitApp: "Cerrar la app",
     noticeTitle: "El escáner de pantalla está activado",
     noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Analytics lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en el recuadro Escáner de pantalla.",
     noticeOk: "Entendido",
@@ -450,7 +462,7 @@ function top(s: AppState) {
   const ok = s.status.cache;
   return `<header class="top">
       <h1 class="brand"><img class="wordmark" src="logo-originsmeta.webp" srcset="logo-originsmeta-sm.webp 320w, logo-originsmeta.webp 640w" sizes="143px" width="143" height="44" alt="OriginsMeta" draggable="false" /><span class="tag">Analytics</span></h1>
-      <span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span>
+      <span class="top-right"><span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span><button type="button" class="btn" id="quit-app">${esc(L.quitApp)}</button></span>
     </header>
     ${s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
 }
@@ -586,6 +598,14 @@ function accountPanel(s: AppState) {
     </section>`;
 }
 
+/** Aggiornamento automatico in corso (11/10/2026): una riga in cima, nessun tasto (l'app fa da sola). */
+function updateNotice(s: AppState) {
+  const u = s.update;
+  if (!u || !u.version || u.state === "idle" || u.state === "error") return "";
+  const text = u.state === "downloading" ? L.updateDownloading(u.version) : u.state === "ready" ? L.updateReady(u.version) : L.updateInstalling(u.version);
+  return `<p class="notice update" role="status">${esc(text)}</p>`;
+}
+
 /** Avviso del primo avvio: lo scanner è acceso (0.3.0, 10/10/2026), che cosa fa e come si spegne. */
 function scannerNotice(s: AppState) {
   if (!s.scanner.on || s.scanner.noticeSeen) return "";
@@ -651,7 +671,7 @@ function render(s: AppState) {
   const typed = input?.value ?? "";
   const focused = document.activeElement === input && input !== null;
   const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
-  root.innerHTML = [top(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  root.innerHTML = [top(s), updateNotice(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
   const again = document.getElementById("link-code") as HTMLInputElement | null;
   if (again) {
     again.value = typed;
@@ -699,6 +719,7 @@ root.addEventListener("click", async (e) => {
   if (target.id === "folder") void window.tracker.openDataFolder();
   if (target.id === "sync-now") void window.tracker.syncNow();
   if (target.id === "ov-session") void window.tracker.resetSession();
+  if (target.id === "quit-app") void window.tracker.quitApp();
   if (target.id === "scan-ok") void window.tracker.dismissScannerNotice();
   if (target.id === "scan-off") void window.tracker.setScanner(false);
   if (target.id === "unlink" && window.confirm(L.unlinkConfirm)) {

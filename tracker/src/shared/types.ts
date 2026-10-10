@@ -95,6 +95,8 @@ export type AppState = {
   dataFolder: string;
   account: AccountState;
   overlay: OverlayState;
+  /** Aggiornamento automatico in corso (11/10/2026, updater.ts); null se non c'è niente da dire. */
+  update: { state: "idle" | "downloading" | "ready" | "installing" | "error"; version: string | null } | null;
   /** Scanner dello schermo (10/10/2026): acceso, finestra del gioco ripresa adesso, avviso del primo avvio già visto. */
   scanner: { on: boolean; capturing: boolean; noticeSeen: boolean };
 };
@@ -126,6 +128,8 @@ export type TrackerApi = {
   setDeckWindow(on: boolean): Promise<boolean>;
   /** Apre o chiude la finestra con le carte dell'avversario (11/10/2026). */
   setOppWindow(on: boolean): Promise<boolean>;
+  /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
+  quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
   setScanner(on: boolean): Promise<boolean>;
   /** L'avviso del primo avvio sullo scanner è stato letto. */

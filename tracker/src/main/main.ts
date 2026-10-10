@@ -23,6 +23,8 @@
  *   una seconda finestra con la Leggendaria e le carte rivelate dall'avversario. La stessa pagina per OBS su
  *   /overlay/deck e /overlay/deck?view=opp. Si accendono dall'app o dal menu dell'icona; posizione e misure in
  *   deck.json e opponent.json.
+ * - Aggiornamento automatico (11/10/2026, updater.ts): l'app impacchettata controlla le release su GitHub, scarica la
+ *   versione nuova e si riavvia aggiornata quando il giocatore non è in partita.
  * - Sicurezza: interfaccia senza Node (contextIsolation, sandbox, preload minimi), nessuna navigazione né finestra
  *   nuova, nessun permesso del browser, link esterni solo verso https://originsmeta.com, IPC accettato solo dalla
  *   pagina locale dell'app (la finestra dell'overlay legge solo i suoi dati).
@@ -48,6 +50,7 @@ import { Account, type Cipher } from "./account";
 import { SyncQueue, claimCode, siteBase, unlinkRemote, type SyncDeps } from "./sync";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { FrameRecorder } from "./frames";
+import { Updater } from "./updater";
 import { deckTrackerView } from "./deckTracker";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
@@ -112,6 +115,7 @@ let notice: AccountState["notice"] = null;
 let sessionStart = Date.now();
 let overlayServer: { port: number; url: string; close: () => void } | null = null;
 let frames: FrameRecorder | null = null;
+let updater: Updater | null = null;
 
 type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null };
 const CARDS = cardsTable as Record<string, CardRow>;
@@ -256,6 +260,7 @@ function state(): AppState {
       sessionStart: new Date(sessionStart).toISOString(),
       view: currentView(),
     },
+    update: updater && updater.status.state !== "idle" ? updater.status : null,
     scanner: {
       // negli screenshot di verifica (--capture) lo scanner non parte: si mostra la preferenza
       on: CAPTURE ? scanPrefs.on : Boolean(frames?.running),
@@ -658,6 +663,12 @@ function registerIpc() {
     if (fromApp(e)) await runSync(true);
   });
   ipcMain.handle("tracker:overlay-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setOverlayWindow(on === true) : Boolean(overlayWin)));
+  // tasto "Chiudi l'app" (11/10/2026, Pierluigi: "un tasto chiudi l'app direttamente nell'app"): come "Esci" dell'icona
+  ipcMain.handle("tracker:quit", (e) => {
+    if (!fromApp(e) || CAPTURE) return;
+    quitting = true;
+    app.quit();
+  });
   ipcMain.handle("tracker:scanner", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setScanner(on === true) : Boolean(frames?.running)));
   ipcMain.handle("tracker:scanner-notice", (e) => {
     if (!fromApp(e)) return;
@@ -769,6 +780,16 @@ async function boot() {
     const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     if (!NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
+    // aggiornamento automatico (11/10/2026): solo nell'app impacchettata, mai durante una partita
+    updater = new Updater({
+      inMatch: () => Boolean(frames?.running && frames.live()?.inMatch),
+      onChange: push,
+      quit: () => {
+        quitting = true;
+        app.quit();
+      },
+    });
+    updater.start();
   }
   createWindow(!HIDDEN);
   watcher.start();
@@ -785,6 +806,7 @@ if (!CAPTURE && !app.requestSingleInstanceLock()) {
     quitting = true;
     watcher?.stop();
     frames?.stop();
+    updater?.stop();
     overlayServer?.close();
   });
   // senza finestre (avvio con Windows, solo l'icona nella barra) l'app resta accesa finché non si sceglie "Esci"

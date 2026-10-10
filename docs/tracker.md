@@ -465,6 +465,17 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   quella del watcher si scarta. Provato dal vivo sul playtest l'11/10 (vittoria in 9 round, registrata da sola). Le 3
   partite della notte del 10/10 e la vittoria sul playtest dell'11/10 sono state completate o aggiunte nello storico di
   Pierluigi con uno script una tantum dai fotogrammi salvati: l'esito letto dallo schermo coincideva con quello dei file.
+- **Aggiornamento automatico (0.3.2, 11/10/2026**, Pierluigi: "dobbiamo fare in modo che le app si aggiornino da sole
+  quando rilasciamo una nuova versione"): `updater.ts` (solo nell'app impacchettata) chiede le release a GitHub 30 s
+  dopo l'avvio e ogni 3 ore; `pickRelease` di `updateRules.ts` accetta solo tag `analytics-vX.Y.Z` pubblicati, non
+  prerelease, con lo zip dal nome fisso all'indirizzo esatto del nostro repo e una dimensione plausibile; lo zip si
+  scarica in `%TEMP%`, si controlla la dimensione, si scompatta con `tar.exe`; fuori dalle partite (scanner) l'app
+  scrive uno script cmd (`Wait-Process` sull'app, `robocopy` della cartella nuova sopra quella vecchia, riavvio), lo
+  lancia staccato e si chiude. Riga in cima all'app durante download e installazione. Provato l'11/10 su una copia con
+  `ORIGINSMETA_UPDATE_FROM=0.3.0`: dalla 0.3.2 alla 0.3.1 scaricata da GitHub e riaperta da sola. La prima versione
+  usava `tasklist | find`, che lanciato dall'app senza console restava bloccato su `find`. Chi ha la 0.3.0 o la 0.3.1
+  aggiorna a mano una volta. Niente firma ancora (Fase 5): la difesa è l'indirizzo esatto su github.com via HTTPS e la
+  dimensione dichiarata da GitHub. Tasto "Chiudi l'app" in alto a destra (Pierluigi, 11/10).
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
   statistiche per carta sul sito (win rate quando una carta viene giocata).
 

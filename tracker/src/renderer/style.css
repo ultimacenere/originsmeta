@@ -352,3 +352,6 @@ details.match > summary:hover .m-title { color: #fff; }
 .notice h2 { margin: 0; font-family: var(--display); font-size: 0.95rem; color: var(--mint); }
 .notice p { margin: 0; font-size: 0.86rem; color: var(--chalk); }
 .fine.live { color: var(--mint); }
+.notice.update { font-size: 0.86rem; color: var(--chalk); }
+/* tasto "Chiudi l'app" accanto allo stato (11/10/2026) */
+.top-right { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }

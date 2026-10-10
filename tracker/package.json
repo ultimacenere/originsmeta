@@ -1,7 +1,7 @@
 {
   "name": "originsmeta-tracker",
   "productName": "OriginsMeta Analytics",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Registra da solo le partite di Origins TCG leggendo i file del gioco sul PC (fan project, non affiliato a Koin Games).",
   "author": "OriginsMeta",
@@ -15,7 +15,7 @@
     "scan": "npm run build && electron . --scan",
     "card-art": "node scripts/card-art.mjs",
     "package": "node scripts/package.mjs",
-    "test": "node --import ./scripts/ts-hooks.mjs --test src/main/watcher.test.ts src/main/store.test.ts src/main/sync.test.ts src/main/overlay.test.ts src/main/deckTracker.test.ts src/shared/frames.test.ts src/shared/recognize.test.ts src/shared/reconstruct.test.ts",
+    "test": "node --import ./scripts/ts-hooks.mjs --test src/main/watcher.test.ts src/main/store.test.ts src/main/sync.test.ts src/main/overlay.test.ts src/main/deckTracker.test.ts src/main/updateRules.test.ts src/shared/frames.test.ts src/shared/recognize.test.ts src/shared/reconstruct.test.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {

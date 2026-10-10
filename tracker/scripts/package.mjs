@@ -48,8 +48,9 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 2. Apri "${name}.exe". Windows può dire "Windows ha protetto il PC": premi "Ulteriori informazioni"
    e poi "Esegui comunque" (l'app non è ancora firmata).
 3. L'app si apre e mette un'icona accanto all'orologio: mentre giochi a Origins TCG registra da sola le partite,
-   15 secondi dopo la fine. La X della finestra chiude l'app (anche overlay e Deck tracker); se parte con Windows
-   resta nell'icona: per uscire, tasto destro sull'icona e "Esci".
+   15 secondi dopo la fine. Per chiuderla: il tasto "Chiudi l'app" in alto, la X della finestra o "Esci" dal menu
+   dell'icona (si chiudono anche overlay e pannelli). Dalla 0.3.2 l'app si aggiorna da sola quando esce una versione
+   nuova: la scarica e si riavvia aggiornata appena non sei in partita.
 4. Per mandare le partite al tuo account OriginsMeta: su https://originsmeta.com/it/account/tracker (con l'accesso
    fatto) premi "Crea un codice"; nell'app apri "Account OriginsMeta", scrivi il codice e premi "Collega".
    Collegandola, le partite entrano anche nelle statistiche anonime del sito (win rate).
