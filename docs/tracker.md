@@ -356,8 +356,11 @@ Pierluigi, 10/10/2026: "una seconda dashboard che fa vedere il deck in uso e se 
 tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata del mazzo del gioco:
 
 - **Cosa mostra** (`deckTrackerView` in `src/main/deckTracker.ts`, test `deckTracker.test.ts`): il mazzo scelto nel
-  gioco (dai file, cambia appena lo si sceglie) con la Leggendaria intera, nome, record del mazzo nello storico sul PC e
-  le 12 carte per costo, ognuna con miniatura intera (mai ritagliata), costo e due pallini per le copie. Con lo
+  gioco (dai file, cambia appena lo si sceglie): il nome, con il round sulla stessa riga durante la partita, e le 13
+  carte tutte uguali, la Leggendaria per prima con la stella e le altre per costo (Pierluigi, 10/10: "metti la
+  leggendaria come le altre carte, il nome del deck e le carte tutte uguali, fine, meno spazio possibile"; il record
+  del mazzo resta nei dati ma non si mostra), ognuna con miniatura intera (mai ritagliata), costo e pallini per le
+  copie. Con lo
   scanner acceso (`--scan`/`--frames`) si aggiorna dal vivo: round, copie giocate spente (mai oltre le copie del mazzo),
   Leggendaria segnata "giocata", e sotto l'avversario con la Leggendaria della schermata VS e le carte che ha rivelato,
   con le copie viste. La partita resta nel pannello fino a 10 minuti dopo l'ultima lettura del mana (`LIVE_MS` di
