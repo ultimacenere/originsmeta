@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
+import { analyticsAccess } from "./analyticsAccess";
 import { LINK } from "@/lib/tracker/upload";
 import { dbErrorCode } from "@/lib/tracker/http";
 
@@ -32,6 +33,8 @@ export async function createTrackerCode(): Promise<TrackerCodeState> {
   const { supabase, user } = await currentUser();
   if (!supabase) return { error: "unavailable" };
   if (!user) return { error: "not_authenticated" };
+  // in prova dal 10/10/2026: collegano l'app solo Creator, Pro, Staff e admin (come la pagina /account/tracker)
+  if (!(await analyticsAccess())) return { error: "unavailable" };
   const { data, error } = await supabase.rpc("tracker_link_code");
   if (error || typeof data !== "string") {
     const reason = error ? dbErrorCode(error) : "error";

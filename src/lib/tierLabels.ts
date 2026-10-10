@@ -57,13 +57,26 @@ export function tierExplorerLabels(d: Dictionary): TierExplorerLabels {
 }
 
 /**
- * Lo stato di ogni fonte sotto il suo nome, nella testata della sezione. La scheda "Analytics" (02/10/2026) dice solo
- * che il tool è in pausa.
+ * Lo stato di ogni fonte sotto il suo nome, nella testata della sezione. `winrateGames`: partite della patch mostrata
+ * dalla pagina dei win rate (`readWinrateGames`), null finché non c'è un numero sopra la soglia ("in arrivo"); assente
+ * sulle pagine che non leggono il database (il tool), che mostrano la dicitura fissa. Dal 02 al 10/10/2026 la scheda era
+ * "Analytics · in pausa" (patch 0.7 senza replay); riaperta il 10/10/2026, quando l'app legge di nuovo le carte giocate
+ * dallo schermo.
  */
-export function tierSourceState(d: Dictionary, n: { lists: number; people: number; decks: number; officialUpdated?: string; cardVotes?: number | null }) {
+export function tierSourceState(
+  d: Dictionary,
+  n: { lists: number; people: number; decks: number; officialUpdated?: string; cardVotes?: number | null; winrateGames?: number | null },
+) {
   const t = d.tier;
   return {
-    analytics: t.sourceAnalyticsState,
+    winrate:
+      n.winrateGames === undefined
+        ? t.sourceWinrateHint
+        : n.winrateGames
+          ? n.winrateGames === 1
+            ? t.sourceWinrateGamesOne
+            : t.sourceWinrateGames.replace("{n}", String(n.winrateGames))
+          : t.sourceWinrateSoon,
     // voti alle carte (06/10/2026): quanti voti da 1 a 10 sono stati dati; null = migrazione non ancora applicata ("in arrivo")
     votes:
       n.cardVotes === undefined

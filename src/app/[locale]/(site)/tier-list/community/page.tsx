@@ -8,6 +8,8 @@ import { normalizeBadge } from "@/lib/community/badges";
 import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communitySample, communityStage } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
+import { readWinrateGames } from "@/lib/community/trackerStatsQueries";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
@@ -43,10 +45,10 @@ export default async function CommunityTierListPage({ params }: { params: Locale
   const { locale, dict: d } = await resolveLocale(params);
   const t = d.tier;
   const c = t.community;
-  const data = await loadData(locale);
+  const [data, winrateGames] = await Promise.all([loadData(locale), ANALYTICS_PUBLIC ? readWinrateGames() : null]);
   const labels = tierExplorerLabels(d);
   const lists = savedLists(data);
-  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length, cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null });
+  const state = tierSourceState(d, { lists, people: data.lists.people, decks: data.decks.length, cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null, winrateGames });
   const kinds = [
     { id: "legendaries" as const, title: t.sections.legendaries.title, text: t.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary), n: data.lists.legendaries },
     { id: "cards" as const, title: t.sections.cards.title, text: t.sections.cards.text, entries: data.cards.filter((x) => !x.legendary), n: data.lists.cards },

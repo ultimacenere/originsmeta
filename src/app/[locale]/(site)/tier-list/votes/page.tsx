@@ -8,6 +8,8 @@ import { CARD_RANKED_MIN_VOTES, CARD_VOTES_MIN_VOTERS, SCORE_TIERS, fillVoteText
 import { cardVoteLabels } from "@/lib/cardVoteLabels";
 import { loadTierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
+import { readWinrateGames } from "@/lib/community/trackerStatsQueries";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
 import { TierExplorer } from "@/components/TierExplorer";
@@ -44,7 +46,7 @@ export default async function CardVotesTierListPage({ params }: { params: Locale
   const t = d.tier;
   const l = cardVoteLabels[locale];
   const p = l.page;
-  const data = await loadData(locale);
+  const [data, winrateGames] = await Promise.all([loadData(locale), ANALYTICS_PUBLIC ? readWinrateGames() : null]);
   const votes = data.cardVotes;
   const totals = votes?.totals ?? { votes: 0, voters: 0, cards: 0 };
   const stage = votes ? votesStage(totals.voters, totals.votes) : "empty";
@@ -54,6 +56,7 @@ export default async function CardVotesTierListPage({ params }: { params: Locale
     people: data.lists.people,
     decks: data.decks.length,
     cardVotes: votes ? totals.votes : null,
+    winrateGames,
   });
   const path = href(locale, "/tier-list/votes");
   // le soglie nei testi con i decimali della lingua ("8,5" in italiano e spagnolo, "8.5" in inglese)

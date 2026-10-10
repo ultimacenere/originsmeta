@@ -193,7 +193,7 @@ Les versions précédentes restent sur la page du deck, sous « Versions de ce 
 
 ## OriginsMeta Analytics {#analytics}
 
-[OriginsMeta Analytics](/fr/analytics) est notre application Windows qui enregistre toute seule vos parties d'Origins TCG pendant que vous jouez : le deck, le résultat, les Légendaires affrontées, avec un overlay au-dessus du jeu et pour OBS. Elle est prête et elle fonctionne, mais depuis le patch 0.7 le jeu n'enregistre plus sur votre PC les données de partie que l'application lisait : pour l'instant, elle est en pause, et les pages de win rate sont désactivées.
+OriginsMeta Analytics est notre application Windows qui enregistre toute seule vos parties d'Origins TCG pendant que vous jouez : le deck, le résultat, les Légendaires affrontées, avec un overlay au-dessus du jeu et pour OBS. Elle est prête et elle fonctionne, mais depuis le patch 0.7 le jeu n'enregistre plus sur votre PC les données de partie que l'application lisait : pour l'instant, elle est en pause, et les pages de win rate sont désactivées.
 
 Nous voulons la montrer à l'équipe de Koin Games et demander si ces données peuvent redevenir disponibles. Si elle vous intéresse, appuyez sur **« Oui, ça m'intéresse »** sur la page : plus les joueurs le demandent, plus la demande pèse.
 

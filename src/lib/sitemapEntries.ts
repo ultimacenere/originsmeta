@@ -12,6 +12,8 @@ import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
 import type { IndexEntry, UrlEntry } from "./seoXml";
 import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
+import { isEarly } from "./tracker/stats";
+import { ANALYTICS_PUBLIC } from "./community/badges";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -108,6 +110,12 @@ export type CommunityData = {
   deckSets?: { sets: { slug: string; updated_at: string; locales: Locale[] }[]; latest?: string };
   /** voti alle carte (06/10/2026): l'ora dell'ultimo voto, per /tier-list/votes; assente prima della migrazione */
   cardVotes?: { latest?: string };
+  /**
+   * Win rate (riaperti il 10/10/2026): partite contate nella patch che mostra /tier-list/win-rate (`readWinrateGames`),
+   * null o assente senza numeri sopra la soglia. La pagina entra in sitemap solo quando si indicizza, cioè dalle 100
+   * partite in su (`isEarly` di tracker/stats.ts, la stessa regola del suo noindex).
+   */
+  winrateGames?: number | null;
 };
 
 export const EMPTY_COMMUNITY: CommunityData = { decks: [], deckRefs: null, tournaments: [], profiles: [], tierLists: { byUser: [] } };
@@ -193,6 +201,12 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/community", section: "pages", route: "/tier-list/community", dates: [data.tierLists.latest] },
     // Tier list dei voti alle carte (06/10/2026): cambia a ogni voto (l'ora dell'ultimo voto, da card_vote_totals).
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
+    // Win rate (riaperti il 10/10/2026): solo quando la pagina si indicizza (almeno 100 partite nella patch mostrata);
+    // sotto è noindex e fuori da hreflang. I numeri cambiano a ogni partita: le date sono quelle del modello.
+    // In prova dal 10/10/2026 (solo Creator, Pro, Staff e admin): mai in sitemap finché ANALYTICS_PUBLIC è spento.
+    ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
+      ? [{ path: "/tier-list/win-rate", section: "pages", route: "/tier-list/win-rate", dates: [] } satisfies SitemapPage]
+      : []),
     // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
     { path: "/cards", section: "pages", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())] },
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.
@@ -218,8 +232,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // /faq è l'unica pagina con dati strutturati FAQPage. Le sue date sono quelle del modello.
     { path: "/faq", section: "pages", route: "/faq", dates: [] },
     { path: "/about", section: "pages", route: "/about", dates: [] },
-    // OriginsMeta Analytics (02/10/2026): la pagina del tool in pausa, con il tasto per chi lo vuole. Date del modello.
-    { path: "/analytics", section: "pages", route: "/analytics", dates: [] },
+    // OriginsMeta Analytics (02/10/2026; dal 10/10/2026 la pagina dell'app, con il download e la guida all'installazione). Date del modello.
+    // In prova dal 10/10/2026: fuori dalla sitemap finché ANALYTICS_PUBLIC è spento (la pagina è noindex e dà 404 ai più).
+    ...(ANALYTICS_PUBLIC ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage] : []),
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
     // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
     // e con i mazzi pubblicati, che mostra contati per autore.

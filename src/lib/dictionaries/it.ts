@@ -415,8 +415,6 @@ export const it: Dictionary = {
     sourceVotesSoon: "in arrivo",
     /* Win rate (30/09/2026): le partite registrate con l'app OriginsMeta Analytics (docs/tracker.md) */
     sourceWinrate: "Win rate",
-    sourceAnalytics: "Analytics",
-    sourceAnalyticsState: "in pausa",
     sourceWinrateSoon: "in arrivo",
     sourceWinrateGames: "{n} partite",
     sourceWinrateGamesOne: "1 partita",
@@ -486,9 +484,9 @@ export const it: Dictionary = {
       h1: "Win rate: Leggendarie, mazzi e carte",
       description: "I win rate di Origins TCG dalle partite registrate con l'app OriginsMeta Analytics: Leggendarie, mazzi della community, archetipi e carte, patch per patch.",
       intro:
-        "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Analytics, la nostra app per Windows (in prova). Ogni numero viene da almeno 20 partite di almeno 3 giocatori diversi e compare appena ci arriva; sotto le 100 partite è una prima stima.",
+        "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Analytics, la nostra app per Windows. Ogni numero viene da almeno 20 partite di almeno 3 giocatori diversi e compare appena ci arriva; sotto le 100 partite è una prima stima.",
       empty:
-        "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Analytics, l'app per Windows di OriginsMeta, oggi in prova. Ogni numero compare qui quando viene da almeno 20 partite di almeno 3 giocatori.",
+        "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Analytics, l'app per Windows di OriginsMeta. Ogni numero compare qui quando viene da almeno 20 partite di almeno 3 giocatori.",
       fallback: "La patch in corso ({current}) non ha ancora abbastanza partite: questi sono i numeri della patch {patch}.",
       testThreshold: "Soglia di prova: per ora i numeri si vedono già da una partita, per provare la pagina. Al lancio ogni numero torna a richiedere almeno 20 partite di almeno 3 giocatori.",
       early: "prime stime",
@@ -520,7 +518,14 @@ export const it: Dictionary = {
         opponents: { title: "Leggendarie più incontrate", text: "Quanto spesso ogni Leggendaria compare dall'altra parte, e il win rate contro di lei." },
       },
       cols: { card: "Carta", inDeck: "Nel mazzo", played: "Giocata", avgRound: "Round medio" },
-      deckBox: { title: "Win rate nelle partite registrate", text: "{rate} su {games} · patch {patch}", link: "Tutti i win rate" },
+      deckBox: { title: "Win rate nelle partite registrate", text: "{rate} su {games} · patch {patch}", link: "Tutti i win rate", app: "Registra le tue con OriginsMeta Analytics" },
+      /* riquadro sotto la testata e riga delle note, verso /analytics (la pagina dell'app, 10/10/2026) */
+      app: {
+        text: "I numeri arrivano dalle partite che i giocatori registrano con OriginsMeta Analytics, la nostra app per Windows. Registra anche le tue: più partite, win rate più affidabili.",
+        cta: "Scarica OriginsMeta Analytics",
+        notesText: "L'app che registra le partite:",
+        notesAnchor: "OriginsMeta Analytics",
+      },
     },
     /* Griglia, elenco, tabella e dettaglio della carta (componente client TierExplorer) */
     explorer: {

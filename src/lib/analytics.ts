@@ -112,6 +112,9 @@
  *                         deck_open_builder con placement=draft)
  *   ★ donate_click        clic su "Dona ora" verso la pagina di donazione di      placement (header | menu: la tendina
  *                         PayPal (06/10/2026, PayPalButton; attributi sul link)   del telefono)
+ *   ★ analytics_download  clic su "Scarica OriginsMeta Analytics" della pagina    placement (top | install: il tasto del
+ *                         /analytics (10/10/2026; attributi sul link, verso lo     passo 2 della guida)
+ *                         zip di GitHub Releases)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -235,6 +238,7 @@ export type EventParams = {
   draft_start: { format: string; opponent: "bot" | "friend" };
   draft_complete: { format: string; grade: string };
   donate_click: { placement: string };
+  analytics_download: { placement: "top" | "install" };
 };
 export type EventName = keyof EventParams;
 
@@ -287,6 +291,7 @@ export const VERCEL_PROPS = {
   draft_start: ["format", "opponent"],
   draft_complete: ["format", "grade"],
   donate_click: ["placement"],
+  analytics_download: ["placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

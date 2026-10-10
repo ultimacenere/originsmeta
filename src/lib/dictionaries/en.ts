@@ -422,8 +422,6 @@ export const en = {
     sourceVotesSoon: "coming soon",
     /* Win rate (30/09/2026): the games recorded with the OriginsMeta Analytics app (docs/tracker.md) */
     sourceWinrate: "Win rate",
-    sourceAnalytics: "Analytics",
-    sourceAnalyticsState: "paused",
     sourceWinrateSoon: "coming soon",
     sourceWinrateGames: "{n} games",
     sourceWinrateGamesOne: "1 game",
@@ -495,9 +493,9 @@ export const en = {
       h1: "Win rates: Legendaries, decks and cards",
       description: "Origins TCG win rates from the games recorded with the OriginsMeta Analytics app: Legendaries, community decks, archetypes and cards, patch by patch.",
       intro:
-        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app (being tested). Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
+        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app. Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
       empty:
-        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows, which is being tested. Each number shows up here once it comes from at least 20 games by at least 3 players.",
+        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows. Each number shows up here once it comes from at least 20 games by at least 3 players.",
       /* {current} = the patch in progress, {patch} = the one shown */
       fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
       testThreshold: "Test threshold: for now the numbers show from a single game, to check the page. At launch each number needs at least 20 games by at least 3 players again.",
@@ -533,7 +531,14 @@ export const en = {
       },
       cols: { card: "Card", inDeck: "In the deck", played: "When played", avgRound: "Avg. round" },
       /* box on the community deck pages, only when the deck's exact list passes the threshold */
-      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} · patch {patch}", link: "All win rates" },
+      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} · patch {patch}", link: "All win rates", app: "Record yours with OriginsMeta Analytics" },
+      /* the box under the page header and the line in the notes, towards /analytics (the app's page, 10/10/2026) */
+      app: {
+        text: "The numbers come from the matches players record with OriginsMeta Analytics, our Windows app. Record yours too: the more matches, the more reliable the win rates.",
+        cta: "Download OriginsMeta Analytics",
+        notesText: "The app that records the matches:",
+        notesAnchor: "OriginsMeta Analytics",
+      },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */
     explorer: {

@@ -9,6 +9,8 @@ import { tierTone } from "@/lib/tiercode";
 import { deckBrief, pickPreview, type Tier } from "@/lib/tierstats";
 import { loadTierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
+import { readWinrateGames } from "@/lib/community/trackerStatsQueries";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { cardVoteLabels } from "@/lib/cardVoteLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
@@ -54,8 +56,8 @@ const PREVIEW = { decks: { limit: 4, max: 6 }, legendaries: { limit: 4, max: 8 }
 export default async function TierListPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const t = d.tier;
-  // i dati della sezione e le partite della scheda "Win rate" (30/09/2026), in parallelo
-  const data = await loadTierData(locale);
+  // i dati della sezione e le partite della scheda "Win rate" (30/09/2026, riaperta il 10/10/2026), in parallelo
+  const [data, winrateGames] = await Promise.all([loadTierData(locale), ANALYTICS_PUBLIC ? readWinrateGames() : null]);
   const labels = tierExplorerLabels(d);
 
   // Fasce di OriginsMeta: vuote fino ai risultati della Crimson Cup (tierlist.ts). Una mappa slug → fascia per sezione.
@@ -77,6 +79,7 @@ export default async function TierListPage({ params }: { params: LocaleParams })
     decks: data.decks.length,
     officialUpdated: ranked ? formatDate(locale, tierList.updated) : undefined,
     cardVotes: data.cardVotes ? data.cardVotes.totals.votes : null,
+    winrateGames,
   });
   const voteLabels = cardVoteLabels[locale].page;
 

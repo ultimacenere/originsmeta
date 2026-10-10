@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { href, type Locale } from "@/lib/i18n";
 import { cleanDescription, pageTitle, resolveLocale, type LocaleParams } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { fillTracker, trackerLabels } from "@/lib/trackerLabels";
+import { analyticsInstallHref } from "@/lib/analyticsLabels";
+import { analyticsAccess } from "@/lib/community/analyticsAccess";
 import { readOwnMatches, readTrackerDevices } from "@/lib/community/trackerQueries";
 import { forgetTrackerMatches, revokeTrackerDevice } from "@/lib/community/trackerActions";
 import { personalStats, recentMatches, type OwnMatch, type Record3 } from "@/lib/tracker/personal";
@@ -68,6 +70,8 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
     );
   }
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/account/tracker"))}`);
+  // in prova dal 10/10/2026 (ANALYTICS_PUBLIC spento): solo Creator, Pro, Staff e admin, gli altri ricevono un 404
+  if (!(await analyticsAccess())) notFound();
 
   const [devices, matches] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id)]);
   const unavailable = devices.status !== "ok" || matches.status !== "ok";
@@ -91,7 +95,13 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
       <p className="kicker mt-6 text-mint">{L.kicker}</p>
       <h1 className="t-page mt-2">{L.h1}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{L.intro}</p>
-      <p className="mt-2 max-w-2xl text-sm text-pale-muted">{L.beta}</p>
+      {/* Al posto del vecchio "l'app è in prova" (10/10/2026): chi non ha ancora l'app va al download e alla guida */}
+      <p className="mt-2 max-w-2xl text-sm text-pale-muted">
+        {L.install}{" "}
+        <Link href={analyticsInstallHref(locale)} prefetch={false} className="link-mint font-bold">
+          {L.installLink} →
+        </Link>
+      </p>
 
       {unavailable ? (
         <p className="card-night mt-8 p-6 text-pale-muted">{L.unavailable}</p>

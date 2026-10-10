@@ -150,10 +150,9 @@ const nextConfig: NextConfig = {
       ...rootRedirect("/en"),
       // Sezioni senza lingua (/cards/merlin, /news/<slug>…): la stessa pagina nella lingua del browser.
       ...sectionRedirects(),
-      // La pagina dei win rate (30/09/2026) è stata tolta il 02/10/2026: il tool è in pausa dalla patch 0.7 e la sua
-      // pagina è /analytics (Pierluigi: "togliamo la pagina del winrate, creiamo una pagina invece"). Permanente: la
-      // pagina vecchia era noindex e non torna con lo stesso indirizzo.
-      { source: "/:locale(en|it|es|fr)/tier-list/win-rate", destination: "/:locale/analytics", permanent: true },
+      // /tier-list/win-rate: dal 02 al 10/10/2026 era un 308 verso /analytics (tool in pausa dalla patch 0.7); tolto il
+      // 10/10/2026, quando la pagina dei win rate è tornata (Pierluigi: "vanno riaperte"). I browser che avevano visto il
+      // 308 lo tengono in cache finché non la svuotano: i link del sito portano comunque alla pagina.
       // Il francese, ritirato il 15/09/2026 (allora /fr mandava a /en con un 308), è tornato il 07/10/2026 come quarta lingua:
       // /fr è di nuovo una lingua vera, nessun redirect.
     ];

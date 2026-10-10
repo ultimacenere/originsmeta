@@ -10,6 +10,8 @@ import { listedInDirectory } from "@/lib/community/creatorDirectory";
 import { listGuideIndex } from "@/lib/community/guideQueries";
 import { listComicIndex } from "@/lib/community/comicQueries";
 import { listDeckSetIndex } from "@/lib/community/deckSetQueries";
+import { readWinrateGames } from "@/lib/community/trackerStatsQueries";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { todayUtc } from "@/lib/lastmod";
 import { sitemapIndexXml, urlsetXml } from "@/lib/seoXml";
 import {
@@ -67,7 +69,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 9; // 9: mazzi torneo (04/10/2026); 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
+export const SITEMAP_DATA_VERSION = 10; // 10: partite dei win rate, per /tier-list/win-rate (10/10/2026); 9: mazzi torneo (04/10/2026); 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -178,7 +180,7 @@ async function showcaseDates(): Promise<NonNullable<CommunityData["showcase"]>> 
  * sito acceso come le altre letture.
  */
 async function readCommunity(): Promise<CommunityData> {
-  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides, communityComics, deckSets] = await Promise.all([
+  const [deckIndex, tournaments, profiles, tierLists, deckRefs, showcase, communityGuides, communityComics, deckSets, winrateGames] = await Promise.all([
     listPublishedDeckIndex(),
     tournamentSlugs(),
     listPublicProfiles(),
@@ -191,8 +193,11 @@ async function readCommunity(): Promise<CommunityData> {
     listComicIndex(),
     // mazzi torneo (04/10/2026): tabella mancante = nessun trio, ogni altro errore lancia
     listDeckSetIndex(),
+    // win rate (10/10/2026): partite della patch mostrata, null senza numeri o con un errore (mai lancia: la pagina dei
+    // win rate è facoltativa e fuori dalla sitemap finché non si indicizza)
+    ANALYTICS_PUBLIC ? readWinrateGames() : null,
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets, cardVotes: await cardVoteDate() };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets, winrateGames, cardVotes: await cardVoteDate() };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

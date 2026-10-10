@@ -8,6 +8,7 @@ import { NavLink } from "./NavLink";
 import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 
 /** `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale). */
 type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean }[] };
@@ -34,7 +35,9 @@ export function navItems(dict: Dictionary): NavItem[] {
         // voti alle carte da 1 a 10 (06/10/2026): la tier list costruita dai voti degli iscritti
         { label: t.sourceVotes, path: "/tier-list/votes" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
-        { label: t.sourceAnalytics, path: "/analytics" },
+        // win rate dalle partite registrate con OriginsMeta Analytics: "Analytics · in pausa" dal 02/10, riaperti il 10/10/2026
+        // ma in prova (solo Creator, Pro, Staff e admin): la voce compare quando si aprono a tutti (ANALYTICS_PUBLIC)
+        ...(ANALYTICS_PUBLIC ? [{ label: t.sourceWinrate, path: "/tier-list/win-rate" }] : []),
       ],
     },
     { label: dict.nav.guides, path: "/guides" },

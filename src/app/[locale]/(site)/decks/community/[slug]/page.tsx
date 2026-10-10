@@ -47,6 +47,9 @@ import { DeckArtImage } from "@/components/DeckArtImage";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { deckArtLabels } from "@/lib/deckArtLabels";
 import { supabaseUrl } from "@/lib/supabase/env";
+import { readDeckWinrate } from "@/lib/community/trackerStatsQueries";
+import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { deckListKey, isEarly, percent } from "@/lib/tracker/stats";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -153,9 +156,15 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const handle = authorHandle(deck.profile);
   const L = communityPageLabels[locale];
   // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
-  // dati di Next condivide (una al minuto), invece di una query per scheda. (Il riquadro dei win rate del 30/09/2026 non
-  // c'è più dal 02/10/2026, con la pagina dei win rate: il tool è in pausa, /analytics.)
-  const published = await listPublishedDecks();
+  // dati di Next condivide (una al minuto), invece di una query per scheda. Accanto, il win rate del mazzo nelle
+  // partite registrate con OriginsMeta Analytics quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
+  // al 10/10/2026, quando la patch 0.7 aveva tolto i replay): null sotto la soglia, prima della migrazione o con un
+  // errore (il riquadro è facoltativo). In prova dal 10/10/2026 (solo Creator, Pro, Staff e admin): la scheda è ISR e non sa
+  // chi guarda, quindi niente riquadro né lettura finché ANALYTICS_PUBLIC è spento.
+  const [published, winrate] = await Promise.all([
+    listPublishedDecks(),
+    ANALYTICS_PUBLIC ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
+  ]);
   // Altri mazzi con la stessa Leggendaria, poi altri mazzi (DECKS-11, 25/09/2026): prima erano gli 8 più recenti, e i
   // link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts): i vicini in
   // ordine di pubblicazione, così ogni mazzo riceve link, e prima i mazzi che si indicizzano.
@@ -403,6 +412,38 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             labels={favoriteLabels[locale]}
           />
         </div>
+
+        {/* Win rate nelle partite registrate con OriginsMeta Analytics (30/09/2026, Pierluigi "fai 1 e 2"; riaperto il
+            10/10/2026): solo quando la lista esatta del mazzo (le 13 carte) supera la soglia di stats.ts; "prime stime" sotto
+            le 100 partite. Altrimenti niente riquadro. Accanto ai win rate, l'app per registrare le proprie partite. */}
+        {winrate ? (
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border-2 border-sky bg-night-2/80 p-3 text-sm">
+            <div className="min-w-0 flex-1 basis-56">
+              <p className="kicker text-mint">{d.tier.winrate.deckBox.title}</p>
+              <p className="mt-1 text-pale">
+                <span className="font-mono text-lg font-bold text-chalk">{percent(winrate.wins, winrate.games)}%</span>{" "}
+                {d.tier.winrate.deckBox.text
+                  .replace("{rate}", "")
+                  .replace("{games}", winrate.games === 1 ? d.tier.winrate.gamesOne : d.tier.winrate.games.replace("{n}", String(winrate.games)))
+                  .replace("{patch}", patchLabel(winrate.patch, locale))
+                  .trim()}
+                {isEarly(winrate.games) ? (
+                  <span className="stat-pill ml-2 bg-night-3 align-middle text-[10px] font-semibold uppercase text-gold" title={d.tier.winrate.earlyTitle}>
+                    {d.tier.winrate.early}
+                  </span>
+                ) : null}
+              </p>
+            </div>
+            <p className="flex flex-col gap-1 text-xs">
+              <Link href={`${href(locale, "/tier-list/win-rate")}#decks`} prefetch={false} className="link-mint font-bold">
+                {d.tier.winrate.deckBox.link} →
+              </Link>
+              <Link href={href(locale, "/analytics")} prefetch={false} className="link-mint">
+                {d.tier.winrate.deckBox.app} →
+              </Link>
+            </p>
+          </div>
+        ) : null}
 
         <OwnerActions
           deckId={deck.id}

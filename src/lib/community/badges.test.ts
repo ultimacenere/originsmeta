@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { sqlStatements } from "../../../scripts/schema-guard.mjs";
 import {
+  ANALYTICS_BADGES,
   AUTHOR_DECK_LIMIT,
   BADGES,
   BADGE_ORDER,
@@ -19,6 +20,7 @@ import {
   UNLIMITED_BADGES,
   canListTournaments,
   canPublishGuides,
+  canSeeAnalytics,
   isShowcaseBadge,
   normalizeBadge,
   publishedDeckCap,
@@ -87,8 +89,14 @@ describe("ruoli e permessi", () => {
     for (const b of ["community", "influencer", null]) assert.ok(!canPublishGuides(b, "user"), String(b));
     assert.ok(!canPublishGuides(undefined));
   });
+  test("OriginsMeta Analytics in prova (10/10/2026): Creator, Pro, Staff e admin; l'Autore e la community no", () => {
+    for (const b of ["creator", "pro", "staff"]) assert.ok(canSeeAnalytics(b, "user"), b);
+    assert.ok(canSeeAnalytics("community", "admin"));
+    for (const b of ["author", "community", "influencer", null]) assert.ok(!canSeeAnalytics(b, "user"), String(b));
+    assert.ok(!canSeeAnalytics(undefined));
+  });
   test("gli elenchi dei permessi usano solo tag esistenti", () => {
-    for (const list of [UNLIMITED_BADGES, LISTING_BADGES, SHOWCASE_BADGES, GUIDE_BADGES]) for (const b of list) assert.ok((BADGES as readonly string[]).includes(b), b);
+    for (const list of [UNLIMITED_BADGES, LISTING_BADGES, SHOWCASE_BADGES, GUIDE_BADGES, ANALYTICS_BADGES]) for (const b of list) assert.ok((BADGES as readonly string[]).includes(b), b);
   });
   test("tier list firmate: gli stessi tag del profilo vetrina (tierstats.ts non importa nulla, quindi li ripete)", () => {
     assert.deepEqual(sorted(SIGNED_BADGES), sorted(SHOWCASE_BADGES));

@@ -1132,7 +1132,7 @@ The previous versions stay on the deck's page, under "Versions of this deck", wi
 
 ## OriginsMeta Analytics {#analytics}
 
-[OriginsMeta Analytics](/en/analytics) is our Windows app that records your Origins TCG matches on its own while you play: the deck, the result, the Legendaries you faced, with an overlay above the game and for OBS. It's ready and it works, but since patch 0.7 the game no longer saves on your PC the match data the app read, so for now it's paused, and the win rate pages are switched off.
+OriginsMeta Analytics is our Windows app that records your Origins TCG matches on its own while you play: the deck, the result, the Legendaries you faced, with an overlay above the game and for OBS. It's ready and it works, but since patch 0.7 the game no longer saves on your PC the match data the app read, so for now it's paused, and the win rate pages are switched off.
 
 We want to show it to the Koin Games team and ask whether that data can be made available again. If you're interested, press **"Yes, I want it"** on the page: the more players ask, the more the request counts.
 
@@ -1182,7 +1182,7 @@ Le versioni precedenti restano nella pagina del mazzo, in "Versioni del mazzo", 
 
 ## OriginsMeta Analytics {#analytics}
 
-[OriginsMeta Analytics](/it/analytics) è la nostra app per Windows che registra da sola le tue partite di Origins TCG mentre giochi: il mazzo, l'esito, le Leggendarie che hai incontrato, con un overlay sopra il gioco e per OBS. È pronta e funziona, ma dalla patch 0.7 il gioco non salva più sul PC i dati delle partite che l'app leggeva, quindi per ora è in pausa e le pagine dei win rate sono spente.
+OriginsMeta Analytics è la nostra app per Windows che registra da sola le tue partite di Origins TCG mentre giochi: il mazzo, l'esito, le Leggendarie che hai incontrato, con un overlay sopra il gioco e per OBS. È pronta e funziona, ma dalla patch 0.7 il gioco non salva più sul PC i dati delle partite che l'app leggeva, quindi per ora è in pausa e le pagine dei win rate sono spente.
 
 Vogliamo mostrarla al team di Koin Games e chiedere se quei dati possono tornare disponibili. Se ti interessa, premi **"Sì, mi interessa"** sulla pagina: più giocatori lo chiedono, più la richiesta conta.
 
@@ -1232,7 +1232,7 @@ Las versiones anteriores siguen en la página del mazo, en "Versiones del mazo",
 
 ## OriginsMeta Analytics {#analytics}
 
-[OriginsMeta Analytics](/es/analytics) es nuestra app para Windows que registra sola tus partidas de Origins TCG mientras juegas: el mazo, el resultado, las Legendarias a las que te enfrentaste, con un overlay sobre el juego y para OBS. Está lista y funciona, pero desde el parche 0.7 el juego ya no guarda en tu PC los datos de las partidas que leía la app, así que por ahora está en pausa y las páginas de win rate están apagadas.
+OriginsMeta Analytics es nuestra app para Windows que registra sola tus partidas de Origins TCG mientras juegas: el mazo, el resultado, las Legendarias a las que te enfrentaste, con un overlay sobre el juego y para OBS. Está lista y funciona, pero desde el parche 0.7 el juego ya no guarda en tu PC los datos de las partidas que leía la app, así que por ahora está en pausa y las páginas de win rate están apagadas.
 
 Queremos enseñársela al equipo de Koin Games y preguntar si esos datos pueden volver a estar disponibles. Si te interesa, pulsa **"Sí, la quiero"** en la página: cuantos más jugadores lo pidan, más cuenta la petición.
 
