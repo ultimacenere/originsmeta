@@ -141,8 +141,19 @@ export async function readWinrateGames(): Promise<number | null> {
  * facoltativo e non deve far fallire la scheda del mazzo).
  */
 export async function readDeckWinrate(listKey: string | null): Promise<(ListStat & { patch: PatchId }) | null> {
+  if (!listKey) return null;
+  const all = await readListWinrates();
+  const found = all?.lists.get(listKey);
+  return found && all ? { ...found, patch: all.patch } : null;
+}
+
+/**
+ * Il win rate di tutte le liste esatte giocate, per chiave della lista (11/10/2026, pastiglia dei mazzi in /decks): una
+ * sola lettura per pagina, con la stessa cache di 5 minuti. null prima della migrazione, sotto la soglia o con un errore.
+ */
+export async function readListWinrates(): Promise<{ patch: PatchId; lists: Map<string, ListStat> } | null> {
   const db = statsClient();
-  if (!db || !listKey) return null;
+  if (!db) return null;
   try {
     const picked = await statsPatch(db);
     if (!picked || picked === "missing") return null;
@@ -151,8 +162,7 @@ export async function readDeckWinrate(listKey: string | null): Promise<(ListStat
       if (!isMissing(res)) console.error(`[tracker] liste: ${res.error.message}`);
       return null;
     }
-    const found = parseListStats(res.data).find((l) => l.list === listKey);
-    return found ? { ...found, patch: picked.patch } : null;
+    return { patch: picked.patch, lists: new Map(parseListStats(res.data).map((l) => [l.list, l])) };
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
     return null;

@@ -84,6 +84,13 @@ export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
 export const ANALYTICS_BADGES: readonly Badge[] = ["creator", "author", "pro", "staff"];
 /** L'interruttore unico dell'apertura di OriginsMeta Analytics (vedi ANALYTICS_BADGES). */
 export const ANALYTICS_PUBLIC = false;
+/**
+ * Il win rate dei mazzi della community, per tutti anche con Analytics in prova (11/10/2026, Pierluigi: "voglio che i deck
+ * del sito acquisiscano il win rate all'interno del deck e nella preview sotto mazzi"; scelte: visibile a tutti, dalla
+ * prima partita, solo la lista identica): riquadro della scheda e pastiglia in /decks. I link verso le pagine in prova
+ * (/analytics, /tier-list/win-rate) restano spenti finché `ANALYTICS_PUBLIC` è false.
+ */
+export const DECK_WINRATE_PUBLIC = true;
 
 type Who = { badge?: string | null; role?: string | null } | null | undefined;
 
