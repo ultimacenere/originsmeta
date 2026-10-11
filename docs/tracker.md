@@ -404,6 +404,11 @@ tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata
     non restano sul tabellone): al loro posto le carte viste;
   - **niente scorrimento**: la finestra prende l'altezza del contenuto (`deckApi.fit`, IPC `deck:fit`), la larghezza la
     sceglie il giocatore (all'inizio 300 e 270 px) e le carte la seguono.
+  - **niente cornice né titolo** (Pierluigi, 11/10: "togliere la barra di Windows e il titolo del deck"): finestre
+    `frame: false`, si spostano trascinando il pannello (`-webkit-app-region: drag`), si allargano dai bordi, si chiudono
+    con la × che compare al passaggio del mouse (IPC `deck:close`) o dall'app; niente nome del mazzo, "Avversario" né
+    round. La dicitura "non affiliato a Koin Games" resta solo nella sorgente per OBS, quando il pannello va in onda
+    (Pierluigi: "togliamola dai due deck, dobbiamo recuperare più spazio possibile"); resta nella finestra principale.
   - **Carte pescate** (`readHand` in `recognize.ts`): la mano in basso si legge scorrendo una finestra lungo la fascia,
     con la sola parte sinistra dell'illustrazione (ogni carta è coperta a destra dalla seguente; riferimenti in
     `src/card-art-hand.json`, generati da `npm run card-art`). Posizione e misura delle carte nelle tre forme di

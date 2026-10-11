@@ -110,3 +110,7 @@ html, body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .gc, .gc.just, .is-opp .grid li { transition: none; animation: none; }
 }
+/* senza cornice (11/10/2026): il pannello si trascina da qualunque punto; la × compare al passaggio del mouse */
+.in-window .dt { position: relative; -webkit-app-region: drag; }
+.x { position: absolute; top: 2px; right: 4px; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--sky); border-radius: 50%; background: var(--ink); color: var(--chalk); font-size: 15px; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 0.2s ease; -webkit-app-region: no-drag; }
+.dt:hover .x, .x:focus-visible { opacity: 1; }

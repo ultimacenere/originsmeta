@@ -194,4 +194,6 @@ export type DeckApi = {
   onView(listener: (view: DeckTrackerView) => void): () => void;
   /** L'altezza del contenuto in pixel CSS: la finestra si adatta, niente barra di scorrimento (11/10/2026). */
   fit(height: number): void;
+  /** Chiude il pannello (la finestra non ha più la cornice di Windows). */
+  close(): void;
 };

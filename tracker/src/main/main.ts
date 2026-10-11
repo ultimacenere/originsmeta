@@ -364,6 +364,9 @@ function openPanel(k: PanelKind) {
     ...panelBounds(k),
     minWidth: 200,
     minHeight: 120,
+    // senza la cornice di Windows (Pierluigi, 11/10/2026: "togliere la barra di Windows e il titolo"): si sposta
+    // trascinando il pannello, si allarga dai bordi, si chiude con la × del pannello o dall'app
+    frame: false,
     alwaysOnTop: true,
     fullscreenable: false,
     maximizable: false,
@@ -694,6 +697,10 @@ function registerIpc() {
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
+  ipcMain.on("deck:close", (e) => {
+    if (!fromDeck(e)) return;
+    for (const k of PANEL_KINDS) if (panelOpen(k) && panels[k].win!.webContents === e.sender) setPanel(k, false);
+  });
   ipcMain.on("deck:fit", (e, h: unknown) => {
     if (!fromDeck(e) || !Number.isFinite(h)) return;
     const win = BrowserWindow.fromWebContents(e.sender);

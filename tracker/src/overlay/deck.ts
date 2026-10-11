@@ -10,8 +10,11 @@
  * - l'avversario (`view=opp`, finestra separata, un po' più piccola): Leggendaria e vita a sinistra, a destra le carte
  *   rivelate che compaiono una alla volta (si parte vuoti, mai caselle vuote).
  * Niente scorrimento: la finestra prende l'altezza del contenuto (`deckApi.fit`), la larghezza la sceglie il giocatore e
- * le carte la seguono. Le carte sono sempre intere (immagini di originsmeta.com, mai ritagliate: i crediti restano).
- * Sempre "non affiliato a Koin Games".
+ * le carte la seguono. Niente cornice di Windows né titolo (Pierluigi, 11/10: "togliere la barra di Windows e il titolo
+ * del deck"): nella finestra il pannello si trascina da qualunque punto e ha una × che compare al passaggio del mouse. Le carte sono sempre intere (immagini di originsmeta.com, mai ritagliate: i crediti restano).
+ * La dicitura "non affiliato a Koin Games" resta solo nella sorgente per OBS, cioè quando il pannello va in onda: nelle
+ * finestre accanto al gioco, che vede solo il giocatore, non c'è (Pierluigi, 11/10/2026: "togliamola dai due deck,
+ * dobbiamo recuperare più spazio possibile"; la dicitura resta nella finestra principale dell'app).
  */
 import type { DeckApi, DeckCard, DeckTrackerView } from "../shared/types";
 
@@ -43,6 +46,7 @@ const LABELS = {
     life: "Life",
     seen: "Seen",
     noScanner: "Turn on the screen scanner in the app for live updates.",
+    close: "Close",
     brand: "Analytics · not affiliated with Koin Games",
   },
   it: {
@@ -56,6 +60,7 @@ const LABELS = {
     life: "Vita",
     seen: "Viste",
     noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
+    close: "Chiudi",
     brand: "Analytics · non affiliato a Koin Games",
   },
   es: {
@@ -69,6 +74,7 @@ const LABELS = {
     life: "Vida",
     seen: "Vistas",
     noScanner: "Activa el escáner de pantalla en la app para las actualizaciones en vivo.",
+    close: "Cerrar",
     brand: "Analytics · sin afiliación con Koin Games",
   },
 } as const;
@@ -112,6 +118,9 @@ function fit() {
   window.deckApi.fit(Math.ceil(root.getBoundingClientRect().height + 8));
 }
 new ResizeObserver(fit).observe(root);
+root.addEventListener("click", (e) => {
+  if (e.target instanceof HTMLElement && e.target.id === "close") window.deckApi?.close();
+});
 
 let drawnKey = "";
 /** La Leggendaria era già pescata al giro prima: lo zoom solo nel momento della pesca. */
@@ -121,36 +130,33 @@ function render(v: DeckTrackerView) {
   if (key === drawnKey) return;
   drawnKey = key;
   const live = v.live;
-  const inMatch = Boolean(live?.inMatch);
-  const round = inMatch && live?.round ? `<span class="round"><span class="dot" aria-hidden="true"></span>${esc(L.round(live.round))}</span>` : "";
   let body: string;
   if (view === "opp") {
     // si riempie man mano: solo le carte viste, mai caselle vuote
     const seen = live?.opponent.seen ?? [];
     const leg = live?.opponent.legendary ?? null;
     body = live
-      ? `<div class="dhead"><span class="dname">${esc(L.opponent)}</span>${round}</div>
-        <div class="oppwrap">
+      ? `<div class="oppwrap">
           <div class="side">
             ${leg ? `<div class="gc">${cardImg(leg)}</div>` : `<div class="gc">${cardImg(null)}</div>`}
             <div class="stats">${stat(lifePips(live.life.opp), L.life)}${stat(String(seen.length), L.seen)}</div>
           </div>
           <ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="cnt">×${c.copies}</span>` : ""}</li>`).join("")}</ul>
         </div>`
-      : `<div class="dhead"><span class="dname">${esc(L.opponent)}</span></div><p class="muted pad">${esc(L.oppWaiting)}</p>`;
+      : `<p class="muted pad">${esc(L.oppWaiting)}</p>`;
   } else if (v.deck) {
     const leg = v.deck.legendary;
     const legOut = Boolean(live && leg && leg.drawn >= 1);
     const zoom = legOut && !legendaryWasOut ? " just" : "";
     legendaryWasOut = legOut;
-    body = `<div class="dhead"><span class="dname">${esc(v.deck.name ?? leg?.name ?? "?")}</span>${round}</div>
-      <ul class="grid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>
+    body = `<ul class="grid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>
       <div class="foot">
         <ul class="legcol">${leg ? myCard(leg, Boolean(live), zoom) : `<li class="gc">${cardImg(null)}</li>`}</ul>
         <div class="stats">${stat(live?.deckLeft !== null && live?.deckLeft !== undefined ? String(live.deckLeft) : "–", L.deckLeft)}${stat(lifePips(live ? live.life.me : null), L.life)}</div>
       </div>`;
   } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-  root.innerHTML = `${body}${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}<footer class="brand">${esc(L.brand)}</footer>`;
+  const close = window.deckApi ? `<button type="button" class="x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
+  root.innerHTML = `${close}${body}${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}${window.deckApi ? "" : `<footer class="brand">${esc(L.brand)}</footer>`}`;
   fit();
 }
 

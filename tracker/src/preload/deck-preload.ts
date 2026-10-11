@@ -13,6 +13,7 @@ const api: DeckApi = {
     return () => ipcRenderer.removeListener("deck:view", handler);
   },
   fit: (height) => ipcRenderer.send("deck:fit", height),
+  close: () => ipcRenderer.send("deck:close"),
 };
 
 contextBridge.exposeInMainWorld("deckApi", api);
