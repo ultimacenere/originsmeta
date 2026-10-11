@@ -180,3 +180,11 @@ body.is-opp { background: transparent; }
 /* maniglia per allargare il Deck tracker, nell'angolo in basso a destra (12/10/2026) */
 .grip { position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; cursor: ew-resize; -webkit-app-region: no-drag; background: linear-gradient(135deg, transparent 0 45%, var(--sky) 45% 55%, transparent 55% 70%, var(--sky) 70% 80%, transparent 80%); opacity: 0.6; }
 .grip:hover { opacity: 1; }
+/* tutorial della finestra principale (12/10/2026): il pannello pulsa in menta e mostra il suo nome */
+body.spot .dt.has-tab, body.spot .arm, body.spot .col { animation: spot-pulse 1.1s ease-in-out infinite alternate; }
+@keyframes spot-pulse { from { box-shadow: 0 0 0 2px var(--mint), 0 0 6px rgba(49, 227, 189, 0.4); } to { box-shadow: 0 0 0 4px var(--mint), 0 0 22px rgba(49, 227, 189, 0.85); } }
+body.spot #deck::after { content: attr(data-spot); position: absolute; z-index: 3; left: 50%; bottom: 10px; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: var(--mint); color: var(--ink); font-family: var(--display); font-weight: 800; font-size: 0.8rem; white-space: nowrap; pointer-events: none; }
+body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
+@media (prefers-reduced-motion: reduce) {
+  body.spot .dt.has-tab, body.spot .arm, body.spot .col { animation: none; box-shadow: 0 0 0 4px var(--mint); }
+}

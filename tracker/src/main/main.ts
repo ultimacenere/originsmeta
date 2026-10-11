@@ -831,6 +831,19 @@ function registerIpc() {
     sessionStart = Date.now();
     push();
   });
+  // tutorial (12/10/2026): i pannelli aperti si illuminano; quelli chiusi si aprono, così il giocatore vede dove stanno
+  ipcMain.handle("tracker:spot-panels", (e, on: unknown) => {
+    if (!fromApp(e)) return;
+    for (const k of PANEL_KINDS) {
+      const opened = on === true && !panelOpen(k);
+      if (opened) setPanel(k, true);
+      const w = panelOpen(k) ? panels[k].win! : null;
+      if (!w) continue;
+      // un pannello appena aperto riceve il segnale quando la pagina è pronta
+      if (opened || w.webContents.isLoading()) w.webContents.once("did-finish-load", () => w.isDestroyed() || w.webContents.send("deck:spot", on === true));
+      else w.webContents.send("deck:spot", on === true);
+    }
+  });
   ipcMain.handle("tracker:copy", (e, text: unknown) => {
     // indirizzi per OBS e codici del gioco (un codice di 13 carte sta sotto i 300 caratteri; il tetto del sito è 420)
     if (fromApp(e) && typeof text === "string" && text.length <= 600) clipboard.writeText(text);

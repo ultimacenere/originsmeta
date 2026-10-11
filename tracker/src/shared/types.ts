@@ -140,6 +140,8 @@ export type TrackerApi = {
   resetSession(): Promise<void>;
   /** Copia un testo negli appunti (l'indirizzo per OBS). */
   copyText(text: string): Promise<void>;
+  /** Tutorial (12/10/2026): i pannelli sopra il gioco si illuminano per farsi trovare (true) o tornano normali. */
+  spotPanels(on: boolean): Promise<void>;
 };
 
 /** Finestra nascosta dello scanner (main/frames.ts, 10/10/2026). */
@@ -206,4 +208,6 @@ export type DeckApi = {
   drag(on: boolean): void;
   /** Deck tracker (12/10/2026): allargamento con la maniglia cominciato (true) o finito; la finestra trasparente non si ridimensiona dai bordi. */
   resize(on: boolean): void;
+  /** Tutorial della finestra principale (12/10/2026): il pannello si illumina per farsi trovare. */
+  onSpot(listener: (on: boolean) => void): () => void;
 };

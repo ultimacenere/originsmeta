@@ -29,6 +29,7 @@ const api: TrackerApi & { rendered(): void } = {
   setOverlayClickThrough: (on) => ipcRenderer.invoke("tracker:overlay-click-through", on),
   resetSession: () => ipcRenderer.invoke("tracker:overlay-session"),
   copyText: (text) => ipcRenderer.invoke("tracker:copy", text),
+  spotPanels: (on) => ipcRenderer.invoke("tracker:spot-panels", on),
   // l'interfaccia ha disegnato lo stato (serve solo agli screenshot di verifica)
   rendered: () => ipcRenderer.send("tracker:rendered"),
 };

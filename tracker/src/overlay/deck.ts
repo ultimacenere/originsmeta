@@ -47,6 +47,7 @@ const LABELS = {
     life: "Barriers",
     oppLeft: "Cards left",
     resize: "Drag to resize",
+    spot: (opp: boolean) => (opp ? "Opponent panel" : "Deck tracker"),
     oppLeftTip: "Estimate: cards the opponent drew, counted from the face-down cards in their hand",
     mana: "Mana",
     you: "You",
@@ -68,6 +69,7 @@ const LABELS = {
     life: "Barriere",
     oppLeft: "Carte rimanenti",
     resize: "Trascina per allargare",
+    spot: (opp: boolean) => (opp ? "Pannello dell'avversario" : "Deck tracker"),
     oppLeftTip: "Stima: carte pescate dall'avversario, contate dalle carte coperte nella sua mano",
     mana: "Mana",
     you: "Tu",
@@ -89,6 +91,7 @@ const LABELS = {
     life: "Barreras",
     oppLeft: "Cartas restantes",
     resize: "Arrastra para cambiar el ancho",
+    spot: (opp: boolean) => (opp ? "Panel del rival" : "Deck tracker"),
     oppLeftTip: "Estimación: cartas robadas por el rival, contadas por las cartas boca abajo de su mano",
     mana: "Maná",
     you: "Tú",
@@ -205,6 +208,10 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
  * Nella finestra il pannello a L ha l'angolo vuoto: lì i clic passano al gioco. Il processo principale ignora il mouse
  * finché il puntatore non è sopra il braccio o la colonna (con `forward` i movimenti arrivano lo stesso).
  */
+// tutorial della finestra principale (12/10/2026): il pannello si illumina e dice come si chiama, per farsi trovare
+root.dataset.spot = L.spot(view === "opp");
+window.deckApi?.onSpot((on) => document.body.classList.toggle("spot", on));
+
 // maniglia del Deck tracker (12/10/2026): la larghezza la cambia il processo principale finché il tasto è premuto
 if (window.deckApi && view === "me") {
   document.addEventListener("pointerdown", (e) => {

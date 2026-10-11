@@ -17,6 +17,11 @@ const api: DeckApi = {
   hit: (on) => ipcRenderer.send("deck:hit", on === true),
   drag: (on) => ipcRenderer.send("deck:drag", on === true),
   resize: (on) => ipcRenderer.send("deck:resize", on === true),
+  onSpot: (listener) => {
+    const handler = (_e: IpcRendererEvent, on: boolean) => listener(on === true);
+    ipcRenderer.on("deck:spot", handler);
+    return () => ipcRenderer.removeListener("deck:spot", handler);
+  },
 };
 
 contextBridge.exposeInMainWorld("deckApi", api);

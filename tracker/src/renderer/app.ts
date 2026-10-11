@@ -137,6 +137,20 @@ const LABELS = {
     notLinked: "Not linked",
     oppShort: "Opponent",
     allOff: "All off",
+    tour: {
+      next: "Next",
+      prev: "Back",
+      skip: "Skip",
+      done: "Start",
+      again: "See the tutorial again",
+      steps: [
+        { title: "Welcome to OriginsMeta Analytics", text: ["The app records your Origins TCG matches on its own: result, deck, rounds and cards played, a few seconds after the match ends.", "It never touches the game: it reads the files the game saves on this PC and, with the scanner, its window."] },
+        { title: "Link your account", text: ["On originsmeta.com, under Account → OriginsMeta Analytics, create a code and type it in the OriginsMeta account section.", "Your matches reach the site: you see your stats, and community decks get their win rate."] },
+        { title: "The screen scanner", text: ["It only looks at the game window and reads the cards on the board, your hand, the mana and the match result.", "Images stay on this PC: only card ids go to the site. You can turn it off in the Screen scanner section."] },
+        { title: "The panels above the game", text: ["On the left, the Deck tracker: the number on each card is how many copies are still in your deck, and a mint border marks the cards in your hand. Widen it with the handle in the bottom right and close it with the X on the tab.", "Top right, the opponent panel: their Legendary, barriers, the cards they played, both players' mana and the combat direction.", "Drag them wherever you like; turn them back on in the Overlay section."] },
+        { title: "Keep it running while you play", text: ["The X on this window closes the app: minimize it to keep it running.", "The icon next to the Windows clock opens the window again. You can see this tutorial again at the bottom of the page."] },
+      ],
+    },
     oppObs: "Opponent's cards for OBS",
     deckObs: "Deck tracker for OBS",
     session: "Session",
@@ -260,6 +274,20 @@ const LABELS = {
     notLinked: "Non collegato",
     oppShort: "Avversario",
     allOff: "Tutto spento",
+    tour: {
+      next: "Avanti",
+      prev: "Indietro",
+      skip: "Salta",
+      done: "Inizia",
+      again: "Rivedi il tutorial",
+      steps: [
+        { title: "Benvenuto in OriginsMeta Analytics", text: ["L'app registra da sola le tue partite di Origins TCG: esito, mazzo, round e carte giocate, pochi secondi dopo la fine.", "Non tocca mai il gioco: legge i file che il gioco salva su questo PC e, con lo scanner, la sua finestra."] },
+        { title: "Collega il tuo account", text: ["Su originsmeta.com, in Account → OriginsMeta Analytics, crea un codice e scrivilo nella tendina Account OriginsMeta.", "Le tue partite arrivano sul sito: vedi le tue statistiche e i mazzi della community prendono il loro win rate."] },
+        { title: "Lo scanner dello schermo", text: ["Guarda solo la finestra del gioco e legge le carte sul tabellone, la tua mano, il mana e l'esito della partita.", "Le immagini restano su questo PC: al sito vanno solo gli id delle carte. Lo spegni dalla tendina Scanner dello schermo."] },
+        { title: "I pannelli sopra il gioco", text: ["A sinistra il Deck tracker: il numero su ogni carta dice quante copie restano nel mazzo, il bordo menta segna le carte che hai in mano. Lo allarghi dalla maniglia in basso a destra e lo chiudi con la X sulla linguetta.", "In alto a destra il pannello dell'avversario: la sua Leggendaria, le barriere, le carte che ha giocato, il mana di tutti e due e la direzione del combattimento.", "Trascinali dove vuoi; li riaccendi dalla tendina Overlay."] },
+        { title: "Tienila accesa mentre giochi", text: ["La X di questa finestra chiude l'app: per tenerla accesa riducila a icona.", "L'icona vicino all'orologio di Windows riapre la finestra. Questo tutorial lo rivedi in fondo alla pagina."] },
+      ],
+    },
     oppObs: "Carte dell'avversario per OBS",
     deckObs: "Deck tracker per OBS",
     session: "Sessione",
@@ -383,6 +411,20 @@ const LABELS = {
     notLinked: "Sin vincular",
     oppShort: "Rival",
     allOff: "Todo apagado",
+    tour: {
+      next: "Siguiente",
+      prev: "Atrás",
+      skip: "Saltar",
+      done: "Empezar",
+      again: "Volver a ver el tutorial",
+      steps: [
+        { title: "Te damos la bienvenida a OriginsMeta Analytics", text: ["La app registra sola tus partidas de Origins TCG: resultado, mazo, rondas y cartas jugadas, pocos segundos después del final.", "Nunca toca el juego: lee los archivos que el juego guarda en este PC y, con el escáner, su ventana."] },
+        { title: "Vincula tu cuenta", text: ["En originsmeta.com, en Cuenta → OriginsMeta Analytics, crea un código y escríbelo en la sección Cuenta de OriginsMeta.", "Tus partidas llegan al sitio: ves tus estadísticas y los mazos de la comunidad reciben su win rate."] },
+        { title: "El escáner de pantalla", text: ["Solo mira la ventana del juego y lee las cartas del tablero, tu mano, el maná y el resultado de la partida.", "Las imágenes se quedan en este PC: al sitio solo van los id de las cartas. Lo apagas en la sección Escáner de pantalla."] },
+        { title: "Los paneles sobre el juego", text: ["A la izquierda, el Deck tracker: el número de cada carta indica cuántas copias quedan en el mazo, y el borde menta marca las cartas de tu mano. Lo ensanchas con el tirador de abajo a la derecha y lo cierras con la X de la pestaña.", "Arriba a la derecha, el panel del rival: su Legendaria, las barreras, las cartas que jugó, el maná de los dos y la dirección del combate.", "Arrástralos donde quieras; los vuelves a activar en la sección Overlay."] },
+        { title: "Déjala abierta mientras juegas", text: ["La X de esta ventana cierra la app: minimízala para que siga abierta.", "El icono junto al reloj de Windows vuelve a abrir la ventana. Este tutorial lo vuelves a ver al final de la página."] },
+      ],
+    },
     oppObs: "Cartas del rival para OBS",
     deckObs: "Deck tracker para OBS",
     session: "Sesión",
@@ -593,7 +635,8 @@ try {
   folds = {};
 }
 function fold(id: string, title: string, status: string, body: string, wanted = false) {
-  const open = folds[id] ?? wanted;
+  // durante il tutorial la tendina di cui si parla resta aperta (senza cambiare la scelta del giocatore)
+  const open = tourFold() === id || (folds[id] ?? wanted);
   return `<details class="panel fold" id="${id}" data-fold="${id}"${open ? " open" : ""}>
       <summary><h2>${esc(title)}</h2><span class="fold-status">${esc(status)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body">${body}</div>
@@ -681,8 +724,134 @@ function footer(s: AppState) {
       <div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
       <p class="fine">${esc(L.privacy)}</p>
       <p class="fine foot-brand"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="58" height="18" draggable="false" /><span>${esc(L.unofficial)} · v${esc(s.version)}</span></p>
+      <p class="fine"><button type="button" class="link" id="tour-again">${esc(L.tour.again)}</button></p>
     </footer>`;
 }
+
+/* ---------- tutorial del primo avvio (12/10/2026) ---------- */
+
+/**
+ * Mini tutorial al primo avvio (Pierluigi, 12/10/2026: "vorrei un mini tutorial all'apertura dell'app", "che indichino
+ * dove sono le cose"): cinque passi, ognuno con un riflettore sulla parte della finestra di cui parla (il resto si
+ * scurisce) e il fumetto accanto. Al passo dei pannelli il Deck tracker e il pannello dell'avversario, finestre a parte
+ * sopra il gioco, si illuminano e dicono il loro nome (`spotPanels`). Si vede una volta (`TOUR_KEY` in localStorage) e
+ * si rivede dal link in fondo alla pagina. Esc lo chiude, le frecce cambiano passo.
+ */
+const TOUR_KEY = "originsmeta.analytics.tour.v1";
+/** Dove punta ogni passo: il mazzo scelto, le tre tendine, il fondo della pagina. */
+const TOUR_TARGETS = [".hero", "#account", "#scanner", "#overlay", ".foot"] as const;
+const TOUR_PANELS_STEP = 3;
+let tourStep: number | null = (() => {
+  try {
+    return localStorage.getItem(TOUR_KEY) ? null : 0;
+  } catch {
+    return 0;
+  }
+})();
+let tourScrolledTo: number | null = null;
+let panelsLit = false;
+const tourFold = () => (tourStep === null ? null : (TOUR_TARGETS[tourStep].startsWith("#") ? TOUR_TARGETS[tourStep].slice(1) : null));
+
+const tourBox = document.createElement("div");
+tourBox.id = "tour";
+document.body.appendChild(tourBox);
+
+function setPanelsLit(on: boolean) {
+  if (on === panelsLit) return;
+  panelsLit = on;
+  void window.tracker.spotPanels(on);
+}
+
+function endTour() {
+  tourStep = null;
+  try {
+    localStorage.setItem(TOUR_KEY, "1");
+  } catch {
+    // senza memoria il tutorial ricompare al prossimo avvio
+  }
+  setPanelsLit(false);
+  tourBox.innerHTML = "";
+  rerender();
+}
+
+function goTour(step: number) {
+  tourStep = Math.max(0, Math.min(TOUR_TARGETS.length - 1, step));
+  rerender();
+}
+
+/** Disegna il riflettore e il fumetto del passo, dopo ogni ridisegno della pagina. */
+function drawTour() {
+  if (tourStep === null) {
+    tourBox.innerHTML = "";
+    return;
+  }
+  const steps = L.tour.steps;
+  const st = steps[tourStep];
+  const lastStep = tourStep === steps.length - 1;
+  setPanelsLit(tourStep === TOUR_PANELS_STEP);
+  const target = document.querySelector<HTMLElement>(TOUR_TARGETS[tourStep]);
+  if (target && tourScrolledTo !== tourStep) {
+    tourScrolledTo = tourStep;
+    target.scrollIntoView({ block: "center" });
+  }
+  tourBox.innerHTML = `<div class="tour-hole" aria-hidden="true"></div>
+    <div class="tour-tip" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+      <p class="tour-count">${tourStep + 1} / ${steps.length}</p>
+      <h2 id="tour-title">${esc(st.title)}</h2>
+      ${st.text.map((t) => `<p>${esc(t)}</p>`).join("")}
+      <div class="tour-dots" aria-hidden="true">${steps.map((_, i) => `<i${i === tourStep ? ` class="on"` : ""}></i>`).join("")}</div>
+      <div class="tour-actions">
+        <button type="button" class="link" data-tour="skip">${esc(L.tour.skip)}</button>
+        <span class="grow"></span>
+        ${tourStep > 0 ? `<button type="button" class="btn" data-tour="prev">${esc(L.tour.prev)}</button>` : ""}
+        <button type="button" class="btn btn-primary" data-tour="${lastStep ? "done" : "next"}">${esc(lastStep ? L.tour.done : L.tour.next)}</button>
+      </div>
+    </div>`;
+  placeTour();
+  tourBox.querySelector<HTMLButtonElement>(".tour-tip .btn-primary")?.focus({ preventScroll: true });
+}
+
+/** Il riflettore sopra la parte di cui si parla, il fumetto sotto (o sopra, se sotto non c'è spazio). */
+function placeTour() {
+  if (tourStep === null) return;
+  const hole = tourBox.querySelector<HTMLElement>(".tour-hole");
+  const tip = tourBox.querySelector<HTMLElement>(".tour-tip");
+  const target = document.querySelector<HTMLElement>(TOUR_TARGETS[tourStep]);
+  if (!hole || !tip) return;
+  const pad = 8;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  if (!target) {
+    hole.style.cssText = `top:${vh / 2}px;left:${vw / 2}px;width:0;height:0`;
+    tip.style.cssText = `top:${Math.max(16, vh / 2 - tip.offsetHeight / 2)}px;left:${Math.max(16, vw / 2 - tip.offsetWidth / 2)}px`;
+    return;
+  }
+  const r = target.getBoundingClientRect();
+  const top = Math.max(4, r.top - pad);
+  const bottom = Math.min(vh - 4, r.bottom + pad);
+  hole.style.cssText = `top:${top}px;left:${Math.max(4, r.left - pad)}px;width:${Math.min(vw - 8, r.width + pad * 2)}px;height:${Math.max(0, bottom - top)}px`;
+  const tw = tip.offsetWidth;
+  const th = tip.offsetHeight;
+  const below = bottom + 12 + th <= vh - 8;
+  const y = below ? bottom + 12 : Math.max(8, top - 12 - th);
+  const x = Math.min(Math.max(8, r.left), vw - tw - 8);
+  tip.style.cssText = `top:${y}px;left:${x}px`;
+}
+
+tourBox.addEventListener("click", (e) => {
+  const act = (e.target as HTMLElement).closest<HTMLElement>("[data-tour]")?.dataset.tour;
+  if (act === "next" && tourStep !== null) goTour(tourStep + 1);
+  else if (act === "prev" && tourStep !== null) goTour(tourStep - 1);
+  else if (act === "skip" || act === "done") endTour();
+});
+document.addEventListener("keydown", (e) => {
+  if (tourStep === null) return;
+  if (e.key === "Escape") endTour();
+  else if (e.key === "ArrowRight") goTour(tourStep + 1);
+  else if (e.key === "ArrowLeft") goTour(tourStep - 1);
+});
+window.addEventListener("resize", placeTour);
+window.addEventListener("scroll", placeTour, { passive: true });
 
 /* ---------- disegno ed eventi ---------- */
 
@@ -708,6 +877,7 @@ function render(s: AppState) {
     }
   }
   window.scrollTo(0, scroll);
+  drawTour();
   if (first) {
     first = false;
     window.tracker.rendered();
@@ -734,6 +904,10 @@ root.addEventListener(
 
 root.addEventListener("click", async (e) => {
   const target = e.target as HTMLElement;
+  if (target.closest("#tour-again")) {
+    tourScrolledTo = null;
+    return void goTour(0);
+  }
   const link = target.closest<HTMLAnchorElement>("a[data-link]");
   if (link) {
     e.preventDefault();

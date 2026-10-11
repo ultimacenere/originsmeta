@@ -365,3 +365,16 @@ details.match > summary:hover .m-title { color: #fff; }
 .notice.update { font-size: 0.86rem; color: var(--chalk); }
 /* tasto "Chiudi l'app" accanto allo stato (11/10/2026) */
 .top-right { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* ---------- tutorial del primo avvio (12/10/2026): riflettore sulla parte di cui si parla e fumetto accanto ---------- */
+#tour:not(:empty)::before { content: ""; position: fixed; inset: 0; z-index: 49; }
+.tour-hole { position: fixed; z-index: 50; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(8, 4, 20, 0.74); outline: 3px solid var(--mint); outline-offset: 0; pointer-events: none; transition: top 220ms ease, left 220ms ease, width 220ms ease, height 220ms ease; }
+.tour-tip { position: fixed; z-index: 51; width: min(440px, calc(100vw - 32px)); display: grid; gap: 8px; padding: 14px 16px; background: linear-gradient(180deg, rgba(49, 227, 189, 0.1) 0%, rgba(49, 227, 189, 0) 50%), var(--night); border: 3px solid var(--mint); border-radius: 14px; box-shadow: var(--shadow-card); }
+.tour-count { margin: 0; font-family: var(--mono); font-size: 0.72rem; color: var(--mint); letter-spacing: 0.06em; }
+.tour-tip h2 { margin: 0; font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--sky); }
+.tour-tip p { margin: 0; font-size: 0.86rem; line-height: 1.45; color: var(--pale); }
+.tour-dots { display: flex; gap: 6px; margin-top: 2px; }
+.tour-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--night-3); }
+.tour-dots i.on { background: var(--mint); }
+.tour-actions { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.tour-actions .grow { flex: 1; }
