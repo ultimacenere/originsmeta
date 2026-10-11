@@ -9,8 +9,10 @@ import {
   artVector,
   BOARD_SLOTS,
   bestMatch,
+  boardScale,
   gameArea,
   inside,
+  layoutFor,
   loadRefs,
   MANA_TEXT,
   packVector,
@@ -21,6 +23,7 @@ import {
   unpackVector,
   VEC,
   VS_CARDS,
+  windowContent,
   type CardRef,
   type Img,
   type Rect,
@@ -43,7 +46,7 @@ function paint(img: Img, r: Rect, ref: CardRef) {
       const xb = Math.round(r.x + (r.w * (gx + 1)) / VEC);
       for (let y = ya; y < yb; y++)
         for (let x = xa; x < xb; x++) {
-          const p = (y * W + x) * 4;
+          const p = (y * img.width + x) * 4;
           for (let c = 0; c < 3; c++) d[p + c] = 128 + ref.v[o + c] * 1500;
         }
     }
@@ -114,6 +117,58 @@ test("area di gioco 16:9 dentro immagini di altre proporzioni", () => {
   assert.deepEqual(gameArea(2560, 1440), { x: 0, y: 0, w: 2560, h: 1440 });
   assert.deepEqual(gameArea(3440, 1440), { x: 440, y: 0, w: 2560, h: 1440 });
   assert.deepEqual(gameArea(1920, 1200), { x: 0, y: 60, w: 1920, h: 1080 });
+});
+
+test("finestre di qualunque forma: scala del tabellone, aree e schermo 16:9 come prima", () => {
+  const near = (a: number, b: number, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≠ ${b}`);
+  near(boardScale(16 / 9), 16 / 9);
+  near(boardScale(1160 / 869), 1221 / 869);
+  near(boardScale(2042 / 853), 1759 / 853);
+  // sempre crescente: una finestra più larga, a pari altezza, non rimpicciolisce il tabellone
+  for (let r = 1; r < 4; r += 0.05) assert.ok(boardScale(r + 0.05) > boardScale(r));
+  const full = layoutFor({ x: 0, y: 0, w: 2560, h: 1440 });
+  for (const k of ["x", "y", "w", "h"] as const) {
+    near(full.board[k], gameArea(2560, 1440)[k], 1e-6);
+    near(full.ui[k], gameArea(2560, 1440)[k], 1e-6);
+  }
+  // la finestra larga dell'11/10: tabellone centrato largo 1759, interfaccia alta come la finestra
+  const wide = layoutFor({ x: 2, y: 45, w: 2042, h: 853 });
+  near(wide.board.w, 1759, 1e-6);
+  near(wide.board.x + wide.board.w / 2, 1023);
+  near(wide.board.y + wide.board.h / 2, 45 + 853 / 2);
+  near(wide.ui.h, 853);
+});
+
+test("finestre: la barra del titolo di Windows si toglie, lo schermo intero no", () => {
+  const w = 1164;
+  const h = 916;
+  const img: Img = { data: new Uint8ClampedArray(w * h * 4), width: w, height: h, channels: 4 };
+  const d = img.data as Uint8ClampedArray;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const p = (y * w + x) * 4;
+      // barra chiara di 45 px, bordo di 2 px, sotto il gioco (scuro e vario)
+      const bar = y < 45 || x < 2 || x >= w - 2 || y >= h - 2;
+      d.set(bar ? [243, 243, 243, 255] : [(x * 7) % 90, (y * 5) % 70, 60 + ((x + y) % 80), 255], p);
+    }
+  assert.deepEqual(windowContent(img, false), { x: 2, y: 45, w: w - 4, h: h - 47 });
+  assert.deepEqual(windowContent(img, true), { x: 0, y: 0, w, h }, "schermo intero");
+  // senza barra (finestra senza bordi): l'immagine intera
+  for (let y = 0; y < 45; y++)
+    for (let x = 0; x < w; x++) d.set([(x * 7) % 90, (y * 5) % 70, 60, 255], (y * w + x) * 4);
+  assert.deepEqual(windowContent(img, false), { x: 0, y: 0, w, h });
+});
+
+test("finestre: una carta si legge nell'area del tabellone della finestra", () => {
+  const w = 1164;
+  const h = 916;
+  const img: Img = { data: new Uint8ClampedArray(w * h * 4).fill(30), width: w, height: h, channels: 4 };
+  const board = layoutFor({ x: 2, y: 45, w: 1160, h: 869 }).board;
+  const ref = refs.find((r) => r.key === Object.keys(cardArt)[3])!;
+  paint(img, inside(inside(board, BOARD_SLOTS[4].rect), ART_IN_SLOT), ref);
+  const read = readBoard(img, refs, board);
+  assert.equal(read[4].key, ref.key);
+  assert.equal(readBoard(img, refs)[4].key, null, "con l'area 16:9 di prima non si legge");
 });
 
 /** Scrive un testo con i modelli delle cifre, ingranditi, dentro il pannello del mana. */

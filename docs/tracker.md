@@ -435,11 +435,29 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   **Limiti noti**: le magie non restano sul tabellone e non si leggono (il riquadro grande a sinistra mostra anche le
   anteprime al passaggio del mouse, quindi non distingue le rivelazioni); una carta giocata e distrutta nello stesso
   round senza restare a schermo 2 fotogrammi non si vede; le carte dell'avversario evocate o generate da effetti non si
-  distinguono da quelle giocate; posizioni misurate solo a 16:9 con l'interfaccia della demo 0.7; il round è il mana
+  distinguono da quelle giocate; il round è il mana
   massimo del giocatore meno uno, e gli effetti sul mana lo spostano (partita del 10/10 alle 15:44: "5/10" con un "-5" al
   round 10, l'avversario "11/11"). Ripresa cominciata a partita in corso (l'app avviata durante la partita): la partita
   si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e non entra
   nello storico.
+- **Finestre di qualunque forma (0.3.3, 11/10/2026**; Magic non registrava giocando in finestra, Pierluigi: "il gioco
+  supporta solo schermo intero o in finestra, poi permette agli utenti di stirare lo schermo come vogliono"): il gioco
+  non mette bande nere, riempie la finestra di qualunque forma (il minimo è circa 4:3). Misurato sul playtest con due
+  partite contro il bot di Pierluigi, finestra 2042 × 853 (2,39:1) e 1160 × 869 (4:3), più le partite a schermo intero
+  2560 × 1440: (1) la ripresa di una finestra comprende la **barra del titolo** di Windows (45 px al 150%) e un bordo di
+  2 px: `windowContent` la riconosce come fascia uniforme in alto, ma solo se l'immagine non è grande come uno schermo
+  (`screens`, le misure in pixel veri che il processo principale manda alla finestra nascosta); (2) **il tabellone è 3D**
+  (spazi, carte e pannello del mana): resta centrato nell'area interna e cambia solo scala, con la larghezza dell'area
+  16:9 "virtuale" S/H = 1,405 a 4:3, 16/9 a 16:9, 2,062 a 2,39:1 (`BOARD_SCALE`, interpolazione sui logaritmi; centro
+  esatto: la ricerca ha dato scarto 0); (3) **l'interfaccia 2D** (scritte, schermata VS, stendardo) cresce con l'altezza:
+  area 16:9 alta come la finestra e centrata (`layoutFor`, `ui`), che su una finestra stretta esce dai lati (lo stendardo
+  conta solo le celle dentro l'immagine). Con lo schermo 16:9 le aree coincidono con l'immagine intera: la partita a
+  schermo intero del 10/10 dà 8.614 carte lette contro le 8.613 dell'app. Nelle due finestre: 2.681 e 2.454 carte lette
+  (prima 0), mana in 409 e 353 fotogrammi. Lo stendardo della sconfitta del playtest ha la parte alta viola: parte alta
+  scura dal 60% (era 80%), riprovato su 5 sessioni senza falsi esiti. La schermata VS in finestra non è verificata
+  (gli allenamenti contro il bot non la mostrano); i punti fuori da 4:3–2,39:1 (32:9) usano la pendenza degli estremi.
+  Taratura: `scripts/fit-scale.mjs` (scala del tabellone), `scripts/fit-ui.mjs` (mana, VS, stendardo con aree diverse),
+  `scan-frames.mjs --screen=<schermo>`.
 - **Nell'app** (dalla 0.3.0 del 10/10/2026, Pierluigi: "acceso"): **acceso di default**, con un avviso al primo avvio
   (che cosa legge, che le immagini non escono dal PC, niente nomi; tasti "Ho capito" e "Spegnilo"), il riquadro
   "Scanner dello schermo" con l'interruttore e la voce nel menu dell'icona; preferenza in `scan.json` (`on`,

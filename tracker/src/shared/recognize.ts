@@ -78,6 +78,85 @@ export function gameArea(width: number, height: number): Rect {
   return { x: 0, y: (height - h) / 2, w: width, h };
 }
 
+/* ---------- finestre di qualunque forma (11/10/2026) ---------- */
+
+/**
+ * Il gioco non mette bande nere: in finestra (che il giocatore stira come vuole) e su schermi non 16:9 riempie tutta
+ * l'area. Misure dell'11/10 sul playtest con tre forme (2560 × 1440 a schermo intero, finestre 2042 × 853 e 1160 × 869):
+ * - **il tabellone è 3D** (spazi, carte e pannello del mana): cambia solo scala, sempre centrato sull'area interna della
+ *   finestra. La scala è la larghezza `S` dell'area 16:9 "virtuale" dove valgono le posizioni misurate a 2560 × 1440:
+ *   S/H = 1,405 a 4:3 (1,335), 16/9 a 16:9, 2,062 a 2,39:1; in mezzo e oltre si interpola sui logaritmi (`BOARD_SCALE`);
+ * - **l'interfaccia 2D** (scritte, schermata VS, stendardo di fine partita) cresce con l'altezza: area 16:9 alta come la
+ *   finestra e centrata, che su una finestra stretta esce dai lati.
+ * Con lo schermo 16:9 tutte e due coincidono con l'immagine intera, come prima.
+ */
+export const BOARD_SCALE: readonly (readonly [number, number])[] = [
+  // [rapporto larghezza/altezza dell'area interna, S/H]
+  [1160 / 869, 1221 / 869],
+  [16 / 9, 16 / 9],
+  [2042 / 853, 1759 / 853],
+];
+
+/** S/H del tabellone per un'area interna di rapporto `r` (interpolazione lineare sui logaritmi, fuori dai punti la pendenza degli estremi). */
+export function boardScale(r: number): number {
+  const pts = BOARD_SCALE.map(([a, k]) => [Math.log(a), Math.log(k)] as const);
+  const x = Math.log(r);
+  let i = 0;
+  while (i < pts.length - 2 && x > pts[i + 1][0]) i++;
+  const [x0, y0] = pts[i];
+  const [x1, y1] = pts[i + 1];
+  return Math.exp(y0 + ((y1 - y0) * (x - x0)) / (x1 - x0));
+}
+
+export type Layout = { content: Rect; board: Rect; ui: Rect };
+
+/** Le due aree 16:9 "virtuali" per un'area interna della finestra (in pixel dell'immagine). */
+export function layoutFor(content: Rect): Layout {
+  const cx = content.x + content.w / 2;
+  const cy = content.y + content.h / 2;
+  const centered = (w: number): Rect => ({ x: cx - w / 2, y: cy - (w * 9) / 32, w, h: (w * 9) / 16 });
+  return { content, board: centered(content.h * boardScale(content.w / content.h)), ui: centered((content.h * 16) / 9) };
+}
+
+/**
+ * L'area interna di una finestra ripresa: la ripresa di una finestra di Windows comprende la barra del titolo (45 px al
+ * 150%) e un bordo di 1–2 px. La barra è una fascia di colore uniforme in alto (tema chiaro, scuro o colore d'accento);
+ * a schermo intero (`fullscreen`: l'immagine è grande come uno schermo) non c'è e l'area è l'immagine intera.
+ */
+export function windowContent(img: Img, fullscreen: boolean): Rect {
+  const W = img.width;
+  const H = img.height;
+  const full = { x: 0, y: 0, w: W, h: H };
+  if (fullscreen || W < 200 || H < 200) return full;
+  const ch = img.channels;
+  const row = (y: number) => {
+    const lo = [255, 255, 255];
+    const hi = [0, 0, 0];
+    const sum = [0, 0, 0];
+    let n = 0;
+    // il centro della barra: il titolo sta a sinistra, i tasti a destra
+    for (let x = Math.round(W * 0.3); x < W * 0.7; x += 3, n++)
+      for (let c = 0; c < 3; c++) {
+        const v = img.data[(y * W + x) * ch + c];
+        lo[c] = Math.min(lo[c], v);
+        hi[c] = Math.max(hi[c], v);
+        sum[c] += v;
+      }
+    return { mean: sum.map((s) => s / (n || 1)), spread: Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]) };
+  };
+  const ref = row(3);
+  if (ref.spread > 24) return full;
+  const maxBar = Math.min(90, Math.round(H * 0.15));
+  let y = 4;
+  for (; y < maxBar; y++) {
+    const r = row(y);
+    if (r.spread > 24 || r.mean.some((m, c) => Math.abs(m - ref.mean[c]) > 12)) break;
+  }
+  if (y < 18 || y >= maxBar) return full;
+  const border = Math.max(1, Math.round(y / 22));
+  return { x: border, y, w: W - 2 * border, h: H - y - border };
+}
+
 /** Un rettangolo dentro un altro (frazioni → pixel). */
 export function inside(outer: Rect, inner: Rect): Rect {
   return { x: outer.x + inner.x * outer.w, y: outer.y + inner.y * outer.h, w: inner.w * outer.w, h: inner.h * outer.h };
@@ -159,14 +238,12 @@ export function bestMatch(v: Float32Array, refs: readonly CardRef[]): Match {
 }
 
 /** Le carte nei 18 spazi del tabellone, nell'ordine di `BOARD_SLOTS`. */
-export function readBoard(img: Img, refs: readonly CardRef[]): Match[] {
-  const area = gameArea(img.width, img.height);
+export function readBoard(img: Img, refs: readonly CardRef[], area: Rect = gameArea(img.width, img.height)): Match[] {
   return BOARD_SLOTS.map((s) => bestMatch(artVector(img, inside(inside(area, s.rect), ART_IN_SLOT)), refs));
 }
 
 /** Le due Leggendarie della schermata VS (key null: non è la schermata VS o non si riconosce). */
-export function readVersus(img: Img, refs: readonly CardRef[]): Record<Side, Match> {
-  const area = gameArea(img.width, img.height);
+export function readVersus(img: Img, refs: readonly CardRef[], area: Rect = gameArea(img.width, img.height)): Record<Side, Match> {
   const at = (side: Side): Match => {
     const all = VS_CARDS[side].map((r) => bestMatch(artVector(img, inside(inside(area, r), ART_IN_CARD)), refs));
     return all.filter((m) => m.key).sort((a, b) => b.score - a.score)[0] ?? all[0];
@@ -311,8 +388,8 @@ function readGlyph(g: { bits: number[]; aspect: number }): string | null {
 }
 
 /** Il mana del giocatore ("3/6" → { current: 3, max: 6 }), null se il pannello non si legge. */
-export function readMana(img: Img): { current: number; max: number } | null {
-  const text = whiteGlyphs(img, inside(gameArea(img.width, img.height), MANA_TEXT)).map(readGlyph);
+export function readMana(img: Img, area: Rect = gameArea(img.width, img.height)): { current: number; max: number } | null {
+  const text = whiteGlyphs(img, inside(area, MANA_TEXT)).map(readGlyph);
   if (text.some((c) => c === null)) return null;
   const m = /^(\d{1,2})\/(\d{1,2})$/.exec(text.join(""));
   if (!m) return null;
@@ -333,7 +410,9 @@ export const roundOf = (maxMana: number): number => maxMana - 1;
  * scrive l'esito sul PC: nel playtest le partite online e classificate non lasciano traccia nei file (solo le
  * "offline"). Soglie tarate l'11/10 su 3.700 fotogrammi (3 vittorie e 1 sconfitta della demo, 1 vittoria del
  * playtest): 53 stendardi su 55 riconosciuti, nessun esito sbagliato, l'unico falso stendardo (una dissolvenza) senza
- * colore e quindi senza esito. I conti si fanno su una griglia di 320 × 180 medie, come nella taratura.
+ * colore e quindi senza esito. I conti si fanno su una griglia di 320 × 180 medie, come nella taratura. Parte alta
+ * scura dal 60% (era 80%) dall'11/10, finestre: la sconfitta del playtest in una finestra larga ha la parte alta viola
+ * (69–76%); riprovato su 5 sessioni, 4.900 fotogrammi: entrano solo stendardi veri, tutti con l'esito giusto.
  */
 export const BANNER = {
   text: { x: 0.04, y: 0.42, w: 0.92, h: 0.2 } as Rect,
@@ -341,17 +420,19 @@ export const BANNER = {
   swoosh: { x: 0, y: 0.25, w: 1, h: 0.53 } as Rect,
   minWhite: 20,
   minDark: 10,
-  minTopDark: 80,
+  minTopDark: 60,
   minColor: 0.3,
   colorRatio: 1.5,
 } as const;
 const GRID_W = 320;
 const GRID_H = 180;
 
-/** Le medie di colore dell'area di gioco su una griglia 320 × 180 (RGB uno dopo l'altro). */
-function colorGrid(img: Img): Uint8Array {
-  const area = gameArea(img.width, img.height);
-  const out = new Uint8Array(GRID_W * GRID_H * 3);
+/**
+ * Le medie di colore dell'area di gioco su una griglia 320 × 180 (RGB e, quarto valore, 1 se la cella cade dentro
+ * l'immagine: su una finestra stretta l'area dell'interfaccia esce dai lati e quelle celle non si contano).
+ */
+function colorGrid(img: Img, area: Rect): Uint8Array {
+  const out = new Uint8Array(GRID_W * GRID_H * 4);
   const ch = img.channels;
   const d = img.data;
   for (let gy = 0; gy < GRID_H; gy++) {
@@ -365,18 +446,19 @@ function colorGrid(img: Img): Uint8Array {
       let b = 0;
       let n = 0;
       // ogni secondo pixel: la media cambia di poco e il conto si dimezza due volte
-      for (let y = ya; y < yb && y < img.height; y += 2)
-        for (let x = xa; x < xb && x < img.width; x += 2) {
+      for (let y = Math.max(0, ya); y < yb && y < img.height; y += 2)
+        for (let x = Math.max(0, xa); x < xb && x < img.width; x += 2) {
           const p = (y * img.width + x) * ch;
           r += d[p];
           g += d[p + 1];
           b += d[p + 2];
           n++;
         }
-      const o = (gy * GRID_W + gx) * 3;
+      const o = (gy * GRID_W + gx) * 4;
       out[o] = n ? r / n : 0;
       out[o + 1] = n ? g / n : 0;
       out[o + 2] = n ? b / n : 0;
+      out[o + 3] = n ? 1 : 0;
     }
   }
   return out;
@@ -388,7 +470,8 @@ function share(grid: Uint8Array, r: Rect, test: (r: number, g: number, b: number
   let n = 0;
   for (let y = Math.round(GRID_H * r.y); y < Math.round(GRID_H * (r.y + r.h)); y++)
     for (let x = Math.round(GRID_W * r.x); x < Math.round(GRID_W * (r.x + r.w)); x++) {
-      const p = (y * GRID_W + x) * 3;
+      const p = (y * GRID_W + x) * 4;
+      if (!grid[p + 3]) continue;
       n++;
       if (test(grid[p], grid[p + 1], grid[p + 2])) c++;
     }
@@ -397,8 +480,8 @@ function share(grid: Uint8Array, r: Rect, test: (r: number, g: number, b: number
 
 export type BannerFeatures = { white: number; dark: number; topDark: number; mint: number; magenta: number };
 
-export function bannerFeatures(img: Img): BannerFeatures {
-  const g = colorGrid(img);
+export function bannerFeatures(img: Img, area: Rect = gameArea(img.width, img.height)): BannerFeatures {
+  const g = colorGrid(img, area);
   return {
     white: share(g, BANNER.text, (r, gg, b) => r > 200 && gg > 200 && b > 200),
     dark: share(g, BANNER.text, (r, gg, b) => r + gg + b < 150),
@@ -416,4 +499,4 @@ export function resultFromBanner(f: BannerFeatures): "W" | "L" | null {
   return null;
 }
 
-export const readResult = (img: Img): "W" | "L" | null => resultFromBanner(bannerFeatures(img));
+export const readResult = (img: Img, area: Rect = gameArea(img.width, img.height)): "W" | "L" | null => resultFromBanner(bannerFeatures(img, area));

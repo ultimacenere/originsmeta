@@ -7,7 +7,7 @@
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { loadRefs, readBoard, readMana, readResult, readVersus, type Img } from "../shared/recognize";
+import { layoutFor, loadRefs, readBoard, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
 
 declare global {
@@ -32,6 +32,9 @@ let timer: ReturnType<typeof setInterval> | null = null;
 let last: Uint8Array | null = null;
 let busy = false;
 let save = false;
+let screens: [number, number][] = [];
+/** L'area interna della finestra e le aree del gioco, calcolate di nuovo quando la ripresa cambia misura (11/10/2026). */
+let layout: { w: number; h: number; at: Layout } | null = null;
 
 function stop() {
   if (timer) clearInterval(timer);
@@ -45,9 +48,11 @@ function stop() {
   last = null;
 }
 
-async function start(sourceId: string, opts: { save: boolean }) {
+async function start(sourceId: string, opts: { save: boolean; screens: [number, number][] }) {
   stop();
   save = opts.save;
+  screens = opts.screens;
+  layout = null;
   try {
     // la vecchia forma di Chromium per riprendere una finestra precisa: niente scelta dell'utente né gesto richiesto
     const constraints = {
@@ -86,9 +91,14 @@ function grab() {
   const ms = Date.now();
   try {
     const img: Img = { data: fullCtx.getImageData(0, 0, w, h).data, width: w, height: h, channels: 4 };
-    const vs = readVersus(img, refs);
-    const mana = readMana(img);
-    api.scan({ ms, board: readBoard(img, refs).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img) });
+    if (!layout || layout.w !== w || layout.h !== h) {
+      const fullscreen = screens.some(([sw, sh]) => sw === w && sh === h);
+      layout = { w, h, at: layoutFor(windowContent(img, fullscreen)) };
+    }
+    const { board, ui } = layout.at;
+    const vs = readVersus(img, refs, ui);
+    const mana = readMana(img, board);
+    api.scan({ ms, board: readBoard(img, refs, board).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img, ui) });
   } catch {
     // un fotogramma che non si legge si salta
   }

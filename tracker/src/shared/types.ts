@@ -143,9 +143,14 @@ export type TrackerApi = {
 };
 
 /** Finestra nascosta dello scanner (main/frames.ts, 10/10/2026). */
+export type FramesStartOpts = { save: boolean; screens: [number, number][] };
+
 export type FramesApi = {
-  /** L'id della finestra del gioco da riprendere (desktopCapturer); `save`: modalità cattura, si salvano anche i JPEG. */
-  onStart(listener: (sourceId: string, opts: { save: boolean }) => void): void;
+  /**
+   * L'id della finestra del gioco da riprendere (desktopCapturer); `save`: modalità cattura, si salvano anche i JPEG;
+   * `screens`: misure in pixel veri degli schermi, per riconoscere lo schermo intero (niente barra del titolo).
+   */
+  onStart(listener: (sourceId: string, opts: FramesStartOpts) => void): void;
   onStop(listener: () => void): void;
   /** Un fotogramma JPEG; false se il processo principale non l'ha salvato. */
   save(jpeg: Uint8Array): Promise<boolean>;
