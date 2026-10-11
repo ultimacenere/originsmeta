@@ -20,6 +20,111 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "building-origins-ama-design-balance": {
+    title: "AMA Building Origins : classé jusqu'au 4 décembre, 22 cartes en novembre et pourquoi Bagheera coûte plus",
+    metaTitle: "AMA d'Origins TCG : classé, nouvelles cartes, équilibrage",
+    description:
+      "L'AMA Building Origins d'Origins TCG : classé du 19 octobre au 4 décembre, 22 cartes en novembre, collector pass à 20 dollars environ, le pourquoi du 0.7.",
+    summary:
+      "Lors de l'AMA Building Origins, diffusé en direct le 2 octobre et publié sur YouTube le 5 octobre, Koin Games a donné des dates « écrites au crayon » : le mode classé du 19 octobre au 4 décembre, le classement Grandmaster à partir du 27 octobre et au moins 22 nouvelles cartes en novembre. L'équipe de design a aussi expliqué pourquoi Bagheera, Mind Palace et Spellbook coûtent plus depuis le patch 0.7, pourquoi Christopher Robin est revenu à 5/4 et comment elle équilibre le jeu.",
+    highlights: [
+      { label: "Le classé du 19 octobre au 4 décembre", text: "le classement Grandmaster ouvre le 27 octobre, pour tout le monde en même temps", anchor: "classe" },
+      { label: "Novembre", text: "un playtest de la monétisation, au moins 22 nouvelles cartes, des cartes et des lieux toutes les deux semaines", anchor: "novembre" },
+      { label: "Les cartes à venir", text: "20 Légendaires, plus de 90 lieux conçus et une mécanique de nourriture", anchor: "premier-set" },
+      { label: "Collector pass, capsules et commanders", text: "un achat unique d'environ 20 dollars, des commanders échangeables", anchor: "collection" },
+      { label: "Spectateur, replays et plateaux", text: "le mode spectateur à la Crimson Cup pour des comptes approuvés seulement", anchor: "fonctions" },
+      { label: "Pourquoi trois cartes coûtent plus", text: "Bagheera, Mind Palace et Spellbook ; aucun changement pour Ellen Trechend", anchor: "patch-0-7" },
+      { label: "Christopher Robin et Axe Throw", text: "les raisons de l'aller-retour 5/4, 4/5, 5/4", anchor: "christopher-robin" },
+      { label: "Comment Koin conçoit le jeu", text: "des bandes de puissance, les données plus le ressenti des joueurs, la « net positive joy »", anchor: "design" },
+    ],
+    body: `## Le classé : du 19 octobre au 4 décembre, Grandmaster à partir du 27 {#classe}
+
+L'équipe a donné les dates avec un avertissement : elles sont « écrites au crayon », et celui qui les a lues a « beaucoup de correcteur ». La saison classée commence le 19 octobre, premier jour du Steam Next Fest, et dure jusqu'au 4 décembre. Le classement Grandmaster reste fermé pendant le festival et devrait ouvrir le mardi 27 octobre, pour que « tout le monde commence au même moment ».
+
+Les meilleurs prix iront aux premiers de ce classement, y compris des récompenses exclusives « 1 sur 1 ou 1 sur 25 » que Mike, de l'équipe de Koin, a qualifiées de « probablement les meilleurs prix de tout le jeu ». Cette saison offre des récompenses en classé avant l'arrivée de la monétisation complète, « peut-être la seule fois », et les objets que l'on obtient aujourd'hui dans la démo ne seront plus disponibles au lancement. La suite dans notre [guide du classé](/fr/guides/origins-tcg-ranked).
+
+## Novembre : un playtest de la monétisation et de nouvelles cartes toutes les deux semaines {#novembre}
+
+Les builds de novembre sont des playtests de la monétisation. Si les plans tiennent, novembre apportera aussi « au moins 22 nouvelles cartes », avec de nouvelles cartes et de nouveaux lieux toutes les deux semaines pendant la saison classée. Plus loin, Mike a dit que l'équipe « vise un lancement du jeu l'année prochaine » et que l'interface, qui ressemble encore à celle d'un jeu mobile, aura un aspect « beaucoup plus PC » d'ici la fin de l'année ; Kevin a dit que la version mobile arrivera « bientôt », sans date. Les dates confirmées sont dans notre [feuille de route](/fr/guides/roadmap-and-dates).
+
+## Les cartes à venir : 20 Légendaires, plus de 90 lieux et la nourriture {#premier-set}
+
+La démo contient « la première moitié » du premier set ; la seconde ajoute des mots-clés et de nouveaux concepts. Ben, le lead card designer, a dit que 20 Légendaires sont prévues et que « plus de 90 » lieux sont conçus, contre la quarantaine que les joueurs ont vue. Beaucoup des lieux actuels favorisent les decks agressifs comme ceux de Three Not So Little Pigs ; cela s'équilibrera avec l'arrivée des autres.
+
+La nouvelle mécanique qui l'enthousiasme est la **nourriture**, repoussée parce qu'elle est « un peu avancée » : un objet sur le plateau qui n'est pas un personnage. Le personnage joué dessus reçoit un bonus, « pour l'instant c'est +2/+2 », ce qui donne plus de poids au placement. Un autre sous-thème arrive aussi, « les cartes créées coûtent moins ». Aucune nouvelle carte n'a été nommée.
+
+Les sets suivants visiteront d'autres mythologies : un set consacré à la mythologie grecque est prévu, et certaines de ses cartes sont déjà conçues. Koin a aussi promis des collaborations et a dit avoir été contacté par des studios « numéro un mondial dans leur catégorie », sans les nommer.
+
+## Collector pass, capsules et commanders {#collection}
+
+Origins reste free-to-compete : chaque joueur a toutes les cartes de jeu, personne ne doit se sentir « obligé de dépenser quoi que ce soit » et l'argent va aux variantes limitées, comme dans Counter-Strike. Les pièces :
+
+- le **collector pass** (nom provisoire) : un achat unique d'« environ 20 dollars », pas un battle pass mensuel, qui donne en jouant environ deux objets de collection par semaine, jamais d'un type qui sort des boosters ;
+- des **crédits de boutique** gagnés en jouant, pour d'autres objets de collection exclusifs ;
+- les **capsules**, un second type d'objet : les boosters ne contiennent que des cartes, alors que les commanders sortent des capsules ;
+- les **commanders**, échangeables et en quantité limitée ; en accès anticipé, chacun en reçoit quatre non échangeables, avec des emotes et des avatars, comme « dotation de départ ».
+
+Koin étudie aussi des étuis à collectionner et personnalisables, et des classeurs pour parcourir les collections des autres joueurs. Les sets et la gradation sont expliqués dans notre [article sur les sets](/fr/news/origins-sets-alpha-edition-grading) et dans le [guide de l'économie de collection](/fr/guides/collector-economy) ; pour le Kickstarter, « les prix seront dévoilés bientôt ».
+
+## Spectateur, replays et plateaux {#fonctions}
+
+- Le **mode spectateur** existe mais « n'est pas terminé » : à la [Crimson Cup](/fr/news/crimson-cup-prizepool-qualifiers), seuls quelques comptes approuvés pour le streaming l'utiliseront.
+- Les **replays** fonctionnent en interne mais ne sont pas prêts pour les joueurs ; un **historique tour par tour** est prévu.
+- Voir combien de cartes votre adversaire a remplacées au mulligan, une idée de la communauté, figurait déjà dans la build interne : c'est arrivé avec le [playtest 0.7.1](/fr/news/playtest-patch-notes-0-7-1#mulligan-adverse).
+- Le **plateau actuel est provisoire**, « trop science-fiction et fade » : des plateaux inspirés de chaque boss sont en préparation, et des plateaux cosmétiques arriveront.
+- **Bots** : « aux heures de pointe, nous avons environ 200 joueurs connectés », a dit Mike, donc pour l'instant certaines parties classées se jouent contre des bots ; les missions sont clairement PvE.
+
+## Pourquoi Bagheera, Mind Palace et Spellbook coûtent plus {#patch-0-7}
+
+Le [patch 0.7](/fr/news/patch-0-7#couts) a augmenté les trois cartes de 1 mana. Ben a raconté que l'équipe ne comptait pas les modifier, mais les cartes que les joueurs ne cessaient de signaler « ont commencé à être plus jouées », jusqu'à ce que les chiffres ne soient plus sains. Il n'a pas donné les win rates : seulement qu'ils étaient « dans des fourchettes saines ».
+
+- **Bagheera** est une carte « très importante à réussir » : elle donne le rythme du début de partie et apprend aux débutants où une menace va apparaître, « aux trois mêmes endroits », les cases centrales où sa capacité À la révélation la fait grandir. En 3/3 pour 1 mana, elle était dans trop de decks, surtout ceux de Three Not So Little Pigs. Koin veut en faire une carte pour Mulan, qui répète les capacités À la révélation : l'équipe a donc gardé le gros bonus et augmenté le coût. Un deck Mulan plus fort, a noté Ben, pourrait à son tour renforcer Ellen Trechend.
+- **Spellbook** sera la carte qui changera le plus quand le nombre de cartes doublera, parce que ses sorts viennent de là. Kevin a compté environ 22 sorts aujourd'hui, donc une Legion of the Dead sort à peu près « une fois sur 22 », des chances qui « ne dureront pas longtemps ».
+- **Ellen Trechend** : « aucune action », et rien à attendre « dans l'immédiat ».
+
+Avant la Crimson Cup, Koin s'est « engagé » à laisser les cartes telles quelles ; en cas de problème « catastrophique », « nous bannirions simplement la carte plutôt que de la modifier ».
+
+## Christopher Robin et Axe Throw {#christopher-robin}
+
+Christopher Robin est passé de 5/4 à 4/5 parce qu'il était dans beaucoup de decks avec un bon win rate, et que dans les parties d'initiation les débutants se retrouvaient souvent avec Golden Egg en face, sans autre issue que l'échange ; en 4/5, un Galahad joué ensuite changeait les affrontements. L'équipe est revenue en arrière ([patch de la démo du 21 septembre](/fr/news/demo-patch-notes-0921#christopher-robin)) parce qu'elle pensait ramener Axe Throw « à cinq » dégâts, n'était pas prête à le faire, et voulait qu'Axe Throw, à 4 dégâts aujourd'hui, reste bonne contre les cartes les plus jouées. « Ce n'était pas seulement une question de puissance », a dit Ben. Le [rework de Twister Toss](/fr/news/patch-0-7#twister-toss) supprime lui aussi un moment maladroit : le déplacement n'échoue plus si une autre carte entre d'abord sur la case.
+
+## Comment Koin conçoit le jeu {#design}
+
+- **Des bandes, pas une puissance égale** : « nous ne cherchons pas à ce que chaque carte ait le même niveau de puissance », a dit Ben ; l'équipe intervient quand une carte sort des bandes saines.
+- **Données et ressenti** : chiffres plus retours, parce que « le ressenti des joueurs, c'est aussi une donnée » (Kevin), et un objectif qu'ils appellent « net positive joy », la joie nette positive : le gagnant d'un échange est content sans que le perdant se sente très mal.
+- **Peu de décisions, mais lourdes** : 12 cartes de base plus une Légendaire font « 13 décisions », donc un changement de coût pèse plus que dans les gros decks.
+- **Tours simultanés, trois lieux et une Légendaire que « vous n'avez pas besoin de piocher »**, dans un jeu pensé pour être agréable à regarder « depuis le tout début ».
+- **Des règles plus clémentes, exprès** : retirer un buff continu ne tue jamais un personnage, et Bouclier arrête complètement Piétinement.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Toutes les dates sont « écrites au crayon » et peuvent bouger.
+- Quelles sont les récompenses du classé et les prix 1 sur 1 : Koin y travaille « encore ».
+- Quand arriveront la nourriture, les autres Légendaires et le set grec, et avec quelles cartes.
+- Les prix du Kickstarter, et combien de commanders et de capsules il y aura.
+
+## D'où cela vient {#sources}
+
+L'[enregistrement de l'AMA Building Origins](https://www.youtube.com/watch?v=bEb5RuwY7tg) sur la chaîne YouTube officielle d'Origins TCG, en direct le 2 octobre 2026 et publié le 5 octobre (2 heures et 22 minutes), avec Kevin Lambert, chief product officer et responsable du design de Koin Games, Ben « Benny Beatdowns », lead card designer et ancien de Wizards of the Coast sur Magic, et d'autres membres de l'équipe. Nous avons utilisé les sous-titres automatiques en anglais de YouTube, qui déforment certains noms (nous avons vérifié les noms des cartes dans notre base de données) : les citations sont transcrites et traduites par nous.`,
+    faq: [
+      {
+        q: "Quand commence et quand se termine la saison classée d'Origins TCG ?",
+        a: "Lors de l'AMA Building Origins, Koin Games a dit que la saison classée commence le 19 octobre 2026, premier jour du Steam Next Fest, et dure jusqu'au 4 décembre. Le classement Grandmaster devrait ouvrir le mardi 27 octobre, pour tout le monde en même temps. L'équipe a souligné que ces dates sont « écrites au crayon ».",
+      },
+      {
+        q: "Pourquoi Bagheera, Mind Palace et Spellbook coûtent-elles 1 mana de plus ?",
+        a: "Leur taux de jeu continuait de monter après les signalements des joueurs, jusqu'à ce que Koin juge les chiffres malsains et les augmente de 1 mana dans le patch 0.7. Bagheera, à 1 mana, était dans trop de decks, surtout ceux de Three Not So Little Pigs, alors que Koin veut en faire une carte pour Mulan. Les win rates n'ont pas été communiqués.",
+      },
+      {
+        q: "Koin va-t-il modifier des cartes avant la Crimson Cup ?",
+        a: "Non, sauf si quelque chose de catastrophique arrive : dans ce cas, a dit Koin, il bannirait la carte plutôt que de la modifier. Ben a aussi dit qu'aucune action n'est prévue sur Ellen Trechend dans l'immédiat.",
+      },
+      {
+        q: "Qu'est-ce que la mécanique de nourriture d'Origins TCG ?",
+        a: "Une des mécaniques à venir, décrite par le lead card designer Ben : un objet qui se pose sur le plateau sans être un personnage, et le personnage joué dessus reçoit un bonus, +2/+2 pour l'instant. Elle a été repoussée parce qu'elle est un peu avancée, et elle n'a pas encore de date.",
+      },
+    ],
+  },
   "bot-deck-challenge-practice-tournaments": {
     title: "Vos decks pour les bots de la démo : le défi de Koin, et des tournois d'entraînement avant la Crimson Cup",
     metaTitle: "Origins TCG : vos decks pour les bots de la démo",
@@ -75,7 +180,7 @@ Si vous voulez commencer tout de suite, l'[organisateur de tournois](/fr/tournam
 
 ## L'AMA Building Origins, sur YouTube {#ama}
 
-L'enregistrement du premier événement Building Origins, l'AMA avec Kevin et Ben, présentés par Koin comme les têtes pensantes d'Origins, est sur la chaîne YouTube officielle d'Origins TCG : [« Building Origins AMA »](https://www.youtube.com/watch?v=bEb5RuwY7tg), publié le 5 octobre 2026, d'une durée de 2 heures et 22 minutes. Nous ne l'avons pas transcrit, cet article ne résume donc pas ce qui s'y est dit.
+L'enregistrement du premier événement Building Origins, l'AMA avec Kevin et Ben, présentés par Koin comme les têtes pensantes d'Origins, est sur la chaîne YouTube officielle d'Origins TCG : [« Building Origins AMA »](https://www.youtube.com/watch?v=bEb5RuwY7tg), publié le 5 octobre 2026, d'une durée de 2 heures et 22 minutes. Ce qui s'y est dit, des dates de la saison classée aux raisons des équilibrages de la 0.7, se trouve dans [notre article sur l'AMA](/fr/news/building-origins-ama-design-balance).
 
 ## La démo en chiffres {#chiffres}
 
