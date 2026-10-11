@@ -166,6 +166,12 @@ test("finestre: la barra del titolo di Windows si toglie, lo schermo intero no",
     }
   assert.deepEqual(windowContent(img, false), { x: 2, y: 45, w: w - 4, h: h - 47 });
   assert.deepEqual(windowContent(img, true), { x: 0, y: 0, w, h }, "schermo intero");
+  // una fascia uniforme ma colorata in alto è il gioco (una dissolvenza a schermo intero), non la barra di Windows
+  for (let y = 0; y < 45; y++) for (let x = 0; x < w; x++) d.set([105, 22, 38, 255], (y * w + x) * 4);
+  assert.deepEqual(windowContent(img, false), { x: 0, y: 0, w, h }, "fascia colorata");
+  // la tinta Mica della barra attiva (quasi grigia) vale come barra
+  for (let y = 0; y < 45; y++) for (let x = 0; x < w; x++) d.set([229, 250, 245, 255], (y * w + x) * 4);
+  assert.equal(windowContent(img, false).y, 45, "tinta Mica");
   // senza barra (finestra senza bordi): l'immagine intera
   for (let y = 0; y < 45; y++)
     for (let x = 0; x < w; x++) d.set([(x * 7) % 90, (y * 5) % 70, 60, 255], (y * w + x) * 4);

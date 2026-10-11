@@ -36,8 +36,13 @@ let last: Uint8Array | null = null;
 let busy = false;
 let save = false;
 let screens: [number, number][] = [];
-/** L'area interna della finestra e le aree del gioco, calcolate di nuovo quando la ripresa cambia misura (11/10/2026). */
-let layout: { w: number; h: number; at: Layout } | null = null;
+/**
+ * L'area interna della finestra e le aree del gioco (11/10/2026): la barra del titolo si cerca in ogni fotogramma e vale
+ * l'area più vista negli ultimi `LAYOUT_VOTES` (un fotogramma ingannevole, come una dissolvenza uniforme in alto, non
+ * sposta tutto); si riparte quando la ripresa cambia misura.
+ */
+const LAYOUT_VOTES = 15;
+let layout: { w: number; h: number; votes: string[]; at: Layout; key: string } | null = null;
 
 function stop() {
   if (timer) clearInterval(timer);
@@ -94,10 +99,14 @@ function grab() {
   const ms = Date.now();
   try {
     const img: Img = { data: fullCtx.getImageData(0, 0, w, h).data, width: w, height: h, channels: 4 };
-    if (!layout || layout.w !== w || layout.h !== h) {
-      const fullscreen = screens.some(([sw, sh]) => sw === w && sh === h);
-      layout = { w, h, at: layoutFor(windowContent(img, fullscreen)) };
-    }
+    // a schermo intero la ripresa è grande come lo schermo (a meno di un pixel o due: la scala di Windows arrotonda)
+    const fullscreen = screens.some(([sw, sh]) => Math.abs(sw - w) <= 3 && Math.abs(sh - h) <= 3);
+    if (!layout || layout.w !== w || layout.h !== h) layout = { w, h, votes: [], at: layoutFor({ x: 0, y: 0, w, h }), key: "" };
+    layout.votes = [...layout.votes, JSON.stringify(windowContent(img, fullscreen))].slice(-LAYOUT_VOTES);
+    const tally = new Map<string, number>();
+    for (const v of layout.votes) tally.set(v, (tally.get(v) ?? 0) + 1);
+    const best = [...tally].sort((a, b) => b[1] - a[1])[0][0];
+    if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
     const { board, ui } = layout.at;
     const vs = readVersus(img, refs, layout.at.vs);
     const mana = readMana(img, board);

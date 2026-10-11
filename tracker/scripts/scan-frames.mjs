@@ -23,8 +23,13 @@ let i = 0;
 for (const f of files) {
   const { data, info } = await sharp(path.join(dir, f)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const img = { data, width: info.width, height: info.height, channels: 3 };
-  if (!layout || layout.w !== img.width || layout.h !== img.height)
-    layout = { w: img.width, h: img.height, at: layoutFor(windowContent(img, img.width === screenW && img.height === screenH)) };
+  // come la finestra nascosta (frames.ts): l'area più vista negli ultimi 15 fotogrammi
+  if (!layout || layout.w !== img.width || layout.h !== img.height) layout = { w: img.width, h: img.height, votes: [], key: "", at: null };
+  layout.votes = [...layout.votes, JSON.stringify(windowContent(img, Math.abs(img.width - screenW) <= 3 && Math.abs(img.height - screenH) <= 3))].slice(-15);
+  const tally = new Map();
+  for (const v of layout.votes) tally.set(v, (tally.get(v) ?? 0) + 1);
+  const best = [...tally].sort((a, b) => b[1] - a[1])[0][0];
+  if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
   const board = readBoard(img, refs, layout.at.board);
   const vs = readVersus(img, refs, layout.at.vs);
   const mana = readMana(img, layout.at.board);

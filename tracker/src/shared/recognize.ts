@@ -124,8 +124,11 @@ export function layoutFor(content: Rect): Layout {
 
 /**
  * L'area interna di una finestra ripresa: la ripresa di una finestra di Windows comprende la barra del titolo (45 px al
- * 150%) e un bordo di 1–2 px. La barra è una fascia di colore uniforme in alto (tema chiaro, scuro o colore d'accento);
- * a schermo intero (`fullscreen`: l'immagine è grande come uno schermo) non c'è e l'area è l'immagine intera.
+ * 150%) e un bordo di 1–2 px. La barra è una fascia uniforme e **grigia** in alto (tema chiaro 244,244,244, scuro, o con
+ * la tinta Mica: 230,251,246); a schermo intero (`fullscreen`: l'immagine è grande come uno schermo) non c'è e l'area è
+ * l'immagine intera. Il grigio serve perché anche il gioco ha fasce uniformi in alto (dissolvenze, caricamenti: il
+ * 11/10 un fotogramma a schermo intero su cinque, viola, menta o rosso, sembrava una barra); chi ha il colore d'accento
+ * sulle barre del titolo resta con l'immagine intera.
  */
 export function windowContent(img: Img, fullscreen: boolean): Rect {
   const W = img.width;
@@ -149,12 +152,15 @@ export function windowContent(img: Img, fullscreen: boolean): Rect {
     return { mean: sum.map((s) => s / (n || 1)), spread: Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]) };
   };
   const ref = row(3);
-  if (ref.spread > 24) return full;
+  const [r0, g0, b0] = ref.mean;
+  if (ref.spread > 24 || Math.max(r0, g0, b0) - Math.min(r0, g0, b0) > 28) return full;
   const maxBar = Math.min(90, Math.round(H * 0.15));
   let y = 4;
   for (; y < maxBar; y++) {
     const r = row(y);
-    if (r.spread > 24 || r.mean.some((m, c) => Math.abs(m - ref.mean[c]) > 12)) break;
+    // il gioco comincia dove cambia tutto: le ultime righe della barra variano un poco (tinta Mica, e nei fotogrammi
+    // salvati in JPEG la compressione sbava il confine), il gioco sotto è un'altra cosa
+    if (r.spread > 48 || r.mean.some((m, c) => Math.abs(m - ref.mean[c]) > 40)) break;
   }
   if (y < 18 || y >= maxBar) return full;
   const border = Math.max(1, Math.round(y / 22));
