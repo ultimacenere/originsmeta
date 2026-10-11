@@ -229,6 +229,8 @@ test("pescate dell'avversario dalla sua mano: prima lettura confermata più gli 
   const frames = [...run(0, 5), ...run(5000, 6), ...run(10000, 4), h(14000, 3), h(14500, 3), h(15000, 9), h(15200, null), ...run(16000, 5)];
   assert.equal(oppDrawnOf(frames), 7);
   assert.equal(oppDrawnOf([h(0, null), h(500, 3), h(1000, 3)]), null, "poche letture non bastano");
+  // mano letta di rado (dorsi che lo scanner non conta, come quelli bianchi del boss): niente stima
+  assert.equal(oppDrawnOf([...run(0, 4), ...Array.from({ length: 30 }, (_, i) => h(10000 + i * 500, null))]), null);
   const board = BOARD_SLOTS.map(() => null);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 6 }, 5)?.oppHand, 6);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 40 }, 5), null);

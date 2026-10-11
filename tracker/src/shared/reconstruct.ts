@@ -283,9 +283,17 @@ function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
  * letture le pescate erano 17, con 6 sono 14).
  */
 export const OPP_HAND_STABLE = 6;
+/**
+ * La mano dell'avversario deve leggersi in almeno questa parte dei fotogrammi col tabellone, altrimenti la stima non
+ * si dà (12/10/2026: i dorsi bianchi e rossi del boss si leggono solo con 3–4 carte, e la stima veniva sbagliata).
+ */
+export const OPP_HAND_MIN_SHARE = 0.3;
 
 /** Le pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (vedi `oppDrawn`). */
 export function oppDrawnOf(frames: readonly ScanFrame[]): number | null {
+  const onBoard = frames.filter((f) => f.maxMana !== null).length;
+  const read = frames.filter((f) => f.maxMana !== null && typeof f.oppHand === "number").length;
+  if (!onBoard || read / onBoard < OPP_HAND_MIN_SHARE) return null;
   let run = 0;
   let prev: number | null = null;
   let held: number | null = null;
