@@ -204,4 +204,6 @@ export type DeckApi = {
   hit(on: boolean): void;
   /** Pannello a L (12/10/2026): trascinamento cominciato (true) o finito; la finestra la sposta il processo principale. */
   drag(on: boolean): void;
+  /** Deck tracker (12/10/2026): allargamento con la maniglia cominciato (true) o finito; la finestra trasparente non si ridimensiona dai bordi. */
+  resize(on: boolean): void;
 };

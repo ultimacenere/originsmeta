@@ -46,6 +46,7 @@ const LABELS = {
     deckLeft: "In deck",
     life: "Barriers",
     oppLeft: "Cards left",
+    resize: "Drag to resize",
     oppLeftTip: "Estimate: cards the opponent drew, counted from the face-down cards in their hand",
     mana: "Mana",
     you: "You",
@@ -66,6 +67,7 @@ const LABELS = {
     deckLeft: "Nel mazzo",
     life: "Barriere",
     oppLeft: "Carte rimanenti",
+    resize: "Trascina per allargare",
     oppLeftTip: "Stima: carte pescate dall'avversario, contate dalle carte coperte nella sua mano",
     mana: "Mana",
     you: "Tu",
@@ -86,6 +88,7 @@ const LABELS = {
     deckLeft: "En el mazo",
     life: "Barreras",
     oppLeft: "Cartas restantes",
+    resize: "Arrastra para cambiar el ancho",
     oppLeftTip: "Estimación: cartas robadas por el rival, contadas por las cartas boca abajo de su mano",
     mana: "Maná",
     you: "Tú",
@@ -149,7 +152,8 @@ root.addEventListener(
 /** La finestra alta come il contenuto (niente barra di scorrimento); in OBS non serve. */
 function fit() {
   if (!window.deckApi) return;
-  window.deckApi.fit(Math.ceil(root.getBoundingClientRect().height + 8));
+  // dal fondo del pannello: sopra c'è anche la linguetta (margine in alto del pannello)
+  window.deckApi.fit(Math.ceil(root.getBoundingClientRect().bottom + 8));
 }
 new ResizeObserver(fit).observe(root);
 root.addEventListener("click", (e) => {
@@ -201,6 +205,18 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
  * Nella finestra il pannello a L ha l'angolo vuoto: lì i clic passano al gioco. Il processo principale ignora il mouse
  * finché il puntatore non è sopra il braccio o la colonna (con `forward` i movimenti arrivano lo stesso).
  */
+// maniglia del Deck tracker (12/10/2026): la larghezza la cambia il processo principale finché il tasto è premuto
+if (window.deckApi && view === "me") {
+  document.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !(e.target instanceof Element) || e.target.id !== "grip") return;
+    e.target.setPointerCapture(e.pointerId);
+    window.deckApi?.resize(true);
+  });
+  const end = () => window.deckApi?.resize(false);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+}
+
 if (window.deckApi && view === "opp") {
   let over = true;
   const set = (on: boolean) => {
@@ -248,7 +264,13 @@ function render(v: DeckTrackerView) {
         <div class="stats">${deckLeftStat(live?.deckLeft ?? null, (leg?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0))}${stat(lifePips(live ? live.life.me : null), L.life)}</div>
       </div>`;
   } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-  root.innerHTML = `${close}${body}${fine}`;
+  // la linguetta stile cartella in alto a sinistra, con il logo e la X per chiudere (12/10/2026, note Granola "pagina
+  // winrate": il marchio OriginsMeta sul tracker è "indispensabile"); in OBS senza la X
+  const tab = `<div class="tab"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="64" height="20" draggable="false" />${window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : ""}</div>`;
+  root.classList.add("has-tab");
+  // la maniglia per allargare il pannello (le finestre trasparenti non si ridimensionano dai bordi)
+  const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
+  root.innerHTML = `${tab}${body}${fine}${grip}`;
   // la larghezza della barra dal JavaScript: la CSP non ammette attributi style nell'HTML
   for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
   fit();

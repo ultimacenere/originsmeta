@@ -16,6 +16,7 @@ const api: DeckApi = {
   close: () => ipcRenderer.send("deck:close"),
   hit: (on) => ipcRenderer.send("deck:hit", on === true),
   drag: (on) => ipcRenderer.send("deck:drag", on === true),
+  resize: (on) => ipcRenderer.send("deck:resize", on === true),
 };
 
 contextBridge.exposeInMainWorld("deckApi", api);

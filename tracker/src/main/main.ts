@@ -336,6 +336,8 @@ const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; 
 const OPP_L_WIDTH = 480;
 /** Il trascinamento in corso del pannello a L (vedi IPC `deck:drag`). */
 let oppDrag: { timer: ReturnType<typeof setInterval> } | null = null;
+/** L'allargamento in corso del Deck tracker (vedi IPC `deck:resize`). */
+let deckResize: ReturnType<typeof setInterval> | null = null;
 const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
 const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
@@ -409,7 +411,11 @@ function openPanel(k: PanelKind) {
     show: false,
     title: k === "deck" ? "OriginsMeta · Deck tracker" : "OriginsMeta · Opponent",
     // il pannello a L dell'avversario ha l'angolo in basso a sinistra vuoto: finestra trasparente, clic al gioco lì
-    ...(k === "opp" ? { transparent: true, backgroundColor: "#00000000", hasShadow: false, resizable: false } : { backgroundColor: "#150c2c" }),
+    // trasparenti tutte e due (12/10/2026): la linguetta del Deck tracker sporge sopra il pannello
+    transparent: true,
+    backgroundColor: "#00000000",
+    hasShadow: false,
+    ...(k === "opp" ? { resizable: false } : {}),
     icon: ICON,
     autoHideMenuBar: true,
     webPreferences: {
@@ -749,6 +755,34 @@ function registerIpc() {
   // trascinamento del pannello a L fatto dall'app (12/10/2026: nella finestra trasparente con i clic che passano al
   // gioco la zona di trascinamento di Windows non rispondeva, "il deck avversario è bloccato"): alla pressione si
   // ricorda dove sta il puntatore rispetto alla finestra e la finestra lo segue finché la pagina non dice che è finita
+  // allargamento del Deck tracker con la maniglia (12/10/2026): la finestra trasparente non si ridimensiona dai bordi
+  ipcMain.on("deck:resize", (e, on: unknown) => {
+    if (!fromDeck(e) || !panelOpen("deck") || panels.deck.win!.webContents !== e.sender) return;
+    const win = panels.deck.win!;
+    if (deckResize) clearInterval(deckResize);
+    deckResize = null;
+    if (on !== true) {
+      const b = win.getBounds();
+      panels.deck.prefs = { ...panels.deck.prefs, x: b.x, y: b.y, width: b.width, height: b.height };
+      savePanelPrefs("deck");
+      return;
+    }
+    const x0 = screen.getCursorScreenPoint().x;
+    const b0 = win.getBounds();
+    const timer = setInterval(() => {
+      if (win.isDestroyed()) return void clearInterval(timer);
+      const width = Math.min(Math.max(b0.width + screen.getCursorScreenPoint().x - x0, 200), 600);
+      const b = win.getBounds();
+      if (b.width !== width) win.setBounds({ x: b0.x, y: b0.y, width, height: b.height });
+    }, 16);
+    deckResize = timer;
+    setTimeout(() => {
+      if (deckResize === timer) {
+        clearInterval(timer);
+        deckResize = null;
+      }
+    }, 60_000);
+  });
   ipcMain.on("deck:drag", (e, on: unknown) => {
     if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
     const win = panels.opp.win!;
