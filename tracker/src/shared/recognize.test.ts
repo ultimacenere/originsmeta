@@ -242,6 +242,12 @@ test("stendardo di fine partita: menta vittoria, magenta sconfitta, niente stend
   assert.equal(resultFromBanner({ white: 32, dark: 30, topDark: 97, mint: 0, magenta: 0 }), null);
   // colori quasi pari: incerto
   assert.equal(resultFromBanner({ white: 50, dark: 30, topDark: 95, mint: 1, magenta: 0.9 }), null);
+  // boss battuto (12/10/2026): "BOSS SCONFITTO!" con la pennellata gialla è una vittoria, anche nel fotogramma di
+  // passaggio con l'alone rosso e blu che prima si leggeva come sconfitta
+  assert.equal(resultFromBanner({ white: 37.8, dark: 34.3, topDark: 85, mint: 0, magenta: 0.4, yellow: 5.9 }), "W");
+  assert.equal(resultFromBanner({ white: 40.7, dark: 44.3, topDark: 85, mint: 0, magenta: 0, yellow: 2.7 }), "W");
+  // una sconfitta vera resta sconfitta anche con un po' di giallo
+  assert.equal(resultFromBanner({ white: 46, dark: 36, topDark: 100, mint: 0, magenta: 6.2, yellow: 0.5 }), "L");
   // sconfitta dopo l'animazione della Leggendaria avversaria (11/10 sera): sfondo viola, parte alta poco scura
   assert.equal(resultFromBanner({ white: 60.6, dark: 34.3, topDark: 19.4, mint: 0, magenta: 0.8 }), "L");
   // tabellone durante la partita (i quasi stendardi più frequenti) e un menu molto bianco: niente esito

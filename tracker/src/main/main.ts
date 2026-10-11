@@ -852,6 +852,15 @@ async function boot() {
       frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, screenAt: new Date(twin.at).toISOString() });
       return;
     }
+    // anche dopo un riavvio dell'app, quando `fromScreen` è vuoto: una partita già nello storico con lo stesso esito e a
+    // meno di NEAR_MS è la stessa (12/10/2026: la vittoria delle 01:05 registrata dallo schermo, l'app riavviata, e le
+    // statistiche del gioco arrivate dopo l'hanno aggiunta una seconda volta, con un secondo di differenza)
+    const end = raw.endedAt ? Date.parse(raw.endedAt) : NaN;
+    const stored = Number.isFinite(end) ? store.matches.find((m) => m.result === raw.result && nearTo(m.endedAt, end)) : undefined;
+    if (stored) {
+      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, storedAt: stored.endedAt });
+      return;
+    }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
     const m = frames ? applyScan(raw, frames.matchFor(raw.endedAt ? Date.parse(raw.endedAt) : Date.now())) : raw;
     if (store.add(m)) {

@@ -729,7 +729,7 @@ function share(grid: Uint8Array, r: Rect, test: (r: number, g: number, b: number
   return n ? (100 * c) / n : 0;
 }
 
-export type BannerFeatures = { white: number; dark: number; topDark: number; mint: number; magenta: number };
+export type BannerFeatures = { white: number; dark: number; topDark: number; mint: number; magenta: number; yellow?: number };
 
 export function bannerFeatures(img: Img, area: Rect = gameArea(img.width, img.height)): BannerFeatures {
   const g = colorGrid(img, area);
@@ -739,6 +739,7 @@ export function bannerFeatures(img: Img, area: Rect = gameArea(img.width, img.he
     topDark: share(g, BANNER.top, (r, gg, b) => r + gg + b < 150),
     mint: share(g, BANNER.swoosh, (r, gg, b) => gg > 170 && b > 120 && r < 120 && gg - r > 90),
     magenta: share(g, BANNER.swoosh, (r, gg, b) => r > 170 && b > 100 && gg < 90 && r - gg > 110),
+    yellow: share(g, BANNER.swoosh, (r, gg, b) => r > 190 && gg > 170 && b < 90),
   };
 }
 
@@ -746,8 +747,12 @@ export function bannerFeatures(img: Img, area: Rect = gameArea(img.width, img.he
 export function resultFromBanner(f: BannerFeatures): "W" | "L" | null {
   if (f.white < BANNER.minWhite || f.dark < BANNER.minDark) return null;
   if (f.topDark < BANNER.minTopDark && (f.white < BANNER.fullWhite || f.dark < BANNER.fullDark)) return null;
-  if (f.mint >= BANNER.minColor && f.mint > f.magenta * BANNER.colorRatio) return "W";
-  if (f.magenta >= BANNER.minColor && f.magenta > f.mint * BANNER.colorRatio) return "L";
+  // la vittoria contro un boss ha la pennellata gialla ("BOSS SCONFITTO!", 12/10/2026): vale come la menta, e la sconfitta
+  // deve battere tutte e due (nel passaggio la scritta del boss ha un alone rosso e blu letto come un po' di magenta)
+  const yellow = f.yellow ?? 0;
+  const win = Math.max(f.mint, yellow);
+  if (win >= BANNER.minColor && win > f.magenta * BANNER.colorRatio) return "W";
+  if (f.magenta >= BANNER.minColor && f.magenta > win * BANNER.colorRatio) return "L";
   return null;
 }
 
