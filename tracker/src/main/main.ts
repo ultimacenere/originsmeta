@@ -333,7 +333,7 @@ const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; 
   opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false },
 };
 /** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
-const OPP_L_WIDTH = 400;
+const OPP_L_WIDTH = 480;
 /** Il trascinamento in corso del pannello a L (vedi IPC `deck:drag`). */
 let oppDrag: { timer: ReturnType<typeof setInterval> } | null = null;
 const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
@@ -376,7 +376,7 @@ function savePanelPrefs(k: PanelKind) {
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 400 per il
+  // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 480 per il
   // pannello a L dell'avversario, che va nell'angolo in alto a destra); l'altezza la decide il contenuto
   // il pannello a L ha la larghezza fissa (12/10/2026: con la larghezza salvata dal vecchio pannello, 273, il contenuto
   // largo 400 usciva dallo schermo)

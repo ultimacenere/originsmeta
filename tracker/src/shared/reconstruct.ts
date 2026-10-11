@@ -277,6 +277,13 @@ function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
   return stableLast(frames, (f) => f.life?.[side] ?? null);
 }
 
+/**
+ * Letture uguali di fila per credere a una mano dell'avversario: 6, circa 3 secondi (12/10/2026: mentre gioca una
+ * carta la fila si muove e per un paio di fotogrammi si legge un numero sbagliato; nella partita delle 00:39 con 2
+ * letture le pescate erano 17, con 6 sono 14).
+ */
+export const OPP_HAND_STABLE = 6;
+
 /** Le pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (vedi `oppDrawn`). */
 export function oppDrawnOf(frames: readonly ScanFrame[]): number | null {
   let run = 0;
@@ -288,7 +295,7 @@ export function oppDrawnOf(frames: readonly ScanFrame[]): number | null {
     if (v === null) continue;
     run = v === prev ? run + 1 : 1;
     prev = v;
-    if (run !== STABLE_FRAMES) continue;
+    if (run !== OPP_HAND_STABLE) continue;
     if (held === null) drawn = v;
     else if (v > held) drawn = (drawn ?? 0) + (v - held);
     held = v;

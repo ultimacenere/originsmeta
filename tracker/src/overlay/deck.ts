@@ -46,6 +46,7 @@ const LABELS = {
     deckLeft: "In deck",
     life: "Barriers",
     oppLeft: "Cards left",
+    oppLeftTip: "Estimate: cards the opponent drew, counted from the face-down cards in their hand",
     mana: "Mana",
     you: "You",
     combat: "Combat",
@@ -65,6 +66,7 @@ const LABELS = {
     deckLeft: "Nel mazzo",
     life: "Barriere",
     oppLeft: "Carte rimanenti",
+    oppLeftTip: "Stima: carte pescate dall'avversario, contate dalle carte coperte nella sua mano",
     mana: "Mana",
     you: "Tu",
     combat: "Combattimento",
@@ -84,6 +86,7 @@ const LABELS = {
     deckLeft: "En el mazo",
     life: "Barreras",
     oppLeft: "Cartas restantes",
+    oppLeftTip: "Estimación: cartas robadas por el rival, contadas por las cartas boca abajo de su mano",
     mana: "Maná",
     you: "Tú",
     combat: "Combate",
@@ -125,7 +128,7 @@ function myCard(c: DeckCard, live: boolean, cls = "") {
 const lifePips = (n: number | null) =>
   `<span class="pips" aria-label="${esc(L.life)} ${n ?? "?"}/2">${[0, 1].map((i) => `<i class="${n === null ? "unk" : i < n ? "on" : "lost"}"></i>`).join("")}</span>`;
 
-const stat = (value: string, label: string) => `<div class="stat"><b>${value}</b><span>${esc(label)}</span></div>`;
+const stat = (value: string, label: string, tip = "") => `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><b>${value}</b><span>${esc(label)}</span></div>`;
 
 /** Le carte ancora nel mazzo, con la barra che si svuota (25 all'inizio). */
 function deckLeftStat(left: number | null, total: number) {
@@ -163,10 +166,12 @@ const arrowSvg = (d: "left" | "right" | null) =>
 /**
  * Il pannello dell'avversario a L (11/10/2026 sera, disegno di Pierluigi sul tabellone: "è lo spazio che abbiamo a
  * nostra disposizione"; "pannello unico a L, e leggi anche la direzione"): il braccio in alto, a sinistra dell'angolo,
- * ha la Leggendaria dell'avversario con le barriere e le carte rimanenti (stima dalla sua mano, "~": 12/10/2026, prima le
+ * ha la Leggendaria dell'avversario con le barriere e le carte rimanenti (stima dalla sua mano, detta nel suggerimento: 12/10/2026, prima le
  * carte viste); la colonna sul bordo destro sta sopra il pannello "MANA
- * DATA" del gioco e lo rimostra (mana dell'avversario in alto con la tacca magenta, la freccia del combattimento, il mio
- * mana in basso con la tacca azzurra), poi le carte rivelate dall'avversario, 3 per fila, che compaiono una alla volta.
+ * DATA" del gioco: le carte rivelate dall'avversario, 4 per fila, che compaiono una alla volta, e sotto il mana rimostrato
+ * (mana dell'avversario con la tacca magenta, la freccia del combattimento, il mio mana con la tacca azzurra). Dal 12/10
+ * (Pierluigi: "allunga orizzontalmente il riquadro, metti le carte in fila da quattro e i mana li sposti sotto le carte
+ * uscite") largo 480 punti, con il mana sotto le carte (prima sopra) e 4 carte per fila (prima 3).
  * L'angolo in basso a sinistra è trasparente e lascia passare i clic al gioco (`deckApi.hit`).
  */
 function oppPanel(v: DeckTrackerView, close: string, fine: string) {
@@ -177,16 +182,16 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
   return `<div class="lpanel">
     <section class="arm">
       <div class="gc legend">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</div>
-      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(live?.opponent.deckLeft !== null && live?.opponent.deckLeft !== undefined ? `~${live.opponent.deckLeft}` : "–", L.oppLeft)}</div>
+      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(live?.opponent.deckLeft !== null && live?.opponent.deckLeft !== undefined ? String(live.opponent.deckLeft) : "–", L.oppLeft, L.oppLeftTip)}</div>
     </section>
     <section class="col">
       ${close}
+      ${seen.length ? `<ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
       <div class="manabox" aria-label="${esc(L.mana)}">
         <div class="mrow is-opp"><i class="tick"></i><b>${manaText(live?.mana.opp ?? null)}</b><span>${esc(L.opponent)}</span></div>
         <div class="dir" title="${esc(dir ? `${L.combat}: ${L.dir(dir)}` : L.combat)}">${arrowSvg(dir)}<span>${esc(L.combat)}</span></div>
         <div class="mrow is-me"><i class="tick"></i><b>${manaText(live?.mana.me ?? null)}</b><span>${esc(L.you)}</span></div>
       </div>
-      ${seen.length ? `<ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
       ${fine}
     </section>
   </div>`;

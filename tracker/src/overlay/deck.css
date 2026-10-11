@@ -87,8 +87,12 @@ html, body { overflow: hidden; }
 .gc.inhand .cardimg { border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint), 0 0 8px rgba(49, 227, 189, 0.55); }
 .gc.just { animation: drawn-zoom 0.9s ease; }
 @keyframes drawn-zoom { 0% { transform: scale(1); filter: none; } 35% { transform: scale(1.12); filter: brightness(1.3); } 100% { transform: scale(1); } }
-/* il numero sta in alto, sopra l'illustrazione: in basso ci sono i crediti della carta, che non si coprono */
-.left { position: absolute; top: 22%; left: 50%; transform: translateX(-50%); min-width: 1.6em; padding: 1px 5px; border-radius: 999px; background: var(--ink); border: 2px solid var(--mint); color: var(--mint); font-family: var(--display); font-weight: 800; font-size: 0.95rem; line-height: 1.15; text-align: center; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+/*
+ * il numero sta in basso al centro (Pierluigi, 12/10/2026: "dal centro a centro basso sul fondo della carta"), sulla
+ * fascia viola sopra la cornice bianca: i crediti della carta (ILLUS // …, KOIN GAMES INC) stanno nella cornice, in basso
+ * a sinistra, e non si coprono mai (condizione di Koin)
+ */
+.left { position: absolute; top: auto; bottom: 9.5%; left: 50%; transform: translateX(-50%); min-width: 1.6em; padding: 1px 5px; border-radius: 999px; background: var(--ink); border: 2px solid var(--mint); color: var(--mint); font-family: var(--display); font-weight: 800; font-size: 0.95rem; line-height: 1.15; text-align: center; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
 /* sotto le carte: la Leggendaria (una colonna) e il riquadro con mazzo e vita (le altre due) */
 .foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; align-items: stretch; }
@@ -115,8 +119,8 @@ html, body { overflow: hidden; }
  */
 body.is-opp { background: transparent; }
 .is-opp .dt { background: none; border: 0; padding: 0; margin: 0; }
-.in-obs.is-opp .dt { width: 400px; }
-.lpanel { display: grid; grid-template-columns: minmax(0, 53fr) minmax(0, 47fr); grid-template-rows: auto 1fr; align-items: start; }
+.in-obs.is-opp .dt { width: 480px; }
+.lpanel { display: grid; grid-template-columns: minmax(0, 40fr) minmax(0, 60fr); grid-template-rows: auto 1fr; align-items: start; }
 .arm, .col { background: linear-gradient(180deg, rgba(255, 61, 139, 0.08) 0%, rgba(255, 61, 139, 0) 40%), var(--panel); border: 2px solid var(--sky); }
 .arm { grid-column: 1; grid-row: 1; position: relative; z-index: 1; margin-right: -2px; border-right: 0; border-radius: 10px 0 0 10px; padding: 6px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 6px; align-items: stretch; }
 .col { grid-column: 2; grid-row: 1 / span 2; position: relative; border-radius: 0 0 10px 10px; border-top-right-radius: 0; padding: 6px; display: grid; gap: 6px; }
@@ -139,8 +143,8 @@ body.is-opp { background: transparent; }
 .arrow path:last-child { fill: var(--sky); }
 .arrow.is-left { transform: scaleX(-1); }
 .arrow.is-unknown { opacity: 0.3; }
-.col .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.is-opp .left { top: 4px; font-size: 0.7rem; border-color: var(--crimson); color: var(--crimson); }
+.col .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.is-opp .left { top: 4px; bottom: auto; font-size: 0.7rem; border-color: var(--crimson); color: var(--crimson); }
 .in-window.is-opp .dt { -webkit-app-region: no-drag; }
 /* il pannello a L si trascina con gli eventi del puntatore (deckApi.drag), non con la zona di trascinamento di Windows */
 .in-window .arm, .in-window .col { -webkit-app-region: no-drag; cursor: move; }

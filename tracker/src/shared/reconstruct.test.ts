@@ -1,7 +1,7 @@
 /** Test della partita ricostruita dallo scanner (reconstruct.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyScan, confirmMana, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
+import { applyScan, confirmMana, OPP_HAND_STABLE, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
 import { BOARD_SLOTS } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
@@ -223,10 +223,12 @@ test("mana dei due giocatori e verso del combattimento: forma controllata, vale 
 
 test("pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (12/10/2026)", () => {
   const h = (ms: number, n: number | null): ScanFrame => ({ ...frame(ms, 3), oppHand: n });
-  // 5 in mano, pesca (6), gioca due carte (4), una lettura storta isolata, pesca (5): 5 + 1 + 1 = 7
-  const frames = [h(0, 5), h(500, 5), h(1000, 6), h(1500, 6), h(2000, 4), h(2500, 4), h(2700, 9), h(3000, null), h(3500, 5), h(4000, 5)];
+  // OPP_HAND_STABLE letture uguali di fila a partire da ms
+  const run = (ms: number, n: number) => Array.from({ length: OPP_HAND_STABLE }, (_, i) => h(ms + i * 500, n));
+  // 5 in mano, pesca (6), gioca due carte (4), due letture storte di passaggio (3, 9), pesca (5): 5 + 1 + 1 = 7
+  const frames = [...run(0, 5), ...run(5000, 6), ...run(10000, 4), h(14000, 3), h(14500, 3), h(15000, 9), h(15200, null), ...run(16000, 5)];
   assert.equal(oppDrawnOf(frames), 7);
-  assert.equal(oppDrawnOf([h(0, null), h(500, 3)]), null, "una lettura sola non basta");
+  assert.equal(oppDrawnOf([h(0, null), h(500, 3), h(1000, 3)]), null, "poche letture non bastano");
   const board = BOARD_SLOTS.map(() => null);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 6 }, 5)?.oppHand, 6);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 40 }, 5), null);
