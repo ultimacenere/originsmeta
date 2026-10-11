@@ -163,7 +163,8 @@ function currentDeckView(): DeckTrackerView {
  * Nel playtest le partite online e classificate non lasciano niente nei file del PC (le statistiche contano solo le
  * "offline"), quindi il watcher non le vede finire. Lo stendardo di fine partita sì: `RESULT_WAIT_MS` dopo, se il
  * watcher non ha registrato una partita finita lì vicino (`NEAR_MS`), la registra l'app con quello che ha letto lo
- * schermo: esito, ora, mazzo scelto, giocate e carte dell'avversario. Solo partite viste per intero (`complete`). Se poi
+ * schermo: esito, ora e mazzo scelto, più giocate e carte dell'avversario se la partita è stata vista per intero (`complete`;
+ * dall'11/10/2026 l'esito vale anche senza, vedi `finishFromScreen`). Se poi
  * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni. Il ritardo può essere
  * lungo: l'11/10 il playtest ha scritto la vittoria di un allenamento delle 06:32 solo alle 06:51, entrando in coda
  * online, con l'ora della scrittura. Per questo, oltre alla vicinanza (`NEAR_MS`), una partita dei file con lo stesso
@@ -195,13 +196,17 @@ function noteFrame(f: ScanFrame) {
 
 async function finishFromScreen(at: number) {
   if (!frames || store.matches.some((m) => nearTo(m.endedAt, at))) return;
+  // l'esito dello stendardo vale anche se la partita non è stata vista dal round 1 (11/10/2026, Magic in finestra: in una
+  // finestra piccola il mana si legge a tratti, la partita risultava incompleta e si perdeva anche vittoria o sconfitta);
+  // le giocate entrano solo da una partita completa (`applyScan`)
   const scan = frames.matchFor(at + 10_000);
-  if (!scan || !scan.complete || !scan.result) return;
-  const endedAt = new Date(scan.resultAt ?? at).toISOString();
-  const base = await buildMatch({ end: { endedAt, result: scan.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
+  const seen = scan?.result ? { result: scan.result, resultAt: scan.resultAt } : frames.resultNear(at);
+  if (!seen.result) return;
+  const endedAt = new Date(seen.resultAt ?? at).toISOString();
+  const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
-  fromScreen.push({ at, result: scan.result, used: false });
+  fromScreen.push({ at, result: seen.result, used: false });
   frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
   push();
   scheduleSync(5000);

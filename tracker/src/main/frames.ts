@@ -21,7 +21,7 @@ import { BrowserWindow, desktopCapturer, ipcMain, screen, session, type IpcMainE
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
-import { readScanFrame, reconstruct, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
+import { readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
 /** La partita resta "dal vivo" nel pannello del mazzo fino a 10 minuti dopo l'ultimo fotogramma con il mana letto. */
 export const LIVE_MS = 10 * 60_000;
@@ -86,6 +86,11 @@ export class FrameRecorder {
 
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
+  }
+
+  /** L'esito dello stendardo intorno a quell'ora, anche senza una partita ricostruita (vedi `resultAround`). */
+  resultNear(atMs: number) {
+    return resultAround(this.scans, atMs);
   }
 
   private ready = false;

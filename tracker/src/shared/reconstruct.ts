@@ -266,6 +266,15 @@ function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
   return last;
 }
 
+/**
+ * L'esito dello stendardo comparso intorno a `atMs` (da 5 s prima a 60 s dopo), anche senza una partita ricostruita:
+ * in una finestra piccola il mana si legge a tratti e la partita può non risultare vista dal round 1, ma l'esito resta
+ * buono (11/10/2026, Magic in finestra: pannelli giusti, vittorie e sconfitte mai registrate).
+ */
+export function resultAround(frames: readonly ScanFrame[], atMs: number): { result: "W" | "L" | null; resultAt: number | null } {
+  return resultOf(frames.filter((f) => f.ms >= atMs - 5_000 && f.ms <= atMs + 60_000));
+}
+
 /** L'esito più visto fra i fotogrammi dello stendardo, se lo confermano almeno `RESULT_FRAMES` fotogrammi. */
 function resultOf(frames: readonly ScanFrame[]): { result: "W" | "L" | null; resultAt: number | null } {
   const seen = frames.filter((f) => f.result === "W" || f.result === "L");

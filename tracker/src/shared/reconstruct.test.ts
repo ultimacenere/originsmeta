@@ -1,7 +1,7 @@
 /** Test della partita ricostruita dallo scanner (reconstruct.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyScan, confirmMana, readScanFrame, reconstruct, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
+import { applyScan, confirmMana, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
 import { BOARD_SLOTS } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
@@ -192,4 +192,13 @@ test("fotogrammi con mano e vita: forma controllata", () => {
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, hand: Array(13).fill("C00065_MC") }, 5), null);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, life: { me: 3, opp: 1 } }, 5), null);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3 }, 5)?.hand, undefined);
+});
+
+test("esito dello stendardo anche senza una partita ricostruita (finestra piccola, 11/10/2026)", () => {
+  const banner = (ms: number, result: "W" | "L" | null): ScanFrame => ({ ...frame(ms, null), result });
+  const frames = [banner(1000, null), banner(2000, "L"), banner(2500, "L"), banner(3000, "W"), banner(90_000, "W"), banner(90_500, "W")];
+  assert.deepEqual(resultAround(frames, 2000), { result: "L", resultAt: 2000 });
+  // un solo fotogramma non basta, e quelli lontani non contano
+  assert.deepEqual(resultAround([banner(2000, "W")], 2000), { result: null, resultAt: null });
+  assert.deepEqual(resultAround(frames, 200_000), { result: null, resultAt: null });
 });

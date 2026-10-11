@@ -364,7 +364,7 @@ function whiteGlyphs(img: Img, r: Rect): { bits: number[]; aspect: number }[] {
     parts.push(part);
   }
   const tallest = Math.max(0, ...parts.map((p) => p.y1 - p.y0 + 1));
-  if (tallest < 10) return [];
+  if (tallest < 6) return [];
   return parts
     .filter((p) => p.y1 - p.y0 + 1 >= tallest * 0.7)
     .sort((a, b) => a.x0 - b.x0)
