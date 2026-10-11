@@ -14,6 +14,7 @@ const api: DeckApi = {
   },
   fit: (height) => ipcRenderer.send("deck:fit", height),
   close: () => ipcRenderer.send("deck:close"),
+  hit: (on) => ipcRenderer.send("deck:hit", on === true),
 };
 
 contextBridge.exposeInMainWorld("deckApi", api);

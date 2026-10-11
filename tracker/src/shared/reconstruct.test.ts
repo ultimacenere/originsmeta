@@ -202,3 +202,21 @@ test("esito dello stendardo anche senza una partita ricostruita (finestra piccol
   assert.deepEqual(resultAround([banner(2000, "W")], 2000), { result: null, resultAt: null });
   assert.deepEqual(resultAround(frames, 200_000), { result: null, resultAt: null });
 });
+
+test("mana dei due giocatori e verso del combattimento: forma controllata, vale la lettura confermata (11/10/2026 sera)", () => {
+  const board = BOARD_SLOTS.map(() => null);
+  const ok = readScanFrame({ board, vs: null, maxMana: 5, mana: { me: { current: 2, max: 5 }, opp: null }, direction: "right" }, 5);
+  assert.deepEqual(ok?.mana, { me: { current: 2, max: 5 }, opp: null });
+  assert.equal(ok?.direction, "right");
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 5, mana: { me: { current: 6, max: 5 }, opp: null } }, 5), null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 5, direction: "up" }, 5), null);
+  // la partita prende l'ultima lettura vista in due fotogrammi di fila
+  const m = (ms: number, me: number, opp: number | null, dir: "left" | "right" | null): ScanFrame => ({
+    ...frame(ms, 5),
+    mana: { me: { current: me, max: 5 }, opp: opp === null ? null : { current: opp, max: 5 } },
+    direction: dir,
+  });
+  const scan = reconstruct([frame(0, 2), frame(1000, 2), m(2000, 5, 5, "right"), m(2500, 5, 5, "right"), m(3000, 3, 4, null), m(3500, 3, 4, "left")], info);
+  assert.deepEqual(scan.mana, { me: { current: 3, max: 5 }, opp: { current: 4, max: 5 } });
+  assert.equal(scan.direction, "right");
+});

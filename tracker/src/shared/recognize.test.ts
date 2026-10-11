@@ -242,6 +242,11 @@ test("stendardo di fine partita: menta vittoria, magenta sconfitta, niente stend
   assert.equal(resultFromBanner({ white: 32, dark: 30, topDark: 97, mint: 0, magenta: 0 }), null);
   // colori quasi pari: incerto
   assert.equal(resultFromBanner({ white: 50, dark: 30, topDark: 95, mint: 1, magenta: 0.9 }), null);
+  // sconfitta dopo l'animazione della Leggendaria avversaria (11/10 sera): sfondo viola, parte alta poco scura
+  assert.equal(resultFromBanner({ white: 60.6, dark: 34.3, topDark: 19.4, mint: 0, magenta: 0.8 }), "L");
+  // tabellone durante la partita (i quasi stendardi più frequenti) e un menu molto bianco: niente esito
+  assert.equal(resultFromBanner({ white: 29.4, dark: 57.6, topDark: 33.6, mint: 1.5, magenta: 2.9 }), null);
+  assert.equal(resultFromBanner({ white: 46.6, dark: 22.4, topDark: 0.3, mint: 0, magenta: 0.8 }), null);
 });
 
 test("mano: le carte affiancate e coperte a destra si leggono da sinistra, nelle tre forme", async () => {

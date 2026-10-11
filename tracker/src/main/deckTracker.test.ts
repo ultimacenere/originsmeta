@@ -55,6 +55,8 @@ const scan: ScannedMatch = {
   // pescate: Mary 2 (una in mano), Billy 3 letta per errore, la Leggendaria in mano
   drawn: { A: 2, B: 3, L_ME: 1 },
   life: { me: 2, opp: 1 },
+  mana: { me: { current: 1, max: 5 }, opp: { current: 0, max: 5 } },
+  direction: "right",
 };
 
 test("mazzo scelto: Leggendaria a parte, carte per costo, due copie, record del mazzo", () => {
@@ -90,6 +92,9 @@ test("carte pescate, mazzo rimasto e vita (overlay di Davdas, 11/10/2026)", () =
   // 25 meno le pescate (2 + 2 + 1)
   assert.equal(v.live?.deckLeft, 20);
   assert.deepEqual(v.live?.life, { me: 2, opp: 1 });
+  // mana dei due e verso del combattimento passano al pannello a L (11/10/2026 sera)
+  assert.deepEqual(v.live?.mana, { me: { current: 1, max: 5 }, opp: { current: 0, max: 5 } });
+  assert.equal(v.live?.direction, "right");
   // le giocate valgono come pescate anche senza la lettura della mano
   const noHand = deckTrackerView({ activeDeck: deck, matches: [], live: { scan: { ...scan, drawn: {} }, inMatch: true }, scanner: true, card, now: 0 });
   assert.equal(noHand.deck!.cards.find((c) => c.name === "Billy")!.drawn, 2);

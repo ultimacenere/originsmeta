@@ -4,20 +4,26 @@
  *
  * Giro: `UPDATE_FIRST_MS` dopo l'avvio e poi ogni `UPDATE_EVERY_MS` chiede a GitHub le release; se ce n'è una più nuova
  * scarica lo zip in una cartella temporanea (controllando la dimensione), lo scompatta con il tar di Windows e, appena
- * il giocatore non è in partita, scrive uno script che aspetta la chiusura dell'app, copia i file nuovi sopra quelli
- * vecchi (robocopy) e la riapre; poi chiude l'app. I dati (%APPDATA%\OriginsMeta Analytics) non si toccano.
+ * il gioco è chiuso, scrive uno script che aspetta la chiusura dell'app, copia i file nuovi sopra quelli vecchi
+ * (robocopy) e la riapre; poi chiude l'app. I dati (%APPDATA%\OriginsMeta Analytics) non si toccano.
+ *
+ * 11/10/2026 sera (Magic, playtest in finestra: "ogni tanto succede questo, dura qualche secondo, si toglie e poi si
+ * bugga il tracker", con la console nera sopra il gioco e la partita non contata): l'app si aggiornava durante la
+ * partita, perché "in partita" lo diceva lo scanner e in una finestra piccola il mana si legge a tratti; e la console
+ * dello script si vedeva. Adesso si installa solo a gioco chiuso (`canInstall`) e lo script parte nascosto
+ * (`launcherScript`).
  */
 import { app, net } from "electron";
 import { execFile, spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { installScript, isNewer, pickRelease, UPDATE_API, UPDATE_ASSET, type Release } from "./updateRules";
+import { installScript, isNewer, launcherScript, pickRelease, UPDATE_API, UPDATE_ASSET, type Release } from "./updateRules";
 
 /** Primo controllo dopo l'avvio (ORIGINSMETA_UPDATE_DELAY_MS per le prove). */
 export const UPDATE_FIRST_MS = Number(process.env.ORIGINSMETA_UPDATE_DELAY_MS) || 30_000;
 export const UPDATE_EVERY_MS = 3 * 60 * 60_000;
-/** In partita non si riavvia: si riprova fra 2 minuti. */
+/** Con il gioco aperto non si riavvia: si riprova fra 2 minuti. */
 export const UPDATE_RETRY_MS = 2 * 60_000;
 
 export type UpdateState = { state: "idle" | "downloading" | "ready" | "installing" | "error"; version: string | null };
@@ -30,8 +36,8 @@ export class Updater {
 
   constructor(
     private readonly deps: {
-      /** il giocatore è in partita (lo dice lo scanner): l'app non si riavvia */
-      inMatch: () => boolean;
+      /** si può installare: il gioco è chiuso (con il gioco aperto l'app non si riavvia mai, nemmeno fra due partite) */
+      canInstall: () => Promise<boolean>;
       onChange: () => void;
       /** chiude l'app per l'aggiornamento */
       quit: () => void;
@@ -121,7 +127,7 @@ export class Updater {
   }
 
   private async installWhenIdle(source: string, version: string): Promise<void> {
-    if (this.deps.inMatch()) {
+    if (!(await this.deps.canInstall().catch(() => false))) {
       setTimeout(() => void this.installWhenIdle(source, version), UPDATE_RETRY_MS);
       return;
     }
@@ -137,7 +143,11 @@ export class Updater {
         // non essenziale
       }
     };
-    const child = spawn("cmd.exe", ["/d", "/c", script], { detached: true, stdio: "ignore", windowsHide: true });
+    // lo script parte da wscript con la finestra nascosta: cmd lanciato con detached mostrava la console sopra il gioco
+    const launcher = path.join(path.dirname(source), "install.vbs");
+    fs.writeFileSync(launcher, launcherScript(script));
+    const wscript = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "wscript.exe");
+    const child = spawn(wscript, ["//B", "//Nologo", launcher], { detached: true, stdio: "ignore", windowsHide: true });
     child.on("error", (e) => note(`errore dello script: ${e.message}`));
     note(`script avviato (pid ${child.pid ?? "?"}), app ${process.pid} ${this.current} -> ${version}`);
     child.unref();

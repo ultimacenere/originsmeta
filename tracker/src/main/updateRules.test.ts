@@ -1,7 +1,7 @@
 /** Test delle regole dell'aggiornamento automatico (updateRules.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { installScript, isNewer, parseVersion, pickRelease, trustedAssetUrl, UPDATE_ASSET } from "./updateRules";
+import { installScript, isNewer, launcherScript, parseVersion, pickRelease, trustedAssetUrl, UPDATE_ASSET } from "./updateRules";
 
 const url = (v: string) => `https://github.com/ultimacenere/originsmeta/releases/download/analytics-v${v}/${UPDATE_ASSET}`;
 const release = (v: string, over: Record<string, unknown> = {}, asset: Record<string, unknown> = {}) => ({
@@ -32,6 +32,12 @@ test("la release giusta: la più nuova dell'app, pubblicata, con lo zip dal nome
   assert.equal(pickRelease([release("1.0.0", {}, { state: "starter" })]), null, "caricamento non finito");
   assert.equal(pickRelease([release("1.0.0", {}, { size: 12 })]), null, "dimensione assurda");
   assert.equal(trustedAssetUrl(url("0.3.1"), "0.3.1"), true);
+});
+
+test("lanciatore dello script: cmd con la finestra nascosta, percorsi con spazi (11/10/2026 sera)", () => {
+  const v = launcherScript("C:\\Users\\Mario Rossi\\AppData\\Local\\Temp\\u\\install.cmd");
+  assert.equal(v, 'CreateObject("WScript.Shell").Run "cmd.exe /d /c """"C:\\Users\\Mario Rossi\\AppData\\Local\\Temp\\u\\install.cmd""""", 0, False\r\n');
+  assert.ok(!launcherScript('C:\\a"b\\install.cmd').includes('a"b'), "niente virgolette dentro il percorso");
 });
 
 test("script di installazione: aspetta l'app, copia, riapre", () => {

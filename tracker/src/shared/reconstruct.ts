@@ -30,7 +30,14 @@ export type ScanFrame = {
   hand?: readonly string[];
   /** Segmenti di vita accesi degli eroi, 0–2 (recognize.ts, `readLife`; null se non si leggono). */
   life?: { me: number | null; opp: number | null };
+  /** Il mana di tutti e due, "rimasto/massimo" (recognize.ts, `readMana`; dall'11/10/2026 sera, assente prima). */
+  mana?: { me: Mana | null; opp: Mana | null };
+  /** Il verso della freccia "COMBAT DIRECTION" (recognize.ts, `readDirection`; dall'11/10/2026 sera). */
+  direction?: Direction | null;
 };
+
+export type Mana = { current: number; max: number };
+export type Direction = "left" | "right";
 
 export type ScannedPlay = { turn: number; me: boolean; card: string; lane: number };
 
@@ -61,6 +68,9 @@ export type ScannedMatch = {
   drawn: Record<string, number>;
   /** La vita degli eroi (segmenti accesi, 0–2): l'ultima lettura confermata da `STABLE_FRAMES` fotogrammi di fila. */
   life: { me: number | null; opp: number | null };
+  /** Il mana dei due giocatori e il verso del combattimento: l'ultima lettura confermata, come la vita. */
+  mana: { me: Mana | null; opp: Mana | null };
+  direction: Direction | null;
 };
 
 /** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
@@ -248,19 +258,27 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     ...resultOf(frames),
     drawn,
     life: { me: lifeOf(frames, "me"), opp: lifeOf(frames, "opp") },
+    mana: { me: stableLast(frames, (f) => f.mana?.me ?? null), opp: stableLast(frames, (f) => f.mana?.opp ?? null) },
+    direction: stableLast(frames, (f) => f.direction ?? null),
   };
 }
 
 /** L'ultima vita letta per un eroe e confermata da `STABLE_FRAMES` fotogrammi di fila (lampi e animazioni non contano). */
 function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
+  return stableLast(frames, (f) => f.life?.[side] ?? null);
+}
+
+/** L'ultimo valore letto e confermato da `STABLE_FRAMES` fotogrammi di fila (i fotogrammi senza lettura non contano). */
+function stableLast<T>(frames: readonly ScanFrame[], read: (f: ScanFrame) => T | null): T | null {
   let run = 0;
-  let prev: number | null = null;
-  let last: number | null = null;
+  let prev = "";
+  let last: T | null = null;
   for (const f of frames) {
-    const v = f.life?.[side] ?? null;
+    const v = read(f);
     if (v === null) continue;
-    run = v === prev ? run + 1 : 1;
-    prev = v;
+    const k = JSON.stringify(v);
+    run = k === prev ? run + 1 : 1;
+    prev = k;
     if (run >= STABLE_FRAMES) last = v;
   }
   return last;
@@ -338,6 +356,15 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   const lifeOk = (v: unknown) => v === null || (Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 2);
   const life = f.life as Record<string, unknown> | undefined;
   if (life !== undefined && !(life && typeof life === "object" && lifeOk(life.me) && lifeOk(life.opp))) return null;
+  const manaOk = (v: unknown): v is Mana | null => {
+    if (v === null) return true;
+    const m = v as Record<string, unknown> | undefined;
+    return Boolean(m && typeof m === "object" && Number.isInteger(m.current) && Number.isInteger(m.max) && (m.max as number) >= 1 && (m.max as number) <= 20 && (m.current as number) >= 0 && (m.current as number) <= (m.max as number));
+  };
+  const mana = f.mana as Record<string, unknown> | undefined;
+  if (mana !== undefined && !(mana && typeof mana === "object" && manaOk(mana.me) && manaOk(mana.opp))) return null;
+  if (f.direction !== undefined && f.direction !== null && f.direction !== "left" && f.direction !== "right") return null;
+  const pick = (m: Mana | null) => (m ? { current: m.current, max: m.max } : null);
   return {
     ms: now,
     board: f.board as (string | null)[],
@@ -346,5 +373,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
     result,
     ...(f.hand ? { hand: f.hand as string[] } : {}),
     ...(life ? { life: { me: life.me as number | null, opp: life.opp as number | null } } : {}),
+    ...(mana ? { mana: { me: pick(mana.me as Mana | null), opp: pick(mana.opp as Mana | null) } } : {}),
+    ...(f.direction === "left" || f.direction === "right" ? { direction: f.direction } : {}),
   };
 }

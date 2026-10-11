@@ -8,7 +8,7 @@
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
+import { OPP_MANA_TEXT, layoutFor, loadRefs, readBoard, readDirection, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
 import cardArtHand from "../card-art-hand.json";
 
@@ -119,7 +119,8 @@ function grab() {
       vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
       maxMana: mana ? mana.max : null,
       result: readResult(img, ui),
-      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board) } : {}),
+      // dall'11/10/2026 sera anche il mana dell'avversario e la freccia del combattimento (pannello a L degli overlay)
+      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board), mana: { me: mana, opp: readMana(img, board, OPP_MANA_TEXT) }, direction: readDirection(img, board) } : {}),
     });
   } catch {
     // un fotogramma che non si legge si salta

@@ -397,15 +397,53 @@ function readGlyph(g: { bits: number[]; aspect: number }): string | null {
   return bd <= GLYPH_MAX_DIST ? best : null;
 }
 
-/** Il mana del giocatore ("3/6" → { current: 3, max: 6 }), null se il pannello non si legge. */
-export function readMana(img: Img, area: Rect = gameArea(img.width, img.height)): { current: number; max: number } | null {
-  const text = whiteGlyphs(img, inside(area, MANA_TEXT)).map(readGlyph);
+/** Il mana del giocatore ("3/6" → { current: 3, max: 6 }), null se il pannello non si legge. `at`: il testo da leggere. */
+export function readMana(img: Img, area: Rect = gameArea(img.width, img.height), at: Rect = MANA_TEXT): { current: number; max: number } | null {
+  const text = whiteGlyphs(img, inside(area, at)).map(readGlyph);
   if (text.some((c) => c === null)) return null;
   const m = /^(\d{1,2})\/(\d{1,2})$/.exec(text.join(""));
   if (!m) return null;
   const current = Number(m[1]);
   const max = Number(m[2]);
   return max >= 1 && max <= 20 && current <= max ? { current, max } : null;
+}
+
+/**
+ * Il mana dell'avversario: lo stesso pannello "MANA DATA", in alto (tacca rossa; il mio è in basso, tacca azzurra), 182
+ * punti più su del mio e un po' più largo, perché "10/10" non ci stava (11/10/2026 sera: il pannello a L degli
+ * overlay copre quello del gioco e lo rimostra). Tarato sulla partita in classificata delle 17:26: "5/5", "0/8", "9/9",
+ * "10/10" come nel gioco. I numeri sono "rimasto/massimo": a fine partita l'avversario a 0/10, io a 10/10.
+ */
+export const OPP_MANA_TEXT: Rect = { x: 1775 / SW, y: 396 / SH, w: 130 / SW, h: 36 / SH };
+
+/**
+ * La freccia "COMBAT DIRECTION" fra i due numeri del mana: trattini e punta azzurri. Il verso è il lato della punta,
+ * dove si ammucchiano i pixel azzurri: sulle 16 sessioni salvate (2.220 fotogrammi con il pannello) la freccia era
+ * sempre verso destra, picco all'85% della sua larghezza. Verso sinistra è la stessa misura specchiata, non ancora vista
+ * in una partita (11/10/2026 sera).
+ */
+export const COMBAT_ARROW: Rect = { x: 1770 / SW, y: 470 / SH, w: 130 / SW, h: 32 / SH };
+
+export function readDirection(img: Img, area: Rect = gameArea(img.width, img.height)): "left" | "right" | null {
+  const r = inside(area, COMBAT_ARROW);
+  const x0 = Math.max(0, Math.round(r.x));
+  const x1 = Math.min(img.width, Math.round(r.x + r.w));
+  const y0 = Math.max(0, Math.round(r.y));
+  const y1 = Math.min(img.height, Math.round(r.y + r.h));
+  if (x1 - x0 < 10 || y1 <= y0) return null;
+  const cols = new Array<number>(x1 - x0).fill(0);
+  for (let y = y0; y < y1; y++)
+    for (let x = x0; x < x1; x++) {
+      const p = (y * img.width + x) * img.channels;
+      if (img.data[p + 1] > 170 && img.data[p + 2] > 170 && img.data[p] < 140) cols[x - x0]++;
+    }
+  const first = cols.findIndex((c) => c > 0);
+  const last = cols.length - 1 - [...cols].reverse().findIndex((c) => c > 0);
+  // freccia intera: almeno metà del riquadro coperta e abbastanza pixel (scritte di danno o lampi la coprono)
+  if (first < 0 || last - first < cols.length * 0.5 || cols.reduce((a, b) => a + b, 0) < (y1 - y0) * cols.length * 0.12) return null;
+  const peak = cols.indexOf(Math.max(...cols));
+  const at = (peak - first) / (last - first);
+  return at >= 0.65 ? "right" : at <= 0.35 ? "left" : null;
 }
 
 /** Il round stimato dal mana massimo (vedi `MANA_TEXT`). */
@@ -526,6 +564,10 @@ export function readLife(img: Img, board: Rect): Record<Side, number | null> {
  * colore e quindi senza esito. I conti si fanno su una griglia di 320 × 180 medie, come nella taratura. Parte alta
  * scura dal 60% (era 80%) dall'11/10, finestre: la sconfitta del playtest in una finestra larga ha la parte alta viola
  * (69–76%); riprovato su 5 sessioni, 4.900 fotogrammi: entrano solo stendardi veri, tutti con l'esito giusto.
+ * Dall'11/10 sera anche senza la parte alta scura, se la scritta è piena (bianco ≥ 45%, fascia scura ≥ 25%): la
+ * sconfitta di Pierluigi in classificata arrivava dopo l'animazione della Leggendaria dell'avversario, con lo sfondo
+ * viola dietro (parte alta scura al 16–20%), e non si è registrata. Sui 8.194 fotogrammi di 16 sessioni (uno su due)
+ * la regola nuova prende solo quei 29; il tabellone con molto bianco arriva al 29% di bianco o al 10% di scuro.
  */
 export const BANNER = {
   text: { x: 0.04, y: 0.42, w: 0.92, h: 0.2 } as Rect,
@@ -534,6 +576,9 @@ export const BANNER = {
   minWhite: 20,
   minDark: 10,
   minTopDark: 60,
+  /** senza la parte alta scura (sfondo di un'animazione): la scritta deve essere piena */
+  fullWhite: 45,
+  fullDark: 25,
   minColor: 0.3,
   colorRatio: 1.5,
 } as const;
@@ -606,7 +651,8 @@ export function bannerFeatures(img: Img, area: Rect = gameArea(img.width, img.he
 
 /** L'esito dalle misure dello stendardo: "W", "L" o null (niente stendardo, o colore incerto). */
 export function resultFromBanner(f: BannerFeatures): "W" | "L" | null {
-  if (f.white < BANNER.minWhite || f.dark < BANNER.minDark || f.topDark < BANNER.minTopDark) return null;
+  if (f.white < BANNER.minWhite || f.dark < BANNER.minDark) return null;
+  if (f.topDark < BANNER.minTopDark && (f.white < BANNER.fullWhite || f.dark < BANNER.fullDark)) return null;
   if (f.mint >= BANNER.minColor && f.mint > f.magenta * BANNER.colorRatio) return "W";
   if (f.magenta >= BANNER.minColor && f.magenta > f.mint * BANNER.colorRatio) return "L";
   return null;

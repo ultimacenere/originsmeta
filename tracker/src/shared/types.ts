@@ -184,6 +184,9 @@ export type DeckTrackerView = {
     deckLeft: number | null;
     /** segmenti di vita accesi degli eroi, 0–2 (anello sotto la miniatura) */
     life: { me: number | null; opp: number | null };
+    /** il mana dei due giocatori, "rimasto/massimo", e il verso del combattimento (11/10/2026 sera: pannello a L) */
+    mana: { me: { current: number; max: number } | null; opp: { current: number; max: number } | null };
+    direction: "left" | "right" | null;
     opponent: { legendary: DeckCard | null; seen: DeckCard[] };
   } | null;
   updatedAt: string;
@@ -196,4 +199,6 @@ export type DeckApi = {
   fit(height: number): void;
   /** Chiude il pannello (la finestra non ha più la cornice di Windows). */
   close(): void;
+  /** Pannello a L (11/10/2026 sera): il puntatore è sopra il pannello (true) o sull'angolo vuoto, dove i clic vanno al gioco. */
+  hit(on: boolean): void;
 };

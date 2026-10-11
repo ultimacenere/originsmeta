@@ -64,6 +64,8 @@ export function deckTrackerView(input: {
           round: opp.turns,
           deckLeft: deck ? Math.max(0, DECK_SIZE - [...(deck.legendary ? [deck.legendary] : []), ...deck.cards].reduce((n, c) => n + c.drawn, 0)) : null,
           life: opp.life ?? { me: null, opp: null },
+          mana: opp.mana ?? { me: null, opp: null },
+          direction: opp.direction ?? null,
           opponent: {
             legendary: opp.oppLegendary ? entry(opp.oppLegendary, 1) : null,
             // le carte rivelate dall'avversario, nell'ordine in cui sono comparse, con le copie viste

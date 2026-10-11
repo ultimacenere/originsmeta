@@ -38,7 +38,7 @@
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
  */
-import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
+import { app, BrowserWindow, clipboard, desktopCapturer, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -52,6 +52,7 @@ import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
 import { deckTrackerView } from "./deckTracker";
+import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
 import type { AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
@@ -325,10 +326,14 @@ function lockZoom(win: BrowserWindow) {
  */
 type PanelKind = "deck" | "opp";
 type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean };
+// dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
+// pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
 const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean }> = {
-  deck: { win: null, prefs: { open: false }, file: "deck.json", left: false },
-  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: true },
+  deck: { win: null, prefs: { open: false }, file: "deck.json", left: true },
+  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false },
 };
+/** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
+const OPP_L_WIDTH = 400;
 const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
 const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
@@ -369,13 +374,15 @@ function savePanelPrefs(k: PanelKind) {
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  // larghezza scelta dal giocatore (all'inizio 300 per il mio mazzo, 270 per l'avversario); l'altezza la decide il contenuto
-  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 300 : 270), 200), 600);
+  // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 400 per il
+  // pannello a L dell'avversario, che va nell'angolo in alto a destra); l'altezza la decide il contenuto
+  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 230 : OPP_L_WIDTH), 200), 600);
   const height = Math.min(Math.max(p.height ?? 420, 120), 1600);
   const { x, y } = p;
   // la posizione salvata vale solo se sta ancora su uno schermo
   if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
-  return { x: panels[k].left ? area.x + 24 : area.x + area.width - width - 24, y: area.y + 24, width, height };
+  if (k === "opp") return { x: area.x + area.width - width, y: area.y, width, height };
+  return { x: panels[k].left ? area.x : area.x + area.width - width - 24, y: area.y + Math.round(area.height * 0.22), width, height };
 }
 
 function openPanel(k: PanelKind) {
@@ -392,7 +399,8 @@ function openPanel(k: PanelKind) {
     maximizable: false,
     show: false,
     title: k === "deck" ? "OriginsMeta · Deck tracker" : "OriginsMeta · Opponent",
-    backgroundColor: "#150c2c",
+    // il pannello a L dell'avversario ha l'angolo in basso a sinistra vuoto: finestra trasparente, clic al gioco lì
+    ...(k === "opp" ? { transparent: true, backgroundColor: "#00000000", hasShadow: false } : { backgroundColor: "#150c2c" }),
     icon: ICON,
     autoHideMenuBar: true,
     webPreferences: {
@@ -723,6 +731,11 @@ function registerIpc() {
     if (!fromDeck(e)) return;
     for (const k of PANEL_KINDS) if (panelOpen(k) && panels[k].win!.webContents === e.sender) setPanel(k, false);
   });
+  // pannello a L: sopra il braccio o la colonna il mouse è del pannello, sull'angolo vuoto passa al gioco
+  ipcMain.on("deck:hit", (e, on: unknown) => {
+    if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
+    panels.opp.win!.setIgnoreMouseEvents(on !== true, { forward: true });
+  });
   ipcMain.on("deck:fit", (e, h: unknown) => {
     if (!fromDeck(e) || !Number.isFinite(h)) return;
     const win = BrowserWindow.fromWebContents(e.sender);
@@ -834,9 +847,14 @@ async function boot() {
     const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     if (!NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
-    // aggiornamento automatico (11/10/2026): solo nell'app impacchettata, mai durante una partita
+    // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
+    // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)
     updater = new Updater({
-      inMatch: () => Boolean(frames?.running && frames.live()?.inMatch),
+      canInstall: async () => {
+        if (frames?.running && frames.live()?.inMatch) return false;
+        const sources = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 0, height: 0 } });
+        return !pickGameWindow(sources.map((s) => ({ id: s.id, name: s.name })));
+      },
       onChange: push,
       quit: () => {
         quitting = true;

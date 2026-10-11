@@ -55,6 +55,17 @@ export function pickRelease(data: unknown): Release | null {
   return best;
 }
 
+/**
+ * Il lanciatore dello script di installazione (11/10/2026 sera): un VBScript che apre `cmd.exe` con la finestra
+ * nascosta. Prima l'app lanciava cmd direttamente con `detached: true` e `windowsHide: true`, ma su Windows Node ignora
+ * `windowsHide` con `detached` e la console nera compariva per qualche secondo sopra il gioco (Magic, playtest in
+ * finestra). wscript.exe non ha console; `Run …, 0, False` nasconde la finestra di cmd e dei programmi che lancia.
+ */
+export function launcherScript(cmdPath: string): string {
+  const inner = `cmd.exe /d /c ""${cmdPath.replace(/"/g, "")}""`;
+  return [`CreateObject("WScript.Shell").Run "${inner.replace(/"/g, '""')}", 0, False`, ""].join("\r\n");
+}
+
 /** Lo script che, chiusa l'app, copia la versione nuova sopra quella vecchia e la riapre (cmd di Windows). */
 export function installScript(input: { pid: number; source: string; target: string; exe: string; log: string }): string {
   const q = (p: string) => `"${p.replace(/"/g, "")}"`;
