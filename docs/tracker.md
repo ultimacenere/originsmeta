@@ -469,8 +469,9 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   distinguono da quelle giocate; il round è il mana
   massimo del giocatore meno uno, e gli effetti sul mana lo spostano (partita del 10/10 alle 15:44: "5/10" con un "-5" al
   round 10, l'avversario "11/11"). Ripresa cominciata a partita in corso (l'app avviata durante la partita): la partita
-  si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e non entra
-  nello storico.
+  si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e le sue
+  giocate non entrano nello storico (dalla 0.3.6 ci entra comunque l'esito dello stendardo, vedi "Esito anche da una
+  partita incompleta").
 - **Finestre di qualunque forma (0.3.3, 11/10/2026**; Magic non registrava giocando in finestra, Pierluigi: "il gioco
   supporta solo schermo intero o in finestra, poi permette agli utenti di stirare lo schermo come vogliono"): il gioco
   non mette bande nere, riempie la finestra di qualunque forma (il minimo è circa 4:3). Misurato sul playtest con due
@@ -512,7 +513,8 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   esito e ora della fine (`readResult`/`resultFromBanner` in recognize.ts, griglia 320 × 180; confermato da 2 fotogrammi,
   `RESULT_FRAMES` di reconstruct.ts). Taratura su 3.700 fotogrammi: 53 stendardi su 55, nessun esito sbagliato.
   `finishFromScreen` (main.ts): 30 s dopo lo stendardo, se il watcher non ha registrato una partita entro 3 minuti, la
-  registra l'app con esito, mazzo scelto, giocate e carte dell'avversario (solo partite viste intere); se poi arriva
+  registra l'app con esito, mazzo scelto, giocate e carte dell'avversario (giocate e carte solo dalle partite viste
+  intere; fino alla 0.3.5 anche l'esito, vedi la 0.3.6 qui sotto); se poi arriva
   quella del watcher si scarta. Provato dal vivo sul playtest l'11/10 (vittoria in 9 round, registrata da sola). Le 3
   partite della notte del 10/10 e la vittoria sul playtest dell'11/10 sono state completate o aggiunte nello storico di
   Pierluigi con uno script una tantum dai fotogrammi salvati: l'esito letto dallo schermo coincideva con quello dei file.
@@ -527,6 +529,24 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   usava `tasklist | find`, che lanciato dall'app senza console restava bloccato su `find`. Chi ha la 0.3.0 o la 0.3.1
   aggiorna a mano una volta. Niente firma ancora (Fase 5): la difesa è l'indirizzo esatto su github.com via HTTPS e la
   dimensione dichiarata da GitHub. Tasto "Chiudi l'app" in alto a destra (Pierluigi, 11/10).
+- **Niente zoom nei pannelli (0.3.5, 11/10/2026**; andrez2205 aveva ingrandito il Deck tracker con Ctrl + rotella e il
+  pannello restava ingrandito): Chromium ricorda lo zoom di ogni pagina nel file `Preferences` dei dati dell'app
+  (`%APPDATA%\OriginsMeta Analytics`), che la disinstallazione non tocca, quindi reinstallare non bastava. `lockZoom`
+  (main.ts), applicata ai due pannelli (`openPanel`) e all'overlay (`openOverlay`): a ogni `zoom-changed` e a ogni
+  `did-finish-load` rimette `setZoomFactor(1)`, blocca lo zoom a pizzico (`setVisualZoomLevelLimits(1, 1)`) e, se il
+  doppio clic sulla zona trascinabile massimizza la finestra, la riporta subito com'era. Chi ha già un pannello
+  ingrandito torna normale da solo con la 0.3.5; se no: chiudere l'app e cancellare `deck.json`, `opponent.json` e
+  `Preferences` in `%APPDATA%\OriginsMeta Analytics`. La finestra principale lo zoom lo tiene.
+- **Esito anche da una partita incompleta (0.3.6, 11/10/2026**; Magic gioca il playtest in finestra: pannelli giusti,
+  ma vittorie e sconfitte mai registrate): fino alla 0.3.5 `finishFromScreen` registrava solo le partite viste dal
+  round 1 (`complete`), e in una finestra piccola il mana si legge a tratti, quindi la partita risultava incompleta e
+  si perdeva anche l'esito. Adesso l'esito vale comunque: se la partita ricostruita non ha l'esito, lo dà
+  `resultAround` (reconstruct.ts: lo stendardo confermato da 2 fotogrammi, `RESULT_FRAMES`, da 5 s prima a 60 s dopo
+  l'ora dello stendardo; un fotogramma solo o lontano non conta, test in `reconstruct.test.ts`), attraverso
+  `FrameRecorder.resultNear` (frames.ts). La partita entra nello storico con esito, ora e mazzo scelto; giocate e
+  carte dell'avversario solo se è completa (`applyScan`). In più le cifre del mana si leggono da 6 px di altezza
+  (`whiteGlyphs` in recognize.ts, prima 10), così il mana si legge anche nelle finestre piccole. **Da provare dal
+  vivo** con la partita online di Magic, poi controllo con `node scripts/tracker-usage-compare.mjs <ora ISO>`.
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
   statistiche per carta sul sito (win rate quando una carta viene giocata).
 

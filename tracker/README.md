@@ -25,6 +25,13 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **Esito anche da una partita incompleta** (0.3.6, 11/10/2026, `resultAround` in `src/shared/reconstruct.ts`): la
+  vittoria o la sconfitta lette dallo stendardo si registrano anche se la partita non è stata vista dal round 1 (finestre
+  piccole, dove il mana si legge a tratti); giocate e carte dell'avversario solo dalle partite viste intere. Cifre del
+  mana lette da 6 px di altezza (prima 10).
+- **Niente zoom nei pannelli** (0.3.5, 11/10/2026, `lockZoom` in `src/main/main.ts`): Deck tracker, carte
+  dell'avversario e overlay restano al 100% anche con Ctrl + rotella o il pizzico (Chromium ricorderebbe lo zoom in
+  `Preferences`, anche dopo la disinstallazione), e il doppio clic sulla zona trascinabile non li massimizza.
 - **Overlay di Davdas** (0.3.4, 11/10/2026): Deck tracker a griglia 4 × 3 di carte grandi che si scuriscono quando si
   pescano (lo scanner legge anche la mano), Leggendaria a parte, carte ancora nel mazzo e vita dell'eroe; pannello
   dell'avversario con Leggendaria, vita e carte viste che compaiono una alla volta; finestre alte come il contenuto.
