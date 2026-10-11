@@ -295,6 +295,21 @@ function push() {
   }, 100);
 }
 
+/**
+ * Niente zoom nelle finestre sopra il gioco (11/10/2026: un tester con Ctrl + rotella ha ingrandito il Deck tracker, e
+ * Chromium ricorda lo zoom nelle preferenze dei dati dell'app, che restano anche disinstallando): ogni richiesta di zoom e
+ * ogni caricamento rimettono il 100%, e il doppio clic sulla zona trascinabile non massimizza.
+ */
+function lockZoom(win: BrowserWindow) {
+  const reset = () => {
+    if (!win.isDestroyed()) win.webContents.setZoomFactor(1);
+  };
+  win.webContents.on("zoom-changed", reset);
+  win.webContents.on("did-finish-load", reset);
+  void win.webContents.setVisualZoomLevelLimits(1, 1);
+  win.on("maximize", () => win.unmaximize());
+}
+
 /* ---------- pannelli: Deck tracker e carte dell'avversario ---------- */
 
 /**
@@ -384,6 +399,7 @@ function openPanel(k: PanelKind) {
     },
   });
   panels[k].win = win;
+  lockZoom(win);
   win.removeMenu();
   win.setAlwaysOnTop(true, "screen-saver");
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -535,6 +551,7 @@ function openOverlay() {
       spellcheck: false,
     },
   });
+  lockZoom(overlayWin);
   overlayWin.setAlwaysOnTop(true, "screen-saver");
   overlayWin.setIgnoreMouseEvents(overlayPrefs.clickThrough, { forward: true });
   overlayWin.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
