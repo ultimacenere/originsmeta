@@ -110,6 +110,177 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Settima news "Upgrade Meta" (11/10/2026, richiesta di Pierluigi: "scrivi una news sul sito con la release finale di
+    // oggi, cosa contiene il tracker, qualche screen e scrivi che presto sarà disponibile per tutti"): OriginsMeta Analytics
+    // 0.3.4. Niente link a /analytics né ai win rate (pagine visibili solo ai ruoli in prova finché ANALYTICS_PUBLIC è
+    // spento) e niente data dell'apertura a tutti (non decisa). Copertina e screenshot: partita vera della Demo 2.0 del
+    // 10/10/2026 (fotogramma salvato dalla modalità cattura dell'app), nomi dei giocatori e contatore FPS tolti, con sopra i
+    // due pannelli con i dati letti in quel momento (round 7, On Death contro Dracula): public/media/analytics/.
+    slug: "upgrade-meta-1011",
+    image: "/media/analytics/tracker-cover.webp",
+    guides: ["play-the-demo"],
+    date: "2026-10-11",
+    title: n(
+      "Upgrade Meta: OriginsMeta Analytics 0.3.4, the match tracker for Origins TCG with a live Deck tracker",
+      "Upgrade Meta: OriginsMeta Analytics 0.3.4, il tracker delle partite di Origins TCG con Deck tracker dal vivo",
+      "Upgrade Meta: OriginsMeta Analytics 0.3.4, el tracker de partidas de Origins TCG con Deck tracker en vivo",
+    ),
+    metaTitle: n("OriginsMeta Analytics 0.3.4: Origins TCG tracker", "OriginsMeta Analytics 0.3.4: tracker di Origins TCG", "OriginsMeta Analytics 0.3.4: tracker de Origins TCG"),
+    description: n(
+      "OriginsMeta Analytics 0.3.4: the Windows app that records your Origins TCG matches, with a live Deck tracker and the opponent's cards. Soon for everyone.",
+      "OriginsMeta Analytics 0.3.4: l'app per Windows che registra le partite di Origins TCG, con Deck tracker dal vivo e carte dell'avversario. Presto per tutti.",
+      "OriginsMeta Analytics 0.3.4: la app de Windows que registra tus partidas de Origins TCG, con Deck tracker en vivo y las cartas del rival. Pronto para todos.",
+    ),
+    summary: n(
+      "OriginsMeta Analytics 0.3.4 is out, the release that closes this week of work on our Windows app for Origins TCG. It records your matches on its own while you play, reads the cards from the game window and shows a live Deck tracker: your deck with the cards you've drawn, the cards left in the deck, your hero's life and the opponent's cards as they appear. Today it's being tested by Creators, Authors, Pro players and Staff; it will soon be available to everyone.",
+      "È uscita OriginsMeta Analytics 0.3.4, la versione che chiude questa settimana di lavoro sulla nostra app per Windows dedicata a Origins TCG. Registra da sola le tue partite mentre giochi, legge le carte dalla finestra del gioco e mostra un Deck tracker dal vivo: il tuo mazzo con le carte già pescate, le carte rimaste nel mazzo, la vita del tuo eroe e le carte dell'avversario man mano che compaiono. Oggi la provano Creator, Autori, giocatori Pro e Staff; presto sarà disponibile per tutti.",
+      "Ya está aquí OriginsMeta Analytics 0.3.4, la versión que cierra esta semana de trabajo en nuestra app de Windows para Origins TCG. Registra tus partidas sola mientras juegas, lee las cartas de la ventana del juego y muestra un Deck tracker en vivo: tu mazo con las cartas que ya robaste, las que quedan en el mazo, la vida de tu héroe y las cartas del rival a medida que aparecen. Hoy la prueban Creators, Autores, jugadores Pro y Staff; pronto estará disponible para todos.",
+    ),
+    highlights: {
+      en: [
+        { label: "Your matches, recorded", text: "result, deck, rounds, the cards played by both sides and the opponent's Legendary, on their own, a few seconds after the end", anchor: "matches" },
+        { label: "Live Deck tracker", text: "your 12 cards that darken as you draw them, the Legendary, the cards left in the deck and your hero's life", anchor: "deck-tracker" },
+        { label: "The opponent's cards", text: "their Legendary, their life and the cards they reveal, one by one", anchor: "opponent" },
+        { label: "Full screen or window", text: "any size, demo and playtest, and it updates itself", anchor: "screen" },
+        { label: "Soon for everyone", text: "today it's being tested by Creators, Authors, Pro players and Staff", anchor: "everyone" },
+      ],
+      it: [
+        { label: "Le tue partite, registrate", text: "esito, mazzo, round, le carte giocate dai due lati e la Leggendaria dell'avversario, da sole, pochi secondi dopo la fine", anchor: "partite" },
+        { label: "Deck tracker dal vivo", text: "le tue 12 carte che si scuriscono quando le peschi, la Leggendaria, le carte rimaste nel mazzo e la vita del tuo eroe", anchor: "deck-tracker" },
+        { label: "Le carte dell'avversario", text: "la sua Leggendaria, la sua vita e le carte che rivela, una alla volta", anchor: "avversario" },
+        { label: "Schermo intero o finestra", text: "di qualunque misura, demo e playtest, e si aggiorna da sola", anchor: "schermo" },
+        { label: "Presto per tutti", text: "oggi la provano Creator, Autori, giocatori Pro e Staff", anchor: "per-tutti" },
+      ],
+      es: [
+        { label: "Tus partidas, registradas", text: "resultado, mazo, rondas, las cartas jugadas por los dos lados y la Legendaria del rival, solas, pocos segundos después del final", anchor: "partidas" },
+        { label: "Deck tracker en vivo", text: "tus 12 cartas que se oscurecen cuando las robas, la Legendaria, las cartas que quedan en el mazo y la vida de tu héroe", anchor: "deck-tracker" },
+        { label: "Las cartas del rival", text: "su Legendaria, su vida y las cartas que revela, una a una", anchor: "rival" },
+        { label: "Pantalla completa o ventana", text: "de cualquier tamaño, demo y playtest, y se actualiza sola", anchor: "pantalla" },
+        { label: "Pronto para todos", text: "hoy la prueban Creators, Autores, jugadores Pro y Staff", anchor: "para-todos" },
+      ],
+    },
+    body: n(
+      `## Version 0.3.4 {#release}
+
+OriginsMeta Analytics is our Windows app for Origins TCG: it records your matches while you play and shows you, live, what's happening in your deck. Version 0.3.4, released on 11 October 2026, closes a week of work in which the app learned to read the matches from the game window, since patch 0.7 no longer saves the match data on your PC. It's still a test version: the cover screenshot comes from a real Demo 2.0 match, with the two app panels on top showing what they read at that moment (round 7) and the players' names removed.
+
+## Your matches, recorded on their own {#matches}
+
+You open the app, play, and a few seconds after the end the match is in your history: result, the deck you chose in the game, the rounds, the cards played by you and by your opponent round by round, and the opponent's Legendary from the VS screen. If you link the app to your OriginsMeta account, your matches are on the site too.
+
+To read the cards, the app uses the **screen scanner**: it watches only the Origins TCG window, recognises the cards on your PC and never sends images anywhere. Only the IDs of the cards reach the site, never the players' names. It never touches the game: no files written, no memory read, nothing that changes how it plays.
+
+## The live Deck tracker {#deck-tracker}
+
+The new Deck tracker, designed by Davdas for a quick glance rather than reading: your 12 cards in large size, in a 4 × 3 grid by cost. A card dims when you've drawn one of its two copies ("1/2") and goes dark when you've drawn both: the app also reads the cards in your hand. Below, your Legendary on its own (it darkens, with a zoom, the moment you draw it), the cards still in your deck and your hero's life, the two segments of the ring under your hero.
+
+![The Deck tracker during a Demo 2.0 match: drawn cards darkened, 8 cards left in the deck, 2 life segments](/media/analytics/deck-tracker-me.webp)
+
+## The opponent's cards {#opponent}
+
+A second panel, a little smaller, for the opponent: their Legendary, their life and the cards they reveal, which appear one by one as the match goes on. It starts empty and never shows empty boxes.
+
+![The opponent's panel: Dracula, one life segment left, Quasimodo and Captain Ahab revealed](/media/analytics/deck-tracker-opp.webp)
+
+The two panels stay above the game, without the Windows frame: drag them where you want, widen them from the edges and they never need scrolling. The same panels are also a Browser source for OBS, for anyone who streams.
+
+## Full screen or window, demo and playtest {#screen}
+
+The app works with Origins TCG in full screen or in a window of any size and shape, at any Windows scaling, with the Steam Demo and with the playtest. When we publish a new version it downloads it and restarts updated on its own, never during a match.
+
+## Soon for everyone {#everyone}
+
+Today OriginsMeta Analytics is being tested by Creators, Authors, Pro players and the Staff of the site: they play with it every day and tell us what doesn't work. Soon it will be available for everyone to download, together with the win rate pages that will use the matches of those who link the app (only totals, never who played). We'll announce the date here and on [our Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta is an unofficial fan site, not affiliated with Koin Games.`,
+      `## La versione 0.3.4 {#versione}
+
+OriginsMeta Analytics è la nostra app per Windows dedicata a Origins TCG: registra le tue partite mentre giochi e ti mostra dal vivo che cosa succede nel tuo mazzo. La versione 0.3.4, uscita l'11 ottobre 2026, chiude una settimana di lavoro in cui l'app ha imparato a leggere le partite dalla finestra del gioco, perché dalla patch 0.7 il gioco non salva più i dati delle partite sul PC. È ancora una versione di prova: lo screenshot di copertina viene da una partita vera della Demo 2.0, con sopra i due pannelli dell'app con quello che leggevano in quel momento (round 7) e senza i nomi dei giocatori.
+
+## Le tue partite, registrate da sole {#partite}
+
+Apri l'app, giochi, e pochi secondi dopo la fine la partita è nel tuo storico: esito, il mazzo scelto nel gioco, i round, le carte giocate da te e dall'avversario round per round e la Leggendaria dell'avversario dalla schermata VS. Se colleghi l'app al tuo account OriginsMeta, le partite le trovi anche sul sito.
+
+Per leggere le carte l'app usa lo **scanner dello schermo**: guarda solo la finestra di Origins TCG, riconosce le carte sul tuo PC e non manda immagini da nessuna parte. Al sito arrivano solo gli id delle carte, mai i nomi dei giocatori. Il gioco non lo tocca mai: nessun file scritto, nessuna memoria letta, niente che cambi come si gioca.
+
+## Il Deck tracker dal vivo {#deck-tracker}
+
+Il nuovo Deck tracker, disegnato da Davdas per il colpo d'occhio e non per la lettura: le tue 12 carte in grande, in una griglia 4 × 3 per costo. Una carta si spegne un po' quando hai pescato una delle sue due copie ("1/2") e diventa scura quando le hai pescate tutte e due: l'app legge anche le carte che hai in mano. Sotto, la tua Leggendaria a parte (si scurisce, con uno zoom, nel momento in cui la peschi), le carte ancora nel mazzo e la vita del tuo eroe, i due segmenti dell'anello sotto l'eroe.
+
+![Il Deck tracker durante una partita della Demo 2.0: carte pescate scurite, 8 carte nel mazzo, 2 segmenti di vita](/media/analytics/deck-tracker-me.webp)
+
+## Le carte dell'avversario {#avversario}
+
+Un secondo pannello, un po' più piccolo, per l'avversario: la sua Leggendaria, la sua vita e le carte che rivela, che compaiono una alla volta man mano che la partita va avanti. Parte vuoto e non mostra mai caselle vuote.
+
+![Il pannello dell'avversario: Dracula, un segmento di vita rimasto, Quasimodo e Captain Ahab rivelati](/media/analytics/deck-tracker-opp.webp)
+
+I due pannelli stanno sopra il gioco, senza la cornice di Windows: li trascini dove vuoi, li allarghi dai bordi e non devi mai farli scorrere. Gli stessi pannelli sono anche una sorgente Browser per OBS, per chi fa dirette.
+
+## Schermo intero o finestra, demo e playtest {#schermo}
+
+L'app funziona con Origins TCG a schermo intero o in una finestra di qualunque misura e forma, con qualunque scala di Windows, con la Demo di Steam e con il playtest. Quando pubblichiamo una versione nuova la scarica e si riavvia aggiornata da sola, mai durante una partita.
+
+## Presto per tutti {#per-tutti}
+
+Oggi OriginsMeta Analytics la provano Creator, Autori, giocatori Pro e lo Staff del sito: ci giocano ogni giorno e ci dicono che cosa non va. Presto sarà disponibile da scaricare per tutti, insieme alle pagine dei win rate che useranno le partite di chi collega l'app (solo totali, mai chi ha giocato). La data la annunciamo qui e sul [nostro Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.`,
+      `## La versión 0.3.4 {#version}
+
+OriginsMeta Analytics es nuestra app de Windows para Origins TCG: registra tus partidas mientras juegas y te muestra en vivo lo que pasa en tu mazo. La versión 0.3.4, publicada el 11 de octubre de 2026, cierra una semana de trabajo en la que la app aprendió a leer las partidas de la ventana del juego, porque desde el parche 0.7 el juego ya no guarda los datos de las partidas en tu PC. Sigue siendo una versión de prueba: la captura de portada viene de una partida real de la Demo 2.0, con los dos paneles de la app encima mostrando lo que leían en ese momento (ronda 7) y sin los nombres de los jugadores.
+
+## Tus partidas, registradas solas {#partidas}
+
+Abres la app, juegas y pocos segundos después del final la partida está en tu historial: resultado, el mazo que elegiste en el juego, las rondas, las cartas jugadas por ti y por tu rival ronda a ronda y la Legendaria del rival de la pantalla VS. Si vinculas la app a tu cuenta de OriginsMeta, también encuentras tus partidas en el sitio.
+
+Para leer las cartas, la app usa el **escáner de pantalla**: mira solo la ventana de Origins TCG, reconoce las cartas en tu PC y no envía imágenes a ninguna parte. Al sitio solo llegan los ID de las cartas, nunca los nombres de los jugadores. Nunca toca el juego: ningún archivo escrito, ninguna memoria leída, nada que cambie cómo se juega.
+
+## El Deck tracker en vivo {#deck-tracker}
+
+El nuevo Deck tracker, diseñado por Davdas para verlo de un vistazo y no para leerlo: tus 12 cartas en grande, en una cuadrícula de 4 × 3 por coste. Una carta se apaga un poco cuando robaste una de sus dos copias ("1/2") y se oscurece cuando robaste las dos: la app también lee las cartas que tienes en la mano. Debajo, tu Legendaria aparte (se oscurece, con un zoom, en el momento en que la robas), las cartas que quedan en el mazo y la vida de tu héroe, los dos segmentos del anillo bajo el héroe.
+
+![El Deck tracker durante una partida de la Demo 2.0: cartas robadas oscurecidas, 8 cartas en el mazo, 2 segmentos de vida](/media/analytics/deck-tracker-me.webp)
+
+## Las cartas del rival {#rival}
+
+Un segundo panel, un poco más pequeño, para el rival: su Legendaria, su vida y las cartas que revela, que aparecen una a una a medida que avanza la partida. Empieza vacío y nunca muestra casillas vacías.
+
+![El panel del rival: Dracula, un segmento de vida restante, Quasimodo y Captain Ahab revelados](/media/analytics/deck-tracker-opp.webp)
+
+Los dos paneles quedan encima del juego, sin el marco de Windows: los arrastras adonde quieras, los ensanchas desde los bordes y nunca tienes que desplazarlos. Los mismos paneles también son una fuente de navegador para OBS, para quien hace directos.
+
+## Pantalla completa o ventana, demo y playtest {#pantalla}
+
+La app funciona con Origins TCG en pantalla completa o en una ventana de cualquier tamaño y forma, con cualquier escala de Windows, con la Demo de Steam y con el playtest. Cuando publicamos una versión nueva, la descarga y se reinicia actualizada sola, nunca durante una partida.
+
+## Pronto para todos {#para-todos}
+
+Hoy prueban OriginsMeta Analytics Creators, Autores, jugadores Pro y el Staff del sitio: juegan con ella cada día y nos dicen qué no funciona. Pronto estará disponible para que todos la descarguen, junto con las páginas de win rate que usarán las partidas de quienes vinculen la app (solo totales, nunca quién jugó). Anunciaremos la fecha aquí y en [nuestro Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.`,
+    ),
+    faq: {
+      en: [
+        { q: "When will OriginsMeta Analytics be available to everyone?", a: "Soon: today it's being tested by Creators, Authors, Pro players and Staff. We'll announce the date in the news and on the OriginsMeta Discord." },
+        { q: "Does OriginsMeta Analytics change or read the game?", a: "It never touches the game: it reads only the image of the Origins TCG window and the files the game saves on your PC, without writing anything. The images stay on your PC and only the card IDs reach the site, never the players' names." },
+        { q: "Does it work in full screen and in a window?", a: "Yes, from version 0.3.4: full screen or a window of any size and shape, at any Windows scaling, with the Steam Demo and with the playtest." },
+      ],
+      it: [
+        { q: "Quando sarà disponibile per tutti OriginsMeta Analytics?", a: "Presto: oggi la provano Creator, Autori, giocatori Pro e Staff. La data la annunciamo nelle news e sul Discord di OriginsMeta." },
+        { q: "OriginsMeta Analytics modifica o legge il gioco?", a: "Il gioco non lo tocca mai: legge solo l'immagine della finestra di Origins TCG e i file che il gioco salva sul PC, senza scrivere niente. Le immagini restano sul tuo PC e al sito arrivano solo gli id delle carte, mai i nomi dei giocatori." },
+        { q: "Funziona a schermo intero e in finestra?", a: "Sì, dalla versione 0.3.4: schermo intero o finestra di qualunque misura e forma, con qualunque scala di Windows, con la Demo di Steam e con il playtest." },
+      ],
+      es: [
+        { q: "¿Cuándo estará disponible para todos OriginsMeta Analytics?", a: "Pronto: hoy la prueban Creators, Autores, jugadores Pro y Staff. Anunciaremos la fecha en las noticias y en el Discord de OriginsMeta." },
+        { q: "¿OriginsMeta Analytics modifica o lee el juego?", a: "Nunca toca el juego: solo lee la imagen de la ventana de Origins TCG y los archivos que el juego guarda en tu PC, sin escribir nada. Las imágenes se quedan en tu PC y al sitio solo llegan los ID de las cartas, nunca los nombres de los jugadores." },
+        { q: "¿Funciona en pantalla completa y en ventana?", a: "Sí, desde la versión 0.3.4: pantalla completa o ventana de cualquier tamaño y forma, con cualquier escala de Windows, con la Demo de Steam y con el playtest." },
+      ],
+    },
+    url: "/",
+    source: "site",
+  },
+  {
     // Sesta news "Upgrade Meta" (07/10/2026): il francese, quarta lingua del sito. Solo quello che c'è davvero: le pagine
     // in /fr, i testi delle carte in francese dichiarati come traduzione nostra con il glossario provvisorio
     // (docs/francese.md; aggiornata l'08/10/2026: letti nel gioco in francese, ora sono quelli ufficiali), le traduzioni automatiche della community, il perché (il gioco è tradotto in francese) e
