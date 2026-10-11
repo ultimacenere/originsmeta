@@ -164,14 +164,27 @@ function currentDeckView(): DeckTrackerView {
  * "offline"), quindi il watcher non le vede finire. Lo stendardo di fine partita sì: `RESULT_WAIT_MS` dopo, se il
  * watcher non ha registrato una partita finita lì vicino (`NEAR_MS`), la registra l'app con quello che ha letto lo
  * schermo: esito, ora, mazzo scelto, giocate e carte dell'avversario. Solo partite viste per intero (`complete`). Se poi
- * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni.
+ * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni. Il ritardo può essere
+ * lungo: l'11/10 il playtest ha scritto la vittoria di un allenamento delle 06:32 solo alle 06:51, entrando in coda
+ * online, con l'ora della scrittura. Per questo, oltre alla vicinanza (`NEAR_MS`), una partita dei file con lo stesso
+ * esito di una dello schermo non ancora abbinata, e finita dopo, prende il suo posto (`screenTwin`): si tiene quella
+ * dello schermo, che ha l'ora vera e le giocate.
  */
 const RESULT_WAIT_MS = 30_000;
 const NEAR_MS = 3 * 60_000;
+/** Il ritardo più lungo accettato per le statistiche dei file (oltre, una partita dei file resta a sé). */
+const LATE_MS = 60 * 60_000;
 let lastBannerAt = 0;
 let gameDeck: GameDeck | null = null;
-const fromScreen: number[] = [];
+const fromScreen: { at: number; result: "W" | "L"; used: boolean }[] = [];
 const nearTo = (iso: string | null, at: number) => Boolean(iso) && Math.abs(Date.parse(iso as string) - at) <= NEAR_MS;
+/** La partita dello schermo che è la stessa di una dei file: vicina nel tempo, o con lo stesso esito e finita prima. */
+function screenTwin(raw: TrackedMatch) {
+  const near = fromScreen.find((s) => !s.used && nearTo(raw.endedAt, s.at));
+  if (near) return near;
+  const end = raw.endedAt ? Date.parse(raw.endedAt) : Date.now();
+  return fromScreen.find((s) => !s.used && s.result === raw.result && s.at <= end + NEAR_MS && s.at >= end - LATE_MS);
+}
 
 function noteFrame(f: ScanFrame) {
   pushDeck();
@@ -188,7 +201,7 @@ async function finishFromScreen(at: number) {
   const base = await buildMatch({ end: { endedAt, result: scan.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
-  fromScreen.push(at);
+  fromScreen.push({ at, result: scan.result, used: false });
   frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
   push();
   scheduleSync(5000);
@@ -734,8 +747,10 @@ async function boot() {
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
     // la stessa partita già registrata dallo schermo (statistiche arrivate in ritardo): si tiene quella
-    if (fromScreen.some((at) => nearTo(raw.endedAt, at))) {
-      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result });
+    const twin = screenTwin(raw);
+    if (twin) {
+      twin.used = true;
+      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, screenAt: new Date(twin.at).toISOString() });
       return;
     }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date

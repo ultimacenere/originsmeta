@@ -137,6 +137,13 @@ test("finestre di qualunque forma: scala del tabellone, aree e schermo 16:9 come
   near(wide.board.x + wide.board.w / 2, 1023);
   near(wide.board.y + wide.board.h / 2, 45 + 853 / 2);
   near(wide.ui.h, 853);
+  near(full.vs.w, 2560);
+  near(full.vs.y, 0);
+  // la schermata VS della partita online dell'11/10 in una finestra 4:3: larga come la finestra, appoggiata in basso
+  const square = layoutFor({ x: 2, y: 45, w: 1160, h: 869 });
+  near(square.vs.w, 1160);
+  near(square.vs.y + square.vs.h, 45 + 869);
+  near(inside(square.vs, VS_CARDS.me[0]).x, 417.86, 0.01);
 });
 
 test("finestre: la barra del titolo di Windows si toglie, lo schermo intero no", () => {

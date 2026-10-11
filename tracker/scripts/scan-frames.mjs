@@ -25,7 +25,7 @@ for (const f of files) {
   if (!layout || layout.w !== img.width || layout.h !== img.height)
     layout = { w: img.width, h: img.height, at: layoutFor(windowContent(img, img.width === screenW && img.height === screenH)) };
   const board = readBoard(img, refs, layout.at.board);
-  const vs = readVersus(img, refs, layout.at.ui);
+  const vs = readVersus(img, refs, layout.at.vs);
   ws.write(
     JSON.stringify({
       ms: Number(f.slice(0, 9)),

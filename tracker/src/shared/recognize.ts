@@ -86,8 +86,10 @@ export function gameArea(width: number, height: number): Rect {
  * - **il tabellone è 3D** (spazi, carte e pannello del mana): cambia solo scala, sempre centrato sull'area interna della
  *   finestra. La scala è la larghezza `S` dell'area 16:9 "virtuale" dove valgono le posizioni misurate a 2560 × 1440:
  *   S/H = 1,405 a 4:3 (1,335), 16/9 a 16:9, 2,062 a 2,39:1; in mezzo e oltre si interpola sui logaritmi (`BOARD_SCALE`);
- * - **l'interfaccia 2D** (scritte, schermata VS, stendardo di fine partita) cresce con l'altezza: area 16:9 alta come la
- *   finestra e centrata, che su una finestra stretta esce dai lati.
+ * - **l'interfaccia 2D** (scritte, stendardo di fine partita) cresce con l'altezza: area 16:9 alta come la finestra e
+ *   centrata, che su una finestra stretta esce dai lati;
+ * - **la schermata VS** sta tutta dentro la finestra e appoggiata in basso: area 16:9 più grande che ci entra, allineata
+ *   al fondo (partita online in una finestra 4:3 dell'11/10: Leggendarie al pixel).
  * Con lo schermo 16:9 tutte e due coincidono con l'immagine intera, come prima.
  */
 export const BOARD_SCALE: readonly (readonly [number, number])[] = [
@@ -108,14 +110,16 @@ export function boardScale(r: number): number {
   return Math.exp(y0 + ((y1 - y0) * (x - x0)) / (x1 - x0));
 }
 
-export type Layout = { content: Rect; board: Rect; ui: Rect };
+export type Layout = { content: Rect; board: Rect; ui: Rect; vs: Rect };
 
 /** Le due aree 16:9 "virtuali" per un'area interna della finestra (in pixel dell'immagine). */
 export function layoutFor(content: Rect): Layout {
   const cx = content.x + content.w / 2;
   const cy = content.y + content.h / 2;
   const centered = (w: number): Rect => ({ x: cx - w / 2, y: cy - (w * 9) / 32, w, h: (w * 9) / 16 });
-  return { content, board: centered(content.h * boardScale(content.w / content.h)), ui: centered((content.h * 16) / 9) };
+  const vsW = Math.min(content.w, (content.h * 16) / 9);
+  const vs = { x: cx - vsW / 2, y: content.y + content.h - (vsW * 9) / 16, w: vsW, h: (vsW * 9) / 16 };
+  return { content, board: centered(content.h * boardScale(content.w / content.h)), ui: centered((content.h * 16) / 9), vs };
 }
 
 /**

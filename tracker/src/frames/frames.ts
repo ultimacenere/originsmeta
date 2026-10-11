@@ -96,7 +96,7 @@ function grab() {
       layout = { w, h, at: layoutFor(windowContent(img, fullscreen)) };
     }
     const { board, ui } = layout.at;
-    const vs = readVersus(img, refs, ui);
+    const vs = readVersus(img, refs, layout.at.vs);
     const mana = readMana(img, board);
     api.scan({ ms, board: readBoard(img, refs, board).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img, ui) });
   } catch {

@@ -449,13 +449,15 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   (`screens`, le misure in pixel veri che il processo principale manda alla finestra nascosta); (2) **il tabellone è 3D**
   (spazi, carte e pannello del mana): resta centrato nell'area interna e cambia solo scala, con la larghezza dell'area
   16:9 "virtuale" S/H = 1,405 a 4:3, 16/9 a 16:9, 2,062 a 2,39:1 (`BOARD_SCALE`, interpolazione sui logaritmi; centro
-  esatto: la ricerca ha dato scarto 0); (3) **l'interfaccia 2D** (scritte, schermata VS, stendardo) cresce con l'altezza:
+  esatto: la ricerca ha dato scarto 0); (3) **l'interfaccia 2D** (scritte, stendardo) cresce con l'altezza:
   area 16:9 alta come la finestra e centrata (`layoutFor`, `ui`), che su una finestra stretta esce dai lati (lo stendardo
-  conta solo le celle dentro l'immagine). Con lo schermo 16:9 le aree coincidono con l'immagine intera: la partita a
+  conta solo le celle dentro l'immagine); (4) **la schermata VS** sta tutta dentro la finestra appoggiata in basso
+  (`vs`: l'area 16:9 più grande che ci entra, allineata al fondo; partita online in finestra 4:3: Robin Hood contro
+  Dracula, 0,92 e 0,78). Con lo schermo 16:9 le aree coincidono con l'immagine intera: la partita a
   schermo intero del 10/10 dà 8.614 carte lette contro le 8.613 dell'app. Nelle due finestre: 2.681 e 2.454 carte lette
   (prima 0), mana in 409 e 353 fotogrammi. Lo stendardo della sconfitta del playtest ha la parte alta viola: parte alta
-  scura dal 60% (era 80%), riprovato su 5 sessioni senza falsi esiti. La schermata VS in finestra non è verificata
-  (gli allenamenti contro il bot non la mostrano); i punti fuori da 4:3–2,39:1 (32:9) usano la pendenza degli estremi.
+  scura dal 60% (era 80%), riprovato su 5 sessioni senza falsi esiti. Gli allenamenti contro il bot non hanno la
+  schermata VS; la VS in una finestra larga non è ancora verificata; i punti fuori da 4:3–2,39:1 (32:9) usano la pendenza degli estremi.
   Taratura: `scripts/fit-scale.mjs` (scala del tabellone), `scripts/fit-ui.mjs` (mana, VS, stendardo con aree diverse),
   `scan-frames.mjs --screen=<schermo>`.
 - **Nell'app** (dalla 0.3.0 del 10/10/2026, Pierluigi: "acceso"): **acceso di default**, con un avviso al primo avvio
