@@ -25,6 +25,13 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **Pannelli e scanner** (0.3.7, 11/10/2026 sera; dettagli in docs/tracker.md, "Pannelli e scanner, 0.3.7"): Deck
+  tracker a 3 carte per fila con il numero delle copie rimaste e il bordo menta per le carte in mano; pannello
+  dell'avversario a L nell'angolo in alto a destra (Leggendaria, vita, carte viste 3 per fila, e sopra il pannello del
+  mana del gioco il mana dei due e la freccia del combattimento; angolo vuoto trasparente, clic al gioco); lo scanner
+  legge il mana dell'avversario (`OPP_MANA_TEXT`) e la freccia (`readDirection`) e lo stendardo anche sopra
+  l'animazione di una Leggendaria; l'aggiornamento si installa solo a gioco chiuso, con lo script nascosto
+  (`launcherScript`).
 - **Esito anche da una partita incompleta** (0.3.6, 11/10/2026, `resultAround` in `src/shared/reconstruct.ts`): la
   vittoria o la sconfitta lette dallo stendardo si registrano anche se la partita non è stata vista dal round 1 (finestre
   piccole, dove il mana si legge a tratti); giocate e carte dell'avversario solo dalle partite viste intere. Cifre del
@@ -40,7 +47,8 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   della finestra (misure e taratura in docs/tracker.md, "Finestre di qualunque forma").
 - **Aggiornamento automatico** (0.3.2, 11/10/2026, `updater.ts` e `updateRules.ts`): l'app impacchettata controlla le
   release `analytics-v…` su GitHub 30 s dopo l'avvio e ogni 3 ore, scarica lo zip dal nome fisso (solo da github.com,
-  dimensione controllata), lo scompatta con il tar di Windows e, fuori dalle partite, si chiude: uno script
+  dimensione controllata), lo scompatta con il tar di Windows e, a gioco chiuso (dalla 0.3.7; prima fuori dalle
+  partite), si chiude: uno script
   (`Wait-Process`, robocopy) copia i file nuovi e la riapre. Registro in `%TEMP%\OriginsMeta-Analytics-update-<v>\`.
   Prove: `ORIGINSMETA_UPDATE_FROM=<versione finta>`, `ORIGINSMETA_UPDATE_DELAY_MS`; spento con `ORIGINSMETA_NO_UPDATE=1`.
 - Tasto "Chiudi l'app" in alto a destra (11/10/2026), come la X e "Esci".

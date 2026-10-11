@@ -392,11 +392,13 @@ tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata
   avversario", in una finestra separata): la stessa pagina con `view=opp`, in una seconda finestra a sinistra dello
   schermo (`opponent.json`), con la Leggendaria dell'avversario e le carte che rivela, che si riempiono man mano; per
   OBS `/overlay/deck?view=opp`. Il Deck tracker mostra solo il mio mazzo. In main.ts i due pannelli sono `panels.deck`
-  e `panels.opp` (`openPanel`, `setPanel`).
+  e `panels.opp` (`openPanel`, `setPanel`). Dalla 0.3.7 è il **pannello a L** in alto a destra (vedi "Pannelli e
+  scanner, 0.3.7").
 - **Disegno di Davdas (0.3.4, 11/10/2026**; mockup e note Granola "tracker" dell'11/10: "colpo d'occhio immediato,
   non lettura"; scelte di Pierluigi: le carte si scuriscono quando si pescano, la vita è l'anello sotto l'eroe):
-  - **il mio mazzo**: le 12 carte grandi in una griglia 4 × 3 per costo, un po' scure quando è pescata una copia su
-    due ("1/2"), scure quando sono pescate tutte; sotto, la Leggendaria a parte (scura quando pescata, con uno zoom al
+  - **il mio mazzo**: le 12 carte grandi in una griglia 4 × 3 per costo (dalla 0.3.7 3 per fila su 4 file), un po'
+    scure quando è pescata una copia su due ("1/2"; dalla 0.3.7 il numero delle copie rimaste), scure quando sono
+    pescate tutte; sotto, la Leggendaria a parte (scura quando pescata, con uno zoom al
     momento della pesca) e un riquadro con le carte ancora nel mazzo (25 meno le pescate, `DECK_SIZE`: la Leggendaria si
     pesca come le altre, lo dice il luogo "Emerge un eroe") e la vita dell'eroe (due segmenti);
   - **l'avversario**: più piccolo, Leggendaria, vita e numero di carte viste a sinistra, a destra le carte rivelate che
@@ -547,8 +549,48 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   carte dell'avversario solo se è completa (`applyScan`). In più le cifre del mana si leggono da 6 px di altezza
   (`whiteGlyphs` in recognize.ts, prima 10), così il mana si legge anche nelle finestre piccole. **Da provare dal
   vivo** con la partita online di Magic, poi controllo con `node scripts/tracker-usage-compare.mjs <ora ISO>`.
+- **Pannelli e scanner (0.3.7, 11/10/2026 sera**, prova in partita con Pierluigi, screenshot dei pannelli sopra il
+  gioco con `CopyFromScreen` di PowerShell: quelli di computer-use non mostrano le finestre sempre in primo piano):
+  - **Deck tracker rifinito** (Pierluigi: "manteniamo come siamo, ma andiamo a disegnarlo meglio"): 3 carte per fila
+    su 4 file, largo 230 px all'inizio, nella fascia libera a sinistra del tabellone ("facciamo 3 in 4 file, che si
+    dovrebbe stringere"). Tre stati a colpo d'occhio: accesa (tutte le copie nel mazzo), spenta a metà con il numero
+    grande delle copie **rimaste** in alto (prima "1/2" delle pescate, in basso, sopra i crediti della carta e quasi
+    uguale a una carta accesa), scura (finita); bordo menta per una copia in mano non ancora giocata (`played` e `drawn`
+    di `DeckCard`); il filtro sta solo sull'immagine, così numero e bordo restano pieni. Carte nel mazzo con "su 25" e
+    una barra che si svuota (larghezza dal JavaScript: la CSP non ammette `style` nell'HTML), vita persa in magenta.
+  - **Pannello a L dell'avversario** (disegno di Pierluigi sul tabellone: le due zone libere sono la fascia a sinistra e
+    l'angolo in alto a destra con la colonna sul bordo destro; "pannello unico a L, e leggi anche la direzione"):
+    finestra trasparente larga 400 punti appoggiata all'angolo in alto a destra (`OPP_L_WIDTH`, `panelBounds`). Il
+    braccio in alto ha la Leggendaria dell'avversario (o un dorso "?" quando non si sa, come negli allenamenti senza
+    schermata VS), la vita e le carte viste; la colonna sul bordo destro sta sopra il pannello "MANA DATA" del gioco e
+    lo rimostra (mana dell'avversario con la tacca magenta, la freccia del combattimento, il mio mana con la tacca
+    azzurra), poi le carte rivelate 3 per fila. L'angolo in basso a sinistra è vuoto: lì i clic vanno al gioco
+    (`deckApi.hit` → IPC `deck:hit` → `setIgnoreMouseEvents(…, { forward: true })` finché il puntatore non è sopra il
+    braccio o la colonna). Senza carte viste, al posto della griglia la frase d'attesa (prima riquadro tratteggiato e
+    zeri). I pannelli partono dalle posizioni nuove solo se il giocatore non ne ha salvata un'altra.
+  - **Mana dell'avversario e freccia** (recognize.ts): `OPP_MANA_TEXT` (stesso pannello, 182 punti più su del mio e un
+    po' più largo per "10/10") e `readDirection` (pixel azzurri della freccia in `COMBAT_ARROW`: il verso è il lato del
+    picco, la punta). Su 5 sessioni, a schermo intero e in finestra: mana dell'avversario letto nell'85% dei fotogrammi
+    col tabellone, massimo sempre uguale al mio; freccia sempre verso destra. **Verso sinistra mai visto**: è la stessa
+    misura specchiata, da verificare alla prima partita che lo mostra. Nelle letture (`ScanFrame.mana`,
+    `ScanFrame.direction`) e nella partita ricostruita l'ultima lettura confermata da 2 fotogrammi (`stableLast`).
+  - **Stendardo sopra un'animazione**: la sconfitta in classificata delle 17:37 arrivava dopo l'animazione della
+    Leggendaria dell'avversario, con lo sfondo viola (parte alta scura al 16–20%, la soglia era 60%) e non si è
+    registrata. Ora lo stendardo vale anche senza la parte alta scura se la scritta è piena (`BANNER.fullWhite` 45,
+    `fullDark` 25): sugli 8.194 fotogrammi di 16 sessioni (uno su due) prende solo quei 29, nessun esito sbagliato.
+    La partita è stata aggiunta allo storico di Pierluigi con uno script una tantum dai fotogrammi salvati.
+  - **Aggiornamento automatico** (Magic, 11/10 alle 17:32: "ogni tanto succede questo, dura qualche secondo, si toglie
+    e poi si bugga il tracker", con la console nera sopra il gioco, "e non mi ha contato la partita"): (1) Node su
+    Windows ignora `windowsHide` con `detached: true`, quindi la console di `cmd.exe` dello script si vedeva: ora lo
+    script parte da un VBScript (`launcherScript` in updateRules.ts, `wscript.exe //B`, `Run …, 0, False`), provato
+    con una cartella con spazi; (2) l'app si installava appena lo scanner diceva "fuori partita", che in una finestra
+    piccola sbaglia: si chiudeva in partita e la partita andava persa. Ora si installa **solo a gioco chiuso**
+    (`canInstall` di main.ts: niente finestra del gioco fra quelle aperte), riprovando ogni 2 minuti. Chi ha la 0.3.6
+    o prima vede la console un'ultima volta, quando installa la 0.3.7.
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
-  statistiche per carta sul sito (win rate quando una carta viene giocata).
+  statistiche per carta sul sito (win rate quando una carta viene giocata); carte in versione ALPHA e cosmetiche
+  dell'avversario, che lo scanner non riconosce (11/10 sera: Piglet ALPHA letta in 2 fotogrammi su 701), con
+  riferimenti presi dai fotogrammi sul PC come le cifre del mana; freccia del combattimento verso sinistra.
 
 **Nome dell'avversario: decisione aperta.** Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
 sue partite con il nome dell'avversario, i mazzi e le statistiche della partita. Va contro la regola 3, che cita i
