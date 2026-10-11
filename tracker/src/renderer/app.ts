@@ -134,6 +134,9 @@ const LABELS = {
     deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: the cards you played and the round. A second panel shows the opponent's Legendary and the cards they reveal.",
     deckWindow: "Show the deck tracker",
     oppWindow: "Show the opponent's cards",
+    notLinked: "Not linked",
+    oppShort: "Opponent",
+    allOff: "All off",
     oppObs: "Opponent's cards for OBS",
     deckObs: "Deck tracker for OBS",
     session: "Session",
@@ -254,6 +257,9 @@ const LABELS = {
     deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato e round. Un secondo pannello mostra la Leggendaria dell'avversario e le carte che rivela.",
     deckWindow: "Mostra il deck tracker",
     oppWindow: "Mostra le carte dell'avversario",
+    notLinked: "Non collegato",
+    oppShort: "Avversario",
+    allOff: "Tutto spento",
     oppObs: "Carte dell'avversario per OBS",
     deckObs: "Deck tracker per OBS",
     session: "Sessione",
@@ -374,6 +380,9 @@ const LABELS = {
     deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activado se actualiza en vivo durante la partida: cartas que jugaste y ronda. Un segundo panel muestra la Legendaria del rival y las cartas que revela.",
     deckWindow: "Mostrar el deck tracker",
     oppWindow: "Mostrar las cartas del rival",
+    notLinked: "Sin vincular",
+    oppShort: "Rival",
+    allOff: "Todo apagado",
     oppObs: "Cartas del rival para OBS",
     deckObs: "Deck tracker para OBS",
     session: "Sesión",
@@ -570,11 +579,32 @@ let linkError: LinkProblem | null = null;
 const SYNC_PROBLEMS: Record<SyncProblem, string> = L.syncProblems;
 const clock = (iso: string) => new Date(iso).toLocaleTimeString(lang === "en" ? "en-GB" : lang, { hour: "2-digit", minute: "2-digit" });
 
+/**
+ * Account, Overlay e Scanner dello schermo sono tendine (12/10/2026, Pierluigi: "rendile richiudibili come una tendina
+ * altrimenti le stat del gioco non le vede nessuno"): chiuse mostrano solo il titolo e una riga di stato, e lasciano
+ * salire le statistiche. Partono chiuse, tranne l'account da collegare (`wanted`); la scelta del giocatore resta in
+ * localStorage (`FOLDS_KEY`) e vale anche dopo i ridisegni, che arrivano a ogni cambio di stato.
+ */
+const FOLDS_KEY = "originsmeta.analytics.folds.v1";
+let folds: Record<string, boolean> = {};
+try {
+  folds = JSON.parse(localStorage.getItem(FOLDS_KEY) ?? "{}") as Record<string, boolean>;
+} catch {
+  folds = {};
+}
+function fold(id: string, title: string, status: string, body: string, wanted = false) {
+  const open = folds[id] ?? wanted;
+  return `<details class="panel fold" id="${id}" data-fold="${id}"${open ? " open" : ""}>
+      <summary><h2>${esc(title)}</h2><span class="fold-status">${esc(status)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
+      <div class="fold-body">${body}</div>
+    </details>`;
+}
+
 function accountPanel(s: AppState) {
   const a = s.account;
   const codeUrl = `https://originsmeta.com/${lang}/account/tracker`;
   if (!a.linked) {
-    return `<section class="panel" id="account"><h2>${esc(L.account)}</h2><p class="sub">${esc(L.accountIntro)}</p>
+    return fold("account", L.account, L.notLinked, `<p class="sub">${esc(L.accountIntro)}</p>
         ${a.notice === "unlinked" ? `<p class="problem">${esc(L.unlinkedNotice)}</p>` : a.notice === "relink" ? `<p class="problem">${esc(L.relinkNotice)}</p>` : ""}
         <p class="fine">${esc(L.consent)}</p>
         <p class="sub">${esc(L.howTo)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></p>
@@ -582,10 +612,9 @@ function accountPanel(s: AppState) {
           <label class="field"><span>${esc(L.codeLabel)}</span><input id="link-code" name="code" spellcheck="false" maxlength="20" placeholder="ABCD-EFGH" /></label>
           <button type="submit" class="btn btn-primary"${linkBusy ? " disabled" : ""}>${esc(linkBusy ? L.linking : L.link)}</button>
         </form>
-        ${linkError ? `<p class="problem">${esc(L.linkProblems[linkError])}</p>` : ""}
-      </section>`;
+        ${linkError ? `<p class="problem">${esc(L.linkProblems[linkError])}</p>` : ""}`, true);
   }
-  return `<section class="panel" id="account"><h2>${esc(L.account)}</h2>
+  return fold("account", L.account, `${L.linkedAs(a.username)}${a.pending ? ` · ${L.pending(a.pending)}` : ""}`, `
       <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
       <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
       ${a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
@@ -594,8 +623,7 @@ function accountPanel(s: AppState) {
         <button type="button" class="btn btn-primary" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
         <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
         <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
-      </div>
-    </section>`;
+      </div>`);
 }
 
 /** Aggiornamento automatico in corso (11/10/2026): una riga in cima, nessun tasto (l'app fa da sola). */
@@ -619,10 +647,9 @@ function scannerNotice(s: AppState) {
 function scannerPanel(s: AppState) {
   const sc = s.scanner;
   const state = sc.on ? (sc.capturing ? L.scannerWatching : L.scannerWaiting) : L.scannerOffNote;
-  return `<section class="panel" id="scanner"><h2>${esc(L.scannerTitle)}</h2><p class="sub">${esc(L.scannerIntro)}</p>
+  return fold("scanner", L.scannerTitle, state, `<p class="sub">${esc(L.scannerIntro)}</p>
       <div class="row"><label class="switch"><input type="checkbox" id="scanner-on"${sc.on ? " checked" : ""} /> ${esc(L.scannerSwitch)}</label></div>
-      <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>
-    </section>`;
+      <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>`);
 }
 
 function overlayPanel(s: AppState) {
@@ -631,7 +658,8 @@ function overlayPanel(s: AppState) {
   const url = (layout: "h" | "v") => (o.obsUrl ? `${o.obsUrl}${layout === "v" ? "&layout=v" : ""}` : "");
   const obsRow = (label: string, layout: "h" | "v") =>
     `<div class="row"><span class="sub">${esc(label)}</span><code class="code">${esc(url(layout))}</code><button type="button" class="btn" data-copy-text="${esc(url(layout))}">${esc(L.copy)}</button></div>`;
-  return `<section class="panel" id="overlay"><h2>${esc(L.overlay)}</h2><p class="sub">${esc(L.overlayIntro)}</p>
+  const on = [o.window ? L.overlay : "", o.deckWindow ? L.deckTitle : "", o.oppWindow ? L.oppShort : ""].filter(Boolean).join(" · ") || L.allOff;
+  return fold("overlay", L.overlay, on, `<p class="sub">${esc(L.overlayIntro)}</p>
       <div class="row">
         <label class="switch"><input type="checkbox" id="ov-window"${o.window ? " checked" : ""} /> ${esc(L.overlayWindow)}</label>
         <label class="switch"><input type="checkbox" id="ov-move"${o.clickThrough ? "" : " checked"}${o.window ? "" : " disabled"} /> ${esc(L.overlayMove)}</label>
@@ -645,8 +673,7 @@ function overlayPanel(s: AppState) {
       <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
       <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
-      ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}
-    </section>`;
+      ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
 
 function footer(s: AppState) {
@@ -758,6 +785,16 @@ root.addEventListener("submit", async (e) => {
 root.addEventListener("click", (e) => {
   const summary = (e.target as HTMLElement).closest("summary");
   const d = summary?.parentElement as HTMLDetailsElement | null;
+  if (d?.dataset.fold) {
+    // il clic apre o chiude subito; la scelta si ricorda per i ridisegni e per i prossimi avvii
+    folds[d.dataset.fold] = !d.open;
+    try {
+      localStorage.setItem(FOLDS_KEY, JSON.stringify(folds));
+    } catch {
+      // senza memoria la tendina resta com'è fino al prossimo avvio
+    }
+    return;
+  }
   if (!d?.dataset.id) return;
   userToggled = true;
   if (d.open) openMatches.delete(d.dataset.id); // sta per chiudersi
