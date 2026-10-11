@@ -26,6 +26,10 @@ export type ScanFrame = {
   maxMana: number | null;
   /** Esito letto dallo stendardo di fine partita (recognize.ts, `readResult`); assente nei fotogrammi più vecchi. */
   result?: "W" | "L" | null;
+  /** Le carte nella mia mano, da sinistra (recognize.ts, `readHand`; dall'11/10/2026, assente prima). */
+  hand?: readonly string[];
+  /** Segmenti di vita accesi degli eroi, 0–2 (recognize.ts, `readLife`; null se non si leggono). */
+  life?: { me: number | null; opp: number | null };
 };
 
 export type ScannedPlay = { turn: number; me: boolean; card: string; lane: number };
@@ -49,6 +53,14 @@ export type ScannedMatch = {
   result: "W" | "L" | null;
   /** Quando è comparso lo stendardo (ora del PC): la fine della partita. */
   resultAt: number | null;
+  /**
+   * Le copie pescate di ogni mia carta (Leggendaria compresa): il massimo, nei fotogrammi della partita, delle copie in
+   * mano (viste in almeno `STABLE_FRAMES` fotogrammi del round) più quelle giocate nei round prima, e mai meno delle
+   * giocate. Una carta pescata e scartata da un effetto senza passare dalla mano a schermo non si conta.
+   */
+  drawn: Record<string, number>;
+  /** La vita degli eroi (segmenti accesi, 0–2): l'ultima lettura confermata da `STABLE_FRAMES` fotogrammi di fila. */
+  life: { me: number | null; opp: number | null };
 };
 
 /** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
@@ -179,6 +191,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
   const rounds = [...byRound.keys()].sort((a, b) => a - b);
 
   const plays: ScannedPlay[] = [];
+  const drawn: Record<string, number> = {};
   let before = new Map<string, number>();
   for (const r of rounds) {
     const fs = byRound.get(r)!;
@@ -197,6 +210,19 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
       const slot = first >= 0 ? fs[first].board.findIndex((k, i) => k === key && sideOf(i) === side) : -1;
       for (let c = 0; c < fresh; c++) plays.push({ turn: r, me: side === "me", card: key, lane: slot >= 0 ? BOARD_SLOTS[slot].lane : 0 });
     }
+    // carte pescate: in mano adesso più le giocate nei round prima (copie in mano stabili per STABLE_FRAMES fotogrammi)
+    const handSeen = new Map<string, number[]>();
+    for (const f of fs) {
+      const n = new Map<string, number>();
+      for (const k of f.hand ?? []) n.set(k, (n.get(k) ?? 0) + 1);
+      for (const [k, c] of n) handSeen.set(k, [...(handSeen.get(k) ?? []), c]);
+    }
+    for (const [k, list] of handSeen) {
+      const stable = list.sort((a, b) => b - a)[STABLE_FRAMES - 1] ?? 0;
+      if (!stable) continue;
+      const before = plays.filter((p) => p.me && p.card === k && p.turn < r).length;
+      drawn[k] = Math.max(drawn[k] ?? 0, stable + before);
+    }
     // il tabellone alla fine del round: il massimo degli ultimi END_FRAMES fotogrammi
     const end = new Map<string, number>();
     for (const m of per.slice(-END_FRAMES)) for (const [id, c] of m) end.set(id, Math.max(end.get(id) ?? 0, c));
@@ -207,6 +233,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
   const opponentCards: string[] = [];
   const oppLegendary = mode(vs.map((f) => f.vs!.opp)) ?? plays.find((p) => !p.me && cards.legendary(p.card))?.card ?? null;
   if (oppLegendary) opponentCards.push(oppLegendary);
+  for (const p of plays) if (p.me) drawn[p.card] = Math.max(drawn[p.card] ?? 0, plays.filter((q) => q.me && q.card === p.card).length);
   for (const p of plays) if (!p.me && !opponentCards.includes(p.card)) opponentCards.push(p.card);
 
   return {
@@ -219,7 +246,24 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     opponentCards,
     complete: rounds[0] === 1,
     ...resultOf(frames),
+    drawn,
+    life: { me: lifeOf(frames, "me"), opp: lifeOf(frames, "opp") },
   };
+}
+
+/** L'ultima vita letta per un eroe e confermata da `STABLE_FRAMES` fotogrammi di fila (lampi e animazioni non contano). */
+function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
+  let run = 0;
+  let prev: number | null = null;
+  let last: number | null = null;
+  for (const f of frames) {
+    const v = f.life?.[side] ?? null;
+    if (v === null) continue;
+    run = v === prev ? run + 1 : 1;
+    prev = v;
+    if (run >= STABLE_FRAMES) last = v;
+  }
+  return last;
 }
 
 /** L'esito più visto fra i fotogrammi dello stendardo, se lo confermano almeno `RESULT_FRAMES` fotogrammi. */
@@ -281,5 +325,17 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   if (max !== null && !(Number.isInteger(max) && (max as number) >= 1 && (max as number) <= 20)) return null;
   const result = f.result === "W" || f.result === "L" ? f.result : null;
   if (f.result !== undefined && f.result !== null && result === null) return null;
-  return { ms: now, board: f.board as (string | null)[], vs: vs ? { me: vs.me as string, opp: vs.opp as string } : null, maxMana: max as number | null, result };
+  if (f.hand !== undefined && !(Array.isArray(f.hand) && f.hand.length <= 12 && f.hand.every(key))) return null;
+  const lifeOk = (v: unknown) => v === null || (Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 2);
+  const life = f.life as Record<string, unknown> | undefined;
+  if (life !== undefined && !(life && typeof life === "object" && lifeOk(life.me) && lifeOk(life.opp))) return null;
+  return {
+    ms: now,
+    board: f.board as (string | null)[],
+    vs: vs ? { me: vs.me as string, opp: vs.opp as string } : null,
+    maxMana: max as number | null,
+    result,
+    ...(f.hand ? { hand: f.hand as string[] } : {}),
+    ...(life ? { life: { me: life.me as number | null, opp: life.opp as number | null } } : {}),
+  };
 }

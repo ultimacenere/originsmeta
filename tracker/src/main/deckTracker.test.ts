@@ -52,6 +52,9 @@ const scan: ScannedMatch = {
   complete: true,
   result: null,
   resultAt: null,
+  // pescate: Mary 2 (una in mano), Billy 3 letta per errore, la Leggendaria in mano
+  drawn: { A: 2, B: 3, L_ME: 1 },
+  life: { me: 2, opp: 1 },
 };
 
 test("mazzo scelto: Leggendaria a parte, carte per costo, due copie, record del mazzo", () => {
@@ -75,6 +78,22 @@ test("dal vivo: copie giocate, round, Leggendaria e carte rivelate dall'avversar
   assert.equal(v.live?.round, 4);
   assert.equal(v.live?.opponent.legendary?.name, "Merlin");
   assert.deepEqual(v.live?.opponent.seen.map((c) => `${c.name} x${c.copies}`), ["Huck Finn x2"]);
+});
+
+test("carte pescate, mazzo rimasto e vita (overlay di Davdas, 11/10/2026)", () => {
+  const v = deckTrackerView({ activeDeck: deck, matches: [], live: { scan, inMatch: true }, scanner: true, card, now: 0 });
+  const by = (name: string) => v.deck!.cards.find((c) => c.name === name)!;
+  assert.equal(by("Mary").drawn, 2);
+  assert.equal(by("Billy").drawn, 2, "mai oltre le copie del mazzo");
+  assert.equal(by("Trash for Treasure").drawn, 0);
+  assert.equal(v.deck?.legendary?.drawn, 1);
+  // 25 meno le pescate (2 + 2 + 1)
+  assert.equal(v.live?.deckLeft, 20);
+  assert.deepEqual(v.live?.life, { me: 2, opp: 1 });
+  // le giocate valgono come pescate anche senza la lettura della mano
+  const noHand = deckTrackerView({ activeDeck: deck, matches: [], live: { scan: { ...scan, drawn: {} }, inMatch: true }, scanner: true, card, now: 0 });
+  assert.equal(noHand.deck!.cards.find((c) => c.name === "Billy")!.drawn, 2);
+  assert.equal(noHand.deck!.cards.find((c) => c.name === "Mary")!.drawn, 1);
 });
 
 test("niente nomi, rank o bot: solo carte", () => {

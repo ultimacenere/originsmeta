@@ -38,7 +38,7 @@
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
  */
-import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainInvokeEvent } from "electron";
+import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -349,8 +349,9 @@ function savePanelPrefs(k: PanelKind) {
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  const width = Math.min(Math.max(p.width ?? 330, 260), 600);
-  const height = Math.min(Math.max(p.height ?? Math.min(820, area.height - 48), 360), 1600);
+  // larghezza scelta dal giocatore (all'inizio 300 per il mio mazzo, 270 per l'avversario); l'altezza la decide il contenuto
+  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 300 : 270), 200), 600);
+  const height = Math.min(Math.max(p.height ?? 420, 120), 1600);
   const { x, y } = p;
   // la posizione salvata vale solo se sta ancora su uno schermo
   if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
@@ -361,8 +362,8 @@ function openPanel(k: PanelKind) {
   if (panelOpen(k)) return;
   const win = new BrowserWindow({
     ...panelBounds(k),
-    minWidth: 260,
-    minHeight: 360,
+    minWidth: 200,
+    minHeight: 120,
     alwaysOnTop: true,
     fullscreenable: false,
     maximizable: false,
@@ -657,7 +658,7 @@ function openLink(url: unknown) {
 
 const fromApp = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && e.sender === win?.webContents;
 const fromOverlay = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(overlayWin) && e.sender === overlayWin?.webContents;
-const fromDeck = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
+const fromDeck = (e: IpcMainInvokeEvent | IpcMainEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
 
 function registerIpc() {
   ipcMain.handle("tracker:state", (e) => (fromApp(e) ? state() : null));
@@ -692,6 +693,15 @@ function registerIpc() {
   ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
+  // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
+  ipcMain.on("deck:fit", (e, h: unknown) => {
+    if (!fromDeck(e) || !Number.isFinite(h)) return;
+    const win = BrowserWindow.fromWebContents(e.sender);
+    if (!win || win.isDestroyed()) return;
+    const [w, cur] = win.getContentSize();
+    const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
+    if (Math.abs(want - cur) > 2) win.setContentSize(w, want);
+  });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
     if (!fromApp(e)) return;

@@ -393,8 +393,34 @@ tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata
   schermo (`opponent.json`), con la Leggendaria dell'avversario e le carte che rivela, che si riempiono man mano; per
   OBS `/overlay/deck?view=opp`. Il Deck tracker mostra solo il mio mazzo. In main.ts i due pannelli sono `panels.deck`
   e `panels.opp` (`openPanel`, `setPanel`).
-- **Da fare**: le carte in mano e quindi quelle ancora nel mazzo (la mano si vede in basso, ma la sua disposizione
-  cambia col numero di carte); le magie (vedi "Scanner dello schermo").
+- **Disegno di Davdas (0.3.4, 11/10/2026**; mockup e note Granola "tracker" dell'11/10: "colpo d'occhio immediato,
+  non lettura"; scelte di Pierluigi: le carte si scuriscono quando si pescano, la vita è l'anello sotto l'eroe):
+  - **il mio mazzo**: le 12 carte grandi in una griglia 4 × 3 per costo, un po' scure quando è pescata una copia su
+    due ("1/2"), scure quando sono pescate tutte; sotto, la Leggendaria a parte (scura quando pescata, con uno zoom al
+    momento della pesca) e un riquadro con le carte ancora nel mazzo (25 meno le pescate, `DECK_SIZE`: la Leggendaria si
+    pesca come le altre, lo dice il luogo "Emerge un eroe") e la vita dell'eroe (due segmenti);
+  - **l'avversario**: più piccolo, Leggendaria, vita e numero di carte viste a sinistra, a destra le carte rivelate che
+    compaiono una alla volta (si parte vuoti, mai caselle vuote). Le carte ancora nel suo mazzo non si sanno (le magie
+    non restano sul tabellone): al loro posto le carte viste;
+  - **niente scorrimento**: la finestra prende l'altezza del contenuto (`deckApi.fit`, IPC `deck:fit`), la larghezza la
+    sceglie il giocatore (all'inizio 300 e 270 px) e le carte la seguono.
+  - **Carte pescate** (`readHand` in `recognize.ts`): la mano in basso si legge scorrendo una finestra lungo la fascia,
+    con la sola parte sinistra dell'illustrazione (ogni carta è coperta a destra dalla seguente; riferimenti in
+    `src/card-art-hand.json`, generati da `npm run card-art`). Posizione e misura delle carte nelle tre forme di
+    finestra (`HAND_SHAPE`): distanza dal fondo che segue l'altezza, larghezza che segue più o meno il tabellone. Prove
+    dell'11/10: 6 su 6 a 2560 × 1440 (round 3), 3 su 3 nella finestra larga, 6 su 6 in quella 4:3, 80–104 ms a
+    fotogramma. In `reconstruct.ts` le copie pescate di una carta sono il massimo di "in mano (stabili per 2 fotogrammi)
+    più giocate nei round prima", mai meno delle giocate (`drawn`); sulla partita online dell'11/10: 19 carte pescate in
+    9 round.
+  - **Vita** (`readLife`): i due segmenti frontali dell'anello sotto la miniatura (Pierluigi: "sono 2 i segmenti della
+    vita e sono quelli frontali, si scuriscono quando vengono colpiti"), parte del tabellone 3D (`LIFE_RINGS` in
+    frazioni dell'area del tabellone, angoli 30–75° e 105–145°). Acceso: almeno 35% di punti luminosi e media ≥ 140
+    (la miniatura può coprire un pezzo di arco); spento: ≤ 12% e media ≤ 120; i lampi bianchi non si leggono. Vale
+    l'ultima lettura uguale per 2 fotogrammi di fila (`life` di `ScannedMatch`).
+  - Mano e vita si leggono solo quando il mana si legge (tabellone a schermo). Anteprima della pagina con dati finti:
+    uno script node che serve `dist/overlay` e un `deck.json` di esempio.
+- **Da fare**: le carte ancora nel mazzo dell'avversario (le carte coperte in alto contano la sua mano, ma il dorso
+  cambia con i cosmetici); le magie (vedi "Scanner dello schermo").
 
 ## Scanner dello schermo (dal 10/10/2026)
 

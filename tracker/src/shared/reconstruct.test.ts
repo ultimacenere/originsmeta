@@ -157,3 +157,39 @@ test("esito dallo stendardo: confermato da due fotogrammi, il più visto, l'ora 
   assert.equal(reconstruct([...g, banner(end, "W"), banner(end + 1, "W"), banner(end + 2, "L"), banner(end + 3, "L")], info).result, null, "parità");
   assert.equal(reconstruct(g, info).result, null);
 });
+
+test("carte pescate dalla mano e vita degli eroi (overlay di Davdas, 11/10/2026)", () => {
+  const withHand = (f: ScanFrame, hand: string[], life?: ScanFrame["life"]): ScanFrame => ({ ...f, hand, ...(life ? { life } : {}) });
+  const frames = [
+    frame(0, null, {}, { me: "L_ME", opp: "L_OPP" }),
+    // round 1: in mano due B, A e la Leggendaria (una lettura isolata di C non conta); poi gioco A
+    withHand(frame(1000, 2), ["B", "B", "A", "L_ME"], { me: 2, opp: 2 }),
+    withHand(frame(2000, 2), ["B", "B", "A", "L_ME", "C"], { me: 2, opp: 2 }),
+    withHand(frame(3000, 2, { "me 1 1": "A" }), ["B", "B", "L_ME"], { me: 2, opp: 2 }),
+    withHand(frame(4000, 2, { "me 1 1": "A" }), ["B", "B", "L_ME"], { me: 2, opp: 2 }),
+    // round 2: peso un'altra A; un lampo sull'anello non conta, l'avversario perde un segmento
+    withHand(frame(10000, 3, { "me 1 1": "A" }), ["B", "B", "L_ME", "A"], { me: 2, opp: 1 }),
+    withHand(frame(11000, 3, { "me 1 1": "A" }), ["B", "B", "L_ME", "A"], { me: 0, opp: 1 }),
+    withHand(frame(12000, 3, { "me 1 1": "A" }), ["B", "B", "L_ME", "A"], { me: 2, opp: 1 }),
+    withHand(frame(13000, 3, { "me 1 1": "A" }), ["B", "B", "L_ME", "A"], { me: 2, opp: 1 }),
+  ];
+  const m = reconstruct(splitMatches(frames)[0], info);
+  // A: una giocata al round 1 più una in mano al round 2
+  assert.deepEqual(m.drawn, { A: 2, B: 2, L_ME: 1 });
+  assert.deepEqual(m.life, { me: 2, opp: 1 });
+  // senza mano né vita (fotogrammi di prima): pescate solo le giocate, vita sconosciuta
+  const old = reconstruct(splitMatches(frames.map((f) => ({ ms: f.ms, board: f.board, vs: f.vs, maxMana: f.maxMana })))[0], info);
+  assert.deepEqual(old.drawn, { A: 1 });
+  assert.deepEqual(old.life, { me: null, opp: null });
+});
+
+test("fotogrammi con mano e vita: forma controllata", () => {
+  const board = BOARD_SLOTS.map(() => null);
+  const ok = readScanFrame({ board, vs: null, maxMana: 3, result: null, hand: ["C00065_MC", "C00013_SB"], life: { me: 2, opp: null } }, 5);
+  assert.deepEqual(ok?.hand, ["C00065_MC", "C00013_SB"]);
+  assert.deepEqual(ok?.life, { me: 2, opp: null });
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, hand: ["nome di un giocatore"] }, 5), null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, hand: Array(13).fill("C00065_MC") }, 5), null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, life: { me: 3, opp: 1 } }, 5), null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3 }, 5)?.hand, undefined);
+});

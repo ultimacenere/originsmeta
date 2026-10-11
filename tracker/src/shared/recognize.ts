@@ -405,6 +405,109 @@ export function readMana(img: Img, area: Rect = gameArea(img.width, img.height))
 /** Il round stimato dal mana massimo (vedi `MANA_TEXT`). */
 export const roundOf = (maxMana: number): number => maxMana - 1;
 
+/* ---------- la mano e la vita (11/10/2026, overlay di Davdas: carte che si scuriscono quando si pescano) ---------- */
+
+/**
+ * La mano del giocatore in basso: carte intere affiancate, ognuna coperta a destra dalla seguente, quindi si confronta
+ * solo la parte sinistra dell'illustrazione (`ART_IN_HAND`, riferimenti in `card-art-hand.json`) scorrendo una finestra
+ * lungo la fascia. La mano è appoggiata in basso: la distanza dal fondo cresce con l'altezza della finestra, la larghezza
+ * delle carte segue più o meno il tabellone; misurate nelle tre forme dell'11/10 (`HAND_SHAPE`, interpolate come
+ * `BOARD_SCALE`). A 2560 × 1440 le sei carte di una mano del round 3 riconosciute tutte (0,62–0,88), 90 ms.
+ */
+export const ART_IN_HAND: Rect = { x: ART_IN_CARD.x, y: ART_IN_CARD.y, w: ART_IN_CARD.w * 0.6, h: ART_IN_CARD.h };
+export const HAND_SHAPE: readonly (readonly [number, number, number])[] = [
+  // [rapporto dell'area interna, larghezza della carta / H, distanza del bordo alto della carta dal fondo / H]
+  [1160 / 869, 98 / 869, 201 / 869],
+  [16 / 9, 213.8 / 1440, 343 / 1440],
+  [2042 / 853, 137 / 853, 196 / 853],
+];
+
+function interpLog(table: readonly (readonly number[])[], col: number, r: number): number {
+  const x = Math.log(r);
+  let i = 0;
+  while (i < table.length - 2 && x > Math.log(table[i + 1][0])) i++;
+  const [x0, y0] = [Math.log(table[i][0]), Math.log(table[i][col])];
+  const [x1, y1] = [Math.log(table[i + 1][0]), Math.log(table[i + 1][col])];
+  return Math.exp(y0 + ((y1 - y0) * (x - x0)) / (x1 - x0));
+}
+
+/** Larghezza, altezza e bordo alto (pixel) di una carta della mano per un'area interna. */
+export function handGeometry(content: Rect): { w: number; h: number; top: number } {
+  const r = content.w / content.h;
+  const w = content.h * interpLog(HAND_SHAPE, 1, r);
+  return { w, h: (w * 690) / 480, top: content.y + content.h - content.h * interpLog(HAND_SHAPE, 2, r) };
+}
+
+/** Le carte riconosciute nella mano, da sinistra (una carta coperta dal mouse o sollevata può mancare). */
+export function readHand(img: Img, refs: readonly CardRef[], content: Rect): string[] {
+  if (!refs.length) return [];
+  const g = handGeometry(content);
+  const step = g.w * 0.04;
+  const hits: { x: number; key: string | null; score: number }[] = [];
+  for (let x = content.x + content.w * 0.12; x + g.w <= content.x + content.w * 0.88; x += step) {
+    const m = bestMatch(artVector(img, inside({ x, y: g.top, w: g.w, h: g.h }, ART_IN_HAND)), refs);
+    hits.push({ x, key: m.key, score: m.score });
+  }
+  const peaks = hits.filter((h, i) => h.key && h.score >= (hits[i - 1]?.score ?? 0) && h.score >= (hits[i + 1]?.score ?? 0));
+  const kept: typeof hits = [];
+  for (const p of peaks.sort((a, b) => b.score - a.score)) if (!kept.some((k) => Math.abs(k.x - p.x) < g.w * 0.45)) kept.push(p);
+  return kept.sort((a, b) => a.x - b.x).map((k) => k.key as string);
+}
+
+/**
+ * La vita degli eroi: i due segmenti frontali dell'anello sotto la miniatura (Pierluigi, 11/10: "sono 2 i segmenti della
+ * vita e sono quelli frontali, si scuriscono quando vengono colpiti"). Fanno parte del tabellone 3D: centri e raggi in
+ * frazioni dell'area del tabellone (x e raggio sulla larghezza, y sull'altezza), angoli in gradi (0 a destra, 90 in
+ * basso). Acceso: più di metà dei punti luminosi (celeste o rosso) e media alta; spento: quasi nessuno e media bassa;
+ * il resto (lampi bianchi, animazioni, carte trascinate sopra) non si legge. Misure su 3 partite del 10–11/10: acceso
+ * 64–83% e media 196–228, spento 0–10% e media 40–65; la miniatura dell'eroe può coprire un pezzo di arco (Big Bob in
+ * finestra 4:3: 47%), da cui la soglia del 35%.
+ */
+export const LIFE_RINGS: Record<Side, { x: number; y: number; r: number }> = {
+  // l'anello è un'ellisse vista di sbieco: per i due archi frontali va meglio un cerchio più piccolo e più in basso
+  // (ricerca dell'11/10 nelle tre forme: centro +1% dell'altezza, raggio × 0,9)
+  me: { x: 219.6 / 2560, y: 992.9 / 1440, r: 91.8 / 2560 },
+  opp: { x: 2274 / 2560, y: 314.4 / 1440, r: 94.5 / 2560 },
+};
+export const LIFE_SEGMENTS: readonly (readonly [number, number])[] = [
+  [30, 75],
+  [105, 145],
+];
+
+/** Segmenti di vita accesi per eroe (0–2), null se l'anello non si legge in questo fotogramma. */
+export function readLife(img: Img, board: Rect): Record<Side, number | null> {
+  const at = (side: Side): number | null => {
+    const ring = LIFE_RINGS[side];
+    const cx = board.x + ring.x * board.w;
+    const cy = board.y + ring.y * board.h;
+    const R = ring.r * board.w;
+    let lit = 0;
+    for (const [a0, a1] of LIFE_SEGMENTS) {
+      let on = 0;
+      let n = 0;
+      let sum = 0;
+      for (let a = a0; a <= a1; a += 3)
+        for (const dr of [-0.08, -0.04, 0, 0.04, 0.08]) {
+          const x = Math.round(cx + R * (1 + dr) * Math.cos((a * Math.PI) / 180));
+          const y = Math.round(cy + R * (1 + dr) * Math.sin((a * Math.PI) / 180));
+          if (x < 0 || y < 0 || x >= img.width || y >= img.height) return null;
+          const p = (y * img.width + x) * img.channels;
+          const mx = Math.max(img.data[p], img.data[p + 1], img.data[p + 2]);
+          sum += mx;
+          n++;
+          if (mx > 190) on++;
+        }
+      const share = on / n;
+      const mean = sum / n;
+      if (mean > 245) return null;
+      if (share >= 0.35 && mean >= 140) lit++;
+      else if (!(share <= 0.12 && mean <= 120)) return null;
+    }
+    return lit;
+  };
+  return { me: at("me"), opp: at("opp") };
+}
+
 /* ---------- esito dallo stendardo di fine partita ---------- */
 
 /**

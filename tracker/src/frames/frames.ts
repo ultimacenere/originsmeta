@@ -1,14 +1,16 @@
 /**
  * Finestra nascosta dello scanner (main/frames.ts): riprende la finestra del gioco che le indica il processo principale
  * e, ogni `FRAME_MS`, solo se lo schermo è cambiato:
- * - legge il fotogramma con il riconoscitore (carte dei 18 spazi, Leggendarie della schermata VS, mana) e manda il
+ * - legge il fotogramma con il riconoscitore (carte dei 18 spazi, Leggendarie della schermata VS, mana, dall'11/10/2026
+ *   anche la mano e la vita degli eroi) e manda il
  *   risultato al processo principale (`scan`): poche decine di byte, i pixel restano qui;
  * - nella modalità cattura (`--frames`) manda anche il JPEG, che il processo principale salva sul PC.
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { layoutFor, loadRefs, readBoard, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
+import { layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
+import cardArtHand from "../card-art-hand.json";
 
 declare global {
   interface Window {
@@ -18,6 +20,7 @@ declare global {
 
 const api = window.framesApi;
 const refs = loadRefs(cardArt as Record<string, string>);
+const handRefs = loadRefs(cardArtHand as Record<string, string>);
 const video = document.createElement("video");
 video.muted = true;
 const full = document.createElement("canvas");
@@ -98,7 +101,17 @@ function grab() {
     const { board, ui } = layout.at;
     const vs = readVersus(img, refs, layout.at.vs);
     const mana = readMana(img, board);
-    api.scan({ ms, board: readBoard(img, refs, board).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img, ui) });
+    const cards = readBoard(img, refs, board).map((m) => m.key);
+    // la mano e la vita solo sul tabellone (mana letto): nei menu e nelle schermate di passaggio non ci sono
+    const onBoard = mana !== null;
+    api.scan({
+      ms,
+      board: cards,
+      vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
+      maxMana: mana ? mana.max : null,
+      result: readResult(img, ui),
+      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board) } : {}),
+    });
   } catch {
     // un fotogramma che non si legge si salta
   }

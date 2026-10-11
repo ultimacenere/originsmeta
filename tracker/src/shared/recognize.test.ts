@@ -7,6 +7,12 @@ import {
   ACCEPT,
   ART_IN_SLOT,
   artVector,
+  ART_IN_HAND,
+  handGeometry,
+  LIFE_RINGS,
+  LIFE_SEGMENTS,
+  readHand,
+  readLife,
   BOARD_SLOTS,
   bestMatch,
   boardScale,
@@ -230,4 +236,44 @@ test("stendardo di fine partita: menta vittoria, magenta sconfitta, niente stend
   assert.equal(resultFromBanner({ white: 32, dark: 30, topDark: 97, mint: 0, magenta: 0 }), null);
   // colori quasi pari: incerto
   assert.equal(resultFromBanner({ white: 50, dark: 30, topDark: 95, mint: 1, magenta: 0.9 }), null);
+});
+
+test("mano: le carte affiancate e coperte a destra si leggono da sinistra, nelle tre forme", async () => {
+  const handArt = loadRefs((await import("../card-art-hand.json")).default as Record<string, string>);
+  const keys = Object.keys(cardArt).slice(10, 14);
+  for (const content of [{ x: 0, y: 0, w: 1280, h: 720 }, { x: 2, y: 45, w: 1160, h: 869 }, { x: 2, y: 45, w: 2042, h: 853 }]) {
+    const w = Math.ceil(content.x + content.w + 2);
+    const h = Math.ceil(content.y + content.h + 2);
+    const img: Img = { data: new Uint8ClampedArray(w * h * 4).fill(30), width: w, height: h, channels: 4 };
+    const g = handGeometry(content);
+    keys.forEach((k, i) => {
+      const card = { x: content.x + content.w * 0.35 + i * g.w * 0.85, y: g.top, w: g.w, h: g.h };
+      paint(img, inside(card, ART_IN_HAND), handArt.find((r) => r.key === k)!);
+    });
+    assert.deepEqual(readHand(img, handArt, content), keys, `${content.w}×${content.h}`);
+  }
+  assert.deepEqual(readHand(blank(), refs, { x: 0, y: 0, w: W, h: H }), []);
+});
+
+test("vita: i due segmenti frontali accesi o spenti, un lampo bianco non si legge", () => {
+  const img = blank();
+  const board = { x: 0, y: 0, w: W, h: H };
+  const d = img.data as Uint8ClampedArray;
+  const ring = (side: "me" | "opp", segs: number[], color: number[]) => {
+    const r = LIFE_RINGS[side];
+    for (const s of segs) {
+      const [a0, a1] = LIFE_SEGMENTS[s];
+      for (let a = a0 - 3; a <= a1 + 3; a += 0.5)
+        for (let k = 0.85; k <= 1.15; k += 0.01) {
+          const x = Math.round(r.x * W + r.r * W * k * Math.cos((a * Math.PI) / 180));
+          const y = Math.round(r.y * H + r.r * W * k * Math.sin((a * Math.PI) / 180));
+          d.set([...color, 255], (y * W + x) * 4);
+        }
+    }
+  };
+  ring("me", [0, 1], [60, 220, 240]);
+  ring("opp", [1], [240, 60, 90]);
+  assert.deepEqual(readLife(img, board), { me: 2, opp: 1 });
+  ring("me", [0, 1], [255, 255, 255]);
+  assert.equal(readLife(img, board).me, null, "lampo bianco");
 });

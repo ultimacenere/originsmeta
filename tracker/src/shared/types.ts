@@ -160,8 +160,11 @@ export type FramesApi = {
   scan(frame: ScanFrame): void;
 };
 
-/** Una carta del pannello del mazzo (deckTracker.ts): `copies` nel mazzo, `played` quelle viste giocare in questa partita. */
-export type DeckCard = { key: string; name: string; slug: string | null; mana: number | null; spell: boolean; legendary: boolean; copies: number; played: number };
+/**
+ * Una carta del pannello del mazzo (deckTracker.ts): `copies` nel mazzo, `played` quelle viste giocare in questa partita,
+ * `drawn` quelle pescate (in mano o già giocate; dall'11/10/2026, mai meno delle giocate).
+ */
+export type DeckCard = { key: string; name: string; slug: string | null; mana: number | null; spell: boolean; legendary: boolean; copies: number; played: number; drawn: number };
 
 /**
  * Il pannello del mazzo (10/10/2026, "Deck tracker"): il mazzo scelto nel gioco, aggiornato dal vivo dallo scanner
@@ -174,11 +177,21 @@ export type DeckTrackerView = {
   /** lo scanner è acceso (senza, il pannello mostra solo il mazzo) */
   scanner: boolean;
   /** la partita in corso o appena finita, dallo scanner */
-  live: { inMatch: boolean; round: number | null; opponent: { legendary: DeckCard | null; seen: DeckCard[] } } | null;
+  live: {
+    inMatch: boolean;
+    round: number | null;
+    /** carte ancora nel mio mazzo: 25 meno quelle pescate (11/10/2026, overlay di Davdas) */
+    deckLeft: number | null;
+    /** segmenti di vita accesi degli eroi, 0–2 (anello sotto la miniatura) */
+    life: { me: number | null; opp: number | null };
+    opponent: { legendary: DeckCard | null; seen: DeckCard[] };
+  } | null;
   updatedAt: string;
 };
 
 export type DeckApi = {
   getView(): Promise<DeckTrackerView | null>;
   onView(listener: (view: DeckTrackerView) => void): () => void;
+  /** L'altezza del contenuto in pixel CSS: la finestra si adatta, niente barra di scorrimento (11/10/2026). */
+  fit(height: number): void;
 };
