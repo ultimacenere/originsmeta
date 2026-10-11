@@ -71,6 +71,11 @@ export type ExplorerDeck = {
   favorites?: number;
   /** voto pesato sul numero di voti (weightedRating): l'ordine "Più votati", lo stesso della classifica di /decks */
   score?: number;
+  /**
+   * win rate delle partite registrate con OriginsMeta Analytics da chi gioca le stesse 13 carte, nella patch in corso
+   * (11/10/2026, solo mazzi della community; assente senza partite)
+   */
+  winrate?: { wins: number; games: number };
   /** tipo di mazzo e ruolo di chi l'ha pubblicato (solo mazzi della community) */
   deckTypeLabels?: string[];
   publisherBadge?: string;
@@ -100,6 +105,8 @@ type Labels = {
   noResults: string;
   votes: string;
   vote: string;
+  /** pastiglia del win rate (11/10/2026): "{n} partite" e "1 partita", e il testo al passaggio del mouse */
+  winrate?: { games: string; gamesOne: string; title: string };
   viewBlocks: string;
   viewList: string;
   copyCode: string;
@@ -321,6 +328,12 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
       {d.rating && d.rating.votes > 0 ? (
         <span className="stat-pill bg-night-3 font-mono text-[11px] text-mint">
           ★ {d.rating.avg.toFixed(1)} · {d.rating.votes} {d.rating.votes === 1 ? labels.vote : labels.votes}
+        </span>
+      ) : null}
+      {/* win rate delle partite registrate con l'app (11/10/2026): sempre con il numero di partite accanto */}
+      {d.winrate && labels.winrate ? (
+        <span className="stat-pill bg-night-3 font-mono text-[11px] text-chalk" title={labels.winrate.title}>
+          WR {Math.round((100 * d.winrate.wins) / d.winrate.games)}% · {d.winrate.games === 1 ? labels.winrate.gamesOne : labels.winrate.games.replace("{n}", String(d.winrate.games))}
         </span>
       ) : null}
       {/* salvataggi (30/09/2026): la stella vuota come sul tasto "Salva" della scheda */}

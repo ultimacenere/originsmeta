@@ -1,16 +1,21 @@
 // Taratura dello scanner sui fotogrammi salvati dalla modalità cattura (`npm run frames`): legge ogni JPEG di una
 // sessione con il riconoscitore dell'app (src/shared/recognize.ts) e scrive una riga JSON per fotogramma con le carte
 // dei 18 spazi e le Leggendarie della schermata VS. Uso: node scripts/scan-frames.mjs <cartella sessione> <uscita.jsonl>
+// [--screen=2560x1440] (le misure dello schermo: un fotogramma grande così è a schermo intero, senza barra del titolo).
 import "./ts-hooks.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { loadRefs, readBoard, readMana, readResult, readVersus } from "../src/shared/recognize.ts";
+import { layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readResult, readVersus, windowContent } from "../src/shared/recognize.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const sharp = createRequire(path.join(root, "..", "package.json"))("sharp");
 const refs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art.json"), "utf8")));
-const [dir, out] = process.argv.slice(2);
+const handRefs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art-hand.json"), "utf8")));
+const [dir, out] = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const screenArg = process.argv.find((a) => a.startsWith("--screen="))?.slice(9) ?? "2560x1440";
+const [screenW, screenH] = screenArg.split("x").map(Number);
+let layout = null;
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".jpg")).sort();
 const ws = fs.createWriteStream(out);
 const t0 = Date.now();
@@ -18,16 +23,25 @@ let i = 0;
 for (const f of files) {
   const { data, info } = await sharp(path.join(dir, f)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const img = { data, width: info.width, height: info.height, channels: 3 };
-  const board = readBoard(img, refs);
-  const vs = readVersus(img, refs);
+  // come la finestra nascosta (frames.ts): l'area più vista negli ultimi 15 fotogrammi
+  if (!layout || layout.w !== img.width || layout.h !== img.height) layout = { w: img.width, h: img.height, votes: [], key: "", at: null };
+  layout.votes = [...layout.votes, JSON.stringify(windowContent(img, Math.abs(img.width - screenW) <= 3 && Math.abs(img.height - screenH) <= 3))].slice(-15);
+  const tally = new Map();
+  for (const v of layout.votes) tally.set(v, (tally.get(v) ?? 0) + 1);
+  const best = [...tally].sort((a, b) => b[1] - a[1])[0][0];
+  if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
+  const board = readBoard(img, refs, layout.at.board);
+  const vs = readVersus(img, refs, layout.at.vs);
+  const mana = readMana(img, layout.at.board);
   ws.write(
     JSON.stringify({
       ms: Number(f.slice(0, 9)),
       board: board.map((m) => m.key),
       low: board.map((m) => (m.key ? Number(m.score.toFixed(2)) : null)),
       vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
-      mana: readMana(img),
-      result: readResult(img),
+      mana,
+      result: readResult(img, layout.at.ui),
+      ...(mana ? { hand: readHand(img, handRefs, layout.at.content), life: readLife(img, layout.at.board) } : {}),
     }) + "\n",
   );
   if (++i % 500 === 0) console.log(i, "/", files.length, `${Math.round((Date.now() - t0) / i)} ms a fotogramma`);

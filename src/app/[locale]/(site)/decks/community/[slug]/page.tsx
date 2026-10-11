@@ -48,7 +48,7 @@ import { deckArtUrl } from "@/lib/community/deckArt";
 import { deckArtLabels } from "@/lib/deckArtLabels";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { readDeckWinrate } from "@/lib/community/trackerStatsQueries";
-import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { ANALYTICS_PUBLIC, DECK_WINRATE_PUBLIC } from "@/lib/community/badges";
 import { deckListKey, isEarly, percent } from "@/lib/tracker/stats";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -159,11 +159,12 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // dati di Next condivide (una al minuto), invece di una query per scheda. Accanto, il win rate del mazzo nelle
   // partite registrate con OriginsMeta Analytics quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
   // al 10/10/2026, quando la patch 0.7 aveva tolto i replay): null sotto la soglia, prima della migrazione o con un
-  // errore (il riquadro è facoltativo). In prova dal 10/10/2026 (solo Creator, Autore, Pro, Staff e admin): la scheda è ISR e non sa
-  // chi guarda, quindi niente riquadro né lettura finché ANALYTICS_PUBLIC è spento.
+  // errore (il riquadro è facoltativo). Dall'11/10/2026 per tutti anche con Analytics in prova (`DECK_WINRATE_PUBLIC`, Pierluigi:
+  // "voglio che i deck del sito acquisiscano il win rate"), dalla prima partita e solo con la lista identica; i link verso
+  // le pagine ancora in prova solo con ANALYTICS_PUBLIC.
   const [published, winrate] = await Promise.all([
     listPublishedDecks(),
-    ANALYTICS_PUBLIC ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
+    DECK_WINRATE_PUBLIC ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
   ]);
   // Altri mazzi con la stessa Leggendaria, poi altri mazzi (DECKS-11, 25/09/2026): prima erano gli 8 più recenti, e i
   // link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts): i vicini in
@@ -434,6 +435,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 ) : null}
               </p>
             </div>
+            {ANALYTICS_PUBLIC ? (
             <p className="flex flex-col gap-1 text-xs">
               <Link href={`${href(locale, "/tier-list/win-rate")}#decks`} prefetch={false} className="link-mint font-bold">
                 {d.tier.winrate.deckBox.link} →
@@ -442,6 +444,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                 {d.tier.winrate.deckBox.app} →
               </Link>
             </p>
+            ) : null}
           </div>
         ) : null}
 

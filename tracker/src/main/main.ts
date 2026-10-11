@@ -38,7 +38,7 @@
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
  */
-import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainInvokeEvent } from "electron";
+import { app, BrowserWindow, clipboard, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -163,15 +163,29 @@ function currentDeckView(): DeckTrackerView {
  * Nel playtest le partite online e classificate non lasciano niente nei file del PC (le statistiche contano solo le
  * "offline"), quindi il watcher non le vede finire. Lo stendardo di fine partita sì: `RESULT_WAIT_MS` dopo, se il
  * watcher non ha registrato una partita finita lì vicino (`NEAR_MS`), la registra l'app con quello che ha letto lo
- * schermo: esito, ora, mazzo scelto, giocate e carte dell'avversario. Solo partite viste per intero (`complete`). Se poi
- * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni.
+ * schermo: esito, ora e mazzo scelto, più giocate e carte dell'avversario se la partita è stata vista per intero (`complete`;
+ * dall'11/10/2026 l'esito vale anche senza, vedi `finishFromScreen`). Se poi
+ * il watcher porta la stessa partita (statistiche in ritardo), si scarta la sua: niente doppioni. Il ritardo può essere
+ * lungo: l'11/10 il playtest ha scritto la vittoria di un allenamento delle 06:32 solo alle 06:51, entrando in coda
+ * online, con l'ora della scrittura. Per questo, oltre alla vicinanza (`NEAR_MS`), una partita dei file con lo stesso
+ * esito di una dello schermo non ancora abbinata, e finita dopo, prende il suo posto (`screenTwin`): si tiene quella
+ * dello schermo, che ha l'ora vera e le giocate.
  */
 const RESULT_WAIT_MS = 30_000;
 const NEAR_MS = 3 * 60_000;
+/** Il ritardo più lungo accettato per le statistiche dei file (oltre, una partita dei file resta a sé). */
+const LATE_MS = 60 * 60_000;
 let lastBannerAt = 0;
 let gameDeck: GameDeck | null = null;
-const fromScreen: number[] = [];
+const fromScreen: { at: number; result: "W" | "L"; used: boolean }[] = [];
 const nearTo = (iso: string | null, at: number) => Boolean(iso) && Math.abs(Date.parse(iso as string) - at) <= NEAR_MS;
+/** La partita dello schermo che è la stessa di una dei file: vicina nel tempo, o con lo stesso esito e finita prima. */
+function screenTwin(raw: TrackedMatch) {
+  const near = fromScreen.find((s) => !s.used && nearTo(raw.endedAt, s.at));
+  if (near) return near;
+  const end = raw.endedAt ? Date.parse(raw.endedAt) : Date.now();
+  return fromScreen.find((s) => !s.used && s.result === raw.result && s.at <= end + NEAR_MS && s.at >= end - LATE_MS);
+}
 
 function noteFrame(f: ScanFrame) {
   pushDeck();
@@ -182,13 +196,17 @@ function noteFrame(f: ScanFrame) {
 
 async function finishFromScreen(at: number) {
   if (!frames || store.matches.some((m) => nearTo(m.endedAt, at))) return;
+  // l'esito dello stendardo vale anche se la partita non è stata vista dal round 1 (11/10/2026, Magic in finestra: in una
+  // finestra piccola il mana si legge a tratti, la partita risultava incompleta e si perdeva anche vittoria o sconfitta);
+  // le giocate entrano solo da una partita completa (`applyScan`)
   const scan = frames.matchFor(at + 10_000);
-  if (!scan || !scan.complete || !scan.result) return;
-  const endedAt = new Date(scan.resultAt ?? at).toISOString();
-  const base = await buildMatch({ end: { endedAt, result: scan.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
+  const seen = scan?.result ? { result: scan.result, resultAt: scan.resultAt } : frames.resultNear(at);
+  if (!seen.result) return;
+  const endedAt = new Date(seen.resultAt ?? at).toISOString();
+  const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
-  fromScreen.push(at);
+  fromScreen.push({ at, result: seen.result, used: false });
   frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
   push();
   scheduleSync(5000);
@@ -282,6 +300,21 @@ function push() {
   }, 100);
 }
 
+/**
+ * Niente zoom nelle finestre sopra il gioco (11/10/2026: un tester con Ctrl + rotella ha ingrandito il Deck tracker, e
+ * Chromium ricorda lo zoom nelle preferenze dei dati dell'app, che restano anche disinstallando): ogni richiesta di zoom e
+ * ogni caricamento rimettono il 100%, e il doppio clic sulla zona trascinabile non massimizza.
+ */
+function lockZoom(win: BrowserWindow) {
+  const reset = () => {
+    if (!win.isDestroyed()) win.webContents.setZoomFactor(1);
+  };
+  win.webContents.on("zoom-changed", reset);
+  win.webContents.on("did-finish-load", reset);
+  void win.webContents.setVisualZoomLevelLimits(1, 1);
+  win.on("maximize", () => win.unmaximize());
+}
+
 /* ---------- pannelli: Deck tracker e carte dell'avversario ---------- */
 
 /**
@@ -336,8 +369,9 @@ function savePanelPrefs(k: PanelKind) {
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  const width = Math.min(Math.max(p.width ?? 330, 260), 600);
-  const height = Math.min(Math.max(p.height ?? Math.min(820, area.height - 48), 360), 1600);
+  // larghezza scelta dal giocatore (all'inizio 300 per il mio mazzo, 270 per l'avversario); l'altezza la decide il contenuto
+  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 300 : 270), 200), 600);
+  const height = Math.min(Math.max(p.height ?? 420, 120), 1600);
   const { x, y } = p;
   // la posizione salvata vale solo se sta ancora su uno schermo
   if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
@@ -348,8 +382,11 @@ function openPanel(k: PanelKind) {
   if (panelOpen(k)) return;
   const win = new BrowserWindow({
     ...panelBounds(k),
-    minWidth: 260,
-    minHeight: 360,
+    minWidth: 200,
+    minHeight: 120,
+    // senza la cornice di Windows (Pierluigi, 11/10/2026: "togliere la barra di Windows e il titolo"): si sposta
+    // trascinando il pannello, si allarga dai bordi, si chiude con la × del pannello o dall'app
+    frame: false,
     alwaysOnTop: true,
     fullscreenable: false,
     maximizable: false,
@@ -367,6 +404,7 @@ function openPanel(k: PanelKind) {
     },
   });
   panels[k].win = win;
+  lockZoom(win);
   win.removeMenu();
   win.setAlwaysOnTop(true, "screen-saver");
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -518,6 +556,7 @@ function openOverlay() {
       spellcheck: false,
     },
   });
+  lockZoom(overlayWin);
   overlayWin.setAlwaysOnTop(true, "screen-saver");
   overlayWin.setIgnoreMouseEvents(overlayPrefs.clickThrough, { forward: true });
   overlayWin.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -644,7 +683,7 @@ function openLink(url: unknown) {
 
 const fromApp = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && e.sender === win?.webContents;
 const fromOverlay = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(overlayWin) && e.sender === overlayWin?.webContents;
-const fromDeck = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
+const fromDeck = (e: IpcMainInvokeEvent | IpcMainEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
 
 function registerIpc() {
   ipcMain.handle("tracker:state", (e) => (fromApp(e) ? state() : null));
@@ -679,6 +718,19 @@ function registerIpc() {
   ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
+  // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
+  ipcMain.on("deck:close", (e) => {
+    if (!fromDeck(e)) return;
+    for (const k of PANEL_KINDS) if (panelOpen(k) && panels[k].win!.webContents === e.sender) setPanel(k, false);
+  });
+  ipcMain.on("deck:fit", (e, h: unknown) => {
+    if (!fromDeck(e) || !Number.isFinite(h)) return;
+    const win = BrowserWindow.fromWebContents(e.sender);
+    if (!win || win.isDestroyed()) return;
+    const [w, cur] = win.getContentSize();
+    const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
+    if (Math.abs(want - cur) > 2) win.setContentSize(w, want);
+  });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
     if (!fromApp(e)) return;
@@ -734,8 +786,10 @@ async function boot() {
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
     // la stessa partita già registrata dallo schermo (statistiche arrivate in ritardo): si tiene quella
-    if (fromScreen.some((at) => nearTo(raw.endedAt, at))) {
-      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result });
+    const twin = screenTwin(raw);
+    if (twin) {
+      twin.used = true;
+      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, screenAt: new Date(twin.at).toISOString() });
       return;
     }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date

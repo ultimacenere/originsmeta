@@ -25,6 +25,12 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **Overlay di Davdas** (0.3.4, 11/10/2026): Deck tracker a griglia 4 × 3 di carte grandi che si scuriscono quando si
+  pescano (lo scanner legge anche la mano), Leggendaria a parte, carte ancora nel mazzo e vita dell'eroe; pannello
+  dell'avversario con Leggendaria, vita e carte viste che compaiono una alla volta; finestre alte come il contenuto.
+- **Finestre di qualunque forma** (0.3.3, 11/10/2026, `layoutFor` e `windowContent` in `src/shared/recognize.ts`): lo
+  scanner toglie la barra del titolo di Windows e cerca il tabellone 3D e l'interfaccia con la scala giusta per la forma
+  della finestra (misure e taratura in docs/tracker.md, "Finestre di qualunque forma").
 - **Aggiornamento automatico** (0.3.2, 11/10/2026, `updater.ts` e `updateRules.ts`): l'app impacchettata controlla le
   release `analytics-v…` su GitHub 30 s dopo l'avvio e ogni 3 ore, scarica lo zip dal nome fisso (solo da github.com,
   dimensione controllata), lo scompatta con il tar di Windows e, fuori dalle partite, si chiude: uno script

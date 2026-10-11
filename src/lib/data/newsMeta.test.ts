@@ -11,12 +11,13 @@
 import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import {
   DESCRIPTION_MAX,
   TITLE_MAX,
   anchorsOf,
   duplicateMetaTitles,
+  imageLinks,
   internalLinks,
   linkProblem,
   newsProblems,
@@ -120,6 +121,9 @@ describe("lettura dei sorgenti", () => {
 describe("funzioni di supporto", () => {
   test("link interni del Markdown", () => {
     assert.deepEqual(internalLinks("[a](/en/news/x) e [b](https://x.com/y) e [c](/it/guides/z#w)"), ["/en/news/x", "/it/guides/z#w"]);
+    // le immagini non sono link a pagine (11/10/2026), ma devono esistere in /public
+    assert.deepEqual(internalLinks("![foto](/media/a.webp) e [b](/en/news/x)"), ["/en/news/x"]);
+    assert.deepEqual(imageLinks("![foto](/media/a.webp) e [b](/en/news/x)"), ["/media/a.webp"]);
   });
   test("ancore scritte e generate dai titoli", () => {
     assert.deepEqual([...anchorsOf("## Uno {#uno}\n\ntesto\n\n### Perché **conta**\n\n## Déjà vu: 20–25 ottobre")], ["uno", "perche-conta", "deja-vu-20-25-ottobre"]);
@@ -190,6 +194,11 @@ describe("newsProblems", () => {
 describe("news", () => {
   test("uno slug per news", () => {
     assert.equal(newsSlugs.size, news.length);
+  });
+  test("le immagini nel testo esistono in /public (11/10/2026)", () => {
+    for (const item of news)
+      for (const l of locales)
+        for (const src of imageLinks(item.body?.[l] ?? "")) assert.ok(existsSync(new URL(`../../../public${src}`, import.meta.url)), `${item.slug} [${l}]: ${src} non c'è`);
   });
   test("il title per la SERP di una news su un mazzo è l'annuncio: non comincia col nome del mazzo, che spetta alla scheda", () => {
     // Il nome del mazzo è la parte del titolo dell'articolo prima dei primi ":" o "," ("3 Pigs Mid Range: …").

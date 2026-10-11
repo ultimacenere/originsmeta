@@ -2412,6 +2412,17 @@
     padding: 0.2em 1em;
     color: var(--color-pale-muted);
   }
+  /* immagini nel testo degli articoli (11/10/2026, prima news con screenshot nel corpo): mai più larghe del testo */
+  .prose-night img {
+    display: block;
+    max-width: 100%;
+    /* gli screenshot alti (un pannello) non riempiono lo schermo */
+    max-height: 560px;
+    width: auto;
+    height: auto;
+    margin: 1.2em auto;
+    border-radius: 12px;
+  }
   /* contenitore aggiunto da Markdown.tsx: la tabella scorre di lato dentro il riquadro, la pagina no */
   .prose-night .table-scroll {
     overflow-x: auto;

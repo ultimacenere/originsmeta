@@ -20,7 +20,9 @@ import { localizedGuide } from "@/lib/community/deckTranslation";
 import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/deckQuality";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { badgeStyle } from "@/lib/cardArt";
-import { BADGE_ORDER, normalizeBadge } from "@/lib/community/badges";
+import { BADGE_ORDER, DECK_WINRATE_PUBLIC, normalizeBadge } from "@/lib/community/badges";
+import { readListWinrates } from "@/lib/community/trackerStatsQueries";
+import { deckListKey } from "@/lib/tracker/stats";
 import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
@@ -98,6 +100,8 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   const popularity = await listDeckPopularity();
   // canali e badge LIVE accanto a chi ha pubblicato, se ha il ruolo Creator, Autore, Pro o Staff (pacchetto CREATOR)
   const creators = creatorIndex(await listCreators());
+  // win rate delle liste esatte giocate con OriginsMeta Analytics (11/10/2026, `DECK_WINRATE_PUBLIC`): una lettura per pagina
+  const winrates = DECK_WINRATE_PUBLIC ? await readListWinrates() : null;
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
   const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
@@ -142,6 +146,11 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         // voto pesato per l'ordine "Più votati" dell'elenco (`ExplorerDeck.score`), lo stesso della classifica dei migliori
         // mazzi (Ondata 3): con la media semplice un solo voto da 5 stelle passava davanti al #1 della classifica
         score: deck.rating?.votes ? weightedRating(deck.rating.avg, deck.rating.votes) : 0,
+        ...(() => {
+          const key = deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key);
+          const wr = key ? winrates?.lists.get(key) : undefined;
+          return wr && wr.games > 0 ? { winrate: { wins: wr.wins, games: wr.games } } : {};
+        })(),
         deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
         // ruolo di chi l'ha pubblicato (27/09/2026): un tag che il codice non conosce vale community
         publisherBadge: d.community.badges[normalizeBadge(deck.profile?.badge)],
@@ -329,6 +338,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             noResults: d.common.noDecks,
             votes: d.community.votes,
             vote: d.community.vote,
+            winrate: { games: d.tier.winrate.games, gamesOne: d.tier.winrate.gamesOne, title: d.tier.winrate.deckBox.title },
             viewBlocks: d.common.viewBlocks,
             viewList: d.common.viewList,
             copyCode: d.common.copyCode,

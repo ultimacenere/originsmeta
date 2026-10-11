@@ -17,11 +17,11 @@
  *
  * Per le prove senza il gioco: ORIGINSMETA_FRAMES_WINDOW=<titolo esatto di un'altra finestra>.
  */
-import { BrowserWindow, desktopCapturer, ipcMain, session, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, desktopCapturer, ipcMain, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
-import { readScanFrame, reconstruct, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
+import { readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
 /** La partita resta "dal vivo" nel pannello del mazzo fino a 10 minuti dopo l'ultimo fotogramma con il mana letto. */
 export const LIVE_MS = 10 * 60_000;
@@ -86,6 +86,11 @@ export class FrameRecorder {
 
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
+  }
+
+  /** L'esito dello stendardo intorno a quell'ora, anche senza una partita ricostruita (vedi `resultAround`). */
+  resultNear(atMs: number) {
+    return resultAround(this.scans, atMs);
   }
 
   private ready = false;
@@ -160,7 +165,9 @@ export class FrameRecorder {
     if (this.save) this.sessionDir();
     this.event("start", { window: game.name });
     const win = this.window();
-    const opts = { save: this.save };
+    // misure in pixel veri: la ripresa a schermo intero è grande come uno di questi (11/10/2026, finestre)
+    const screens = screen.getAllDisplays().map((d) => [Math.round(d.size.width * d.scaleFactor), Math.round(d.size.height * d.scaleFactor)] as [number, number]);
+    const opts = { save: this.save, screens };
     if (win.webContents.isLoading()) win.webContents.once("did-finish-load", () => this.sourceId && win.webContents.send("frames:start", this.sourceId, opts));
     else win.webContents.send("frames:start", game.id, opts);
     this.onChange();

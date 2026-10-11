@@ -7,10 +7,18 @@ import {
   ACCEPT,
   ART_IN_SLOT,
   artVector,
+  ART_IN_HAND,
+  handGeometry,
+  LIFE_RINGS,
+  LIFE_SEGMENTS,
+  readHand,
+  readLife,
   BOARD_SLOTS,
   bestMatch,
+  boardScale,
   gameArea,
   inside,
+  layoutFor,
   loadRefs,
   MANA_TEXT,
   packVector,
@@ -21,6 +29,7 @@ import {
   unpackVector,
   VEC,
   VS_CARDS,
+  windowContent,
   type CardRef,
   type Img,
   type Rect,
@@ -43,7 +52,7 @@ function paint(img: Img, r: Rect, ref: CardRef) {
       const xb = Math.round(r.x + (r.w * (gx + 1)) / VEC);
       for (let y = ya; y < yb; y++)
         for (let x = xa; x < xb; x++) {
-          const p = (y * W + x) * 4;
+          const p = (y * img.width + x) * 4;
           for (let c = 0; c < 3; c++) d[p + c] = 128 + ref.v[o + c] * 1500;
         }
     }
@@ -116,6 +125,71 @@ test("area di gioco 16:9 dentro immagini di altre proporzioni", () => {
   assert.deepEqual(gameArea(1920, 1200), { x: 0, y: 60, w: 1920, h: 1080 });
 });
 
+test("finestre di qualunque forma: scala del tabellone, aree e schermo 16:9 come prima", () => {
+  const near = (a: number, b: number, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≠ ${b}`);
+  near(boardScale(16 / 9), 16 / 9);
+  near(boardScale(1160 / 869), 1221 / 869);
+  near(boardScale(2042 / 853), 1759 / 853);
+  // sempre crescente: una finestra più larga, a pari altezza, non rimpicciolisce il tabellone
+  for (let r = 1; r < 4; r += 0.05) assert.ok(boardScale(r + 0.05) > boardScale(r));
+  const full = layoutFor({ x: 0, y: 0, w: 2560, h: 1440 });
+  for (const k of ["x", "y", "w", "h"] as const) {
+    near(full.board[k], gameArea(2560, 1440)[k], 1e-6);
+    near(full.ui[k], gameArea(2560, 1440)[k], 1e-6);
+  }
+  // la finestra larga dell'11/10: tabellone centrato largo 1759, interfaccia alta come la finestra
+  const wide = layoutFor({ x: 2, y: 45, w: 2042, h: 853 });
+  near(wide.board.w, 1759, 1e-6);
+  near(wide.board.x + wide.board.w / 2, 1023);
+  near(wide.board.y + wide.board.h / 2, 45 + 853 / 2);
+  near(wide.ui.h, 853);
+  near(full.vs.w, 2560);
+  near(full.vs.y, 0);
+  // la schermata VS della partita online dell'11/10 in una finestra 4:3: larga come la finestra, appoggiata in basso
+  const square = layoutFor({ x: 2, y: 45, w: 1160, h: 869 });
+  near(square.vs.w, 1160);
+  near(square.vs.y + square.vs.h, 45 + 869);
+  near(inside(square.vs, VS_CARDS.me[0]).x, 417.86, 0.01);
+});
+
+test("finestre: la barra del titolo di Windows si toglie, lo schermo intero no", () => {
+  const w = 1164;
+  const h = 916;
+  const img: Img = { data: new Uint8ClampedArray(w * h * 4), width: w, height: h, channels: 4 };
+  const d = img.data as Uint8ClampedArray;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const p = (y * w + x) * 4;
+      // barra chiara di 45 px, bordo di 2 px, sotto il gioco (scuro e vario)
+      const bar = y < 45 || x < 2 || x >= w - 2 || y >= h - 2;
+      d.set(bar ? [243, 243, 243, 255] : [(x * 7) % 90, (y * 5) % 70, 60 + ((x + y) % 80), 255], p);
+    }
+  assert.deepEqual(windowContent(img, false), { x: 2, y: 45, w: w - 4, h: h - 47 });
+  assert.deepEqual(windowContent(img, true), { x: 0, y: 0, w, h }, "schermo intero");
+  // una fascia uniforme ma colorata in alto è il gioco (una dissolvenza a schermo intero), non la barra di Windows
+  for (let y = 0; y < 45; y++) for (let x = 0; x < w; x++) d.set([105, 22, 38, 255], (y * w + x) * 4);
+  assert.deepEqual(windowContent(img, false), { x: 0, y: 0, w, h }, "fascia colorata");
+  // la tinta Mica della barra attiva (quasi grigia) vale come barra
+  for (let y = 0; y < 45; y++) for (let x = 0; x < w; x++) d.set([229, 250, 245, 255], (y * w + x) * 4);
+  assert.equal(windowContent(img, false).y, 45, "tinta Mica");
+  // senza barra (finestra senza bordi): l'immagine intera
+  for (let y = 0; y < 45; y++)
+    for (let x = 0; x < w; x++) d.set([(x * 7) % 90, (y * 5) % 70, 60, 255], (y * w + x) * 4);
+  assert.deepEqual(windowContent(img, false), { x: 0, y: 0, w, h });
+});
+
+test("finestre: una carta si legge nell'area del tabellone della finestra", () => {
+  const w = 1164;
+  const h = 916;
+  const img: Img = { data: new Uint8ClampedArray(w * h * 4).fill(30), width: w, height: h, channels: 4 };
+  const board = layoutFor({ x: 2, y: 45, w: 1160, h: 869 }).board;
+  const ref = refs.find((r) => r.key === Object.keys(cardArt)[3])!;
+  paint(img, inside(inside(board, BOARD_SLOTS[4].rect), ART_IN_SLOT), ref);
+  const read = readBoard(img, refs, board);
+  assert.equal(read[4].key, ref.key);
+  assert.equal(readBoard(img, refs)[4].key, null, "con l'area 16:9 di prima non si legge");
+});
+
 /** Scrive un testo con i modelli delle cifre, ingranditi, dentro il pannello del mana. */
 function writeMana(img: Img, text: string) {
   const glyphs: Record<string, string> = {
@@ -168,4 +242,44 @@ test("stendardo di fine partita: menta vittoria, magenta sconfitta, niente stend
   assert.equal(resultFromBanner({ white: 32, dark: 30, topDark: 97, mint: 0, magenta: 0 }), null);
   // colori quasi pari: incerto
   assert.equal(resultFromBanner({ white: 50, dark: 30, topDark: 95, mint: 1, magenta: 0.9 }), null);
+});
+
+test("mano: le carte affiancate e coperte a destra si leggono da sinistra, nelle tre forme", async () => {
+  const handArt = loadRefs((await import("../card-art-hand.json")).default as Record<string, string>);
+  const keys = Object.keys(cardArt).slice(10, 14);
+  for (const content of [{ x: 0, y: 0, w: 1280, h: 720 }, { x: 2, y: 45, w: 1160, h: 869 }, { x: 2, y: 45, w: 2042, h: 853 }]) {
+    const w = Math.ceil(content.x + content.w + 2);
+    const h = Math.ceil(content.y + content.h + 2);
+    const img: Img = { data: new Uint8ClampedArray(w * h * 4).fill(30), width: w, height: h, channels: 4 };
+    const g = handGeometry(content);
+    keys.forEach((k, i) => {
+      const card = { x: content.x + content.w * 0.35 + i * g.w * 0.85, y: g.top, w: g.w, h: g.h };
+      paint(img, inside(card, ART_IN_HAND), handArt.find((r) => r.key === k)!);
+    });
+    assert.deepEqual(readHand(img, handArt, content), keys, `${content.w}×${content.h}`);
+  }
+  assert.deepEqual(readHand(blank(), refs, { x: 0, y: 0, w: W, h: H }), []);
+});
+
+test("vita: i due segmenti frontali accesi o spenti, un lampo bianco non si legge", () => {
+  const img = blank();
+  const board = { x: 0, y: 0, w: W, h: H };
+  const d = img.data as Uint8ClampedArray;
+  const ring = (side: "me" | "opp", segs: number[], color: number[]) => {
+    const r = LIFE_RINGS[side];
+    for (const s of segs) {
+      const [a0, a1] = LIFE_SEGMENTS[s];
+      for (let a = a0 - 3; a <= a1 + 3; a += 0.5)
+        for (let k = 0.85; k <= 1.15; k += 0.01) {
+          const x = Math.round(r.x * W + r.r * W * k * Math.cos((a * Math.PI) / 180));
+          const y = Math.round(r.y * H + r.r * W * k * Math.sin((a * Math.PI) / 180));
+          d.set([...color, 255], (y * W + x) * 4);
+        }
+    }
+  };
+  ring("me", [0, 1], [60, 220, 240]);
+  ring("opp", [1], [240, 60, 90]);
+  assert.deepEqual(readLife(img, board), { me: 2, opp: 1 });
+  ring("me", [0, 1], [255, 255, 255]);
+  assert.equal(readLife(img, board).me, null, "lampo bianco");
 });

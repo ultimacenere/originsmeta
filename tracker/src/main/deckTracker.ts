@@ -4,7 +4,8 @@
  * deckTracker.test.ts: la usano la finestra accanto al gioco e la sorgente per OBS (overlay.ts).
  *
  * Il mazzo arriva dai file del gioco (watcher.ts, cambia appena il giocatore lo sceglie); durante la partita lo scanner
- * (frames.ts) dice round, carte giocate e carte rivelate dall'avversario. Le carte sono ordinate come nella schermata
+ * (frames.ts) dice round, carte giocate e carte rivelate dall'avversario e, dall'11/10/2026 (overlay di Davdas), carte
+ * pescate, carte rimaste nel mazzo e vita dei due eroi. Le carte sono ordinate come nella schermata
  * del mazzo del gioco: per costo, poi per nome.
  */
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
@@ -14,6 +15,8 @@ import type { CardLookup } from "./overlay";
 
 /** Copie di una carta base nel mazzo: 1 Leggendaria + 12 carte × 2 = 25 (regole del deck builder del sito). */
 export const BASE_COPIES = 2;
+/** Carte di un mazzo: 1 Leggendaria + 12 × 2. La Leggendaria si pesca come le altre ("Emerge un eroe": "Pesca la tua carta leggendaria"). */
+export const DECK_SIZE = 25;
 
 const sortedKey = (cards: readonly string[]) => [...cards].sort().join(",");
 
@@ -31,7 +34,9 @@ export function deckTrackerView(input: {
   for (const p of live?.scan.plays ?? []) if (p.me) played.set(p.card, (played.get(p.card) ?? 0) + 1);
   const entry = (key: string, copies: number): DeckCard => {
     const c = card(key);
-    return { key, name: c?.name ?? key, slug: c?.slug ?? null, mana: c?.mana ?? null, spell: c?.type === "spell", legendary: c?.legendary ?? false, copies, played: Math.min(copies, played.get(key) ?? 0) };
+    const p = Math.min(copies, played.get(key) ?? 0);
+    const d = Math.min(copies, Math.max(p, live?.scan.drawn?.[key] ?? 0));
+    return { key, name: c?.name ?? key, slug: c?.slug ?? null, mana: c?.mana ?? null, spell: c?.type === "spell", legendary: c?.legendary ?? false, copies, played: p, drawn: d };
   };
   const byCost = (a: DeckCard, b: DeckCard) => (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name);
 
@@ -57,13 +62,15 @@ export function deckTrackerView(input: {
       ? {
           inMatch: live.inMatch,
           round: opp.turns,
+          deckLeft: deck ? Math.max(0, DECK_SIZE - [...(deck.legendary ? [deck.legendary] : []), ...deck.cards].reduce((n, c) => n + c.drawn, 0)) : null,
+          life: opp.life ?? { me: null, opp: null },
           opponent: {
             legendary: opp.oppLegendary ? entry(opp.oppLegendary, 1) : null,
             // le carte rivelate dall'avversario, nell'ordine in cui sono comparse, con le copie viste
             seen: [...new Set(opp.plays.filter((p) => !p.me && p.card !== opp.oppLegendary).map((p) => p.card))].map((k) => {
               const e = entry(k, 0);
               const n = opp.plays.filter((p) => !p.me && p.card === k).length;
-              return { ...e, copies: n, played: n };
+              return { ...e, copies: n, played: n, drawn: n };
             }),
           },
         }

@@ -1,14 +1,16 @@
 /**
  * Finestra nascosta dello scanner (main/frames.ts): riprende la finestra del gioco che le indica il processo principale
  * e, ogni `FRAME_MS`, solo se lo schermo è cambiato:
- * - legge il fotogramma con il riconoscitore (carte dei 18 spazi, Leggendarie della schermata VS, mana) e manda il
+ * - legge il fotogramma con il riconoscitore (carte dei 18 spazi, Leggendarie della schermata VS, mana, dall'11/10/2026
+ *   anche la mano e la vita degli eroi) e manda il
  *   risultato al processo principale (`scan`): poche decine di byte, i pixel restano qui;
  * - nella modalità cattura (`--frames`) manda anche il JPEG, che il processo principale salva sul PC.
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { loadRefs, readBoard, readMana, readResult, readVersus, type Img } from "../shared/recognize";
+import { layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
+import cardArtHand from "../card-art-hand.json";
 
 declare global {
   interface Window {
@@ -18,6 +20,7 @@ declare global {
 
 const api = window.framesApi;
 const refs = loadRefs(cardArt as Record<string, string>);
+const handRefs = loadRefs(cardArtHand as Record<string, string>);
 const video = document.createElement("video");
 video.muted = true;
 const full = document.createElement("canvas");
@@ -32,6 +35,14 @@ let timer: ReturnType<typeof setInterval> | null = null;
 let last: Uint8Array | null = null;
 let busy = false;
 let save = false;
+let screens: [number, number][] = [];
+/**
+ * L'area interna della finestra e le aree del gioco (11/10/2026): la barra del titolo si cerca in ogni fotogramma e vale
+ * l'area più vista negli ultimi `LAYOUT_VOTES` (un fotogramma ingannevole, come una dissolvenza uniforme in alto, non
+ * sposta tutto); si riparte quando la ripresa cambia misura.
+ */
+const LAYOUT_VOTES = 15;
+let layout: { w: number; h: number; votes: string[]; at: Layout; key: string } | null = null;
 
 function stop() {
   if (timer) clearInterval(timer);
@@ -45,9 +56,11 @@ function stop() {
   last = null;
 }
 
-async function start(sourceId: string, opts: { save: boolean }) {
+async function start(sourceId: string, opts: { save: boolean; screens: [number, number][] }) {
   stop();
   save = opts.save;
+  screens = opts.screens;
+  layout = null;
   try {
     // la vecchia forma di Chromium per riprendere una finestra precisa: niente scelta dell'utente né gesto richiesto
     const constraints = {
@@ -86,9 +99,28 @@ function grab() {
   const ms = Date.now();
   try {
     const img: Img = { data: fullCtx.getImageData(0, 0, w, h).data, width: w, height: h, channels: 4 };
-    const vs = readVersus(img, refs);
-    const mana = readMana(img);
-    api.scan({ ms, board: readBoard(img, refs).map((m) => m.key), vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null, maxMana: mana ? mana.max : null, result: readResult(img) });
+    // a schermo intero la ripresa è grande come lo schermo (a meno di un pixel o due: la scala di Windows arrotonda)
+    const fullscreen = screens.some(([sw, sh]) => Math.abs(sw - w) <= 3 && Math.abs(sh - h) <= 3);
+    if (!layout || layout.w !== w || layout.h !== h) layout = { w, h, votes: [], at: layoutFor({ x: 0, y: 0, w, h }), key: "" };
+    layout.votes = [...layout.votes, JSON.stringify(windowContent(img, fullscreen))].slice(-LAYOUT_VOTES);
+    const tally = new Map<string, number>();
+    for (const v of layout.votes) tally.set(v, (tally.get(v) ?? 0) + 1);
+    const best = [...tally].sort((a, b) => b[1] - a[1])[0][0];
+    if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
+    const { board, ui } = layout.at;
+    const vs = readVersus(img, refs, layout.at.vs);
+    const mana = readMana(img, board);
+    const cards = readBoard(img, refs, board).map((m) => m.key);
+    // la mano e la vita solo sul tabellone (mana letto): nei menu e nelle schermate di passaggio non ci sono
+    const onBoard = mana !== null;
+    api.scan({
+      ms,
+      board: cards,
+      vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
+      maxMana: mana ? mana.max : null,
+      result: readResult(img, ui),
+      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board) } : {}),
+    });
   } catch {
     // un fotogramma che non si legge si salta
   }

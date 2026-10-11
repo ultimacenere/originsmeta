@@ -32,7 +32,13 @@ export type NewsChecks = {
 
 /** Percorsi dei link interni di un testo Markdown (`](/…)`), per controllare prefisso della lingua e destinazione. */
 export function internalLinks(markdown: string): string[] {
-  return [...markdown.matchAll(/\]\((\/[^)\s]*)\)/g)].map((m) => m[1]);
+  // le immagini (`![testo](/media/…)`, dall'11/10/2026) non sono link a pagine: niente prefisso della lingua
+  return [...markdown.matchAll(/(!?)\[[^\]\n]*\]\((\/[^)\s]*)\)/g)].filter((m) => !m[1]).map((m) => m[2]);
+}
+
+/** Le immagini del Markdown con un percorso del sito (`![testo](/media/…)`): devono esistere in /public. */
+export function imageLinks(markdown: string): string[] {
+  return [...markdown.matchAll(/!\[[^\]\n]*\]\((\/[^)\s]*)\)/g)].map((m) => m[1]);
 }
 
 /** Ancora generata da un titolo, con la stessa regola di `slugify` in Markdown.tsx (qui sul Markdown, non sull'HTML). */

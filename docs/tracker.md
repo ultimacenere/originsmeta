@@ -393,8 +393,39 @@ tracker a tutti gli effetti". Un pannello verticale, sul modello della schermata
   schermo (`opponent.json`), con la Leggendaria dell'avversario e le carte che rivela, che si riempiono man mano; per
   OBS `/overlay/deck?view=opp`. Il Deck tracker mostra solo il mio mazzo. In main.ts i due pannelli sono `panels.deck`
   e `panels.opp` (`openPanel`, `setPanel`).
-- **Da fare**: le carte in mano e quindi quelle ancora nel mazzo (la mano si vede in basso, ma la sua disposizione
-  cambia col numero di carte); le magie (vedi "Scanner dello schermo").
+- **Disegno di Davdas (0.3.4, 11/10/2026**; mockup e note Granola "tracker" dell'11/10: "colpo d'occhio immediato,
+  non lettura"; scelte di Pierluigi: le carte si scuriscono quando si pescano, la vita è l'anello sotto l'eroe):
+  - **il mio mazzo**: le 12 carte grandi in una griglia 4 × 3 per costo, un po' scure quando è pescata una copia su
+    due ("1/2"), scure quando sono pescate tutte; sotto, la Leggendaria a parte (scura quando pescata, con uno zoom al
+    momento della pesca) e un riquadro con le carte ancora nel mazzo (25 meno le pescate, `DECK_SIZE`: la Leggendaria si
+    pesca come le altre, lo dice il luogo "Emerge un eroe") e la vita dell'eroe (due segmenti);
+  - **l'avversario**: più piccolo, Leggendaria, vita e numero di carte viste a sinistra, a destra le carte rivelate che
+    compaiono una alla volta (si parte vuoti, mai caselle vuote). Le carte ancora nel suo mazzo non si sanno (le magie
+    non restano sul tabellone): al loro posto le carte viste;
+  - **niente scorrimento**: la finestra prende l'altezza del contenuto (`deckApi.fit`, IPC `deck:fit`), la larghezza la
+    sceglie il giocatore (all'inizio 300 e 270 px) e le carte la seguono.
+  - **niente cornice né titolo** (Pierluigi, 11/10: "togliere la barra di Windows e il titolo del deck"): finestre
+    `frame: false`, si spostano trascinando il pannello (`-webkit-app-region: drag`), si allargano dai bordi, si chiudono
+    con la × che compare al passaggio del mouse (IPC `deck:close`) o dall'app; niente nome del mazzo, "Avversario" né
+    round. La dicitura "non affiliato a Koin Games" resta solo nella sorgente per OBS, quando il pannello va in onda
+    (Pierluigi: "togliamola dai due deck, dobbiamo recuperare più spazio possibile"); resta nella finestra principale.
+  - **Carte pescate** (`readHand` in `recognize.ts`): la mano in basso si legge scorrendo una finestra lungo la fascia,
+    con la sola parte sinistra dell'illustrazione (ogni carta è coperta a destra dalla seguente; riferimenti in
+    `src/card-art-hand.json`, generati da `npm run card-art`). Posizione e misura delle carte nelle tre forme di
+    finestra (`HAND_SHAPE`): distanza dal fondo che segue l'altezza, larghezza che segue più o meno il tabellone. Prove
+    dell'11/10: 6 su 6 a 2560 × 1440 (round 3), 3 su 3 nella finestra larga, 6 su 6 in quella 4:3, 80–104 ms a
+    fotogramma. In `reconstruct.ts` le copie pescate di una carta sono il massimo di "in mano (stabili per 2 fotogrammi)
+    più giocate nei round prima", mai meno delle giocate (`drawn`); sulla partita online dell'11/10: 19 carte pescate in
+    9 round.
+  - **Vita** (`readLife`): i due segmenti frontali dell'anello sotto la miniatura (Pierluigi: "sono 2 i segmenti della
+    vita e sono quelli frontali, si scuriscono quando vengono colpiti"), parte del tabellone 3D (`LIFE_RINGS` in
+    frazioni dell'area del tabellone, angoli 30–75° e 105–145°). Acceso: almeno 35% di punti luminosi e media ≥ 140
+    (la miniatura può coprire un pezzo di arco); spento: ≤ 12% e media ≤ 120; i lampi bianchi non si leggono. Vale
+    l'ultima lettura uguale per 2 fotogrammi di fila (`life` di `ScannedMatch`).
+  - Mano e vita si leggono solo quando il mana si legge (tabellone a schermo). Anteprima della pagina con dati finti:
+    uno script node che serve `dist/overlay` e un `deck.json` di esempio.
+- **Da fare**: le carte ancora nel mazzo dell'avversario (le carte coperte in alto contano la sua mano, ma il dorso
+  cambia con i cosmetici); le magie (vedi "Scanner dello schermo").
 
 ## Scanner dello schermo (dal 10/10/2026)
 
@@ -435,11 +466,31 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   **Limiti noti**: le magie non restano sul tabellone e non si leggono (il riquadro grande a sinistra mostra anche le
   anteprime al passaggio del mouse, quindi non distingue le rivelazioni); una carta giocata e distrutta nello stesso
   round senza restare a schermo 2 fotogrammi non si vede; le carte dell'avversario evocate o generate da effetti non si
-  distinguono da quelle giocate; posizioni misurate solo a 16:9 con l'interfaccia della demo 0.7; il round è il mana
+  distinguono da quelle giocate; il round è il mana
   massimo del giocatore meno uno, e gli effetti sul mana lo spostano (partita del 10/10 alle 15:44: "5/10" con un "-5" al
   round 10, l'avversario "11/11"). Ripresa cominciata a partita in corso (l'app avviata durante la partita): la partita
   si legge dal primo mana con carte sul tabellone, il Deck tracker la mostra, ma è incompleta (`complete`) e non entra
   nello storico.
+- **Finestre di qualunque forma (0.3.3, 11/10/2026**; Magic non registrava giocando in finestra, Pierluigi: "il gioco
+  supporta solo schermo intero o in finestra, poi permette agli utenti di stirare lo schermo come vogliono"): il gioco
+  non mette bande nere, riempie la finestra di qualunque forma (il minimo è circa 4:3). Misurato sul playtest con due
+  partite contro il bot di Pierluigi, finestra 2042 × 853 (2,39:1) e 1160 × 869 (4:3), più le partite a schermo intero
+  2560 × 1440: (1) la ripresa di una finestra comprende la **barra del titolo** di Windows (45 px al 150%) e un bordo di
+  2 px: `windowContent` la riconosce come fascia uniforme in alto, ma solo se l'immagine non è grande come uno schermo
+  (`screens`, le misure in pixel veri che il processo principale manda alla finestra nascosta); (2) **il tabellone è 3D**
+  (spazi, carte e pannello del mana): resta centrato nell'area interna e cambia solo scala, con la larghezza dell'area
+  16:9 "virtuale" S/H = 1,405 a 4:3, 16/9 a 16:9, 2,062 a 2,39:1 (`BOARD_SCALE`, interpolazione sui logaritmi; centro
+  esatto: la ricerca ha dato scarto 0); (3) **l'interfaccia 2D** (scritte, stendardo) cresce con l'altezza:
+  area 16:9 alta come la finestra e centrata (`layoutFor`, `ui`), che su una finestra stretta esce dai lati (lo stendardo
+  conta solo le celle dentro l'immagine); (4) **la schermata VS** sta tutta dentro la finestra appoggiata in basso
+  (`vs`: l'area 16:9 più grande che ci entra, allineata al fondo; partita online in finestra 4:3: Robin Hood contro
+  Dracula, 0,92 e 0,78). Con lo schermo 16:9 le aree coincidono con l'immagine intera: la partita a
+  schermo intero del 10/10 dà 8.614 carte lette contro le 8.613 dell'app. Nelle due finestre: 2.681 e 2.454 carte lette
+  (prima 0), mana in 409 e 353 fotogrammi. Lo stendardo della sconfitta del playtest ha la parte alta viola: parte alta
+  scura dal 60% (era 80%), riprovato su 5 sessioni senza falsi esiti. Gli allenamenti contro il bot non hanno la
+  schermata VS; la VS in una finestra larga non è ancora verificata; i punti fuori da 4:3–2,39:1 (32:9) usano la pendenza degli estremi.
+  Taratura: `scripts/fit-scale.mjs` (scala del tabellone), `scripts/fit-ui.mjs` (mana, VS, stendardo con aree diverse),
+  `scan-frames.mjs --screen=<schermo>`.
 - **Nell'app** (dalla 0.3.0 del 10/10/2026, Pierluigi: "acceso"): **acceso di default**, con un avviso al primo avvio
   (che cosa legge, che le immagini non escono dal PC, niente nomi; tasti "Ho capito" e "Spegnilo"), il riquadro
   "Scanner dello schermo" con l'interruttore e la voce nel menu dell'icona; preferenza in `scan.json` (`on`,
