@@ -228,7 +228,11 @@ export function normalize(v: Float32Array): Float32Array {
 export type CardRef = { key: string; v: Float32Array };
 export type Match = { key: string | null; score: number; margin: number; best: string | null };
 
-/** La carta più somigliante; `key` è null se non supera le soglie (spazio vuoto, dorso, carta coperta a metà). */
+/**
+ * La carta più somigliante; `key` è null se non supera le soglie (spazio vuoto, dorso, carta coperta a metà). Una carta
+ * può avere più riferimenti (l'immagine del sito e le versioni ALPHA di `card-art-extra.json`): il distacco si misura
+ * dalla migliore carta **diversa**, altrimenti due versioni della stessa carta si annullerebbero a vicenda.
+ */
 export function bestMatch(v: Float32Array, refs: readonly CardRef[]): Match {
   let best: CardRef | null = null;
   let s1 = -Infinity;
@@ -237,10 +241,10 @@ export function bestMatch(v: Float32Array, refs: readonly CardRef[]): Match {
     let s = 0;
     for (let i = 0; i < VEC_LEN; i++) s += v[i] * ref.v[i];
     if (s > s1) {
-      s2 = s1;
+      if (best && best.key !== ref.key) s2 = s1;
       s1 = s;
       best = ref;
-    } else if (s > s2) s2 = s;
+    } else if (s > s2 && ref.key !== best?.key) s2 = s;
   }
   if (!best) return { key: null, score: 0, margin: 0, best: null };
   const margin = s1 - (Number.isFinite(s2) ? s2 : 0);
@@ -284,12 +288,28 @@ export function unpackVector(b64: string): Float32Array {
   return normalize(v);
 }
 
-export function loadRefs(table: Record<string, string>): CardRef[] {
-  return Object.entries(table)
+/**
+ * I riferimenti da un JSON: una stringa per carta (`card-art.json`, dalle immagini del sito) o più stringhe
+ * (`card-art-extra.json`, dal 12/10/2026: le versioni ALPHA viste in partita, vedi `EXTRA_ART`).
+ */
+export function loadRefs(...tables: Record<string, string | readonly string[]>[]): CardRef[] {
+  return tables
+    .flatMap((table) => Object.entries(table).flatMap(([key, b64]) => (Array.isArray(b64) ? b64 : [b64]).map((b) => [key, b] as const)))
     .filter(([, b64]) => typeof b64 === "string" && b64.length > 0)
     .map(([key, b64]) => ({ key, v: unpackVector(b64) }))
     .filter((r) => r.v.length === VEC_LEN);
 }
+
+/**
+ * Le carte in versione ALPHA (12/10/2026): nel gioco hanno un'illustrazione diversa, che esce dalla cornice, e la
+ * scritta "ALPHA" fra le statistiche; con i soli riferimenti del sito lo scanner non le riconosceva (Piglet ALPHA
+ * dell'avversario in 2 fotogrammi su 701, partita dell'11/10). `card-art-extra.json` ha per ogni carta i vettori presi
+ * dai fotogrammi delle partite di Pierluigi (solo i 20 × 20 colori medi: nessuna immagine del gioco nel repo), un
+ * gruppo di letture simili per ogni posa, con il nome dato guardando un esemplare. Ci sono anche due carte normali che
+ * in qualche posa non passavano le soglie (Merry Man, Shield Maiden). Da allungare quando compaiono altre ALPHA:
+ * docs/tracker.md, "Carte ALPHA".
+ */
+export const EXTRA_ART = "card-art-extra.json";
 
 /* ---------- mana del giocatore: "attuale/massimo", da cui il round ---------- */
 
@@ -444,6 +464,79 @@ export function readDirection(img: Img, area: Rect = gameArea(img.width, img.hei
   const peak = cols.indexOf(Math.max(...cols));
   const at = (peak - first) / (last - first);
   return at >= 0.65 ? "right" : at <= 0.35 ? "left" : null;
+}
+
+/**
+ * La mano dell'avversario: le sue carte coperte in alto al centro (12/10/2026, per le "carte rimanenti" del pannello a
+ * L; Pierluigi: "va sostituito nel tracker avversario il counter viste con il counter carte rimanenti"). Il dorso cambia
+ * con i cosmetici, quindi non si riconosce il disegno ma la fila: colonne con pixel chiari e saturi in `OPP_HAND`. Fino
+ * a 4 carte la fila è larga 123 punti più 148 per ogni carta in più (misurato su tre partite dell'11–12/10: 123, 271,
+ * 419, 567); da 5 si ferma a ~610 punti e le carte si stringono, e allora il numero è il passo con cui il profilo di
+ * luminosità si ripete (autocorrelazione, la più alta fra 5 e 12 carte, con distacco). Null quando la fila non ha una
+ * di queste forme (carte in movimento, inquadratura spostata).
+ */
+export const OPP_HAND: Rect = { x: 300 / SW, y: 15 / SH, w: 1400 / SW, h: 60 / SH };
+const OPP_HAND_FIRST = 123;
+const OPP_HAND_STEP = 148;
+const OPP_HAND_FULL = { min: 595, max: 630 };
+
+export function readOppHand(img: Img, ui: Rect = gameArea(img.width, img.height)): number | null {
+  const r = inside(ui, OPP_HAND);
+  const xa = Math.max(0, Math.round(r.x));
+  const xb = Math.min(img.width, Math.round(r.x + r.w));
+  const ya = Math.max(0, Math.round(r.y));
+  const yb = Math.min(img.height, Math.round(r.y + r.h));
+  if (xb - xa < 50 || yb - ya < 4) return null;
+  const rows = Math.ceil((yb - ya) / 2);
+  const on: boolean[] = [];
+  for (let x = xa; x < xb; x++) {
+    let n = 0;
+    for (let y = ya; y < yb; y += 2) {
+      const p = (y * img.width + x) * img.channels;
+      const mx = Math.max(img.data[p], img.data[p + 1], img.data[p + 2]);
+      const mn = Math.min(img.data[p], img.data[p + 1], img.data[p + 2]);
+      if (mx > 150 && mx - mn > 70) n++;
+    }
+    on.push(n / rows > 0.25);
+  }
+  const first = on.indexOf(true);
+  if (first < 0) return 0;
+  const last = on.lastIndexOf(true);
+  // larghezza nei punti di riferimento (2000 di larghezza per l'area dell'interfaccia)
+  const w = ((last - first) / (xb - xa)) * OPP_HAND.w * SW;
+  if (w < OPP_HAND_FULL.min) {
+    const k = 1 + Math.round((w - OPP_HAND_FIRST) / OPP_HAND_STEP);
+    return k >= 1 && Math.abs(w - (OPP_HAND_FIRST + (k - 1) * OPP_HAND_STEP)) < 22 ? k : null;
+  }
+  if (w > OPP_HAND_FULL.max) return null;
+  const lum: number[] = [];
+  for (let x = xa + first; x <= xa + last; x++) {
+    let s = 0;
+    let k = 0;
+    for (let y = ya; y < yb; y += 2) {
+      const p = (y * img.width + x) * img.channels;
+      s += img.data[p] + img.data[p + 1] + img.data[p + 2];
+      k++;
+    }
+    lum.push(s / k);
+  }
+  const mean = lum.reduce((a, b) => a + b, 0) / lum.length;
+  const z = lum.map((v) => v - mean);
+  const corr = (lag: number) => {
+    let s = 0;
+    let a = 0;
+    let b = 0;
+    for (let i = 0; i + lag < z.length; i++) {
+      s += z[i] * z[i + lag];
+      a += z[i] * z[i];
+      b += z[i + lag] * z[i + lag];
+    }
+    return s / Math.sqrt(a * b || 1);
+  };
+  const scores: [number, number][] = [];
+  for (let n = 5; n <= 12; n++) scores.push([n, corr(Math.round(lum.length / n))]);
+  scores.sort((p, q) => q[1] - p[1]);
+  return scores[0][1] >= 0.6 && scores[0][1] - scores[1][1] >= 0.1 ? scores[0][0] : null;
 }
 
 /** Il round stimato dal mana massimo (vedi `MANA_TEXT`). */

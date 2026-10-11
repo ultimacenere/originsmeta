@@ -8,8 +8,9 @@
  */
 import type { FramesApi } from "../shared/types";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { OPP_MANA_TEXT, layoutFor, loadRefs, readBoard, readDirection, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
+import { OPP_MANA_TEXT, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHand, readLife, readMana, readResult, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
+import cardArtExtra from "../card-art-extra.json";
 import cardArtHand from "../card-art-hand.json";
 
 declare global {
@@ -19,7 +20,8 @@ declare global {
 }
 
 const api = window.framesApi;
-const refs = loadRefs(cardArt as Record<string, string>);
+// le immagini del sito più le versioni ALPHA viste in partita (12/10/2026, `EXTRA_ART` in recognize.ts)
+const refs = loadRefs(cardArt as Record<string, string>, cardArtExtra as Record<string, string[]>);
 const handRefs = loadRefs(cardArtHand as Record<string, string>);
 const video = document.createElement("video");
 video.muted = true;
@@ -120,7 +122,7 @@ function grab() {
       maxMana: mana ? mana.max : null,
       result: readResult(img, ui),
       // dall'11/10/2026 sera anche il mana dell'avversario e la freccia del combattimento (pannello a L degli overlay)
-      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board), mana: { me: mana, opp: readMana(img, board, OPP_MANA_TEXT) }, direction: readDirection(img, board) } : {}),
+      ...(onBoard ? { hand: readHand(img, handRefs, layout.at.content).slice(0, 12), life: readLife(img, board), mana: { me: mana, opp: readMana(img, board, OPP_MANA_TEXT) }, direction: readDirection(img, board), oppHand: readOppHand(img, ui) } : {}),
     });
   } catch {
     // un fotogramma che non si legge si salta

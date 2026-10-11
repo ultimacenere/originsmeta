@@ -76,13 +76,12 @@ html, body { overflow: hidden; }
  */
 .grid, .legcol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
 /*
- * Tre stati a colpo d'occhio (rifinitura dell'11/10/2026 sera): accesa = tutte le copie ancora nel mazzo; spenta a metà
- * con il numero grande delle rimaste = ne può uscire ancora una; scura = finita. Il filtro sta sull'immagine, così il
- * numero e il bordo della mano restano pieni. Bordo menta = una copia in mano.
+ * Il numero in alto = copie ancora nel mazzo (2, poi 1; la Leggendaria 1); a zero la carta diventa scura e il numero
+ * sparisce (12/10/2026; dall'11/10 sera al 12/10 la carta si spegneva a metà alla prima pescata). Il filtro sta
+ * sull'immagine, così il bordo della mano resta pieno. Bordo menta = una copia in mano.
  */
 .gc { position: relative; }
 .gc .cardimg img { transition: filter 0.35s ease, opacity 0.35s ease; }
-.gc.half .cardimg img { filter: brightness(0.45) saturate(0.6); }
 .gc.out .cardimg img { filter: grayscale(1) brightness(0.28); }
 .gc.out .cardimg { border-color: var(--night-3); }
 .gc.inhand .cardimg { border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint), 0 0 8px rgba(49, 227, 189, 0.55); }
@@ -143,7 +142,8 @@ body.is-opp { background: transparent; }
 .col .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .is-opp .left { top: 4px; font-size: 0.7rem; border-color: var(--crimson); color: var(--crimson); }
 .in-window.is-opp .dt { -webkit-app-region: no-drag; }
-.in-window .arm, .in-window .col { -webkit-app-region: drag; }
+/* il pannello a L si trascina con gli eventi del puntatore (deckApi.drag), non con la zona di trascinamento di Windows */
+.in-window .arm, .in-window .col { -webkit-app-region: no-drag; cursor: move; }
 .col:hover .x, .col .x:focus-visible { opacity: 1; }
 .cardimg.back { display: grid; place-items: center; border-style: dashed; border-color: var(--crimson); color: var(--crimson); font-family: var(--display); font-weight: 800; font-size: 1.4rem; opacity: 0.7; }
 .waiting { align-self: center; font-size: 0.72rem; line-height: 1.35; }

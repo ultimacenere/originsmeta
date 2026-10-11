@@ -44,8 +44,8 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} in deck`, hand ? `${hand} in hand` : "", played ? `${played} played` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `of ${n}`,
     deckLeft: "In deck",
-    life: "Life",
-    seen: "Seen",
+    life: "Barriers",
+    oppLeft: "Cards left",
     mana: "Mana",
     you: "You",
     combat: "Combat",
@@ -63,8 +63,8 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} nel mazzo`, hand ? `${hand} in mano` : "", played ? `${played} giocat${played === 1 ? "a" : "e"}` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `su ${n}`,
     deckLeft: "Nel mazzo",
-    life: "Vita",
-    seen: "Viste",
+    life: "Barriere",
+    oppLeft: "Carte rimanenti",
     mana: "Mana",
     you: "Tu",
     combat: "Combattimento",
@@ -82,8 +82,8 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} en el mazo`, hand ? `${hand} en la mano` : "", played ? `${played} jugada${played === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `de ${n}`,
     deckLeft: "En el mazo",
-    life: "Vida",
-    seen: "Vistas",
+    life: "Barreras",
+    oppLeft: "Cartas restantes",
     mana: "Maná",
     you: "Tú",
     combat: "Combate",
@@ -105,18 +105,19 @@ const cardImg = (c: DeckCard | null) =>
     : `<span class="cardimg empty" aria-hidden="true"></span>`;
 
 /**
- * Una carta del mio mazzo (rifinitura dell'11/10/2026 sera, partita di Pierluigi al round 6): il colpo d'occhio dice
- * quante copie possono ancora uscire. Tutte nel mazzo: accesa; una sì e una no: spenta a metà con il numero grande
- * delle copie rimaste in alto (prima "1/2" delle pescate, in basso sopra i crediti e quasi uguale a una carta accesa);
- * nessuna: scura. Una copia in mano e non ancora giocata accende il bordo menta.
+ * Una carta del mio mazzo: il numero in alto dice quante copie sono ancora nel mazzo (Pierluigi, 12/10/2026: "deve
+ * partire da 2 e poi ogni volta che la carta viene pescata decrescere prima ad 1 e poi quando a zero diventare scura
+ * la carta"; la Leggendaria parte da 1). Il numero c'è sempre, anche fuori partita; la carta resta accesa finché ne
+ * resta una e diventa scura a zero, senza più il numero (11/10 sera: prima la carta si spegneva a metà dopo la prima
+ * pescata e il numero compariva solo da lì). Una copia in mano e non ancora giocata accende il bordo menta.
  */
 function myCard(c: DeckCard, live: boolean, cls = "") {
-  const left = Math.max(0, c.copies - c.drawn);
-  const inHand = Math.max(0, c.drawn - c.played);
-  const state = !live || c.drawn === 0 ? "" : left === 0 ? " out" : " half";
-  const hand = live && inHand > 0 ? " inhand" : "";
+  const left = live ? Math.max(0, c.copies - c.drawn) : c.copies;
+  const inHand = live ? Math.max(0, c.drawn - c.played) : 0;
+  const state = left === 0 ? " out" : "";
+  const hand = inHand > 0 ? " inhand" : "";
   const tip = live ? `${c.name} · ${L.cardState(left, inHand, c.drawn - inHand)}` : c.name;
-  const count = live && c.drawn > 0 && left > 0 ? `<span class="left" aria-hidden="true">${left}</span>` : "";
+  const count = left > 0 ? `<span class="left" aria-hidden="true">${left}</span>` : "";
   return `<li class="gc${state}${hand}${cls}" title="${esc(tip)}">${cardImg(c)}${count}</li>`;
 }
 
@@ -162,7 +163,8 @@ const arrowSvg = (d: "left" | "right" | null) =>
 /**
  * Il pannello dell'avversario a L (11/10/2026 sera, disegno di Pierluigi sul tabellone: "è lo spazio che abbiamo a
  * nostra disposizione"; "pannello unico a L, e leggi anche la direzione"): il braccio in alto, a sinistra dell'angolo,
- * ha la Leggendaria dell'avversario con vita e carte viste; la colonna sul bordo destro sta sopra il pannello "MANA
+ * ha la Leggendaria dell'avversario con le barriere e le carte rimanenti (stima dalla sua mano, "~": 12/10/2026, prima le
+ * carte viste); la colonna sul bordo destro sta sopra il pannello "MANA
  * DATA" del gioco e lo rimostra (mana dell'avversario in alto con la tacca magenta, la freccia del combattimento, il mio
  * mana in basso con la tacca azzurra), poi le carte rivelate dall'avversario, 3 per fila, che compaiono una alla volta.
  * L'angolo in basso a sinistra è trasparente e lascia passare i clic al gioco (`deckApi.hit`).
@@ -175,7 +177,7 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
   return `<div class="lpanel">
     <section class="arm">
       <div class="gc legend">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</div>
-      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(String(seen.length), L.seen)}</div>
+      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(live?.opponent.deckLeft !== null && live?.opponent.deckLeft !== undefined ? `~${live.opponent.deckLeft}` : "–", L.oppLeft)}</div>
     </section>
     <section class="col">
       ${close}
@@ -204,6 +206,15 @@ if (window.deckApi && view === "opp") {
   document.addEventListener("mousemove", (e) => set(e.target instanceof Element && Boolean(e.target.closest(".arm, .col"))));
   document.addEventListener("mouseleave", () => set(false));
   set(false);
+  // trascinamento (12/10/2026): lo fa il processo principale, la pagina dice solo quando comincia e quando finisce
+  document.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !(e.target instanceof Element) || e.target.closest(".x") || !e.target.closest(".arm, .col")) return;
+    e.target.setPointerCapture(e.pointerId);
+    window.deckApi?.drag(true);
+  });
+  const end = () => window.deckApi?.drag(false);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
 }
 
 let drawnKey = "";

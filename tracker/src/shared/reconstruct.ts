@@ -34,6 +34,8 @@ export type ScanFrame = {
   mana?: { me: Mana | null; opp: Mana | null };
   /** Il verso della freccia "COMBAT DIRECTION" (recognize.ts, `readDirection`; dall'11/10/2026 sera). */
   direction?: Direction | null;
+  /** Le carte coperte nella mano dell'avversario (recognize.ts, `readOppHand`; dal 12/10/2026, null se non si leggono). */
+  oppHand?: number | null;
 };
 
 export type Mana = { current: number; max: number };
@@ -71,6 +73,12 @@ export type ScannedMatch = {
   /** Il mana dei due giocatori e il verso del combattimento: l'ultima lettura confermata, come la vita. */
   mana: { me: Mana | null; opp: Mana | null };
   direction: Direction | null;
+  /**
+   * Le carte pescate dall'avversario, stimate dalla sua mano (12/10/2026): la prima lettura confermata più ogni
+   * aumento fra due letture confermate. Una carta che un effetto gli mette in mano conta come pescata; se la ripresa
+   * comincia a partita in corso le pescate di prima mancano. Null senza letture.
+   */
+  oppDrawn: number | null;
 };
 
 /** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
@@ -260,12 +268,32 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     life: { me: lifeOf(frames, "me"), opp: lifeOf(frames, "opp") },
     mana: { me: stableLast(frames, (f) => f.mana?.me ?? null), opp: stableLast(frames, (f) => f.mana?.opp ?? null) },
     direction: stableLast(frames, (f) => f.direction ?? null),
+    oppDrawn: oppDrawnOf(frames),
   };
 }
 
 /** L'ultima vita letta per un eroe e confermata da `STABLE_FRAMES` fotogrammi di fila (lampi e animazioni non contano). */
 function lifeOf(frames: readonly ScanFrame[], side: Side): number | null {
   return stableLast(frames, (f) => f.life?.[side] ?? null);
+}
+
+/** Le pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (vedi `oppDrawn`). */
+export function oppDrawnOf(frames: readonly ScanFrame[]): number | null {
+  let run = 0;
+  let prev: number | null = null;
+  let held: number | null = null;
+  let drawn: number | null = null;
+  for (const f of frames) {
+    const v = f.oppHand ?? null;
+    if (v === null) continue;
+    run = v === prev ? run + 1 : 1;
+    prev = v;
+    if (run !== STABLE_FRAMES) continue;
+    if (held === null) drawn = v;
+    else if (v > held) drawn = (drawn ?? 0) + (v - held);
+    held = v;
+  }
+  return drawn;
 }
 
 /** L'ultimo valore letto e confermato da `STABLE_FRAMES` fotogrammi di fila (i fotogrammi senza lettura non contano). */
@@ -364,6 +392,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   const mana = f.mana as Record<string, unknown> | undefined;
   if (mana !== undefined && !(mana && typeof mana === "object" && manaOk(mana.me) && manaOk(mana.opp))) return null;
   if (f.direction !== undefined && f.direction !== null && f.direction !== "left" && f.direction !== "right") return null;
+  if (f.oppHand !== undefined && f.oppHand !== null && !(Number.isInteger(f.oppHand) && (f.oppHand as number) >= 0 && (f.oppHand as number) <= 20)) return null;
   const pick = (m: Mana | null) => (m ? { current: m.current, max: m.max } : null);
   return {
     ms: now,
@@ -375,5 +404,6 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
     ...(life ? { life: { me: life.me as number | null, opp: life.opp as number | null } } : {}),
     ...(mana ? { mana: { me: pick(mana.me as Mana | null), opp: pick(mana.opp as Mana | null) } } : {}),
     ...(f.direction === "left" || f.direction === "right" ? { direction: f.direction } : {}),
+    ...(typeof f.oppHand === "number" ? { oppHand: f.oppHand } : {}),
   };
 }

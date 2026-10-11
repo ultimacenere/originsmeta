@@ -187,7 +187,8 @@ export type DeckTrackerView = {
     /** il mana dei due giocatori, "rimasto/massimo", e il verso del combattimento (11/10/2026 sera: pannello a L) */
     mana: { me: { current: number; max: number } | null; opp: { current: number; max: number } | null };
     direction: "left" | "right" | null;
-    opponent: { legendary: DeckCard | null; seen: DeckCard[] };
+    /** `deckLeft`: carte ancora nel mazzo dell'avversario, stimate dalla sua mano (12/10/2026; null se non si sa) */
+    opponent: { deckLeft: number | null; legendary: DeckCard | null; seen: DeckCard[] };
   } | null;
   updatedAt: string;
 };
@@ -201,4 +202,6 @@ export type DeckApi = {
   close(): void;
   /** Pannello a L (11/10/2026 sera): il puntatore è sopra il pannello (true) o sull'angolo vuoto, dove i clic vanno al gioco. */
   hit(on: boolean): void;
+  /** Pannello a L (12/10/2026): trascinamento cominciato (true) o finito; la finestra la sposta il processo principale. */
+  drag(on: boolean): void;
 };

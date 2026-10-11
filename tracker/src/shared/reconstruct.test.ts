@@ -1,7 +1,7 @@
 /** Test della partita ricostruita dallo scanner (reconstruct.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyScan, confirmMana, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
+import { applyScan, confirmMana, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
 import { BOARD_SLOTS } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
@@ -219,4 +219,15 @@ test("mana dei due giocatori e verso del combattimento: forma controllata, vale 
   const scan = reconstruct([frame(0, 2), frame(1000, 2), m(2000, 5, 5, "right"), m(2500, 5, 5, "right"), m(3000, 3, 4, null), m(3500, 3, 4, "left")], info);
   assert.deepEqual(scan.mana, { me: { current: 3, max: 5 }, opp: { current: 4, max: 5 } });
   assert.equal(scan.direction, "right");
+});
+
+test("pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (12/10/2026)", () => {
+  const h = (ms: number, n: number | null): ScanFrame => ({ ...frame(ms, 3), oppHand: n });
+  // 5 in mano, pesca (6), gioca due carte (4), una lettura storta isolata, pesca (5): 5 + 1 + 1 = 7
+  const frames = [h(0, 5), h(500, 5), h(1000, 6), h(1500, 6), h(2000, 4), h(2500, 4), h(2700, 9), h(3000, null), h(3500, 5), h(4000, 5)];
+  assert.equal(oppDrawnOf(frames), 7);
+  assert.equal(oppDrawnOf([h(0, null), h(500, 3)]), null, "una lettura sola non basta");
+  const board = BOARD_SLOTS.map(() => null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 6 }, 5)?.oppHand, 6);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 40 }, 5), null);
 });

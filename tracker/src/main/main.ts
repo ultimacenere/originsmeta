@@ -334,6 +334,8 @@ const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; 
 };
 /** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
 const OPP_L_WIDTH = 400;
+/** Il trascinamento in corso del pannello a L (vedi IPC `deck:drag`). */
+let oppDrag: { timer: ReturnType<typeof setInterval> } | null = null;
 const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
 const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
@@ -376,11 +378,18 @@ function panelBounds(k: PanelKind) {
   const area = screen.getPrimaryDisplay().workArea;
   // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 400 per il
   // pannello a L dell'avversario, che va nell'angolo in alto a destra); l'altezza la decide il contenuto
-  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 230 : OPP_L_WIDTH), 200), 600);
+  // il pannello a L ha la larghezza fissa (12/10/2026: con la larghezza salvata dal vecchio pannello, 273, il contenuto
+  // largo 400 usciva dallo schermo)
+  const width = k === "opp" ? OPP_L_WIDTH : Math.min(Math.max(p.width ?? 230, 200), 600);
   const height = Math.min(Math.max(p.height ?? 420, 120), 1600);
   const { x, y } = p;
-  // la posizione salvata vale solo se sta ancora su uno schermo
-  if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
+  // la posizione salvata vale solo se sta ancora su uno schermo; il pannello a L ci sta tutto dentro (riportato dentro)
+  const home = x !== undefined && y !== undefined ? screen.getAllDisplays().find((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height) : undefined;
+  if (home && x !== undefined && y !== undefined) {
+    if (k !== "opp") return { x, y, width, height };
+    const w = home.workArea;
+    return { x: Math.min(x, w.x + w.width - width), y: Math.min(y, w.y + w.height - 120), width, height };
+  }
   if (k === "opp") return { x: area.x + area.width - width, y: area.y, width, height };
   return { x: panels[k].left ? area.x : area.x + area.width - width - 24, y: area.y + Math.round(area.height * 0.22), width, height };
 }
@@ -400,7 +409,7 @@ function openPanel(k: PanelKind) {
     show: false,
     title: k === "deck" ? "OriginsMeta · Deck tracker" : "OriginsMeta · Opponent",
     // il pannello a L dell'avversario ha l'angolo in basso a sinistra vuoto: finestra trasparente, clic al gioco lì
-    ...(k === "opp" ? { transparent: true, backgroundColor: "#00000000", hasShadow: false } : { backgroundColor: "#150c2c" }),
+    ...(k === "opp" ? { transparent: true, backgroundColor: "#00000000", hasShadow: false, resizable: false } : { backgroundColor: "#150c2c" }),
     icon: ICON,
     autoHideMenuBar: true,
     webPreferences: {
@@ -734,7 +743,43 @@ function registerIpc() {
   // pannello a L: sopra il braccio o la colonna il mouse è del pannello, sull'angolo vuoto passa al gioco
   ipcMain.on("deck:hit", (e, on: unknown) => {
     if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
+    if (oppDrag) return; // durante il trascinamento il mouse resta del pannello
     panels.opp.win!.setIgnoreMouseEvents(on !== true, { forward: true });
+  });
+  // trascinamento del pannello a L fatto dall'app (12/10/2026: nella finestra trasparente con i clic che passano al
+  // gioco la zona di trascinamento di Windows non rispondeva, "il deck avversario è bloccato"): alla pressione si
+  // ricorda dove sta il puntatore rispetto alla finestra e la finestra lo segue finché la pagina non dice che è finita
+  ipcMain.on("deck:drag", (e, on: unknown) => {
+    if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
+    const win = panels.opp.win!;
+    if (oppDrag) clearInterval(oppDrag.timer);
+    oppDrag = null;
+    if (on !== true) {
+      const b = win.getBounds();
+      panels.opp.prefs = { ...panels.opp.prefs, x: b.x, y: b.y };
+      savePanelPrefs("opp");
+      return;
+    }
+    win.setIgnoreMouseEvents(false);
+    const start = screen.getCursorScreenPoint();
+    const b0 = win.getBounds();
+    const dx = start.x - b0.x;
+    const dy = start.y - b0.y;
+    // posizione e misura insieme: con la scala di Windows al 150% ogni setPosition arrotonda la misura e la finestra
+    // cresce di un pixel a ogni passo (Pierluigi, 12/10: "trasportando in giro si allarga")
+    const timer = setInterval(() => {
+      if (win.isDestroyed()) return void clearInterval(timer);
+      const c = screen.getCursorScreenPoint();
+      win.setBounds({ x: c.x - dx, y: c.y - dy, width: OPP_L_WIDTH, height: b0.height });
+    }, 16);
+    // al massimo un minuto: se la pagina non dice più niente, il trascinamento si chiude da solo
+    oppDrag = { timer };
+    setTimeout(() => {
+      if (oppDrag?.timer === timer) {
+        clearInterval(timer);
+        oppDrag = null;
+      }
+    }, 60_000);
   });
   ipcMain.on("deck:fit", (e, h: unknown) => {
     if (!fromDeck(e) || !Number.isFinite(h)) return;
@@ -742,7 +787,9 @@ function registerIpc() {
     if (!win || win.isDestroyed()) return;
     const [w, cur] = win.getContentSize();
     const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
-    if (Math.abs(want - cur) > 2) win.setContentSize(w, want);
+    // il pannello a L resta largo OPP_L_WIDTH anche se Windows l'ha allargato di qualche pixel (scala al 150%)
+    const width = panelOpen("opp") && win === panels.opp.win ? OPP_L_WIDTH : w;
+    if (Math.abs(want - cur) > 2 || width !== w) win.setContentSize(width, want);
   });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
