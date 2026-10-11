@@ -4,7 +4,7 @@ import "./ts-hooks.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { loadRefs, readMana, readVersus, readResult, bannerFeatures, gameArea } from "../src/shared/recognize.ts";
+import { loadRefs, readMana, readVersus, readResult, gameArea } from "../src/shared/recognize.ts";
 const root = path.resolve(import.meta.dirname, "..");
 const sharp = createRequire(path.join(root, "..", "package.json"))("sharp");
 const refs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art.json"), "utf8")));
