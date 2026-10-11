@@ -14,6 +14,7 @@ export const en = {
     news: "News",
     tierList: "Tier list",
     guides: "Guides",
+    locations: "Locations",
     cards: "Cards",
     decks: "Decks",
     events: "Tournaments & Events",

@@ -21,6 +21,7 @@ export const fr: Dictionary = {
     news: "Actus",
     tierList: "Tier list",
     guides: "Guides",
+    locations: "Lieux",
     cards: "Cartes",
     decks: "Decks",
     events: "Tournois et événements",
