@@ -16,6 +16,7 @@ export const it: Dictionary = {
     news: "News",
     tierList: "Tier list",
     guides: "Guide",
+    locations: "Luoghi",
     cards: "Carte",
     decks: "Mazzi",
     events: "Tornei ed Eventi",

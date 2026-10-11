@@ -29,14 +29,14 @@ const linkCls = "text-chalk transition-colors hover:text-mint";
 
 /**
  * Colonna "Esplora" (Ondata 1 del piano SEO/GEO, 25/09/2026, rilievi TOOL-06 e TECH-16): le pagine che non stanno nel
- * menu e ricevevano 3-11 link interni (MetaShifting, Luoghi, le due tier list dei dati, il tool, gli autori). Il menu
- * dell'header non cambia: MetaShifting e Luoghi restano fuori finché Pierluigi non decide (decisione 7 del 25/09).
+ * menu e ricevevano 3-11 link interni (MetaShifting, le due tier list dei dati, il tool, gli autori). MetaShifting resta
+ * fuori dal menu finché Pierluigi non decide (decisione 7 del 25/09); i Luoghi dall'11/10/2026 sono nel sottomenu di
+ * Guide e arrivano nella colonna dei link del footer da navItems, quindi qui non si ripetono.
  */
 function exploreItems(locale: Locale): { label: string; path: string }[] {
   const x = linkLabels[locale].explore;
   return [
     { label: x.metashifting, path: "/metashifting" },
-    { label: x.locations, path: "/locations" },
     { label: x.mostPlayed, path: "/tier-list/most-played" },
     { label: x.communityTierList, path: "/tier-list/community" },
     { label: x.makeTierList, path: "/tier-list/create" },

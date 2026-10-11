@@ -46,7 +46,16 @@ export function navItems(dict: Dictionary): NavItem[] {
         ANALYTICS_PUBLIC ? { label: t.sourceWinrate, path: "/tier-list/win-rate" } : { label: t.sourceWinrate, path: "#winrate", testOnly: true },
       ],
     },
-    { label: dict.nav.guides, path: "/guides" },
+    {
+      label: dict.nav.guides,
+      path: "/guides",
+      // sottomenu (11/10/2026, Pierluigi: "mettilo come sotto menu di guide"): i Luoghi, che prima stavano solo nel tasto
+      // di /cards e nella colonna "Esplora" del footer; anche nella tendina del telefono e fra i link del footer
+      sub: [
+        { label: dict.nav.guides, path: "/guides" },
+        { label: dict.nav.locations, path: "/locations", mobile: true },
+      ],
+    },
     { label: dict.nav.cards, path: "/cards" },
     {
       label: dict.nav.decks,
