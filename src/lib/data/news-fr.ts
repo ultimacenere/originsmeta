@@ -20,6 +20,280 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "bot-deck-challenge-practice-tournaments": {
+    title: "Vos decks pour les bots de la démo : le défi de Koin, et des tournois d'entraînement avant la Crimson Cup",
+    metaTitle: "Origins TCG : vos decks pour les bots de la démo",
+    description:
+      "Koin Games demande aux joueurs d'Origins TCG des decks pour les bots de la démo, avec un prix secret. Aussi : tournois d'entraînement et chiffres de la démo.",
+    summary:
+      "Le 6 octobre, Koin Games a lancé un défi sur le Discord officiel : construisez des decks, envoyez-les avec un formulaire et les bots de la démo commencent à les jouer, avec un « prix super secret » pour les decks les plus performants. Les mêmes jours, Koin a organisé les deux premiers tournois d'entraînement hebdomadaires avant la Crimson Cup, invité les fans à organiser leurs propres tournois et partagé de nouveaux chiffres : plus de 20 000 téléchargements de la démo et plus de 300 000 parties jouées.",
+    highlights: [
+      { label: "Le défi des decks pour les bots", text: "des decks envoyés avec le formulaire de Koin, les bots de la démo les jouent, un prix secret pour les meilleurs", anchor: "defi-bots" },
+      { label: "Comment participer", text: "autant de decks que vous voulez, aucune règle annoncée", anchor: "participer" },
+      { label: "Tournois d'entraînement", text: "les deux premiers les 3 et 10 octobre ; la communauté préfère les soirs de semaine, heure européenne", anchor: "entrainement" },
+      { label: "Organisez votre tournoi", text: "Koin propose son soutien aux tournois des fans, et OriginsMeta a un organisateur gratuit", anchor: "organiser" },
+      { label: "L'enregistrement de l'AMA", text: "Building Origins, 2 heures et 22 minutes sur YouTube", anchor: "ama" },
+      { label: "La démo en chiffres", text: "plus de 20 000 téléchargements et plus de 300 000 parties", anchor: "chiffres" },
+    ],
+    body: `## Koin veut de meilleurs decks pour ses bots {#defi-bots}
+
+Le 6 octobre, à 18:17 UTC, l'équipe de Koin Games a publié « un petit défi » dans #announcements sur le [Discord officiel](https://discord.gg/originstcg) : « Nous voulons améliorer les decks qu'utilisent nos bots, alors faisons-en un petit jeu ». Cela fonctionne en quatre étapes :
+
+1. construisez des decks ;
+2. envoyez-les avec le [formulaire officiel](https://forms.gle/zY1WeRTPLQzKAEs26) ;
+3. les bots commencent à les utiliser dans leurs parties ;
+4. « les decks les plus performants gagnent un prix super secret ».
+
+Vous pouvez envoyer plusieurs decks et, selon les mots de l'équipe, « il n'y a aucune règle » : le but est de « construire les meilleurs decks possibles ».
+
+Pourquoi c'est important : dans le [post sur la Crimson Cup du 5 octobre](/fr/news/crimson-cup-prizepool-qualifiers#entrainement), Koin a écrit que la plupart des parties de la démo se jouent contre des bots. Les listes issues de ce défi sont celles que l'on rencontrera dans ces parties, dans les semaines qui précèdent la [Crimson Cup](/fr/guides/steam-next-fest-2026).
+
+## Comment participer {#participer}
+
+L'annonce ne demande rien d'autre que le formulaire : ni date limite, ni format, ni limite au nombre de decks. Si vous cherchez un point de départ :
+
+- construisez et vérifiez votre liste dans notre [Deck builder](/fr/deck-builder), qui suit les règles des decks de la démo (une Légendaire plus 12 cartes de base en deux exemplaires, 25 cartes) et vous donne le code du jeu à copier ;
+- cherchez des idées parmi les [decks publiés sur OriginsMeta](/fr/decks), chacun avec son guide et les votes de la communauté ;
+- comme vous pouvez envoyer plusieurs listes, essayez des archétypes différents plutôt que de tout miser sur un seul deck.
+
+## Des tournois d'entraînement chaque semaine {#entrainement}
+
+Les tournois d'entraînement annoncés le 5 octobre ont commencé. Koin avait d'abord posé la question : dans un sondage du 30 septembre, 265 votants sur 293 (90 %) avaient dit oui à des tournois d'entraînement sans lots.
+
+- **Tournoi d'entraînement n° 1**, samedi 3 octobre à 16:00 CEST, annoncé le 2 octobre, s'est joué avec les règles de la Crimson Cup, donc avec des decks à remettre avant le début ([le format](/fr/news/crimson-cup-format-check-in#format) et notre [guide du Conquest](/fr/guides/origins-tcg-conquest)).
+- **Tournoi d'entraînement n° 2**, samedi 10 octobre à 16:00 CEST (14:00 UTC), annoncé dans #game-announcements le 6 octobre, a gardé le format du premier, cinq rondes suisses, des matchs au meilleur des trois manches et aucune élimination, mais sans Conquest : aucun deck à remettre et le libre choix de ce que vous jouez. Les inscriptions se faisaient dans #tournaments-to-join.
+
+Le 6 octobre, Koin a aussi demandé quand les joueurs préfèrent jouer. L'option gagnante, avec 40 % des voix, était « Weekdays - evening EU time (7pm CEST, 1pm EST) », c'est-à-dire les soirs de semaine à l'heure européenne, à 19:00 CEST. Le jour et l'heure du prochain tournoi d'entraînement n'ont pas encore été annoncés, et les résultats du deuxième n'ont pas été publiés dans les canaux d'annonces.
+
+## D'autres tournois, et organiser le vôtre {#organiser}
+
+Le 8 octobre, Koin a signalé un tournoi d'Origins organisé le jour même à 16:30 CEST par le Collector Club, un site tiers, qui prévoit d'organiser des tournois chaque semaine sur son propre Discord, avec les inscriptions dans son canal d'annonces.
+
+Dans le même message, l'équipe a ajouté une invitation ouverte : « Si vous êtes fan d'Origins et voulez organiser vos propres tournois, nous serions ravis de vous soutenir. N'hésitez pas à nous contacter pour que cela se fasse ! » Le message ne précise pas en quoi consiste ce soutien.
+
+Si vous voulez commencer tout de suite, l'[organisateur de tournois](/fr/tournaments/new) d'OriginsMeta est gratuit pour toute personne connectée : tableau à élimination directe, Conquest ou deck libre, matchs au meilleur d'une, trois ou cinq manches, decks remis avant le début, check-in et listes cachées, tournoi public ou privé sur invitation, avec un lien court à partager. Il ne gère pas encore les rondes suisses.
+
+## L'AMA Building Origins, sur YouTube {#ama}
+
+L'enregistrement du premier événement Building Origins, l'AMA avec Kevin et Ben, présentés par Koin comme les têtes pensantes d'Origins, est sur la chaîne YouTube officielle d'Origins TCG : [« Building Origins AMA »](https://www.youtube.com/watch?v=bEb5RuwY7tg), publié le 5 octobre 2026, d'une durée de 2 heures et 22 minutes. Nous ne l'avons pas transcrit, cet article ne résume donc pas ce qui s'y est dit.
+
+## La démo en chiffres {#chiffres}
+
+- **Plus de 20 000 téléchargements.** Le compte X officiel a écrit le 7 octobre que la démo « a déjà été téléchargée plus de 20000 fois » ; le 24 septembre, il parlait de 15 000.
+- **Plus de 300 000 parties.** Le 29 septembre, le fondateur et PDG de Koin Games, Tim Jooste, a écrit que plus de 300 000 parties avaient été terminées dans la démo en 11 semaines, avec près de 1 000 joueurs au-delà de 20 heures de jeu.
+- **1 500 inscrits à la Crimson Cup.** Le 1er octobre, il a ajouté que 1 500 joueurs s'étaient inscrits à la Crimson Cup en trois semaines.
+
+Ce sont les chiffres de Koin : nous n'avons aucun moyen de les vérifier.
+
+## Ce que nous ne savons pas encore {#ce-que-nous-ne-savons-pas}
+
+- Combien de temps dure le défi des decks pour les bots : l'annonce ne donne aucune date limite.
+- Ce qu'est le « prix super secret », et combien de decks le gagnent.
+- Comment se mesure « les plus performants » (victoires, win rate, nombre de parties) et si les résultats seront publiés.
+- Quand les decks envoyés commencent à apparaître dans les parties, et dans quels modes.
+- Si « il n'y a aucune règle » vaut aussi pour la construction des decks ou seulement pour le nombre de decks à envoyer.
+- Le jour et l'heure du prochain tournoi d'entraînement, s'il passera aux soirs de semaine choisis par le sondage, et les résultats du deuxième.
+
+## D'où viennent ces informations {#sources}
+
+- Le [Discord officiel d'Origins TCG](https://discord.gg/originstcg) : le défi dans #announcements le 6 octobre 2026 ; les tournois d'entraînement dans #announcements (2 octobre) et #game-announcements (6 octobre), avec les deux sondages ; le tournoi du Collector Club et l'invitation à organiser des tournois dans #game-announcements (8 octobre) ; le premier événement Building Origins dans #announcements.
+- L'[enregistrement de l'AMA](https://www.youtube.com/watch?v=bEb5RuwY7tg) sur la chaîne YouTube officielle.
+- Les posts sur X d'[Origins TCG du 7 octobre](https://x.com/origins_tcg/status/2107853622897705015) et [du 24 septembre](https://x.com/origins_tcg/status/2103203061707477242), et de Tim Jooste du [29 septembre](https://x.com/TimothyJooste/status/2104979201707192617) et du [1er octobre](https://x.com/TimothyJooste/status/2105506219679264901).`,
+    faq: [
+      {
+        q: "Comment envoyer un deck pour les bots de la démo d'Origins TCG ?",
+        a: "Avec le formulaire indiqué dans l'annonce de Koin Games du 6 octobre 2026 sur le Discord officiel (forms.gle/zY1WeRTPLQzKAEs26). Vous pouvez envoyer autant de decks que vous voulez : les bots commencent à les utiliser dans leurs parties et les decks les plus performants gagnent un prix secret.",
+      },
+      {
+        q: "Le défi des decks pour les bots a-t-il une date limite ou un prix connu ?",
+        a: "Pas encore. L'annonce ne donne aucune date limite, ne dit pas ce qu'est le « prix super secret » et n'explique pas comment les decks les plus performants sont choisis.",
+      },
+      {
+        q: "Quand ont lieu les tournois d'entraînement d'Origins TCG ?",
+        a: "Ils sont hebdomadaires et annoncés sur le Discord officiel. Le premier s'est joué le 3 octobre 2026 avec les règles de la Crimson Cup, le deuxième le 10 octobre à 16:00 CEST sans Conquest. Dans un sondage du 6 octobre, la communauté a choisi les soirs de semaine, à l'heure européenne (19:00 CEST).",
+      },
+      {
+        q: "Puis-je organiser mon propre tournoi d'Origins TCG ?",
+        a: "Oui. Koin Games invite les fans qui veulent organiser des tournois à les contacter pour obtenir du soutien, et sur OriginsMeta toute personne connectée peut en créer un avec l'organisateur de tournois, avec Conquest ou deck libre et des matchs au meilleur d'une, trois ou cinq manches.",
+      },
+    ],
+  },
+  "origins-sets-alpha-edition-grading": {
+    title: "Les sets d'Origins TCG : Alpha Edition, un set tous les 3 à 4 mois, gradation et cartes de jeu gratuites",
+    metaTitle: "Sets d'Origins TCG : Alpha Edition, gradation, tirages",
+    description:
+      "Les sets d'Origins TCG : Alpha Edition réservée au Kickstarter, un set tous les 3 à 4 mois, boosters sur Steam, grades de 1 à 10 et cartes de jeu gratuites.",
+    summary:
+      "Dans trois posts sur X publiés entre le 29 septembre et le 9 octobre, Koin Games a expliqué comment fonctionneront les sets et la collection d'Origins TCG. Le premier set, Myths and Legends, compte 218 personnages ; son Alpha Edition ne sera vendue que via le Kickstarter et ne sera jamais réimprimée, et les sets suivants sont prévus tous les 3 à 4 mois, avec trois mois de vente, des cartes de collection gradées et des promos que l'on ne gagne qu'en tournoi. Les cartes de jeu restent gratuites pour tous : le système de collection, attendu après le Steam Next Fest, est facultatif.",
+    highlights: [
+      { label: "Deux systèmes de cartes", text: "cartes de jeu gratuites pour tous à chaque saison et non échangeables ; cartes de collection sous forme d'objets Steam à part, échangeables", anchor: "deux-systemes" },
+      { label: "Alpha Edition", text: "la première édition de Myths and Legends (218 personnages) : uniquement sur Kickstarter, avec l'Alpha tag, jamais réimprimée", anchor: "alpha-edition" },
+      { label: "Un set tous les 3 à 4 mois", text: "trois mois de vente, puis il ne reste que les exemplaires déjà détenus par les collectionneurs", anchor: "cycle-des-sets" },
+      { label: "Produits scellés sur Steam", text: "boosters, boîtes et cases comme objets d'inventaire ; boîtes et cases uniquement en précommande", anchor: "scelles" },
+      { label: "Rareté et gradation", text: "cinq couches de rareté, cartes avec erreur, grades de 1 à 10 avec demi-grades : le 2 octobre, Koin a écrit que le système est encore à l'étude", anchor: "rarete-gradation" },
+      { label: "Cartes de tournoi", text: "jamais dans les boosters : le vainqueur de la Crimson Cup reçoit un Dracula 1/1", anchor: "cartes-de-tournoi" },
+      { label: "La rareté n'est pas une valeur", text: "Koin cite les premières éditions de Pokémon et de Magic, puis écrit qu'elles ne sont pas une formule", anchor: "rarete" },
+    ],
+    body: `## Trois posts, un seul système {#trois-posts}
+
+Entre le 29 septembre et le 9 octobre 2026, le compte officiel d'Origins TCG sur X a publié trois longs posts sur le fonctionnement des sets et de la collection. Koin Games dit s'inspirer avant tout des jeux de cartes physiques : produits scellés, tirages limités, périodes de sortie définies et boutiques de jeux locales.
+
+Notre [guide de l'économie de collection](/fr/guides/collector-economy) présente déjà les formats de l'Alpha Edition et ses sept niveaux de rareté, d'après la page officielle de préinscription. Ce que ces posts ajoutent : la taille du premier set, l'Alpha tag, le rythme des sets suivants, les produits scellés sous forme d'objets Steam, les couches de rareté, le fonctionnement prévu de la gradation et les cartes de tournoi.
+
+## Deux systèmes de cartes {#deux-systemes}
+
+Origins a deux types de cartes qui partagent les personnages et les illustrations, mais pas l'accès, la propriété ni la disponibilité :
+
+- **Les cartes de jeu.** Chaque carte de jeu de base sera gratuite pour tous les joueurs, à chaque saison. Elles ne s'échangent pas et servent à jouer. Selon Koin, « a player will never need to buy a pack or own a collectible version to build a competitive deck » : aucun joueur n'aura jamais besoin d'acheter un booster ni de posséder une version de collection pour construire un deck compétitif. Le studio appelle cela le free-to-compete.
+- **Les cartes de collection.** Des objets à part de l'inventaire Steam, que vous possédez et pouvez échanger. Même la version de collection standard se distingue de la carte de jeu, avec un cadre et un affichage différents qui mettent l'illustration en valeur.
+
+La rareté dont parle Koin ne concerne que la partie collection : éditions, traitements de l'illustration, grades, produits scellés et provenance des tournois. Elle ne limitera jamais l'accès aux cartes compétitives, et la fermeture d'une édition ne retire jamais une carte du jeu. Ce que l'argent achète, et ce qu'il n'achète pas, est expliqué dans notre [guide du free-to-compete](/fr/guides/is-origins-tcg-pay-to-win).
+
+## Myths and Legends et l'Alpha Edition {#alpha-edition}
+
+Le premier set est **Myths and Legends**, avec **218 personnages**. Sa première sortie de collection est l'**Alpha Edition**, disponible uniquement via le Kickstarter, le 27 octobre selon le CEO (les détails sont dans notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter)). Chaque carte Alpha porte un **Alpha tag** sur sa face, pour que l'édition reste reconnaissable. Un personnage peut revenir dans un set ultérieur, mais pas dans sa version Alpha : une fois la fenêtre fermée, dit Koin, il n'y aura plus de cartes, de boosters, de boîtes ni de cases Alpha.
+
+Le système de collection est prévu **après le Steam Next Fest** (du 19 au 26 octobre), et le post du 9 octobre indique que tout sera échangeable sur Steam dès le « day 1 », le premier jour.
+
+## Un nouveau set tous les 3 à 4 mois {#cycle-des-sets}
+
+Koin prévoit un nouveau set tous les 3 à 4 mois. Chaque set standard a une **fenêtre de vente de trois mois**, pendant laquelle les cartes de collection et les produits scellés sont vendus par Origins, les boutiques de jeux participantes (le [Digital LGS Program](/fr/news/digital-lgs-program) présenté le 6 octobre) et des partenaires en ligne agréés. Ensuite, il ne reste que les exemplaires déjà détenus par les collectionneurs, échangeables sur le Marché de la communauté Steam.
+
+## Les produits scellés restent scellés {#scelles}
+
+Les boosters, les boîtes et les cases seront des objets individuels de l'inventaire Steam : vous pourrez les ouvrir, les échanger ou les garder scellés. Les boîtes et les cases sont **uniquement en précommande** : une fois cette fenêtre fermée, aucune nouvelle unité ne s'ajoute. Pour Koin, le produit scellé reste ainsi une partie de la collection, au lieu d'être un écran d'achat qui disparaît après l'ouverture.
+
+## Rareté, traitements et gradation {#rarete-gradation}
+
+Une carte de collection peut varier sur cinq couches : édition, rareté, grade, état numérique et statut de promo. Aucune ne change ce que fait la carte en partie. Les boosters de collection peuvent contenir des cartes de collection standard, des variantes **alternate art**, des cartes **Storybook** animées et des **cartes numériques avec erreur**.
+
+Sur la gradation, les deux posts n'ont pas le même ton. Le 29 septembre, Koin la décrit comme décidée : le contenu d'un booster est fixé avant son ouverture et, quand une carte de collection est révélée, « the system rolls its grade », le système tire son grade. La gradation est « automatic, instant, and free », automatique, instantanée et gratuite, selon le centrage, les coins, les bords et la surface, avec des défauts numériques visibles qui expliquent le résultat. Le 2 octobre, le ton est plus prudent : « We're exploring a digital grading system », un système dans lequel plusieurs paramètres forment le grade et où les défauts varient d'une carte à l'autre. L'échelle est la même dans les deux posts, **de 1 à 10 avec des demi-grades** ; le reste peut encore changer, et dans la mise à jour du playtest du 1er octobre, l'équipe demandait d'[ignorer pour l'instant l'écran « How Grading Works »](/fr/news/playtest-patch-notes-1001#gradation). Le grade est indépendant de la rareté et de l'illustration et, selon Koin, les grades bas peuvent aussi intéresser les collectionneurs, parce qu'ils rendent un exemplaire plus singulier.
+
+## Cartes de tournoi : le Dracula 1/1 {#cartes-de-tournoi}
+
+Certaines cartes de collection ne seront jamais dans les boosters ni en boutique : des promos de tournoi ultra rares, que l'on gagne seulement en compétition. Le premier exemple est la Crimson Cup : son vainqueur recevra une **carte promo Dracula 1/1** et sera, selon Koin, la seule personne à la posséder, pour toujours. Les autres prix sont dans notre [tableau des prix de la Crimson Cup](/fr/news/crimson-cup-prizepool-qualifiers#prix).
+
+## Premières éditions et rareté, selon Koin {#rarete}
+
+Le post du 9 octobre affirme que, dans les jeux de cartes physiques, le premier tirage devient rare parce qu'il est ouvert et joué avant que le public n'arrive. Il cite en exemple une boîte de Pokémon Base Set 1st Edition de 1999, vendue environ 100 à 120 dollars, dont des exemplaires scellés se seraient vendus entre environ 10 000 et plus de 250 000 dollars, et une boîte de Magic Alpha de 1993, environ 88 dollars en magasin, dont les boosters scellés s'échangeraient aujourd'hui entre 8 000 et 12 000 dollars. Ce sont les chiffres de Koin, pas les nôtres.
+
+Koin ajoute lui-même que ces résultats ont pris des décennies, qu'ils dépendaient du fait que les deux jeux sont devenus énormes et qu'ils « are not a formula », ne sont pas une formule ; et le post du 29 septembre affirme qu'une offre limitée ne garantit ni la demande, ni la valeur de marché, ni la hausse des prix. Nous rapportons ce que dit le studio : rien de tout cela n'est une raison d'acheter. La collection est facultative, et vous pouvez jouer à Origins en compétition sans rien dépenser.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Les prix et la taille des tirages de l'Alpha Edition et des sets suivants.
+- Si la gradation fonctionnera exactement comme décrit le 29 septembre, et en quoi l'« état numérique » diffère du grade.
+- Quel jour est le « day 1 » des échanges sur Steam, et comment les objets de collection de la démo actuelle s'intègrent au nouveau système.
+- Le nom et la date du deuxième set, et les probabilités des alternate art, des Storybook animées et des cartes avec erreur.
+- Comment fonctionne la fenêtre de trois mois entre Origins, les boutiques et les partenaires en ligne.
+
+## D'où vient l'information {#sources}
+
+Trois posts du compte officiel d'Origins TCG sur X : [29 septembre](https://x.com/origins_tcg/status/2105048221139747258) (sets, Alpha Edition, gradation), [2 octobre](https://x.com/origins_tcg/status/2106087343895486639) (les deux systèmes de cartes et le système de collection) et [9 octobre 2026](https://x.com/origins_tcg/status/2108619922586898629) (premières éditions et offre). Au 11 octobre, il n'y a aucun post sur Steam sur ces sujets.`,
+    faq: [
+      {
+        q: "Faut-il acheter des boosters pour être compétitif sur Origins TCG ?",
+        a: "Non. Selon Koin Games, chaque carte de jeu de base sera gratuite pour tous les joueurs, à chaque saison, et personne n'aura jamais besoin d'acheter un booster ni de posséder une version de collection pour construire un deck compétitif. Les cartes de collection sont des objets Steam à part, échangeables, et les boosters sont facultatifs.",
+      },
+      {
+        q: "Qu'est-ce que l'Alpha Edition d'Origins TCG ?",
+        a: "La première sortie de collection de Myths and Legends, le premier set d'Origins, avec 218 personnages. Elle ne sera disponible que via le Kickstarter, chaque carte Alpha porte un Alpha tag sur sa face et, une fois la fenêtre fermée, selon Koin, il n'y aura plus de cartes, de boosters, de boîtes ni de cases Alpha.",
+      },
+      {
+        q: "Comment fonctionnera la gradation des cartes sur Origins TCG ?",
+        a: "Chaque carte de collection reçoit automatiquement un grade à son ouverture, sur une échelle de 1 à 10 avec des demi-grades. Le 29 septembre, Koin décrivait une gradation automatique, instantanée et gratuite, fondée sur le centrage, les coins, les bords et la surface ; le 2 octobre, il a écrit que le système est encore à l'étude, donc les détails peuvent changer.",
+      },
+      {
+        q: "À quel rythme sortiront les sets d'Origins TCG ?",
+        a: "Koin Games prévoit un nouveau set tous les 3 à 4 mois. Les sets standard sont en vente pendant trois mois via Origins, les boutiques de jeux participantes et des partenaires en ligne agréés ; ensuite, les exemplaires ne viennent plus que des collectionneurs, sur le Marché de la communauté Steam.",
+      },
+    ],
+  },
+  "playtest-patch-notes-0-7-1": {
+    title: "Notes de patch du playtest 0.7.1 d'Origins TCG : le classé compte de nouveau pour les missions",
+    metaTitle: "Playtest 0.7.1 d'Origins TCG : notes de patch",
+    description:
+      "Playtest 0.7.1 d'Origins TCG du 8 octobre : le classé compte de nouveau pour les missions, le mulligan adverse s'affiche et une vingtaine de bugs corrigés.",
+    summary:
+      "Le 8 octobre, Koin Games a mis à jour le playtest d'Origins TCG en version 0.7.1, une petite mise à jour faite de corrections et de confort de jeu. Les parties classées comptent de nouveau pour la progression des missions, vous voyez combien de cartes votre adversaire a remplacées au mulligan, et la recherche dans la collection, le choix des émotes et trois voix de personnages s'améliorent. Aucun changement d'équilibrage : les statistiques des cartes restent celles du patch 0.7.",
+    highlights: [
+      { label: "Le classé compte de nouveau pour les missions", text: "et les missions se jouent toujours en PvE si vous le voulez", anchor: "classe-missions" },
+      { label: "Le mulligan de l'adversaire", text: "vous voyez combien de cartes il a remplacées", anchor: "mulligan-adverse" },
+      { label: "Une recherche plus futée dans la collection", text: "phrases de plusieurs mots, et une carte invoquée trouve la carte qui l'invoque", anchor: "recherche-collection" },
+      { label: "Émotes et voix", text: "emplacements d'émotes à vider, nouvelles voix pour Hansel and Gretel, Huck Finn et Christopher Robin", anchor: "emotes-voix" },
+      { label: "Missions, écran d'accueil, plateau", text: "du confort de jeu et quelques éléments provisoires", anchor: "nouveautes" },
+      { label: "Aucun changement d'équilibrage", text: "les statistiques des cartes sur OriginsMeta ne changent pas", anchor: "ce-qui-ne-change-pas" },
+    ],
+    body: `## Une petite mise à jour pour le playtest {#mise-a-jour}
+
+Le 8 octobre, Koin Games a mis à jour en version 0.7.1 le playtest, la build à part de la Demo 2.0 à laquelle on accède par le Discord officiel. L'équipe a publié les notes dans le salon game-announcements du [Discord officiel](https://discord.gg/originstcg) à 16:54 UTC et a coupé la build pendant quelques heures pour installer la mise à jour. « Rien de majeur, juste quelques corrections et du confort de jeu », écrit l'équipe : il n'y a aucun changement d'équilibrage, mais plusieurs nouveautés sont des demandes des joueurs. Elle arrive une semaine après la [mise à jour du playtest du 1er octobre](/fr/news/playtest-patch-notes-1001), dont l'annonce n'avait pas de numéro de version.
+
+## Les nouveautés {#nouveautes}
+
+### Le mulligan de l'adversaire {#mulligan-adverse}
+
+Pendant la phase de mulligan, vous voyez désormais combien de cartes votre adversaire a remplacées. Les joueurs l'avaient demandé sur Discord, et l'équipe dit que l'idée était si bonne qu'elle l'a mise en place dès le lendemain. Le [patch 0.6.1](/fr/news/patch-0-6-1-ranked) avait déjà ajouté un aperçu de la Légendaire adverse pendant le mulligan.
+
+### Missions, écran d'accueil et le reste {#missions-accueil}
+
+- **Missions, Boss et Récompenses** reçoivent quelques améliorations de confort, tout comme l'**écran d'accueil**. Les notes ne disent pas lesquelles.
+- Les **Commanders**, comme les appellent les notes, disent désormais une réplique et affichent leur plaque de nom quand vous les examinez.
+- **Effets sur le plateau :** cliquer sur le plateau déclenche des effets visuels et sonores. L'équipe précise que les deux sont provisoires et demande de ne pas les juger trop sévèrement.
+- **Cinématique d'introduction :** une cinématique d'ouverture provisoire se lance, et l'équipe sait qu'elle est encore en plein chantier.
+
+## Les améliorations {#ameliorations}
+
+### Le classé compte de nouveau pour les missions {#classe-missions}
+
+Avec la mise à jour du 1er octobre, les missions étaient devenues uniquement PvE, et dans cette build les missions de deck ne pouvaient pas être accomplies depuis le classé : l'équipe avait promis de les réactiver dans une build future ([notre article](/fr/news/playtest-patch-notes-1001#missions-classe)). Avec la 0.7.1, les parties classées PvP font de nouveau progresser les missions. Si vous préférez, vous pouvez toujours jouer les missions en PvE depuis la section Missions : à vous de choisir. Le fonctionnement du classé dans la démo est expliqué dans [notre guide du mode classé](/fr/guides/origins-tcg-ranked).
+
+### La recherche dans la collection {#recherche-collection}
+
+La recherche dans la collection accepte désormais des phrases de plusieurs mots, et chercher quelque chose qu'une carte invoque fait aussi apparaître la carte qui l'invoque. Sur OriginsMeta, la recherche dans les [Cartes](/fr/cards) et dans le [Deck builder](/fr/deck-builder) regarde déjà le nom et le texte des cartes.
+
+### Émotes et voix {#emotes-voix}
+
+- Dans le choix des émotes, vous pouvez désormais vider un emplacement, ce qui rend la composition de vos émotes un peu plus simple.
+- Hansel and Gretel, Huck Finn et Christopher Robin ont de nouvelles voix. Les joueurs trouvaient qu'elles sonnaient bien trop vieilles pour les personnages, et l'équipe écrit qu'en interne tout le monde disait la même chose.
+
+### Une vingtaine de bugs corrigés {#bugs-corriges}
+
+D'après le décompte de l'équipe, une vingtaine de bugs sont corrigés. Les notes n'en donnent pas la liste, et l'équipe demande vos retours et ce qui lui aurait échappé sur Discord.
+
+## Ce qui ne change pas {#ce-qui-ne-change-pas}
+
+- **Aucun changement d'équilibrage.** Les statistiques des cartes restent celles du [patch 0.7](/fr/news/patch-0-7) du 29 septembre, le dernier patch d'équilibrage avant la Crimson Cup : les pages des cartes, le [Deck builder](/fr/deck-builder) et [MetaShifting](/fr/metashifting) ne changent pas.
+- **Le playtest n'est pas la démo principale.** Ces changements sont dans la build du playtest ; la démo sur Steam, celle qu'explique [notre guide pour jouer à la démo](/fr/guides/play-the-demo), garde sa version tant que Koin ne la met pas à jour.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Quand les changements de la 0.7.1 arriveront dans la démo principale sur Steam.
+- Quels bugs ont été corrigés : les notes ne donnent que le nombre, une vingtaine.
+- Ce qui change exactement dans les Missions, les Boss, les Récompenses et sur l'écran d'accueil.
+- Quand les effets du plateau et la cinématique d'introduction, provisoires pour l'instant, seront définitifs.
+
+## La même semaine : le tournoi d'entraînement n° 2 {#tournoi-entrainement}
+
+Dans le même salon, l'équipe a annoncé le deuxième tournoi d'entraînement pour le samedi 10 octobre à 14:00 UTC (16:00 CEST) : cinq rondes suisses au meilleur des trois manches, sans élimination et, contrairement au premier, sans Conquest, donc sans deck à remettre. Koin avait annoncé les tournois d'entraînement hebdomadaires le 5 octobre ([notre article](/fr/news/crimson-cup-prizepool-qualifiers#entrainement)).
+
+## D'où viennent ces notes {#sources}
+
+Les notes de patch de la 0.7.1 que l'équipe a publiées sur le [Discord officiel d'Origins TCG](https://discord.gg/originstcg) le 8 octobre 2026, dans le salon game-announcements. Au 11 octobre, aucune publication Steam ne parle de cette mise à jour : la dernière date du 5 octobre.`,
+    faq: [
+      {
+        q: "Les parties classées comptent-elles pour les missions dans le playtest d'Origins TCG ?",
+        a: "Oui, de nouveau, depuis le playtest 0.7.1 du 8 octobre 2026 : les parties classées PvP font progresser les missions. Les missions se jouent toujours en PvE depuis la section Missions. Dans la build du 1er octobre, les missions de deck ne pouvaient pas être accomplies depuis le classé.",
+      },
+      {
+        q: "Le playtest 0.7.1 change-t-il les statistiques des cartes ?",
+        a: "Non. Il n'a aucun changement d'équilibrage : les statistiques des cartes restent celles du patch 0.7 du 29 septembre 2026, le dernier patch d'équilibrage avant la Crimson Cup, et les pages des cartes d'OriginsMeta ne changent pas.",
+      },
+      {
+        q: "Voit-on le mulligan de l'adversaire dans Origins TCG ?",
+        a: "Dans le playtest, depuis la 0.7.1, vous voyez combien de cartes votre adversaire a remplacées pendant la phase de mulligan. Nous ne savons pas encore quand ce changement arrivera dans la démo principale sur Steam.",
+      },
+    ],
+  },
   "upgrade-meta-1007": {
     title: "Upgrade Meta : OriginsMeta parle français, quatrième langue du site, avec toutes les cartes, guides et actus",
     metaTitle: "Upgrade Meta : OriginsMeta pour Origins TCG, en français",
@@ -258,6 +532,8 @@ Les missions et les boss sont désormais entièrement PvE : vous n'affrontez qu
 
 Comment fonctionne le classé dans la démo, et ce que nous savons de la ladder, c'est dans [notre guide du mode classé](/fr/guides/origins-tcg-ranked).
 
+**Mise à jour du 11 octobre :** avec la mise à jour 0.7.1 du playtest du 8 octobre, les parties classées comptent de nouveau pour les missions de deck, et les missions peuvent toujours se jouer en PvE depuis l'espace Missions ([les notes de patch de la 0.7.1](/fr/news/playtest-patch-notes-0-7-1#classe-missions)).
+
 ## Deck builder, fil d'actualités et Grandmaster {#interface}
 
 ### Un deck builder avec plus de filtres {#deck-builder}
@@ -345,7 +621,6 @@ Dans cette build, les parties en salon (Create/Join Room Battle) utilisent le po
 
 - Si les cinq nouveaux changements de cartes, Tectonic Decay et le retrait d'Ashen Grove sont déjà dans la démo principale.
 - Quels lieux sont hors du pool de la Crimson Cup : réponse arrivée le 5 octobre, voir la mise à jour ci-dessus.
-- Quand les missions de deck compteront de nouveau en classé.
 - Le nouveau texte de Reflection.
 
 ## Ce qui change sur OriginsMeta {#sur-le-site}
@@ -1293,19 +1568,22 @@ Les règles, les horaires du check-in et ce que nous ne savons pas encore sont d
     description:
       "Le fondateur de Koin Games présente le Digital LGS Program d'Origins TCG : tournois hebdomadaires, promos exclusives et précommandes de sets en boutique.",
     summary:
-      "Le 6 octobre, Tim Jooste, fondateur et CEO de Koin Games, a présenté sur X le Digital LGS Program : les boutiques de jeux locales accueilleront des tournois hebdomadaires d'Origins, vendront des boosters et des promos réservés à la boutique et prendront les précommandes de sets de collection qui ne seront pas disponibles dans le jeu. Les événements en présentiel commencent début 2027 ; le Set 1 arrive sur Kickstarter le 27 octobre, avec les boutiques associées au lancement.",
+      "Le 6 octobre, Tim Jooste, fondateur et CEO de Koin Games, a présenté sur X le Digital LGS Program : les boutiques de jeux locales accueilleront des tournois hebdomadaires d'Origins, vendront des boosters et des promos réservés à la boutique et prendront les précommandes de sets de collection qui ne seront pas disponibles dans le jeu. Les événements en présentiel commencent début 2027 ; le Set 1 arrive sur Kickstarter le 27 octobre, avec les boutiques associées au lancement. Le 8 octobre, le compte officiel d'Origins a ajouté les conditions : les boutiques prennent les précommandes et reçoivent une part des revenus, sans frais ni stock puisque tout est un objet de l'inventaire Steam, et accueillent en échange des événements de jeu organisé.",
     highlights: [
       { label: "Le Digital LGS Program", text: "le fondateur de Koin Games le présente sur X : les sets d'Origins distribués par les boutiques de jeux locales", anchor: "programme" },
       { label: "Tournois, promos, précommandes", text: "tournois hebdomadaires en boutique, boosters et promos réservés aux joueurs sur place, précommandes de sets absents du jeu", anchor: "boutiques" },
+      { label: "Comment ça marche pour les boutiques", text: "précommandes avec une part des revenus, ni frais ni stock, jeu organisé en échange (8 octobre)", anchor: "fonctionnement" },
       { label: "Début 2027, Kickstarter le 27 octobre", text: "les événements en présentiel commencent début 2027 ; le Set 1 arrive sur Kickstarter avec les boutiques à bord, plus de 30 déjà intéressées", anchor: "dates" },
-      { label: "Une version pour les créateurs", text: "les streamers et les créateurs de contenu ont un programme à eux", anchor: "createurs" },
-      { label: "Ce que nous ne savons pas", text: "quelles boutiques et quels pays, les prix, comment un set numérique arrive en rayon", anchor: "inconnues" },
+      { label: "Les créateurs et un AMA", text: "les streamers et les créateurs ont un programme à eux ; AMA pour les boutiques et les créateurs le 12 octobre à 21:00 UTC", anchor: "createurs" },
+      { label: "Ce que nous ne savons pas", text: "quelles boutiques et quels pays, la part des revenus, la fréquence des événements et leur date de départ", anchor: "inconnues" },
     ],
     body: `## Le Digital LGS Program {#programme}
 
 Le 6 octobre 2026, **Tim Jooste**, fondateur et CEO de Koin Games, a publié sur X un long post accompagné d'une courte vidéo. Il y décrit une soirée dans votre boutique de jeux locale (LGS, local game store) avec, pour seul bagage, votre téléphone : une soirée de parties d'Origins contre les joueurs de votre ville, une promo exclusive à la boutique à aller décrocher et un booster du prochain set de collection à précommander. Le studio l'appelle le **Digital LGS Program** et, selon ses mots, il fait d'Origins « le 1er jeu de cartes numérique à distribuer ses sets par les boutiques de jeux locales du monde entier ».
 
 C'est une affirmation du fondateur, pas quelque chose que nous pouvons vérifier. Ce que le post dit clairement, c'est la forme du programme : un jeu de cartes numérique avec un réseau physique de boutiques qui organisent ses événements et vendent ses sets.
+
+**Mise à jour du 11 octobre :** le 8 octobre, le compte officiel d'Origins sur X a expliqué comment le programme fonctionne pour les boutiques. Elles prennent les précommandes et reçoivent une part des revenus, l'adhésion ne coûte rien et il n'y a pas de marchandise à stocker, car les cartes et les boosters sont des objets de l'inventaire Steam. En échange, les boutiques accueillent des événements de jeu organisé, le seul endroit où l'on gagne certaines promos et certains boosters spéciaux. Le compte a aussi annoncé un AMA pour les gérants de boutique et les créateurs le lundi 12 octobre à 21:00 UTC. Les détails sont dans les sections ci-dessous.
 
 ## Ce que reçoivent les boutiques et ce que reçoivent les joueurs {#boutiques}
 
@@ -1318,6 +1596,19 @@ Le post énumère quatre choses :
 
 Les boutiques intéressées sont invitées à contacter Jooste directement : ses messages privés sur X sont ouverts, et il propose un appel.
 
+## Comment ça marche pour les boutiques : les détails du 8 octobre {#fonctionnement}
+
+Deux jours après le fondateur, le 8 octobre, le compte officiel d'Origins TCG sur X a expliqué le programme dans un post plus long. Son point de départ : dans les jeux de cartes traditionnels, ce sont les boutiques locales qui construisent la communauté, initient les nouveaux joueurs et organisent des événements réguliers, et les tournois locaux sont souvent l'endroit où l'on gagne les plus beaux lots. Origins est numérique par nature, dit le post, mais sa communauté mérite tout de même de vrais lieux où se retrouver. Les conditions :
+
+- **Précommandes et part des revenus.** Les boutiques participantes peuvent prendre les précommandes des produits de collection d'Origins et reçoivent une part des revenus. Le post ne dit pas quelle est cette part.
+- **Pas de stock.** Les cartes, les boosters, les boîtes et les cases existeront comme objets de l'inventaire Steam : les boutiques n'achètent pas de marchandise, ne gardent pas de stock, ne réservent pas de place en rayon et n'expédient pas de commandes.
+- **Coût zéro.** Adhérer « costs literally $0 », ne coûte littéralement rien, dit le post, et les boutiques profitent des gains autant, sinon plus, qu'avec un jeu de cartes physique. La comparaison est celle de Koin.
+- **Du jeu organisé en échange.** Les boutiques participantes accueillent des événements de jeu organisé. Origins orientera les joueurs vers ces boutiques et les soutiendra comme points de rendez-vous locaux du jeu.
+- **Des récompenses réservées aux événements.** Des cartes promo uniques et des boosters spéciaux se gagnent en participant et en jouant dans les boutiques participantes. Origins ne vendra pas ces cartes de tournoi et ne les mettra pas dans les boosters normaux.
+- **Un réseau qui peut grandir.** Le jeu organisé part d'événements locaux trimestriels et peut aller vers des compétitions plus fréquentes, des événements régionaux et, à terme, une structure avec un championnat du monde.
+
+Un détail ne colle pas encore : le post du fondateur parlait de tournois hebdomadaires en boutique, alors que le post officiel décrit un réseau qui part d'événements locaux trimestriels. Aucun des deux n'explique comment les deux s'articulent.
+
 ## Les dates : début 2027, avec le Kickstarter le 27 octobre {#dates}
 
 - Les **événements en présentiel commencent officiellement début 2027**. Les boutiques, dit le post, n'ont pas à attendre jusque-là.
@@ -1328,28 +1619,30 @@ Les boutiques intéressées sont invitées à contacter Jooste directement : se
 
 Le post ajoute qu'une version du programme existe pour les streamers et les créateurs de contenu, sans détails. L'appel s'adresse aussi aux joueurs et aux collectionneurs : taguer sous le post sa boutique ou son créateur de TCG préféré.
 
+Le 8 octobre, en réponse dans le même fil, le compte officiel a annoncé un **AMA sur le programme pour les gérants de boutique et les créateurs le lundi 12 octobre à 21:00 UTC**, sur son Discord des créateurs. Pour y participer, envoyez un message privé à @origins_tcg sur X.
+
 ## Pourquoi c'est important {#pourquoi}
 
-Origins s'est toujours décrit comme free-to-compete, gratuit pour la compétition, et pensé pour les collectionneurs : le mode classé ne coûte rien et la collection repose sur [deux niveaux de cartes](/fr/guides/collector-economy), compétitives et de collection. Jusqu'ici, la partie collection n'avait été annoncée qu'en numérique : les boosters de l'Alpha Edition sur Kickstarter, les échanges sur le Marché de la communauté Steam ; le seul indice physique était les [cartes en métal](/fr/news/metal-cards-tease) filmées en mars. Un programme pour les boutiques lui donne un lieu physique : le tournoi du mardi soir, la promo que l'on ne gagne que là, le set que l'on précommande au comptoir. Pour un jeu numérique, c'est aussi une façon de trouver des joueurs là où l'on joue déjà aux cartes.
+Origins s'est toujours décrit comme free-to-compete, gratuit pour la compétition, et pensé pour les collectionneurs : le mode classé ne coûte rien et la collection repose sur [deux niveaux de cartes](/fr/guides/collector-economy), compétitives et de collection. Jusqu'ici, la partie collection n'avait été annoncée qu'en numérique : les boosters de l'Alpha Edition sur Kickstarter, les échanges sur le Marché de la communauté Steam ; le seul indice physique était les [cartes en métal](/fr/news/metal-cards-tease) filmées en mars. Un programme pour les boutiques lui donne un lieu physique : le tournoi du mardi soir, la promo que l'on ne gagne que là, le set que l'on précommande au comptoir. Et, d'après le post du 8 octobre, sans produits physiques : ce que la boutique vend reste dans l'inventaire Steam. Pour un jeu numérique, c'est aussi une façon de trouver des joueurs là où l'on joue déjà aux cartes.
 
-Deux réserves. Le post est l'annonce du fondateur, pas une page officielle avec les conditions et la liste des boutiques, et rien ne dit encore comment fonctionne en pratique un set numérique vendu en boutique. Et si vous voulez organiser des tournois avant 2027, vous n'avez pas besoin d'attendre le programme : notre [organisateur de tournois](/fr/tournaments) est gratuit et la communauté l'utilise déjà.
+Deux réserves. Les conditions viennent de deux posts sur X, celui du fondateur et celui du compte officiel, pas d'une page officielle avec un contrat et la liste des boutiques, et la part des revenus qui revient aux boutiques n'est pas indiquée. Et si vous voulez organiser des tournois avant 2027, vous n'avez pas besoin d'attendre le programme : notre [organisateur de tournois](/fr/tournaments) est gratuit et la communauté l'utilise déjà.
 
 ## Ce que nous ne savons pas encore {#inconnues}
 
-- Quels pays et quelles boutiques participent, et s'il existe une liste.
-- Comment un set numérique est distribué par une boutique : des codes, des boosters physiques avec des cartes numériques, ou autre chose.
-- Ce que veut dire « sets non disponibles dans le jeu » pour la collection : si ces cartes n'existeront que par les boutiques.
-- Les prix, les récompenses pour une précommande en boutique et la façon dont les promos sont attribuées.
-- Comment se jouent les tournois en boutique (salons privés dans le jeu, un mode dédié) et si les résultats comptent quelque part.
-- Les conditions de la version pour les créateurs.
+- Quels pays et quelles boutiques participent, et s'il y aura une liste publique.
+- Quelle est la part des revenus, et comment une précommande faite en boutique arrive dans l'inventaire Steam du joueur : un code, une liaison avec le compte ou autre chose.
+- Ce que veut dire « sets non disponibles dans le jeu » pour la collection : le post officiel dit que les produits sont des objets de l'inventaire Steam et que les promos et les boosters spéciaux des tournois ne sont jamais vendus, mais pas si des sets entiers ne seront vendus que par les boutiques.
+- À quelle fréquence on joue en boutique (le fondateur a écrit chaque semaine, le post officiel part d'événements locaux trimestriels), quand ont lieu les premiers événements et avec quelles règles : salons privés dans le jeu ou un mode dédié, et si les résultats comptent pour des événements régionaux ou un championnat du monde.
+- Les prix, les récompenses pour une précommande en boutique et la façon dont les promos et les boosters spéciaux sont attribués lors des événements.
+- Les conditions de la version pour les créateurs. L'AMA du 12 octobre pourrait répondre à certaines de ces questions.
 
 ## D'où vient l'information {#source}
 
-Le [post de Tim Jooste sur X](https://x.com/TimothyJooste/status/2107532013687418943) du 6 octobre 2026, avec une vidéo de 15 secondes. Au 7 octobre, il n'y a aucun post sur le programme sur la page Steam du jeu ; nous mettrons cet article à jour quand Koin Games publiera les conditions officielles.`,
+Le [post de Tim Jooste sur X](https://x.com/TimothyJooste/status/2107532013687418943) du 6 octobre 2026, avec une vidéo de 15 secondes, et le [post du compte officiel d'Origins TCG](https://x.com/origins_tcg/status/2108281049721491549) du 8 octobre 2026, avec la [réponse qui annonce l'AMA](https://x.com/origins_tcg/status/2108281052212985975). Au 7 octobre, il n'y avait aucun post sur le programme sur la page Steam du jeu ; nous mettrons cet article à jour après l'AMA ou quand Koin Games publiera les conditions officielles.`,
     faq: [
       {
         q: "Qu'est-ce que le Digital LGS Program d'Origins TCG ?",
-        a: "Un programme annoncé sur X par le fondateur et CEO de Koin Games, Tim Jooste, le 6 octobre 2026 : les boutiques de jeux locales accueillent des tournois hebdomadaires d'Origins, vendent des boosters et des promos exclusifs réservés aux joueurs sur place et prennent les précommandes des prochains sets de collection, qui ne seront pas disponibles dans le jeu. Les conditions officielles n'ont pas encore été publiées.",
+        a: "Un programme annoncé sur X par le fondateur et CEO de Koin Games, Tim Jooste, le 6 octobre 2026 : les boutiques de jeux locales accueillent des tournois hebdomadaires d'Origins, vendent des boosters et des promos exclusifs réservés aux joueurs sur place et prennent les précommandes des prochains sets de collection, qui ne seront pas disponibles dans le jeu. Le 8 octobre, le compte officiel d'Origins a ajouté les conditions pour les boutiques : précommandes avec une part des revenus, ni frais ni stock, des événements de jeu organisé en échange. Aucune page avec les conditions complètes n'a encore été publiée.",
       },
       {
         q: "Quand commencent les événements Origins TCG en boutique ?",
@@ -1357,7 +1650,11 @@ Le [post de Tim Jooste sur X](https://x.com/TimothyJooste/status/210753201368741
       },
       {
         q: "Comment une boutique de jeux peut-elle rejoindre le programme d'Origins TCG ?",
-        a: "En contactant directement Tim Jooste : dans le post, il écrit que ses messages privés sur X sont ouverts et propose un appel. En deux mois, selon le post, plus de 30 boutiques s'étaient déjà manifestées. Il existe aussi une version du programme pour les streamers et les créateurs de contenu.",
+        a: "En contactant directement Koin Games : Tim Jooste écrit que ses messages privés sur X sont ouverts et propose un appel, et le compte officiel demande aux gérants de boutique et aux créateurs de lui envoyer un message privé pour participer à l'AMA sur le programme, le lundi 12 octobre 2026 à 21:00 UTC. En deux mois, selon le fondateur, plus de 30 boutiques s'étaient déjà manifestées. Il existe aussi une version du programme pour les streamers et les créateurs de contenu.",
+      },
+      {
+        q: "Combien coûte l'adhésion d'une boutique au programme d'Origins TCG ?",
+        a: "Rien, d'après le compte officiel d'Origins (8 octobre 2026) : les cartes, les boosters, les boîtes et les cases sont des objets de l'inventaire Steam, donc les boutiques n'achètent pas de marchandise, ne gardent pas de stock et n'expédient pas de commandes. Elles prennent les précommandes et reçoivent une part des revenus, dont le montant n'a pas été publié, et accueillent en échange des événements de jeu organisé.",
       },
     ],
   },
