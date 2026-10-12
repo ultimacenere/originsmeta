@@ -186,6 +186,8 @@ const LABELS = {
     deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: the cards you played and the round. A second panel shows the opponent's Legendary and the cards they reveal.",
     deckWindow: "Show the deck tracker",
     oppWindow: "Show the opponent's cards",
+    inMatch: "Show the panels only during a match",
+    inMatchNote: "They show up at the first round and disappear about 30 seconds after the match ends, in the OBS source too. It needs the screen scanner: with it off, the panels always stay visible.",
     oppShort: "Opponent",
     allOff: "All off",
     tour: {
@@ -367,6 +369,8 @@ const LABELS = {
     deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato e round. Un secondo pannello mostra la Leggendaria dell'avversario e le carte che rivela.",
     deckWindow: "Mostra il deck tracker",
     oppWindow: "Mostra le carte dell'avversario",
+    inMatch: "Mostra i pannelli solo durante la partita",
+    inMatchNote: "Compaiono al primo round e spariscono una trentina di secondi dopo la fine, anche nella sorgente per OBS. Serve lo scanner dello schermo: spento, i pannelli restano sempre visibili.",
     oppShort: "Avversario",
     allOff: "Tutto spento",
     tour: {
@@ -548,6 +552,8 @@ const LABELS = {
     deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activado se actualiza en vivo durante la partida: cartas que jugaste y ronda. Un segundo panel muestra la Legendaria del rival y las cartas que revela.",
     deckWindow: "Mostrar el deck tracker",
     oppWindow: "Mostrar las cartas del rival",
+    inMatch: "Mostrar los paneles solo durante la partida",
+    inMatchNote: "Aparecen en la primera ronda y desaparecen unos 30 segundos después del final, también en la fuente para OBS. Necesita el escáner de pantalla: apagado, los paneles siempre quedan visibles.",
     oppShort: "Rival",
     allOff: "Todo apagado",
     tour: {
@@ -960,6 +966,8 @@ function overlayPanel(s: AppState) {
       ${o.template === "custom" ? customEditor(o.custom) : ""}
       <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
       <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
+      <div class="row"><label class="switch"><input type="checkbox" id="panels-in-match"${o.onlyInMatch ? " checked" : ""} /> ${esc(L.inMatch)}</label></div>
+      <p class="fine">${esc(L.inMatchNote)}</p>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
@@ -1257,6 +1265,7 @@ root.addEventListener("change", async (e) => {
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
   if (t.id === "opp-window") t.checked = await window.tracker.setOppWindow(t.checked);
+  if (t.id === "panels-in-match") t.checked = await window.tracker.setPanelsOnlyInMatch(t.checked);
   if (t.name === "panel-template" && t.checked) await window.tracker.setPanelTemplate(t.value as PanelTemplate);
   if (t.id === "scanner-on") t.checked = await window.tracker.setScanner(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic

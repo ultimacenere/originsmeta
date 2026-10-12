@@ -121,6 +121,8 @@ export type OverlayState = {
   /** il template dei pannelli (0.4.1) e le opzioni di quello personalizzato */
   template: PanelTemplate;
   custom: PanelCustom;
+  /** i pannelli si vedono solo durante la partita (0.4.1, serve lo scanner acceso) */
+  onlyInMatch: boolean;
   /** la finestra sopra il gioco è aperta */
   window: boolean;
   /** la finestra lascia passare i clic al gioco */
@@ -195,6 +197,8 @@ export type TrackerApi = {
   setPanelTemplate(template: PanelTemplate): Promise<PanelTemplate>;
   /** Cambia le opzioni del template personalizzato (anche solo una; "reset" = quelle di partenza); i pannelli si aggiornano subito. Restituisce quelle in uso. */
   setPanelCustom(custom: PanelCustomChange | "reset"): Promise<PanelCustom>;
+  /** Pannelli solo durante la partita (true) o sempre (false); restituisce la scelta in uso. */
+  setPanelsOnlyInMatch(on: boolean): Promise<boolean>;
   /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
   quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
@@ -261,6 +265,8 @@ export type DeckTrackerView = {
   } | null;
   /** le opzioni del template personalizzato quando è quello in uso (0.4.1), così le ricevono anche la finestra e OBS */
   custom?: PanelCustom | null;
+  /** fuori partita con "solo durante la partita" acceso: la sorgente per OBS resta vuota (le finestre si nascondono) */
+  hidden?: boolean;
   updatedAt: string;
 };
 

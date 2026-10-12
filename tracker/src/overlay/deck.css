@@ -57,6 +57,8 @@ body.in-obs { overflow: hidden; }
 .round { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 0.68rem; color: var(--mint); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
 .round .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); }
 .in-obs .dt { width: 230px; }
+/* "solo durante la partita" (0.4.1): fuori partita il pannello non si vede, anche nella sorgente per OBS */
+body.is-hidden #deck { visibility: hidden; }
 /* niente scorrimento: la finestra prende l'altezza del contenuto */
 html, body { overflow: hidden; }
 

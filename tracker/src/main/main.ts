@@ -199,7 +199,7 @@ function currentView(): OverlayView {
 function currentDeckView(): DeckTrackerView {
   const view = deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
   // le opzioni del personalizzato viaggiano con i dati: le leggono la finestra e la sorgente per OBS (0.4.1)
-  return { ...view, custom: panelTemplate === "custom" ? panelCustom : null };
+  return { ...view, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted() };
 }
 
 /* ---------- partite che solo lo schermo vede (11/10/2026) ---------- */
@@ -335,6 +335,7 @@ function state(): AppState {
       deckWindow: panelOpen("deck"),
       template: panelTemplate,
       custom: panelCustom,
+      onlyInMatch: panelsOnlyInMatch,
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
       oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
@@ -400,6 +401,40 @@ type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; ope
 let panelTemplate: PanelTemplate = "classic";
 /** Le opzioni del template personalizzato, salvate con il template (0.4.1). */
 let panelCustom: PanelCustom = DEFAULT_CUSTOM;
+/**
+ * Pannelli solo durante la partita (0.4.1, Pierluigi: "il tracker appare solo quando sei in partita, quando esci
+ * scompare, un'opzione flaggabile"). "In partita" è quello dello scanner (`frames.live().inMatch`: mana del tabellone
+ * letto negli ultimi 30 secondi): i pannelli compaiono al primo round e spariscono una trentina di secondi dopo la
+ * fine. Senza scanner l'app non lo sa, e i pannelli restano visibili. Le finestre si nascondono (non si chiudono:
+ * restano "accese" e tengono posto e misura); la sorgente per OBS resta vuota (`hidden`).
+ */
+let panelsOnlyInMatch = false;
+/** Il tutorial illumina i pannelli: in quel momento si vedono anche fuori partita. */
+let panelsSpotlit = false;
+function panelsWanted(): boolean {
+  if (!panelsOnlyInMatch || panelsSpotlit || !frames?.running) return true;
+  return Boolean(frames.live()?.inMatch);
+}
+/** Mostra o nasconde le finestre dei pannelli accese; gira ogni secondo e mezzo e a ogni aggiornamento dei pannelli. */
+function syncPanelVisibility() {
+  const want = panelsWanted();
+  for (const k of PANEL_KINDS) {
+    if (!panelOpen(k)) continue;
+    const w = panels[k].win!;
+    if (w.webContents.isLoading()) continue; // la mostra ready-to-show
+    if (want && !w.isVisible()) w.showInactive();
+    else if (!want && w.isVisible()) w.hide();
+  }
+}
+setInterval(syncPanelVisibility, 1500);
+function setPanelsOnlyInMatch(on: boolean): boolean {
+  panelsOnlyInMatch = on;
+  savePanelTemplate();
+  syncPanelVisibility();
+  pushDeckNow();
+  push();
+  return on;
+}
 const TEMPLATE_FILE = "panel-template.json";
 // dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
 // pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
@@ -420,6 +455,7 @@ const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
 const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
 function pushDeckNow() {
+  syncPanelVisibility();
   if (!PANEL_KINDS.some(panelOpen)) return;
   const view = currentDeckView();
   for (const k of PANEL_KINDS) if (panelOpen(k)) panels[k].win!.webContents.send("deck:view", view);
@@ -453,16 +489,17 @@ function loadPanelPrefs() {
     }
   }
   try {
-    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown };
+    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown };
     panelTemplate = readTemplate(saved.template);
     panelCustom = readCustom(saved.custom);
+    panelsOnlyInMatch = saved.onlyInMatch === true;
   } catch {
     // prima volta: classico
   }
 }
 function savePanelTemplate() {
   try {
-    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom }));
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch }));
   } catch {
     // non essenziale
   }
@@ -567,7 +604,7 @@ function openPanel(k: PanelKind) {
     panels[k].keep = false;
     push();
   });
-  win.once("ready-to-show", () => win.showInactive());
+  win.once("ready-to-show", () => panelsWanted() && win.showInactive());
   void win.loadFile(path.join(__dirname, "overlay", "deck.html"), { query: { view: k === "deck" ? "me" : "opp", layout: panelTemplate } });
 }
 
@@ -1011,6 +1048,7 @@ function registerIpc() {
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("tracker:panel-template", (e, t: unknown) => (fromOpenApp(e) ? setPanelTemplate(readTemplate(t)) : panelTemplate));
   ipcMain.handle("tracker:panel-custom", (e, c: unknown) => (fromOpenApp(e) ? setPanelCustom(c) : panelCustom));
+  ipcMain.handle("tracker:panels-in-match", (e, on: unknown) => (fromOpenApp(e) ? setPanelsOnlyInMatch(on === true) : panelsOnlyInMatch));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {
@@ -1110,6 +1148,9 @@ function registerIpc() {
   // tutorial (12/10/2026): i pannelli aperti si illuminano; quelli chiusi si aprono, così il giocatore vede dove stanno
   ipcMain.handle("tracker:spot-panels", (e, on: unknown) => {
     if (!fromOpenApp(e)) return; // app bloccata: i pannelli non si aprono (0.4.0)
+    // illuminati si vedono anche fuori partita, con "solo durante la partita" acceso (0.4.1)
+    panelsSpotlit = on === true;
+    syncPanelVisibility();
     for (const k of PANEL_KINDS) {
       const opened = on === true && !panelOpen(k);
       if (opened) setPanel(k, true);

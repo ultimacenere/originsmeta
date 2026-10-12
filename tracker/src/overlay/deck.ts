@@ -375,6 +375,8 @@ function render(v: DeckTrackerView) {
   const live = v.live;
   const close = window.deckApi ? `<button type="button" class="x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
   const fine = `${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}${window.deckApi ? "" : `<footer class="brand">${esc(L.brand)}</footer>`}`;
+  // "solo durante la partita" e fuori partita: niente pannello (in OBS la sorgente resta vuota)
+  document.body.classList.toggle("is-hidden", v.hidden === true);
   if (layout !== "classic") {
     const leg = v.deck?.legendary ?? null;
     const legOut = Boolean(live && leg && leg.drawn >= 1);
