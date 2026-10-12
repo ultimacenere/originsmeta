@@ -310,7 +310,7 @@ Link dell'app verso il sito: guida all'installazione `/en/tracker#install`, `/it
 `/es/tracker#instalacion` (schermata di blocco, fondo della pagina, LEGGIMI), collegamento e statistiche personali
 `/<lingua>/account/tracker`, win rate `/<lingua>/analytics` (pannello "Account OriginsMeta").
 
-## Setup e correzioni (0.4.1, 12/10/2026, da pubblicare)
+## Setup e correzioni (0.4.1, 12–13/10/2026, pubblicata il 13/10)
 
 Richieste di Pierluigi del 12/10/2026 sera (bug dalla diretta di Robip, poi "nella main app, le opzioni devono essere
 raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gioco").
@@ -346,7 +346,7 @@ raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gi
 - **Avviso dell'aggiornamento**: riquadro magenta in cima, "Aggiornamento in arrivo: aspetta a lanciare il gioco"
   (l'app si installa solo a gioco chiuso). `--capture-update=<versione>` per gli screenshot.
 - Sul sito la guida di `/tracker` è in cinque passi brevi (requisiti in una riga, problemi comuni in un riquadro) e
-  rimanda al tasto Setup: **va online insieme alla release 0.4.1**, non prima.
+  rimanda al tasto Setup: online dal 13/10, con la release 0.4.1.
 
 ## Il sito (Fase 3)
 
