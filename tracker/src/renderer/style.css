@@ -400,3 +400,22 @@ details.match > summary:hover .m-title { color: #fff; }
 .tpl-sketch .board { fill: none; stroke: var(--felt-line); stroke-dasharray: 2 1.5; }
 .tpl-sketch .me { fill: var(--mint); opacity: 0.85; }
 .tpl-sketch .opp { fill: #ff3d8b; opacity: 0.85; }
+.tpl-sketch .pen { fill: var(--gold); opacity: 0.85; }
+
+/* editor del template personalizzato (0.4.1) */
+.custom-ed { margin: 4px 0 0; padding: 12px 14px 14px; display: grid; gap: 12px; min-width: 0; background: var(--night-2); border: 2px solid var(--mint); border-radius: 12px; }
+.custom-ed legend { padding: 0 6px; font-family: var(--display); font-size: 0.8rem; font-weight: 700; color: var(--mint); }
+.ed-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.ed-label { font-family: var(--display); font-size: 0.72rem; font-weight: 700; color: var(--sky); min-width: 110px; }
+.segs { display: inline-flex; border: 2px solid var(--night-3); border-radius: 999px; overflow: hidden; }
+.seg { position: relative; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: block; padding: 4px 14px; font-size: 0.78rem; font-weight: 700; color: var(--pale-muted); }
+.seg input:checked + span { background: var(--mint); color: var(--ink); }
+.seg input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: -2px; }
+.ed-ranges { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 18px; }
+.range { display: grid; gap: 4px; font-size: 0.8rem; color: var(--chalk); }
+.range output { font-family: var(--mono); color: var(--mint); margin-left: 6px; }
+.range input { width: 100%; accent-color: var(--mint); }
+.ed-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px 18px; }
+.ed-group { display: grid; gap: 6px; align-content: start; }

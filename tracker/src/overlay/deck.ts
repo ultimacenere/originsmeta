@@ -17,12 +17,15 @@
  * sopra; `strips` ("Fasce in alto") mette in una fila sola le 12 carte e la Leggendaria del mio mazzo, e la Leggendaria
  * e le carte rivelate dell'avversario ("no, solo le 12 carte e la leggendaria"); `columns` ("Colonne ai lati") ha a
  * sinistra il mio mazzo con le carte ancora nel mazzo e a destra Leggendaria e carte rivelate dell'avversario, le sue
- * carte rimanenti e il mana dei due con la freccia del combattimento (copre il pannello del mana del gioco).
+ * carte rimanenti e il mana dei due con la freccia del combattimento (copre il pannello del mana del gioco); `custom`
+ * ("Personalizzato") segue le opzioni scelte in Setup, che arrivano con i dati (`view.custom`) e cambiano il pannello
+ * dal vivo: disposizione, carte disegnate o solo nomi, carte per fila, opacità del fondo, carte finite nascoste, cosa
+ * mostrare.
  * La dicitura "non affiliato a Koin Games" resta solo nella sorgente per OBS, cioè quando il pannello va in onda: nelle
  * finestre accanto al gioco, che vede solo il giocatore, non c'è (Pierluigi, 11/10/2026: "togliamola dai due deck,
  * dobbiamo recuperare più spazio possibile"; la dicitura resta nella finestra principale dell'app).
  */
-import type { DeckApi, DeckCard, DeckTrackerView } from "../shared/types";
+import type { DeckApi, DeckCard, DeckTrackerView, PanelCustom } from "../shared/types";
 
 declare global {
   interface Window {
@@ -39,9 +42,9 @@ const lang: Lang = asked === "en" || asked === "it" || asked === "es" ? asked : 
 document.documentElement.lang = lang;
 document.body.classList.add(window.deckApi ? "in-window" : "in-obs");
 if (view === "opp") document.body.classList.add("is-opp");
-type Layout = "classic" | "strips" | "columns";
+type Layout = "classic" | "strips" | "columns" | "custom";
 const asked2 = params.get("layout");
-const layout: Layout = asked2 === "strips" || asked2 === "columns" ? asked2 : "classic";
+const layout: Layout = asked2 === "strips" || asked2 === "columns" || asked2 === "custom" ? asked2 : "classic";
 document.body.classList.add(`layout-${layout}`);
 
 const LABELS = {
@@ -268,6 +271,53 @@ function columnPanel(v: DeckTrackerView, zoom: string, close: string, grip: stri
 }
 
 /**
+ * Una carta in riga, "solo nomi" del personalizzato: gemma del mana, nome, copie rimaste (le mie) o viste
+ * (dell'avversario). Stesse regole delle carte disegnate: scura a zero, bordo menta se in mano, oro la Leggendaria.
+ */
+function nameRow(c: DeckCard, mine: boolean, live: boolean, cls = "") {
+  const left = mine ? (live ? Math.max(0, c.copies - c.drawn) : c.copies) : c.copies;
+  const inHand = mine && live ? Math.max(0, c.drawn - c.played) : 0;
+  const state = `${mine && left === 0 ? " out" : ""}${inHand > 0 ? " inhand" : ""}${c.legendary ? " is-leg" : ""}${cls}`;
+  const count = mine ? (left > 0 ? String(left) : "") : c.copies > 1 ? `×${c.copies}` : "";
+  const tip = mine && live ? `${c.name} · ${L.cardState(left, inHand, c.drawn - inHand)}` : c.name;
+  return `<li class="nrow${state}" title="${esc(tip)}"><span class="ngem">${c.mana ?? "–"}</span><span class="nname">${c.legendary ? "★ " : ""}${esc(c.name)}</span><span class="ncount">${count}</span></li>`;
+}
+
+/** "Personalizzato": le opzioni di Setup decidono che cosa c'è e come. */
+function customPanel(v: DeckTrackerView, c: PanelCustom, zoom: string, close: string, grip: string, fine: string) {
+  const live = v.live;
+  const names = c.cards === "names";
+  const items: string[] = [];
+  const stats: string[] = [];
+  let waiting = "";
+  if (view === "opp") {
+    const leg = live?.opponent.legendary ?? null;
+    if (c.opp.legendary) {
+      if (leg) items.push(names ? nameRow(leg, false, Boolean(live), " leg") : `<li class="gc leg">${cardImg(leg)}</li>`);
+      else if (!names) items.push(`<li class="gc leg"><span class="cardimg back" aria-hidden="true">?</span></li>`);
+    }
+    const seen = live?.opponent.seen ?? [];
+    items.push(...seen.map((x) => (names ? nameRow(x, false, Boolean(live)) : seenCard(x))));
+    if (!seen.length) waiting = `<p class="muted cwait">${esc(L.oppWaiting)}</p>`;
+    const left = live?.opponent.deckLeft;
+    if (c.opp.deckLeft) stats.push(stat(left !== null && left !== undefined ? String(left) : "–", L.oppLeft, L.oppLeftTip));
+    if (c.opp.life) stats.push(stat(lifePips(live ? live.life.opp : null), L.life));
+    if (c.opp.mana) stats.push(manaBox(live));
+  } else if (v.deck) {
+    const leg = v.deck.legendary;
+    const list: [DeckCard, string][] = [...(c.me.legendary && leg ? [[leg, ` leg${zoom}`] as [DeckCard, string]] : []), ...v.deck.cards.map((x) => [x, ""] as [DeckCard, string])];
+    // carte finite nascoste: solo durante la partita (fuori partita ogni carta ha tutte le sue copie)
+    const shown = c.hideOut && live ? list.filter(([x]) => x.copies - x.drawn > 0) : list;
+    items.push(...shown.map(([x, cls]) => (names ? nameRow(x, true, Boolean(live), cls) : myCard(x, Boolean(live), cls))));
+    const total = (leg?.copies ?? 0) + v.deck.cards.reduce((n, x) => n + x.copies, 0);
+    if (c.me.deckLeft) stats.push(deckLeftStat(live?.deckLeft ?? null, total));
+    if (c.me.life) stats.push(stat(lifePips(live ? live.life.me : null), L.life));
+  } else waiting = `<p class="muted pad">${esc(L.choose)}</p>`;
+  const list = items.length ? `<ul class="${names ? "nlist" : "cgrid"} ccards">${items.join("")}</ul>` : "";
+  return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
+}
+
+/**
  * Nella finestra il pannello a L ha l'angolo vuoto: lì i clic passano al gioco. Il processo principale ignora il mouse
  * finché il puntatore non è sopra il braccio o la colonna (con `forward` i movimenti arrivano lo stesso).
  */
@@ -326,7 +376,12 @@ function render(v: DeckTrackerView) {
     const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
     // la radice della pagina (#deck, .dt) è il pannello
     root.classList.add("panel-x");
-    root.innerHTML = (layout === "strips" ? stripPanel : columnPanel)(v, zoom, close, grip, fine);
+    if (layout === "custom" && v.custom) {
+      // carte per fila e opacità come variabili CSS (la CSP non ammette attributi style nell'HTML)
+      root.style.setProperty("--per-row", String(v.custom.perRow));
+      root.style.setProperty("--bg-alpha", String(v.custom.opacity / 100));
+      root.innerHTML = customPanel(v, v.custom, zoom, close, grip, fine);
+    } else root.innerHTML = (layout === "strips" ? stripPanel : columnPanel)(v, zoom, close, grip, fine);
     for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
     fit();
     return;

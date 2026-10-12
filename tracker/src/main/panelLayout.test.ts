@@ -4,7 +4,7 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { clampWidth, defaultSpot, readTemplate, WIDTH_LIMITS } from "./panelLayout";
+import { clampWidth, DEFAULT_CUSTOM, defaultSpot, readCustom, readTemplate, WIDTH_LIMITS } from "./panelLayout";
 import { PANEL_TEMPLATES } from "../shared/types";
 
 const FULL_HD = { x: 0, y: 0, width: 1920, height: 1080 };
@@ -45,6 +45,35 @@ describe("template dei pannelli", () => {
   test("template salvato sconosciuto o rotto: classico", () => {
     assert.equal(readTemplate("strips"), "strips");
     assert.equal(readTemplate("columns"), "columns");
+    assert.equal(readTemplate("custom"), "custom");
     for (const bad of [undefined, null, "", "Strips", 3, {}]) assert.equal(readTemplate(bad), "classic");
+  });
+
+  test("personalizzato: parte dove partono le colonne", () => {
+    assert.deepEqual(defaultSpot("custom", "deck", FULL_HD), defaultSpot("columns", "deck", FULL_HD));
+    assert.deepEqual(defaultSpot("custom", "opp", FULL_HD), defaultSpot("columns", "opp", FULL_HD));
+  });
+
+  test("opzioni del personalizzato: valori sbagliati o mancanti tornano quelli di partenza, numeri nei limiti", () => {
+    assert.deepEqual(readCustom(undefined), DEFAULT_CUSTOM);
+    assert.deepEqual(readCustom("rotto"), DEFAULT_CUSTOM);
+    const c = readCustom({ orientation: "diagonal", cards: "names", perRow: 40, opacity: -5, hideOut: "sì", me: { life: false }, opp: null });
+    assert.equal(c.orientation, DEFAULT_CUSTOM.orientation);
+    assert.equal(c.cards, "names");
+    assert.equal(c.perRow, 13);
+    assert.equal(c.opacity, 0);
+    assert.equal(c.hideOut, DEFAULT_CUSTOM.hideOut);
+    assert.deepEqual(c.me, { ...DEFAULT_CUSTOM.me, life: false });
+    assert.deepEqual(c.opp, DEFAULT_CUSTOM.opp);
+    assert.equal(readCustom({ perRow: 2.6 }).perRow, 3);
+    assert.equal(readCustom({ perRow: Number.NaN }).perRow, DEFAULT_CUSTOM.perRow);
+  });
+
+  test("opzioni del personalizzato: un cambio parziale tocca solo il suo campo", () => {
+    const now = readCustom({ cards: "names", perRow: 13, opacity: 40, opp: { mana: false } });
+    const next = readCustom({ opacity: 70 }, now);
+    assert.deepEqual(next, { ...now, opacity: 70 });
+    assert.deepEqual(readCustom({ me: { deckLeft: false } }, now).me, { ...now.me, deckLeft: false });
+    assert.equal(readCustom({ me: { deckLeft: false } }, now).opp.mana, false);
   });
 });

@@ -25,7 +25,7 @@
  * del sito, non copiate nell'app); senza rete resta il nome della carta dentro la cornice.
  */
 import cardsTable from "../cards.json";
-import { PANEL_TEMPLATES, type AppState, type LinkProblem, type PanelTemplate, type SyncProblem, type TrackedMatch, type TrackerApi } from "../shared/types";
+import { PANEL_TEMPLATES, type AppState, type LinkProblem, type PanelCustom, type PanelCustomChange, type PanelTemplate, type SyncProblem, type TrackedMatch, type TrackerApi } from "../shared/types";
 
 declare global {
   interface Window {
@@ -159,6 +159,28 @@ const LABELS = {
       classic: { name: "Classic", text: "Deck tracker as a grid on the left, the opponent's L-shaped panel top right." },
       strips: { name: "Top strips", text: "Your 12 cards and Legendary, and the opponent's Legendary and revealed cards, in two strips along the top of the game." },
       columns: { name: "Side columns", text: "On the left your deck and the cards left in it; on the right the opponent's cards, the cards left in their deck and both players' mana." },
+      custom: { name: "Custom", text: "You choose: layout, drawn cards or names only, cards per row, transparency and what to show." },
+    },
+    customize: {
+      title: "Customize",
+      orientation: "Layout",
+      vertical: "Vertical",
+      horizontal: "Horizontal",
+      cards: "Cards",
+      art: "Drawn",
+      names: "Names only",
+      perRow: "Cards per row",
+      opacity: "Background opacity",
+      hideOut: "Hide finished cards",
+      me: "Your deck",
+      opp: "Opponent",
+      legendary: "Legendary",
+      deckLeft: "Cards in deck",
+      oppLeft: "Cards left",
+      life: "Barriers",
+      mana: "Mana and combat",
+      reset: "Reset",
+      note: "Changes show up right away on the open panels and in the OBS source.",
     },
     deckTitle: "Deck tracker",
     deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: the cards you played and the round. A second panel shows the opponent's Legendary and the cards they reveal.",
@@ -318,6 +340,28 @@ const LABELS = {
       classic: { name: "Classico", text: "Deck tracker a griglia a sinistra, pannello a L dell'avversario in alto a destra." },
       strips: { name: "Fasce in alto", text: "Le tue 12 carte e la Leggendaria, e la Leggendaria e le carte rivelate dell'avversario, in due fasce sul bordo alto del gioco." },
       columns: { name: "Colonne ai lati", text: "A sinistra il tuo mazzo e le carte che ti restano; a destra le carte dell'avversario, quelle che gli restano e il mana dei due giocatori." },
+      custom: { name: "Personalizzato", text: "Scegli tu: disposizione, carte disegnate o solo nomi, carte per fila, trasparenza e cosa mostrare." },
+    },
+    customize: {
+      title: "Personalizza",
+      orientation: "Disposizione",
+      vertical: "Verticale",
+      horizontal: "Orizzontale",
+      cards: "Carte",
+      art: "Disegnate",
+      names: "Solo nomi",
+      perRow: "Carte per fila",
+      opacity: "Opacità del fondo",
+      hideOut: "Nascondi le carte finite",
+      me: "Il tuo mazzo",
+      opp: "Avversario",
+      legendary: "Leggendaria",
+      deckLeft: "Carte nel mazzo",
+      oppLeft: "Carte rimanenti",
+      life: "Barriere",
+      mana: "Mana e combattimento",
+      reset: "Ripristina",
+      note: "Le modifiche si vedono subito sui pannelli aperti e nella sorgente per OBS.",
     },
     deckTitle: "Deck tracker",
     deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato e round. Un secondo pannello mostra la Leggendaria dell'avversario e le carte che rivela.",
@@ -477,6 +521,28 @@ const LABELS = {
       classic: { name: "Clásico", text: "Deck tracker en cuadrícula a la izquierda, panel en L del rival arriba a la derecha." },
       strips: { name: "Franjas arriba", text: "Tus 12 cartas y la Legendaria, y la Legendaria y las cartas reveladas del rival, en dos franjas en el borde superior del juego." },
       columns: { name: "Columnas laterales", text: "A la izquierda tu mazo y las cartas que te quedan; a la derecha las cartas del rival, las que le quedan y el maná de los dos jugadores." },
+      custom: { name: "Personalizado", text: "Tú eliges: disposición, cartas dibujadas o solo nombres, cartas por fila, transparencia y qué mostrar." },
+    },
+    customize: {
+      title: "Personaliza",
+      orientation: "Disposición",
+      vertical: "Vertical",
+      horizontal: "Horizontal",
+      cards: "Cartas",
+      art: "Dibujadas",
+      names: "Solo nombres",
+      perRow: "Cartas por fila",
+      opacity: "Opacidad del fondo",
+      hideOut: "Ocultar las cartas agotadas",
+      me: "Tu mazo",
+      opp: "Rival",
+      legendary: "Legendaria",
+      deckLeft: "Cartas en el mazo",
+      oppLeft: "Cartas restantes",
+      life: "Barreras",
+      mana: "Maná y combate",
+      reset: "Restablecer",
+      note: "Los cambios se ven al momento en los paneles abiertos y en la fuente para OBS.",
     },
     deckTitle: "Deck tracker",
     deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activado se actualiza en vivo durante la partida: cartas que jugaste y ronda. Un segundo panel muestra la Legendaria del rival y las cartas que revela.",
@@ -827,6 +893,7 @@ const TEMPLATE_SKETCH: Record<PanelTemplate, string> = {
   classic: '<rect class="me" x="1" y="9" width="10" height="22" rx="1.5"/><rect class="opp" x="44" y="2" width="19" height="6" rx="1.5"/><rect class="opp" x="55" y="2" width="8" height="22" rx="1.5"/>',
   strips: '<rect class="me" x="7" y="1" width="19" height="7" rx="1.5"/><rect class="opp" x="40" y="1" width="19.5" height="7" rx="1.5"/>',
   columns: '<rect class="me" x="1" y="6" width="9" height="20" rx="1.5"/><rect class="opp" x="54" y="10" width="9.5" height="17" rx="1.5"/>',
+  custom: '<rect class="me" x="2" y="11" width="10" height="5" rx="1.5"/><rect class="me" x="2" y="18" width="10" height="5" rx="1.5"/><rect class="opp" x="47" y="2" width="15" height="5" rx="1.5"/><path class="pen" d="M26 31l10-10 3 3-10 10h-3z"/>',
 };
 const sketch = (t: PanelTemplate) => `<svg class="tpl-sketch" viewBox="0 0 64 36" aria-hidden="true"><rect class="screen" x="0.5" y="0.5" width="63" height="35" rx="3"/><rect class="board" x="14" y="9" width="38" height="18" rx="1"/>${TEMPLATE_SKETCH[t]}</svg>`;
 
@@ -838,6 +905,37 @@ function templatePicker(current: PanelTemplate) {
       ).join("")}</div>
       <p class="fine">${esc(L.panelStyleNote)}</p>
     </fieldset>`;
+}
+
+/**
+ * Le opzioni del template personalizzato (0.4.1), sotto le schede quando è quello scelto. Ogni cambio va subito ai
+ * pannelli (`setPanelCustom`); i cursori mandano ogni passo e, mentre si trascinano, la pagina non si ridisegna
+ * (`holdRender`), altrimenti il cursore sparirebbe sotto il dito.
+ */
+function customEditor(c: PanelCustom) {
+  const C = L.customize;
+  const radio = (name: string, value: string, label: string, on: boolean) => `<label class="seg"><input type="radio" name="${name}" value="${value}"${on ? " checked" : ""} /><span>${esc(label)}</span></label>`;
+  const check = (key: string, label: string, on: boolean) => `<label class="switch"><input type="checkbox" data-custom="${key}"${on ? " checked" : ""} /> ${esc(label)}</label>`;
+  const range = (key: "perRow" | "opacity", label: string, min: number, max: number, value: number, unit: string) =>
+    `<label class="range"><span>${esc(label)} <output data-out="${key}">${value}${unit}</output></span><input type="range" data-custom="${key}" min="${min}" max="${max}" value="${value}" /></label>`;
+  return `<fieldset class="custom-ed"><legend>${esc(C.title)}</legend>
+      <div class="ed-row"><span class="ed-label">${esc(C.orientation)}</span><span class="segs">${radio("c-orientation", "vertical", C.vertical, c.orientation === "vertical")}${radio("c-orientation", "horizontal", C.horizontal, c.orientation === "horizontal")}</span></div>
+      <div class="ed-row"><span class="ed-label">${esc(C.cards)}</span><span class="segs">${radio("c-cards", "art", C.art, c.cards === "art")}${radio("c-cards", "names", C.names, c.cards === "names")}</span></div>
+      <div class="ed-ranges">${range("perRow", C.perRow, 1, 13, c.perRow, "")}${range("opacity", C.opacity, 0, 100, c.opacity, "%")}</div>
+      <div class="row">${check("hideOut", C.hideOut, c.hideOut)}</div>
+      <div class="ed-cols">
+        <div class="ed-group"><span class="ed-label">${esc(C.me)}</span>${check("me.legendary", C.legendary, c.me.legendary)}${check("me.deckLeft", C.deckLeft, c.me.deckLeft)}${check("me.life", C.life, c.me.life)}</div>
+        <div class="ed-group"><span class="ed-label">${esc(C.opp)}</span>${check("opp.legendary", C.legendary, c.opp.legendary)}${check("opp.deckLeft", C.oppLeft, c.opp.deckLeft)}${check("opp.life", C.life, c.opp.life)}${check("opp.mana", C.mana, c.opp.mana)}</div>
+      </div>
+      <div class="row"><button type="button" class="btn" id="custom-reset">${esc(C.reset)}</button><span class="fine">${esc(C.note)}</span></div>
+    </fieldset>`;
+}
+
+/** Un cambio dell'editor: va ai pannelli e resta nello stato che la pagina ha in mano (l'app non lo rimanda). */
+async function changeCustom(change: PanelCustomChange | "reset", redraw: boolean) {
+  const next = await window.tracker.setPanelCustom(change);
+  if (last) last = { ...last, overlay: { ...last.overlay, custom: next } };
+  if (redraw) rerender();
 }
 
 function overlayPanel(s: AppState) {
@@ -859,6 +957,7 @@ function overlayPanel(s: AppState) {
       <h3>${esc(L.deckTitle)}</h3>
       <p class="sub">${esc(L.deckIntro)}</p>
       ${templatePicker(o.template)}
+      ${o.template === "custom" ? customEditor(o.custom) : ""}
       <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
       <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
@@ -1031,8 +1130,15 @@ let first = true;
 let last: AppState | null = null;
 
 let renderedPage: Page = page;
+/** Un cursore dell'editor è tenuto premuto: lo stato nuovo aspetta il rilascio (vedi customEditor). */
+let holdRender = false;
+let heldState = false;
 function render(s: AppState) {
   last = s;
+  if (holdRender) {
+    heldState = true;
+    return;
+  }
   // cambio di pagina (Setup ↔ partite): si parte dall'alto; altrimenti il ridisegno non sposta la pagina
   const scroll = renderedPage === page ? window.scrollY : 0;
   renderedPage = page;
@@ -1105,6 +1211,7 @@ root.addEventListener("click", async (e) => {
   const copyText = target.closest<HTMLButtonElement>("[data-copy-text]");
   if (copyText) return void copyWith(copyText, copyText.dataset.copyText!);
   if (target.id === "folder") void window.tracker.openDataFolder();
+  if (target.id === "custom-reset") void changeCustom("reset", true);
   if (target.id === "sync-now") void window.tracker.syncNow();
   if (target.id === "verify-now") void window.tracker.verifyNow();
   if (target.id === "ov-session") void window.tracker.resetSession();
@@ -1116,8 +1223,36 @@ root.addEventListener("click", async (e) => {
     void window.tracker.unlinkAccount();
   }
 });
+root.addEventListener("pointerdown", (e) => {
+  if ((e.target as HTMLElement).matches?.('input[type="range"]')) holdRender = true;
+});
+const releaseRange = () => {
+  if (!holdRender) return;
+  holdRender = false;
+  if (heldState) {
+    heldState = false;
+    rerender();
+  }
+};
+document.addEventListener("pointerup", releaseRange);
+document.addEventListener("pointercancel", releaseRange);
+// i cursori dell'editor mandano ogni passo ai pannelli, senza ridisegnare la pagina
+root.addEventListener("input", (e) => {
+  const t = e.target as HTMLInputElement;
+  const key = t.dataset.custom;
+  if (t.type !== "range" || (key !== "perRow" && key !== "opacity")) return;
+  const out = root.querySelector<HTMLOutputElement>(`output[data-out="${key}"]`);
+  if (out) out.textContent = `${t.value}${key === "opacity" ? "%" : ""}`;
+  void changeCustom({ [key]: Number(t.value) }, false);
+});
 root.addEventListener("change", async (e) => {
   const t = e.target as HTMLInputElement;
+  if (t.name === "c-orientation" && t.checked) return void changeCustom({ orientation: t.value as PanelCustom["orientation"] }, true);
+  if (t.name === "c-cards" && t.checked) return void changeCustom({ cards: t.value as PanelCustom["cards"] }, true);
+  if (t.type === "checkbox" && t.dataset.custom) {
+    const [group, field] = t.dataset.custom.split(".");
+    return void changeCustom(field ? { [group]: { [field]: t.checked } } : { [group]: t.checked }, true);
+  }
   if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);

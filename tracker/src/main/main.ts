@@ -65,8 +65,8 @@ import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
-import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelTemplate, TrackedMatch } from "../shared/types";
-import { clampWidth, defaultSpot, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
+import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelCustom, PanelTemplate, TrackedMatch } from "../shared/types";
+import { clampWidth, DEFAULT_CUSTOM, defaultSpot, readCustom, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
@@ -197,7 +197,9 @@ function currentView(): OverlayView {
 }
 
 function currentDeckView(): DeckTrackerView {
-  return deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
+  const view = deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
+  // le opzioni del personalizzato viaggiano con i dati: le leggono la finestra e la sorgente per OBS (0.4.1)
+  return { ...view, custom: panelTemplate === "custom" ? panelCustom : null };
 }
 
 /* ---------- partite che solo lo schermo vede (11/10/2026) ---------- */
@@ -332,6 +334,7 @@ function state(): AppState {
       obsUrl: overlayServer ? `${overlayServer.url}?lang=${lang()}` : null,
       deckWindow: panelOpen("deck"),
       template: panelTemplate,
+      custom: panelCustom,
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
       oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
@@ -395,6 +398,8 @@ const obsLayout = () => (panelTemplate === "classic" ? "" : `&layout=${panelTemp
 type Spot = { x: number; y: number; width: number };
 type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean; spots?: Partial<Record<PanelTemplate, Spot>> };
 let panelTemplate: PanelTemplate = "classic";
+/** Le opzioni del template personalizzato, salvate con il template (0.4.1). */
+let panelCustom: PanelCustom = DEFAULT_CUSTOM;
 const TEMPLATE_FILE = "panel-template.json";
 // dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
 // pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
@@ -446,14 +451,16 @@ function loadPanelPrefs() {
     }
   }
   try {
-    panelTemplate = readTemplate((JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown }).template);
+    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown };
+    panelTemplate = readTemplate(saved.template);
+    panelCustom = readCustom(saved.custom);
   } catch {
     // prima volta: classico
   }
 }
 function savePanelTemplate() {
   try {
-    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate }));
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom }));
   } catch {
     // non essenziale
   }
@@ -557,6 +564,23 @@ function openPanel(k: PanelKind) {
   });
   win.once("ready-to-show", () => win.showInactive());
   void win.loadFile(path.join(__dirname, "overlay", "deck.html"), { query: { view: k === "deck" ? "me" : "opp", layout: panelTemplate } });
+}
+
+/**
+ * Opzioni del personalizzato (0.4.1): arrivano anche a ogni passo di un cursore, quindi i pannelli si aggiornano subito
+ * ma il file si scrive mezzo secondo dopo l'ultimo cambio. La finestra principale tiene da sé il valore che mostra
+ * (niente ridisegno dell'app a ogni passo, che toglierebbe il cursore di mano).
+ */
+let customSaveTimer: ReturnType<typeof setTimeout> | null = null;
+function setPanelCustom(raw: unknown): PanelCustom {
+  panelCustom = raw === "reset" ? DEFAULT_CUSTOM : readCustom(raw, panelCustom);
+  if (customSaveTimer) clearTimeout(customSaveTimer);
+  customSaveTimer = setTimeout(() => {
+    customSaveTimer = null;
+    savePanelTemplate();
+  }, 500);
+  pushDeckNow();
+  return panelCustom;
 }
 
 /** Cambio di template (0.4.1): si salva e i pannelli aperti si chiudono e si riaprono con quello nuovo. */
@@ -981,6 +1005,7 @@ function registerIpc() {
   ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
   ipcMain.handle("tracker:panel-template", (e, t: unknown) => (fromOpenApp(e) ? setPanelTemplate(readTemplate(t)) : panelTemplate));
+  ipcMain.handle("tracker:panel-custom", (e, c: unknown) => (fromOpenApp(e) ? setPanelCustom(c) : panelCustom));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {

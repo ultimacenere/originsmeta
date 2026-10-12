@@ -328,6 +328,18 @@ raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gi
   ci sono più. Un problema dell'account (sito irraggiungibile, invio fermo) resta anche nella pagina principale, con il
   link a Setup. Il tutorial apre Setup per i passi su account, scanner e pannelli e chiude sul tasto (chiave
   `originsmeta.tracker.tour.v2`: chi l'aveva visto lo rivede una volta). `--capture-setup` fotografa Setup.
+- **Template dei pannelli** (disegni di Pierluigi; `src/main/panelLayout.ts` con i test): in Setup › Overlay, "Stile dei
+  pannelli", quattro schede con lo schema dello schermo. **Classico** (com'era); **Fasce in alto** (le 12 carte e la
+  Leggendaria in una fila sul bordo alto, fra il mio nome e la mano dell'avversario; Leggendaria e carte rivelate
+  dell'avversario fra la sua mano e l'ingranaggio); **Colonne ai lati** (a sinistra il mio mazzo con le carte ancora nel
+  mazzo; a destra, sopra il pannello del mana del gioco, carte dell'avversario, carte rimanenti e mana dei due);
+  **Personalizzato** (disposizione verticale o orizzontale = numeri sotto o accanto, carte disegnate o solo nomi in riga,
+  carte per fila da 1 a 13, opacità del fondo, carte finite nascoste, cosa mostrare di ciascun pannello, "Ripristina").
+  Le posizioni di partenza sono frazioni dello schermo principale misurate sui disegni (l'app non sa dove sta la
+  finestra del gioco); ogni template ricorda la sua posizione. Template e opzioni in `panel-template.json`; le opzioni
+  viaggiano con i dati dei pannelli (`view.custom`), quindi cambiano dal vivo anche nella sorgente per OBS (indirizzi con
+  `&layout=`). Cambiare template riapre i pannelli aperti. Nei template nuovi i pannelli si trascinano da qualunque
+  punto e si allargano con la maniglia (anche quello dell'avversario).
 - Sul sito la guida di `/tracker` è in cinque passi brevi (requisiti in una riga, problemi comuni in un riquadro) e
   rimanda al tasto Setup: **va online insieme alla release 0.4.1**, non prima.
 

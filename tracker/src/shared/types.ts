@@ -86,15 +86,41 @@ export type OverlayView = {
  * orizzontali sul bordo alto del gioco (le 12 carte e la Leggendaria del mio mazzo; Leggendaria e carte rivelate
  * dell'avversario); `columns` = "Colonne ai lati", due colonne sui bordi del tabellone (a sinistra il mio mazzo e le
  * carte ancora nel mazzo; a destra, sopra il pannello del mana del gioco, Leggendaria e carte rivelate dell'avversario,
- * le sue carte rimanenti e il mana dei due giocatori con la freccia del combattimento).
+ * le sue carte rimanenti e il mana dei due giocatori con la freccia del combattimento); `custom` = "Personalizzato",
+ * con le opzioni di `PanelCustom` scelte in Setup.
  */
-export type PanelTemplate = "classic" | "strips" | "columns";
-export const PANEL_TEMPLATES: readonly PanelTemplate[] = ["classic", "strips", "columns"];
+export type PanelTemplate = "classic" | "strips" | "columns" | "custom";
+export const PANEL_TEMPLATES: readonly PanelTemplate[] = ["classic", "strips", "columns", "custom"];
+
+/**
+ * Il template personalizzato (0.4.1, 12/10/2026, Pierluigi: "customizzazione del tracker, righe e posizioni, orizzontale
+ * o verticale, trasparenza, carte solo nomi in riga o carte disegnate"). Valori controllati da `readCustom`
+ * (main/panelLayout.ts).
+ */
+export type PanelCustom = {
+  /** `vertical`: i numeri sotto le carte; `horizontal`: accanto, a destra (pannello largo e basso) */
+  orientation: "vertical" | "horizontal";
+  /** carte disegnate o solo i nomi in riga (gemma del mana, nome, copie) */
+  cards: "art" | "names";
+  /** carte (o righe di nomi) per fila, da 1 a 13 */
+  perRow: number;
+  /** opacità del fondo del pannello, da 0 (trasparente) a 100 */
+  opacity: number;
+  /** le carte finite (tutte le copie pescate) spariscono invece di scurirsi */
+  hideOut: boolean;
+  /** cosa mostrare del mio mazzo */
+  me: { legendary: boolean; deckLeft: boolean; life: boolean };
+  /** cosa mostrare dell'avversario */
+  opp: { legendary: boolean; deckLeft: boolean; life: boolean; mana: boolean };
+};
+/** Un cambio delle opzioni del personalizzato: solo i campi che cambiano. */
+export type PanelCustomChange = Omit<Partial<PanelCustom>, "me" | "opp"> & { me?: Partial<PanelCustom["me"]>; opp?: Partial<PanelCustom["opp"]> };
 
 /** Overlay (Fase 4, 30/09/2026): finestra sopra il gioco e sorgente per OBS. */
 export type OverlayState = {
-  /** il template dei pannelli (0.4.1) */
+  /** il template dei pannelli (0.4.1) e le opzioni di quello personalizzato */
   template: PanelTemplate;
+  custom: PanelCustom;
   /** la finestra sopra il gioco è aperta */
   window: boolean;
   /** la finestra lascia passare i clic al gioco */
@@ -167,6 +193,8 @@ export type TrackerApi = {
   setOppWindow(on: boolean): Promise<boolean>;
   /** Sceglie il template dei pannelli (0.4.1): i pannelli aperti si riaprono con quello nuovo; restituisce quello in uso. */
   setPanelTemplate(template: PanelTemplate): Promise<PanelTemplate>;
+  /** Cambia le opzioni del template personalizzato (anche solo una; "reset" = quelle di partenza); i pannelli si aggiornano subito. Restituisce quelle in uso. */
+  setPanelCustom(custom: PanelCustomChange | "reset"): Promise<PanelCustom>;
   /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
   quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
@@ -231,6 +259,8 @@ export type DeckTrackerView = {
     /** `deckLeft`: carte ancora nel mazzo dell'avversario, stimate dalla sua mano (12/10/2026; null se non si sa) */
     opponent: { deckLeft: number | null; legendary: DeckCard | null; seen: DeckCard[] };
   } | null;
+  /** le opzioni del template personalizzato quando è quello in uso (0.4.1), così le ricevono anche la finestra e OBS */
+  custom?: PanelCustom | null;
   updatedAt: string;
 };
 

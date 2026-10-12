@@ -25,6 +25,7 @@ const api: TrackerApi & { rendered(): void } = {
   setDeckWindow: (on) => ipcRenderer.invoke("tracker:deck-window", on),
   setOppWindow: (on) => ipcRenderer.invoke("tracker:opp-window", on),
   setPanelTemplate: (template) => ipcRenderer.invoke("tracker:panel-template", template),
+  setPanelCustom: (custom) => ipcRenderer.invoke("tracker:panel-custom", custom),
   setScanner: (on) => ipcRenderer.invoke("tracker:scanner", on),
   quitApp: () => ipcRenderer.invoke("tracker:quit"),
   dismissScannerNotice: () => ipcRenderer.invoke("tracker:scanner-notice"),
