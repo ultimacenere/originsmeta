@@ -260,10 +260,17 @@ function stripPanel(v: DeckTrackerView, zoom: string, grip: string, fine: string
     view === "opp" ? `${oppCards(v)}${seen ? "" : `<li class="swait">${esc(L.oppWaiting)}</li>`}`
     : v.deck ? myCards(v, zoom)
     : `<li class="swait">${esc(L.choose)}</li>`;
+  return `<div class="tab stab">${tabContent()}</div><ul class="srow">${row}</ul>${fine}${grip}`;
+}
+
+/**
+ * Il contenuto della linguetta di Fasce e Colonne: la × sul lato esterno, il logo verso l'interno (Pierluigi, 12/10/2026
+ * sera: "x sull'esterno con linguetta e scritta verso l'interno della linguetta"): × a sinistra sul mio mazzo, a destra
+ * sull'avversario. In OBS niente ×.
+ */
+function tabContent() {
   const x = window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
-  // la × sul lato esterno della linguetta, il logo verso l'interno (Pierluigi, 12/10/2026 sera): a sinistra sul mio mazzo, a destra sull'avversario
-  const tab = view === "opp" ? `${miniLogo}${x}` : `${x}${miniLogo}`;
-  return `<div class="tab stab">${tab}</div><ul class="srow">${row}</ul>${fine}${grip}`;
+  return view === "opp" ? `${miniLogo}${x}` : `${x}${miniLogo}`;
 }
 
 /**
@@ -282,7 +289,7 @@ function legBand(c: DeckCard | null, mine: boolean, live: boolean, zoom = "") {
 }
 
 /** "Colonne ai lati": logo in testa, la Leggendaria a fascia, le carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
-function columnPanel(v: DeckTrackerView, zoom: string, close: string, grip: string, fine: string) {
+function columnPanel(v: DeckTrackerView, zoom: string, grip: string, fine: string) {
   const live = v.live;
   let body: string;
   if (view === "opp") {
@@ -295,7 +302,10 @@ function columnPanel(v: DeckTrackerView, zoom: string, close: string, grip: stri
     const total = (v.deck.legendary?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0);
     body = `${v.deck.legendary ? legBand(v.deck.legendary, true, Boolean(live), zoom) : ""}<ul class="cgrid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
   } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-  return `<div class="chead">${miniLogo}${close}</div>${body}${fine}${grip}`;
+  // il logo in una linguetta fuori dal corpo, come nelle Fasce (Pierluigi, 12/10/2026 sera: "origins meta sempre nella
+  // versione laterale deve essere un'etichetta e non nel corpo"): in alto, a sinistra sul mio mazzo e a destra
+  // sull'avversario, con la × sul lato esterno
+  return `<div class="tab ctab">${tabContent()}</div>${body}${fine}${grip}`;
 }
 
 /**
@@ -414,7 +424,11 @@ function render(v: DeckTrackerView) {
     } else if (layout === "strips") {
       root.classList.add(view === "opp" ? "tab-below" : "has-tab");
       root.innerHTML = stripPanel(v, zoom, grip, fine);
-    } else root.innerHTML = columnPanel(v, zoom, close, grip, fine);
+    } else {
+      root.classList.add("has-tab");
+      if (view === "opp") root.classList.add("tab-right");
+      root.innerHTML = columnPanel(v, zoom, grip, fine);
+    }
     for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
     // l'illustrazione delle fasce della Leggendaria (solo slug del sito: lettere, cifre e trattini)
     for (const el of root.querySelectorAll<HTMLElement>("[data-art]")) if (/^[a-z0-9-]+$/.test(el.dataset.art ?? "")) el.style.setProperty("--row-art", `url("https://originsmeta.com/cards/art/${el.dataset.art}.webp")`);

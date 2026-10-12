@@ -205,9 +205,13 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
 .layout-strips .dt.panel-x { padding: 5px; }
 .layout-strips .dt.has-tab { margin-top: 26px; border-top-left-radius: 0; }
 .layout-strips .dt.tab-below { margin-bottom: 26px; border-bottom-right-radius: 0; }
-.layout-strips .tab { height: 26px; background: rgba(46, 30, 140, 0.92); }
-.layout-strips .tab .mini-logo { height: 14px; opacity: 1; }
-.layout-strips .has-tab .tab { padding: 0 10px 0 5px; }
+.layout-strips .tab, .layout-columns .tab { height: 26px; background: rgba(46, 30, 140, 0.92); }
+.layout-strips .tab .mini-logo, .layout-columns .tab .mini-logo { height: 14px; opacity: 1; }
+.layout-strips .has-tab .tab, .layout-columns .has-tab .tab { padding: 0 10px 0 5px; }
+/* Colonne (12/10/2026 sera): linguetta in alto, a sinistra sul mio mazzo e a destra sull'avversario */
+.layout-columns .dt.has-tab { margin-top: 26px; border-top-left-radius: 0; }
+.layout-columns .dt.tab-right { border-top-left-radius: 10px; border-top-right-radius: 0; }
+.layout-columns .tab-right .tab { left: auto; right: -2px; padding: 0 5px 0 10px; }
 .layout-strips .tab-below .tab { bottom: auto; top: 100%; left: auto; right: -2px; padding: 0 5px 0 10px; border-top: 0; border-bottom: 2px solid var(--sky); border-radius: 0 0 10px 10px; }
 .in-window.is-opp.layout-strips .dt, .in-window.is-opp.layout-columns .dt { -webkit-app-region: drag; }
 .srow, .cgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
