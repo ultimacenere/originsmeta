@@ -6,8 +6,7 @@
  * Colori (nota "winrate 2.0" di Pierluigi: aggro rosso, control verde, tempo blu; gli altri presi dalle icone):
  * contrasto ≥ 4,5:1 come testo su night, night-2, night-3 e felt (lo controlla `archetypeIcons.test.ts`).
  *
- * "tempo" ha icona e colore (il blu) ma non è ancora un archetipo del sito: per mostrarlo servono anche il modulo di
- * pubblicazione, la regola che suggerisce l'archetipo (archetype.ts) e le etichette di `archetypeLabels` (decks.ts).
+ * "tempo" è un archetipo del sito dal 12/10/2026: lo sceglie chi pubblica (la regola di archetype.ts non lo suggerisce).
  *
  * Il modulo non importa dati: lo usano anche i client component (DeckExplorer). L'etichetta resta in `archetypeLabels`.
  */
@@ -21,7 +20,6 @@ export const ARCHETYPE_ICONS = {
   swarm: { src: "/media/archetypes/swarm.webp", color: "#e2a368" },
   evil: { src: "/media/archetypes/evil.webp", color: "#8fd3ff" },
   combo: { src: "/media/archetypes/combo.webp", color: "#ff7ac8" },
-  /* non ancora nei dati del sito (vedi sopra) */
   tempo: { src: "/media/archetypes/tempo.webp", color: "#5aa2ff" },
 } as const satisfies Record<string, ArchetypeIcon>;
 

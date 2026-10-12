@@ -10,6 +10,8 @@ export const archetypeLabels: Record<string, L10n> = {
   evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits"),
   discard: n("Discard", "Scarto", "Descarte", "Défausse"),
   midrange: n("Midrange", "Midrange", "Midrange", "Midrange"),
+  // Tempo dal 12/10/2026 (Pierluigi, nota "winrate 2.0" e "sì aggiungilo"): lo sceglie chi pubblica, suggestArchetype non lo propone
+  tempo: n("Tempo", "Tempo", "Tempo", "Tempo"),
   control: n("Control", "Controllo", "Control", "Contrôle"),
   aggro: n("Aggro", "Aggro", "Aggro", "Aggro"),
   combo: n("Combo", "Combo", "Combo", "Combo"),
