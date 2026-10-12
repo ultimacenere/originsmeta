@@ -207,6 +207,7 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
 .layout-strips .dt.tab-below { margin-bottom: 26px; border-bottom-right-radius: 0; }
 .layout-strips .tab { height: 26px; background: rgba(46, 30, 140, 0.92); }
 .layout-strips .tab .mini-logo { height: 14px; opacity: 1; }
+.layout-strips .has-tab .tab { padding: 0 10px 0 5px; }
 .layout-strips .tab-below .tab { bottom: auto; top: 100%; left: auto; right: -2px; padding: 0 5px 0 10px; border-top: 0; border-bottom: 2px solid var(--sky); border-radius: 0 0 10px 10px; }
 .in-window.is-opp.layout-strips .dt, .in-window.is-opp.layout-columns .dt { -webkit-app-region: drag; }
 .srow, .cgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }

@@ -258,7 +258,9 @@ function stripPanel(v: DeckTrackerView, zoom: string, grip: string, fine: string
     : v.deck ? myCards(v, zoom)
     : `<li class="swait">${esc(L.choose)}</li>`;
   const x = window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
-  return `<div class="tab stab">${miniLogo}${x}</div><ul class="srow">${row}</ul>${fine}${grip}`;
+  // la × sul lato esterno della linguetta, il logo verso l'interno (Pierluigi, 12/10/2026 sera): a sinistra sul mio mazzo, a destra sull'avversario
+  const tab = view === "opp" ? `${miniLogo}${x}` : `${x}${miniLogo}`;
+  return `<div class="tab stab">${tab}</div><ul class="srow">${row}</ul>${fine}${grip}`;
 }
 
 /** "Colonne ai lati": logo in testa, carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
