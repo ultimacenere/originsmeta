@@ -259,3 +259,16 @@ body.spot .dt.panel-x { animation: spot-pulse 1.1s ease-in-out infinite alternat
 .is-opp .ncount { color: var(--crimson); }
 .nrow.just { animation: drawn-zoom 0.9s ease; }
 body.spot.layout-custom .dt.panel-x { animation: spot-pulse 1.1s ease-in-out infinite alternate; }
+
+/* la Leggendaria a fascia nelle Colonne (12/10/2026 sera), come le righe del deck builder del sito */
+.legband { position: relative; display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 4px 8px 4px 5px; background: var(--night); border: 2px solid var(--gold); border-radius: 8px; overflow: hidden; transition: opacity 0.35s ease, border-color 0.35s ease; }
+.legband::after { content: ""; position: absolute; z-index: 0; inset: 0 0 0 35%; background-image: var(--row-art, none); background-position: center 45%; background-size: cover; opacity: 0.6; mask-image: linear-gradient(to right, transparent, #000 55%); pointer-events: none; }
+.legband > * { position: relative; z-index: 1; }
+.lb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--display); font-weight: 700; font-size: 0.82rem; color: var(--gold); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); }
+.lb-count { min-width: 1.5em; padding: 1px 5px; border-radius: 999px; background: var(--ink); border: 1.5px solid var(--mint); color: var(--mint); font-family: var(--display); font-weight: 800; font-size: 0.72rem; line-height: 1.15; text-align: center; }
+.legband.out { opacity: 0.4; border-color: var(--night-3); }
+.legband.out .lb-name { color: var(--muted); }
+.legband.inhand { border-color: var(--mint); box-shadow: 0 0 8px rgba(49, 227, 189, 0.5); }
+.legband.unknown { border-style: dashed; border-color: var(--crimson); }
+.legband.unknown .lb-name { color: var(--crimson); }
+.legband.just { animation: drawn-zoom 0.9s ease; }

@@ -77,6 +77,7 @@ const NO_SCAN = process.argv.includes("--no-scan");
 const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--capture=".length) ?? null;
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
 /** Screenshot di verifica dell'app sbloccata senza account: solo con --capture e mai nell'app impacchettata. */
+const CAPTURE_UPDATE = CAPTURE ? (process.argv.find((a) => a.startsWith("--capture-update="))?.slice("--capture-update=".length) ?? null) : null;
 const CAPTURE_UNLOCKED = Boolean(CAPTURE) && !app.isPackaged && process.argv.includes("--capture-unlocked");
 
 // la cartella dei dati è fissa (%APPDATA%\OriginsMeta Analytics), qualunque sia il nome dell'app: senza, col nome
@@ -342,7 +343,8 @@ function state(): AppState {
       sessionStart: new Date(sessionStart).toISOString(),
       view: currentView(),
     },
-    update: updater && updater.status.state !== "idle" ? updater.status : null,
+    // --capture-update=<versione>: l'avviso dell'aggiornamento negli screenshot di verifica (0.4.1)
+    update: CAPTURE_UPDATE ? { state: "downloading", version: CAPTURE_UPDATE } : updater && updater.status.state !== "idle" ? updater.status : null,
     scanner: {
       // negli screenshot di verifica (--capture) lo scanner non parte: si mostra la preferenza
       on: CAPTURE ? scanPrefs.on : Boolean(frames?.running),

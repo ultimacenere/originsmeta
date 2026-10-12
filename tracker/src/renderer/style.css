@@ -209,6 +209,9 @@ a.cardimg:hover, a.cardimg:focus-visible { transform: translateY(-3px); border-c
 .hero-main { display: grid; gap: 12px; min-width: 0; }
 .kicker { margin: 0; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pale-muted); }
 /* titolo del pannello, ma grande: il nome del mazzo in celeste come i nomi sul sito */
+/* nome del mazzo con "Crea il tuo layout" a destra (12/10/2026 sera); sotto i 520 px il tasto va a capo */
+.deck-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.btn-layout { padding: 9px 20px; font-size: 0.82rem; }
 .panel h2.deck-name { margin: 0; font-family: var(--display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; color: var(--sky); overflow-wrap: anywhere; }
 .hero .deckstrip { gap: 6px; }
 .deck-leg { margin: 0; color: var(--pale); font-weight: 600; }
@@ -360,7 +363,10 @@ details.match > summary:hover .m-title { color: #fff; }
 .notice h2 { margin: 0; font-family: var(--display); font-size: 0.95rem; color: var(--mint); }
 .notice p { margin: 0; font-size: 0.86rem; color: var(--chalk); }
 .fine.live { color: var(--mint); }
-.notice.update { font-size: 0.86rem; color: var(--chalk); }
+/* aggiornamento in arrivo (12/10/2026 sera): in evidenza, magenta come gli avvisi della palette (il giallo è delle Leggendarie) */
+.notice.update { border: 3px solid var(--crimson); background: linear-gradient(180deg, rgba(255, 61, 139, 0.16) 0%, rgba(255, 61, 139, 0.04) 100%), var(--night-2); box-shadow: 0 10px 26px -14px rgba(255, 61, 139, 0.8); }
+.notice.update h2 { font-size: 1.02rem; color: #ff6fb0; }
+.notice.update p { font-size: 0.9rem; color: var(--chalk); }
 /* tasto "Chiudi l'app" accanto allo stato (11/10/2026) */
 .top-right { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 

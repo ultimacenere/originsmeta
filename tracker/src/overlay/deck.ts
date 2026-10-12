@@ -68,6 +68,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "right to left" : "left to right"),
     noScanner: "Turn on the screen scanner in the app for live updates.",
     close: "Close",
+    legendary: "Legendary",
     brand: "Tracker · not affiliated with Koin Games",
   },
   it: {
@@ -90,6 +91,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "da destra a sinistra" : "da sinistra a destra"),
     noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
     close: "Chiudi",
+    legendary: "Leggendaria",
     brand: "Tracker · non affiliato a Koin Games",
   },
   es: {
@@ -112,6 +114,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "de derecha a izquierda" : "de izquierda a derecha"),
     noScanner: "Activa el escáner de pantalla en la app para las actualizaciones en vivo.",
     close: "Cerrar",
+    legendary: "Legendaria",
     brand: "Tracker · sin afiliación con Koin Games",
   },
 } as const;
@@ -263,18 +266,34 @@ function stripPanel(v: DeckTrackerView, zoom: string, grip: string, fine: string
   return `<div class="tab stab">${tab}</div><ul class="srow">${row}</ul>${fine}${grip}`;
 }
 
-/** "Colonne ai lati": logo in testa, carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
+/**
+ * La Leggendaria a fascia, come le righe del deck builder del sito (Pierluigi, 12/10/2026 sera: "la leggendaria diventa
+ * una fascia in stile del nostro builder così recuperiamo la carta singola e un po' di px"): gemma del mana, nome in
+ * oro, illustrazione del sito sfumata da destra (`--row-art`, messa dal JavaScript: la CSP non ammette style
+ * nell'HTML), copie rimaste a destra. Scura quando l'hai pescata e giocata, menta quando è in mano; l'avversario
+ * senza Leggendaria vista ha la fascia tratteggiata con il punto interrogativo.
+ */
+function legBand(c: DeckCard | null, mine: boolean, live: boolean, zoom = "") {
+  if (!c) return `<div class="legband unknown"><span class="ngem">?</span><span class="lb-name">${esc(L.legendary)}</span></div>`;
+  const left = mine ? (live ? Math.max(0, c.copies - c.drawn) : c.copies) : 0;
+  const inHand = mine && live ? Math.max(0, c.drawn - c.played) : 0;
+  const state = `${mine && left === 0 ? " out" : ""}${inHand > 0 ? " inhand" : ""}${zoom}`;
+  return `<div class="legband${state}"${c.slug ? ` data-art="${esc(c.slug)}"` : ""} title="${esc(c.name)}"><span class="ngem">${c.mana ?? "–"}</span><span class="lb-name">★ ${esc(c.name)}</span>${mine && left > 0 ? `<span class="lb-count">${left}</span>` : ""}</div>`;
+}
+
+/** "Colonne ai lati": logo in testa, la Leggendaria a fascia, le carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
 function columnPanel(v: DeckTrackerView, zoom: string, close: string, grip: string, fine: string) {
   const live = v.live;
   let body: string;
   if (view === "opp") {
     const left = live?.opponent.deckLeft;
-    body = `<ul class="cgrid">${oppCards(v)}</ul>${live?.opponent.seen.length ? "" : `<p class="muted cwait">${esc(L.oppWaiting)}</p>`}
+    const seen = live?.opponent.seen ?? [];
+    body = `${legBand(live?.opponent.legendary ?? null, false, Boolean(live))}${seen.length ? `<ul class="cgrid">${seen.map(seenCard).join("")}</ul>` : `<p class="muted cwait">${esc(L.oppWaiting)}</p>`}
       ${stat(left !== null && left !== undefined ? String(left) : "–", L.oppLeft, L.oppLeftTip)}
       ${manaBox(live)}`;
   } else if (v.deck) {
     const total = (v.deck.legendary?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0);
-    body = `<ul class="cgrid">${myCards(v, zoom)}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
+    body = `${v.deck.legendary ? legBand(v.deck.legendary, true, Boolean(live), zoom) : ""}<ul class="cgrid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
   } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
   return `<div class="chead">${miniLogo}${close}</div>${body}${fine}${grip}`;
 }
@@ -397,6 +416,8 @@ function render(v: DeckTrackerView) {
       root.innerHTML = stripPanel(v, zoom, grip, fine);
     } else root.innerHTML = columnPanel(v, zoom, close, grip, fine);
     for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
+    // l'illustrazione delle fasce della Leggendaria (solo slug del sito: lettere, cifre e trattini)
+    for (const el of root.querySelectorAll<HTMLElement>("[data-art]")) if (/^[a-z0-9-]+$/.test(el.dataset.art ?? "")) el.style.setProperty("--row-art", `url("https://originsmeta.com/cards/art/${el.dataset.art}.webp")`);
     fit();
     return;
   }

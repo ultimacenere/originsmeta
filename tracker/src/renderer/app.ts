@@ -44,6 +44,7 @@ const LABELS = {
   en: {
     listening: "Tracking your matches",
     setup: "Setup",
+    layout: "Create your layout",
     setupIntro: "Your OriginsMeta account, the screen scanner, the panels above the game and the app's options. Your games stay on the main page.",
     back: "Back to your matches",
     general: "App",
@@ -145,9 +146,10 @@ const LABELS = {
     scannerWatching: "Reading the game window",
     scannerWaiting: "On · waiting for the game",
     scannerOffNote: "Off: matches are saved with result and deck only, and the Deck tracker doesn't update live.",
-    updateDownloading: (v: string) => "Downloading version " + v + "…",
-    updateReady: (v: string) => "Version " + v + " is ready: the app restarts by itself as soon as you're not in a match.",
-    updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment.",
+    updateTitle: "Update on the way: wait before launching the game",
+    updateDownloading: (v: string) => "Downloading version " + v + ". Don't open Origins TCG yet: when the download is done the app updates and restarts by itself, then you can play.",
+    updateReady: (v: string) => "Version " + v + " is ready. With the game closed the app restarts in a moment: wait before opening it. If the game is already open, the app updates as soon as you close it.",
+    updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment. Wait before opening the game.",
     quitApp: "Close the app",
     noticeTitle: "The screen scanner is on",
     noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in Setup.",
@@ -227,6 +229,7 @@ const LABELS = {
   it: {
     listening: "Sto registrando le tue partite",
     setup: "Setup",
+    layout: "Crea il tuo layout",
     setupIntro: "Il tuo account OriginsMeta, lo scanner dello schermo, i pannelli sopra il gioco e le opzioni dell'app. Il tuo gioco resta nella pagina principale.",
     back: "Torna alle partite",
     general: "App",
@@ -328,9 +331,10 @@ const LABELS = {
     scannerWatching: "Sta leggendo la finestra del gioco",
     scannerWaiting: "Acceso · in attesa del gioco",
     scannerOffNote: "Spento: le partite si salvano solo con esito e mazzo, e il Deck tracker non si aggiorna dal vivo.",
-    updateDownloading: (v: string) => "Sto scaricando la versione " + v + "…",
-    updateReady: (v: string) => "La versione " + v + " è pronta: l'app si riavvia da sola appena non sei in partita.",
-    updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo.",
+    updateTitle: "Aggiornamento in arrivo: aspetta a lanciare il gioco",
+    updateDownloading: (v: string) => "Sto scaricando la versione " + v + ". Non aprire ancora Origins TCG: appena ho finito l'app si aggiorna e si riavvia da sola, poi puoi giocare.",
+    updateReady: (v: string) => "La versione " + v + " è pronta. Con il gioco chiuso l'app si riavvia fra un attimo: aspetta ad aprirlo. Se il gioco è già aperto, l'app si aggiorna appena lo chiudi.",
+    updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo. Aspetta ad aprire il gioco.",
     quitApp: "Chiudi l'app",
     noticeTitle: "Lo scanner dello schermo è acceso",
     noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o in Setup.",
@@ -410,6 +414,7 @@ const LABELS = {
   es: {
     listening: "Registrando tus partidas",
     setup: "Setup",
+    layout: "Crea tu layout",
     setupIntro: "Tu cuenta de OriginsMeta, el escáner de pantalla, los paneles sobre el juego y las opciones de la app. Tu juego se queda en la página principal.",
     back: "Volver a las partidas",
     general: "App",
@@ -511,9 +516,10 @@ const LABELS = {
     scannerWatching: "Leyendo la ventana del juego",
     scannerWaiting: "Activado · esperando al juego",
     scannerOffNote: "Desactivado: las partidas se guardan solo con resultado y mazo, y el Deck tracker no se actualiza en vivo.",
-    updateDownloading: (v: string) => "Descargando la versión " + v + "…",
-    updateReady: (v: string) => "La versión " + v + " está lista: la app se reinicia sola en cuanto no estés en una partida.",
-    updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento.",
+    updateTitle: "Actualización en camino: espera para abrir el juego",
+    updateDownloading: (v: string) => "Descargando la versión " + v + ". No abras todavía Origins TCG: cuando termine, la app se actualiza y se reinicia sola, y luego puedes jugar.",
+    updateReady: (v: string) => "La versión " + v + " está lista. Con el juego cerrado la app se reinicia en un momento: espera para abrirlo. Si el juego ya está abierto, la app se actualiza en cuanto lo cierres.",
+    updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento. Espera para abrir el juego.",
     quitApp: "Cerrar la app",
     noticeTitle: "El escáner de pantalla está activado",
     noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en Setup.",
@@ -666,6 +672,14 @@ function top(s: AppState) {
     ${s.access.open && s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
 }
 
+/**
+ * "Crea il tuo layout" (12/10/2026 sera, Pierluigi: "sul main il pulsante opzioni deve essere messo sulla destra del
+ * nome del mazzo e si deve chiamare 'crea il tuo layout', ben visibile"): apre Setup sulla scelta dello stile dei
+ * pannelli (`pendingScroll`). Setup resta anche nella testata, per account, scanner e opzioni dell'app.
+ */
+const layoutButton = `<button type="button" class="btn btn-primary btn-layout" data-open-layout>${esc(L.layout)}</button>`;
+let pendingScroll: string | null = null;
+
 /** Il mazzo scelto adesso nel gioco, in grande: la Leggendaria intera, i numeri e le altre 12 carte. */
 function hero(s: AppState) {
   const all = wl(s.matches);
@@ -678,7 +692,8 @@ function hero(s: AppState) {
       <div class="hero-card">${d?.legendary ? cardArt(d.legendary, 148) : `<span class="empty-card" aria-hidden="true">?</span>`}</div>
       <div class="hero-main">
         <p class="kicker">${esc(L.activeDeck)}</p>
-        ${d ? `<h2 class="deck-name">${esc(d.name ?? legendary?.n ?? "?")}</h2>${legendary && d.name ? `<p class="deck-leg">${star(d.legendary)}${esc(legendary.n)}</p>` : ""}` : `<h2 class="deck-name">${esc(L.noDeck)}</h2><p class="sub">${esc(L.noDeckHint)}</p>`}
+        <div class="deck-title"><h2 class="deck-name">${esc(d ? (d.name ?? legendary?.n ?? "?") : L.noDeck)}</h2>${layoutButton}</div>
+        ${d ? (legendary && d.name ? `<p class="deck-leg">${star(d.legendary)}${esc(legendary.n)}</p>` : "") : `<p class="sub">${esc(L.noDeckHint)}</p>`}
         <div class="tiles">
           <div class="tile"><span class="v">${t.n ? `${t.w}–${t.l}` : "—"}</span><span class="l">${esc(L.today)}${t.n ? "" : ` · ${esc(L.noToday)}`}</span></div>
           <div class="tile"><span class="v">${all.n}</span><span class="l">${esc(L.recorded)} · ${all.w}–${all.l}</span></div>
@@ -865,12 +880,17 @@ function lockScreen(s: AppState) {
     </section>`;
 }
 
-/** Aggiornamento automatico in corso (11/10/2026): una riga in cima, nessun tasto (l'app fa da sola). */
+/**
+ * Aggiornamento automatico in corso (11/10/2026), nessun tasto (l'app fa da sola). Dal 12/10/2026 sera un riquadro in
+ * evidenza, in cima a ogni pagina (Pierluigi: "un avviso sulla main nel momento che c'è una nuova versione di aspettare
+ * a lanciare il game per fine aggiornamento"): l'app si installa solo a gioco chiuso (updater.ts), quindi chi apre il
+ * gioco durante il download rimanda l'aggiornamento a quando lo chiude.
+ */
 function updateNotice(s: AppState) {
   const u = s.update;
   if (!u || !u.version || u.state === "idle" || u.state === "error") return "";
   const text = u.state === "downloading" ? L.updateDownloading(u.version) : u.state === "ready" ? L.updateReady(u.version) : L.updateInstalling(u.version);
-  return `<p class="notice update" role="status">${esc(text)}</p>`;
+  return `<section class="notice update" role="status"><h2>${esc(L.updateTitle)}</h2><p>${esc(text)}</p></section>`;
 }
 
 /** Avviso del primo avvio: lo scanner è acceso (0.3.0, 10/10/2026), che cosa fa e come si spegne. */
@@ -1171,6 +1191,10 @@ function render(s: AppState) {
     }
   }
   window.scrollTo(0, scroll);
+  if (pendingScroll) {
+    document.querySelector(pendingScroll)?.scrollIntoView({ block: "start" });
+    pendingScroll = null;
+  }
   // il tutorial parte solo con l'app sbloccata, cioè al primo avvio dopo il primo collegamento verificato (0.4.0):
   // sulla schermata di blocco resta in sospeso, senza segnarlo come visto
   if (s.access.open) drawTour();
@@ -1204,6 +1228,11 @@ root.addEventListener("click", async (e) => {
   if (target.closest("#tour-again")) {
     tourScrolledTo = null;
     return void goTour(0);
+  }
+  if (target.closest("[data-open-layout]")) {
+    page = "setup";
+    pendingScroll = ".tpl";
+    return void rerender();
   }
   if (target.closest("#open-setup, [data-open-setup]") || target.closest("#close-setup")) {
     page = target.closest("#close-setup") ? "main" : "setup";
