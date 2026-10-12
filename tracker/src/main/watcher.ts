@@ -92,6 +92,10 @@ export class MatchWatcher extends EventEmitter {
   private files: { stats: string | null; inventory: string | null } = { stats: null, inventory: null };
   private lastDiscover = -Infinity;
   private statsMtime = -1;
+  /** Ora di modifica dell'inventario all'ultima lettura del mazzo: un mazzo cambiato nel gioco si rilegge da qui. */
+  private inventoryMtime = -1;
+  /** Le ultime statistiche lette: l'indice del mazzo scelto, per rileggere il mazzo quando cambia solo l'inventario. */
+  private lastStats: ProfileStats | null = null;
   /** `lastMatchAt` della lettura precedente delle statistiche (undefined: nessuna lettura ancora). */
   private seenAt: string | null | undefined = undefined;
   private pending: Pending | null = null;
@@ -137,12 +141,17 @@ export class MatchWatcher extends EventEmitter {
       if (!this.files.stats || now - this.lastDiscover >= DISCOVER_MS || !statOf(this.files.stats)) this.discover(now);
       if (this.pending) await this.tryFinish(now);
       if (!this.files.stats) return;
+      // mazzo modificato nel gioco (12/10/2026, Lightning Strike cambiata con Stroke of Midnight e rimasta nel Deck
+      // tracker): l'inventario si riscrive senza che cambino le statistiche, quindi si guarda anche la sua ora
+      const inv = this.files.inventory ? statOf(this.files.inventory) : null;
+      if (inv && inv.mtimeMs !== this.inventoryMtime && this.lastStats) this.updateDeck(this.lastStats);
       const st = statOf(this.files.stats);
       if (!st || st.mtimeMs === this.statsMtime) return;
       const text = readText(this.files.stats);
       const stats = text ? readStatsFile(text) : null;
       if (!stats) return; // file a metà scrittura: si riprova al giro dopo
       this.statsMtime = st.mtimeMs;
+      this.lastStats = stats;
       this.setStatus({ lastRead: new Date(now).toISOString() });
       this.emit("history", stats.results);
       this.updateDeck(stats);
@@ -167,7 +176,9 @@ export class MatchWatcher extends EventEmitter {
   private discover(now: number) {
     this.lastDiscover = now;
     let stats: { file: string; mtime: number } | null = null;
-    let inventory: { file: string; mtime: number } | null = null;
+    // l'inventario più recente di ogni cartella: vale quello della cartella delle statistiche (stessa build e stesso
+    // account; demo e playtest hanno cartelle diverse), altrimenti il più recente di tutti
+    const inventories = new Map<string, { file: string; mtime: number }>();
     for (const root of this.dirs.cacheRoots) {
       for (const dir of subdirs(root).flatMap(subdirs).flatMap(subdirs)) {
         let names: string[] = [];
@@ -180,14 +191,16 @@ export class MatchWatcher extends EventEmitter {
           const file = path.join(dir, name);
           const st = statOf(file);
           if (!st || st.dir || st.size > 8 * 1024 * 1024) continue;
+          const inventory = inventories.get(dir);
           if (stats && st.mtimeMs <= stats.mtime && inventory && st.mtimeMs <= inventory.mtime) continue;
           const text = readText(file);
           if (!text) continue;
           if ((!stats || st.mtimeMs > stats.mtime) && readStatsFile(text)) stats = { file, mtime: st.mtimeMs };
-          else if ((!inventory || st.mtimeMs > inventory.mtime) && readInventoryFile(text)) inventory = { file, mtime: st.mtimeMs };
+          else if ((!inventory || st.mtimeMs > inventory.mtime) && readInventoryFile(text)) inventories.set(dir, { file, mtime: st.mtimeMs });
         }
       }
     }
+    const inventory = (stats && inventories.get(path.dirname(stats.file))) || [...inventories.values()].sort((a, b) => b.mtime - a.mtime)[0] || null;
     if (stats?.file !== this.files.stats) {
       this.statsMtime = -1;
       if (this.files.stats && stats) this.rebase = true;
@@ -202,8 +215,12 @@ export class MatchWatcher extends EventEmitter {
   }
 
   private decks(): GameDeck[] {
-    const text = this.files.inventory ? readText(this.files.inventory) : null;
-    return (text ? readInventoryFile(text) : null) ?? [];
+    const file = this.files.inventory;
+    const text = file ? readText(file) : null;
+    const decks = text ? readInventoryFile(text) : null;
+    // un file a metà scrittura si riprova al giro dopo (l'ora resta quella di prima)
+    if (file && decks) this.inventoryMtime = statOf(file)?.mtimeMs ?? -1;
+    return decks ?? [];
   }
 
   private updateDeck(stats: ProfileStats) {

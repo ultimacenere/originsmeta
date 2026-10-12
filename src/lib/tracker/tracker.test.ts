@@ -193,6 +193,18 @@ describe("readInventoryFile", () => {
     assert.deepEqual([decks?.[2].name, decks?.[2].cards], [null, []]);
   });
 
+  test("la voce con CardId 0 (segnaposto \"Tower\" del gioco) non è una carta", () => {
+    const text = JSON.stringify({
+      items: [
+        {
+          id: "items.Deck.Web2Deck",
+          items: [{ id: "226", properties: [{ name: "Config", value: JSON.stringify({ DisplayName: "what is a spell", Cards: [{ CardKey: "C00042_SC_V00000", CardId: 83 }, { CardKey: "C00002_MB_V00000", CardId: 54 }, { CardKey: "Tower_V00000", CardId: 0 }] }) }] }],
+        },
+      ],
+    });
+    assert.deepEqual(readInventoryFile(text)?.[0].cards, ["C00042_SC_V00000", "C00002_MB_V00000"]);
+  });
+
   test("file senza mazzi: null", () => {
     assert.equal(readInventoryFile(JSON.stringify({ items: [{ id: "items.Emote.TextEmote", items: [] }] })), null);
     assert.equal(readInventoryFile(statsJson(baseStats)), null);
@@ -392,6 +404,10 @@ describe("file veri del gioco su questo PC", () => {
     const latest = stats.find((s) => s.lastMatchAt) ?? stats[0];
     assert.match(latest.results, /^[WL]*$/);
     const decks = inventories.reduce((a, b) => (b.length > a.length ? b : a));
-    for (const d of decks) assert.equal(d.cards.length, 13);
+    // 13 carte in un mazzo completo; uno incompleto ne ha meno, e il segnaposto del gioco (CardId 0) non conta mai
+    for (const d of decks) {
+      assert.ok(d.cards.length >= 1 && d.cards.length <= 13);
+      for (const k of d.cards) assert.match(k, /^C\d+_[A-Z]{2}(?:_V\d+)?$/);
+    }
   });
 });

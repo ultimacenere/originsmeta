@@ -41,8 +41,17 @@ function setup() {
     fs.writeFileSync(file, bytes);
     touch(file, at);
   };
+  /** Riscrive l'inventario (mazzo modificato nel gioco); `sub` = la cartella di un'altra build, accanto a 0.7.0. */
+  const inventory = (decks: { name: string; cards: string[] }[], at: number, sub?: string) => {
+    const where = sub ? path.join(cacheRoot, "1618175429308424", sub, "0.7.0") : dir;
+    fs.mkdirSync(where, { recursive: true });
+    const file = path.join(where, "307935825bdee329262f1e8aa050a648.json");
+    fs.writeFileSync(file, inventoryJson(decks));
+    touch(file, at);
+  };
   return {
     root,
+    inventory,
     dirs: { cacheRoots: [cacheRoot], replayDirs: [replays] },
     stats,
     replay,
@@ -224,6 +233,41 @@ describe("MatchWatcher", () => {
         out.decks.map((d) => d?.name),
         ["On Death", "Swarm"],
       );
+    } finally {
+      g.cleanup();
+    }
+  });
+
+  test("mazzo modificato nel gioco senza statistiche nuove: il Deck tracker prende le carte nuove", async () => {
+    const g = setup();
+    try {
+      const end = g.advance(1000);
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "W", onboardingLastMatchId: "offline_4" }, end + 100);
+      const w = new MatchWatcher(g.dirs, { lastFingerprint: null, results: "" }, { firstRun: true, now: g.now });
+      const out = listen(w);
+      await w.tick();
+      assert.deepEqual(out.decks.at(-1)?.cards, MY_DECK);
+      // una carta cambiata con un'altra: si riscrive solo l'inventario
+      const edited = [...MY_DECK.slice(0, -1), "C00205_SB_V00000"];
+      g.advance(POLL_MS);
+      g.inventory([{ name: "Swarm", cards: BOT_DECK }, { name: "On Death", cards: edited }], end + 5000);
+      await w.tick();
+      assert.deepEqual(out.decks.at(-1)?.cards, edited);
+    } finally {
+      g.cleanup();
+    }
+  });
+
+  test("inventario più recente di un'altra build: vale quello della cartella delle statistiche", async () => {
+    const g = setup();
+    try {
+      const end = g.advance(1000);
+      g.inventory([{ name: "Playtest", cards: BOT_DECK }, { name: "Altro", cards: BOT_DECK }], end + 50_000, "PT_1");
+      g.stats({ lastMatchPlayedDateTime: iso(end), onboardingResults: "W", onboardingLastMatchId: "offline_4" }, end + 100);
+      const w = new MatchWatcher(g.dirs, { lastFingerprint: null, results: "" }, { firstRun: true, now: g.now });
+      const out = listen(w);
+      await w.tick();
+      assert.equal(out.decks.at(-1)?.name, "On Death");
     } finally {
       g.cleanup();
     }

@@ -93,8 +93,12 @@ export function readInventoryFile(text: string): GameDeck[] | null {
       if (prop && typeof prop.name === "string") props.set(prop.name, String(prop.value ?? ""));
     }
     const config = asRecord(parseJson(props.get("Config") ?? "")) ?? {};
+    // `CardId: 0` non è una carta: il gioco ci tiene un segnaposto ("Tower_V00000", visto il 12/10/2026 in un mazzo da
+    // 12 carte), che il Deck tracker mostrava come una tredicesima casella vuota da 2 copie
     const cards = (Array.isArray(config.Cards) ? config.Cards : [])
-      .map((c) => asRecord(c)?.CardKey)
+      .map(asRecord)
+      .filter((c) => c?.CardId !== 0)
+      .map((c) => c?.CardKey)
       .filter((k): k is string => typeof k === "string" && k.length > 0);
     return {
       index,
