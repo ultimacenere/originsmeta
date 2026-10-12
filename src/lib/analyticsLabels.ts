@@ -32,7 +32,12 @@ export function trackerDownloadHref(locale: Locale): string {
   return `/api/tracker/download?lang=${locale}`;
 }
 
-/** Un passo della guida all'installazione: `{link}` (passo 6) diventa il link a /account/tracker, `{file}` il nome dello zip. */
+/**
+ * Un passo della guida all'installazione: `{file}` (passo 1) il nome dello zip, `{link}` (passo 4) il link a
+ * /account/tracker. Dal 12/10/2026 cinque passi brevi al posto di nove (Pierluigi: "i testi delle istruzioni nella pagina
+ * principale del dl dobbiamo rifarli completamente, renderli easy"): requisiti in una riga sopra, i problemi più comuni
+ * in un riquadro sotto, le opzioni dell'app nel tasto Setup (0.4.1).
+ */
 type Step = { title: string; text: string };
 
 const en = {
@@ -79,39 +84,28 @@ const en = {
   install: {
     /** ancora della guida (/en/tracker#install): i link di /account e /account/tracker ci portano */
     anchor: "install",
-    title: "Install it step by step",
-    intro: "Nine steps, from the download to your first recorded match.",
-    /** testo del link del passo 6, verso /account/tracker */
-    linkText: "the Analytics page of your account",
+    title: "Install it in 5 steps",
+    intro: "A couple of minutes, from the download to your first recorded match.",
+    /** requisiti, in una riga sopra i passi */
+    needs: "You need: a Windows 10 or 11 PC (64-bit), the Origins TCG demo from Steam and a free OriginsMeta account.",
+    /** testo del link del passo 4, verso /account/tracker */
+    linkText: "the Tracker page of your account",
     steps: [
-      { title: "What you need", text: "A PC with Windows 10 or 11 (64-bit) and the Origins TCG demo, installed from Steam." },
-      { title: "Download the zip", text: "Signed in to OriginsMeta (the account is free), press the button below: your browser downloads the file {file}, usually into the Downloads folder. If you aren't signed in, the button takes you to the sign-in page first." },
-      {
-        title: "Extract it",
-        text: "Right-click the zip → “Extract All…”, choose a folder (for example Documents) and press “Extract”. Don't open the app from inside the zip: extract it first.",
-      },
-      {
-        title: "Open the app",
-        text: "In the extracted folder, double-click “OriginsMeta Tracker.exe”. The app isn't signed yet, so Windows may show “Windows protected your PC”: click “More info”, then “Run anyway”.",
-      },
-      {
-        title: "It stays next to the clock",
-        text: "The app opens and also stays in its icon next to the clock (the notification area). The screen scanner is on: it captures only the game's window, never other windows, and no image leaves your PC. You can switch it off in the app.",
-      },
-      {
-        title: "Link your account",
-        text: "Signed in to OriginsMeta, open {link} and press “Create a code”. In the app, open “OriginsMeta account”, paste the code and press “Link”. From then on your matches reach your account and also the site's anonymous stats. It's required: the app works only once it's linked to an OriginsMeta account.",
-      },
-      {
-        title: "Play",
-        text: "Matches are recorded on their own, 15 seconds after the end. Switch on the Deck tracker and the overlay from the app's “Overlay” box; for OBS, copy the address shown in the same box and add it as a Browser source.",
-      },
-      {
-        title: "Windowed or borderless",
-        text: "To see the Deck tracker and the overlay above the game, play in windowed or borderless mode: in exclusive fullscreen Windows doesn't show them. Or keep them on a second screen.",
-      },
-      { title: "Closing the app", text: "The X of the window closes everything, the overlay and the Deck tracker too. To use it again, open “OriginsMeta Tracker.exe”." },
+      { title: "Download it", text: "Press the button below and save the file {file}. The download needs an OriginsMeta account: if you aren't signed in, the button asks you to sign in first." },
+      { title: "Extract the zip", text: "Right-click the zip and choose “Extract All…”, then “Extract”. Always open the app from the extracted folder, never from inside the zip." },
+      { title: "Open the app", text: "Double-click “OriginsMeta Tracker.exe”. If Windows says “Windows protected your PC”, click “More info” and then “Run anyway”: it shows up because the app isn't signed yet." },
+      { title: "Link your account", text: "The app asks for a code. Open {link}, press “Create a code”, type it in the app and press “Link”. Done: from now on it starts on its own, linked to your OriginsMeta account." },
+      { title: "Play", text: "Open Origins TCG and play: every match is saved on its own a few seconds after the end. The Deck tracker, the overlay for OBS and the screen scanner are behind the app's Setup button." },
     ] as Step[],
+    /** i tre problemi più comuni, sotto i passi */
+    tips: {
+      title: "If something doesn't work",
+      items: [
+        "Can't see the panels above the game? Play in windowed or borderless mode: in exclusive fullscreen Windows hides them.",
+        "The app disappeared? The X on its window closes it. To keep it running, minimize it: its icon stays next to the clock.",
+        "The screen scanner only looks at the game window, and no image leaves your PC. You can switch it off in Setup.",
+      ],
+    },
   },
   winrate: {
     title: "Win rates on the site",
@@ -189,38 +183,28 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     install: {
       anchor: "installazione",
-      title: "Installarla passo per passo",
-      intro: "Nove passi, dal download alla prima partita registrata.",
-      linkText: "la pagina Analytics del tuo account",
+      title: "Installala in 5 passi",
+      intro: "Un paio di minuti, dal download alla prima partita registrata.",
+      /** requisiti, in una riga sopra i passi */
+      needs: "Ti servono: un PC con Windows 10 o 11 a 64 bit, la demo di Origins TCG da Steam e un account OriginsMeta gratuito.",
+      /** testo del link del passo 4, verso /account/tracker */
+      linkText: "la pagina Tracker del tuo account",
       steps: [
-        { title: "Cosa serve", text: "Un PC con Windows 10 o 11 a 64 bit e la demo di Origins TCG, installata da Steam." },
-        { title: "Scarica lo zip", text: "Con l'accesso fatto su OriginsMeta (l'account è gratuito), premi il tasto qui sotto: il browser scarica il file {file}, di solito nella cartella Download. Senza accesso, il tasto ti porta prima alla pagina per accedere." },
-        {
-          title: "Estrai i file",
-          text: "Tasto destro sullo zip → «Estrai tutto…», scegli una cartella (per esempio Documenti) e premi «Estrai». Non aprire l'app da dentro lo zip: prima estraila.",
-        },
-        {
-          title: "Apri l'app",
-          text: "Nella cartella estratta fai doppio clic su «OriginsMeta Tracker.exe». L'app non è ancora firmata, quindi Windows può mostrare «Windows ha protetto il PC»: fai clic su «Ulteriori informazioni» e poi su «Esegui comunque».",
-        },
-        {
-          title: "Resta vicino all'orologio",
-          text: "L'app si apre e resta anche nella sua icona vicino all'orologio (l'area di notifica). Lo scanner dello schermo è acceso: riprende solo la finestra del gioco, mai altre finestre, e nessuna immagine esce dal tuo PC. Puoi spegnerlo dall'app.",
-        },
-        {
-          title: "Collega l'account",
-          text: "Con l'accesso fatto su OriginsMeta, apri {link} e premi «Crea un codice». Nell'app apri «Account OriginsMeta», incolla il codice e premi «Collega». Da lì le partite arrivano al tuo account ed entrano anche nelle statistiche anonime del sito. È obbligatorio: l'app funziona solo collegata a un account OriginsMeta.",
-        },
-        {
-          title: "Gioca",
-          text: "Le partite si registrano da sole, 15 secondi dopo la fine. Deck tracker e overlay si accendono dal riquadro «Overlay» dell'app; per OBS copia l'indirizzo dallo stesso riquadro e aggiungilo come sorgente Browser.",
-        },
-        {
-          title: "Finestra o senza bordi",
-          text: "Per vedere Deck tracker e overlay sopra il gioco usa la modalità finestra o finestra senza bordi: a schermo intero esclusivo Windows non li mostra. Oppure tienili su un secondo schermo.",
-        },
-        { title: "Chiudere l'app", text: "La X della finestra chiude tutto, anche overlay e Deck tracker. Per riaprirla, apri di nuovo «OriginsMeta Tracker.exe»." },
+        { title: "Scaricala", text: "Premi il tasto qui sotto e salva il file {file}. Per scaricarla serve un account OriginsMeta: se non hai fatto l'accesso, il tasto te lo chiede prima." },
+        { title: "Estrai lo zip", text: "Tasto destro sullo zip, «Estrai tutto…» e poi «Estrai». Apri sempre l'app dalla cartella estratta, mai da dentro lo zip." },
+        { title: "Apri l'app", text: "Doppio clic su «OriginsMeta Tracker.exe». Se Windows dice «Windows ha protetto il PC», fai clic su «Ulteriori informazioni» e poi su «Esegui comunque»: compare perché l'app non è ancora firmata." },
+        { title: "Collega il tuo account", text: "L'app ti chiede un codice. Apri {link}, premi «Crea un codice», scrivilo nell'app e premi «Collega». Fatto: da qui parte da sola, collegata al tuo account OriginsMeta." },
+        { title: "Gioca", text: "Apri Origins TCG e gioca: ogni partita si salva da sola pochi secondi dopo la fine. Deck tracker, overlay per OBS e scanner dello schermo stanno nel tasto Setup dell'app." },
       ],
+      /** i tre problemi più comuni, sotto i passi */
+      tips: {
+        title: "Se qualcosa non va",
+        items: [
+          "Non vedi i pannelli sopra il gioco? Gioca in finestra o in finestra senza bordi: a schermo intero esclusivo Windows li nasconde.",
+          "L'app è sparita? La X della sua finestra la chiude. Per tenerla accesa riducila a icona: l'icona resta vicino all'orologio.",
+          "Lo scanner dello schermo guarda solo la finestra del gioco e nessuna immagine esce dal tuo PC. Lo spegni da Setup.",
+        ],
+      },
     },
     winrate: {
       title: "I win rate sul sito",
@@ -291,38 +275,28 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     install: {
       anchor: "instalacion",
-      title: "Instálala paso a paso",
-      intro: "Nueve pasos, de la descarga a tu primera partida registrada.",
-      linkText: "la página Analytics de tu cuenta",
+      title: "Instálala en 5 pasos",
+      intro: "Un par de minutos, de la descarga a tu primera partida registrada.",
+      /** requisiti, in una riga sopra i passi */
+      needs: "Necesitas: un PC con Windows 10 u 11 de 64 bits, la demo de Origins TCG de Steam y una cuenta gratuita de OriginsMeta.",
+      /** testo del link del passo 4, verso /account/tracker */
+      linkText: "la página Tracker de tu cuenta",
       steps: [
-        { title: "Qué necesitas", text: "Un PC con Windows 10 u 11 de 64 bits y la demo de Origins TCG, instalada desde Steam." },
-        { title: "Descarga el zip", text: "Con la sesión iniciada en OriginsMeta (la cuenta es gratuita), pulsa el botón de abajo: el navegador descarga el archivo {file}, normalmente en la carpeta Descargas. Sin sesión iniciada, el botón te lleva primero a la página para iniciar sesión." },
-        {
-          title: "Extrae los archivos",
-          text: "Clic derecho en el zip → «Extraer todo…», elige una carpeta (por ejemplo Documentos) y pulsa «Extraer». No abras la app desde dentro del zip: extráela primero.",
-        },
-        {
-          title: "Abre la app",
-          text: "En la carpeta extraída, haz doble clic en «OriginsMeta Tracker.exe». La app todavía no está firmada, así que Windows puede mostrar «Windows protegió su PC»: haz clic en «Más información» y luego en «Ejecutar de todas formas».",
-        },
-        {
-          title: "Se queda junto al reloj",
-          text: "La app se abre y también se queda en su icono junto al reloj (el área de notificación). El escáner de pantalla está activado: captura solo la ventana del juego, nunca otras ventanas, y ninguna imagen sale de tu PC. Puedes desactivarlo desde la app.",
-        },
-        {
-          title: "Vincula tu cuenta",
-          text: "Con la sesión iniciada en OriginsMeta, abre {link} y pulsa «Crear un código». En la app, abre «Cuenta de OriginsMeta», pega el código y pulsa «Vincular». Desde entonces tus partidas llegan a tu cuenta y entran también en las estadísticas anónimas del sitio. Es obligatorio: la app solo funciona vinculada a una cuenta de OriginsMeta.",
-        },
-        {
-          title: "Juega",
-          text: "Las partidas se registran solas, 15 segundos después del final. El Deck tracker y el overlay se activan desde el recuadro «Overlay» de la app; para OBS, copia la dirección del mismo recuadro y añádela como fuente de Navegador.",
-        },
-        {
-          title: "Ventana o sin bordes",
-          text: "Para ver el Deck tracker y el overlay encima del juego, usa el modo ventana o ventana sin bordes: en pantalla completa exclusiva Windows no los muestra. O tenlos en una segunda pantalla.",
-        },
-        { title: "Cerrar la app", text: "La X de la ventana lo cierra todo, también el overlay y el Deck tracker. Para volver a usarla, abre de nuevo «OriginsMeta Tracker.exe»." },
+        { title: "Descárgala", text: "Pulsa el botón de abajo y guarda el archivo {file}. Para descargarla hace falta una cuenta de OriginsMeta: si no has iniciado sesión, el botón te lo pide antes." },
+        { title: "Extrae el zip", text: "Clic derecho en el zip, «Extraer todo…» y luego «Extraer». Abre siempre la app desde la carpeta extraída, nunca desde dentro del zip." },
+        { title: "Abre la app", text: "Doble clic en «OriginsMeta Tracker.exe». Si Windows dice «Windows protegió su PC», haz clic en «Más información» y luego en «Ejecutar de todas formas»: aparece porque la app todavía no está firmada." },
+        { title: "Vincula tu cuenta", text: "La app te pide un código. Abre {link}, pulsa «Crear un código», escríbelo en la app y pulsa «Vincular». Listo: desde aquí arranca sola, vinculada a tu cuenta de OriginsMeta." },
+        { title: "Juega", text: "Abre Origins TCG y juega: cada partida se guarda sola unos segundos después del final. El Deck tracker, el overlay para OBS y el escáner de pantalla están en el botón Setup de la app." },
       ],
+      /** i tre problemi più comuni, sotto i passi */
+      tips: {
+        title: "Si algo no funciona",
+        items: [
+          "¿No ves los paneles sobre el juego? Juega en modo ventana o ventana sin bordes: en pantalla completa exclusiva Windows los oculta.",
+          "¿La app desapareció? La X de su ventana la cierra. Para que siga abierta, minimízala: su icono se queda junto al reloj.",
+          "El escáner de pantalla solo mira la ventana del juego y ninguna imagen sale de tu PC. Lo apagas en Setup.",
+        ],
+      },
     },
     winrate: {
       title: "El win rate en el sitio",
@@ -396,38 +370,28 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     install: {
       anchor: "installation",
-      title: "L'installer pas à pas",
-      intro: "Neuf étapes, du téléchargement à votre première partie enregistrée.",
-      linkText: "la page Analytics de votre compte",
+      title: "L'installer en 5 étapes",
+      intro: "Quelques minutes, du téléchargement à votre première partie enregistrée.",
+      /** requisiti, in una riga sopra i passi */
+      needs: "Il vous faut : un PC sous Windows 10 ou 11 (64 bits), la démo d'Origins TCG depuis Steam et un compte OriginsMeta gratuit.",
+      /** testo del link del passo 4, verso /account/tracker */
+      linkText: "la page Tracker de votre compte",
       steps: [
-        { title: "Ce qu'il vous faut", text: "Un PC sous Windows 10 ou 11 (64 bits) et la démo d'Origins TCG, installée depuis Steam." },
-        { title: "Téléchargez le zip", text: "Avec votre session ouverte sur OriginsMeta (le compte est gratuit), appuyez sur le bouton ci-dessous : votre navigateur télécharge le fichier {file}, en général dans le dossier Téléchargements. Sans session ouverte, le bouton vous mène d'abord à la page de connexion." },
-        {
-          title: "Extrayez les fichiers",
-          text: "Clic droit sur le zip → « Extraire tout… », choisissez un dossier (par exemple Documents) et appuyez sur « Extraire ». N'ouvrez pas l'application depuis le zip : extrayez-la d'abord.",
-        },
-        {
-          title: "Ouvrez l'application",
-          text: "Dans le dossier extrait, double-cliquez sur « OriginsMeta Tracker.exe ». L'application n'est pas encore signée, donc Windows peut afficher « Windows a protégé votre ordinateur » : cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».",
-        },
-        {
-          title: "Elle reste près de l'horloge",
-          text: "L'application s'ouvre et reste aussi dans son icône près de l'horloge (la zone de notification). Pour l'instant elle est en anglais. Le scanner d'écran est activé : il capture uniquement la fenêtre du jeu, jamais d'autres fenêtres, et aucune image ne quitte votre PC. Vous pouvez le désactiver dans l'application.",
-        },
-        {
-          title: "Associez votre compte",
-          text: "Avec votre session ouverte sur OriginsMeta, ouvrez {link} et appuyez sur « Créer un code ». Dans l'application, ouvrez « OriginsMeta account », collez le code et appuyez sur « Link ». Vos parties arrivent alors sur votre compte et entrent aussi dans les statistiques anonymes du site. C'est obligatoire : l'application fonctionne uniquement associée à un compte OriginsMeta.",
-        },
-        {
-          title: "Jouez",
-          text: "Les parties s'enregistrent toutes seules, 15 secondes après la fin. Le Deck tracker et l'overlay s'activent depuis l'encadré « Overlay » de l'application ; pour OBS, copiez l'adresse affichée dans le même encadré et ajoutez-la comme source Navigateur.",
-        },
-        {
-          title: "Fenêtré ou sans bordure",
-          text: "Pour voir le Deck tracker et l'overlay au-dessus du jeu, jouez en mode fenêtré ou fenêtré sans bordure : en plein écran exclusif, Windows ne les affiche pas. Vous pouvez aussi les garder sur un second écran.",
-        },
-        { title: "Fermer l'application", text: "La croix de la fenêtre ferme tout, y compris l'overlay et le Deck tracker. Pour la réutiliser, ouvrez de nouveau « OriginsMeta Tracker.exe »." },
+        { title: "Téléchargez-la", text: "Appuyez sur le bouton ci-dessous et enregistrez le fichier {file}. Le téléchargement demande un compte OriginsMeta : sans session ouverte, le bouton vous fait d'abord vous connecter." },
+        { title: "Extrayez le zip", text: "Clic droit sur le zip, « Extraire tout… » puis « Extraire ». Ouvrez toujours l'application depuis le dossier extrait, jamais depuis le zip." },
+        { title: "Ouvrez l'application", text: "Double-cliquez sur « OriginsMeta Tracker.exe ». Si Windows affiche « Windows a protégé votre ordinateur », cliquez sur « Informations complémentaires » puis sur « Exécuter quand même » : ce message apparaît parce que l'application n'est pas encore signée." },
+        { title: "Associez votre compte", text: "L'application vous demande un code. Ouvrez {link}, appuyez sur « Créer un code », saisissez-le dans l'application et appuyez sur « Link » (l'application est en anglais). C'est fait : elle démarre désormais toute seule, associée à votre compte OriginsMeta." },
+        { title: "Jouez", text: "Ouvrez Origins TCG et jouez : chaque partie s'enregistre toute seule quelques secondes après la fin. Le Deck tracker, l'overlay pour OBS et le scanner d'écran se trouvent derrière le bouton Setup de l'application." },
       ],
+      /** i tre problemi più comuni, sotto i passi */
+      tips: {
+        title: "Si quelque chose ne marche pas",
+        items: [
+          "Vous ne voyez pas les panneaux au-dessus du jeu ? Jouez en mode fenêtré ou fenêtré sans bordure : en plein écran exclusif, Windows les masque.",
+          "L'application a disparu ? La croix de sa fenêtre la ferme. Pour la garder ouverte, réduisez-la : son icône reste près de l'horloge.",
+          "Le scanner d'écran regarde uniquement la fenêtre du jeu et aucune image ne quitte votre PC. Vous le désactivez dans Setup.",
+        ],
+      },
     },
     winrate: {
       title: "Les win rates sur le site",

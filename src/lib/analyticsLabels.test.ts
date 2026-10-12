@@ -8,7 +8,7 @@
  *   lingue con il contatto per farsi cancellare.
  * - Gli stessi valori del blocco INTERESSE ANALYTICS di schema.sql (lingue, posizioni del tasto, forma del numero del
  *   browser) e le immagini nelle tre lingue dell'app (il francese usa quelle inglesi).
- * - Dal 10/10/2026: il download da GitHub Releases, la guida in nove passi uguale nelle quattro lingue (segnaposto,
+ * - Dal 10/10/2026: il download da GitHub Releases, la guida (cinque passi dal 12/10/2026) uguale nelle quattro lingue (segnaposto,
  *   ancora), niente più "in pausa" nei testi della SERP, la tipografia francese.
  */
 import { describe, test } from "node:test";
@@ -38,22 +38,25 @@ describe("analytics: testi della pagina", () => {
       assert.ok(!/paus/i.test(`${x.meta.title} ${x.meta.description} ${x.lead}`), x.meta.description);
     });
 
-    test(`${l}: guida all'installazione in nove passi, con il download e il collegamento all'account`, () => {
+    test(`${l}: guida all'installazione in cinque passi, con il download e il collegamento all'account`, () => {
       const steps = x.install.steps;
-      assert.equal(steps.length, 9);
+      assert.equal(steps.length, 5);
       assert.match(x.install.anchor, /^[a-z-]+$/);
       assert.equal(trackerInstallHref(l), `/${l}/tracker#${x.install.anchor}`);
-      // {file} solo nel passo 2 (il download, con il tasto), {link} solo nel passo 6 (il collegamento)
+      // {file} solo nel passo 1 (il download, con il tasto), {link} solo nel passo 4 (il collegamento); passi corti
       steps.forEach((s, i) => {
-        assert.equal(s.text.includes("{file}"), i === 1, `passo ${i + 1}: {file}`);
-        assert.equal(s.text.includes("{link}"), i === 5, `passo ${i + 1}: {link}`);
-        assert.ok(s.title && s.text.length > 40, `passo ${i + 1}`);
+        assert.equal(s.text.includes("{file}"), i === 0, `passo ${i + 1}: {file}`);
+        assert.equal(s.text.includes("{link}"), i === 3, `passo ${i + 1}: {link}`);
+        assert.ok(s.title && s.text.length > 40 && s.text.length <= 320, `passo ${i + 1}: ${s.text.length}`);
       });
-      // requisiti, file dell'app, la X che chiude tutto
-      assert.match(steps[0].text, /Windows 10/);
-      assert.match(steps[0].text, /Steam/);
-      assert.match(steps[3].text, /OriginsMeta Tracker\.exe/);
-      assert.match(steps[8].text, /X|croix/);
+      // requisiti in una riga, file dell'app, Setup, la X che chiude l'app fra i problemi
+      assert.match(x.install.needs, /Windows 10/);
+      assert.match(x.install.needs, /Steam/);
+      assert.match(x.install.needs, /OriginsMeta/);
+      assert.match(steps[2].text, /OriginsMeta Tracker\.exe/);
+      assert.match(steps[4].text, /Setup/);
+      assert.equal(x.install.tips.items.length, 3);
+      assert.ok(x.install.tips.items.some((tip) => /X|croix/.test(tip)));
     });
 
     test(`${l}: non affiliato a Koin Games, nessuna parola su bot o persone, conteggio`, () => {

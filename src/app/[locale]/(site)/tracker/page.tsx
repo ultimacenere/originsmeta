@@ -134,13 +134,14 @@ export default async function TrackerPage({ params }: { params: LocaleParams }) 
         </div>
       </section>
 
-      {/* La guida all'installazione (10/10/2026): un elenco ordinato con l'ancora nella lingua (#install, #installazione,
+      {/* La guida all'installazione (10/10/2026; cinque passi brevi dal 12/10/2026): un elenco ordinato con l'ancora nella lingua (#install, #installazione,
           #instalacion, #installation), dove portano i link di /account e /account/tracker. */}
       <section id={install.anchor} className="mt-14 max-w-3xl scroll-mt-24" aria-labelledby="an-install">
         <h2 id="an-install" className="t-section">
           {install.title}
         </h2>
         <p className="mt-2 text-pale-muted">{install.intro}</p>
+        <p className="mt-3 text-sm text-pale">{install.needs}</p>
         <ol className="mt-6 grid gap-3">
           {install.steps.map((step, i) => (
             <li key={step.title} className="card-night flex gap-4 p-4 sm:p-5">
@@ -160,6 +161,20 @@ export default async function TrackerPage({ params }: { params: LocaleParams }) 
             </li>
           ))}
         </ol>
+        {/* i problemi più comuni (12/10/2026): fuori dai passi, così i passi restano corti */}
+        <div className="card-night mt-6 p-4 sm:p-5">
+          <h3 className="t-item">{install.tips.title}</h3>
+          <ul className="mt-2 grid gap-2 text-pale">
+            {install.tips.items.map((tip) => (
+              <li key={tip} className="flex gap-2">
+                <span aria-hidden="true" className="text-mint">
+                  →
+                </span>
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <section className="mt-12 max-w-3xl" aria-labelledby="an-winrate">

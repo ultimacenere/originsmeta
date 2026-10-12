@@ -310,6 +310,27 @@ Link dell'app verso il sito: guida all'installazione `/en/tracker#install`, `/it
 `/es/tracker#instalacion` (schermata di blocco, fondo della pagina, LEGGIMI), collegamento e statistiche personali
 `/<lingua>/account/tracker`, win rate `/<lingua>/analytics` (pannello "Account OriginsMeta").
 
+## Setup e correzioni (0.4.1, 12/10/2026, da pubblicare)
+
+Richieste di Pierluigi del 12/10/2026 sera (bug dalla diretta di Robip, poi "nella main app, le opzioni devono essere
+raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gioco").
+
+- **Carta fantasma nel Deck tracker**: nell'inventario del gioco un mazzo può avere una voce `{"CardKey": "Tower_V00000",
+  "CardId": 0}`, che non è una carta (visto in un mazzo da 12 carte su questo PC). L'app la contava come tredicesima
+  carta da 2 copie: casella vuota con il "2" in fondo alla griglia. `readInventoryFile` scarta le voci con `CardId: 0`.
+- **Mazzo modificato nel gioco**: il watcher rileggeva il mazzo solo quando cambiava il file delle statistiche, quindi
+  una carta cambiata (Lightning Strike → Stroke of Midnight) restava nel Deck tracker fino alla partita dopo. Ora
+  guarda anche l'ora dell'inventario a ogni giro e prende l'inventario della **cartella delle statistiche** (stessa
+  build e stesso account), non il più recente fra demo e playtest.
+- **Setup**: la pagina principale ha solo mazzo scelto, numeri, mazzi, Leggendarie avversarie, partite ed esiti del
+  gioco; il tasto Setup della testata apre account, scanner dello schermo, overlay e pannelli, opzioni dell'app (avvio
+  con Windows, cartella dei dati, tutorial, guida, informativa); "Torna alle partite" riporta indietro. Le tendine non
+  ci sono più. Un problema dell'account (sito irraggiungibile, invio fermo) resta anche nella pagina principale, con il
+  link a Setup. Il tutorial apre Setup per i passi su account, scanner e pannelli e chiude sul tasto (chiave
+  `originsmeta.tracker.tour.v2`: chi l'aveva visto lo rivede una volta). `--capture-setup` fotografa Setup.
+- Sul sito la guida di `/tracker` è in cinque passi brevi (requisiti in una riga, problemi comuni in un riquadro) e
+  rimanda al tasto Setup: **va online insieme alla release 0.4.1**, non prima.
+
 ## Il sito (Fase 3)
 
 - **Rotte** (client anonimo senza cache, `supabaseAnon` di `src/lib/supabase/public.ts`; mai in cache; niente cookie):
@@ -678,7 +699,7 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
     `bannerFeatures`), che ora vale come la menta; prima un alone rosso nel passaggio la faceva leggere come sconfitta.
   - **Doppioni**: una partita dei file con lo stesso esito di una già nello storico a meno di 3 minuti è la stessa,
     anche dopo un riavvio. Correzioni sul sito con `scripts/tracker-fix-match.mjs` (il sito non sovrascrive).
-  - **Finestra principale**: Account, Overlay e Scanner sono tendine con una riga di stato; mini tutorial al primo
+  - **Finestra principale**: Account, Overlay e Scanner sono tendine con una riga di stato (dalla 0.4.1 in Setup); mini tutorial al primo
     avvio con il riflettore sulle parti della finestra e i pannelli che pulsano (`tracker:spot-panels`), da rivedere
     con il link in fondo.
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;

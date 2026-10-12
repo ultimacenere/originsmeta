@@ -36,7 +36,7 @@ const en = {
     title: "Link a PC",
     steps: [
       "Create a code below: it's valid for 10 minutes and works once.",
-      "In the app, open “OriginsMeta account” and type the code.",
+      "Open the app: it asks for the code. Type it and press “Link”.",
       "From then on the app sends your matches to your account, including the ones it had already recorded.",
     ],
     consent:
@@ -142,7 +142,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       title: "Collega un PC",
       steps: [
         "Crea un codice qui sotto: vale 10 minuti e si usa una volta.",
-        "Nell'app apri “Account OriginsMeta” e scrivi il codice.",
+        "Apri l'app: ti chiede il codice. Scrivilo e premi “Collega”.",
         "Da lì in poi l'app manda le partite al tuo account, anche quelle che aveva già registrato.",
       ],
       consent:
@@ -237,7 +237,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       title: "Vincula un PC",
       steps: [
         "Crea un código aquí abajo: vale 10 minutos y se usa una sola vez.",
-        "En la app, abre “Cuenta de OriginsMeta” y escribe el código.",
+        "Abre la app: te pide el código. Escríbelo y pulsa “Vincular”.",
         "Desde entonces la app envía tus partidas a tu cuenta, también las que ya había registrado.",
       ],
       consent:
@@ -334,7 +334,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       title: "Associer un PC",
       steps: [
         "Créez un code ci-dessous : il est valable 10 minutes et ne sert qu'une fois.",
-        "Dans l'application, ouvrez « Compte OriginsMeta » et saisissez le code.",
+        "Ouvrez l'application : elle vous demande le code. Saisissez-le et appuyez sur « Link ».",
         "Dès lors, l'application envoie vos parties à votre compte, y compris celles qu'elle avait déjà enregistrées.",
       ],
       consent:
