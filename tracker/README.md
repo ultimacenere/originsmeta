@@ -1,18 +1,27 @@
-# OriginsMeta Analytics (cartella `tracker/`)
+# OriginsMeta Tracker (cartella `tracker/`)
 
-Fino al 01/10/2026 si chiamava OriginsMeta Tracker (Pierluigi: "chiamiamolo Analytics e non tracker"): il nome cambia
-dove si vede, nel codice resta "tracker". App desktop per Windows che registra da sola le partite di Origins TCG leggendo, in sola lettura, i file che il gioco
+Nome: OriginsMeta Tracker fino al 01/10/2026, OriginsMeta Analytics dal 01/10 al 12/10/2026, di nuovo **OriginsMeta
+Tracker dalla 0.4.0** (Pierluigi, 12/10/2026: "l'app si chiama OriginsMeta Tracker"; "Analytics" è la pagina delle
+statistiche del sito, originsmeta.com/analytics, e la pagina dell'app è originsmeta.com/tracker). Restano quelli di prima
+la cartella dei dati `%APPDATA%\OriginsMeta Analytics`, l'AppUserModelId, il prefisso `analytics-v` delle release e
+uno zip col nome vecchio per le app 0.3.x (`src/main/appIdentity.ts`). App desktop per Windows che registra da sola le partite di Origins TCG leggendo, in sola lettura, i file che il gioco
 salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, collegamento, statistiche, overlay):
 [`../docs/tracker.md`](../docs/tracker.md).
 
 ## Cosa fa
 
+- **Solo con l'account** (0.4.0, 12/10/2026, `src/main/access.ts`; Pierluigi: "se non sono registrati con il cazzo
+  possono usarla"): senza un collegamento a un account OriginsMeta verificato dal sito l'app non legge il gioco, non
+  riprende lo schermo, non apre overlay, pannelli né la sorgente per OBS e non registra: mostra solo la schermata di
+  collegamento e "Chiudi l'app". Il token si verifica all'avvio e ogni 4 ore (zero partite a `/api/tracker/sync`);
+  rifiutato = blocco subito; sito irraggiungibile = 7 giorni di tolleranza dall'ultima verifica riuscita (salvata
+  cifrata in `account.json`). Lo storico sul PC resta.
 - Icona accanto all'orologio; clic = finestra. La X della finestra chiude tutta l'app, overlay e Deck tracker compresi
   (dal 10/10/2026; prima la nascondeva). Avviata con Windows resta solo nell'icona e registra finché non si sceglie "Esci".
 - Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a 15 secondi) e salva la partita:
   esito, coda (classificata o normale, non mostrata), mazzo con nome e codice del gioco, rank, Leggendaria
   dell'avversario, carte giocate round per round.
-- Storico sul PC in `%APPDATA%\OriginsMeta Analytics\` (`matches.jsonl`, `state.json`; al primo avvio col nome nuovo
+- Storico sul PC in `%APPDATA%\OriginsMeta Analytics\` (fissa anche col nome nuovo) (`matches.jsonl`, `state.json`; al primo avvio col nome nuovo
   copiati da `%APPDATA%\OriginsMeta Tracker\`).
 - Grafica del sito (01/10/2026): font, logo e carte intere con le immagini di originsmeta.com (vedi docs/tracker.md).
 - **Account OriginsMeta** (Fase 3): con il codice creato su originsmeta.com/account/tracker l'app si collega
@@ -73,8 +82,9 @@ npm run capture    # screenshot della finestra in out/capture.png (verifiche)
 npm run scan       # app con lo scanner acceso anche se spento nelle preferenze (dalla 0.3.0 è acceso di default)
 npm run frames     # come scan, e salva anche i fotogrammi in %APPDATA%\OriginsMeta Analytics\frames\ per la taratura
 npm run card-art   # rigenera src/card-art.json (riferimenti dello scanner) dalle immagini delle carte del sito
-npm run package    # versione portatile non firmata: out/OriginsMeta-Analytics-<versione>-win-x64.zip con LEGGIMI.txt,
-                   # più OriginsMeta-Analytics-win-x64.zip (nome fisso) da caricare su GitHub Releases
+npm run package    # versione portatile non firmata: out/OriginsMeta-Tracker-<versione>-win-x64.zip con LEGGIMI.txt,
+                   # più OriginsMeta-Tracker-win-x64.zip (nome fisso) e OriginsMeta-Analytics-win-x64.zip (per
+                   # l'aggiornamento delle app 0.3.x): tutti e due nella stessa release su GitHub
 ```
 
 - `npm run package` (01/10/2026, prima build per Davdas, 0.2.0): `scripts/package.mjs` compila, impacchetta con

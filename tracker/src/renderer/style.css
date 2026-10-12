@@ -355,3 +355,9 @@ details.match > summary:hover .m-title { color: #fff; }
 .notice.update { font-size: 0.86rem; color: var(--chalk); }
 /* tasto "Chiudi l'app" accanto allo stato (11/10/2026) */
 .top-right { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* schermata di blocco (0.4.0, 12/10/2026): l'app senza un collegamento verificato all'account */
+.panel.lock { max-width: 720px; width: 100%; margin: 0 auto; gap: 12px; }
+.panel.lock h2 { font-size: 1.15rem; }
+.steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; color: var(--chalk); font-size: 0.9rem; }
+.steps li::marker { color: var(--mint); font-family: var(--mono); font-weight: 700; }

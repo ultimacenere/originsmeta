@@ -3,11 +3,18 @@
  * sole quando rilasciamo una nuova versione"; il resto in updater.ts). Le release stanno su GitHub, nel repo del sito,
  * con il tag `analytics-vX.Y.Z` e lo zip con il nome fisso: si accetta solo quello, solo da github.com e solo dal repo
  * di OriginsMeta, e il file scaricato deve avere la dimensione che dichiara GitHub. Niente bozze né prerelease.
+ *
+ * Dalla 0.4.0 (12/10/2026, l'app torna a chiamarsi OriginsMeta Tracker, appIdentity.ts) lo zip si chiama
+ * `OriginsMeta-Tracker-win-x64.zip`. Il prefisso del tag resta `analytics-v` e ogni release porta anche lo zip col
+ * nome di prima (`LEGACY_UPDATE_ASSET`, con dentro anche `OriginsMeta Analytics.exe`): è quello che cercano le app
+ * 0.3.x, che altrimenti non si aggiornerebbero più (`npm run package` li fa tutti e due).
  */
 
 export const UPDATE_REPO = "ultimacenere/originsmeta";
 export const UPDATE_TAG_PREFIX = "analytics-v";
-export const UPDATE_ASSET = "OriginsMeta-Analytics-win-x64.zip";
+export const UPDATE_ASSET = "OriginsMeta-Tracker-win-x64.zip";
+/** Lo zip col nome di prima della 0.4.0: lo cercano le app 0.3.x per aggiornarsi. */
+export const LEGACY_UPDATE_ASSET = "OriginsMeta-Analytics-win-x64.zip";
 export const UPDATE_API = `https://api.github.com/repos/${UPDATE_REPO}/releases?per_page=20`;
 
 export type Version = [number, number, number];

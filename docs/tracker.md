@@ -4,7 +4,10 @@ Guida tecnica del tracker di OriginsMeta (stato, decisioni e storia anche nella 
 Pierluigi il 26/09/2026: il **tracker** registra le partite, l'**overlay** le mostra. **Dal 01/10/2026 il nome pubblico
 è OriginsMeta Analytics** (Pierluigi: "chiamiamolo Analytics e non tracker"): app, finestra, menu dell'icona, overlay e
 testi del sito. Nel codice, negli indirizzi (`/account/tracker`, `/api/tracker/*`), nelle tabelle (`tracker_*`) e in
-questa guida resta "tracker".
+questa guida resta "tracker". **Dal 12/10/2026 (app 0.4.0) l'app si chiama di nuovo OriginsMeta Tracker** (Pierluigi:
+"l'app si chiama OriginsMeta Tracker"): "Analytics" è il nome della pagina delle statistiche sul sito
+(originsmeta.com/analytics), la pagina dell'app con download e guida è originsmeta.com/tracker. Vedi "Nome: OriginsMeta
+Tracker (0.4.0)".
 
 ## Cos'è
 
@@ -216,7 +219,7 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
   `img-src` del sito; detto nel testo sulla privacy dell'app e nell'informativa), mai ritagliate: i crediti restano
   visibili, gemma e stella stanno negli angoli in alto. Senza rete resta il nome dentro la cornice. Il server locale
   dell'overlay serve anche logo e font (`overlayFile`).
-- Test: `npm test` in `tracker/` (27 test: watcher con la coda, storico con le v1, invio con una rete finta, token
+- Test: `npm test` in `tracker/` (84 test dalla 0.4.0, fra cui "Solo con l'account" e il nome nuovo; prima 27: watcher con la coda, storico con le v1, invio con una rete finta, token
   cifrato, dati dell'overlay e server locale), `npm run typecheck`.
 
 ## Collegamento e invio (Fase 3)
@@ -240,6 +243,68 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
 
 Per le prove: `ORIGINSMETA_TRACKER_SITE` (solo https o http://localhost) punta l'app a un'anteprima o al server di
 sviluppo; `ORIGINSMETA_TRACKER_DATA` usa una cartella dati di prova.
+
+## Solo con l'account (0.4.0, 12/10/2026)
+
+Pierluigi, 12/10/2026: "ben inteso che solo i registrati al sito possono scaricare l'app e possono usarla, se non sono
+registrati con il cazzo possono usarla!!". Regole in `tracker/src/main/access.ts` (funzioni pure, test in
+`access.test.ts`), cablate in `main.ts`:
+
+1. **Senza un collegamento verificato l'app non fa niente**: il "motore" (watcher dei file del gioco, scanner dello
+   schermo, overlay, Deck tracker e carte dell'avversario, sorgente per OBS su 127.0.0.1, registrazione e invio delle
+   partite) resta spento; la finestra mostra solo la schermata di collegamento (crea un account gratuito o accedi su
+   `/login?next=/<lingua>/account/tracker`, crea il codice in `/account/tracker`, scrivilo qui) e "Chiudi l'app";
+   l'icona vicino all'orologio ha solo "Apri" ed "Esci"; l'interfaccia non riceve partite né storico; le chiamate IPC
+   che non sono collegamento, link, verifica, scollega o uscita sono rifiutate. Appena collegata parte tutto (le
+   finestre aperte l'ultima volta si riaprono, lo scanner segue la sua preferenza). Resta acceso solo
+   l'aggiornamento automatico, così anche un'app bloccata riceve le correzioni.
+2. **Verifica del token**: all'avvio e poi ogni 4 ore l'app manda `POST /api/tracker/sync` con `matches: []` (la rotta
+   fa già da controllo del token, nessun cambio al sito); vale come verifica anche ogni invio accettato. Esiti
+   (`verifyOutcome`): 200 e 429 = valido (il tetto delle partite si controlla dopo il token); 401 = rifiutato (PC
+   scollegato da `/account/tracker`, account eliminato: `tracker_devices` va via con il profilo) → l'app dimentica il
+   token, ferma tutto e torna alla schermata di collegamento ("il sito ha scollegato questo PC"); tutto il resto (rete
+   assente, 503, 5xx) = tolleranza.
+3. **Tolleranza**: con il sito irraggiungibile l'app continua per **7 giorni dall'ultima verifica riuscita**, poi si
+   blocca ("non riesce a verificare il collegamento dal …") e riprova da sola ogni 5 minuti (o con "Riprova"). L'ora
+   dell'ultima verifica sta in `account.json` (`verified`), **cifrata** con safeStorage come il token: un'ora scritta a
+   mano non vale, un'ora nel futuro oltre 10 minuti nemmeno (si verifica da capo). Il collegamento appena fatto vale
+   come verifica. I collegamenti della 0.3.x non hanno l'ora: alla prima apertura della 0.4.0 l'app resta ferma i pochi
+   secondi della prima verifica (senza rete, finché non la fa).
+4. **Lo storico sul PC non si tocca mai**: bloccata, l'app non cancella `matches.jsonl` né le impostazioni; la schermata
+   dice quante partite restano sul PC. Scollegare dall'app ("Scollega questo PC") ora vuol dire anche fermarla.
+5. Con l'app solo nell'icona (avvio con Windows), se si blocca la finestra si apre da sola sulla schermata di
+   collegamento; all'avvio con Windows si apre subito se è bloccata per un motivo diverso dalla prima verifica.
+6. Prove: `--capture` fotografa la schermata di blocco (nessuna rete); `--capture-unlocked` fotografa l'app sbloccata,
+   solo fuori dall'app impacchettata. Provato dal vivo il 12/10 con un server finto (token rifiutato, collegamento 0.3.x
+   verificato, sito giù da 2 e da 8 giorni).
+
+**Limiti**: il download da GitHub Releases resta pubblico (lo zip si scarica senza account), ma l'app senza account non
+fa niente. Un utente che manomette l'app (sorgenti pubblici) può togliere il blocco sul suo PC: quello che conta è che
+il sito accetta partite solo con un token valido.
+
+## Nome: OriginsMeta Tracker (0.4.0)
+
+Cambia solo il nome visibile (`tracker/src/main/appIdentity.ts`, test in `appIdentity.test.ts`): finestre, icona,
+menu, testi en/it/es, `productName` del pacchetto, eseguibile `OriginsMeta Tracker.exe`, cartella
+`OriginsMeta Tracker-win32-x64` e zip `OriginsMeta-Tracker-win-x64.zip` (il tasto di download del sito punta a
+`https://github.com/ultimacenere/originsmeta/releases/latest/download/OriginsMeta-Tracker-win-x64.zip`). Restano fissi:
+
+- **cartella dei dati** `%APPDATA%\OriginsMeta Analytics`: `main.ts` la imposta esplicitamente (`dataDir`), perché col
+  nome nuovo Electron userebbe `%APPDATA%\OriginsMeta Tracker` (la cartella di prima del 01/10) e la chiave di
+  safeStorage del suo `Local State` renderebbe illeggibile il token, come il 01/10;
+- **AppUserModelId** `com.originsmeta.analytics`: è anche il nome della voce di "Avvia con Windows" nel registro. Chi la
+  aveva accesa con `OriginsMeta Analytics.exe` passa da sé a `OriginsMeta Tracker.exe` al primo avvio di questo
+  (`migrateLoginItem`, `staleLoginItem`: la voce vecchia si toglie, la nuova si mette con lo stesso stato
+  abilitato/disabilitato);
+- **release su GitHub**: tag `analytics-vX.Y.Z`. Le app 0.3.x cercano lo zip `OriginsMeta-Analytics-win-x64.zip` con
+  dentro `OriginsMeta Analytics.exe`: `npm run package` lo fa (la stessa app con una copia dell'eseguibile col nome
+  vecchio) e **va caricato nella stessa release** accanto a quello nuovo, almeno nella 0.4.0, che deve restare fra le
+  ultime 20 release del repo (le 0.3.x scelgono la più nuova che lo porta). Dopo l'aggiornamento una 0.3.x gira con
+  `OriginsMeta Analytics.exe` (codice nuovo); dalla release successiva l'aggiornamento riapre `OriginsMeta Tracker.exe`
+  (`exeAfterUpdate`). Il vecchio eseguibile resta nella cartella, così i collegamenti fatti dal giocatore funzionano.
+
+Link dell'app verso il sito: guida `/<lingua>/tracker` (LEGGIMI), collegamento e statistiche personali
+`/<lingua>/account/tracker`, win rate `/<lingua>/analytics` (pannello "Account OriginsMeta").
 
 ## Il sito (Fase 3)
 

@@ -27,9 +27,9 @@ document.documentElement.lang = lang;
 document.body.classList.add(`layout-${layout}`, window.overlayApi ? "in-window" : "in-obs");
 
 const LABELS = {
-  en: { session: "Session", deck: "This deck", last: "Last", vs: "vs", choose: "Choose a deck in the game", win: "W", loss: "L", brand: "Analytics · not affiliated with Koin Games" },
-  it: { session: "Sessione", deck: "Questo mazzo", last: "Ultima", vs: "vs", choose: "Scegli un mazzo nel gioco", win: "V", loss: "S", brand: "Analytics · non affiliato a Koin Games" },
-  es: { session: "Sesión", deck: "Este mazo", last: "Última", vs: "vs", choose: "Elige un mazo en el juego", win: "V", loss: "D", brand: "Analytics · sin afiliación con Koin Games" },
+  en: { session: "Session", deck: "This deck", last: "Last", vs: "vs", choose: "Choose a deck in the game", win: "W", loss: "L", brand: "Tracker · not affiliated with Koin Games" },
+  it: { session: "Sessione", deck: "Questo mazzo", last: "Ultima", vs: "vs", choose: "Scegli un mazzo nel gioco", win: "V", loss: "S", brand: "Tracker · non affiliato a Koin Games" },
+  es: { session: "Sesión", deck: "Este mazo", last: "Última", vs: "vs", choose: "Elige un mazo en el juego", win: "V", loss: "D", brand: "Tracker · sin afiliación con Koin Games" },
 } as const;
 const L = LABELS[lang];
 

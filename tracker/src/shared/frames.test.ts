@@ -6,7 +6,7 @@ import { frameFileName, frameSignature, isJpegFrame, MAX_FRAME_BYTES, pickGameWi
 test("finestra del gioco: solo un titolo esatto, la demo prima delle altre", () => {
   const sources = [
     { id: "window:1", name: "Origins TCG Demo - Discord" },
-    { id: "window:2", name: "OriginsMeta Analytics" },
+    { id: "window:2", name: "OriginsMeta Tracker" },
     { id: "window:3", name: "Origins TCG Demo" },
   ];
   assert.deepEqual(pickGameWindow(sources), { id: "window:3", name: "Origins TCG Demo" });

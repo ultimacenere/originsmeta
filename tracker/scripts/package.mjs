@@ -1,9 +1,15 @@
 // Versione portatile per Windows (01/10/2026, Pierluigi: "fammi un eseguibile rapido che lo condivido via wa a dav"):
 // `npm run package` dalla cartella tracker/. Compila (build.mjs), impacchetta con @electron/packager (preso con npx,
 // non è una dipendenza del progetto; Electron dalla cache di @electron/get, la stessa versione delle devDependencies),
-// aggiunge LEGGIMI.txt e fa lo zip in out/OriginsMeta-Analytics-<versione>-win-x64.zip, più una copia con il nome fisso
-// out/OriginsMeta-Analytics-win-x64.zip: è quella da caricare su GitHub Releases, perché il tasto di download di
-// originsmeta.com/analytics punta a releases/latest/download/OriginsMeta-Analytics-win-x64.zip (10/10/2026).
+// aggiunge LEGGIMI.txt e fa lo zip in out/OriginsMeta-Tracker-<versione>-win-x64.zip, più una copia con il nome fisso
+// out/OriginsMeta-Tracker-win-x64.zip: è quella da caricare su GitHub Releases, perché il tasto di download della
+// pagina dell'app (originsmeta.com/tracker dal 12/10/2026) punta a releases/latest/download/OriginsMeta-Tracker-win-x64.zip.
+//
+// Dalla 0.4.0 (12/10/2026) l'app si chiama OriginsMeta Tracker (src/main/appIdentity.ts). Le app 0.3.x si aggiornano
+// solo con lo zip col nome di prima, out/OriginsMeta-Analytics-win-x64.zip (LEGACY_UPDATE_ASSET di updateRules.ts),
+// che deve contenere "OriginsMeta Analytics.exe": è la stessa app con una copia dell'eseguibile col nome vecchio. Va
+// caricato nella stessa release, accanto all'altro (almeno nella 0.4.0, che deve restare fra le ultime 20 release del
+// repo: le app 0.3.x scelgono la più nuova che lo porta).
 //
 // Non firmata (Fase 5: certificato o Microsoft Store): Windows mostra "Windows ha protetto il PC" e si apre con
 // "Ulteriori informazioni" → "Esegui comunque". Dentro il pacchetto solo dist/ e package.json (asar): niente sorgenti.
@@ -17,8 +23,11 @@ const name = pkg.productName;
 const version = pkg.version;
 const out = path.join(root, "out");
 const folder = path.join(out, "package", `${name}-win32-x64`);
-const zip = path.join(out, `OriginsMeta-Analytics-${version}-win-x64.zip`);
-const stableZip = path.join(out, "OriginsMeta-Analytics-win-x64.zip");
+const zip = path.join(out, `OriginsMeta-Tracker-${version}-win-x64.zip`);
+const stableZip = path.join(out, "OriginsMeta-Tracker-win-x64.zip");
+// per le app 0.3.x (vedi sopra): nome dello zip e dell'eseguibile di allora
+const legacyZip = path.join(out, "OriginsMeta-Analytics-win-x64.zip");
+const legacyExe = "OriginsMeta Analytics.exe";
 const run = (cmd, args) => execFileSync(cmd, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
 
 run("node", ["build.mjs"]);
@@ -51,9 +60,11 @@ const readme = `${name} ${version} (versione di prova, non firmata)
    15 secondi dopo la fine. Per chiuderla: il tasto "Chiudi l'app" in alto, la X della finestra o "Esci" dal menu
    dell'icona (si chiudono anche overlay e pannelli). Dalla 0.3.2 l'app si aggiorna da sola quando esce una versione
    nuova: la scarica e si riavvia aggiornata appena non sei in partita.
-4. Per mandare le partite al tuo account OriginsMeta: su https://originsmeta.com/it/account/tracker (con l'accesso
-   fatto) premi "Crea un codice"; nell'app apri "Account OriginsMeta", scrivi il codice e premi "Collega".
-   Collegandola, le partite entrano anche nelle statistiche anonime del sito (win rate).
+4. L'app funziona solo collegata a un account OriginsMeta (gratuito): finché non la colleghi non legge il gioco e non
+   registra niente. Crea un account o accedi su https://originsmeta.com, poi su
+   https://originsmeta.com/it/account/tracker premi "Crea un codice"; nell'app scrivi il codice e premi "Collega".
+   Le partite vanno al tuo account ed entrano anche nelle statistiche anonime del sito (win rate). L'app ricontrolla
+   il collegamento ogni tanto: senza internet continua a funzionare per 7 giorni.
 5. Overlay, Deck tracker e carte dell'avversario: nel pannello "Overlay" dell'app, "Mostra sopra il gioco",
    "Mostra il deck tracker" e "Mostra le carte dell'avversario" (si vedono sopra il gioco in modalità finestra o
    finestra senza bordi, oppure su un secondo schermo). Per OBS copia gli
@@ -64,7 +75,7 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 7. Funziona con la demo e con il playtest di Steam: sul playtest l'esito delle partite online e classificate lo legge
    dallo schermo di fine partita, quindi lascia lo scanner acceso.
 
-Guida passo per passo: https://originsmeta.com/it/analytics
+Guida passo per passo: https://originsmeta.com/it/tracker
 L'app legge i file che il gioco salva sul PC e, con lo scanner acceso, la finestra del gioco: non tocca mai il gioco.
 OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.
 `;
@@ -76,4 +87,17 @@ const bsdtar = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "t
 if (fs.existsSync(bsdtar)) execFileSync(bsdtar, ["-a", "-c", "-f", zip, "-C", path.dirname(folder), path.basename(folder)], { stdio: "inherit" });
 else run("powershell", ["-NoProfile", "-Command", `Compress-Archive -Path '${folder}' -DestinationPath '${zip}'`]);
 fs.copyFileSync(zip, stableZip);
-console.log(`\n${zip} (${Math.round(fs.statSync(zip).size / 1024 / 1024)} MB)\n${stableZip} (per GitHub Releases)`);
+
+// lo zip per le app 0.3.x: la stessa cartella con una copia dell'eseguibile col nome di allora (il loro aggiornamento
+// cerca "OriginsMeta Analytics.exe" nello zip e riapre quello; il codice è lo stesso, dentro resources/app.asar)
+const exe = path.join(folder, `${name}.exe`);
+const legacyCopy = path.join(folder, legacyExe);
+fs.copyFileSync(exe, legacyCopy);
+fs.rmSync(legacyZip, { force: true });
+try {
+  if (fs.existsSync(bsdtar)) execFileSync(bsdtar, ["-a", "-c", "-f", legacyZip, "-C", path.dirname(folder), path.basename(folder)], { stdio: "inherit" });
+  else run("powershell", ["-NoProfile", "-Command", `Compress-Archive -Path '${folder}' -DestinationPath '${legacyZip}'`]);
+} finally {
+  fs.rmSync(legacyCopy, { force: true });
+}
+console.log(`\n${zip} (${Math.round(fs.statSync(zip).size / 1024 / 1024)} MB)\n${stableZip} (per GitHub Releases)\n${legacyZip} (per GitHub Releases, stessa release: aggiornamento delle app 0.3.x)`);

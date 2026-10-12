@@ -1,8 +1,9 @@
 /**
- * OriginsMeta Analytics, processo principale (Fasi 2–4 del tracker/overlay, 29–30/09/2026; guida in docs/tracker.md).
- * Fino al 01/10/2026 si chiamava OriginsMeta Tracker (Pierluigi: "chiamiamolo Analytics e non tracker"): il nome cambia
- * dove si vede, nel codice e negli indirizzi resta "tracker". Al primo avvio col nome nuovo i dati passano dalla
- * cartella vecchia (`moveOldData`).
+ * OriginsMeta Tracker, processo principale (Fasi 2–4 del tracker/overlay, 29–30/09/2026; guida in docs/tracker.md).
+ * Si chiamava OriginsMeta Tracker fino al 01/10/2026, OriginsMeta Analytics dal 01/10 al 12/10/2026 (Pierluigi, 12/10:
+ * "l'app si chiama OriginsMeta Tracker"; Analytics è la pagina delle statistiche sul sito). Il nome cambia solo dove si
+ * vede: cartella dei dati, AppUserModelId e release restano quelli di prima (appIdentity.ts). Al primo avvio dopo il
+ * 01/10 i dati passavano dalla cartella vecchia (`moveOldData`).
  *
  * - Icona accanto all'orologio: clic = apri la finestra; menu con "Apri", "Overlay sopra il gioco", "Avvia con
  *   Windows" ed "Esci". Dal 10/10/2026 la X della finestra chiude tutta l'app (prima la nascondeva); avviata con
@@ -37,6 +38,13 @@
  *   partita finisce senza replay, ne aggiunge giocate e carte dell'avversario (`applyScan`). Acceso di default dalla
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
+ * - **Solo con l'account** (0.4.0, 12/10/2026, access.ts; Pierluigi: "se non sono registrati con il cazzo possono
+ *   usarla"): senza un collegamento verificato dal sito il "motore" (watcher dei file del gioco, scanner, overlay,
+ *   pannelli, sorgente per OBS, invio) resta spento e la finestra mostra solo il collegamento e "Chiudi l'app". Il token
+ *   si verifica all'avvio e ogni 4 ore; token rifiutato = blocco subito; sito irraggiungibile = 7 giorni di tolleranza
+ *   dall'ultima verifica riuscita. Lo storico sul PC non si tocca. Resta acceso solo l'aggiornamento automatico, così
+ *   anche un'app bloccata riceve le correzioni. `--capture-unlocked` (solo fuori dall'app impacchettata) fotografa
+ *   l'app sbloccata per le verifiche.
  */
 import { app, BrowserWindow, clipboard, desktopCapturer, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
@@ -47,7 +55,9 @@ import { gameDirs } from "./paths";
 import { Store } from "./store";
 import { MatchWatcher } from "./watcher";
 import { Account, type Cipher } from "./account";
-import { SyncQueue, claimCode, siteBase, unlinkRemote, type SyncDeps } from "./sync";
+import { SyncQueue, claimCode, siteBase, unlinkRemote, verifyToken, type SyncDeps } from "./sync";
+import { checkDue, decideAccess, type Access } from "./access";
+import { APP_NAME, APP_USER_MODEL_ID, OLD_DATA_FOLDER, dataDir, staleLoginItem } from "./appIdentity";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
@@ -55,7 +65,7 @@ import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
-import type { AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
+import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
@@ -65,9 +75,15 @@ const FORCE_SCAN = FRAMES || process.argv.includes("--scan");
 const NO_SCAN = process.argv.includes("--no-scan");
 const CAPTURE = process.argv.find((a) => a.startsWith("--capture="))?.slice("--capture=".length) ?? null;
 const CAPTURE_SIZE = (process.argv.find((a) => a.startsWith("--capture-size="))?.slice("--capture-size=".length) ?? "1040x760").split("x").map(Number);
+/** Screenshot di verifica dell'app sbloccata senza account: solo con --capture e mai nell'app impacchettata. */
+const CAPTURE_UNLOCKED = Boolean(CAPTURE) && !app.isPackaged && process.argv.includes("--capture-unlocked");
 
-if (process.env.ORIGINSMETA_TRACKER_DATA) app.setPath("userData", process.env.ORIGINSMETA_TRACKER_DATA);
-app.setAppUserModelId("com.originsmeta.analytics");
+// la cartella dei dati è fissa (%APPDATA%\OriginsMeta Analytics), qualunque sia il nome dell'app: senza, col nome
+// "OriginsMeta Tracker" Electron userebbe %APPDATA%\OriginsMeta Tracker e il collegamento (chiave di safeStorage in
+// Local State), lo storico e le impostazioni non si troverebbero più (appIdentity.ts)
+app.setPath("userData", dataDir(app.getPath("appData"), process.env.ORIGINSMETA_TRACKER_DATA));
+// fisso anche lui: è il nome della voce di "Avvia con Windows" nel registro
+app.setAppUserModelId(APP_USER_MODEL_ID);
 
 /** I file dei dati dell'app (store.ts, sync.ts, account.ts, overlay.json). */
 const DATA_FILES = ["matches.jsonl", "state.json", "sync.json", "account.json", "overlay.json"];
@@ -84,7 +100,7 @@ const DATA_FILES = ["matches.jsonl", "state.json", "sync.json", "account.json", 
 function moveOldData() {
   if (process.env.ORIGINSMETA_TRACKER_DATA) return;
   const target = app.getPath("userData");
-  const old = path.join(app.getPath("appData"), "OriginsMeta Tracker");
+  const old = path.join(app.getPath("appData"), OLD_DATA_FOLDER);
   if (path.resolve(old) === path.resolve(target) || !fs.existsSync(path.join(old, "state.json"))) return;
   if (DATA_FILES.some((f) => fs.existsSync(path.join(target, f)))) return;
   try {
@@ -117,6 +133,14 @@ let sessionStart = Date.now();
 let overlayServer: { port: number; url: string; close: () => void } | null = null;
 let frames: FrameRecorder | null = null;
 let updater: Updater | null = null;
+/** Solo con l'account (0.4.0, access.ts): stato del blocco, motore acceso, verifiche del token. */
+let access: Access = { open: false, reason: "never" };
+let engineOn = false;
+/** cresce a ogni avvio del motore: la sorgente per OBS di un avvio superato si chiude */
+let engineGen = 0;
+let checking = false;
+let lastCheckAt: number | null = null;
+let lastCheckFailed = false;
 
 type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null };
 const CARDS = cardsTable as Record<string, CardRow>;
@@ -132,9 +156,9 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Analytics", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Analytics", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Analytics", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", locked: "link your OriginsMeta account to start", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", locked: "collega il tuo account OriginsMeta per iniziare", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", locked: "vincula tu cuenta de OriginsMeta para empezar", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
 /* ---------- avvio con Windows ---------- */
@@ -142,6 +166,23 @@ const TRAY = {
 // in sviluppo si lancia electron.exe con la cartella dell'app; nell'app installata basta l'eseguibile
 const loginArgs = () => (app.isPackaged ? ["--hidden"] : [app.getAppPath(), "--hidden"]);
 const openAtLogin = () => app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).openAtLogin;
+/**
+ * Cambio di nome dell'eseguibile (0.4.0, 12/10/2026): chi aveva acceso "Avvia con Windows" con "OriginsMeta
+ * Analytics.exe" (o con l'app in un'altra cartella) passa a quello che gira adesso, con lo stato abilitato o no che
+ * aveva in Gestione attività. La voce ha lo stesso nome nel registro (l'AppUserModelId), quindi resta una sola.
+ */
+function migrateLoginItem() {
+  if (!app.isPackaged || CAPTURE || process.platform !== "win32") return;
+  try {
+    const stale = staleLoginItem(app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).launchItems ?? [], process.execPath);
+    if (!stale) return;
+    app.setLoginItemSettings({ openAtLogin: false, path: stale.path, args: stale.args });
+    app.setLoginItemSettings({ openAtLogin: true, path: process.execPath, args: loginArgs(), enabled: stale.enabled !== false });
+  } catch {
+    // non essenziale: il giocatore la riaccende dall'app
+  }
+}
+
 function setOpenAtLogin(on: boolean): boolean {
   app.setLoginItemSettings({ openAtLogin: on, path: process.execPath, args: loginArgs() });
   refreshTray();
@@ -196,7 +237,7 @@ function noteFrame(f: ScanFrame) {
 }
 
 async function finishFromScreen(at: number) {
-  if (!frames || store.matches.some((m) => nearTo(m.endedAt, at))) return;
+  if (!frames || !engineOn || store.matches.some((m) => nearTo(m.endedAt, at))) return;
   // l'esito dello stendardo vale anche se la partita non è stata vista dal round 1 (11/10/2026, Magic in finestra: in una
   // finestra piccola il mana si legge a tratti, la partita risultava incompleta e si perdeva anche vittoria o sconfitta);
   // le giocate entrano solo da una partita completa (`applyScan`)
@@ -234,6 +275,7 @@ function saveScanPrefs() {
   }
 }
 function setScanner(on: boolean): boolean {
+  if (!engineOn) return false; // app bloccata: lo scanner non si accende (access.ts)
   scanPrefs = { ...scanPrefs, on, noticeSeen: true };
   saveScanPrefs();
   if (on) frames?.start();
@@ -257,14 +299,29 @@ function accountState(): AccountState {
   };
 }
 
+function accessView(): AccessView {
+  return {
+    open: access.open,
+    reason: access.open ? null : access.reason,
+    checking,
+    offline: lastCheckFailed,
+    verifiedAt: access.open ? access.verifiedAt : account.verifiedAt,
+    graceUntil: access.open ? access.graceUntil : null,
+    localMatches: store.matches.length,
+  };
+}
+
 function state(): AppState {
+  // app bloccata (access.ts): all'interfaccia niente partite, storico né mazzo, solo il collegamento
+  const open = access.open;
   return {
     version: app.getVersion(),
+    access: accessView(),
     status: watcher.status,
-    matches: [...store.matches].reverse(),
-    missed: store.saved.missed,
-    history,
-    activeDeck,
+    matches: open ? [...store.matches].reverse() : [],
+    missed: open ? store.saved.missed : "",
+    history: open ? history : "",
+    activeDeck: open ? activeDeck : null,
     openAtLogin: CAPTURE ? false : openAtLogin(),
     dataFolder: store.dir,
     account: accountState(),
@@ -328,9 +385,10 @@ type PanelKind = "deck" | "opp";
 type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean };
 // dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
 // pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
-const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean }> = {
-  deck: { win: null, prefs: { open: false }, file: "deck.json", left: true },
-  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false },
+// `keep`: chiusa dall'app che si blocca (access.ts), non dal giocatore: la preferenza "aperta" resta e si riapre allo sblocco
+const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean; keep: boolean }> = {
+  deck: { win: null, prefs: { open: false }, file: "deck.json", left: true, keep: false },
+  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false, keep: false },
 };
 /** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
 const OPP_L_WIDTH = 400;
@@ -427,11 +485,12 @@ function openPanel(k: PanelKind) {
   win.on("resized", remember);
   win.on("closed", () => {
     panels[k].win = null;
-    // chiusa con la X: resta spenta anche al prossimo avvio
-    if (!quitting) {
+    // chiusa con la X: resta spenta anche al prossimo avvio (non se l'ha chiusa il blocco dell'app)
+    if (!quitting && !panels[k].keep) {
       panels[k].prefs = { ...panels[k].prefs, open: false };
       savePanelPrefs(k);
     }
+    panels[k].keep = false;
     push();
   });
   win.once("ready-to-show", () => win.showInactive());
@@ -439,6 +498,7 @@ function openPanel(k: PanelKind) {
 }
 
 function setPanel(k: PanelKind, on: boolean): boolean {
+  if (!engineOn) return false; // app bloccata (access.ts)
   if (on) openPanel(k);
   else if (panelOpen(k)) panels[k].win!.close();
   panels[k].prefs = { ...panels[k].prefs, open: on };
@@ -467,28 +527,45 @@ function scheduleSync(ms: number) {
 
 async function runSync(force: boolean) {
   const token = account.token;
-  if (!token || CAPTURE) return;
+  if (!token || CAPTURE || !engineOn) return;
   const running = sync.run(store.matches, token, { force });
   push();
   const r = await running;
-  if (r.unlinked) {
-    // il sito non riconosce più il token (PC scollegato da /account/tracker): si dimentica e lo si dice
-    account.clear();
-    sync.reset();
-    notice = "unlinked";
-  }
+  if (account.token !== token) return push(); // scollegata o ricollegata nel frattempo
+  if (r.unlinked) forgetLink();
+  else if (r.verified) noteVerified();
   push();
+}
+
+/** Il sito non riconosce più il token (PC scollegato da /account/tracker, account eliminato): si dimentica, lo si dice, l'app si blocca. */
+function forgetLink() {
+  account.clear();
+  sync.reset();
+  notice = "unlinked";
+  lastCheckFailed = false;
+  refreshAccess();
+}
+
+/** Il sito ha appena accettato il token (verifica o invio): riparte la tolleranza. */
+function noteVerified() {
+  account.markVerified();
+  lastCheckAt = Date.now();
+  lastCheckFailed = false;
+  refreshAccess();
 }
 
 async function linkAccount(code: unknown): Promise<LinkResult> {
   if (account.linked) return { ok: true, username: account.username };
   const r = await claimCode(syncDeps, String(code ?? ""), os.hostname());
   if (!r.ok) return r;
+  // il collegamento appena dato dal sito vale come verifica (account.set salva anche l'ora)
   account.set(r.token, r.username, SITE_ORIGIN);
   // tutto lo storico sul PC va a questo account (il sito scarta da sé i doppioni)
   sync.reset();
   notice = null;
-  push();
+  lastCheckAt = Date.now();
+  lastCheckFailed = false;
+  refreshAccess();
   void runSync(true);
   return { ok: true, username: r.username };
 }
@@ -498,8 +575,91 @@ async function unlinkAccount() {
   account.clear();
   sync.reset();
   notice = null;
-  push();
+  lastCheckFailed = false;
+  // senza collegamento l'app si ferma e torna alla schermata di collegamento
+  refreshAccess();
   if (token) await unlinkRemote(syncDeps, token);
+}
+
+/* ---------- solo con l'account (0.4.0, 12/10/2026, access.ts) ---------- */
+
+/** Ricalcola il blocco e accende o spegne il motore di conseguenza. */
+function refreshAccess() {
+  const now = Date.now();
+  access = CAPTURE_UNLOCKED
+    ? { open: true, verifiedAt: new Date(now).toISOString(), graceUntil: new Date(now).toISOString() }
+    : decideAccess({ linked: account.linked, unreadable: account.unreadable, notice, verifiedAt: account.verifiedAt, now });
+  if (access.open && !engineOn) void startEngine();
+  else if (!access.open && engineOn) stopEngine();
+  push();
+}
+
+/** Verifica il token con il sito (zero partite a /api/tracker/sync). */
+async function checkAccess() {
+  const token = account.token;
+  if (!token || CAPTURE || checking) return;
+  checking = true;
+  push();
+  const outcome = await verifyToken(syncDeps, token);
+  checking = false;
+  lastCheckAt = Date.now();
+  if (account.token !== token) return refreshAccess(); // scollegata o ricollegata nel frattempo
+  if (outcome === "ok") return noteVerified();
+  if (outcome === "revoked") return forgetLink();
+  // sito irraggiungibile: niente cambia, vale la tolleranza dall'ultima verifica riuscita
+  lastCheckFailed = true;
+  refreshAccess();
+}
+
+/** Ogni minuto: verifica quando è ora (avvio, ogni 4 ore, ogni 5 minuti da bloccata) e ricontrolla la tolleranza. */
+function accessTick() {
+  if (checkDue({ linked: account.linked, open: access.open, lastAttemptAt: lastCheckAt, lastFailed: lastCheckFailed, now: Date.now() })) void checkAccess();
+  else refreshAccess();
+}
+
+/**
+ * Il motore dell'app: file del gioco, sorgente per OBS e, fuori dalla modalità cattura, overlay e pannelli aperti
+ * l'ultima volta, scanner (se acceso nelle preferenze) e invio. Parte solo con l'app sbloccata.
+ */
+async function startEngine() {
+  engineOn = true;
+  const gen = ++engineGen;
+  watcher.start();
+  if (!CAPTURE) {
+    if (overlayPrefs.open) openOverlay();
+    for (const k of PANEL_KINDS) if (panels[k].prefs.open) openPanel(k);
+    if (frames && !NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
+    scheduleSync(10_000);
+  }
+  push();
+  // la sorgente per OBS parte anche nella modalità di cattura, così lo screenshot mostra gli indirizzi veri
+  const server = await startOverlayServer({ dir: path.join(__dirname, "overlay"), view: currentView, deckView: currentDeckView });
+  if (!engineOn || gen !== engineGen) return server?.close(); // bloccata (o ripartita) mentre partiva
+  overlayServer = server;
+  push();
+}
+
+/** Ferma tutto (app bloccata): niente più letture, riprese, finestre sopra il gioco né sorgente per OBS. Le preferenze restano. */
+function stopEngine() {
+  engineOn = false;
+  watcher.stop();
+  frames?.stop();
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = null;
+  if (overlayWin && !overlayWin.isDestroyed()) overlayWin.destroy();
+  overlayWin = null;
+  for (const k of PANEL_KINDS) {
+    if (!panelOpen(k)) continue;
+    panels[k].keep = true;
+    panels[k].win!.destroy();
+  }
+  overlayServer?.close();
+  overlayServer = null;
+  gameDeck = null;
+  activeDeck = null;
+  // la schermata di collegamento si vede subito, anche con l'app solo nell'icona
+  if (!CAPTURE && !quitting) showWindow();
+  push();
 }
 
 /* ---------- overlay: finestra sopra il gioco ---------- */
@@ -585,6 +745,7 @@ function openOverlay() {
 }
 
 function setOverlayWindow(on: boolean): boolean {
+  if (!engineOn) return false; // app bloccata (access.ts)
   if (on) openOverlay();
   else if (overlayWin && !overlayWin.isDestroyed()) overlayWin.close();
   overlayPrefs = { ...overlayPrefs, open: on };
@@ -594,6 +755,7 @@ function setOverlayWindow(on: boolean): boolean {
 }
 
 function setClickThrough(on: boolean): boolean {
+  if (!engineOn) return overlayPrefs.clickThrough;
   overlayPrefs = { ...overlayPrefs, clickThrough: on };
   saveOverlayPrefs();
   if (overlayWin && !overlayWin.isDestroyed()) overlayWin.setIgnoreMouseEvents(on, { forward: true });
@@ -616,8 +778,13 @@ function refreshTray() {
   if (!tray) return;
   const t = TRAY[lang()];
   const f = frames?.status;
+  if (!access.open) {
+    tray.setToolTip(`${APP_NAME} · ${t.locked}`);
+    tray.setContextMenu(Menu.buildFromTemplate([{ label: t.open, click: showWindow }, { type: "separator" }, { label: t.quit, click: () => app.quit() }]));
+    return;
+  }
   const rec = f && frames?.running ? ` · SCAN ${f.capturing ? "●" : "○"}${FRAMES ? ` ${f.frames}` : ""}${f.full ? " (4 GB)" : ""}` : "";
-  tray.setToolTip(`OriginsMeta Analytics · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}${rec}`);
+  tray.setToolTip(`${APP_NAME} · ${watcher?.status.cache ? t.listening : t.waiting} · ${store ? todayRecord() : ""}${rec}`);
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: t.open, click: showWindow },
@@ -652,7 +819,7 @@ function createWindow(show: boolean) {
     minWidth: 420,
     minHeight: 480,
     show: false,
-    title: "OriginsMeta Analytics",
+    title: APP_NAME,
     backgroundColor: "#150c2c",
     icon: ICON,
     autoHideMenuBar: true,
@@ -690,14 +857,16 @@ function openLink(url: unknown) {
 /* ---------- IPC: solo dalla pagina locale dell'app ---------- */
 
 const fromApp = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && e.sender === win?.webContents;
+/** Dalla finestra dell'app e con l'app sbloccata (access.ts): tutto quello che non è collegamento, link o uscita. */
+const fromOpenApp = (e: IpcMainInvokeEvent) => fromApp(e) && engineOn;
 const fromOverlay = (e: IpcMainInvokeEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && Boolean(overlayWin) && e.sender === overlayWin?.webContents;
 const fromDeck = (e: IpcMainInvokeEvent | IpcMainEvent) => Boolean(e.senderFrame?.url.startsWith("file://")) && PANEL_KINDS.some((k) => panelOpen(k) && e.sender === panels[k].win!.webContents);
 
 function registerIpc() {
   ipcMain.handle("tracker:state", (e) => (fromApp(e) ? state() : null));
-  ipcMain.handle("tracker:login", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setOpenAtLogin(on === true) : openAtLogin()));
+  ipcMain.handle("tracker:login", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setOpenAtLogin(on === true) : openAtLogin()));
   ipcMain.handle("tracker:folder", async (e) => {
-    if (fromApp(e)) await shell.openPath(store.dir);
+    if (fromOpenApp(e)) await shell.openPath(store.dir);
   });
   ipcMain.handle("tracker:link", (e, url: unknown) => {
     if (fromApp(e)) openLink(url);
@@ -707,25 +876,29 @@ function registerIpc() {
     if (fromApp(e) && !CAPTURE) await unlinkAccount();
   });
   ipcMain.handle("tracker:sync-now", async (e) => {
-    if (fromApp(e)) await runSync(true);
+    if (fromOpenApp(e)) await runSync(true);
   });
-  ipcMain.handle("tracker:overlay-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setOverlayWindow(on === true) : Boolean(overlayWin)));
+  // "Riprova" della schermata di blocco: verifica subito il collegamento con il sito
+  ipcMain.handle("tracker:verify-now", async (e) => {
+    if (fromApp(e) && !CAPTURE) await checkAccess();
+  });
+  ipcMain.handle("tracker:overlay-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setOverlayWindow(on === true) : Boolean(overlayWin)));
   // tasto "Chiudi l'app" (11/10/2026, Pierluigi: "un tasto chiudi l'app direttamente nell'app"): come "Esci" dell'icona
   ipcMain.handle("tracker:quit", (e) => {
     if (!fromApp(e) || CAPTURE) return;
     quitting = true;
     app.quit();
   });
-  ipcMain.handle("tracker:scanner", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setScanner(on === true) : Boolean(frames?.running)));
+  ipcMain.handle("tracker:scanner", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setScanner(on === true) : Boolean(frames?.running)));
   ipcMain.handle("tracker:scanner-notice", (e) => {
-    if (!fromApp(e)) return;
+    if (!fromOpenApp(e)) return;
     scanPrefs = { ...scanPrefs, noticeSeen: true };
     saveScanPrefs();
     push();
   });
-  ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
-  ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
-  ipcMain.handle("deck:view", (e) => (fromDeck(e) ? currentDeckView() : null));
+  ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
+  ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
+  ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {
     if (!fromDeck(e)) return;
@@ -744,18 +917,18 @@ function registerIpc() {
     const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
     if (Math.abs(want - cur) > 2) win.setContentSize(w, want);
   });
-  ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
+  ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromOpenApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
-    if (!fromApp(e)) return;
+    if (!fromOpenApp(e)) return;
     sessionStart = Date.now();
     push();
   });
   ipcMain.handle("tracker:copy", (e, text: unknown) => {
     // indirizzi per OBS e codici del gioco (un codice di 13 carte sta sotto i 300 caratteri; il tetto del sito è 420)
-    if (fromApp(e) && typeof text === "string" && text.length <= 600) clipboard.writeText(text);
+    if (fromOpenApp(e) && typeof text === "string" && text.length <= 600) clipboard.writeText(text);
   });
   // la finestra dell'overlay legge solo i suoi dati
-  ipcMain.handle("overlay:view", (e) => (fromOverlay(e) ? { view: currentView(), clickThrough: overlayPrefs.clickThrough } : null));
+  ipcMain.handle("overlay:view", (e) => (fromOverlay(e) && engineOn ? { view: currentView(), clickThrough: overlayPrefs.clickThrough } : null));
   ipcMain.on("tracker:rendered", (e) => {
     if (!CAPTURE || e.sender !== win?.webContents) return;
     // l'interfaccia ha disegnato lo stato: un attimo per i caratteri (e con --capture-delay per le immagini delle carte,
@@ -786,6 +959,7 @@ function registerIpc() {
 const deckView = (deck: GameDeck | null): ActiveDeck => (deck ? { name: deck.name, legendary: deck.legendary?.replace(/_V\d+$/, "") ?? null, cards: deck.cards.map((k) => k.replace(/_V\d+$/, "")) } : null);
 
 async function boot() {
+  migrateLoginItem();
   store = new Store(app.getPath("userData"));
   const hadState = store.load();
   account = new Account(app.getPath("userData"), cipher);
@@ -798,6 +972,7 @@ async function boot() {
   loadScanPrefs();
   watcher = new MatchWatcher(gameDirs(app.getPath("home"), app.getPath("documents")), store.saved, { firstRun: !hadState });
   watcher.on("match", (raw: TrackedMatch) => {
+    if (!engineOn) return; // un giro già partito quando l'app si è bloccata
     // la stessa partita già registrata dallo schermo (statistiche arrivate in ritardo): si tiene quella
     const twin = screenTwin(raw);
     if (twin) {
@@ -834,19 +1009,12 @@ async function boot() {
 
   session.defaultSession.setPermissionRequestHandler((_wc, _perm, callback) => callback(false));
   registerIpc();
-  // la sorgente per OBS parte anche nella modalità di cattura, così lo screenshot mostra gli indirizzi veri
-  overlayServer = await startOverlayServer({ dir: path.join(__dirname, "overlay"), view: currentView, deckView: currentDeckView });
   if (!CAPTURE) {
     tray = new Tray(nativeImage.createFromPath(ICON));
     tray.on("click", showWindow);
-    refreshTray();
-    if (overlayPrefs.open) openOverlay();
-    for (const k of PANEL_KINDS) if (panels[k].prefs.open) openPanel(k);
-    scheduleSync(10_000);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
-    if (!NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)
     updater = new Updater({
@@ -863,8 +1031,16 @@ async function boot() {
     });
     updater.start();
   }
-  createWindow(!HIDDEN);
-  watcher.start();
+  // solo con l'account (access.ts): sbloccata se il collegamento è stato verificato da meno di 7 giorni (così parte
+  // anche senza rete), poi la verifica con il sito subito e ogni minuto il controllo di quando rifarla
+  refreshAccess();
+  if (!CAPTURE) {
+    void checkAccess();
+    setInterval(accessTick, 60_000);
+  }
+  // avviata con Windows ma bloccata: la finestra si apre comunque, per dire che serve il collegamento (non per
+  // "verify", il collegamento della 0.3.x che la verifica appena partita sblocca in un attimo)
+  createWindow(!HIDDEN || (!access.open && access.reason !== "verify"));
 }
 
 if (!CAPTURE && !app.requestSingleInstanceLock()) {

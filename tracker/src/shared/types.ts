@@ -4,6 +4,7 @@
  */
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 import type { ScanFrame } from "./reconstruct";
+import type { LockReason } from "../main/access";
 
 export type { TrackedMatch };
 
@@ -47,6 +48,25 @@ export type AccountState = {
 };
 
 /**
+ * Solo con l'account (0.4.0, 12/10/2026; main/access.ts): senza un collegamento verificato l'app è bloccata e
+ * l'interfaccia mostra solo la schermata di collegamento.
+ */
+export type AccessView = {
+  open: boolean;
+  /** perché è bloccata (null se aperta) */
+  reason: LockReason | null;
+  /** una verifica del token con il sito è in corso */
+  checking: boolean;
+  /** l'ultima verifica non ha raggiunto il sito: l'app va avanti fino a `graceUntil` */
+  offline: boolean;
+  /** ultima verifica riuscita e fine della tolleranza, ISO (null se mai verificata) */
+  verifiedAt: string | null;
+  graceUntil: string | null;
+  /** partite già registrate su questo PC (restano lì anche ad app bloccata) */
+  localMatches: number;
+};
+
+/**
  * Quello che mostra l'overlay (Fase 4, 30/09/2026; overlay.ts): mazzo scelto nel gioco, sessione, record del mazzo
  * nello storico sul PC, ultima partita finita. Mai bot o persona, mai il rank dell'avversario, mai nomi.
  */
@@ -83,6 +103,8 @@ export type OverlayState = {
 
 export type AppState = {
   version: string;
+  /** Solo con l'account (0.4.0): con `open: false` partite, storico e mazzo arrivano vuoti. */
+  access: AccessView;
   status: TrackerStatus;
   /** Partite registrate, dalla più recente. */
   matches: TrackedMatch[];
@@ -122,6 +144,8 @@ export type TrackerApi = {
   unlinkAccount(): Promise<void>;
   /** Manda subito le partite in attesa. */
   syncNow(): Promise<void>;
+  /** Verifica subito il collegamento con il sito (tasto "Riprova" della schermata di blocco, 0.4.0). */
+  verifyNow(): Promise<void>;
   /** Apre o chiude la finestra sopra il gioco. */
   setOverlayWindow(on: boolean): Promise<boolean>;
   /** Apre o chiude il pannello del mazzo (10/10/2026). */

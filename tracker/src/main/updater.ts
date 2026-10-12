@@ -5,7 +5,9 @@
  * Giro: `UPDATE_FIRST_MS` dopo l'avvio e poi ogni `UPDATE_EVERY_MS` chiede a GitHub le release; se ce n'è una più nuova
  * scarica lo zip in una cartella temporanea (controllando la dimensione), lo scompatta con il tar di Windows e, appena
  * il gioco è chiuso, scrive uno script che aspetta la chiusura dell'app, copia i file nuovi sopra quelli vecchi
- * (robocopy) e la riapre; poi chiude l'app. I dati (%APPDATA%\OriginsMeta Analytics) non si toccano.
+ * (robocopy) e la riapre; poi chiude l'app. I dati (%APPDATA%\OriginsMeta Analytics) non si toccano. Dalla 0.4.0
+ * riapre `OriginsMeta Tracker.exe` se lo zip lo porta (cambio di nome, appIdentity.ts): il vecchio eseguibile resta
+ * nella cartella, così i collegamenti che il giocatore si è fatto continuano ad aprire l'app.
  *
  * 11/10/2026 sera (Magic, playtest in finestra: "ogni tanto succede questo, dura qualche secondo, si toglie e poi si
  * bugga il tracker", con la console nera sopra il gioco e la partita non contata): l'app si aggiornava durante la
@@ -19,6 +21,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { installScript, isNewer, launcherScript, pickRelease, UPDATE_API, UPDATE_ASSET, type Release } from "./updateRules";
+import { EXE_NAME, LEGACY_EXE_NAME, exeAfterUpdate } from "./appIdentity";
 
 /** Primo controllo dopo l'avvio (ORIGINSMETA_UPDATE_DELAY_MS per le prove). */
 export const UPDATE_FIRST_MS = Number(process.env.ORIGINSMETA_UPDATE_DELAY_MS) || 30_000;
@@ -75,7 +78,7 @@ export class Updater {
     if (this.busy) return;
     this.busy = true;
     try {
-      const res = await net.fetch(UPDATE_API, { headers: { accept: "application/vnd.github+json", "user-agent": `OriginsMeta-Analytics/${this.current}` } });
+      const res = await net.fetch(UPDATE_API, { headers: { accept: "application/vnd.github+json", "user-agent": `OriginsMeta-Tracker/${this.current}` } });
       if (!res.ok) throw new Error(`github ${res.status}`);
       const rel = pickRelease(await res.json());
       if (!rel || !isNewer(rel.version, this.current)) {
@@ -96,11 +99,11 @@ export class Updater {
   /** Scarica e scompatta; restituisce la cartella con l'app nuova (quella che contiene l'exe). */
   private async download(rel: Release): Promise<string> {
     this.set({ state: "downloading", version: rel.version });
-    const base = path.join(os.tmpdir(), `OriginsMeta-Analytics-update-${rel.version}`);
+    const base = path.join(os.tmpdir(), `OriginsMeta-Tracker-update-${rel.version}`);
     fs.rmSync(base, { recursive: true, force: true });
     fs.mkdirSync(base, { recursive: true });
     const zip = path.join(base, UPDATE_ASSET);
-    const res = await net.fetch(rel.url, { headers: { "user-agent": `OriginsMeta-Analytics/${this.current}` } });
+    const res = await net.fetch(rel.url, { headers: { "user-agent": `OriginsMeta-Tracker/${this.current}` } });
     if (!res.ok || !res.body) throw new Error(`download ${res.status}`);
     const out = fs.createWriteStream(zip);
     let got = 0;
@@ -118,10 +121,10 @@ export class Updater {
     fs.mkdirSync(unpacked, { recursive: true });
     const tar = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe");
     await new Promise<void>((resolve, reject) => execFile(tar, ["-x", "-f", zip, "-C", unpacked], { windowsHide: true }, (e) => (e ? reject(e) : resolve())));
-    // lo zip contiene una cartella con l'app (OriginsMeta Analytics-win32-x64): quella con l'exe
-    const exeName = path.basename(process.execPath);
+    // lo zip contiene una cartella con l'app (OriginsMeta Tracker-win32-x64; fino alla 0.3.7 OriginsMeta Analytics-…): quella con l'exe
+    const exeNames = [EXE_NAME, LEGACY_EXE_NAME, path.basename(process.execPath)];
     const inner = fs.readdirSync(unpacked, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => path.join(unpacked, d.name));
-    const found = [unpacked, ...inner].find((d) => fs.existsSync(path.join(d, exeName)) || fs.existsSync(path.join(d, "OriginsMeta Analytics.exe")));
+    const found = [unpacked, ...inner].find((d) => exeNames.some((n) => fs.existsSync(path.join(d, n))));
     if (!found) throw new Error("exe non trovato nello zip");
     return found;
   }
@@ -134,7 +137,8 @@ export class Updater {
     this.set({ state: "installing", version });
     const target = path.dirname(process.execPath);
     const script = path.join(path.dirname(source), "install.cmd");
-    fs.writeFileSync(script, installScript({ pid: process.pid, source, target, exe: process.execPath, log: path.join(path.dirname(source), "install.log") }));
+    const exe = exeAfterUpdate(target, fs.existsSync(path.join(source, EXE_NAME)), process.execPath);
+    fs.writeFileSync(script, installScript({ pid: process.pid, source, target, exe, log: path.join(path.dirname(source), "install.log") }));
     const note = (line: string) => {
       try {
         fs.appendFileSync(path.join(path.dirname(source), "update.log"), `${new Date().toISOString()} ${line}

@@ -106,7 +106,7 @@ describe("SyncQueue", () => {
       q.load();
       assert.equal(q.status(matches).pending, 120);
       const r = await q.run(matches, TOKEN);
-      assert.deepEqual(r, { sent: 120, unlinked: false });
+      assert.deepEqual(r, { sent: 120, unlinked: false, verified: true });
       assert.deepEqual(
         net.calls.map((c) => (c.body as { matches: unknown[] }).matches.length),
         [50, 50, 20],
@@ -124,7 +124,7 @@ describe("SyncQueue", () => {
       const again = new SyncQueue(dir, { site: "https://originsmeta.com", fetch: net.fetch, now: () => T0 });
       again.load();
       assert.equal(again.status(matches).pending, 0);
-      assert.deepEqual(await again.run(matches, TOKEN), { sent: 0, unlinked: false });
+      assert.deepEqual(await again.run(matches, TOKEN), { sent: 0, unlinked: false, verified: false });
       assert.equal(net.calls.length, 3);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
@@ -160,13 +160,13 @@ describe("SyncQueue", () => {
     try {
       const matches = [match(1), match(2)];
       const q429 = new SyncQueue(dir, { site: "https://originsmeta.com", fetch: fakeNet([{ status: 429, body: { error: "too_many_matches" } }]).fetch, now: () => T0 });
-      await q429.run(matches, TOKEN);
+      assert.equal((await q429.run(matches, TOKEN)).verified, true, "il 429 arriva dopo il controllo del token");
       assert.deepEqual([q429.status(matches).problem, q429.status(matches).retryAt], ["rate_limited", new Date(T0 + RETRY.rateLimited).toISOString()]);
       const q503 = new SyncQueue(dir, { site: "https://originsmeta.com", fetch: fakeNet([{ status: 503, body: { error: "unavailable" } }]).fetch, now: () => T0 });
       await q503.run(matches, TOKEN);
       assert.deepEqual([q503.status(matches).problem, q503.status(matches).retryAt], ["unavailable", new Date(T0 + RETRY.unavailable).toISOString()]);
       const q400 = new SyncQueue(dir, { site: "https://originsmeta.com", fetch: fakeNet([{ status: 400, body: { error: "bad_request" } }]).fetch, now: () => T0 });
-      assert.deepEqual(await q400.run(matches, TOKEN), { sent: 0, unlinked: false });
+      assert.deepEqual(await q400.run(matches, TOKEN), { sent: 0, unlinked: false, verified: false });
       assert.equal(q400.status(matches).pending, 0);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
@@ -180,7 +180,7 @@ describe("SyncQueue", () => {
       const q = new SyncQueue(dir, { site: "https://originsmeta.com", fetch: fakeNet([{ status: 200 }, { status: 401, body: { error: "invalid_token" } }]).fetch, now: () => T0 });
       await q.run([matches[0]], TOKEN);
       assert.equal(q.status(matches).pending, 1);
-      assert.deepEqual(await q.run(matches, TOKEN), { sent: 0, unlinked: true });
+      assert.deepEqual(await q.run(matches, TOKEN), { sent: 0, unlinked: true, verified: false });
       assert.equal(q.status(matches).problem, "unlinked");
       q.reset();
       assert.deepEqual([q.status(matches).pending, q.status(matches).problem, q.status(matches).lastSyncAt], [2, null, null]);

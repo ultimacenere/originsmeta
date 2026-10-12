@@ -19,6 +19,7 @@ const api: TrackerApi & { rendered(): void } = {
   linkAccount: (code) => ipcRenderer.invoke("tracker:account-link", code),
   unlinkAccount: () => ipcRenderer.invoke("tracker:account-unlink"),
   syncNow: () => ipcRenderer.invoke("tracker:sync-now"),
+  verifyNow: () => ipcRenderer.invoke("tracker:verify-now"),
   // overlay (Fase 4)
   setOverlayWindow: (on) => ipcRenderer.invoke("tracker:overlay-window", on),
   setDeckWindow: (on) => ipcRenderer.invoke("tracker:deck-window", on),

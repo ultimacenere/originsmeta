@@ -101,7 +101,8 @@ export async function startOverlayServer(opts: { dir: string; view: () => Overla
       server.once("error", () => resolve(false));
       server.listen(port, "127.0.0.1", () => resolve(true));
     });
-    if (ok) return { port, url: `http://127.0.0.1:${port}/overlay/`, close: () => server.close() };
+    // chiusa anche ad app bloccata (0.4.0, access.ts): via subito anche le connessioni aperte di OBS (keep-alive)
+    if (ok) return { port, url: `http://127.0.0.1:${port}/overlay/`, close: () => (server.close(), server.closeAllConnections()) };
   }
   return null;
 }

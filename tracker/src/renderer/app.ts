@@ -12,6 +12,10 @@
  * sulle statistiche anonime prima del collegamento. Fase 4: pannello "Overlay" (finestra sopra il gioco, sposta,
  * sessione, indirizzi della sorgente per OBS).
  *
+ * Solo con l'account (0.4.0, 12/10/2026, main/access.ts): con l'app bloccata la finestra mostra solo la schermata di
+ * collegamento (`lockScreen`: crea un account gratuito o accedi, crea il codice, scrivilo qui) e "Chiudi l'app"; con
+ * il collegamento da verificare o scaduto anche "Riprova" e "Scollega".
+ *
  * Grafica del 01/10/2026 (Pierluigi: "portiamo nell'app i nostri logo, le palette, i font" e "anche le grafiche delle
  * carte"): logo e font del sito, il mazzo scelto con le sue carte intere, miniature delle Leggendarie in tabelle e
  * partite, il tuo mazzo in carte dentro ogni partita. Le immagini delle carte arrivano da originsmeta.com (le stesse
@@ -74,13 +78,11 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the app closed`,
     startup: "Start with Windows",
     dataFolder: "Open the data folder",
-    privacy: "OriginsMeta Analytics reads the files Origins TCG saves on this PC and, with the screen scanner on, the game window; it never touches the game. Screen images never leave this PC. Your matches stay on this PC unless you link the app to your OriginsMeta account. Card images load from originsmeta.com.",
+    privacy: "OriginsMeta Tracker reads the files Origins TCG saves on this PC and, with the screen scanner on, the game window; it never touches the game. Screen images never leave this PC. Your matches are saved on this PC and sent to your OriginsMeta account, which the app needs in order to work. Card images load from originsmeta.com.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
     account: "OriginsMeta account",
-    accountIntro: "Link the app to your account: your matches also go to originsmeta.com, where you can see your stats.",
     consent:
-      "When you link it, the app sends your matches to your account, including the ones already recorded here, and they always go into the site's anonymous stats too: only aggregate numbers, never who played. If you don't want that, don't link it: the app also works on this PC alone.",
-    howTo: "Create a code on originsmeta.com (Account → OriginsMeta Analytics) and type it here.",
+      "When you link it, the app sends your matches to your account, including the ones already recorded here, and they always go into the site's anonymous stats too: only aggregate numbers, never who played. Without a linked account the app doesn't work.",
     openCodePage: "Create a code on originsmeta.com",
     codeLabel: "Link code",
     link: "Link",
@@ -94,9 +96,22 @@ const LABELS = {
     unlink: "Unlink this PC",
     unlinkConfirm: "Unlink this PC from your account? The matches already sent stay on the site: you can delete them from originsmeta.com.",
     openStats: "Your stats on originsmeta.com",
+    openWinrates: "Win rates on originsmeta.com",
     notPersisted: "Windows data protection isn't available: the link lasts until you close the app.",
-    unlinkedNotice: "The site unlinked this PC: link it again with a new code.",
-    relinkNotice: "The link saved on this PC can no longer be read: link the app again with a new code. The matches recorded in the meantime are sent as soon as you do.",
+    unlinkedNotice: "The site unlinked this PC (or the account no longer exists): link it again with a new code.",
+    relinkNotice: "The link saved on this PC can no longer be read: link the app again with a new code.",
+    lockTitle: "Link the app to your OriginsMeta account",
+    lockIntro: "OriginsMeta Tracker is only for registered OriginsMeta users. Until it's linked to your account the app doesn't read the game, doesn't record matches and doesn't show overlays.",
+    step1: "Create a free account on originsmeta.com, or sign in.",
+    signUp: "Create an account or sign in",
+    step2: "Open the OriginsMeta Tracker page of your account and press “Create a code”.",
+    step3: "Type the code here and press Link: the app starts right away.",
+    checking: "Checking your link with originsmeta.com…",
+    verifyOffline: "Can't reach originsmeta.com to check your link: the app starts as soon as it can. Check your connection.",
+    expired: (d: string) => `The app hasn't been able to check your link with originsmeta.com since ${d}, more than 7 days ago: connect to the internet and it starts again by itself.`,
+    retry: "Try again",
+    offlineGrace: (d: string) => `Can't reach originsmeta.com: the app keeps working until ${d}, then it needs to check your link with the site.`,
+    localKept: (n: number) => `The ${n} ${n === 1 ? "match" : "matches"} already recorded stay on this PC: you'll see them again as soon as the app is linked.`,
     linkProblems: {
       invalid_code: "Wrong or expired code: create a new one on the site.",
       too_many_devices: "You already have 10 linked PCs: unlink one on the site.",
@@ -127,7 +142,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment.",
     quitApp: "Close the app",
     noticeTitle: "The screen scanner is on",
-    noticeText: "To record the cards played by you and your opponent, OriginsMeta Analytics reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in the Screen scanner box.",
+    noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in the Screen scanner box.",
     noticeOk: "Got it",
     noticeOff: "Turn it off",
     deckTitle: "Deck tracker",
@@ -194,13 +209,11 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} ad app chiusa`,
     startup: "Avvia con Windows",
     dataFolder: "Apri la cartella dei dati",
-    privacy: "OriginsMeta Analytics legge i file che Origins TCG salva su questo PC e, con lo scanner dello schermo acceso, la finestra del gioco; non tocca mai il gioco. Le immagini dello schermo non lasciano mai questo PC. Le tue partite restano su questo PC, a meno che colleghi l'app al tuo account OriginsMeta. Le immagini delle carte arrivano da originsmeta.com.",
+    privacy: "OriginsMeta Tracker legge i file che Origins TCG salva su questo PC e, con lo scanner dello schermo acceso, la finestra del gioco; non tocca mai il gioco. Le immagini dello schermo non lasciano mai questo PC. Le tue partite si salvano su questo PC e vanno al tuo account OriginsMeta, che serve all'app per funzionare. Le immagini delle carte arrivano da originsmeta.com.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
     account: "Account OriginsMeta",
-    accountIntro: "Collega l'app al tuo account: le tue partite arrivano anche su originsmeta.com, dove vedi le tue statistiche.",
     consent:
-      "Collegandola, l'app manda le tue partite al tuo account, anche quelle già registrate qui, ed entrano sempre anche nelle statistiche anonime del sito: solo numeri aggregati, mai chi ha giocato. Se non vuoi, non collegarla: l'app funziona anche solo su questo PC.",
-    howTo: "Crea un codice su originsmeta.com (Account → OriginsMeta Analytics) e scrivilo qui.",
+      "Collegandola, l'app manda le tue partite al tuo account, anche quelle già registrate qui, ed entrano sempre anche nelle statistiche anonime del sito: solo numeri aggregati, mai chi ha giocato. Senza un account collegato l'app non funziona.",
     openCodePage: "Crea un codice su originsmeta.com",
     codeLabel: "Codice di collegamento",
     link: "Collega",
@@ -214,9 +227,22 @@ const LABELS = {
     unlink: "Scollega questo PC",
     unlinkConfirm: "Scollegare questo PC dal tuo account? Le partite già inviate restano sul sito: puoi cancellarle da originsmeta.com.",
     openStats: "Le tue statistiche su originsmeta.com",
+    openWinrates: "Win rate su originsmeta.com",
     notPersisted: "La protezione dei dati di Windows non è disponibile: il collegamento vale fino alla chiusura dell'app.",
-    unlinkedNotice: "Il sito ha scollegato questo PC: collegalo di nuovo con un codice nuovo.",
-    relinkNotice: "Il collegamento salvato su questo PC non si legge più: collega di nuovo l'app con un codice nuovo. Le partite registrate intanto partono appena lo fai.",
+    unlinkedNotice: "Il sito ha scollegato questo PC (o l'account non esiste più): collegalo di nuovo con un codice nuovo.",
+    relinkNotice: "Il collegamento salvato su questo PC non si legge più: collega di nuovo l'app con un codice nuovo.",
+    lockTitle: "Collega l'app al tuo account OriginsMeta",
+    lockIntro: "OriginsMeta Tracker è solo per gli iscritti a OriginsMeta. Finché non è collegata al tuo account l'app non legge il gioco, non registra partite e non mostra overlay.",
+    step1: "Crea un account gratuito su originsmeta.com, oppure accedi.",
+    signUp: "Crea un account o accedi",
+    step2: "Apri la pagina OriginsMeta Tracker del tuo account e premi “Crea un codice”.",
+    step3: "Scrivi qui il codice e premi Collega: l'app parte subito.",
+    checking: "Sto verificando il collegamento con originsmeta.com…",
+    verifyOffline: "Non raggiungo originsmeta.com per verificare il collegamento: l'app parte appena ci riesce. Controlla la connessione.",
+    expired: (d: string) => `L'app non riesce a verificare il collegamento con originsmeta.com dal ${d}, più di 7 giorni fa: collegati a internet e riparte da sola.`,
+    retry: "Riprova",
+    offlineGrace: (d: string) => `Non raggiungo originsmeta.com: l'app continua a funzionare fino al ${d}, poi deve verificare il collegamento con il sito.`,
+    localKept: (n: number) => `${n === 1 ? "La partita già registrata resta" : `Le ${n} partite già registrate restano`} su questo PC: ${n === 1 ? "la rivedi" : "le rivedi"} appena l'app è collegata.`,
     linkProblems: {
       invalid_code: "Codice sbagliato o scaduto: creane uno nuovo sul sito.",
       too_many_devices: "Hai già 10 PC collegati: scollegane uno dal sito.",
@@ -247,7 +273,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo.",
     quitApp: "Chiudi l'app",
     noticeTitle: "Lo scanner dello schermo è acceso",
-    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Analytics legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o nel riquadro Scanner dello schermo.",
+    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o nel riquadro Scanner dello schermo.",
     noticeOk: "Ho capito",
     noticeOff: "Spegnilo",
     deckTitle: "Deck tracker",
@@ -314,13 +340,11 @@ const LABELS = {
     missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con la app cerrada`,
     startup: "Iniciar con Windows",
     dataFolder: "Abrir la carpeta de datos",
-    privacy: "OriginsMeta Analytics lee los archivos que Origins TCG guarda en este PC y, con el escáner de pantalla activado, la ventana del juego; nunca toca el juego. Las imágenes de la pantalla nunca salen de este PC. Tus partidas se quedan en este PC, salvo que vincules la app a tu cuenta de OriginsMeta. Las imágenes de las cartas se cargan desde originsmeta.com.",
+    privacy: "OriginsMeta Tracker lee los archivos que Origins TCG guarda en este PC y, con el escáner de pantalla activado, la ventana del juego; nunca toca el juego. Las imágenes de la pantalla nunca salen de este PC. Tus partidas se guardan en este PC y se envían a tu cuenta de OriginsMeta, que la app necesita para funcionar. Las imágenes de las cartas se cargan desde originsmeta.com.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
     account: "Cuenta de OriginsMeta",
-    accountIntro: "Vincula la app a tu cuenta: tus partidas llegan también a originsmeta.com, donde ves tus estadísticas.",
     consent:
-      "Al vincularla, la app envía tus partidas a tu cuenta, también las que ya registró aquí, y entran siempre también en las estadísticas anónimas del sitio: solo números agregados, nunca quién jugó. Si no quieres, no la vincules: la app también funciona solo en este PC.",
-    howTo: "Crea un código en originsmeta.com (Cuenta → OriginsMeta Analytics) y escríbelo aquí.",
+      "Al vincularla, la app envía tus partidas a tu cuenta, también las que ya registró aquí, y entran siempre también en las estadísticas anónimas del sitio: solo números agregados, nunca quién jugó. Sin una cuenta vinculada la app no funciona.",
     openCodePage: "Crear un código en originsmeta.com",
     codeLabel: "Código de vinculación",
     link: "Vincular",
@@ -334,9 +358,22 @@ const LABELS = {
     unlink: "Desvincular este PC",
     unlinkConfirm: "¿Desvincular este PC de tu cuenta? Las partidas ya enviadas se quedan en el sitio: puedes borrarlas desde originsmeta.com.",
     openStats: "Tus estadísticas en originsmeta.com",
+    openWinrates: "Win rate en originsmeta.com",
     notPersisted: "La protección de datos de Windows no está disponible: la vinculación dura hasta que cierres la app.",
-    unlinkedNotice: "El sitio desvinculó este PC: vuelve a vincularlo con un código nuevo.",
-    relinkNotice: "La vinculación guardada en este PC ya no se puede leer: vuelve a vincular la app con un código nuevo. Las partidas registradas mientras tanto se envían en cuanto lo hagas.",
+    unlinkedNotice: "El sitio desvinculó este PC (o la cuenta ya no existe): vuelve a vincularlo con un código nuevo.",
+    relinkNotice: "La vinculación guardada en este PC ya no se puede leer: vuelve a vincular la app con un código nuevo.",
+    lockTitle: "Vincula la app a tu cuenta de OriginsMeta",
+    lockIntro: "OriginsMeta Tracker es solo para los usuarios registrados en OriginsMeta. Hasta que esté vinculada a tu cuenta, la app no lee el juego, no registra partidas y no muestra overlays.",
+    step1: "Crea una cuenta gratuita en originsmeta.com, o inicia sesión.",
+    signUp: "Crear una cuenta o iniciar sesión",
+    step2: "Abre la página OriginsMeta Tracker de tu cuenta y pulsa “Crear un código”.",
+    step3: "Escribe aquí el código y pulsa Vincular: la app arranca enseguida.",
+    checking: "Comprobando la vinculación con originsmeta.com…",
+    verifyOffline: "No consigo llegar a originsmeta.com para comprobar la vinculación: la app arranca en cuanto pueda. Revisa la conexión.",
+    expired: (d: string) => `La app no consigue comprobar la vinculación con originsmeta.com desde el ${d}, hace más de 7 días: conéctate a internet y arranca sola.`,
+    retry: "Reintentar",
+    offlineGrace: (d: string) => `No consigo llegar a originsmeta.com: la app sigue funcionando hasta el ${d}, luego tiene que comprobar la vinculación con el sitio.`,
+    localKept: (n: number) => `${n === 1 ? "La partida ya registrada se queda" : `Las ${n} partidas ya registradas se quedan`} en este PC: ${n === 1 ? "la verás" : "las verás"} de nuevo en cuanto la app esté vinculada.`,
     linkProblems: {
       invalid_code: "Código incorrecto o caducado: crea uno nuevo en el sitio.",
       too_many_devices: "Ya tienes 10 PC vinculados: desvincula uno en el sitio.",
@@ -367,7 +404,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento.",
     quitApp: "Cerrar la app",
     noticeTitle: "El escáner de pantalla está activado",
-    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Analytics lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en el recuadro Escáner de pantalla.",
+    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en el recuadro Escáner de pantalla.",
     noticeOk: "Entendido",
     noticeOff: "Desactivarlo",
     deckTitle: "Deck tracker",
@@ -460,11 +497,12 @@ const wl = (list: TrackedMatch[]) => {
 
 function top(s: AppState) {
   const ok = s.status.cache;
+  const pill = s.access.open ? `<span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span>` : "";
   return `<header class="top">
-      <h1 class="brand"><img class="wordmark" src="logo-originsmeta.webp" srcset="logo-originsmeta-sm.webp 320w, logo-originsmeta.webp 640w" sizes="143px" width="143" height="44" alt="OriginsMeta" draggable="false" /><span class="tag">Analytics</span></h1>
-      <span class="top-right"><span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span><button type="button" class="btn" id="quit-app">${esc(L.quitApp)}</button></span>
+      <h1 class="brand"><img class="wordmark" src="logo-originsmeta.webp" srcset="logo-originsmeta-sm.webp 320w, logo-originsmeta.webp 640w" sizes="143px" width="143" height="44" alt="OriginsMeta" draggable="false" /><span class="tag">Tracker</span></h1>
+      <span class="top-right">${pill}<button type="button" class="btn" id="quit-app">${esc(L.quitApp)}</button></span>
     </header>
-    ${s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
+    ${s.access.open && s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
 }
 
 /** Il mazzo scelto adesso nel gioco, in grande: la Leggendaria intera, i numeri e le altre 12 carte. */
@@ -570,31 +608,66 @@ let linkError: LinkProblem | null = null;
 const SYNC_PROBLEMS: Record<SyncProblem, string> = L.syncProblems;
 const clock = (iso: string) => new Date(iso).toLocaleTimeString(lang === "en" ? "en-GB" : lang, { hour: "2-digit", minute: "2-digit" });
 
+const codeUrl = `https://originsmeta.com/${lang}/account/tracker`;
+// iscrizione e accesso sono la stessa pagina del sito (accesso senza password); dopo si torna al codice
+const loginUrl = `https://originsmeta.com/${lang}/login?next=${encodeURIComponent(`/${lang}/account/tracker`)}`;
+const day = (iso: string) => new Date(iso).toLocaleDateString(lang === "en" ? "en-GB" : lang, { day: "numeric", month: "long", year: "numeric" });
+
 function accountPanel(s: AppState) {
   const a = s.account;
-  const codeUrl = `https://originsmeta.com/${lang}/account/tracker`;
-  if (!a.linked) {
-    return `<section class="panel" id="account"><h2>${esc(L.account)}</h2><p class="sub">${esc(L.accountIntro)}</p>
-        ${a.notice === "unlinked" ? `<p class="problem">${esc(L.unlinkedNotice)}</p>` : a.notice === "relink" ? `<p class="problem">${esc(L.relinkNotice)}</p>` : ""}
-        <p class="fine">${esc(L.consent)}</p>
-        <p class="sub">${esc(L.howTo)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></p>
+  return `<section class="panel" id="account"><h2>${esc(L.account)}</h2>
+      <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
+      <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
+      ${s.access.offline && s.access.graceUntil ? `<p class="problem">${esc(L.offlineGrace(day(s.access.graceUntil)))}</p>` : a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
+      ${a.persisted ? "" : `<p class="fine">${esc(L.notPersisted)}</p>`}
+      <div class="row">
+        <button type="button" class="btn btn-primary" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
+        <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
+        <a href="https://originsmeta.com/${lang}/analytics" data-link>${esc(L.openWinrates)}</a>
+        <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
+      </div>
+    </section>`;
+}
+
+/**
+ * Schermata di blocco (0.4.0, 12/10/2026): l'app senza un collegamento verificato. Mai collegata, scollegata o con il
+ * collegamento illeggibile: i tre passi e il modulo del codice. Collegata ma da verificare o oltre la tolleranza: lo
+ * stato della verifica, "Riprova" e "Scollega questo PC" (per collegare un altro account).
+ */
+function lockScreen(s: AppState) {
+  const x = s.access;
+  const a = s.account;
+  const linked = x.reason === "verify" || x.reason === "expired";
+  const notice =
+    x.reason === "unlinked" ? L.unlinkedNotice
+    : x.reason === "relink" ? L.relinkNotice
+    : x.checking ? L.checking
+    : x.reason === "expired" ? L.expired(x.verifiedAt ? day(x.verifiedAt) : "—")
+    : x.reason === "verify" && x.offline ? L.verifyOffline
+    : x.reason === "verify" ? L.checking
+    : "";
+  const body = linked
+    ? `<p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
+        <div class="row">
+          <button type="button" class="btn btn-primary" id="verify-now"${x.checking ? " disabled" : ""}>${esc(L.retry)}</button>
+          <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
+        </div>`
+    : `<ol class="steps">
+          <li>${esc(L.step1)} <a href="${loginUrl}" data-link>${esc(L.signUp)}</a></li>
+          <li>${esc(L.step2)} <a href="${codeUrl}" data-link>${esc(L.openCodePage)}</a></li>
+          <li>${esc(L.step3)}</li>
+        </ol>
         <form id="link-form" class="row" autocomplete="off">
           <label class="field"><span>${esc(L.codeLabel)}</span><input id="link-code" name="code" spellcheck="false" maxlength="20" placeholder="ABCD-EFGH" /></label>
           <button type="submit" class="btn btn-primary"${linkBusy ? " disabled" : ""}>${esc(linkBusy ? L.linking : L.link)}</button>
         </form>
         ${linkError ? `<p class="problem">${esc(L.linkProblems[linkError])}</p>` : ""}
-      </section>`;
-  }
-  return `<section class="panel" id="account"><h2>${esc(L.account)}</h2>
-      <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
-      <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
-      ${a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
-      ${a.persisted ? "" : `<p class="fine">${esc(L.notPersisted)}</p>`}
-      <div class="row">
-        <button type="button" class="btn btn-primary" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
-        <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
-        <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
-      </div>
+        <p class="fine">${esc(L.consent)}</p>`;
+  return `<section class="panel lock" id="account"><h2>${esc(L.lockTitle)}</h2>
+      <p class="sub">${esc(L.lockIntro)}</p>
+      ${notice ? `<p class="problem" role="status">${esc(notice)}</p>` : ""}
+      ${body}
+      ${x.localMatches ? `<p class="fine">${esc(L.localKept(x.localMatches))}</p>` : ""}
     </section>`;
 }
 
@@ -657,6 +730,12 @@ function footer(s: AppState) {
     </footer>`;
 }
 
+function lockFooter(s: AppState) {
+  return `<footer class="foot">
+      <p class="fine foot-brand"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="58" height="18" draggable="false" /><span>${esc(L.unofficial)} · v${esc(s.version)}</span></p>
+    </footer>`;
+}
+
 /* ---------- disegno ed eventi ---------- */
 
 const root = document.getElementById("app")!;
@@ -671,7 +750,11 @@ function render(s: AppState) {
   const typed = input?.value ?? "";
   const focused = document.activeElement === input && input !== null;
   const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
-  root.innerHTML = [top(s), updateNotice(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)].join("");
+  root.innerHTML = (
+    s.access.open
+      ? [top(s), updateNotice(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)]
+      : [top(s), updateNotice(s), lockScreen(s), lockFooter(s)]
+  ).join("");
   const again = document.getElementById("link-code") as HTMLInputElement | null;
   if (again) {
     again.value = typed;
@@ -718,6 +801,7 @@ root.addEventListener("click", async (e) => {
   if (copyText) return void copyWith(copyText, copyText.dataset.copyText!);
   if (target.id === "folder") void window.tracker.openDataFolder();
   if (target.id === "sync-now") void window.tracker.syncNow();
+  if (target.id === "verify-now") void window.tracker.verifyNow();
   if (target.id === "ov-session") void window.tracker.resetSession();
   if (target.id === "quit-app") void window.tracker.quitApp();
   if (target.id === "scan-ok") void window.tracker.dismissScannerNotice();

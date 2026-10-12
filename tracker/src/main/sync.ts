@@ -10,6 +10,8 @@
  * - Errori: senza rete o con il sito giù si riprova più tardi, con attese crescenti; 429 (tetto giornaliero) dopo
  *   un'ora; 503 (funzioni non ancora nel database) dopo 15 minuti; 401 = PC scollegato dal sito: l'app dimentica il
  *   token. Un 400 è un errore nostro: quelle partite non si riprovano, per non girare a vuoto.
+ * - Verifica del token (0.4.0, 12/10/2026, access.ts): `verifyToken` manda zero partite (la rotta fa da controllo del
+ *   token) e ogni invio accettato vale come verifica (`verified` di `run`).
  *
  * Rete e orologio arrivano da fuori (`SyncDeps`), così i test girano senza Electron e senza rete.
  */
@@ -18,6 +20,7 @@ import path from "node:path";
 import { UPLOAD_LIMITS, normalizeLinkCode, toUpload } from "../../../src/lib/tracker/upload";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 import type { LinkProblem, SyncProblem } from "../shared/types";
+import { verifyOutcome, type VerifyOutcome } from "./access";
 
 export type { LinkProblem, SyncProblem };
 
@@ -104,6 +107,15 @@ export async function claimCode(deps: SyncDeps, code: string, name: string): Pro
   return { ok: false, problem: "error" };
 }
 
+/**
+ * Verifica il token con il sito senza mandare partite (POST /api/tracker/sync con `matches: []`: la rotta controlla il
+ * token e aggiorna l'ultimo contatto del PC). "ok", "revoked" (401) o "unreachable" (rete, sito giù, 503…).
+ */
+export async function verifyToken(deps: SyncDeps, token: string): Promise<VerifyOutcome> {
+  const res = await call(deps, "POST", "/api/tracker/sync", token, { matches: [] });
+  return verifyOutcome(res.reached, res.status);
+}
+
 /** Scollega il PC anche sul sito (senza rete resta collegato là: si scollega da /account/tracker). */
 export async function unlinkRemote(deps: SyncDeps, token: string): Promise<boolean> {
   const res = await call(deps, "DELETE", "/api/tracker/link", token);
@@ -185,17 +197,20 @@ export class SyncQueue {
   /**
    * Manda le partite in attesa. Senza `force` non riparte prima dell'ora del prossimo tentativo dopo un problema.
    * `unlinked: true` = il sito non riconosce più il token (PC scollegato da /account/tracker): il chiamante lo dimentica.
+   * `verified: true` = il sito ha accettato il token almeno una volta (200 o 429): vale come verifica (access.ts).
    */
-  async run(matches: readonly TrackedMatch[], token: string, opts: { force?: boolean } = {}): Promise<{ sent: number; unlinked: boolean }> {
-    if (this.running || (!opts.force && this.now() < this.retryAt)) return { sent: 0, unlinked: false };
+  async run(matches: readonly TrackedMatch[], token: string, opts: { force?: boolean } = {}): Promise<{ sent: number; unlinked: boolean; verified: boolean }> {
+    if (this.running || (!opts.force && this.now() < this.retryAt)) return { sent: 0, unlinked: false, verified: false };
     this.running = true;
     let sent = 0;
+    let verified = false;
     try {
       const todo = this.pendingOf(matches);
       for (let i = 0; i < todo.length; i += UPLOAD_LIMITS.batch) {
         const chunk = todo.slice(i, i + UPLOAD_LIMITS.batch);
         const now = this.now();
         const res = await call(this.deps, "POST", "/api/tracker/sync", token, { matches: chunk.map((m) => toUpload(m, now)) });
+        if (verifyOutcome(res.reached, res.status) === "ok") verified = true;
         if (res.status === 200 || res.status === 400) {
           // 400: una richiesta che il sito non accetterà mai (errore nostro): quelle partite non si riprovano
           for (const m of chunk) this.sent.add(m.id);
@@ -211,7 +226,7 @@ export class SyncQueue {
         }
         if (res.status === 401) {
           this.problem = "unlinked";
-          return { sent, unlinked: true };
+          return { sent, unlinked: true, verified };
         }
         if (res.status === 429) this.wait("rate_limited", RETRY.rateLimited);
         else if (res.status === 503) this.wait("unavailable", RETRY.unavailable);
@@ -219,10 +234,10 @@ export class SyncQueue {
           this.wait(res.reached ? "server" : "offline", RETRY.offline[Math.min(this.failures, RETRY.offline.length - 1)]);
           this.failures++;
         }
-        return { sent, unlinked: false };
+        return { sent, unlinked: false, verified };
       }
       if (!todo.length) this.problem = null;
-      return { sent, unlinked: false };
+      return { sent, unlinked: false, verified };
     } finally {
       this.running = false;
     }

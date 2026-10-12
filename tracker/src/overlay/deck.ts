@@ -52,7 +52,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "right to left" : "left to right"),
     noScanner: "Turn on the screen scanner in the app for live updates.",
     close: "Close",
-    brand: "Analytics · not affiliated with Koin Games",
+    brand: "Tracker · not affiliated with Koin Games",
   },
   it: {
     choose: "Scegli un mazzo nel gioco",
@@ -71,7 +71,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "da destra a sinistra" : "da sinistra a destra"),
     noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
     close: "Chiudi",
-    brand: "Analytics · non affiliato a Koin Games",
+    brand: "Tracker · non affiliato a Koin Games",
   },
   es: {
     choose: "Elige un mazo en el juego",
@@ -90,7 +90,7 @@ const LABELS = {
     dir: (d: "left" | "right") => (d === "left" ? "de derecha a izquierda" : "de izquierda a derecha"),
     noScanner: "Activa el escáner de pantalla en la app para las actualizaciones en vivo.",
     close: "Cerrar",
-    brand: "Analytics · sin afiliación con Koin Games",
+    brand: "Tracker · sin afiliación con Koin Games",
   },
 } as const;
 const L = LABELS[lang];
