@@ -67,6 +67,8 @@ export function deckTrackerView(input: {
           mana: opp.mana ?? { me: null, opp: null },
           direction: opp.direction ?? null,
           opponent: {
+            // carte ancora nel suo mazzo, stimate dalla sua mano (12/10/2026, "carte rimanenti" del pannello a L)
+            deckLeft: opp.oppDrawn === null || opp.oppDrawn === undefined ? null : Math.max(0, DECK_SIZE - opp.oppDrawn),
             legendary: opp.oppLegendary ? entry(opp.oppLegendary, 1) : null,
             // le carte rivelate dall'avversario, nell'ordine in cui sono comparse, con le copie viste
             seen: [...new Set(opp.plays.filter((p) => !p.me && p.card !== opp.oppLegendary).map((p) => p.card))].map((k) => {

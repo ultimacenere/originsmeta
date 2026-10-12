@@ -232,6 +232,16 @@ a.cardimg:hover, a.cardimg:focus-visible { transform: translateY(-3px); border-c
   min-width: 0;
 }
 .panel h2 { margin: 0; font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--sky); letter-spacing: -0.01em; }
+/* tendine: Account, Overlay e Scanner dello schermo (12/10/2026), chiuse mostrano titolo e stato */
+details.fold > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary:hover h2 { color: #fff; }
+details.fold > summary:focus-visible { outline: 2px solid var(--mint); outline-offset: 4px; border-radius: 6px; }
+.fold-status { font-size: 0.82rem; color: var(--pale-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fold-chev { width: 9px; height: 9px; margin: 0 4px 4px 0; border-right: 2px solid var(--sky); border-bottom: 2px solid var(--sky); transform: rotate(45deg); transition: transform 150ms ease; }
+details.fold[open] > summary .fold-chev { transform: rotate(-135deg); margin-bottom: 0; margin-top: 4px; }
+details.fold:not([open]) { padding-block: 12px; }
+.fold-body { display: grid; gap: 12px; min-width: 0; }
 .panel h3 { margin: 4px 0 0; font-family: var(--display); font-size: 0.86rem; font-weight: 700; color: var(--sky); }
 .panel p { margin: 0; }
 .panel .sub, .sub { margin: 0; font-size: 0.82rem; color: var(--pale-muted); }
@@ -361,3 +371,16 @@ details.match > summary:hover .m-title { color: #fff; }
 .panel.lock h2 { font-size: 1.15rem; }
 .steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; color: var(--chalk); font-size: 0.9rem; }
 .steps li::marker { color: var(--mint); font-family: var(--mono); font-weight: 700; }
+
+/* ---------- tutorial del primo avvio (12/10/2026): riflettore sulla parte di cui si parla e fumetto accanto ---------- */
+#tour:not(:empty)::before { content: ""; position: fixed; inset: 0; z-index: 49; }
+.tour-hole { position: fixed; z-index: 50; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(8, 4, 20, 0.74); outline: 3px solid var(--mint); outline-offset: 0; pointer-events: none; transition: top 220ms ease, left 220ms ease, width 220ms ease, height 220ms ease; }
+.tour-tip { position: fixed; z-index: 51; width: min(440px, calc(100vw - 32px)); display: grid; gap: 8px; padding: 14px 16px; background: linear-gradient(180deg, rgba(49, 227, 189, 0.1) 0%, rgba(49, 227, 189, 0) 50%), var(--night); border: 3px solid var(--mint); border-radius: 14px; box-shadow: var(--shadow-card); }
+.tour-count { margin: 0; font-family: var(--mono); font-size: 0.72rem; color: var(--mint); letter-spacing: 0.06em; }
+.tour-tip h2 { margin: 0; font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--sky); }
+.tour-tip p { margin: 0; font-size: 0.86rem; line-height: 1.45; color: var(--pale); }
+.tour-dots { display: flex; gap: 6px; margin-top: 2px; }
+.tour-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--night-3); }
+.tour-dots i.on { background: var(--mint); }
+.tour-actions { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.tour-actions .grow { flex: 1; }

@@ -34,6 +34,10 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **0.3.8** (12/10/2026; dettagli in docs/tracker.md): carte ALPHA (`src/card-art-extra.json`), pannello a L largo 480
+  e trascinabile, "Barriere", carte rimanenti dell'avversario stimate dalla sua mano, contatore delle copie in basso,
+  linguetta con il logo e maniglia sul Deck tracker, vittoria contro un boss (pennellata gialla), niente doppioni dopo
+  un riavvio, tendine nella finestra principale, mini tutorial al primo avvio.
 - **Pannelli e scanner** (0.3.7, 11/10/2026 sera; dettagli in docs/tracker.md, "Pannelli e scanner, 0.3.7"): Deck
   tracker a 3 carte per fila con il numero delle copie rimaste e il bordo menta per le carte in mano; pannello
   dell'avversario a L nell'angolo in alto a destra (Leggendaria, vita, carte viste 3 per fila, e sopra il pannello del

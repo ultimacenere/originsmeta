@@ -1,7 +1,7 @@
 /** Test della partita ricostruita dallo scanner (reconstruct.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyScan, confirmMana, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
+import { applyScan, confirmMana, OPP_HAND_STABLE, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
 import { BOARD_SLOTS } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
@@ -219,4 +219,19 @@ test("mana dei due giocatori e verso del combattimento: forma controllata, vale 
   const scan = reconstruct([frame(0, 2), frame(1000, 2), m(2000, 5, 5, "right"), m(2500, 5, 5, "right"), m(3000, 3, 4, null), m(3500, 3, 4, "left")], info);
   assert.deepEqual(scan.mana, { me: { current: 3, max: 5 }, opp: { current: 4, max: 5 } });
   assert.equal(scan.direction, "right");
+});
+
+test("pescate dell'avversario dalla sua mano: prima lettura confermata più gli aumenti (12/10/2026)", () => {
+  const h = (ms: number, n: number | null): ScanFrame => ({ ...frame(ms, 3), oppHand: n });
+  // OPP_HAND_STABLE letture uguali di fila a partire da ms
+  const run = (ms: number, n: number) => Array.from({ length: OPP_HAND_STABLE }, (_, i) => h(ms + i * 500, n));
+  // 5 in mano, pesca (6), gioca due carte (4), due letture storte di passaggio (3, 9), pesca (5): 5 + 1 + 1 = 7
+  const frames = [...run(0, 5), ...run(5000, 6), ...run(10000, 4), h(14000, 3), h(14500, 3), h(15000, 9), h(15200, null), ...run(16000, 5)];
+  assert.equal(oppDrawnOf(frames), 7);
+  assert.equal(oppDrawnOf([h(0, null), h(500, 3), h(1000, 3)]), null, "poche letture non bastano");
+  // mano letta di rado (dorsi che lo scanner non conta, come quelli bianchi del boss): niente stima
+  assert.equal(oppDrawnOf([...run(0, 4), ...Array.from({ length: 30 }, (_, i) => h(10000 + i * 500, null))]), null);
+  const board = BOARD_SLOTS.map(() => null);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 6 }, 5)?.oppHand, 6);
+  assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 40 }, 5), null);
 });

@@ -257,7 +257,10 @@ registrati con il cazzo possono usarla!!". Regole in `tracker/src/main/access.ts
    l'icona vicino all'orologio ha solo "Apri" ed "Esci"; l'interfaccia non riceve partite né storico; le chiamate IPC
    che non sono collegamento, link, verifica, scollega o uscita sono rifiutate. Appena collegata parte tutto (le
    finestre aperte l'ultima volta si riaprono, lo scanner segue la sua preferenza). Resta acceso solo
-   l'aggiornamento automatico, così anche un'app bloccata riceve le correzioni.
+   l'aggiornamento automatico, così anche un'app bloccata riceve le correzioni. Il mini tutorial della 0.3.8 e le
+   tendine (Account, Overlay, Scanner) esistono solo ad app sbloccata: il tutorial parte al primo avvio dopo il primo
+   collegamento verificato (sulla schermata di blocco resta in sospeso, senza segnarlo come visto) e l'IPC
+   `tracker:spot-panels`, che apre i pannelli, è rifiutato ad app bloccata.
 2. **Verifica del token**: all'avvio e poi ogni 4 ore l'app manda `POST /api/tracker/sync` con `matches: []` (la rotta
    fa già da controllo del token, nessun cambio al sito); vale come verifica anche ogni invio accettato. Esiti
    (`verifyOutcome`): 200 e 429 = valido (il tetto delle partite si controlla dopo il token); 401 = rifiutato (PC
@@ -303,7 +306,8 @@ menu, testi en/it/es, `productName` del pacchetto, eseguibile `OriginsMeta Track
   `OriginsMeta Analytics.exe` (codice nuovo); dalla release successiva l'aggiornamento riapre `OriginsMeta Tracker.exe`
   (`exeAfterUpdate`). Il vecchio eseguibile resta nella cartella, così i collegamenti fatti dal giocatore funzionano.
 
-Link dell'app verso il sito: guida `/<lingua>/tracker` (LEGGIMI), collegamento e statistiche personali
+Link dell'app verso il sito: guida all'installazione `/en/tracker#install`, `/it/tracker#installazione`,
+`/es/tracker#instalacion` (schermata di blocco, fondo della pagina, LEGGIMI), collegamento e statistiche personali
 `/<lingua>/account/tracker`, win rate `/<lingua>/analytics` (pannello "Account OriginsMeta").
 
 ## Il sito (Fase 3)
@@ -652,6 +656,31 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
     piccola sbaglia: si chiudeva in partita e la partita andava persa. Ora si installa **solo a gioco chiuso**
     (`canInstall` di main.ts: niente finestra del gioco fra quelle aperte), riprovando ogni 2 minuti. Chi ha la 0.3.6
     o prima vede la console un'ultima volta, quando installa la 0.3.7.
+- **0.3.8 (12/10/2026**, sessione sul gioco con Pierluigi):
+  - **Carte ALPHA**: illustrazioni diverse dal sito (a volte disegni nuovi, non solo inquadrature: le versioni
+    "zoomate" delle immagini del sito non bastano). Riferimenti in più in `src/card-art-extra.json` (vettori 20 × 20 dai
+    fotogrammi, nessuna immagine nel repo): Piglet, Big Bad Wolf, Wicked Stepsisters, Scarecrow, Huntsman,
+    Bandersnatch, più Shield Maiden normale in una posa che sfuggiva; Merry Man tolto (rubava altre carte). `bestMatch`
+    misura il distacco dalla migliore carta **diversa**. Si imparano partita per partita: fotogrammi raccolti con
+    `npm run frames`, letture non riconosciute raggruppate, un nome per gruppo guardando un esemplare, controllo su
+    tutte le sessioni che nessuna carta cambi nome. Zombie no: somiglia al dorso rosa del mazzo.
+  - **Pannello a L**: largo 480, carte viste 4 per fila con il mana sotto; larghezza fissa e sempre dentro lo schermo;
+    trascinamento fatto dall'app (`deck:drag`) con `setBounds`, perché con la scala al 150% `setPosition` allarga la
+    finestra di un pixel a ogni passo. "Vita" diventa "Barriere" (glossario del gioco).
+  - **Carte rimanenti dell'avversario** (al posto di "Viste"): stima dalla sua mano coperta in alto (`readOppHand`:
+    fino a 4 carte la larghezza della fila, 123 + 148 punti a carta; da 5 il passo della ripetizione), pescate = prima
+    lettura + aumenti dopo 6 letture uguali (`OPP_HAND_STABLE`); senza stima se la mano si legge in meno del 30% dei
+    fotogrammi (`OPP_HAND_MIN_SHARE`: i dorsi bianchi e rossi del boss).
+  - **Deck tracker**: numero delle copie rimaste da 2 (1 la Leggendaria) in basso al centro, sopra la cornice dei crediti;
+    a zero la carta è scura. Linguetta stile cartella con il logo e la X (note Granola "pagina winrate" del 12/10);
+    finestre trasparenti, quindi una maniglia in basso a destra per allargarlo (`deck:resize`).
+  - **Vittoria contro un boss**: lo stendardo "BOSS SCONFITTO!" ha la pennellata gialla (`yellow` di
+    `bannerFeatures`), che ora vale come la menta; prima un alone rosso nel passaggio la faceva leggere come sconfitta.
+  - **Doppioni**: una partita dei file con lo stesso esito di una già nello storico a meno di 3 minuti è la stessa,
+    anche dopo un riavvio. Correzioni sul sito con `scripts/tracker-fix-match.mjs` (il sito non sovrascrive).
+  - **Finestra principale**: Account, Overlay e Scanner sono tendine con una riga di stato; mini tutorial al primo
+    avvio con il riflettore sulle parti della finestra e i pannelli che pulsano (`tracker:spot-panels`), da rivedere
+    con il link in fondo.
 - **Da fare**: mazzo probabile dell'avversario (le carte viste contro i mazzi pubblicati e le liste registrate); magie;
   statistiche per carta sul sito (win rate quando una carta viene giocata); carte in versione ALPHA e cosmetiche
   dell'avversario, che lo scanner non riconosce (11/10 sera: Piglet ALPHA letta in 2 fotogrammi su 701), con

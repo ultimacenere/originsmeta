@@ -75,7 +75,7 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 7. Funziona con la demo e con il playtest di Steam: sul playtest l'esito delle partite online e classificate lo legge
    dallo schermo di fine partita, quindi lascia lo scanner acceso.
 
-Guida passo per passo: https://originsmeta.com/it/tracker
+Guida passo per passo: https://originsmeta.com/it/tracker#installazione
 L'app legge i file che il gioco salva sul PC e, con lo scanner acceso, la finestra del gioco: non tocca mai il gioco.
 OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.
 `;

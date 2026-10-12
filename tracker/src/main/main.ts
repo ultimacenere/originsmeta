@@ -391,7 +391,11 @@ const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; 
   opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false, keep: false },
 };
 /** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
-const OPP_L_WIDTH = 400;
+const OPP_L_WIDTH = 480;
+/** Il trascinamento in corso del pannello a L (vedi IPC `deck:drag`). */
+let oppDrag: { timer: ReturnType<typeof setInterval> } | null = null;
+/** L'allargamento in corso del Deck tracker (vedi IPC `deck:resize`). */
+let deckResize: ReturnType<typeof setInterval> | null = null;
 const PANEL_KINDS: PanelKind[] = ["deck", "opp"];
 const panelOpen = (k: PanelKind) => Boolean(panels[k].win && !panels[k].win!.isDestroyed());
 
@@ -432,13 +436,20 @@ function savePanelPrefs(k: PanelKind) {
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
   const area = screen.getPrimaryDisplay().workArea;
-  // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 400 per il
+  // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 480 per il
   // pannello a L dell'avversario, che va nell'angolo in alto a destra); l'altezza la decide il contenuto
-  const width = Math.min(Math.max(p.width ?? (k === "deck" ? 230 : OPP_L_WIDTH), 200), 600);
+  // il pannello a L ha la larghezza fissa (12/10/2026: con la larghezza salvata dal vecchio pannello, 273, il contenuto
+  // largo 400 usciva dallo schermo)
+  const width = k === "opp" ? OPP_L_WIDTH : Math.min(Math.max(p.width ?? 230, 200), 600);
   const height = Math.min(Math.max(p.height ?? 420, 120), 1600);
   const { x, y } = p;
-  // la posizione salvata vale solo se sta ancora su uno schermo
-  if (x !== undefined && y !== undefined && screen.getAllDisplays().some((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height)) return { x, y, width, height };
+  // la posizione salvata vale solo se sta ancora su uno schermo; il pannello a L ci sta tutto dentro (riportato dentro)
+  const home = x !== undefined && y !== undefined ? screen.getAllDisplays().find((d) => x >= d.workArea.x && y >= d.workArea.y && x + 40 <= d.workArea.x + d.workArea.width && y + 40 <= d.workArea.y + d.workArea.height) : undefined;
+  if (home && x !== undefined && y !== undefined) {
+    if (k !== "opp") return { x, y, width, height };
+    const w = home.workArea;
+    return { x: Math.min(x, w.x + w.width - width), y: Math.min(y, w.y + w.height - 120), width, height };
+  }
   if (k === "opp") return { x: area.x + area.width - width, y: area.y, width, height };
   return { x: panels[k].left ? area.x : area.x + area.width - width - 24, y: area.y + Math.round(area.height * 0.22), width, height };
 }
@@ -458,7 +469,11 @@ function openPanel(k: PanelKind) {
     show: false,
     title: k === "deck" ? "OriginsMeta · Deck tracker" : "OriginsMeta · Opponent",
     // il pannello a L dell'avversario ha l'angolo in basso a sinistra vuoto: finestra trasparente, clic al gioco lì
-    ...(k === "opp" ? { transparent: true, backgroundColor: "#00000000", hasShadow: false } : { backgroundColor: "#150c2c" }),
+    // trasparenti tutte e due (12/10/2026): la linguetta del Deck tracker sporge sopra il pannello
+    transparent: true,
+    backgroundColor: "#00000000",
+    hasShadow: false,
+    ...(k === "opp" ? { resizable: false } : {}),
     icon: ICON,
     autoHideMenuBar: true,
     webPreferences: {
@@ -907,7 +922,71 @@ function registerIpc() {
   // pannello a L: sopra il braccio o la colonna il mouse è del pannello, sull'angolo vuoto passa al gioco
   ipcMain.on("deck:hit", (e, on: unknown) => {
     if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
+    if (oppDrag) return; // durante il trascinamento il mouse resta del pannello
     panels.opp.win!.setIgnoreMouseEvents(on !== true, { forward: true });
+  });
+  // trascinamento del pannello a L fatto dall'app (12/10/2026: nella finestra trasparente con i clic che passano al
+  // gioco la zona di trascinamento di Windows non rispondeva, "il deck avversario è bloccato"): alla pressione si
+  // ricorda dove sta il puntatore rispetto alla finestra e la finestra lo segue finché la pagina non dice che è finita
+  // allargamento del Deck tracker con la maniglia (12/10/2026): la finestra trasparente non si ridimensiona dai bordi
+  ipcMain.on("deck:resize", (e, on: unknown) => {
+    if (!fromDeck(e) || !panelOpen("deck") || panels.deck.win!.webContents !== e.sender) return;
+    const win = panels.deck.win!;
+    if (deckResize) clearInterval(deckResize);
+    deckResize = null;
+    if (on !== true) {
+      const b = win.getBounds();
+      panels.deck.prefs = { ...panels.deck.prefs, x: b.x, y: b.y, width: b.width, height: b.height };
+      savePanelPrefs("deck");
+      return;
+    }
+    const x0 = screen.getCursorScreenPoint().x;
+    const b0 = win.getBounds();
+    const timer = setInterval(() => {
+      if (win.isDestroyed()) return void clearInterval(timer);
+      const width = Math.min(Math.max(b0.width + screen.getCursorScreenPoint().x - x0, 200), 600);
+      const b = win.getBounds();
+      if (b.width !== width) win.setBounds({ x: b0.x, y: b0.y, width, height: b.height });
+    }, 16);
+    deckResize = timer;
+    setTimeout(() => {
+      if (deckResize === timer) {
+        clearInterval(timer);
+        deckResize = null;
+      }
+    }, 60_000);
+  });
+  ipcMain.on("deck:drag", (e, on: unknown) => {
+    if (!fromDeck(e) || !panelOpen("opp") || panels.opp.win!.webContents !== e.sender) return;
+    const win = panels.opp.win!;
+    if (oppDrag) clearInterval(oppDrag.timer);
+    oppDrag = null;
+    if (on !== true) {
+      const b = win.getBounds();
+      panels.opp.prefs = { ...panels.opp.prefs, x: b.x, y: b.y };
+      savePanelPrefs("opp");
+      return;
+    }
+    win.setIgnoreMouseEvents(false);
+    const start = screen.getCursorScreenPoint();
+    const b0 = win.getBounds();
+    const dx = start.x - b0.x;
+    const dy = start.y - b0.y;
+    // posizione e misura insieme: con la scala di Windows al 150% ogni setPosition arrotonda la misura e la finestra
+    // cresce di un pixel a ogni passo (Pierluigi, 12/10: "trasportando in giro si allarga")
+    const timer = setInterval(() => {
+      if (win.isDestroyed()) return void clearInterval(timer);
+      const c = screen.getCursorScreenPoint();
+      win.setBounds({ x: c.x - dx, y: c.y - dy, width: OPP_L_WIDTH, height: b0.height });
+    }, 16);
+    // al massimo un minuto: se la pagina non dice più niente, il trascinamento si chiude da solo
+    oppDrag = { timer };
+    setTimeout(() => {
+      if (oppDrag?.timer === timer) {
+        clearInterval(timer);
+        oppDrag = null;
+      }
+    }, 60_000);
   });
   ipcMain.on("deck:fit", (e, h: unknown) => {
     if (!fromDeck(e) || !Number.isFinite(h)) return;
@@ -915,13 +994,28 @@ function registerIpc() {
     if (!win || win.isDestroyed()) return;
     const [w, cur] = win.getContentSize();
     const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
-    if (Math.abs(want - cur) > 2) win.setContentSize(w, want);
+    // il pannello a L resta largo OPP_L_WIDTH anche se Windows l'ha allargato di qualche pixel (scala al 150%)
+    const width = panelOpen("opp") && win === panels.opp.win ? OPP_L_WIDTH : w;
+    if (Math.abs(want - cur) > 2 || width !== w) win.setContentSize(width, want);
   });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromOpenApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {
     if (!fromOpenApp(e)) return;
     sessionStart = Date.now();
     push();
+  });
+  // tutorial (12/10/2026): i pannelli aperti si illuminano; quelli chiusi si aprono, così il giocatore vede dove stanno
+  ipcMain.handle("tracker:spot-panels", (e, on: unknown) => {
+    if (!fromOpenApp(e)) return; // app bloccata: i pannelli non si aprono (0.4.0)
+    for (const k of PANEL_KINDS) {
+      const opened = on === true && !panelOpen(k);
+      if (opened) setPanel(k, true);
+      const w = panelOpen(k) ? panels[k].win! : null;
+      if (!w) continue;
+      // un pannello appena aperto riceve il segnale quando la pagina è pronta
+      if (opened || w.webContents.isLoading()) w.webContents.once("did-finish-load", () => w.isDestroyed() || w.webContents.send("deck:spot", on === true));
+      else w.webContents.send("deck:spot", on === true);
+    }
   });
   ipcMain.handle("tracker:copy", (e, text: unknown) => {
     // indirizzi per OBS e codici del gioco (un codice di 13 carte sta sotto i 300 caratteri; il tetto del sito è 420)
@@ -978,6 +1072,15 @@ async function boot() {
     if (twin) {
       twin.used = true;
       frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, screenAt: new Date(twin.at).toISOString() });
+      return;
+    }
+    // anche dopo un riavvio dell'app, quando `fromScreen` è vuoto: una partita già nello storico con lo stesso esito e a
+    // meno di NEAR_MS è la stessa (12/10/2026: la vittoria delle 01:05 registrata dallo schermo, l'app riavviata, e le
+    // statistiche del gioco arrivate dopo l'hanno aggiunta una seconda volta, con un secondo di differenza)
+    const end = raw.endedAt ? Date.parse(raw.endedAt) : NaN;
+    const stored = Number.isFinite(end) ? store.matches.find((m) => m.result === raw.result && nearTo(m.endedAt, end)) : undefined;
+    if (stored) {
+      frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, storedAt: stored.endedAt });
       return;
     }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date

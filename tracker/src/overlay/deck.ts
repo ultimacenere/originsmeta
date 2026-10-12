@@ -44,8 +44,11 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} in deck`, hand ? `${hand} in hand` : "", played ? `${played} played` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `of ${n}`,
     deckLeft: "In deck",
-    life: "Life",
-    seen: "Seen",
+    life: "Barriers",
+    oppLeft: "Cards left",
+    resize: "Drag to resize",
+    spot: (opp: boolean) => (opp ? "Opponent panel" : "Deck tracker"),
+    oppLeftTip: "Estimate: cards the opponent drew, counted from the face-down cards in their hand",
     mana: "Mana",
     you: "You",
     combat: "Combat",
@@ -63,8 +66,11 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} nel mazzo`, hand ? `${hand} in mano` : "", played ? `${played} giocat${played === 1 ? "a" : "e"}` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `su ${n}`,
     deckLeft: "Nel mazzo",
-    life: "Vita",
-    seen: "Viste",
+    life: "Barriere",
+    oppLeft: "Carte rimanenti",
+    resize: "Trascina per allargare",
+    spot: (opp: boolean) => (opp ? "Pannello dell'avversario" : "Deck tracker"),
+    oppLeftTip: "Stima: carte pescate dall'avversario, contate dalle carte coperte nella sua mano",
     mana: "Mana",
     you: "Tu",
     combat: "Combattimento",
@@ -82,8 +88,11 @@ const LABELS = {
     cardState: (left: number, hand: number, played: number) => [`${left} en el mazo`, hand ? `${hand} en la mano` : "", played ? `${played} jugada${played === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · "),
     ofDeck: (n: number) => `de ${n}`,
     deckLeft: "En el mazo",
-    life: "Vida",
-    seen: "Vistas",
+    life: "Barreras",
+    oppLeft: "Cartas restantes",
+    resize: "Arrastra para cambiar el ancho",
+    spot: (opp: boolean) => (opp ? "Panel del rival" : "Deck tracker"),
+    oppLeftTip: "Estimación: cartas robadas por el rival, contadas por las cartas boca abajo de su mano",
     mana: "Maná",
     you: "Tú",
     combat: "Combate",
@@ -105,18 +114,19 @@ const cardImg = (c: DeckCard | null) =>
     : `<span class="cardimg empty" aria-hidden="true"></span>`;
 
 /**
- * Una carta del mio mazzo (rifinitura dell'11/10/2026 sera, partita di Pierluigi al round 6): il colpo d'occhio dice
- * quante copie possono ancora uscire. Tutte nel mazzo: accesa; una sì e una no: spenta a metà con il numero grande
- * delle copie rimaste in alto (prima "1/2" delle pescate, in basso sopra i crediti e quasi uguale a una carta accesa);
- * nessuna: scura. Una copia in mano e non ancora giocata accende il bordo menta.
+ * Una carta del mio mazzo: il numero in alto dice quante copie sono ancora nel mazzo (Pierluigi, 12/10/2026: "deve
+ * partire da 2 e poi ogni volta che la carta viene pescata decrescere prima ad 1 e poi quando a zero diventare scura
+ * la carta"; la Leggendaria parte da 1). Il numero c'è sempre, anche fuori partita; la carta resta accesa finché ne
+ * resta una e diventa scura a zero, senza più il numero (11/10 sera: prima la carta si spegneva a metà dopo la prima
+ * pescata e il numero compariva solo da lì). Una copia in mano e non ancora giocata accende il bordo menta.
  */
 function myCard(c: DeckCard, live: boolean, cls = "") {
-  const left = Math.max(0, c.copies - c.drawn);
-  const inHand = Math.max(0, c.drawn - c.played);
-  const state = !live || c.drawn === 0 ? "" : left === 0 ? " out" : " half";
-  const hand = live && inHand > 0 ? " inhand" : "";
+  const left = live ? Math.max(0, c.copies - c.drawn) : c.copies;
+  const inHand = live ? Math.max(0, c.drawn - c.played) : 0;
+  const state = left === 0 ? " out" : "";
+  const hand = inHand > 0 ? " inhand" : "";
   const tip = live ? `${c.name} · ${L.cardState(left, inHand, c.drawn - inHand)}` : c.name;
-  const count = live && c.drawn > 0 && left > 0 ? `<span class="left" aria-hidden="true">${left}</span>` : "";
+  const count = left > 0 ? `<span class="left" aria-hidden="true">${left}</span>` : "";
   return `<li class="gc${state}${hand}${cls}" title="${esc(tip)}">${cardImg(c)}${count}</li>`;
 }
 
@@ -124,7 +134,7 @@ function myCard(c: DeckCard, live: boolean, cls = "") {
 const lifePips = (n: number | null) =>
   `<span class="pips" aria-label="${esc(L.life)} ${n ?? "?"}/2">${[0, 1].map((i) => `<i class="${n === null ? "unk" : i < n ? "on" : "lost"}"></i>`).join("")}</span>`;
 
-const stat = (value: string, label: string) => `<div class="stat"><b>${value}</b><span>${esc(label)}</span></div>`;
+const stat = (value: string, label: string, tip = "") => `<div class="stat"${tip ? ` title="${esc(tip)}"` : ""}><b>${value}</b><span>${esc(label)}</span></div>`;
 
 /** Le carte ancora nel mazzo, con la barra che si svuota (25 all'inizio). */
 function deckLeftStat(left: number | null, total: number) {
@@ -145,7 +155,8 @@ root.addEventListener(
 /** La finestra alta come il contenuto (niente barra di scorrimento); in OBS non serve. */
 function fit() {
   if (!window.deckApi) return;
-  window.deckApi.fit(Math.ceil(root.getBoundingClientRect().height + 8));
+  // dal fondo del pannello: sopra c'è anche la linguetta (margine in alto del pannello)
+  window.deckApi.fit(Math.ceil(root.getBoundingClientRect().bottom + 8));
 }
 new ResizeObserver(fit).observe(root);
 root.addEventListener("click", (e) => {
@@ -162,9 +173,12 @@ const arrowSvg = (d: "left" | "right" | null) =>
 /**
  * Il pannello dell'avversario a L (11/10/2026 sera, disegno di Pierluigi sul tabellone: "è lo spazio che abbiamo a
  * nostra disposizione"; "pannello unico a L, e leggi anche la direzione"): il braccio in alto, a sinistra dell'angolo,
- * ha la Leggendaria dell'avversario con vita e carte viste; la colonna sul bordo destro sta sopra il pannello "MANA
- * DATA" del gioco e lo rimostra (mana dell'avversario in alto con la tacca magenta, la freccia del combattimento, il mio
- * mana in basso con la tacca azzurra), poi le carte rivelate dall'avversario, 3 per fila, che compaiono una alla volta.
+ * ha la Leggendaria dell'avversario con le barriere e le carte rimanenti (stima dalla sua mano, detta nel suggerimento: 12/10/2026, prima le
+ * carte viste); la colonna sul bordo destro sta sopra il pannello "MANA
+ * DATA" del gioco: le carte rivelate dall'avversario, 4 per fila, che compaiono una alla volta, e sotto il mana rimostrato
+ * (mana dell'avversario con la tacca magenta, la freccia del combattimento, il mio mana con la tacca azzurra). Dal 12/10
+ * (Pierluigi: "allunga orizzontalmente il riquadro, metti le carte in fila da quattro e i mana li sposti sotto le carte
+ * uscite") largo 480 punti, con il mana sotto le carte (prima sopra) e 4 carte per fila (prima 3).
  * L'angolo in basso a sinistra è trasparente e lascia passare i clic al gioco (`deckApi.hit`).
  */
 function oppPanel(v: DeckTrackerView, close: string, fine: string) {
@@ -175,16 +189,16 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
   return `<div class="lpanel">
     <section class="arm">
       <div class="gc legend">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</div>
-      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(String(seen.length), L.seen)}</div>
+      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(live?.opponent.deckLeft !== null && live?.opponent.deckLeft !== undefined ? String(live.opponent.deckLeft) : "–", L.oppLeft, L.oppLeftTip)}</div>
     </section>
     <section class="col">
       ${close}
+      ${seen.length ? `<ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
       <div class="manabox" aria-label="${esc(L.mana)}">
         <div class="mrow is-opp"><i class="tick"></i><b>${manaText(live?.mana.opp ?? null)}</b><span>${esc(L.opponent)}</span></div>
         <div class="dir" title="${esc(dir ? `${L.combat}: ${L.dir(dir)}` : L.combat)}">${arrowSvg(dir)}<span>${esc(L.combat)}</span></div>
         <div class="mrow is-me"><i class="tick"></i><b>${manaText(live?.mana.me ?? null)}</b><span>${esc(L.you)}</span></div>
       </div>
-      ${seen.length ? `<ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
       ${fine}
     </section>
   </div>`;
@@ -194,6 +208,22 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
  * Nella finestra il pannello a L ha l'angolo vuoto: lì i clic passano al gioco. Il processo principale ignora il mouse
  * finché il puntatore non è sopra il braccio o la colonna (con `forward` i movimenti arrivano lo stesso).
  */
+// tutorial della finestra principale (12/10/2026): il pannello si illumina e dice come si chiama, per farsi trovare
+root.dataset.spot = L.spot(view === "opp");
+window.deckApi?.onSpot((on) => document.body.classList.toggle("spot", on));
+
+// maniglia del Deck tracker (12/10/2026): la larghezza la cambia il processo principale finché il tasto è premuto
+if (window.deckApi && view === "me") {
+  document.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !(e.target instanceof Element) || e.target.id !== "grip") return;
+    e.target.setPointerCapture(e.pointerId);
+    window.deckApi?.resize(true);
+  });
+  const end = () => window.deckApi?.resize(false);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+}
+
 if (window.deckApi && view === "opp") {
   let over = true;
   const set = (on: boolean) => {
@@ -204,6 +234,15 @@ if (window.deckApi && view === "opp") {
   document.addEventListener("mousemove", (e) => set(e.target instanceof Element && Boolean(e.target.closest(".arm, .col"))));
   document.addEventListener("mouseleave", () => set(false));
   set(false);
+  // trascinamento (12/10/2026): lo fa il processo principale, la pagina dice solo quando comincia e quando finisce
+  document.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !(e.target instanceof Element) || e.target.closest(".x") || !e.target.closest(".arm, .col")) return;
+    e.target.setPointerCapture(e.pointerId);
+    window.deckApi?.drag(true);
+  });
+  const end = () => window.deckApi?.drag(false);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
 }
 
 let drawnKey = "";
@@ -232,7 +271,13 @@ function render(v: DeckTrackerView) {
         <div class="stats">${deckLeftStat(live?.deckLeft ?? null, (leg?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0))}${stat(lifePips(live ? live.life.me : null), L.life)}</div>
       </div>`;
   } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-  root.innerHTML = `${close}${body}${fine}`;
+  // la linguetta stile cartella in alto a sinistra, con il logo e la X per chiudere (12/10/2026, note Granola "pagina
+  // winrate": il marchio OriginsMeta sul tracker è "indispensabile"); in OBS senza la X
+  const tab = `<div class="tab"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="64" height="20" draggable="false" />${window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : ""}</div>`;
+  root.classList.add("has-tab");
+  // la maniglia per allargare il pannello (le finestre trasparenti non si ridimensionano dai bordi)
+  const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
+  root.innerHTML = `${tab}${body}${fine}${grip}`;
   // la larghezza della barra dal JavaScript: la CSP non ammette attributi style nell'HTML
   for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
   fit();

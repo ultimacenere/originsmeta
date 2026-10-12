@@ -39,7 +39,8 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; color: var(--chalk); font-family: var(--body); font-size: 14px; line-height: 1.3; }
-.in-window, .in-window body { background: #150c2c; }
+/* finestre trasparenti dal 12/10/2026: la linguetta del Deck tracker sporge sopra il pannello, l'angolo della L è vuoto */
+.in-window, .in-window body { background: transparent; }
 .in-obs { background: transparent; }
 body.in-obs { overflow: hidden; }
 .dt {
@@ -76,20 +77,23 @@ html, body { overflow: hidden; }
  */
 .grid, .legcol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
 /*
- * Tre stati a colpo d'occhio (rifinitura dell'11/10/2026 sera): accesa = tutte le copie ancora nel mazzo; spenta a metà
- * con il numero grande delle rimaste = ne può uscire ancora una; scura = finita. Il filtro sta sull'immagine, così il
- * numero e il bordo della mano restano pieni. Bordo menta = una copia in mano.
+ * Il numero in alto = copie ancora nel mazzo (2, poi 1; la Leggendaria 1); a zero la carta diventa scura e il numero
+ * sparisce (12/10/2026; dall'11/10 sera al 12/10 la carta si spegneva a metà alla prima pescata). Il filtro sta
+ * sull'immagine, così il bordo della mano resta pieno. Bordo menta = una copia in mano.
  */
 .gc { position: relative; }
 .gc .cardimg img { transition: filter 0.35s ease, opacity 0.35s ease; }
-.gc.half .cardimg img { filter: brightness(0.45) saturate(0.6); }
 .gc.out .cardimg img { filter: grayscale(1) brightness(0.28); }
 .gc.out .cardimg { border-color: var(--night-3); }
 .gc.inhand .cardimg { border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint), 0 0 8px rgba(49, 227, 189, 0.55); }
 .gc.just { animation: drawn-zoom 0.9s ease; }
 @keyframes drawn-zoom { 0% { transform: scale(1); filter: none; } 35% { transform: scale(1.12); filter: brightness(1.3); } 100% { transform: scale(1); } }
-/* il numero sta in alto, sopra l'illustrazione: in basso ci sono i crediti della carta, che non si coprono */
-.left { position: absolute; top: 22%; left: 50%; transform: translateX(-50%); min-width: 1.6em; padding: 1px 5px; border-radius: 999px; background: var(--ink); border: 2px solid var(--mint); color: var(--mint); font-family: var(--display); font-weight: 800; font-size: 0.95rem; line-height: 1.15; text-align: center; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+/*
+ * il numero sta in basso al centro (Pierluigi, 12/10/2026: "dal centro a centro basso sul fondo della carta"), sulla
+ * fascia viola sopra la cornice bianca: i crediti della carta (ILLUS // …, KOIN GAMES INC) stanno nella cornice, in basso
+ * a sinistra, e non si coprono mai (condizione di Koin)
+ */
+.left { position: absolute; top: auto; bottom: 9.5%; left: 50%; transform: translateX(-50%); min-width: 1.6em; padding: 1px 5px; border-radius: 999px; background: var(--ink); border: 2px solid var(--mint); color: var(--mint); font-family: var(--display); font-weight: 800; font-size: 0.95rem; line-height: 1.15; text-align: center; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
 /* sotto le carte: la Leggendaria (una colonna) e il riquadro con mazzo e vita (le altre due) */
 .foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; align-items: stretch; }
@@ -116,8 +120,8 @@ html, body { overflow: hidden; }
  */
 body.is-opp { background: transparent; }
 .is-opp .dt { background: none; border: 0; padding: 0; margin: 0; }
-.in-obs.is-opp .dt { width: 400px; }
-.lpanel { display: grid; grid-template-columns: minmax(0, 53fr) minmax(0, 47fr); grid-template-rows: auto 1fr; align-items: start; }
+.in-obs.is-opp .dt { width: 480px; }
+.lpanel { display: grid; grid-template-columns: minmax(0, 40fr) minmax(0, 60fr); grid-template-rows: auto 1fr; align-items: start; }
 .arm, .col { background: linear-gradient(180deg, rgba(255, 61, 139, 0.08) 0%, rgba(255, 61, 139, 0) 40%), var(--panel); border: 2px solid var(--sky); }
 .arm { grid-column: 1; grid-row: 1; position: relative; z-index: 1; margin-right: -2px; border-right: 0; border-radius: 10px 0 0 10px; padding: 6px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 6px; align-items: stretch; }
 .col { grid-column: 2; grid-row: 1 / span 2; position: relative; border-radius: 0 0 10px 10px; border-top-right-radius: 0; padding: 6px; display: grid; gap: 6px; }
@@ -140,10 +144,11 @@ body.is-opp { background: transparent; }
 .arrow path:last-child { fill: var(--sky); }
 .arrow.is-left { transform: scaleX(-1); }
 .arrow.is-unknown { opacity: 0.3; }
-.col .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.is-opp .left { top: 4px; font-size: 0.7rem; border-color: var(--crimson); color: var(--crimson); }
+.col .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.is-opp .left { top: 4px; bottom: auto; font-size: 0.7rem; border-color: var(--crimson); color: var(--crimson); }
 .in-window.is-opp .dt { -webkit-app-region: no-drag; }
-.in-window .arm, .in-window .col { -webkit-app-region: drag; }
+/* il pannello a L si trascina con gli eventi del puntatore (deckApi.drag), non con la zona di trascinamento di Windows */
+.in-window .arm, .in-window .col { -webkit-app-region: no-drag; cursor: move; }
 .col:hover .x, .col .x:focus-visible { opacity: 1; }
 .cardimg.back { display: grid; place-items: center; border-style: dashed; border-color: var(--crimson); color: var(--crimson); font-family: var(--display); font-weight: 800; font-size: 1.4rem; opacity: 0.7; }
 .waiting { align-self: center; font-size: 0.72rem; line-height: 1.35; }
@@ -162,3 +167,24 @@ body.is-opp { background: transparent; }
 .in-window .dt { position: relative; -webkit-app-region: drag; }
 .x { position: absolute; top: 2px; right: 4px; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--sky); border-radius: 50%; background: var(--ink); color: var(--chalk); font-size: 15px; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 0.2s ease; -webkit-app-region: no-drag; }
 .dt:hover .x, .x:focus-visible { opacity: 1; }
+/*
+ * linguetta stile cartella del Deck tracker (12/10/2026): sporge sopra l'angolo in alto a sinistra con il logo di
+ * OriginsMeta e la X per chiudere il pannello; copre il bordo del pannello sotto di sé, così cartella e linguetta sono
+ * un pezzo solo. Si trascina come il pannello.
+ */
+.dt.has-tab { position: relative; margin-top: 30px; border-top-left-radius: 0; }
+.tab { position: absolute; left: -2px; bottom: 100%; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 5px 0 10px; background: var(--panel); border: 2px solid var(--sky); border-bottom: 0; border-radius: 10px 10px 0 0; -webkit-app-region: drag; }
+.tab img { display: block; width: auto; height: 16px; }
+.tab-x { display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--chalk); font-size: 16px; line-height: 1; cursor: pointer; -webkit-app-region: no-drag; }
+.tab-x:hover, .tab-x:focus-visible { background: var(--crimson); color: var(--ink); outline: none; }
+/* maniglia per allargare il Deck tracker, nell'angolo in basso a destra (12/10/2026) */
+.grip { position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; cursor: ew-resize; -webkit-app-region: no-drag; background: linear-gradient(135deg, transparent 0 45%, var(--sky) 45% 55%, transparent 55% 70%, var(--sky) 70% 80%, transparent 80%); opacity: 0.6; }
+.grip:hover { opacity: 1; }
+/* tutorial della finestra principale (12/10/2026): il pannello pulsa in menta e mostra il suo nome */
+body.spot .dt.has-tab, body.spot .arm, body.spot .col { animation: spot-pulse 1.1s ease-in-out infinite alternate; }
+@keyframes spot-pulse { from { box-shadow: 0 0 0 2px var(--mint), 0 0 6px rgba(49, 227, 189, 0.4); } to { box-shadow: 0 0 0 4px var(--mint), 0 0 22px rgba(49, 227, 189, 0.85); } }
+body.spot #deck::after { content: attr(data-spot); position: absolute; z-index: 3; left: 50%; bottom: 10px; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: var(--mint); color: var(--ink); font-family: var(--display); font-weight: 800; font-size: 0.8rem; white-space: nowrap; pointer-events: none; }
+body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
+@media (prefers-reduced-motion: reduce) {
+  body.spot .dt.has-tab, body.spot .arm, body.spot .col { animation: none; box-shadow: 0 0 0 4px var(--mint); }
+}
