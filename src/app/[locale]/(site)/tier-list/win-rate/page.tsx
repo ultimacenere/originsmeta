@@ -13,7 +13,7 @@ import { readWinrate } from "@/lib/community/trackerStatsQueries";
 import { analyticsInstallHref } from "@/lib/analyticsLabels";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { requireAnalyticsAccess } from "@/lib/community/analyticsAccess";
-import { deckListKey, isEarly, percent, testThresholds } from "@/lib/tracker/stats";
+import { deckListKey, isEarly, percent } from "@/lib/tracker/stats";
 import { loadTierData } from "@/lib/tierData";
 import { tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
@@ -28,10 +28,15 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   del tracker e tutte le stat le avevamo nascoste, vanno riaperte"); in cima e in fondo il rimando a /analytics, la
   pagina dell'app con il download e la guida all'installazione. In prova dal 10/10/2026 (Pierluigi: "visibile solo ai
   creators e top players"): con ANALYTICS_PUBLIC spento solo Creator, Autore, Pro, Staff e admin con l'accesso fatto (gli altri
-  ricevono un 404), sempre noindex e fuori da hreflang e sitemap; la sessione letta rende la pagina dinamica. I numeri vengono dalle partite registrate con l'app OriginsMeta Tracker e li
+  ricevono un 404), sempre noindex e fuori da hreflang e sitemap; la sessione letta rende la pagina dinamica. Aperta a
+  tutti il 12/10/2026 (ANALYTICS_PUBLIC acceso): statica e ISR. I numeri vengono dalle partite registrate con l'app e li
   calcola il database (funzioni tracker_stats_* del blocco TRACKER di supabase/schema.sql): solo totali anonimi di una
-  patch, ogni numero da almeno 20 partite di almeno 3 giocatori, mostrato appena supera la soglia; sotto le 100 partite
-  porta "prime stime" (stats.ts). Patch in corso, oppure la precedente finché quella in corso non ha numeri (e lo dice).
+  patch, ogni numero mostrato appena supera la soglia di stats.ts; sotto le 100 partite la pagina è noindex (dal 12/10/2026 nessuna
+  etichetta "prime stime", Pierluigi: "nessuna prima stima"). Dal
+  12/10/2026 (Pierluigi: "statistica libera e rimuovi gli allert gialli e soprattutto il numero di giocatori che hanno
+  contribuito o hanno fatto cose, è un dato privato e non deve interessare a nessuno") niente riquadri gialli e mai il
+  numero di giocatori, solo le partite. Patch in corso, oppure la precedente finché quella in corso non ha numeri (e lo
+  dice, in una riga grigia).
   Noindex (e fuori da sitemap e hreflang) finché la patch mostrata ha meno di 100 partite: una pagina quasi vuota non si
   indicizza. Prima della migrazione, e finché nessun numero supera la soglia, la pagina spiega da dove arriveranno.
   Legge Supabase: ISR come le altre pagine della tier list.
@@ -52,7 +57,7 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 /**
  * Una riga con la barra: nome, riga sotto con partite e vittorie, valore a destra. I pezzi della riga sotto non si
- * spezzano al loro interno ("12–10", "prime stime"): vanno a capo solo fra un pezzo e l'altro.
+ * spezzano al loro interno ("12–10", "34 partite"): vanno a capo solo fra un pezzo e l'altro.
  */
 function RateRow({
   label,
@@ -60,9 +65,6 @@ function RateRow({
   value,
   note,
   bar,
-  early,
-  earlyLabel,
-  earlyTitle,
 }: {
   label: ReactNode;
   sub: string[];
@@ -70,9 +72,6 @@ function RateRow({
   /** che cosa misura il valore, sotto di lui (per le quote, che non sono win rate) */
   note?: string;
   bar: number;
-  early: boolean;
-  earlyLabel: string;
-  earlyTitle: string;
 }) {
   return (
     <li className="tier-arch">
@@ -85,11 +84,6 @@ function RateRow({
               {part}
             </span>
           ))}
-          {early ? (
-            <span className="stat-pill whitespace-nowrap bg-night-3 text-[10px] font-semibold uppercase text-gold" title={earlyTitle}>
-              {earlyLabel}
-            </span>
-          ) : null}
         </span>
       </span>
       <span className="tier-usage-bar" aria-hidden="true">
@@ -138,9 +132,7 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
   const pct = (wins: number, games: number) => `${percent(wins, games) ?? 0}%`;
   // singolare per 1 (con la soglia di prova del 01/10/2026 i numeri partono da una partita di un giocatore)
   const games = (n: number) => (n === 1 ? w.gamesOne : w.games.replace("{n}", nf(n)));
-  const players = (n: number) => (n === 1 ? w.playersOne : w.players.replace("{n}", nf(n)));
   const wl = (wins: number, all: number) => `${wins}–${all - wins}`;
-  const early = { earlyLabel: w.early, earlyTitle: w.earlyTitle };
   const legendaryLabel = d.common.legendary;
   const patchName = (id: typeof latestPatch) => patchLabel(id, locale);
 
@@ -193,17 +185,15 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
         </Link>
       </p>
 
-      {/* soglia di prova (01/10/2026): finché è sotto quella del lancio la pagina lo dice, così i testi sui 20 e 3 non ingannano */}
-      {testThresholds ? <p className="mt-6 max-w-3xl rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">{w.testThreshold}</p> : null}
-
       {!data ? (
         <div className="felt-panel-mint mt-8 max-w-3xl p-6">
           <p className="text-pale">{w.empty}</p>
         </div>
       ) : (
         <>
+          {/* il ripiego sulla patch precedente si dice, ma in una riga grigia, non in un riquadro giallo (12/10/2026) */}
           {data.fallback ? (
-            <p className="mt-6 max-w-3xl rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">
+            <p className="mt-4 max-w-3xl text-sm text-pale-muted">
               {w.fallback.replace("{current}", patchName(latestPatch)).replace("{patch}", patchName(data.patch))}
             </p>
           ) : null}
@@ -221,8 +211,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                     sub={[games(s.games), wl(s.wins, s.games)]}
                     value={pct(s.wins, s.games)}
                     bar={percent(s.wins, s.games) ?? 0}
-                    early={isEarly(s.games)}
-                    {...early}
                   />
                 ))}
               </ol>
@@ -250,8 +238,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                       sub={[...(leg ? [`★ ${leg.name}`] : []), authorName(deck.profile), games(stat.games), wl(stat.wins, stat.games)]}
                       value={pct(stat.wins, stat.games)}
                       bar={percent(stat.wins, stat.games) ?? 0}
-                      early={isEarly(stat.games)}
-                      {...early}
                     />
                   );
                 })}
@@ -274,8 +260,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                     sub={[games(s.games), wl(s.wins, s.games)]}
                     value={pct(s.wins, s.games)}
                     bar={percent(s.wins, s.games) ?? 0}
-                    early={isEarly(s.games)}
-                    {...early}
                   />
                 ))}
               </ol>
@@ -317,7 +301,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                           {s.deck ? (
                             <>
                               <b className="text-chalk">{pct(s.deck.wins, s.deck.games)}</b> <span className="text-xs text-pale-muted">{games(s.deck.games)}</span>
-                              {isEarly(s.deck.games) ? <span className="ml-1 text-xs text-gold" title={w.earlyTitle}>*</span> : null}
                             </>
                           ) : (
                             <span className="text-pale-muted">—</span>
@@ -327,7 +310,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                           {s.played ? (
                             <>
                               <b className="text-chalk">{pct(s.played.wins, s.played.games)}</b> <span className="text-xs text-pale-muted">{games(s.played.games)}</span>
-                              {isEarly(s.played.games) ? <span className="ml-1 text-xs text-gold" title={w.earlyTitle}>*</span> : null}
                             </>
                           ) : (
                             <span className="text-pale-muted">—</span>
@@ -338,9 +320,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                     ))}
                   </tbody>
                 </table>
-                <p className="mt-3 text-xs text-pale-muted">
-                  <span className="text-gold">*</span> {w.earlyTitle}
-                </p>
               </div>
             ) : (
               none
@@ -365,8 +344,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                     sub={[games(s.games), wl(s.wins, s.games)]}
                     value={pct(s.wins, s.games)}
                     bar={percent(s.wins, s.games) ?? 0}
-                    early={isEarly(s.games)}
-                    {...early}
                   />
                 ))}
               </ol>
@@ -391,8 +368,6 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
                       value={`${share}%`}
                       note={w.shareNote}
                       bar={share}
-                      early={isEarly(s.games)}
-                      {...early}
                     />
                   );
                 })}
@@ -410,7 +385,7 @@ export default async function WinratePage({ params }: { params: LocaleParams }) 
         <TierSourceLine
           items={[
             { label: t.lineSource, text: w.sourceText.replace("{patch}", patchName(data?.patch ?? latestPatch)) },
-            ...(data ? [{ label: t.lineSample, text: w.sampleText.replace("{games}", games(data.overview.games)).replace("{players}", players(data.overview.players)) }] : []),
+            ...(data ? [{ label: t.lineSample, text: games(data.overview.games) }] : []),
             { label: t.lineMeasure, text: w.measureText },
           ]}
         />

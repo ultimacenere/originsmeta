@@ -20,8 +20,11 @@ export const fr: Dictionary = {
   nav: {
     news: "Actus",
     tierList: "Tier list",
+    /** voce del menu che contiene Guide, Carte e Luoghi (12/10/2026): chiave sua, così si rinomina da sola */
+    guidesMenu: "Guides",
     guides: "Guides",
     locations: "Lieux",
+    analytics: "Analytics",
     cards: "Cartes",
     decks: "Decks",
     events: "Tournois et événements",
@@ -493,27 +496,21 @@ export const fr: Dictionary = {
       h1: "Win rate : Légendaires, decks et cartes",
       description: "Le win rate d'Origins TCG d'après les parties enregistrées avec l'app OriginsMeta Analytics : Légendaires, decks, archétypes et cartes, patch par patch.",
       intro:
-        "Les win rates de la meta d'Origins TCG, d'après les parties que les joueurs enregistrent avec OriginsMeta Analytics, notre application Windows. Chaque nombre vient d'au moins 20 parties d'au moins 3 joueurs différents et s'affiche dès qu'il y arrive ; sous 100 parties, c'est une première estimation.",
+        "Les win rates de la meta d'Origins TCG, d'après les parties que les joueurs enregistrent avec OriginsMeta Analytics, notre application Windows.",
       empty:
-        "Pas encore de win rate : les nombres viennent des parties enregistrées avec OriginsMeta Analytics, l'application Windows d'OriginsMeta. Chaque nombre apparaît ici dès qu'il vient d'au moins 20 parties d'au moins 3 joueurs.",
+        "Pas encore de win rate : les nombres viennent des parties enregistrées avec OriginsMeta Analytics, l'application Windows d'OriginsMeta, et s'affichent ici au fil des parties.",
       /* {current} = il patch in corso, {patch} = quello mostrato */
       fallback: "Le patch en cours ({current}) n'a pas encore assez de parties : voici les nombres du patch {patch}.",
-      testThreshold: "Seuil de test : pour l'instant les nombres s'affichent dès une seule partie, pour vérifier la page. Au lancement, chaque nombre demandera de nouveau au moins 20 parties d'au moins 3 joueurs.",
-      early: "premières estimations",
-      earlyTitle: "Moins de 100 parties : une première estimation",
       games: "{n} parties",
       gamesOne: "1 partie",
-      players: "{n} joueurs",
-      playersOne: "1 joueur",
       /* {p} = percentuale */
       winsAgainst: "{p} gagnées contre elle",
       /* sotto la quota di partite delle Leggendarie più incontrate */
       shareNote: "des parties",
       vs: "vs",
       showAll: "Tout afficher ({n})",
-      noneYet: "Aucun nombre au-dessus du seuil pour l'instant.",
+      noneYet: "Aucun nombre pour l'instant.",
       sourceText: "parties enregistrées avec OriginsMeta Analytics, patch {patch}",
-      sampleText: "{games} de {players}",
       measureText: "parties gagnées sur parties jouées, du côté de qui les enregistre",
       notes: [
         "Seuls les decks de qui enregistre comptent : le deck de l'adversaire n'est jamais compté, et la même partie compte une fois.",

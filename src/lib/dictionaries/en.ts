@@ -13,8 +13,11 @@ export const en = {
   nav: {
     news: "News",
     tierList: "Tier list",
+    /** voce del menu che contiene Guide, Carte e Luoghi (12/10/2026): chiave sua, così si rinomina da sola */
+    guidesMenu: "Guides",
     guides: "Guides",
     locations: "Locations",
+    analytics: "Analytics",
     cards: "Cards",
     decks: "Decks",
     events: "Tournaments & Events",
@@ -488,33 +491,28 @@ export const en = {
       noDecks: "No deck published yet: publish the first one from the deck builder.",
     },
     /* Win rate (30/09/2026, Pierluigi: win rates "are very important and we must have them"): only anonymous totals of the
-       games recorded with OriginsMeta Analytics, each number from at least 20 games by at least 3 players (stats.ts) */
+       games recorded with OriginsMeta Analytics, each number above the threshold of stats.ts. Dal 12/10/2026 (Pierluigi) la
+       pagina non dice mai quanti giocatori hanno contribuito: solo le partite */
     winrate: {
       title: "Origins TCG win rates by Legendary, deck and card",
       h1: "Win rates: Legendaries, decks and cards",
       description: "Origins TCG win rates from the games recorded with the OriginsMeta Analytics app: Legendaries, community decks, archetypes and cards, patch by patch.",
       intro:
-        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app. Every number comes from at least 20 games by at least 3 different players and shows up as soon as it gets there; below 100 games it is an early estimate.",
+        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app.",
       empty:
-        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows. Each number shows up here once it comes from at least 20 games by at least 3 players.",
+        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows, and show up here as the games come in.",
       /* {current} = the patch in progress, {patch} = the one shown */
       fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
-      testThreshold: "Test threshold: for now the numbers show from a single game, to check the page. At launch each number needs at least 20 games by at least 3 players again.",
-      early: "early estimates",
-      earlyTitle: "Fewer than 100 games: an early estimate",
       games: "{n} games",
       gamesOne: "1 game",
-      players: "{n} players",
-      playersOne: "1 player",
       /* {p} = percentage */
       winsAgainst: "{p} won against it",
       /* under the share of games of the most faced Legendaries */
       shareNote: "of games",
       vs: "vs",
       showAll: "Show all {n}",
-      noneYet: "No number above the threshold yet.",
+      noneYet: "No numbers yet.",
       sourceText: "games recorded with OriginsMeta Analytics, patch {patch}",
-      sampleText: "{games} by {players}",
       measureText: "games won out of games played, from the side of whoever records them",
       notes: [
         "Only the decks of whoever records count: the opponent's deck is never counted, and the same game counts once.",

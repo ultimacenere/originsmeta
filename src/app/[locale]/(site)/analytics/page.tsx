@@ -4,7 +4,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { TRACKER_DOWNLOAD_FILE, TRACKER_DOWNLOAD_URL, analyticsLabels } from "@/lib/analyticsLabels";
+import { TRACKER_DOWNLOAD_FILE, analyticsLabels, trackerDownloadHref } from "@/lib/analyticsLabels";
+import { TrackerDownloadButton } from "@/components/TrackerDownloadButton";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { requireAnalyticsAccess } from "@/lib/community/analyticsAccess";
@@ -18,7 +19,9 @@ import { dropHreflang } from "@/lib/community/deckQuality";
   l'installazione"). Il tasto "Sei interessato?" non c'è più (componente, tabella e informativa restano).
   In prova dal 10/10/2026 (Pierluigi: "visibile solo ai creators e top players"): con ANALYTICS_PUBLIC spento la vedono
   solo Creator, Autore, Pro, Staff e admin con l'accesso fatto (gli altri ricevono un 404), noindex e fuori da hreflang e
-  sitemap; la sessione letta la rende dinamica. Con ANALYTICS_PUBLIC acceso torna statica e indicizzabile. Lo zip arriva da GitHub Releases (`TRACKER_DOWNLOAD_URL`, un solo posto); i clic
+  sitemap; la sessione letta la rende dinamica. Con ANALYTICS_PUBLIC acceso torna statica e indicizzabile. Aperta a tutti dal 12/10/2026, ma il download è solo per chi ha fatto l'accesso (Pierluigi: "solo i registrati al sito
+  possono scaricare l'app e possono usarla"): il tasto porta a /api/tracker/download, che rimanda allo zip su GitHub
+  Releases o alla pagina di accesso (l'indirizzo dello zip non è nella pagina); i clic
   sul download contano come `analytics_download` (attributi data-om-*, analytics.ts).
   Screenshot dell'app vera nelle tre lingue dell'app (public/media/analytics, fatti il 02/10/2026 con --capture su una
   copia dei dati, senza collegamento: nessun nome utente), con le carte intere e i loro crediti.
@@ -47,13 +50,9 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   return ANALYTICS_PUBLIC ? meta : dropHreflang(meta);
 }
 
-/** Il tasto del download: un link diretto allo zip, contato come `analytics_download` con il suo posto nella pagina. */
-function DownloadButton({ label, placement }: { label: string; placement: "top" | "install" }) {
-  return (
-    <a href={TRACKER_DOWNLOAD_URL} className="btn btn-primary" rel="noopener" data-om-event="analytics_download" data-om-placement={placement}>
-      {label} ↓
-    </a>
-  );
+/** Il tasto del download (12/10/2026): sempre verso la rotta che controlla l'accesso; il testo lo sceglie il browser. */
+function DownloadButton({ locale, x, placement }: { locale: Locale; x: (typeof analyticsLabels)[Locale]; placement: "top" | "install" }) {
+  return <TrackerDownloadButton href={trackerDownloadHref(locale)} label={x.download.button} signInLabel={x.download.signIn} placement={placement} />;
 }
 
 /** Il testo di un passo con i segnaposto al loro posto: `{file}` il nome dello zip, `{link}` il link alla pagina dell'account. */
@@ -91,12 +90,14 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
         <h1 className="t-page mt-2">{x.h1}</h1>
         <p className="mt-4 text-pale">{x.lead}</p>
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-          <DownloadButton label={x.download.button} placement="top" />
+          <DownloadButton locale={locale} x={x} placement="top" />
           <a href={`#${install.anchor}`} className="link-mint text-sm font-bold">
             {x.download.guide} ↓
           </a>
         </div>
         <p className="mt-2 text-sm text-pale-muted">{x.download.note}</p>
+        {/* l'app si usa solo con un account (12/10/2026): lo dice a tutti, anche a chi ha già fatto l'accesso */}
+        <p className="mt-1 text-sm text-pale-muted">{x.download.account}</p>
       </header>
 
       <section className="mt-12" aria-labelledby="an-what">
@@ -150,7 +151,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                 {/* il passo del download ha il tasto */}
                 {step.text.includes("{file}") ? (
                   <p className="mt-3">
-                    <DownloadButton label={x.download.button} placement="install" />
+                    <DownloadButton locale={locale} x={x} placement="install" />
                   </p>
                 ) : null}
               </div>

@@ -80,10 +80,13 @@ export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
  * /analytics, /tier-list/win-rate e /account/tracker, il riquadro di /account e il codice per collegare l'app sono solo
  * per Creator, Autore, Pro, Staff e admin (gli altri ricevono un 404), e nessuna pagina pubblica le linka (testata della tier
  * list, sottomenu, riquadro dei win rate nei mazzi, sitemap). Per aprire tutto a tutti: `ANALYTICS_PUBLIC = true`.
+ * Aperto a tutti dal 12/10/2026 (Pierluigi: "Tracker mettiamo sul menu la pagina (sì rendila pubblica e tutti possono
+ * scaricarlo)"): pagine statiche e ISR, voce "Analytics" nel menu. I ruoli e i rami della prova restano, per richiudere
+ * rimettendo `false`.
  */
 export const ANALYTICS_BADGES: readonly Badge[] = ["creator", "author", "pro", "staff"];
-/** L'interruttore unico dell'apertura di OriginsMeta Analytics (vedi ANALYTICS_BADGES). */
-export const ANALYTICS_PUBLIC = false;
+/** L'interruttore unico dell'apertura di OriginsMeta Analytics (vedi ANALYTICS_BADGES): acceso dal 12/10/2026. */
+export const ANALYTICS_PUBLIC: boolean = true;
 /**
  * Il win rate dei mazzi della community, per tutti anche con Analytics in prova (11/10/2026, Pierluigi: "voglio che i deck
  * del sito acquisiscano il win rate all'interno del deck e nella preview sotto mazzi"; scelte: visibile a tutti, dalla

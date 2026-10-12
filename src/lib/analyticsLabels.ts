@@ -19,10 +19,18 @@ import type { Locale } from "./i18n";
  * Koin Games, sempre "non affiliato". Regola del tracker: nessuna parola su bot o persone.
  */
 
-/** Lo zip dell'app su GitHub Releases: l'ultima versione pubblicata, sempre allo stesso indirizzo (unico posto). */
-export const TRACKER_DOWNLOAD_URL = "https://github.com/ultimacenere/originsmeta/releases/latest/download/OriginsMeta-Analytics-win-x64.zip";
-/** Il nome del file che il browser scarica, citato nel passo 2 della guida. */
+/**
+ * Il nome del file che il browser scarica, citato nel passo 2 della guida. L'indirizzo dello zip su GitHub Releases non
+ * sta qui (12/10/2026, Pierluigi: "solo i registrati al sito possono scaricare l'app"): lo conosce solo la rotta
+ * /api/tracker/download (src/lib/trackerDownload.ts), che lo dà a chi ha fatto l'accesso, così non finisce né
+ * nell'HTML né nel JavaScript del browser.
+ */
 export const TRACKER_DOWNLOAD_FILE = "OriginsMeta-Analytics-win-x64.zip";
+
+/** Il tasto del download: la rotta che controlla l'accesso, con la lingua della pagina (per il ritorno dal login). */
+export function trackerDownloadHref(locale: Locale): string {
+  return `/api/tracker/download?lang=${locale}`;
+}
 
 /** Un passo della guida all'installazione: `{link}` (passo 6) diventa il link a /account/tracker, `{file}` il nome dello zip. */
 type Step = { title: string; text: string };
@@ -40,6 +48,9 @@ const en = {
     button: "Download OriginsMeta Analytics",
     note: "For Windows 10 and 11 (64-bit) · zip file from GitHub",
     guide: "How to install it",
+    /** il tasto per chi non ha fatto l'accesso (12/10/2026): porta al login e poi torna alla guida */
+    signIn: "Sign in to download",
+    account: "The app works only with an OriginsMeta account, which is free: sign in to download it, then link it to your account.",
   },
   what: {
     title: "What it does",
@@ -74,7 +85,7 @@ const en = {
     linkText: "the Analytics page of your account",
     steps: [
       { title: "What you need", text: "A PC with Windows 10 or 11 (64-bit) and the Origins TCG demo, installed from Steam." },
-      { title: "Download the zip", text: "Press the button below: your browser downloads the file {file}, usually into the Downloads folder." },
+      { title: "Download the zip", text: "Signed in to OriginsMeta (the account is free), press the button below: your browser downloads the file {file}, usually into the Downloads folder. If you aren't signed in, the button takes you to the sign-in page first." },
       {
         title: "Extract it",
         text: "Right-click the zip → “Extract All…”, choose a folder (for example Documents) and press “Extract”. Don't open the app from inside the zip: extract it first.",
@@ -89,7 +100,7 @@ const en = {
       },
       {
         title: "Link your account",
-        text: "Signed in to OriginsMeta, open {link} and press “Create a code”. In the app, open “OriginsMeta account”, paste the code and press “Link”. From then on your matches reach your account and also the site's anonymous stats. It's optional: without an account the app works on your PC alone.",
+        text: "Signed in to OriginsMeta, open {link} and press “Create a code”. In the app, open “OriginsMeta account”, paste the code and press “Link”. From then on your matches reach your account and also the site's anonymous stats. It's required: the app works only once it's linked to an OriginsMeta account.",
       },
       {
         title: "Play",
@@ -109,7 +120,7 @@ const en = {
   },
   privacy: {
     title: "Your data",
-    text: "The app reads only the game's files and window, and no image leaves your PC. Your matches stay on your PC until you link the app; then only match data and card identifiers reach the site, never names of players. You can unlink it and delete everything from your account.",
+    text: "The app reads only the game's files and window, and no image leaves your PC. It works only linked to your OriginsMeta account: only match data and card identifiers reach the site, never names of players. You can unlink it and delete everything from your account.",
     link: "Privacy policy",
   },
   koin: {
@@ -149,6 +160,8 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       button: "Scarica OriginsMeta Analytics",
       note: "Per Windows 10 e 11 a 64 bit · file zip da GitHub",
       guide: "Come installarla",
+      signIn: "Accedi per scaricarla",
+      account: "L'app funziona solo con un account OriginsMeta, che è gratuito: accedi per scaricarla, poi collegala al tuo account.",
     },
     what: {
       title: "Che cosa fa",
@@ -181,7 +194,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       linkText: "la pagina Analytics del tuo account",
       steps: [
         { title: "Cosa serve", text: "Un PC con Windows 10 o 11 a 64 bit e la demo di Origins TCG, installata da Steam." },
-        { title: "Scarica lo zip", text: "Premi il tasto qui sotto: il browser scarica il file {file}, di solito nella cartella Download." },
+        { title: "Scarica lo zip", text: "Con l'accesso fatto su OriginsMeta (l'account è gratuito), premi il tasto qui sotto: il browser scarica il file {file}, di solito nella cartella Download. Senza accesso, il tasto ti porta prima alla pagina per accedere." },
         {
           title: "Estrai i file",
           text: "Tasto destro sullo zip → «Estrai tutto…», scegli una cartella (per esempio Documenti) e premi «Estrai». Non aprire l'app da dentro lo zip: prima estraila.",
@@ -196,7 +209,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Collega l'account",
-          text: "Con l'accesso fatto su OriginsMeta, apri {link} e premi «Crea un codice». Nell'app apri «Account OriginsMeta», incolla il codice e premi «Collega». Da lì le partite arrivano al tuo account ed entrano anche nelle statistiche anonime del sito. È facoltativo: senza account l'app funziona anche solo sul tuo PC.",
+          text: "Con l'accesso fatto su OriginsMeta, apri {link} e premi «Crea un codice». Nell'app apri «Account OriginsMeta», incolla il codice e premi «Collega». Da lì le partite arrivano al tuo account ed entrano anche nelle statistiche anonime del sito. È obbligatorio: l'app funziona solo collegata a un account OriginsMeta.",
         },
         {
           title: "Gioca",
@@ -216,7 +229,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     privacy: {
       title: "I tuoi dati",
-      text: "L'app legge solo i file e la finestra del gioco, e nessuna immagine esce dal tuo PC. Le partite restano sul PC finché non colleghi l'app; da lì al sito arrivano solo i dati delle partite e gli identificativi delle carte, mai nomi di giocatori. Puoi scollegarla e cancellare tutto dal tuo account.",
+      text: "L'app legge solo i file e la finestra del gioco, e nessuna immagine esce dal tuo PC. Funziona solo collegata al tuo account OriginsMeta: al sito arrivano solo i dati delle partite e gli identificativi delle carte, mai nomi di giocatori. Puoi scollegarla e cancellare tutto dal tuo account.",
       link: "Informativa privacy",
     },
     koin: {
@@ -249,6 +262,8 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       button: "Descarga OriginsMeta Analytics",
       note: "Para Windows 10 y 11 de 64 bits · archivo zip de GitHub",
       guide: "Cómo instalarla",
+      signIn: "Inicia sesión para descargarla",
+      account: "La app solo funciona con una cuenta de OriginsMeta, que es gratuita: inicia sesión para descargarla y luego vincúlala a tu cuenta.",
     },
     what: {
       title: "Qué hace",
@@ -281,7 +296,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       linkText: "la página Analytics de tu cuenta",
       steps: [
         { title: "Qué necesitas", text: "Un PC con Windows 10 u 11 de 64 bits y la demo de Origins TCG, instalada desde Steam." },
-        { title: "Descarga el zip", text: "Pulsa el botón de abajo: el navegador descarga el archivo {file}, normalmente en la carpeta Descargas." },
+        { title: "Descarga el zip", text: "Con la sesión iniciada en OriginsMeta (la cuenta es gratuita), pulsa el botón de abajo: el navegador descarga el archivo {file}, normalmente en la carpeta Descargas. Sin sesión iniciada, el botón te lleva primero a la página para iniciar sesión." },
         {
           title: "Extrae los archivos",
           text: "Clic derecho en el zip → «Extraer todo…», elige una carpeta (por ejemplo Documentos) y pulsa «Extraer». No abras la app desde dentro del zip: extráela primero.",
@@ -296,7 +311,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Vincula tu cuenta",
-          text: "Con la sesión iniciada en OriginsMeta, abre {link} y pulsa «Crear un código». En la app, abre «Cuenta de OriginsMeta», pega el código y pulsa «Vincular». Desde entonces tus partidas llegan a tu cuenta y entran también en las estadísticas anónimas del sitio. Es opcional: sin cuenta, la app también funciona solo en tu PC.",
+          text: "Con la sesión iniciada en OriginsMeta, abre {link} y pulsa «Crear un código». En la app, abre «Cuenta de OriginsMeta», pega el código y pulsa «Vincular». Desde entonces tus partidas llegan a tu cuenta y entran también en las estadísticas anónimas del sitio. Es obligatorio: la app solo funciona vinculada a una cuenta de OriginsMeta.",
         },
         {
           title: "Juega",
@@ -316,7 +331,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     privacy: {
       title: "Tus datos",
-      text: "La app lee solo los archivos y la ventana del juego, y ninguna imagen sale de tu PC. Tus partidas se quedan en tu PC hasta que vinculas la app; desde entonces al sitio solo llegan los datos de las partidas y los identificadores de las cartas, nunca nombres de jugadores. Puedes desvincularla y borrarlo todo desde tu cuenta.",
+      text: "La app lee solo los archivos y la ventana del juego, y ninguna imagen sale de tu PC. Solo funciona vinculada a tu cuenta de OriginsMeta: al sitio solo llegan los datos de las partidas y los identificadores de las cartas, nunca nombres de jugadores. Puedes desvincularla y borrarlo todo desde tu cuenta.",
       link: "Política de privacidad",
     },
     koin: {
@@ -352,6 +367,8 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       button: "Télécharger OriginsMeta Analytics",
       note: "Pour Windows 10 et 11 (64 bits) · fichier zip sur GitHub",
       guide: "Comment l'installer",
+      signIn: "Connectez-vous pour la télécharger",
+      account: "L'application fonctionne uniquement avec un compte OriginsMeta, qui est gratuit : connectez-vous pour la télécharger, puis associez-la à votre compte.",
     },
     what: {
       title: "Ce qu'elle fait",
@@ -384,7 +401,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       linkText: "la page Analytics de votre compte",
       steps: [
         { title: "Ce qu'il vous faut", text: "Un PC sous Windows 10 ou 11 (64 bits) et la démo d'Origins TCG, installée depuis Steam." },
-        { title: "Téléchargez le zip", text: "Appuyez sur le bouton ci-dessous : votre navigateur télécharge le fichier {file}, en général dans le dossier Téléchargements." },
+        { title: "Téléchargez le zip", text: "Avec votre session ouverte sur OriginsMeta (le compte est gratuit), appuyez sur le bouton ci-dessous : votre navigateur télécharge le fichier {file}, en général dans le dossier Téléchargements. Sans session ouverte, le bouton vous mène d'abord à la page de connexion." },
         {
           title: "Extrayez les fichiers",
           text: "Clic droit sur le zip → « Extraire tout… », choisissez un dossier (par exemple Documents) et appuyez sur « Extraire ». N'ouvrez pas l'application depuis le zip : extrayez-la d'abord.",
@@ -399,7 +416,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Associez votre compte",
-          text: "Avec votre session ouverte sur OriginsMeta, ouvrez {link} et appuyez sur « Créer un code ». Dans l'application, ouvrez « OriginsMeta account », collez le code et appuyez sur « Link ». Vos parties arrivent alors sur votre compte et entrent aussi dans les statistiques anonymes du site. C'est facultatif : sans compte, l'application fonctionne aussi sur votre PC seul.",
+          text: "Avec votre session ouverte sur OriginsMeta, ouvrez {link} et appuyez sur « Créer un code ». Dans l'application, ouvrez « OriginsMeta account », collez le code et appuyez sur « Link ». Vos parties arrivent alors sur votre compte et entrent aussi dans les statistiques anonymes du site. C'est obligatoire : l'application fonctionne uniquement associée à un compte OriginsMeta.",
         },
         {
           title: "Jouez",
@@ -419,7 +436,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     privacy: {
       title: "Vos données",
-      text: "L'application lit uniquement les fichiers et la fenêtre du jeu, et aucune image ne quitte votre PC. Vos parties restent sur votre PC jusqu'à ce que vous associiez l'application ; ensuite, seules les données des parties et les identifiants des cartes arrivent sur le site, jamais de noms de joueurs. Vous pouvez la dissocier et tout supprimer depuis votre compte.",
+      text: "L'application lit uniquement les fichiers et la fenêtre du jeu, et aucune image ne quitte votre PC. Elle fonctionne uniquement associée à votre compte OriginsMeta : seules les données des parties et les identifiants des cartes arrivent sur le site, jamais de noms de joueurs. Vous pouvez la dissocier et tout supprimer depuis votre compte.",
       link: "Politique de confidentialité",
     },
     koin: {

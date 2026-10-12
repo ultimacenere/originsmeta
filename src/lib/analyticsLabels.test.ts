@@ -14,7 +14,9 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { TRACKER_DOWNLOAD_FILE, TRACKER_DOWNLOAD_URL, analyticsInstallHref, analyticsInterestPrivacy, analyticsLabels, interestCount } from "./analyticsLabels.ts";
+import { TRACKER_DOWNLOAD_FILE, analyticsInstallHref, analyticsInterestPrivacy, analyticsLabels, interestCount, trackerDownloadHref } from "./analyticsLabels.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { TRACKER_DOWNLOAD_URL } from "./trackerDownload.ts";
 
 const LOCALES = ["en", "it", "es", "fr"] as const;
 /** lingua degli screenshot: l'app non ha il francese, la pagina francese mostra quelli inglesi (come SHOT_LOCALE della pagina) */
@@ -80,6 +82,28 @@ describe("analytics: download e tipografia", () => {
   test("lo zip dell'ultima versione su GitHub Releases, con il nome citato nella guida", () => {
     assert.match(TRACKER_DOWNLOAD_URL, /^https:\/\/github\.com\/ultimacenere\/originsmeta\/releases\/latest\/download\//);
     assert.ok(TRACKER_DOWNLOAD_URL.endsWith(`/${TRACKER_DOWNLOAD_FILE}`));
+  });
+
+  // 12/10/2026 (Pierluigi: "solo i registrati al sito possono scaricare l'app"): l'indirizzo dello zip lo conosce solo la
+  // rotta /api/tracker/download; i testi e le pagine non lo contengono, e il tasto porta alla rotta con la lingua
+  test("download solo con l'accesso: l'indirizzo dello zip solo nella rotta", () => {
+    const src = (p: string) => fs.readFileSync(new URL(p, import.meta.url), "utf8");
+    for (const p of ["./analyticsLabels.ts", "../app/[locale]/(site)/analytics/page.tsx", "../components/TrackerDownloadButton.tsx"]) {
+      assert.ok(!src(p).includes("releases/latest"), p);
+      assert.ok(!src(p).includes("trackerDownload\""), p);
+    }
+    assert.ok(src("../app/api/tracker/download/route.ts").includes("TRACKER_DOWNLOAD_URL"));
+    for (const l of LOCALES) assert.equal(trackerDownloadHref(l), `/api/tracker/download?lang=${l}`);
+  });
+
+  test("download solo con l'accesso: tasto e riga per chi non l'ha fatto, collegamento obbligatorio", () => {
+    for (const l of LOCALES) {
+      const x = analyticsLabels[l];
+      assert.ok(x.download.signIn.length > 0 && x.download.account.includes("OriginsMeta"), l);
+      const link = x.install.steps.find((s: { text: string }) => s.text.includes("{link}"));
+      assert.ok(link && link.text.includes("OriginsMeta"), l);
+      assert.ok(!/optional|facoltativ|opcional|facultati/i.test(link!.text), l);
+    }
   });
 
   test("francese: spazio insecabile prima di : ; ? ! e dentro « » (docs/francese.md)", () => {

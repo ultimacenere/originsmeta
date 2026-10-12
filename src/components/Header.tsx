@@ -47,16 +47,22 @@ export function navItems(dict: Dictionary): NavItem[] {
       ],
     },
     {
-      label: dict.nav.guides,
+      // etichetta propria (`nav.guidesMenu`, 12/10/2026): la voce contiene Guide, Carte e Luoghi e Pierluigi vuole trovarle
+      // un nome migliore ("troviamo un nome migliore"); per rinominarla bastano le quattro stringhe dei dizionari
+      label: dict.nav.guidesMenu,
       path: "/guides",
       // sottomenu (11/10/2026, Pierluigi: "mettilo come sotto menu di guide"): i Luoghi, che prima stavano solo nel tasto
-      // di /cards e nella colonna "Esplora" del footer; anche nella tendina del telefono e fra i link del footer
+      // di /cards e nella colonna "Esplora" del footer; dal 12/10/2026 anche le Carte, che erano una voce del menu
+      // (Pierluigi: "menu in alto metti carte sotto guide"); anche nella tendina del telefono e fra i link del footer
       sub: [
         { label: dict.nav.guides, path: "/guides" },
+        { label: dict.nav.cards, path: "/cards", mobile: true },
         { label: dict.nav.locations, path: "/locations", mobile: true },
       ],
     },
-    { label: dict.nav.cards, path: "/cards" },
+    // OriginsMeta Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina (sì rendila pubblica e
+    // tutti possono scaricarlo)"): la pagina dell'app, nel posto lasciato libero dalle Carte; solo ad Analytics aperto
+    ...(ANALYTICS_PUBLIC ? [{ label: dict.nav.analytics, path: "/analytics" }] : []),
     {
       label: dict.nav.decks,
       path: "/decks",
@@ -110,14 +116,19 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             it.sub ? (
               // sottomenu al passaggio del mouse e col fuoco da tastiera, solo CSS (.nav-drop): l'header resta statico
               <div key={it.path} className="nav-drop">
-                <NavLink href={href(locale, it.path)}>{it.label}</NavLink>
+                {/* la voce si accende anche nelle pagine del sottomenu (12/10/2026: /cards e /cards/<slug> accendono la voce
+                    delle guide, dove ora stanno le Carte) */}
+                <NavLink href={href(locale, it.path)} also={it.sub.filter((s) => !s.testOnly).map((s) => href(locale, s.path))}>
+                  {it.label}
+                </NavLink>
                 <div className="nav-drop-panel">
                   <div className="nav-drop-box" role="group" aria-label={it.label}>
                     {it.sub.map((s) =>
                       s.testOnly ? (
                         <AnalyticsNavLink key={s.path} locale={locale} page="winrate" label={s.label} exact className="nav-link-block" />
                       ) : (
-                        <NavLink key={s.path} href={href(locale, s.path)} exact className="nav-link-block">
+                        // esatta solo la voce uguale a quella principale (/tier-list, /decks…): /cards/<slug> accende "Carte"
+                        <NavLink key={s.path} href={href(locale, s.path)} exact={s.path === it.path} className="nav-link-block">
                           {s.label}
                         </NavLink>
                       ),

@@ -49,7 +49,7 @@ import { deckArtLabels } from "@/lib/deckArtLabels";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { readDeckWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC, DECK_WINRATE_PUBLIC } from "@/lib/community/badges";
-import { deckListKey, isEarly, percent } from "@/lib/tracker/stats";
+import { deckListKey, percent } from "@/lib/tracker/stats";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -428,11 +428,6 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                   .replace("{games}", winrate.games === 1 ? d.tier.winrate.gamesOne : d.tier.winrate.games.replace("{n}", String(winrate.games)))
                   .replace("{patch}", patchLabel(winrate.patch, locale))
                   .trim()}
-                {isEarly(winrate.games) ? (
-                  <span className="stat-pill ml-2 bg-night-3 align-middle text-[10px] font-semibold uppercase text-gold" title={d.tier.winrate.earlyTitle}>
-                    {d.tier.winrate.early}
-                  </span>
-                ) : null}
               </p>
             </div>
             {ANALYTICS_PUBLIC ? (
