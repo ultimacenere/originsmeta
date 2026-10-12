@@ -76,15 +76,15 @@ export default async function CardVotesTierListPage({ params }: { params: Locale
   const ranked = stage === "live" ? kinds.flatMap((k) => TIER_ORDER.flatMap((tier) => k.entries.filter((e) => e.rating?.tier === tier).sort(ratingOrder))) : [];
   const oneDecimal = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const listItems = ranked.length
-    ? ranked.map((e) => ({ name: e.name, path: e.href, description: `${e.rating!.tier} · ${oneDecimal.format(e.rating!.avg)}/10 (${e.rating!.votes})` }))
+    ? ranked.map((e) => ({ name: e.name, path: e.href, description: `${e.rating!.tier} · ${oneDecimal.format(e.rating!.avg)}/10` }))
     : kinds.map((k) => ({ name: k.title, path: `${path}#${k.id}` }));
   const sample = fillVoteText(p.sample, {
     votes: votesWord({ one: p.votesOne, many: p.votesMany }, totals.votes),
     cards: votesWord({ one: p.cardsOne, many: p.cardsMany }, totals.cards),
-    voters: votesWord({ one: p.votersOne, many: p.votersMany }, totals.voters),
   });
   const updated = totals.latest ? formatDate(locale, totals.latest.slice(0, 10)) : undefined;
-  const previewText = (s: string) => fillVoteText(s, { min: CARD_VOTES_MIN_VOTERS, n: totals.voters });
+  // mai il numero di chi ha votato (12/10/2026, Pierluigi): solo la soglia
+  const previewText = (s: string) => fillVoteText(s, { min: CARD_VOTES_MIN_VOTERS });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">

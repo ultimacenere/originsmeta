@@ -1331,6 +1331,143 @@ Las notas del parche 0.7.1 que el equipo publicó en el [Discord oficial de Orig
     source: "press",
   },
   {
+    // Ottava news "Upgrade Meta" (12/10/2026, richiesta di Pierluigi): OriginsMeta Tracker 0.4.0 per tutti con un account
+    // gratuito (download da /tracker, app che funziona solo collegata, aggiornamento automatico per chi l'ha già), le
+    // statistiche aperte a tutti in /analytics e il menu nuovo (Database; Analytics con il Tracker). Niente soglie delle
+    // statistiche né numero di giocatori (regole del 12/10/2026). Copertina: lo screenshot dell'app in inglese della pagina
+    // /tracker, mai usato da una news (fatto il 02/10/2026, quando l'app si chiamava ancora Analytics).
+    slug: "upgrade-meta-1012",
+    image: "/media/analytics/app-overview-en.webp",
+    guides: ["play-the-demo"],
+    date: "2026-10-12",
+    title: n(
+      "Upgrade Meta: OriginsMeta Tracker 0.4.0 for everyone, win rates open in Analytics and a new menu",
+      "Upgrade Meta: OriginsMeta Tracker 0.4.0 per tutti, i win rate aperti in Analytics e un menu nuovo",
+      "Upgrade Meta: OriginsMeta Tracker 0.4.0 para todos, el win rate abierto en Analytics y un menú nuevo",
+    ),
+    metaTitle: n("OriginsMeta Tracker 0.4.0 for Origins TCG", "OriginsMeta Tracker 0.4.0 per Origins TCG", "OriginsMeta Tracker 0.4.0 para Origins TCG"),
+    description: n(
+      "OriginsMeta Tracker 0.4.0 is out for everyone with a free account: it records your Origins TCG matches, and its win rates are open to all in Analytics.",
+      "OriginsMeta Tracker 0.4.0 è per tutti con un account gratuito: registra le tue partite di Origins TCG, e i suoi win rate sono aperti a tutti in Analytics.",
+      "OriginsMeta Tracker 0.4.0 es para todos con una cuenta gratuita: registra tus partidas de Origins TCG, y su win rate está abierto a todos en Analytics.",
+    ),
+    summary: n(
+      "OriginsMeta Tracker, our Windows app that records your Origins TCG matches, is now available to everyone with a free OriginsMeta account: version 0.4.0 downloads from the Tracker page. The win rates it collects are open to all in the new Analytics section, and the menu changes: Guides, Cards and Locations now live under Database.",
+      "OriginsMeta Tracker, la nostra app per Windows che registra le tue partite di Origins TCG, ora è disponibile per tutti con un account OriginsMeta gratuito: la versione 0.4.0 si scarica dalla pagina Tracker. I win rate che raccoglie sono aperti a tutti nella nuova sezione Analytics, e il menu cambia: Guide, Carte e Luoghi stanno sotto Database.",
+      "OriginsMeta Tracker, nuestra app para Windows que registra tus partidas de Origins TCG, ya está disponible para todos con una cuenta gratuita de OriginsMeta: la versión 0.4.0 se descarga desde la página Tracker. El win rate que recoge está abierto a todos en la nueva sección Analytics, y el menú cambia: Guías, Cartas y Ubicaciones están ahora en Database.",
+    ),
+    highlights: {
+      en: [
+        { label: "OriginsMeta Tracker for everyone", text: "version 0.4.0, the new name of OriginsMeta Analytics, on the Tracker page", anchor: "tracker" },
+        { label: "Only with an account", text: "the account is free, and the app works only linked to it", anchor: "account" },
+        { label: "Win rates in Analytics", text: "Legendaries, decks, archetypes and cards, open to everyone", anchor: "analytics" },
+        { label: "A new menu", text: "Database with Guides, Cards and Locations; Analytics with the Tracker", anchor: "menu" },
+      ],
+      it: [
+        { label: "OriginsMeta Tracker per tutti", text: "la versione 0.4.0, il nuovo nome di OriginsMeta Analytics, nella pagina Tracker", anchor: "tracker" },
+        { label: "Solo con un account", text: "l'account è gratuito, e l'app funziona solo collegata", anchor: "account" },
+        { label: "I win rate in Analytics", text: "Leggendarie, mazzi, archetipi e carte, aperti a tutti", anchor: "analytics" },
+        { label: "Un menu nuovo", text: "Database con Guide, Carte e Luoghi; Analytics con il Tracker", anchor: "menu" },
+      ],
+      es: [
+        { label: "OriginsMeta Tracker para todos", text: "la versión 0.4.0, el nuevo nombre de OriginsMeta Analytics, en la página Tracker", anchor: "tracker" },
+        { label: "Solo con una cuenta", text: "la cuenta es gratuita, y la app solo funciona vinculada", anchor: "cuenta" },
+        { label: "El win rate en Analytics", text: "Legendarias, mazos, arquetipos y cartas, abierto a todos", anchor: "analytics" },
+        { label: "Un menú nuevo", text: "Database con Guías, Cartas y Ubicaciones; Analytics con el Tracker", anchor: "menu" },
+      ],
+    },
+    body: n(
+      `## OriginsMeta Tracker for everyone {#tracker}
+
+Until yesterday OriginsMeta Analytics, our Windows app for Origins TCG, was tested by Creators, Authors, Pro players and the Staff ([the 11 October release](/en/news/upgrade-meta-1011)). From today it is called **OriginsMeta Tracker** and anyone can download it: version 0.4.0 is on the [Tracker page](/en/tracker), with the [step-by-step installation guide](/en/tracker#install).
+
+It does what it already did: it records your matches on its own a few seconds after the end, reads the cards played from the game window with the screen scanner, shows the live Deck tracker with the opponent's cards and adds an overlay for OBS. It never touches the game, and no image leaves your PC.
+
+## Only with an OriginsMeta account {#account}
+
+To download the app you sign in to OriginsMeta: the account is free. The app works only linked to your account: after installing it, create a code on the [Tracker page of your account](/en/account/tracker) and type it in the app. The app checks the link when it starts and every 4 hours, sending only its token.
+
+If you already have the app, you don't need to download it again: it updates itself to version 0.4.0, then asks you to link your account if you haven't done it yet.
+
+## Win rates, open to everyone in Analytics {#analytics}
+
+The win rates calculated from the matches recorded with the app are now open to everyone in [Analytics](/en/analytics): Legendaries, community decks, archetypes, cards, matchups between Legendaries and the Legendaries you face most, patch by patch. Only totals: never names, single matches or who played them. The community decks show the win rate of their exact list on their page and in the [deck list](/en/decks).
+
+Until yesterday these numbers were the "Win rate" tab of the tier list: the old address now takes you to Analytics.
+
+## A new menu {#menu}
+
+The top menu changes to make room: **Database** gathers [Guides](/en/guides), [Cards](/en/cards) and [Locations](/en/locations), and **Analytics** holds the win rates and the [Tracker](/en/tracker) page. On phones you find them in the Menu.
+
+OriginsMeta is an unofficial fan site, not affiliated with Koin Games.`,
+      `## OriginsMeta Tracker per tutti {#tracker}
+
+Fino a ieri OriginsMeta Analytics, la nostra app per Windows dedicata a Origins TCG, la provavano Creator, Autori, giocatori Pro e lo Staff ([la versione dell'11 ottobre](/it/news/upgrade-meta-1011)). Da oggi si chiama **OriginsMeta Tracker** e la può scaricare chiunque: la versione 0.4.0 è nella [pagina Tracker](/it/tracker), con la [guida all'installazione passo per passo](/it/tracker#installazione).
+
+Fa quello che faceva già: registra da sola le tue partite pochi secondi dopo la fine, legge le carte giocate dalla finestra del gioco con lo scanner dello schermo, mostra il Deck tracker dal vivo con le carte dell'avversario e aggiunge un overlay per OBS. Il gioco non lo tocca mai, e nessuna immagine esce dal tuo PC.
+
+## Solo con un account OriginsMeta {#account}
+
+Per scaricare l'app si fa l'accesso a OriginsMeta: l'account è gratuito. L'app funziona solo collegata al tuo account: dopo averla installata crea un codice nella [pagina Tracker del tuo account](/it/account/tracker) e scrivilo nell'app. L'app controlla il collegamento all'avvio e ogni 4 ore, mandando solo il suo token.
+
+Se l'app ce l'hai già, non devi riscaricarla: si aggiorna da sola alla versione 0.4.0, poi ti chiede di collegare il tuo account se non l'hai ancora fatto.
+
+## I win rate, aperti a tutti in Analytics {#analytics}
+
+I win rate calcolati dalle partite registrate con l'app ora sono aperti a tutti in [Analytics](/it/analytics): Leggendarie, mazzi della community, archetipi, carte, scontri fra Leggendarie e le Leggendarie che incontri di più, patch per patch. Solo totali: mai nomi, singole partite né chi le ha giocate. I mazzi della community mostrano il win rate della loro lista esatta nella loro pagina e nell'[elenco dei mazzi](/it/decks).
+
+Fino a ieri questi numeri erano la scheda "Win rate" della tier list: il vecchio indirizzo ora porta ad Analytics.
+
+## Un menu nuovo {#menu}
+
+Il menu in alto cambia per fare spazio: **Database** raccoglie [Guide](/it/guides), [Carte](/it/cards) e [Luoghi](/it/locations), e **Analytics** tiene i win rate e la pagina [Tracker](/it/tracker). Sul telefono li trovi nel Menu.
+
+OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.`,
+      `## OriginsMeta Tracker para todos {#tracker}
+
+Hasta ayer, OriginsMeta Analytics, nuestra app para Windows dedicada a Origins TCG, la probaban Creators, Autores, jugadores Pro y el Staff ([la versión del 11 de octubre](/es/news/upgrade-meta-1011)). Desde hoy se llama **OriginsMeta Tracker** y cualquiera puede descargarla: la versión 0.4.0 está en la [página Tracker](/es/tracker), con la [guía de instalación paso a paso](/es/tracker#instalacion).
+
+Hace lo que ya hacía: registra tus partidas sola pocos segundos después del final, lee las cartas jugadas en la ventana del juego con el escáner de pantalla, muestra el Deck tracker en vivo con las cartas del rival y añade un overlay para OBS. Nunca toca el juego, y ninguna imagen sale de tu PC.
+
+## Solo con una cuenta de OriginsMeta {#cuenta}
+
+Para descargar la app inicias sesión en OriginsMeta: la cuenta es gratuita. La app solo funciona vinculada a tu cuenta: después de instalarla, crea un código en la [página Tracker de tu cuenta](/es/account/tracker) y escríbelo en la app. La app comprueba la vinculación al arrancar y cada 4 horas, enviando solo su token.
+
+Si ya tienes la app, no hace falta que la vuelvas a descargar: se actualiza sola a la versión 0.4.0 y luego te pide que vincules tu cuenta si todavía no lo hiciste.
+
+## El win rate, abierto a todos en Analytics {#analytics}
+
+El win rate calculado con las partidas registradas con la app ahora está abierto a todos en [Analytics](/es/analytics): Legendarias, mazos de la comunidad, arquetipos, cartas, enfrentamientos entre Legendarias y las Legendarias que más te encuentras, parche a parche. Solo totales: nunca nombres, partidas sueltas ni quién las jugó. Los mazos de la comunidad muestran el win rate de su lista exacta en su página y en la [lista de mazos](/es/decks).
+
+Hasta ayer estos números eran la pestaña "Win rate" de la tier list: la dirección antigua ahora te lleva a Analytics.
+
+## Un menú nuevo {#menu}
+
+El menú de arriba cambia para hacer sitio: **Database** reúne [Guías](/es/guides), [Cartas](/es/cards) y [Ubicaciones](/es/locations), y **Analytics** tiene el win rate y la página [Tracker](/es/tracker). En el móvil los encuentras en el Menú.
+
+OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.`,
+    ),
+    faq: {
+      en: [
+        { q: "How do I download OriginsMeta Tracker?", a: "Sign in to OriginsMeta (the account is free), open the Tracker page and press the download button. The installation guide on the same page explains every step, from extracting the zip to linking the app to your account." },
+        { q: "Can I use OriginsMeta Tracker without an account?", a: "No: from version 0.4.0 the app works only linked to an OriginsMeta account. It checks the link when it starts and every 4 hours, sending only its token." },
+        { q: "Where are the Origins TCG win rates on OriginsMeta?", a: "In Analytics, in the top menu: the win rates of Legendaries, community decks, archetypes and cards, patch by patch, from the matches recorded with OriginsMeta Tracker." },
+      ],
+      it: [
+        { q: "Come si scarica OriginsMeta Tracker?", a: "Fai l'accesso a OriginsMeta (l'account è gratuito), apri la pagina Tracker e premi il tasto del download. La guida all'installazione nella stessa pagina spiega ogni passo, dall'estrazione dello zip al collegamento dell'app al tuo account." },
+        { q: "Si può usare OriginsMeta Tracker senza account?", a: "No: dalla versione 0.4.0 l'app funziona solo collegata a un account OriginsMeta. Controlla il collegamento all'avvio e ogni 4 ore, mandando solo il suo token." },
+        { q: "Dove sono i win rate di Origins TCG su OriginsMeta?", a: "In Analytics, nel menu in alto: i win rate di Leggendarie, mazzi della community, archetipi e carte, patch per patch, dalle partite registrate con OriginsMeta Tracker." },
+      ],
+      es: [
+        { q: "¿Cómo se descarga OriginsMeta Tracker?", a: "Inicia sesión en OriginsMeta (la cuenta es gratuita), abre la página Tracker y pulsa el botón de descarga. La guía de instalación de la misma página explica cada paso, desde extraer el zip hasta vincular la app a tu cuenta." },
+        { q: "¿Se puede usar OriginsMeta Tracker sin cuenta?", a: "No: desde la versión 0.4.0 la app solo funciona vinculada a una cuenta de OriginsMeta. Comprueba la vinculación al arrancar y cada 4 horas, enviando solo su token." },
+        { q: "¿Dónde está el win rate de Origins TCG en OriginsMeta?", a: "En Analytics, en el menú de arriba: el win rate de Legendarias, mazos de la comunidad, arquetipos y cartas, parche a parche, con las partidas registradas con OriginsMeta Tracker." },
+      ],
+    },
+    url: "/tracker",
+    source: "site",
+  },
+  {
     // Settima news "Upgrade Meta" (11/10/2026, richiesta di Pierluigi: "scrivi una news sul sito con la release finale di
     // oggi, cosa contiene il tracker, qualche screen e scrivi che presto sarà disponibile per tutti"): OriginsMeta Analytics
     // 0.3.4. Niente link a /analytics né ai win rate (pagine visibili solo ai ruoli in prova finché ANALYTICS_PUBLIC è

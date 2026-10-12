@@ -21,7 +21,7 @@ export const es: Dictionary = {
     news: "Noticias",
     tierList: "Tier list",
     /** voce del menu che contiene Guide, Carte e Luoghi (12/10/2026): chiave sua, così si rinomina da sola */
-    guidesMenu: "Guías",
+    guidesMenu: "Database",
     guides: "Guías",
     locations: "Ubicaciones",
     analytics: "Analytics",
@@ -212,14 +212,10 @@ export const es: Dictionary = {
     tierSub: "Mazos, Legendarias, cartas base",
     tierStatus: "Clasificación de OriginsMeta tras la Crimson Cup (19–25 oct.). Mientras tanto: las cartas más jugadas.",
     tierSoon: "Las más jugadas",
-    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {n} persone che hanno salvato la scheda più salvata,
-       {min} la soglia, {people} "2 personas"; `intro` senza numeri per l'HTML statico (vedi en.ts) */
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
+       questa frase, senza numeri (mai il numero di persone) */
     tierInvite: {
       intro: "Tier list de la comunidad: el promedio de las listas que guardan los miembros (necesita al menos {min} personas).",
-      empty: "Tier list de la comunidad: arranca con {min} personas y nadie ha guardado la suya todavía.",
-      previewOne: "Tier list de la comunidad: 1 de las {min} personas que necesita para arrancar.",
-      preview: "Tier list de la comunidad: {n} de las {min} personas que necesita para arrancar.",
-      live: "Tier list de la comunidad: el promedio de las listas guardadas por {people}.",
       cta: "Guarda la tuya",
     },
     newsBoardTitle: "Tablón de noticias",
@@ -263,6 +259,8 @@ export const es: Dictionary = {
     slider: { prev: "Imagen anterior", next: "Imagen siguiente", goTo: "Ir a la imagen {n}", credit: "Arte oficial © Koin Games", pause: "Pausar la presentación", play: "Reproducir la presentación" },
     slides: {
       // patch 0.7 (30/09/2026, Pierluigi: "metti la copertina anche nello slider con il tasto che rimanda all'articolo della patch")
+      /* slide di OriginsMeta Tracker (12/10/2026), la prima dello slider */
+      tracker: { kicker: "Novedad · OriginsMeta Tracker 0.4.0", title: "OriginsMeta Tracker", text: "Nuestra app para Windows registra tus partidas de Origins TCG y sigue tu mazo en vivo. Gratis con una cuenta de OriginsMeta.", cta: "Descarga el Tracker", alt: "OriginsMeta Tracker durante una partida de la Demo 2.0: el Deck tracker con las cartas robadas oscurecidas, junto al panel del rival con Dracula y las cartas reveladas." },
       patch07: { kicker: "Notas del parche · 29 de septiembre de 2026", title: "Ya salió el parche 0.7", text: "El último de equilibrio antes de la Crimson Cup: rework de Twister Toss; Bagheera, Mind Palace y Spellbook cuestan 1 más.", cta: "Lee las notas del parche", alt: "Imagen oficial de la Steam Demo Update #2, versión 0.7: un cazador de barba blanca, con gafas rosas, puro y escopeta al hombro, sostiene un frasco de agua bendita que brilla." },
       keyArt: { kicker: "Demo en Steam · lanzamiento en el 4.º trimestre de 2026", title: "Origins TCG", text: "El juego de cartas digital free-to-compete de Koin Games: leyendas de todas las historias, una Legendaria al frente de cada mazo.", cta: "Juega la demo en Steam", alt: "Arte principal: una heroína rubia sonríe entre cartas que vuelan sobre un fondo rosa y morado, junto al logo de Origins TCG." },
       rapunzel: { kicker: "Arte principal oficial", title: "Leyendas de todas las historias", text: "Rapunzel en el banner oficial: el elenco de Legendarias crece con cada revelación.", cta: "Base de datos de cartas", alt: "Banner oficial: Rapunzel sentada con auriculares y un controlador, con su larguísimo cabello cruzando toda la imagen." },
@@ -406,12 +404,8 @@ export const es: Dictionary = {
     sourceOfficialUpdated: "actualizada el {date}",
     sourceCommunity: "Comunidad",
     sourceCommunityNone: "aún sin listas",
-    sourceCommunityOne: "1 lista",
-    sourceCommunityMany: "{n} listas",
-    sourceCommunityPeopleOne: "1 persona",
-    sourceCommunityPeopleMany: "{n} personas",
-    communitySampleOne: "{people}, {lists} guardada ({legendaries} de Legendarias y {cards} de cartas base)",
-    communitySampleMany: "{people}, {lists} guardadas ({legendaries} de Legendarias y {cards} de cartas base)",
+    /** riga del campione della tier list della community, senza numeri (12/10/2026: mai il numero di persone) */
+    communitySampleText: "las listas guardadas por los usuarios registrados con la herramienta, una por persona y por pestaña",
     sourcePlayed: "Las más jugadas",
     sourcePlayedNone: "aún sin mazos",
     sourcePlayedOne: "1 mazo",
@@ -459,9 +453,9 @@ export const es: Dictionary = {
       sourceText: "tier lists guardadas por los miembros",
       updatedText: "la última del {date}",
       /* {n} = lists saved so far, {min} = lists needed */
-      preview: "Vista previa: se convierte en la tier list de la comunidad con {min} listas ({n} de {min} por ahora).",
+      preview: "Vista previa: se convierte en la tier list de la comunidad con {min} listas.",
       previewBadge: "Vista previa",
-      previewShort: "se convierte en la tier list de la comunidad con {min} listas ({n} de {min} por ahora)",
+      previewShort: "se convierte en la tier list de la comunidad con {min} listas",
       empty: "Aún nadie ha guardado una tier list: la primera puede ser la tuya.",
       emptyCta: "Crea tu tier list",
       disclaimer: "Es la opinión de quienes usan este sitio, no una estadística del juego: pesa tanto como las personas que la votaron.",

@@ -17,7 +17,7 @@
  */
 import { ARCHETYPE_RE, KEY_RE } from "./upload";
 
-/** Le soglie del lancio, quelle scritte nell'informativa (/privacy#tracker): almeno 20 partite di almeno 3 giocatori. */
+/** Le soglie del lancio: almeno 20 partite di almeno 3 giocatori. Dal 12/10/2026 il sito non scrive più nessuna soglia (Pierluigi). */
 export const TRACKER_STATS_LAUNCH = { minGames: 20, minPlayers: 3 } as const;
 
 export const TRACKER_STATS = {
@@ -41,7 +41,7 @@ export const LIST_SIZE = 13;
 export const LIST_RE = /^(C[0-9]{5}_[A-Z]{2},){12}C[0-9]{5}_[A-Z]{2}$/;
 
 export const passesThreshold = (games: number, players: number) => games >= TRACKER_STATS.minGames && players >= TRACKER_STATS.minPlayers;
-/** true finché le soglie stanno sotto quelle del lancio: la pagina Win rate lo dice ("soglia di prova"). */
+/** true finché le soglie stanno sotto quelle del lancio (dal 12/10/2026 il sito non lo dice più: resta per i test). */
 export const testThresholds = TRACKER_STATS.minGames < TRACKER_STATS_LAUNCH.minGames || TRACKER_STATS.minPlayers < TRACKER_STATS_LAUNCH.minPlayers;
 export const isEarly = (games: number) => games < TRACKER_STATS.earlyBelow;
 /** Quota di vittorie fra 0 e 1, null senza partite. */

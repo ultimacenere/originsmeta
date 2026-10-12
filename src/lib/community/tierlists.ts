@@ -32,7 +32,7 @@ export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
   const client = supabasePublic();
   if (!client) return [];
   // Con un errore lancia (DECKS-12): la rigenerazione fallisce e restano le tier list di prima, non una classifica vuota.
-  // `owner` serve a communitySample (tierstats.ts): persone e liste salvate. Titolo, codice e profilo (Ondata 3) servono
+  // `owner` serve a tierListCounts (tierstats.ts; i numeri non si mostrano dal 12/10/2026). Titolo, codice e profilo (Ondata 3) servono
   // alle tier list firmate di /tier-list/community: stessa lettura, niente query in più.
   // Limite da tenere d'occhio: la cache dei dati di Next non conserva risposte oltre i 2 MB, e con `entries` e `code` una
   // lista di carte base pesa circa 3 KB. Verso le 650 liste la risposta non resterebbe più in cache (una lettura a ogni
@@ -43,17 +43,6 @@ export async function listPublishedTierLists(): Promise<PublishedTierList[]> {
     .eq("status", "published")
     .limit(5000);
   return rowsOrThrow<PublishedTierList>("listPublishedTierLists", res);
-}
-
-/**
- * Solo chi ha salvato e quale scheda, per le tier list pubblicate: bastano ai conteggi dell'invito della home
- * (`tierListCounts`, rotta /api/tier-list-counts), senza scaricare fasce, codici e profili. Con un errore lancia (DECKS-12).
- */
-export async function listTierListOwners(): Promise<{ owner: string; kind: TierKind }[]> {
-  const client = supabasePublic();
-  if (!client) return [];
-  const res = await client.from("tier_lists").select("owner, kind").eq("status", "published").limit(5000);
-  return rowsOrThrow<{ owner: string; kind: TierKind }>("listTierListOwners", res);
 }
 
 const TIER_LIST_SELECT = "id, owner, kind, title, code, entries, status, created_at, updated_at";

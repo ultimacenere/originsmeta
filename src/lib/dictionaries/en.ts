@@ -14,7 +14,7 @@ export const en = {
     news: "News",
     tierList: "Tier list",
     /** voce del menu che contiene Guide, Carte e Luoghi (12/10/2026): chiave sua, così si rinomina da sola */
-    guidesMenu: "Guides",
+    guidesMenu: "Database",
     guides: "Guides",
     locations: "Locations",
     analytics: "Analytics",
@@ -209,16 +209,10 @@ export const en = {
     tierSub: "Decks, Legendaries, base cards",
     tierStatus: "OriginsMeta ranking after the Crimson Cup (19–25 Oct). Meanwhile: the most played cards.",
     tierSoon: "Most played",
-    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01), nella striscia della tier list. Conto per persone: {n} le
-       persone che hanno salvato la scheda più salvata (una lista per persona e per scheda), {min} la soglia della community
-       (COMMUNITY_MIN_LISTS), {people} "2 people". `intro` è la frase senza numeri dell'HTML statico; quella con i numeri la
-       scrive il browser (`TierInvite`, dati da /api/tier-list-counts) con `tierInviteText` di tierstats.ts */
+    /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
+       questa frase, senza numeri (mai il numero di persone) */
     tierInvite: {
       intro: "Community tier list: the average of the lists members save (it needs at least {min} people).",
-      empty: "Community tier list: it goes live with {min} people, and nobody has saved theirs yet.",
-      previewOne: "Community tier list: 1 of the {min} people it needs to go live.",
-      preview: "Community tier list: {n} of the {min} people it needs to go live.",
-      live: "Community tier list: the average of the lists saved by {people}.",
       cta: "Save yours",
     },
     newsBoardTitle: "News board",
@@ -262,6 +256,8 @@ export const en = {
     slider: { prev: "Previous image", next: "Next image", goTo: "Go to image {n}", credit: "Official art © Koin Games", pause: "Pause the slideshow", play: "Play the slideshow" },
     slides: {
       // patch 0.7 (30/09/2026, Pierluigi: "metti la copertina anche nello slider con il tasto che rimanda all'articolo della patch")
+      /* slide di OriginsMeta Tracker (12/10/2026), la prima dello slider */
+      tracker: { kicker: "New · OriginsMeta Tracker 0.4.0", title: "OriginsMeta Tracker", text: "Our Windows app records your Origins TCG matches and tracks your deck live. Free with an OriginsMeta account.", cta: "Download the Tracker", alt: "OriginsMeta Tracker during a Demo 2.0 match: the Deck tracker with the drawn cards darkened, next to the opponent's panel with Dracula and the cards revealed." },
       patch07: { kicker: "Patch notes · 29 September 2026", title: "Patch 0.7 is out", text: "The last balance patch before the Crimson Cup: Twister Toss reworked, Bagheera, Mind Palace and Spellbook cost 1 more.", cta: "Read the patch notes", alt: "Official image of Steam Demo Update #2, version 0.7: a white-bearded hunter with pink sunglasses, a cigar and a shotgun on his shoulder holds a glowing bottle of holy water." },
       keyArt: { kicker: "Steam demo live · release Q4 2026", title: "Origins TCG", text: "The free-to-compete digital card game by Koin Games: legends from every story, one Legendary leading each deck.", cta: "Play the demo on Steam", alt: "Key art: a blonde heroine smiling among cards flying across a pink and purple background, beside the Origins TCG logo." },
       rapunzel: { kicker: "Official key art", title: "Legends from every story", text: "Rapunzel in the official banner: the roster of Legendaries grows with every reveal.", cta: "Card database", alt: "Official banner: Rapunzel sitting with headphones and a controller, her very long hair running across the image." },
@@ -406,12 +402,8 @@ export const en = {
     sourceOfficialUpdated: "updated {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "no lists yet",
-    sourceCommunityOne: "1 list",
-    sourceCommunityMany: "{n} lists",
-    sourceCommunityPeopleOne: "1 person",
-    sourceCommunityPeopleMany: "{n} people",
-    communitySampleOne: "{people}, {lists} saved ({legendaries} of Legendaries and {cards} of base cards)",
-    communitySampleMany: "{people}, {lists} saved ({legendaries} of Legendaries and {cards} of base cards)",
+    /** riga del campione della tier list della community, senza numeri (12/10/2026: mai il numero di persone) */
+    communitySampleText: "the lists registered users saved with the tool, one per person and per tab",
     sourcePlayed: "Most played",
     sourcePlayedNone: "no decks yet",
     sourcePlayedOne: "1 deck",
@@ -459,9 +451,9 @@ export const en = {
       sourceText: "tier lists saved by members",
       updatedText: "latest on {date}",
       /* {n} = lists saved so far, {min} = lists needed */
-      preview: "Preview: it becomes the community tier list at {min} lists ({n} of {min} so far).",
+      preview: "Preview: it becomes the community tier list at {min} lists.",
       previewBadge: "Preview",
-      previewShort: "it becomes the community tier list at {min} lists ({n} of {min} so far)",
+      previewShort: "it becomes the community tier list at {min} lists",
       empty: "Nobody has saved a tier list yet: the first one could be yours.",
       emptyCta: "Make your tier list",
       disclaimer: "It is the opinion of the people on this site, not a game statistic: it weighs as much as the people who voted.",

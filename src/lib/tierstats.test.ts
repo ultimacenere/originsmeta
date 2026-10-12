@@ -6,7 +6,6 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
   COMMUNITY_MIN_LISTS,
-  communitySample,
   aggregateLists,
   bestDecks,
   briefSentence,
@@ -14,7 +13,6 @@ import {
   excludedFromBest,
   listParts,
   rankedCount,
-  tierInviteText,
   signedTierLists,
   tierListCounts,
   communityOrder,
@@ -368,21 +366,6 @@ describe("In breve con i dizionari veri", () => {
   });
 });
 
-describe("communitySample", () => {
-  test("2 persone e 4 liste: la frase dice tutte e due le cose, nelle tre lingue", () => {
-    const n = { legendaries: 2, cards: 2, people: 2 };
-    assert.equal(communitySample(en.tier, n), "2 people, 4 lists saved (2 of Legendaries and 2 of base cards)");
-    assert.equal(communitySample(it.tier, n), "2 persone, 4 liste salvate (2 di Leggendarie e 2 di carte base)");
-    assert.equal(communitySample(es.tier, n), "2 personas, 4 listas guardadas (2 de Legendarias y 2 de cartas base)");
-  });
-  test("una sola lista: singolare", () => {
-    const n = { legendaries: 1, cards: 0, people: 1 };
-    assert.equal(communitySample(it.tier, n), "1 persona, 1 lista salvata (1 di Leggendarie e 0 di carte base)");
-    assert.equal(communitySample(es.tier, n), "1 persona, 1 lista guardada (1 de Legendarias y 0 de cartas base)");
-    assert.equal(communitySample(en.tier, n), "1 person, 1 list saved (1 of Legendaries and 0 of base cards)");
-  });
-});
-
 /* ——— Ondata 3 del piano SEO/GEO: invito in home, tier list firmate, migliori mazzi di /decks ——— */
 
 describe("tierListCounts e communityStage (invito della home e /tier-list/community)", () => {
@@ -405,46 +388,15 @@ describe("tierListCounts e communityStage (invito della home e /tier-list/commun
     assert.deepEqual(communityStage({ legendaries: 1, cards: 3 }, 3), { stage: "live", lists: 3 });
   });
 
-  test("le frasi dell'invito hanno i loro segnaposto, nelle tre lingue", () => {
+  // dal 12/10/2026 l'invito è una frase sola, senza numeri (mai il numero di persone): solo la soglia {min}
+  test("l'invito ha solo la soglia, nessun conteggio di persone o liste", () => {
     for (const d of [en, it, es]) {
       const w = d.home.tierInvite;
       assert.match(w.intro, /\{min\}/);
-      assert.match(w.empty, /\{min\}/);
-      assert.match(w.previewOne, /\{min\}/);
-      assert.doesNotMatch(w.previewOne, /\{n\}/);
-      assert.match(w.preview, /\{n\}.*\{min\}/);
-      assert.match(w.live, /\{people\}/);
+      assert.doesNotMatch(w.intro, /\{(n|people)\}/);
       assert.ok(w.cta.length > 0);
+      assert.doesNotMatch(d.tier.community.preview + d.tier.community.previewShort + d.tier.communitySampleText, /\{(n|people|lists)\}/);
     }
-  });
-});
-
-describe("tierInviteText (invito della home, conto per persone)", () => {
-  const words = (d: typeof it) => ({ ...d.home.tierInvite, peopleOne: d.tier.sourceCommunityPeopleOne, peopleMany: d.tier.sourceCommunityPeopleMany });
-
-  test("i dati del 25/09/2026: 2 persone, 2 liste per scheda (4 in tutto) sono 2 persone delle 5, non 2 liste", () => {
-    const n = { legendaries: 2, cards: 2, people: 2 };
-    assert.equal(tierInviteText(words(it), n), "Tier list della community: 2 persone delle 5 che servono per farla partire.");
-    assert.equal(tierInviteText(words(en), n), "Community tier list: 2 of the 5 people it needs to go live.");
-    assert.equal(tierInviteText(words(es), n), "Tier list de la comunidad: 2 de las 5 personas que necesita para arrancar.");
-  });
-
-  test("una persona sola, nessuna, soglia raggiunta", () => {
-    assert.equal(tierInviteText(words(it), { legendaries: 1, cards: 0, people: 1 }), "Tier list della community: 1 persona delle 5 che servono per farla partire.");
-    assert.equal(tierInviteText(words(it), { legendaries: 0, cards: 0, people: 0 }), "Tier list della community: parte da 5 persone e nessuno ha ancora salvato la sua.");
-    assert.equal(tierInviteText(words(it), { legendaries: 5, cards: 3, people: 6 }), "Tier list della community: la media delle liste salvate da 6 persone.");
-    assert.equal(tierInviteText(words(en), { legendaries: 2, cards: 1, people: 2 }, 2), "Community tier list: the average of the lists saved by 2 people.");
-  });
-
-  test("nessun segnaposto resta nella frase, in nessuno stato e in nessuna lingua", () => {
-    for (const d of [en, it, es])
-      for (const n of [
-        { legendaries: 0, cards: 0, people: 0 },
-        { legendaries: 1, cards: 0, people: 1 },
-        { legendaries: 3, cards: 2, people: 4 },
-        { legendaries: 7, cards: 5, people: 9 },
-      ])
-        assert.doesNotMatch(tierInviteText(words(d), n), /[{}]/);
   });
 });
 

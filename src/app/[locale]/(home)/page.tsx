@@ -153,23 +153,17 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
   /* la promessa datata resta finché nessuna sezione ha una fascia: sparisce da sola alla prima classifica */
   const nothingRanked = tierList.sections.every((s) => rankedIn(s) === 0);
-  // Invito a salvare la propria tier list (Ondata 3, TOOL-01). La home resta statica (niente letture di Supabase qui né
-  // nel layout): nell'HTML la frase senza numeri, il conteggio vero lo scrive il browser (`TierInvite`, da
-  // /api/tier-list-counts, con lo stesso conto e la stessa soglia di /tier-list/community). Con la community spenta
-  // (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
+  // Invito a salvare la propria tier list (Ondata 3, TOOL-01): dal 12/10/2026 solo la frase senza numeri (mai il numero di
+  // persone). Con la community spenta (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
   const ti = d.home.tierInvite;
-  const inviteWords = {
-    empty: ti.empty,
-    previewOne: ti.previewOne,
-    preview: ti.preview,
-    live: ti.live,
-    peopleOne: d.tier.sourceCommunityPeopleOne,
-    peopleMany: d.tier.sourceCommunityPeopleMany,
-  };
   const sl = d.home.slides;
   const mv = d.home.moves;
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
   const slides: Slide[] = [
+    // Prima slide dal 12/10/2026: OriginsMeta Tracker 0.4.0 per tutti, verso la pagina dell'app. Immagine: uno screenshot
+    // dell'app sopra una partita (contenuto, mai design; è la copertina della news upgrade-meta-1011, qui non è una news).
+    { src: "/media/analytics/tracker-cover.webp", ...sl.tracker, href: href(locale, "/tracker") },
+    // Dal 30/09 all'11/10/2026 era la prima:
     // Prima slide dal 30/09/2026 (richiesta di Pierluigi): la copertina ufficiale della patch 0.7 con il tasto verso l'articolo.
     // Quando esce la patch successiva si sostituisce o si toglie.
     { src: "/media/news-patch-07.webp", ...sl.patch07, href: href(locale, "/news/patch-0-7") },
@@ -382,11 +376,10 @@ export default async function Home({ params }: { params: LocaleParams }) {
                   {d.home.tierStatus}
                 </p>
               ) : null}
-              {/* Invito con il conteggio vero (Ondata 3, TOOL-01): la tier list della community parte da 5 persone */}
+              {/* Invito a salvare la propria tier list (Ondata 3, TOOL-01), senza conteggi dal 12/10/2026 */}
               {supabaseEnabled ? (
                 <TierInvite
-                  words={inviteWords}
-                  fallback={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))}
+                  text={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))}
                   cta={ti.cta}
                   href={href(locale, "/tier-list/create")}
                 />

@@ -79,7 +79,7 @@ export function tierSourceState(
               : t.sourceVotesMany.replace("{n}", String(n.cardVotes)),
     official: n.officialUpdated ? t.sourceOfficialUpdated.replace("{date}", n.officialUpdated) : t.sourceOfficialSoon,
     // niente conteggio sotto "Community" (Pierluigi, 29/09/2026: "rimuovi la dicitura 6 persone"): resta solo il nome.
-    // Quante persone hanno salvato una lista si legge ancora nella riga del campione (communitySample di tierstats.ts).
+    // Dal 12/10/2026 nemmeno la riga del campione dice quante persone hanno salvato una lista (Pierluigi: dato privato).
     community: "",
     played: n.decks === 0 ? t.sourcePlayedNone : n.decks === 1 ? t.sourcePlayedOne : t.sourcePlayedMany.replace("{n}", String(n.decks)),
   };

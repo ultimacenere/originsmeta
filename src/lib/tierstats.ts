@@ -19,32 +19,6 @@ export const TIER_POINTS: Record<Tier, number> = { S: 5, A: 4, B: 3, C: 2, D: 1 
 /** Da quante tier list salvate la classifica si chiama "della community" (Pierluigi, 24/09/2026). Sotto è un'anteprima. */
 export const COMMUNITY_MIN_LISTS = 5;
 
-/** Le parole della frase sul campione della tier list della community (chiavi di `tier` nei dizionari). */
-export type SampleWords = {
-  sourceCommunityPeopleOne: string;
-  sourceCommunityPeopleMany: string;
-  sourceCommunityOne: string;
-  sourceCommunityMany: string;
-  communitySampleOne: string;
-  communitySampleMany: string;
-};
-
-/**
- * Quante persone hanno salvato una tier list e quante liste ci sono, per scheda. Ogni persona ne salva al massimo una
- * per scheda (Leggendarie e carte base), quindi 2 persone possono fare 4 liste: prima il sito diceva solo "2 liste"
- * (il massimo fra le due schede) e un contatore sulle righe della tabella ne vedeva 4 (Pierluigi, 25/09/2026).
- */
-export function communitySample(w: SampleWords, n: { legendaries: number; cards: number; people: number }): string {
-  const total = n.legendaries + n.cards;
-  const people = n.people === 1 ? w.sourceCommunityPeopleOne : w.sourceCommunityPeopleMany.replace("{n}", String(n.people));
-  const lists = total === 1 ? w.sourceCommunityOne : w.sourceCommunityMany.replace("{n}", String(total));
-  return (total === 1 ? w.communitySampleOne : w.communitySampleMany)
-    .replace("{people}", people)
-    .replace("{lists}", lists)
-    .replace("{legendaries}", String(n.legendaries))
-    .replace("{cards}", String(n.cards));
-}
-
 /**
  * Liste salvate per scheda e persone distinte, dalle righe pubblicate di `tier_lists` (una per persona e per scheda,
  * indice unico `owner, kind`). La usano la sezione Tier list (`loadTierData`) e l'invito della home (Ondata 3, TOOL-01),
@@ -69,23 +43,6 @@ export function communityStage(
 ): { stage: "empty" | "preview" | "live"; lists: number } {
   const lists = Math.max(n.legendaries, n.cards);
   return { stage: lists === 0 ? "empty" : lists < min ? "preview" : "live", lists };
-}
-
-/** Le frasi dell'invito della home (`home.tierInvite` nei dizionari, più "1 persona" / "{n} persone" di `tier`). */
-export type InviteWords = { empty: string; previewOne: string; preview: string; live: string; peopleOne: string; peopleMany: string };
-
-/**
- * La frase dell'invito della home a salvare la propria tier list (Ondata 3, TOOL-01), con i numeri veri. Il conto è per
- * persone: ognuno salva una lista per scheda, quindi le liste della scheda più salvata (`communityStage`, lo stesso numero
- * che /tier-list/community confronta con la soglia) sono le persone che l'hanno salvata. Prima diceva "2 delle 5 liste"
- * mentre le liste salvate erano 4 (2 per scheda): letto da solo, sembrava che ne esistessero solo 2. A tier list partita
- * la frase dice le persone distinte, come la riga del campione.
- */
-export function tierInviteText(w: InviteWords, n: { legendaries: number; cards: number; people: number }, min: number = COMMUNITY_MIN_LISTS): string {
-  const { stage, lists } = communityStage(n, min);
-  const people = n.people === 1 ? w.peopleOne : w.peopleMany.replace("{n}", String(n.people));
-  const template = stage === "empty" ? w.empty : stage === "live" ? w.live : lists === 1 ? w.previewOne : w.preview;
-  return template.replace(/\{min\}/g, String(min)).replace("{n}", String(lists)).replace("{people}", people);
 }
 
 /*

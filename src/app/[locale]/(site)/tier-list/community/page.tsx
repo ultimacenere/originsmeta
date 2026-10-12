@@ -5,7 +5,7 @@ import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { normalizeBadge } from "@/lib/community/badges";
-import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communitySample, communityStage } from "@/lib/tierstats";
+import { COMMUNITY_MIN_LISTS, TIER_ORDER, communityOrder, communityStage } from "@/lib/tierstats";
 import { loadTierData, type TierData } from "@/lib/tierData";
 import { tierExplorerLabels, tierSourceState } from "@/lib/tierLabels";
 import { TierListHeader, TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
@@ -51,7 +51,6 @@ export default async function CommunityTierListPage({ params }: { params: Locale
     { id: "legendaries" as const, title: t.sections.legendaries.title, text: t.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary), n: data.lists.legendaries },
     { id: "cards" as const, title: t.sections.cards.title, text: t.sections.cards.text, entries: data.cards.filter((x) => !x.legendary), n: data.lists.cards },
   ];
-  const listsLabel = (n: number) => (n === 1 ? t.sourceCommunityOne : t.sourceCommunityMany.replace("{n}", String(n)));
   // ItemList vera (Ondata 2, GEO-10) solo per le liste che non sono più un'anteprima (almeno COMMUNITY_MIN_LISTS
   // salvate di quel tipo): le carte fascia per fascia, nell'ordine delle fasce visibili (communityOrder, lo stesso di
   // TierExplorer). Altrimenti restano le ancore delle sezioni.
@@ -59,10 +58,10 @@ export default async function CommunityTierListPage({ params }: { params: Locale
     .filter((k) => k.n >= COMMUNITY_MIN_LISTS)
     .flatMap((k) => TIER_ORDER.flatMap((tier) => k.entries.filter((e) => e.community?.tier === tier).sort(communityOrder)));
   const listItems = ranked.length
-    ? ranked.map((e) => ({ name: e.name, path: e.href, description: `${e.community!.tier} · ${e.community!.avg.toFixed(1)} (${e.community!.votes})` }))
+    ? ranked.map((e) => ({ name: e.name, path: e.href, description: `${e.community!.tier} · ${e.community!.avg.toFixed(1)}` }))
     : kinds.map((k) => ({ name: k.title, path: `${href(locale, "/tier-list/community")}#${k.id}` }));
-  const fill = (s: string, n: number) => s.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS)).replace("{n}", String(n));
-  const preview = (n: number) => fill(c.preview, n);
+  // mai il numero di persone né di liste (una per persona e per scheda: sarebbe lo stesso numero; 12/10/2026, Pierluigi)
+  const fill = (s: string) => s.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS));
   // Tier list firmate (Ondata 3, TOOL-01): dalla stessa lettura di `loadTierData`, già raggruppate per autore
   const signed = data.signed;
   // nell'indice il numero conta le tier list della sezione, come le altre voci contano le carte (non gli autori)
@@ -118,7 +117,7 @@ export default async function CommunityTierListPage({ params }: { params: Locale
             <h2 id={`${k.id}-title`} className="t-section">
               {k.title}
             </h2>
-            {k.n > 0 && k.n < COMMUNITY_MIN_LISTS ? <p className="tier-ribbon">{preview(k.n)}</p> : null}
+            {k.n > 0 && k.n < COMMUNITY_MIN_LISTS ? <p className="tier-ribbon">{fill(c.preview)}</p> : null}
             <div className="mt-4">
               <TierExplorer locale={locale}
                 id={`community-${k.id}`}
@@ -193,13 +192,13 @@ export default async function CommunityTierListPage({ params }: { params: Locale
         <TierSourceLine
           items={[
             { label: t.lineSource, text: c.sourceText },
-            { label: t.lineSample, text: `${communitySample(t, data.lists)}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
-            ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort, lists), warn: true }] : []),
+            { label: t.lineSample, text: `${t.communitySampleText}${data.lists.updated ? `, ${c.updatedText.replace("{date}", data.lists.updated)}` : ""}` },
+            ...(lists && lists < COMMUNITY_MIN_LISTS ? [{ label: c.previewBadge, text: fill(c.previewShort), warn: true }] : []),
           ]}
         />
         <TierSectionNotes
           items={[
-            ...kinds.map((k) => ({ title: `${k.title} (${listsLabel(k.n)})`, text: k.text })),
+            ...kinds.map((k) => ({ title: k.title, text: k.text })),
             ...(signed.length ? [{ title: c.signedTitle, text: c.signedText }] : []),
           ]}
         />
