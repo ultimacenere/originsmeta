@@ -25,7 +25,7 @@
  * del sito, non copiate nell'app); senza rete resta il nome della carta dentro la cornice.
  */
 import cardsTable from "../cards.json";
-import type { AppState, LinkProblem, SyncProblem, TrackedMatch, TrackerApi } from "../shared/types";
+import { PANEL_TEMPLATES, type AppState, type LinkProblem, type PanelTemplate, type SyncProblem, type TrackedMatch, type TrackerApi } from "../shared/types";
 
 declare global {
   interface Window {
@@ -153,6 +153,13 @@ const LABELS = {
     noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in Setup.",
     noticeOk: "Got it",
     noticeOff: "Turn it off",
+    panelStyle: "Panel style",
+    panelStyleNote: "Open panels reopen in the new style; each style remembers where you put them.",
+    templates: {
+      classic: { name: "Classic", text: "Deck tracker as a grid on the left, the opponent's L-shaped panel top right." },
+      strips: { name: "Top strips", text: "Your 12 cards and Legendary, and the opponent's Legendary and revealed cards, in two strips along the top of the game." },
+      columns: { name: "Side columns", text: "On the left your deck and the cards left in it; on the right the opponent's cards, the cards left in their deck and both players' mana." },
+    },
     deckTitle: "Deck tracker",
     deckIntro: "A panel beside the game with the deck you chose: Legendary and the 12 cards by cost. With the screen scanner on it updates live during the match: the cards you played and the round. A second panel shows the opponent's Legendary and the cards they reveal.",
     deckWindow: "Show the deck tracker",
@@ -305,6 +312,13 @@ const LABELS = {
     noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o in Setup.",
     noticeOk: "Ho capito",
     noticeOff: "Spegnilo",
+    panelStyle: "Stile dei pannelli",
+    panelStyleNote: "I pannelli aperti si riaprono nello stile nuovo; ogni stile ricorda dove li hai messi.",
+    templates: {
+      classic: { name: "Classico", text: "Deck tracker a griglia a sinistra, pannello a L dell'avversario in alto a destra." },
+      strips: { name: "Fasce in alto", text: "Le tue 12 carte e la Leggendaria, e la Leggendaria e le carte rivelate dell'avversario, in due fasce sul bordo alto del gioco." },
+      columns: { name: "Colonne ai lati", text: "A sinistra il tuo mazzo e le carte che ti restano; a destra le carte dell'avversario, quelle che gli restano e il mana dei due giocatori." },
+    },
     deckTitle: "Deck tracker",
     deckIntro: "Un pannello accanto al gioco con il mazzo che hai scelto: Leggendaria e le 12 carte per costo. Con lo scanner dello schermo acceso si aggiorna dal vivo durante la partita: carte che hai giocato e round. Un secondo pannello mostra la Leggendaria dell'avversario e le carte che rivela.",
     deckWindow: "Mostra il deck tracker",
@@ -457,6 +471,13 @@ const LABELS = {
     noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en Setup.",
     noticeOk: "Entendido",
     noticeOff: "Desactivarlo",
+    panelStyle: "Estilo de los paneles",
+    panelStyleNote: "Los paneles abiertos se vuelven a abrir con el estilo nuevo; cada estilo recuerda dónde los pusiste.",
+    templates: {
+      classic: { name: "Clásico", text: "Deck tracker en cuadrícula a la izquierda, panel en L del rival arriba a la derecha." },
+      strips: { name: "Franjas arriba", text: "Tus 12 cartas y la Legendaria, y la Legendaria y las cartas reveladas del rival, en dos franjas en el borde superior del juego." },
+      columns: { name: "Columnas laterales", text: "A la izquierda tu mazo y las cartas que te quedan; a la derecha las cartas del rival, las que le quedan y el maná de los dos jugadores." },
+    },
     deckTitle: "Deck tracker",
     deckIntro: "Un panel junto al juego con el mazo que elegiste: Legendaria y las 12 cartas por coste. Con el escáner de pantalla activado se actualiza en vivo durante la partida: cartas que jugaste y ronda. Un segundo panel muestra la Legendaria del rival y las cartas que revela.",
     deckWindow: "Mostrar el deck tracker",
@@ -798,6 +819,27 @@ function scannerPanel(s: AppState) {
       <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>`);
 }
 
+/**
+ * Lo schema di un template, uno schermo in piccolo (0.4.1): in viola dove stanno i pannelli, in menta il mio mazzo e
+ * in magenta quello dell'avversario, come nei disegni di Pierluigi.
+ */
+const TEMPLATE_SKETCH: Record<PanelTemplate, string> = {
+  classic: '<rect class="me" x="1" y="9" width="10" height="22" rx="1.5"/><rect class="opp" x="44" y="2" width="19" height="6" rx="1.5"/><rect class="opp" x="55" y="2" width="8" height="22" rx="1.5"/>',
+  strips: '<rect class="me" x="7" y="1" width="19" height="7" rx="1.5"/><rect class="opp" x="40" y="1" width="19.5" height="7" rx="1.5"/>',
+  columns: '<rect class="me" x="1" y="6" width="9" height="20" rx="1.5"/><rect class="opp" x="54" y="10" width="9.5" height="17" rx="1.5"/>',
+};
+const sketch = (t: PanelTemplate) => `<svg class="tpl-sketch" viewBox="0 0 64 36" aria-hidden="true"><rect class="screen" x="0.5" y="0.5" width="63" height="35" rx="3"/><rect class="board" x="14" y="9" width="38" height="18" rx="1"/>${TEMPLATE_SKETCH[t]}</svg>`;
+
+/** La scelta del template dei pannelli: tre schede con lo schema e due righe. */
+function templatePicker(current: PanelTemplate) {
+  return `<fieldset class="tpl"><legend>${esc(L.panelStyle)}</legend>
+      <div class="tpl-opts">${PANEL_TEMPLATES.map(
+        (t) => `<label class="tpl-opt"><input type="radio" name="panel-template" value="${t}"${t === current ? " checked" : ""} />${sketch(t)}<b>${esc(L.templates[t].name)}</b><span>${esc(L.templates[t].text)}</span></label>`,
+      ).join("")}</div>
+      <p class="fine">${esc(L.panelStyleNote)}</p>
+    </fieldset>`;
+}
+
 function overlayPanel(s: AppState) {
   const o = s.overlay;
   const v = o.view;
@@ -816,6 +858,7 @@ function overlayPanel(s: AppState) {
       ${o.obsUrl ? `<p class="sub">${esc(L.obsHow)}</p>${obsRow(L.obsH, "h")}${obsRow(L.obsV, "v")}` : `<p class="problem">${esc(L.obsOff)}</p>`}
       <h3>${esc(L.deckTitle)}</h3>
       <p class="sub">${esc(L.deckIntro)}</p>
+      ${templatePicker(o.template)}
       <div class="row"><label class="switch"><input type="checkbox" id="deck-window"${o.deckWindow ? " checked" : ""} /> ${esc(L.deckWindow)}</label></div>
       <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
@@ -1079,6 +1122,7 @@ root.addEventListener("change", async (e) => {
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
   if (t.id === "opp-window") t.checked = await window.tracker.setOppWindow(t.checked);
+  if (t.name === "panel-template" && t.checked) await window.tracker.setPanelTemplate(t.value as PanelTemplate);
   if (t.id === "scanner-on") t.checked = await window.tracker.setScanner(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic
   if (t.id === "ov-move") t.checked = !(await window.tracker.setOverlayClickThrough(!t.checked));

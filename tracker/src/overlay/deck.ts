@@ -12,6 +12,12 @@
  * Niente scorrimento: la finestra prende l'altezza del contenuto (`deckApi.fit`), la larghezza la sceglie il giocatore e
  * le carte la seguono. Niente cornice di Windows né titolo (Pierluigi, 11/10: "togliere la barra di Windows e il titolo
  * del deck"): nella finestra il pannello si trascina da qualunque punto e ha una × che compare al passaggio del mouse. Le carte sono sempre intere (immagini di originsmeta.com, mai ritagliate: i crediti restano).
+ *
+ * Template (0.4.1, 12/10/2026, disegni di Pierluigi; parametro `layout`, anche per OBS): `classic` è tutto quello qui
+ * sopra; `strips` ("Fasce in alto") mette in una fila sola le 12 carte e la Leggendaria del mio mazzo, e la Leggendaria
+ * e le carte rivelate dell'avversario ("no, solo le 12 carte e la leggendaria"); `columns` ("Colonne ai lati") ha a
+ * sinistra il mio mazzo con le carte ancora nel mazzo e a destra Leggendaria e carte rivelate dell'avversario, le sue
+ * carte rimanenti e il mana dei due con la freccia del combattimento (copre il pannello del mana del gioco).
  * La dicitura "non affiliato a Koin Games" resta solo nella sorgente per OBS, cioè quando il pannello va in onda: nelle
  * finestre accanto al gioco, che vede solo il giocatore, non c'è (Pierluigi, 11/10/2026: "togliamola dai due deck,
  * dobbiamo recuperare più spazio possibile"; la dicitura resta nella finestra principale dell'app).
@@ -33,6 +39,10 @@ const lang: Lang = asked === "en" || asked === "it" || asked === "es" ? asked : 
 document.documentElement.lang = lang;
 document.body.classList.add(window.deckApi ? "in-window" : "in-obs");
 if (view === "opp") document.body.classList.add("is-opp");
+type Layout = "classic" | "strips" | "columns";
+const asked2 = params.get("layout");
+const layout: Layout = asked2 === "strips" || asked2 === "columns" ? asked2 : "classic";
+document.body.classList.add(`layout-${layout}`);
 
 const LABELS = {
   en: {
@@ -181,11 +191,23 @@ const arrowSvg = (d: "left" | "right" | null) =>
  * uscite") largo 480 punti, con il mana sotto le carte (prima sopra) e 4 carte per fila (prima 3).
  * L'angolo in basso a sinistra è trasparente e lascia passare i clic al gioco (`deckApi.hit`).
  */
+/** Il pannello del mana del gioco, rimostrato: avversario in alto, la freccia del combattimento, io in basso. */
+function manaBox(live: DeckTrackerView["live"]) {
+  const dir = live?.direction ?? null;
+  return `<div class="manabox" aria-label="${esc(L.mana)}">
+        <div class="mrow is-opp"><i class="tick"></i><b>${manaText(live?.mana.opp ?? null)}</b><span>${esc(L.opponent)}</span></div>
+        <div class="dir" title="${esc(dir ? `${L.combat}: ${L.dir(dir)}` : L.combat)}">${arrowSvg(dir)}<span>${esc(L.combat)}</span></div>
+        <div class="mrow is-me"><i class="tick"></i><b>${manaText(live?.mana.me ?? null)}</b><span>${esc(L.you)}</span></div>
+      </div>`;
+}
+
+/** Una carta rivelata dall'avversario, con le copie viste se più di una. */
+const seenCard = (c: DeckCard) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`;
+
 function oppPanel(v: DeckTrackerView, close: string, fine: string) {
   const live = v.live;
   const seen = live?.opponent.seen ?? [];
   const leg = live?.opponent.legendary ?? null;
-  const dir = live?.direction ?? null;
   return `<div class="lpanel">
     <section class="arm">
       <div class="gc legend">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</div>
@@ -193,15 +215,56 @@ function oppPanel(v: DeckTrackerView, close: string, fine: string) {
     </section>
     <section class="col">
       ${close}
-      ${seen.length ? `<ul class="grid">${seen.map((c) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
-      <div class="manabox" aria-label="${esc(L.mana)}">
-        <div class="mrow is-opp"><i class="tick"></i><b>${manaText(live?.mana.opp ?? null)}</b><span>${esc(L.opponent)}</span></div>
-        <div class="dir" title="${esc(dir ? `${L.combat}: ${L.dir(dir)}` : L.combat)}">${arrowSvg(dir)}<span>${esc(L.combat)}</span></div>
-        <div class="mrow is-me"><i class="tick"></i><b>${manaText(live?.mana.me ?? null)}</b><span>${esc(L.you)}</span></div>
-      </div>
+      ${seen.length ? `<ul class="grid">${seen.map(seenCard).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
+      ${manaBox(live)}
       ${fine}
     </section>
   </div>`;
+}
+
+/** Il logo di OriginsMeta, piccolo, nei template nuovi (il marchio sul tracker è "indispensabile": note del 12/10). */
+const miniLogo = `<img class="mini-logo" src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="48" height="15" draggable="false" />`;
+
+/**
+ * Le carte del mio mazzo nei template nuovi: la Leggendaria per prima, poi le 12 per costo. `zoom` la fa saltare
+ * nel momento in cui la peschi, come nel classico.
+ */
+function myCards(v: DeckTrackerView, zoom: string) {
+  const leg = v.deck?.legendary ?? null;
+  const live = Boolean(v.live);
+  return `${leg ? myCard(leg, live, ` leg${zoom}`) : `<li class="gc leg">${cardImg(null)}</li>`}${(v.deck?.cards ?? []).map((c) => myCard(c, live)).join("")}`;
+}
+
+/** Leggendaria e carte rivelate dell'avversario nei template nuovi (la Leggendaria coperta finché non si vede). */
+function oppCards(v: DeckTrackerView) {
+  const leg = v.live?.opponent.legendary ?? null;
+  return `<li class="gc leg">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</li>${(v.live?.opponent.seen ?? []).map(seenCard).join("")}`;
+}
+
+/** "Fasce in alto": una fila sola, il logo piccolo in basso a destra. */
+function stripPanel(v: DeckTrackerView, zoom: string, close: string, grip: string, fine: string) {
+  const seen = v.live?.opponent.seen.length ?? 0;
+  const row =
+    view === "opp" ? `${oppCards(v)}${seen ? "" : `<li class="swait">${esc(L.oppWaiting)}</li>`}`
+    : v.deck ? myCards(v, zoom)
+    : `<li class="swait">${esc(L.choose)}</li>`;
+  return `${close}<ul class="srow">${row}</ul><div class="sfoot">${miniLogo}</div>${fine}${grip}`;
+}
+
+/** "Colonne ai lati": logo in testa, carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
+function columnPanel(v: DeckTrackerView, zoom: string, close: string, grip: string, fine: string) {
+  const live = v.live;
+  let body: string;
+  if (view === "opp") {
+    const left = live?.opponent.deckLeft;
+    body = `<ul class="cgrid">${oppCards(v)}</ul>${live?.opponent.seen.length ? "" : `<p class="muted cwait">${esc(L.oppWaiting)}</p>`}
+      ${stat(left !== null && left !== undefined ? String(left) : "–", L.oppLeft, L.oppLeftTip)}
+      ${manaBox(live)}`;
+  } else if (v.deck) {
+    const total = (v.deck.legendary?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0);
+    body = `<ul class="cgrid">${myCards(v, zoom)}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
+  } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
+  return `<div class="chead">${miniLogo}${close}</div>${body}${fine}${grip}`;
 }
 
 /**
@@ -213,7 +276,7 @@ root.dataset.spot = L.spot(view === "opp");
 window.deckApi?.onSpot((on) => document.body.classList.toggle("spot", on));
 
 // maniglia del Deck tracker (12/10/2026): la larghezza la cambia il processo principale finché il tasto è premuto
-if (window.deckApi && view === "me") {
+if (window.deckApi && (view === "me" || layout !== "classic")) {
   document.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || !(e.target instanceof Element) || e.target.id !== "grip") return;
     e.target.setPointerCapture(e.pointerId);
@@ -224,7 +287,7 @@ if (window.deckApi && view === "me") {
   document.addEventListener("pointercancel", end);
 }
 
-if (window.deckApi && view === "opp") {
+if (window.deckApi && view === "opp" && layout === "classic") {
   let over = true;
   const set = (on: boolean) => {
     if (on === over) return;
@@ -255,6 +318,19 @@ function render(v: DeckTrackerView) {
   const live = v.live;
   const close = window.deckApi ? `<button type="button" class="x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
   const fine = `${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}${window.deckApi ? "" : `<footer class="brand">${esc(L.brand)}</footer>`}`;
+  if (layout !== "classic") {
+    const leg = v.deck?.legendary ?? null;
+    const legOut = Boolean(live && leg && leg.drawn >= 1);
+    const zoom = view === "me" && legOut && !legendaryWasOut ? " just" : "";
+    legendaryWasOut = legOut;
+    const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
+    // la radice della pagina (#deck, .dt) è il pannello
+    root.classList.add("panel-x");
+    root.innerHTML = (layout === "strips" ? stripPanel : columnPanel)(v, zoom, close, grip, fine);
+    for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
+    fit();
+    return;
+  }
   let body: string;
   if (view === "opp") {
     root.innerHTML = oppPanel(v, close, fine);

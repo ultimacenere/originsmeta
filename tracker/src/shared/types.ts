@@ -80,8 +80,21 @@ export type OverlayView = {
   updatedAt: string;
 };
 
+/**
+ * Template dei pannelli sopra il gioco (0.4.1, 12/10/2026, disegni di Pierluigi): `classic` = Deck tracker a griglia
+ * nella fascia a sinistra e pannello a L dell'avversario in alto a destra; `strips` = "Fasce in alto", due fasce
+ * orizzontali sul bordo alto del gioco (le 12 carte e la Leggendaria del mio mazzo; Leggendaria e carte rivelate
+ * dell'avversario); `columns` = "Colonne ai lati", due colonne sui bordi del tabellone (a sinistra il mio mazzo e le
+ * carte ancora nel mazzo; a destra, sopra il pannello del mana del gioco, Leggendaria e carte rivelate dell'avversario,
+ * le sue carte rimanenti e il mana dei due giocatori con la freccia del combattimento).
+ */
+export type PanelTemplate = "classic" | "strips" | "columns";
+export const PANEL_TEMPLATES: readonly PanelTemplate[] = ["classic", "strips", "columns"];
+
 /** Overlay (Fase 4, 30/09/2026): finestra sopra il gioco e sorgente per OBS. */
 export type OverlayState = {
+  /** il template dei pannelli (0.4.1) */
+  template: PanelTemplate;
   /** la finestra sopra il gioco è aperta */
   window: boolean;
   /** la finestra lascia passare i clic al gioco */
@@ -152,6 +165,8 @@ export type TrackerApi = {
   setDeckWindow(on: boolean): Promise<boolean>;
   /** Apre o chiude la finestra con le carte dell'avversario (11/10/2026). */
   setOppWindow(on: boolean): Promise<boolean>;
+  /** Sceglie il template dei pannelli (0.4.1): i pannelli aperti si riaprono con quello nuovo; restituisce quello in uso. */
+  setPanelTemplate(template: PanelTemplate): Promise<PanelTemplate>;
   /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
   quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */

@@ -65,7 +65,8 @@ import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
-import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, TrackedMatch } from "../shared/types";
+import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelTemplate, TrackedMatch } from "../shared/types";
+import { clampWidth, defaultSpot, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
@@ -330,9 +331,10 @@ function state(): AppState {
       clickThrough: overlayPrefs.clickThrough,
       obsUrl: overlayServer ? `${overlayServer.url}?lang=${lang()}` : null,
       deckWindow: panelOpen("deck"),
-      deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}` : null,
+      template: panelTemplate,
+      deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
-      oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}` : null,
+      oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
       sessionStart: new Date(sessionStart).toISOString(),
       view: currentView(),
     },
@@ -375,14 +377,25 @@ function lockZoom(win: BrowserWindow) {
 
 /* ---------- pannelli: Deck tracker e carte dell'avversario ---------- */
 
+/** Il template negli indirizzi per OBS (il classico non ha parametro, come prima). */
+const obsLayout = () => (panelTemplate === "classic" ? "" : `&layout=${panelTemplate}`);
+
 /**
  * Due finestre con la stessa pagina (overlay/deck.html): `deck` con il mio mazzo, a destra dello schermo, e `opp` con
  * la Leggendaria e le carte rivelate dall'avversario, a sinistra (Pierluigi, 11/10/2026: "il deck avversario crea
  * un'altra tab dove si popola con le carte avversario", in una finestra separata). Ognuna con posizione, misure e
  * apertura salvate a parte (deck.json, opponent.json).
+ *
+ * Template (0.4.1, 12/10/2026, disegni di Pierluigi; panelLayout.ts): classico, "Fasce in alto" e "Colonne ai lati".
+ * Il template scelto sta in panel-template.json e la pagina lo riceve nell'indirizzo (`layout`); ogni template ha la
+ * sua posizione salvata (`spots`; il classico tiene x, y e larghezza di sempre). Cambiare template riapre i pannelli
+ * aperti. Nei template nuovi i pannelli non hanno angoli vuoti: si trascinano con la zona di Windows e si allargano con
+ * la maniglia (tutti e due).
  */
-type PanelKind = "deck" | "opp";
-type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean };
+type Spot = { x: number; y: number; width: number };
+type PanelPrefs = { x?: number; y?: number; width?: number; height?: number; open: boolean; spots?: Partial<Record<PanelTemplate, Spot>> };
+let panelTemplate: PanelTemplate = "classic";
+const TEMPLATE_FILE = "panel-template.json";
 // dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
 // pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
 // `keep`: chiusa dall'app che si blocca (access.ts), non dal giocatore: la preferenza "aperta" resta e si riapre allo sblocco
@@ -419,11 +432,40 @@ function loadPanelPrefs() {
     try {
       const raw = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), panels[k].file), "utf8")) as Partial<PanelPrefs>;
       const int = (v: unknown) => (Number.isInteger(v) ? (v as number) : undefined);
-      panels[k].prefs = { open: raw.open === true, x: int(raw.x), y: int(raw.y), width: int(raw.width), height: int(raw.height) };
+      const spots: PanelPrefs["spots"] = {};
+      for (const t of ["strips", "columns"] as const) {
+        const sp = raw.spots?.[t];
+        const x = int(sp?.x);
+        const y = int(sp?.y);
+        const width = int(sp?.width);
+        if (x !== undefined && y !== undefined && width !== undefined) spots[t] = { x, y, width };
+      }
+      panels[k].prefs = { open: raw.open === true, x: int(raw.x), y: int(raw.y), width: int(raw.width), height: int(raw.height), spots };
     } catch {
       // prima volta: il Deck tracker a destra dello schermo principale, l'avversario a sinistra
     }
   }
+  try {
+    panelTemplate = readTemplate((JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown }).template);
+  } catch {
+    // prima volta: classico
+  }
+}
+function savePanelTemplate() {
+  try {
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate }));
+  } catch {
+    // non essenziale
+  }
+}
+/** Posizione e misura attuali di un pannello, nel posto del template in uso. */
+function rememberPanel(k: PanelKind) {
+  const win = panels[k].win;
+  if (!win || win.isDestroyed()) return;
+  const b = win.getBounds();
+  if (panelTemplate === "classic") panels[k].prefs = { ...panels[k].prefs, x: b.x, y: b.y, width: b.width, height: b.height };
+  else panels[k].prefs = { ...panels[k].prefs, spots: { ...panels[k].prefs.spots, [panelTemplate]: { x: b.x, y: b.y, width: b.width } } };
+  savePanelPrefs(k);
 }
 function savePanelPrefs(k: PanelKind) {
   try {
@@ -435,6 +477,16 @@ function savePanelPrefs(k: PanelKind) {
 
 function panelBounds(k: PanelKind) {
   const p = panels[k].prefs;
+  // template nuovi (0.4.1): la posizione salvata se sta ancora su uno schermo, altrimenti quella del disegno sullo schermo
+  // principale (i limiti interi: le fasce stanno sul bordo alto, sopra la barra delle applicazioni se è in alto)
+  if (panelTemplate !== "classic") {
+    const t = panelTemplate;
+    const saved = p.spots?.[t];
+    const height = 160; // la decide il contenuto (deck:fit)
+    const on = saved ? screen.getAllDisplays().some((d) => saved.x >= d.bounds.x - 8 && saved.y >= d.bounds.y - 8 && saved.x + 40 <= d.bounds.x + d.bounds.width && saved.y + 20 <= d.bounds.y + d.bounds.height) : false;
+    if (saved && on) return { x: saved.x, y: saved.y, width: clampWidth(t, saved.width), height };
+    return { ...defaultSpot(t, k, screen.getPrimaryDisplay().bounds), height };
+  }
   const area = screen.getPrimaryDisplay().workArea;
   // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 480 per il
   // pannello a L dell'avversario, che va nell'angolo in alto a destra); l'altezza la decide il contenuto
@@ -458,8 +510,8 @@ function openPanel(k: PanelKind) {
   if (panelOpen(k)) return;
   const win = new BrowserWindow({
     ...panelBounds(k),
-    minWidth: 200,
-    minHeight: 120,
+    minWidth: WIDTH_LIMITS[panelTemplate].min,
+    minHeight: panelTemplate === "classic" ? 120 : 40,
     // senza la cornice di Windows (Pierluigi, 11/10/2026: "togliere la barra di Windows e il titolo"): si sposta
     // trascinando il pannello, si allarga dai bordi, si chiude con la × del pannello o dall'app
     frame: false,
@@ -473,7 +525,7 @@ function openPanel(k: PanelKind) {
     transparent: true,
     backgroundColor: "#00000000",
     hasShadow: false,
-    ...(k === "opp" ? { resizable: false } : {}),
+    ...(k === "opp" && panelTemplate === "classic" ? { resizable: false } : {}),
     icon: ICON,
     autoHideMenuBar: true,
     webPreferences: {
@@ -490,12 +542,7 @@ function openPanel(k: PanelKind) {
   win.setAlwaysOnTop(true, "screen-saver");
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (e) => e.preventDefault());
-  const remember = () => {
-    if (win.isDestroyed()) return;
-    const b = win.getBounds();
-    panels[k].prefs = { ...panels[k].prefs, x: b.x, y: b.y, width: b.width, height: b.height };
-    savePanelPrefs(k);
-  };
+  const remember = () => rememberPanel(k);
   win.on("moved", remember);
   win.on("resized", remember);
   win.on("closed", () => {
@@ -509,7 +556,26 @@ function openPanel(k: PanelKind) {
     push();
   });
   win.once("ready-to-show", () => win.showInactive());
-  void win.loadFile(path.join(__dirname, "overlay", "deck.html"), { query: { view: k === "deck" ? "me" : "opp" } });
+  void win.loadFile(path.join(__dirname, "overlay", "deck.html"), { query: { view: k === "deck" ? "me" : "opp", layout: panelTemplate } });
+}
+
+/** Cambio di template (0.4.1): si salva e i pannelli aperti si chiudono e si riaprono con quello nuovo. */
+function setPanelTemplate(t: PanelTemplate): PanelTemplate {
+  if (t === panelTemplate) return t;
+  panelTemplate = t;
+  savePanelTemplate();
+  for (const k of PANEL_KINDS) {
+    if (!panelOpen(k)) continue;
+    const win = panels[k].win!;
+    // chiusa dall'app, non dal giocatore: resta "aperta" e si riapre appena chiusa (dopo il gestore di openPanel)
+    panels[k].keep = true;
+    win.once("closed", () => {
+      if (engineOn && !quitting) openPanel(k);
+    });
+    win.close();
+  }
+  push();
+  return t;
 }
 
 function setPanel(k: PanelKind, on: boolean): boolean {
@@ -914,6 +980,7 @@ function registerIpc() {
   });
   ipcMain.handle("tracker:deck-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("deck", on === true) : panelOpen("deck")));
   ipcMain.handle("tracker:opp-window", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setPanel("opp", on === true) : panelOpen("opp")));
+  ipcMain.handle("tracker:panel-template", (e, t: unknown) => (fromOpenApp(e) ? setPanelTemplate(readTemplate(t)) : panelTemplate));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {
@@ -931,21 +998,19 @@ function registerIpc() {
   // ricorda dove sta il puntatore rispetto alla finestra e la finestra lo segue finché la pagina non dice che è finita
   // allargamento del Deck tracker con la maniglia (12/10/2026): la finestra trasparente non si ridimensiona dai bordi
   ipcMain.on("deck:resize", (e, on: unknown) => {
-    if (!fromDeck(e) || !panelOpen("deck") || panels.deck.win!.webContents !== e.sender) return;
-    const win = panels.deck.win!;
+    if (!fromDeck(e)) return;
+    // nel classico solo il Deck tracker (il pannello a L ha la larghezza fissa); nei template nuovi tutti e due
+    const k = PANEL_KINDS.find((x) => panelOpen(x) && panels[x].win!.webContents === e.sender);
+    if (!k || (panelTemplate === "classic" && k !== "deck")) return;
+    const win = panels[k].win!;
     if (deckResize) clearInterval(deckResize);
     deckResize = null;
-    if (on !== true) {
-      const b = win.getBounds();
-      panels.deck.prefs = { ...panels.deck.prefs, x: b.x, y: b.y, width: b.width, height: b.height };
-      savePanelPrefs("deck");
-      return;
-    }
+    if (on !== true) return rememberPanel(k);
     const x0 = screen.getCursorScreenPoint().x;
     const b0 = win.getBounds();
     const timer = setInterval(() => {
       if (win.isDestroyed()) return void clearInterval(timer);
-      const width = Math.min(Math.max(b0.width + screen.getCursorScreenPoint().x - x0, 200), 600);
+      const width = clampWidth(panelTemplate, b0.width + screen.getCursorScreenPoint().x - x0);
       const b = win.getBounds();
       if (b.width !== width) win.setBounds({ x: b0.x, y: b0.y, width, height: b.height });
     }, 16);
@@ -994,9 +1059,9 @@ function registerIpc() {
     const win = BrowserWindow.fromWebContents(e.sender);
     if (!win || win.isDestroyed()) return;
     const [w, cur] = win.getContentSize();
-    const want = Math.round(Math.min(Math.max(h as number, 120), 1400) * win.webContents.getZoomFactor());
+    const want = Math.round(Math.min(Math.max(h as number, panelTemplate === "classic" ? 120 : 40), 1400) * win.webContents.getZoomFactor());
     // il pannello a L resta largo OPP_L_WIDTH anche se Windows l'ha allargato di qualche pixel (scala al 150%)
-    const width = panelOpen("opp") && win === panels.opp.win ? OPP_L_WIDTH : w;
+    const width = panelTemplate === "classic" && panelOpen("opp") && win === panels.opp.win ? OPP_L_WIDTH : w;
     if (Math.abs(want - cur) > 2 || width !== w) win.setContentSize(width, want);
   });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromOpenApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));

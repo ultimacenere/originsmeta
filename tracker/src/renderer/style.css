@@ -382,3 +382,21 @@ details.match > summary:hover .m-title { color: #fff; }
 .tour-dots i.on { background: var(--mint); }
 .tour-actions { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
 .tour-actions .grow { flex: 1; }
+
+/* scelta del template dei pannelli (0.4.1): tre schede con lo schema dello schermo */
+.tpl { margin: 4px 0 0; padding: 0; border: 0; display: grid; gap: 8px; min-width: 0; }
+.tpl legend { padding: 0; margin-bottom: 8px; font-family: var(--display); font-size: 0.8rem; font-weight: 700; color: var(--chalk); }
+.tpl-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px; }
+.tpl-opt { position: relative; display: grid; gap: 6px; align-content: start; padding: 10px 12px 12px; background: var(--night-2); border: 2px solid var(--night-3); border-radius: 12px; cursor: pointer; transition: border-color 140ms ease; }
+.tpl-opt:hover { border-color: var(--sky); }
+.tpl-opt:has(input:checked) { border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint), 0 8px 20px -12px rgba(49, 227, 189, 0.8); }
+.tpl-opt:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
+.tpl-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.tpl-opt b { font-family: var(--display); font-size: 0.82rem; color: var(--sky); }
+.tpl-opt:has(input:checked) b { color: var(--mint); }
+.tpl-opt span { font-size: 0.78rem; line-height: 1.4; color: var(--pale-muted); }
+.tpl-sketch { width: 100%; max-width: 160px; height: auto; }
+.tpl-sketch .screen { fill: #0d0820; stroke: var(--night-3); }
+.tpl-sketch .board { fill: none; stroke: var(--felt-line); stroke-dasharray: 2 1.5; }
+.tpl-sketch .me { fill: var(--mint); opacity: 0.85; }
+.tpl-sketch .opp { fill: #ff3d8b; opacity: 0.85; }
