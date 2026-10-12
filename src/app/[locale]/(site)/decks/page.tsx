@@ -100,7 +100,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   const popularity = await listDeckPopularity();
   // canali e badge LIVE accanto a chi ha pubblicato, se ha il ruolo Creator, Autore, Pro o Staff (pacchetto CREATOR)
   const creators = creatorIndex(await listCreators());
-  // win rate delle liste esatte giocate con OriginsMeta Analytics (11/10/2026, `DECK_WINRATE_PUBLIC`): una lettura per pagina
+  // win rate delle liste esatte giocate con OriginsMeta Tracker (11/10/2026, `DECK_WINRATE_PUBLIC`): una lettura per pagina
   const winrates = DECK_WINRATE_PUBLIC ? await readListWinrates() : null;
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.

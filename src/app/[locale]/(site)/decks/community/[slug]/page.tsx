@@ -157,7 +157,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const L = communityPageLabels[locale];
   // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
   // dati di Next condivide (una al minuto), invece di una query per scheda. Accanto, il win rate del mazzo nelle
-  // partite registrate con OriginsMeta Analytics quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
+  // partite registrate con OriginsMeta Tracker quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
   // al 10/10/2026, quando la patch 0.7 aveva tolto i replay): null sotto la soglia, prima della migrazione o con un
   // errore (il riquadro è facoltativo). Dall'11/10/2026 per tutti anche con Analytics in prova (`DECK_WINRATE_PUBLIC`, Pierluigi:
   // "voglio che i deck del sito acquisiscano il win rate"), dalla prima partita e solo con la lista identica; i link verso
@@ -414,7 +414,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           />
         </div>
 
-        {/* Win rate nelle partite registrate con OriginsMeta Analytics (30/09/2026, Pierluigi "fai 1 e 2"; riaperto il
+        {/* Win rate nelle partite registrate con OriginsMeta Tracker (30/09/2026, Pierluigi "fai 1 e 2"; riaperto il
             10/10/2026): solo quando la lista esatta del mazzo (le 13 carte) supera la soglia di stats.ts; "prime stime" sotto
             le 100 partite. Altrimenti niente riquadro. Accanto ai win rate, l'app per registrare le proprie partite. */}
         {winrate ? (
@@ -432,10 +432,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             </div>
             {ANALYTICS_PUBLIC ? (
             <p className="flex flex-col gap-1 text-xs">
-              <Link href={`${href(locale, "/tier-list/win-rate")}#decks`} prefetch={false} className="link-mint font-bold">
+              <Link href={`${href(locale, "/analytics")}#decks`} prefetch={false} className="link-mint font-bold">
                 {d.tier.winrate.deckBox.link} →
               </Link>
-              <Link href={href(locale, "/analytics")} prefetch={false} className="link-mint">
+              <Link href={href(locale, "/tracker")} prefetch={false} className="link-mint">
                 {d.tier.winrate.deckBox.app} →
               </Link>
             </p>

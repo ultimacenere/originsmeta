@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
-import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
-import { WinrateTab } from "./AnalyticsOnly";
 
 /**
  * Testata unica della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB), al posto della
@@ -17,10 +15,11 @@ import { WinrateTab } from "./AnalyticsOnly";
  * Dal 30/09/2026 la quarta scheda (sotto i 640 px le schede stanno due per riga): era "Win rate" (/tier-list/win-rate),
  * dal 02/10/2026 "Analytics · in pausa" verso /analytics (la patch 0.7 aveva tolto i replay), di nuovo "Win rate" dal
  * 10/10/2026, quando l'app legge le carte giocate dallo schermo (Pierluigi: "la pagina del tracker e tutte le stat le
- * avevamo nascoste, vanno riaperte"). La pagina dell'app, /analytics, si raggiunge dalla pagina dei win rate.
+ * avevamo nascoste, vanno riaperte"). Dal 12/10/2026 la scheda non c'è più: le statistiche sono la pagina /analytics,
+ * fuori dalla tier list (Pierluigi: "non si chiama più win rate ma si chiama analytics", "solo sotto Analytics").
  */
 
-export type TierSource = "official" | "community" | "votes" | "played" | "winrate" | "create";
+export type TierSource = "official" | "community" | "votes" | "played" | "create";
 
 export function TierListHeader({
   locale,
@@ -35,7 +34,7 @@ export function TierListHeader({
   current: TierSource;
   title: string;
   /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "12 voti", "14 mazzi", "12 partite" */
-  state: { official: string; community: string; votes: string; played: string; winrate: string };
+  state: { official: string; community: string; votes: string; played: string };
   /** indice della pagina: ancore e conteggi delle sezioni */
   sections?: { id: string; label: string; count?: number }[];
 }) {
@@ -46,8 +45,6 @@ export function TierListHeader({
     // voti alle carte da 1 a 10 (06/10/2026): quinta scheda, fra la community (liste intere) e le più giocate
     { id: "votes", label: t.sourceVotes, path: "/tier-list/votes" },
     { id: "played", label: t.sourcePlayed, path: "/tier-list/most-played" },
-    // in prova dal 10/10/2026: la scheda compare solo quando OriginsMeta Analytics si apre a tutti (ANALYTICS_PUBLIC)
-    ...(ANALYTICS_PUBLIC ? [{ id: "winrate" as const, label: t.sourceWinrate, path: "/tier-list/win-rate" }] : []),
   ];
   return (
     <>
@@ -69,10 +66,6 @@ export function TierListHeader({
             </Link>
           );
         })}
-        {/* in prova (ANALYTICS_PUBLIC spento): la scheda "Win rate" la vede nel browser solo chi ha un ruolo ammesso */}
-        {ANALYTICS_PUBLIC ? null : (
-          <WinrateTab locale={locale} label={t.sourceWinrate} state={state.winrate || undefined} on={current === "winrate"} />
-        )}
         {/* sul tool stesso il tasto non serve: ci si è già */}
         {current === "create" ? null : (
           <Link href={href(locale, "/tier-list/create")} className="btn btn-primary w-full justify-center self-center sm:ml-auto sm:w-auto">

@@ -77,7 +77,7 @@ export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
  * OriginsMeta Analytics in prova (10/10/2026, Pierluigi: "la pagina deve essere visibile solo ai creators e top players,
  * lo facciamo testare prima di renderlo pubblico"; top players = Pro; poi "dai accesso anche agli autori alle pagine e
  * al dl", stesso giorno): finché `ANALYTICS_PUBLIC` è false, le pagine
- * /analytics, /tier-list/win-rate e /account/tracker, il riquadro di /account e il codice per collegare l'app sono solo
+ * /analytics (statistiche), /tracker (app; fino all'11/10 /tier-list/win-rate e /analytics) e /account/tracker, il riquadro di /account e il codice per collegare l'app sono solo
  * per Creator, Autore, Pro, Staff e admin (gli altri ricevono un 404), e nessuna pagina pubblica le linka (testata della tier
  * list, sottomenu, riquadro dei win rate nei mazzi, sitemap). Per aprire tutto a tutti: `ANALYTICS_PUBLIC = true`.
  * Aperto a tutti dal 12/10/2026 (Pierluigi: "Tracker mettiamo sul menu la pagina (sì rendila pubblica e tutti possono
@@ -91,7 +91,7 @@ export const ANALYTICS_PUBLIC: boolean = true;
  * Il win rate dei mazzi della community, per tutti anche con Analytics in prova (11/10/2026, Pierluigi: "voglio che i deck
  * del sito acquisiscano il win rate all'interno del deck e nella preview sotto mazzi"; scelte: visibile a tutti, dalla
  * prima partita, solo la lista identica): riquadro della scheda e pastiglia in /decks. I link verso le pagine in prova
- * (/analytics, /tier-list/win-rate) restano spenti finché `ANALYTICS_PUBLIC` è false.
+ * (/analytics, /tracker) restano spenti finché `ANALYTICS_PUBLIC` è false.
  */
 export const DECK_WINRATE_PUBLIC = true;
 

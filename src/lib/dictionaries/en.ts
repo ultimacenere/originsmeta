@@ -18,6 +18,8 @@ export const en = {
     guides: "Guides",
     locations: "Locations",
     analytics: "Analytics",
+    /** la pagina dell'app OriginsMeta Tracker (12/10/2026), nel sottomenu di Analytics */
+    tracker: "Tracker",
     cards: "Cards",
     decks: "Decks",
     events: "Tournaments & Events",
@@ -424,12 +426,7 @@ export const en = {
     sourceVotesMany: "{n} votes",
     sourceVotesHint: "1 to 10 by members",
     sourceVotesSoon: "coming soon",
-    /* Win rate (30/09/2026): the games recorded with the OriginsMeta Analytics app (docs/tracker.md) */
-    sourceWinrate: "Win rate",
-    sourceWinrateSoon: "coming soon",
-    sourceWinrateGames: "{n} games",
-    sourceWinrateGamesOne: "1 game",
-    sourceWinrateHint: "from the Analytics app",
+    /* Win rate (30/09/2026): the games recorded with the OriginsMeta Tracker app (docs/tracker.md) */
     onThisPage: "On this page",
     /* the line under the tabs: where the ranking comes from and how much it knows */
     lineSource: "Source",
@@ -491,16 +488,16 @@ export const en = {
       noDecks: "No deck published yet: publish the first one from the deck builder.",
     },
     /* Win rate (30/09/2026, Pierluigi: win rates "are very important and we must have them"): only anonymous totals of the
-       games recorded with OriginsMeta Analytics, each number above the threshold of stats.ts. Dal 12/10/2026 (Pierluigi) la
+       games recorded with OriginsMeta Tracker, each number above the threshold of stats.ts. Dal 12/10/2026 (Pierluigi) la
        pagina non dice mai quanti giocatori hanno contribuito: solo le partite */
     winrate: {
-      title: "Origins TCG win rates by Legendary, deck and card",
-      h1: "Win rates: Legendaries, decks and cards",
-      description: "Origins TCG win rates from the games recorded with the OriginsMeta Analytics app: Legendaries, community decks, archetypes and cards, patch by patch.",
+      title: "Analytics: Origins TCG win rates by Legendary and deck",
+      h1: "Analytics: win rates of Legendaries, decks and cards",
+      description: "Origins TCG win rates from the games recorded with the OriginsMeta Tracker app: Legendaries, community decks, archetypes and cards, patch by patch.",
       intro:
-        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Analytics, our Windows app.",
+        "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Tracker, our Windows app.",
       empty:
-        "No win rates yet: the numbers come from the games recorded with OriginsMeta Analytics, the OriginsMeta app for Windows, and show up here as the games come in.",
+        "No win rates yet: the numbers come from the games recorded with OriginsMeta Tracker, the OriginsMeta app for Windows, and show up here as the games come in.",
       /* {current} = the patch in progress, {patch} = the one shown */
       fallback: "The current patch ({current}) doesn't have enough games yet: these are the numbers of patch {patch}.",
       games: "{n} games",
@@ -512,7 +509,7 @@ export const en = {
       vs: "vs",
       showAll: "Show all {n}",
       noneYet: "No numbers yet.",
-      sourceText: "games recorded with OriginsMeta Analytics, patch {patch}",
+      sourceText: "games recorded with OriginsMeta Tracker, patch {patch}",
       measureText: "games won out of games played, from the side of whoever records them",
       notes: [
         "Only the decks of whoever records count: the opponent's deck is never counted, and the same game counts once.",
@@ -530,13 +527,13 @@ export const en = {
       },
       cols: { card: "Card", inDeck: "In the deck", played: "When played", avgRound: "Avg. round" },
       /* box on the community deck pages, only when the deck's exact list passes the threshold */
-      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} · patch {patch}", link: "All win rates", app: "Record yours with OriginsMeta Analytics" },
+      deckBox: { title: "Win rate in recorded games", text: "{rate} over {games} · patch {patch}", link: "All win rates", app: "Record yours with OriginsMeta Tracker" },
       /* the box under the page header and the line in the notes, towards /analytics (the app's page, 10/10/2026) */
       app: {
-        text: "The numbers come from the matches players record with OriginsMeta Analytics, our Windows app. Record yours too: the more matches, the more reliable the win rates.",
-        cta: "Download OriginsMeta Analytics",
+        text: "The numbers come from the matches players record with OriginsMeta Tracker, our Windows app. Record yours too: the more matches, the more reliable the win rates.",
+        cta: "Download OriginsMeta Tracker",
         notesText: "The app that records the matches:",
-        notesAnchor: "OriginsMeta Analytics",
+        notesAnchor: "OriginsMeta Tracker",
       },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */

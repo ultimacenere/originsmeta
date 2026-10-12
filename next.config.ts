@@ -67,6 +67,8 @@ const sections = [
   "style",
   "tier-list",
   "tournaments",
+  // la pagina dell'app OriginsMeta Tracker (12/10/2026; prima stava in /analytics, che ora sono le statistiche)
+  "tracker",
   "u",
 ] as const;
 
@@ -151,8 +153,14 @@ const nextConfig: NextConfig = {
       // Sezioni senza lingua (/cards/merlin, /news/<slug>…): la stessa pagina nella lingua del browser.
       ...sectionRedirects(),
       // /tier-list/win-rate: dal 02 al 10/10/2026 era un 308 verso /analytics (tool in pausa dalla patch 0.7); tolto il
-      // 10/10/2026, quando la pagina dei win rate è tornata (Pierluigi: "vanno riaperte"). I browser che avevano visto il
-      // 308 lo tengono in cache finché non la svuotano: i link del sito portano comunque alla pagina.
+      // 10/10/2026, quando la pagina dei win rate è tornata (Pierluigi: "vanno riaperte"). Dal 12/10/2026 di nuovo un 308
+      // verso /analytics, che ora è la pagina delle statistiche (Pierluigi: "non si chiama più win rate ma si chiama
+      // analytics"); la pagina dell'app è /tracker. Una sola regola per le quattro lingue, con l'ancora che resta.
+      {
+        source: "/:locale(en|it|es|fr)/tier-list/win-rate",
+        destination: "/:locale/analytics",
+        permanent: true,
+      },
       // Il francese, ritirato il 15/09/2026 (allora /fr mandava a /en con un 308), è tornato il 07/10/2026 come quarta lingua:
       // /fr è di nuovo una lingua vera, nessun redirect.
     ];

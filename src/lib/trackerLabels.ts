@@ -2,7 +2,7 @@ import type { Locale } from "./i18n";
 import { ANALYTICS_PUBLIC } from "./community/badges";
 
 /**
- * Il riquadro "OriginsMeta Analytics" di /account a tutti: segue `ANALYTICS_PUBLIC` di badges.ts, l'interruttore unico
+ * Il riquadro "OriginsMeta Tracker" di /account a tutti: segue `ANALYTICS_PUBLIC` di badges.ts, l'interruttore unico
  * dell'apertura (spento: in prova dal 10/10/2026, Pierluigi: "visibile solo ai creators e top players"). Finché è spento
  * il riquadro, con il link al download, lo vedono solo Creator, Autore, Pro, Staff e admin (`canSeeAnalytics`).
  */
@@ -20,18 +20,18 @@ export const TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC;
  */
 const en = {
   meta: {
-    title: "OriginsMeta Analytics",
-    description: "Link the OriginsMeta Analytics app to your account, see the matches it recorded and your stats, unlink your PCs and delete your data.",
+    title: "OriginsMeta Tracker",
+    description: "Link the OriginsMeta Tracker app to your account, see the matches it recorded and your stats, unlink your PCs and delete your data.",
   },
   back: "Account",
-  kicker: "Analytics",
-  h1: "OriginsMeta Analytics",
+  kicker: "Tracker",
+  h1: "OriginsMeta Tracker",
   intro:
     "The Windows app that records your Origins TCG matches on its own: result, deck, cards played round by round. Here you link the app to your account and see your stats.",
-  /** al posto del vecchio testo "in prova" (10/10/2026): verso la guida all'installazione di /analytics */
+  /** al posto del vecchio testo "in prova" (10/10/2026): verso la guida all'installazione di /tracker */
   install: "Don't have the app yet?",
   installLink: "Download it and follow the installation guide",
-  unavailable: "OriginsMeta Analytics isn't available yet. Please try again later.",
+  unavailable: "OriginsMeta Tracker isn't available yet. Please try again later.",
   link: {
     title: "Link a PC",
     steps: [
@@ -40,7 +40,7 @@ const en = {
       "From then on the app sends your matches to your account, including the ones it had already recorded.",
     ],
     consent:
-      "When you link the app, your matches always go into the site's anonymous stats too (win rates of Legendaries, decks and cards): only aggregate numbers, never who played. If you don't want that, don't link it: the app also works on your PC alone.",
+      "When you link the app, your matches always go into the site's anonymous stats too (win rates of Legendaries, decks and cards): only aggregate numbers, never who played. If you don't want that, don't use the app: it works only linked to your account.",
     consentLink: "Details in the privacy policy",
     create: "Create a code",
     creating: "Creating…",
@@ -111,12 +111,12 @@ const en = {
     /** {n} */
     done: "Matches deleted: {n}.",
     error: "Couldn't delete the matches. Please try again.",
-    privacy: "Privacy policy: OriginsMeta Analytics",
+    privacy: "Privacy policy: OriginsMeta Tracker",
   },
   account: {
-    title: "OriginsMeta Analytics",
+    title: "OriginsMeta Tracker",
     intro: "The Windows app that records your Origins TCG matches: link it to your account, see your stats, manage your PCs and data.",
-    open: "Open OriginsMeta Analytics",
+    open: "Open OriginsMeta Tracker",
     download: "Download the app",
   },
 };
@@ -127,17 +127,17 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
   en,
   it: {
     meta: {
-      title: "OriginsMeta Analytics",
-      description: "Collega l'app OriginsMeta Analytics al tuo account, guarda le partite registrate e le tue statistiche, scollega i PC e cancella i tuoi dati.",
+      title: "OriginsMeta Tracker",
+      description: "Collega l'app OriginsMeta Tracker al tuo account, guarda le partite registrate e le tue statistiche, scollega i PC e cancella i tuoi dati.",
     },
     back: "Account",
-    kicker: "Analytics",
-    h1: "OriginsMeta Analytics",
+    kicker: "Tracker",
+    h1: "OriginsMeta Tracker",
     intro:
       "L'app per Windows che registra da sola le tue partite di Origins TCG: esito, mazzo, carte giocate round per round. Qui colleghi l'app al tuo account e vedi le tue statistiche.",
     install: "Non hai ancora l'app?",
     installLink: "Scaricala e segui la guida all'installazione",
-    unavailable: "OriginsMeta Analytics non è ancora disponibile. Riprova più tardi.",
+    unavailable: "OriginsMeta Tracker non è ancora disponibile. Riprova più tardi.",
     link: {
       title: "Collega un PC",
       steps: [
@@ -146,7 +146,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         "Da lì in poi l'app manda le partite al tuo account, anche quelle che aveva già registrato.",
       ],
       consent:
-        "Collegando l'app, le tue partite entrano sempre anche nelle statistiche anonime del sito (win rate di Leggendarie, mazzi e carte): solo numeri aggregati, mai chi ha giocato. Se non vuoi, non collegarla: l'app funziona anche solo sul tuo PC.",
+        "Collegando l'app, le tue partite entrano sempre anche nelle statistiche anonime del sito (win rate di Leggendarie, mazzi e carte): solo numeri aggregati, mai chi ha giocato. Se non vuoi, non usare l'app: funziona solo collegata al tuo account.",
       consentLink: "Dettagli nell'informativa privacy",
       create: "Crea un codice",
       creating: "Creo il codice…",
@@ -211,28 +211,28 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       confirm: "Cancellare tutte le partite arrivate dall'app? Non si può annullare.",
       done: "Partite cancellate: {n}.",
       error: "Non è stato possibile cancellare le partite. Riprova.",
-      privacy: "Informativa privacy: OriginsMeta Analytics",
+      privacy: "Informativa privacy: OriginsMeta Tracker",
     },
     account: {
-      title: "OriginsMeta Analytics",
+      title: "OriginsMeta Tracker",
       intro: "L'app per Windows che registra le tue partite di Origins TCG: collegala al tuo account, guarda le tue statistiche, gestisci i PC e i dati.",
-      open: "Apri OriginsMeta Analytics",
+      open: "Apri OriginsMeta Tracker",
       download: "Scarica l'app",
     },
   },
   es: {
     meta: {
-      title: "OriginsMeta Analytics",
-      description: "Vincula la app OriginsMeta Analytics a tu cuenta, mira las partidas registradas y tus estadísticas, desvincula tus PC y borra tus datos.",
+      title: "OriginsMeta Tracker",
+      description: "Vincula la app OriginsMeta Tracker a tu cuenta, mira las partidas registradas y tus estadísticas, desvincula tus PC y borra tus datos.",
     },
     back: "Cuenta",
-    kicker: "Analytics",
-    h1: "OriginsMeta Analytics",
+    kicker: "Tracker",
+    h1: "OriginsMeta Tracker",
     intro:
       "La app para Windows que registra sola tus partidas de Origins TCG: resultado, mazo, cartas jugadas ronda a ronda. Aquí vinculas la app a tu cuenta y ves tus estadísticas.",
     install: "¿Todavía no tienes la app?",
     installLink: "Descárgala y sigue la guía de instalación",
-    unavailable: "OriginsMeta Analytics todavía no está disponible. Vuelve a intentarlo más tarde.",
+    unavailable: "OriginsMeta Tracker todavía no está disponible. Vuelve a intentarlo más tarde.",
     link: {
       title: "Vincula un PC",
       steps: [
@@ -241,7 +241,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         "Desde entonces la app envía tus partidas a tu cuenta, también las que ya había registrado.",
       ],
       consent:
-        "Al vincular la app, tus partidas entran siempre también en las estadísticas anónimas del sitio (win rate de Legendarias, mazos y cartas): solo números agregados, nunca quién jugó. Si no quieres, no la vincules: la app también funciona solo en tu PC.",
+        "Al vincular la app, tus partidas entran siempre también en las estadísticas anónimas del sitio (win rate de Legendarias, mazos y cartas): solo números agregados, nunca quién jugó. Si no quieres, no uses la app: solo funciona vinculada a tu cuenta.",
       consentLink: "Detalles en la política de privacidad",
       create: "Crear un código",
       creating: "Creando el código…",
@@ -306,30 +306,30 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       confirm: "¿Borrar todas las partidas que llegaron desde la app? No se puede deshacer.",
       done: "Partidas borradas: {n}.",
       error: "No se pudieron borrar las partidas. Vuelve a intentarlo.",
-      privacy: "Política de privacidad: OriginsMeta Analytics",
+      privacy: "Política de privacidad: OriginsMeta Tracker",
     },
     account: {
-      title: "OriginsMeta Analytics",
+      title: "OriginsMeta Tracker",
       intro: "La app para Windows que registra tus partidas de Origins TCG: vincúlala a tu cuenta, mira tus estadísticas y gestiona tus PC y tus datos.",
-      open: "Abrir OriginsMeta Analytics",
+      open: "Abrir OriginsMeta Tracker",
       download: "Descarga la app",
     },
   },
   // Francese dal 07/10/2026 (docs/francese.md): vous; "associer / dissocier un PC" per link/unlink, "manche" per round,
-  // "file d'attente classée" per la coda classificata; "OriginsMeta Analytics" e "win rate" restano.
+  // "file d'attente classée" per la coda classificata; "OriginsMeta Tracker" e "win rate" restano.
   fr: {
     meta: {
-      title: "OriginsMeta Analytics",
-      description: "Associez l'application OriginsMeta Analytics à votre compte, consultez les parties enregistrées et vos statistiques, dissociez vos PC et supprimez vos données.",
+      title: "OriginsMeta Tracker",
+      description: "Associez l'application OriginsMeta Tracker à votre compte, consultez les parties enregistrées et vos statistiques, dissociez vos PC et supprimez vos données.",
     },
     back: "Compte",
-    kicker: "Analytics",
-    h1: "OriginsMeta Analytics",
+    kicker: "Tracker",
+    h1: "OriginsMeta Tracker",
     intro:
       "L'application Windows qui enregistre seule vos parties d'Origins TCG : résultat, deck, cartes jouées manche par manche. Ici, vous associez l'application à votre compte et consultez vos statistiques.",
     install: "Vous n'avez pas encore l'application ?",
     installLink: "Téléchargez-la et suivez le guide d'installation",
-    unavailable: "OriginsMeta Analytics n'est pas encore disponible. Réessayez plus tard.",
+    unavailable: "OriginsMeta Tracker n'est pas encore disponible. Réessayez plus tard.",
     link: {
       title: "Associer un PC",
       steps: [
@@ -338,7 +338,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         "Dès lors, l'application envoie vos parties à votre compte, y compris celles qu'elle avait déjà enregistrées.",
       ],
       consent:
-        "En associant l'application, vos parties entrent toujours aussi dans les statistiques anonymes du site (win rate des Légendaires, des decks et des cartes) : uniquement des chiffres agrégés, jamais qui a joué. Si vous ne le souhaitez pas, ne l'associez pas : l'application fonctionne aussi sur votre PC seul.",
+        "En associant l'application, vos parties entrent toujours aussi dans les statistiques anonymes du site (win rate des Légendaires, des decks et des cartes) : uniquement des chiffres agrégés, jamais qui a joué. Si vous ne le souhaitez pas, n'utilisez pas l'application : elle fonctionne uniquement associée à votre compte.",
       consentLink: "Détails dans la politique de confidentialité",
       create: "Créer un code",
       creating: "Création…",
@@ -403,12 +403,12 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       confirm: "Supprimer toutes les parties reçues de l'application ? Cette action est irréversible.",
       done: "Parties supprimées : {n}.",
       error: "Impossible de supprimer les parties. Réessayez.",
-      privacy: "Politique de confidentialité : OriginsMeta Analytics",
+      privacy: "Politique de confidentialité : OriginsMeta Tracker",
     },
     account: {
-      title: "OriginsMeta Analytics",
+      title: "OriginsMeta Tracker",
       intro: "L'application Windows qui enregistre vos parties d'Origins TCG : associez-la à votre compte, consultez vos statistiques, gérez vos PC et vos données.",
-      open: "Ouvrir OriginsMeta Analytics",
+      open: "Ouvrir OriginsMeta Tracker",
       download: "Télécharger l'application",
     },
   },
@@ -422,10 +422,10 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
  * immagine inviata, al sito solo gli id delle carte; si spegne dall'app.
  */
 export const trackerPrivacy: Record<Locale, string> = {
-  en: "OriginsMeta Analytics: the Windows app only reads the files Origins TCG saves on your PC (profile stats, deck inventory and, when the game saves one, the replay of the last match) and never touches the game. Screen scanner: while the game is open, the app captures only the game's window, never other windows, and recognizes on your PC the cards on the board, the Legendaries on the opening screen and the mana; the images stay in memory on your PC and are never sent. Of what it sees, only the identifiers of the cards reach the site (the cards played by you and by your opponent, the opponent's Legendary), never names of players. You can switch the scanner off in the app. To show the cards, it loads their images from originsmeta.com. The app works only linked to an OriginsMeta account (with a one-time code created in /account/tracker): without the link it doesn't work. To check that the link is still valid, it periodically contacts the site sending only its token, no other data. The match history is also kept on your PC, in the app's data folder. For each match it sends the site: a fingerprint of the match computed on the PC (never the game's identifier), end time, result, queue (ranked or normal), your deck (name, cards, game code), your rank, the rounds and the cards played round by round; of the opponent, only their Legendary and the cards they played. It never sends names or identifiers of players or matches, the opponent's rank, their full deck, or whether the opponent is a bot or a person. The site adds the patch in force and the deck's archetype. Matches are stored on Supabase (Ireland, EU) and only you can see them, in /account/tracker, together with the name of your linked PCs and the time of their last sync; for the link, the database keeps only a fingerprint of the token, which on the PC is encrypted with Windows data protection. The app's requests go through the servers of the site (Vercel) and of Supabase, which keep the usual technical logs (IP address included) for a short time. Anonymous stats: the matches of everyone who links the app always go into the site's stats (win rates of Legendaries, decks, archetypes and cards, Legendary matchups), which show only aggregate numbers per patch, and each number only if it comes from at least 20 matches by at least 3 different players: never single matches or who played them. Linking the app, which is required to use it, means accepting this; if you don't want it, don't use the app. You can unlink a PC and delete all your matches from /account/tracker at any time: they also leave the stats at once, because they are computed on the fly. Deleting your account deletes everything.",
-  it: "OriginsMeta Analytics: l'app per Windows legge in sola lettura i file che Origins TCG salva sul tuo PC (statistiche del profilo, mazzi dell'inventario e, quando il gioco lo salva, il replay dell'ultima partita) e non tocca mai il gioco. Scanner dello schermo: quando il gioco è aperto, l'app riprende solo la finestra del gioco, mai altre finestre, e riconosce sul tuo PC le carte sul tabellone, le Leggendarie della schermata iniziale e il mana; le immagini restano in memoria sul PC e non vengono mai inviate. Di quello che vede, al sito arrivano solo gli identificativi delle carte (le carte giocate da te e dall'avversario, la Leggendaria dell'avversario), mai nomi di giocatori. Lo scanner si può spegnere dall'app. Per mostrare le carte ne carica le immagini da originsmeta.com. L'app funziona solo collegata a un account OriginsMeta (con un codice monouso creato in /account/tracker): senza collegamento non funziona. Per controllare che il collegamento sia ancora valido, contatta periodicamente il sito mandando solo il suo token, nessun altro dato. Lo storico delle partite resta anche sul PC, nella cartella dei dati dell'app. Per ogni partita manda al sito: un'impronta della partita calcolata sul PC (mai l'identificativo del gioco), ora di fine, esito, coda (classificata o normale), il tuo mazzo (nome, carte, codice del gioco), il tuo rank, i round e le carte giocate round per round; dell'avversario solo la Leggendaria e le carte che ha giocato. Non manda mai nomi né identificativi di giocatori o partite, il rank dell'avversario, il suo mazzo completo né se l'avversario è un bot o una persona. Il sito aggiunge la patch in vigore e l'archetipo del mazzo. Le partite si salvano su Supabase (Irlanda, UE) e le vedi solo tu, in /account/tracker, insieme al nome dei PC collegati e all'ora del loro ultimo invio; del collegamento il database tiene solo un'impronta del token, che sul PC è cifrato con la protezione dei dati di Windows. Le richieste dell'app passano dai server del sito (Vercel) e di Supabase, che conservano per poco i normali log tecnici (indirizzo IP compreso). Statistiche anonime: le partite di chi collega l'app entrano sempre nelle statistiche del sito (win rate di Leggendarie, mazzi, archetipi e carte, scontri fra Leggendarie), che mostrano solo numeri aggregati per patch, e ogni numero solo se viene da almeno 20 partite di almeno 3 giocatori diversi: mai le singole partite né chi le ha giocate. Collegare l'app, che serve per usarla, vuol dire accettarlo; se non vuoi, non usare l'app. Puoi scollegare un PC e cancellare tutte le tue partite da /account/tracker in qualsiasi momento: escono subito anche dalle statistiche, perché si calcolano al momento. Cancellando l'account si cancella tutto.",
-  es: "OriginsMeta Analytics: la app para Windows solo lee los archivos que Origins TCG guarda en tu PC (estadísticas del perfil, mazos del inventario y, cuando el juego la guarda, la repetición de la última partida) y nunca toca el juego. Escáner de pantalla: cuando el juego está abierto, la app captura solo la ventana del juego, nunca otras ventanas, y reconoce en tu PC las cartas del tablero, las Legendarias de la pantalla inicial y el maná; las imágenes se quedan en la memoria de tu PC y nunca se envían. De lo que ve, al sitio solo llegan los identificadores de las cartas (las cartas que jugaron tú y tu rival, la Legendaria del rival), nunca nombres de jugadores. Puedes apagar el escáner desde la app. Para mostrar las cartas, carga sus imágenes desde originsmeta.com. La app solo funciona vinculada a una cuenta de OriginsMeta (con un código de un solo uso creado en /account/tracker): sin la vinculación no funciona. Para comprobar que la vinculación sigue siendo válida, contacta periódicamente con el sitio enviando solo su token, ningún otro dato. El historial de partidas también se guarda en tu PC, en la carpeta de datos de la app. Por cada partida envía al sitio: una huella de la partida calculada en el PC (nunca el identificador del juego), hora de fin, resultado, cola (clasificatoria o normal), tu mazo (nombre, cartas, código del juego), tu rango, las rondas y las cartas jugadas ronda a ronda; del rival, solo su Legendaria y las cartas que jugó. Nunca envía nombres ni identificadores de jugadores o partidas, el rango del rival, su mazo completo ni si el rival es un bot o una persona. El sitio añade el parche vigente y el arquetipo del mazo. Las partidas se guardan en Supabase (Irlanda, UE) y solo las ves tú, en /account/tracker, junto con el nombre de tus PC vinculados y la hora de su último envío; de la vinculación, la base de datos guarda solo una huella del token, que en el PC está cifrado con la protección de datos de Windows. Las solicitudes de la app pasan por los servidores del sitio (Vercel) y de Supabase, que conservan por poco tiempo los registros técnicos habituales (dirección IP incluida). Estadísticas anónimas: las partidas de quien vincula la app entran siempre en las estadísticas del sitio (win rate de Legendarias, mazos, arquetipos y cartas, enfrentamientos entre Legendarias), que muestran solo números agregados por parche, y cada número solo si viene de al menos 20 partidas de al menos 3 jugadores distintos: nunca partidas sueltas ni quién las jugó. Vincular la app, que es necesario para usarla, significa aceptarlo; si no quieres, no uses la app. Puedes desvincular un PC y borrar todas tus partidas desde /account/tracker en cualquier momento: también salen enseguida de las estadísticas, porque se calculan en el momento. Si borras tu cuenta, se borra todo.",
-  fr: "OriginsMeta Analytics : l'application Windows lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC (statistiques du profil, decks de l'inventaire et, quand le jeu en enregistre un, le replay de la dernière partie) et ne touche jamais au jeu. Scanner d'écran : quand le jeu est ouvert, l'application capture uniquement la fenêtre du jeu, jamais d'autres fenêtres, et reconnaît sur votre PC les cartes du plateau, les Légendaires de l'écran d'ouverture et le mana ; les images restent en mémoire sur votre PC et ne sont jamais envoyées. De ce qu'elle voit, seuls les identifiants des cartes arrivent sur le site (les cartes jouées par vous et par votre adversaire, la Légendaire de l'adversaire), jamais de noms de joueurs. Vous pouvez désactiver le scanner dans l'application. Pour afficher les cartes, elle charge leurs images depuis originsmeta.com. L'application fonctionne uniquement associée à un compte OriginsMeta (avec un code à usage unique créé dans /account/tracker) : sans association, elle ne fonctionne pas. Pour vérifier que l'association est toujours valide, elle contacte régulièrement le site en n'envoyant que son jeton, aucune autre donnée. L'historique des parties est aussi conservé sur votre PC, dans le dossier de données de l'application. Pour chaque partie, elle envoie au site : une empreinte de la partie calculée sur le PC (jamais l'identifiant du jeu), l'heure de fin, le résultat, la file d'attente (classée ou normale), votre deck (nom, cartes, code du jeu), votre rang, les manches et les cartes jouées manche par manche ; de l'adversaire, uniquement sa Légendaire et les cartes qu'il a jouées. Elle n'envoie jamais de noms ni d'identifiants de joueurs ou de parties, ni le rang de l'adversaire, ni son deck complet, ni si l'adversaire est un bot ou une personne. Le site ajoute le patch en vigueur et l'archétype du deck. Les parties sont stockées sur Supabase (Irlande, UE) et vous êtes la seule personne à pouvoir les voir, dans /account/tracker, avec le nom de vos PC associés et l'heure de leur dernier envoi ; de l'association, la base de données ne garde qu'une empreinte du jeton, qui est chiffré sur le PC avec la protection des données de Windows. Les requêtes de l'application passent par les serveurs du site (Vercel) et de Supabase, qui conservent brièvement les journaux techniques habituels (adresse IP comprise). Statistiques anonymes : les parties de toute personne qui associe l'application entrent toujours dans les statistiques du site (win rate des Légendaires, des decks, des archétypes et des cartes, confrontations entre Légendaires), qui n'affichent que des chiffres agrégés par patch, et chaque chiffre seulement s'il provient d'au moins 20 parties d'au moins 3 joueurs différents : jamais de parties isolées ni qui les a jouées. Associer l'application, ce qui est nécessaire pour l'utiliser, c'est l'accepter ; si vous ne le souhaitez pas, n'utilisez pas l'application. Vous pouvez dissocier un PC et supprimer toutes vos parties depuis /account/tracker à tout moment : elles sortent aussitôt des statistiques, parce qu'elles sont calculées à la volée. Supprimer votre compte supprime tout.",
+  en: "OriginsMeta Tracker: the Windows app only reads the files Origins TCG saves on your PC (profile stats, deck inventory and, when the game saves one, the replay of the last match) and never touches the game. Screen scanner: while the game is open, the app captures only the game's window, never other windows, and recognizes on your PC the cards on the board, the Legendaries on the opening screen and the mana; the images stay in memory on your PC and are never sent. Of what it sees, only the identifiers of the cards reach the site (the cards played by you and by your opponent, the opponent's Legendary), never names of players. You can switch the scanner off in the app. To show the cards, it loads their images from originsmeta.com. The app works only linked to an OriginsMeta account (with a one-time code created in /account/tracker): without the link it doesn't work. It checks the link when it starts and every 4 hours, sending only its token, no other data; if the site doesn't answer, it keeps working for 7 days from the last successful check. The matches it records are also kept on your PC, in the app's data folder. For each match it sends the site: a fingerprint of the match computed on the PC (never the game's identifier), end time, result, queue (ranked or normal), your deck (name, cards, game code), your rank, the rounds and the cards played round by round; of the opponent, only their Legendary and the cards they played. It never sends names or identifiers of players or matches, the opponent's rank, their full deck, or whether the opponent is a bot or a person. The site adds the patch in force and the deck's archetype. Matches are stored on Supabase (Ireland, EU) and only you can see them, in /account/tracker, together with the name of your linked PCs and the time of their last sync; for the link, the database keeps only a fingerprint of the token, which on the PC is encrypted with Windows data protection. The app's requests go through the servers of the site (Vercel) and of Supabase, which keep the usual technical logs (IP address included) for a short time. Anonymous stats: the matches of everyone who links the app always go into the site's stats (win rates of Legendaries, decks, archetypes and cards, Legendary matchups), which show only aggregate numbers per patch, and each number only if it comes from at least 20 matches by at least 3 different players: never single matches or who played them. Linking the app, which is required to use it, means accepting this; if you don't want it, don't use the app. You can unlink a PC and delete all your matches from /account/tracker at any time: they also leave the stats at once, because they are computed on the fly. Deleting your account deletes everything.",
+  it: "OriginsMeta Tracker: l'app per Windows legge in sola lettura i file che Origins TCG salva sul tuo PC (statistiche del profilo, mazzi dell'inventario e, quando il gioco lo salva, il replay dell'ultima partita) e non tocca mai il gioco. Scanner dello schermo: quando il gioco è aperto, l'app riprende solo la finestra del gioco, mai altre finestre, e riconosce sul tuo PC le carte sul tabellone, le Leggendarie della schermata iniziale e il mana; le immagini restano in memoria sul PC e non vengono mai inviate. Di quello che vede, al sito arrivano solo gli identificativi delle carte (le carte giocate da te e dall'avversario, la Leggendaria dell'avversario), mai nomi di giocatori. Lo scanner si può spegnere dall'app. Per mostrare le carte ne carica le immagini da originsmeta.com. L'app funziona solo collegata a un account OriginsMeta (con un codice monouso creato in /account/tracker): senza collegamento non funziona. Controlla il collegamento all'avvio e ogni 4 ore, mandando al sito solo il suo token, nessun altro dato; se il sito non risponde, continua a funzionare per 7 giorni dall'ultimo controllo riuscito. Le partite registrate restano anche sul PC, nella cartella dei dati dell'app. Per ogni partita manda al sito: un'impronta della partita calcolata sul PC (mai l'identificativo del gioco), ora di fine, esito, coda (classificata o normale), il tuo mazzo (nome, carte, codice del gioco), il tuo rank, i round e le carte giocate round per round; dell'avversario solo la Leggendaria e le carte che ha giocato. Non manda mai nomi né identificativi di giocatori o partite, il rank dell'avversario, il suo mazzo completo né se l'avversario è un bot o una persona. Il sito aggiunge la patch in vigore e l'archetipo del mazzo. Le partite si salvano su Supabase (Irlanda, UE) e le vedi solo tu, in /account/tracker, insieme al nome dei PC collegati e all'ora del loro ultimo invio; del collegamento il database tiene solo un'impronta del token, che sul PC è cifrato con la protezione dei dati di Windows. Le richieste dell'app passano dai server del sito (Vercel) e di Supabase, che conservano per poco i normali log tecnici (indirizzo IP compreso). Statistiche anonime: le partite di chi collega l'app entrano sempre nelle statistiche del sito (win rate di Leggendarie, mazzi, archetipi e carte, scontri fra Leggendarie), che mostrano solo numeri aggregati per patch, e ogni numero solo se viene da almeno 20 partite di almeno 3 giocatori diversi: mai le singole partite né chi le ha giocate. Collegare l'app, che serve per usarla, vuol dire accettarlo; se non vuoi, non usare l'app. Puoi scollegare un PC e cancellare tutte le tue partite da /account/tracker in qualsiasi momento: escono subito anche dalle statistiche, perché si calcolano al momento. Cancellando l'account si cancella tutto.",
+  es: "OriginsMeta Tracker: la app para Windows solo lee los archivos que Origins TCG guarda en tu PC (estadísticas del perfil, mazos del inventario y, cuando el juego la guarda, la repetición de la última partida) y nunca toca el juego. Escáner de pantalla: cuando el juego está abierto, la app captura solo la ventana del juego, nunca otras ventanas, y reconoce en tu PC las cartas del tablero, las Legendarias de la pantalla inicial y el maná; las imágenes se quedan en la memoria de tu PC y nunca se envían. De lo que ve, al sitio solo llegan los identificadores de las cartas (las cartas que jugaron tú y tu rival, la Legendaria del rival), nunca nombres de jugadores. Puedes apagar el escáner desde la app. Para mostrar las cartas, carga sus imágenes desde originsmeta.com. La app solo funciona vinculada a una cuenta de OriginsMeta (con un código de un solo uso creado en /account/tracker): sin la vinculación no funciona. Comprueba la vinculación al arrancar y cada 4 horas, enviando al sitio solo su token, ningún otro dato; si el sitio no responde, sigue funcionando durante 7 días desde la última comprobación correcta. Las partidas registradas también se guardan en tu PC, en la carpeta de datos de la app. Por cada partida envía al sitio: una huella de la partida calculada en el PC (nunca el identificador del juego), hora de fin, resultado, cola (clasificatoria o normal), tu mazo (nombre, cartas, código del juego), tu rango, las rondas y las cartas jugadas ronda a ronda; del rival, solo su Legendaria y las cartas que jugó. Nunca envía nombres ni identificadores de jugadores o partidas, el rango del rival, su mazo completo ni si el rival es un bot o una persona. El sitio añade el parche vigente y el arquetipo del mazo. Las partidas se guardan en Supabase (Irlanda, UE) y solo las ves tú, en /account/tracker, junto con el nombre de tus PC vinculados y la hora de su último envío; de la vinculación, la base de datos guarda solo una huella del token, que en el PC está cifrado con la protección de datos de Windows. Las solicitudes de la app pasan por los servidores del sitio (Vercel) y de Supabase, que conservan por poco tiempo los registros técnicos habituales (dirección IP incluida). Estadísticas anónimas: las partidas de quien vincula la app entran siempre en las estadísticas del sitio (win rate de Legendarias, mazos, arquetipos y cartas, enfrentamientos entre Legendarias), que muestran solo números agregados por parche, y cada número solo si viene de al menos 20 partidas de al menos 3 jugadores distintos: nunca partidas sueltas ni quién las jugó. Vincular la app, que es necesario para usarla, significa aceptarlo; si no quieres, no uses la app. Puedes desvincular un PC y borrar todas tus partidas desde /account/tracker en cualquier momento: también salen enseguida de las estadísticas, porque se calculan en el momento. Si borras tu cuenta, se borra todo.",
+  fr: "OriginsMeta Tracker : l'application Windows lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC (statistiques du profil, decks de l'inventaire et, quand le jeu en enregistre un, le replay de la dernière partie) et ne touche jamais au jeu. Scanner d'écran : quand le jeu est ouvert, l'application capture uniquement la fenêtre du jeu, jamais d'autres fenêtres, et reconnaît sur votre PC les cartes du plateau, les Légendaires de l'écran d'ouverture et le mana ; les images restent en mémoire sur votre PC et ne sont jamais envoyées. De ce qu'elle voit, seuls les identifiants des cartes arrivent sur le site (les cartes jouées par vous et par votre adversaire, la Légendaire de l'adversaire), jamais de noms de joueurs. Vous pouvez désactiver le scanner dans l'application. Pour afficher les cartes, elle charge leurs images depuis originsmeta.com. L'application fonctionne uniquement associée à un compte OriginsMeta (avec un code à usage unique créé dans /account/tracker) : sans association, elle ne fonctionne pas. Elle vérifie l'association au démarrage et toutes les 4 heures, en n'envoyant au site que son jeton, aucune autre donnée ; si le site ne répond pas, elle continue de fonctionner pendant 7 jours après la dernière vérification réussie. Les parties enregistrées sont aussi conservées sur votre PC, dans le dossier de données de l'application. Pour chaque partie, elle envoie au site : une empreinte de la partie calculée sur le PC (jamais l'identifiant du jeu), l'heure de fin, le résultat, la file d'attente (classée ou normale), votre deck (nom, cartes, code du jeu), votre rang, les manches et les cartes jouées manche par manche ; de l'adversaire, uniquement sa Légendaire et les cartes qu'il a jouées. Elle n'envoie jamais de noms ni d'identifiants de joueurs ou de parties, ni le rang de l'adversaire, ni son deck complet, ni si l'adversaire est un bot ou une personne. Le site ajoute le patch en vigueur et l'archétype du deck. Les parties sont stockées sur Supabase (Irlande, UE) et vous êtes la seule personne à pouvoir les voir, dans /account/tracker, avec le nom de vos PC associés et l'heure de leur dernier envoi ; de l'association, la base de données ne garde qu'une empreinte du jeton, qui est chiffré sur le PC avec la protection des données de Windows. Les requêtes de l'application passent par les serveurs du site (Vercel) et de Supabase, qui conservent brièvement les journaux techniques habituels (adresse IP comprise). Statistiques anonymes : les parties de toute personne qui associe l'application entrent toujours dans les statistiques du site (win rate des Légendaires, des decks, des archétypes et des cartes, confrontations entre Légendaires), qui n'affichent que des chiffres agrégés par patch, et chaque chiffre seulement s'il provient d'au moins 20 parties d'au moins 3 joueurs différents : jamais de parties isolées ni qui les a jouées. Associer l'application, ce qui est nécessaire pour l'utiliser, c'est l'accepter ; si vous ne le souhaitez pas, n'utilisez pas l'application. Vous pouvez dissocier un PC et supprimer toutes vos parties depuis /account/tracker à tout moment : elles sortent aussitôt des statistiques, parce qu'elles sont calculées à la volée. Supprimer votre compte supprime tout.",
 };
 
 /**

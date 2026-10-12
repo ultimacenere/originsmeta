@@ -9,7 +9,7 @@ import { ANALYTICS_PUBLIC, canSeeAnalytics } from "./badges";
  * fatto l'accesso e ha il ruolo Creator, Autore, Pro o Staff, o è admin (`canSeeAnalytics` di badges.ts). Una lettura per
  * richiesta (cache di React), condivisa da generateMetadata e dalla pagina.
  *
- * Leggere la sessione rende dinamiche le pagine che la chiamano (/analytics, /tier-list/win-rate): quando
+ * Leggere la sessione rende dinamiche le pagine che la chiamano (/analytics e /tracker dal 12/10/2026): quando
  * `ANALYTICS_PUBLIC` si accende la funzione non legge più nulla e le pagine tornano statiche e ISR da sole.
  */
 export const analyticsAccess = cache(async (): Promise<boolean> => {

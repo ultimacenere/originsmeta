@@ -201,11 +201,11 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/community", section: "pages", route: "/tier-list/community", dates: [data.tierLists.latest] },
     // Tier list dei voti alle carte (06/10/2026): cambia a ogni voto (l'ora dell'ultimo voto, da card_vote_totals).
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
-    // Win rate (riaperti il 10/10/2026): solo quando la pagina si indicizza (almeno 100 partite nella patch mostrata);
-    // sotto è noindex e fuori da hreflang. I numeri cambiano a ogni partita: le date sono quelle del modello.
-    // In prova dal 10/10/2026 (solo Creator, Autore, Pro, Staff e admin): mai in sitemap finché ANALYTICS_PUBLIC è spento.
+    // Analytics, le statistiche (dal 12/10/2026 in /analytics; prima /tier-list/win-rate, ora un 308): solo quando la pagina
+    // si indicizza (almeno 100 partite nella patch mostrata); sotto è noindex e fuori da hreflang. I numeri cambiano a ogni
+    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento.
     ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
-      ? [{ path: "/tier-list/win-rate", section: "pages", route: "/tier-list/win-rate", dates: [] } satisfies SitemapPage]
+      ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage]
       : []),
     // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
     { path: "/cards", section: "pages", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())] },
@@ -232,9 +232,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // /faq è l'unica pagina con dati strutturati FAQPage. Le sue date sono quelle del modello.
     { path: "/faq", section: "pages", route: "/faq", dates: [] },
     { path: "/about", section: "pages", route: "/about", dates: [] },
-    // OriginsMeta Analytics (02/10/2026; dal 10/10/2026 la pagina dell'app, con il download e la guida all'installazione). Date del modello.
-    // In prova dal 10/10/2026: fuori dalla sitemap finché ANALYTICS_PUBLIC è spento (la pagina è noindex e dà 404 ai più).
-    ...(ANALYTICS_PUBLIC ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage] : []),
+    // OriginsMeta Tracker, la pagina dell'app con il download e la guida all'installazione (in /analytics dal 02 all'11/10/2026,
+    // in /tracker dal 12/10/2026). Date del modello. Fuori dalla sitemap finché ANALYTICS_PUBLIC è spento.
+    ...(ANALYTICS_PUBLIC ? [{ path: "/tracker", section: "pages", route: "/tracker", dates: [] } satisfies SitemapPage] : []),
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
     // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
     // e con i mazzi pubblicati, che mostra contati per autore.

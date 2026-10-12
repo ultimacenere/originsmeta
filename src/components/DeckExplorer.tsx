@@ -72,7 +72,7 @@ export type ExplorerDeck = {
   /** voto pesato sul numero di voti (weightedRating): l'ordine "Più votati", lo stesso della classifica di /decks */
   score?: number;
   /**
-   * win rate delle partite registrate con OriginsMeta Analytics da chi gioca le stesse 13 carte, nella patch in corso
+   * win rate delle partite registrate con OriginsMeta Tracker da chi gioca le stesse 13 carte, nella patch in corso
    * (11/10/2026, solo mazzi della community; assente senza partite)
    */
   winrate?: { wins: number; games: number };

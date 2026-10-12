@@ -1,7 +1,7 @@
 import type { Locale } from "./i18n";
 
 /**
- * Testi della pagina /analytics, la pagina dell'app OriginsMeta Analytics. Un modulo solo nelle quattro lingue,
+ * Testi della pagina /tracker (fino al 12/10/2026 /analytics, che ora è la pagina delle statistiche), la pagina dell'app OriginsMeta Tracker. Un modulo solo nelle quattro lingue,
  * l'inglese è il tipo di riferimento; spagnolo neutro col tú (docs/spagnolo.md), francese col vous e la tipografia
  * francese (docs/francese.md).
  *
@@ -25,7 +25,7 @@ import type { Locale } from "./i18n";
  * /api/tracker/download (src/lib/trackerDownload.ts), che lo dà a chi ha fatto l'accesso, così non finisce né
  * nell'HTML né nel JavaScript del browser.
  */
-export const TRACKER_DOWNLOAD_FILE = "OriginsMeta-Analytics-win-x64.zip";
+export const TRACKER_DOWNLOAD_FILE = "OriginsMeta-Tracker-win-x64.zip";
 
 /** Il tasto del download: la rotta che controlla l'accesso, con la lingua della pagina (per il ritorno dal login). */
 export function trackerDownloadHref(locale: Locale): string {
@@ -38,14 +38,14 @@ type Step = { title: string; text: string };
 const en = {
   meta: {
     /** titolo della SERP: contiene OriginsMeta, quindi `pageTitle` lo lascia com'è (entro 60 caratteri, test) */
-    title: "OriginsMeta Analytics: the match tracker for Origins TCG",
-    description: "Download OriginsMeta Analytics for Windows: it records your Origins TCG matches, tracks your deck live and adds an OBS overlay. Step-by-step install guide.",
+    title: "OriginsMeta Tracker: the match tracker for Origins TCG",
+    description: "Download OriginsMeta Tracker for Windows: it records your Origins TCG matches, tracks your deck live and adds an OBS overlay. Step-by-step install guide.",
   },
   kicker: "Our app",
-  h1: "OriginsMeta Analytics",
+  h1: "OriginsMeta Tracker",
   lead: "A Windows app that records your Origins TCG matches on its own while you play: result, deck, the cards played by you and by your opponent, the Legendary you faced. It shows your deck live next to the game, adds an overlay for streamers and, linked to your account, brings your matches to the site's win rates.",
   download: {
-    button: "Download OriginsMeta Analytics",
+    button: "Download OriginsMeta Tracker",
     note: "For Windows 10 and 11 (64-bit) · zip file from GitHub",
     guide: "How to install it",
     /** il tasto per chi non ha fatto l'accesso (12/10/2026): porta al login e poi torna alla guida */
@@ -64,7 +64,7 @@ const en = {
   },
   shots: {
     overview: {
-      alt: "The OriginsMeta Analytics window: the deck selected in the game with its Legendary and 12 cards, recorded matches and win rate",
+      alt: "The OriginsMeta Tracker window: the deck selected in the game with its Legendary and 12 cards, recorded matches and win rate",
       caption: "The deck selected in the game, with its cards, and your numbers.",
     },
     matches: {
@@ -72,12 +72,12 @@ const en = {
       caption: "Your decks, the Legendaries you faced and every match with your deck as cards.",
     },
     overlay: {
-      alt: "The OriginsMeta Analytics overlay: the deck's Legendary, the session, the deck's record and the last match",
+      alt: "The OriginsMeta Tracker overlay: the deck's Legendary, the session, the deck's record and the last match",
       caption: "The overlay, above the game or as an OBS source.",
     },
   },
   install: {
-    /** ancora della guida (/en/analytics#install): i link di /account e /account/tracker ci portano */
+    /** ancora della guida (/en/tracker#install): i link di /account e /account/tracker ci portano */
     anchor: "install",
     title: "Install it step by step",
     intro: "Nine steps, from the download to your first recorded match.",
@@ -92,7 +92,7 @@ const en = {
       },
       {
         title: "Open the app",
-        text: "In the extracted folder, double-click “OriginsMeta Analytics.exe”. The app isn't signed yet, so Windows may show “Windows protected your PC”: click “More info”, then “Run anyway”.",
+        text: "In the extracted folder, double-click “OriginsMeta Tracker.exe”. The app isn't signed yet, so Windows may show “Windows protected your PC”: click “More info”, then “Run anyway”.",
       },
       {
         title: "It stays next to the clock",
@@ -110,7 +110,7 @@ const en = {
         title: "Windowed or borderless",
         text: "To see the Deck tracker and the overlay above the game, play in windowed or borderless mode: in exclusive fullscreen Windows doesn't show them. Or keep them on a second screen.",
       },
-      { title: "Closing the app", text: "The X of the window closes everything, the overlay and the Deck tracker too. To use it again, open “OriginsMeta Analytics.exe”." },
+      { title: "Closing the app", text: "The X of the window closes everything, the overlay and the Deck tracker too. To use it again, open “OriginsMeta Tracker.exe”." },
     ] as Step[],
   },
   winrate: {
@@ -150,14 +150,14 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
   en,
   it: {
     meta: {
-      title: "OriginsMeta Analytics: il tracker di partite per Origins TCG",
-      description: "Scarica OriginsMeta Analytics per Windows: registra le tue partite di Origins TCG, segue il mazzo dal vivo e ha l'overlay per OBS. Guida passo per passo.",
+      title: "OriginsMeta Tracker: il tracker di partite per Origins TCG",
+      description: "Scarica OriginsMeta Tracker per Windows: registra le tue partite di Origins TCG, segue il mazzo dal vivo e ha l'overlay per OBS. Guida passo per passo.",
     },
     kicker: "La nostra app",
-    h1: "OriginsMeta Analytics",
+    h1: "OriginsMeta Tracker",
     lead: "Un'app per Windows che registra da sola le tue partite di Origins TCG mentre giochi: esito, mazzo, le carte giocate da te e dall'avversario, la Leggendaria che avevi di fronte. Ti mostra il mazzo dal vivo accanto al gioco, ha l'overlay per chi fa dirette e, collegata al tuo account, porta le tue partite nei win rate del sito.",
     download: {
-      button: "Scarica OriginsMeta Analytics",
+      button: "Scarica OriginsMeta Tracker",
       note: "Per Windows 10 e 11 a 64 bit · file zip da GitHub",
       guide: "Come installarla",
       signIn: "Accedi per scaricarla",
@@ -175,7 +175,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     shots: {
       overview: {
-        alt: "La finestra di OriginsMeta Analytics: il mazzo scelto nel gioco con la sua Leggendaria e le 12 carte, le partite registrate e il win rate",
+        alt: "La finestra di OriginsMeta Tracker: il mazzo scelto nel gioco con la sua Leggendaria e le 12 carte, le partite registrate e il win rate",
         caption: "Il mazzo scelto nel gioco, con le sue carte, e i tuoi numeri.",
       },
       matches: {
@@ -183,7 +183,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         caption: "I tuoi mazzi, le Leggendarie che hai incontrato e ogni partita con il tuo mazzo in carte.",
       },
       overlay: {
-        alt: "L'overlay di OriginsMeta Analytics: la Leggendaria del mazzo, la sessione, il record del mazzo e l'ultima partita",
+        alt: "L'overlay di OriginsMeta Tracker: la Leggendaria del mazzo, la sessione, il record del mazzo e l'ultima partita",
         caption: "L'overlay, sopra il gioco o come sorgente per OBS.",
       },
     },
@@ -201,7 +201,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Apri l'app",
-          text: "Nella cartella estratta fai doppio clic su «OriginsMeta Analytics.exe». L'app non è ancora firmata, quindi Windows può mostrare «Windows ha protetto il PC»: fai clic su «Ulteriori informazioni» e poi su «Esegui comunque».",
+          text: "Nella cartella estratta fai doppio clic su «OriginsMeta Tracker.exe». L'app non è ancora firmata, quindi Windows può mostrare «Windows ha protetto il PC»: fai clic su «Ulteriori informazioni» e poi su «Esegui comunque».",
         },
         {
           title: "Resta vicino all'orologio",
@@ -219,7 +219,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
           title: "Finestra o senza bordi",
           text: "Per vedere Deck tracker e overlay sopra il gioco usa la modalità finestra o finestra senza bordi: a schermo intero esclusivo Windows non li mostra. Oppure tienili su un secondo schermo.",
         },
-        { title: "Chiudere l'app", text: "La X della finestra chiude tutto, anche overlay e Deck tracker. Per riaprirla, apri di nuovo «OriginsMeta Analytics.exe»." },
+        { title: "Chiudere l'app", text: "La X della finestra chiude tutto, anche overlay e Deck tracker. Per riaprirla, apri di nuovo «OriginsMeta Tracker.exe»." },
       ],
     },
     winrate: {
@@ -252,14 +252,14 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
   },
   es: {
     meta: {
-      title: "OriginsMeta Analytics: tracker de partidas de Origins TCG",
-      description: "Descarga OriginsMeta Analytics para Windows: registra tus partidas de Origins TCG, sigue tu mazo en directo y añade un overlay para OBS. Guía paso a paso.",
+      title: "OriginsMeta Tracker: tracker de partidas de Origins TCG",
+      description: "Descarga OriginsMeta Tracker para Windows: registra tus partidas de Origins TCG, sigue tu mazo en directo y añade un overlay para OBS. Guía paso a paso.",
     },
     kicker: "Nuestra app",
-    h1: "OriginsMeta Analytics",
+    h1: "OriginsMeta Tracker",
     lead: "Una app para Windows que registra sola tus partidas de Origins TCG mientras juegas: resultado, mazo, las cartas que jugaron tú y tu rival, la Legendaria que tenías enfrente. Te muestra tu mazo en directo junto al juego, añade un overlay para quien hace directos y, vinculada a tu cuenta, lleva tus partidas al win rate del sitio.",
     download: {
-      button: "Descarga OriginsMeta Analytics",
+      button: "Descarga OriginsMeta Tracker",
       note: "Para Windows 10 y 11 de 64 bits · archivo zip de GitHub",
       guide: "Cómo instalarla",
       signIn: "Inicia sesión para descargarla",
@@ -277,7 +277,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     shots: {
       overview: {
-        alt: "La ventana de OriginsMeta Analytics: el mazo elegido en el juego con su Legendaria y sus 12 cartas, las partidas registradas y el win rate",
+        alt: "La ventana de OriginsMeta Tracker: el mazo elegido en el juego con su Legendaria y sus 12 cartas, las partidas registradas y el win rate",
         caption: "El mazo elegido en el juego, con sus cartas, y tus números.",
       },
       matches: {
@@ -285,7 +285,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         caption: "Tus mazos, las Legendarias que enfrentaste y cada partida con tu mazo en cartas.",
       },
       overlay: {
-        alt: "El overlay de OriginsMeta Analytics: la Legendaria del mazo, la sesión, el récord del mazo y la última partida",
+        alt: "El overlay de OriginsMeta Tracker: la Legendaria del mazo, la sesión, el récord del mazo y la última partida",
         caption: "El overlay, sobre el juego o como fuente para OBS.",
       },
     },
@@ -303,7 +303,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Abre la app",
-          text: "En la carpeta extraída, haz doble clic en «OriginsMeta Analytics.exe». La app todavía no está firmada, así que Windows puede mostrar «Windows protegió su PC»: haz clic en «Más información» y luego en «Ejecutar de todas formas».",
+          text: "En la carpeta extraída, haz doble clic en «OriginsMeta Tracker.exe». La app todavía no está firmada, así que Windows puede mostrar «Windows protegió su PC»: haz clic en «Más información» y luego en «Ejecutar de todas formas».",
         },
         {
           title: "Se queda junto al reloj",
@@ -321,7 +321,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
           title: "Ventana o sin bordes",
           text: "Para ver el Deck tracker y el overlay encima del juego, usa el modo ventana o ventana sin bordes: en pantalla completa exclusiva Windows no los muestra. O tenlos en una segunda pantalla.",
         },
-        { title: "Cerrar la app", text: "La X de la ventana lo cierra todo, también el overlay y el Deck tracker. Para volver a usarla, abre de nuevo «OriginsMeta Analytics.exe»." },
+        { title: "Cerrar la app", text: "La X de la ventana lo cierra todo, también el overlay y el Deck tracker. Para volver a usarla, abre de nuevo «OriginsMeta Tracker.exe»." },
       ],
     },
     winrate: {
@@ -357,14 +357,14 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
   // Regola del tracker: niente parole su bot o persone.
   fr: {
     meta: {
-      title: "OriginsMeta Analytics : tracker de parties d'Origins TCG",
-      description: "Téléchargez OriginsMeta Analytics pour Windows : vos parties d'Origins TCG enregistrées, votre deck suivi en direct et un overlay OBS. Guide pas à pas.",
+      title: "OriginsMeta Tracker : tracker de parties d'Origins TCG",
+      description: "Téléchargez OriginsMeta Tracker pour Windows : vos parties d'Origins TCG enregistrées, votre deck suivi en direct et un overlay OBS. Guide pas à pas.",
     },
     kicker: "Notre application",
-    h1: "OriginsMeta Analytics",
+    h1: "OriginsMeta Tracker",
     lead: "Une application Windows qui enregistre seule vos parties d'Origins TCG pendant que vous jouez : résultat, deck, les cartes jouées par vous et par votre adversaire, la Légendaire affrontée. Elle affiche votre deck en direct à côté du jeu, ajoute un overlay pour les streamers et, associée à votre compte, envoie vos parties vers les win rates du site.",
     download: {
-      button: "Télécharger OriginsMeta Analytics",
+      button: "Télécharger OriginsMeta Tracker",
       note: "Pour Windows 10 et 11 (64 bits) · fichier zip sur GitHub",
       guide: "Comment l'installer",
       signIn: "Connectez-vous pour la télécharger",
@@ -382,7 +382,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
     },
     shots: {
       overview: {
-        alt: "La fenêtre d'OriginsMeta Analytics : le deck sélectionné dans le jeu avec sa Légendaire et ses 12 cartes, les parties enregistrées et le win rate",
+        alt: "La fenêtre d'OriginsMeta Tracker : le deck sélectionné dans le jeu avec sa Légendaire et ses 12 cartes, les parties enregistrées et le win rate",
         caption: "Le deck sélectionné dans le jeu, avec ses cartes, et vos chiffres.",
       },
       matches: {
@@ -390,7 +390,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         caption: "Vos decks, les Légendaires affrontées et chaque partie avec votre deck en cartes.",
       },
       overlay: {
-        alt: "L'overlay d'OriginsMeta Analytics : la Légendaire du deck, la session, le bilan du deck et la dernière partie",
+        alt: "L'overlay d'OriginsMeta Tracker : la Légendaire du deck, la session, le bilan du deck et la dernière partie",
         caption: "L'overlay, au-dessus du jeu ou comme source OBS.",
       },
     },
@@ -408,7 +408,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
         },
         {
           title: "Ouvrez l'application",
-          text: "Dans le dossier extrait, double-cliquez sur « OriginsMeta Analytics.exe ». L'application n'est pas encore signée, donc Windows peut afficher « Windows a protégé votre ordinateur » : cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».",
+          text: "Dans le dossier extrait, double-cliquez sur « OriginsMeta Tracker.exe ». L'application n'est pas encore signée, donc Windows peut afficher « Windows a protégé votre ordinateur » : cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».",
         },
         {
           title: "Elle reste près de l'horloge",
@@ -426,7 +426,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
           title: "Fenêtré ou sans bordure",
           text: "Pour voir le Deck tracker et l'overlay au-dessus du jeu, jouez en mode fenêtré ou fenêtré sans bordure : en plein écran exclusif, Windows ne les affiche pas. Vous pouvez aussi les garder sur un second écran.",
         },
-        { title: "Fermer l'application", text: "La croix de la fenêtre ferme tout, y compris l'overlay et le Deck tracker. Pour la réutiliser, ouvrez de nouveau « OriginsMeta Analytics.exe »." },
+        { title: "Fermer l'application", text: "La croix de la fenêtre ferme tout, y compris l'overlay et le Deck tracker. Pour la réutiliser, ouvrez de nouveau « OriginsMeta Tracker.exe »." },
       ],
     },
     winrate: {
@@ -459,9 +459,10 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
   },
 };
 
-/** L'indirizzo della guida all'installazione nella lingua (/it/analytics#installazione), per /account e /account/tracker. */
-export function analyticsInstallHref(locale: Locale): string {
-  return `/${locale}/analytics#${analyticsLabels[locale].install.anchor}`;
+/** L'indirizzo della guida all'installazione nella lingua (/it/tracker#installazione), per /account, /account/tracker e la
+ * pagina delle statistiche. */
+export function trackerInstallHref(locale: Locale): string {
+  return `/${locale}/tracker#${analyticsLabels[locale].install.anchor}`;
 }
 
 /** Il numero di interessati in una frase (singolare per 1). */
@@ -474,8 +475,8 @@ export function interestCount(l: AnalyticsLabels["interest"], n: number): string
  * interessa" sulla pagina /analytics, perché e come si cancella.
  */
 export const analyticsInterestPrivacy: Record<Locale, string> = {
-  en: "Interest in OriginsMeta Analytics (/analytics): when you press “Yes, I want it”, the site saves a random number that your browser keeps so you aren't counted twice, the page language, which of the two buttons you pressed, the date and, if you're signed in, your account (so you're counted only once from other devices too). No email and no IP address. We use it only to know how many people want the tool and to show the total to Koin Games. It is stored on Supabase (Ireland, EU); to have it deleted, write to staff@originsmeta.com; if you delete your account, the row linked to it is deleted too.",
-  it: "Interesse per OriginsMeta Analytics (/analytics): quando premi «Sì, mi interessa», il sito salva un numero a caso che il tuo browser tiene per non contarti due volte, la lingua della pagina, quale dei due tasti hai premuto, la data e, se hai fatto l'accesso, il tuo account (per contarti una volta sola anche da altri dispositivi). Niente email né indirizzo IP. Lo usiamo solo per sapere quante persone vogliono il tool e per mostrarne il totale a Koin Games. Si salva su Supabase (Irlanda, UE); per farlo cancellare scrivi a staff@originsmeta.com; se cancelli l'account, la riga legata all'account si cancella con lui.",
-  es: "Interés en OriginsMeta Analytics (/analytics): cuando pulsas «Sí, la quiero», el sitio guarda un número al azar que tu navegador conserva para no contarte dos veces, el idioma de la página, cuál de los dos botones pulsaste, la fecha y, si iniciaste sesión, tu cuenta (para contarte una sola vez también desde otros dispositivos). Ni email ni dirección IP. Lo usamos solo para saber cuántas personas quieren la herramienta y para mostrar el total a Koin Games. Se guarda en Supabase (Irlanda, UE); para que lo borremos, escribe a staff@originsmeta.com; si borras tu cuenta, la fila vinculada a ella se borra también.",
-  fr: "Intérêt pour OriginsMeta Analytics (/analytics) : quand vous appuyez sur « Oui, je le veux », le site enregistre un nombre aléatoire que votre navigateur conserve pour ne pas vous compter deux fois, la langue de la page, lequel des deux boutons vous avez pressé, la date et, si votre session est ouverte, votre compte (pour ne vous compter qu'une fois, même depuis d'autres appareils). Ni e-mail ni adresse IP. Nous l'utilisons uniquement pour savoir combien de personnes veulent l'outil et pour en montrer le total à Koin Games. Il est stocké sur Supabase (Irlande, UE) ; pour le faire supprimer, écrivez à staff@originsmeta.com ; si vous supprimez votre compte, la ligne liée au compte est supprimée aussi.",
+  en: "Interest in OriginsMeta Tracker (/analytics): when you press “Yes, I want it”, the site saves a random number that your browser keeps so you aren't counted twice, the page language, which of the two buttons you pressed, the date and, if you're signed in, your account (so you're counted only once from other devices too). No email and no IP address. We use it only to know how many people want the tool and to show the total to Koin Games. It is stored on Supabase (Ireland, EU); to have it deleted, write to staff@originsmeta.com; if you delete your account, the row linked to it is deleted too.",
+  it: "Interesse per OriginsMeta Tracker (/analytics): quando premi «Sì, mi interessa», il sito salva un numero a caso che il tuo browser tiene per non contarti due volte, la lingua della pagina, quale dei due tasti hai premuto, la data e, se hai fatto l'accesso, il tuo account (per contarti una volta sola anche da altri dispositivi). Niente email né indirizzo IP. Lo usiamo solo per sapere quante persone vogliono il tool e per mostrarne il totale a Koin Games. Si salva su Supabase (Irlanda, UE); per farlo cancellare scrivi a staff@originsmeta.com; se cancelli l'account, la riga legata all'account si cancella con lui.",
+  es: "Interés en OriginsMeta Tracker (/analytics): cuando pulsas «Sí, la quiero», el sitio guarda un número al azar que tu navegador conserva para no contarte dos veces, el idioma de la página, cuál de los dos botones pulsaste, la fecha y, si iniciaste sesión, tu cuenta (para contarte una sola vez también desde otros dispositivos). Ni email ni dirección IP. Lo usamos solo para saber cuántas personas quieren la herramienta y para mostrar el total a Koin Games. Se guarda en Supabase (Irlanda, UE); para que lo borremos, escribe a staff@originsmeta.com; si borras tu cuenta, la fila vinculada a ella se borra también.",
+  fr: "Intérêt pour OriginsMeta Tracker (/analytics) : quand vous appuyez sur « Oui, je le veux », le site enregistre un nombre aléatoire que votre navigateur conserve pour ne pas vous compter deux fois, la langue de la page, lequel des deux boutons vous avez pressé, la date et, si votre session est ouverte, votre compte (pour ne vous compter qu'une fois, même depuis d'autres appareils). Ni e-mail ni adresse IP. Nous l'utilisons uniquement pour savoir combien de personnes veulent l'outil et pour en montrer le total à Koin Games. Il est stocké sur Supabase (Irlande, UE) ; pour le faire supprimer, écrivez à staff@originsmeta.com ; si vous supprimez votre compte, la ligne liée au compte est supprimée aussi.",
 };

@@ -32,7 +32,7 @@ import { Suspense } from "react";
 import { AccountGuides } from "@/components/guides/AccountGuides";
 import { AccountComics } from "@/components/comics/AccountComics";
 import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
-import { analyticsInstallHref } from "@/lib/analyticsLabels";
+import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { canSeeAnalytics } from "@/lib/community/badges";
 
 export const dynamic = "force-dynamic";
@@ -382,7 +382,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             </Link>
           </p>
           <p className="mt-3 text-sm">
-            <Link href={analyticsInstallHref(locale)} prefetch={false} className="link-mint font-bold">
+            <Link href={trackerInstallHref(locale)} prefetch={false} className="link-mint font-bold">
               {trackerLabels[locale].account.download} →
             </Link>
           </p>

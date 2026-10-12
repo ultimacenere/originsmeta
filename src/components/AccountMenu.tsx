@@ -173,9 +173,9 @@ function AccountDetails({
         <NavLink href={`/${locale}/deck-builder`} className="nav-link-block">
           {labels.builder}
         </NavLink>
-        {/* OriginsMeta Analytics in prova (10/10/2026): la pagina dell'app con il download, solo per i ruoli ammessi */}
+        {/* OriginsMeta Tracker in prova (10/10/2026; nome del 12/10): la pagina dell'app con il download, solo per i ruoli ammessi */}
         {ANALYTICS_PUBLIC ? null : (
-          <AnalyticsNavLink locale={locale} page="app" label="OriginsMeta Analytics" className="nav-link-block" />
+          <AnalyticsNavLink locale={locale} page="app" label="OriginsMeta Tracker" className="nav-link-block" />
         )}
         <SignOutButton locale={locale} label={labels.logout} className="nav-link nav-link-block text-chalk-muted hover:text-pink" />
       </nav>

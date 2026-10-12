@@ -9,13 +9,14 @@ import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
-import { AnalyticsNavLink } from "./AnalyticsOnly";
 
 /**
  * `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale).
- * `testOnly`: voce di OriginsMeta Analytics in prova, mostrata nel browser solo ai ruoli ammessi (`AnalyticsOnly`).
+ * (Fino al 12/10/2026 c'era anche `testOnly`, la voce "Win rate" in prova mostrata solo ai ruoli ammessi: le statistiche
+ * ora sono la voce "Analytics", che con OriginsMeta Tracker chiuso non c'è; i ruoli in prova arrivano all'app dal menu
+ * dell'account, `AnalyticsNavLink`.)
  */
-type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean; testOnly?: boolean }[] };
+type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean }[] };
 
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
@@ -32,18 +33,14 @@ export function navItems(dict: Dictionary): NavItem[] {
     {
       label: dict.nav.tierList,
       path: "/tier-list",
-      // sottomenu del menu desktop (01/10/2026, Pierluigi): le quattro tier list, come le schede di TierListHeader
+      // sottomenu del menu desktop (01/10/2026, Pierluigi): le tier list, come le schede di TierListHeader; la voce
+      // "Win rate" (30/09–11/10/2026) non c'è più: le statistiche stanno sotto Analytics (12/10/2026)
       sub: [
         { label: t.sourceOfficial, path: "/tier-list" },
         { label: t.sourceCommunity, path: "/tier-list/community" },
         // voti alle carte da 1 a 10 (06/10/2026): la tier list costruita dai voti degli iscritti
         { label: t.sourceVotes, path: "/tier-list/votes" },
         { label: t.sourcePlayed, path: "/tier-list/most-played" },
-        // win rate dalle partite registrate con OriginsMeta Analytics: "Analytics · in pausa" dal 02/10, riaperti il 10/10/2026
-        // ma in prova (solo Creator, Autore, Pro, Staff e admin): finché ANALYTICS_PUBLIC è spento la voce la vede nel
-        // browser solo chi ha il ruolo (Pierluigi, 10/10: "la vedo sotto tierlist ma non c'è un percorso sul menu")
-        // (l'indirizzo della voce in prova lo costruisce AnalyticsNavLink nel browser: qui non deve finire nell'HTML)
-        ANALYTICS_PUBLIC ? { label: t.sourceWinrate, path: "/tier-list/win-rate" } : { label: t.sourceWinrate, path: "#winrate", testOnly: true },
       ],
     },
     {
@@ -60,9 +57,22 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: dict.nav.locations, path: "/locations", mobile: true },
       ],
     },
-    // OriginsMeta Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina (sì rendila pubblica e
-    // tutti possono scaricarlo)"): la pagina dell'app, nel posto lasciato libero dalle Carte; solo ad Analytics aperto
-    ...(ANALYTICS_PUBLIC ? [{ label: dict.nav.analytics, path: "/analytics" }] : []),
+    // Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina", poi "non si chiama più win rate ma
+    // si chiama analytics" e "l'app si chiama OriginsMeta Tracker"): le statistiche (/analytics) con la pagina dell'app
+    // (/tracker) nel sottomenu, anche nella tendina del telefono e nel footer; nel posto lasciato libero dalle Carte,
+    // solo con ANALYTICS_PUBLIC acceso
+    ...(ANALYTICS_PUBLIC
+      ? [
+          {
+            label: dict.nav.analytics,
+            path: "/analytics",
+            sub: [
+              { label: dict.nav.analytics, path: "/analytics" },
+              { label: dict.nav.tracker, path: "/tracker", mobile: true },
+            ],
+          },
+        ]
+      : []),
     {
       label: dict.nav.decks,
       path: "/decks",
@@ -118,21 +128,17 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               <div key={it.path} className="nav-drop">
                 {/* la voce si accende anche nelle pagine del sottomenu (12/10/2026: /cards e /cards/<slug> accendono la voce
                     delle guide, dove ora stanno le Carte) */}
-                <NavLink href={href(locale, it.path)} also={it.sub.filter((s) => !s.testOnly).map((s) => href(locale, s.path))}>
+                <NavLink href={href(locale, it.path)} also={it.sub.map((s) => href(locale, s.path))}>
                   {it.label}
                 </NavLink>
                 <div className="nav-drop-panel">
                   <div className="nav-drop-box" role="group" aria-label={it.label}>
-                    {it.sub.map((s) =>
-                      s.testOnly ? (
-                        <AnalyticsNavLink key={s.path} locale={locale} page="winrate" label={s.label} exact className="nav-link-block" />
-                      ) : (
-                        // esatta solo la voce uguale a quella principale (/tier-list, /decks…): /cards/<slug> accende "Carte"
-                        <NavLink key={s.path} href={href(locale, s.path)} exact={s.path === it.path} className="nav-link-block">
-                          {s.label}
-                        </NavLink>
-                      ),
-                    )}
+                    {it.sub.map((s) => (
+                      // esatta solo la voce uguale a quella principale (/tier-list, /decks…): /cards/<slug> accende "Carte"
+                      <NavLink key={s.path} href={href(locale, s.path)} exact={s.path === it.path} className="nav-link-block">
+                        {s.label}
+                      </NavLink>
+                    ))}
                   </div>
                 </div>
               </div>

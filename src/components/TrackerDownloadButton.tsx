@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 /**
- * Il tasto del download di OriginsMeta Analytics (12/10/2026, Pierluigi: "solo i registrati al sito possono scaricare
+ * Il tasto del download di OriginsMeta Tracker (12/10/2026, Pierluigi: "solo i registrati al sito possono scaricare
  * l'app"). Porta sempre alla rotta /api/tracker/download, che decide: zip con l'accesso fatto, pagina di accesso senza.
- * La pagina /analytics resta statica: l'HTML ha il testo per chi non ha fatto l'accesso ("Accedi per scaricarla"), e qui
- * nel browser, letta la sessione, il tasto diventa "Scarica OriginsMeta Analytics" con l'evento `analytics_download`
+ * La pagina /tracker resta statica: l'HTML ha il testo per chi non ha fatto l'accesso ("Accedi per scaricarla"), e qui
+ * nel browser, letta la sessione, il tasto diventa "Scarica OriginsMeta Tracker" con l'evento `analytics_download`
  * (che conta solo i download veri, non i giri verso l'accesso).
  */
 export function TrackerDownloadButton({

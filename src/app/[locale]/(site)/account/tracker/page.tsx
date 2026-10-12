@@ -5,7 +5,7 @@ import { href, type Locale } from "@/lib/i18n";
 import { cleanDescription, pageTitle, resolveLocale, type LocaleParams } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { fillTracker, trackerLabels } from "@/lib/trackerLabels";
-import { analyticsInstallHref } from "@/lib/analyticsLabels";
+import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { analyticsAccess } from "@/lib/community/analyticsAccess";
 import { readOwnMatches, readTrackerDevices } from "@/lib/community/trackerQueries";
 import { forgetTrackerMatches, revokeTrackerDevice } from "@/lib/community/trackerActions";
@@ -98,7 +98,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
       {/* Al posto del vecchio "l'app è in prova" (10/10/2026): chi non ha ancora l'app va al download e alla guida */}
       <p className="mt-2 max-w-2xl text-sm text-pale-muted">
         {L.install}{" "}
-        <Link href={analyticsInstallHref(locale)} prefetch={false} className="link-mint font-bold">
+        <Link href={trackerInstallHref(locale)} prefetch={false} className="link-mint font-bold">
           {L.installLink} →
         </Link>
       </p>

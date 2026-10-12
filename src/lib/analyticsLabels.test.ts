@@ -1,5 +1,6 @@
 /**
- * Test della pagina /analytics (02/10/2026; dal 10/10/2026 la pagina del download con la guida all'installazione):
+ * Test della pagina dell'app, /tracker dal 12/10/2026 (prima /analytics; 02/10/2026, dal 10/10/2026 la pagina del
+ * download con la guida all'installazione):
  * `node --test src/lib/analyticsLabels.test.ts`.
  * - Titolo e description nei limiti di Google (le regole di `pageTitle` e `cleanDescription`, come hubMeta.test.ts:
  *   un titolo con "OriginsMeta" dentro resta com'è, quindi entro 60 caratteri; description fra 120 e 158).
@@ -14,7 +15,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { TRACKER_DOWNLOAD_FILE, analyticsInstallHref, analyticsInterestPrivacy, analyticsLabels, interestCount, trackerDownloadHref } from "./analyticsLabels.ts";
+import { TRACKER_DOWNLOAD_FILE, trackerInstallHref, analyticsInterestPrivacy, analyticsLabels, interestCount, trackerDownloadHref } from "./analyticsLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { TRACKER_DOWNLOAD_URL } from "./trackerDownload.ts";
 
@@ -41,7 +42,7 @@ describe("analytics: testi della pagina", () => {
       const steps = x.install.steps;
       assert.equal(steps.length, 9);
       assert.match(x.install.anchor, /^[a-z-]+$/);
-      assert.equal(analyticsInstallHref(l), `/${l}/analytics#${x.install.anchor}`);
+      assert.equal(trackerInstallHref(l), `/${l}/tracker#${x.install.anchor}`);
       // {file} solo nel passo 2 (il download, con il tasto), {link} solo nel passo 6 (il collegamento)
       steps.forEach((s, i) => {
         assert.equal(s.text.includes("{file}"), i === 1, `passo ${i + 1}: {file}`);
@@ -51,7 +52,7 @@ describe("analytics: testi della pagina", () => {
       // requisiti, file dell'app, la X che chiude tutto
       assert.match(steps[0].text, /Windows 10/);
       assert.match(steps[0].text, /Steam/);
-      assert.match(steps[3].text, /OriginsMeta Analytics\.exe/);
+      assert.match(steps[3].text, /OriginsMeta Tracker\.exe/);
       assert.match(steps[8].text, /X|croix/);
     });
 
@@ -88,7 +89,7 @@ describe("analytics: download e tipografia", () => {
   // rotta /api/tracker/download; i testi e le pagine non lo contengono, e il tasto porta alla rotta con la lingua
   test("download solo con l'accesso: l'indirizzo dello zip solo nella rotta", () => {
     const src = (p: string) => fs.readFileSync(new URL(p, import.meta.url), "utf8");
-    for (const p of ["./analyticsLabels.ts", "../app/[locale]/(site)/analytics/page.tsx", "../components/TrackerDownloadButton.tsx"]) {
+    for (const p of ["./analyticsLabels.ts", "../app/[locale]/(site)/tracker/page.tsx", "../app/[locale]/(site)/analytics/page.tsx", "../components/TrackerDownloadButton.tsx"]) {
       assert.ok(!src(p).includes("releases/latest"), p);
       assert.ok(!src(p).includes("trackerDownload\""), p);
     }

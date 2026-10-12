@@ -25,6 +25,8 @@ export const es: Dictionary = {
     guides: "Guías",
     locations: "Ubicaciones",
     analytics: "Analytics",
+    /** la pagina dell'app OriginsMeta Tracker (12/10/2026), nel sottomenu di Analytics */
+    tracker: "Tracker",
     cards: "Cartas",
     decks: "Mazos",
     events: "Torneos y eventos",
@@ -424,12 +426,7 @@ export const es: Dictionary = {
     sourceVotesMany: "{n} votos",
     sourceVotesHint: "del 1 al 10 por los miembros",
     sourceVotesSoon: "próximamente",
-    /* Win rate (30/09/2026): las partidas registradas con la app OriginsMeta Analytics (docs/tracker.md) */
-    sourceWinrate: "Win rate",
-    sourceWinrateSoon: "próximamente",
-    sourceWinrateGames: "{n} partidas",
-    sourceWinrateGamesOne: "1 partida",
-    sourceWinrateHint: "de la app Analytics",
+    /* Win rate (30/09/2026): las partidas registradas con la app OriginsMeta Tracker (docs/tracker.md) */
     onThisPage: "En esta página",
     /* the line under the tabs: where the ranking comes from and how much it knows */
     lineSource: "Fuente",
@@ -491,13 +488,13 @@ export const es: Dictionary = {
     },
     /* Win rate (30/09/2026): vedi en.ts */
     winrate: {
-      title: "Win rate de Origins TCG: Legendarias, mazos y cartas",
-      h1: "Win rate: Legendarias, mazos y cartas",
-      description: "El win rate de Origins TCG con las partidas registradas en la app OriginsMeta Analytics: Legendarias, mazos de la comunidad, arquetipos y cartas, por parche.",
+      title: "Analytics: win rate de Legendarias y mazos de Origins TCG",
+      h1: "Analytics: win rate de Legendarias, mazos y cartas",
+      description: "El win rate de Origins TCG con las partidas registradas en la app OriginsMeta Tracker: Legendarias, mazos de la comunidad, arquetipos y cartas, por parche.",
       intro:
-        "El win rate (porcentaje de victorias) del meta de Origins TCG, según las partidas que los jugadores registran con OriginsMeta Analytics, nuestra app para Windows.",
+        "El win rate (porcentaje de victorias) del meta de Origins TCG, según las partidas que los jugadores registran con OriginsMeta Tracker, nuestra app para Windows.",
       empty:
-        "Todavía no hay win rate: los números salen de las partidas registradas con OriginsMeta Analytics, la app de OriginsMeta para Windows, y aparecen aquí a medida que llegan las partidas.",
+        "Todavía no hay win rate: los números salen de las partidas registradas con OriginsMeta Tracker, la app de OriginsMeta para Windows, y aparecen aquí a medida que llegan las partidas.",
       fallback: "El parche en curso ({current}) todavía no tiene suficientes partidas: estos son los números del parche {patch}.",
       games: "{n} partidas",
       gamesOne: "1 partida",
@@ -506,7 +503,7 @@ export const es: Dictionary = {
       vs: "contra",
       showAll: "Mostrar todas ({n})",
       noneYet: "Todavía no hay números.",
-      sourceText: "partidas registradas con OriginsMeta Analytics, parche {patch}",
+      sourceText: "partidas registradas con OriginsMeta Tracker, parche {patch}",
       measureText: "partidas ganadas sobre partidas jugadas, desde el lado de quien las registra",
       notes: [
         "Solo cuentan los mazos de quien registra: el mazo del rival nunca se cuenta, y la misma partida cuenta una vez.",
@@ -523,13 +520,13 @@ export const es: Dictionary = {
         opponents: { title: "Legendarias más enfrentadas", text: "Con qué frecuencia aparece cada Legendaria como rival, y el win rate contra ella." },
       },
       cols: { card: "Carta", inDeck: "En el mazo", played: "Jugada", avgRound: "Ronda media" },
-      deckBox: { title: "Win rate en partidas registradas", text: "{rate} en {games} · parche {patch}", link: "Todos los win rate", app: "Registra las tuyas con OriginsMeta Analytics" },
+      deckBox: { title: "Win rate en partidas registradas", text: "{rate} en {games} · parche {patch}", link: "Todos los win rate", app: "Registra las tuyas con OriginsMeta Tracker" },
       /* recuadro bajo la cabecera y línea de las notas, hacia /analytics (la página de la app, 10/10/2026) */
       app: {
-        text: "Los números salen de las partidas que los jugadores registran con OriginsMeta Analytics, nuestra app para Windows. Registra también las tuyas: cuantas más partidas, más fiable es el win rate.",
-        cta: "Descarga OriginsMeta Analytics",
+        text: "Los números salen de las partidas que los jugadores registran con OriginsMeta Tracker, nuestra app para Windows. Registra también las tuyas: cuantas más partidas, más fiable es el win rate.",
+        cta: "Descarga OriginsMeta Tracker",
         notesText: "La app que registra las partidas:",
-        notesAnchor: "OriginsMeta Analytics",
+        notesAnchor: "OriginsMeta Tracker",
       },
     },
     /* Grid, list, table and card detail (client component TierExplorer) */

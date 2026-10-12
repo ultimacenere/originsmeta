@@ -82,14 +82,14 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p id="community-guides" className="mt-6 scroll-mt-24">
           {communityGuideLabels[locale].privacy}
         </p>
-        {/* App OriginsMeta Analytics e statistiche anonime delle partite (tracker/overlay, 30/09/2026; scanner dello
+        {/* App OriginsMeta Tracker e statistiche anonime delle partite (tracker/overlay, 30/09/2026; scanner dello
             schermo dal 10/10/2026): testo in src/lib/trackerLabels.ts, ancora #tracker (link da /account/tracker). Finché la
             soglia delle statistiche è quella di prova, la frase che lo dice. */}
         <p id="tracker" className="mt-6 scroll-mt-24">
           {trackerPrivacy[locale]}
           {testThresholds ? ` ${trackerPrivacyTestThreshold[locale]}` : null}
         </p>
-        {/* Interesse per OriginsMeta Analytics (02/10/2026, tasto della pagina /analytics) */}
+        {/* Interesse per OriginsMeta Tracker (02/10/2026, tasto della pagina /analytics) */}
         <p id="analytics-interest" className="mt-6 scroll-mt-24">
           {analyticsInterestPrivacy[locale]}
         </p>

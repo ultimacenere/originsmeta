@@ -52,9 +52,10 @@ export const config = {
     "/:locale(en|it|es|fr)/account/staff/messages/:id",
     // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
     "/:locale(en|it|es|fr)/account/tracker",
-    // OriginsMeta Analytics in prova (10–11/10/2026) aveva qui /analytics e /tier-list/win-rate, che leggevano la sessione
-    // per decidere chi le vedeva; aperte a tutti il 12/10/2026 (ANALYTICS_PUBLIC acceso), sono di nuovo statiche e ISR.
-    // Per richiudere: ANALYTICS_PUBLIC = false e di nuovo le due righe "/:locale(en|it|es|fr)/analytics" e "…/tier-list/win-rate".
+    // OriginsMeta Tracker in prova (10–11/10/2026) aveva qui la pagina dell'app e quella dei win rate, che leggevano la
+    // sessione per decidere chi le vedeva; aperte a tutti il 12/10/2026 (ANALYTICS_PUBLIC acceso), sono di nuovo statiche e
+    // ISR. Per richiudere: ANALYTICS_PUBLIC = false e due righe per le pagine di oggi, "/:locale(en|it|es|fr)/analytics"
+    // (le statistiche) e "/:locale(en|it|es|fr)/tracker" (l'app).
     "/:locale(en|it|es|fr)/decks/community/:slug/edit",
     // mazzi torneo (04/10/2026): modifica, pagina renderizzata sul server
     "/:locale(en|it|es|fr)/decks/tournament/:slug/edit",

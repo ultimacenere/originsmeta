@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NavLink } from "./NavLink";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -68,31 +67,17 @@ export function useAnalyticsAccess(): boolean {
  * Le pagine di Analytics in prova: gli indirizzi stanno qui, nel codice del browser, e non nei dati della pagina (se
  * il link arrivasse dal server come contenuto di `AnalyticsOnly`, l'indirizzo finirebbe nell'HTML di tutti).
  */
-const TEST_PAGES = { winrate: "/tier-list/win-rate", app: "/analytics" } as const;
+// dal 12/10/2026 le statistiche sono /analytics e la pagina dell'app (OriginsMeta Tracker) è /tracker
+const TEST_PAGES = { stats: "/analytics", app: "/tracker" } as const;
 export type AnalyticsPage = keyof typeof TEST_PAGES;
 export const analyticsPagePath = (locale: string, page: AnalyticsPage) => `/${locale}${TEST_PAGES[page]}`;
 
-/** Voce di menu verso una pagina in prova, solo per i ruoli ammessi (sottomenu "Tier list" dell'header). */
+/** Voce di menu verso una pagina in prova, solo per i ruoli ammessi (menu dell'account). */
 export function AnalyticsNavLink({ locale, page, label, className, exact }: { locale: string; page: AnalyticsPage; label: string; className?: string; exact?: boolean }) {
   if (!useAnalyticsAccess()) return null;
   return (
     <NavLink href={analyticsPagePath(locale, page)} exact={exact} className={className}>
       {label}
     </NavLink>
-  );
-}
-
-/** La scheda "Win rate" della testata della tier list, solo per i ruoli ammessi (stesse classi delle altre schede). */
-export function WinrateTab({ locale, label, state, on }: { locale: string; label: string; state?: string; on: boolean }) {
-  if (!useAnalyticsAccess()) return null;
-  return (
-    <Link
-      href={analyticsPagePath(locale, "winrate")}
-      aria-current={on ? "page" : undefined}
-      className={`tier-src min-w-0 flex-1 basis-[calc(50%-0.25rem)] sm:flex-none sm:basis-auto ${on ? "is-on" : ""}`}
-    >
-      <span className="tier-src-name">{label}</span>
-      {state ? <span className="tier-src-state">{state}</span> : null}
-    </Link>
   );
 }

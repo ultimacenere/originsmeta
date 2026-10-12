@@ -23,7 +23,7 @@ import { isMissing } from "./achievements";
 /**
  * Statistiche anonime del tracker per il sito (30/09/2026): le funzioni tracker_stats_* del blocco TRACKER di
  * supabase/schema.sql, solo aggregati sopra la soglia (stats.ts ricontrolla le risposte). Le usano la pagina
- * /tier-list/win-rate (`readWinrate`), lo stato della scheda "Win rate" nella testata della tier list
+ * /analytics (`readWinrate`; fino all'11/10/2026 /tier-list/win-rate), fino all'11/10 anche la scheda "Win rate" della tier list
  * (`readWinrateGames`) e il riquadro delle schede dei mazzi della community (`readDeckWinrate`).
  *
  * Cache: le chiamate sono POST (RPC di PostgREST) e la data cache di Next le tiene solo con `cache: "force-cache"`
