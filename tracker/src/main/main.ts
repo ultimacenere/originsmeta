@@ -44,7 +44,7 @@
  *   si verifica all'avvio e ogni 4 ore; token rifiutato = blocco subito; sito irraggiungibile = 7 giorni di tolleranza
  *   dall'ultima verifica riuscita. Lo storico sul PC non si tocca. Resta acceso solo l'aggiornamento automatico, così
  *   anche un'app bloccata riceve le correzioni. `--capture-unlocked` (solo fuori dall'app impacchettata) fotografa
- *   l'app sbloccata per le verifiche.
+ *   l'app sbloccata per le verifiche; `--capture-setup` apre la pagina Setup.
  */
 import { app, BrowserWindow, clipboard, desktopCapturer, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
@@ -862,7 +862,8 @@ function createWindow(show: boolean) {
     if (CAPTURE) win?.showInactive();
     else if (show) win?.show();
   });
-  void win.loadFile(path.join(__dirname, "renderer", "index.html"));
+  // --capture-setup: lo screenshot di verifica della pagina Setup (0.4.1)
+  void win.loadFile(path.join(__dirname, "renderer", "index.html"), CAPTURE && process.argv.includes("--capture-setup") ? { hash: "setup" } : {});
 }
 
 function openLink(url: unknown) {

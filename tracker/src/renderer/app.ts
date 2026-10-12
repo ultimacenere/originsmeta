@@ -12,6 +12,9 @@
  * sulle statistiche anonime prima del collegamento. Fase 4: pannello "Overlay" (finestra sopra il gioco, sposta,
  * sessione, indirizzi della sorgente per OBS).
  *
+ * Setup (0.4.1, 12/10/2026): la pagina principale ha solo i dati del gioco; account, scanner, pannelli e opzioni
+ * stanno nella pagina Setup, aperta dal tasto della testata (`page`).
+ *
  * Solo con l'account (0.4.0, 12/10/2026, main/access.ts): con l'app bloccata la finestra mostra solo la schermata di
  * collegamento (`lockScreen`: crea un account gratuito o accedi, crea il codice, scrivilo qui) e "Chiudi l'app"; con
  * il collegamento da verificare o scaduto anche "Riprova" e "Scollega".
@@ -40,6 +43,10 @@ document.documentElement.lang = lang;
 const LABELS = {
   en: {
     listening: "Tracking your matches",
+    setup: "Setup",
+    setupIntro: "Your OriginsMeta account, the screen scanner, the panels above the game and the app's options. Your games stay on the main page.",
+    back: "Back to your matches",
+    general: "App",
     waiting: "Waiting for Origins TCG",
     activeDeck: "Deck selected in the game",
     noDeck: "No deck selected yet",
@@ -143,7 +150,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment.",
     quitApp: "Close the app",
     noticeTitle: "The screen scanner is on",
-    noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in the Screen scanner box.",
+    noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in Setup.",
     noticeOk: "Got it",
     noticeOff: "Turn it off",
     deckTitle: "Deck tracker",
@@ -160,10 +167,10 @@ const LABELS = {
       again: "See the tutorial again",
       steps: [
         { title: "Welcome to OriginsMeta Tracker", text: ["The app records your Origins TCG matches on its own: result, deck, rounds and cards played, a few seconds after the match ends.", "It never touches the game: it reads the files the game saves on this PC and, with the scanner, its window."] },
-        { title: "Your account", text: ["The app is linked to your OriginsMeta account: this section shows the matches still to send and the last sync.", "Your matches reach the site: you see your stats, and community decks get their win rate."] },
-        { title: "The screen scanner", text: ["It only looks at the game window and reads the cards on the board, your hand, the mana and the match result.", "Images stay on this PC: only card ids go to the site. You can turn it off in the Screen scanner section."] },
-        { title: "The panels above the game", text: ["On the left, the Deck tracker: the number on each card is how many copies are still in your deck, and a mint border marks the cards in your hand. Widen it with the handle in the bottom right and close it with the X on the tab.", "Top right, the opponent panel: their Legendary, barriers, the cards they played, both players' mana and the combat direction.", "Drag them wherever you like; turn them back on in the Overlay section."] },
-        { title: "Keep it running while you play", text: ["The X on this window closes the app: minimize it to keep it running.", "The icon next to the Windows clock opens the window again. You can see this tutorial again at the bottom of the page."] },
+        { title: "Your account", text: ["In Setup you find your OriginsMeta account: the matches still to send and the last sync.", "Your matches reach the site: you see your stats, and community decks get their win rate."] },
+        { title: "The screen scanner", text: ["It only looks at the game window and reads the cards on the board, your hand, the mana and the match result.", "Images stay on this PC: only card ids go to the site. You can turn it off here, in Setup."] },
+        { title: "The panels above the game", text: ["On the left, the Deck tracker: the number on each card is how many copies are still in your deck, and a mint border marks the cards in your hand. Widen it with the handle in the bottom right and close it with the X on the tab.", "Top right, the opponent panel: their Legendary, barriers, the cards they played, both players' mana and the combat direction.", "Drag them wherever you like; you turn them back on here, in Setup."] },
+        { title: "Setup and the main page", text: ["The main page only shows your games: deck, matches and results. Account, scanner, panels and the app's options are behind the Setup button, up here.", "The X on this window closes the app: minimize it to keep it running. The icon next to the Windows clock opens it again, and you can see this tutorial again from Setup."] },
       ],
     },
     oppObs: "Opponent's cards for OBS",
@@ -188,6 +195,10 @@ const LABELS = {
   },
   it: {
     listening: "Sto registrando le tue partite",
+    setup: "Setup",
+    setupIntro: "Il tuo account OriginsMeta, lo scanner dello schermo, i pannelli sopra il gioco e le opzioni dell'app. Il tuo gioco resta nella pagina principale.",
+    back: "Torna alle partite",
+    general: "App",
     waiting: "In attesa di Origins TCG",
     activeDeck: "Mazzo scelto nel gioco",
     noDeck: "Nessun mazzo scelto per ora",
@@ -291,7 +302,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo.",
     quitApp: "Chiudi l'app",
     noticeTitle: "Lo scanner dello schermo è acceso",
-    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o nel riquadro Scanner dello schermo.",
+    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o in Setup.",
     noticeOk: "Ho capito",
     noticeOff: "Spegnilo",
     deckTitle: "Deck tracker",
@@ -308,10 +319,10 @@ const LABELS = {
       again: "Rivedi il tutorial",
       steps: [
         { title: "Benvenuto in OriginsMeta Tracker", text: ["L'app registra da sola le tue partite di Origins TCG: esito, mazzo, round e carte giocate, pochi secondi dopo la fine.", "Non tocca mai il gioco: legge i file che il gioco salva su questo PC e, con lo scanner, la sua finestra."] },
-        { title: "Il tuo account", text: ["L'app è collegata al tuo account OriginsMeta: in questa tendina vedi le partite ancora da inviare e l'ultimo invio.", "Le tue partite arrivano sul sito: vedi le tue statistiche e i mazzi della community prendono il loro win rate."] },
-        { title: "Lo scanner dello schermo", text: ["Guarda solo la finestra del gioco e legge le carte sul tabellone, la tua mano, il mana e l'esito della partita.", "Le immagini restano su questo PC: al sito vanno solo gli id delle carte. Lo spegni dalla tendina Scanner dello schermo."] },
-        { title: "I pannelli sopra il gioco", text: ["A sinistra il Deck tracker: il numero su ogni carta dice quante copie restano nel mazzo, il bordo menta segna le carte che hai in mano. Lo allarghi dalla maniglia in basso a destra e lo chiudi con la X sulla linguetta.", "In alto a destra il pannello dell'avversario: la sua Leggendaria, le barriere, le carte che ha giocato, il mana di tutti e due e la direzione del combattimento.", "Trascinali dove vuoi; li riaccendi dalla tendina Overlay."] },
-        { title: "Tienila accesa mentre giochi", text: ["La X di questa finestra chiude l'app: per tenerla accesa riducila a icona.", "L'icona vicino all'orologio di Windows riapre la finestra. Questo tutorial lo rivedi in fondo alla pagina."] },
+        { title: "Il tuo account", text: ["In Setup trovi il tuo account OriginsMeta: le partite ancora da inviare e l'ultimo invio.", "Le tue partite arrivano sul sito: vedi le tue statistiche e i mazzi della community prendono il loro win rate."] },
+        { title: "Lo scanner dello schermo", text: ["Guarda solo la finestra del gioco e legge le carte sul tabellone, la tua mano, il mana e l'esito della partita.", "Le immagini restano su questo PC: al sito vanno solo gli id delle carte. Lo spegni qui, in Setup."] },
+        { title: "I pannelli sopra il gioco", text: ["A sinistra il Deck tracker: il numero su ogni carta dice quante copie restano nel mazzo, il bordo menta segna le carte che hai in mano. Lo allarghi dalla maniglia in basso a destra e lo chiudi con la X sulla linguetta.", "In alto a destra il pannello dell'avversario: la sua Leggendaria, le barriere, le carte che ha giocato, il mana di tutti e due e la direzione del combattimento.", "Trascinali dove vuoi; li riaccendi qui, in Setup."] },
+        { title: "Setup e pagina principale", text: ["La pagina principale mostra solo il tuo gioco: mazzo, partite ed esiti. Account, scanner, pannelli e opzioni dell'app stanno dietro il tasto Setup, qui in alto.", "La X di questa finestra chiude l'app: per tenerla accesa riducila a icona. L'icona vicino all'orologio di Windows la riapre, e il tutorial lo rivedi da Setup."] },
       ],
     },
     oppObs: "Carte dell'avversario per OBS",
@@ -336,6 +347,10 @@ const LABELS = {
   },
   es: {
     listening: "Registrando tus partidas",
+    setup: "Setup",
+    setupIntro: "Tu cuenta de OriginsMeta, el escáner de pantalla, los paneles sobre el juego y las opciones de la app. Tu juego se queda en la página principal.",
+    back: "Volver a las partidas",
+    general: "App",
     waiting: "Esperando a Origins TCG",
     activeDeck: "Mazo elegido en el juego",
     noDeck: "Todavía no has elegido mazo",
@@ -439,7 +454,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento.",
     quitApp: "Cerrar la app",
     noticeTitle: "El escáner de pantalla está activado",
-    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en el recuadro Escáner de pantalla.",
+    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en Setup.",
     noticeOk: "Entendido",
     noticeOff: "Desactivarlo",
     deckTitle: "Deck tracker",
@@ -456,10 +471,10 @@ const LABELS = {
       again: "Volver a ver el tutorial",
       steps: [
         { title: "Te damos la bienvenida a OriginsMeta Tracker", text: ["La app registra sola tus partidas de Origins TCG: resultado, mazo, rondas y cartas jugadas, pocos segundos después del final.", "Nunca toca el juego: lee los archivos que el juego guarda en este PC y, con el escáner, su ventana."] },
-        { title: "Tu cuenta", text: ["La app está vinculada a tu cuenta de OriginsMeta: en esta sección ves las partidas que faltan por enviar y el último envío.", "Tus partidas llegan al sitio: ves tus estadísticas y los mazos de la comunidad reciben su win rate."] },
-        { title: "El escáner de pantalla", text: ["Solo mira la ventana del juego y lee las cartas del tablero, tu mano, el maná y el resultado de la partida.", "Las imágenes se quedan en este PC: al sitio solo van los id de las cartas. Lo apagas en la sección Escáner de pantalla."] },
-        { title: "Los paneles sobre el juego", text: ["A la izquierda, el Deck tracker: el número de cada carta indica cuántas copias quedan en el mazo, y el borde menta marca las cartas de tu mano. Lo ensanchas con el tirador de abajo a la derecha y lo cierras con la X de la pestaña.", "Arriba a la derecha, el panel del rival: su Legendaria, las barreras, las cartas que jugó, el maná de los dos y la dirección del combate.", "Arrástralos donde quieras; los vuelves a activar en la sección Overlay."] },
-        { title: "Déjala abierta mientras juegas", text: ["La X de esta ventana cierra la app: minimízala para que siga abierta.", "El icono junto al reloj de Windows vuelve a abrir la ventana. Este tutorial lo vuelves a ver al final de la página."] },
+        { title: "Tu cuenta", text: ["En Setup encuentras tu cuenta de OriginsMeta: las partidas que faltan por enviar y el último envío.", "Tus partidas llegan al sitio: ves tus estadísticas y los mazos de la comunidad reciben su win rate."] },
+        { title: "El escáner de pantalla", text: ["Solo mira la ventana del juego y lee las cartas del tablero, tu mano, el maná y el resultado de la partida.", "Las imágenes se quedan en este PC: al sitio solo van los id de las cartas. Lo apagas aquí, en Setup."] },
+        { title: "Los paneles sobre el juego", text: ["A la izquierda, el Deck tracker: el número de cada carta indica cuántas copias quedan en el mazo, y el borde menta marca las cartas de tu mano. Lo ensanchas con el tirador de abajo a la derecha y lo cierras con la X de la pestaña.", "Arriba a la derecha, el panel del rival: su Legendaria, las barreras, las cartas que jugó, el maná de los dos y la dirección del combate.", "Arrástralos donde quieras; los vuelves a activar aquí, en Setup."] },
+        { title: "Setup y página principal", text: ["La página principal solo muestra tu juego: mazo, partidas y resultados. La cuenta, el escáner, los paneles y las opciones de la app están detrás del botón Setup, aquí arriba.", "La X de esta ventana cierra la app: minimízala para que siga abierta. El icono junto al reloj de Windows la vuelve a abrir, y el tutorial lo vuelves a ver desde Setup."] },
       ],
     },
     oppObs: "Cartas del rival para OBS",
@@ -549,9 +564,11 @@ const wl = (list: TrackedMatch[]) => {
 function top(s: AppState) {
   const ok = s.status.cache;
   const pill = s.access.open ? `<span class="pill ${ok ? "ok" : "wait"}"><span>${esc(ok ? L.listening : L.waiting)}</span></span>` : "";
+  // Setup (0.4.1): dalla pagina principale si apre, da Setup si torna alle partite; con l'app bloccata non c'è
+  const nav = !s.access.open ? "" : page === "main" ? `<button type="button" class="btn btn-setup" id="open-setup">${GEAR}<span>${esc(L.setup)}</span></button>` : `<button type="button" class="btn" id="close-setup">${esc(L.back)}</button>`;
   return `<header class="top">
       <h1 class="brand"><img class="wordmark" src="logo-originsmeta.webp" srcset="logo-originsmeta-sm.webp 320w, logo-originsmeta.webp 640w" sizes="143px" width="143" height="44" alt="OriginsMeta" draggable="false" /><span class="tag">Tracker</span></h1>
-      <span class="top-right">${pill}<button type="button" class="btn" id="quit-app">${esc(L.quitApp)}</button></span>
+      <span class="top-right">${pill}${nav}<button type="button" class="btn" id="quit-app">${esc(L.quitApp)}</button></span>
     </header>
     ${s.access.open && s.status.problem ? `<p class="problem">${esc(L.problems[s.status.problem])}</p>` : ""}`;
 }
@@ -667,33 +684,29 @@ const guideUrl = `https://originsmeta.com/${lang}/tracker#${({ en: "install", it
 const day = (iso: string) => new Date(iso).toLocaleDateString(lang === "en" ? "en-GB" : lang, { day: "numeric", month: "long", year: "numeric" });
 
 /**
- * Account, Overlay e Scanner dello schermo sono tendine (12/10/2026, Pierluigi: "rendile richiudibili come una tendina
- * altrimenti le stat del gioco non le vede nessuno"): chiuse mostrano solo il titolo e una riga di stato, e lasciano
- * salire le statistiche. Partono chiuse; la scelta del giocatore resta in localStorage (`FOLDS_KEY`) e vale anche dopo
- * i ridisegni, che arrivano a ogni cambio di stato. Dalla 0.4.0 si vedono solo con l'app sbloccata (collegata): il
- * collegamento sta nella schermata di blocco (`lockScreen`), senza tendine.
+ * Setup (0.4.1, 12/10/2026, Pierluigi: "nella main app, le opzioni devono essere raggiungibili attraverso tasto setup,
+ * nella pagina principale solo i dati del gioco"): account, scanner dello schermo, pannelli sopra il gioco e opzioni
+ * dell'app stanno in una pagina a parte, aperta dal tasto Setup della testata; la pagina principale tiene solo mazzo,
+ * numeri, partite ed esiti. In Setup ogni riquadro è aperto, con il titolo e una riga di stato (le tendine del 12/10
+ * servivano a lasciare salire le statistiche, che ora hanno la pagina tutta per loro). La pagina non si ricorda: a ogni
+ * avvio si parte dalle partite.
  */
-const FOLDS_KEY = "originsmeta.analytics.folds.v1";
-let folds: Record<string, boolean> = {};
-try {
-  folds = JSON.parse(localStorage.getItem(FOLDS_KEY) ?? "{}") as Record<string, boolean>;
-} catch {
-  folds = {};
-}
-function fold(id: string, title: string, status: string, body: string, wanted = false) {
-  // durante il tutorial la tendina di cui si parla resta aperta (senza cambiare la scelta del giocatore)
-  const open = tourFold() === id || (folds[id] ?? wanted);
-  return `<details class="panel fold" id="${id}" data-fold="${id}"${open ? " open" : ""}>
-      <summary><h2>${esc(title)}</h2><span class="fold-status">${esc(status)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
-      <div class="fold-body">${body}</div>
-    </details>`;
+type Page = "main" | "setup";
+// "#setup" solo dagli screenshot di verifica (--capture-setup)
+let page: Page = location.hash === "#setup" ? "setup" : "main";
+const GEAR = '<svg class="gear" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.5 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1L11 21h4l.4-2.9a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" /></svg>';
+function section(id: string, title: string, status: string, body: string) {
+  return `<section class="panel setup-box" id="${id}">
+      <div class="box-head"><h2>${esc(title)}</h2>${status ? `<span class="box-status">${esc(status)}</span>` : ""}</div>
+      ${body}
+    </section>`;
 }
 
 /** Il pannello dell'account con l'app sbloccata (0.4.0: sbloccata vuol dire sempre collegata). */
 function accountPanel(s: AppState) {
   const a = s.account;
   const offline = s.access.offline && s.access.graceUntil ? L.offlineGrace(day(s.access.graceUntil)) : null;
-  return fold("account", L.account, `${L.linkedAs(a.username)}${a.pending ? ` · ${L.pending(a.pending)}` : ""}`, `
+  return section("account", L.account, `${L.linkedAs(a.username)}${a.pending ? ` · ${L.pending(a.pending)}` : ""}`, `
       <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
       <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
       ${offline ? `<p class="problem">${esc(offline)}</p>` : a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
@@ -703,7 +716,17 @@ function accountPanel(s: AppState) {
         <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
         <a href="https://originsmeta.com/${lang}/analytics" data-link>${esc(L.openWinrates)}</a>
         <button type="button" class="link" id="unlink">${esc(L.unlink)}</button>
-      </div>`, Boolean(offline));
+      </div>`);
+}
+
+/**
+ * Un problema dell'account sulla pagina principale (0.4.1): l'account sta in Setup, ma il sito che non risponde o
+ * l'invio fermo li deve vedere anche chi non apre Setup; il tasto porta lì.
+ */
+function accountAlert(s: AppState) {
+  const a = s.account;
+  const text = s.access.offline && s.access.graceUntil ? L.offlineGrace(day(s.access.graceUntil)) : a.problem && a.problem !== "unlinked" ? SYNC_PROBLEMS[a.problem] : "";
+  return text ? `<p class="problem">${esc(text)} <button type="button" class="link" data-open-setup>${esc(L.setup)}</button></p>` : "";
 }
 
 /**
@@ -770,7 +793,7 @@ function scannerNotice(s: AppState) {
 function scannerPanel(s: AppState) {
   const sc = s.scanner;
   const state = sc.on ? (sc.capturing ? L.scannerWatching : L.scannerWaiting) : L.scannerOffNote;
-  return fold("scanner", L.scannerTitle, state, `<p class="sub">${esc(L.scannerIntro)}</p>
+  return section("scanner", L.scannerTitle, state, `<p class="sub">${esc(L.scannerIntro)}</p>
       <div class="row"><label class="switch"><input type="checkbox" id="scanner-on"${sc.on ? " checked" : ""} /> ${esc(L.scannerSwitch)}</label></div>
       <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>`);
 }
@@ -782,7 +805,7 @@ function overlayPanel(s: AppState) {
   const obsRow = (label: string, layout: "h" | "v") =>
     `<div class="row"><span class="sub">${esc(label)}</span><code class="code">${esc(url(layout))}</code><button type="button" class="btn" data-copy-text="${esc(url(layout))}">${esc(L.copy)}</button></div>`;
   const on = [o.window ? L.overlay : "", o.deckWindow ? L.deckTitle : "", o.oppWindow ? L.oppShort : ""].filter(Boolean).join(" · ") || L.allOff;
-  return fold("overlay", L.overlay, on, `<p class="sub">${esc(L.overlayIntro)}</p>
+  return section("overlay", L.overlay, on, `<p class="sub">${esc(L.overlayIntro)}</p>
       <div class="row">
         <label class="switch"><input type="checkbox" id="ov-window"${o.window ? " checked" : ""} /> ${esc(L.overlayWindow)}</label>
         <label class="switch"><input type="checkbox" id="ov-move"${o.clickThrough ? "" : " checked"}${o.window ? "" : " disabled"} /> ${esc(L.overlayMove)}</label>
@@ -799,12 +822,21 @@ function overlayPanel(s: AppState) {
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
 
+/** Le opzioni dell'app, in Setup: avvio con Windows, cartella dei dati, tutorial, guida e informativa. */
+function appPanel(s: AppState) {
+  return section("app", L.general, `v${s.version}`, `<div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
+      <p class="fine"><button type="button" class="link" id="tour-again">${esc(L.tour.again)}</button> · <a href="${guideUrl}" data-link>${esc(L.guide)}</a></p>
+      <p class="fine">${esc(L.privacy)}</p>`);
+}
+
+function setupHead() {
+  return `<div class="setup-head"><h2 class="t-setup">${GEAR}<span>${esc(L.setup)}</span></h2><p class="sub">${esc(L.setupIntro)}</p></div>`;
+}
+
+/** La dicitura "non affiliato a Koin Games" resta in tutte e due le pagine. */
 function footer(s: AppState) {
   return `<footer class="foot">
-      <div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
-      <p class="fine">${esc(L.privacy)}</p>
       <p class="fine foot-brand"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="58" height="18" draggable="false" /><span>${esc(L.unofficial)} · v${esc(s.version)}</span></p>
-      <p class="fine"><button type="button" class="link" id="tour-again">${esc(L.tour.again)}</button> · <a href="${guideUrl}" data-link>${esc(L.guide)}</a></p>
     </footer>`;
 }
 
@@ -821,11 +853,14 @@ function lockFooter(s: AppState) {
  * dove sono le cose"): cinque passi, ognuno con un riflettore sulla parte della finestra di cui parla (il resto si
  * scurisce) e il fumetto accanto. Al passo dei pannelli il Deck tracker e il pannello dell'avversario, finestre a parte
  * sopra il gioco, si illuminano e dicono il loro nome (`spotPanels`). Si vede una volta (`TOUR_KEY` in localStorage) e
- * si rivede dal link in fondo alla pagina. Esc lo chiude, le frecce cambiano passo.
+ * si rivede da Setup. Esc lo chiude, le frecce cambiano passo. Dalla 0.4.1 i passi su account, scanner e pannelli
+ * aprono Setup e l'ultimo torna alla pagina principale e indica il tasto Setup; la chiave è nuova (v2), così chi aveva
+ * già visto il tutorial lo rivede una volta e scopre dove sono finite le opzioni.
  */
-const TOUR_KEY = "originsmeta.analytics.tour.v1";
-/** Dove punta ogni passo: il mazzo scelto, le tre tendine, il fondo della pagina. */
-const TOUR_TARGETS = [".hero", "#account", "#scanner", "#overlay", ".foot"] as const;
+const TOUR_KEY = "originsmeta.tracker.tour.v2";
+/** Dove punta ogni passo e in quale pagina: il mazzo scelto, i tre riquadri di Setup, il tasto Setup. */
+const TOUR_TARGETS = [".hero", "#account", "#scanner", "#overlay", "#open-setup"] as const;
+const TOUR_PAGES = ["main", "setup", "setup", "setup", "main"] as const;
 const TOUR_PANELS_STEP = 3;
 let tourStep: number | null = (() => {
   try {
@@ -836,7 +871,6 @@ let tourStep: number | null = (() => {
 })();
 let tourScrolledTo: number | null = null;
 let panelsLit = false;
-const tourFold = () => (tourStep === null ? null : (TOUR_TARGETS[tourStep].startsWith("#") ? TOUR_TARGETS[tourStep].slice(1) : null));
 
 const tourBox = document.createElement("div");
 tourBox.id = "tour";
@@ -850,6 +884,7 @@ function setPanelsLit(on: boolean) {
 
 function endTour() {
   tourStep = null;
+  page = "main";
   try {
     localStorage.setItem(TOUR_KEY, "1");
   } catch {
@@ -868,6 +903,7 @@ function hideTour() {
 
 function goTour(step: number) {
   tourStep = Math.max(0, Math.min(TOUR_TARGETS.length - 1, step));
+  page = TOUR_PAGES[tourStep];
   rerender();
 }
 
@@ -951,9 +987,12 @@ const root = document.getElementById("app")!;
 let first = true;
 let last: AppState | null = null;
 
+let renderedPage: Page = page;
 function render(s: AppState) {
   last = s;
-  const scroll = window.scrollY;
+  // cambio di pagina (Setup ↔ partite): si parte dall'alto; altrimenti il ridisegno non sposta la pagina
+  const scroll = renderedPage === page ? window.scrollY : 0;
+  renderedPage = page;
   // il codice che il giocatore sta scrivendo sopravvive ai ridisegni (arrivano a ogni cambio di stato)
   const input = document.getElementById("link-code") as HTMLInputElement | null;
   const typed = input?.value ?? "";
@@ -961,7 +1000,9 @@ function render(s: AppState) {
   const caret = focused ? [input.selectionStart, input.selectionEnd] : null;
   root.innerHTML = (
     s.access.open
-      ? [top(s), updateNotice(s), scannerNotice(s), hero(s), `<div class="cols">${accountPanel(s)}${overlayPanel(s)}</div>`, scannerPanel(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)]
+      ? page === "setup"
+        ? [top(s), updateNotice(s), setupHead(), `<div class="cols">${accountPanel(s)}${scannerPanel(s)}</div>`, overlayPanel(s), appPanel(s), footer(s)]
+        : [top(s), updateNotice(s), scannerNotice(s), accountAlert(s), hero(s), `<div class="cols">${decks(s)}${opponents(s)}</div>`, matches(s), history(s), footer(s)]
       : [top(s), updateNotice(s), lockScreen(s), lockFooter(s)]
   ).join("");
   const again = document.getElementById("link-code") as HTMLInputElement | null;
@@ -1006,6 +1047,10 @@ root.addEventListener("click", async (e) => {
   if (target.closest("#tour-again")) {
     tourScrolledTo = null;
     return void goTour(0);
+  }
+  if (target.closest("#open-setup, [data-open-setup]") || target.closest("#close-setup")) {
+    page = target.closest("#close-setup") ? "main" : "setup";
+    return void rerender();
   }
   const link = target.closest<HTMLAnchorElement>("a[data-link]");
   if (link) {
@@ -1059,16 +1104,6 @@ root.addEventListener("submit", async (e) => {
 root.addEventListener("click", (e) => {
   const summary = (e.target as HTMLElement).closest("summary");
   const d = summary?.parentElement as HTMLDetailsElement | null;
-  if (d?.dataset.fold) {
-    // il clic apre o chiude subito; la scelta si ricorda per i ridisegni e per i prossimi avvii
-    folds[d.dataset.fold] = !d.open;
-    try {
-      localStorage.setItem(FOLDS_KEY, JSON.stringify(folds));
-    } catch {
-      // senza memoria la tendina resta com'è fino al prossimo avvio
-    }
-    return;
-  }
   if (!d?.dataset.id) return;
   userToggled = true;
   if (d.open) openMatches.delete(d.dataset.id); // sta per chiudersi
