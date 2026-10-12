@@ -4,7 +4,7 @@
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { clampWidth, DEFAULT_CUSTOM, defaultSpot, readCustom, readTemplate, WIDTH_LIMITS } from "./panelLayout";
+import { clampWidth, DEFAULT_CUSTOM, defaultSpot, panelShape, readCustom, readTemplate, WIDTH_LIMITS } from "./panelLayout";
 import { PANEL_TEMPLATES } from "../shared/types";
 
 const FULL_HD = { x: 0, y: 0, width: 1920, height: 1080 };
@@ -37,8 +37,10 @@ describe("template dei pannelli", () => {
 
   test("larghezza: mai fuori dai limiti del template, anche su schermi piccoli o enormi", () => {
     for (const t of PANEL_TEMPLATES) {
-      assert.equal(clampWidth(t, 10), WIDTH_LIMITS[t].min);
-      assert.equal(clampWidth(t, 99_999), WIDTH_LIMITS[t].max);
+      for (const k of ["deck", "opp"] as const) {
+        assert.equal(clampWidth(t, k, 10), WIDTH_LIMITS[panelShape(t, k)].min);
+        assert.equal(clampWidth(t, k, 99_999), WIDTH_LIMITS[panelShape(t, k)].max);
+      }
     }
     assert.equal(defaultSpot("strips", "deck", { x: 0, y: 0, width: 800, height: 600 }).width, WIDTH_LIMITS.strips.min);
   });
@@ -48,6 +50,14 @@ describe("template dei pannelli", () => {
     assert.equal(readTemplate("columns"), "columns");
     assert.equal(readTemplate("custom"), "custom");
     for (const bad of [undefined, null, "", "Strips", 3, {}]) assert.equal(readTemplate(bad), "classic");
+  });
+
+  test("classico (13/10/2026): il mio mazzo come nelle Colonne, l'avversario come nelle Fasce", () => {
+    assert.equal(panelShape("classic", "deck"), "columns");
+    assert.equal(panelShape("classic", "opp"), "strips");
+    assert.deepEqual(defaultSpot("classic", "deck", FULL_HD), defaultSpot("columns", "deck", FULL_HD));
+    assert.deepEqual(defaultSpot("classic", "opp", FULL_HD), defaultSpot("strips", "opp", FULL_HD));
+    assert.equal(panelShape("strips", "deck"), "strips");
   });
 
   test("personalizzato: parte dove partono le colonne", () => {

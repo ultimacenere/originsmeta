@@ -158,9 +158,9 @@ const LABELS = {
     panelStyle: "Panel style",
     panelStyleNote: "Open panels reopen in the new style; each style remembers where you put them.",
     templates: {
-      classic: { name: "Classic", text: "Deck tracker as a grid on the left, the opponent's L-shaped panel top right." },
-      strips: { name: "Strips", text: "Your 12 cards and Legendary in a strip at the bottom left, next to your hand; the opponent's Legendary and revealed cards in a strip at the top right." },
-      columns: { name: "Side columns", text: "On the left your deck and the cards left in it; on the right the opponent's cards, the cards left in their deck and both players' mana." },
+      classic: { name: "Classic", text: "Your deck in a column on the left, with the Legendary as a band; the opponent's Legendary and revealed cards in a strip at the top right." },
+      strips: { name: "Minimal", text: "Your 12 cards and Legendary in a strip at the bottom left, next to your hand; the opponent's Legendary and revealed cards in a strip at the top right." },
+      columns: { name: "Structured", text: "On the left your deck and the cards left in it; on the right the opponent's cards, the cards left in their deck and both players' mana." },
       custom: { name: "Custom", text: "You choose: layout, drawn cards or names only, cards per row, transparency and what to show." },
     },
     customize: {
@@ -202,7 +202,7 @@ const LABELS = {
         { title: "Welcome to OriginsMeta Tracker", text: ["The app records your Origins TCG matches on its own: result, deck, rounds and cards played, a few seconds after the match ends.", "It never touches the game: it reads the files the game saves on this PC and, with the scanner, its window."] },
         { title: "Your account", text: ["In Setup you find your OriginsMeta account: the matches still to send and the last sync.", "Your matches reach the site: you see your stats, and community decks get their win rate."] },
         { title: "The screen scanner", text: ["It only looks at the game window and reads the cards on the board, your hand, the mana and the match result.", "Images stay on this PC: only card ids go to the site. You can turn it off here, in Setup."] },
-        { title: "The panels above the game", text: ["On the left, the Deck tracker: the number on each card is how many copies are still in your deck, and a mint border marks the cards in your hand. Widen it with the handle in the bottom right and close it with the X on the tab.", "Top right, the opponent panel: their Legendary, barriers, the cards they played, both players' mana and the combat direction.", "Drag them wherever you like; you turn them back on here, in Setup."] },
+        { title: "The panels above the game", text: ["On the left, your deck: the number on each card is how many copies are still in your deck, and a mint border marks the cards in your hand. Widen it with the handle in the bottom right and close it with the X on the tab.", "Top right, the opponent's cards: their Legendary and the cards they played.", "Drag them wherever you like; choose their style with “Create your layout” and turn them back on here, in Setup."] },
         { title: "Setup and the main page", text: ["The main page only shows your games: deck, matches and results. Account, scanner, panels and the app's options are behind the Setup button, up here.", "The X on this window closes the app: minimize it to keep it running. The icon next to the Windows clock opens it again, and you can see this tutorial again from Setup."] },
       ],
     },
@@ -343,9 +343,9 @@ const LABELS = {
     panelStyle: "Stile dei pannelli",
     panelStyleNote: "I pannelli aperti si riaprono nello stile nuovo; ogni stile ricorda dove li hai messi.",
     templates: {
-      classic: { name: "Classico", text: "Deck tracker a griglia a sinistra, pannello a L dell'avversario in alto a destra." },
-      strips: { name: "Fasce", text: "Le tue 12 carte e la Leggendaria in una fascia in basso a sinistra, accanto alla tua mano; la Leggendaria e le carte rivelate dell'avversario in una fascia in alto a destra." },
-      columns: { name: "Colonne ai lati", text: "A sinistra il tuo mazzo e le carte che ti restano; a destra le carte dell'avversario, quelle che gli restano e il mana dei due giocatori." },
+      classic: { name: "Classico", text: "Il tuo mazzo in una colonna a sinistra, con la Leggendaria a fascia; la Leggendaria e le carte rivelate dell'avversario in una fascia in alto a destra." },
+      strips: { name: "Minimal", text: "Le tue 12 carte e la Leggendaria in una fascia in basso a sinistra, accanto alla tua mano; la Leggendaria e le carte rivelate dell'avversario in una fascia in alto a destra." },
+      columns: { name: "Strutturato", text: "A sinistra il tuo mazzo e le carte che ti restano; a destra le carte dell'avversario, quelle che gli restano e il mana dei due giocatori." },
       custom: { name: "Personalizzato", text: "Scegli tu: disposizione, carte disegnate o solo nomi, carte per fila, trasparenza e cosa mostrare." },
     },
     customize: {
@@ -387,7 +387,7 @@ const LABELS = {
         { title: "Benvenuto in OriginsMeta Tracker", text: ["L'app registra da sola le tue partite di Origins TCG: esito, mazzo, round e carte giocate, pochi secondi dopo la fine.", "Non tocca mai il gioco: legge i file che il gioco salva su questo PC e, con lo scanner, la sua finestra."] },
         { title: "Il tuo account", text: ["In Setup trovi il tuo account OriginsMeta: le partite ancora da inviare e l'ultimo invio.", "Le tue partite arrivano sul sito: vedi le tue statistiche e i mazzi della community prendono il loro win rate."] },
         { title: "Lo scanner dello schermo", text: ["Guarda solo la finestra del gioco e legge le carte sul tabellone, la tua mano, il mana e l'esito della partita.", "Le immagini restano su questo PC: al sito vanno solo gli id delle carte. Lo spegni qui, in Setup."] },
-        { title: "I pannelli sopra il gioco", text: ["A sinistra il Deck tracker: il numero su ogni carta dice quante copie restano nel mazzo, il bordo menta segna le carte che hai in mano. Lo allarghi dalla maniglia in basso a destra e lo chiudi con la X sulla linguetta.", "In alto a destra il pannello dell'avversario: la sua Leggendaria, le barriere, le carte che ha giocato, il mana di tutti e due e la direzione del combattimento.", "Trascinali dove vuoi; li riaccendi qui, in Setup."] },
+        { title: "I pannelli sopra il gioco", text: ["A sinistra il tuo mazzo: il numero su ogni carta dice quante copie restano nel mazzo, il bordo menta segna le carte che hai in mano. Lo allarghi dalla maniglia in basso a destra e lo chiudi con la X sulla linguetta.", "In alto a destra le carte dell'avversario: la sua Leggendaria e le carte che ha giocato.", "Trascinali dove vuoi; lo stile lo scegli con “Crea il tuo layout”, li riaccendi qui, in Setup."] },
         { title: "Setup e pagina principale", text: ["La pagina principale mostra solo il tuo gioco: mazzo, partite ed esiti. Account, scanner, pannelli e opzioni dell'app stanno dietro il tasto Setup, qui in alto.", "La X di questa finestra chiude l'app: per tenerla accesa riducila a icona. L'icona vicino all'orologio di Windows la riapre, e il tutorial lo rivedi da Setup."] },
       ],
     },
@@ -528,9 +528,9 @@ const LABELS = {
     panelStyle: "Estilo de los paneles",
     panelStyleNote: "Los paneles abiertos se vuelven a abrir con el estilo nuevo; cada estilo recuerda dónde los pusiste.",
     templates: {
-      classic: { name: "Clásico", text: "Deck tracker en cuadrícula a la izquierda, panel en L del rival arriba a la derecha." },
-      strips: { name: "Franjas", text: "Tus 12 cartas y la Legendaria en una franja abajo a la izquierda, junto a tu mano; la Legendaria y las cartas reveladas del rival en una franja arriba a la derecha." },
-      columns: { name: "Columnas laterales", text: "A la izquierda tu mazo y las cartas que te quedan; a la derecha las cartas del rival, las que le quedan y el maná de los dos jugadores." },
+      classic: { name: "Clásico", text: "Tu mazo en una columna a la izquierda, con la Legendaria en franja; la Legendaria y las cartas reveladas del rival en una franja arriba a la derecha." },
+      strips: { name: "Minimal", text: "Tus 12 cartas y la Legendaria en una franja abajo a la izquierda, junto a tu mano; la Legendaria y las cartas reveladas del rival en una franja arriba a la derecha." },
+      columns: { name: "Estructurado", text: "A la izquierda tu mazo y las cartas que te quedan; a la derecha las cartas del rival, las que le quedan y el maná de los dos jugadores." },
       custom: { name: "Personalizado", text: "Tú eliges: disposición, cartas dibujadas o solo nombres, cartas por fila, transparencia y qué mostrar." },
     },
     customize: {
@@ -572,7 +572,7 @@ const LABELS = {
         { title: "Te damos la bienvenida a OriginsMeta Tracker", text: ["La app registra sola tus partidas de Origins TCG: resultado, mazo, rondas y cartas jugadas, pocos segundos después del final.", "Nunca toca el juego: lee los archivos que el juego guarda en este PC y, con el escáner, su ventana."] },
         { title: "Tu cuenta", text: ["En Setup encuentras tu cuenta de OriginsMeta: las partidas que faltan por enviar y el último envío.", "Tus partidas llegan al sitio: ves tus estadísticas y los mazos de la comunidad reciben su win rate."] },
         { title: "El escáner de pantalla", text: ["Solo mira la ventana del juego y lee las cartas del tablero, tu mano, el maná y el resultado de la partida.", "Las imágenes se quedan en este PC: al sitio solo van los id de las cartas. Lo apagas aquí, en Setup."] },
-        { title: "Los paneles sobre el juego", text: ["A la izquierda, el Deck tracker: el número de cada carta indica cuántas copias quedan en el mazo, y el borde menta marca las cartas de tu mano. Lo ensanchas con el tirador de abajo a la derecha y lo cierras con la X de la pestaña.", "Arriba a la derecha, el panel del rival: su Legendaria, las barreras, las cartas que jugó, el maná de los dos y la dirección del combate.", "Arrástralos donde quieras; los vuelves a activar aquí, en Setup."] },
+        { title: "Los paneles sobre el juego", text: ["A la izquierda, tu mazo: el número de cada carta indica cuántas copias quedan en el mazo, y el borde menta marca las cartas de tu mano. Lo ensanchas con el tirador de abajo a la derecha y lo cierras con la X de la pestaña.", "Arriba a la derecha, las cartas del rival: su Legendaria y las cartas que jugó.", "Arrástralos donde quieras; eliges su estilo con “Crea tu layout” y los vuelves a activar aquí, en Setup."] },
         { title: "Setup y página principal", text: ["La página principal solo muestra tu juego: mazo, partidas y resultados. La cuenta, el escáner, los paneles y las opciones de la app están detrás del botón Setup, aquí arriba.", "La X de esta ventana cierra la app: minimízala para que siga abierta. El icono junto al reloj de Windows la vuelve a abrir, y el tutorial lo vuelves a ver desde Setup."] },
       ],
     },
@@ -916,7 +916,7 @@ function scannerPanel(s: AppState) {
  * in magenta quello dell'avversario, come nei disegni di Pierluigi.
  */
 const TEMPLATE_SKETCH: Record<PanelTemplate, string> = {
-  classic: '<rect class="me" x="1" y="9" width="10" height="22" rx="1.5"/><rect class="opp" x="44" y="2" width="19" height="6" rx="1.5"/><rect class="opp" x="55" y="2" width="8" height="22" rx="1.5"/>',
+  classic: '<rect class="me" x="1" y="6" width="9" height="20" rx="1.5"/><rect class="opp" x="43" y="1" width="20" height="6" rx="1.5"/>',
   strips: '<rect class="me" x="1" y="29" width="20" height="6" rx="1.5"/><rect class="opp" x="43" y="1" width="20" height="6" rx="1.5"/>',
   columns: '<rect class="me" x="1" y="6" width="9" height="20" rx="1.5"/><rect class="opp" x="54" y="10" width="9.5" height="17" rx="1.5"/>',
   custom: '<rect class="me" x="2" y="11" width="10" height="5" rx="1.5"/><rect class="me" x="2" y="18" width="10" height="5" rx="1.5"/><rect class="opp" x="47" y="2" width="15" height="5" rx="1.5"/><path class="pen" d="M26 31l10-10 3 3-10 10h-3z"/>',

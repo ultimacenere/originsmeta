@@ -328,18 +328,23 @@ raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gi
   ci sono più. Un problema dell'account (sito irraggiungibile, invio fermo) resta anche nella pagina principale, con il
   link a Setup. Il tutorial apre Setup per i passi su account, scanner e pannelli e chiude sul tasto (chiave
   `originsmeta.tracker.tour.v2`: chi l'aveva visto lo rivede una volta). `--capture-setup` fotografa Setup.
-- **Template dei pannelli** (disegni di Pierluigi; `src/main/panelLayout.ts` con i test): in Setup › Overlay, "Stile dei
-  pannelli", quattro schede con lo schema dello schermo. **Classico** (com'era); **Fasce in alto** (le 12 carte e la
-  Leggendaria in una fila sul bordo alto, fra il mio nome e la mano dell'avversario; Leggendaria e carte rivelate
-  dell'avversario fra la sua mano e l'ingranaggio); **Colonne ai lati** (a sinistra il mio mazzo con le carte ancora nel
-  mazzo; a destra, sopra il pannello del mana del gioco, carte dell'avversario, carte rimanenti e mana dei due);
-  **Personalizzato** (disposizione verticale o orizzontale = numeri sotto o accanto, carte disegnate o solo nomi in riga,
-  carte per fila da 1 a 13, opacità del fondo, carte finite nascoste, cosa mostrare di ciascun pannello, "Ripristina").
-  Le posizioni di partenza sono frazioni dello schermo principale misurate sui disegni (l'app non sa dove sta la
-  finestra del gioco); ogni template ricorda la sua posizione. Template e opzioni in `panel-template.json`; le opzioni
-  viaggiano con i dati dei pannelli (`view.custom`), quindi cambiano dal vivo anche nella sorgente per OBS (indirizzi con
-  `&layout=`). Cambiare template riapre i pannelli aperti. Nei template nuovi i pannelli si trascinano da qualunque
-  punto e si allargano con la maniglia (anche quello dell'avversario).
+- **Template dei pannelli** (disegni e prove sul gioco di Pierluigi, 12–13/10/2026; `src/main/panelLayout.ts` con i test):
+  in Setup › Overlay, "Stile dei pannelli", quattro schede con lo schema dello schermo; dalla pagina principale ci porta
+  "Crea il tuo layout", accanto al nome del mazzo. **Classico** (dal 13/10 un misto: il mio mazzo come nello
+  Strutturato, l'avversario come nel Minimal; il vecchio Deck tracker a griglia e il pannello a L non ci sono più);
+  **Minimal** (id `strips`: il mio mazzo in una fascia in basso a sinistra, l'avversario in una fascia in alto a
+  destra, Leggendaria e carte rivelate); **Strutturato** (id `columns`: a sinistra il mio mazzo con la Leggendaria a
+  fascia in stile deck builder e le carte ancora nel mazzo; a destra, sopra il pannello del mana del gioco, Leggendaria
+  a fascia e carte dell'avversario, carte rimanenti, mana dei due); **Personalizzato** (disposizione verticale o
+  orizzontale, carte disegnate o solo nomi in riga, carte per fila da 1 a 13, opacità del fondo, carte finite
+  nascoste, cosa mostrare di ciascun pannello, "Ripristina"). Fasce e colonne sono chiuse su tutti i lati, con il logo
+  e la × in una linguetta fuori dal corpo (× sul lato esterno). Le posizioni di partenza sono frazioni dello schermo
+  principale misurate sui disegni (l'app non sa dove sta la finestra del gioco); ogni template ricorda la sua
+  posizione (`spots`). Template e opzioni in `panel-template.json`, con "Mostra i pannelli solo durante la partita"
+  (con lo scanner: compaiono al primo round e spariscono una trentina di secondi dopo la fine, anche in OBS). Le
+  opzioni viaggiano con i dati dei pannelli (`view.custom`, `view.hidden`). Cambiare template riapre i pannelli.
+- **Avviso dell'aggiornamento**: riquadro magenta in cima, "Aggiornamento in arrivo: aspetta a lanciare il gioco"
+  (l'app si installa solo a gioco chiuso). `--capture-update=<versione>` per gli screenshot.
 - Sul sito la guida di `/tracker` è in cinque passi brevi (requisiti in una riga, problemi comuni in un riquadro) e
   rimanda al tasto Setup: **va online insieme alla release 0.4.1**, non prima.
 

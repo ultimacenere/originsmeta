@@ -13,7 +13,11 @@
  * le carte la seguono. Niente cornice di Windows né titolo (Pierluigi, 11/10: "togliere la barra di Windows e il titolo
  * del deck"): nella finestra il pannello si trascina da qualunque punto e ha una × che compare al passaggio del mouse. Le carte sono sempre intere (immagini di originsmeta.com, mai ritagliate: i crediti restano).
  *
- * Template (0.4.1, 12/10/2026, disegni di Pierluigi; parametro `layout`, anche per OBS): `classic` è tutto quello qui
+ * Dal 13/10/2026 il Deck tracker a griglia e il pannello a L descritti qui sopra non ci sono più (Pierluigi: "al posto
+ * della classica, crea un mix con il deck di sinistra come colonna ai lati mentre il deck avversario come fasce"): il
+ * classico è il mio mazzo come nelle Colonne e l'avversario come nelle Fasce (`shape`).
+ *
+ * Template (0.4.1, 12/10/2026, disegni di Pierluigi; parametro `layout`, anche per OBS): `classic` è il misto qui
  * sopra; `strips` ("Fasce in alto") mette in una fila sola le 12 carte e la Leggendaria del mio mazzo, e la Leggendaria
  * e le carte rivelate dell'avversario ("no, solo le 12 carte e la leggendaria"); `columns` ("Colonne ai lati") ha a
  * sinistra il mio mazzo con le carte ancora nel mazzo e a destra Leggendaria e carte rivelate dell'avversario, le sue
@@ -45,7 +49,9 @@ if (view === "opp") document.body.classList.add("is-opp");
 type Layout = "classic" | "strips" | "columns" | "custom";
 const asked2 = params.get("layout");
 const layout: Layout = asked2 === "strips" || asked2 === "columns" || asked2 === "custom" ? asked2 : "classic";
-document.body.classList.add(`layout-${layout}`);
+/** La forma del pannello: il classico (13/10/2026) è il mio mazzo come nelle Colonne e l'avversario come nelle Fasce. */
+const shape: Exclude<Layout, "classic"> = layout === "classic" ? (view === "opp" ? "strips" : "columns") : layout;
+document.body.classList.add(`layout-${shape}`);
 
 const LABELS = {
   en: {
@@ -188,17 +194,6 @@ const manaText = (m: { current: number; max: number } | null) => (m ? `${m.curre
 const arrowSvg = (d: "left" | "right" | null) =>
   `<svg class="arrow${d === "left" ? " is-left" : ""}${d ? "" : " is-unknown"}" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 8h8M14 8h8M26 8h18" /><path d="M42 2l12 6-12 6z" /></svg>`;
 
-/**
- * Il pannello dell'avversario a L (11/10/2026 sera, disegno di Pierluigi sul tabellone: "è lo spazio che abbiamo a
- * nostra disposizione"; "pannello unico a L, e leggi anche la direzione"): il braccio in alto, a sinistra dell'angolo,
- * ha la Leggendaria dell'avversario con le barriere e le carte rimanenti (stima dalla sua mano, detta nel suggerimento: 12/10/2026, prima le
- * carte viste); la colonna sul bordo destro sta sopra il pannello "MANA
- * DATA" del gioco: le carte rivelate dall'avversario, 4 per fila, che compaiono una alla volta, e sotto il mana rimostrato
- * (mana dell'avversario con la tacca magenta, la freccia del combattimento, il mio mana con la tacca azzurra). Dal 12/10
- * (Pierluigi: "allunga orizzontalmente il riquadro, metti le carte in fila da quattro e i mana li sposti sotto le carte
- * uscite") largo 480 punti, con il mana sotto le carte (prima sopra) e 4 carte per fila (prima 3).
- * L'angolo in basso a sinistra è trasparente e lascia passare i clic al gioco (`deckApi.hit`).
- */
 /** Il pannello del mana del gioco, rimostrato: avversario in alto, la freccia del combattimento, io in basso. */
 function manaBox(live: DeckTrackerView["live"]) {
   const dir = live?.direction ?? null;
@@ -211,24 +206,6 @@ function manaBox(live: DeckTrackerView["live"]) {
 
 /** Una carta rivelata dall'avversario, con le copie viste se più di una. */
 const seenCard = (c: DeckCard) => `<li class="gc" title="${esc(c.name)}">${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`;
-
-function oppPanel(v: DeckTrackerView, close: string, fine: string) {
-  const live = v.live;
-  const seen = live?.opponent.seen ?? [];
-  const leg = live?.opponent.legendary ?? null;
-  return `<div class="lpanel">
-    <section class="arm">
-      <div class="gc legend">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</div>
-      <div class="stats">${stat(lifePips(live ? live.life.opp : null), L.life)}${stat(live?.opponent.deckLeft !== null && live?.opponent.deckLeft !== undefined ? String(live.opponent.deckLeft) : "–", L.oppLeft, L.oppLeftTip)}</div>
-    </section>
-    <section class="col">
-      ${close}
-      ${seen.length ? `<ul class="grid">${seen.map(seenCard).join("")}</ul>` : `<p class="muted waiting">${esc(L.oppWaiting)}</p>`}
-      ${manaBox(live)}
-      ${fine}
-    </section>
-  </div>`;
-}
 
 /** Il logo di OriginsMeta, piccolo, nei template nuovi (il marchio sul tracker è "indispensabile": note del 12/10). */
 const miniLogo = `<img class="mini-logo" src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="48" height="15" draggable="false" />`;
@@ -355,43 +332,18 @@ function customPanel(v: DeckTrackerView, c: PanelCustom, zoom: string, close: st
   return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
 }
 
-/**
- * Nella finestra il pannello a L ha l'angolo vuoto: lì i clic passano al gioco. Il processo principale ignora il mouse
- * finché il puntatore non è sopra il braccio o la colonna (con `forward` i movimenti arrivano lo stesso).
- */
 // tutorial della finestra principale (12/10/2026): il pannello si illumina e dice come si chiama, per farsi trovare
 root.dataset.spot = L.spot(view === "opp");
 window.deckApi?.onSpot((on) => document.body.classList.toggle("spot", on));
 
 // maniglia del Deck tracker (12/10/2026): la larghezza la cambia il processo principale finché il tasto è premuto
-if (window.deckApi && (view === "me" || layout !== "classic")) {
+if (window.deckApi) {
   document.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || !(e.target instanceof Element) || e.target.id !== "grip") return;
     e.target.setPointerCapture(e.pointerId);
     window.deckApi?.resize(true);
   });
   const end = () => window.deckApi?.resize(false);
-  document.addEventListener("pointerup", end);
-  document.addEventListener("pointercancel", end);
-}
-
-if (window.deckApi && view === "opp" && layout === "classic") {
-  let over = true;
-  const set = (on: boolean) => {
-    if (on === over) return;
-    over = on;
-    window.deckApi?.hit(on);
-  };
-  document.addEventListener("mousemove", (e) => set(e.target instanceof Element && Boolean(e.target.closest(".arm, .col"))));
-  document.addEventListener("mouseleave", () => set(false));
-  set(false);
-  // trascinamento (12/10/2026): lo fa il processo principale, la pagina dice solo quando comincia e quando finisce
-  document.addEventListener("pointerdown", (e) => {
-    if (e.button !== 0 || !(e.target instanceof Element) || e.target.closest(".x") || !e.target.closest(".arm, .col")) return;
-    e.target.setPointerCapture(e.pointerId);
-    window.deckApi?.drag(true);
-  });
-  const end = () => window.deckApi?.drag(false);
   document.addEventListener("pointerup", end);
   document.addEventListener("pointercancel", end);
 }
@@ -408,58 +360,29 @@ function render(v: DeckTrackerView) {
   const fine = `${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}${window.deckApi ? "" : `<footer class="brand">${esc(L.brand)}</footer>`}`;
   // "solo durante la partita" e fuori partita: niente pannello (in OBS la sorgente resta vuota)
   document.body.classList.toggle("is-hidden", v.hidden === true);
-  if (layout !== "classic") {
-    const leg = v.deck?.legendary ?? null;
-    const legOut = Boolean(live && leg && leg.drawn >= 1);
-    const zoom = view === "me" && legOut && !legendaryWasOut ? " just" : "";
-    legendaryWasOut = legOut;
-    const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
-    // la radice della pagina (#deck, .dt) è il pannello
-    root.classList.add("panel-x");
-    if (layout === "custom" && v.custom) {
-      // carte per fila e opacità come variabili CSS (la CSP non ammette attributi style nell'HTML)
-      root.style.setProperty("--per-row", String(v.custom.perRow));
-      root.style.setProperty("--bg-alpha", String(v.custom.opacity / 100));
-      root.innerHTML = customPanel(v, v.custom, zoom, close, grip, fine);
-    } else if (layout === "strips") {
-      root.classList.add(view === "opp" ? "tab-below" : "has-tab");
-      root.innerHTML = stripPanel(v, zoom, grip, fine);
-    } else {
-      root.classList.add("has-tab");
-      if (view === "opp") root.classList.add("tab-right");
-      root.innerHTML = columnPanel(v, zoom, grip, fine);
-    }
-    for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
-    // l'illustrazione delle fasce della Leggendaria (solo slug del sito: lettere, cifre e trattini)
-    for (const el of root.querySelectorAll<HTMLElement>("[data-art]")) if (/^[a-z0-9-]+$/.test(el.dataset.art ?? "")) el.style.setProperty("--row-art", `url("https://originsmeta.com/cards/art/${el.dataset.art}.webp")`);
-    fit();
-    return;
-  }
-  let body: string;
-  if (view === "opp") {
-    root.innerHTML = oppPanel(v, close, fine);
-    fit();
-    return;
-  } else if (v.deck) {
-    const leg = v.deck.legendary;
-    const legOut = Boolean(live && leg && leg.drawn >= 1);
-    const zoom = legOut && !legendaryWasOut ? " just" : "";
-    legendaryWasOut = legOut;
-    body = `<ul class="grid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>
-      <div class="foot">
-        <ul class="legcol">${leg ? myCard(leg, Boolean(live), zoom) : `<li class="gc">${cardImg(null)}</li>`}</ul>
-        <div class="stats">${deckLeftStat(live?.deckLeft ?? null, (leg?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0))}${stat(lifePips(live ? live.life.me : null), L.life)}</div>
-      </div>`;
-  } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-  // la linguetta stile cartella in alto a sinistra, con il logo e la X per chiudere (12/10/2026, note Granola "pagina
-  // winrate": il marchio OriginsMeta sul tracker è "indispensabile"); in OBS senza la X
-  const tab = `<div class="tab"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" width="64" height="20" draggable="false" />${window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : ""}</div>`;
-  root.classList.add("has-tab");
-  // la maniglia per allargare il pannello (le finestre trasparenti non si ridimensionano dai bordi)
+  const leg = v.deck?.legendary ?? null;
+  const legOut = Boolean(live && leg && leg.drawn >= 1);
+  const zoom = view === "me" && legOut && !legendaryWasOut ? " just" : "";
+  legendaryWasOut = legOut;
   const grip = window.deckApi ? `<span class="grip" id="grip" title="${esc(L.resize)}" aria-hidden="true"></span>` : "";
-  root.innerHTML = `${tab}${body}${fine}${grip}`;
-  // la larghezza della barra dal JavaScript: la CSP non ammette attributi style nell'HTML
+  // la radice della pagina (#deck, .dt) è il pannello
+  root.classList.add("panel-x");
+  if (shape === "custom" && v.custom) {
+    // carte per fila e opacità come variabili CSS (la CSP non ammette attributi style nell'HTML)
+    root.style.setProperty("--per-row", String(v.custom.perRow));
+    root.style.setProperty("--bg-alpha", String(v.custom.opacity / 100));
+    root.innerHTML = customPanel(v, v.custom, zoom, close, grip, fine);
+  } else if (shape === "strips") {
+    root.classList.add(view === "opp" ? "tab-below" : "has-tab");
+    root.innerHTML = stripPanel(v, zoom, grip, fine);
+  } else {
+    root.classList.add("has-tab");
+    if (view === "opp") root.classList.add("tab-right");
+    root.innerHTML = columnPanel(v, zoom, grip, fine);
+  }
   for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
+  // l'illustrazione delle fasce della Leggendaria (solo slug del sito: lettere, cifre e trattini)
+  for (const el of root.querySelectorAll<HTMLElement>("[data-art]")) if (/^[a-z0-9-]+$/.test(el.dataset.art ?? "")) el.style.setProperty("--row-art", `url("https://originsmeta.com/cards/art/${el.dataset.art}.webp")`);
   fit();
 }
 

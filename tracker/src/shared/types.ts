@@ -277,10 +277,6 @@ export type DeckApi = {
   fit(height: number): void;
   /** Chiude il pannello (la finestra non ha più la cornice di Windows). */
   close(): void;
-  /** Pannello a L (11/10/2026 sera): il puntatore è sopra il pannello (true) o sull'angolo vuoto, dove i clic vanno al gioco. */
-  hit(on: boolean): void;
-  /** Pannello a L (12/10/2026): trascinamento cominciato (true) o finito; la finestra la sposta il processo principale. */
-  drag(on: boolean): void;
   /** Deck tracker (12/10/2026): allargamento con la maniglia cominciato (true) o finito; la finestra trasparente non si ridimensiona dai bordi. */
   resize(on: boolean): void;
   /** Tutorial della finestra principale (12/10/2026): il pannello si illumina per farsi trovare. */
