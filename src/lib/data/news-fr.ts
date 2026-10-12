@@ -399,6 +399,61 @@ Les notes de patch de la 0.7.1 que l'équipe a publiées sur le [Discord officie
       },
     ],
   },
+  "upgrade-meta-1013": {
+    title: "Upgrade Meta : merci pour les près de 200 parties, et OriginsMeta Tracker 0.4.1 vous laisse créer votre layout",
+    metaTitle: "OriginsMeta Tracker 0.4.1 pour Origins TCG",
+    description:
+      "Merci pour vos retours et les près de 200 parties en une journée. OriginsMeta Tracker 0.4.1 pour Origins TCG apporte quatre layouts et Setup.",
+    summary:
+      "Merci : le 12 octobre, vous nous avez envoyé énormément de retours et vous avez enregistré près de 200 parties avec OriginsMeta Tracker, alors que les serveurs du jeu allaient et venaient une bonne partie de la journée. Ces parties sont déjà dans Analytics. La version 0.4.1 sort avec ce que vous nous avez demandé : quatre layouts des panneaux au choix, des panneaux seulement pendant la partie, une page Setup et les correctifs que vous nous avez signalés.",
+    highlights: [
+      { label: "Merci", text: "près de 200 parties enregistrées le 12 octobre", anchor: "merci" },
+      { label: "Créez votre layout", text: "quatre styles pour les panneaux : Classic, Minimal, Structured et Custom", anchor: "layout" },
+      { label: "Seulement pendant la partie", text: "des panneaux qui apparaissent au premier round et disparaissent à la fin", anchor: "en-partie" },
+      { label: "Setup", text: "la page principale ne montre que votre jeu", anchor: "setup" },
+      { label: "Correctifs", text: "plus de case vide dans le Deck tracker, decks modifiés lus tout de suite", anchor: "correctifs" },
+    ],
+    body: `## Merci {#merci}
+
+En une journée, vous nous avez envoyé énormément de retours, sur notre Discord et depuis le site, et le 12 octobre vous avez enregistré **près de 200 parties** avec OriginsMeta Tracker, même avec les serveurs du jeu qui allaient et venaient une bonne partie de la journée. Chaque partie entre dans les win rates d'[Analytics](/fr/analytics) : Légendaires, decks de la communauté, archétypes et cartes, patch par patch, uniquement des totaux. Beaucoup des nouveautés ci-dessous viennent directement de vos messages.
+
+## Créez votre layout {#layout}
+
+Les panneaux au-dessus du jeu ont maintenant quatre styles, depuis le nouveau bouton **Create your layout** à côté du nom de votre deck (l'application est en anglais) :
+
+- **Classic** : votre deck dans une colonne à gauche, avec la Légendaire en bandeau comme dans notre [deck builder](/fr/deck-builder) ; la Légendaire et les cartes révélées de l'adversaire dans un bandeau en haut à droite.
+- **Minimal** : deux bandeaux, vos 12 cartes et la Légendaire en bas à gauche à côté de votre main, celles de l'adversaire en haut à droite.
+- **Structured** : deux colonnes sur les côtés ; à droite, au-dessus du panneau de mana du jeu, les cartes de l'adversaire, celles qui restent dans son deck et le mana des deux joueurs avec la direction du combat.
+- **Custom** : vous choisissez vertical ou horizontal, cartes illustrées ou seulement les noms en lignes, cartes par ligne, opacité du fond, si les cartes épuisées disparaissent et ce que montre chaque panneau.
+
+Chaque style se souvient de l'endroit où vous placez ses panneaux, et la source OBS suit le style choisi.
+
+## Panneaux seulement pendant la partie {#en-partie}
+
+Une nouvelle option n'affiche les panneaux que pendant que vous jouez : ils apparaissent au premier round et disparaissent une trentaine de secondes après la fin, dans la source OBS aussi. Elle utilise le scanner d'écran : scanner désactivé, les panneaux restent visibles.
+
+## Setup et une page principale plus nette {#setup}
+
+La page principale de l'application ne montre plus que votre jeu : le deck choisi, vos chiffres, vos parties et leurs résultats. Le compte, le scanner d'écran, les panneaux et les options de l'application sont derrière le bouton **Setup**. Le tutoriel recommence une fois pour tout le monde, pour montrer où les choses ont changé de place.
+
+## Correctifs et mises à jour {#correctifs}
+
+- Plus de case vide en bas du Deck tracker : c'était un emplacement réservé que le jeu garde dans certains decks, pas une carte.
+- Un deck que vous modifiez dans le jeu se met à jour tout de suite dans le tracker, sans attendre la partie suivante.
+- Quand une nouvelle version sort, un avis bien visible vous demande d'attendre avant de lancer le jeu : l'application ne se met à jour que jeu fermé.
+
+Le [guide d'installation](/fr/tracker#installation) de la page Tracker tient maintenant en cinq étapes courtes.
+
+## Comment mettre à jour {#mettre-a-jour}
+
+Si vous avez déjà OriginsMeta Tracker, il se met à jour tout seul en 0.4.1 jeu fermé. Si vous êtes nouveau, téléchargez-le depuis la [page Tracker](/fr/tracker) : le compte OriginsMeta est gratuit.
+
+OriginsMeta est un site de fans non officiel, non affilié à Koin Games.`,
+    faq: [
+      { q: "Comment changer le style des panneaux d'OriginsMeta Tracker ?", a: "Appuyez sur Create your layout, à côté du nom de votre deck sur la page principale de l'application : il ouvre Setup sur les quatre styles (Classic, Minimal, Structured et Custom). Les panneaux ouverts se rouvrent dans le nouveau style." },
+      { q: "Faut-il retélécharger OriginsMeta Tracker 0.4.1 ?", a: "Non : si vous l'avez déjà, l'application se met à jour toute seule en 0.4.1 jeu fermé. Les nouveaux venus la téléchargent depuis la page Tracker avec un compte OriginsMeta gratuit." },
+    ],
+  },
   "upgrade-meta-1012": {
     title: "Upgrade Meta : OriginsMeta Tracker 0.4.0 pour tous, les win rates ouverts dans Analytics et un nouveau menu",
     metaTitle: "OriginsMeta Tracker 0.4.0 pour Origins TCG",
