@@ -6,7 +6,8 @@ const n = (en: string, it: string, es: string, fr: string): L10n => ({ en, it, e
 /** Archetipi (tag obbligatorio su ogni mazzo). */
 export const archetypeLabels: Record<string, L10n> = {
   swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large"),
-  evil: n("Evil / big bodies", "Evil / grossi corpi", "Evil / cuerpos grandes", "Evil / gros gabarits"),
+  // "Evil" si chiama "Big" dal 12/10/2026 (Pierluigi: "evil diventa big"); l'id resta `evil` per i mazzi già salvati
+  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits"),
   discard: n("Discard", "Scarto", "Descarte", "Défausse"),
   midrange: n("Midrange", "Midrange", "Midrange", "Midrange"),
   control: n("Control", "Controllo", "Control", "Contrôle"),
