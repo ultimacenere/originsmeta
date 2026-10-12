@@ -196,8 +196,16 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
  */
 .layout-strips .dt.panel-x, .layout-columns .dt.panel-x { position: relative; margin: 0; padding: 6px; gap: 5px; background: rgba(46, 30, 140, 0.82); border: 2px solid var(--sky); border-radius: 10px; }
 /* l'avversario in alto (aperta verso il bordo alto), il mio mazzo in basso (aperta verso il bordo basso) */
-.layout-strips .dt.panel-x { padding-bottom: 2px; border-top-width: 0; border-radius: 0 0 10px 10px; }
-.layout-strips:not(.is-opp) .dt.panel-x { border-top-width: 2px; border-bottom-width: 0; border-radius: 10px 10px 0 0; }
+/*
+ * Fasce chiuse su tutti i lati (12/10/2026 sera) con la linguetta del logo fuori dalla fascia: in alto a sinistra sul mio
+ * mazzo (come il Deck tracker classico), in basso a destra su quello dell'avversario; le carte prendono tutta l'altezza
+ */
+.layout-strips .dt.panel-x { padding: 5px; }
+.layout-strips .dt.has-tab { margin-top: 26px; border-top-left-radius: 0; }
+.layout-strips .dt.tab-below { margin-bottom: 26px; border-bottom-right-radius: 0; }
+.layout-strips .tab { height: 26px; background: rgba(46, 30, 140, 0.92); }
+.layout-strips .tab .mini-logo { height: 14px; opacity: 1; }
+.layout-strips .tab-below .tab { bottom: auto; top: 100%; left: auto; right: -2px; padding: 0 5px 0 10px; border-top: 0; border-bottom: 2px solid var(--sky); border-radius: 0 0 10px 10px; }
 .in-window.is-opp.layout-strips .dt, .in-window.is-opp.layout-columns .dt { -webkit-app-region: drag; }
 .srow, .cgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
 .srow { grid-template-columns: repeat(13, minmax(0, 1fr)); }
@@ -206,14 +214,13 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
 .layout-strips .left, .layout-columns .left { min-width: 1.4em; padding: 0 4px; border-width: 1.5px; font-size: 0.68rem; }
 .swait { grid-column: 2 / -1; align-self: center; padding: 0 8px; font-size: 0.7rem; line-height: 1.35; color: var(--muted); }
 .cwait { font-size: 0.7rem; line-height: 1.35; }
-.sfoot { display: flex; justify-content: flex-end; height: 13px; padding-right: 14px; }
 .chead { display: flex; align-items: center; justify-content: space-between; height: 18px; padding-right: 24px; }
 .mini-logo { display: block; width: auto; height: 11px; opacity: 0.85; }
 .chead .mini-logo { height: 14px; }
 .layout-strips .grip, .layout-columns .grip { right: 1px; bottom: 1px; }
 .in-obs.layout-strips .dt { width: 760px; }
 .in-obs.layout-columns .dt { width: 280px; }
-.in-obs.layout-strips .sfoot, .in-obs.layout-columns .chead { padding-right: 0; }
+.in-obs.layout-columns .chead { padding-right: 0; }
 body.spot .dt.panel-x { animation: spot-pulse 1.1s ease-in-out infinite alternate; }
 @media (prefers-reduced-motion: reduce) {
   body.spot .dt.panel-x { animation: none; box-shadow: 0 0 0 4px var(--mint); }

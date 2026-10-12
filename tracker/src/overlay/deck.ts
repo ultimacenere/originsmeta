@@ -168,8 +168,10 @@ root.addEventListener(
 /** La finestra alta come il contenuto (niente barra di scorrimento); in OBS non serve. */
 function fit() {
   if (!window.deckApi) return;
-  // dal fondo del pannello: sopra c'è anche la linguetta (margine in alto del pannello)
-  window.deckApi.fit(Math.ceil(root.getBoundingClientRect().bottom + 8));
+  // dal fondo del pannello: sopra c'è anche la linguetta (margine in alto del pannello); nella fascia dell'avversario la
+  // linguetta sta sotto, fuori dal pannello, e conta lei
+  const tab = root.querySelector(".tab");
+  window.deckApi.fit(Math.ceil(Math.max(root.getBoundingClientRect().bottom, tab ? tab.getBoundingClientRect().bottom : 0) + 8));
 }
 new ResizeObserver(fit).observe(root);
 root.addEventListener("click", (e) => {
@@ -244,14 +246,19 @@ function oppCards(v: DeckTrackerView) {
   return `<li class="gc leg">${leg ? cardImg(leg) : `<span class="cardimg back" aria-hidden="true">?</span>`}</li>${(v.live?.opponent.seen ?? []).map(seenCard).join("")}`;
 }
 
-/** "Fasce in alto": una fila sola, il logo piccolo in basso a destra. */
-function stripPanel(v: DeckTrackerView, zoom: string, close: string, grip: string, fine: string) {
+/**
+ * "Fasce": una fila sola, chiusa su tutti i lati, con il logo e la × in una linguetta fuori dalla fascia, in alto a
+ * sinistra sul mio mazzo e in basso a destra su quello dell'avversario (Pierluigi, 12/10/2026 sera: "non lasciare aperto
+ * gli elementi", "così lo spazio verticale puoi usarlo per le carte").
+ */
+function stripPanel(v: DeckTrackerView, zoom: string, grip: string, fine: string) {
   const seen = v.live?.opponent.seen.length ?? 0;
   const row =
     view === "opp" ? `${oppCards(v)}${seen ? "" : `<li class="swait">${esc(L.oppWaiting)}</li>`}`
     : v.deck ? myCards(v, zoom)
     : `<li class="swait">${esc(L.choose)}</li>`;
-  return `${close}<ul class="srow">${row}</ul><div class="sfoot">${miniLogo}</div>${fine}${grip}`;
+  const x = window.deckApi ? `<button type="button" class="tab-x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
+  return `<div class="tab stab">${miniLogo}${x}</div><ul class="srow">${row}</ul>${fine}${grip}`;
 }
 
 /** "Colonne ai lati": logo in testa, carte 4 per fila, sotto i numeri (e il mana per l'avversario). */
@@ -381,7 +388,10 @@ function render(v: DeckTrackerView) {
       root.style.setProperty("--per-row", String(v.custom.perRow));
       root.style.setProperty("--bg-alpha", String(v.custom.opacity / 100));
       root.innerHTML = customPanel(v, v.custom, zoom, close, grip, fine);
-    } else root.innerHTML = (layout === "strips" ? stripPanel : columnPanel)(v, zoom, close, grip, fine);
+    } else if (layout === "strips") {
+      root.classList.add(view === "opp" ? "tab-below" : "has-tab");
+      root.innerHTML = stripPanel(v, zoom, grip, fine);
+    } else root.innerHTML = columnPanel(v, zoom, close, grip, fine);
     for (const el of root.querySelectorAll<HTMLElement>("[data-w]")) el.style.width = `${Number(el.dataset.w)}%`;
     fit();
     return;
