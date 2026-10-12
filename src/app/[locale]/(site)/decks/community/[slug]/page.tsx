@@ -5,6 +5,7 @@ import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, resolveLocale, type PageMetaOptions } from "@/lib/page";
 import { deckLead, deckShortTail, deckTitle } from "@/lib/cardTitles";
 import { archetypeLabels } from "@/lib/data/decks";
+import { ArchetypeIcon } from "@/components/ArchetypeIcon";
 import { getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
@@ -310,7 +311,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           {/* il ruolo sta accanto al nome, in AuthorChannels (pacchetto CREATOR) */}
           {/* pastiglie a fondo pieno con testo ink scuro (prima menta scuro con testo chiaro, 2,3:1) */}
           {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{d.common.community}</span>}
-          <span className="stat-pill bg-sky text-ink">
+          <span className="stat-pill inline-flex items-center gap-1 bg-sky text-ink">
+            <ArchetypeIcon id={deck.archetype} size="xs" />
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
           </span>
           {deck.deck_types.map((t) => (

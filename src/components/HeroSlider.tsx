@@ -15,6 +15,8 @@ export type Slide = {
   /** link esterno (Steam): apre come <a>, altrimenti Link interno */
   external?: boolean;
   cta: string;
+  /** immagine nostra (uno screenshot di OriginsMeta Tracker, 12/10/2026): niente credito "Immagini ufficiali © Koin Games" su questa slide */
+  ownImage?: boolean;
 };
 
 export type SliderLabels = { prev: string; next: string; goTo: string; credit: string; pause: string; play: string };
@@ -97,6 +99,9 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
     const id = window.setInterval(() => setIndex((v) => (v + 1) % n), interval);
     return () => window.clearInterval(id);
   }, [rotating, n, interval]);
+
+  /* il credito del media kit si mostra solo sulle slide con le immagini ufficiali */
+  const credit = slides[index]?.ownImage ? null : labels.credit;
 
   const arrow = "absolute top-1/2 z-20 hidden sm:block -translate-y-1/2 rounded-full border border-chalk/40 bg-felt-deep/70 p-2 text-chalk backdrop-blur transition hover:border-mint hover:text-mint";
 
@@ -188,10 +193,12 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
           </div>
         ))}
 
-        {/* Sul telefono: credito in alto a sinistra (mai tolto), puntini e pausa in basso a destra */}
-        <span className="absolute left-2 top-2 z-10 rounded bg-felt-deep/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-chalk-muted sm:hidden">
-          {labels.credit}
-        </span>
+        {/* Sul telefono: credito in alto a sinistra (mai tolto sulle immagini ufficiali; non c'è sugli screenshot nostri), puntini e pausa in basso a destra */}
+        {credit ? (
+          <span className="absolute left-2 top-2 z-10 rounded bg-felt-deep/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-chalk-muted sm:hidden">
+            {credit}
+          </span>
+        ) : null}
         <div className="absolute bottom-2 right-2 z-10 sm:hidden">{controls}</div>
       </div>
 
@@ -250,7 +257,7 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
           </p>
           <div className="hidden items-center gap-3 sm:flex">
             {controls}
-            <span className="font-mono text-[10px] uppercase tracking-wider text-chalk-muted/70">{labels.credit}</span>
+            {credit ? <span className="font-mono text-[10px] uppercase tracking-wider text-chalk-muted/70">{credit}</span> : null}
           </div>
         </div>
       </div>

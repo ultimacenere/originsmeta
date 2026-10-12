@@ -10,6 +10,7 @@ import type { ProfileLink } from "@/lib/community/profileLinks";
 import type { ChannelLabels, LiveLabels } from "@/lib/creatorLabels";
 import { ChannelLinks } from "./ChannelLinks";
 import { LiveBadge } from "./LiveBadge";
+import { ArchetypeIcon } from "./ArchetypeIcon";
 import { bumpDeckStat } from "@/lib/community/deckStatsClient";
 import { compareSaved, compareTrending } from "@/lib/community/favorites";
 
@@ -319,7 +320,11 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         <span className={`stat-pill text-[11px] font-semibold uppercase ${d.source === "community" ? "bg-mint text-ink" : "bg-night-3 text-chalk"}`}>{d.sourceLabel}</span>
       )}
       {/* pastiglie a fondo pieno con testo ink scuro: menta scuro + testo chiaro faceva 2,3:1 */}
-      <span className="stat-pill bg-sky text-[11px] text-ink">{d.archetypeLabel}</span>
+      {/* simbolino dell'archetipo davanti al nome (icone di Pierluigi, 12/10/2026) */}
+      <span className="stat-pill inline-flex items-center gap-1 bg-sky text-[11px] text-ink">
+        <ArchetypeIcon id={d.archetype} size="xs" />
+        {d.archetypeLabel}
+      </span>
       {d.deckTypeLabels?.map((t) => (
         <span key={t} className="stat-pill bg-night-3 text-[11px] text-pale">
           {t}

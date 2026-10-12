@@ -161,8 +161,8 @@ export default async function Home({ params }: { params: LocaleParams }) {
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
   const slides: Slide[] = [
     // Prima slide dal 12/10/2026: OriginsMeta Tracker 0.4.0 per tutti, verso la pagina dell'app. Immagine: uno screenshot
-    // dell'app sopra una partita (contenuto, mai design; è la copertina della news upgrade-meta-1011, qui non è una news).
-    { src: "/media/analytics/tracker-cover.webp", ...sl.tracker, href: href(locale, "/tracker") },
+    // dell'app sopra una partita (contenuto, mai design; è la copertina della news upgrade-meta-1011, qui non è una news). È nostra: niente credito "Immagini ufficiali © Koin Games" (`ownImage`, 12/10/2026).
+    { src: "/media/analytics/tracker-cover.webp", ...sl.tracker, href: href(locale, "/tracker"), ownImage: true },
     // Dal 30/09 all'11/10/2026 era la prima:
     // Prima slide dal 30/09/2026 (richiesta di Pierluigi): la copertina ufficiale della patch 0.7 con il tasto verso l'articolo.
     // Quando esce la patch successiva si sostituisce o si toglie.
