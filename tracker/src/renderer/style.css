@@ -209,9 +209,9 @@ a.cardimg:hover, a.cardimg:focus-visible { transform: translateY(-3px); border-c
 .hero-main { display: grid; gap: 12px; min-width: 0; }
 .kicker { margin: 0; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pale-muted); }
 /* titolo del pannello, ma grande: il nome del mazzo in celeste come i nomi sul sito */
-/* nome del mazzo con "Crea il tuo layout" a destra (12/10/2026 sera); sotto i 520 px il tasto va a capo */
+/* nome del mazzo e, sul lato destro del riquadro, "Crea il tuo layout" (12–13/10/2026); se non c'è posto il tasto va a capo */
 .deck-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
-.btn-layout { padding: 9px 20px; font-size: 0.82rem; }
+.btn-layout { margin-left: auto; padding: 9px 20px; font-size: 0.82rem; } /* sul lato destro (13/10/2026) */
 .panel h2.deck-name { margin: 0; font-family: var(--display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; color: var(--sky); overflow-wrap: anywhere; }
 .hero .deckstrip { gap: 6px; }
 .deck-leg { margin: 0; color: var(--pale); font-weight: 600; }
