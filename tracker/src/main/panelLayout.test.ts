@@ -10,20 +10,21 @@ import { PANEL_TEMPLATES } from "../shared/types";
 const FULL_HD = { x: 0, y: 0, width: 1920, height: 1080 };
 
 describe("template dei pannelli", () => {
-  test("fasce in alto: sul bordo alto, il mio mazzo a sinistra della mano dell'avversario, il suo a destra", () => {
+  test("fasce: il mio mazzo in basso a sinistra (cresce verso l'alto), l'avversario in alto a destra fino al bordo", () => {
     const me = defaultSpot("strips", "deck", FULL_HD);
     const opp = defaultSpot("strips", "opp", FULL_HD);
-    assert.deepEqual(me, { x: 216, y: 0, width: 568 });
-    assert.deepEqual(opp, { x: 1198, y: 0, width: 586 });
-    // la mano coperta dell'avversario (dal 31,5% al 62% dei disegni) resta libera
-    assert.ok(me.x + me.width < 1920 * 0.42 && opp.x > 1920 * 0.62);
+    assert.deepEqual(me, { x: 0, y: 1080, width: 603, fromBottom: true });
+    assert.deepEqual(opp, { x: 1291, y: 0, width: 629, fromBottom: false });
+    assert.equal(opp.x + opp.width, 1920);
+    // la mia mano (dal 31,5% della larghezza) resta libera
+    assert.ok(me.x + me.width <= 1920 * 0.315);
   });
 
   test("colonne ai lati: il mio mazzo sul bordo sinistro, l'avversario sul bordo destro sopra il pannello del mana", () => {
     const me = defaultSpot("columns", "deck", FULL_HD);
     const opp = defaultSpot("columns", "opp", FULL_HD);
-    assert.deepEqual(me, { x: 0, y: 171, width: 276 });
-    assert.deepEqual(opp, { x: 1620, y: 311, width: 290 });
+    assert.deepEqual(me, { x: 0, y: 171, width: 276, fromBottom: false });
+    assert.deepEqual(opp, { x: 1620, y: 311, width: 290, fromBottom: false });
     assert.ok(opp.x + opp.width <= 1920);
   });
 

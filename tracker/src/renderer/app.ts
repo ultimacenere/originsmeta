@@ -157,7 +157,7 @@ const LABELS = {
     panelStyleNote: "Open panels reopen in the new style; each style remembers where you put them.",
     templates: {
       classic: { name: "Classic", text: "Deck tracker as a grid on the left, the opponent's L-shaped panel top right." },
-      strips: { name: "Top strips", text: "Your 12 cards and Legendary, and the opponent's Legendary and revealed cards, in two strips along the top of the game." },
+      strips: { name: "Strips", text: "Your 12 cards and Legendary in a strip at the bottom left, next to your hand; the opponent's Legendary and revealed cards in a strip at the top right." },
       columns: { name: "Side columns", text: "On the left your deck and the cards left in it; on the right the opponent's cards, the cards left in their deck and both players' mana." },
       custom: { name: "Custom", text: "You choose: layout, drawn cards or names only, cards per row, transparency and what to show." },
     },
@@ -338,7 +338,7 @@ const LABELS = {
     panelStyleNote: "I pannelli aperti si riaprono nello stile nuovo; ogni stile ricorda dove li hai messi.",
     templates: {
       classic: { name: "Classico", text: "Deck tracker a griglia a sinistra, pannello a L dell'avversario in alto a destra." },
-      strips: { name: "Fasce in alto", text: "Le tue 12 carte e la Leggendaria, e la Leggendaria e le carte rivelate dell'avversario, in due fasce sul bordo alto del gioco." },
+      strips: { name: "Fasce", text: "Le tue 12 carte e la Leggendaria in una fascia in basso a sinistra, accanto alla tua mano; la Leggendaria e le carte rivelate dell'avversario in una fascia in alto a destra." },
       columns: { name: "Colonne ai lati", text: "A sinistra il tuo mazzo e le carte che ti restano; a destra le carte dell'avversario, quelle che gli restano e il mana dei due giocatori." },
       custom: { name: "Personalizzato", text: "Scegli tu: disposizione, carte disegnate o solo nomi, carte per fila, trasparenza e cosa mostrare." },
     },
@@ -519,7 +519,7 @@ const LABELS = {
     panelStyleNote: "Los paneles abiertos se vuelven a abrir con el estilo nuevo; cada estilo recuerda dónde los pusiste.",
     templates: {
       classic: { name: "Clásico", text: "Deck tracker en cuadrícula a la izquierda, panel en L del rival arriba a la derecha." },
-      strips: { name: "Franjas arriba", text: "Tus 12 cartas y la Legendaria, y la Legendaria y las cartas reveladas del rival, en dos franjas en el borde superior del juego." },
+      strips: { name: "Franjas", text: "Tus 12 cartas y la Legendaria en una franja abajo a la izquierda, junto a tu mano; la Legendaria y las cartas reveladas del rival en una franja arriba a la derecha." },
       columns: { name: "Columnas laterales", text: "A la izquierda tu mazo y las cartas que te quedan; a la derecha las cartas del rival, las que le quedan y el maná de los dos jugadores." },
       custom: { name: "Personalizado", text: "Tú eliges: disposición, cartas dibujadas o solo nombres, cartas por fila, transparencia y qué mostrar." },
     },
@@ -891,7 +891,7 @@ function scannerPanel(s: AppState) {
  */
 const TEMPLATE_SKETCH: Record<PanelTemplate, string> = {
   classic: '<rect class="me" x="1" y="9" width="10" height="22" rx="1.5"/><rect class="opp" x="44" y="2" width="19" height="6" rx="1.5"/><rect class="opp" x="55" y="2" width="8" height="22" rx="1.5"/>',
-  strips: '<rect class="me" x="7" y="1" width="19" height="7" rx="1.5"/><rect class="opp" x="40" y="1" width="19.5" height="7" rx="1.5"/>',
+  strips: '<rect class="me" x="1" y="29" width="20" height="6" rx="1.5"/><rect class="opp" x="43" y="1" width="20" height="6" rx="1.5"/>',
   columns: '<rect class="me" x="1" y="6" width="9" height="20" rx="1.5"/><rect class="opp" x="54" y="10" width="9.5" height="17" rx="1.5"/>',
   custom: '<rect class="me" x="2" y="11" width="10" height="5" rx="1.5"/><rect class="me" x="2" y="18" width="10" height="5" rx="1.5"/><rect class="opp" x="47" y="2" width="15" height="5" rx="1.5"/><path class="pen" d="M26 31l10-10 3 3-10 10h-3z"/>',
 };

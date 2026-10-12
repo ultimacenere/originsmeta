@@ -404,9 +404,11 @@ const TEMPLATE_FILE = "panel-template.json";
 // dall'11/10/2026 sera (disegno di Pierluigi sul tabellone) il Deck tracker parte nella fascia libera a sinistra e il
 // pannello a L dell'avversario nell'angolo in alto a destra, sopra il pannello del mana del gioco
 // `keep`: chiusa dall'app che si blocca (access.ts), non dal giocatore: la preferenza "aperta" resta e si riapre allo sblocco
-const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean; keep: boolean }> = {
-  deck: { win: null, prefs: { open: false }, file: "deck.json", left: true, keep: false },
-  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false, keep: false },
+// `bottom`: la finestra è partita attaccata al bordo basso dello schermo (fascia in basso, posizione di partenza): alla
+// prima misura del contenuto (deck:fit) sale quanto serve per restarci attaccata
+const panels: Record<PanelKind, { win: BrowserWindow | null; prefs: PanelPrefs; file: string; left: boolean; keep: boolean; bottom: number | null }> = {
+  deck: { win: null, prefs: { open: false }, file: "deck.json", left: true, keep: false, bottom: null },
+  opp: { win: null, prefs: { open: false }, file: "opponent.json", left: false, keep: false, bottom: null },
 };
 /** Larghezza iniziale del pannello a L dell'avversario: braccio in alto più colonna sul bordo destro. */
 const OPP_L_WIDTH = 480;
@@ -491,8 +493,11 @@ function panelBounds(k: PanelKind) {
     const saved = p.spots?.[t];
     const height = 160; // la decide il contenuto (deck:fit)
     const on = saved ? screen.getAllDisplays().some((d) => saved.x >= d.bounds.x - 8 && saved.y >= d.bounds.y - 8 && saved.x + 40 <= d.bounds.x + d.bounds.width && saved.y + 20 <= d.bounds.y + d.bounds.height) : false;
+    panels[k].bottom = null;
     if (saved && on) return { x: saved.x, y: saved.y, width: clampWidth(t, saved.width), height };
-    return { ...defaultSpot(t, k, screen.getPrimaryDisplay().bounds), height };
+    const spot = defaultSpot(t, k, screen.getPrimaryDisplay().bounds);
+    if (spot.fromBottom) panels[k].bottom = spot.y;
+    return { x: spot.x, y: spot.fromBottom ? spot.y - height : spot.y, width: spot.width, height };
   }
   const area = screen.getPrimaryDisplay().workArea;
   // larghezza scelta dal giocatore (all'inizio 230 per il mio mazzo, 3 carte per fila dall'11/10 sera; 480 per il
@@ -1088,6 +1093,13 @@ function registerIpc() {
     // il pannello a L resta largo OPP_L_WIDTH anche se Windows l'ha allargato di qualche pixel (scala al 150%)
     const width = panelTemplate === "classic" && panelOpen("opp") && win === panels.opp.win ? OPP_L_WIDTH : w;
     if (Math.abs(want - cur) > 2 || width !== w) win.setContentSize(width, want);
+    // fascia partita attaccata al bordo basso: sale quanto è alta, una volta sola (poi la posizione è del giocatore)
+    const k = PANEL_KINDS.find((x) => panelOpen(x) && panels[x].win === win);
+    if (k && panels[k].bottom !== null) {
+      const b = win.getBounds();
+      win.setBounds({ x: b.x, y: panels[k].bottom! - b.height, width: b.width, height: b.height });
+      panels[k].bottom = null;
+    }
   });
   ipcMain.handle("tracker:overlay-click-through", (e, on: unknown) => (fromOpenApp(e) ? setClickThrough(on === true) : overlayPrefs.clickThrough));
   ipcMain.handle("tracker:overlay-session", (e) => {

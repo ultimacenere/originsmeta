@@ -6,8 +6,10 @@
  * Le posizioni sono frazioni dello schermo su cui sta il gioco, misurate sui disegni (gioco a schermo intero o finestra
  * senza bordi, 16:9): l'app non sa dove sta la finestra del gioco (la ripresa dello schermo non dà la posizione),
  * quindi il giocatore sposta i pannelli e la posizione si salva, una per template.
- * - Fasce in alto (`strips`): sul bordo alto, il mio mazzo fra il mio nome e la mano coperta dell'avversario
- *   (dall'11,25% al 40,9% della larghezza), quello dell'avversario fra la sua mano e l'ingranaggio (dal 62,4% al 92,9%).
+ * - Fasce (`strips`): il mio mazzo in basso a sinistra, attaccato al bordo sotto, accanto alla mia mano (dal bordo al
+ *   31,4% della larghezza); quello dell'avversario in alto a destra, attaccato al bordo alto e a quello destro (dal 67,25%).
+ *   Prima versione (fasce tutte e due in alto) cambiata con lo screenshot di Pierluigi del 12/10/2026 sera: "versione due
+ *   sopra cambiare così come lo vedi nello screen". La fascia in basso cresce verso l'alto (`fromBottom`).
  * - Colonne ai lati (`columns`): a sinistra del tabellone il mio mazzo (dal bordo al 14,4%, dal 15,8% dell'altezza); a
  *   destra, sopra il pannello del mana del gioco, quello dell'avversario (dall'84,4% al 99,5%, dal 28,8%).
  * - Classico (`classic`): le misure di sempre, in main.ts (Deck tracker largo 230 nella fascia a sinistra, pannello a L
@@ -20,9 +22,9 @@ import { PANEL_TEMPLATES, type PanelCustom, type PanelTemplate } from "../shared
 export type PanelKind = "deck" | "opp";
 type Rect = { x: number; y: number; width: number; height: number };
 
-/** Frazioni dello schermo: sinistra, alto, larghezza. */
-const SPOTS: Record<Exclude<PanelTemplate, "classic">, Record<PanelKind, { left: number; top: number; width: number }>> = {
-  strips: { deck: { left: 0.1125, top: 0, width: 0.296 }, opp: { left: 0.624, top: 0, width: 0.305 } },
+/** Frazioni dello schermo: sinistra, alto (o il bordo basso, con `fromBottom`), larghezza. */
+const SPOTS: Record<Exclude<PanelTemplate, "classic">, Record<PanelKind, { left: number; top: number; width: number; fromBottom?: true }>> = {
+  strips: { deck: { left: 0, top: 1, width: 0.314, fromBottom: true }, opp: { left: 0.6725, top: 0, width: 0.3275 } },
   columns: { deck: { left: 0, top: 0.158, width: 0.144 }, opp: { left: 0.844, top: 0.288, width: 0.151 } },
   custom: { deck: { left: 0, top: 0.158, width: 0.144 }, opp: { left: 0.844, top: 0.288, width: 0.151 } },
 };
@@ -80,8 +82,14 @@ export function clampWidth(template: PanelTemplate, width: number): number {
   return Math.round(Math.min(Math.max(width, min), max));
 }
 
-/** Dove parte un pannello dei template nuovi, sullo schermo `screen` (i suoi limiti interi, non l'area di lavoro). */
-export function defaultSpot(template: Exclude<PanelTemplate, "classic">, kind: PanelKind, screen: Rect): { x: number; y: number; width: number } {
+/**
+ * Dove parte un pannello dei template nuovi, sullo schermo `screen` (i suoi limiti interi, non l'area di lavoro). Con
+ * `fromBottom` `y` è il bordo basso: l'altezza la decide il contenuto, quindi chi apre la finestra la mette sopra.
+ */
+export function defaultSpot(template: Exclude<PanelTemplate, "classic">, kind: PanelKind, screen: Rect): { x: number; y: number; width: number; fromBottom: boolean } {
   const s = SPOTS[template][kind];
-  return { x: Math.round(screen.x + screen.width * s.left), y: Math.round(screen.y + screen.height * s.top), width: clampWidth(template, screen.width * s.width) };
+  const width = clampWidth(template, screen.width * s.width);
+  // mai oltre il bordo destro (l'avversario sta attaccato al bordo)
+  const x = Math.min(Math.round(screen.x + screen.width * s.left), screen.x + screen.width - width);
+  return { x, y: Math.round(screen.y + screen.height * s.top), width, fromBottom: s.fromBottom === true };
 }

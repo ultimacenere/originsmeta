@@ -195,7 +195,9 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
  * e si allargano con la maniglia; le carte seguono la larghezza.
  */
 .layout-strips .dt.panel-x, .layout-columns .dt.panel-x { position: relative; margin: 0; padding: 6px; gap: 5px; background: rgba(46, 30, 140, 0.82); border: 2px solid var(--sky); border-radius: 10px; }
+/* l'avversario in alto (aperta verso il bordo alto), il mio mazzo in basso (aperta verso il bordo basso) */
 .layout-strips .dt.panel-x { padding-bottom: 2px; border-top-width: 0; border-radius: 0 0 10px 10px; }
+.layout-strips:not(.is-opp) .dt.panel-x { border-top-width: 2px; border-bottom-width: 0; border-radius: 10px 10px 0 0; }
 .in-window.is-opp.layout-strips .dt, .in-window.is-opp.layout-columns .dt { -webkit-app-region: drag; }
 .srow, .cgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
 .srow { grid-template-columns: repeat(13, minmax(0, 1fr)); }
