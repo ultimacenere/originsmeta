@@ -14,7 +14,10 @@
  *   destra, sopra il pannello del mana del gioco, quello dell'avversario (dall'84,4% al 99,5%, dal 28,8%).
  * - Classico (`classic`): dal 13/10/2026 un misto (Pierluigi: "al posto della classica, crea un mix con il deck di
  *   sinistra come colonna ai lati mentre il deck avversario come fasce e chiamiamola classica"): il mio mazzo come nelle
- *   Colonne, l'avversario come nelle Fasce (`panelShape`). Fino al 12/10 era il Deck tracker a griglia con il pannello a L.
+ *   Colonne, l'avversario come nelle Fasce (`panelShape`), con posizioni sue prese dallo screenshot di Pierluigi del
+ *   13/10 ("per la versione classica guarda le posizioni"): il mio mazzo sul bordo sinistro dal 31,7% dell'altezza (la
+ *   linguetta compresa), largo il 14,15%; l'avversario in alto a destra dal 67,65% fino al bordo. Fino al 12/10 era il
+ *   Deck tracker a griglia con il pannello a L.
  * - Personalizzato (`custom`): parte dove partono le colonne, con le opzioni di `PanelCustom` (`readCustom` le
  *   controlla una per una: un file vecchio o scritto a mano non rompe i pannelli).
  */
@@ -30,7 +33,8 @@ export function panelShape(template: PanelTemplate, kind: PanelKind): PanelShape
 }
 
 /** Frazioni dello schermo: sinistra, alto (o il bordo basso, con `fromBottom`), larghezza. */
-const SPOTS: Record<PanelShape, Record<PanelKind, { left: number; top: number; width: number; fromBottom?: true }>> = {
+const SPOTS: Record<PanelTemplate, Record<PanelKind, { left: number; top: number; width: number; fromBottom?: true }>> = {
+  classic: { deck: { left: 0, top: 0.317, width: 0.1415 }, opp: { left: 0.6765, top: 0, width: 0.3235 } },
   strips: { deck: { left: 0, top: 1, width: 0.314, fromBottom: true }, opp: { left: 0.6725, top: 0, width: 0.3275 } },
   columns: { deck: { left: 0, top: 0.158, width: 0.144 }, opp: { left: 0.844, top: 0.288, width: 0.151 } },
   custom: { deck: { left: 0, top: 0.158, width: 0.144 }, opp: { left: 0.844, top: 0.288, width: 0.151 } },
@@ -93,7 +97,7 @@ export function clampWidth(template: PanelTemplate, kind: PanelKind, width: numb
  * `fromBottom` `y` è il bordo basso: l'altezza la decide il contenuto, quindi chi apre la finestra la mette sopra.
  */
 export function defaultSpot(template: PanelTemplate, kind: PanelKind, screen: Rect): { x: number; y: number; width: number; fromBottom: boolean } {
-  const s = SPOTS[panelShape(template, kind)][kind];
+  const s = SPOTS[template][kind];
   const width = clampWidth(template, kind, screen.width * s.width);
   // mai oltre il bordo destro (l'avversario sta attaccato al bordo)
   const x = Math.min(Math.round(screen.x + screen.width * s.left), screen.x + screen.width - width);

@@ -55,8 +55,10 @@ describe("template dei pannelli", () => {
   test("classico (13/10/2026): il mio mazzo come nelle Colonne, l'avversario come nelle Fasce", () => {
     assert.equal(panelShape("classic", "deck"), "columns");
     assert.equal(panelShape("classic", "opp"), "strips");
-    assert.deepEqual(defaultSpot("classic", "deck", FULL_HD), defaultSpot("columns", "deck", FULL_HD));
-    assert.deepEqual(defaultSpot("classic", "opp", FULL_HD), defaultSpot("strips", "opp", FULL_HD));
+    // posizioni dallo screenshot di Pierluigi del 13/10: il mio mazzo sul bordo sinistro a un terzo dell'altezza,
+    // l'avversario in alto a destra fino al bordo
+    assert.deepEqual(defaultSpot("classic", "deck", FULL_HD), { x: 0, y: 342, width: 272, fromBottom: false });
+    assert.deepEqual(defaultSpot("classic", "opp", FULL_HD), { x: 1299, y: 0, width: 621, fromBottom: false });
     assert.equal(panelShape("strips", "deck"), "strips");
   });
 
