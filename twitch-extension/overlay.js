@@ -157,9 +157,8 @@
   // codice e lo stesso CSS dell'app), nelle stesse proporzioni dello schermo dello streamer. Il video sta nel player in
   // proporzione (bande nere se il player ha un'altra forma); i pannelli restano fuori dalle fasce dei controlli del
   // player (in alto e in basso) e chi guarda li può nascondere. Senza stile (app più vecchia) resta la linguetta.
+  // Dal 14/10/2026 i pannelli stanno esattamente dove li vede lo streamer, anche sopra le fasce dei controlli.
   var PANEL_LANG = OM.lang === "it" || OM.lang === "es" ? OM.lang : "en";
-  var SAFE_TOP = 70;
-  var SAFE_BOTTOM = 90;
   var mode = "tab";
   var fullState = null; // lo stato con lo stile dei pannelli (parseLiveState del sito, in panels.js)
   var appHidden = false; // chi guarda ha nascosto i pannelli
@@ -201,9 +200,10 @@
   }
 
   /**
-   * La posizione dei pannelli: stessa posizione e stessa misura in proporzione allo schermo dello streamer, attaccati al
-   * bordo più vicino (un pannello a destra resta sul bordo destro anche se si rimpicciolisce). Un pannello più alto dello
-   * spazio fra le fasce dei controlli del player si rimpicciolisce finché ci sta.
+   * La posizione dei pannelli: esattamente gli stessi punti e la stessa misura, in proporzione, dello schermo dello
+   * streamer (14/10/2026, prova in diretta di Pierluigi: "la posizione di quelli di Twitch non è la stessa"; prima i
+   * pannelli si spostavano fuori dalle fasce dei controlli del player). Un pannello più alto del video si rimpicciolisce,
+   * attaccato al bordo più vicino.
    */
   function placeApp() {
     if (!fullState || !fullState.ui) return;
@@ -213,7 +213,7 @@
     var scale = Math.min(W / ui.screen.w, H / ui.screen.h);
     var vx = (W - ui.screen.w * scale) / 2;
     var vy = (H - ui.screen.h * scale) / 2;
-    var avail = Math.max(60, H - SAFE_TOP - SAFE_BOTTOM);
+    var avail = Math.max(60, ui.screen.h * scale);
     ["me", "opp"].forEach(function (side) {
       var h = appHosts[side];
       var rect = ui.panels[side === "me" ? "deck" : "opp"];
@@ -226,8 +226,7 @@
       var left = right ? vx + (rect.x + rect.w) * scale - width : vx + rect.x * scale;
       var bottomAnchored = rect.y + rect.h / 2 > ui.screen.h / 2;
       var top = bottomAnchored ? vy + (rect.y + rect.h) * scale - height : vy + rect.y * scale;
-      top = Math.min(Math.max(top, SAFE_TOP), H - SAFE_BOTTOM - height);
-      if (top < SAFE_TOP) top = SAFE_TOP;
+      top = Math.min(Math.max(top, vy), vy + ui.screen.h * scale - height);
       h.host.style.left = Math.round(Math.max(0, Math.min(left, W - width))) + "px";
       h.host.style.top = Math.round(top) + "px";
       h.host.style.transform = "scale(" + s.toFixed(4) + ")";

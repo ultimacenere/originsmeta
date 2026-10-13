@@ -189,6 +189,8 @@ const LABELS = {
     deckWindow: "Show the deck tracker",
     oppWindow: "Show the opponent's cards",
     inMatch: "Show the panels only during a match",
+    hideStream: "Hide the panels from the stream",
+    hideStreamNote: "OBS and other screen captures don't record the panels: only you see them. Use it with the OriginsMeta Deck tracker extension in “Like the app” mode, which shows the panels to your viewers.",
     inMatchNote: "They show up at the first round and disappear about 30 seconds after the match ends, in the OBS source too. It needs the screen scanner: with it off, the panels always stay visible.",
     oppShort: "Opponent",
     allOff: "All off",
@@ -374,6 +376,8 @@ const LABELS = {
     deckWindow: "Mostra il deck tracker",
     oppWindow: "Mostra le carte dell'avversario",
     inMatch: "Mostra i pannelli solo durante la partita",
+    hideStream: "Nascondi i pannelli dalla diretta",
+    hideStreamNote: "OBS e le altre riprese dello schermo non registrano i pannelli: li vedi solo tu. Usalo con l'estensione OriginsMeta Deck tracker in modalità “Come l'app”, che i pannelli li mostra a chi guarda.",
     inMatchNote: "Compaiono al primo round e spariscono una trentina di secondi dopo la fine, anche nella sorgente per OBS. Serve lo scanner dello schermo: spento, i pannelli restano sempre visibili.",
     oppShort: "Avversario",
     allOff: "Tutto spento",
@@ -559,6 +563,8 @@ const LABELS = {
     deckWindow: "Mostrar el deck tracker",
     oppWindow: "Mostrar las cartas del rival",
     inMatch: "Mostrar los paneles solo durante la partida",
+    hideStream: "Ocultar los paneles del directo",
+    hideStreamNote: "OBS y las demás capturas de pantalla no graban los paneles: solo los ves tú. Úsalo con la extensión OriginsMeta Deck tracker en modo “Como la app”, que muestra los paneles a tu público.",
     inMatchNote: "Aparecen en la primera ronda y desaparecen unos 30 segundos después del final, también en la fuente para OBS. Necesita el escáner de pantalla: apagado, los paneles siempre quedan visibles.",
     oppShort: "Rival",
     allOff: "Todo apagado",
@@ -988,6 +994,8 @@ function overlayPanel(s: AppState) {
       <div class="row"><label class="switch"><input type="checkbox" id="opp-window"${o.oppWindow ? " checked" : ""} /> ${esc(L.oppWindow)}</label></div>
       <div class="row"><label class="switch"><input type="checkbox" id="panels-in-match"${o.onlyInMatch ? " checked" : ""} /> ${esc(L.inMatch)}</label></div>
       <p class="fine">${esc(L.inMatchNote)}</p>
+      <div class="row"><label class="switch"><input type="checkbox" id="panels-hide-stream"${o.hideFromStream ? " checked" : ""} /> ${esc(L.hideStream)}</label></div>
+      <p class="fine">${esc(L.hideStreamNote)}</p>
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
@@ -1295,6 +1303,7 @@ root.addEventListener("change", async (e) => {
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
   if (t.id === "opp-window") t.checked = await window.tracker.setOppWindow(t.checked);
   if (t.id === "panels-in-match") t.checked = await window.tracker.setPanelsOnlyInMatch(t.checked);
+  if (t.id === "panels-hide-stream") t.checked = await window.tracker.setPanelsHideFromStream(t.checked);
   if (t.name === "panel-template" && t.checked) await window.tracker.setPanelTemplate(t.value as PanelTemplate);
   if (t.id === "scanner-on") t.checked = await window.tracker.setScanner(t.checked);
   // "Sposta" acceso = la finestra non lascia passare i clic

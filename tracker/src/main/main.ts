@@ -364,6 +364,7 @@ function state(): AppState {
       template: panelTemplate,
       custom: panelCustom,
       onlyInMatch: panelsOnlyInMatch,
+      hideFromStream: panelsHideFromStream,
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
       oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
@@ -456,6 +457,28 @@ function syncPanelVisibility() {
   }
 }
 setInterval(syncPanelVisibility, 1500);
+/**
+ * Pannelli esclusi dalle riprese dello schermo (0.4.3, 14/10/2026, prova in diretta di Pierluigi con l'estensione Twitch
+ * "come l'app": "sono duplicati"). OBS che riprende lo schermo intero metteva in onda anche le finestre dei pannelli, e
+ * l'estensione ne disegnava un'altra copia sopra. Con l'opzione accesa Windows esclude le finestre dei pannelli da ogni
+ * ripresa (`setContentProtection`): il giocatore le vede, la diretta no. Lo scanner non ne risente: riprende solo la
+ * finestra del gioco.
+ */
+let panelsHideFromStream = false;
+function applyHideFromStream(win: BrowserWindow) {
+  try {
+    win.setContentProtection(panelsHideFromStream);
+  } catch {
+    // Windows troppo vecchio: i pannelli restano nelle riprese
+  }
+}
+function setPanelsHideFromStream(on: boolean): boolean {
+  panelsHideFromStream = on;
+  savePanelTemplate();
+  for (const k of PANEL_KINDS) if (panelOpen(k)) applyHideFromStream(panels[k].win!);
+  push();
+  return on;
+}
 function setPanelsOnlyInMatch(on: boolean): boolean {
   panelsOnlyInMatch = on;
   savePanelTemplate();
@@ -512,17 +535,18 @@ function loadPanelPrefs() {
     }
   }
   try {
-    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown };
+    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown; hideFromStream?: unknown };
     panelTemplate = readTemplate(saved.template);
     panelCustom = readCustom(saved.custom);
     panelsOnlyInMatch = saved.onlyInMatch === true;
+    panelsHideFromStream = saved.hideFromStream === true;
   } catch {
     // prima volta: classico
   }
 }
 function savePanelTemplate() {
   try {
-    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch }));
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch, hideFromStream: panelsHideFromStream }));
   } catch {
     // non essenziale
   }
@@ -588,6 +612,7 @@ function openPanel(k: PanelKind) {
     },
   });
   panels[k].win = win;
+  applyHideFromStream(win);
   lockZoom(win);
   win.removeMenu();
   win.setAlwaysOnTop(true, "screen-saver");
@@ -1079,6 +1104,7 @@ function registerIpc() {
   ipcMain.handle("tracker:panel-template", (e, t: unknown) => (fromOpenApp(e) ? setPanelTemplate(readTemplate(t)) : panelTemplate));
   ipcMain.handle("tracker:panel-custom", (e, c: unknown) => (fromOpenApp(e) ? setPanelCustom(c) : panelCustom));
   ipcMain.handle("tracker:panels-in-match", (e, on: unknown) => (fromOpenApp(e) ? setPanelsOnlyInMatch(on === true) : panelsOnlyInMatch));
+  ipcMain.handle("tracker:panels-hide-stream", (e, on: unknown) => (fromOpenApp(e) ? setPanelsHideFromStream(on === true) : panelsHideFromStream));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {

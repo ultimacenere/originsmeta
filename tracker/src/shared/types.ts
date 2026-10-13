@@ -123,6 +123,8 @@ export type OverlayState = {
   custom: PanelCustom;
   /** i pannelli si vedono solo durante la partita (0.4.1, serve lo scanner acceso) */
   onlyInMatch: boolean;
+  /** i pannelli non finiscono nelle riprese dello schermo (OBS): li mostra l'estensione Twitch (0.4.3, 14/10/2026) */
+  hideFromStream: boolean;
   /** la finestra sopra il gioco è aperta */
   window: boolean;
   /** la finestra lascia passare i clic al gioco */
@@ -199,6 +201,8 @@ export type TrackerApi = {
   setPanelCustom(custom: PanelCustomChange | "reset"): Promise<PanelCustom>;
   /** Pannelli solo durante la partita (true) o sempre (false); restituisce la scelta in uso. */
   setPanelsOnlyInMatch(on: boolean): Promise<boolean>;
+  /** Pannelli esclusi dalle riprese dello schermo (true) o no; restituisce la scelta in uso. */
+  setPanelsHideFromStream(on: boolean): Promise<boolean>;
   /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
   quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
