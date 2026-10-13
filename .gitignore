@@ -43,3 +43,6 @@ next-env.d.ts
 # Claude Code (anteprime e worktree locali)
 .claude/
 !.env.example
+
+# zip dell'estensione Twitch da caricare sulla console (twitch-extension/README.md)
+/originsmeta-deck-tracker.zip
