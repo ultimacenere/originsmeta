@@ -89,3 +89,41 @@ export function installScript(input: { pid: number; source: string; target: stri
     "",
   ].join("\r\n");
 }
+
+/**
+ * Gli avvisi di Windows dell'aggiornamento (13/10/2026, Pierluigi: "la gente non la tiene aperta a babbo morto, manda
+ * una notifica se c'è da aggiornare dicendo di tenere il gioco chiuso fino a fine aggiornamento"): `found` quando
+ * l'app trova una versione nuova e la scarica, `close` quando è pronta ma il gioco è aperto (una volta sola), `done`
+ * al primo avvio della versione nuova. Partono dall'icona vicino all'orologio (updater.ts, main.ts). {v} = versione.
+ */
+export type UpdateNotice = "found" | "close" | "done";
+export const UPDATE_NOTICES: Record<"en" | "it" | "es", { title: string } & Record<UpdateNotice, string>> = {
+  en: {
+    title: "OriginsMeta Tracker update",
+    found: "Version {v} is on its way: keep Origins TCG closed until the app reopens by itself (about a minute).",
+    close: "Version {v} is ready: close Origins TCG to install it. The app reopens by itself, then you can play again.",
+    done: "OriginsMeta Tracker is up to date (version {v}): you can open Origins TCG.",
+  },
+  it: {
+    title: "Aggiornamento di OriginsMeta Tracker",
+    found: "Sta arrivando la versione {v}: tieni chiuso Origins TCG finché l'app non si riapre da sola (circa un minuto).",
+    close: "La versione {v} è pronta: chiudi Origins TCG per installarla. L'app si riapre da sola, poi puoi tornare a giocare.",
+    done: "OriginsMeta Tracker è aggiornato alla versione {v}: puoi aprire Origins TCG.",
+  },
+  es: {
+    title: "Actualización de OriginsMeta Tracker",
+    found: "Llega la versión {v}: mantén Origins TCG cerrado hasta que la app se vuelva a abrir sola (más o menos un minuto).",
+    close: "La versión {v} está lista: cierra Origins TCG para instalarla. La app se vuelve a abrir sola y luego puedes seguir jugando.",
+    done: "OriginsMeta Tracker está actualizado (versión {v}): ya puedes abrir Origins TCG.",
+  },
+};
+
+export function updateNotice(lang: "en" | "it" | "es", kind: UpdateNotice, version: string): { title: string; content: string } {
+  const t = UPDATE_NOTICES[lang];
+  return { title: t.title, content: t[kind].replace("{v}", version) };
+}
+
+/** Il primo avvio di una versione nuova: la versione salvata l'ultima volta è più vecchia (prima installazione: niente avviso). */
+export function justUpdated(saved: string | null, current: string): boolean {
+  return saved !== null && isNewer(current, saved);
+}

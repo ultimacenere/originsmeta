@@ -386,6 +386,12 @@ Twitch chiesta dagli streamer (docs/twitch.md).
   del Deck tracker (`liveStateOf` di src/lib/tracker/live.ts) quando cambia, al massimo ogni 2 secondi; il sito lo tiene
   solo se l'account ha collegato un canale Twitch, altrimenti risponde `linked: false` e l'app aspetta 5 minuti.
   Senza account collegato non parte niente. Dettagli in docs/twitch.md.
+- **Avvisi dell'aggiornamento** (Pierluigi: "la gente non la tiene aperta a babbo morto, manda una notifica se c'è da
+  aggiornare dicendo di tenere il gioco chiuso fino a fine aggiornamento"): fumetti di Windows dall'icona vicino
+  all'orologio (`tray.displayBalloon`, niente collegamento nel menu Start), testi in `UPDATE_NOTICES` di updateRules.ts:
+  versione trovata ("tieni chiuso Origins TCG finché l'app non si riapre da sola"), pronta col gioco aperto ("chiudi
+  Origins TCG per installarla", una volta per versione) e, al primo avvio della versione nuova (`last-version.json`,
+  `justUpdated`), "puoi aprire Origins TCG". La riga in cima all'app resta.
 
 ## Il sito (Fase 3)
 

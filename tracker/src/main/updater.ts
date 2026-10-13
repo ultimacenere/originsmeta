@@ -20,7 +20,7 @@ import { execFile, spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { installScript, isNewer, launcherScript, pickRelease, UPDATE_API, UPDATE_ASSET, type Release } from "./updateRules";
+import { installScript, isNewer, launcherScript, pickRelease, UPDATE_API, UPDATE_ASSET, type Release, type UpdateNotice } from "./updateRules";
 import { EXE_NAME, LEGACY_EXE_NAME, exeAfterUpdate } from "./appIdentity";
 
 /** Primo controllo dopo l'avvio (ORIGINSMETA_UPDATE_DELAY_MS per le prove). */
@@ -35,6 +35,8 @@ export class Updater {
   status: UpdateState = { state: "idle", version: null };
   private timer: ReturnType<typeof setTimeout> | null = null;
   private busy = false;
+  /** l'avviso "chiudi il gioco" parte una volta per versione */
+  private askedToClose: string | null = null;
   private readonly current: string;
 
   constructor(
@@ -44,6 +46,8 @@ export class Updater {
       onChange: () => void;
       /** chiude l'app per l'aggiornamento */
       quit: () => void;
+      /** avviso di Windows (13/10/2026): versione trovata, gioco da chiudere */
+      notify?: (kind: UpdateNotice, version: string) => void;
     },
   ) {
     // per le prove: ORIGINSMETA_UPDATE_FROM finge una versione più vecchia
@@ -85,6 +89,8 @@ export class Updater {
         this.again(UPDATE_EVERY_MS);
         return;
       }
+      // avviso subito, così chi apre l'app solo per giocare sa che deve aspettare a lanciare il gioco
+      this.deps.notify?.("found", rel.version);
       const dir = await this.download(rel);
       this.set({ state: "ready", version: rel.version });
       await this.installWhenIdle(dir, rel.version);
@@ -131,6 +137,10 @@ export class Updater {
 
   private async installWhenIdle(source: string, version: string): Promise<void> {
     if (!(await this.deps.canInstall().catch(() => false))) {
+      if (this.askedToClose !== version) {
+        this.askedToClose = version;
+        this.deps.notify?.("close", version);
+      }
       setTimeout(() => void this.installWhenIdle(source, version), UPDATE_RETRY_MS);
       return;
     }

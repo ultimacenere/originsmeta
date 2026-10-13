@@ -1,7 +1,7 @@
 /** Test delle regole dell'aggiornamento automatico (updateRules.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { installScript, isNewer, launcherScript, parseVersion, pickRelease, trustedAssetUrl, UPDATE_ASSET } from "./updateRules";
+import { installScript, isNewer, justUpdated, launcherScript, parseVersion, pickRelease, trustedAssetUrl, updateNotice, UPDATE_ASSET } from "./updateRules";
 
 const url = (v: string) => `https://github.com/ultimacenere/originsmeta/releases/download/analytics-v${v}/${UPDATE_ASSET}`;
 const release = (v: string, over: Record<string, unknown> = {}, asset: Record<string, unknown> = {}) => ({
@@ -48,4 +48,19 @@ test("script di installazione: aspetta l'app, copia, riapre", () => {
   assert.match(s, /start "" "C:\\Giochi\\OriginsMeta\\OriginsMeta Analytics.exe"/);
   assert.ok(s.includes("\r\n"), "fine riga di Windows");
   assert.ok(!installScript({ pid: 1, source: 'a"b', target: "c", exe: "d", log: "e" }).includes('a"b'), "niente virgolette dentro i percorsi");
+});
+
+test("avvisi dell'aggiornamento: tre lingue, la versione nel testo, \"aggiornata\" solo dopo un aggiornamento (13/10/2026)", () => {
+  for (const lang of ["en", "it", "es"] as const)
+    for (const kind of ["found", "close", "done"] as const) {
+      const n = updateNotice(lang, kind, "0.4.2");
+      assert.ok(n.title && n.content.includes("0.4.2") && !n.content.includes("{v}"), `${lang} ${kind}`);
+      // Windows taglia i fumetti lunghi: restano sotto i 200 caratteri
+      assert.ok(n.content.length <= 200, `${lang} ${kind} troppo lungo`);
+    }
+  assert.match(updateNotice("it", "found", "0.4.2").content, /tieni chiuso Origins TCG/);
+  assert.equal(justUpdated("0.4.1", "0.4.2"), true);
+  assert.equal(justUpdated("0.4.2", "0.4.2"), false);
+  assert.equal(justUpdated(null, "0.4.2"), false);
+  assert.equal(justUpdated("0.5.0", "0.4.2"), false);
 });

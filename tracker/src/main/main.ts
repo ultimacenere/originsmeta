@@ -62,6 +62,7 @@ import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { LivePusher, LIVE_MIN_MS } from "./twitchLive";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
+import { justUpdated, updateNotice, type UpdateNotice } from "./updateRules";
 import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
@@ -152,6 +153,29 @@ const card: CardLookup = (key) => {
   const c = CARDS[key];
   return c ? { name: c.n, legendary: c.l === 1, slug: c.s, mana: c.m ?? null, type: c.t } : undefined;
 };
+
+/* ---------- avviso dopo un aggiornamento (13/10/2026) ---------- */
+
+/** Al primo avvio di una versione nuova (versione salvata in last-version.json più vecchia): "puoi aprire il gioco". */
+function noteVersion(notify: (kind: UpdateNotice, version: string) => void) {
+  const file = path.join(app.getPath("userData"), "last-version.json");
+  let saved: string | null = null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, "utf8")) as { version?: unknown };
+    saved = typeof raw.version === "string" ? raw.version : null;
+  } catch {
+    // prima installazione o file illeggibile: niente avviso
+  }
+  const current = app.getVersion();
+  if (justUpdated(saved, current)) setTimeout(() => notify("done", current), 3000);
+  if (saved !== current) {
+    try {
+      fs.writeFileSync(file, JSON.stringify({ version: current }));
+    } catch {
+      // non essenziale
+    }
+  }
+}
 
 /* ---------- lingua del menu dell'icona ---------- */
 
@@ -1211,7 +1235,14 @@ async function boot() {
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)
+    // avvisi di Windows dell'aggiornamento (13/10/2026): dal fumetto dell'icona, che non chiede collegamenti nel menu Start
+    const notifyUpdate = (kind: UpdateNotice, version: string) => {
+      const n = updateNotice(lang(), kind, version);
+      tray?.displayBalloon({ title: n.title, content: n.content, iconType: "info", respectQuietTime: false });
+    };
+    noteVersion(notifyUpdate);
     updater = new Updater({
+      notify: notifyUpdate,
       canInstall: async () => {
         if (frames?.running && frames.live()?.inMatch) return false;
         const sources = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 0, height: 0 } });
