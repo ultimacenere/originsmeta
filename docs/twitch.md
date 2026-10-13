@@ -84,6 +84,10 @@ tracker scelto dall'utente?", poi "sì procedi, con la scelta nella configurazio
 - **Senza pannelli sul PC** (Pierluigi: "non si può scegliere di avere quelli di Twitch senza che noi a schermo abbiamo
   effettivamente i due tracker visibili?"): dalla 0.4.5 un pannello chiuso nell'app va comunque su Twitch, nella
   posizione salvata per lo stile in uso o in quella di partenza (`liveUi` di main.ts).
+- **Carte in mano** (domanda di Davdas: "perché non anche le carte in mano?"; app 0.4.6): lo scanner manda anche le carte
+  in mano con il bordo sinistro di ognuna (`readHandAt` di recognize.ts, `live.hand`), l'estensione ci mette le zone
+  con la stessa geometria (`handRects`). Provate su un fotogramma vero.
+- **Anteprima sempre a destra** (Pierluigi: "il puntatore del mouse è uno per persona, non ha senso sta divisione").
 
 ## Da fare per andare online
 

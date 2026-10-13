@@ -98,6 +98,8 @@
       }
       if (l.direction === "left" || l.direction === "right" || l.direction === null) live.direction = l.direction;
       if (Array.isArray(l.board) && l.board.length === BOARD_SIZE && l.board.every((k) => k === null || key(k))) live.board = l.board;
+      if (Array.isArray(l.hand) && l.hand.length <= 12 && l.hand.every((c) => Array.isArray(c) && c.length === 2 && key(c[0]) && typeof c[1] === "number" && c[1] >= 0 && c[1] <= 1))
+        live.hand = l.hand.map(([k, x]) => [k, x]);
     }
     const ui = s.ui === void 0 ? null : readLiveUi(s.ui);
     return { v: LIVE_STATE_VERSION, deck, live, ...ui ? { ui } : {} };
@@ -395,6 +397,19 @@
     [16 / 9, 213.8 / 1440, 343 / 1440],
     [2042 / 853, 137 / 853, 196 / 853]
   ];
+  function interpLog(table, col, r) {
+    const x = Math.log(r);
+    let i = 0;
+    while (i < table.length - 2 && x > Math.log(table[i + 1][0])) i++;
+    const [x0, y0] = [Math.log(table[i][0]), Math.log(table[i][col])];
+    const [x1, y1] = [Math.log(table[i + 1][0]), Math.log(table[i + 1][col])];
+    return Math.exp(y0 + (y1 - y0) * (x - x0) / (x1 - x0));
+  }
+  function handGeometry(content) {
+    const r = content.w / content.h;
+    const w = content.h * interpLog(HAND_SHAPE, 1, r);
+    return { w, h: w * 690 / 480, top: content.y + content.h - content.h * interpLog(HAND_SHAPE, 2, r) };
+  }
   var LIFE_RINGS = {
     // l'anello è un'ellisse vista di sbieco: per i due archi frontali va meglio un cerchio più piccolo e più in basso
     // (ricerca dell'11/10 nelle tre forme: centro +1% dell'altezza, raggio × 0,9)
@@ -473,5 +488,13 @@
     const board = layoutFor(video).board;
     return BOARD_SLOTS.map((s) => ({ side: s.side, ...inside(board, s.rect) }));
   }
-  window.OMPanels = { viewFromState, create, parseLiveState, boardRects };
+  function handRects(video, xs) {
+    const g = handGeometry(video);
+    return xs.map((x, i) => {
+      const left = video.x + x * video.w;
+      const next = i + 1 < xs.length ? video.x + xs[i + 1] * video.w : left + g.w;
+      return { x: left, y: g.top, w: Math.max(8, Math.min(g.w, next - left)), h: g.h };
+    });
+  }
+  window.OMPanels = { viewFromState, create, parseLiveState, boardRects, handRects };
 })();

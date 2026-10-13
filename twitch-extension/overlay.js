@@ -333,11 +333,11 @@
     var n = node && node.closest ? node.closest("[data-key]") : null;
     return n && appLayer.contains(n) ? n : null;
   }
-  function placePreviewNear(node) {
-    var r = node.getBoundingClientRect();
-    var onLeft = r.left + r.width / 2 < window.innerWidth / 2;
-    stage.style.left = onLeft ? "auto" : "0";
-    stage.style.right = onLeft ? "0" : "auto";
+  // l'anteprima sempre a destra (14/10/2026, Pierluigi: "il puntatore del mouse è uno per persona, non ha senso sta
+  // divisione, ogni carta appare sempre sulla destra, che sia deck o sia campo")
+  function placePreviewNear() {
+    stage.style.left = "auto";
+    stage.style.right = "0";
   }
   function placePreview(node) {
     placePreviewNear(node.closest(".om-app"));
@@ -385,8 +385,10 @@
   }
 
   function renderZones() {
-    var board = fullState && fullState.live && fullState.live.inMatch && fullState.live.board ? fullState.live.board : null;
-    var show = !MOBILE && !!board && !!window.OMPanels && !!cards && !(window.innerWidth < MIN_W || window.innerHeight < MIN_H);
+    var live = fullState && fullState.live && fullState.live.inMatch ? fullState.live : null;
+    var board = live && live.board ? live.board : null;
+    var hand = live && live.hand ? live.hand : [];
+    var show = !MOBILE && (!!board || hand.length > 0) && !!window.OMPanels && !!cards && !(window.innerWidth < MIN_W || window.innerHeight < MIN_H);
     zoneLayer.hidden = !show;
     if (!show) {
       if (zoneKey) {
@@ -396,10 +398,29 @@
       return;
     }
     var v = videoRect();
-    var key = JSON.stringify([board, Math.round(v.w), Math.round(v.h)]);
+    var key = JSON.stringify([board, hand, Math.round(v.w), Math.round(v.h)]);
     if (key === zoneKey) return;
     zoneKey = key;
     clear(zoneLayer);
+    function addZone(k, r, side) {
+      var zone = el("button", {
+        cls: "om-zone",
+        attrs: { type: "button", "data-key": k, "data-side": side, "aria-label": nameOf(k) }
+      });
+      zone.style.left = Math.round(r.x) + "px";
+      zone.style.top = Math.round(r.y) + "px";
+      zone.style.width = Math.round(r.w) + "px";
+      zone.style.height = Math.round(r.h) + "px";
+      zoneLayer.appendChild(zone);
+    }
+    // le carte in mano dello streamer (dall'app 0.4.6), sopra le zone del tabellone nell'ordine
+    if (hand.length) {
+      var hr = window.OMPanels.handRects(v, hand.map(function (c) { return c[1]; }));
+      hand.forEach(function (c, i) {
+        if (card(c[0])) addZone(c[0], hr[i], "me");
+      });
+    }
+    if (!board) return;
     var rects = window.OMPanels.boardRects(v);
     board.forEach(function (k, i) {
       if (!k || !card(k)) return;

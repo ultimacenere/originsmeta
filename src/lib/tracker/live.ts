@@ -60,6 +60,8 @@ export type LiveState = {
      * leggere le carte in gioco, come quella di Hearthstone.
      */
     board?: (string | null)[];
+    /** dal 14/10/2026 (app 0.4.6): le carte in mano, [chiave, bordo sinistro in frazione della larghezza del gioco] */
+    hand?: [string, number][];
   } | null;
   ui?: LiveUi;
 };
@@ -79,6 +81,7 @@ export type LiveSource = {
     mana?: { me: LiveMana; opp: LiveMana };
     direction?: "left" | "right" | null;
     board?: (string | null)[] | null;
+    hand?: [string, number][] | null;
   } | null;
 };
 
@@ -108,6 +111,7 @@ export function liveStateOf(view: LiveSource, ui?: LiveUi | null): LiveState {
           ...(l.mana ? { mana: { me: l.mana.me ? { current: l.mana.me.current, max: l.mana.me.max } : null, opp: l.mana.opp ? { current: l.mana.opp.current, max: l.mana.opp.max } : null } } : {}),
           ...(l.direction !== undefined ? { direction: l.direction } : {}),
           ...(l.board && l.board.length === BOARD_SIZE ? { board: l.board.map((k) => k ?? null) } : {}),
+          ...(l.hand ? { hand: l.hand.slice(0, 12).map(([k, x]) => [k, x] as [string, number]) } : {}),
         }
       : null,
     ...(ui ? { ui } : {}),
@@ -209,6 +213,8 @@ export function parseLiveState(raw: unknown): LiveState | null {
     }
     if (l.direction === "left" || l.direction === "right" || l.direction === null) live.direction = l.direction;
     if (Array.isArray(l.board) && l.board.length === BOARD_SIZE && l.board.every((k) => k === null || key(k))) live.board = l.board as (string | null)[];
+    if (Array.isArray(l.hand) && l.hand.length <= 12 && l.hand.every((c) => Array.isArray(c) && c.length === 2 && key(c[0]) && typeof c[1] === "number" && c[1] >= 0 && c[1] <= 1))
+      live.hand = (l.hand as [string, number][]).map(([k, x]) => [k, x]);
   }
   const ui = s.ui === undefined ? null : readLiveUi(s.ui);
   return { v: LIVE_STATE_VERSION, deck, live, ...(ui ? { ui } : {}) };

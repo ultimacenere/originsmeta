@@ -95,13 +95,17 @@ describe("stile dei pannelli dell'app nello stato (14/10/2026)", () => {
     panels: { deck: { x: 0, y: 152, w: 246, h: 520 }, opp: null },
   };
   const BOARD = Array.from({ length: 18 }, (_, i) => (i % 3 === 0 ? "C00245_MB" : null));
-  const withExtra: LiveSource = { ...view, live: { ...view.live!, life: { me: 2, opp: 1 }, mana: { me: { current: 3, max: 6 }, opp: null }, direction: "right", board: BOARD } };
+  const withExtra: LiveSource = { ...view, live: { ...view.live!, life: { me: 2, opp: 1 }, mana: { me: { current: 3, max: 6 }, opp: null }, direction: "right", board: BOARD, hand: [["C00245_MB", 0.32], ["C00013_SB", 0.39]] } };
   test("stile, vita, mana e verso passano e tornano uguali", () => {
     const s = liveStateOf(withExtra, ui);
     assert.deepEqual(parseLiveState(JSON.parse(JSON.stringify(s))), s);
     assert.deepEqual(s.ui, ui);
     assert.deepEqual(s.live?.mana, { me: { current: 3, max: 6 }, opp: null });
     assert.deepEqual(s.live?.board, BOARD);
+    assert.deepEqual(s.live?.hand, [["C00245_MB", 0.32], ["C00013_SB", 0.39]]);
+    const badHand = JSON.parse(JSON.stringify(s));
+    badHand.live.hand[0][1] = 3;
+    assert.equal(parseLiveState(badHand)?.live?.hand, undefined);
     const bad = JSON.parse(JSON.stringify(s));
     bad.live.board[0] = "<x>";
     assert.equal(parseLiveState(bad)?.live?.board, undefined);

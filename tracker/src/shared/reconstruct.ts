@@ -28,6 +28,8 @@ export type ScanFrame = {
   result?: "W" | "L" | null;
   /** Le carte nella mia mano, da sinistra (recognize.ts, `readHand`; dall'11/10/2026, assente prima). */
   hand?: readonly string[];
+  /** Il bordo sinistro di ogni carta in mano, in frazione della larghezza (stesso ordine di `hand`; dal 14/10/2026). */
+  handX?: readonly number[];
   /** Segmenti di vita accesi degli eroi, 0–2 (recognize.ts, `readLife`; null se non si leggono). */
   life?: { me: number | null; opp: number | null };
   /** Il mana di tutti e due, "rimasto/massimo" (recognize.ts, `readMana`; dall'11/10/2026 sera, assente prima). */
@@ -548,6 +550,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   if (mana !== undefined && !(mana && typeof mana === "object" && manaOk(mana.me) && manaOk(mana.opp))) return null;
   if (f.direction !== undefined && f.direction !== null && f.direction !== "left" && f.direction !== "right") return null;
   if (f.oppHand !== undefined && f.oppHand !== null && !(Number.isInteger(f.oppHand) && (f.oppHand as number) >= 0 && (f.oppHand as number) <= 20)) return null;
+  if (f.handX !== undefined && !(Array.isArray(f.handX) && Array.isArray(f.hand) && f.handX.length === f.hand.length && f.handX.every((x) => typeof x === "number" && x >= 0 && x <= 1))) return null;
   if (f.spell !== undefined && f.spell !== null && !key(f.spell)) return null;
   if (f.phase !== undefined && f.phase !== "plan" && f.phase !== "reveal") return null;
   const pick = (m: Mana | null) => (m ? { current: m.current, max: m.max } : null);
@@ -558,6 +561,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
     maxMana: max as number | null,
     result,
     ...(f.hand ? { hand: f.hand as string[] } : {}),
+    ...(f.handX ? { handX: f.handX as number[] } : {}),
     ...(life ? { life: { me: life.me as number | null, opp: life.opp as number | null } } : {}),
     ...(mana ? { mana: { me: pick(mana.me as Mana | null), opp: pick(mana.opp as Mana | null) } } : {}),
     ...(f.direction === "left" || f.direction === "right" ? { direction: f.direction } : {}),

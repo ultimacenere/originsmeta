@@ -577,6 +577,14 @@ export function handGeometry(content: Rect): { w: number; h: number; top: number
 
 /** Le carte riconosciute nella mano, da sinistra (una carta coperta dal mouse o sollevata può mancare). */
 export function readHand(img: Img, refs: readonly CardRef[], content: Rect): string[] {
+  return readHandAt(img, refs, content).map((c) => c.key);
+}
+
+/**
+ * La mano con la posizione di ogni carta (14/10/2026, per le zone dell'estensione Twitch; domanda di Davdas: "perché non
+ * anche le carte in mano?"): `x` è il bordo sinistro della carta in frazione della larghezza dell'area interna.
+ */
+export function readHandAt(img: Img, refs: readonly CardRef[], content: Rect): { key: string; x: number }[] {
   if (!refs.length) return [];
   const g = handGeometry(content);
   const step = g.w * 0.04;
@@ -588,7 +596,7 @@ export function readHand(img: Img, refs: readonly CardRef[], content: Rect): str
   const peaks = hits.filter((h, i) => h.key && h.score >= (hits[i - 1]?.score ?? 0) && h.score >= (hits[i + 1]?.score ?? 0));
   const kept: typeof hits = [];
   for (const p of peaks.sort((a, b) => b.score - a.score)) if (!kept.some((k) => Math.abs(k.x - p.x) < g.w * 0.45)) kept.push(p);
-  return kept.sort((a, b) => a.x - b.x).map((k) => k.key as string);
+  return kept.sort((a, b) => a.x - b.x).map((k) => ({ key: k.key as string, x: Math.round(((k.x - content.x) / content.w) * 1000) / 1000 }));
 }
 
 /**

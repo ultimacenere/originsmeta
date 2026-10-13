@@ -98,6 +98,16 @@ export class FrameRecorder {
     return null;
   }
 
+  /** Le carte in mano adesso con la loro posizione (14/10/2026, per l'estensione Twitch), come `board`. */
+  hand(now = Date.now()): [string, number][] | null {
+    for (let i = this.scans.length - 1; i >= 0; i--) {
+      const f = this.scans[i];
+      if (now - f.ms > 3000) return null;
+      if (f.maxMana !== null) return f.hand && f.handX ? f.hand.map((k, j) => [k, f.handX![j]] as [string, number]) : null;
+    }
+    return null;
+  }
+
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }

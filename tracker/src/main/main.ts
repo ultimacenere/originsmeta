@@ -724,7 +724,9 @@ setInterval(() => {
   const v = currentDeckView();
   // le carte del tabellone, per le zone dell'estensione Twitch (14/10/2026): solo in partita
   const board = v.live?.inMatch && frames?.running ? frames.board() : null;
-  void livePusher.offer({ ...v, live: v.live ? { ...v.live, board } : null }, liveUi());
+  // e le carte in mano con la loro posizione (domanda di Davdas: "perché non anche le carte in mano?")
+  const hand = v.live?.inMatch && frames?.running ? frames.hand() : null;
+  void livePusher.offer({ ...v, live: v.live ? { ...v.live, board, hand } : null }, liveUi());
 }, LIVE_MIN_MS);
 
 let syncTimer: ReturnType<typeof setTimeout> | null = null;

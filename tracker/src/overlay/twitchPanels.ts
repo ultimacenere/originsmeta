@@ -12,7 +12,7 @@
 import { parseLiveState, type LiveState } from "../../../src/lib/tracker/live";
 import type { DeckCard, DeckTrackerView, PanelTemplate } from "../shared/types";
 import { createDeckRenderer, shapeOf, type Lang, type PanelSide } from "./deckRender";
-import { BOARD_SLOTS, inside, layoutFor } from "../shared/recognize";
+import { BOARD_SLOTS, handGeometry, inside, layoutFor } from "../shared/recognize";
 
 /** [nome, slug, tipo, costo, forza, salute, leggendaria (0/1), testo, immagine] (src/lib/twitchExt/cards.ts) */
 type ExtCard = [string, string, string, number | null, number | null, number | null, 0 | 1, string, string | null];
@@ -99,10 +99,23 @@ export function boardRects(video: { x: number; y: number; w: number; h: number }
   return BOARD_SLOTS.map((s) => ({ side: s.side, ...inside(board, s.rect) }));
 }
 
+/**
+ * Le carte in mano sopra il video (14/10/2026): stessa geometria con cui lo scanner legge la mano (`handGeometry`), dal
+ * bordo sinistro di ogni carta fino a quello della carta dopo (le carte si sovrappongono), l'ultima intera.
+ */
+export function handRects(video: { x: number; y: number; w: number; h: number }, xs: readonly number[]) {
+  const g = handGeometry(video);
+  return xs.map((x, i) => {
+    const left = video.x + x * video.w;
+    const next = i + 1 < xs.length ? video.x + xs[i + 1] * video.w : left + g.w;
+    return { x: left, y: g.top, w: Math.max(8, Math.min(g.w, next - left)), h: g.h };
+  });
+}
+
 declare global {
   interface Window {
-    OMPanels: { viewFromState: typeof viewFromState; create: typeof create; parseLiveState: typeof parseLiveState; boardRects: typeof boardRects };
+    OMPanels: { viewFromState: typeof viewFromState; create: typeof create; parseLiveState: typeof parseLiveState; boardRects: typeof boardRects; handRects: typeof handRects };
   }
 }
 // il controllo dello stato del sito (src/lib/tracker/live.ts), con lo stile dei pannelli
-window.OMPanels = { viewFromState, create, parseLiveState, boardRects };
+window.OMPanels = { viewFromState, create, parseLiveState, boardRects, handRects };
