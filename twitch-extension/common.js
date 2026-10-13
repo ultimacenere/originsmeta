@@ -71,7 +71,16 @@
       cfgErr_forbidden: "Only the streamer of this channel can link it.",
       cfgErr_unavailable: "The service isn't available right now. Please try again later.",
       cfgErr_error: "Something went wrong. Please try again.",
-      cfgNote: "The extension shows only what the Deck tracker already shows on stream: your deck with the copies left, the round, the opponent's Legendary and the cards they reveal. Never names, ranks or match identifiers."
+      cfgNote: "The extension shows only what the Deck tracker already shows on stream: your deck with the copies left, the round, the opponent's Legendary and the cards they reveal. Never names, ranks or match identifiers.",
+      appHide: "Hide the panels",
+      appShow: "Show the panels",
+      cfgModeTitle: "How your viewers see the deck",
+      cfgModeApp: "Like the app",
+      cfgModeAppHint: "The same panels as OriginsMeta Tracker, in the same places and with the style you chose in the app. Hide the app's panels from your OBS scene, so viewers don't see them twice.",
+      cfgModeTab: "Tab",
+      cfgModeTabHint: "A small “Deck” tab on the left of the video that viewers open when they want.",
+      cfgModeSaved: "Saved: viewers will see it in a few seconds.",
+      cfgModeError: "Couldn't save the choice. Please try again."
     },
     it: {
       tab: "Mazzo",
@@ -122,7 +131,16 @@
       cfgErr_forbidden: "Solo lo streamer di questo canale può collegarlo.",
       cfgErr_unavailable: "Il servizio non è disponibile in questo momento. Riprova più tardi.",
       cfgErr_error: "Qualcosa non ha funzionato. Riprova.",
-      cfgNote: "L'estensione mostra solo quello che il Deck tracker mostra già in diretta: il tuo mazzo con le copie rimaste, il turno, la Leggendaria dell'avversario e le carte che rivela. Mai nomi, rank o identificativi delle partite."
+      cfgNote: "L'estensione mostra solo quello che il Deck tracker mostra già in diretta: il tuo mazzo con le copie rimaste, il turno, la Leggendaria dell'avversario e le carte che rivela. Mai nomi, rank o identificativi delle partite.",
+      appHide: "Nascondi i pannelli",
+      appShow: "Mostra i pannelli",
+      cfgModeTitle: "Come vedono il mazzo i tuoi spettatori",
+      cfgModeApp: "Come l'app",
+      cfgModeAppHint: "Gli stessi pannelli di OriginsMeta Tracker, negli stessi punti e con lo stile che hai scelto nell'app. Togli i pannelli dell'app dalla scena di OBS, così chi guarda non li vede due volte.",
+      cfgModeTab: "Linguetta",
+      cfgModeTabHint: "Una piccola linguetta “Mazzo” a sinistra del video, che chi guarda apre quando vuole.",
+      cfgModeSaved: "Salvato: gli spettatori lo vedono fra pochi secondi.",
+      cfgModeError: "Non è stato possibile salvare la scelta. Riprova."
     },
     es: {
       tab: "Mazo",
@@ -173,7 +191,16 @@
       cfgErr_forbidden: "Solo el streamer de este canal puede vincularlo.",
       cfgErr_unavailable: "El servicio no está disponible en este momento. Vuelve a intentarlo más tarde.",
       cfgErr_error: "Algo ha fallado. Vuelve a intentarlo.",
-      cfgNote: "La extensión muestra solo lo que el Deck tracker ya muestra en directo: tu mazo con las copias que quedan, la ronda, la Legendaria del rival y las cartas que revela. Nunca nombres, rangos ni identificadores de partidas."
+      cfgNote: "La extensión muestra solo lo que el Deck tracker ya muestra en directo: tu mazo con las copias que quedan, la ronda, la Legendaria del rival y las cartas que revela. Nunca nombres, rangos ni identificadores de partidas.",
+      appHide: "Ocultar los paneles",
+      appShow: "Mostrar los paneles",
+      cfgModeTitle: "Cómo ve el mazo tu público",
+      cfgModeApp: "Como la app",
+      cfgModeAppHint: "Los mismos paneles de OriginsMeta Tracker, en los mismos sitios y con el estilo que elegiste en la app. Quita los paneles de la app de tu escena de OBS para que tu público no los vea dos veces.",
+      cfgModeTab: "Pestaña",
+      cfgModeTabHint: "Una pequeña pestaña “Mazo” a la izquierda del vídeo, que tu público abre cuando quiere.",
+      cfgModeSaved: "Guardado: tu público lo verá en unos segundos.",
+      cfgModeError: "No se ha podido guardar la elección. Vuelve a intentarlo."
     },
     fr: {
       tab: "Deck",
@@ -224,7 +251,16 @@
       cfgErr_forbidden: "Seul le streamer de cette chaîne peut l'associer.",
       cfgErr_unavailable: "Le service n'est pas disponible pour le moment. Réessayez plus tard.",
       cfgErr_error: "Une erreur s'est produite. Réessayez.",
-      cfgNote: "L'extension affiche uniquement ce que le Deck tracker montre déjà en live : votre deck avec les copies restantes, le tour, la Légendaire de l'adversaire et les cartes qu'il révèle. Jamais de noms, de rangs ni d'identifiants de parties."
+      cfgNote: "L'extension affiche uniquement ce que le Deck tracker montre déjà en live : votre deck avec les copies restantes, le tour, la Légendaire de l'adversaire et les cartes qu'il révèle. Jamais de noms, de rangs ni d'identifiants de parties.",
+      appHide: "Masquer les panneaux",
+      appShow: "Afficher les panneaux",
+      cfgModeTitle: "Comment votre public voit le deck",
+      cfgModeApp: "Comme l'application",
+      cfgModeAppHint: "Les mêmes panneaux qu'OriginsMeta Tracker, aux mêmes endroits et avec le style choisi dans l'application. Retirez les panneaux de l'application de votre scène OBS, pour que votre public ne les voie pas deux fois.",
+      cfgModeTab: "Onglet",
+      cfgModeTabHint: "Un petit onglet « Deck » à gauche de la vidéo, que votre public ouvre quand il le souhaite.",
+      cfgModeSaved: "Enregistré : votre public le verra dans quelques secondes.",
+      cfgModeError: "Impossible d'enregistrer le choix. Réessayez."
     }
   };
 
@@ -383,7 +419,7 @@
     }
     if (!m || typeof m !== "object" || m.t !== "state") return null;
     var state = parseState(m.s);
-    return state ? { at: timeOf(m.at), state: state } : null;
+    return state ? { at: timeOf(m.at), state: state, raw: m.s } : null;
   }
 
   /** GET JSON da originsmeta.com, con tempo massimo. */

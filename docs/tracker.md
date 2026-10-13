@@ -393,6 +393,14 @@ Twitch chiesta dagli streamer (docs/twitch.md).
   Origins TCG per installarla", una volta per versione) e, al primo avvio della versione nuova (`last-version.json`,
   `justUpdated`), "puoi aprire Origins TCG". La riga in cima all'app resta.
 
+## Pannelli anche su Twitch (0.4.3, 14/10/2026, da pubblicare)
+
+- Lo stato dal vivo per l'estensione Twitch porta anche lo stile dei pannelli (template, opzioni, nascosti fuori
+  partita, posizione delle finestre rispetto allo schermo principale: `liveUi` di main.ts) e vita, mana e verso del
+  combattimento, così l'estensione in modalità "come l'app" disegna gli stessi pannelli sopra il video (docs/twitch.md).
+- Il disegno dei pannelli è in `src/overlay/deckRender.ts`, condiviso fra la pagina del pannello (deck.ts: finestra e
+  OBS) e l'estensione (`twitchPanels.ts`, `npm run twitch-panels`). Le carte hanno `data-key`.
+
 ## Il sito (Fase 3)
 
 - **Rotte** (client anonimo senza cache, `supabaseAnon` di `src/lib/supabase/public.ts`; mai in cache; niente cookie):

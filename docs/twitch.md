@@ -51,6 +51,29 @@ Pagina di configurazione dell'estensione (streamer)
   senza migrazione: il riquadro di `/account/tracker` non compare, le rotte rispondono "unavailable" o stato vuoto.
 - **Informativa**: `#tracker` (testo in `trackerPrivacy` di `src/lib/trackerLabels.ts`, quattro lingue).
 
+## Modalità "come l'app" (14/10/2026)
+
+Pierluigi, dopo la prima prova in diretta del 13/10: "non possiamo renderlo identico come visuale alla versione del
+tracker scelto dall'utente?", poi "sì procedi, con la scelta nella configurazione".
+
+- **Scelta dello streamer**: nella pagina di configurazione dell'estensione, "Come l'app" o "Linguetta", salvata nel
+  Configuration Service di Twitch (segmento "broadcaster", versione 1, `{"view": "app" | "tab"}`; nella console:
+  Funzionalità → "Servizio di configurazione dell'estensione"). Con "come l'app" lo streamer toglie i pannelli dell'app
+  dalla scena di OBS, per non mostrarli due volte.
+- **Dati**: dall'app 0.4.3 lo stato dal vivo porta anche `ui` (template, opzioni del personalizzato, pannelli nascosti
+  fuori partita, scanner, misure dello schermo principale e posizione delle due finestre dei pannelli in punti di
+  Windows) e in `live` vita, mana dei due e verso del combattimento (`liveStateOf`, `parseLiveState` di
+  src/lib/tracker/live.ts; facoltativi, una forma sbagliata si lascia fuori; test in twitchExt.test.ts).
+- **Disegno**: lo stesso codice dei pannelli dell'app. Il disegno è passato da `tracker/src/overlay/deck.ts` a
+  `deckRender.ts` (deck.ts lo usa per la finestra e per OBS); `twitchPanels.ts` lo espone come `window.OMPanels` e
+  `npm run twitch-panels` (cartella tracker/) lo compila, non minificato, in `twitch-extension/panels.js`, con
+  `panels.css` (deck.css, variabili limitate a `.om-app`), i font e il logo. L'estensione mette i pannelli negli
+  stessi punti in proporzione allo schermo dello streamer (il video sta nel player con le bande se ha un'altra forma),
+  attaccati al bordo più vicino, rimpiccioliti se non ci stanno fra le fasce dei controlli del player (70 px in alto,
+  90 in basso); il tasto "Nascondi i pannelli" li toglie per chi guarda; passando su una carta l'anteprima compare
+  dall'altra parte del video. Senza `ui` (app 0.4.2) e sul telefono resta la linguetta.
+- **Prova**: `twitch-extension/dev/mock.html?mode=app` con i tasti dei quattro stili e "Fuori partita".
+
 ## Da fare per andare online
 
 1. **Migrazione**: prova a secco `node scripts/twitch-dry-run.mjs` (serve `CRON_SECRET` in `.env.local`), poi

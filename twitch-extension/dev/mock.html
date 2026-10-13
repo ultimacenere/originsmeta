@@ -8,6 +8,7 @@
     <title>Mock · OriginsMeta Deck tracker</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&amp;family=Unbounded:wght@600;700;800&amp;display=swap" />
     <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="../panels.css" />
     <style>
       .mock-video {
         position: fixed;
@@ -56,8 +57,16 @@
       <button onclick="Mock.oldMessage()">Msg vecchio</button>
       <button onclick="Mock.badMessage()">Msg rotti</button>
       <button onclick="Mock.noDeck()">Niente mazzo</button>
+      <button onclick="Mock.setMode('app')">Come l'app</button>
+      <button onclick="Mock.setMode('tab')">Linguetta</button>
+      <button onclick="Mock.template('classic')">Classico</button>
+      <button onclick="Mock.template('strips')">Minimal</button>
+      <button onclick="Mock.template('columns')">Strutturato</button>
+      <button onclick="Mock.template('custom')">Personalizzato</button>
+      <button onclick="Mock.hidePanels()">Fuori partita</button>
     </div>
     <script src="../common.js"></script>
+    <script src="../panels.js"></script>
     <script src="../overlay.js"></script>
   </body>
 </html>

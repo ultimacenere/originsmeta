@@ -60,6 +60,7 @@ import { checkDue, decideAccess, type Access } from "./access";
 import { APP_NAME, APP_USER_MODEL_ID, OLD_DATA_FOLDER, dataDir, staleLoginItem } from "./appIdentity";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
 import { LivePusher, LIVE_MIN_MS } from "./twitchLive";
+import type { LiveRect, LiveUi } from "../../../src/lib/tracker/live";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
 import { justUpdated, updateNotice, type UpdateNotice } from "./updateRules";
@@ -669,9 +670,24 @@ const syncDeps: SyncDeps = { site: SITE_ORIGIN, fetch: (url, init) => net.fetch(
  * cambia, al massimo ogni 2 secondi, e il sito lo tiene solo se l'account ha collegato un canale Twitch.
  */
 const livePusher = new LivePusher(syncDeps, () => account.token);
+/**
+ * Lo stile dei pannelli per l'estensione in modalità "come l'app" (14/10/2026, Pierluigi: "non possiamo renderlo identico
+ * come visuale alla versione del tracker scelto dall'utente?"): template e opzioni, pannelli nascosti fuori partita,
+ * scanner, misure dello schermo principale (quello su cui partono i pannelli, panelLayout.ts) e la posizione delle due
+ * finestre rispetto a lui, in punti di Windows. L'estensione le riporta sopra il video, in proporzione.
+ */
+function liveUi(): LiveUi {
+  const d = screen.getPrimaryDisplay().bounds;
+  const rect = (k: PanelKind): LiveRect | null => {
+    if (!panelOpen(k)) return null;
+    const b = panels[k].win!.getBounds();
+    return { x: Math.round(b.x - d.x), y: Math.round(b.y - d.y), w: Math.max(1, Math.round(b.width)), h: Math.max(1, Math.round(b.height)) };
+  };
+  return { template: panelTemplate, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted(), scanner: Boolean(frames?.running), screen: { w: d.width, h: d.height }, panels: { deck: rect("deck"), opp: rect("opp") } };
+}
 setInterval(() => {
   if (!account.token || CAPTURE || !engineOn) return;
-  void livePusher.offer(currentDeckView());
+  void livePusher.offer(currentDeckView(), liveUi());
 }, LIVE_MIN_MS);
 
 let syncTimer: ReturnType<typeof setTimeout> | null = null;

@@ -149,8 +149,171 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
+
+  // ---------- modalità "come l'app" (14/10/2026) ----------
+  // Pierluigi: "non possiamo renderlo identico come visuale alla versione del tracker scelto dall'utente?". Se lo
+  // streamer la sceglie nella configurazione (segmento "broadcaster": {"view": "app"}) e l'app manda lo stile dei
+  // pannelli (ui, dalla 0.4.3), i pannelli di OriginsMeta Tracker si disegnano sopra il video con panels.js (lo stesso
+  // codice e lo stesso CSS dell'app), nelle stesse proporzioni dello schermo dello streamer. Il video sta nel player in
+  // proporzione (bande nere se il player ha un'altra forma); i pannelli restano fuori dalle fasce dei controlli del
+  // player (in alto e in basso) e chi guarda li può nascondere. Senza stile (app più vecchia) resta la linguetta.
+  var PANEL_LANG = OM.lang === "it" || OM.lang === "es" ? OM.lang : "en";
+  var SAFE_TOP = 70;
+  var SAFE_BOTTOM = 90;
+  var mode = "tab";
+  var fullState = null; // lo stato con lo stile dei pannelli (parseLiveState del sito, in panels.js)
+  var appHidden = false; // chi guarda ha nascosto i pannelli
+  var appLayer = el("div", { cls: "om-applayer", attrs: { hidden: "" } });
+  var appToggle = el("button", { cls: "om-apptoggle", attrs: { type: "button", "aria-pressed": "false" } }, [
+    el("span", { cls: "om-tab-mark", attrs: { "aria-hidden": "true" } }),
+    el("span", { cls: "om-apptoggle-text", text: t("appHide") })
+  ]);
+  var appHosts = {}; // "me" | "opp" → {host, panel}
+  document.body.appendChild(appLayer);
+  document.body.appendChild(appToggle);
+  appToggle.hidden = true;
+
+  function readMode(seg) {
+    try {
+      var c = seg && typeof seg.content === "string" ? JSON.parse(seg.content) : null;
+      return c && c.view === "app" ? "app" : "tab";
+    } catch (e) {
+      return "tab";
+    }
+  }
+
+  function appReady() {
+    return !MOBILE && mode === "app" && !!window.OMPanels && !!cards && !!fullState && !!fullState.ui && !!fullState.deck;
+  }
+
+  function appHost(side) {
+    if (appHosts[side]) return appHosts[side];
+    var host = el("div", { cls: "om-app", attrs: { "data-side": side } });
+    appLayer.appendChild(host);
+    var raw = {};
+    Object.keys(cards).forEach(function (k) {
+      var c = cards[k];
+      raw[k] = [c.name, c.slug, c.type, c.cost, c.power, c.health, c.legendary ? 1 : 0, c.text, null];
+    });
+    appHosts[side] = { host: host, panel: window.OMPanels.create(host, side, PANEL_LANG, "logo-originsmeta-sm.webp"), table: raw };
+    if (appResize) appResize.observe(host);
+    return appHosts[side];
+  }
+
+  /**
+   * La posizione dei pannelli: stessa posizione e stessa misura in proporzione allo schermo dello streamer, attaccati al
+   * bordo più vicino (un pannello a destra resta sul bordo destro anche se si rimpicciolisce). Un pannello più alto dello
+   * spazio fra le fasce dei controlli del player si rimpicciolisce finché ci sta.
+   */
+  function placeApp() {
+    if (!fullState || !fullState.ui) return;
+    var ui = fullState.ui;
+    var W = window.innerWidth;
+    var H = window.innerHeight;
+    var scale = Math.min(W / ui.screen.w, H / ui.screen.h);
+    var vx = (W - ui.screen.w * scale) / 2;
+    var vy = (H - ui.screen.h * scale) / 2;
+    var avail = Math.max(60, H - SAFE_TOP - SAFE_BOTTOM);
+    ["me", "opp"].forEach(function (side) {
+      var h = appHosts[side];
+      var rect = ui.panels[side === "me" ? "deck" : "opp"];
+      if (!h || h.host.hidden || !rect) return;
+      var natural = h.host.offsetHeight || rect.h;
+      var s = Math.min(scale, avail / natural);
+      var height = natural * s;
+      var width = rect.w * s;
+      var right = rect.x + rect.w / 2 > ui.screen.w / 2;
+      var left = right ? vx + (rect.x + rect.w) * scale - width : vx + rect.x * scale;
+      var bottomAnchored = rect.y + rect.h / 2 > ui.screen.h / 2;
+      var top = bottomAnchored ? vy + (rect.y + rect.h) * scale - height : vy + rect.y * scale;
+      top = Math.min(Math.max(top, SAFE_TOP), H - SAFE_BOTTOM - height);
+      if (top < SAFE_TOP) top = SAFE_TOP;
+      h.host.style.left = Math.round(Math.max(0, Math.min(left, W - width))) + "px";
+      h.host.style.top = Math.round(top) + "px";
+      h.host.style.transform = "scale(" + s.toFixed(4) + ")";
+    });
+  }
+
+  /** I pannelli sopra il video: disegnati con panels.js (lo stesso codice dell'app), poi messi al loro posto. */
+  function renderApp() {
+    var ui = fullState.ui;
+    var view = null;
+    ["me", "opp"].forEach(function (side) {
+      var rect = ui.panels[side === "me" ? "deck" : "opp"];
+      var existing = appHosts[side];
+      if (!rect || ui.hidden || appHidden) {
+        if (existing) existing.host.hidden = true;
+        return;
+      }
+      var h = appHost(side);
+      if (!view) view = window.OMPanels.viewFromState(fullState, h.table);
+      h.host.hidden = false;
+      h.host.style.width = rect.w + "px";
+      h.panel.update(ui.template, view);
+    });
+    placeApp();
+    appToggle.querySelector(".om-apptoggle-text").textContent = appHidden ? t("appShow") : t("appHide");
+    appToggle.setAttribute("aria-pressed", appHidden ? "true" : "false");
+  }
+
+  // le immagini delle carte arrivano dopo il disegno e cambiano l'altezza dei pannelli: si rimettono a posto
+  var appResize = typeof ResizeObserver === "function" ? new ResizeObserver(function () { placeApp(); }) : null;
+
+  appToggle.addEventListener("click", function () {
+    appHidden = !appHidden;
+    hidePreview(true);
+    render();
+  });
+
+  // l'anteprima della carta dai pannelli dell'app: dall'altra parte del video rispetto al pannello
+  function appCardOf(node) {
+    var n = node && node.closest ? node.closest("[data-key]") : null;
+    return n && appLayer.contains(n) ? n : null;
+  }
+  function placePreview(node) {
+    var host = node.closest(".om-app");
+    var r = host.getBoundingClientRect();
+    var onLeft = r.left + r.width / 2 < window.innerWidth / 2;
+    stage.style.left = onLeft ? "auto" : "0";
+    stage.style.right = onLeft ? "0" : "auto";
+  }
+  appLayer.addEventListener("pointerover", function (e) {
+    var n = appCardOf(e.target);
+    if (!n || pinned) return;
+    placePreview(n);
+    showPreview(n.getAttribute("data-key"), n.closest(".om-app").getAttribute("data-side") === "opp" ? "opp" : "me", false);
+  });
+  appLayer.addEventListener("pointerleave", function () {
+    if (!pinned) hidePreview(false);
+  });
+  appLayer.addEventListener("click", function (e) {
+    var n = appCardOf(e.target);
+    if (!n) return;
+    var key = n.getAttribute("data-key");
+    var side = n.closest(".om-app").getAttribute("data-side") === "opp" ? "opp" : "me";
+    if (pinned && pinned.key === key && pinned.side === side) {
+      hidePreview(true);
+      return;
+    }
+    placePreview(n);
+    pinned = { key: key, side: side };
+    showPreview(key, side, true);
+  });
+
   // ---------- disegno ----------
   function render() {
+    var app = appReady();
+    document.body.classList.toggle("om-mode-app", app);
+    appLayer.hidden = !app;
+    appToggle.hidden = !app;
+    if (app) {
+      if (open) setOpen(false, false);
+      stage.hidden = false;
+      renderApp();
+      return;
+    }
+    stage.style.left = "";
+    stage.style.right = "";
     var smallPlayer = !MOBILE && (window.innerWidth < MIN_W || window.innerHeight < MIN_H);
     var show = hasDeck() && !smallPlayer;
     document.body.classList.toggle("om-small", smallPlayer);
@@ -447,11 +610,13 @@
   window.addEventListener("resize", render);
 
   // ---------- dati ----------
-  function apply(state, at) {
+  function apply(state, at, raw) {
     if (at && at < lastAt) return; // più vecchio dell'ultimo: si ignora
     if (at) lastAt = at;
     lastUpdate = Date.now();
     current = state;
+    // lo stato completo, con lo stile dei pannelli, per la modalità "come l'app"
+    fullState = raw && window.OMPanels ? window.OMPanels.parseLiveState(raw) : null;
     render();
   }
 
@@ -479,7 +644,7 @@
         if (!r || typeof r !== "object") return;
         if (r.state) {
           var s = OM.parseState(r.state);
-          if (s) apply(s, OM.timeOf(r.at));
+          if (s) apply(s, OM.timeOf(r.at), r.state);
         } else if (r.state === null && lastAt === 0) {
           apply(null, 0);
         }
@@ -513,8 +678,15 @@
     });
     ext.listen("broadcast", function (_target, _contentType, message) {
       var m = OM.parseMessage(message);
-      if (m) apply(m.state, m.at);
+      if (m) apply(m.state, m.at, m.raw);
     });
+    // la scelta dello streamer (configurazione dell'estensione): "come l'app" o linguetta
+    if (ext.configuration) {
+      ext.configuration.onChanged(function () {
+        mode = readMode(ext.configuration.broadcaster);
+        render();
+      });
+    }
     if (typeof ext.onContext === "function") {
       // il contesto arriva spesso (latenza, bitrate…): si ridisegna solo se teatro o schermo intero cambiano le misure
       var lastSize = "";

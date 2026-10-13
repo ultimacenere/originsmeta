@@ -9,7 +9,7 @@
  *
  * Rete e orologio arrivano da fuori (`SyncDeps` di sync.ts), così i test girano senza Electron e senza rete.
  */
-import { liveStateOf, type LiveSource } from "../../../src/lib/tracker/live";
+import { liveStateOf, type LiveSource, type LiveUi } from "../../../src/lib/tracker/live";
 import type { SyncDeps } from "./sync";
 
 /** Fra due invii almeno 2 secondi (il sito ne accetta al massimo due al secondo; Twitch uno al secondo per canale). */
@@ -32,12 +32,15 @@ export class LivePusher {
     this.token = token;
   }
 
-  /** Lo stato di adesso: parte se è cambiato e se è passato abbastanza tempo; altrimenti aspetta la prossima chiamata. */
-  async offer(view: LiveSource): Promise<void> {
+  /**
+   * Lo stato di adesso: parte se è cambiato e se è passato abbastanza tempo; altrimenti aspetta la prossima chiamata.
+   * `ui`: lo stile e la posizione dei pannelli (14/10/2026), per l'estensione in modalità "come l'app".
+   */
+  async offer(view: LiveSource, ui?: LiveUi | null): Promise<void> {
     const now = (this.deps.now ?? Date.now)();
     const token = this.token();
     if (!token || this.busy || now < this.pausedUntil || now - this.lastAt < LIVE_MIN_MS) return;
-    const state = liveStateOf(view);
+    const state = liveStateOf(view, ui);
     const key = JSON.stringify(state);
     if (key === this.lastKey) return;
     this.busy = true;

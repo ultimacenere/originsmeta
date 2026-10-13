@@ -21,6 +21,7 @@ Solo questi file vanno nello zip, alla radice (niente cartelle):
 | `overlay.js` | linguetta, pannello del mazzo, anteprima della carta, dati (carte, stato, PubSub) |
 | `config.js` | modulo del codice e chiamata a `/api/twitch/link` |
 | `style.css` | grafica "ink & mint" del sito e del Deck tracker dell'app |
+| `panels.js`, `panels.css`, `fonts/`, `logo-originsmeta-sm.webp` | modalità "come l'app" (14/10/2026): i pannelli di OriginsMeta Tracker, generati con `npm run twitch-panels` nella cartella `tracker/` dallo stesso codice dell'app (deckRender.ts, deck.css); non si modificano a mano |
 | `config.css` | grafica della pagina di configurazione |
 
 `dev/` (prove in locale), `README.md` e `.gitignore` restano fuori dallo zip.
@@ -132,3 +133,15 @@ rispondono a qualunque origine e funzionano anche in Local Test.
   esatto al momento della revisione.
 - Revisione di Twitch: va descritto che l'estensione mostra solo dati già in onda (Deck tracker), che il link esterno
   porta a originsmeta.com e che le immagini sono carte ufficiali di Koin Games usate con il loro permesso.
+
+## Modalità "come l'app" (14/10/2026)
+
+Pierluigi: "non possiamo renderlo identico come visuale alla versione del tracker scelto dall'utente?". Nella pagina di
+configurazione lo streamer sceglie "Come l'app" o "Linguetta" (Configuration Service di Twitch, segmento "broadcaster",
+versione 1, `{"view": "app" | "tab"}`: nella console, Funzionalità → "Servizio di configurazione dell'estensione"). Con
+"come l'app" e l'app 0.4.3 o successive (che manda lo stile e la posizione dei pannelli, campo `ui` dello stato)
+`overlay.js` disegna con `panels.js` gli stessi pannelli dell'app, negli stessi punti in proporzione allo schermo dello
+streamer, fuori dalle fasce dei controlli del player; chi guarda li nasconde con il tasto "Nascondi i pannelli" e
+passando su una carta ne vede l'anteprima. Senza stile (app più vecchia) o sul telefono resta la linguetta. Lo
+streamer deve togliere i pannelli dell'app dalla scena di OBS, per non mostrarli due volte. Prova: `dev/mock.html?mode=app`
+(tasti Come l'app, Linguetta, Classico, Minimal, Strutturato, Personalizzato, Fuori partita).

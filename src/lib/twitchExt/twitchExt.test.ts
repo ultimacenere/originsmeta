@@ -84,3 +84,37 @@ describe("stato dal vivo dell'app", () => {
     assert.ok(msg && new TextEncoder().encode(msg).length <= PUBSUB_MAX_BYTES);
   });
 });
+
+describe("stile dei pannelli dell'app nello stato (14/10/2026)", () => {
+  const ui = {
+    template: "custom" as const,
+    custom: { orientation: "vertical" as const, cards: "art" as const, perRow: 4, opacity: 85, hideOut: false, me: { legendary: true, deckLeft: true, life: true }, opp: { legendary: true, deckLeft: true, life: false, mana: true } },
+    hidden: false,
+    scanner: true,
+    screen: { w: 1707, h: 960 },
+    panels: { deck: { x: 0, y: 152, w: 246, h: 520 }, opp: null },
+  };
+  const withExtra: LiveSource = { ...view, live: { ...view.live!, life: { me: 2, opp: 1 }, mana: { me: { current: 3, max: 6 }, opp: null }, direction: "right" } };
+  test("stile, vita, mana e verso passano e tornano uguali", () => {
+    const s = liveStateOf(withExtra, ui);
+    assert.deepEqual(parseLiveState(JSON.parse(JSON.stringify(s))), s);
+    assert.deepEqual(s.ui, ui);
+    assert.deepEqual(s.live?.mana, { me: { current: 3, max: 6 }, opp: null });
+  });
+  test("uno stile malformato si lascia fuori, il resto resta", () => {
+    const s = JSON.parse(JSON.stringify(liveStateOf(withExtra, ui)));
+    s.ui.template = "altro";
+    s.live.mana.me = { current: 9, max: 6 };
+    const p = parseLiveState(s);
+    assert.ok(p && p.deck && p.live);
+    assert.equal(p.ui, undefined);
+    assert.equal(p.live.mana, undefined);
+    assert.deepEqual(p.live.life, { me: 2, opp: 1 });
+  });
+  test("con lo stile il messaggio resta sotto i 5 KB", () => {
+    const full = liveStateOf({ ...withExtra, live: { ...withExtra.live!, opponent: { ...withExtra.live!.opponent, seen: Array.from({ length: LIVE_LIMITS.seen }, () => card("C00026_SB", 20, 20, 20)) } } }, ui);
+    const msg = pubsubMessage(full, new Date(NOW * 1000).toISOString());
+    assert.ok(msg && new TextEncoder().encode(msg).length <= PUBSUB_MAX_BYTES);
+    assert.ok(JSON.stringify(full).length <= 4096, "oltre il tetto del database");
+  });
+});

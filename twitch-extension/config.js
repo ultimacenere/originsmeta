@@ -3,6 +3,10 @@
  * Live Config). Tre passi e il collegamento del canale: il codice creato su originsmeta.com/<lingua>/account/tracker
  * (riquadro "Estensione Twitch", vale 10 minuti, una volta) va a POST https://originsmeta.com/api/twitch/link con il
  * token che Twitch dà all'estensione (onAuthorized). Il sito accetta solo il ruolo "broadcaster" del canale.
+ *
+ * Dal 14/10/2026 anche la scelta di come gli spettatori vedono il mazzo (Pierluigi: "sì procedi, con la scelta nella
+ * configurazione"): "come l'app" (i pannelli di OriginsMeta Tracker negli stessi punti, overlay.js) o "linguetta". Si
+ * salva nel Configuration Service di Twitch, segmento "broadcaster", versione MODE_VERSION: {"view": "app" | "tab"}.
  */
 (function () {
   "use strict";
@@ -43,11 +47,27 @@
     status
   ]);
 
+  // ---------- come gli spettatori vedono il mazzo (14/10/2026) ----------
+  var MODE_VERSION = "1";
+  var modeStatus = el("p", { cls: "cfg-status", attrs: { role: "status", "aria-live": "polite" } });
+  function modeOption(value, label, hint) {
+    var radio = el("input", { attrs: { type: "radio", name: "om-mode", value: value, id: "om-mode-" + value } });
+    return {
+      radio: radio,
+      node: el("label", { cls: "cfg-mode", attrs: { for: "om-mode-" + value } }, [radio, el("span", { cls: "cfg-mode-text" }, [el("b", { text: label }), el("span", { text: hint })])])
+    };
+  }
+  var optApp = modeOption("app", t("cfgModeApp"), t("cfgModeAppHint"));
+  var optTab = modeOption("tab", t("cfgModeTab"), t("cfgModeTabHint"));
+  optTab.radio.checked = true;
+  var modeBox = el("fieldset", { cls: "cfg-modes" }, [el("legend", { cls: "cfg-label", text: t("cfgModeTitle") }), optApp.node, optTab.node, modeStatus]);
+
   var main = el("main", { cls: "cfg" }, [
     el("h1", { cls: "cfg-title" }, [el("span", { cls: "om-tab-mark", attrs: { "aria-hidden": "true" } }), " ", t("cfgTitle")]),
     el("p", { cls: "cfg-intro", text: t("cfgIntro") }),
     el("ol", { cls: "cfg-steps" }, [el("li", { text: t("cfgStep1") }), step2, el("li", { text: t("cfgStep3") })]),
     form,
+    modeBox,
     el("p", { cls: "cfg-note", text: t("cfgNote") }),
     el("p", { cls: "om-foot cfg-foot", text: t("footer") })
   ]);
@@ -144,5 +164,33 @@
     ext.onAuthorized(function (auth) {
       token = auth && typeof auth.token === "string" && auth.token.length < 4096 ? auth.token : null;
     });
+    // la scelta salvata nel segmento "broadcaster" del Configuration Service di Twitch
+    if (ext.configuration) {
+      ext.configuration.onChanged(function () {
+        var seg = ext.configuration.broadcaster;
+        var view = "tab";
+        try {
+          var c = seg && typeof seg.content === "string" ? JSON.parse(seg.content) : null;
+          if (c && c.view === "app") view = "app";
+        } catch (e) {
+          /* contenuto illeggibile: resta la linguetta */
+        }
+        optApp.radio.checked = view === "app";
+        optTab.radio.checked = view !== "app";
+      });
+      [optApp.radio, optTab.radio].forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (!radio.checked) return;
+          try {
+            ext.configuration.set("broadcaster", MODE_VERSION, JSON.stringify({ view: radio.value === "app" ? "app" : "tab" }));
+            modeStatus.textContent = t("cfgModeSaved");
+            modeStatus.className = "cfg-status is-ok";
+          } catch (e) {
+            modeStatus.textContent = t("cfgModeError");
+            modeStatus.className = "cfg-status is-error";
+          }
+        });
+      });
+    }
   }
 })();

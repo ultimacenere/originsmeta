@@ -136,3 +136,11 @@ body[data-view="config"] {
   margin: 0 -20px -14px;
   border-radius: 0 0 9px 9px;
 }
+
+/* scelta della modalità (14/10/2026) */
+.cfg-modes { margin: 18px 0 0; padding: 12px; border: 2px solid var(--night-3); border-radius: 10px; display: grid; gap: 10px; }
+.cfg-modes legend { padding: 0 6px; }
+.cfg-mode { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.cfg-mode input { margin-top: 3px; accent-color: var(--mint); }
+.cfg-mode-text { display: grid; gap: 2px; }
+.cfg-mode-text span { color: var(--chalk-muted); font-size: 0.85rem; }

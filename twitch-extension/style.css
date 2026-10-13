@@ -623,3 +623,25 @@ body[data-view="mobile"] .om-art {
     transition: none !important;
   }
 }
+
+/* ---------- modalità "come l'app" (14/10/2026): i pannelli di OriginsMeta Tracker sopra il video (panels.css) ---------- */
+.om-applayer { position: fixed; inset: 0; pointer-events: none; }
+.om-applayer[hidden], .om-app[hidden] { display: none; }
+body.om-mode-app .om-tab, body.om-mode-app .om-panel { display: none; }
+.om-apptoggle {
+  position: fixed;
+  left: 8px;
+  top: calc(var(--safe-top) - 34px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 2px solid var(--sky);
+  border-radius: 999px;
+  background: rgba(24, 34, 56, 0.9);
+  color: var(--chalk);
+  font: 700 0.72rem var(--body);
+  cursor: pointer;
+}
+.om-apptoggle[hidden] { display: none; }
+.om-apptoggle:focus-visible { outline: 3px solid var(--mint); outline-offset: 2px; }

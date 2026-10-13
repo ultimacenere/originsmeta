@@ -34,8 +34,27 @@
         ["C00258_MB", 2, 0, 0]
       ]
     },
-    live: { inMatch: true, round: 3, deckLeft: 19, opp: { legendary: "C00118_MC", deckLeft: 18, seen: [["C00029_MB", 1], ["C00028_SB", 2], ["C00032_MB", 1]] } }
+    live: { inMatch: true, round: 3, deckLeft: 19, opp: { legendary: "C00118_MC", deckLeft: 18, seen: [["C00029_MB", 1], ["C00028_SB", 2], ["C00032_MB", 1]] }, life: { me: 2, opp: 1 }, mana: { me: { current: 2, max: 4 }, opp: { current: 0, max: 4 } }, direction: "right" },
+    // stile dei pannelli dell'app (14/10/2026): schermo 2560 × 1440 al 150 %, posizioni del template classico
+    ui: {
+      template: "classic",
+      custom: null,
+      hidden: false,
+      scanner: true,
+      screen: { w: 1707, h: 960 },
+      panels: { deck: { x: 0, y: 304, w: 242, h: 470 }, opp: { x: 1155, y: 0, w: 552, h: 110 } }
+    }
   };
+  var CUSTOM = { orientation: "vertical", cards: "names", perRow: 1, opacity: 85, hideOut: false, me: { legendary: true, deckLeft: true, life: true }, opp: { legendary: true, deckLeft: true, life: true, mana: true } };
+  var SPOTS = {
+    classic: { deck: { x: 0, y: 304, w: 242, h: 470 }, opp: { x: 1155, y: 0, w: 552, h: 110 } },
+    strips: { deck: { x: 0, y: 840, w: 536, h: 120 }, opp: { x: 1148, y: 0, w: 559, h: 110 } },
+    columns: { deck: { x: 0, y: 152, w: 246, h: 470 }, opp: { x: 1441, y: 276, w: 258, h: 520 } },
+    custom: { deck: { x: 0, y: 152, w: 220, h: 470 }, opp: { x: 1441, y: 276, w: 258, h: 420 } }
+  };
+  var configCbs = [];
+  var params = new URLSearchParams(location.search);
+  var broadcaster = { version: "1", content: JSON.stringify({ view: params.get("mode") === "app" ? "app" : "tab" }) };
   var at = Date.now();
 
   function iso(ms) {
@@ -135,6 +154,21 @@
       state.live = { inMatch: true, round: 1, deckLeft: 25, opp: { legendary: "C00175_MC", deckLeft: 25, seen: [] } };
       push();
     },
+    template: function (name) {
+      state.ui.template = name;
+      state.ui.custom = name === "custom" ? CUSTOM : null;
+      state.ui.panels = SPOTS[name];
+      push();
+    },
+    hidePanels: function () {
+      state.ui.hidden = !state.ui.hidden;
+      push();
+    },
+    setMode: function (view) {
+      broadcaster = { version: "1", content: JSON.stringify({ view: view }) };
+      window.Twitch.ext.configuration.broadcaster = broadcaster;
+      configCbs.forEach(function (cb) { cb(); });
+    },
     noDeck: function () {
       state.deck = null;
       state.live = null;
@@ -175,6 +209,17 @@
         if (target === "broadcast") listeners.push(cb);
       },
       unlisten: function () {},
+      configuration: {
+        broadcaster: broadcaster,
+        onChanged: function (cb) {
+          configCbs.push(cb);
+          setTimeout(cb, 40);
+        },
+        set: function (segment, version, content) {
+          broadcaster = { version: version, content: content };
+          window.Twitch.ext.configuration.broadcaster = broadcaster;
+        }
+      },
       onError: function () {},
       onVisibilityChanged: function () {},
       rig: { log: function () { console.log.apply(console, arguments); } }

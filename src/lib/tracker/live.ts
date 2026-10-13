@@ -21,17 +21,56 @@ export type LiveDeckCard = [string, number, number, number];
 /** [chiave, copie viste] */
 export type LiveSeenCard = [string, number];
 
+export type LiveMana = { current: number; max: number } | null;
+/**
+ * Lo stile dei pannelli dell'app (14/10/2026, Pierluigi: "non possiamo renderlo identico come visuale alla versione del
+ * tracker scelto dall'utente?"): template, opzioni del personalizzato, pannelli nascosti fuori partita, scanner acceso,
+ * misure dello schermo e posizione dei due pannelli in pixel dello schermo (punti di Windows). Con l'estensione in
+ * modalità "come l'app" i pannelli si disegnano sopra il video negli stessi punti. Facoltativo: le app 0.4.2 non lo mandano.
+ */
+export const LIVE_TEMPLATES = ["classic", "strips", "columns", "custom"] as const;
+export type LiveTemplate = (typeof LIVE_TEMPLATES)[number];
+export type LiveCustom = {
+  orientation: "vertical" | "horizontal";
+  cards: "art" | "names";
+  perRow: number;
+  opacity: number;
+  hideOut: boolean;
+  me: { legendary: boolean; deckLeft: boolean; life: boolean };
+  opp: { legendary: boolean; deckLeft: boolean; life: boolean; mana: boolean };
+};
+export type LiveRect = { x: number; y: number; w: number; h: number };
+export type LiveUi = { template: LiveTemplate; custom: LiveCustom | null; hidden: boolean; scanner: boolean; screen: { w: number; h: number }; panels: { deck: LiveRect | null; opp: LiveRect | null } };
+
 export type LiveState = {
   v: typeof LIVE_STATE_VERSION;
   deck: { name: string | null; legendary: string | null; cards: LiveDeckCard[] } | null;
-  live: { inMatch: boolean; round: number | null; deckLeft: number | null; opp: { legendary: string | null; deckLeft: number | null; seen: LiveSeenCard[] } } | null;
+  live: {
+    inMatch: boolean;
+    round: number | null;
+    deckLeft: number | null;
+    opp: { legendary: string | null; deckLeft: number | null; seen: LiveSeenCard[] };
+    /** dal 14/10/2026 (app 0.4.3): vita, mana dei due e verso del combattimento, per i pannelli "come l'app" */
+    life?: { me: number | null; opp: number | null };
+    mana?: { me: LiveMana; opp: LiveMana };
+    direction?: "left" | "right" | null;
+  } | null;
+  ui?: LiveUi;
 };
 
 /** La forma minima del pannello del mazzo dell'app (tracker/src/shared/types.ts, `DeckTrackerView`). */
 type ViewCard = { key: string; copies: number; drawn: number; played: number };
 export type LiveSource = {
   deck: { name: string | null; legendary: ViewCard | null; cards: ViewCard[] } | null;
-  live: { inMatch: boolean; round: number | null; deckLeft: number | null; opponent: { deckLeft: number | null; legendary: ViewCard | null; seen: ViewCard[] } } | null;
+  live: {
+    inMatch: boolean;
+    round: number | null;
+    deckLeft: number | null;
+    opponent: { deckLeft: number | null; legendary: ViewCard | null; seen: ViewCard[] };
+    life?: { me: number | null; opp: number | null };
+    mana?: { me: LiveMana; opp: LiveMana };
+    direction?: "left" | "right" | null;
+  } | null;
 };
 
 const clean = (s: string | null | undefined): string | null => {
@@ -40,8 +79,8 @@ const clean = (s: string | null | undefined): string | null => {
 };
 const int = (n: unknown, min: number, max: number): n is number => Number.isInteger(n) && (n as number) >= min && (n as number) <= max;
 
-/** Lo stato da mandare, dal pannello del mazzo dell'app. */
-export function liveStateOf(view: LiveSource): LiveState {
+/** Lo stato da mandare, dal pannello del mazzo dell'app (con lo stile dei pannelli, se c'è). */
+export function liveStateOf(view: LiveSource, ui?: LiveUi | null): LiveState {
   const card = (c: ViewCard): LiveDeckCard => [c.key, c.copies, c.drawn, c.played];
   const deck = view.deck
     ? { name: clean(view.deck.name), legendary: view.deck.legendary?.key ?? null, cards: [...(view.deck.legendary ? [view.deck.legendary] : []), ...view.deck.cards].slice(0, LIVE_LIMITS.deckCards).map(card) }
@@ -56,10 +95,63 @@ export function liveStateOf(view: LiveSource): LiveState {
           round: l.round,
           deckLeft: l.deckLeft,
           opp: { legendary: l.opponent.legendary?.key ?? null, deckLeft: l.opponent.deckLeft, seen: l.opponent.seen.slice(0, LIVE_LIMITS.seen).map((c) => [c.key, c.copies] as LiveSeenCard) },
+          ...(l.life ? { life: { me: l.life.me, opp: l.life.opp } } : {}),
+          ...(l.mana ? { mana: { me: l.mana.me ? { current: l.mana.me.current, max: l.mana.me.max } : null, opp: l.mana.opp ? { current: l.mana.opp.current, max: l.mana.opp.max } : null } } : {}),
+          ...(l.direction !== undefined ? { direction: l.direction } : {}),
         }
       : null,
+    ...(ui ? { ui } : {}),
   };
 }
+
+const bool = (b: unknown): b is boolean => typeof b === "boolean";
+
+/** Le opzioni del personalizzato, se hanno la forma attesa (come `readCustom` dell'app). */
+function readLiveCustom(raw: unknown): LiveCustom | null {
+  const c = raw as Record<string, unknown> | null;
+  if (!c || typeof c !== "object") return null;
+  const me = c.me as Record<string, unknown> | null;
+  const opp = c.opp as Record<string, unknown> | null;
+  if (c.orientation !== "vertical" && c.orientation !== "horizontal") return null;
+  if (c.cards !== "art" && c.cards !== "names") return null;
+  if (!int(c.perRow, 1, 13) || !int(c.opacity, 0, 100) || !bool(c.hideOut)) return null;
+  if (!me || typeof me !== "object" || !bool(me.legendary) || !bool(me.deckLeft) || !bool(me.life)) return null;
+  if (!opp || typeof opp !== "object" || !bool(opp.legendary) || !bool(opp.deckLeft) || !bool(opp.life) || !bool(opp.mana)) return null;
+  return {
+    orientation: c.orientation,
+    cards: c.cards,
+    perRow: c.perRow,
+    opacity: c.opacity,
+    hideOut: c.hideOut,
+    me: { legendary: me.legendary, deckLeft: me.deckLeft, life: me.life },
+    opp: { legendary: opp.legendary, deckLeft: opp.deckLeft, life: opp.life, mana: opp.mana },
+  };
+}
+
+const readRect = (raw: unknown): LiveRect | null => {
+  const r = raw as Record<string, unknown> | null;
+  return r && typeof r === "object" && int(r.x, -20000, 40000) && int(r.y, -20000, 40000) && int(r.w, 1, 20000) && int(r.h, 1, 20000) ? { x: r.x, y: r.y, w: r.w, h: r.h } : null;
+};
+
+/** Lo stile dei pannelli, se ha la forma attesa; altrimenti niente (l'estensione usa la sua linguetta). */
+function readLiveUi(raw: unknown): LiveUi | null {
+  const u = raw as Record<string, unknown> | null;
+  if (!u || typeof u !== "object" || !LIVE_TEMPLATES.includes(u.template as LiveTemplate) || !bool(u.hidden) || !bool(u.scanner)) return null;
+  const screen = u.screen as Record<string, unknown> | null;
+  if (!screen || typeof screen !== "object" || !int(screen.w, 100, 20000) || !int(screen.h, 100, 20000)) return null;
+  const panels = u.panels as Record<string, unknown> | null;
+  if (!panels || typeof panels !== "object") return null;
+  const custom = u.custom === null ? null : readLiveCustom(u.custom);
+  if (u.custom !== null && !custom) return null;
+  return { template: u.template as LiveTemplate, custom, hidden: u.hidden, scanner: u.scanner, screen: { w: screen.w, h: screen.h }, panels: { deck: readRect(panels.deck), opp: readRect(panels.opp) } };
+}
+
+const readMana = (raw: unknown): LiveMana | undefined => {
+  if (raw === null) return null;
+  const m = raw as Record<string, unknown> | undefined;
+  return m && typeof m === "object" && int(m.max, 1, 20) && int(m.current, 0, m.max as number) ? { current: m.current, max: m.max } : undefined;
+};
+const lifeOk = (n: unknown): n is number | null => n === null || int(n, 0, 2);
 
 /** Lo stato arrivato dall'app, se ha la forma attesa (altrimenti null): il sito lo salva e lo inoltra così com'è. */
 export function parseLiveState(raw: unknown): LiveState | null {
@@ -96,8 +188,19 @@ export function parseLiveState(raw: unknown): LiveState | null {
       seen.push([c[0], c[1]]);
     }
     live = { inMatch: l.inMatch, round: l.round as number | null, deckLeft: l.deckLeft as number | null, opp: { legendary: o.legendary as string | null, deckLeft: o.deckLeft as number | null, seen } };
+    // i campi del 14/10/2026: facoltativi, e se non hanno la forma attesa si lasciano fuori
+    const life = l.life as Record<string, unknown> | undefined;
+    if (life && typeof life === "object" && lifeOk(life.me) && lifeOk(life.opp)) live.life = { me: life.me, opp: life.opp };
+    const mana = l.mana as Record<string, unknown> | undefined;
+    if (mana && typeof mana === "object") {
+      const me = readMana(mana.me);
+      const opp = readMana(mana.opp);
+      if (me !== undefined && opp !== undefined) live.mana = { me, opp };
+    }
+    if (l.direction === "left" || l.direction === "right" || l.direction === null) live.direction = l.direction;
   }
-  return { v: LIVE_STATE_VERSION, deck, live };
+  const ui = s.ui === undefined ? null : readLiveUi(s.ui);
+  return { v: LIVE_STATE_VERSION, deck, live, ...(ui ? { ui } : {}) };
 }
 
 /** Il messaggio di Extension PubSub per gli spettatori: lo stato con l'ora, sotto i 5 KB di Twitch. */
