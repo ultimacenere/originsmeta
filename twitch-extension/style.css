@@ -5,7 +5,9 @@
  * bianco né nero pieni. Le carte si mostrano intere: mai ritagliate né coperte (crediti stampati).
  */
 :root {
-  color-scheme: dark;
+  /* niente color-scheme: dark (13/10/2026, prova in diretta): se lo schema dell'iframe è diverso da quello del player
+     di Twitch, Chrome gli dipinge uno sfondo pieno e il video sparisce. L'overlay deve restare trasparente. */
+  color-scheme: normal;
   --felt: #150c2c;
   --felt-deep: #0e071f;
   --felt-line: #3a2a60;
