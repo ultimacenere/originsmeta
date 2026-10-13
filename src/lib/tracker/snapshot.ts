@@ -100,16 +100,63 @@ export type Matchup = Count & { legendary: string; opponent: string };
 export type RatedMatchup = Matchup & Rated;
 
 /**
+ * Leggendarie e scontri contando tutti e due i lati (13/10/2026, Pierluigi: "conta anche il lato avversario"). Il
+ * database dà gli scontri dal lato di chi registra (Leggendaria sua, Leggendaria avversaria, partite, vittorie); da soli
+ * mettevano tutte le Leggendarie sopra il 50%, perché chi registra vince più della metà delle sue partite. Qui ogni
+ * partita con la Leggendaria avversaria nota conta per tutte e due: la vittoria di chi registra è la sconfitta
+ * dell'avversaria. Così il totale delle Leggendarie è il 50% per costruzione e A contro B è il contrario di B contro A.
+ *
+ * - `legendaries`: per Leggendaria le sue presenze in campo (uno specchio vale due presenze, una vinta e una persa) e le
+ *   vittorie; la somma delle presenze è 2 × `games`, ed è il denominatore della quota di gioco.
+ * - `matchups`: una riga per ogni coppia ordinata, simmetrica; lo specchio resta com'è (non ha win rate).
+ * - `games`: le partite contate, ognuna una volta.
+ *
+ * Le partite senza la Leggendaria avversaria nota qui non entrano: dal loro lato non si sa chi c'era dall'altra parte.
+ * Le righe sotto la soglia del database non arrivano e quindi mancano anche qui.
+ */
+export function bothSides(rows: readonly Matchup[]): { legendaries: (Count & { legendary: string })[]; matchups: Matchup[]; games: number } {
+  const legs = new Map<string, Count>();
+  const add = (k: string, games: number, wins: number) => {
+    const c = legs.get(k) ?? { games: 0, wins: 0 };
+    legs.set(k, { games: c.games + games, wins: c.wins + wins });
+  };
+  const pairs = new Map<string, Matchup>();
+  const addPair = (legendary: string, opponent: string, games: number, wins: number) => {
+    const id = `${legendary}|${opponent}`;
+    const c = pairs.get(id) ?? { legendary, opponent, games: 0, wins: 0 };
+    pairs.set(id, { ...c, games: c.games + games, wins: c.wins + wins });
+  };
+  let games = 0;
+  for (const m of rows) {
+    if (m.games <= 0) continue;
+    games += m.games;
+    add(m.legendary, m.games, m.wins);
+    add(m.opponent, m.games, m.games - m.wins);
+    addPair(m.legendary, m.opponent, m.games, m.wins);
+    if (m.legendary !== m.opponent) addPair(m.opponent, m.legendary, m.games, m.games - m.wins);
+  }
+  return {
+    legendaries: [...legs].map(([legendary, c]) => ({ legendary, ...c })),
+    matchups: [...pairs.values()],
+    games,
+  };
+}
+
+/**
  * Lo scontro più sbilanciato: fra quelli con almeno `THIN_GAMES` partite se ce ne sono, il più lontano dal 50%, poi il
  * più giocato. Mai uno specchio né uno scontro senza partite; null se non ce n'è nessuno.
  */
 export function notableMatchup<T extends RatedMatchup>(list: readonly T[]): T | null {
   const ok = list.filter((m) => m.legendary !== m.opponent && m.games > 0);
+  // distanza dal 50% arrotondata: 0,7 − 0,5 e 0,5 − 0,3 devono pesare uguale
+  const far = (m: T) => Math.round(Math.abs(m.r - 0.5) * 1e9);
   ok.sort(
     (x, y) =>
       Number(y.games >= THIN_GAMES) - Number(x.games >= THIN_GAMES) ||
-      Math.abs(y.r - 0.5) - Math.abs(x.r - 0.5) ||
+      far(y) - far(x) ||
       y.games - x.games ||
+      // scontri simmetrici (bothSides): fra A contro B e B contro A si racconta chi vince
+      Number(y.r > 0.5) - Number(x.r > 0.5) ||
       (x.legendary + x.opponent).localeCompare(y.legendary + y.opponent),
   );
   return ok[0] ?? null;
@@ -132,7 +179,7 @@ export function matchupOrder(matchups: readonly Matchup[], legendaryGames: Reado
 export type CellKind = "mirror" | "none" | "thin" | "ok";
 export type GridCell = Rated & { a: string; b: string; kind: CellKind };
 
-/** La tabella completa (righe = la Leggendaria di chi registra, colonne = quella dall'altra parte), con le celle vuote. */
+/** La tabella completa (righe = una Leggendaria, colonne = quella dall'altra parte; con bothSides è simmetrica), con le celle vuote. */
 export function matchupGrid(matchups: readonly Matchup[], order: readonly string[]): GridCell[][] {
   const byPair = new Map(matchups.map((m) => [`${m.legendary}|${m.opponent}`, m]));
   return order.map((a) =>

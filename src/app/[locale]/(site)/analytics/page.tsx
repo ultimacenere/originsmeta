@@ -43,6 +43,7 @@ import {
   watchLegendary,
   type Axis,
   type Rated,
+  bothSides,
 } from "@/lib/tracker/snapshot";
 import { TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
@@ -133,7 +134,12 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
 
   /* ---------- dati (mai `players`: si tengono solo partite e vittorie) ---------- */
   const total = data?.overview.games ?? 0;
-  const legs = (data?.legendaries ?? [])
+  /* Leggendarie e scontri contano tutti e due i lati delle partite con la Leggendaria avversaria nota (13/10/2026,
+     bothSides di snapshot.ts): `legGames` partite, il doppio di presenze in campo (la base della quota di gioco). */
+  const both = bothSides((data?.matchups ?? []).filter((m) => getCardByKey(m.legendary) && getCardByKey(m.opponent)));
+  const legGames = both.games;
+  const legShare = (games: number) => (legGames ? games / (2 * legGames) : 0);
+  const legs = both.legendaries
     .flatMap((s) => {
       const card = getCardByKey(s.legendary);
       return card ? [{ ...rated({ legendary: s.legendary, games: s.games, wins: s.wins }), card }] : [];
@@ -160,7 +166,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
       },
     ];
   });
-  const mus = (data?.matchups ?? []).filter((m) => getCardByKey(m.legendary) && getCardByKey(m.opponent)).map((m) => rated({ legendary: m.legendary, opponent: m.opponent, games: m.games, wins: m.wins }));
+  const mus = both.matchups.map((m) => rated(m));
   const notable = notableMatchup(mus);
 
   /* ---------- sezioni presenti, numerate nell'ordine ---------- */
@@ -171,7 +177,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
         { id: "decks" as const, count: decks.length },
         ...(archs.length ? [{ id: "archetypes" as const, count: archs.length }] : []),
         ...(cardRows.length ? [{ id: "cards" as const, count: cardRows.length }] : []),
-        ...(notable ? [{ id: "matchups" as const, count: mus.filter((m) => m.legendary !== m.opponent && m.games > 0).length }] : []),
+        ...(notable ? [{ id: "matchups" as const, count: mus.filter((m) => m.legendary < m.opponent && m.games > 0).length }] : []),
       ]
     : [];
   const numOf = (id: SecId) => present.findIndex((s) => s.id === id) + 1;
@@ -243,7 +249,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
       ),
     });
   }
-  if (mostPlayed && mostPlayed !== strongest && total) {
+  if (mostPlayed && mostPlayed !== strongest && legGames) {
     wide.push({
       key: "most",
       node: (
@@ -257,7 +263,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
               <CardName name={mostPlayed.card.name} legendary legendaryLabel={legendaryLabel} />
             </span>
             <span className="an-cell-value">
-              {pctNum(mostPlayed.games / total, locale)}
+              {pctNum(legShare(mostPlayed.games), locale)}
               <small>{unit}</small>
             </span>
             <span className="an-cell-sub">{fmt(w.snapshot.mostPlayedSub, { n: fmtInt(mostPlayed.games, locale), p: P(mostPlayed.r, 0) })}</span>
@@ -519,7 +525,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                   kicker={w.legendaries.kicker}
                   title={w.sections.legendaries.title}
                   id="an-h-legendaries"
-                  meta={legs.length === 1 ? fmt(w.legendaries.metaOne, { games: gamesText(total) }) : fmt(w.legendaries.meta, { n: legs.length, games: gamesText(total) })}
+                  meta={legs.length === 1 ? fmt(w.legendaries.metaOne, { games: gamesText(legGames) }) : fmt(w.legendaries.meta, { n: legs.length, games: gamesText(legGames) })}
                 />
                 <div className={`an-podium an-reveal has-${Math.min(3, legs.length)}`}>
                   {legs.slice(0, 3).map((s, i) => (
@@ -624,9 +630,9 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                     <p className="an-lead">{w.legendaries.mapLead}</p>
                     <div className="an-panel an-map-wrap an-reveal">
                       <MetaMap
-                        points={legs.map((s) => ({ key: s.legendary, label: s.card.name, share: total ? s.games / total : 0, r: s.r }))}
+                        points={legs.map((s) => ({ key: s.legendary, label: s.card.name, share: legShare(s.games), r: s.r }))}
                         titles={Object.fromEntries(
-                          legs.map((s) => [s.legendary, fmt(w.legendaries.mapPoint, { name: s.card.name, p: P(s.r), games: gamesText(s.games), share: P(total ? s.games / total : 0) })]),
+                          legs.map((s) => [s.legendary, fmt(w.legendaries.mapPoint, { name: s.card.name, p: P(s.r), games: gamesText(s.games), share: P(legShare(s.games)) })]),
                         )}
                         labels={{ aria: w.legendaries.mapAria, axis: w.legendaries.mapAxis, unit, quadrants: w.legendaries.mapQuadrants as [string, string, string, string], quadrantsShort: w.legendaries.mapQuadrantsShort as [string, string, string, string] }}
                       />
@@ -675,7 +681,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                             <td className="is-num">{P(s.lo)}</td>
                             <td className="is-num">{fmtInt(s.games, locale)}</td>
                             <td className="is-num">{wl(s)}</td>
-                            <td className="is-num">{P(total ? s.games / total : 0)}</td>
+                            <td className="is-num">{P(legShare(s.games))}</td>
                           </tr>
                         ))}
                       </tbody>
