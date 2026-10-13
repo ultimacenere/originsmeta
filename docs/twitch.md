@@ -66,8 +66,8 @@ Pagina di configurazione dell'estensione (streamer)
    (l'Extension Secret in base64, come lo dà la console), `TWITCH_EXT_OWNER_ID` (l'id utente Twitch del proprietario
    dell'estensione). `CRON_SECRET` c'è già.
 4. **App 0.4.2** con l'invio dello stato dal vivo: release su GitHub (docs/tracker.md).
-5. **Koin**: chiedere a Kevin anche dell'estensione (le immagini delle carte, che sono contenuto, in un canale nuovo:
-   Twitch) insieme alla domanda sul minigioco dei pacchetti.
+5. **Koin**: le immagini delle carte nell'estensione sono contenuto, coperte dal permesso di Kevin del 19/09/2026
+   (decisione di Pierluigi del 13/10/2026: niente domanda a parte). A Kevin va chiesto solo del minigioco dei pacchetti.
 
 ## Punti aperti
 
