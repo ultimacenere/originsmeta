@@ -6,12 +6,13 @@ import "./ts-hooks.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { EXTRA_ART, layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readResult, readVersus, windowContent } from "../src/shared/recognize.ts";
+import { EXTRA_ART, layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, PREVIEW_ART } from "../src/shared/recognize.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const sharp = createRequire(path.join(root, "..", "package.json"))("sharp");
 const refs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art.json"), "utf8")), JSON.parse(fs.readFileSync(path.join(root, "src", EXTRA_ART), "utf8")));
 const handRefs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art-hand.json"), "utf8")));
+const previewRefs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src", PREVIEW_ART), "utf8")));
 const [dir, out] = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const screenArg = process.argv.find((a) => a.startsWith("--screen="))?.slice(9) ?? "2560x1440";
 const [screenW, screenH] = screenArg.split("x").map(Number);
@@ -41,7 +42,7 @@ for (const f of files) {
       vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
       mana,
       result: readResult(img, layout.at.ui),
-      ...(mana ? { hand: readHand(img, handRefs, layout.at.content), life: readLife(img, layout.at.board) } : {}),
+      ...(mana ? { hand: readHand(img, handRefs, layout.at.content), life: readLife(img, layout.at.board), spell: readSpell(img, previewRefs, layout.at.ui), phase: readPhase(img, layout.at.ui) } : {}),
     }) + "\n",
   );
   if (++i % 500 === 0) console.log(i, "/", files.length, `${Math.round((Date.now() - t0) / i)} ms a fotogramma`);

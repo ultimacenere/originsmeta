@@ -359,7 +359,9 @@ function render(v: DeckTrackerView) {
   const close = window.deckApi ? `<button type="button" class="x" id="close" title="${esc(L.close)}" aria-label="${esc(L.close)}">×</button>` : "";
   const fine = `${v.scanner ? "" : `<p class="fine">${esc(L.noScanner)}</p>`}${window.deckApi ? "" : `<footer class="brand">${esc(L.brand)}</footer>`}`;
   // "solo durante la partita" e fuori partita: niente pannello (in OBS la sorgente resta vuota)
-  document.body.classList.toggle("is-hidden", v.hidden === true);
+  // le finestre le nasconde già il processo principale: qui conta solo per OBS (13/10/2026: la pagina restava vuota
+  // per un attimo nella finestra appena rimostrata, perché `hidden` arriva con un secondo di ritardo)
+  document.body.classList.toggle("is-hidden", v.hidden === true && !window.deckApi);
   const leg = v.deck?.legendary ?? null;
   const legOut = Boolean(live && leg && leg.drawn >= 1);
   const zoom = view === "me" && legOut && !legendaryWasOut ? " just" : "";

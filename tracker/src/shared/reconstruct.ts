@@ -9,13 +9,13 @@
  * almeno `STABLE_FRAMES` fotogrammi, e si confrontano con il tabellone alla fine del round prima (il massimo degli
  * ultimi `END_FRAMES` fotogrammi, che regge le sparizioni momentanee): le copie in più sono giocate di quel round.
  * Limiti noti: una carta giocata e distrutta nello stesso round senza restare a schermo per due fotogrammi non si vede;
- * una magia non resta sul tabellone (S3 la legge solo se lascia una carta). Le carte create dal gioco (tipo "token")
- * non sono giocate e restano fuori.
+ * una magia non resta sul tabellone: dal 13/10/2026 si legge dal riquadro in alto a sinistra (`spellPlays`). Le carte
+ * create dal gioco (tipo "token") non sono giocate e restano fuori.
  *
  * Il round è il mana massimo meno uno (`roundOf` di recognize.ts), portato avanti nei fotogrammi in cui il pannello non
  * si legge.
  */
-import { BOARD_SLOTS, roundOf, type Side } from "./recognize";
+import { BOARD_SLOTS, isSpellKey, roundOf, type Side } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
 export type ScanFrame = {
@@ -36,6 +36,10 @@ export type ScanFrame = {
   direction?: Direction | null;
   /** Le carte coperte nella mano dell'avversario (recognize.ts, `readOppHand`; dal 12/10/2026, null se non si leggono). */
   oppHand?: number | null;
+  /** La magia nel riquadro in alto a sinistra (recognize.ts, `readSpell`; dal 13/10/2026, null se non c'è o non si legge). */
+  spell?: string | null;
+  /** La fase del round dal tasto in basso a destra (recognize.ts, `readPhase`; dal 13/10/2026). */
+  phase?: "plan" | "reveal";
 };
 
 export type Mana = { current: number; max: number };
@@ -84,7 +88,10 @@ export type ScannedMatch = {
 /** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
 export const RESULT_FRAMES = 2;
 
-export type CardInfo = { token: (key: string) => boolean; legendary: (key: string) => boolean };
+/**
+ * `myDeck`: le carte del mazzo scelto, se si sanno (13/10/2026): una magia che non c'è non può essere mia (`spellPlays`).
+ */
+export type CardInfo = { token: (key: string) => boolean; legendary: (key: string) => boolean; myDeck?: () => readonly string[] | null };
 
 export const STABLE_FRAMES = 2;
 export const END_FRAMES = 5;
@@ -118,6 +125,18 @@ export function confirmMana(frames: readonly ScanFrame[]): ScanFrame[] {
  */
 export const START_MAX_MANA = 3;
 export const MIDGAME_START_MS = 60_000;
+/**
+ * Fotogrammi col tabellone con carte dopo la schermata VS per dire che la partita è cominciata anche senza il mana
+ * (13/10/2026: in 2 partite su 23 il "2/2" del round 1 non si legge mai, e la partita partiva dal round 2, con i pannelli
+ * "solo durante la partita" accesi un minuto dopo la VS e le carte del round 1 contate nel round 2).
+ */
+export const BOARD_START_FRAMES = 2;
+/**
+ * Il tabellone con carte tiene la partita "in corso" fino a 2 minuti dopo l'ultimo mana letto (13/10/2026: nei round
+ * finali il mana resta coperto fino a 78 secondi e i pannelli "solo durante la partita" sparivano a partita in corso,
+ * in 9 partite su 24). Lo stendardo di fine partita chiude prima.
+ */
+export const BOARD_GRACE_MS = 120_000;
 
 /** Divide i fotogrammi di una sessione in partite: una schermata VS dopo il gioco, il mana che riparte o una pausa. */
 export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
@@ -128,6 +147,7 @@ export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
   let lastMax: number | null = null;
   let played = false;
   let sawVs = false;
+  let boardAfterVs = 0;
   const firstMs = frames[0]?.ms ?? 0;
   for (const f of frames) {
     const prev = cur[cur.length - 1];
@@ -141,12 +161,16 @@ export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
       lastMax = null;
       played = false;
       sawVs = false;
+      boardAfterVs = 0;
     }
     cur.push(f);
     if (f.vs) sawVs = true;
+    // il round 1 si riconosce anche dal tabellone dopo la VS, quando il suo mana non si legge (`BOARD_START_FRAMES`)
+    if (sawVs && !f.vs && f.board.some(Boolean) && ++boardAfterVs >= BOARD_START_FRAMES) played = true;
     // una partita in corso ha carte sul tabellone; il tabellone d'apertura ("0/10") è vuoto
     const midgame = out.length === 0 && !sawVs && f.ms - firstMs <= MIDGAME_START_MS && f.board.some(Boolean);
-    if (f.maxMana !== null && (played || f.maxMana <= START_MAX_MANA || midgame)) {
+    // dopo una partenza riconosciuta dal tabellone il segnaposto "0/10" non vale: conta solo da un mana già valido
+    if (f.maxMana !== null && (lastMax !== null || f.maxMana <= START_MAX_MANA || midgame)) {
       lastMax = f.maxMana;
       played = true;
     }
@@ -161,15 +185,116 @@ export function splitMatches(all: readonly ScanFrame[]): ScanFrame[][] {
 
 const sideOf = (i: number): Side => BOARD_SLOTS[i].side;
 
-/** Copie di ogni carta per lato in un fotogramma: "me|C00032_MB" → 2. */
+/**
+ * Copie di ogni carta per lato in un fotogramma: "me|C00032_MB" → 2. Le magie non restano sul tabellone: una magia letta
+ * in uno spazio è un'altra carta scambiata (13/10/2026: Searing Light in 53 letture su 10 sessioni, tutte false), e le
+ * magie si leggono dal riquadro in alto a sinistra (`spellPlays`).
+ */
 function counts(f: ScanFrame): Map<string, number> {
   const m = new Map<string, number>();
   f.board.forEach((k, i) => {
-    if (!k) return;
+    if (!k || isSpellKey(k)) return;
     const id = `${sideOf(i)}|${k}`;
     m.set(id, (m.get(id) ?? 0) + 1);
   });
   return m;
+}
+
+/**
+ * Una stessa magia letta di nuovo entro questo tempo nel riquadro è la stessa rivelazione (il riquadro entra scorrendo e
+ * durante l'effetto si legge a tratti).
+ */
+export const SPELL_GAP_MS = 3000;
+
+/** Le apparizioni di ogni magia nel riquadro fra questi fotogrammi: letture vicine della stessa magia, almeno `minFrames`. */
+function spellRuns(frames: readonly ScanFrame[], minFrames = STABLE_FRAMES): Map<string, number> {
+  const out = new Map<string, number>();
+  let cur: { key: string; n: number; last: number } | null = null;
+  const close = () => {
+    if (cur && cur.n >= minFrames) out.set(cur.key, (out.get(cur.key) ?? 0) + 1);
+  };
+  for (const f of frames) {
+    if (!f.spell) continue;
+    if (cur && cur.key === f.spell && f.ms - cur.last <= SPELL_GAP_MS) {
+      cur.n++;
+      cur.last = f.ms;
+      continue;
+    }
+    close();
+    cur = { key: f.spell, n: 1, last: f.ms };
+  }
+  close();
+  return out;
+}
+
+/** Le copie di una carta nella mia mano lette in almeno `STABLE_FRAMES` fotogrammi di fila, nell'ordine. */
+function handCounts(frames: readonly ScanFrame[], key: string): number[] {
+  const seq = frames.filter((f) => f.hand !== undefined).map((f) => f.hand!.filter((k) => k === key).length);
+  const stable: number[] = [];
+  for (let i = 0; i + STABLE_FRAMES <= seq.length; i++) if (seq.slice(i, i + STABLE_FRAMES).every((n) => n === seq[i])) stable.push(seq[i]);
+  return stable;
+}
+
+/**
+ * Le copie di una carta uscite dalla mia mano nel round: il massimo letto prima della fine della pianificazione meno
+ * l'ultima lettura della pianificazione. Il massimo, non la prima lettura, perché la carta può lasciare la mano già
+ * durante l'animazione d'inizio round, prima che il tasto diventi verde (partita del 12/10 alle 00:07, round 4).
+ */
+function leftHand(frames: readonly ScanFrame[], key: string): number {
+  let end = -1;
+  frames.forEach((f, i) => {
+    if (f.phase === "plan") end = i;
+  });
+  if (end < 0) return 0;
+  const before = handCounts(frames.slice(0, end + 1), key);
+  const plan = handCounts(frames.slice(0, end + 1).filter((f) => f.phase === "plan"), key);
+  return before.length && plan.length ? Math.max(0, Math.max(...before) - plan[plan.length - 1]) : 0;
+}
+
+/**
+ * Le magie giocate in un round (13/10/2026, Pierluigi: "dobbiamo leggere le spell e sappiamo che vengono visualizzate in
+ * alto a sinistra"). Il riquadro le mostra durante la rivelazione, le mie e quelle dell'avversario, e durante la
+ * pianificazione solo le mie (mentre scelgo il bersaglio). Una magia rivelata è mia fino al numero di copie che ho
+ * giocato in quel round, cioè il più alto fra le volte che l'ho vista mentre sceglievo il bersaglio e le copie uscite
+ * dalla mia mano entro la fine della pianificazione (`leftHand`); le altre sono dell'avversario. Le carte create (token) restano fuori, come
+ * sul tabellone; il luogo non si sa (0).
+ */
+export function spellPlays(frames: readonly ScanFrame[], turn: number, cards: CardInfo): ScannedPlay[] {
+  const reveal = spellRuns(frames.filter((f) => f.phase !== "plan"));
+  // durante la pianificazione il riquadro mostra solo le mie magie: basta un fotogramma
+  const aimed = spellRuns(frames.filter((f) => f.phase === "plan"), 1);
+  const deck = cards.myDeck?.() ?? null;
+  const out: ScannedPlay[] = [];
+  for (const [key, n] of reveal) {
+    if (cards.token(key)) continue;
+    const mine = deck && !deck.includes(key) ? 0 : Math.min(n, Math.max(aimed.get(key) ?? 0, leftHand(frames, key)));
+    for (let i = 0; i < mine; i++) out.push({ turn, me: true, card: key, lane: 0 });
+    for (let i = mine; i < n; i++) out.push({ turn, me: false, card: key, lane: 0 });
+  }
+  return out;
+}
+
+/**
+ * L'ultimo segno di partita in un pezzo (13/10/2026, pannelli "solo durante la partita"): il mana, o il tabellone con
+ * carte entro `BOARD_GRACE_MS` dall'ultimo mana (o dalla VS) e prima dello stendardo di fine partita. Null senza mana né VS.
+ */
+export function lastActivity(piece: readonly ScanFrame[]): number | null {
+  let mana: number | null = null;
+  let vs: number | null = null;
+  let banner: number | null = null;
+  for (const f of piece) {
+    if (f.maxMana !== null) mana = f.ms;
+    if (f.vs) vs = f.ms;
+    if (f.result && banner === null && (mana !== null || vs !== null)) banner = f.ms;
+  }
+  const anchor = mana ?? vs;
+  if (anchor === null) return null;
+  let last = mana;
+  for (const f of piece) {
+    if (f.ms <= anchor || f.ms > anchor + BOARD_GRACE_MS || (banner !== null && f.ms >= banner) || f.vs || !f.board.some(Boolean)) continue;
+    last = Math.max(last ?? 0, f.ms);
+  }
+  return last;
 }
 
 /** Il valore più frequente (a pari merito il primo incontrato), o null. */
@@ -194,12 +319,25 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
   // round di ogni fotogramma: il mana massimo portato avanti, dal primo mana dei primi round (o dal primo mana letto, se
   // la ripresa è cominciata a partita in corso); prima la partita non è cominciata
   const start = frames.findIndex((f) => f.maxMana !== null && f.maxMana <= START_MAX_MANA);
-  const from = start >= 0 ? start : frames.findIndex((f) => f.maxMana !== null);
+  let from = start >= 0 ? start : frames.findIndex((f) => f.maxMana !== null);
+  const manaFrom = from;
   let max: number | null = null;
+  // round 1 senza mana letto (`BOARD_START_FRAMES`): dopo l'ultima VS, il primo tabellone con carte è il round 1
+  const firstMax = from >= 0 ? frames[from].maxMana : null;
+  if (firstMax === null || firstMax <= START_MAX_MANA) {
+    const end = from >= 0 ? from : frames.length;
+    let lastVs = -1;
+    for (let i = 0; i < end; i++) if (frames[i].vs) lastVs = i;
+    const board1 = lastVs >= 0 ? frames.findIndex((f, i) => i > lastVs && i < end && !f.vs && f.board.some(Boolean)) : -1;
+    if (board1 >= 0) {
+      from = board1;
+      max = 2;
+    }
+  }
   const byRound = new Map<number, ScanFrame[]>();
   for (const [i, f] of frames.entries()) {
     if (i < from || from < 0) continue;
-    if (f.maxMana !== null && (max === null || f.maxMana >= max)) max = f.maxMana;
+    if (f.maxMana !== null && (manaFrom < 0 || i >= manaFrom) && (max === null || f.maxMana >= max)) max = f.maxMana;
     if (max === null) continue;
     const r = roundOf(max);
     if (r < 1) continue;
@@ -228,6 +366,8 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
       const slot = first >= 0 ? fs[first].board.findIndex((k, i) => k === key && sideOf(i) === side) : -1;
       for (let c = 0; c < fresh; c++) plays.push({ turn: r, me: side === "me", card: key, lane: slot >= 0 ? BOARD_SLOTS[slot].lane : 0 });
     }
+    // le magie, che non restano sul tabellone: dal riquadro in alto a sinistra (13/10/2026)
+    plays.push(...spellPlays(fs, r, cards));
     // carte pescate: in mano adesso più le giocate nei round prima (copie in mano stabili per STABLE_FRAMES fotogrammi)
     const handSeen = new Map<string, number[]>();
     for (const f of fs) {
@@ -408,6 +548,8 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   if (mana !== undefined && !(mana && typeof mana === "object" && manaOk(mana.me) && manaOk(mana.opp))) return null;
   if (f.direction !== undefined && f.direction !== null && f.direction !== "left" && f.direction !== "right") return null;
   if (f.oppHand !== undefined && f.oppHand !== null && !(Number.isInteger(f.oppHand) && (f.oppHand as number) >= 0 && (f.oppHand as number) <= 20)) return null;
+  if (f.spell !== undefined && f.spell !== null && !key(f.spell)) return null;
+  if (f.phase !== undefined && f.phase !== "plan" && f.phase !== "reveal") return null;
   const pick = (m: Mana | null) => (m ? { current: m.current, max: m.max } : null);
   return {
     ms: now,
@@ -420,5 +562,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
     ...(mana ? { mana: { me: pick(mana.me as Mana | null), opp: pick(mana.opp as Mana | null) } } : {}),
     ...(f.direction === "left" || f.direction === "right" ? { direction: f.direction } : {}),
     ...(typeof f.oppHand === "number" ? { oppHand: f.oppHand } : {}),
+    ...(key(f.spell) ? { spell: f.spell } : f.spell === null ? { spell: null } : {}),
+    ...(f.phase === "plan" || f.phase === "reveal" ? { phase: f.phase } : {}),
   };
 }
