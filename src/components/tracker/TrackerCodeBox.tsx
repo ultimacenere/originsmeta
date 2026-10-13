@@ -7,10 +7,13 @@ import { fillTracker, type TrackerLabels } from "@/lib/trackerLabels";
 /**
  * "Crea un codice" di /account/tracker (tracker/overlay, Fase 3, 30/09/2026): il codice monouso da scrivere nell'app
  * per collegarla all'account. Vale 10 minuti e una volta (tracker_link_code); scaduto, il riquadro lo dice. Il codice
- * vive solo in questo riquadro: non finisce nell'indirizzo della pagina né nella cronologia del browser.
+ * vive solo in questo riquadro: non finisce nell'indirizzo della pagina né nella cronologia del browser. Dal 13/10/2026 lo
+ * stesso riquadro crea anche il codice per l'estensione Twitch (`create` = createTwitchCode, testi di `twitch`).
  */
-export function TrackerCodeBox({ labels, locale }: { labels: TrackerLabels["link"]; locale: string }) {
-  const [state, action, pending] = useActionState<TrackerCodeState>(createTrackerCode, {});
+type CodeLabels = Pick<TrackerLabels["link"], "create" | "creating" | "yourCode" | "expires" | "expired" | "copy" | "copied" | "errors">;
+
+export function TrackerCodeBox({ labels, locale, create = createTrackerCode }: { labels: CodeLabels; locale: string; create?: () => Promise<TrackerCodeState> }) {
+  const [state, action, pending] = useActionState<TrackerCodeState>(create, {});
   // l'ora la aggiorna il timer qui sotto (0 = appena creato, quindi non scaduto): niente Date.now() durante il render
   const [now, setNow] = useState(0);
   // il codice copiato: un codice nuovo torna a "Copia" da solo

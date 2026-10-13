@@ -59,6 +59,7 @@ import { SyncQueue, claimCode, siteBase, unlinkRemote, verifyToken, type SyncDep
 import { checkDue, decideAccess, type Access } from "./access";
 import { APP_NAME, APP_USER_MODEL_ID, OLD_DATA_FOLDER, dataDir, staleLoginItem } from "./appIdentity";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
+import { LivePusher, LIVE_MIN_MS } from "./twitchLive";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
 import { deckTrackerView } from "./deckTracker";
@@ -639,6 +640,16 @@ const cipher: Cipher = {
 };
 const syncDeps: SyncDeps = { site: SITE_ORIGIN, fetch: (url, init) => net.fetch(url, init) };
 
+/**
+ * Estensione Twitch "Deck tracker" (13/10/2026, twitchLive.ts): lo stato del pannello del mazzo parte per il sito quando
+ * cambia, al massimo ogni 2 secondi, e il sito lo tiene solo se l'account ha collegato un canale Twitch.
+ */
+const livePusher = new LivePusher(syncDeps, () => account.token);
+setInterval(() => {
+  if (!account.token || CAPTURE || !engineOn) return;
+  void livePusher.offer(currentDeckView());
+}, LIVE_MIN_MS);
+
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
 function scheduleSync(ms: number) {
   if (syncTimer) clearTimeout(syncTimer);
@@ -664,6 +675,7 @@ async function runSync(force: boolean) {
 function forgetLink() {
   account.clear();
   sync.reset();
+  livePusher.reset();
   notice = "unlinked";
   lastCheckFailed = false;
   refreshAccess();
@@ -685,6 +697,7 @@ async function linkAccount(code: unknown): Promise<LinkResult> {
   account.set(r.token, r.username, SITE_ORIGIN);
   // tutto lo storico sul PC va a questo account (il sito scarta da sé i doppioni)
   sync.reset();
+  livePusher.reset();
   notice = null;
   lastCheckAt = Date.now();
   lastCheckFailed = false;
@@ -697,6 +710,7 @@ async function unlinkAccount() {
   const token = account.token;
   account.clear();
   sync.reset();
+  livePusher.reset();
   notice = null;
   lastCheckFailed = false;
   // senza collegamento l'app si ferma e torna alla schermata di collegamento
@@ -1192,7 +1206,8 @@ async function boot() {
     tray = new Tray(nativeImage.createFromPath(ICON));
     tray.on("click", showWindow);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
-    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
+    // il mazzo scelto: una magia che non c'è è dell'avversario (13/10/2026, `spellPlays` di reconstruct.ts)
+    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)

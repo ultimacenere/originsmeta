@@ -348,6 +348,45 @@ raggiungibili attraverso tasto setup, nella pagina principale solo i dati del gi
 - Sul sito la guida di `/tracker` è in cinque passi brevi (requisiti in una riga, problemi comuni in un riquadro) e
   rimanda al tasto Setup: online dal 13/10, con la release 0.4.1.
 
+## Magie, pannelli e Twitch (0.4.2, 13/10/2026, da pubblicare)
+
+Richieste di Pierluigi del 13/10/2026: "dobbiamo leggere le spell e sappiamo che vengono visualizzate in alto a
+sinistra e dobbiamo assolutamente leggerle"; "abbiamo un bug sulla funzione di nascondere l'interfaccia a partita
+conclusa, a volte non ricompare l'interfaccia, a volte parte post turno uno a leggere le carte"; l'integrazione con
+Twitch chiesta dagli streamer (docs/twitch.md).
+
+- **Magie** (`readSpell` e `readPhase` di recognize.ts, `spellPlays` di reconstruct.ts, test in reconstruct.test.ts):
+  le magie non restano sul tabellone, ma il gioco le mostra nel riquadro grande in alto a sinistra, con la cornice ad
+  angoli tagliati, mentre si rivelano (le mie e quelle dell'avversario) e mentre scelgo il bersaglio di una mia.
+  L'illustrazione lì è un'inquadratura più stretta di quella del sito: riferimenti a parte in `src/card-art-preview.json`
+  (`ART_IN_PREVIEW`, 40,30–435,275 su 480 × 690, `npm run card-art`), cercati sulle partite salvate (Searing Light 0,91
+  e Legion of the Dead 0,84, distacco 0,44–0,51 da ogni altra carta). Il riquadro entra scorrendo e sta più a sinistra
+  nella demo che nel playtest: `SPELL_SHIFTS` prova 12 posizioni solo con le magie (chiavi `_SB`/`_SC`) e poi misura il
+  distacco da tutte le carte (`SPELL_ACCEPT` 0,6 / 0,15). Su 33 sessioni del 10–12/10: 22 magie diverse, 0,61–0,90, nessuna
+  carta scambiata. La fase del round viene dal tasto in basso a destra: "PRONTO" ha l'anello verde (0,04–0,16 di
+  verde), "RIVELAZIONE" no (0 in 712 fotogrammi su 712). **Chi l'ha giocata**: in pianificazione il riquadro mostra
+  solo le mie; in rivelazione una magia è mia fino al numero di copie che ho giocato in quel round (viste mentre
+  sceglievo il bersaglio, anche un fotogramma solo, o uscite dalla mia mano entro la fine della pianificazione: il
+  massimo prima meno l'ultima lettura, perché la carta può lasciare la mano già nell'animazione d'inizio round), mai se
+  non è nel mazzo scelto (`CardInfo.myDeck`); le altre sono dell'avversario. Una stessa magia letta di nuovo entro 3 s
+  è la stessa rivelazione (`SPELL_GAP_MS`), servono 2 fotogrammi. Le magie entrano nelle giocate (luogo 0), quindi nel
+  Deck tracker (le mie si spengono, quelle dell'avversario fra le carte viste), nello storico e nelle statistiche
+  delle carte. Le magie **lette sul tabellone** non contano più: erano altre carte scambiate (Searing Light in 53
+  letture su 10 sessioni, tutte false). Verifica: `scripts/scan-frames.mjs` scrive anche `spell` e `phase`.
+- **Pannelli "solo durante la partita"** (analisi sui fotogrammi del 10–12/10, 24 partite): (1) sparivano a partita in
+  corso quando il mana non si leggeva per più di 30 s mentre il tabellone sì (round finali e combattimento, 9 partite
+  su 24, fino a 78 s): ora "in partita" guarda anche il tabellone con carte fino a 2 minuti dopo l'ultimo mana e prima
+  dello stendardo (`lastActivity`, `BOARD_GRACE_MS`); (2) in 2 partite su 23 il "2/2" del round 1 non si legge mai e la
+  partita partiva dal round 2 (pannelli un minuto dopo la VS, carte del round 1 contate nel round 2): ora dopo la VS
+  il primo tabellone con carte è il round 1 (`BOARD_START_FRAMES`), e dopo una partenza così il segnaposto "0/10" non
+  vale; (3) la pagina del pannello restava vuota per un attimo nella finestra appena rimostrata (`hidden` arriva con un
+  secondo di ritardo): `is-hidden` vale solo per OBS. Simulazione: pannelli nascosti a partita in corso da 9 partite
+  (200 s) a 1 volta (1,5 s), partite dal round 2 da 2 a 0, pagina vuota da 8 volte a 0.
+- **Estensione Twitch** (`src/main/twitchLive.ts`, test): durante la partita l'app manda a `/api/tracker/live` lo stato
+  del Deck tracker (`liveStateOf` di src/lib/tracker/live.ts) quando cambia, al massimo ogni 2 secondi; il sito lo tiene
+  solo se l'account ha collegato un canale Twitch, altrimenti risponde `linked: false` e l'app aspetta 5 minuti.
+  Senza account collegato non parte niente. Dettagli in docs/twitch.md.
+
 ## Il sito (Fase 3)
 
 - **Rotte** (client anonimo senza cache, `supabaseAnon` di `src/lib/supabase/public.ts`; mai in cache; niente cookie):
@@ -572,7 +611,7 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   dell'avversario, round, giocate (mie solo le carte del mazzo: Christopher Robin evocato dal luogo, Ali Baba e Big
   Bad Wolf generati da effetti restano fuori; luoghi 0–2 come nel replay). Le partite del 10/10 ricostruite: io Queen of
   Hearts contro Merlin, Dracula e Three Not So Little Pigs, 9 round ciascuna, giocate di tutti e due i lati.
-  **Limiti noti**: le magie non restano sul tabellone e non si leggono (il riquadro grande a sinistra mostra anche le
+  **Limiti noti** (le magie si leggono dal 13/10/2026 dal riquadro in alto a sinistra: "Magie, pannelli e Twitch (0.4.2)"; prima: le magie non restano sul tabellone e non si leggevano, il riquadro grande a sinistra mostra anche le
   anteprime al passaggio del mouse, quindi non distingue le rivelazioni); una carta giocata e distrutta nello stesso
   round senza restare a schermo 2 fotogrammi non si vede; le carte dell'avversario evocate o generate da effetti non si
   distinguono da quelle giocate; il round è il mana
