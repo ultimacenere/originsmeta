@@ -1,0 +1,623 @@
+/*
+ * OriginsMeta Deck tracker, estensione Twitch: grafica del sito ("ink & mint", src/app/globals.css) e del Deck tracker
+ * dell'app (tracker/src/overlay/deck.css). Pannelli blu notte semitrasparenti con cornice celeste piena, titoli celesti,
+ * testi grigio chiaro, menta per i tasti e il focus, giallo solo per le Leggendarie, magenta per l'avversario. Niente
+ * bianco né nero pieni. Le carte si mostrano intere: mai ritagliate né coperte (crediti stampati).
+ */
+:root {
+  color-scheme: dark;
+  --felt: #150c2c;
+  --felt-deep: #0e071f;
+  --felt-line: #3a2a60;
+  --night: #182238;
+  --night-2: #121a2c;
+  --night-3: #22304b;
+  --panel: rgba(18, 26, 44, 0.93);
+  --row: rgba(24, 34, 56, 0.96);
+  --sky: #3fc4e8;
+  --mint: #31e3bd;
+  --gold: #f2d23c;
+  --pink: #ff3d9a;
+  --crimson: #c81e7a;
+  --ink: #16102a;
+  --pale: #c8d1dd;
+  --pale-muted: #8e9bb1;
+  --chalk: #d9dfe8;
+  --chalk-muted: #96a3b9;
+  --played: #4b5b7a;
+  --display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  /* fasce lasciate libere per i controlli del player */
+  --safe-top: 70px;
+  --safe-bottom: 90px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  color: var(--chalk);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.om-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- palco: tra le due fasce libere, appoggiato a sinistra ---------- */
+.om-stage {
+  position: fixed;
+  left: 0;
+  top: var(--safe-top);
+  bottom: var(--safe-bottom);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  pointer-events: none;
+}
+.om-stage > * {
+  pointer-events: auto;
+}
+
+/* ---------- linguetta ---------- */
+.om-tab {
+  /* testo dal basso verso l'alto: verticale e ruotato di mezzo giro (i bordi qui sono quindi "al contrario") */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 7px;
+  background: var(--panel);
+  border: 2px solid var(--sky);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  box-shadow: 0 4px 14px rgba(14, 7, 31, 0.55);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.om-tab:hover {
+  border-color: var(--mint);
+  background: rgba(24, 34, 56, 0.96);
+}
+.om-tab:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+.om-tab-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  color: var(--mint);
+}
+.om-tab-mark {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--mint);
+  transform: rotate(45deg);
+}
+.om-tab-label {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  color: var(--sky);
+}
+body.om-open .om-tab {
+  display: none;
+}
+
+/* ---------- pannello ---------- */
+.om-panel {
+  display: none;
+  flex-direction: column;
+  width: 280px;
+  max-height: 100%;
+  margin-left: 8px;
+  background: linear-gradient(180deg, rgba(49, 227, 189, 0.07) 0%, rgba(49, 227, 189, 0) 90px), var(--panel);
+  border: 3px solid var(--sky);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(14, 7, 31, 0.6);
+  overflow: hidden;
+}
+.om-panel:focus {
+  outline: none;
+}
+body.om-open .om-panel {
+  display: flex;
+  animation: om-in 0.18s ease-out;
+}
+@keyframes om-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.om-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 10px 4px 12px;
+}
+.om-title {
+  flex: 1;
+  min-width: 0;
+  margin: 2px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--sky);
+}
+.om-close,
+.om-preview-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: var(--night-3);
+  border: 2px solid var(--sky);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--chalk);
+  cursor: pointer;
+}
+.om-close:hover,
+.om-preview-close:hover {
+  border-color: var(--mint);
+  color: var(--mint);
+}
+.om-close:focus-visible,
+.om-preview-close:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+
+.om-meta {
+  margin: 0 12px 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--pale-muted);
+}
+.om-dot {
+  color: var(--sky);
+}
+
+.om-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 8px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky) transparent;
+}
+
+.om-list {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- righe delle carte ---------- */
+.om-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 30px;
+  padding: 3px 8px 3px 4px;
+  background: var(--row);
+  border: 2px solid var(--night-3);
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.om-row:hover,
+.om-row.is-pinned {
+  border-color: var(--sky);
+}
+.om-row.is-pinned {
+  box-shadow: 0 0 0 2px var(--sky), 0 0 10px rgba(63, 196, 232, 0.45);
+}
+.om-row:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 1px;
+}
+.om-row.is-leg {
+  border-color: var(--gold);
+}
+.om-row.is-leg .om-name {
+  color: var(--gold);
+}
+.om-row.is-out .om-gem,
+.om-row.is-out .om-name {
+  opacity: 0.45;
+}
+
+.om-gem {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--sky);
+  color: var(--ink);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+.om-gem--big {
+  min-width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+.om-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--chalk);
+}
+.om-star {
+  margin-right: 3px;
+  color: var(--gold);
+}
+
+/* pallini delle copie: pieni = ancora nel mazzo, vuoti = pescate, vuoti più scuri = giocate */
+.om-pips {
+  display: inline-flex;
+  gap: 4px;
+}
+.om-pip {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--sky);
+}
+.om-pip.is-on {
+  background: var(--sky);
+  box-shadow: 0 0 5px rgba(63, 196, 232, 0.55);
+}
+.om-pip.is-drawn {
+  background: transparent;
+}
+.om-pip.is-played {
+  background: transparent;
+  border-color: var(--played);
+}
+
+.om-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 7px 2px 0;
+  font-size: 0.64rem;
+  color: var(--pale-muted);
+}
+.om-legend .om-pip {
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+}
+.om-legend .om-pip:first-child {
+  margin-left: 0;
+}
+
+/* ---------- avversario ---------- */
+.om-opp {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 2px solid var(--night-3);
+}
+.om-subtitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 2px 5px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.76rem;
+  color: var(--sky);
+}
+.om-subtitle-meta {
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 0.68rem;
+  color: var(--pale-muted);
+}
+.om-row--opp {
+  border-left-color: var(--pink);
+}
+.om-row--opp.is-leg {
+  border-color: var(--gold);
+}
+.om-count {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.74rem;
+  color: var(--pink);
+}
+.om-empty,
+.om-waiting {
+  margin: 4px 2px 0;
+  font-size: 0.72rem;
+  color: var(--pale-muted);
+}
+.om-waiting {
+  margin: 8px 4px;
+  font-size: 0.82rem;
+  color: var(--pale);
+}
+
+.om-hint {
+  margin: 0 12px 6px;
+  font-size: 0.64rem;
+  color: var(--pale-muted);
+}
+.om-foot {
+  margin: 0;
+  padding: 6px 12px 8px;
+  border-top: 2px solid var(--night-3);
+  background: rgba(14, 7, 31, 0.45);
+  font-size: 0.62rem;
+  color: var(--chalk-muted);
+}
+
+/* ---------- anteprima della carta ---------- */
+.om-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(214px, calc(100vw - 310px));
+  max-height: 100%;
+  padding: 10px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 3px solid var(--sky);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(14, 7, 31, 0.6);
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky) transparent;
+}
+.om-preview.is-pinned {
+  padding-top: 40px;
+}
+.om-preview-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+
+/* carta intera (proporzioni 1425 × 2048), dentro la cornice e mai ritagliata */
+.om-art {
+  position: relative;
+  flex: none;
+  width: min(100%, calc((100vh - var(--safe-top) - var(--safe-bottom) - 120px) * 0.696));
+  min-width: 90px;
+  aspect-ratio: 1425 / 2048;
+  margin: 0 auto;
+  background: linear-gradient(160deg, #241645, var(--felt-deep));
+  border: 2px solid var(--sky);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.om-art.is-leg {
+  border-color: var(--gold);
+}
+.om-art img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.om-art.is-noimg img {
+  display: none;
+}
+.om-textcard {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.om-art.is-loaded .om-textcard {
+  visibility: hidden;
+}
+.om-textcard-name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--sky);
+}
+.om-art.is-leg .om-textcard-name {
+  color: var(--gold);
+}
+.om-textcard-type {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pale-muted);
+}
+
+.om-info {
+  display: grid;
+  gap: 5px;
+}
+.om-info-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: var(--sky);
+}
+.om-info-name.is-leg {
+  color: var(--gold);
+}
+.om-info-type {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pale-muted);
+}
+.om-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+}
+.om-stat {
+  padding: 2px 7px;
+  border: 2px solid var(--night-3);
+  border-radius: 999px;
+  background: var(--night-2);
+  font-size: 0.68rem;
+  color: var(--pale);
+}
+.om-stat b {
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--chalk);
+}
+.om-stat--cost {
+  border-color: var(--sky);
+}
+.om-text {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--pale);
+}
+.om-link {
+  justify-self: start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--mint);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.om-link:hover {
+  color: var(--sky);
+}
+.om-link:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ---------- telefono (mobile.html): elenco a tutta larghezza ---------- */
+body[data-view="mobile"] {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+  background: var(--felt);
+}
+body[data-view="mobile"] .om-stage {
+  position: static;
+  display: block;
+  padding: 8px;
+  pointer-events: auto;
+}
+body[data-view="mobile"] .om-panel {
+  display: flex;
+  width: auto;
+  max-height: none;
+  margin: 0;
+  animation: none;
+}
+body[data-view="mobile"] .om-scroll {
+  overflow: visible;
+}
+body[data-view="mobile"] .om-row {
+  min-height: 40px;
+}
+body[data-view="mobile"] .om-preview {
+  position: fixed;
+  inset: 8px;
+  z-index: 10;
+  width: auto;
+  max-height: none;
+  padding-top: 40px;
+  background: var(--night);
+}
+body[data-view="mobile"] .om-art {
+  width: min(70vw, 260px);
+}
+
+/* player basso: più spazio alle carte */
+@media (max-height: 560px) {
+  body[data-view="overlay"] .om-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

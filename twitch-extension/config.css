@@ -1,0 +1,138 @@
+/*
+ * Pagina di configurazione (config.html): stessi token di style.css, fondo viola inchiostro del sito, scheda blu notte
+ * con cornice celeste, tasto menta.
+ */
+body[data-view="config"] {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+  background: var(--felt);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.cfg {
+  max-width: 620px;
+  margin: 16px auto;
+  padding: 18px 20px 14px;
+  background: var(--night);
+  border: 3px solid var(--sky);
+  border-radius: 12px;
+}
+.cfg-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--sky);
+}
+.cfg-title .om-tab-mark {
+  width: 10px;
+  height: 10px;
+}
+.cfg-intro {
+  margin: 0 0 12px;
+  color: var(--pale);
+}
+.cfg-steps {
+  margin: 0 0 16px;
+  padding-left: 1.4em;
+  color: var(--chalk);
+}
+.cfg-steps li {
+  margin-bottom: 6px;
+}
+.cfg-steps li::marker {
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--mint);
+}
+.om-link--inline {
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+.cfg-form {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 12px;
+  background: var(--night-2);
+  border: 2px solid var(--night-3);
+  border-radius: 10px;
+}
+.cfg-label {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--pale);
+}
+.cfg-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cfg-input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 8px 10px;
+  background: var(--felt-deep);
+  border: 2px solid var(--sky);
+  border-radius: 8px;
+  color: var(--chalk);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+}
+.cfg-input::placeholder {
+  color: var(--pale-muted);
+  opacity: 0.6;
+}
+.cfg-input:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+.cfg-button {
+  padding: 8px 18px;
+  background: var(--mint);
+  border: 2px solid var(--mint);
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+.cfg-button:hover {
+  background: #5fead0;
+}
+.cfg-button:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 2px;
+}
+.cfg-button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.cfg-status {
+  min-height: 1.4em;
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.cfg-status.is-ok {
+  color: var(--mint);
+}
+.cfg-status.is-error {
+  color: var(--pink);
+}
+.cfg-note {
+  margin: 0 0 12px;
+  font-size: 0.8rem;
+  color: var(--pale-muted);
+}
+.cfg-foot {
+  margin: 0 -20px -14px;
+  border-radius: 0 0 9px 9px;
+}

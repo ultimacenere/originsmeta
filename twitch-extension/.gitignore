@@ -1,0 +1,4 @@
+# prove locali: generati, mai nel repo né nello zip
+dev/cards-en.json
+dev/certs/
+*.zip

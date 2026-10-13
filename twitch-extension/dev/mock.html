@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Solo prove locali, fuori dallo zip: il finto Twitch al posto dell'helper vero. -->
+    <script src="twitch-mock.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mock · OriginsMeta Deck tracker</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&amp;family=Unbounded:wght@600;700;800&amp;display=swap" />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      .mock-video {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(circle at 70% 40%, #3a6b4f, #1d2a22 60%, #0d1410);
+        display: grid;
+        place-items: center;
+        font: 800 4rem system-ui;
+        color: rgba(220, 230, 220, 0.12);
+      }
+      .mock-band {
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        background: repeating-linear-gradient(45deg, rgba(255, 61, 154, 0.12) 0 10px, transparent 10px 20px);
+      }
+      .mock-band.top { top: 0; height: 70px; }
+      .mock-band.bottom { bottom: 0; height: 90px; }
+      .mock-bar {
+        position: fixed;
+        right: 8px;
+        bottom: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        max-width: 60%;
+        justify-content: flex-end;
+        font: 12px system-ui;
+      }
+      .mock-bar button { padding: 3px 6px; }
+    </style>
+  </head>
+  <body data-view="overlay">
+    <div class="mock-video">VIDEO</div>
+    <div class="mock-band top"></div>
+    <div class="mock-band bottom"></div>
+    <div class="mock-bar">
+      <button onclick="Mock.draw()">Pesca</button>
+      <button onclick="Mock.play()">Gioca</button>
+      <button onclick="Mock.round()">Turno +1</button>
+      <button onclick="Mock.oppCard()">Carta avv.</button>
+      <button onclick="Mock.endMatch()">Fine partita</button>
+      <button onclick="Mock.newMatch()">Nuova partita</button>
+      <button onclick="Mock.oldMessage()">Msg vecchio</button>
+      <button onclick="Mock.badMessage()">Msg rotti</button>
+      <button onclick="Mock.noDeck()">Niente mazzo</button>
+    </div>
+    <script src="../common.js"></script>
+    <script src="../overlay.js"></script>
+  </body>
+</html>
