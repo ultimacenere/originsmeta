@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, useTransition } from "react";
 import { initials } from "@/lib/cardArt";
-import { RULES, emptyDeck, isComplete, manaCurve, sharedCards, differentCards, validateConquest, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";
+import { RULES, emptyDeck, isComplete, manaCurve, maxSharedFor, sharedBaseCards, validateConquest, validateConquestShared, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeGameCode, encodeOmCode, parseTextList, toTextList } from "@/lib/deckcode";
 import { BUILDER_STORAGE_KEY, PENDING_PUBLISH_KEY } from "@/lib/community/types";
 import { saveDeckPrivate, type ActionState } from "@/lib/community/actions";
@@ -118,6 +118,7 @@ export type BuilderLabels = {
   tournamentTitle: string;
   tournamentHint: string;
   minDifferent: string;
+  distinctLegendaries: string;
   diffTable: string;
   shared: string;
   deckLabel: string;
@@ -214,7 +215,10 @@ export function DeckBuilder({
   const [active, setActive] = useState(0);
   const [decks, setDecks] = useState<DeckState[]>(() => Array.from({ length: count }, () => emptyDeck()));
   const [keyMap, setKeyMap] = useState<Record<string, string>>({});
-  const [minDifferent, setMinDifferent] = useState<number>(preset?.minDifferent ?? RULES.conquestMinDifferent);
+  /* regole Conquest del builder (13/10/2026): carte base al massimo in comune e Leggendarie diverse come regola a parte;
+     un torneo (preset) le fissa dal suo minimo di carte uniche diverse */
+  const [maxShared, setMaxShared] = useState<number>(maxSharedFor(preset?.minDifferent ?? RULES.conquestMinDifferent));
+  const [distinctLegendaries, setDistinctLegendaries] = useState(true);
   const [submitState, setSubmitState] = useState<"idle" | "saved" | string>("idle");
   const [submitting, startSubmit] = useTransition();
   const [q, setQ] = useState("");
@@ -626,7 +630,7 @@ export function DeckBuilder({
   const freeSlots = Math.max(0, RULES.distinctCards - deck.cards.length);
   const curve = manaCurve(deck, lookup);
   const maxCurve = Math.max(1, ...curve);
-  const conquestIssues = mode === "tournament" ? validateConquest(decks, minDifferent) : [];
+  const conquestIssues = mode === "tournament" ? validateConquestShared(decks, { maxShared, distinctLegendaries }) : [];
   /* consegna al torneo: tutti i mazzi richiesti completi e regole Conquest rispettate */
   const submittable = mode === "tournament" ? decks.slice(0, count).every((d) => isComplete(d)) && conquestIssues.length === 0 : complete;
   /* mazzo torneo (04/10/2026): tre mazzi completi con le regole della Crimson Cup, a prescindere dal minimo scelto qui */
@@ -1039,6 +1043,84 @@ export function DeckBuilder({
               </div>
             )}
           </div>
+          {/* Conquest: le regole stanno sopra i mazzi (13/10/2026, Pierluigi), carte base al massimo in comune e
+              Leggendarie diverse come casella a parte; in un torneo (preset) le fissa l'organizzatore */}
+          {mode === "tournament" ? (
+            <div className="mt-3 rounded-lg border-2 border-sky p-4">
+              <h3 className="text-base font-bold text-chalk">{labels.tournamentTitle}</h3>
+              <p className="mt-1 text-xs text-pale-muted">{fmt(labels.tournamentHint, { max: maxShared })}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-pale-muted">
+                <label className="flex items-center gap-2">
+                  {labels.minDifferent}
+                  <input
+                    id="conquest-max-shared"
+                    type="number"
+                    min={0}
+                    max={RULES.distinctCards}
+                    value={maxShared}
+                    readOnly={locked}
+                    onChange={(e) => setMaxShared(Math.max(0, Math.min(RULES.distinctCards, Math.trunc(Number(e.target.value)) || 0)))}
+                    className="w-16 rounded border border-sky bg-night px-2 py-1 font-mono text-pale"
+                  />
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    id="conquest-distinct-legendaries"
+                    type="checkbox"
+                    checked={distinctLegendaries}
+                    disabled={locked}
+                    onChange={(e) => setDistinctLegendaries(e.target.checked)}
+                    className="accent-mint"
+                  />
+                  {labels.distinctLegendaries}
+                </label>
+              </div>
+              <table className="mt-3 w-full text-xs">
+                <thead>
+                  <tr className="text-left text-pale-muted">
+                    <th className="py-1">{labels.diffTable}</th>
+                    {indices.map((i) => (
+                      <th key={i} className="py-1">
+                        {String.fromCharCode(65 + i)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {indices.map((i) => (
+                    <tr key={i} className="border-t border-sky">
+                      <td className="py-1 font-bold">
+                        {labels.deckLabel} {String.fromCharCode(65 + i)}
+                      </td>
+                      {indices.map((j) => {
+                        if (i === j) return <td key={j} className="py-1 font-mono text-pale-muted">—</td>;
+                        const shared = sharedBaseCards(decks[i], decks[j]);
+                        const ok = shared.length <= maxShared;
+                        // con un mazzo ancora incompleto il ✓ non dice niente (le carte in comune possono crescere), il ✗ sì
+                        if (ok && (!isComplete(decks[i]) || !isComplete(decks[j]))) return <td key={j} className="py-1 font-mono text-pale-muted">…</td>;
+                        return (
+                          <td key={j} className={`py-1 font-mono ${ok ? "text-mint" : "text-error"}`} title={`${labels.shared}: ${shared.map((s) => lookup(s)?.name ?? s).join(", ") || "—"}`}>
+                            {shared.length} {ok ? "✓" : "✗"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {conquestIssues.length ? (
+                <ul className="mt-2 space-y-1 text-sm text-error">
+                  {conquestIssues.map((c, i) => (
+                    <li key={i}>
+                      • {c.code === "tooSimilar" && c.decks ? fmt(labels.issues.tooSimilar, { a: String.fromCharCode(65 + c.decks[0]), b: String.fromCharCode(65 + c.decks[1]), n: c.value ?? 0, max: maxShared }) : issueText(c.code)}
+                    </li>
+                  ))}
+                </ul>
+              ) : decks.slice(0, count).every((d) => isComplete(d)) ? (
+                <p className="mt-2 text-sm font-bold text-mint">{labels.ok} ✓</p>
+              ) : null}
+            </div>
+          ) : null}
           {mode === "tournament" ? (
             <div className="mt-3 flex flex-wrap gap-1">
               {indices.map((i) => (
@@ -1280,70 +1362,6 @@ export function DeckBuilder({
             </div>
           </div>
 
-          {/* Conquest */}
-          {mode === "tournament" ? (
-            <div className="mt-6 rounded-lg border-2 border-sky p-4">
-              <h3 className="text-base font-bold text-chalk">{labels.tournamentTitle}</h3>
-              <p className="mt-1 text-xs text-pale-muted">{fmt(labels.tournamentHint, { min: minDifferent })}</p>
-              <label className="mt-2 flex items-center gap-2 text-xs text-pale-muted">
-                {labels.minDifferent}
-                <input
-                  id="conquest-min"
-                  type="number"
-                  min={1}
-                  max={25}
-                  value={minDifferent}
-                  readOnly={locked}
-                  onChange={(e) => setMinDifferent(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
-                  className="w-16 rounded border border-sky bg-night px-2 py-1 font-mono text-pale"
-                />
-              </label>
-              <table className="mt-3 w-full text-xs">
-                <thead>
-                  <tr className="text-left text-pale-muted">
-                    <th className="py-1">{labels.diffTable}</th>
-                    {indices.map((i) => (
-                      <th key={i} className="py-1">
-                        {String.fromCharCode(65 + i)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {indices.map((i) => (
-                    <tr key={i} className="border-t border-sky">
-                      <td className="py-1 font-bold">
-                        {labels.deckLabel} {String.fromCharCode(65 + i)}
-                      </td>
-                      {indices.map((j) => {
-                        if (i === j) return <td key={j} className="py-1 font-mono text-pale-muted">—</td>;
-                        // differentCards non è simmetrica: con un mazzo ancora incompleto il confronto non dice niente
-                        if (!isComplete(decks[i]) || !isComplete(decks[j])) return <td key={j} className="py-1 font-mono text-pale-muted">…</td>;
-                        const diff = differentCards(decks[i], decks[j]);
-                        const ok = diff >= minDifferent;
-                        return (
-                          <td key={j} className={`py-1 font-mono ${ok ? "text-mint" : "text-error"}`} title={`${labels.shared}: ${sharedCards(decks[i], decks[j]).map((s) => lookup(s)?.name ?? s).join(", ") || "—"}`}>
-                            {diff} {ok ? "✓" : "✗"}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {conquestIssues.length ? (
-                <ul className="mt-2 space-y-1 text-sm text-error">
-                  {conquestIssues.map((c, i) => (
-                    <li key={i}>
-                      • {c.code === "tooSimilar" && c.decks ? fmt(labels.issues.tooSimilar, { a: String.fromCharCode(65 + c.decks[0]), b: String.fromCharCode(65 + c.decks[1]), n: c.value ?? 0, min: minDifferent }) : issueText(c.code)}
-                    </li>
-                  ))}
-                </ul>
-              ) : decks.slice(0, count).every((d) => isComplete(d)) ? (
-                <p className="mt-2 text-sm font-bold text-mint">{labels.ok} ✓</p>
-              ) : null}
-            </div>
-          ) : null}
         </section>
 
         {/* ---------- pool: sul telefono viene prima del mazzo e scorre con la pagina (niente scorrimento interno) ---------- */}

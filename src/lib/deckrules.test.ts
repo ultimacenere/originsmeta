@@ -8,6 +8,9 @@ import assert from "node:assert/strict";
 import {
   RULES,
   differentCards,
+  maxSharedFor,
+  sharedBaseCards,
+  validateConquestShared,
   validateConquest,
   type DeckState,
   // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
@@ -48,5 +51,35 @@ describe("validateConquest", () => {
   test("due mazzi con la stessa Leggendaria non vanno bene", () => {
     const other = ["m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x"];
     assert.equal(validateConquest([deck("mulan", base), deck("mulan", other)])[0].code, "duplicateLegendary");
+  });
+});
+
+describe("validateConquestShared (deck builder)", () => {
+  const five = [...base.slice(0, 5), "m", "n", "o", "p", "q", "r", "s"];
+  const six = [...base.slice(0, 6), "m", "n", "o", "p", "q", "r"];
+  const rules = { maxShared: maxSharedFor(RULES.conquestMinDifferent), distinctLegendaries: true };
+  test("8 carte uniche diverse della Crimson Cup = al massimo 5 carte base in comune", () => {
+    assert.equal(maxSharedFor(8), 5);
+    assert.equal(maxSharedFor(0), 12);
+    assert.equal(maxSharedFor(13), 0);
+  });
+  test("la Leggendaria non conta fra le carte in comune", () => {
+    assert.deepEqual(sharedBaseCards(deck("mulan", base), deck("mulan", five)), base.slice(0, 5));
+  });
+  test("con 5 carte in comune passa, con 6 no", () => {
+    assert.deepEqual(validateConquestShared([deck("mulan", base), deck("merlin", five)], rules), []);
+    const issues = validateConquestShared([deck("mulan", base), deck("merlin", six)], rules);
+    assert.deepEqual(issues, [{ code: "tooSimilar", decks: [0, 1], value: 6 }]);
+  });
+  test("con Leggendarie diverse dice lo stesso di validateConquest", () => {
+    for (const other of [base, five, six]) {
+      const decks = [deck("mulan", base), deck("merlin", other)];
+      assert.equal(validateConquestShared(decks, rules).length, validateConquest(decks).length);
+    }
+  });
+  test("la regola delle Leggendarie diverse si può spegnere", () => {
+    const decks = [deck("mulan", base), deck("mulan", five)];
+    assert.equal(validateConquestShared(decks, rules)[0].code, "duplicateLegendary");
+    assert.deepEqual(validateConquestShared(decks, { ...rules, distinctLegendaries: false }), []);
   });
 });

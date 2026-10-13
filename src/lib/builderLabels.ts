@@ -91,6 +91,7 @@ export function builderLabels(d: Dictionary): BuilderLabels {
     tournamentTitle: b.tournamentTitle,
     tournamentHint: b.tournamentHint,
     minDifferent: b.minDifferent,
+    distinctLegendaries: b.distinctLegendaries,
     diffTable: b.diffTable,
     shared: b.shared,
     deckLabel: b.deckLabel,
