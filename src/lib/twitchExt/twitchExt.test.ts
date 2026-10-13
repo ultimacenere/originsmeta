@@ -94,12 +94,17 @@ describe("stile dei pannelli dell'app nello stato (14/10/2026)", () => {
     screen: { w: 1707, h: 960 },
     panels: { deck: { x: 0, y: 152, w: 246, h: 520 }, opp: null },
   };
-  const withExtra: LiveSource = { ...view, live: { ...view.live!, life: { me: 2, opp: 1 }, mana: { me: { current: 3, max: 6 }, opp: null }, direction: "right" } };
+  const BOARD = Array.from({ length: 18 }, (_, i) => (i % 3 === 0 ? "C00245_MB" : null));
+  const withExtra: LiveSource = { ...view, live: { ...view.live!, life: { me: 2, opp: 1 }, mana: { me: { current: 3, max: 6 }, opp: null }, direction: "right", board: BOARD } };
   test("stile, vita, mana e verso passano e tornano uguali", () => {
     const s = liveStateOf(withExtra, ui);
     assert.deepEqual(parseLiveState(JSON.parse(JSON.stringify(s))), s);
     assert.deepEqual(s.ui, ui);
     assert.deepEqual(s.live?.mana, { me: { current: 3, max: 6 }, opp: null });
+    assert.deepEqual(s.live?.board, BOARD);
+    const bad = JSON.parse(JSON.stringify(s));
+    bad.live.board[0] = "<x>";
+    assert.equal(parseLiveState(bad)?.live?.board, undefined);
   });
   test("uno stile malformato si lascia fuori, il resto resta", () => {
     const s = JSON.parse(JSON.stringify(liveStateOf(withExtra, ui)));

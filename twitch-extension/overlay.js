@@ -168,6 +168,32 @@
     el("span", { cls: "om-apptoggle-text", text: t("appHide") })
   ]);
   var appHosts = {}; // "me" | "opp" → {host, panel}
+  // la posizione scelta da chi guarda trascinando un pannello dalla sua linguetta (14/10/2026, come la lista di
+  // Hearthstone): frazioni del video, per canale, nel browser di chi guarda; doppio clic sulla linguetta = di nuovo al
+  // posto dello streamer
+  var moved = {};
+  function movedKey() {
+    return "om.panels." + (channelId || "x");
+  }
+  function loadMoved() {
+    try {
+      var raw = JSON.parse(window.localStorage.getItem(movedKey()) || "{}");
+      moved = {};
+      ["me", "opp"].forEach(function (side) {
+        var m = raw && raw[side];
+        if (m && typeof m.x === "number" && typeof m.y === "number" && m.x >= 0 && m.x <= 1 && m.y >= 0 && m.y <= 1) moved[side] = { x: m.x, y: m.y };
+      });
+    } catch (e) {
+      moved = {};
+    }
+  }
+  function saveMoved() {
+    try {
+      window.localStorage.setItem(movedKey(), JSON.stringify(moved));
+    } catch (e) {
+      /* niente memoria nel browser: la posizione vale fino alla chiusura */
+    }
+  }
   document.body.appendChild(appLayer);
   document.body.appendChild(appToggle);
   appToggle.hidden = true;
@@ -196,6 +222,40 @@
     });
     appHosts[side] = { host: host, panel: window.OMPanels.create(host, side, PANEL_LANG, "logo-originsmeta-sm.webp"), table: raw };
     if (appResize) appResize.observe(host);
+    // trascinamento dalla linguetta del pannello (logo)
+    host.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || !e.target.closest || !e.target.closest(".tab, .chead")) return;
+      e.preventDefault();
+      var start = { px: e.clientX, py: e.clientY, left: host.offsetLeft, top: host.offsetTop };
+      host.setPointerCapture(e.pointerId);
+      host.classList.add("is-dragging");
+      function move(ev) {
+        host.style.left = Math.round(start.left + ev.clientX - start.px) + "px";
+        host.style.top = Math.round(start.top + ev.clientY - start.py) + "px";
+      }
+      function end() {
+        host.removeEventListener("pointermove", move);
+        host.removeEventListener("pointerup", end);
+        host.removeEventListener("pointercancel", end);
+        host.classList.remove("is-dragging");
+        var v = videoRect();
+        var ui = fullState && fullState.ui;
+        if (ui) {
+          moved[side] = { x: Math.min(1, Math.max(0, (host.offsetLeft - v.x) / v.w)), y: Math.min(1, Math.max(0, (host.offsetTop - v.y) / v.h)) };
+          saveMoved();
+        }
+        placeApp();
+      }
+      host.addEventListener("pointermove", move);
+      host.addEventListener("pointerup", end);
+      host.addEventListener("pointercancel", end);
+    });
+    host.addEventListener("dblclick", function (e) {
+      if (!e.target.closest || !e.target.closest(".tab, .chead")) return;
+      delete moved[side];
+      saveMoved();
+      placeApp();
+    });
     return appHosts[side];
   }
 
@@ -227,8 +287,12 @@
       var bottomAnchored = rect.y + rect.h / 2 > ui.screen.h / 2;
       var top = bottomAnchored ? vy + (rect.y + rect.h) * scale - height : vy + rect.y * scale;
       top = Math.min(Math.max(top, vy), vy + ui.screen.h * scale - height);
+      if (moved[side]) {
+        left = vx + moved[side].x * ui.screen.w * scale;
+        top = vy + moved[side].y * ui.screen.h * scale;
+      }
       h.host.style.left = Math.round(Math.max(0, Math.min(left, W - width))) + "px";
-      h.host.style.top = Math.round(top) + "px";
+      h.host.style.top = Math.round(Math.max(0, Math.min(top, H - height))) + "px";
       h.host.style.transform = "scale(" + s.toFixed(4) + ")";
     });
   }
@@ -269,12 +333,14 @@
     var n = node && node.closest ? node.closest("[data-key]") : null;
     return n && appLayer.contains(n) ? n : null;
   }
-  function placePreview(node) {
-    var host = node.closest(".om-app");
-    var r = host.getBoundingClientRect();
+  function placePreviewNear(node) {
+    var r = node.getBoundingClientRect();
     var onLeft = r.left + r.width / 2 < window.innerWidth / 2;
     stage.style.left = onLeft ? "auto" : "0";
     stage.style.right = onLeft ? "0" : "auto";
+  }
+  function placePreview(node) {
+    placePreviewNear(node.closest(".om-app"));
   }
   appLayer.addEventListener("pointerover", function (e) {
     var n = appCardOf(e.target);
@@ -299,8 +365,89 @@
     showPreview(key, side, true);
   });
 
+
+  // ---------- le carte del tabellone (14/10/2026) ----------
+  // Come l'estensione di Hearthstone: sopra le carte in gioco nel video ci sono zone invisibili, e chi guarda ci passa
+  // sopra per leggerle. Le carte vengono dallo scanner dell'app (`live.board`, dalla 0.4.5), le posizioni dalle stesse
+  // misure con cui lo scanner legge il tabellone (OMPanels.boardRects). Solo in partita, non sul telefono.
+  var zoneLayer = el("div", { cls: "om-zones", attrs: { hidden: "" } });
+  document.body.appendChild(zoneLayer);
+  var zoneKey = "";
+
+  /** Il rettangolo del video nel player: le proporzioni dello schermo dello streamer (16:9 se non si sanno), al centro. */
+  function videoRect() {
+    var W = window.innerWidth;
+    var H = window.innerHeight;
+    var sw = fullState && fullState.ui ? fullState.ui.screen.w : 16;
+    var sh = fullState && fullState.ui ? fullState.ui.screen.h : 9;
+    var scale = Math.min(W / sw, H / sh);
+    return { x: (W - sw * scale) / 2, y: (H - sh * scale) / 2, w: sw * scale, h: sh * scale, scale: scale };
+  }
+
+  function renderZones() {
+    var board = fullState && fullState.live && fullState.live.inMatch && fullState.live.board ? fullState.live.board : null;
+    var show = !MOBILE && !!board && !!window.OMPanels && !!cards && !(window.innerWidth < MIN_W || window.innerHeight < MIN_H);
+    zoneLayer.hidden = !show;
+    if (!show) {
+      if (zoneKey) {
+        clear(zoneLayer);
+        zoneKey = "";
+      }
+      return;
+    }
+    var v = videoRect();
+    var key = JSON.stringify([board, Math.round(v.w), Math.round(v.h)]);
+    if (key === zoneKey) return;
+    zoneKey = key;
+    clear(zoneLayer);
+    var rects = window.OMPanels.boardRects(v);
+    board.forEach(function (k, i) {
+      if (!k || !card(k)) return;
+      var r = rects[i];
+      var zone = el("button", {
+        cls: "om-zone",
+        attrs: { type: "button", "data-key": k, "data-side": r.side === "opp" ? "opp" : "me", "aria-label": nameOf(k) }
+      });
+      zone.style.left = Math.round(r.x) + "px";
+      zone.style.top = Math.round(r.y) + "px";
+      zone.style.width = Math.round(r.w) + "px";
+      zone.style.height = Math.round(r.h) + "px";
+      zoneLayer.appendChild(zone);
+    });
+  }
+
+  zoneLayer.addEventListener("pointerover", function (e) {
+    var z = e.target && e.target.closest ? e.target.closest(".om-zone") : null;
+    if (!z || pinned) return;
+    placePreviewNear(z);
+    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false);
+  });
+  zoneLayer.addEventListener("pointerleave", function () {
+    if (!pinned) hidePreview(false);
+  });
+  zoneLayer.addEventListener("click", function (e) {
+    var z = e.target && e.target.closest ? e.target.closest(".om-zone") : null;
+    if (!z) return;
+    var key = z.getAttribute("data-key");
+    var side = z.getAttribute("data-side");
+    if (pinned && pinned.key === key && pinned.side === side) {
+      hidePreview(true);
+      return;
+    }
+    placePreviewNear(z);
+    pinned = { key: key, side: side };
+    showPreview(key, side, true);
+  });
+  zoneLayer.addEventListener("focusin", function (e) {
+    var z = e.target && e.target.closest ? e.target.closest(".om-zone") : null;
+    if (!z || pinned) return;
+    placePreviewNear(z);
+    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false);
+  });
+
   // ---------- disegno ----------
   function render() {
+    renderZones();
     var app = appReady();
     document.body.classList.toggle("om-mode-app", app);
     appLayer.hidden = !app;
@@ -673,6 +820,7 @@
       var id = auth && typeof auth.channelId === "string" ? auth.channelId : null;
       if (!OM.channelOk(id) || id === channelId) return;
       channelId = id;
+      loadMoved();
       loadState();
     });
     ext.listen("broadcast", function (_target, _contentType, message) {

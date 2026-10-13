@@ -34,7 +34,9 @@
         ["C00258_MB", 2, 0, 0]
       ]
     },
-    live: { inMatch: true, round: 3, deckLeft: 19, opp: { legendary: "C00118_MC", deckLeft: 18, seen: [["C00029_MB", 1], ["C00028_SB", 2], ["C00032_MB", 1]] }, life: { me: 2, opp: 1 }, mana: { me: { current: 2, max: 4 }, opp: { current: 0, max: 4 } }, direction: "right" },
+    live: { inMatch: true, round: 3, deckLeft: 19, opp: { legendary: "C00118_MC", deckLeft: 18, seen: [["C00029_MB", 1], ["C00028_SB", 2], ["C00032_MB", 1]] }, life: { me: 2, opp: 1 }, mana: { me: { current: 2, max: 4 }, opp: { current: 0, max: 4 } }, direction: "right",
+      // le carte del tabellone lette dallo scanner (14/10/2026): avversario in alto, poi io
+      board: [null, "C00029_MB", null, null, null, null, "C00032_MB", null, null, "C00245_MB", null, null, null, "C00202_MB", "C00021_MB", null, null, null] },
     // stile dei pannelli dell'app (14/10/2026): schermo 2560 × 1440 al 150 %, posizioni del template classico
     ui: {
       template: "classic",

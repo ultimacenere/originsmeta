@@ -703,16 +703,28 @@ const livePusher = new LivePusher(syncDeps, () => account.token);
  */
 function liveUi(): LiveUi {
   const d = screen.getPrimaryDisplay().bounds;
-  const rect = (k: PanelKind): LiveRect | null => {
-    if (!panelOpen(k)) return null;
-    const b = panels[k].win!.getBounds();
-    return { x: Math.round(b.x - d.x), y: Math.round(b.y - d.y), w: Math.max(1, Math.round(b.width)), h: Math.max(1, Math.round(b.height)) };
+  // un pannello chiuso sul PC va comunque su Twitch (14/10/2026, Pierluigi: "non si può scegliere di avere quelli di
+  // Twitch senza che noi a schermo abbiamo effettivamente i due tracker visibili?"): la posizione salvata per lo stile
+  // in uso, o quella di partenza (panelLayout.ts); l'altezza la decide il contenuto, qui solo una misura di partenza
+  const rect = (k: PanelKind): LiveRect => {
+    if (panelOpen(k)) {
+      const b = panels[k].win!.getBounds();
+      return { x: Math.round(b.x - d.x), y: Math.round(b.y - d.y), w: Math.max(1, Math.round(b.width)), h: Math.max(1, Math.round(b.height)) };
+    }
+    const h = 160;
+    const saved = panels[k].prefs.spots?.[panelTemplate];
+    if (saved) return { x: Math.round(saved.x - d.x), y: Math.round(saved.y - d.y), w: clampWidth(panelTemplate, k, saved.width), h };
+    const spot = defaultSpot(panelTemplate, k, d);
+    return { x: Math.round(spot.x - d.x), y: Math.round((spot.fromBottom ? spot.y - h : spot.y) - d.y), w: spot.width, h };
   };
   return { template: panelTemplate, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted(), scanner: Boolean(frames?.running), screen: { w: d.width, h: d.height }, panels: { deck: rect("deck"), opp: rect("opp") } };
 }
 setInterval(() => {
   if (!account.token || CAPTURE || !engineOn) return;
-  void livePusher.offer(currentDeckView(), liveUi());
+  const v = currentDeckView();
+  // le carte del tabellone, per le zone dell'estensione Twitch (14/10/2026): solo in partita
+  const board = v.live?.inMatch && frames?.running ? frames.board() : null;
+  void livePusher.offer({ ...v, live: v.live ? { ...v.live, board } : null }, liveUi());
 }, LIVE_MIN_MS);
 
 let syncTimer: ReturnType<typeof setTimeout> | null = null;

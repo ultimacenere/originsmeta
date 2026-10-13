@@ -54,9 +54,17 @@ export type LiveState = {
     life?: { me: number | null; opp: number | null };
     mana?: { me: LiveMana; opp: LiveMana };
     direction?: "left" | "right" | null;
+    /**
+     * dal 14/10/2026 (app 0.4.5): le carte lette adesso nei 18 spazi del tabellone (l'ordine di BOARD_SLOTS dello
+     * scanner, l'avversario in alto, poi io; null: vuoto o non riconosciuto). L'estensione ci mette sopra le zone per
+     * leggere le carte in gioco, come quella di Hearthstone.
+     */
+    board?: (string | null)[];
   } | null;
   ui?: LiveUi;
 };
+/** Gli spazi del tabellone (tracker/src/shared/recognize.ts, `BOARD_SLOTS`). */
+export const BOARD_SIZE = 18;
 
 /** La forma minima del pannello del mazzo dell'app (tracker/src/shared/types.ts, `DeckTrackerView`). */
 type ViewCard = { key: string; copies: number; drawn: number; played: number };
@@ -70,6 +78,7 @@ export type LiveSource = {
     life?: { me: number | null; opp: number | null };
     mana?: { me: LiveMana; opp: LiveMana };
     direction?: "left" | "right" | null;
+    board?: (string | null)[] | null;
   } | null;
 };
 
@@ -98,6 +107,7 @@ export function liveStateOf(view: LiveSource, ui?: LiveUi | null): LiveState {
           ...(l.life ? { life: { me: l.life.me, opp: l.life.opp } } : {}),
           ...(l.mana ? { mana: { me: l.mana.me ? { current: l.mana.me.current, max: l.mana.me.max } : null, opp: l.mana.opp ? { current: l.mana.opp.current, max: l.mana.opp.max } : null } } : {}),
           ...(l.direction !== undefined ? { direction: l.direction } : {}),
+          ...(l.board && l.board.length === BOARD_SIZE ? { board: l.board.map((k) => k ?? null) } : {}),
         }
       : null,
     ...(ui ? { ui } : {}),
@@ -198,6 +208,7 @@ export function parseLiveState(raw: unknown): LiveState | null {
       if (me !== undefined && opp !== undefined) live.mana = { me, opp };
     }
     if (l.direction === "left" || l.direction === "right" || l.direction === null) live.direction = l.direction;
+    if (Array.isArray(l.board) && l.board.length === BOARD_SIZE && l.board.every((k) => k === null || key(k))) live.board = l.board as (string | null)[];
   }
   const ui = s.ui === undefined ? null : readLiveUi(s.ui);
   return { v: LIVE_STATE_VERSION, deck, live, ...(ui ? { ui } : {}) };

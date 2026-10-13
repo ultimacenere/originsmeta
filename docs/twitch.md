@@ -73,6 +73,17 @@ tracker scelto dall'utente?", poi "sì procedi, con la scelta nella configurazio
   90 in basso); il tasto "Nascondi i pannelli" li toglie per chi guarda; passando su una carta l'anteprima compare
   dall'altra parte del video. Senza `ui` (app 0.4.2) e sul telefono resta la linguetta.
 - **Prova**: `twitch-extension/dev/mock.html?mode=app` con i tasti dei quattro stili e "Fuori partita".
+- **Come l'estensione di Hearthstone** (14/10/2026, Pierluigi dopo aver visto la diretta di Lugozzi: "sì procedi con
+  entrambe"): (1) i pannelli si trascinano dalla linguetta del logo, la posizione scelta da chi guarda resta nel suo
+  browser per quel canale (doppio clic sulla linguetta: di nuovo al posto dello streamer); (2) sopra le carte in gioco
+  nel video ci sono zone invisibili: chi guarda ci passa sopra e legge la carta. Le carte arrivano dallo scanner
+  (`live.board`, 18 spazi, dall'app 0.4.5), le posizioni dalle stesse misure con cui lo scanner legge il tabellone
+  (`boardRects` di twitchPanels.ts: `layoutFor` e `BOARD_SLOTS` di recognize.ts); valgono con il gioco a schermo
+  intero nella ripresa. Provate su un fotogramma vero di una partita: le zone cadono sugli spazi.
+- **Duplicati**: con l'opzione dell'app "Nascondi i pannelli dalla diretta" (0.4.4) OBS non riprende i pannelli.
+- **Senza pannelli sul PC** (Pierluigi: "non si può scegliere di avere quelli di Twitch senza che noi a schermo abbiamo
+  effettivamente i due tracker visibili?"): dalla 0.4.5 un pannello chiuso nell'app va comunque su Twitch, nella
+  posizione salvata per lo stile in uso o in quella di partenza (`liveUi` di main.ts).
 
 ## Da fare per andare online
 

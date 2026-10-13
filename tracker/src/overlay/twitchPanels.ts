@@ -12,6 +12,7 @@
 import { parseLiveState, type LiveState } from "../../../src/lib/tracker/live";
 import type { DeckCard, DeckTrackerView, PanelTemplate } from "../shared/types";
 import { createDeckRenderer, shapeOf, type Lang, type PanelSide } from "./deckRender";
+import { BOARD_SLOTS, inside, layoutFor } from "../shared/recognize";
 
 /** [nome, slug, tipo, costo, forza, salute, leggendaria (0/1), testo, immagine] (src/lib/twitchExt/cards.ts) */
 type ExtCard = [string, string, string, number | null, number | null, number | null, 0 | 1, string, string | null];
@@ -87,10 +88,21 @@ export function create(host: HTMLElement, view: PanelSide, lang: Lang, logo: str
   };
 }
 
+/**
+ * I 18 spazi del tabellone sopra il video (14/10/2026, come l'estensione di Hearthstone: chi guarda passa sopra una carta
+ * in gioco e la legge): le stesse misure con cui lo scanner legge il tabellone (recognize.ts: area del tabellone di
+ * `layoutFor` e `BOARD_SLOTS`), sul rettangolo del video. Vale con il gioco a schermo intero nella ripresa (o una
+ * finestra senza bordi grande quanto il video).
+ */
+export function boardRects(video: { x: number; y: number; w: number; h: number }) {
+  const board = layoutFor(video).board;
+  return BOARD_SLOTS.map((s) => ({ side: s.side, ...inside(board, s.rect) }));
+}
+
 declare global {
   interface Window {
-    OMPanels: { viewFromState: typeof viewFromState; create: typeof create; parseLiveState: typeof parseLiveState };
+    OMPanels: { viewFromState: typeof viewFromState; create: typeof create; parseLiveState: typeof parseLiveState; boardRects: typeof boardRects };
   }
 }
 // il controllo dello stato del sito (src/lib/tracker/live.ts), con lo stile dei pannelli
-window.OMPanels = { viewFromState, create, parseLiveState };
+window.OMPanels = { viewFromState, create, parseLiveState, boardRects };

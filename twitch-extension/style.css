@@ -645,3 +645,12 @@ body.om-mode-app .om-tab, body.om-mode-app .om-panel { display: none; }
 }
 .om-apptoggle[hidden] { display: none; }
 .om-apptoggle:focus-visible { outline: 3px solid var(--mint); outline-offset: 2px; }
+
+/* ---------- le carte del tabellone (14/10/2026): zone invisibili sopra le carte in gioco ---------- */
+.om-zones { position: fixed; inset: 0; pointer-events: none; }
+.om-zones[hidden] { display: none; }
+.om-zone { position: absolute; padding: 0; margin: 0; border: 0; background: transparent; cursor: help; pointer-events: auto; border-radius: 6px; }
+.om-zone:hover, .om-zone:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }
+/* i pannelli "come l'app" si trascinano dalla linguetta del logo */
+.om-app .tab, .om-app .chead { cursor: grab; touch-action: none; }
+.om-app.is-dragging .tab, .om-app.is-dragging .chead { cursor: grabbing; }

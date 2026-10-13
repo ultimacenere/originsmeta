@@ -85,6 +85,19 @@ export class FrameRecorder {
     return value;
   }
 
+/**
+   * Le carte lette adesso nei 18 spazi del tabellone (14/10/2026, per le zone dell'estensione Twitch): l'ultimo
+   * fotogramma col tabellone (mana letto) degli ultimi 3 secondi; null fuori partita o senza letture.
+   */
+  board(now = Date.now()): (string | null)[] | null {
+    for (let i = this.scans.length - 1; i >= 0; i--) {
+      const f = this.scans[i];
+      if (now - f.ms > 3000) return null;
+      if (f.maxMana !== null) return [...f.board];
+    }
+    return null;
+  }
+
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }

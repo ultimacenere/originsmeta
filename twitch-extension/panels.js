@@ -6,6 +6,7 @@
   var LIVE_STATE_VERSION = 1;
   var LIVE_LIMITS = { deckCards: 13, seen: 30, name: 40, copies: 3 };
   var LIVE_TEMPLATES = ["classic", "strips", "columns", "custom"];
+  var BOARD_SIZE = 18;
   var clean = (s) => {
     const t = (s ?? "").replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩]/g, "").trim().slice(0, LIVE_LIMITS.name);
     return t || null;
@@ -96,6 +97,7 @@
         if (me !== void 0 && opp !== void 0) live.mana = { me, opp };
       }
       if (l.direction === "left" || l.direction === "right" || l.direction === null) live.direction = l.direction;
+      if (Array.isArray(l.board) && l.board.length === BOARD_SIZE && l.board.every((k) => k === null || key(k))) live.board = l.board;
     }
     const ui = s.ui === void 0 ? null : readLiveUi(s.ui);
     return { v: LIVE_STATE_VERSION, deck, live, ...ui ? { ui } : {} };
@@ -313,6 +315,97 @@
     return { L, paint };
   }
 
+  // src/shared/recognize.ts
+  var VEC = 20;
+  var VEC_LEN = VEC * VEC * 3;
+  var ART_IN_CARD = { x: 40 / 480, y: 62 / 690, w: 395 / 480, h: 303 / 690 };
+  var SW = 2e3;
+  var SH = 1125;
+  var LANE_X = {
+    opp: [[335, 465], [475, 605], [615, 745], [793, 922], [935, 1065], [1077, 1207], [1258, 1385], [1397, 1525], [1537, 1665]],
+    me: [[297, 440], [447, 588], [595, 735], [785, 925], [935, 1065], [1080, 1215], [1265, 1405], [1412, 1552], [1557, 1697]]
+  };
+  var ROW_Y = { opp: [275, 430], me: [543, 712] };
+  var BOARD_SLOTS = ["opp", "me"].flatMap(
+    (side) => LANE_X[side].map(([x0, x1], i) => ({
+      side,
+      lane: Math.floor(i / 3) + 1,
+      slot: i % 3 + 1,
+      rect: { x: x0 / SW, y: ROW_Y[side][0] / SH, w: (x1 - x0) / SW, h: (ROW_Y[side][1] - ROW_Y[side][0]) / SH }
+    }))
+  );
+  var VS_CARDS = {
+    me: [
+      { x: 717 / SW, y: 828 / SH, w: 178 / SW, h: 260 / SH },
+      { x: 706 / SW, y: 806 / SH, w: 204 / SW, h: 293 / SH }
+    ],
+    opp: [
+      { x: 1105 / SW, y: 828 / SH, w: 178 / SW, h: 260 / SH },
+      { x: 1094 / SW, y: 806 / SH, w: 204 / SW, h: 293 / SH }
+    ]
+  };
+  var BOARD_SCALE = [
+    // [rapporto larghezza/altezza dell'area interna, S/H]
+    [1160 / 869, 1221 / 869],
+    [16 / 9, 16 / 9],
+    [2042 / 853, 1759 / 853]
+  ];
+  function boardScale(r) {
+    const pts = BOARD_SCALE.map(([a, k]) => [Math.log(a), Math.log(k)]);
+    const x = Math.log(r);
+    let i = 0;
+    while (i < pts.length - 2 && x > pts[i + 1][0]) i++;
+    const [x0, y0] = pts[i];
+    const [x1, y1] = pts[i + 1];
+    return Math.exp(y0 + (y1 - y0) * (x - x0) / (x1 - x0));
+  }
+  function layoutFor(content) {
+    const cx = content.x + content.w / 2;
+    const cy = content.y + content.h / 2;
+    const centered = (w) => ({ x: cx - w / 2, y: cy - w * 9 / 32, w, h: w * 9 / 16 });
+    const vsW = Math.min(content.w, content.h * 16 / 9);
+    const vs = { x: cx - vsW / 2, y: content.y + content.h - vsW * 9 / 16, w: vsW, h: vsW * 9 / 16 };
+    return { content, board: centered(content.h * boardScale(content.w / content.h)), ui: centered(content.h * 16 / 9), vs };
+  }
+  function inside(outer, inner) {
+    return { x: outer.x + inner.x * outer.w, y: outer.y + inner.y * outer.h, w: inner.w * outer.w, h: inner.h * outer.h };
+  }
+  var MANA_TEXT = { x: 1800 / SW, y: 578 / SH, w: 100 / SW, h: 36 / SH };
+  var GLYPHS = [
+    ["/", 0.52, "....####|...#####|...####.|...####.|..####..|..####..|..####..|.####...|.####...|####....|####....|####...."],
+    ["0", 1, "..####..|.#####..|#######.|###.###.|###..###|###..###|###..###|###..###|###..###|.#######|.######.|..#####."],
+    ["1", 0.68, "#######.|#######.|#######.|..#####.|..#####.|...####.|...#####|...#####|...#####|...#####|...#####|...#####"],
+    ["2", 1.04, ".####...|.######.|#######.|.##.###.|....###.|....###.|...####.|..####..|..###...|.#######|.#######|.#######"],
+    ["3", 0.96, "#######.|#######.|#######.|...###..|..####..|..#####.|..######|.....###|.....###|.#######|########|.######."],
+    ["4", 1.16, "..###...|..###...|..###...|.###....|.###....|.######.|###.###.|########|########|########|....###.|....###."],
+    ["5", 0.96, "#######.|#######.|#######.|###.....|######..|#######.|########|....####|.....###|########|#######.|#######."],
+    ["6", 1, "..#####.|.######.|.######.|####....|###.....|#######.|########|###..###|###..###|.###.###|.#######|..#####."],
+    ["7", 1, "########|########|########|###.####|###.###.|....###.|....###.|....###.|...####.|...###..|...###..|...###.."],
+    ["8", 1.04, ".####...|.######.|#######.|###.###.|###.###.|.######.|.######.|###..###|###..###|####.###|.######.|.######."],
+    ["9", 1, ".####...|######..|#######.|###.###.|###..###|########|.#######|..##.###|.....###|.######.|.######.|.#####.."]
+  ];
+  var GLYPH_BITS = GLYPHS.map(([ch, aspect, rows]) => ({ ch, aspect, bits: rows.replace(/\|/g, "").split("").map((c) => c === "#" ? 1 : 0) }));
+  var OPP_MANA_TEXT = { x: 1775 / SW, y: 396 / SH, w: 130 / SW, h: 36 / SH };
+  var COMBAT_ARROW = { x: 1770 / SW, y: 470 / SH, w: 130 / SW, h: 32 / SH };
+  var OPP_HAND = { x: 300 / SW, y: 15 / SH, w: 1400 / SW, h: 60 / SH };
+  var ART_IN_HAND = { x: ART_IN_CARD.x, y: ART_IN_CARD.y, w: ART_IN_CARD.w * 0.6, h: ART_IN_CARD.h };
+  var HAND_SHAPE = [
+    // [rapporto dell'area interna, larghezza della carta / H, distanza del bordo alto della carta dal fondo / H]
+    [1160 / 869, 98 / 869, 201 / 869],
+    [16 / 9, 213.8 / 1440, 343 / 1440],
+    [2042 / 853, 137 / 853, 196 / 853]
+  ];
+  var LIFE_RINGS = {
+    // l'anello è un'ellisse vista di sbieco: per i due archi frontali va meglio un cerchio più piccolo e più in basso
+    // (ricerca dell'11/10 nelle tre forme: centro +1% dell'altezza, raggio × 0,9)
+    me: { x: 219.6 / 2560, y: 992.9 / 1440, r: 91.8 / 2560 },
+    opp: { x: 2274 / 2560, y: 314.4 / 1440, r: 94.5 / 2560 }
+  };
+  var ART_IN_PREVIEW = { x: 40 / 480, y: 30 / 690, w: 395 / 480, h: 245 / 690 };
+  var SPELL_PANEL = { x: 82 / SW, y: 168 / SH, w: 253 / SW, h: 150 / SH };
+  var SPELL_SHIFTS = [-50, -40, -30, -20, -10, 0].flatMap((dx) => [-5, 5].map((dy) => [dx, dy]));
+  var ROUND_BUTTON = { x: 1730 / SW, y: 870 / SH, w: 245 / SW, h: 215 / SH };
+
   // src/overlay/twitchPanels.ts
   function deckCard(table, key, copies, drawn, played) {
     const c = table[key];
@@ -376,5 +469,9 @@
       }
     };
   }
-  window.OMPanels = { viewFromState, create, parseLiveState };
+  function boardRects(video) {
+    const board = layoutFor(video).board;
+    return BOARD_SLOTS.map((s) => ({ side: s.side, ...inside(board, s.rect) }));
+  }
+  window.OMPanels = { viewFromState, create, parseLiveState, boardRects };
 })();
