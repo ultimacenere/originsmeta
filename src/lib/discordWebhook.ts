@@ -41,7 +41,7 @@ export type DiscordWebhookPayload = {
  * sovrascrive, così non serve rinominare i webhook a mano. Un payload con il suo `username` tiene il proprio.
  */
 export const DISCORD_USERNAME = "OriginsMeta";
-export const DISCORD_AVATAR_URL = "https://originsmeta.com/media/originsmeta-icon.png";
+export const DISCORD_AVATAR_URL = "https://originsmeta.com/media/discord-avatar.png";
 
 /**
  * File di testo allegato al messaggio (per esempio il testo completo di una guida inviata dal sito, che in un

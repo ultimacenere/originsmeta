@@ -310,7 +310,7 @@ async function waitForPage(url, waitMs = WAIT_MS) {
  * stessi valori di DISCORD_USERNAME e DISCORD_AVATAR_URL in src/lib/discordWebhook.ts.
  */
 async function post(webhook, body) {
-  const payload = JSON.stringify({ username: "OriginsMeta", avatar_url: "https://originsmeta.com/media/originsmeta-icon.png", ...body });
+  const payload = JSON.stringify({ username: "OriginsMeta", avatar_url: "https://originsmeta.com/media/discord-avatar.png", ...body });
   for (let attempt = 0; attempt < 4; attempt++) {
     const r = await fetch(`${webhook}?wait=true`, { method: "POST", headers: { "content-type": "application/json" }, body: payload });
     if (r.status === 429) {
