@@ -21,7 +21,7 @@ import { BrowserWindow, desktopCapturer, ipcMain, screen, session, type IpcMainE
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
-import { readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
+import { lastActivity, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
 /** La partita resta "dal vivo" nel pannello del mazzo fino a 10 minuti dopo l'ultimo fotogramma con il mana letto. */
 export const LIVE_MS = 10 * 60_000;
@@ -78,10 +78,34 @@ export class FrameRecorder {
     if (this.liveCache && now - this.liveCache.at < 1000) return this.liveCache.value;
     const pieces = splitMatches(this.scans);
     const piece = pieces[pieces.length - 1];
-    const lastMana = piece ? [...piece].reverse().find((f) => f.maxMana !== null)?.ms : undefined;
-    const value = piece && lastMana !== undefined && now - lastMana <= LIVE_MS ? { scan: reconstruct(piece, this.cards), inMatch: now - lastMana <= IN_MATCH_MS } : null;
+    // l'ultimo mana o, nei round finali col mana coperto, il tabellone con carte (13/10/2026, `lastActivity`)
+    const last = piece ? lastActivity(piece) : null;
+    const value = piece && last !== null && now - last <= LIVE_MS ? { scan: reconstruct(piece, this.cards), inMatch: now - last <= IN_MATCH_MS } : null;
     this.liveCache = { at: now, value };
     return value;
+  }
+
+/**
+   * Le carte lette adesso nei 18 spazi del tabellone (14/10/2026, per le zone dell'estensione Twitch): l'ultimo
+   * fotogramma col tabellone (mana letto) degli ultimi 3 secondi; null fuori partita o senza letture.
+   */
+  board(now = Date.now()): (string | null)[] | null {
+    for (let i = this.scans.length - 1; i >= 0; i--) {
+      const f = this.scans[i];
+      if (now - f.ms > 3000) return null;
+      if (f.maxMana !== null) return [...f.board];
+    }
+    return null;
+  }
+
+  /** Le carte in mano adesso con la loro posizione (14/10/2026, per l'estensione Twitch), come `board`. */
+  hand(now = Date.now()): [string, number][] | null {
+    for (let i = this.scans.length - 1; i >= 0; i--) {
+      const f = this.scans[i];
+      if (now - f.ms > 3000) return null;
+      if (f.maxMana !== null) return f.hand && f.handX ? f.hand.map((k, j) => [k, f.handX![j]] as [string, number]) : null;
+    }
+    return null;
   }
 
   matchFor(endedAtMs: number): ScannedMatch | null {

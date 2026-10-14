@@ -7,6 +7,7 @@ import {
   THIN_GAMES,
   axisFor,
   band,
+  bothSides,
   byPrudent,
   cardHighlights,
   deltaPoints,
@@ -100,6 +101,29 @@ describe("scontri", () => {
     assert.equal(notableMatchup([mu("A", "B", 2, 2), mu("A", "C", 3, 2)])?.opponent, "B");
     assert.equal(notableMatchup([mu("A", "A", 3, 2)]), null);
     assert.equal(notableMatchup([]), null);
+  });
+  test("tutti e due i lati: la vittoria di uno è la sconfitta dell'altro", () => {
+    // chi registra vince 7 su 10 con A contro B, 3 su 4 con B contro C, 2 su 2 con B contro A e uno specchio A contro A
+    const both = bothSides([mu("A", "B", 10, 7), mu("B", "C", 4, 3), mu("B", "A", 2, 2), mu("A", "A", 3, 1), mu("C", "B", 0, 0)]);
+    assert.equal(both.games, 19);
+    const legs = new Map(both.legendaries.map((l) => [l.legendary, l]));
+    // A: 7 vinte su 10, 0 su 2 dall'altra parte, specchio = 3 vinte su 6 presenze
+    assert.deepEqual(legs.get("A"), { legendary: "A", games: 18, wins: 10 });
+    assert.deepEqual(legs.get("B"), { legendary: "B", games: 16, wins: 8 });
+    assert.deepEqual(legs.get("C"), { legendary: "C", games: 4, wins: 1 });
+    const all = both.legendaries.reduce((s, l) => ({ games: s.games + l.games, wins: s.wins + l.wins }), { games: 0, wins: 0 });
+    assert.equal(all.games, 2 * both.games);
+    assert.equal(all.wins * 2, all.games);
+    const pair = new Map(both.matchups.map((m) => [`${m.legendary}|${m.opponent}`, m]));
+    assert.deepEqual(pair.get("A|B"), { legendary: "A", opponent: "B", games: 12, wins: 7 });
+    assert.deepEqual(pair.get("B|A"), { legendary: "B", opponent: "A", games: 12, wins: 5 });
+    assert.deepEqual(pair.get("C|B"), { legendary: "C", opponent: "B", games: 4, wins: 1 });
+    assert.deepEqual(pair.get("A|A"), { legendary: "A", opponent: "A", games: 3, wins: 1 });
+    assert.equal(bothSides([]).legendaries.length, 0);
+  });
+  test("negli scontri simmetrici lo scontro della patch si racconta dal lato di chi vince", () => {
+    const both = bothSides([mu("A", "B", 30, 9)]).matchups.map(rated);
+    assert.equal(notableMatchup(both)?.legendary, "B");
   });
   test("solo le Leggendarie con partite, le più giocate prima", () => {
     const order = matchupOrder([mu("A", "B", 3, 2), mu("C", "A", 1, 0), mu("D", "E", 0, 0)], new Map([["C", 50], ["A", 10]]));

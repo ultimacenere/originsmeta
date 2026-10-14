@@ -1331,6 +1331,183 @@ Las notas del parche 0.7.1 que el equipo publicó en el [Discord oficial de Orig
     source: "press",
   },
   {
+    // Nona news "Upgrade Meta" (13/10/2026, richiesta di Pierluigi: "articolo con il ringraziamento per i numerosi
+    // feedback e il risultato eccezionale delle quasi 200 partite nonostante i server ballerini di oggi, poi le novità
+    // introdotte in questa patch del tracker"): le quasi 200 partite del 12/10 sono il dato di Pierluigi (Analytics, per
+    // tutta la patch 0.7, ne mostrava 208 la notte del 13/10); mai il numero di giocatori. Novità della 0.4.1 (Crea il tuo
+    // layout, solo in partita, Setup, correzioni, avviso dell'aggiornamento). Copertina: lo screenshot delle partite
+    // nell'app, mai usato da una news.
+    slug: "upgrade-meta-1013",
+    image: "/media/analytics/app-matches-en.webp",
+    guides: ["play-the-demo"],
+    date: "2026-10-13",
+    title: n(
+      "Upgrade Meta: thank you for nearly 200 matches, and OriginsMeta Tracker 0.4.1 lets you create your layout",
+      "Upgrade Meta: grazie per le quasi 200 partite, e OriginsMeta Tracker 0.4.1 ti fa creare il tuo layout",
+      "Upgrade Meta: gracias por las casi 200 partidas, y OriginsMeta Tracker 0.4.1 te deja crear tu layout",
+    ),
+    metaTitle: n("OriginsMeta Tracker 0.4.1 for Origins TCG", "OriginsMeta Tracker 0.4.1 per Origins TCG", "OriginsMeta Tracker 0.4.1 para Origins TCG"),
+    description: n(
+      "Thanks for your feedback and nearly 200 matches in a day. OriginsMeta Tracker 0.4.1 for Origins TCG adds four panel layouts, Setup and fixes.",
+      "Grazie per i feedback e le quasi 200 partite in un giorno. OriginsMeta Tracker 0.4.1 per Origins TCG porta quattro layout, Setup e correzioni.",
+      "Gracias por los comentarios y las casi 200 partidas en un día. OriginsMeta Tracker 0.4.1 para Origins TCG trae cuatro layouts, Setup y arreglos.",
+    ),
+    summary: n(
+      "Thank you: on 12 October you sent us a lot of feedback and recorded nearly 200 matches with OriginsMeta Tracker, even though the game's servers came and went for much of the day. Those matches are already in Analytics. Version 0.4.1 is out with what you asked for: four panel layouts to choose from, panels only during a match, a Setup page and the fixes you reported.",
+      "Grazie: il 12 ottobre ci avete mandato tantissimi feedback e avete registrato quasi 200 partite con OriginsMeta Tracker, nonostante i server del gioco andassero e venissero per buona parte della giornata. Quelle partite sono già in Analytics. Esce la versione 0.4.1 con quello che ci avete chiesto: quattro layout dei pannelli fra cui scegliere, pannelli solo durante la partita, una pagina Setup e le correzioni che ci avete segnalato.",
+      "Gracias: el 12 de octubre nos enviaron muchísimos comentarios y registraron casi 200 partidas con OriginsMeta Tracker, aunque los servidores del juego iban y venían durante buena parte del día. Esas partidas ya están en Analytics. Sale la versión 0.4.1 con lo que nos pidieron: cuatro layouts de los paneles para elegir, paneles solo durante la partida, una página Setup y los arreglos que nos señalaron.",
+    ),
+    highlights: {
+      en: [
+        { label: "Thank you", text: "nearly 200 matches recorded on 12 October", anchor: "thanks" },
+        { label: "Create your layout", text: "four styles for the panels: Classic, Minimal, Structured and Custom", anchor: "layout" },
+        { label: "Only during a match", text: "panels that appear at the first round and disappear at the end", anchor: "in-match" },
+        { label: "Setup", text: "the main page shows only your game", anchor: "setup" },
+        { label: "Fixes", text: "no empty box in the Deck tracker, deck changes read right away", anchor: "fixes" },
+      ],
+      it: [
+        { label: "Grazie", text: "quasi 200 partite registrate il 12 ottobre", anchor: "grazie" },
+        { label: "Crea il tuo layout", text: "quattro stili per i pannelli: Classico, Minimal, Strutturato e Personalizzato", anchor: "layout" },
+        { label: "Solo durante la partita", text: "pannelli che compaiono al primo round e spariscono alla fine", anchor: "in-partita" },
+        { label: "Setup", text: "la pagina principale mostra solo il tuo gioco", anchor: "setup" },
+        { label: "Correzioni", text: "niente casella vuota nel Deck tracker, mazzi modificati letti subito", anchor: "correzioni" },
+      ],
+      es: [
+        { label: "Gracias", text: "casi 200 partidas registradas el 12 de octubre", anchor: "gracias" },
+        { label: "Crea tu layout", text: "cuatro estilos para los paneles: Clásico, Minimal, Estructurado y Personalizado", anchor: "layout" },
+        { label: "Solo durante la partida", text: "paneles que aparecen en la primera ronda y desaparecen al final", anchor: "en-partida" },
+        { label: "Setup", text: "la página principal muestra solo tu juego", anchor: "setup" },
+        { label: "Arreglos", text: "sin casilla vacía en el Deck tracker, cambios de mazo leídos al momento", anchor: "arreglos" },
+      ],
+    },
+    body: n(
+      `## Thank you {#thanks}
+
+In one day you sent us a lot of feedback, on our Discord and from the site, and on 12 October you recorded **nearly 200 matches** with OriginsMeta Tracker, even with the game's servers going up and down for much of the day. Every match goes into the win rates in [Analytics](/en/analytics): Legendaries, community decks, archetypes and cards, patch by patch, only totals. Many of the changes below come straight from your messages.
+
+## Create your layout {#layout}
+
+The panels above the game now come in four styles, from the new **Create your layout** button next to your deck's name:
+
+- **Classic**: your deck in a column on the left, with the Legendary as a band like in our [deck builder](/en/deck-builder); the opponent's Legendary and revealed cards in a strip at the top right.
+- **Minimal**: two strips, your 12 cards and Legendary at the bottom left next to your hand, the opponent's at the top right.
+- **Structured**: two columns at the sides; on the right, over the game's mana panel, the opponent's cards, the cards left in their deck and both players' mana with the combat direction.
+- **Custom**: you choose vertical or horizontal, drawn cards or names only in rows, cards per row, background opacity, whether finished cards disappear and what each panel shows.
+
+Every style remembers where you put its panels, and the OBS source follows the style you pick.
+
+## Panels only during a match {#in-match}
+
+A new option shows the panels only while you play: they appear at the first round and disappear about 30 seconds after the end, in the OBS source too. It uses the screen scanner: with the scanner off, the panels stay visible.
+
+## Setup and a cleaner main page {#setup}
+
+The app's main page now shows only your game: the deck you picked, your numbers, your matches and results. Your account, the screen scanner, the panels and the app's options are behind the **Setup** button. The tutorial starts again once for everyone, to show where things moved.
+
+## Fixes and updates {#fixes}
+
+- No more empty box at the bottom of the Deck tracker: it was a placeholder the game keeps in some decks, not a card.
+- A deck you change in the game updates right away in the tracker, without waiting for the next match.
+- When a new version is out, a highlighted notice asks you to wait before launching the game: the app updates only with the game closed.
+
+The [installation guide](/en/tracker#install) on the Tracker page is now five short steps.
+
+## How to update {#update}
+
+If you already have OriginsMeta Tracker, it updates itself to 0.4.1 with the game closed. If you're new, download it from the [Tracker page](/en/tracker): the OriginsMeta account is free.
+
+OriginsMeta is an unofficial fan site, not affiliated with Koin Games.`,
+      `## Grazie {#grazie}
+
+In un giorno ci avete mandato tantissimi feedback, sul nostro Discord e dal sito, e il 12 ottobre avete registrato **quasi 200 partite** con OriginsMeta Tracker, anche con i server del gioco che andavano e venivano per buona parte della giornata. Ogni partita entra nei win rate di [Analytics](/it/analytics): Leggendarie, mazzi della community, archetipi e carte, patch per patch, solo totali. Molte delle novità qui sotto vengono dritte dai vostri messaggi.
+
+## Crea il tuo layout {#layout}
+
+I pannelli sopra il gioco ora hanno quattro stili, dal nuovo tasto **Crea il tuo layout** accanto al nome del tuo mazzo:
+
+- **Classico**: il tuo mazzo in una colonna a sinistra, con la Leggendaria a fascia come nel nostro [deck builder](/it/deck-builder); la Leggendaria e le carte rivelate dell'avversario in una fascia in alto a destra.
+- **Minimal**: due fasce, le tue 12 carte e la Leggendaria in basso a sinistra accanto alla tua mano, quelle dell'avversario in alto a destra.
+- **Strutturato**: due colonne ai lati; a destra, sopra il pannello del mana del gioco, le carte dell'avversario, quelle che gli restano nel mazzo e il mana dei due giocatori con la direzione del combattimento.
+- **Personalizzato**: scegli tu verticale o orizzontale, carte disegnate o solo i nomi in riga, carte per fila, opacità del fondo, se le carte finite spariscono e che cosa mostra ogni pannello.
+
+Ogni stile ricorda dove metti i suoi pannelli, e la sorgente per OBS segue lo stile che scegli.
+
+## Pannelli solo durante la partita {#in-partita}
+
+Una nuova opzione mostra i pannelli solo mentre giochi: compaiono al primo round e spariscono una trentina di secondi dopo la fine, anche nella sorgente per OBS. Usa lo scanner dello schermo: con lo scanner spento i pannelli restano visibili.
+
+## Setup e una pagina principale più pulita {#setup}
+
+La pagina principale dell'app ora mostra solo il tuo gioco: il mazzo che hai scelto, i tuoi numeri, le partite e gli esiti. Account, scanner dello schermo, pannelli e opzioni dell'app stanno dietro il tasto **Setup**. Il tutorial riparte una volta per tutti, per far vedere dove sono finite le cose.
+
+## Correzioni e aggiornamenti {#correzioni}
+
+- Niente più casella vuota in fondo al Deck tracker: era un segnaposto che il gioco tiene in alcuni mazzi, non una carta.
+- Un mazzo che cambi nel gioco si aggiorna subito nel tracker, senza aspettare la partita dopo.
+- Quando esce una versione nuova, un avviso in evidenza ti chiede di aspettare a lanciare il gioco: l'app si aggiorna solo a gioco chiuso.
+
+La [guida all'installazione](/it/tracker#installazione) nella pagina Tracker ora è in cinque passi brevi.
+
+## Come aggiornare {#aggiornare}
+
+Se OriginsMeta Tracker ce l'hai già, si aggiorna da solo alla 0.4.1 a gioco chiuso. Se sei nuovo, scaricalo dalla [pagina Tracker](/it/tracker): l'account OriginsMeta è gratuito.
+
+OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.`,
+      `## Gracias {#gracias}
+
+En un día nos enviaron muchísimos comentarios, en nuestro Discord y desde el sitio, y el 12 de octubre registraron **casi 200 partidas** con OriginsMeta Tracker, incluso con los servidores del juego yendo y viniendo durante buena parte del día. Cada partida entra en el win rate de [Analytics](/es/analytics): Legendarias, mazos de la comunidad, arquetipos y cartas, parche a parche, solo totales. Muchas de las novedades de aquí abajo salen directamente de sus mensajes.
+
+## Crea tu layout {#layout}
+
+Los paneles sobre el juego ahora tienen cuatro estilos, desde el nuevo botón **Crea tu layout** junto al nombre de tu mazo:
+
+- **Clásico**: tu mazo en una columna a la izquierda, con la Legendaria en franja como en nuestro [deck builder](/es/deck-builder); la Legendaria y las cartas reveladas del rival en una franja arriba a la derecha.
+- **Minimal**: dos franjas, tus 12 cartas y la Legendaria abajo a la izquierda junto a tu mano, las del rival arriba a la derecha.
+- **Estructurado**: dos columnas a los lados; a la derecha, sobre el panel de maná del juego, las cartas del rival, las que le quedan en el mazo y el maná de los dos jugadores con la dirección del combate.
+- **Personalizado**: eliges vertical u horizontal, cartas dibujadas o solo los nombres en filas, cartas por fila, opacidad del fondo, si las cartas agotadas desaparecen y qué muestra cada panel.
+
+Cada estilo recuerda dónde pones sus paneles, y la fuente para OBS sigue el estilo que elijas.
+
+## Paneles solo durante la partida {#en-partida}
+
+Una nueva opción muestra los paneles solo mientras juegas: aparecen en la primera ronda y desaparecen unos 30 segundos después del final, también en la fuente para OBS. Usa el escáner de pantalla: con el escáner apagado, los paneles siguen visibles.
+
+## Setup y una página principal más limpia {#setup}
+
+La página principal de la app ahora muestra solo tu juego: el mazo que elegiste, tus números, tus partidas y resultados. La cuenta, el escáner de pantalla, los paneles y las opciones de la app están detrás del botón **Setup**. El tutorial vuelve a empezar una vez para todos, para mostrar dónde quedó cada cosa.
+
+## Arreglos y actualizaciones {#arreglos}
+
+- Se acabó la casilla vacía al final del Deck tracker: era un marcador que el juego guarda en algunos mazos, no una carta.
+- Un mazo que cambias en el juego se actualiza al momento en el tracker, sin esperar a la siguiente partida.
+- Cuando sale una versión nueva, un aviso destacado te pide que esperes para abrir el juego: la app solo se actualiza con el juego cerrado.
+
+La [guía de instalación](/es/tracker#instalacion) de la página Tracker ahora son cinco pasos cortos.
+
+## Cómo actualizar {#actualizar}
+
+Si ya tienes OriginsMeta Tracker, se actualiza solo a la 0.4.1 con el juego cerrado. Si eres nuevo, descárgalo desde la [página Tracker](/es/tracker): la cuenta de OriginsMeta es gratuita.
+
+OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.`,
+    ),
+    faq: {
+      en: [
+        { q: "How do I change the style of the OriginsMeta Tracker panels?", a: "Press Create your layout, next to your deck's name on the app's main page: it opens Setup on the four styles (Classic, Minimal, Structured and Custom). The open panels reopen in the new style." },
+        { q: "Do I have to download OriginsMeta Tracker 0.4.1 again?", a: "No: if you already have it, the app updates itself to 0.4.1 with the game closed. New players download it from the Tracker page with a free OriginsMeta account." },
+      ],
+      it: [
+        { q: "Come si cambia lo stile dei pannelli di OriginsMeta Tracker?", a: "Premi Crea il tuo layout, accanto al nome del tuo mazzo nella pagina principale dell'app: apre Setup sui quattro stili (Classico, Minimal, Strutturato e Personalizzato). I pannelli aperti si riaprono nello stile nuovo." },
+        { q: "Devo riscaricare OriginsMeta Tracker 0.4.1?", a: "No: se ce l'hai già, l'app si aggiorna da sola alla 0.4.1 a gioco chiuso. Chi è nuovo la scarica dalla pagina Tracker con un account OriginsMeta gratuito." },
+      ],
+      es: [
+        { q: "¿Cómo se cambia el estilo de los paneles de OriginsMeta Tracker?", a: "Pulsa Crea tu layout, junto al nombre de tu mazo en la página principal de la app: abre Setup en los cuatro estilos (Clásico, Minimal, Estructurado y Personalizado). Los paneles abiertos se vuelven a abrir con el estilo nuevo." },
+        { q: "¿Tengo que volver a descargar OriginsMeta Tracker 0.4.1?", a: "No: si ya la tienes, la app se actualiza sola a la 0.4.1 con el juego cerrado. Quien es nuevo la descarga desde la página Tracker con una cuenta gratuita de OriginsMeta." },
+      ],
+    },
+    url: "/tracker",
+    source: "site",
+  },
+  {
     // Ottava news "Upgrade Meta" (12/10/2026, richiesta di Pierluigi): OriginsMeta Tracker 0.4.0 per tutti con un account
     // gratuito (download da /tracker, app che funziona solo collegata, aggiornamento automatico per chi l'ha già), le
     // statistiche aperte a tutti in /analytics e il menu nuovo (Database; Analytics con il Tracker). Niente soglie delle

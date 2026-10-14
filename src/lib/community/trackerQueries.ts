@@ -40,3 +40,17 @@ export async function readOwnMatches(supabase: Db, userId: string): Promise<Trac
   }
   return { status: "ok", data: (res.data ?? []) as unknown as OwnMatch[] };
 }
+
+/**
+ * Il canale Twitch collegato per l'estensione "Deck tracker" (blocco TWITCH, 13/10/2026), o null. Niente filtro sul
+ * proprietario: la colonna non si legge (grant solo su channel_id e linked_at) e la RLS dà già solo la propria riga.
+ */
+export async function readTwitchLink(supabase: Db): Promise<TrackerRead<{ channel_id: string; linked_at: string } | null>> {
+  const res = await supabase.from("twitch_links").select("channel_id, linked_at").maybeSingle();
+  if (res.error) {
+    if (isMissing(res)) return { status: "missing" };
+    console.error("[twitch-ext] canale:", res.error.message);
+    return { status: "error" };
+  }
+  return { status: "ok", data: res.data ?? null };
+}

@@ -371,6 +371,8 @@ export type TrackedMatchRow = {
   created_at: string;
 };
 /** authenticated legge solo queste colonne dei propri PC (grant per colonna): mai l'impronta del token */
+/** Canale Twitch collegato per l'estensione Deck tracker (blocco TWITCH di schema.sql, 13/10/2026): il proprietario legge id e data. */
+export type TwitchLinkRow = { owner: string; channel_id: string; linked_at: string };
 export type TrackerDeviceRow = { id: string; owner: string; name: string; created_at: string; last_seen_at: string | null; revoked_at: string | null };
 type TrackerStatCount = { games: number; wins: number; players: number };
 
@@ -851,6 +853,12 @@ export type Database = {
         ];
       };
       /** PC collegati (blocco TRACKER): lettura per colonna del proprietario, scrittura solo con le funzioni tracker_* */
+      twitch_links: {
+        Row: TwitchLinkRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       tracker_devices: {
         Row: TrackerDeviceRow;
         Insert: Record<string, never>;
@@ -992,6 +1000,16 @@ export type Database = {
       tracker_link_claim: { Args: { p_code: string; p_name: string }; Returns: { token: string; username: string | null }[] };
       /** l'app si scollega con il suo token; true se valeva */
       tracker_device_unlink: { Args: { p_token: string }; Returns: boolean };
+      /** estensione Twitch (blocco TWITCH, 13/10/2026): codice per collegare il canale (con l'accesso fatto) */
+      twitch_link_code: { Args: Record<string, never>; Returns: string };
+      /** il codice scritto nell'estensione, solo dalla rotta /api/twitch/link con il segreto del server; restituisce lo username */
+      twitch_link_claim: { Args: { p_key: string; p_code: string; p_channel: string }; Returns: string | null };
+      /** scollega il proprio canale; true se c'era */
+      twitch_unlink: { Args: Record<string, never>; Returns: boolean };
+      /** stato dal vivo dall'app (anon, con il token); restituisce il canale collegato o null */
+      tracker_live_push: { Args: { p_token: string; p_state: unknown }; Returns: string | null };
+      /** ultimo stato di un canale collegato (anon), per l'estensione */
+      twitch_live_state: { Args: { p_channel: string }; Returns: { state: unknown; updated_at: string }[] };
       /** partite dall'app (anon, con il token, dalla rotta /api/tracker/sync); restituisce quante aggiunte */
       tracker_submit: { Args: { p_token: string; p_matches: unknown[] }; Returns: number };
       /** scollega un proprio PC; true se c'era */

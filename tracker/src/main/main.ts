@@ -59,8 +59,11 @@ import { SyncQueue, claimCode, siteBase, unlinkRemote, verifyToken, type SyncDep
 import { checkDue, decideAccess, type Access } from "./access";
 import { APP_NAME, APP_USER_MODEL_ID, OLD_DATA_FOLDER, dataDir, staleLoginItem } from "./appIdentity";
 import { overlayView, startOverlayServer, type CardLookup } from "./overlay";
+import { LivePusher, LIVE_MIN_MS } from "./twitchLive";
+import type { LiveRect, LiveUi } from "../../../src/lib/tracker/live";
 import { FrameRecorder } from "./frames";
 import { Updater } from "./updater";
+import { justUpdated, updateNotice, type UpdateNotice } from "./updateRules";
 import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
@@ -151,6 +154,29 @@ const card: CardLookup = (key) => {
   const c = CARDS[key];
   return c ? { name: c.n, legendary: c.l === 1, slug: c.s, mana: c.m ?? null, type: c.t } : undefined;
 };
+
+/* ---------- avviso dopo un aggiornamento (13/10/2026) ---------- */
+
+/** Al primo avvio di una versione nuova (versione salvata in last-version.json più vecchia): "puoi aprire il gioco". */
+function noteVersion(notify: (kind: UpdateNotice, version: string) => void) {
+  const file = path.join(app.getPath("userData"), "last-version.json");
+  let saved: string | null = null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, "utf8")) as { version?: unknown };
+    saved = typeof raw.version === "string" ? raw.version : null;
+  } catch {
+    // prima installazione o file illeggibile: niente avviso
+  }
+  const current = app.getVersion();
+  if (justUpdated(saved, current)) setTimeout(() => notify("done", current), 3000);
+  if (saved !== current) {
+    try {
+      fs.writeFileSync(file, JSON.stringify({ version: current }));
+    } catch {
+      // non essenziale
+    }
+  }
+}
 
 /* ---------- lingua del menu dell'icona ---------- */
 
@@ -338,6 +364,7 @@ function state(): AppState {
       template: panelTemplate,
       custom: panelCustom,
       onlyInMatch: panelsOnlyInMatch,
+      hideFromStream: panelsHideFromStream,
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
       oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
@@ -430,6 +457,28 @@ function syncPanelVisibility() {
   }
 }
 setInterval(syncPanelVisibility, 1500);
+/**
+ * Pannelli esclusi dalle riprese dello schermo (0.4.3, 14/10/2026, prova in diretta di Pierluigi con l'estensione Twitch
+ * "come l'app": "sono duplicati"). OBS che riprende lo schermo intero metteva in onda anche le finestre dei pannelli, e
+ * l'estensione ne disegnava un'altra copia sopra. Con l'opzione accesa Windows esclude le finestre dei pannelli da ogni
+ * ripresa (`setContentProtection`): il giocatore le vede, la diretta no. Lo scanner non ne risente: riprende solo la
+ * finestra del gioco.
+ */
+let panelsHideFromStream = false;
+function applyHideFromStream(win: BrowserWindow) {
+  try {
+    win.setContentProtection(panelsHideFromStream);
+  } catch {
+    // Windows troppo vecchio: i pannelli restano nelle riprese
+  }
+}
+function setPanelsHideFromStream(on: boolean): boolean {
+  panelsHideFromStream = on;
+  savePanelTemplate();
+  for (const k of PANEL_KINDS) if (panelOpen(k)) applyHideFromStream(panels[k].win!);
+  push();
+  return on;
+}
 function setPanelsOnlyInMatch(on: boolean): boolean {
   panelsOnlyInMatch = on;
   savePanelTemplate();
@@ -486,17 +535,18 @@ function loadPanelPrefs() {
     }
   }
   try {
-    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown };
+    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown; hideFromStream?: unknown };
     panelTemplate = readTemplate(saved.template);
     panelCustom = readCustom(saved.custom);
     panelsOnlyInMatch = saved.onlyInMatch === true;
+    panelsHideFromStream = saved.hideFromStream === true;
   } catch {
     // prima volta: classico
   }
 }
 function savePanelTemplate() {
   try {
-    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch }));
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch, hideFromStream: panelsHideFromStream }));
   } catch {
     // non essenziale
   }
@@ -562,6 +612,7 @@ function openPanel(k: PanelKind) {
     },
   });
   panels[k].win = win;
+  applyHideFromStream(win);
   lockZoom(win);
   win.removeMenu();
   win.setAlwaysOnTop(true, "screen-saver");
@@ -639,6 +690,45 @@ const cipher: Cipher = {
 };
 const syncDeps: SyncDeps = { site: SITE_ORIGIN, fetch: (url, init) => net.fetch(url, init) };
 
+/**
+ * Estensione Twitch "Deck tracker" (13/10/2026, twitchLive.ts): lo stato del pannello del mazzo parte per il sito quando
+ * cambia, al massimo ogni 2 secondi, e il sito lo tiene solo se l'account ha collegato un canale Twitch.
+ */
+const livePusher = new LivePusher(syncDeps, () => account.token);
+/**
+ * Lo stile dei pannelli per l'estensione in modalità "come l'app" (14/10/2026, Pierluigi: "non possiamo renderlo identico
+ * come visuale alla versione del tracker scelto dall'utente?"): template e opzioni, pannelli nascosti fuori partita,
+ * scanner, misure dello schermo principale (quello su cui partono i pannelli, panelLayout.ts) e la posizione delle due
+ * finestre rispetto a lui, in punti di Windows. L'estensione le riporta sopra il video, in proporzione.
+ */
+function liveUi(): LiveUi {
+  const d = screen.getPrimaryDisplay().bounds;
+  // un pannello chiuso sul PC va comunque su Twitch (14/10/2026, Pierluigi: "non si può scegliere di avere quelli di
+  // Twitch senza che noi a schermo abbiamo effettivamente i due tracker visibili?"): la posizione salvata per lo stile
+  // in uso, o quella di partenza (panelLayout.ts); l'altezza la decide il contenuto, qui solo una misura di partenza
+  const rect = (k: PanelKind): LiveRect => {
+    if (panelOpen(k)) {
+      const b = panels[k].win!.getBounds();
+      return { x: Math.round(b.x - d.x), y: Math.round(b.y - d.y), w: Math.max(1, Math.round(b.width)), h: Math.max(1, Math.round(b.height)) };
+    }
+    const h = 160;
+    const saved = panels[k].prefs.spots?.[panelTemplate];
+    if (saved) return { x: Math.round(saved.x - d.x), y: Math.round(saved.y - d.y), w: clampWidth(panelTemplate, k, saved.width), h };
+    const spot = defaultSpot(panelTemplate, k, d);
+    return { x: Math.round(spot.x - d.x), y: Math.round((spot.fromBottom ? spot.y - h : spot.y) - d.y), w: spot.width, h };
+  };
+  return { template: panelTemplate, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted(), scanner: Boolean(frames?.running), screen: { w: d.width, h: d.height }, panels: { deck: rect("deck"), opp: rect("opp") } };
+}
+setInterval(() => {
+  if (!account.token || CAPTURE || !engineOn) return;
+  const v = currentDeckView();
+  // le carte del tabellone, per le zone dell'estensione Twitch (14/10/2026): solo in partita
+  const board = v.live?.inMatch && frames?.running ? frames.board() : null;
+  // e le carte in mano con la loro posizione (domanda di Davdas: "perché non anche le carte in mano?")
+  const hand = v.live?.inMatch && frames?.running ? frames.hand() : null;
+  void livePusher.offer({ ...v, live: v.live ? { ...v.live, board, hand } : null }, liveUi());
+}, LIVE_MIN_MS);
+
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
 function scheduleSync(ms: number) {
   if (syncTimer) clearTimeout(syncTimer);
@@ -664,6 +754,7 @@ async function runSync(force: boolean) {
 function forgetLink() {
   account.clear();
   sync.reset();
+  livePusher.reset();
   notice = "unlinked";
   lastCheckFailed = false;
   refreshAccess();
@@ -685,6 +776,7 @@ async function linkAccount(code: unknown): Promise<LinkResult> {
   account.set(r.token, r.username, SITE_ORIGIN);
   // tutto lo storico sul PC va a questo account (il sito scarta da sé i doppioni)
   sync.reset();
+  livePusher.reset();
   notice = null;
   lastCheckAt = Date.now();
   lastCheckFailed = false;
@@ -697,6 +789,7 @@ async function unlinkAccount() {
   const token = account.token;
   account.clear();
   sync.reset();
+  livePusher.reset();
   notice = null;
   lastCheckFailed = false;
   // senza collegamento l'app si ferma e torna alla schermata di collegamento
@@ -1025,6 +1118,7 @@ function registerIpc() {
   ipcMain.handle("tracker:panel-template", (e, t: unknown) => (fromOpenApp(e) ? setPanelTemplate(readTemplate(t)) : panelTemplate));
   ipcMain.handle("tracker:panel-custom", (e, c: unknown) => (fromOpenApp(e) ? setPanelCustom(c) : panelCustom));
   ipcMain.handle("tracker:panels-in-match", (e, on: unknown) => (fromOpenApp(e) ? setPanelsOnlyInMatch(on === true) : panelsOnlyInMatch));
+  ipcMain.handle("tracker:panels-hide-stream", (e, on: unknown) => (fromOpenApp(e) ? setPanelsHideFromStream(on === true) : panelsHideFromStream));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {
@@ -1192,11 +1286,19 @@ async function boot() {
     tray = new Tray(nativeImage.createFromPath(ICON));
     tray.on("click", showWindow);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
-    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1 };
+    // il mazzo scelto: una magia che non c'è è dell'avversario (13/10/2026, `spellPlays` di reconstruct.ts)
+    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)
+    // avvisi di Windows dell'aggiornamento (13/10/2026): dal fumetto dell'icona, che non chiede collegamenti nel menu Start
+    const notifyUpdate = (kind: UpdateNotice, version: string) => {
+      const n = updateNotice(lang(), kind, version);
+      tray?.displayBalloon({ title: n.title, content: n.content, iconType: "info", respectQuietTime: false });
+    };
+    noteVersion(notifyUpdate);
     updater = new Updater({
+      notify: notifyUpdate,
       canInstall: async () => {
         if (frames?.running && frames.live()?.inMatch) return false;
         const sources = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 0, height: 0 } });

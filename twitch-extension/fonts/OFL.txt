@@ -1,0 +1,18 @@
+Font inclusi in OriginsMeta Tracker, gli stessi del sito originsmeta.com (sottoinsieme latino).
+
+unbounded-latin.woff2: Unbounded Version 1.701;gftools[0.9.28.dev5+ged2979d]
+  Copyright 2022 The Unbounded Project Authors (https://github.com/googlefonts/unbounded)
+
+  https://scripts.sil.org/OFL
+
+manrope-latin.woff2: Manrope ExtraLight Version 4.504
+  Copyright 2019 The Manrope Project Authors (https://github.com/sharanda/manrope)
+
+  http://scripts.sil.org/OFL
+
+jetbrains-mono-latin.woff2: JetBrains Mono Version 2.211
+  Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
+
+  https://scripts.sil.org/OFL
+
+Testo completo della licenza: SIL Open Font License, Version 1.1 — https://openfontlicense.org

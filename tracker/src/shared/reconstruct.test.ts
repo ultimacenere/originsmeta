@@ -1,7 +1,7 @@
 /** Test della partita ricostruita dallo scanner (reconstruct.ts): `npm test` nella cartella tracker/. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyScan, confirmMana, OPP_HAND_STABLE, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
+import { applyScan, confirmMana, lastActivity, OPP_HAND_STABLE, oppDrawnOf, readScanFrame, reconstruct, resultAround, scanFor, spellPlays, splitMatches, type CardInfo, type ScanFrame } from "./reconstruct";
 import { BOARD_SLOTS } from "./recognize";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
@@ -234,4 +234,78 @@ test("pescate dell'avversario dalla sua mano: prima lettura confermata più gli 
   const board = BOARD_SLOTS.map(() => null);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 6 }, 5)?.oppHand, 6);
   assert.equal(readScanFrame({ board, vs: null, maxMana: 3, oppHand: 40 }, 5), null);
+});
+
+test("magie dal riquadro in alto a sinistra: mie e dell'avversario (13/10/2026)", () => {
+  const f = (ms: number, extra: Partial<ScanFrame>): ScanFrame => ({ ...frame(ms, 4), ...extra });
+  const SB = "C00026_SB";
+  const AXE = "C00015_SB";
+  const frames: ScanFrame[] = [
+    // pianificazione: ho due Axe Throw in mano, ne gioco una scegliendo il bersaglio (il riquadro la mostra)
+    f(0, { phase: "plan", hand: [AXE, AXE, "A"], spell: null }),
+    f(500, { phase: "plan", hand: [AXE, AXE, "A"], spell: null }),
+    f(1000, { phase: "plan", hand: [AXE, "A"], spell: AXE }),
+    f(1500, { phase: "plan", hand: [AXE, "A"], spell: AXE }),
+    // rivelazione: la mia Axe Throw, poi due Searing Light dell'avversario separate da un'altra carta e una lettura isolata
+    f(4000, { phase: "reveal", hand: [AXE, "A"], spell: AXE }),
+    f(4500, { phase: "reveal", hand: [AXE, "A"], spell: AXE }),
+    f(6000, { phase: "reveal", spell: SB }),
+    f(6500, { phase: "reveal", spell: null }),
+    f(7000, { phase: "reveal", spell: SB }),
+    f(8000, { phase: "reveal", spell: AXE }),
+    f(12000, { phase: "reveal", spell: SB }),
+    f(12500, { phase: "reveal", spell: SB }),
+    f(20000, { phase: "reveal", spell: "C00169_SB" }),
+  ];
+  assert.deepEqual(spellPlays(frames, 3, info), [
+    { turn: 3, me: true, card: AXE, lane: 0 },
+    { turn: 3, me: false, card: SB, lane: 0 },
+    { turn: 3, me: false, card: SB, lane: 0 },
+  ]);
+  // una magia mia vista solo in rivelazione: è mia se è uscita dalla mano durante la pianificazione
+  const fromHand = [f(0, { phase: "plan", hand: [SB, SB] }), f(500, { phase: "plan", hand: [SB, SB] }), f(1000, { phase: "plan", hand: [SB] }), f(1500, { phase: "plan", hand: [SB] }), f(3000, { phase: "reveal", spell: SB }), f(3500, { phase: "reveal", spell: SB })];
+  assert.deepEqual(spellPlays(fromHand, 2, info), [{ turn: 2, me: true, card: SB, lane: 0 }]);
+  // le carte create non contano
+  assert.deepEqual(spellPlays([f(0, { phase: "reveal", spell: "T_MOUSE" }), f(500, { phase: "reveal", spell: "T_MOUSE" })], 1, info), []);
+  // forma controllata
+  assert.equal(readScanFrame({ ...frame(0, 4), spell: "nope" }, 1)?.spell, undefined);
+  assert.equal(readScanFrame({ ...frame(0, 4), spell: "nope" }, 1), null);
+  assert.equal(readScanFrame({ ...frame(0, 4), spell: SB, phase: "reveal" }, 1)?.spell, SB);
+  assert.equal(readScanFrame({ ...frame(0, 4), phase: "altro" }, 1), null);
+});
+
+test("round 1 senza mana letto e pannelli nei round finali col mana coperto (13/10/2026)", () => {
+  const vs = { me: "L_ME", opp: "L_OPP" };
+  // VS, poi il round 1 col tabellone ma senza mana, poi il "3/3" del round 2
+  const frames: ScanFrame[] = [
+    frame(0, null, {}, vs),
+    frame(1000, null, {}, vs),
+    frame(5000, null, { "me 1 1": "A" }),
+    frame(6000, null, { "me 1 1": "A", "opp 3 1": "X" }),
+    frame(7000, null, { "me 1 1": "A", "opp 3 1": "X" }),
+    frame(20000, 3, { "me 1 1": "A", "opp 3 1": "X" }),
+    frame(21000, 3, { "me 1 1": "A", "me 2 1": "B", "opp 3 1": "X" }),
+    frame(22000, 3, { "me 1 1": "A", "me 2 1": "B", "opp 3 1": "X" }),
+  ];
+  const pieces = splitMatches(frames);
+  assert.equal(pieces.length, 1);
+  const m = reconstruct(pieces[0], info);
+  assert.equal(m.complete, true);
+  assert.deepEqual(
+    m.plays.map((p) => [p.turn, p.me, p.card]),
+    [
+      [1, true, "A"],
+      [1, false, "X"],
+      [2, true, "B"],
+    ],
+  );
+  // dopo una partenza dal tabellone il segnaposto "0/10" non apre il round 9
+  assert.equal(reconstruct(splitMatches([...frames.slice(0, 5), frame(8000, 10, { "me 1 1": "A" }), ...frames.slice(5)])[0], info).turns, 2);
+
+  // ultimo segno di partita: il tabellone con carte entro 2 minuti dall'ultimo mana, fino allo stendardo
+  const late: ScanFrame[] = [frame(0, null, {}, vs), frame(10_000, 2, { "me 1 1": "A" }), frame(60_000, null, { "me 1 1": "A" }), frame(100_000, null, { "me 1 1": "A" })];
+  assert.equal(lastActivity(late), 100_000);
+  assert.equal(lastActivity([...late, frame(200_000, null, { "me 1 1": "A" })]), 100_000);
+  assert.equal(lastActivity([...late.slice(0, 2), { ...frame(50_000, null), result: "W" }, frame(60_000, null, { "me 1 1": "A" })]), 10_000);
+  assert.equal(lastActivity([frame(0, null, { "me 1 1": "A" })]), null);
 });

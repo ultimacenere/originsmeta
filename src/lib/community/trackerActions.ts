@@ -65,3 +65,32 @@ export async function forgetTrackerMatches(formData: FormData): Promise<void> {
   if (error) console.error("[tracker] cancellazione:", error.message);
   redirect(trackerPath(locale, error ? "error=forget" : `forgot=${typeof data === "number" ? data : 0}`, "data"));
 }
+
+/**
+ * Codice per collegare il canale Twitch all'estensione "Deck tracker" (13/10/2026, docs/twitch.md): stesso riquadro e
+ * stesse regole del codice dell'app (10 minuti, una volta, 5 l'ora), funzione twitch_link_code del blocco TWITCH.
+ */
+export async function createTwitchCode(): Promise<TrackerCodeState> {
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "unavailable" };
+  if (!user) return { error: "not_authenticated" };
+  if (!(await analyticsAccess())) return { error: "unavailable" };
+  const { data, error } = await supabase.rpc("twitch_link_code");
+  if (error || typeof data !== "string") {
+    const reason = error ? dbErrorCode(error) : "error";
+    if (reason === "too_many_codes" || reason === "unavailable" || reason === "not_authenticated") return { error: reason };
+    console.error("[twitch-ext] codice:", error?.message ?? "risposta vuota");
+    return { error: "error" };
+  }
+  return { code: data, expiresAt: new Date(Date.now() + LINK.minutes * 60_000).toISOString() };
+}
+
+/** Scollega il proprio canale Twitch: l'estensione smette subito di mostrare il mazzo. */
+export async function unlinkTwitch(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const { supabase, user } = await currentUser();
+  if (!supabase || !user) redirect(`/${locale}/login`);
+  const { error } = await supabase.rpc("twitch_unlink");
+  if (error) console.error("[twitch-ext] scollegamento:", error.message);
+  redirect(trackerPath(locale, error ? "error=twitch" : "done=twitch", "twitch"));
+}

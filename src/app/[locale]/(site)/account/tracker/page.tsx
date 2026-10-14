@@ -7,8 +7,8 @@ import { currentUser } from "@/lib/supabase/server";
 import { fillTracker, trackerLabels } from "@/lib/trackerLabels";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { analyticsAccess } from "@/lib/community/analyticsAccess";
-import { readOwnMatches, readTrackerDevices } from "@/lib/community/trackerQueries";
-import { forgetTrackerMatches, revokeTrackerDevice } from "@/lib/community/trackerActions";
+import { readOwnMatches, readTrackerDevices, readTwitchLink } from "@/lib/community/trackerQueries";
+import { createTwitchCode, forgetTrackerMatches, revokeTrackerDevice, unlinkTwitch } from "@/lib/community/trackerActions";
 import { personalStats, recentMatches, type OwnMatch, type Record3 } from "@/lib/tracker/personal";
 import { percent } from "@/lib/tracker/stats";
 import { getCardByKey, patchLabel, patchOrder, type PatchId } from "@/lib/data/cards";
@@ -73,7 +73,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
   // in prova dal 10/10/2026 (ANALYTICS_PUBLIC spento): solo Creator, Autore, Pro, Staff e admin, gli altri ricevono un 404
   if (!(await analyticsAccess())) notFound();
 
-  const [devices, matches] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id)]);
+  const [devices, matches, twitch] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id), readTwitchLink(supabase)]);
   const unavailable = devices.status !== "ok" || matches.status !== "ok";
   const own: OwnMatch[] = matches.status === "ok" ? matches.data : [];
   const stats = personalStats(own);
@@ -159,6 +159,43 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
               </div>
             )}
           </section>
+
+          {/* Estensione Twitch "Deck tracker" (13/10/2026, docs/twitch.md): codice per collegare il canale e scollegamento.
+              Prima della migrazione del blocco TWITCH la sezione non si mostra. */}
+          {twitch.status !== "missing" ? (
+            <section id="twitch" className="mt-12 scroll-mt-24">
+              <h2 className="t-section">{L.twitch.title}</h2>
+              <p className="mt-3 max-w-2xl text-sm text-chalk-muted">{L.twitch.intro}</p>
+              <ol className="mt-3 max-w-2xl list-decimal space-y-1 pl-5 text-sm text-pale">
+                {L.twitch.steps.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ol>
+              <p className="mt-3 max-w-2xl text-sm text-chalk-muted">
+                {L.twitch.privacy}{" "}
+                <Link href={privacyHref} prefetch={false} className="link-mint">
+                  {L.twitch.privacyLink}
+                </Link>
+                .
+              </p>
+              {one(sp.done) === "twitch" ? <p className="mt-3 text-sm text-good">{L.twitch.done}</p> : null}
+              {one(sp.error) === "twitch" ? <p className="mt-3 text-sm text-bad">{L.twitch.error}</p> : null}
+              {twitch.status === "ok" && twitch.data ? (
+                <div className="card-night mt-4 flex flex-wrap items-center justify-between gap-3 p-4">
+                  <p className="font-mono text-xs text-pale-muted">
+                    {fillTracker(L.twitch.linked, { id: twitch.data.channel_id })} <TrackerTime iso={twitch.data.linked_at} locale={locale} />
+                  </p>
+                  <form action={unlinkTwitch}>
+                    <input type="hidden" name="locale" value={locale} />
+                    <ConfirmButton label={L.twitch.unlink} confirm={L.twitch.confirm} className="btn btn-ink text-xs" />
+                  </form>
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-pale-muted">{L.twitch.none}</p>
+              )}
+              <TrackerCodeBox labels={L.twitch} locale={locale} create={createTwitchCode} />
+            </section>
+          ) : null}
 
           <section id="stats" className="mt-12 scroll-mt-24">
             <h2 className="t-section">{S.title}</h2>

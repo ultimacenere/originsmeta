@@ -6415,3 +6415,150 @@ comment on function public.card_vote_totals() is 'Voti, votanti, carte votate e 
 -- perdono, e la pagina francese mostra l'originale con la sua nota; scripts/translate-*.mjs recuperano gli arretrati dopo.
 alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
 alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr'));
+
+-- ===== 13/10/2026: TWITCH =====
+-- =====================================================================================================
+-- 13/10/2026 — ESTENSIONE TWITCH "DECK TRACKER" (richiesta degli streamer riportata da Pierluigi: "l'integrazione con
+-- Twitch che permetta agli utenti di interagire con il deck per leggersi le carte live"; docs/twitch.md).
+--   Collegamento del canale: il sito crea un codice monouso per chi ha fatto l'accesso (twitch_link_code: 8 caratteri,
+--   10 minuti, al massimo 5 l'ora, come quello dell'app); lo streamer lo scrive nella pagina di configurazione
+--   dell'estensione, che lo manda al sito con il JWT di Twitch; la rotta /api/twitch/link verifica il JWT (ruolo
+--   broadcaster, canale) e chiama twitch_link_claim con il segreto del server (notify_key_ok, CRON_SECRET): senza il
+--   segreto nessuno può legare un canale che non ha dimostrato di avere. Un canale sta con un solo account e un account
+--   con un solo canale: il collegamento nuovo sostituisce il vecchio. Si scollega dal sito (twitch_unlink).
+--   Stato dal vivo: l'app manda durante la partita lo stato del Deck tracker (tracker_live_push, anon, con il token
+--   dell'app; la forma la controlla la rotta /api/tracker/live con parseLiveState di src/lib/tracker/live.ts): si
+--   tiene solo l'ultimo, e solo per chi ha collegato un canale (senza canale non si salva niente). Lo stato contiene
+--   solo quello che lo streamer mostra già in diretta: il suo mazzo, il round, la Leggendaria dell'avversario e le sue
+--   carte rivelate; mai nomi né id di giocatori o partite, mai il rank, mai se l'avversario è un bot. Lo legge chiunque
+--   conosca l'id del canale (twitch_live_state, anon: è quello che l'estensione mostra a ogni spettatore), per 6 ore.
+--   Righe: nessuna lettura né scrittura diretta, tranne il proprio canale (twitch_links) per chi ha fatto l'accesso.
+--   Tutto si cancella con l'account (cascade). Idempotente.
+-- =====================================================================================================
+
+create table if not exists public.twitch_links (
+  owner uuid primary key references public.profiles(id) on delete cascade,
+  channel_id text not null unique check (channel_id ~ '^[0-9]{1,20}$'),
+  linked_at timestamptz not null default now()
+);
+create table if not exists public.twitch_link_codes (
+  code_hash text primary key check (code_hash ~ '^[0-9a-f]{64}$'),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  used_at timestamptz
+);
+create index if not exists twitch_link_codes_owner_idx on public.twitch_link_codes (owner, created_at);
+create table if not exists public.tracker_live (
+  owner uuid primary key references public.profiles(id) on delete cascade,
+  state jsonb not null check (octet_length(state::text) <= 4096),
+  updated_at timestamptz not null default now()
+);
+comment on table public.twitch_links is 'Canale Twitch collegato all''account per l''estensione Deck tracker (13/10/2026): solo l''id del canale.';
+comment on table public.tracker_live is 'Ultimo stato del Deck tracker mandato dall''app durante la partita, solo per chi ha collegato un canale Twitch (13/10/2026).';
+
+alter table public.twitch_links enable row level security;
+alter table public.twitch_link_codes enable row level security;
+alter table public.tracker_live enable row level security;
+drop policy if exists "twitch links: owner reads" on public.twitch_links;
+create policy "twitch links: owner reads" on public.twitch_links for select to authenticated using (owner = (select auth.uid()));
+revoke all on public.twitch_links from anon, authenticated;
+revoke all on public.twitch_link_codes from anon, authenticated;
+revoke all on public.tracker_live from anon, authenticated;
+grant select (channel_id, linked_at) on public.twitch_links to authenticated;
+
+-- ---------- codice per collegare il canale (con l'accesso fatto) ----------
+create or replace function public.twitch_link_code()
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  raw bytea := uuid_send(gen_random_uuid()) || uuid_send(gen_random_uuid());
+  code text := '';
+  i integer;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  if (select count(*) from public.twitch_link_codes c where c.owner = uid and c.created_at > now() - interval '1 hour') >= 5 then
+    raise exception 'too_many_codes';
+  end if;
+  foreach i in array array[0, 1, 2, 3, 4, 5, 16, 17] loop
+    code := code || substr(alphabet, (get_byte(raw, i) % 32) + 1, 1);
+  end loop;
+  delete from public.twitch_link_codes c where c.expires_at < now() - interval '1 day';
+  insert into public.twitch_link_codes (code_hash, owner, expires_at)
+  values (encode(sha256(convert_to(code, 'UTF8')), 'hex'), uid, now() + interval '10 minutes');
+  return substr(code, 1, 4) || '-' || substr(code, 5, 4);
+end $$;
+revoke all on function public.twitch_link_code() from public, anon;
+grant execute on function public.twitch_link_code() to authenticated;
+
+-- ---------- il codice scritto nell'estensione (solo dalla rotta del sito, con il segreto) ----------
+-- Segreto sbagliato: 'forbidden'. Canale non valido o codice sconosciuto, già usato o scaduto: 'invalid_code'.
+-- Restituisce lo username dell'account collegato.
+create or replace function public.twitch_link_claim(p_key text, p_code text, p_channel text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  norm text := upper(regexp_replace(left(coalesce(p_code, ''), 40), '[^A-Za-z0-9]', '', 'g'));
+  row_owner uuid;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  if char_length(norm) <> 8 or p_channel is null or p_channel !~ '^[0-9]{1,20}$' then raise exception 'invalid_code'; end if;
+  update public.twitch_link_codes c set used_at = now()
+   where c.code_hash = encode(sha256(convert_to(norm, 'UTF8')), 'hex') and c.used_at is null and c.expires_at > now()
+   returning c.owner into row_owner;
+  if row_owner is null then raise exception 'invalid_code'; end if;
+  delete from public.tracker_live t where t.owner = row_owner or t.owner in (select l.owner from public.twitch_links l where l.channel_id = p_channel);
+  delete from public.twitch_links l where l.channel_id = p_channel or l.owner = row_owner;
+  insert into public.twitch_links (owner, channel_id) values (row_owner, p_channel);
+  return (select p.username from public.profiles p where p.id = row_owner);
+end $$;
+revoke all on function public.twitch_link_claim(text, text, text) from public;
+grant execute on function public.twitch_link_claim(text, text, text) to anon, authenticated;
+
+-- ---------- scollegare il canale (con l'accesso fatto) ----------
+create or replace function public.twitch_unlink()
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if auth.uid() is null then raise exception 'not_authenticated'; end if;
+  delete from public.tracker_live t where t.owner = auth.uid();
+  delete from public.twitch_links l where l.owner = auth.uid();
+  return found;
+end $$;
+revoke all on function public.twitch_unlink() from public, anon;
+grant execute on function public.twitch_unlink() to authenticated;
+
+-- ---------- stato dal vivo dall'app (anon, con il token dell'app) ----------
+-- Token sconosciuto o scollegato: 'invalid_token'. Stato che non è un oggetto o più grande di 4 KB: 'invalid_state'.
+-- Più di due invii al secondo: 'too_fast'. Restituisce il canale collegato (null senza canale: allora non si salva niente).
+create or replace function public.tracker_live_push(p_token text, p_state jsonb)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  dev_owner uuid;
+  chan text;
+begin
+  if p_token is null or p_token !~ '^omt_[0-9a-f]{64}$' then raise exception 'invalid_token'; end if;
+  select d.owner into dev_owner from public.tracker_devices d
+   where d.token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex') and d.revoked_at is null;
+  if dev_owner is null then raise exception 'invalid_token'; end if;
+  if jsonb_typeof(p_state) is distinct from 'object' or octet_length(p_state::text) > 4096 then raise exception 'invalid_state'; end if;
+  select l.channel_id into chan from public.twitch_links l where l.owner = dev_owner;
+  if chan is null then return null; end if;
+  if exists (select 1 from public.tracker_live t where t.owner = dev_owner and t.updated_at > now() - interval '500 milliseconds') then
+    raise exception 'too_fast';
+  end if;
+  insert into public.tracker_live (owner, state, updated_at) values (dev_owner, p_state, now())
+  on conflict (owner) do update set state = excluded.state, updated_at = excluded.updated_at;
+  return chan;
+end $$;
+revoke all on function public.tracker_live_push(text, jsonb) from public;
+grant execute on function public.tracker_live_push(text, jsonb) to anon, authenticated;
+
+-- ---------- lo stato di un canale per l'estensione (anon) ----------
+-- Vuoto se il canale non è collegato o se l'app non manda niente da 6 ore.
+create or replace function public.twitch_live_state(p_channel text)
+returns table (state jsonb, updated_at timestamptz) language sql stable security definer set search_path = public, pg_temp as $$
+  select t.state, t.updated_at from public.twitch_links l join public.tracker_live t on t.owner = l.owner
+   where p_channel ~ '^[0-9]{1,20}$' and l.channel_id = p_channel and t.updated_at > now() - interval '6 hours';
+$$;
+revoke all on function public.twitch_live_state(text) from public;
+grant execute on function public.twitch_live_state(text) to anon, authenticated;

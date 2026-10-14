@@ -577,6 +577,14 @@ export function handGeometry(content: Rect): { w: number; h: number; top: number
 
 /** Le carte riconosciute nella mano, da sinistra (una carta coperta dal mouse o sollevata può mancare). */
 export function readHand(img: Img, refs: readonly CardRef[], content: Rect): string[] {
+  return readHandAt(img, refs, content).map((c) => c.key);
+}
+
+/**
+ * La mano con la posizione di ogni carta (14/10/2026, per le zone dell'estensione Twitch; domanda di Davdas: "perché non
+ * anche le carte in mano?"): `x` è il bordo sinistro della carta in frazione della larghezza dell'area interna.
+ */
+export function readHandAt(img: Img, refs: readonly CardRef[], content: Rect): { key: string; x: number }[] {
   if (!refs.length) return [];
   const g = handGeometry(content);
   const step = g.w * 0.04;
@@ -588,7 +596,7 @@ export function readHand(img: Img, refs: readonly CardRef[], content: Rect): str
   const peaks = hits.filter((h, i) => h.key && h.score >= (hits[i - 1]?.score ?? 0) && h.score >= (hits[i + 1]?.score ?? 0));
   const kept: typeof hits = [];
   for (const p of peaks.sort((a, b) => b.score - a.score)) if (!kept.some((k) => Math.abs(k.x - p.x) < g.w * 0.45)) kept.push(p);
-  return kept.sort((a, b) => a.x - b.x).map((k) => k.key as string);
+  return kept.sort((a, b) => a.x - b.x).map((k) => ({ key: k.key as string, x: Math.round(((k.x - content.x) / content.w) * 1000) / 1000 }));
 }
 
 /**
@@ -757,3 +765,61 @@ export function resultFromBanner(f: BannerFeatures): "W" | "L" | null {
 }
 
 export const readResult = (img: Img, area: Rect = gameArea(img.width, img.height)): "W" | "L" | null => resultFromBanner(bannerFeatures(img, area));
+
+/* ---------- le magie: il riquadro in alto a sinistra (13/10/2026) ---------- */
+
+/**
+ * Le magie non restano sul tabellone: il gioco le mostra nel riquadro grande in alto a sinistra, con la cornice ad angoli
+ * tagliati, mentre si rivelano (le mie e quelle dell'avversario) e mentre scelgo il bersaglio di una mia (Pierluigi,
+ * 13/10/2026: "dobbiamo leggere le spell e sappiamo che vengono visualizzate in alto a sinistra"). L'illustrazione del
+ * riquadro è un'inquadratura più stretta di quella del sito (`ART_IN_PREVIEW`, cercata sulle partite del 10–12/10:
+ * Searing Light 0,91 e Legion of the Dead 0,84 con distacco 0,44–0,51 da ogni altra carta). Il riquadro entra
+ * scorrendo e sta più a sinistra nella demo che nel playtest (−40/−50 punti contro 0), quindi la lettura prova
+ * qualche posizione (`SPELL_SHIFTS`) solo con le magie (chiavi `_S…`) e poi misura il distacco da tutte le carte.
+ * Sui fotogrammi del 10–12/10: 22 magie diverse, 0,61–0,90 con distacco 0,15–0,47; sotto `SPELL_ACCEPT` niente.
+ */
+export const ART_IN_PREVIEW: Rect = { x: 40 / 480, y: 30 / 690, w: 395 / 480, h: 245 / 690 };
+export const SPELL_PANEL: Rect = { x: 82 / SW, y: 168 / SH, w: 253 / SW, h: 150 / SH };
+export const SPELL_SHIFTS: readonly (readonly [number, number])[] = [-50, -40, -30, -20, -10, 0].flatMap((dx) => [-5, 5].map((dy) => [dx, dy] as const));
+export const SPELL_ACCEPT = { min: 0.6, margin: 0.15 } as const;
+export const PREVIEW_ART = "card-art-preview.json";
+/** Le magie fra le chiavi del gioco: "_SB" e "_SC" (le Leggendarie magia come Legion of the Dead e Mirror Mirror). */
+export const isSpellKey = (key: string): boolean => /_S[BC]$/.test(key);
+
+export function readSpell(img: Img, refs: readonly CardRef[], ui: Rect = gameArea(img.width, img.height)): string | null {
+  let best: { m: Match; v: Float32Array } | null = null;
+  const spells = refs.filter((r) => isSpellKey(r.key));
+  for (const [dx, dy] of SPELL_SHIFTS) {
+    const r = inside(ui, { ...SPELL_PANEL, x: SPELL_PANEL.x + dx / SW, y: SPELL_PANEL.y + dy / SH });
+    const v = artVector(img, r);
+    const m = bestMatch(v, spells);
+    if (!best || m.score > best.m.score) best = { m, v };
+  }
+  if (!best || best.m.score < SPELL_ACCEPT.min) return null;
+  const all = bestMatch(best.v, refs);
+  return all.best && isSpellKey(all.best) && all.score >= SPELL_ACCEPT.min && all.margin >= SPELL_ACCEPT.margin ? all.best : null;
+}
+
+/**
+ * La fase del round dal tasto in basso a destra: "PRONTO" (pianificazione) ha l'anello verde, "RIVELAZIONE" no. Sui
+ * fotogrammi con una magia nel riquadro: 0 di verde in 712, 0,04–0,16 negli altri 155 (tutti col bersaglio di una mia
+ * magia). Serve a non contare come giocate dell'avversario le mie magie mostrate mentre scelgo il bersaglio.
+ */
+export const ROUND_BUTTON: Rect = { x: 1730 / SW, y: 870 / SH, w: 245 / SW, h: 215 / SH };
+export const PLAN_GREEN = 0.03;
+
+export function readPhase(img: Img, ui: Rect = gameArea(img.width, img.height)): "plan" | "reveal" {
+  const r = inside(ui, ROUND_BUTTON);
+  let n = 0;
+  let t = 0;
+  for (let y = Math.max(0, Math.round(r.y)); y < Math.min(img.height, r.y + r.h); y += 2)
+    for (let x = Math.max(0, Math.round(r.x)); x < Math.min(img.width, r.x + r.w); x += 2) {
+      const p = (y * img.width + x) * img.channels;
+      const red = img.data[p];
+      const g = img.data[p + 1];
+      const b = img.data[p + 2];
+      t++;
+      if (g > 150 && g > red + 30 && g > b + 30) n++;
+    }
+  return t && n / t >= PLAN_GREEN ? "plan" : "reveal";
+}

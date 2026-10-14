@@ -94,7 +94,39 @@ export function sharedCards(a: DeckState, b: DeckState): string[] {
   return [...physicalCards(a).keys()].filter((s) => pb.has(s));
 }
 
+/** Carte base (Leggendaria esclusa) che due mazzi hanno in comune: ogni carta conta una volta. */
+export function sharedBaseCards(a: DeckState, b: DeckState): string[] {
+  const pb = new Set(b.cards);
+  return [...new Set(a.cards)].filter((s) => pb.has(s));
+}
+
+/**
+ * Carte base al massimo in comune che corrispondono a un minimo di carte uniche diverse (Leggendaria compresa, regola
+ * dei tornei): con Leggendarie diverse due mazzi completi hanno 13 - diverse carte base in comune, quindi 8 → 5.
+ */
+export function maxSharedFor(minDifferent: number): number {
+  return Math.max(0, Math.min(RULES.distinctCards, RULES.legendarySlots + RULES.distinctCards - minDifferent));
+}
+
 export type ConquestIssue = { code: string; decks?: [number, number]; value?: number };
+
+/**
+ * Controllo Conquest del deck builder (13/10/2026, Pierluigi: "carte massime in comune", Leggendarie diverse come regola
+ * a parte): al massimo `maxShared` carte base in comune fra due mazzi qualsiasi, `value` = carte in comune.
+ * Con Leggendarie diverse equivale a `validateConquest(decks, 13 - maxShared)`, che resta la regola di tornei e mazzi torneo.
+ */
+export function validateConquestShared(decks: DeckState[], rules: { maxShared: number; distinctLegendaries: boolean }): ConquestIssue[] {
+  const issues: ConquestIssue[] = [];
+  const legendaries = decks.map((d) => d.legendary).filter(Boolean) as string[];
+  if (rules.distinctLegendaries && new Set(legendaries).size !== legendaries.length) issues.push({ code: "duplicateLegendary" });
+  for (let i = 0; i < decks.length; i++) {
+    for (let j = i + 1; j < decks.length; j++) {
+      const shared = sharedBaseCards(decks[i], decks[j]).length;
+      if (shared > rules.maxShared) issues.push({ code: "tooSimilar", decks: [i, j], value: shared });
+    }
+  }
+  return issues;
+}
 
 export function validateConquest(decks: DeckState[], minDifferent: number = RULES.conquestMinDifferent): ConquestIssue[] {
   const issues: ConquestIssue[] = [];
