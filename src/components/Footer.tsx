@@ -8,6 +8,7 @@ import { navItems } from "./Header";
 import { NEW_TAB_HINT_ID, NEW_TAB_REL, NewTabIcon, SteamLogo } from "./SteamButton";
 import { DiscordButton, DiscordLogo } from "./DiscordButton";
 import { CookiePreferencesButton } from "./CookieBanner";
+import { termsLabels } from "@/lib/termsLabels";
 import { HideOnPath } from "./HideOnPath";
 
 export const officialLinks = {
@@ -171,6 +172,8 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <ul className="space-y-1.5 text-sm">
             <li><Link className={linkCls} href={href(locale, "/about")}>{dict.nav.about}</Link></li>
             <li><Link className={linkCls} href={href(locale, "/privacy")}>{dict.footer.privacy}</Link></li>
+            {/* termini d'uso (14/10/2026): testi in src/lib/termsLabels.ts */}
+            <li><Link className={linkCls} href={href(locale, "/terms")}>{termsLabels[locale].footer}</Link></li>
             <li>
               <CookiePreferencesButton label={dict.cookies.manage} className={`cursor-pointer ${linkCls}`} />
             </li>

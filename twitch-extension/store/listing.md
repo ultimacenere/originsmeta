@@ -50,7 +50,7 @@ cosa è un bot, mai nomi o rank di giocatori.
 
 **Privacy Policy URL**: https://originsmeta.com/en/privacy#tracker
 
-**EULA / Terms of Service URL**: facoltativo nella console; il sito non ha una pagina di termini d'uso.
+**EULA / Terms of Service URL**: https://originsmeta.com/en/terms (pagina del 14/10/2026, da scrivere nella console dopo il deploy).
 
 **Capabilities**: Request Identity Link = No, Chat Capabilities = No.
 

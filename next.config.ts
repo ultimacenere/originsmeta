@@ -65,6 +65,8 @@ const sections = [
   "news",
   "privacy",
   "style",
+  // termini d'uso (14/10/2026, per la scheda dell'estensione Twitch)
+  "terms",
   "tier-list",
   "tournaments",
   // la pagina dell'app OriginsMeta Tracker (12/10/2026; prima stava in /analytics, che ora sono le statistiche)
