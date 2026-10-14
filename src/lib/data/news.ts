@@ -110,6 +110,218 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Annuncio di Koin Games sul Discord ufficiale (scritta il 14/10/2026). Fonte: il messaggio "Hello Hello @everyone @here"
+    // del team, incollato da Pierluigi il 14/10/2026: canale e ora esatti non li abbiamo, nel testo solo "Discord ufficiale".
+    // Data = giorno dell'annuncio ("Playtest is leaving us tomorrow" = il playtest chiude il 15/10). Fatti usati: chiusura del
+    // playtest, oltre 100.000 partite giocate sulla build del playtest, un aggiornamento in arrivo sulla demo principale che
+    // l'annuncio non descrive ("iykyk": non si indovina il contenuto), nuovo canale Twitch con tutti gli eventi della Crimson
+    // Cup, pagina di anteprima del Kickstarter, co-streaming libero con modulo per coordinarsi, aggiunta a pagina 8 del
+    // regolamento su problemi tecnici e tracciamento dei mazzi (il testo dell'aggiunta non l'abbiamo letto). I link
+    // dell'annuncio (Twitch, Kickstarter, modulo, regolamento) non ci sono arrivati: si rimanda al Discord ufficiale.
+    // Copertina: screenshot ufficiale ss-board-death, non usato da nessun'altra news. Guide: streaming-tools,
+    // steam-next-fest-2026, origins-tcg-kickstarter.
+    slug: "playtest-closing-crimson-cup-twitch",
+    image: "/media/ss-board-death.webp",
+    guides: ["streaming-tools", "steam-next-fest-2026", "origins-tcg-kickstarter"],
+    date: "2026-10-14",
+    title: n(
+      "The Origins TCG playtest closes on 15 October: Crimson Cup on Twitch, co-streaming and a rulebook update",
+      "Il playtest di Origins TCG chiude il 15 ottobre: Crimson Cup su Twitch, co-streaming e regolamento aggiornato",
+      "El playtest de Origins TCG cierra el 15 de octubre: Crimson Cup en Twitch, co-streaming y reglamento al día",
+    ),
+    metaTitle: n(
+      "Origins TCG playtest closes, Crimson Cup on Twitch",
+      "Origins TCG: chiude il playtest, Crimson Cup su Twitch",
+      "Origins TCG: cierra el playtest, Crimson Cup en Twitch",
+    ),
+    description: n(
+      "The Origins TCG playtest closes on 15 October after over 100,000 matches. Koin opens a Twitch channel for the Crimson Cup and lets anyone co-stream it.",
+      "Il playtest di Origins TCG chiude il 15 ottobre dopo oltre 100.000 partite. Koin apre un canale Twitch per la Crimson Cup e lascia a tutti il co-streaming.",
+      "El playtest de Origins TCG cierra el 15 de octubre tras más de 100.000 partidas. Koin abre un canal de Twitch para la Crimson Cup y permite el co-streaming.",
+    ),
+    summary: n(
+      "On 14 October Koin Games announced on the official Discord that the Origins TCG playtest closes the next day, after more than 100,000 matches, and that an update for the main demo is on the way. All Crimson Cup events will be broadcast on a new official Twitch channel, anyone can co-stream them, and page 8 of the rulebook now explains how to handle tech issues and deck tracking.",
+      "Il 14 ottobre Koin Games ha annunciato sul Discord ufficiale che il playtest di Origins TCG chiude il giorno dopo, dopo più di 100.000 partite, e che sta arrivando un aggiornamento della demo principale. Tutti gli eventi della Crimson Cup andranno in onda su un nuovo canale Twitch ufficiale, chiunque può fare co-streaming e la pagina 8 del regolamento ora spiega come gestire problemi tecnici e tracciamento dei mazzi.",
+      "El 14 de octubre Koin Games anunció en el Discord oficial que el playtest de Origins TCG cierra al día siguiente, tras más de 100.000 partidas, y que llega una actualización de la demo principal. Todos los eventos de la Crimson Cup se emitirán en un nuevo canal oficial de Twitch, cualquiera puede hacer co-streaming y la página 8 del reglamento explica ahora cómo gestionar problemas técnicos y el seguimiento de los mazos.",
+    ),
+    highlights: {
+      en: [
+        { label: "The playtest closes on 15 October", text: "over 100,000 matches played, and an update for the main demo is coming", anchor: "playtest" },
+        { label: "A Twitch channel for the Crimson Cup", text: "every event broadcast, plus a Kickstarter preview page to follow", anchor: "twitch" },
+        { label: "Co-streaming is open to everyone", text: "re-stream the official broadcast or spectate other streamers, and tell Koin through its form", anchor: "co-streaming" },
+        { label: "Rulebook, page 8", text: "new guidance on tech issues and deck tracking", anchor: "rulebook" },
+      ],
+      it: [
+        { label: "Il playtest chiude il 15 ottobre", text: "oltre 100.000 partite giocate, e arriva un aggiornamento della demo principale", anchor: "playtest" },
+        { label: "Un canale Twitch per la Crimson Cup", text: "tutti gli eventi in diretta, e una pagina di anteprima del Kickstarter da seguire", anchor: "twitch" },
+        { label: "Co-streaming aperto a tutti", text: "ritrasmettere la diretta ufficiale o seguire altri streamer, avvisando Koin con il suo modulo", anchor: "co-streaming" },
+        { label: "Regolamento, pagina 8", text: "indicazioni nuove su problemi tecnici e tracciamento dei mazzi", anchor: "regolamento" },
+      ],
+      es: [
+        { label: "El playtest cierra el 15 de octubre", text: "más de 100.000 partidas jugadas, y llega una actualización de la demo principal", anchor: "playtest" },
+        { label: "Un canal de Twitch para la Crimson Cup", text: "todos los eventos en directo, y una página de vista previa del Kickstarter para seguir", anchor: "twitch" },
+        { label: "Co-streaming abierto a todos", text: "retransmite la emisión oficial o mira a otros streamers, y avisa a Koin con su formulario", anchor: "co-streaming" },
+        { label: "Reglamento, página 8", text: "nuevas indicaciones sobre problemas técnicos y seguimiento de los mazos", anchor: "reglamento" },
+      ],
+    },
+    body: n(
+      `## The playtest closes on 15 October {#playtest}
+
+On 14 October the Koin Games team opened its announcement on the [official Discord](https://discord.gg/originstcg) with sad news: the playtest "is leaving us tomorrow", so the playtest build closes on 15 October. In its words, players "played over 100k matches" on it and "helped us a lot". The [0.7.1 update of 8 October](/en/news/playtest-patch-notes-0-7-1) was its last patch notes.
+
+With the playtest gone, an update is coming to the main demo, the free one on Steam that our [demo guide](/en/guides/play-the-demo) covers. Koin says it "should make most of you very happy" but doesn't say what it contains, so we won't guess: we'll cover it when the patch notes are out.
+
+Koin also warned that "these are BIG WEEKS for Origins", with more announcements to come. The calendar is in our [Steam Next Fest guide](/en/guides/steam-next-fest-2026): ranked and the Crimson Cup start with the festival on 19 October, and the [Alpha Edition Kickstarter](/en/guides/origins-tcg-kickstarter) is due on 27 October.
+
+## A Twitch channel for the Crimson Cup, and the Kickstarter page {#twitch}
+
+Koin has opened a new official Twitch channel, where it "will broadcast ALL Crimson Cup events", and asks players to follow the Kickstarter preview page before the campaign goes live. Both links are in the announcement on the [official Discord](https://discord.gg/originstcg). The qualifier dates and the prize pool are in our [Crimson Cup article](/en/news/crimson-cup-prizepool-qualifiers).
+
+## Co-streaming the Crimson Cup {#co-streaming}
+
+Anyone can co-stream the Crimson Cup or stream their own matches. Besides the official broadcast of every event, there are two ways to cast it yourself:
+
+- re-stream Koin's official broadcast;
+- spectate other streamers directly.
+
+Koin would like to work with a few Twitch streamers to reach more people, and asks anyone planning to stream a Crimson Cup event to tell it through the form linked in the announcement, so it can coordinate.
+
+If you stream with a tournament deck, OriginsMeta has free tools for it: a short link to say on stream, the !deck chat command and an OBS overlay with your three decks, all explained in our [streaming guide](/en/guides/streaming-tools).
+
+## The rulebook update: tech issues and deck tracking {#rulebook}
+
+Koin added a short section to the Crimson Cup rulebook, on page 8, with clearer guidance on how to handle tech issues and deck tracking. The announcement doesn't summarise it: if you're playing a qualifier, read that page before your matches. The format, with three decks and Conquest, is in our article on [the Crimson Cup rules](/en/news/crimson-cup-format-check-in).
+
+## What we don't know yet {#unknowns}
+
+- What the main demo update contains, and when it arrives.
+- The exact wording of the new rulebook section.
+- Which streamers Koin will partner with for the broadcasts.
+
+## Where this comes from {#sources}
+
+- The announcement by the Koin Games team on the [official Origins TCG Discord](https://discord.gg/originstcg), 14 October 2026, with the links to the Twitch channel, the Kickstarter preview page, the co-streaming form and the rulebook.`,
+      `## Il playtest chiude il 15 ottobre {#playtest}
+
+Il 14 ottobre il team di Koin Games ha aperto il suo annuncio sul [Discord ufficiale](https://discord.gg/originstcg) con una notizia triste: il playtest "ci lascia domani", quindi la build del playtest chiude il 15 ottobre. Nelle loro parole, i giocatori ci hanno giocato "oltre 100.000 partite" e "ci hanno aiutato molto". L'[aggiornamento 0.7.1 dell'8 ottobre](/it/news/playtest-patch-notes-0-7-1) è stato l'ultimo con le sue patch notes.
+
+Con la chiusura del playtest arriva un aggiornamento della demo principale, quella gratuita su Steam di cui parla la nostra [guida alla demo](/it/guides/play-the-demo). Koin dice che "dovrebbe rendere molto felici quasi tutti" ma non dice che cosa contiene, quindi non tiriamo a indovinare: ne parleremo quando usciranno le patch notes.
+
+Koin ha anche avvisato che "queste sono SETTIMANE GRANDI per Origins", con altri annunci in arrivo. Il calendario è nella nostra [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026): classificata e Crimson Cup partono con il festival il 19 ottobre, e il [Kickstarter dell'Alpha Edition](/it/guides/origins-tcg-kickstarter) è previsto il 27 ottobre.
+
+## Un canale Twitch per la Crimson Cup, e la pagina del Kickstarter {#twitch}
+
+Koin ha aperto un nuovo canale Twitch ufficiale, dove "trasmetterà TUTTI gli eventi della Crimson Cup", e chiede di seguire la pagina di anteprima del Kickstarter prima che la campagna parta. Tutti e due i link sono nell'annuncio sul [Discord ufficiale](https://discord.gg/originstcg). Date delle qualificazioni e montepremi sono nel nostro [articolo sulla Crimson Cup](/it/news/crimson-cup-prizepool-qualifiers).
+
+## Il co-streaming della Crimson Cup {#co-streaming}
+
+Chiunque può fare co-streaming della Crimson Cup o trasmettere le proprie partite. Oltre alla diretta ufficiale di ogni evento, per commentarla in proprio ci sono due strade:
+
+- ritrasmettere la diretta ufficiale di Koin;
+- seguire direttamente le partite di altri streamer come spettatore.
+
+Koin vorrebbe collaborare con qualche streamer su Twitch per arrivare a più persone, e chiede a chi pensa di trasmettere un evento della Crimson Cup di avvisarla con il modulo linkato nell'annuncio, per coordinarsi.
+
+Se trasmetti con un mazzo da torneo, OriginsMeta ha strumenti gratuiti: un link breve da dire in diretta, il comando !deck per la chat e un overlay per OBS con i tuoi tre mazzi, tutto spiegato nella nostra [guida alle dirette](/it/guides/streaming-tools).
+
+## Il regolamento aggiornato: problemi tecnici e tracciamento dei mazzi {#regolamento}
+
+Koin ha aggiunto una breve sezione al regolamento della Crimson Cup, a pagina 8, con indicazioni più chiare su come gestire i problemi tecnici e il tracciamento dei mazzi. L'annuncio non la riassume: se giochi una qualificazione, leggi quella pagina prima delle partite. Il formato, con tre mazzi e Conquest, è nel nostro articolo sulle [regole della Crimson Cup](/it/news/crimson-cup-format-check-in).
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- Che cosa contiene l'aggiornamento della demo principale, e quando arriva.
+- Il testo preciso della nuova sezione del regolamento.
+- Con quali streamer Koin collaborerà per le dirette.
+
+## Da dove arriva {#fonti}
+
+- L'annuncio del team di Koin Games sul [Discord ufficiale di Origins TCG](https://discord.gg/originstcg), 14 ottobre 2026, con i link al canale Twitch, alla pagina di anteprima del Kickstarter, al modulo per il co-streaming e al regolamento.`,
+      `## El playtest cierra el 15 de octubre {#playtest}
+
+El 14 de octubre el equipo de Koin Games abrió su anuncio en el [Discord oficial](https://discord.gg/originstcg) con una noticia triste: el playtest "nos deja mañana", así que la build del playtest cierra el 15 de octubre. En sus palabras, los jugadores jugaron en ella "más de 100.000 partidas" y "nos ayudaron mucho". La [actualización 0.7.1 del 8 de octubre](/es/news/playtest-patch-notes-0-7-1) fue la última con notas del parche.
+
+Con el cierre del playtest llega una actualización de la demo principal, la gratuita de Steam que explica nuestra [guía de la demo](/es/guides/play-the-demo). Koin dice que "debería hacer muy felices a casi todos" pero no dice qué contiene, así que no vamos a adivinarlo: la contaremos cuando salgan las notas del parche.
+
+Koin también avisó de que "son SEMANAS GRANDES para Origins", con más anuncios en camino. El calendario está en nuestra [guía del Steam Next Fest](/es/guides/steam-next-fest-2026): la clasificatoria y la Crimson Cup empiezan con el festival el 19 de octubre, y el [Kickstarter de la Alpha Edition](/es/guides/origins-tcg-kickstarter) está previsto para el 27 de octubre.
+
+## Un canal de Twitch para la Crimson Cup, y la página del Kickstarter {#twitch}
+
+Koin ha abierto un nuevo canal oficial de Twitch, donde "emitirá TODOS los eventos de la Crimson Cup", y pide seguir la página de vista previa del Kickstarter antes de que empiece la campaña. Los dos enlaces están en el anuncio del [Discord oficial](https://discord.gg/originstcg). Las fechas de los clasificatorios y la bolsa de premios están en nuestro [artículo sobre la Crimson Cup](/es/news/crimson-cup-prizepool-qualifiers).
+
+## El co-streaming de la Crimson Cup {#co-streaming}
+
+Cualquiera puede hacer co-streaming de la Crimson Cup o emitir sus propias partidas. Además de la emisión oficial de cada evento, hay dos maneras de comentarla por tu cuenta:
+
+- retransmitir la emisión oficial de Koin;
+- mirar directamente las partidas de otros streamers como espectador.
+
+Koin quiere colaborar con algunos streamers de Twitch para llegar a más gente, y pide a quien piense emitir un evento de la Crimson Cup que se lo diga con el formulario enlazado en el anuncio, para coordinarse.
+
+Si emites con un mazo de torneo, OriginsMeta tiene herramientas gratuitas: un enlace corto para decir en directo, el comando !deck para el chat y un overlay para OBS con tus tres mazos, todo explicado en nuestra [guía para streamers](/es/guides/streaming-tools).
+
+## El reglamento actualizado: problemas técnicos y seguimiento de los mazos {#reglamento}
+
+Koin añadió una sección breve al reglamento de la Crimson Cup, en la página 8, con indicaciones más claras sobre cómo gestionar los problemas técnicos y el seguimiento de los mazos. El anuncio no la resume: si juegas un clasificatorio, lee esa página antes de tus partidas. El formato, con tres mazos y Conquest, está en nuestro artículo sobre [las reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in).
+
+## Lo que aún no sabemos {#lo-que-no-sabemos}
+
+- Qué contiene la actualización de la demo principal, y cuándo llega.
+- El texto exacto de la nueva sección del reglamento.
+- Con qué streamers colaborará Koin para las emisiones.
+
+## De dónde viene {#fuentes}
+
+- El anuncio del equipo de Koin Games en el [Discord oficial de Origins TCG](https://discord.gg/originstcg), 14 de octubre de 2026, con los enlaces al canal de Twitch, a la página de vista previa del Kickstarter, al formulario de co-streaming y al reglamento.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "When does the Origins TCG playtest close?",
+          a: "On 15 October 2026. Koin Games announced it on the official Discord the day before, after more than 100,000 matches played on the playtest build, and said an update for the main demo is coming.",
+        },
+        {
+          q: "Where can I watch the Crimson Cup?",
+          a: "On Koin Games' new official Twitch channel, which will broadcast every Crimson Cup event. The link is in the announcement of 14 October 2026 on the official Origins TCG Discord.",
+        },
+        {
+          q: "Can I stream or co-stream the Crimson Cup?",
+          a: "Yes. Anyone can co-stream the Crimson Cup or stream their own matches, re-streaming the official broadcast or spectating other streamers. Koin asks streamers to tell it through the form in its announcement so it can coordinate.",
+        },
+      ],
+      it: [
+        {
+          q: "Quando chiude il playtest di Origins TCG?",
+          a: "Il 15 ottobre 2026. Koin Games lo ha annunciato sul Discord ufficiale il giorno prima, dopo più di 100.000 partite giocate sulla build del playtest, e ha detto che sta arrivando un aggiornamento della demo principale.",
+        },
+        {
+          q: "Dove si guarda la Crimson Cup?",
+          a: "Sul nuovo canale Twitch ufficiale di Koin Games, che trasmetterà tutti gli eventi della Crimson Cup. Il link è nell'annuncio del 14 ottobre 2026 sul Discord ufficiale di Origins TCG.",
+        },
+        {
+          q: "Posso trasmettere o fare co-streaming della Crimson Cup?",
+          a: "Sì. Chiunque può fare co-streaming della Crimson Cup o trasmettere le proprie partite, ritrasmettendo la diretta ufficiale o seguendo altri streamer come spettatore. Koin chiede agli streamer di avvisarla con il modulo del suo annuncio, per coordinarsi.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Cuándo cierra el playtest de Origins TCG?",
+          a: "El 15 de octubre de 2026. Koin Games lo anunció en el Discord oficial el día anterior, tras más de 100.000 partidas jugadas en la build del playtest, y dijo que llega una actualización de la demo principal.",
+        },
+        {
+          q: "¿Dónde puedo ver la Crimson Cup?",
+          a: "En el nuevo canal oficial de Twitch de Koin Games, que emitirá todos los eventos de la Crimson Cup. El enlace está en el anuncio del 14 de octubre de 2026 en el Discord oficial de Origins TCG.",
+        },
+        {
+          q: "¿Puedo emitir o hacer co-streaming de la Crimson Cup?",
+          a: "Sí. Cualquiera puede hacer co-streaming de la Crimson Cup o emitir sus propias partidas, retransmitiendo la emisión oficial o mirando a otros streamers. Koin pide a los streamers que se lo digan con el formulario de su anuncio, para coordinarse.",
+        },
+      ],
+    },
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
     // AMA "Building Origins" di Koin Games (scritta l'11/10/2026). Fonte: la registrazione sul canale YouTube ufficiale Origins
     // TCG (bEb5RuwY7tg), diretta del 02/10/2026 annunciata sul Discord ufficiale il 28/09 e il 02/10, video pubblicato il
     // 05/10/2026, 2 h 22 min. Letta per intero dai sottotitoli automatici inglesi di YouTube (nomi delle carte corretti sul

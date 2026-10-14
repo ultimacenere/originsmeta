@@ -20,6 +20,70 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "playtest-closing-crimson-cup-twitch": {
+    title: "Le playtest d'Origins TCG ferme le 15 octobre : la Crimson Cup sur Twitch, le co-streaming et le règlement",
+    metaTitle: "Origins TCG : fin du playtest, Crimson Cup sur Twitch",
+    description:
+      "Le playtest d'Origins TCG ferme le 15 octobre après plus de 100 000 parties. Koin ouvre une chaîne Twitch pour la Crimson Cup et ouvre le co-streaming.",
+    summary:
+      "Le 14 octobre, Koin Games a annoncé sur le Discord officiel que le playtest d'Origins TCG ferme le lendemain, après plus de 100 000 parties, et qu'une mise à jour de la démo principale arrive. Tous les événements de la Crimson Cup seront diffusés sur une nouvelle chaîne Twitch officielle, tout le monde peut les co-streamer et la page 8 du règlement explique désormais comment gérer les problèmes techniques et le suivi des decks.",
+    highlights: [
+      { label: "Le playtest ferme le 15 octobre", text: "plus de 100 000 parties jouées, et une mise à jour de la démo principale arrive", anchor: "playtest" },
+      { label: "Une chaîne Twitch pour la Crimson Cup", text: "tous les événements en direct, et une page d'aperçu du Kickstarter à suivre", anchor: "twitch" },
+      { label: "Le co-streaming ouvert à tous", text: "rediffusez le direct officiel ou regardez d'autres streamers, et prévenez Koin avec son formulaire", anchor: "co-streaming" },
+      { label: "Le règlement, page 8", text: "de nouvelles consignes sur les problèmes techniques et le suivi des decks", anchor: "reglement" },
+    ],
+    body: `## Le playtest ferme le 15 octobre {#playtest}
+
+Le 14 octobre, l'équipe de Koin Games a ouvert son annonce sur le [Discord officiel](https://discord.gg/originstcg) par une triste nouvelle : le playtest « nous quitte demain », donc la build du playtest ferme le 15 octobre. Selon l'équipe, les joueurs y ont joué « plus de 100 000 parties » et l'ont « beaucoup aidée ». La [mise à jour 0.7.1 du 8 octobre](/fr/news/playtest-patch-notes-0-7-1) aura été ses dernières notes de patch.
+
+Avec la fin du playtest, une mise à jour arrive sur la démo principale, la démo gratuite sur Steam que présente notre [guide de la démo](/fr/guides/play-the-demo). Koin dit qu'elle « devrait rendre très heureux la plupart d'entre vous » mais ne dit pas ce qu'elle contient : nous n'allons pas le deviner, nous en parlerons à la sortie des notes de patch.
+
+Koin a aussi prévenu que « ce sont de GRANDES SEMAINES pour Origins », avec d'autres annonces à venir. Le calendrier est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026) : le classé et la Crimson Cup commencent avec le festival le 19 octobre, et le [Kickstarter de l'Alpha Edition](/fr/guides/origins-tcg-kickstarter) est prévu le 27 octobre.
+
+## Une chaîne Twitch pour la Crimson Cup, et la page du Kickstarter {#twitch}
+
+Koin a ouvert une nouvelle chaîne Twitch officielle, où elle « diffusera TOUS les événements de la Crimson Cup », et demande de suivre la page d'aperçu du Kickstarter avant le lancement de la campagne. Les deux liens sont dans l'annonce sur le [Discord officiel](https://discord.gg/originstcg). Les dates des qualifications et la dotation sont dans notre [article sur la Crimson Cup](/fr/news/crimson-cup-prizepool-qualifiers).
+
+## Le co-streaming de la Crimson Cup {#co-streaming}
+
+Tout le monde peut co-streamer la Crimson Cup ou diffuser ses propres parties. En plus du direct officiel de chaque événement, il y a deux façons de la commenter vous-même :
+
+- rediffuser le direct officiel de Koin ;
+- regarder directement les parties d'autres streamers en spectateur.
+
+Koin aimerait collaborer avec quelques streamers sur Twitch pour toucher plus de monde, et demande à ceux qui prévoient de diffuser un événement de la Crimson Cup de la prévenir avec le formulaire lié dans l'annonce, pour se coordonner.
+
+Si vous streamez avec un deck de tournoi, OriginsMeta a des outils gratuits : un lien court à dire en direct, la commande !deck pour le chat et un overlay OBS avec vos trois decks, le tout expliqué dans notre [guide du streaming](/fr/guides/streaming-tools).
+
+## Le règlement mis à jour : problèmes techniques et suivi des decks {#reglement}
+
+Koin a ajouté une courte section au règlement de la Crimson Cup, page 8, avec des consignes plus claires sur la gestion des problèmes techniques et le suivi des decks. L'annonce ne la résume pas : si vous jouez une qualification, lisez cette page avant vos matchs. Le format, avec trois decks et Conquest, est dans notre article sur [les règles de la Crimson Cup](/fr/news/crimson-cup-format-check-in).
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Ce que contient la mise à jour de la démo principale, et quand elle arrive.
+- Le texte exact de la nouvelle section du règlement.
+- Avec quels streamers Koin collaborera pour les diffusions.
+
+## D'où ça vient {#sources}
+
+- L'annonce de l'équipe de Koin Games sur le [Discord officiel d'Origins TCG](https://discord.gg/originstcg), le 14 octobre 2026, avec les liens vers la chaîne Twitch, la page d'aperçu du Kickstarter, le formulaire de co-streaming et le règlement.`,
+    faq: [
+      {
+        q: "Quand ferme le playtest d'Origins TCG ?",
+        a: "Le 15 octobre 2026. Koin Games l'a annoncé sur le Discord officiel la veille, après plus de 100 000 parties jouées sur la build du playtest, et a dit qu'une mise à jour de la démo principale arrive.",
+      },
+      {
+        q: "Où regarder la Crimson Cup ?",
+        a: "Sur la nouvelle chaîne Twitch officielle de Koin Games, qui diffusera tous les événements de la Crimson Cup. Le lien est dans l'annonce du 14 octobre 2026 sur le Discord officiel d'Origins TCG.",
+      },
+      {
+        q: "Puis-je streamer ou co-streamer la Crimson Cup ?",
+        a: "Oui. Tout le monde peut co-streamer la Crimson Cup ou diffuser ses propres parties, en rediffusant le direct officiel ou en regardant d'autres streamers. Koin demande aux streamers de la prévenir avec le formulaire de son annonce, pour se coordonner.",
+      },
+    ],
+  },
   "building-origins-ama-design-balance": {
     title: "AMA Building Origins : classé jusqu'au 4 décembre, 22 cartes en novembre et pourquoi Bagheera coûte plus",
     metaTitle: "AMA d'Origins TCG : classé, nouvelles cartes, équilibrage",
