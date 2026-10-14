@@ -84,6 +84,107 @@ Koin a ajouté une courte section au règlement de la Crimson Cup, page 8, avec 
       },
     ],
   },
+  "digital-game-shop-ama-kickstarter-creators": {
+    title: "AMA Digital Game Shop : 15 % aux créateurs sur Kickstarter, échanges Steam en novembre et vente des sets",
+    metaTitle: "AMA Digital Game Shop d'Origins TCG : Kickstarter, Steam",
+    description:
+      "Le fondateur de Koin Games détaille le programme Digital Game Shop : liens Kickstarter suivis avec 15 % aux créateurs, précommandes et échanges sur Steam.",
+    summary:
+      "Dans un AMA d'une heure pour les créateurs, publié le 13 octobre, le fondateur de Koin Games Tim Jooste a présenté le programme Digital Game Shop, le nouveau nom du Digital LGS Program : les créateurs qui ont une boutique en ligne et les boutiques physiques vendront les produits scellés d'Origins pendant de courtes fenêtres de précommande. Pour le Kickstarter de l'Alpha Edition, à partir du 27 octobre, les créateurs reçoivent un lien suivi et 15 % de ce qu'il rapporte. Les cartes d'Origins deviendront échangeables sur Steam début novembre, en commençant par environ 56 cartes de tournoi.",
+    highlights: [
+      { label: "Digital Game Shop", text: "le nouveau nom du Digital LGS Program, avec les boutiques physiques et les boutiques en ligne des créateurs", anchor: "programme" },
+      { label: "La vente des sets", text: "boîtes et cases uniquement en précommande, une vente directe minime, puis 2 à 3 semaines avec boutiques et créateurs", anchor: "scelles" },
+      { label: "Kickstarter dès le 27 octobre", text: "un lien suivi pour chaque créateur et 15 % de ce qu'il rapporte ; le programme complet en 2027", anchor: "kickstarter" },
+      { label: "Échanges sur Steam début novembre", text: "environ 56 cartes échangeables au départ, les cartes de tournoi", anchor: "echanges" },
+      { label: "Raretés et taux", text: "de l'alternate art, environ 1 booster sur 7, à la Storybook, 1 sur 1 200", anchor: "raretes" },
+      { label: "Esport et mobile", text: "des contacts avec des organisations d'esport, le téléphone aux tournois en boutique d'ici mi-2027", anchor: "avenir" },
+    ],
+    body: `## De Digital LGS à Digital Game Shop {#programme}
+
+Le 13 octobre, la chaîne YouTube officielle d'Origins TCG a publié l'[enregistrement de l'AMA Digital Game Shop](https://www.youtube.com/watch?v=226EBjrWQSQ), d'une heure environ : c'est l'AMA pour les créateurs et les boutiques que Koin Games avait annoncé le 8 octobre et que nous évoquions dans notre article sur le [Digital LGS Program](/fr/news/digital-lgs-program). C'est presque toujours **Tim Jooste**, fondateur et CEO de Koin Games, qui parle, avec Alex, de l'équipe, à l'animation.
+
+Première nouveauté : le nom. Tim Jooste dit encore « digital LGS » et se reprend : le programme s'appelle désormais **Digital Game Shop**. Il a deux branches :
+
+- **les boutiques de jeux physiques**, qui accueillent aussi des tournois, des événements et des soirées de jeu ;
+- **les boutiques numériques** : les streamers et créateurs qui ont une boutique en ligne, une branche possible seulement parce qu'Origins est numérique. C'était le sujet principal de l'AMA.
+
+Tim Jooste a aussi raconté avoir parlé le jour même avec un distributeur qui travaille déjà avec quelques jeux de cartes plus petits et pourrait amener Origins dans des centaines, puis des milliers, de boutiques, avec des événements, de la formation et du marketing. Aucun accord n'est signé, et il porterait de toute façon sur les sets suivant le premier.
+
+## Comment les produits scellés seront vendus {#scelles}
+
+Origins vendra trois produits scellés : le **booster** (cinq cartes, deux « hits » à la fin, avec une chance de god pack où chaque carte est un hit), la **boîte de boosters** (24 boosters déjà mélangés, que vous pouvez garder scellée ou ouvrir en boosters, eux-mêmes scellés ou non) et le **case** (six boîtes). Les cartes pour jouer restent gratuites : les cartes de base sont offertes à tous à chaque saison, et selon Tim Jooste cela « ne changera jamais ».
+
+- **L'Alpha Edition, le Set 1, ne sera jamais vendue dans le jeu** : elle est exclusive au Kickstarter. Tim Jooste l'oppose au jeu de cartes Cyberpunk, qui avait mis son set bêta sur Kickstarter puis aussi en boutique.
+- **À partir du Set 2**, les boosters à l'unité seront disponibles dans le jeu derrière le **compte Prime**, un achat unique « comme Counter-Strike » qui ouvre la partie collection, par un mélange de dépenses et de jeu et en quantité limitée. Chaque set reste en vente environ **trois mois** : quand le suivant arrive, le précédent ne s'obtient plus.
+- **Les boîtes et les cases se vendent uniquement en précommande**, aujourd'hui comme demain.
+- Origins les vendra directement lors d'une vente très limitée, comme le Pokémon Center : une fois épuisés, c'est fini, sans réassort. Au même moment, les produits sont mis en vente dans les boutiques et chez les créateurs, avec des **allocations séparées** (les créateurs ne font pas concurrence aux boutiques), pendant une **fenêtre de précommande de 2 à 3 semaines** ou jusqu'à épuisement.
+- Il y aura aussi des **sets spéciaux**, de petites collections à thème (l'exemple de Tim Jooste : cinq cartes sur un même thème), vendus eux aussi par le programme.
+
+## Le Kickstarter : un lien suivi et 15 % pour les créateurs {#kickstarter}
+
+Le [Kickstarter de l'Alpha Edition](/fr/guides/origins-tcg-kickstarter) commence le **27 octobre**. Pour la campagne, Koin propose une version réduite du programme à ceux qui veulent l'aider :
+
+- les créateurs remplissent un court formulaire, partagé sur le Discord des créateurs, et reçoivent un **lien personnel** ; Koin suit les clics et les contributeurs qui arrivent par ce lien ;
+- ils reçoivent **15 % de ce qui arrive par leur lien**, un « override » selon les mots de Tim Jooste. Kickstarter garde ses 10 % ; Tim Jooste espère pouvoir augmenter la part pour les sets suivants ;
+- Koin fournira aussi des visuels et des idées pour parler de la campagne.
+
+Tim Jooste a critiqué la façon dont le Kickstarter du jeu de cartes Cyberpunk avait écarté les boutiques, en les obligeant à acheter leur stock au studio : ici, dit-il, boutiques et créateurs gagnent sur les ventes qu'ils apportent. **Le programme complet démarre officiellement en 2027**, avec des conditions, une formation sur la manière de le promouvoir et, probablement, une quantité attribuée à chaque partenaire pendant les fenêtres de précommande. Pour le Set 1, la participation est libre.
+
+Sur la campagne elle-même, Tim Jooste a dit qu'elle sera à prix réduit, que le compte Prime coûtera moins cher pendant le Kickstarter, que le palier le moins cher devrait tourner autour de 25 dollars (en demandant à Alex de le corriger) et que seuls deux paliers sont limités, à 5 000 et 25 000 dollars, sur le thème de personnages ; les autres restent disponibles pendant toute la campagne, qu'il a décrite comme durant 30 jours. La remise de 15 % de la préinscription « va bientôt disparaître ». Dans l'enregistrement, Tim Jooste et Alex demandent aux créateurs de ne pas répéter deux détails que Koin veut annoncer elle-même : nous les laissons de côté.
+
+## Les échanges sur Steam à partir de début novembre {#echanges}
+
+Les objets de collection d'Origins s'achèteront et se vendront avec le porte-monnaie Steam sur le Marché de la communauté Steam, « exactement comme Counter-Strike », à partir de **début novembre**, avec la première phase de l'accès anticipé. Au départ, il n'y aura qu'**environ 56 cartes échangeables** : les cartes de tournoi. Les 32 finalistes de la [Crimson Cup](/fr/news/crimson-cup-prizepool-qualifiers) gagnent tous une version limitée de Dracula, de rareté variable, et le vainqueur reçoit l'unique version dorée ; s'y ajoutent les cartes du tournoi de la GDC. Le reste arrive plus tard : les cartes gagnées en jouant avec le système prestige et l'Alpha Edition après le Kickstarter. Comme le jeu utilise l'API d'échange de Steam, ajoute Tim Jooste, les sites qui gèrent déjà les objets de Counter-Strike peuvent ajouter Origins sans grand effort.
+
+## Cartes de collection, alternate arts et taux d'apparition {#raretes}
+
+Dans le Set 1, les **218 personnages** se répartissent entre les quatre raretés de jeu, commune, rare, épique et légendaire : chaque personnage a une seule rareté de base. Au-dessus viennent les **alternate arts**, désormais « bien plus d'une centaine » sur l'ensemble du set, presque toutes signées par des artistes invités. La version de collection d'une carte se distingue de la version gratuite par trois choses : un cadre noir au lieu de blanc, pas de bordure intérieure, et le personnage qui sort du cadre ; les paliers les plus élevés sont animés, avec des effets holographiques sur mesure (Tim Jooste en cite un avec des chauves-souris pour Dracula). Les cartes de collection sont échangeables et gradées, et peuvent entrer dans un **système de trade-up** prévu qui les transforme en versions cosmétiques de la même illustration, par exemple en noir et blanc ou monochromes.
+
+Les taux donnés par Tim Jooste, précédés de « je crois » : alternate art environ 1 booster sur 7, le palier suivant environ 1 sur 20, celui d'après environ 1 sur 40, les secret arts 1 sur 150, les specials 1 sur 450 et les **Storybook 1 sur 1 200** (le chiffre de la page officielle de préinscription). Les noms des paliers viennent des sous-titres automatiques. Chaque palier d'alternate art a son propre artiste ; l'équipe artistique compte environ 18 personnes, dont environ huit sur le style maison. L'apparence des Storybook sera dévoilée quand quelqu'un en ouvrira une.
+
+Des cartes à erreur et des god packs sont aussi prévus ; la fréquence des cartes à erreur reste à décider. Le reste de la collection, de l'Alpha tag aux deux systèmes de cartes, se trouve dans notre [guide de l'économie de collection](/fr/guides/collector-economy) et dans notre article sur [le fonctionnement des sets](/fr/news/origins-sets-alpha-edition-grading).
+
+## Des données transparentes et une gradation numérique {#donnees}
+
+La fonction sur laquelle Tim Jooste a le plus insisté, ce sont les **données de population publiques** : combien d'exemplaires d'une carte existent à chaque grade, et combien de boîtes Alpha restent scellées à un instant donné. Elle « ne sera pas là dès le premier jour » et arrivera au fil du temps.
+
+La gradation est encore en cours de mise au point : un 10 est une carte parfaite et les grades inférieurs affichent des effets de « glitch », parce qu'une déchirure ou un coin plié n'ont guère de sens sur une carte numérique. Koin y travaille en ce moment et promet de montrer quelque chose bientôt.
+
+Tim Jooste a longuement comparé Origins au collectionnisme physique, en citant des prix de cartes Pokémon, Magic, One Piece et Riftbound. Nous ne les reprenons pas : ce ne sont pas des prix d'Origins, et il a lui-même dit aux créateurs que « ce n'est pas un conseil financier ». Personne ne sait ce que vaudront les cartes d'Origins.
+
+## Esport, mobile et Steam Next Fest {#avenir}
+
+- **Esport.** Tim Jooste dit avoir parlé avec trois organisations d'esport, dont Team Liquid, et juge l'esport « très probable » : Koin veut être connue comme le jeu de cartes le plus compétitif et le plus accessible. Pas de date.
+- **Mobile.** D'ici mi-2027, il aimerait qu'on puisse se rendre à un tournoi dans sa boutique de quartier avec son seul téléphone.
+- **Steam Next Fest.** Le **19 octobre** arrive la nouvelle démo, avec de grands événements communautaires, et Koin demande aux créateurs de streamer ce jour-là : des récompenses pour les streamers arrivent. Le calendrier est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026), et les outils gratuits d'OriginsMeta pour les directs dans notre [guide pour les streamers](/fr/guides/streaming-tools).
+- **Boutiques.** Une trentaine de boutiques ont montré de l'intérêt lors des deux derniers salons de jeux de cartes, et Koin commence à les contacter.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Les conditions du programme complet en 2027 : exigences, allocations et part des boutiques et des créateurs après le Kickstarter.
+- Le contenu et le prix des paliers du Kickstarter, au-delà des chiffres que Tim Jooste a donnés comme approximatifs.
+- Qui est le distributeur et quelles boutiques participeront.
+- L'apparence définitive de la gradation, la probabilité des cartes à erreur et la date d'arrivée des données de population.
+- Combien de cartes deviendront échangeables après la première phase, et quel jour de novembre tout commence.
+
+## D'où cela vient {#sources}
+
+- L'[enregistrement de l'AMA Digital Game Shop](https://www.youtube.com/watch?v=226EBjrWQSQ) sur la chaîne YouTube officielle d'Origins TCG, publié le 13 octobre 2026, 61 minutes. Nous avons utilisé les sous-titres automatiques en anglais de YouTube : les citations sont transcrites et traduites par nos soins, et les noms des paliers et les chiffres sont ceux donnés par Tim Jooste, souvent précédés de « je pense » ou « je crois ».`,
+    faq: [
+      {
+        q: "Qu'est-ce que le programme Digital Game Shop d'Origins TCG ?",
+        a: "C'est le nouveau nom du Digital LGS Program : les boutiques de jeux physiques et les créateurs qui ont une boutique en ligne vendent les produits scellés d'Origins, comme les boîtes de boosters et les cases, pendant de courtes fenêtres de précommande. Le fondateur de Koin Games, Tim Jooste, l'a présenté dans un AMA publié le 13 octobre 2026 ; le programme complet démarre en 2027.",
+      },
+      {
+        q: "Combien gagnent les créateurs avec le Kickstarter d'Origins TCG ?",
+        a: "15 % de ce qui arrive par leur lien personnel suivi, selon Tim Jooste dans l'AMA du 13 octobre 2026. Les créateurs demandent ce lien avec un formulaire sur le Discord des créateurs ; le Kickstarter de l'Alpha Edition commence le 27 octobre 2026.",
+      },
+      {
+        q: "Quand pourra-t-on échanger les cartes d'Origins TCG sur Steam ?",
+        a: "À partir de début novembre 2026, sur le Marché de la communauté Steam. Au départ, seules environ 56 cartes seront échangeables, les cartes de tournoi comme les Dracula de la Crimson Cup ; les cartes gagnées en jouant et l'Alpha Edition arrivent ensuite.",
+      },
+    ],
+  },
   "building-origins-ama-design-balance": {
     title: "AMA Building Origins : classé jusqu'au 4 décembre, 22 cartes en novembre et pourquoi Bagheera coûte plus",
     metaTitle: "AMA d'Origins TCG : classé, nouvelles cartes, équilibrage",
