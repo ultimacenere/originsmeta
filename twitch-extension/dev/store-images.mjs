@@ -8,7 +8,8 @@
 //
 // Uso, dalla radice del repo:
 //   node twitch-extension/dev/store-images.mjs                      logo, icona e discovery in twitch-extension/store/
-//   node twitch-extension/dev/store-images.mjs shot <file.png> ...  screenshot 1024 × 768 accanto a quelli di prima
+//   node twitch-extension/dev/store-images.mjs shot <file.png> [--hide x,y,w,h] ...  screenshot 1024 × 768 (--hide sfoca
+//     una zona del file che lo precede, in pixel dell'originale: nomi dei giocatori)
 // Chrome o Edge headless, nessuna dipendenza (come scripts/make-favicon.mjs).
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -60,14 +61,26 @@ mkdirSync(OUT, { recursive: true });
 const args = process.argv.slice(2);
 try {
   if (args[0] === "shot") {
-    const files = args.slice(1);
-    if (!files.length) throw new Error("indica uno o più screenshot: node twitch-extension/dev/store-images.mjs shot <file.png>");
-    files.forEach((file, i) => {
+    // --hide x,y,w,h (pixel dell'originale, ripetibile, vale per il file che lo precede): sfoca una zona, per le
+    // targhette con i nomi dei giocatori
+    const files = [];
+    for (let i = 1; i < args.length; i++) {
+      if (args[i] === "--hide") {
+        if (!files.length) throw new Error("--hide va dopo il file a cui si riferisce");
+        files.at(-1).hides.push(args[++i].split(",").map(Number));
+      } else files.push({ file: args[i], hides: [] });
+    }
+    if (!files.length) throw new Error("indica uno o più screenshot: node twitch-extension/dev/store-images.mjs shot <file.png> [--hide x,y,w,h]");
+    files.forEach(({ file, hides }, i) => {
       const abs = path.resolve(file);
       const ext = path.extname(abs).slice(1).toLowerCase().replace("jpg", "jpeg");
       const data = `data:image/${ext};base64,${readFileSync(abs).toString("base64")}`;
       shoot(`screenshot-${i + 1}-1024x768.png`, 1024, 768,
-        `<body style="background:${FELT};display:flex;align-items:center;justify-content:center"><img src="${data}" style="max-width:1024px;max-height:768px;display:block">`);
+        `<body style="background:${FELT};display:flex;align-items:center;justify-content:center"><div id="f" style="position:relative;overflow:hidden"><img id="i" src="${data}" style="max-width:1024px;max-height:768px;display:block"></div>
+        <script>const img=document.getElementById("i");const hides=${JSON.stringify(hides)};
+        img.decode().then(()=>{const k=img.width/img.naturalWidth;for(const [x,y,w,h] of hides){const d=document.createElement("div");
+        d.style.cssText="position:absolute;left:"+x*k+"px;top:"+y*k+"px;width:"+w*k+"px;height:"+h*k+"px;backdrop-filter:blur(7px);background:rgba(21,12,44,.35)";
+        document.getElementById("f").append(d)}});</script>`);
     });
   } else {
     shoot("logo-100.png", 100, 100, `<body style="background:#0b2e25">${svgAt(100)}`);
