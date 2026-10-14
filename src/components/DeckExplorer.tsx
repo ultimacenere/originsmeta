@@ -13,6 +13,7 @@ import { LiveBadge } from "./LiveBadge";
 import { ArchetypeIcon } from "./ArchetypeIcon";
 import { bumpDeckStat } from "@/lib/community/deckStatsClient";
 import { compareSaved, compareTrending } from "@/lib/community/favorites";
+import { hasIgDeckFrame } from "@/lib/community/badges";
 
 type DeckCard = {
   name: string;
@@ -153,6 +154,9 @@ const FEW_DECKS = 12;
 function roleOf(d: ExplorerDeck): string | undefined {
   return d.publisherBadgeId ?? (d.source === "community" ? "community" : undefined);
 }
+
+/** Cornice col gradiente stile Instagram per i mazzi dei Pro (14/10/2026), al posto del celeste. */
+const frame = (d: ExplorerDeck) => (hasIgDeckFrame(d.publisherBadgeId) ? "card-frame-ig" : "");
 
 /**
  * Carta del mazzo: illustrazione ufficiale con il costo in mana, o le iniziali se non ce l'abbiamo.
@@ -492,7 +496,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           {showInvite ? inviteBlock : null}
           {list.map((d) => (
-            <li key={d.slug} className="card-night p-4 sm:p-5">
+            <li key={d.slug} className={`card-night p-4 sm:p-5 ${frame(d)}`}>
               <div className="flex gap-4">
                 <div className="w-[140px] shrink-0">
                   <Link href={d.href} className="block">
@@ -563,7 +567,7 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
         <ul className="flex flex-col gap-2">
           {showInvite ? inviteRow : null}
           {list.map((d, i) => (
-            <li key={d.slug} className="card-night flex flex-wrap items-center gap-x-4 gap-y-3 p-3 sm:flex-nowrap">
+            <li key={d.slug} className={`card-night flex flex-wrap items-center gap-x-4 gap-y-3 p-3 sm:flex-nowrap ${frame(d)}`}>
               <span className="w-6 shrink-0 text-right font-mono text-sm text-chalk-muted">{i + 1}.</span>
               <span className="min-w-0 basis-56 sm:shrink-0">
                 <Link href={d.href} className="t-item block truncate text-base leading-tight hover:text-mint">

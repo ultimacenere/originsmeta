@@ -21,6 +21,7 @@ import {
   canListTournaments,
   canPublishGuides,
   canSeeAnalytics,
+  hasIgDeckFrame,
   isShowcaseBadge,
   normalizeBadge,
   publishedDeckCap,
@@ -213,5 +214,11 @@ describe("script e interfaccia", () => {
     assert.match(css, /\.badge-creator \{[^}]*--grad-ig/, "il Creator ha il gradiente stile Instagram");
     assert.match(css, /\.badge-author \{[^}]*--color-sky/, "l'Autore è celeste");
     assert.doesNotMatch(css, /\.badge-ig\b/);
+  });
+  test("cornice dei mazzi col gradiente stile Instagram: solo i Pro (14/10/2026)", () => {
+    for (const b of BADGES) assert.equal(hasIgDeckFrame(b), b === "pro", b);
+    for (const b of ["influencer", "", null, undefined]) assert.ok(!hasIgDeckFrame(b), String(b));
+    const css = read("../../app/globals.css");
+    assert.match(css, /\.card-night\.card-frame-ig \{[^}]*--grad-ig\) border-box/);
   });
 });

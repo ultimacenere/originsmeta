@@ -151,6 +151,16 @@
     border: 3px solid var(--color-sky);
     position: relative;
   }
+  /* Mazzi dei Pro (14/10/2026, `hasIgDeckFrame` in src/lib/community/badges.ts): la stessa cornice da 3 px, ma col
+     gradiente stile Instagram al posto del celeste. Il fondo della scheda resta dentro il bordo (padding-box), il
+     gradiente sta solo sotto il bordo trasparente (border-box), così gli angoli arrotondati restano puliti. */
+  .card-night.card-frame-ig {
+    border-color: transparent;
+    background:
+      linear-gradient(180deg, rgba(49, 227, 189, 0.07) 0%, rgba(49, 227, 189, 0) 40%) padding-box,
+      linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%) padding-box,
+      var(--grad-ig) border-box;
+  }
   .card-night-hover {
     transition: transform 160ms ease, box-shadow 160ms ease;
   }

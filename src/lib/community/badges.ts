@@ -74,6 +74,13 @@ export const DECK_ART_BADGES: readonly Badge[] = ["creator", "staff"];
 export const COMIC_BADGES: readonly Badge[] = ["creator", "staff"];
 
 /**
+ * Tag i cui mazzi hanno la cornice col gradiente stile Instagram invece del celeste (14/10/2026, Pierluigi, con il passaggio
+ * di MagicOfHands a Pro: "i suoi deck cerchiati anziché di azzurro del gradiente ig"): elenco /decks, nelle due viste, e
+ * scheda del mazzo. Classe `.card-frame-ig` in globals.css.
+ */
+export const DECK_FRAME_IG_BADGES: readonly Badge[] = ["pro"];
+
+/**
  * OriginsMeta Analytics in prova (10/10/2026, Pierluigi: "la pagina deve essere visibile solo ai creators e top players,
  * lo facciamo testare prima di renderlo pubblico"; top players = Pro; poi "dai accesso anche agli autori alle pagine e
  * al dl", stesso giorno): finché `ANALYTICS_PUBLIC` è false, le pagine
@@ -154,6 +161,11 @@ export function canUseDeckArt(badge: string | null | undefined, role?: string | 
  */
 export function canSeeAnalytics(badge: string | null | undefined, role?: string | null): boolean {
   return role === "admin" || has(ANALYTICS_BADGES, badge);
+}
+
+/** Cornice col gradiente stile Instagram sui mazzi di chi ha pubblicato (14/10/2026): oggi i Pro. Guarda solo il tag. */
+export function hasIgDeckFrame(badge: string | null | undefined): boolean {
+  return has(DECK_FRAME_IG_BADGES, badge);
 }
 
 /** Pubblica fumetti fra le news (pacchetto FUMETTI, 29/09/2026): Creator, Staff e admin. */

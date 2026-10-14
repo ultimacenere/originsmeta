@@ -20,6 +20,45 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "magicofhands-wins-collector-club-tournament": {
+    title: "MagicOfHands remporte le tournoi du Collector Club, l'événement Origins TCG à 100 dollars du 8 octobre",
+    metaTitle: "Origins TCG : MagicOfHands gagne au Collector Club",
+    description: "MagicOfHands a remporté le tournoi Origins TCG du Collector Club le 8 octobre, avec 100 dollars à la clé. L'un de ses decks est sur OriginsMeta.",
+    summary: "MagicOfHands, le joueur italien qui publie ses decks sur OriginsMeta, a remporté le tournoi Origins TCG organisé par le Collector Club le 8 octobre, celui que Koin Games avait signalé sur son Discord officiel, avec 100 dollars pour la première place. Il dit avoir joué surtout Pigs et un Merlin combo, et a publié l'un de ses decks le soir même : EN PAULANT, mené par Legion of the Dead.",
+    body: `## MagicOfHands remporte le tournoi du Collector Club {#tournoi}
+
+Le matin du 8 octobre 2026, Koin Games a signalé, dans #game-announcements sur le Discord officiel d'Origins TCG, un tournoi Origins organisé le jour même à 16:30 CEST (14:30 UTC) par le Collector Club, un site tiers qui compte organiser des tournois chaque semaine sur son propre Discord. La première place valait 100 dollars à dépenser sur le site du Collector Club. Nous l'avions cité parmi les [occasions de s'entraîner avant la Crimson Cup](/fr/news/bot-deck-challenge-practice-tournaments#organiser).
+
+Le soir, à 22:03 CEST, Senith, modérateur du serveur officiel, a annoncé le vainqueur : MagicOfHands, le joueur italien qui publie ses decks sur OriginsMeta. « Guys Italy arrived!!! Not even @itzBolt is safe » (« L'Italie est arrivée, même itzBolt n'est pas à l'abri »), poursuivait le message, un clin d'œil à [itzBolt, vainqueur du premier tournoi Conquest](/fr/news/itzbolt-wins-conquest).
+
+## Les decks {#decks}
+
+MagicOfHands a joué plus d'un deck. Dans #deck-discussions, il a écrit avoir joué « surtout Pigs » et « un Merlin Combo » : ces deux listes ne sont pas publiques. Celle qu'il a publiée sur OriginsMeta le soir même, présentée comme l'un des decks avec lesquels il a gagné, est [EN PAULANT](/fr/decks/community/en-paulant-7399), menée par Legion of the Dead. D'après son guide :
+
+- Morgiana, Asanbosam et Boogeyman posent de gros personnages dès les premiers tours, puis En Passant sur chacun d'eux ouvre des brèches ;
+- Mummy et Golden Egg sont de bonnes cibles pour Trash for Treasure et de bons sacrifices pour Boogeyman ;
+- Impundulu trouve les derniers dégâts, et Paul Bunyan peut se jouer avec Dark Omen ou En Passant dans le même tour.
+
+La fiche du deck contient la liste complète, les notes sur le mulligan et les matchups, et le code du jeu pour l'importer.
+
+## Pourquoi c'est important {#pourquoi}
+
+Avant les qualifications de la Crimson Cup, qui commencent le 20 octobre, les tournois de la communauté sont les meilleurs résultats compétitifs disponibles, et le Collector Club compte en organiser un par semaine. Les règles de la coupe sont dans notre [article sur la Crimson Cup](/fr/news/crimson-cup-format-check-in).
+
+## Ce que nous ne savons pas encore {#ce-que-nous-ne-savons-pas}
+
+- Le format, le nombre de joueurs et le reste du classement : l'annonce de Koin et les messages du Discord officiel ne le disent pas, et le tableau se trouve sur le Discord du Collector Club.
+- Les listes des autres decks joués par MagicOfHands.
+
+## D'où ça vient {#sources}
+
+Le [Discord officiel d'Origins TCG](https://discord.gg/originstcg) : l'annonce de Koin dans #game-announcements (8 octobre 2026, 07:22 UTC), le vainqueur annoncé dans #the-courtyard (20:03 UTC) et le message de MagicOfHands dans #deck-discussions (20:59 UTC). Dans le texte, les horaires sont en CEST ; les citations sont traduites par nous.`,
+    highlights: [
+      { label: "MagicOfHands l'emporte", text: "le tournoi du Collector Club du 8 octobre, 100 dollars pour la première place", anchor: "tournoi" },
+      { label: "Les decks", text: "surtout Pigs et un Merlin combo ; EN PAULANT, avec Legion of the Dead, est sur OriginsMeta", anchor: "decks" },
+      { label: "Ce que nous ne savons pas", text: "format, nombre de joueurs et classement", anchor: "ce-que-nous-ne-savons-pas" },
+    ],
+  },
   "building-origins-ama-design-balance": {
     title: "AMA Building Origins : classé jusqu'au 4 décembre, 22 cartes en novembre et pourquoi Bagheera coûte plus",
     metaTitle: "AMA d'Origins TCG : classé, nouvelles cartes, équilibrage",

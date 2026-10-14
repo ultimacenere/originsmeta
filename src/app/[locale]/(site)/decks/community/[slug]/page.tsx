@@ -18,7 +18,7 @@ import { deckCardsDate, deckCardsDiff, deckOutdated, deckUpdateHref, type DeckCa
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
-import { normalizeBadge } from "@/lib/community/badges";
+import { hasIgDeckFrame, normalizeBadge } from "@/lib/community/badges";
 import { localizedGuide } from "@/lib/community/deckTranslation";
 import { communityPageLabels, deckIndexing, dropHreflang, editorialAuthor, fillLabel, relatedDecks } from "@/lib/community/deckQuality";
 import { communityPerson, deckArticle } from "@/lib/jsonld/deck";
@@ -248,7 +248,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         labels={{ title: c.newDeckTitle, text: c.newDeckText, copyLink: c.copyLink, copied: c.copied, discord: d.common.discord, close: c.newDeckClose }}
       />
 
-      <article className="card-night mt-6 p-6 sm:p-8">
+      <article className={`card-night mt-6 p-6 sm:p-8 ${hasIgDeckFrame(deck.profile?.badge) ? "card-frame-ig" : ""}`}>
         <div className="flex flex-wrap items-start gap-5">
           {artUrl ? (
             /* l'artwork del creator al posto dell'illustrazione ufficiale, con la didascalia: la carta ufficiale resta nella

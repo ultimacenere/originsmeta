@@ -110,6 +110,149 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Vittoria di MagicOfHands (magicofhandss sul sito) al torneo del Collector Club dell'08/10/2026 (scritta il 14/10/2026,
+    // richiesta di Pierluigi: "torneo da 100 dollari di cui parlavano sul discord ufficiale"). Fonti, tutte sul Discord
+    // ufficiale di Origins TCG: annuncio di Koin in #game-announcements (08/10 alle 07:22 UTC: "hosting a Origins tournament
+    // today 16:30", timestamp di Discord letto in CEST = 14:30 UTC; "1st place wins a $100 spin on their site"), il vincitore
+    // annunciato da Senith, moderatore, in #the-courtyard (08/10 alle 20:03 UTC: "Mr @MagicOfHands won the collectorclub
+    // tournament!!! Guys Italy arrived !!! Not even @itzBolt is safe!!!!"), il post di MagicOfHands in #deck-discussions
+    // (08/10 alle 20:59 UTC, "CollectorClub Tournament Winner Deck": "I played mostly Pigs … and a Merlin Combo") con il link al
+    // mazzo en-paulant-7399, pubblicato alle 20:50 UTC. Il premio si dice "100 dollari da spendere sul sito del Collector
+    // Club" e basta: niente giro di gacha, USDC né ritiro (il vincitore il 09/10 ha raccontato di aver ritirato 87 euro).
+    // Formato, partecipanti e podio non si trovano (sono sul Discord del Collector Club). Copertina: la carta di Legion of the
+    // Dead, Leggendaria del mazzo pubblicato, mai usata da un'altra news. Guide come itzbolt-wins-conquest.
+    slug: "magicofhands-wins-collector-club-tournament",
+    image: "/cards/cover/legion-of-the-dead.webp",
+    cards: ["legion-of-the-dead", "morgiana", "asanbosam", "boogeyman", "en-passant", "mummy", "golden-egg", "trash-for-treasure", "impundulu", "paul-bunyan", "dark-omen", "flying-monkey", "stroke-of-midnight"],
+    guides: ["steam-next-fest-2026"],
+    date: "2026-10-08",
+    title: n(
+      "MagicOfHands wins the Collector Club tournament, the $100 Origins TCG event of 8 October",
+      "MagicOfHands vince il torneo del Collector Club, l'evento di Origins TCG da 100 dollari dell'8 ottobre",
+      "MagicOfHands gana el torneo de Collector Club, el evento de Origins TCG de 100 dólares del 8 de octubre",
+    ),
+    metaTitle: n(
+      "Origins TCG: MagicOfHands wins Collector Club tournament",
+      "Origins TCG: MagicOfHands vince al Collector Club",
+      "Origins TCG: MagicOfHands gana el torneo de Collector Club",
+    ),
+    description: n(
+      "MagicOfHands won the Origins TCG tournament hosted by the Collector Club on 8 October, worth $100 to first place. One of his decks is on OriginsMeta.",
+      "MagicOfHands ha vinto il torneo di Origins TCG del Collector Club dell'8 ottobre, 100 dollari al primo posto. Uno dei suoi mazzi è su OriginsMeta.",
+      "MagicOfHands ganó el torneo de Origins TCG de Collector Club del 8 de octubre, con 100 dólares para el primero. Uno de sus mazos está en OriginsMeta.",
+    ),
+    summary: n(
+      "MagicOfHands, the Italian player who publishes his decks on OriginsMeta, won the Origins TCG tournament hosted by the Collector Club on 8 October, the one Koin Games had pointed to on its official Discord, with $100 for first place. He says he played mostly Pigs and a Merlin combo, and published one of his decks the same evening: EN PAULANT, led by Legion of the Dead.",
+      "MagicOfHands, il giocatore italiano che pubblica i suoi mazzi su OriginsMeta, ha vinto il torneo di Origins TCG organizzato dal Collector Club l'8 ottobre, quello che Koin Games aveva segnalato sul suo Discord ufficiale, con 100 dollari al primo posto. Racconta di aver giocato soprattutto Pigs e un Merlin combo, e la sera stessa ha pubblicato uno dei suoi mazzi: EN PAULANT, guidato da Legion of the Dead.",
+      "MagicOfHands, el jugador italiano que publica sus mazos en OriginsMeta, ganó el torneo de Origins TCG organizado por Collector Club el 8 de octubre, el que Koin Games había señalado en su Discord oficial, con 100 dólares para el primer puesto. Cuenta que jugó sobre todo Pigs y un Merlin combo, y esa misma noche publicó uno de sus mazos: EN PAULANT, liderado por Legion of the Dead.",
+    ),
+    highlights: {
+      en: [
+        { label: "MagicOfHands wins", text: "the Collector Club tournament of 8 October, $100 for first place", anchor: "tournament" },
+        { label: "The decks", text: "mostly Pigs and a Merlin combo; EN PAULANT, with Legion of the Dead, is on OriginsMeta", anchor: "decks" },
+        { label: "What we don't know", text: "format, number of players and standings", anchor: "unknowns" },
+      ],
+      it: [
+        { label: "Vince MagicOfHands", text: "il torneo del Collector Club dell'8 ottobre, 100 dollari al primo posto", anchor: "torneo" },
+        { label: "I mazzi", text: "soprattutto Pigs e un Merlin combo; EN PAULANT, con Legion of the Dead, è su OriginsMeta", anchor: "mazzi" },
+        { label: "Cosa non sappiamo", text: "formato, numero di giocatori e classifica", anchor: "cosa-non-sappiamo" },
+      ],
+      es: [
+        { label: "Gana MagicOfHands", text: "el torneo de Collector Club del 8 de octubre, 100 dólares para el primero", anchor: "torneo" },
+        { label: "Los mazos", text: "sobre todo Pigs y un Merlin combo; EN PAULANT, con Legion of the Dead, está en OriginsMeta", anchor: "mazos" },
+        { label: "Lo que no sabemos", text: "formato, número de jugadores y clasificación", anchor: "lo-que-no-sabemos" },
+      ],
+    },
+    body: n(
+      `## MagicOfHands wins the Collector Club tournament {#tournament}
+
+On the morning of 8 October 2026 Koin Games pointed players, in #game-announcements on the official Origins TCG Discord, to an Origins tournament hosted that same day at 16:30 CEST (14:30 UTC) by the Collector Club, a third-party site that plans to run weekly tournaments on its own Discord. First place was worth $100 to spend on the Collector Club site. We listed it among the [ways to practise before the Crimson Cup](/en/news/bot-deck-challenge-practice-tournaments#host-your-own).
+
+That evening, at 22:03 CEST, Senith, a moderator of the official server, announced the winner: MagicOfHands, the Italian player who publishes his decks on OriginsMeta. "Guys Italy arrived!!! Not even @itzBolt is safe", the message went on, a nod to [itzBolt, winner of the first Conquest tournament](/en/news/itzbolt-wins-conquest).
+
+## The decks {#decks}
+
+MagicOfHands played more than one deck. In #deck-discussions he wrote that he played "mostly Pigs" and "a Merlin Combo": those two lists are not public. The one he did publish on OriginsMeta the same evening, introduced as one of the decks he won with, is [EN PAULANT](/en/decks/community/en-paulant-7399), led by Legion of the Dead. According to his guide:
+
+- Morgiana, Asanbosam and Boogeyman put big bodies on the board from the first turns, then En Passant on each of them opens holes;
+- Mummy and Golden Egg are good targets for Trash for Treasure and good sacrifices for Boogeyman;
+- Impundulu finds the last points of damage, and Paul Bunyan can be played with Dark Omen or En Passant in the same turn.
+
+The deck page has the full list, the mulligan and matchup notes and the game code to import it.
+
+## Why it matters {#why-it-matters}
+
+Before the Crimson Cup qualifiers, which start on 20 October, community tournaments are the best competitive results there are, and the Collector Club plans to run one every week. The rules of the cup are in our [Crimson Cup article](/en/news/crimson-cup-format-check-in).
+
+## What we don't know yet {#unknowns}
+
+- The format, the number of players and the rest of the standings: Koin's announcement and the posts on the official Discord don't say, and the bracket is on the Collector Club's Discord.
+- The lists of the other decks MagicOfHands played.
+
+## Where this comes from {#sources}
+
+The [official Origins TCG Discord](https://discord.gg/originstcg): Koin's announcement in #game-announcements (8 October 2026, 07:22 UTC), the winner announced in #the-courtyard (20:03 UTC) and the post by MagicOfHands in #deck-discussions (20:59 UTC). In the text the times are in CEST.`,
+      `## MagicOfHands vince il torneo del Collector Club {#torneo}
+
+La mattina dell'8 ottobre 2026 Koin Games ha segnalato, in #game-announcements sul Discord ufficiale di Origins TCG, un torneo di Origins organizzato lo stesso giorno alle 16:30 CEST (14:30 UTC) dal Collector Club, un sito esterno che conta di organizzare tornei ogni settimana sul suo Discord. Il primo posto valeva 100 dollari da spendere sul sito del Collector Club. Lo avevamo segnalato fra le [occasioni per allenarsi prima della Crimson Cup](/it/news/bot-deck-challenge-practice-tournaments#organizzare).
+
+La sera, alle 22:03 CEST, Senith, moderatore del server ufficiale, ha annunciato il vincitore: MagicOfHands, il giocatore italiano che pubblica i suoi mazzi su OriginsMeta. "Guys Italy arrived!!! Not even @itzBolt is safe" ("È arrivata l'Italia, nemmeno itzBolt è al sicuro"), continuava il messaggio, con un cenno a [itzBolt, vincitore del primo torneo Conquest](/it/news/itzbolt-wins-conquest).
+
+## I mazzi {#mazzi}
+
+MagicOfHands ha giocato più di un mazzo. In #deck-discussions ha scritto di aver giocato "soprattutto Pigs" e "un Merlin Combo": quelle due liste non sono pubbliche. Quella che ha pubblicato su OriginsMeta la sera stessa, presentata come uno dei mazzi con cui ha vinto, è [EN PAULANT](/it/decks/community/en-paulant-7399), guidata da Legion of the Dead. Secondo la sua guida:
+
+- Morgiana, Asanbosam e Boogeyman mettono in campo pezzi grossi fin dai primi turni, poi En Passant su ognuno di loro apre dei buchi;
+- Mummy e Golden Egg sono ottimi bersagli per Trash for Treasure e buoni sacrifici per Boogeyman;
+- Impundulu trova gli ultimi danni, e Paul Bunyan si può giocare con Dark Omen o En Passant nello stesso turno.
+
+Nella scheda del mazzo trovi la lista completa, le note su mulligan e scontri e il codice del gioco per importarlo.
+
+## Perché conta {#perche-conta}
+
+Prima delle qualificazioni della Crimson Cup, che partono il 20 ottobre, i tornei della community sono i risultati competitivi migliori che ci siano, e il Collector Club conta di organizzarne uno a settimana. Le regole della coppa sono nel nostro [articolo sulla Crimson Cup](/it/news/crimson-cup-format-check-in).
+
+## Cosa non sappiamo ancora {#cosa-non-sappiamo}
+
+- Il formato, il numero di giocatori e il resto della classifica: l'annuncio di Koin e i messaggi sul Discord ufficiale non li dicono, e il tabellone sta sul Discord del Collector Club.
+- Le liste degli altri mazzi giocati da MagicOfHands.
+
+## Da dove arriva {#fonti}
+
+Il [Discord ufficiale di Origins TCG](https://discord.gg/originstcg): l'annuncio di Koin in #game-announcements (8 ottobre 2026, 07:22 UTC), il vincitore annunciato in #the-courtyard (20:03 UTC) e il post di MagicOfHands in #deck-discussions (20:59 UTC). Nel testo gli orari sono in CEST; le citazioni sono tradotte da noi.`,
+      `## MagicOfHands gana el torneo de Collector Club {#torneo}
+
+La mañana del 8 de octubre de 2026 Koin Games señaló, en #game-announcements del Discord oficial de Origins TCG, un torneo de Origins organizado ese mismo día a las 16:30 CEST (14:30 UTC) por Collector Club, un sitio externo que piensa organizar torneos semanales en su propio Discord. El primer puesto valía 100 dólares para gastar en el sitio de Collector Club. Lo habíamos incluido entre las [ocasiones para practicar antes de la Crimson Cup](/es/news/bot-deck-challenge-practice-tournaments#organizar).
+
+Por la noche, a las 22:03 CEST, Senith, moderador del servidor oficial, anunció el ganador: MagicOfHands, el jugador italiano que publica sus mazos en OriginsMeta. "Guys Italy arrived!!! Not even @itzBolt is safe" ("Ha llegado Italia, ni siquiera itzBolt está a salvo"), seguía el mensaje, con un guiño a [itzBolt, ganador del primer torneo Conquest](/es/news/itzbolt-wins-conquest).
+
+## Los mazos {#mazos}
+
+MagicOfHands jugó más de un mazo. En #deck-discussions escribió que jugó "sobre todo Pigs" y "un Merlin Combo": esas dos listas no son públicas. La que publicó en OriginsMeta esa misma noche, presentada como uno de los mazos con los que ganó, es [EN PAULANT](/es/decks/community/en-paulant-7399), liderada por Legion of the Dead. Según su guía:
+
+- Morgiana, Asanbosam y Boogeyman ponen piezas grandes en el tablero desde los primeros turnos, y luego En Passant sobre cada una abre huecos;
+- Mummy y Golden Egg son buenos objetivos para Trash for Treasure y buenos sacrificios para Boogeyman;
+- Impundulu encuentra el último daño, y Paul Bunyan se puede jugar con Dark Omen o En Passant en el mismo turno.
+
+En la ficha del mazo tienes la lista completa, las notas sobre el mulligan y los enfrentamientos y el código del juego para importarlo.
+
+## Por qué importa {#por-que-importa}
+
+Antes de los clasificatorios de la Crimson Cup, que empiezan el 20 de octubre, los torneos de la comunidad son los mejores resultados competitivos que hay, y Collector Club piensa organizar uno cada semana. Las reglas de la copa están en nuestro [artículo sobre la Crimson Cup](/es/news/crimson-cup-format-check-in).
+
+## Lo que aún no sabemos {#lo-que-no-sabemos}
+
+- El formato, el número de jugadores y el resto de la clasificación: el anuncio de Koin y los mensajes del Discord oficial no lo dicen, y el cuadro está en el Discord de Collector Club.
+- Las listas de los otros mazos que jugó MagicOfHands.
+
+## De dónde viene {#fuentes}
+
+El [Discord oficial de Origins TCG](https://discord.gg/originstcg): el anuncio de Koin en #game-announcements (8 de octubre de 2026, 07:22 UTC), el ganador anunciado en #the-courtyard (20:03 UTC) y el mensaje de MagicOfHands en #deck-discussions (20:59 UTC). En el texto las horas están en CEST; las citas las traducimos nosotros.`,
+    ),
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
     // AMA "Building Origins" di Koin Games (scritta l'11/10/2026). Fonte: la registrazione sul canale YouTube ufficiale Origins
     // TCG (bEb5RuwY7tg), diretta del 02/10/2026 annunciata sul Discord ufficiale il 28/09 e il 02/10, video pubblicato il
     // 05/10/2026, 2 h 22 min. Letta per intero dai sottotitoli automatici inglesi di YouTube (nomi delle carte corretti sul
