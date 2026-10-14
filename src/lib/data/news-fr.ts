@@ -20,6 +20,60 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "originsmeta-one-month": {
+    title: "Il y a un mois, à une heure du matin : OriginsMeta fête ses trente jours",
+    metaTitle: "Origins TCG : OriginsMeta a un mois, merci",
+    description:
+      "OriginsMeta, le site fan d'Origins TCG, a un mois : 6 800 visiteurs, 1 900 codes de decks copiés, quatre langues et la suite. Merci à vous.",
+    summary:
+      "Le 15 septembre, à une heure du matin, nous avons mis OriginsMeta en ligne. Nous pensions avoir fait une base de données de cartes avec un deck builder. Un mois plus tard, nous voilà avec des milliers de personnes passées par ici, quatre langues, une application qui enregistre les parties et une Crimson Cup qui approche. Voici notre merci, avec quelques chiffres et quelques promesses.",
+    highlights: [
+      { label: "Un soir de septembre", text: "une idée le 14 septembre, le site en ligne à une heure du matin, le premier deck de la communauté l'après-midi", anchor: "debut" },
+      { label: "Vos chiffres", text: "plus de 6 800 personnes, 47 000 pages, 1 900 codes de decks copiés, 850 parties enregistrées", anchor: "chiffres" },
+      { label: "Ce que nous avons construit", text: "la moitié est née d'un message sur Discord ou d'un retour", anchor: "outils" },
+      { label: "Et maintenant ?", text: "le Steam Next Fest, la Crimson Cup, la première tier list OriginsMeta, le Kickstarter et une extension Twitch", anchor: "la-suite" },
+      { label: "Merci, vraiment", anchor: "merci" },
+    ],
+    body: `## Un soir de septembre {#debut}
+
+OriginsMeta est né d'une note sur un téléphone, le soir du 14 septembre : « idée de site ». Nous avons acheté le domaine la nuit même. À une heure du matin, la première version était en ligne, à huit heures et demie il y avait le deck builder, et dans l'après-midi la base de données des cartes était complète.
+
+À 17 h 30, il s'est passé ce qui nous a fait comprendre que nous avions peut-être bien fait : Luigi « [Davdas](/fr/authors/davdas) » Ragoni a publié le premier deck de la communauté, Healing Healsing. Un site de decks sans decks, c'est une vitrine vide, mais à partir de ce moment notre site a commencé à fonctionner : la vitrine ne resterait plus jamais vide.
+
+## Ce que vous nous avez offert en trente jours {#chiffres}
+
+Nous ne nous attendions pas à ces chiffres. Nous ne voulons pas vous dire s'ils sont grands ou petits : nous voulons vous dire que ce sont « nos » chiffres, ceux de toute la communauté.
+
+- Plus de 6 800 personnes sont passées par ici, et à ce jour plus de 47 000 pages ont été ouvertes. Les meilleurs jours, vous étiez plus de 350 utilisateurs uniques à visiter le site.
+- 1 900 fois, vous avez copié le code d'un deck pour l'emporter dans le jeu. C'est le chiffre auquel nous tenons le plus : il veut dire que le site aide les joueurs à jouer.
+- Vous nous lisez surtout depuis l'Italie (45 %), mais aussi depuis les États-Unis (14 %), l'Espagne (6 %), la France (5 %), l'Allemagne (4 %), Singapour (4 %) et le Brésil (2 %), et chaque jour des personnes d'autres pays nous rejoignent.
+
+C'est pour cela que l'espagnol est arrivé fin septembre et le français le 8 octobre.
+
+Il y a plus de 60 [decks](/fr/decks) dans la base de données, et avec [OriginsMeta Tracker](/fr/tracker) vous avez enregistré plus de 850 parties, qui façonnent aujourd'hui toutes les données de notre [Analytics](/fr/analytics).
+
+Derrière tout cela, il y a aussi plus de 400 mises à jour du site, 122 cartes vérifiées une à une dans le jeu et pas mal de nuits blanches.
+
+## Ce que nous avons construit {#outils}
+
+En relisant les notes de ce mois, ce qui saute aux yeux, c'est que la moitié des fonctions du site, le Tracker, Analytics et beaucoup d'autres idées, sont nées d'un message sur Discord ou d'un retour. Nous ne vous en serons jamais assez reconnaissants ! Continuez comme ça !
+
+## Et maintenant ? {#la-suite}
+
+Les deux prochaines semaines sont les plus importantes depuis qu'Origins existe, et nous voulons y être.
+
+- À partir du 19 octobre, c'est le Steam Next Fest, avec la partie classée et la Crimson Cup. Nous suivrons le tournoi jour après jour : le calendrier est dans le [guide du Next Fest](/fr/guides/steam-next-fest-2026).
+- Après la Crimson Cup sortira la première [tier list](/fr/tier-list) OriginsMeta, faite sur les résultats du tournoi et non sur nos opinions.
+- Le 27 octobre commence le [Kickstarter de l'Alpha Edition](/fr/guides/origins-tcg-kickstarter), et nous vous le raconterons ici.
+- Petit spoiler : nous travaillons jour et nuit sur notre premier overlay pour Twitch, une extension qui vous permettra de voir quand vous voulez le deck et les cartes de votre streamer préféré, en direct pendant ses parties.
+- Plus tard, sans dates parce que nous ne voulons pas promettre ce que nous ne savons pas encore tenir : un site plus pratique sur téléphone et tablette, peut-être une application dédiée ? Laissez-nous cuisiner !
+
+## Merci, vraiment {#merci}
+
+À tous ceux qui ont publié un deck, à ceux qui ont voté, à ceux qui nous ont écrit « ce truc ne marche pas » à toute heure du jour et de la nuit, à ceux qui ont installé l'application de quelques inconnus pour nous aider à compter les parties : OriginsMeta est aussi, et surtout, à vous. Continuez à nous dire ce qui manque sur [notre Discord](https://discord.gg/RAG7nnrNGP). La liste des choses à faire pour le deuxième mois est déjà longue… et c'est comme ça qu'on l'aime !
+
+*Luigi, Pierluigi et toute l'équipe d'OriginsMeta*`,
+  },
   "playtest-closing-crimson-cup-twitch": {
     title: "Le playtest d'Origins TCG ferme le 15 octobre : la Crimson Cup sur Twitch, le co-streaming et le règlement",
     metaTitle: "Origins TCG : fin du playtest, Crimson Cup sur Twitch",

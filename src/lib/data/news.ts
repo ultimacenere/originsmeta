@@ -110,6 +110,182 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Un mese di OriginsMeta (15/10/2026, testo di Pierluigi incollato lo stesso giorno, "da pubblicare adesso"): il sito è
+    // online dall'una di notte del 15/09/2026 (primo commit 01:00). Numeri dati da Pierluigi (Vercel, GA4, statistiche dei
+    // mazzi e del Tracker al 15/10): 6.800 persone, 47.000 pagine, punte di 350 utenti unici al giorno, 1.900 codici copiati,
+    // paesi, 60 mazzi, 850 partite, 400 aggiornamenti, 122 carte verificate. Mai il numero di giocatori del Tracker (regola
+    // del 12/10). Francese online l'08/10 a mezzanotte (commit delle 00:06), quindi "8 ottobre" è giusto. Copertina:
+    // ss-pack-opening, mai usata da una news. Firma: autore predefinito, chiusura con Luigi, Pierluigi e lo staff.
+    slug: "originsmeta-one-month",
+    image: "/media/ss-pack-opening.webp",
+    guides: ["steam-next-fest-2026", "origins-tcg-kickstarter"],
+    date: "2026-10-15",
+    title: n(
+      "One month ago, at one in the morning: OriginsMeta turns thirty days old",
+      "Un mese fa, all'una di notte: OriginsMeta compie trenta giorni",
+      "Hace un mes, a la una de la madrugada: OriginsMeta cumple treinta días",
+    ),
+    metaTitle: n(
+      "Origins TCG: OriginsMeta turns one month, thank you",
+      "Origins TCG: OriginsMeta compie un mese, grazie",
+      "Origins TCG: OriginsMeta cumple un mes, gracias",
+    ),
+    description: n(
+      "OriginsMeta, the Origins TCG fan site, turns one month old: 6,800 visitors, 1,900 deck codes copied, four languages and what comes next. Thank you.",
+      "OriginsMeta, il sito fan di Origins TCG, compie un mese: 6.800 persone, 1.900 codici di mazzi copiati, quattro lingue e cosa arriva adesso. Grazie.",
+      "OriginsMeta, el sitio fan de Origins TCG, cumple un mes: 6.800 personas, 1.900 códigos de mazos copiados, cuatro idiomas y lo que viene. Gracias.",
+    ),
+    summary: n(
+      "On 15 September, at one in the morning, we put OriginsMeta online. We thought we had built a card database with a deck builder. A month later we find ourselves with thousands of people who stopped by, four languages, an app that records matches and a Crimson Cup around the corner. This is our thank you, with a few numbers and a few promises.",
+      "Il 15 settembre, all'una di notte, abbiamo messo online OriginsMeta. Pensavamo di aver fatto un database di carte con un deck builder. Un mese dopo ci ritroviamo con migliaia di persone passate di qui, quattro lingue, un'app che registra le partite e una Crimson Cup alle porte. Questo è il nostro grazie, con un po' di numeri e qualche promessa.",
+      "El 15 de septiembre, a la una de la madrugada, pusimos OriginsMeta en línea. Creíamos haber hecho una base de datos de cartas con un deck builder. Un mes después nos encontramos con miles de personas que han pasado por aquí, cuatro idiomas, una app que registra las partidas y una Crimson Cup a la vuelta de la esquina. Este es nuestro gracias, con algunos números y alguna promesa.",
+    ),
+    highlights: {
+      en: [
+        { label: "A September night", text: "an idea on 14 September, the site online at one in the morning, the first community deck that afternoon", anchor: "beginning" },
+        { label: "Your numbers", text: "over 6,800 people, 47,000 pages, 1,900 deck codes copied, 850 matches recorded", anchor: "numbers" },
+        { label: "What we built", text: "half of it born from a Discord message or a feedback", anchor: "tools" },
+        { label: "What's next", text: "Steam Next Fest, the Crimson Cup, the first OriginsMeta tier list, the Kickstarter and a Twitch extension", anchor: "roadmap" },
+        { label: "Thank you", anchor: "thanks" },
+      ],
+      it: [
+        { label: "Una sera di settembre", text: "un'idea il 14 settembre, il sito online all'una di notte, il primo mazzo della community nel pomeriggio", anchor: "inizio" },
+        { label: "I vostri numeri", text: "più di 6.800 persone, 47.000 pagine, 1.900 codici di mazzi copiati, 850 partite registrate", anchor: "numeri" },
+        { label: "Cosa abbiamo costruito", text: "metà nato da un messaggio su Discord o da un feedback", anchor: "strumenti" },
+        { label: "E adesso?", text: "Steam Next Fest, Crimson Cup, la prima tier list OriginsMeta, il Kickstarter e un'estensione per Twitch", anchor: "roadmap" },
+        { label: "Grazie, davvero", anchor: "grazie" },
+      ],
+      es: [
+        { label: "Una noche de septiembre", text: "una idea el 14 de septiembre, el sitio en línea a la una de la madrugada, el primer mazo de la comunidad esa tarde", anchor: "inicio" },
+        { label: "Vuestros números", text: "más de 6.800 personas, 47.000 páginas, 1.900 códigos de mazos copiados, 850 partidas registradas", anchor: "numeros" },
+        { label: "Lo que hemos construido", text: "la mitad nació de un mensaje en Discord o de un comentario", anchor: "herramientas" },
+        { label: "¿Y ahora?", text: "Steam Next Fest, la Crimson Cup, la primera tier list de OriginsMeta, el Kickstarter y una extensión para Twitch", anchor: "hoja-de-ruta" },
+        { label: "Gracias, de verdad", anchor: "gracias" },
+      ],
+    },
+    body: n(
+      `## A September night {#beginning}
+
+OriginsMeta was born from a note on a phone, on the evening of 14 September: "idea for a site". We bought the domain that same night. At one in the morning the first version was online, at half past eight there was the deck builder, and by the afternoon the card database was complete.
+
+At 17:30 something happened that made us think we had maybe done the right thing: Luigi "[Davdas](/en/authors/davdas)" Ragoni published the first community deck, Healing Healsing. A deck site without decks is an empty shop window, but from that moment our site started working: the window would never be empty again.
+
+## What you gave us in thirty days {#numbers}
+
+We didn't expect these numbers. We don't want to tell you whether they're a lot or a little: we want to tell you they're "our" numbers, the whole community's.
+
+- More than 6,800 people have stopped by, and so far more than 47,000 pages have been opened. On the best days more than 350 unique users visited the site.
+- 1,900 times you copied a deck code to take it into the game. It's the number we care about most: it means the site helps players play.
+- You read us mostly from Italy (45%), but also from the United States (14%), Spain (6%), France (5%), Germany (4%), Singapore (4%) and Brazil (2%), and every day people join from other countries.
+
+That's why Spanish arrived at the end of September and French on 8 October.
+
+There are more than 60 [decks](/en/decks) in the database, and with [OriginsMeta Tracker](/en/tracker) you have recorded more than 850 matches, which today shape all the data in our [Analytics](/en/analytics).
+
+Behind it all there are also more than 400 updates to the site, 122 cards checked one by one in the game and quite a few sleepless nights.
+
+## What we built {#tools}
+
+Rereading this month's notes, what stands out is that half of the site's features, the Tracker, Analytics and many other ideas, were born from a message on Discord or a feedback. We'll never be grateful enough for this! Keep it coming!
+
+## What's next? {#roadmap}
+
+The next two weeks are the most important since Origins has existed, and we want to be there.
+
+- From 19 October there's the Steam Next Fest, with ranked and the Crimson Cup. We'll follow the tournament day by day: the calendar is in our [Next Fest guide](/en/guides/steam-next-fest-2026).
+- After the Crimson Cup the first OriginsMeta [tier list](/en/tier-list) will come out, built on the tournament results and not on our opinions.
+- On 27 October the [Alpha Edition Kickstarter](/en/guides/origins-tcg-kickstarter) starts, and we'll tell you about it here.
+- A small spoiler: we're working day and night on our first overlay for Twitch, an extension that will let you see your favourite streamer's deck and cards whenever you like, live during their matches.
+- Further ahead, without dates because we don't want to promise what we don't yet know we can deliver: a site that's easier to use on phones and tablets, maybe a dedicated app? Let us cook!
+
+## Thank you, really {#thanks}
+
+To everyone who published a deck, to those who voted, to those who wrote to us "this thing doesn't work" at every hour of the day and night, to those who installed an app made by a few strangers to help us count matches: OriginsMeta is also, and above all, yours. Keep telling us what's missing on [our Discord](https://discord.gg/RAG7nnrNGP). The to-do list for the second month is already long… and we like it that way!
+
+*Luigi, Pierluigi and the whole OriginsMeta staff*`,
+      `## Una sera di settembre {#inizio}
+
+OriginsMeta è nato da una nota sul telefono, la sera del 14 settembre: "idea per sito". Il dominio l'abbiamo comprato quella notte stessa. All'una la prima versione era online, alle otto e mezza c'era il deck builder e nel pomeriggio il database delle carte era completo.
+
+Alle 17:30 è successa la cosa che ci ha fatto capire che forse avevamo fatto bene: Luigi "[Davdas](/it/authors/davdas)" Ragoni ha pubblicato il primo mazzo della community, Healing Healsing. Un sito di mazzi senza mazzi è una vetrina vuota, ma da quel momento il nostro sito ha iniziato a funzionare: la vetrina non sarebbe più rimasta vuota.
+
+## Quello che ci avete regalato in trenta giorni {#numeri}
+
+Non ci aspettavamo questi numeri. Non vogliamo dirvi che son tanti o pochi, vogliamo dirvi che sono i "nostri" numeri, di tutta la community:
+
+- Più di 6.800 persone sono passate di qui, e ad oggi sono state aperte più di 47.000 pagine. Nei giorni migliori eravate più di 350 utenti unici in visita sul sito.
+- 1.900 volte avete copiato il codice di un mazzo per portarlo nel gioco. È il numero a cui teniamo di più: vuol dire che il sito serve ai giocatori per giocare.
+- Ci leggete soprattutto dall'Italia (45%), ma anche da Stati Uniti (14%), Spagna (6%), Francia (5%), Germania (4%), Singapore (4%) e Brasile (2%), e ogni giorno si aggiungono persone da altri Paesi del mondo.
+
+Per questo a fine settembre è arrivata la lingua spagnola e l'8 ottobre quella francese.
+
+Nel database ci sono più di 60 [mazzi](/it/decks), e con [OriginsMeta Tracker](/it/tracker) avete registrato più di 850 partite, che oggi modellano tutti i dati del nostro [Analytics](/it/analytics).
+
+Dietro ci sono anche oltre 400 aggiornamenti al sito, 122 carte verificate una per una nel gioco e svariate notti in bianco.
+
+## Cosa abbiamo costruito {#strumenti}
+
+Rileggendo le note di questo mese, la cosa che salta all'occhio è che metà delle funzioni del sito, il Tracker, Analytics e molte altre idee, sono nate da un messaggio su Discord o da un feedback. Di questo non vi saremo mai abbastanza grati! Continuate così!
+
+## E adesso? {#roadmap}
+
+Le prossime due settimane sono le più importanti da quando Origins esiste, e vogliamo esserci.
+
+- Dal 19 ottobre c'è lo Steam Next Fest, con la classificata e la Crimson Cup. Seguiremo il torneo giorno per giorno: il calendario è nella [guida al Next Fest](/it/guides/steam-next-fest-2026).
+- Dopo la Crimson Cup uscirà la prima [tier list](/it/tier-list) OriginsMeta, fatta sui risultati del torneo e non sulle nostre opinioni.
+- Il 27 ottobre parte il [Kickstarter dell'Alpha Edition](/it/guides/origins-tcg-kickstarter), ve lo racconteremo qui.
+- Piccolo spoiler: stiamo lavorando giorno e notte al primo overlay per Twitch, un'estensione che vi permetterà di vedere a vostro piacimento il mazzo e le carte del vostro streamer preferito, in diretta durante le partite.
+- Più in là, senza date perché non vogliamo promettere quello che non sappiamo ancora mantenere: un sito più comodo da telefono e tablet, forse un'app dedicata? Lasciateci cucinare!
+
+## Grazie, davvero {#grazie}
+
+A tutti quelli che hanno pubblicato un mazzo, a chi ha votato, a chi ci ha scritto "questa cosa non funziona" a tutte le ore del giorno e della notte, a chi ha installato un'app di alcuni sconosciuti per aiutarci a contare le partite: OriginsMeta è anche e soprattutto vostro. Continuate a dirci cosa manca sul [nostro Discord](https://discord.gg/RAG7nnrNGP). La lista delle cose da fare per il secondo mese è già lunga… e a noi piace così!
+
+*Luigi, Pierluigi e tutto lo staff di OriginsMeta*`,
+      `## Una noche de septiembre {#inicio}
+
+OriginsMeta nació de una nota en el móvil, la noche del 14 de septiembre: "idea para un sitio". Compramos el dominio esa misma noche. A la una de la madrugada la primera versión estaba en línea, a las ocho y media llegó el deck builder y por la tarde la base de datos de cartas estaba completa.
+
+A las 17:30 pasó lo que nos hizo pensar que quizá lo habíamos hecho bien: Luigi "[Davdas](/es/authors/davdas)" Ragoni publicó el primer mazo de la comunidad, Healing Healsing. Un sitio de mazos sin mazos es un escaparate vacío, pero desde ese momento nuestro sitio empezó a funcionar: el escaparate ya no volvería a estar vacío.
+
+## Lo que nos habéis regalado en treinta días {#numeros}
+
+No esperábamos estos números. No queremos deciros si son muchos o pocos: queremos deciros que son "nuestros" números, de toda la comunidad.
+
+- Más de 6.800 personas han pasado por aquí, y hasta hoy se han abierto más de 47.000 páginas. En los mejores días erais más de 350 usuarios únicos visitando el sitio.
+- 1.900 veces habéis copiado el código de un mazo para llevarlo al juego. Es el número que más nos importa: significa que el sitio ayuda a los jugadores a jugar.
+- Nos leéis sobre todo desde Italia (45%), pero también desde Estados Unidos (14%), España (6%), Francia (5%), Alemania (4%), Singapur (4%) y Brasil (2%), y cada día se suman personas de otros países del mundo.
+
+Por eso a finales de septiembre llegó el español y el 8 de octubre el francés.
+
+En la base de datos hay más de 60 [mazos](/es/decks), y con [OriginsMeta Tracker](/es/tracker) habéis registrado más de 850 partidas, que hoy dan forma a todos los datos de nuestro [Analytics](/es/analytics).
+
+Detrás hay también más de 400 actualizaciones del sitio, 122 cartas verificadas una a una en el juego y unas cuantas noches en vela.
+
+## Lo que hemos construido {#herramientas}
+
+Releyendo las notas de este mes, lo que salta a la vista es que la mitad de las funciones del sitio, el Tracker, Analytics y muchas otras ideas, nacieron de un mensaje en Discord o de un comentario. ¡Nunca os lo agradeceremos lo suficiente! ¡Seguid así!
+
+## ¿Y ahora? {#hoja-de-ruta}
+
+Las próximas dos semanas son las más importantes desde que Origins existe, y queremos estar ahí.
+
+- Desde el 19 de octubre llega el Steam Next Fest, con la clasificatoria y la Crimson Cup. Seguiremos el torneo día a día: el calendario está en la [guía del Next Fest](/es/guides/steam-next-fest-2026).
+- Después de la Crimson Cup saldrá la primera [tier list](/es/tier-list) de OriginsMeta, hecha con los resultados del torneo y no con nuestras opiniones.
+- El 27 de octubre empieza el [Kickstarter de la Alpha Edition](/es/guides/origins-tcg-kickstarter), y os lo contaremos aquí.
+- Pequeño spoiler: estamos trabajando día y noche en nuestro primer overlay para Twitch, una extensión que os permitirá ver cuando queráis el mazo y las cartas de vuestro streamer favorito, en directo durante sus partidas.
+- Más adelante, sin fechas porque no queremos prometer lo que todavía no sabemos si podremos cumplir: un sitio más cómodo en móvil y tableta, ¿quizá una app propia? ¡Dejadnos cocinar!
+
+## Gracias, de verdad {#gracias}
+
+A todos los que han publicado un mazo, a quien ha votado, a quien nos ha escrito "esto no funciona" a todas horas del día y de la noche, a quien ha instalado una app de unos desconocidos para ayudarnos a contar partidas: OriginsMeta también es, y sobre todo, vuestro. Seguid contándonos qué falta en [nuestro Discord](https://discord.gg/RAG7nnrNGP). La lista de cosas por hacer para el segundo mes ya es larga… ¡y así nos gusta!
+
+*Luigi, Pierluigi y todo el staff de OriginsMeta*`,
+    ),
+    url: "/about",
+    source: "site",
+  },
+  {
     // Annuncio di Koin Games sul Discord ufficiale (scritta il 14/10/2026). Fonte: il messaggio "Hello Hello @everyone @here"
     // del team, incollato da Pierluigi il 14/10/2026: canale e ora esatti non li abbiamo, nel testo solo "Discord ufficiale".
     // Data = giorno dell'annuncio ("Playtest is leaving us tomorrow" = il playtest chiude il 15/10). Fatti usati: chiusura del
