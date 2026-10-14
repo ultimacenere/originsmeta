@@ -304,10 +304,15 @@ async function waitForPage(url, waitMs = WAIT_MS) {
   }
 }
 
-/** Manda il messaggio; se Discord chiede di rallentare (429) aspetta quanto dice e riprova. */
+/**
+ * Manda il messaggio; se Discord chiede di rallentare (429) aspetta quanto dice e riprova. Firma come "OriginsMeta"
+ * con il nostro logo (14/10/2026), al posto dei nomi di default dei webhook ("Captain Hook", "Spidey Bot");
+ * stessi valori di DISCORD_USERNAME e DISCORD_AVATAR_URL in src/lib/discordWebhook.ts.
+ */
 async function post(webhook, body) {
+  const payload = JSON.stringify({ username: "OriginsMeta", avatar_url: "https://originsmeta.com/media/originsmeta-icon.png", ...body });
   for (let attempt = 0; attempt < 4; attempt++) {
-    const r = await fetch(`${webhook}?wait=true`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    const r = await fetch(`${webhook}?wait=true`, { method: "POST", headers: { "content-type": "application/json" }, body: payload });
     if (r.status === 429) {
       const wait = Number((await r.json().catch(() => ({}))).retry_after) || 2;
       await sleep(Math.ceil(wait * 1000) + 250);

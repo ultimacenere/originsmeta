@@ -6,6 +6,7 @@ import { siteUrl, type Locale } from "@/lib/i18n";
 import { roundLabel, standings } from "./bracket";
 import { tournamentShortLink } from "./types";
 import { discordUtm } from "@/lib/analytics";
+import { DISCORD_AVATAR_URL, DISCORD_USERNAME } from "@/lib/discordWebhook";
 
 /**
  * Notifiche Discord del Tournament Organizer (UX-8, 21/09/2026).
@@ -312,7 +313,7 @@ async function post(url: string, content: string): Promise<void> {
     const res = await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ content: body, allowed_mentions: { parse: [] } }),
+      body: JSON.stringify({ content: body, username: DISCORD_USERNAME, avatar_url: DISCORD_AVATAR_URL, allowed_mentions: { parse: [] } }),
       cache: "no-store",
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

@@ -30,8 +30,18 @@ export type DiscordEmbed = {
 export type DiscordWebhookPayload = {
   content?: string;
   username?: string;
+  /** immagine del mittente; senza, vale DISCORD_AVATAR_URL */
+  avatar_url?: string;
   embeds?: DiscordEmbed[];
 };
+
+/**
+ * Nome e immagine con cui firma ogni messaggio mandato dal sito (14/10/2026). Senza, Discord usa quelli dati al
+ * webhook quando è stato creato, rimasti i nomi casuali di default ("Captain Hook", "Spidey Bot"): il messaggio li
+ * sovrascrive, così non serve rinominare i webhook a mano. Un payload con il suo `username` tiene il proprio.
+ */
+export const DISCORD_USERNAME = "OriginsMeta";
+export const DISCORD_AVATAR_URL = "https://originsmeta.com/media/originsmeta-icon.png";
 
 /**
  * File di testo allegato al messaggio (per esempio il testo completo di una guida inviata dal sito, che in un
@@ -87,7 +97,7 @@ export async function sendDiscordWebhook(
   { timeoutMs = 5000, files = [] }: { timeoutMs?: number; files?: DiscordFile[] } = {},
 ): Promise<{ ok: boolean; status?: number }> {
   // nessuna menzione può partire, qualunque cosa contenga il testo
-  const json = JSON.stringify({ ...payload, allowed_mentions: { parse: [] } });
+  const json = JSON.stringify({ username: DISCORD_USERNAME, avatar_url: DISCORD_AVATAR_URL, ...payload, allowed_mentions: { parse: [] } });
   let body: string | FormData = json;
   if (files.length) {
     body = new FormData();
