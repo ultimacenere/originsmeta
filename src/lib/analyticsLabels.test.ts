@@ -38,23 +38,33 @@ describe("analytics: testi della pagina", () => {
       assert.ok(!/paus/i.test(`${x.meta.title} ${x.meta.description} ${x.lead}`), x.meta.description);
     });
 
-    test(`${l}: guida all'installazione in cinque passi, con il download e il collegamento all'account`, () => {
+    test(`${l}: guida all'installazione in sette passi, con il download e il collegamento all'account`, () => {
       const steps = x.install.steps;
-      assert.equal(steps.length, 5);
+      // dal 15/10/2026 sette passi, uno per ogni punto in cui si perde chi scarica, ognuno con il suo "Se ti blocchi qui"
+      assert.equal(steps.length, 7);
+      assert.equal(x.install.path.length, steps.length);
       assert.match(x.install.anchor, /^[a-z-]+$/);
       assert.equal(trackerInstallHref(l), `/${l}/tracker#${x.install.anchor}`);
-      // {file} solo nel passo 1 (il download, con il tasto), {link} solo nel passo 4 (il collegamento); passi corti
+      // {file} solo nel passo 2 (il download, con il tasto), {link} solo nel passo 5 (il collegamento); passi e aiuti corti
       steps.forEach((s, i) => {
-        assert.equal(s.text.includes("{file}"), i === 0, `passo ${i + 1}: {file}`);
-        assert.equal(s.text.includes("{link}"), i === 3, `passo ${i + 1}: {link}`);
+        assert.equal(s.text.includes("{file}"), i === 1, `passo ${i + 1}: {file}`);
+        assert.equal(s.text.includes("{link}"), i === 4, `passo ${i + 1}: {link}`);
         assert.ok(s.title && s.text.length > 40 && s.text.length <= 320, `passo ${i + 1}: ${s.text.length}`);
+        assert.ok(s.hint.length > 40 && s.hint.length <= 240, `passo ${i + 1}, aiuto: ${s.hint.length}`);
       });
+      // passo 1 l'accesso, 3 lo zip, 4 l'avviso di Windows con i due clic dello schema, 6 lo scanner
+      assert.match(steps[0].text, /Discord/);
+      assert.match(steps[2].hint, /zip/);
+      assert.ok(steps[3].hint.includes(x.install.smartscreen.more) && steps[3].hint.includes(x.install.smartscreen.run), "passo 4");
+      assert.match(steps[5].title + steps[5].text, /scanner|escáner/i);
+      for (const v of Object.values(x.install.smartscreen)) assert.ok(typeof v === "string" && v.length > 0);
+      assert.match(x.install.started, /3/);
       // requisiti in una riga, file dell'app, Setup, la X che chiude l'app fra i problemi
       assert.match(x.install.needs, /Windows 10/);
       assert.match(x.install.needs, /Steam/);
       assert.match(x.install.needs, /OriginsMeta/);
-      assert.match(steps[2].text, /OriginsMeta Tracker\.exe/);
-      assert.match(steps[4].text, /Setup/);
+      assert.match(steps[3].text, /OriginsMeta Tracker\.exe/);
+      assert.match(steps[6].text, /Setup/);
       assert.equal(x.install.tips.items.length, 3);
       assert.ok(x.install.tips.items.some((tip) => /X|croix/.test(tip)));
     });
@@ -75,9 +85,9 @@ describe("analytics: testi della pagina", () => {
       assert.ok(/IP/.test(analyticsInterestPrivacy[l]));
     });
 
-    test(`${l}: le tre immagini della pagina`, () => {
+    test(`${l}: le immagini della pagina`, () => {
       const s = SHOT[l];
-      for (const f of [`app-overview-${s}.webp`, `app-matches-${s}.webp`, `overlay-${s}.webp`]) assert.ok(fs.existsSync(new URL(`../../public/media/analytics/${f}`, import.meta.url)), f);
+      for (const f of [`app-overview-${s}.webp`, `app-matches-${s}.webp`, `overlay-${s}.webp`, `app-link-${s}.webp`]) assert.ok(fs.existsSync(new URL(`../../public/media/analytics/${f}`, import.meta.url)), f);
     });
   }
 });
