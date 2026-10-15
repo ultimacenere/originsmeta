@@ -6562,3 +6562,40 @@ returns table (state jsonb, updated_at timestamptz) language sql stable security
 $$;
 revoke all on function public.twitch_live_state(text) from public;
 grant execute on function public.twitch_live_state(text) to anon, authenticated;
+
+-- =====================================================================================================
+-- ===== 15/10/2026: DOWNLOAD DEL TRACKER =====
+-- =====================================================================================================
+-- 15/10/2026 — CLIC SUL TASTO DI DOWNLOAD DI ORIGINSMETA TRACKER (Pierluigi: "voglio avere accortezza di chi scarica il
+-- tracker, quindi il numero di click sul tasto di download").
+--   Ogni clic sul tasto di /tracker passa dalla rotta /api/tracker/download, che chiama tracker_download_log con il
+--   segreto del server (notify_key_ok, CRON_SECRET): solo il sito scrive, nessuno può gonfiare il conteggio dal browser.
+--   Una riga per clic: chi (l'account, se ha fatto l'accesso; null = clic senza accesso, rimandato alla pagina di
+--   accesso), quando e in che lingua. Niente IP né user agent. Se l'account si cancella la riga resta senza nome
+--   (set null): il conteggio non cambia. Nessuna lettura né scrittura diretta: lo legge lo staff con
+--   scripts/tracker-downloads.mjs (connessione diretta). Idempotente.
+-- =====================================================================================================
+
+create table if not exists public.tracker_downloads (
+  id bigint generated always as identity primary key,
+  owner uuid references public.profiles(id) on delete set null,
+  lang text check (lang in ('en', 'it', 'es', 'fr')),
+  created_at timestamptz not null default now()
+);
+create index if not exists tracker_downloads_created_idx on public.tracker_downloads (created_at);
+create index if not exists tracker_downloads_owner_idx on public.tracker_downloads (owner);
+comment on table public.tracker_downloads is 'Clic sul tasto di download di OriginsMeta Tracker (15/10/2026): account (null senza accesso), lingua, ora.';
+
+alter table public.tracker_downloads enable row level security;
+revoke all on public.tracker_downloads from anon, authenticated;
+
+-- Un clic, dalla rotta del download con il segreto del server. Un account che non esiste diventa null.
+create or replace function public.tracker_download_log(p_key text, p_owner uuid, p_lang text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  insert into public.tracker_downloads (owner, lang)
+  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr') then p_lang end);
+end $$;
+revoke all on function public.tracker_download_log(text, uuid, text) from public;
+grant execute on function public.tracker_download_log(text, uuid, text) to anon, authenticated;

@@ -1010,6 +1010,8 @@ export type Database = {
       tracker_live_push: { Args: { p_token: string; p_state: unknown }; Returns: string | null };
       /** ultimo stato di un canale collegato (anon), per l'estensione */
       twitch_live_state: { Args: { p_channel: string }; Returns: { state: unknown; updated_at: string }[] };
+      /** un clic sul tasto di download dell'app (blocco DOWNLOAD DEL TRACKER, 15/10/2026), solo dalla rotta /api/tracker/download con il segreto del server */
+      tracker_download_log: { Args: { p_key: string; p_owner: string | null; p_lang: string }; Returns: undefined };
       /** partite dall'app (anon, con il token, dalla rotta /api/tracker/sync); restituisce quante aggiunte */
       tracker_submit: { Args: { p_token: string; p_matches: unknown[] }; Returns: number };
       /** scollega un proprio PC; true se c'era */
