@@ -110,6 +110,350 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Demo 0.7.1 del 15/10/2026 (richiesta di Pierluigi del 16/10: "scrivi news, nuova patch per la demo"; il playtest ha
+    // chiuso il 15/10, quindi la demo è l'unica build). Fonte: il post Steam "Ranked is here!" del 15/10 alle 20:52:27 UTC
+    // (gid 1846651706679257, stesso testo incollato da Pierluigi) e la sua immagine ufficiale "Steam Demo Update 0.7.1",
+    // che dà il numero ed è la copertina (1600×900, intera). Nessun bilanciamento: le statistiche restano della 0.7 e la
+    // patch NON è in `patchOrder` di cards.ts (come il playtest 0.7.1): aggiungerla aprirebbe una patch nuova per mazzi e
+    // statistiche di Analytics, decisione di Pierluigi. Date della stagione classificata e del Grandmaster dall'AMA del 02/10
+    // (news building-origins-ama-design-balance, date "a matita"); il 21/09 Koin scriveva che la classificata sarebbe partita
+    // con lo Steam Next Fest. Le voci nuove le note della demo le danno solo a Huck Finn e Christopher Robin (il playtest
+    // 0.7.1 anche a Hansel and Gretel).
+    slug: "demo-patch-notes-0-7-1",
+    image: "/media/news-demo-071.webp",
+    cards: ["huck-finn", "christopher-robin"],
+    guides: ["origins-tcg-ranked", "play-the-demo", "steam-next-fest-2026"],
+    date: "2026-10-15",
+    title: n(
+      "Origins TCG demo 0.7.1: ranked mode is live before Steam Next Fest, and about 100 bugs are fixed",
+      "Demo 0.7.1 di Origins TCG: la classificata apre prima dello Steam Next Fest, e circa 100 bug corretti",
+      "Demo 0.7.1 de Origins TCG: la clasificatoria abre antes del Steam Next Fest y unos 100 errores corregidos",
+    ),
+    metaTitle: n(
+      "Origins TCG demo 0.7.1 patch notes: ranked is live",
+      "Demo 0.7.1 di Origins TCG: arriva la classificata",
+      "Demo 0.7.1 de Origins TCG: llega la clasificatoria",
+    ),
+    description: n(
+      "Origins TCG demo 0.7.1 of 15 October: ranked opens four days before Steam Next Fest, you see the opponent's mulligan and about 100 bugs are fixed.",
+      "Demo 0.7.1 di Origins TCG del 15 ottobre: la classificata apre prima dello Steam Next Fest, si vede il mulligan avversario e circa 100 bug corretti.",
+      "Demo 0.7.1 de Origins TCG del 15 de octubre: la clasificatoria abre antes del Steam Next Fest, ves el mulligan del rival y unos 100 errores corregidos.",
+    ),
+    summary: n(
+      "On 15 October Koin Games updated the Origins TCG demo on Steam to version 0.7.1, the day the playtest closed. The big news is ranked mode, four days before Steam Next Fest: for now the ladder stops at Grandmaster. The update also brings a new home screen and playmats, shows how many cards your opponent replaced at the mulligan and fixes about 100 bugs. There are no balance changes: card stats stay those of patch 0.7.",
+      "Il 15 ottobre Koin Games ha aggiornato la demo di Origins TCG su Steam alla versione 0.7.1, il giorno in cui ha chiuso il playtest. La novità grossa è la classificata, quattro giorni prima dello Steam Next Fest: per ora la scalata si ferma al Grandmaster. Arrivano anche una schermata principale nuova e i tappetini di gioco, si vede quante carte ha cambiato l'avversario al mulligan e sono corretti circa 100 bug. Nessun bilanciamento: le statistiche delle carte restano quelle della patch 0.7.",
+      "El 15 de octubre Koin Games actualizó la demo de Origins TCG en Steam a la versión 0.7.1, el día en que cerró el playtest. La gran novedad es la clasificatoria, cuatro días antes del Steam Next Fest: por ahora la escalera se detiene en Grandmaster. También llegan una pantalla principal nueva y los tapetes de juego, ves cuántas cartas cambió tu rival en el mulligan y se corrigen unos 100 errores. No hay cambios de equilibrio: las estadísticas de las cartas siguen siendo las del parche 0.7.",
+    ),
+    highlights: {
+      en: [
+        { label: "Ranked mode is live", text: "four days before Steam Next Fest; for now the ladder stops at Grandmaster", anchor: "ranked" },
+        { label: "Missions from ranked or PvE", text: "you choose where to complete them", anchor: "missions" },
+        { label: "The opponent's mulligan", text: "you see how many cards they replaced", anchor: "opponent-mulligan" },
+        { label: "New home screen and playmats", text: "still a work in progress, with a hint about the future", anchor: "home-playmats" },
+        { label: "Your language, faster bots, about 100 fixes", text: "plus a smarter collection search and new voices", anchor: "improvements" },
+        { label: "Known issues", text: "game speed, grading visuals not there yet, translations still in progress", anchor: "known-issues" },
+        { label: "No balance changes", text: "card stats on OriginsMeta don't change", anchor: "what-doesnt-change" },
+      ],
+      it: [
+        { label: "Arriva la classificata", text: "quattro giorni prima dello Steam Next Fest; per ora la scalata si ferma al Grandmaster", anchor: "classificata" },
+        { label: "Missioni dalla classificata o in PvE", text: "scegli tu dove completarle", anchor: "missioni" },
+        { label: "Il mulligan dell'avversario", text: "vedi quante carte ha cambiato", anchor: "mulligan-avversario" },
+        { label: "Schermata principale nuova e tappetini", text: "ancora un lavoro in corso, con un indizio sul futuro", anchor: "schermata-tappetini" },
+        { label: "La tua lingua, bot più veloci, circa 100 correzioni", text: "più una ricerca più furba nella collezione e voci nuove", anchor: "miglioramenti" },
+        { label: "Problemi noti", text: "velocità del gioco, grafica del grading non ancora, traduzioni in corso", anchor: "problemi-noti" },
+        { label: "Nessun bilanciamento", text: "le statistiche delle carte su OriginsMeta non cambiano", anchor: "cosa-non-cambia" },
+      ],
+      es: [
+        { label: "Llega la clasificatoria", text: "cuatro días antes del Steam Next Fest; por ahora la escalera se detiene en Grandmaster", anchor: "clasificatoria" },
+        { label: "Misiones desde la clasificatoria o en PvE", text: "tú eliges dónde completarlas", anchor: "misiones" },
+        { label: "El mulligan del rival", text: "ves cuántas cartas cambió", anchor: "mulligan-rival" },
+        { label: "Pantalla principal nueva y tapetes", text: "todavía en desarrollo, con una pista sobre el futuro", anchor: "pantalla-tapetes" },
+        { label: "Tu idioma, bots más rápidos, unas 100 correcciones", text: "y además una búsqueda más lista en la colección y voces nuevas", anchor: "mejoras" },
+        { label: "Problemas conocidos", text: "velocidad del juego, los gráficos de la gradación todavía no, traducciones en curso", anchor: "problemas-conocidos" },
+        { label: "Ningún cambio de equilibrio", text: "las estadísticas de las cartas en OriginsMeta no cambian", anchor: "lo-que-no-cambia" },
+      ],
+    },
+    body: n(
+      `## A small update before Steam Next Fest {#update}
+
+On 15 October Koin Games updated the main demo of Origins TCG on Steam to version 0.7.1. The post on Steam, titled "Ranked is here!", went up at 20:52 UTC; the version number is on the official image of the update, "Steam Demo Update 0.7.1". "This update is small", the team writes, but it wanted to squeeze a few quality-of-life fixes and features into the demo before Steam Next Fest, which starts on 19 October.
+
+It arrives the same day the playtest closed ([our article](/en/news/playtest-closing-crimson-cup-twitch)): from now on the demo is the only build to play, and it is also the build of the Crimson Cup ([our guide to Next Fest and the tournament](/en/guides/steam-next-fest-2026)). Several changes are the ones the playtest got with [version 0.7.1 of 8 October](/en/news/playtest-patch-notes-0-7-1); ranked, the new home screen, the playmats and the language at startup are new.
+
+## Ranked mode is live {#ranked}
+
+"It's been 84 years... but Ranked Mode is finally here!", writes the team. You climb the ladder and earn prizes, along with "the sobering realization that everyone above you is somehow better at this game". For now the ladder stops at Grandmaster, the top division, and Koin says it will "open those doors soon".
+
+On 21 September Koin had written that ranked would switch on with the start of Steam Next Fest: it arrived four days early. In the AMA of 2 October the team had given dates "in pencil": a season from 19 October to 4 December, and a Grandmaster leaderboard closed during the festival and open from 27 October, so that everyone starts at the same time ([our article](/en/news/building-origins-ama-design-balance#ranked)). The patch notes confirm that Grandmaster is closed for now, but they don't say whether the season counts from today or starts on 19 October. How ranked works, divisions and Victory Points included, is in [our ranked guide](/en/guides/origins-tcg-ranked).
+
+### Missions from ranked or PvE {#missions}
+
+Missions can now be completed as PvE, from the Missions section, or as PvP, from ranked: you choose. It is the same choice the playtest got on 8 October, after the build of 1 October had made missions PvE only.
+
+## What's new {#whats-new}
+
+### The opponent's mulligan {#opponent-mulligan}
+
+During the mulligan phase you now see how many cards your opponent replaced. Players asked for it on Discord, and the team says the idea was so good that it implemented it the very next day.
+
+### New home screen and playmats {#home-playmats}
+
+- **Home screen:** "quite a few" UI enhancements. The team calls it a work in progress.
+- **Playmats:** the home screen and the match have a new playmat. "Oh whatever could this imply down the road?", the team adds, and says nothing more.
+
+### Commanders, the board and the intro {#commanders-board}
+
+- **Commanders**, as the notes call them, now say a voice line and show their nameplate when you inspect them.
+- **Board effects:** clicking around the board triggers visual and sound effects. Both are placeholders, and the team asks players to "only judge them a medium amount".
+- **Intro cinematic:** an intro movie plays once. It still needs polish, and the team wants opinions on Discord.
+
+## Improvements {#improvements}
+
+### Collection search {#collection-search}
+
+The search in the collection accepts multi-word phrases, and searching for something a card summons also finds the card that summons it. On OriginsMeta, the search in [Cards](/en/cards) and in the [deck builder](/en/deck-builder) already looks at card names and card text.
+
+### Emotes and voices {#emotes-voices}
+
+- In the emote picker you can now clear a slot, so building your emote loadout is a little easier.
+- Huck Finn and Christopher Robin have new voices: they "no longer sound like creepy middle-aged men". Players had said so, and the team writes that internally everyone was saying the same thing.
+
+### The game starts in your language {#language}
+
+The game should now start in your own language, if your system is set to one the game supports. Patch 0.7 had brought the game to 13 languages ([our article](/en/news/patch-0-7)).
+
+### Faster bots {#bots}
+
+Computer-controlled opponents no longer play quite so slowly. The team says there is more to do, but hopes the difference shows.
+
+### About 100 bugs fixed {#bug-fixes}
+
+By the team's count, the update fixes around 100 bugs. The notes don't list them.
+
+## Known issues {#known-issues}
+
+- **Game speed and animations.** Some things are faster, but there is "still a LOT to do": it stays one of the team's highest priorities.
+- **Grading visuals.** They didn't make this update; Koin says it should have something to show "very soon". What grading is, with the sets and the Alpha Edition, is in [our article](/en/news/origins-sets-alpha-edition-grading).
+- **Other languages.** If you play in a language other than English, translations are still a work in progress and there is a lot of placeholder text.
+
+## What doesn't change {#what-doesnt-change}
+
+- **No balance changes.** Card stats stay those of [patch 0.7](/en/news/patch-0-7) of 29 September, the last balance patch before the Crimson Cup: card pages, the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) don't change, and published decks don't need updating.
+- **How to play the demo** stays the same: our [guide to playing the demo](/en/guides/play-the-demo).
+
+## What we don't know yet {#unknowns}
+
+- Whether the ranked season counts from 15 October or starts again on 19 October with Steam Next Fest.
+- Which prizes ranked gives, and when exactly the Grandmaster doors open: the AMA said 27 October, in pencil.
+- What the new playmats imply.
+- When the grading visuals arrive, and which bugs were fixed.
+
+## Where these notes come from {#sources}
+
+The post "Ranked is here!" that Koin Games published on the [Origins TCG Steam page](https://store.steampowered.com/news/app/4429430/view/1846651706679257) on 15 October 2026, and its official image, which gives the version number 0.7.1.`,
+      `## Un aggiornamento piccolo prima dello Steam Next Fest {#aggiornamento}
+
+Il 15 ottobre Koin Games ha aggiornato la demo principale di Origins TCG su Steam alla versione 0.7.1. Il post su Steam, intitolato "Ranked is here!", è uscito alle 20:52 UTC; il numero di versione sta nell'immagine ufficiale dell'aggiornamento, "Steam Demo Update 0.7.1". "Questo aggiornamento è piccolo", scrive il team, ma voleva far entrare nella demo qualche correzione e qualche funzione prima dello Steam Next Fest, che parte il 19 ottobre.
+
+Arriva lo stesso giorno in cui ha chiuso il playtest ([il nostro articolo](/it/news/playtest-closing-crimson-cup-twitch)): da adesso la demo è l'unica build in cui si gioca, ed è anche la build della Crimson Cup ([la nostra guida al Next Fest e al torneo](/it/guides/steam-next-fest-2026)). Diverse modifiche sono quelle che il playtest aveva avuto con la [versione 0.7.1 dell'8 ottobre](/it/news/playtest-patch-notes-0-7-1); la classificata, la schermata principale nuova, i tappetini e la lingua all'avvio sono novità.
+
+## Arriva la classificata {#classificata}
+
+"Sono passati 84 anni... ma la modalità classificata è finalmente arrivata!", scrive il team. Si scala la classifica e si vincono premi, insieme alla "triste scoperta che tutti quelli sopra di te sono in qualche modo più bravi a questo gioco". Per ora la scalata si ferma al Grandmaster, la divisione più alta, e Koin dice che "aprirà quelle porte presto".
+
+Il 21 settembre Koin aveva scritto che la classificata si sarebbe accesa con l'inizio dello Steam Next Fest: è arrivata con quattro giorni di anticipo. Nell'AMA del 2 ottobre il team aveva dato delle date "a matita": una stagione dal 19 ottobre al 4 dicembre, e una classifica del Grandmaster chiusa durante il festival e aperta dal 27 ottobre, così che tutti partano insieme ([il nostro articolo](/it/news/building-origins-ama-design-balance#classificata)). Le patch notes confermano che il Grandmaster per ora è chiuso, ma non dicono se la stagione conta da oggi o parte il 19 ottobre. Come funziona la classificata, divisioni e Punti Vittoria compresi, è nella [nostra guida alla classificata](/it/guides/origins-tcg-ranked).
+
+### Missioni dalla classificata o in PvE {#missioni}
+
+Le missioni ora si completano in PvE, dalla sezione Missioni, oppure in PvP, dalla classificata: scegli tu. È la stessa scelta che il playtest aveva avuto l'8 ottobre, dopo che la build del 1° ottobre aveva reso le missioni solo PvE.
+
+## Le novità {#novita}
+
+### Il mulligan dell'avversario {#mulligan-avversario}
+
+Durante la fase di mulligan ora vedi quante carte ha cambiato il tuo avversario. L'avevano chiesto i giocatori sul Discord, e il team dice che l'idea era così buona da realizzarla il giorno dopo.
+
+### Schermata principale nuova e tappetini {#schermata-tappetini}
+
+- **Schermata principale:** "parecchi" miglioramenti dell'interfaccia. Il team la definisce un lavoro in corso.
+- **Tappetini di gioco:** la schermata principale e la partita hanno un tappetino nuovo. "Chissà che cosa vorrà mai dire per il futuro?", aggiunge il team, senza dire altro.
+
+### Commander, tabellone e filmato introduttivo {#commander-tabellone}
+
+- I **Commander**, come li chiamano le note, ora dicono una battuta e mostrano la loro targhetta quando li esamini.
+- **Effetti sul tabellone:** cliccando sul tabellone partono effetti visivi e sonori. Sono entrambi provvisori, e il team chiede di giudicarli "solo un pochino".
+- **Filmato introduttivo:** un filmato d'apertura parte una volta sola. Va ancora rifinito, e il team vuole pareri sul Discord.
+
+## I miglioramenti {#miglioramenti}
+
+### La ricerca nella collezione {#ricerca-collezione}
+
+La ricerca nella collezione accetta frasi di più parole, e cercando qualcosa che una carta evoca si trova anche la carta che la evoca. Su OriginsMeta la ricerca nelle [Carte](/it/cards) e nel [deck builder](/it/deck-builder) guarda già il nome e il testo delle carte.
+
+### Emote e voci {#emote-voci}
+
+- Nella scelta delle emote ora puoi svuotare uno slot, così sistemare le tue emote è un po' più semplice.
+- Huck Finn e Christopher Robin hanno voci nuove: "non sembrano più inquietanti uomini di mezza età". L'avevano detto i giocatori, e il team scrive che anche internamente dicevano tutti la stessa cosa.
+
+### Il gioco parte nella tua lingua {#lingua}
+
+Il gioco ora dovrebbe partire nella tua lingua, se il sistema è impostato su una di quelle che supporta. La patch 0.7 aveva portato il gioco a 13 lingue ([il nostro articolo](/it/news/patch-0-7)).
+
+### Bot più veloci {#bot}
+
+Gli avversari controllati dal computer non giocano più così lentamente. Il team dice che c'è ancora da fare, ma spera che la differenza si senta.
+
+### Circa 100 bug corretti {#bug-corretti}
+
+Secondo il conto del team, l'aggiornamento corregge circa 100 bug. Le note non li elencano.
+
+## Problemi noti {#problemi-noti}
+
+- **Velocità del gioco e animazioni.** Qualcosa è più veloce, ma c'è "ancora MOLTO da fare": resta una delle priorità più alte del team.
+- **Grafica del grading.** Non è entrata in questo aggiornamento; Koin dice che dovrebbe avere qualcosa da mostrare "molto presto". Che cos'è il grading, con i set e l'Alpha Edition, è nel [nostro articolo](/it/news/origins-sets-alpha-edition-grading).
+- **Altre lingue.** Se giochi in una lingua diversa dall'inglese, le traduzioni sono ancora un lavoro in corso e ci sono molti testi provvisori.
+
+## Cosa non cambia {#cosa-non-cambia}
+
+- **Nessun bilanciamento.** Le statistiche delle carte restano quelle della [patch 0.7](/it/news/patch-0-7) del 29 settembre, l'ultima di bilanciamento prima della Crimson Cup: le schede carta, il [deck builder](/it/deck-builder) e il [MetaShifting](/it/metashifting) non cambiano, e i mazzi pubblicati non vanno aggiornati.
+- **Come si gioca la demo** resta uguale: la nostra [guida per giocare la demo](/it/guides/play-the-demo).
+
+## Cosa non sappiamo ancora {#cosa-non-sappiamo}
+
+- Se la stagione classificata conta dal 15 ottobre o riparte il 19 ottobre con lo Steam Next Fest.
+- Quali premi dà la classificata, e quando si aprono esattamente le porte del Grandmaster: l'AMA diceva 27 ottobre, a matita.
+- Che cosa vogliono dire i tappetini nuovi.
+- Quando arriva la grafica del grading, e quali bug sono stati corretti.
+
+## Da dove arrivano queste note {#fonti}
+
+Il post "Ranked is here!" che Koin Games ha pubblicato sulla [pagina Steam di Origins TCG](https://store.steampowered.com/news/app/4429430/view/1846651706679257) il 15 ottobre 2026, e la sua immagine ufficiale, che dà il numero di versione 0.7.1. Le citazioni sono tradotte da noi.`,
+      `## Una actualización pequeña antes del Steam Next Fest {#actualizacion}
+
+El 15 de octubre Koin Games actualizó la demo principal de Origins TCG en Steam a la versión 0.7.1. La publicación de Steam, titulada "Ranked is here!", salió a las 20:52 UTC; el número de versión está en la imagen oficial de la actualización, "Steam Demo Update 0.7.1". "Esta actualización es pequeña", escribe el equipo, pero quería meter en la demo algunas correcciones y funciones antes del Steam Next Fest, que empieza el 19 de octubre.
+
+Llega el mismo día en que cerró el playtest ([nuestro artículo](/es/news/playtest-closing-crimson-cup-twitch)): desde ahora la demo es la única build en la que se juega, y también es la build de la Crimson Cup ([nuestra guía del Next Fest y del torneo](/es/guides/steam-next-fest-2026)). Varios cambios son los que el playtest recibió con la [versión 0.7.1 del 8 de octubre](/es/news/playtest-patch-notes-0-7-1); la clasificatoria, la pantalla principal nueva, los tapetes y el idioma al iniciar son nuevos.
+
+## Llega la clasificatoria {#clasificatoria}
+
+"Han pasado 84 años... ¡pero el modo clasificatorio por fin está aquí!", escribe el equipo. Subes en la escalera y ganas premios, junto con "la amarga constatación de que todos los que están por encima de ti son de algún modo mejores en este juego". Por ahora la escalera se detiene en Grandmaster, la división más alta, y Koin dice que "abrirá esas puertas pronto".
+
+El 21 de septiembre Koin había escrito que la clasificatoria se activaría con el inicio del Steam Next Fest: ha llegado con cuatro días de adelanto. En el AMA del 2 de octubre el equipo había dado fechas "a lápiz": una temporada del 19 de octubre al 4 de diciembre, y una clasificación de Grandmaster cerrada durante el festival y abierta desde el 27 de octubre, para que todos empiecen a la vez ([nuestro artículo](/es/news/building-origins-ama-design-balance#clasificatoria)). Las notas del parche confirman que Grandmaster está cerrado por ahora, pero no dicen si la temporada cuenta desde hoy o empieza el 19 de octubre. Cómo funciona la clasificatoria, divisiones y Puntos de Victoria incluidos, está en [nuestra guía de la clasificatoria](/es/guides/origins-tcg-ranked).
+
+### Misiones desde la clasificatoria o en PvE {#misiones}
+
+Las misiones ahora se completan en PvE, desde la sección de Misiones, o en PvP, desde la clasificatoria: tú eliges. Es la misma opción que el playtest recibió el 8 de octubre, después de que la build del 1 de octubre dejara las misiones solo en PvE.
+
+## Las novedades {#novedades}
+
+### El mulligan del rival {#mulligan-rival}
+
+Durante la fase de mulligan ahora ves cuántas cartas cambió tu rival. Lo pidieron los jugadores en Discord, y el equipo dice que la idea era tan buena que la implementó al día siguiente.
+
+### Pantalla principal nueva y tapetes {#pantalla-tapetes}
+
+- **Pantalla principal:** "bastantes" mejoras de la interfaz. El equipo dice que todavía está en desarrollo.
+- **Tapetes de juego:** la pantalla principal y la partida tienen un tapete nuevo. "¿Qué podrá significar esto en el futuro?", añade el equipo, sin decir nada más.
+
+### Commanders, tablero y cinemática {#commanders-tablero}
+
+- Los **Commanders**, como los llaman las notas, ahora dicen una frase y muestran su placa con el nombre cuando los examinas.
+- **Efectos en el tablero:** al hacer clic por el tablero aparecen efectos visuales y de sonido. Los dos son provisionales, y el equipo pide juzgarlos "solo un poquito".
+- **Cinemática de introducción:** una cinemática de inicio se reproduce una sola vez. Todavía hay que pulirla, y el equipo quiere opiniones en Discord.
+
+## Las mejoras {#mejoras}
+
+### La búsqueda en la colección {#busqueda-coleccion}
+
+La búsqueda en la colección acepta frases de varias palabras, y al buscar algo que una carta invoca también aparece la carta que lo invoca. En OriginsMeta, la búsqueda en [Cartas](/es/cards) y en el [deck builder](/es/deck-builder) ya mira el nombre y el texto de las cartas.
+
+### Emotes y voces {#emotes-voces}
+
+- En el selector de emotes ahora puedes vaciar un hueco, así que preparar tus emotes es un poco más fácil.
+- Huck Finn y Christopher Robin tienen voces nuevas: "ya no suenan como inquietantes hombres de mediana edad". Lo habían dicho los jugadores, y el equipo escribe que internamente todos decían lo mismo.
+
+### El juego empieza en tu idioma {#idioma}
+
+El juego ahora debería empezar en tu idioma, si tu sistema está configurado en uno de los que admite. El parche 0.7 había llevado el juego a 13 idiomas ([nuestro artículo](/es/news/patch-0-7)).
+
+### Bots más rápidos {#bots}
+
+Los rivales controlados por el ordenador ya no juegan tan despacio. El equipo dice que queda trabajo por hacer, pero espera que se note la diferencia.
+
+### Unos 100 errores corregidos {#errores-corregidos}
+
+Según la cuenta del equipo, la actualización corrige unos 100 errores. Las notas no los enumeran.
+
+## Problemas conocidos {#problemas-conocidos}
+
+- **Velocidad del juego y animaciones.** Algunas cosas van más rápido, pero "todavía queda MUCHO por hacer": sigue siendo una de las máximas prioridades del equipo.
+- **Gráficos de la gradación.** No entraron en esta actualización; Koin dice que debería tener algo que enseñar "muy pronto". Qué es la gradación, con los sets y la Alpha Edition, está en [nuestro artículo](/es/news/origins-sets-alpha-edition-grading).
+- **Otros idiomas.** Si juegas en un idioma distinto del inglés, las traducciones todavía están en desarrollo y hay muchos textos provisionales.
+
+## Lo que no cambia {#lo-que-no-cambia}
+
+- **Ningún cambio de equilibrio.** Las estadísticas de las cartas siguen siendo las del [parche 0.7](/es/news/patch-0-7) del 29 de septiembre, el último de equilibrio antes de la Crimson Cup: las páginas de las cartas, el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) no cambian, y los mazos publicados no hay que actualizarlos.
+- **Cómo se juega la demo** sigue igual: nuestra [guía para jugar la demo](/es/guides/play-the-demo).
+
+## Lo que todavía no sabemos {#lo-que-no-sabemos}
+
+- Si la temporada clasificatoria cuenta desde el 15 de octubre o vuelve a empezar el 19 de octubre con el Steam Next Fest.
+- Qué premios da la clasificatoria, y cuándo exactamente se abren las puertas de Grandmaster: el AMA decía 27 de octubre, a lápiz.
+- Qué significan los tapetes nuevos.
+- Cuándo llegan los gráficos de la gradación, y qué errores se han corregido.
+
+## De dónde vienen estas notas {#fuentes}
+
+La publicación "Ranked is here!" que Koin Games publicó en la [página de Steam de Origins TCG](https://store.steampowered.com/news/app/4429430/view/1846651706679257) el 15 de octubre de 2026, y su imagen oficial, que da el número de versión 0.7.1. Las citas son traducción nuestra.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Is ranked mode available in the Origins TCG demo?",
+          a: "Yes, since demo 0.7.1 of 15 October 2026, four days before Steam Next Fest. For now the ladder stops at Grandmaster: Koin says it will open that division soon, and in the AMA of 2 October the team had pencilled in 27 October.",
+        },
+        {
+          q: "Does demo 0.7.1 change card stats?",
+          a: "No. It has no balance changes: card stats stay those of patch 0.7 of 29 September 2026, the last balance patch before the Crimson Cup, and the card pages on OriginsMeta don't change.",
+        },
+        {
+          q: "Do ranked games count toward missions in the Origins TCG demo?",
+          a: "Yes. Since demo 0.7.1 you can complete missions as PvP from ranked, or as PvE from the Missions section.",
+        },
+      ],
+      it: [
+        {
+          q: "La classificata c'è nella demo di Origins TCG?",
+          a: "Sì, dalla demo 0.7.1 del 15 ottobre 2026, quattro giorni prima dello Steam Next Fest. Per ora la scalata si ferma al Grandmaster: Koin dice che aprirà presto quella divisione, e nell'AMA del 2 ottobre il team aveva segnato a matita il 27 ottobre.",
+        },
+        {
+          q: "La demo 0.7.1 cambia le statistiche delle carte?",
+          a: "No. Non ha bilanciamenti: le statistiche delle carte restano quelle della patch 0.7 del 29 settembre 2026, l'ultima di bilanciamento prima della Crimson Cup, e le schede carta di OriginsMeta non cambiano.",
+        },
+        {
+          q: "Le partite classificate contano per le missioni nella demo di Origins TCG?",
+          a: "Sì. Dalla demo 0.7.1 le missioni si completano in PvP dalla classificata, oppure in PvE dalla sezione Missioni.",
+        },
+      ],
+      es: [
+        {
+          q: "¿La clasificatoria está en la demo de Origins TCG?",
+          a: "Sí, desde la demo 0.7.1 del 15 de octubre de 2026, cuatro días antes del Steam Next Fest. Por ahora la escalera se detiene en Grandmaster: Koin dice que abrirá pronto esa división, y en el AMA del 2 de octubre el equipo había apuntado a lápiz el 27 de octubre.",
+        },
+        {
+          q: "¿La demo 0.7.1 cambia las estadísticas de las cartas?",
+          a: "No. No tiene cambios de equilibrio: las estadísticas de las cartas siguen siendo las del parche 0.7 del 29 de septiembre de 2026, el último de equilibrio antes de la Crimson Cup, y las páginas de las cartas de OriginsMeta no cambian.",
+        },
+        {
+          q: "¿Las partidas clasificatorias cuentan para las misiones en la demo de Origins TCG?",
+          a: "Sí. Desde la demo 0.7.1 las misiones se completan en PvP desde la clasificatoria, o en PvE desde la sección de Misiones.",
+        },
+      ],
+    },
+    url: "https://store.steampowered.com/news/app/4429430/view/1846651706679257",
+    source: "steam",
+  },
+  {
     // Un mese di OriginsMeta (15/10/2026, testo di Pierluigi incollato lo stesso giorno, "da pubblicare adesso"): il sito è
     // online dall'una di notte del 15/09/2026 (primo commit 01:00). Numeri dati da Pierluigi (Vercel, GA4, statistiche dei
     // mazzi e del Tracker al 15/10): 6.800 persone, 47.000 pagine, punte di 350 utenti unici al giorno, 1.900 codici copiati,
