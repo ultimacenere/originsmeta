@@ -4,8 +4,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { TRACKER_DOWNLOAD_FILE, analyticsLabels, trackerDownloadHref } from "@/lib/analyticsLabels";
-import { TrackerDownloadButton } from "@/components/TrackerDownloadButton";
+import { TRACKER_DOWNLOAD_FILE, analyticsLabels, trackerDownloadHref, trackerInstallHref } from "@/lib/analyticsLabels";
+import { TrackerDownloadButton, TrackerSignInStep } from "@/components/TrackerDownloadButton";
+import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { requireAnalyticsAccess } from "@/lib/community/analyticsAccess";
@@ -26,7 +27,9 @@ import { dropHreflang } from "@/lib/community/deckQuality";
   Releases o alla pagina di accesso (l'indirizzo dello zip non è nella pagina); i clic
   sul download contano come `analytics_download` (attributi data-om-*, analytics.ts).
   Screenshot dell'app vera nelle tre lingue dell'app (public/media/analytics, fatti il 02/10/2026 con --capture su una
-  copia dei dati, senza collegamento: nessun nome utente), con le carte intere e i loro crediti.
+  copia dei dati, senza collegamento: nessun nome utente), con le carte intere e i loro crediti. Sono dell'app 0.2/0.3
+  (dicono "Analytics" e "funziona anche solo su questo PC"): vanno rifatti con la 0.4. Lo screenshot della schermata di
+  collegamento (app-link-*, 15/10/2026) è invece della 0.4.6, fatto con `--capture` e una cartella dati vuota.
 */
 
 const OVERVIEW = { width: 1200, height: 799 };
@@ -52,9 +55,63 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   return ANALYTICS_PUBLIC ? meta : dropHreflang(meta);
 }
 
-/** Il tasto del download (12/10/2026): sempre verso la rotta che controlla l'accesso; il testo lo sceglie il browser. */
+/** La schermata di collegamento dell'app 0.4.6 al primo avvio (15/10/2026, `npm run capture` con una cartella dati vuota, ritagliata). */
+const LINK_SHOT = { width: 736, height: 392 };
+
+/** Il tasto del download (12/10/2026): sempre verso la rotta che controlla l'accesso; il testo lo sceglie il browser.
+ * Dal 15/10/2026, dopo il clic, la pagina scorre al passo 3 (l'estrazione). */
 function DownloadButton({ locale, x, placement }: { locale: Locale; x: (typeof analyticsLabels)[Locale]; placement: "top" | "install" }) {
-  return <TrackerDownloadButton href={trackerDownloadHref(locale)} label={x.download.button} signInLabel={x.download.signIn} placement={placement} />;
+  return (
+    <TrackerDownloadButton
+      href={trackerDownloadHref(locale)}
+      label={x.download.button}
+      signInLabel={x.download.signIn}
+      placement={placement}
+      next={{ id: `${x.install.anchor}-3`, label: x.install.started }}
+    />
+  );
+}
+
+/**
+ * L'avviso SmartScreen di Windows (15/10/2026), dove si ferma chi scarica un'app non firmata: uno schema semplificato
+ * delle due schermate, con i testi di Windows nella lingua della pagina e i due clic segnati. Non è uno screenshot (non
+ * ce ne sono di veri) e la didascalia lo dice.
+ */
+function SmartScreenSketch({ s }: { s: (typeof analyticsLabels)[Locale]["install"]["smartscreen"] }) {
+  const badge = "absolute -top-7 left-0 whitespace-nowrap rounded-full bg-gold px-2 py-0.5 font-mono text-[11px] font-bold text-ink";
+  return (
+    <figure className="mt-4">
+      <div className="grid gap-3 sm:grid-cols-2" aria-hidden="true">
+        <div className="relative rounded-md bg-[#0b5cad] p-4 text-white">
+          <p className="text-lg font-semibold leading-tight">{s.title}</p>
+          <p className="mt-2 text-xs text-white/85">{s.body}</p>
+          <p className="relative mt-9 inline-block rounded px-1 text-xs underline outline outline-2 outline-gold">
+            {s.more}
+            <span className={badge}>{s.first}</span>
+          </p>
+          <div className="mt-4 flex justify-end">
+            <span className="rounded-sm border border-white/60 px-3 py-1 text-xs">{s.dontRun}</span>
+          </div>
+        </div>
+        <div className="relative rounded-md bg-[#0b5cad] p-4 text-white">
+          <p className="text-lg font-semibold leading-tight">{s.title}</p>
+          <p className="mt-2 text-xs text-white/85">
+            {s.app} OriginsMeta Tracker.exe
+            <br />
+            {s.publisher} {s.unknown}
+          </p>
+          <div className="mt-10 flex flex-wrap justify-end gap-2">
+            <span className="relative rounded-sm border border-white/60 px-3 py-1 text-xs outline outline-2 outline-offset-2 outline-gold">
+              {s.run}
+              <span className={badge}>{s.second}</span>
+            </span>
+            <span className="rounded-sm border border-white/60 px-3 py-1 text-xs">{s.dontRun}</span>
+          </div>
+        </div>
+      </div>
+      <figcaption className="mt-2 text-xs text-pale-muted">{s.caption}</figcaption>
+    </figure>
+  );
 }
 
 /** Il testo di un passo con i segnaposto al loro posto: `{file}` il nome dello zip, `{link}` il link alla pagina dell'account. */
@@ -69,6 +126,9 @@ export default async function TrackerPage({ params }: { params: LocaleParams }) 
   const shot = SHOT_LOCALE[locale];
   const path = href(locale, "/tracker");
   const install = x.install;
+  const stepId = (i: number) => `${install.anchor}-${i + 1}`;
+  // passo 1: la pagina di accesso con il ritorno alla guida, come la rotta del download per chi non ha fatto l'accesso
+  const loginHref = `${href(locale, "/login")}?next=${encodeURIComponent(trackerInstallHref(locale))}`;
   const placeholders = {
     file: <code className="break-all font-mono text-sm text-chalk">{TRACKER_DOWNLOAD_FILE}</code>,
     link: (
@@ -134,34 +194,62 @@ export default async function TrackerPage({ params }: { params: LocaleParams }) 
         </div>
       </section>
 
-      {/* La guida all'installazione (10/10/2026; cinque passi brevi dal 12/10/2026): un elenco ordinato con l'ancora nella lingua (#install, #installazione,
-          #instalacion, #installation), dove portano i link di /account e /account/tracker. */}
+      {/* La guida all'installazione (10/10/2026; cinque passi brevi dal 12/10/2026; sette dal 15/10/2026, uno per ogni punto
+          in cui si perde chi scarica, ognuno con il suo "Se ti blocchi qui"): un elenco ordinato con l'ancora nella lingua
+          (#install, #installazione, #instalacion, #installation), dove portano i link di /account e /account/tracker, e un
+          id per passo (#installazione-3) per il percorso in breve e per il salto dopo il download. */}
       <section id={install.anchor} className="mt-14 max-w-3xl scroll-mt-24" aria-labelledby="an-install">
         <h2 id="an-install" className="t-section">
           {install.title}
         </h2>
         <p className="mt-2 text-pale-muted">{install.intro}</p>
         <p className="mt-3 text-sm text-pale">{install.needs}</p>
+        <ol className="mt-5 flex flex-wrap gap-2" aria-label={install.title}>
+          {install.path.map((label, i) => (
+            <li key={label}>
+              <a href={`#${stepId(i)}`} className="inline-flex items-center gap-1.5 rounded-full border border-felt-line px-3 py-1 text-sm text-pale hover:border-mint hover:text-chalk">
+                <span className="font-mono text-xs font-bold text-mint">{i + 1}</span>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ol>
         <ol className="mt-6 grid gap-3">
           {install.steps.map((step, i) => (
-            <li key={step.title} className="card-night flex gap-4 p-4 sm:p-5">
+            <li key={step.title} id={stepId(i)} className="card-night flex scroll-mt-24 gap-4 p-4 sm:p-5">
               <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-mint font-mono text-base font-bold text-ink">
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
                 <h3 className="t-item">{step.title}</h3>
                 <p className="mt-1 text-pale">{stepText(step.text, placeholders)}</p>
-                {/* il passo del download ha il tasto */}
-                {step.text.includes("{file}") ? (
-                  <p className="mt-3">
-                    <DownloadButton locale={locale} x={x} placement="install" />
-                  </p>
+                {/* passo 1: accesso; passo con {file}: il tasto del download; passo 4: l'avviso di Windows; passo 5: la schermata dell'app */}
+                {i === 0 ? (
+                  <div className="mt-3">
+                    <TrackerSignInStep loginHref={loginHref} signInLabel={install.signInCta} signedInLabel={install.signedIn} />
+                  </div>
                 ) : null}
+                {step.text.includes("{file}") ? (
+                  <div className="mt-3">
+                    <DownloadButton locale={locale} x={x} placement="install" />
+                  </div>
+                ) : null}
+                {i === 3 ? <SmartScreenSketch s={install.smartscreen} /> : null}
+                {i === 4 ? (
+                  <figure className="mt-4 overflow-hidden rounded-lg border border-felt-line bg-felt-deep">
+                    <Image src={`/media/analytics/app-link-${shot}.webp`} {...LINK_SHOT} alt={install.shotAlt} sizes="(min-width: 768px) 640px, 90vw" className="h-auto w-full" />
+                    <figcaption className="px-3 py-2 text-xs text-pale-muted">{install.shotCaption}</figcaption>
+                  </figure>
+                ) : null}
+                <div className="mt-3 rounded-lg border-l-2 border-gold bg-felt-deep/60 px-3 py-2 text-sm">
+                  <p className="kicker text-gold">{install.stuck}</p>
+                  <p className="mt-1 text-pale">{step.hint}</p>
+                </div>
               </div>
             </li>
           ))}
         </ol>
-        {/* i problemi più comuni (12/10/2026): fuori dai passi, così i passi restano corti */}
+        {/* da sapere dopo l'installazione (12/10/2026, dal 15/10/2026 con il Discord per chi resta bloccato) */}
         <div className="card-night mt-6 p-4 sm:p-5">
           <h3 className="t-item">{install.tips.title}</h3>
           <ul className="mt-2 grid gap-2 text-pale">
@@ -174,6 +262,11 @@ export default async function TrackerPage({ params }: { params: LocaleParams }) 
               </li>
             ))}
           </ul>
+          <p className="mt-4">
+            <a href={ORIGINSMETA_DISCORD} target="_blank" rel="noopener noreferrer" className="link-mint font-bold">
+              {install.tips.discord} →
+            </a>
+          </p>
         </div>
       </section>
 
