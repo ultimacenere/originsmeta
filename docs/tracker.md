@@ -205,7 +205,7 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
   (`moveOldData`: storico, stato, invii, collegamento, overlay; la cartella vecchia resta).
 - `src/main/account.ts`, `sync.ts`: collegamento e invio (sotto). `src/main/overlay.ts`: overlay (sotto).
 - `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra la cui X chiude tutta l'app con overlay e Deck tracker (dal 10/10/2026, prima la nascondeva), una sola
-  copia, "Avvia con Windows" spento di default, sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
+  copia, avvio automatico (sotto, "Avvio automatico e pannelli sopra il gioco"), sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
   permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
 - `src/renderer/`: interfaccia EN/IT/ES con i pannelli "Account OriginsMeta" e "Overlay"; `src/overlay/`: la pagina
   dell'overlay; `src/preload/`: i due ponti (l'overlay può solo leggere i suoi dati).
@@ -295,7 +295,7 @@ menu, testi en/it/es, `productName` del pacchetto, eseguibile `OriginsMeta Track
 - **cartella dei dati** `%APPDATA%\OriginsMeta Analytics`: `main.ts` la imposta esplicitamente (`dataDir`), perché col
   nome nuovo Electron userebbe `%APPDATA%\OriginsMeta Tracker` (la cartella di prima del 01/10) e la chiave di
   safeStorage del suo `Local State` renderebbe illeggibile il token, come il 01/10;
-- **AppUserModelId** `com.originsmeta.analytics`: è anche il nome della voce di "Avvia con Windows" nel registro. Chi la
+- **AppUserModelId** `com.originsmeta.analytics`: è anche il nome della voce di avvio automatico nel registro. Chi la
   aveva accesa con `OriginsMeta Analytics.exe` passa da sé a `OriginsMeta Tracker.exe` al primo avvio di questo
   (`migrateLoginItem`, `staleLoginItem`: la voce vecchia si toglie, la nuova si mette con lo stesso stato
   abilitato/disabilitato);
@@ -810,3 +810,24 @@ dipende.
 - Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate.
 - Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.
 - Uso dei dati del client (poteri leggendari, luoghi): contengono anche carte non annunciate.
+
+## Avvio automatico e pannelli sopra il gioco (0.4.7, 16/10/2026)
+
+- **Avvio con il gioco** (Pierluigi: "aggiungi avvio automatico con l'avvio del gioco ma senza aprire il builder, solo
+  icona vicino all'orologio… a noi ci interessa il tracking delle sue partite principalmente"). `src/main/startup.ts`
+  (test `startup.test.ts`): tre scelte, "Con il gioco" (di default), "Con Windows", "Mai", nella pagina Setup e nel
+  menu dell'icona, salvate in `startup.json`. Windows non sa lanciare un programma quando ne parte un altro senza
+  permessi da amministratore, quindi "con il gioco" è la stessa voce "Esegui all'avvio" di prima con
+  `--hidden --wait-game`: l'app aspetta senza icona, finestre né letture e guarda ogni 10 secondi `tasklist`
+  (`gameRunning`: `OriginsTCG*.exe`); quando vede il gioco parte solo nella barra e registra le partite. Avviata in
+  automatico (con il gioco o con Windows) non apre la finestra né overlay e pannelli: quelli aperti l'ultima volta
+  tornano quando il giocatore apre l'app (`layersDeferred`, `openSavedLayers`), e dal menu dell'icona si accendono
+  uno per uno. Se il giocatore apre l'app mentre aspetta il gioco, parte subito con la finestra. Al primo avvio della
+  0.4.7 (`initialStartMode`): chi aveva "Avvia con Windows" acceso lo tiene, chi l'aveva disattivato da Gestione
+  attività resta spento, tutti gli altri passano a "Con il gioco". In sviluppo nessuna scelta automatica.
+- **Pannelli che sparivano** (Pierluigi: "a volte scompaiono i layer anche con disattivato il flag… per rimetterli
+  devo sflaggare e riflaggare"): per Electron una finestra minimizzata o coperta è ancora visibile, quindi
+  `syncPanelVisibility` non faceva niente. Ora ogni 1,5 secondi `layerAction` (`src/main/panelVisibility.ts`, test
+  `panelVisibility.test.ts`) rimostra le finestre minimizzate e riporta in primo piano pannelli e overlay
+  (`setAlwaysOnTop` + `moveTop`, senza prendere il fuoco), mai mentre il giocatore li usa o li allarga. Causa non
+  riprodotta dal vivo: da confermare sul gioco.

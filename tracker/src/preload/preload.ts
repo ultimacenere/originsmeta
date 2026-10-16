@@ -12,7 +12,7 @@ const api: TrackerApi & { rendered(): void } = {
     ipcRenderer.on("tracker:state", handler);
     return () => ipcRenderer.removeListener("tracker:state", handler);
   },
-  setOpenAtLogin: (on) => ipcRenderer.invoke("tracker:login", on),
+  setStartMode: (mode) => ipcRenderer.invoke("tracker:login", mode),
   openDataFolder: () => ipcRenderer.invoke("tracker:folder"),
   openLink: (url) => ipcRenderer.invoke("tracker:link", url),
   // account OriginsMeta (Fase 3)

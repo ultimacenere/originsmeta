@@ -69,7 +69,8 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   Prove: `ORIGINSMETA_UPDATE_FROM=<versione finta>`, `ORIGINSMETA_UPDATE_DELAY_MS`; spento con `ORIGINSMETA_NO_UPDATE=1`.
 - Tasto "Chiudi l'app" in alto a destra (11/10/2026), come la X e "Esci".
 - Interfaccia e menu dell'icona in inglese, italiano e spagnolo secondo la lingua di Windows.
-- "Avvia con Windows" è spento finché il giocatore non lo accende (nella finestra o nel menu dell'icona).
+- Avvio automatico (0.4.7): "Con il gioco" di default (l'app aspetta il gioco e parte solo come icona accanto
+  all'orologio, senza finestra né pannelli), "Con Windows" o "Mai", nella pagina Setup o nel menu dell'icona.
 
 ## Regole (da docs/tracker.md)
 
