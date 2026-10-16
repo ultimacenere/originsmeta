@@ -236,6 +236,11 @@ export type FramesApi = {
   ended(): void;
   /** Un fotogramma letto dal riconoscitore (shared/reconstruct.ts). */
   scan(frame: ScanFrame): void;
+  /**
+   * Il ritaglio PNG del nome dell'avversario nella schermata VS (14/10/2026, shared/botNames.ts): il processo principale
+   * lo legge con l'OCR di Windows solo per sapere se è un bot, poi lo dimentica.
+   */
+  name(png: Uint8Array): void;
 };
 
 /**

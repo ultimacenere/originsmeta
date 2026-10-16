@@ -40,6 +40,10 @@
  *   partita finisce senza replay, ne aggiunge giocate e carte dell'avversario (`applyScan`). Acceso di default dalla
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
+ * - **Partite contro i bot** (0.4.7, 14/10/2026, Pierluigi: "non devono più essere registrate"): lo scanner legge il nome
+ *   dell'avversario nella schermata VS con l'OCR di Windows (frames.ts, ocr.ts) e, se è un bot (shared/botNames.ts:
+ *   Big Bob, i boss "(BOT)" e l'elenco di bot-names.json), la partita non entra nello storico e non parte per il sito.
+ *   Il nome non si salva né si mostra; con lo scanner spento le partite si registrano come prima.
  * - **Solo con l'account** (0.4.0, 12/10/2026, access.ts; Pierluigi: "se non sono registrati con il cazzo possono
  *   usarla"): senza un collegamento verificato dal sito il "motore" (watcher dei file del gioco, scanner, overlay,
  *   pannelli, sorgente per OBS, invio) resta spento e la finestra mostra solo il collegamento e "Chiudi l'app". Il token
@@ -347,6 +351,13 @@ async function finishFromScreen(at: number) {
   const seen = scan?.result ? { result: scan.result, resultAt: scan.resultAt } : frames.resultNear(at);
   if (!seen.result) return;
   const endedAt = new Date(seen.resultAt ?? at).toISOString();
+  // contro un bot (nome della schermata VS, 14/10/2026): non si registra; resta il segnaposto in `fromScreen`, così la
+  // stessa partita portata più tardi dalle statistiche del gioco si scarta
+  if (frames.botMatch(at)) {
+    fromScreen.push({ at, result: seen.result, used: false });
+    frames.event("match-bot", { source: "screen", endedAt, result: seen.result });
+    return;
+  }
   const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
@@ -1355,6 +1366,11 @@ async function boot() {
     const stored = Number.isFinite(end) ? store.matches.find((m) => m.result === raw.result && nearTo(m.endedAt, end)) : undefined;
     if (stored) {
       frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, storedAt: stored.endedAt });
+      return;
+    }
+    // contro un bot (nome della schermata VS, 14/10/2026): non si registra
+    if (frames && Number.isFinite(end) && frames.botMatch(end)) {
+      frames.event("match-bot", { source: "files", endedAt: raw.endedAt, result: raw.result });
       return;
     }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date

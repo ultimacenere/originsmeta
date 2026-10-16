@@ -67,6 +67,16 @@ export const VS_CARDS: Record<Side, readonly Rect[]> = {
   ],
 };
 
+/**
+ * Il nome dell'avversario nella schermata VS, in basso a destra sotto il ritratto (14/10/2026, per riconoscere i bot:
+ * shared/botNames.ts). Il nome è in corsivo: prima dell'OCR il ritaglio si raddrizza (`VS_NAME_SHEAR`) e si ingrandisce
+ * (`VS_NAME_SCALE`). Misurato sui fotogrammi del 10–12/10 (2560 × 1440, playtest in italiano): con questi valori l'OCR
+ * di Windows ha letto "BIG BOB", "ANDRA" e "(BOT)" dei boss; senza raddrizzare leggeva "ANDU".
+ */
+export const VS_OPP_NAME: Rect = { x: 0.77, y: 0.885, w: 0.23, h: 0.055 };
+export const VS_NAME_SHEAR = 0.25;
+export const VS_NAME_SCALE = 2;
+
 /** L'area 16:9 del gioco dentro l'immagine (centrata: bande nere ai lati o sopra e sotto). */
 export function gameArea(width: number, height: number): Rect {
   const target = 16 / 9;
