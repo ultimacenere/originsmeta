@@ -812,7 +812,9 @@ function liveUi(): LiveUi {
   return { template: panelTemplate, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted(), scanner: Boolean(frames?.running), screen: { w: d.width, h: d.height }, panels: { deck: rect("deck"), opp: rect("opp") } };
 }
 setInterval(() => {
-  if (!account.token || CAPTURE || !engineOn) return;
+  // prima engineOn e `account?.`: con l'avvio "con il gioco" (0.4.7, --wait-game) boot() aspetta il gioco e l'account
+  // non c'è ancora; leggere account.token qui faceva crashare l'app ogni volta (17/10/2026)
+  if (!engineOn || CAPTURE || !account?.token) return;
   const v = currentDeckView();
   // le carte del tabellone, per le zone dell'estensione Twitch (14/10/2026): solo in partita
   const board = v.live?.inMatch && frames?.running ? frames.board() : null;
