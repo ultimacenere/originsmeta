@@ -64,13 +64,9 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
   }
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/account"))}`);
 
-  const { data: profileRow } = await supabase.from("profiles").select("username, display_name, avatar_url, role, badge, created_at").eq("id", user.id).maybeSingle();
-  const profile = (profileRow as (Profile & { role: string; badge: string | null; created_at: string }) | null) ?? null;
-  // il tracker in /account: a tutti quando si apre (TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC); in prova dal 10/10/2026
-  // solo Creator, Autore, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
-  const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || canSeeAnalytics(profile?.badge, profile?.role);
-  const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
-  const [allDecks, tournaments, tierLists, deckLimit, saved] = await Promise.all([
+  // Profilo e liste in una sola attesa (17/10/2026, "fastidioso delay": prima il profilo si leggeva da solo, prima delle liste)
+  const [{ data: profileRow }, allDecks, tournaments, tierLists, deckLimit, saved] = await Promise.all([
+    supabase.from("profiles").select("username, display_name, avatar_url, role, badge, created_at").eq("id", user.id).maybeSingle(),
     listUserDecks(supabase, user.id),
     listUserTournaments(supabase, user.id),
     listUserTierLists(supabase, user.id),
@@ -78,6 +74,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
     // mazzi salvati con "Salva" (30/09/2026); null senza la migrazione: la sezione non c'è
     listSavedDecks(supabase, user.id),
   ]);
+  const profile = (profileRow as (Profile & { role: string; badge: string | null; created_at: string }) | null) ?? null;
+  // il tracker in /account: a tutti quando si apre (TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC); in prova dal 10/10/2026
+  // solo Creator, Autore, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
+  const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || canSeeAnalytics(profile?.badge, profile?.role);
+  const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   const FL = favoriteLabels[locale];
   // I mazzi privati ("Salva privato" del deck builder, stato 'draft') hanno la loro sezione: niente voti né scheda pubblica.
   const decks = allDecks.filter((deck) => deck.status !== "draft");
@@ -123,7 +124,10 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       {/* La casella messaggi non sta qui: vive tutta in /account/messages, dove porta la busta dell'header (Pierluigi, 27/09/2026:
           "questo modulo deve stare sotto messaggi e non sotto profilo") */}
       {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
-      <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
+      {/* dentro <Suspense> (17/10/2026): la pagina non aspetta questa lettura, la sezione arriva quando è pronta */}
+      <Suspense fallback={null}>
+        <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
+      </Suspense>
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -362,9 +366,13 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       </section>
 
       {/* Le mie guide (pacchetto GUIDE, 27/09/2026): solo per chi pubblica guide o ne ha già; ancora #guides */}
-      <AccountGuides locale={locale} supabase={supabase} userId={user.id} />
+      <Suspense fallback={null}>
+        <AccountGuides locale={locale} supabase={supabase} userId={user.id} />
+      </Suspense>
       {/* I miei fumetti (pacchetto FUMETTI, 29/09/2026): solo per chi pubblica fumetti o ne ha già; ancora #comics */}
-      <AccountComics locale={locale} supabase={supabase} userId={user.id} />
+      <Suspense fallback={null}>
+        <AccountComics locale={locale} supabase={supabase} userId={user.id} />
+      </Suspense>
 
       {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
       {profile?.username ? (

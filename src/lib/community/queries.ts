@@ -179,8 +179,11 @@ export async function listUserDecks(client: Db, userId: string): Promise<Communi
  * Richiede il client con la sessione dell'utente.
  */
 export async function publishedDeckLimit(client: Db, userId: string): Promise<{ used: number; cap: number; badge: Badge }> {
-  const { count } = await client.from("community_decks").select("id", { count: "exact", head: true }).eq("owner", userId).neq("status", "draft");
-  const { data } = await client.from("profiles").select("role, badge").eq("id", userId).maybeSingle();
+  // le due letture insieme (17/10/2026): prima una dopo l'altra, e /account le aspettava tutte e due
+  const [{ count }, { data }] = await Promise.all([
+    client.from("community_decks").select("id", { count: "exact", head: true }).eq("owner", userId).neq("status", "draft"),
+    client.from("profiles").select("role, badge").eq("id", userId).maybeSingle(),
+  ]);
   const p = data as { role: string | null; badge: string | null } | null;
   return { used: count ?? 0, cap: publishedDeckCap(p), badge: normalizeBadge(p?.badge) };
 }

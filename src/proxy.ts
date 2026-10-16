@@ -34,7 +34,17 @@ export async function proxy(request: NextRequest) {
       },
     },
   });
-  await supabase.auth.getUser();
+  // getClaims e non getUser (17/10/2026): rinnova il token scaduto come prima, ma la firma la controlla qui con la chiave
+  // pubblica ES256 invece di chiedere a Supabase a ogni pagina (vedi `currentUser` in src/lib/supabase/server.ts)
+  const { data } = await supabase.auth.getClaims();
+  // Pagine private senza accesso: al login con un 307 da qui (17/10/2026). Dentro le pagine il `redirect()` non basta più:
+  // il loading.tsx di /account fa partire la risposta prima, e il rimando diventerebbe un 200 con un refresh nella pagina.
+  const account = /^\/(en|it|es|fr)\/account(?:\/|$)/.exec(pathname);
+  if (account && !data?.claims?.sub) {
+    const login = new URL(`/${account[1]}/login`, request.url);
+    login.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    return NextResponse.redirect(login, 307);
+  }
   return response;
 }
 

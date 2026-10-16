@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
@@ -77,9 +78,20 @@ export function generateStaticParams() {
  * Le letture passano dalla cache dei dati di Next, quindi chiamarla due volte non raddoppia le query.
  * Un errore del database si lancia (queries.ts, DECKS-12): la rigenerazione fallisce e resta la pagina di prima.
  */
-async function loadProfile(username: string) {
+const loadProfile = cache(async (username: string) => {
   const profile = await getProfileByUsername(username);
   if (!profile) return null;
+  // Tutte le altre letture partono insieme (17/10/2026, Pierluigi: "fastidioso delay"): prima fumetti, canali e vetrina
+  // si leggevano uno dopo l'altro nella pagina, dopo queste tre, e la prima visita di un profilo aspettava ~2 s.
+  const showcaseRole = isShowcaseBadge(normalizeBadge(profile.badge));
+  const extras = Promise.all([
+    listComicsByOwner(profile.id, 24),
+    getProfileShowcase(profile.id),
+    // Vetrina (pacchetto VETRINA): solo per Creator, Autore, Pro e Staff; null prima della migrazione (la pagina resta com'era)
+    showcaseRole ? getProfileVetrina(profile.id) : Promise.resolve(null),
+  ]);
+  // `extras` si aspetta anche se le letture qui sotto lanciano: niente promesse rifiutate senza nessuno che le ascolti
+  extras.catch(() => undefined);
   // Le due letture lanciano con un errore (DECKS-12, `rowsOrThrow`): un profilo "senza mazzi" o "senza tier list" per
   // un guasto di rete non finisce in cache. I tipi delle tier list (title, description, noindex) si ricavano dalla
   // lettura completa, una per tipo e già in ordine di tipo (revisione dell'integrazione dell'Ondata 2: prima una
@@ -101,8 +113,9 @@ async function loadProfile(username: string) {
     decks.map((deck) => deck.slug),
     profile.username,
   );
-  return { profile, decks, tierLists, guides, name, facts, editorial };
-}
+  const [comics, showcase, vetrina] = await extras;
+  return { profile, decks, tierLists, guides, name, facts, editorial, comics, showcase, showcaseRole, vetrina };
+});
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { username } = await params;
@@ -127,6 +140,12 @@ function avatarUrl(url: string | null | undefined): string | undefined {
   return safeAvatarUrl(url, supabaseUrl) ?? undefined;
 }
 
+/*
+  Niente scheletro di caricamento qui (17/10/2026, provato e tolto): né loading.tsx né <Suspense>. Con tutti e due la
+  pagina salvata nella cache ISR ha lo scheletro in vista e il contenuto in un <div hidden> che solo uno script mostra
+  (male per chi legge l'HTML senza JavaScript: crawler e LLM), e con loading.tsx un nome sbagliato diventa un 200 invece
+  di un 404. Il ritardo della prima visita si accorcia con le letture in parallelo di `loadProfile`.
+*/
 export default async function PublicProfilePage({ params }: { params: Params }) {
   const { username } = await params;
   const { locale, dict: d } = await resolveLocale(params);
@@ -134,9 +153,9 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const p = c.profile;
   const data = await loadProfile(username);
   if (!data) notFound();
-  const { profile, decks, tierLists, guides, name, editorial } = data;
+  const { profile, decks, tierLists, guides, name, editorial, showcase, showcaseRole, vetrina } = data;
   // fumetti pubblicati (pacchetto FUMETTI, 29/09/2026): solo mostrati, non contano per l'indicizzazione del profilo
-  const comics = comicFeedCards(await listComicsByOwner(profile.id, 24), locale, supabaseUrl, authorName);
+  const comics = comicFeedCards(data.comics, locale, supabaseUrl, authorName);
   const L = communityPageLabels[locale];
   const GL = communityGuideLabels[locale].profile;
   // Chi ha pubblicato guide non vede le schede vuote "Nessun mazzo" e "Nessuna tier list" prima delle sue guide
@@ -156,12 +175,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   // Bio, canali e lingue (pacchetto CREATOR, 26/09/2026); per il ruolo Creator, Autore, Pro o Staff i canali sono i
   // sameAs della Person. Non per un autore editoriale: la sua Person è quella di /authors, con i contatti verificati di
   // authors.ts, e i link scritti dall'utente la cambierebbero da una pagina all'altra.
-  const showcase = await getProfileShowcase(profile.id);
-  const showcaseRole = isShowcaseBadge(role);
   // badge LIVE nella testata: solo i ruoli con vetrina e un canale Twitch nel profilo (le regole di /api/live)
   const liveHeader = showcaseRole && Boolean(profile.username) && showcase !== null && twitchLogin(showcase.links) !== null;
-  // Vetrina (pacchetto VETRINA): solo per Creator, Autore, Pro e Staff; null prima della migrazione (la pagina resta com'era)
-  const vetrina = showcaseRole ? await getProfileVetrina(profile.id) : null;
   const sameAs = showcaseRole && !editorial && showcase?.links.length ? showcase.links.map((l) => l.url) : [];
   const person = communityPerson({
     locale,
