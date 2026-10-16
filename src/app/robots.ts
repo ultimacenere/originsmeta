@@ -9,8 +9,9 @@ export default function robots(): MetadataRoute.Robots {
     // Strumenti per le dirette (pacchetto STREAM, 26/09/2026): l'overlay per OBS (dinamico, noindex) e i PNG da
     // scaricare non servono ai motori. L'immagine senza download=1 resta aperta: è l'og:image delle schede dei mazzi,
     // e il crawler di X rispetta robots.txt. Lo stesso per l'immagine dei Mazzi torneo (/api/deck-set-image, 04/10/2026);
-    // il suo overlay (/overlay/deck-set/) è già sotto /overlay/.
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/*?_rsc=", "/*&_rsc=", "/*/login?", "/overlay/", "/api/deck-image/*download=1", "/api/deck-set-image/*download=1"] }],
+    // il suo overlay (/overlay/deck-set/) è già sotto /overlay/. Broadcasting OM (/broadcast, regia e overlay dei tornei,
+    // prototipo del 16/10/2026) non serve ai motori.
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/*?_rsc=", "/*&_rsc=", "/*/login?", "/overlay/", "/broadcast","/api/deck-image/*download=1", "/api/deck-set-image/*download=1"] }],
     // Dal 25/09/2026 (Ondata 2) /sitemap.xml è l'indice delle sitemap per sezione e lingua (src/lib/sitemapEntries.ts):
     // basta lui. I feed RSS delle news no: danno la data di uscita, la sitemap quella dell'ultima revisione.
     sitemap: `${siteUrl}/sitemap.xml`,

@@ -132,6 +132,23 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: "frame-ancestors *" },
         ],
       },
+      // Broadcasting OM (prototipo del 16/10/2026, src/app/broadcast): regia e overlay per le dirette dei tornei, mai
+      // indicizzati. L'overlay (/broadcast/live) si può incorniciare come quello di /overlay; la regia no, come il sito.
+      {
+        source: "/broadcast",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+      {
+        source: "/broadcast/:path+",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Content-Security-Policy", value: "frame-ancestors *" },
+        ],
+      },
     ];
   },
   async redirects() {
