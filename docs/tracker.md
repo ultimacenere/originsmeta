@@ -50,7 +50,12 @@ Calendario proposto il 27/09: fasi 3–4 dal 7 al 12/10 (fatte prima), prova dal
    riconoscere il giocatore (`pickMe`). La coda (classificata o normale) è solo "ranked" o "normal" e non si mostra
    partita per partita (vedi "Coda"). Test: "mai dire se l'avversario è un bot o una persona" in `tracker.test.ts`,
    più quelli dell'app, dell'upload e dell'overlay.
-3. **Mai nomi né id** di giocatori o partite fuori dal lettore: dell'id della partita resta un'impronta salata con
+   **Dal 14/10/2026 le partite contro i bot non si registrano** (Pierluigi: "devono non solo essere rimosse dalle
+   statistiche ma anche non devono più essere registrate"; "devi fare in modo che il tracker legga i nomi"): vedi
+   "Partite contro i bot". Il segnale bot resta dentro l'app (sì/no in memoria) e decide solo se la partita esiste:
+   niente flag nei record, nello storico, nell'overlay o sul sito.
+3. **Mai nomi né id** di giocatori o partite fuori dal lettore (dal 14/10/2026 lo scanner legge il nome dell'avversario
+   della schermata VS, ma solo per riconoscere i bot: il testo non si salva, non si mostra e non esce dal PC): dell'id della partita resta un'impronta salata con
    l'id dell'account (`matchFingerprint`). I termini di Koin vietano di raccogliere dati di altri utenti senza
    consenso (Terms of Use, §2.3).
 4. **Al sito, dell'avversario solo la Leggendaria e le carte che ha giocato** (Pierluigi, 30/09/2026): il suo mazzo
@@ -205,7 +210,7 @@ esclude e l'ESLint del sito ne controlla solo i sorgenti), istruzioni in `tracke
   (`moveOldData`: storico, stato, invii, collegamento, overlay; la cartella vecchia resta).
 - `src/main/account.ts`, `sync.ts`: collegamento e invio (sotto). `src/main/overlay.ts`: overlay (sotto).
 - `src/main/main.ts`: icona nella barra (menu in EN/IT/ES), finestra la cui X chiude tutta l'app con overlay e Deck tracker (dal 10/10/2026, prima la nascondeva), una sola
-  copia, "Avvia con Windows" spento di default, sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
+  copia, avvio automatico (sotto, "Avvio automatico e pannelli sopra il gioco"), sicurezza (contextIsolation, sandbox, nessuna navigazione, nessun
   permesso, link solo verso originsmeta.com, IPC solo dalla pagina dell'app), `--capture` per gli screenshot.
 - `src/renderer/`: interfaccia EN/IT/ES con i pannelli "Account OriginsMeta" e "Overlay"; `src/overlay/`: la pagina
   dell'overlay; `src/preload/`: i due ponti (l'overlay può solo leggere i suoi dati).
@@ -295,7 +300,7 @@ menu, testi en/it/es, `productName` del pacchetto, eseguibile `OriginsMeta Track
 - **cartella dei dati** `%APPDATA%\OriginsMeta Analytics`: `main.ts` la imposta esplicitamente (`dataDir`), perché col
   nome nuovo Electron userebbe `%APPDATA%\OriginsMeta Tracker` (la cartella di prima del 01/10) e la chiave di
   safeStorage del suo `Local State` renderebbe illeggibile il token, come il 01/10;
-- **AppUserModelId** `com.originsmeta.analytics`: è anche il nome della voce di "Avvia con Windows" nel registro. Chi la
+- **AppUserModelId** `com.originsmeta.analytics`: è anche il nome della voce di avvio automatico nel registro. Chi la
   aveva accesa con `OriginsMeta Analytics.exe` passa da sé a `OriginsMeta Tracker.exe` al primo avvio di questo
   (`migrateLoginItem`, `staleLoginItem`: la voce vecchia si toglie, la nuova si mette con lo stesso stato
   abilitato/disabilitato);
@@ -782,7 +787,33 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
   dell'avversario, che lo scanner non riconosce (11/10 sera: Piglet ALPHA letta in 2 fotogrammi su 701), con
   riferimenti presi dai fotogrammi sul PC come le cifre del mana; freccia del combattimento verso sinistra.
 
-**Nome dell'avversario: decisione aperta.** Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
+## Partite contro i bot (0.4.7, 14/10/2026)
+
+Pierluigi, dopo una serie di 6 sconfitte con Mulan contro il bot: le partite contro i bot "devono non solo essere
+rimosse dalle statistiche ma anche non devono più essere registrate", e il bot si riconosce dal nome ("devi fare in modo
+che il tracker legga i nomi"). Il bot che ha visto è **Big Bob** (il manichino col bersaglio, titolo "La pratica rende
+perfetti", comandante `H0001` nei dati del gioco); i boss della Battaglia Boss hanno "(BOT)" dopo il nome ("RED (BOT)").
+
+- **Lettura**: nella schermata VS (Leggendarie di tutti e due riconosciute) la finestra nascosta ritaglia il nome in basso a
+  destra (`VS_OPP_NAME` in recognize.ts, frazioni dell'area `vs`), lo raddrizza (è in corsivo, `VS_NAME_SHEAR`) e lo
+  ingrandisce (`VS_NAME_SCALE`), fino a tre ritagli per schermata; il processo principale lo legge con l'**OCR di
+  Windows** (Windows.Media.Ocr da PowerShell, `main/ocr.ts`: nessuna dipendenza nuova, niente rete; il PNG sta sul disco
+  il tempo della lettura). Il TextDetector di Chromium in Electron 44 non c'è (provato con le opzioni sperimentali).
+- **Decisione** (`shared/botNames.ts`, test `botNames.test.ts`): bot se il nome intero è in `bot-names.json` (lettere e
+  cifre, maiuscole, 0/O, 1/I, 5/S, 8/B ripiegati) o finisce con "(BOT)". Resta solo `{ ms, bot }`, mai il nome. La
+  partita è contro un bot se lo dice la schermata VS più recente prima della fine (`botMatch`, entro 40 minuti); una
+  lettura non riuscita conta come "non bot", così una partita contro una persona non eredita la schermata di prima.
+- **Effetto** (main.ts): la partita contro un bot non entra nello storico e non parte per il sito, né dallo schermo
+  (`finishFromScreen`) né dai file del gioco (watcher; il segnaposto in `fromScreen` scarta anche le statistiche che
+  arrivano in ritardo). Nella modalità cattura `events.jsonl` scrive `match-bot` (senza nome).
+- **Limiti**: con lo scanner spento, o se la schermata VS non si vede (gioco ridotto a icona, allenamenti senza VS), la
+  partita si registra come prima. Un nome nuovo di bot va aggiunto a `bot-names.json` (nuova versione dell'app).
+- **Prova** sui 15 fotogrammi VS salvati dal 10 al 12/10: "BIG BOB" e "(BOT)" riconosciuti, gli altri 13 nomi no
+  (`scripts/bot-names-check.ts`, istruzioni in testa al file).
+- **Partite già sul sito**: il sito non ha i nomi, quindi non sa quali partite già arrivate erano contro un bot; si
+  tolgono a mano con `scripts/tracker-fix-match.mjs <utente> <id> delete`.
+
+**Nome dell'avversario: decisione aperta** (resta aperta per tutto quello che non è riconoscere i bot). Pierluigi (10/10/2026) vuole che chi gioca veda sul sito lo storico delle
 sue partite con il nome dell'avversario, i mazzi e le statistiche della partita. Va contro la regola 3, che cita i
 termini di Koin (Terms of Use §2.3: niente dati di altri utenti senza consenso), e contro la regola 2 (i nomi dei bot si
 riconoscono). Finché Pierluigi non decide su questo punto, il nome non si legge; tutto il resto dello scanner non ne
@@ -810,3 +841,24 @@ dipende.
 - Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate.
 - Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.
 - Uso dei dati del client (poteri leggendari, luoghi): contengono anche carte non annunciate.
+
+## Avvio automatico e pannelli sopra il gioco (0.4.7, 16/10/2026)
+
+- **Avvio con il gioco** (Pierluigi: "aggiungi avvio automatico con l'avvio del gioco ma senza aprire il builder, solo
+  icona vicino all'orologio… a noi ci interessa il tracking delle sue partite principalmente"). `src/main/startup.ts`
+  (test `startup.test.ts`): tre scelte, "Con il gioco" (di default), "Con Windows", "Mai", nella pagina Setup e nel
+  menu dell'icona, salvate in `startup.json`. Windows non sa lanciare un programma quando ne parte un altro senza
+  permessi da amministratore, quindi "con il gioco" è la stessa voce "Esegui all'avvio" di prima con
+  `--hidden --wait-game`: l'app aspetta senza icona, finestre né letture e guarda ogni 10 secondi `tasklist`
+  (`gameRunning`: `OriginsTCG*.exe`); quando vede il gioco parte solo nella barra e registra le partite. Avviata in
+  automatico (con il gioco o con Windows) non apre la finestra né overlay e pannelli: quelli aperti l'ultima volta
+  tornano quando il giocatore apre l'app (`layersDeferred`, `openSavedLayers`), e dal menu dell'icona si accendono
+  uno per uno. Se il giocatore apre l'app mentre aspetta il gioco, parte subito con la finestra. Al primo avvio della
+  0.4.7 (`initialStartMode`): chi aveva "Avvia con Windows" acceso lo tiene, chi l'aveva disattivato da Gestione
+  attività resta spento, tutti gli altri passano a "Con il gioco". In sviluppo nessuna scelta automatica.
+- **Pannelli che sparivano** (Pierluigi: "a volte scompaiono i layer anche con disattivato il flag… per rimetterli
+  devo sflaggare e riflaggare"): per Electron una finestra minimizzata o coperta è ancora visibile, quindi
+  `syncPanelVisibility` non faceva niente. Ora ogni 1,5 secondi `layerAction` (`src/main/panelVisibility.ts`, test
+  `panelVisibility.test.ts`) rimostra le finestre minimizzate e riporta in primo piano pannelli e overlay
+  (`setAlwaysOnTop` + `moveTop`, senza prendere il fuoco), mai mentre il giocatore li usa o li allarga. Causa non
+  riprodotta dal vivo: da confermare sul gioco.

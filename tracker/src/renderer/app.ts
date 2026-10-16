@@ -84,7 +84,9 @@ const LABELS = {
     history: "Results according to the game",
     historySub: (n: number, w: number) => `The game keeps the results of all your matches (${n}, ${w} won). The app also recovers the result of matches played while it was closed, only win or loss.`,
     missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the app closed`,
-    startup: "Start with Windows",
+    startup: "Start automatically",
+    start: { game: "With the game", windows: "With Windows", off: "Never" },
+    startNote: "With the game (recommended): when Origins TCG opens, the app starts by itself next to the clock and records your matches; the window, overlay and panels open only when you open the app.",
     dataFolder: "Open the data folder",
     privacy: "OriginsMeta Tracker reads the files Origins TCG saves on this PC and, with the screen scanner on, the game window; it never touches the game. Screen images never leave this PC. Your matches are saved on this PC and sent to your OriginsMeta account, which the app needs in order to work. Card images load from originsmeta.com.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
@@ -141,7 +143,7 @@ const LABELS = {
     overlayMove: "Move it (while this is on, clicks don't go through to the game)",
     overlayFullscreen: "It shows above the game in windowed or borderless mode, not in exclusive fullscreen.",
     scannerTitle: "Screen scanner",
-    scannerIntro: "Since patch 0.7 the game no longer saves match replays: the scanner reads the cards from the game window instead (board, Legendaries on the VS screen, mana). It only watches the Origins TCG window, never other windows. Images stay in this PC's memory and are never sent anywhere: only the card ids go to your account. Player names are never read.",
+    scannerIntro: "Since patch 0.7 the game no longer saves match replays: the scanner reads the cards from the game window instead (board, Legendaries on the VS screen, mana). It only watches the Origins TCG window, never other windows. Images stay in this PC's memory and are never sent anywhere: only the card ids go to your account. On the VS screen it reads the opponent's name only to recognize bots: matches against bots are not recorded, and the name is never saved or sent.",
     scannerSwitch: "Read played cards from the game window",
     scannerWatching: "Reading the game window",
     scannerWaiting: "On · waiting for the game",
@@ -152,7 +154,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Updating to version " + v + ": the app restarts in a moment. Wait before opening the game.",
     quitApp: "Close the app",
     noticeTitle: "The screen scanner is on",
-    noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names. You can turn it off here or in Setup.",
+    noticeText: "To record the cards played by you and your opponent, OriginsMeta Tracker reads the Origins TCG window while you play. Only that window, nothing leaves this PC except the card ids, and no player names (the opponent's name is read only to skip matches against bots). You can turn it off here or in Setup.",
     noticeOk: "Got it",
     noticeOff: "Turn it off",
     panelStyle: "Panel style",
@@ -271,7 +273,9 @@ const LABELS = {
     history: "Esiti secondo il gioco",
     historySub: (n: number, w: number) => `Il gioco conserva gli esiti di tutte le tue partite (${n}, ${w} vinte). L'app recupera l'esito anche delle partite giocate mentre era chiusa, solo vittoria o sconfitta.`,
     missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} ad app chiusa`,
-    startup: "Avvia con Windows",
+    startup: "Avvio automatico",
+    start: { game: "Con il gioco", windows: "Con Windows", off: "Mai" },
+    startNote: "Con il gioco (consigliato): quando apri Origins TCG l'app parte da sola accanto all'orologio e registra le tue partite; finestra, overlay e pannelli si aprono solo quando apri l'app.",
     dataFolder: "Apri la cartella dei dati",
     privacy: "OriginsMeta Tracker legge i file che Origins TCG salva su questo PC e, con lo scanner dello schermo acceso, la finestra del gioco; non tocca mai il gioco. Le immagini dello schermo non lasciano mai questo PC. Le tue partite si salvano su questo PC e vanno al tuo account OriginsMeta, che serve all'app per funzionare. Le immagini delle carte arrivano da originsmeta.com.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
@@ -328,7 +332,7 @@ const LABELS = {
     overlayMove: "Spostala (finché è acceso, i clic non passano al gioco)",
     overlayFullscreen: "Si vede sopra il gioco in modalità finestra o finestra senza bordi, non a schermo intero esclusivo.",
     scannerTitle: "Scanner dello schermo",
-    scannerIntro: "Dalla patch 0.7 il gioco non salva più i replay delle partite: lo scanner legge le carte dalla finestra del gioco (tabellone, Leggendarie della schermata VS, mana). Guarda solo la finestra di Origins TCG, mai altre finestre. Le immagini restano nella memoria di questo PC e non vengono mai inviate: al tuo account arrivano solo gli id delle carte. I nomi dei giocatori non vengono mai letti.",
+    scannerIntro: "Dalla patch 0.7 il gioco non salva più i replay delle partite: lo scanner legge le carte dalla finestra del gioco (tabellone, Leggendarie della schermata VS, mana). Guarda solo la finestra di Origins TCG, mai altre finestre. Le immagini restano nella memoria di questo PC e non vengono mai inviate: al tuo account arrivano solo gli id delle carte. Nella schermata VS legge il nome dell'avversario solo per riconoscere i bot: le partite contro i bot non vengono registrate e il nome non si salva né si invia.",
     scannerSwitch: "Leggi le carte giocate dalla finestra del gioco",
     scannerWatching: "Sta leggendo la finestra del gioco",
     scannerWaiting: "Acceso · in attesa del gioco",
@@ -339,7 +343,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Aggiornamento alla versione " + v + ": l'app si riavvia fra un attimo. Aspetta ad aprire il gioco.",
     quitApp: "Chiudi l'app",
     noticeTitle: "Lo scanner dello schermo è acceso",
-    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori. Puoi spegnerlo qui o in Setup.",
+    noticeText: "Per registrare le carte giocate da te e dall'avversario, OriginsMeta Tracker legge la finestra di Origins TCG mentre giochi. Solo quella finestra, da questo PC escono solo gli id delle carte e mai i nomi dei giocatori (il nome dell'avversario si legge solo per saltare le partite contro i bot). Puoi spegnerlo qui o in Setup.",
     noticeOk: "Ho capito",
     noticeOff: "Spegnilo",
     panelStyle: "Stile dei pannelli",
@@ -458,7 +462,9 @@ const LABELS = {
     history: "Resultados según el juego",
     historySub: (n: number, w: number) => `El juego guarda los resultados de todas tus partidas (${n}, ${w} ganadas). El tracker también recupera el resultado de las partidas jugadas con él apagado, solo victoria o derrota.`,
     missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con la app cerrada`,
-    startup: "Iniciar con Windows",
+    startup: "Inicio automático",
+    start: { game: "Con el juego", windows: "Con Windows", off: "Nunca" },
+    startNote: "Con el juego (recomendado): cuando abres Origins TCG la app se inicia sola junto al reloj y registra tus partidas; la ventana, el overlay y los paneles se abren solo cuando abres la app.",
     dataFolder: "Abrir la carpeta de datos",
     privacy: "OriginsMeta Tracker lee los archivos que Origins TCG guarda en este PC y, con el escáner de pantalla activado, la ventana del juego; nunca toca el juego. Las imágenes de la pantalla nunca salen de este PC. Tus partidas se guardan en este PC y se envían a tu cuenta de OriginsMeta, que la app necesita para funcionar. Las imágenes de las cartas se cargan desde originsmeta.com.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
@@ -515,7 +521,7 @@ const LABELS = {
     overlayMove: "Moverla (mientras esté activo, los clics no pasan al juego)",
     overlayFullscreen: "Se ve sobre el juego en modo ventana o ventana sin bordes, no en pantalla completa exclusiva.",
     scannerTitle: "Escáner de pantalla",
-    scannerIntro: "Desde el parche 0.7 el juego ya no guarda las repeticiones de las partidas: el escáner lee las cartas de la ventana del juego (tablero, Legendarias de la pantalla VS, maná). Solo mira la ventana de Origins TCG, nunca otras ventanas. Las imágenes se quedan en la memoria de este PC y nunca se envían: a tu cuenta solo llegan los id de las cartas. Los nombres de los jugadores nunca se leen.",
+    scannerIntro: "Desde el parche 0.7 el juego ya no guarda las repeticiones de las partidas: el escáner lee las cartas de la ventana del juego (tablero, Legendarias de la pantalla VS, maná). Solo mira la ventana de Origins TCG, nunca otras ventanas. Las imágenes se quedan en la memoria de este PC y nunca se envían: a tu cuenta solo llegan los id de las cartas. En la pantalla VS lee el nombre del rival solo para reconocer a los bots: las partidas contra bots no se registran y el nombre nunca se guarda ni se envía.",
     scannerSwitch: "Leer las cartas jugadas de la ventana del juego",
     scannerWatching: "Leyendo la ventana del juego",
     scannerWaiting: "Activado · esperando al juego",
@@ -526,7 +532,7 @@ const LABELS = {
     updateInstalling: (v: string) => "Actualizando a la versión " + v + ": la app se reinicia en un momento. Espera para abrir el juego.",
     quitApp: "Cerrar la app",
     noticeTitle: "El escáner de pantalla está activado",
-    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores. Puedes desactivarlo aquí o en Setup.",
+    noticeText: "Para registrar las cartas que juegas tú y tu rival, OriginsMeta Tracker lee la ventana de Origins TCG mientras juegas. Solo esa ventana, de este PC solo salen los id de las cartas y nunca los nombres de los jugadores (el nombre del rival se lee solo para saltar las partidas contra bots). Puedes desactivarlo aquí o en Setup.",
     noticeOk: "Entendido",
     noticeOff: "Desactivarlo",
     panelStyle: "Estilo de los paneles",
@@ -1000,9 +1006,14 @@ function overlayPanel(s: AppState) {
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
 
-/** Le opzioni dell'app, in Setup: avvio con Windows, cartella dei dati, tutorial, guida e informativa. */
+/** Le opzioni dell'app, in Setup: avvio automatico (con il gioco, con Windows, mai), cartella dei dati, tutorial, guida e informativa. */
 function appPanel(s: AppState) {
-  return section("app", L.general, `v${s.version}`, `<div class="row"><label class="switch"><input type="checkbox" id="startup"${s.openAtLogin ? " checked" : ""} /> ${esc(L.startup)}</label><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
+  const start = (["game", "windows", "off"] as const)
+    .map((m) => `<label class="seg"><input type="radio" name="startup" value="${m}"${s.startMode === m ? " checked" : ""} /><span>${esc(L.start[m])}</span></label>`)
+    .join("");
+  return section("app", L.general, `v${s.version}`, `<div class="row"><span class="sub">${esc(L.startup)}</span><span class="segs">${start}</span></div>
+      <p class="fine">${esc(L.startNote)}</p>
+      <div class="row"><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
       <p class="fine"><button type="button" class="link" id="tour-again">${esc(L.tour.again)}</button> · <a href="${guideUrl}" data-link>${esc(L.guide)}</a></p>
       <p class="fine">${esc(L.privacy)}</p>`);
 }
@@ -1298,7 +1309,7 @@ root.addEventListener("change", async (e) => {
     const [group, field] = t.dataset.custom.split(".");
     return void changeCustom(field ? { [group]: { [field]: t.checked } } : { [group]: t.checked }, true);
   }
-  if (t.id === "startup") t.checked = await window.tracker.setOpenAtLogin(t.checked);
+  if (t.name === "startup" && t.checked) await window.tracker.setStartMode(t.value as AppState["startMode"]);
   if (t.id === "ov-window") t.checked = await window.tracker.setOverlayWindow(t.checked);
   if (t.id === "deck-window") t.checked = await window.tracker.setDeckWindow(t.checked);
   if (t.id === "opp-window") t.checked = await window.tracker.setOppWindow(t.checked);

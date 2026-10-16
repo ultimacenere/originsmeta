@@ -8,6 +8,10 @@
  * Leggendarie della schermata VS, mana massimo), che resta in memoria per `KEEP_MS`; quando il tracker chiude una
  * partita, `scanFor` ne ricostruisce giocate e carte dell'avversario (main.ts, `applyScan`).
  *
+ * Bot (14/10/2026): nella schermata VS la finestra nascosta manda anche il ritaglio del nome dell'avversario; qui lo legge
+ * l'OCR di Windows (ocr.ts) e resta solo se è un bot (`VersusName`, shared/botNames.ts), mai il nome: `botMatch` dice
+ * a main.ts di non registrare la partita.
+ *
  * Modalità cattura:
  * Ogni `POLL_MS` cerca la finestra del gioco per titolo esatto; quando c'è, una finestra nascosta la riprende (sola
  * lettura dello schermo, come OBS: niente processo del gioco) e manda qui un JPEG ogni `FRAME_MS`, solo se lo schermo
@@ -21,6 +25,8 @@ import { BrowserWindow, desktopCapturer, ipcMain, screen, session, type IpcMainE
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
+import { botMatch, isBotName, VERSUS_LOOKBACK_MS, type VersusName } from "../shared/botNames";
+import { readNameText } from "./ocr";
 import { lastActivity, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
 /** La partita resta "dal vivo" nel pannello del mazzo fino a 10 minuti dopo l'ultimo fotogramma con il mana letto. */
@@ -52,6 +58,8 @@ export class FrameRecorder {
   private readonly save: boolean;
   private readonly cards: CardInfo;
   private scans: ScanFrame[] = [];
+  /** Le schermate VS lette: ora e bot sì o no, mai il nome (14/10/2026). */
+  private versus: VersusName[] = [];
 
   /** `save`: modalità cattura (anche i JPEG e `events.jsonl` sul PC). */
   private onScan: (f: ScanFrame) => void;
@@ -108,6 +116,11 @@ export class FrameRecorder {
     return null;
   }
 
+  /** La partita finita a `endedAtMs` (ora del PC) era contro un bot (nome letto nella sua schermata VS)? */
+  botMatch(endedAtMs: number): boolean {
+    return Number.isFinite(endedAtMs) && botMatch(this.versus, endedAtMs);
+  }
+
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }
@@ -136,6 +149,7 @@ export class FrameRecorder {
       ipcMain.handle("frames:save", (e, data: unknown) => this.saveFrame(e, data));
       ipcMain.on("frames:ended", (e) => this.ended(e));
       ipcMain.on("frames:scan", (e, raw: unknown) => this.scan(e, raw));
+      ipcMain.on("frames:name", (e, raw: unknown) => void this.name(e, raw));
     }
     void this.poll();
     this.timer = setInterval(() => void this.poll(), POLL_MS);
@@ -150,6 +164,7 @@ export class FrameRecorder {
     if (this.win && !this.win.isDestroyed()) this.win.destroy();
     this.win = null;
     this.scans = [];
+    this.versus = [];
     this.liveCache = null;
     this.onChange();
   }
@@ -249,6 +264,21 @@ export class FrameRecorder {
     const old = this.scans.findIndex((x) => x.ms >= now - KEEP_MS);
     if (old > 0) this.scans.splice(0, old);
     if (this.scans.length > KEEP_FRAMES) this.scans.splice(0, this.scans.length - KEEP_FRAMES);
+  }
+
+  /**
+   * Il nome dell'avversario della schermata VS: si legge con l'OCR e si tiene solo se è un bot. Anche una lettura non
+   * riuscita conta come "non bot": così una partita contro una persona non prende l'esito della schermata VS di prima.
+   */
+  private async name(e: IpcMainEvent, raw: unknown) {
+    if (!this.fromFrames(e) || !this.sourceId) return;
+    const png = raw instanceof Uint8Array ? raw : raw instanceof ArrayBuffer ? new Uint8Array(raw) : null;
+    if (!png) return;
+    const ms = Date.now();
+    const text = await readNameText(path.join(this.root, "..", "ocr"), png);
+    const bot = text !== null && isBotName(text);
+    this.versus = [...this.versus.filter((v) => v.ms >= ms - VERSUS_LOOKBACK_MS), { ms, bot }];
+    if (bot) this.event("versus", { bot: true });
   }
 
   private saveFrame(e: IpcMainInvokeEvent, data: unknown): boolean {

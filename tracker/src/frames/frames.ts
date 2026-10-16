@@ -4,11 +4,14 @@
  * - legge il fotogramma con il riconoscitore (carte dei 18 spazi, Leggendarie della schermata VS, mana, dall'11/10/2026
  *   anche la mano e la vita degli eroi) e manda il
  *   risultato al processo principale (`scan`): poche decine di byte, i pixel restano qui;
+ * - nella schermata VS (dal 14/10/2026) ritaglia il nome dell'avversario e lo manda al processo principale (`name`),
+ *   che lo legge con l'OCR di Windows solo per riconoscere i bot (shared/botNames.ts) e non lo salva;
  * - nella modalità cattura (`--frames`) manda anche il JPEG, che il processo principale salva sul PC.
  */
 import type { FramesApi } from "../shared/types";
+import { SAME_VERSUS_MS } from "../shared/botNames";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { OPP_MANA_TEXT, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
+import { OPP_MANA_TEXT, VS_NAME_SCALE, VS_NAME_SHEAR, VS_OPP_NAME, inside, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
 import cardArtExtra from "../card-art-extra.json";
 import cardArtHand from "../card-art-hand.json";
@@ -50,6 +53,41 @@ let screens: [number, number][] = [];
  */
 const LAYOUT_VOTES = 15;
 let layout: { w: number; h: number; votes: string[]; at: Layout; key: string } | null = null;
+
+/**
+ * Il nome dell'avversario nella schermata VS (14/10/2026): fino a `NAME_SHOTS` ritagli per schermata, ad almeno
+ * `NAME_GAP_MS` l'uno dall'altro (la schermata dura qualche secondo e il primo fotogramma può essere a metà
+ * dell'animazione); una schermata VS nuova dopo `SAME_VERSUS_MS` senza.
+ */
+const NAME_SHOTS = 3;
+const NAME_GAP_MS = 700;
+let nameShots = { lastVs: 0, lastShot: 0, count: 0 };
+const nameCanvas = document.createElement("canvas");
+
+function shootName(vsArea: Layout["vs"], ms: number) {
+  if (ms - nameShots.lastVs > SAME_VERSUS_MS) nameShots = { lastVs: ms, lastShot: 0, count: 0 };
+  nameShots.lastVs = ms;
+  if (nameShots.count >= NAME_SHOTS || ms - nameShots.lastShot < NAME_GAP_MS) return;
+  nameShots.count++;
+  nameShots.lastShot = ms;
+  const r = inside(vsArea, VS_OPP_NAME);
+  const w = Math.round(r.w * VS_NAME_SCALE);
+  const h = Math.round(r.h * VS_NAME_SCALE);
+  if (w < 20 || h < 8) return;
+  nameCanvas.width = w;
+  nameCanvas.height = h;
+  const g = nameCanvas.getContext("2d")!;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = "#000";
+  g.fillRect(0, 0, w, h);
+  // il nome è in corsivo: lo si raddrizza inclinando il ritaglio al contrario intorno alla riga di mezzo
+  g.setTransform(1, 0, VS_NAME_SHEAR, 1, (-VS_NAME_SHEAR * h) / 2, 0);
+  g.drawImage(full, r.x, r.y, r.w, r.h, 0, 0, w, h);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  nameCanvas.toBlob((blob) => {
+    if (blob) void blob.arrayBuffer().then((buf) => api.name(new Uint8Array(buf)));
+  }, "image/png");
+}
 
 function stop() {
   if (timer) clearInterval(timer);
@@ -116,6 +154,7 @@ function grab() {
     if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
     const { board, ui } = layout.at;
     const vs = readVersus(img, refs, layout.at.vs);
+    if (vs.me.key && vs.opp.key) shootName(layout.at.vs, ms);
     const mana = readMana(img, board);
     const cards = readBoard(img, refs, board).map((m) => m.key);
     // la mano e la vita solo sul tabellone (mana letto): nei menu e nelle schermate di passaggio non ci sono

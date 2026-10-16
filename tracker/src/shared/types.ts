@@ -156,7 +156,8 @@ export type AppState = {
   /** Esiti di tutte le partite secondo il gioco, dal più recente. */
   history: string;
   activeDeck: ActiveDeck;
-  openAtLogin: boolean;
+  /** Avvio automatico (startup.ts, 16/10/2026). */
+  startMode: "off" | "game" | "windows";
   dataFolder: string;
   account: AccountState;
   overlay: OverlayState;
@@ -177,7 +178,7 @@ export type OverlayApi = {
 export type TrackerApi = {
   getState(): Promise<AppState>;
   onState(listener: (state: AppState) => void): () => void;
-  setOpenAtLogin(on: boolean): Promise<boolean>;
+  setStartMode(mode: "off" | "game" | "windows"): Promise<"off" | "game" | "windows">;
   openDataFolder(): Promise<void>;
   /** Solo indirizzi di originsmeta.com, nel browser predefinito. */
   openLink(url: string): Promise<void>;
@@ -235,6 +236,11 @@ export type FramesApi = {
   ended(): void;
   /** Un fotogramma letto dal riconoscitore (shared/reconstruct.ts). */
   scan(frame: ScanFrame): void;
+  /**
+   * Il ritaglio PNG del nome dell'avversario nella schermata VS (14/10/2026, shared/botNames.ts): il processo principale
+   * lo legge con l'OCR di Windows solo per sapere se è un bot, poi lo dimentica.
+   */
+  name(png: Uint8Array): void;
 };
 
 /**

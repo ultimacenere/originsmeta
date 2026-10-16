@@ -5,11 +5,13 @@
  * vede: cartella dei dati, AppUserModelId e release restano quelli di prima (appIdentity.ts). Al primo avvio dopo il
  * 01/10 i dati passavano dalla cartella vecchia (`moveOldData`).
  *
- * - Icona accanto all'orologio: clic = apri la finestra; menu con "Apri", "Overlay sopra il gioco", "Avvia con
- *   Windows" ed "Esci". Dal 10/10/2026 la X della finestra chiude tutta l'app (prima la nascondeva); avviata con
- *   Windows l'app resta solo nella barra finché non si apre la finestra o si sceglie "Esci".
- * - "Avvia con Windows" è spento finché il giocatore non lo accende (voce di Windows "Esegui all'avvio"), e parte con
- *   `--hidden`, cioè solo nella barra.
+ * - Icona accanto all'orologio: clic = apri la finestra; menu con "Apri", "Overlay sopra il gioco", "Avvio
+ *   automatico" ed "Esci". Dal 10/10/2026 la X della finestra chiude tutta l'app (prima la nascondeva); avviata in
+ *   automatico l'app resta solo nella barra finché non si apre la finestra o si sceglie "Esci".
+ * - Avvio automatico (startup.ts, 16/10/2026): "Con il gioco" (di default dalla 0.4.7: voce di Windows "Esegui
+ *   all'avvio" con `--hidden --wait-game`, l'app aspetta in silenzio che il gioco sia aperto e poi parte nella barra),
+ *   "Con Windows" (`--hidden`, subito nella barra) o "Mai". Avviata così registra le partite ma non apre né la
+ *   finestra né overlay e pannelli: si aprono quando il giocatore apre l'app.
  * - Una sola copia aperta: la seconda riporta in primo piano la prima.
  * - Account OriginsMeta (Fase 3): collegamento con il codice di originsmeta.com/account/tracker, token cifrato con
  *   safeStorage (account.ts), invio delle partite a gruppi con i tentativi (sync.ts): subito dopo ogni partita, all'avvio
@@ -38,6 +40,10 @@
  *   partita finisce senza replay, ne aggiunge giocate e carte dell'avversario (`applyScan`). Acceso di default dalla
  *   0.3.0 (Pierluigi: "acceso"), con un avviso al primo avvio e un interruttore nell'app e nel menu dell'icona
  *   (preferenza in scan.json). `--frames` (`npm run frames`) salva anche i fotogrammi sul PC, per la taratura.
+ * - **Partite contro i bot** (0.4.7, 14/10/2026, Pierluigi: "non devono più essere registrate"): lo scanner legge il nome
+ *   dell'avversario nella schermata VS con l'OCR di Windows (frames.ts, ocr.ts) e, se è un bot (shared/botNames.ts:
+ *   Big Bob, i boss "(BOT)" e l'elenco di bot-names.json), la partita non entra nello storico e non parte per il sito.
+ *   Il nome non si salva né si mostra; con lo scanner spento le partite si registrano come prima.
  * - **Solo con l'account** (0.4.0, 12/10/2026, access.ts; Pierluigi: "se non sono registrati con il cazzo possono
  *   usarla"): senza un collegamento verificato dal sito il "motore" (watcher dei file del gioco, scanner, overlay,
  *   pannelli, sorgente per OBS, invio) resta spento e la finestra mostra solo il collegamento e "Chiudi l'app". Il token
@@ -71,9 +77,14 @@ import { buildMatch } from "../../../src/lib/tracker/match";
 import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelCustom, PanelTemplate, TrackedMatch } from "../shared/types";
 import { PANEL_TEMPLATES } from "../shared/types";
 import { clampWidth, DEFAULT_CUSTOM, defaultSpot, panelShape, readCustom, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
+import { layerAction } from "./panelVisibility";
+import { gameRunning, GAME_POLL_MS, initialStartMode, readStartMode, START_MODES, startArgs, WAIT_GAME_ARG, type StartMode } from "./startup";
+import { execFile } from "node:child_process";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
 const HIDDEN = process.argv.includes("--hidden");
+/** Avvio automatico "con il gioco" (startup.ts): aspetta il gioco prima di partire. */
+const WAIT_GAME = process.argv.includes(WAIT_GAME_ARG);
 const FRAMES = process.argv.includes("--frames");
 /** `--scan`/`--frames` accendono lo scanner anche se il giocatore l'ha spento; `--no-scan` lo spegne per le prove. */
 const FORCE_SCAN = FRAMES || process.argv.includes("--scan");
@@ -185,16 +196,77 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start with Windows", quit: "Quit", listening: "tracking", waiting: "waiting for the game", locked: "link your OriginsMeta account to start", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvia con Windows", quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", locked: "collega il tuo account OriginsMeta per iniziare", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Iniciar con Windows", quit: "Salir", listening: "registrando", waiting: "esperando al juego", locked: "vincula tu cuenta de OriginsMeta para empezar", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start automatically", start: { game: "With the game", windows: "With Windows", off: "Never" }, quit: "Quit", listening: "tracking", waiting: "waiting for the game", locked: "link your OriginsMeta account to start", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvio automatico", start: { game: "Con il gioco", windows: "Con Windows", off: "Mai" }, quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", locked: "collega il tuo account OriginsMeta per iniziare", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Inicio automático", start: { game: "Con el juego", windows: "Con Windows", off: "Nunca" }, quit: "Salir", listening: "registrando", waiting: "esperando al juego", locked: "vincula tu cuenta de OriginsMeta para empezar", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
-/* ---------- avvio con Windows ---------- */
+/* ---------- avvio automatico: con il gioco o con Windows (startup.ts) ---------- */
 
+const START_FILE = "startup.json";
+let startMode: StartMode = "off";
 // in sviluppo si lancia electron.exe con la cartella dell'app; nell'app installata basta l'eseguibile
-const loginArgs = () => (app.isPackaged ? ["--hidden"] : [app.getAppPath(), "--hidden"]);
-const openAtLogin = () => app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).openAtLogin;
+const loginArgs = (mode: StartMode = startMode) => {
+  const args = startArgs(mode === "off" ? "windows" : mode);
+  return app.isPackaged ? args : [app.getAppPath(), ...args];
+};
+
+/** Registra la scelta: la voce "Esegui all'avvio" di Windows (una sola, cambiano gli argomenti) e startup.json. */
+function applyStartMode(mode: StartMode): StartMode {
+  try {
+    app.setLoginItemSettings({ openAtLogin: mode !== "off", path: process.execPath, args: loginArgs(mode) });
+    startMode = mode;
+    fs.writeFileSync(path.join(app.getPath("userData"), START_FILE), JSON.stringify({ mode }));
+  } catch {
+    // non essenziale: resta la scelta di prima
+  }
+  return startMode;
+}
+
+/**
+ * La scelta salvata o, la prima volta (0.4.7), quella di partenza: con il gioco, tranne per chi aveva già acceso o
+ * spento "Avvia con Windows" (`initialStartMode`). In sviluppo niente scelta automatica (registrerebbe electron.exe).
+ */
+function loadStartMode() {
+  if (CAPTURE || process.platform !== "win32") return;
+  try {
+    const saved = readStartMode((JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), START_FILE), "utf8")) as { mode?: unknown }).mode);
+    if (saved) {
+      startMode = saved;
+      return;
+    }
+  } catch {
+    // prima volta con questa versione
+  }
+  if (!app.isPackaged) return;
+  const items = app.getLoginItemSettings({ path: process.execPath, args: loginArgs("windows") }).launchItems ?? [];
+  applyStartMode(initialStartMode(items));
+}
+
+/**
+ * Avviata con `--wait-game`: niente icona, finestre né letture finché il gioco non è aperto (controllo ogni 10 secondi
+ * con `tasklist`). Se nel frattempo il giocatore apre l'app (seconda copia), parte subito con la finestra.
+ */
+let waitingForGame: (() => void) | null = null;
+let openRequested = false;
+function waitForGame(): Promise<void> {
+  return new Promise((resolve) => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const done = () => {
+      if (timer) clearTimeout(timer);
+      waitingForGame = null;
+      resolve();
+    };
+    waitingForGame = done;
+    const check = () =>
+      execFile("tasklist", ["/FO", "CSV", "/NH"], { windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (err, out) => {
+        if (!waitingForGame) return;
+        if (!err && gameRunning(String(out))) return done();
+        timer = setTimeout(check, GAME_POLL_MS);
+      });
+    check();
+  });
+}
 /**
  * Cambio di nome dell'eseguibile (0.4.0, 12/10/2026): chi aveva acceso "Avvia con Windows" con "OriginsMeta
  * Analytics.exe" (o con l'app in un'altra cartella) passa a quello che gira adesso, con lo stato abilitato o no che
@@ -205,17 +277,20 @@ function migrateLoginItem() {
   try {
     const stale = staleLoginItem(app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).launchItems ?? [], process.execPath);
     if (!stale) return;
+    // gli argomenti restano quelli della voce vecchia (con o senza `--wait-game`)
     app.setLoginItemSettings({ openAtLogin: false, path: stale.path, args: stale.args });
-    app.setLoginItemSettings({ openAtLogin: true, path: process.execPath, args: loginArgs(), enabled: stale.enabled !== false });
+    app.setLoginItemSettings({ openAtLogin: true, path: process.execPath, args: stale.args, enabled: stale.enabled !== false });
   } catch {
     // non essenziale: il giocatore la riaccende dall'app
   }
 }
 
-function setOpenAtLogin(on: boolean): boolean {
-  app.setLoginItemSettings({ openAtLogin: on, path: process.execPath, args: loginArgs() });
+function setStartMode(raw: unknown): StartMode {
+  const mode = readStartMode(raw);
+  if (mode) applyStartMode(mode);
   refreshTray();
-  return openAtLogin();
+  push();
+  return startMode;
 }
 
 /* ---------- stato per l'interfaccia ---------- */
@@ -276,6 +351,13 @@ async function finishFromScreen(at: number) {
   const seen = scan?.result ? { result: scan.result, resultAt: scan.resultAt } : frames.resultNear(at);
   if (!seen.result) return;
   const endedAt = new Date(seen.resultAt ?? at).toISOString();
+  // contro un bot (nome della schermata VS, 14/10/2026): non si registra; resta il segnaposto in `fromScreen`, così la
+  // stessa partita portata più tardi dalle statistiche del gioco si scarta
+  if (frames.botMatch(at)) {
+    fromScreen.push({ at, result: seen.result, used: false });
+    frames.event("match-bot", { source: "screen", endedAt, result: seen.result });
+    return;
+  }
   const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
@@ -353,7 +435,7 @@ function state(): AppState {
     missed: open ? store.saved.missed : "",
     history: open ? history : "",
     activeDeck: open ? activeDeck : null,
-    openAtLogin: CAPTURE ? false : openAtLogin(),
+    startMode: CAPTURE ? "off" : startMode,
     dataFolder: store.dir,
     account: accountState(),
     overlay: {
@@ -445,15 +527,25 @@ function panelsWanted(): boolean {
   if (!panelsOnlyInMatch || panelsSpotlit || !frames?.running) return true;
   return Boolean(frames.live()?.inMatch);
 }
-/** Mostra o nasconde le finestre dei pannelli accese; gira ogni secondo e mezzo e a ogni aggiornamento dei pannelli. */
+/**
+ * Mostra o nasconde le finestre dei pannelli accese e le tiene sopra il gioco (anche l'overlay): gira ogni secondo e
+ * mezzo e a ogni aggiornamento dei pannelli. Una finestra minimizzata o coperta dal gioco torna su da sola
+ * (panelVisibility.ts, 16/10/2026).
+ */
 function syncPanelVisibility() {
   const want = panelsWanted();
-  for (const k of PANEL_KINDS) {
-    if (!panelOpen(k)) continue;
-    const w = panels[k].win!;
+  const wins: { w: BrowserWindow; want: boolean }[] = [];
+  for (const k of PANEL_KINDS) if (panelOpen(k)) wins.push({ w: panels[k].win!, want });
+  if (overlayWin && !overlayWin.isDestroyed()) wins.push({ w: overlayWin, want: true });
+  for (const { w, want } of wins) {
     if (w.webContents.isLoading()) continue; // la mostra ready-to-show
-    if (want && !w.isVisible()) w.showInactive();
-    else if (!want && w.isVisible()) w.hide();
+    const act = layerAction(want, { visible: w.isVisible(), minimized: w.isMinimized(), focused: w.isFocused(), busy: deckResize !== null });
+    if (act === "show") w.showInactive();
+    else if (act === "hide") w.hide();
+    else if (act === "raise") {
+      w.setAlwaysOnTop(true, "screen-saver");
+      w.moveTop();
+    }
   }
 }
 setInterval(syncPanelVisibility, 1500);
@@ -842,8 +934,9 @@ async function startEngine() {
   const gen = ++engineGen;
   watcher.start();
   if (!CAPTURE) {
-    if (overlayPrefs.open) openOverlay();
-    for (const k of PANEL_KINDS) if (panels[k].prefs.open) openPanel(k);
+    // con la finestra dell'app già aperta (avviata in automatico ma da collegare) non si aspetta
+    if (layersDeferred && win && !win.isDestroyed() && win.isVisible()) layersDeferred = false;
+    if (!layersDeferred) openSavedLayers();
     if (frames && !NO_SCAN && (FORCE_SCAN || scanPrefs.on)) frames.start();
     scheduleSync(10_000);
   }
@@ -853,6 +946,17 @@ async function startEngine() {
   if (!engineOn || gen !== engineGen) return server?.close(); // bloccata (o ripartita) mentre partiva
   overlayServer = server;
   push();
+}
+
+/**
+ * Overlay e pannelli aperti l'ultima volta. Con l'avvio automatico (16/10/2026, Pierluigi: "se il giocatore vuole
+ * aprire l'app e i layer se l'aprirà") aspettano che il giocatore apra la finestra dell'app (`showWindow`); dal menu
+ * dell'icona si accendono comunque uno per uno.
+ */
+let layersDeferred = false;
+function openSavedLayers() {
+  if (overlayPrefs.open) openOverlay();
+  for (const k of PANEL_KINDS) if (panels[k].prefs.open) openPanel(k);
 }
 
 /** Ferma tutto (app bloccata): niente più letture, riprese, finestre sopra il gioco né sorgente per OBS. Le preferenze restano. */
@@ -1009,7 +1113,10 @@ function refreshTray() {
       { label: t.deck, type: "checkbox", checked: panelOpen("deck"), click: (item) => setPanel("deck", item.checked) },
       { label: t.opp, type: "checkbox", checked: panelOpen("opp"), click: (item) => setPanel("opp", item.checked) },
       { label: t.scanner, type: "checkbox", checked: Boolean(frames?.running), click: (item) => setScanner(item.checked) },
-      { label: t.startup, type: "checkbox", checked: openAtLogin(), click: (item) => setOpenAtLogin(item.checked) },
+      {
+        label: t.startup,
+        submenu: START_MODES.map((m) => ({ label: t.start[m], type: "radio" as const, checked: startMode === m, click: () => setStartMode(m) })),
+      },
       { type: "separator" },
       { label: t.quit, click: () => app.quit() },
     ]),
@@ -1019,6 +1126,10 @@ function refreshTray() {
 /* ---------- finestra ---------- */
 
 function showWindow() {
+  if (layersDeferred) {
+    layersDeferred = false;
+    if (engineOn) openSavedLayers();
+  }
   if (!win || win.isDestroyed()) createWindow(true);
   else {
     if (win.isMinimized()) win.restore();
@@ -1081,7 +1192,7 @@ const fromDeck = (e: IpcMainInvokeEvent | IpcMainEvent) => Boolean(e.senderFrame
 
 function registerIpc() {
   ipcMain.handle("tracker:state", (e) => (fromApp(e) ? state() : null));
-  ipcMain.handle("tracker:login", (e, on: unknown) => (fromOpenApp(e) && !CAPTURE ? setOpenAtLogin(on === true) : openAtLogin()));
+  ipcMain.handle("tracker:login", (e, mode: unknown) => (fromOpenApp(e) && !CAPTURE ? setStartMode(mode) : startMode));
   ipcMain.handle("tracker:folder", async (e) => {
     if (fromOpenApp(e)) await shell.openPath(store.dir);
   });
@@ -1223,7 +1334,11 @@ function registerIpc() {
 const deckView = (deck: GameDeck | null): ActiveDeck => (deck ? { name: deck.name, legendary: deck.legendary?.replace(/_V\d+$/, "") ?? null, cards: deck.cards.map((k) => k.replace(/_V\d+$/, "")) } : null);
 
 async function boot() {
+  if (WAIT_GAME && !CAPTURE) await waitForGame();
+  // avviata in automatico (con Windows o con il gioco): solo l'icona, pannelli e overlay quando si apre l'app
+  layersDeferred = HIDDEN && !openRequested && !CAPTURE;
   migrateLoginItem();
+  loadStartMode();
   store = new Store(app.getPath("userData"));
   const hadState = store.load();
   account = new Account(app.getPath("userData"), cipher);
@@ -1251,6 +1366,11 @@ async function boot() {
     const stored = Number.isFinite(end) ? store.matches.find((m) => m.result === raw.result && nearTo(m.endedAt, end)) : undefined;
     if (stored) {
       frames?.event("match-skipped", { endedAt: raw.endedAt, result: raw.result, storedAt: stored.endedAt });
+      return;
+    }
+    // contro un bot (nome della schermata VS, 14/10/2026): non si registra
+    if (frames && Number.isFinite(end) && frames.botMatch(end)) {
+      frames.event("match-bot", { source: "files", endedAt: raw.endedAt, result: raw.result });
       return;
     }
     // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
@@ -1321,13 +1441,18 @@ async function boot() {
   }
   // avviata con Windows ma bloccata: la finestra si apre comunque, per dire che serve il collegamento (non per
   // "verify", il collegamento della 0.3.x che la verifica appena partita sblocca in un attimo)
-  createWindow(!HIDDEN || (!access.open && access.reason !== "verify"));
+  createWindow(openRequested || !HIDDEN || (!access.open && access.reason !== "verify"));
 }
 
 if (!CAPTURE && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", showWindow);
+  // in attesa del gioco (startup.ts) il giocatore che apre l'app la fa partire subito, con la finestra
+  app.on("second-instance", () => {
+    if (!waitingForGame) return showWindow();
+    openRequested = true;
+    waitingForGame();
+  });
   app.on("web-contents-created", (_e, contents) => {
     contents.on("will-attach-webview", (e) => e.preventDefault());
   });
