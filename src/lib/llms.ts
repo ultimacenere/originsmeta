@@ -230,7 +230,7 @@ export function llmsFull(): string {
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…) and French (/fr/cards/…) with the same slug, the official text in Italian and Spanish, our translation in French, and the balance history.`,
+    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…) and French (/fr/cards/…) with the same slug, the official text of the game in Italian, Spanish and French, and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");

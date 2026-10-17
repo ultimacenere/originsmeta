@@ -105,11 +105,13 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
 export function cardTitle(card: TitleCard, locale: Locale): string {
   const t = titleTails[locale];
   const tail = card.status === "removed" ? (card.legendary ? t.removedLegendary : t.removed) : card.type === "token" ? t.created : card.legendary ? t.legendary : t.card;
+  // francese: spazio insecabile prima dei due punti (docs/francese.md), come nella description
+  const colon = locale === "fr" ? " : " : ": ";
   for (const option of [tail, t.card]) {
-    const title = `${card.name}: ${option}`;
+    const title = `${card.name}${colon}${option}`;
     if (title.length <= CARD_TITLE_MAX) return title;
   }
-  return `${fitName(card.name, CARD_TITLE_MAX - ": Origins TCG".length)}: Origins TCG`;
+  return `${fitName(card.name, CARD_TITLE_MAX - `${colon}Origins TCG`.length)}${colon}Origins TCG`;
 }
 
 /** Etichette di allineamento: restano in inglese in tutte le lingue, come sulla carta (docs/testi-di-gioco.md). */

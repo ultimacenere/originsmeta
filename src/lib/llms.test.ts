@@ -207,7 +207,9 @@ describe("public/llms.txt", () => {
       }
       const rest = m[2] ?? "";
       const [section, slug, extra] = rest.split("/");
+      // gli elenchi dentro una sezione (/guides/community, /news/comics) sono pagine, non slug di guide o news
       const ok =
+        (rest !== "" && !extra && existsSync(app(`[locale]/(site)/${rest}/page.tsx`))) ||
         rest === ""
           ? existsSync(app("[locale]/(home)/page.tsx"))
           : section === "guides" && slug

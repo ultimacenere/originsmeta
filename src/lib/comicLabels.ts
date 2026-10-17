@@ -16,6 +16,9 @@ const en = {
   page: {
     /** in coda al titolo per la SERP ("{title} · Origins TCG comic") */
     metaSuffix: "Origins TCG comic",
+    /** in coda a una presentazione corta nella description (sotto i 120 caratteri): la lunga se ci sta nei 158, altrimenti la corta */
+    descriptionTail: "A comic by {name} set in the world of Origins TCG, the card game by Koin Games, in {pages}.",
+    descriptionTailShort: "A comic by {name} about Origins TCG, {pages}.",
     published: "Published on {date}",
     updated: "updated on {date}",
     pagesOne: "1 page",
@@ -173,6 +176,8 @@ const it: ComicLabels = {
   read: "Leggi il fumetto",
   page: {
     metaSuffix: "fumetto di Origins TCG",
+    descriptionTail: "Un fumetto di {name} nel mondo di Origins TCG, il gioco di carte di Koin Games, in {pages}.",
+    descriptionTailShort: "Un fumetto di {name} su Origins TCG, {pages}.",
     published: "Pubblicato il {date}",
     updated: "aggiornato il {date}",
     pagesOne: "1 tavola",
@@ -324,6 +329,8 @@ const es: ComicLabels = {
   read: "Lee el cómic",
   page: {
     metaSuffix: "cómic de Origins TCG",
+    descriptionTail: "Un cómic de {name} en el mundo de Origins TCG, el juego de cartas de Koin Games, en {pages}.",
+    descriptionTailShort: "Un cómic de {name} sobre Origins TCG, {pages}.",
     published: "Publicado el {date}",
     updated: "actualizado el {date}",
     pagesOne: "1 página",
@@ -476,6 +483,8 @@ const fr: ComicLabels = {
   read: "Lire la BD",
   page: {
     metaSuffix: "BD Origins TCG",
+    descriptionTail: "Une BD de {name} dans l'univers d'Origins TCG, le jeu de cartes de Koin Games, en {pages}.",
+    descriptionTailShort: "Une BD de {name} sur Origins TCG, {pages}.",
     published: "Publiée le {date}",
     updated: "mise à jour le {date}",
     pagesOne: "1 planche",

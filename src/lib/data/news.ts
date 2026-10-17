@@ -2618,7 +2618,7 @@ What the community publishes is translated into French too, automatically, after
 
 ## Why French {#why-french}
 
-Origins TCG is translated into French: the game's Steam page lists French among its 13 languages, interface and audio included. After [Spanish, which arrived on 25 September](/en/news/upgrade-meta-0925), French is the fourth language of OriginsMeta, for the same reason: being read in the languages the game speaks.
+Origins TCG is translated into French: the game's Steam page lists French among its 13 interface languages (full audio is in English only). After [Spanish, which arrived on 25 September](/en/news/upgrade-meta-0925), French is the fourth language of OriginsMeta, for the same reason: being read in the languages the game speaks.
 
 ## Help us get it right {#help}
 
@@ -2643,7 +2643,7 @@ Anche quello che pubblica la community si traduce in francese, in automatico, do
 
 ## Perché il francese {#perche-il-francese}
 
-Origins TCG è tradotto in francese: la pagina Steam del gioco elenca il francese fra le sue 13 lingue, interfaccia e audio compresi. Dopo [lo spagnolo, arrivato il 25 settembre](/it/news/upgrade-meta-0925), il francese è la quarta lingua di OriginsMeta, per la stessa ragione: farsi leggere nelle lingue che parla il gioco.
+Origins TCG è tradotto in francese: la pagina Steam del gioco elenca il francese fra le sue 13 lingue dell'interfaccia (l'audio completo è solo in inglese). Dopo [lo spagnolo, arrivato il 25 settembre](/it/news/upgrade-meta-0925), il francese è la quarta lingua di OriginsMeta, per la stessa ragione: farsi leggere nelle lingue che parla il gioco.
 
 ## Aiutaci a farlo bene {#aiutaci}
 
@@ -2668,7 +2668,7 @@ Lo que publica la comunidad también se traduce al francés, automáticamente, d
 
 ## Por qué el francés {#por-que-el-frances}
 
-Origins TCG está traducido al francés: la página de Steam del juego incluye el francés entre sus 13 idiomas, interfaz y audio incluidos. Después del [español, que llegó el 25 de septiembre](/es/news/upgrade-meta-0925), el francés es el cuarto idioma de OriginsMeta, por la misma razón: que nos lean en los idiomas que habla el juego.
+Origins TCG está traducido al francés: la página de Steam del juego incluye el francés entre sus 13 idiomas de la interfaz (el audio completo está solo en inglés). Después del [español, que llegó el 25 de septiembre](/es/news/upgrade-meta-0925), el francés es el cuarto idioma de OriginsMeta, por la misma razón: que nos lean en los idiomas que habla el juego.
 
 ## Ayúdanos a hacerlo bien {#ayudanos}
 
