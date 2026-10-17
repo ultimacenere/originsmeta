@@ -29,6 +29,7 @@ export function MarketBoard({
   labels,
   base,
   icons,
+  demo = false,
 }: {
   items: BoardItem[];
   usdPerEur: number | null;
@@ -36,8 +37,11 @@ export function MarketBoard({
   labels: Pick<MarketLabels, "board" | "movers" | "currency">;
   base: string;
   icons: boolean;
+  /** prova del motore (CS2): i tipi si chiamano skin e casse */
+  demo?: boolean;
 }) {
   const b = labels.board;
+  const kindLabels = demo ? b.demoKinds : b.kinds;
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"all" | MarketKind>("all");
   const [sort, setSort] = useState<Sort>("name");
@@ -133,7 +137,7 @@ export function MarketBoard({
         <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={b.kind}>
           {kinds.map((k) => (
             <button key={k.id} type="button" onClick={() => setKind(k.id)} aria-pressed={kind === k.id} className={`btn btn-choice px-3 py-1.5 text-xs ${kind === k.id ? "is-on" : ""}`}>
-              {b.kinds[k.id]} <span className="font-mono font-normal">{k.count}</span>
+              {kindLabels[k.id]} <span className="font-mono font-normal">{k.count}</span>
             </button>
           ))}
         </div>

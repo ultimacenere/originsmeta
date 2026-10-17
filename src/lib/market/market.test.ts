@@ -74,7 +74,7 @@ describe("pagina di Steam", () => {
     assert.equal(parseSearchPage({ success: true }), null);
   });
   test("indirizzo della ricerca con i filtri della fonte", () => {
-    assert.match(searchUrl(MARKET_SOURCES.standin, 20), /appid=753&norender=1&sort_column=name&sort_dir=asc&start=20&category_753_Game%5B%5D=tag_app_1145360$/);
+    assert.match(searchUrl(MARKET_SOURCES.standin, 20), /appid=730&norender=1&sort_column=name&sort_dir=asc&start=20&category_730_ItemSet%5B%5D=tag_set_community_30$/);
     assert.match(searchUrl(MARKET_SOURCES.origins, -5), /appid=4429430&.*start=0$/);
   });
 });
@@ -87,10 +87,13 @@ describe("slug e classificazione", () => {
     assert.match(marketSlug(":::"), /^item-[a-z0-9]+$/);
     assert.ok(marketSlug("x".repeat(300)).length <= 100);
   });
-  test("controfigura: carte normali e foil, il resto è altro", () => {
-    assert.deepEqual(classifyItem("standin", { name: "Lord Hades", type: "Hades Trading Card" }), { kind: "card", card: null, variant: "normal" });
-    assert.deepEqual(classifyItem("standin", { name: "Lord Hades", type: "Hades Foil Trading Card" }), { kind: "card", card: null, variant: "foil" });
-    assert.equal(classifyItem("standin", { name: ":zagcry:", type: "Hades Emoticon" }).kind, "other");
+  test("controfigura CS2: skin con StatTrak/Souvenir e usura, la cassa è una busta", () => {
+    assert.deepEqual(classifyItem("standin", { name: "AK-47 | Nightwish (Field-Tested)", type: "Covert Rifle" }), { kind: "card", card: null, variant: "Field-Tested" });
+    assert.deepEqual(classifyItem("standin", { name: "StatTrak™ AK-47 | Nightwish (Factory New)", type: "StatTrak™ Covert Rifle" }), { kind: "card", card: null, variant: "StatTrak™ · Factory New" });
+    assert.deepEqual(classifyItem("standin", { name: "★ StatTrak™ Karambit | Doppler (Minimal Wear)", type: "★ Covert Knife" }), { kind: "card", card: null, variant: "★ StatTrak™ · Minimal Wear" });
+    assert.deepEqual(classifyItem("standin", { name: "Dreams & Nightmares Case", type: "Base Grade Container" }), { kind: "pack", card: null, variant: null });
+    assert.equal(classifyItem("standin", { name: "Sticker | Something", type: "Sticker" }).variant, null);
+    assert.equal(classifyItem("standin", { name: "Music Kit", type: "Music Kit" }).kind, "other");
   });
   const cards = [
     { slug: "bear", name: "Bear" },
@@ -109,11 +112,12 @@ describe("slug e classificazione", () => {
     assert.equal(classifyItem("origins", { name: "Merlin Capsule", type: "Sealed Product Box" }, cards).kind, "pack", "il tipo di Steam vince");
   });
   test("righe per market_ingest: al massimo 100, con slug e classe", () => {
-    const items = parseSearchPage({ success: true, total_count: 1, results: [steamRow()] })!.items;
+    const items = parseSearchPage({ success: true, total_count: 1, results: [steamRow({ name: "AK-47 | Nightwish (Field-Tested)", hash_name: "AK-47 | Nightwish (Field-Tested)", asset_description: { type: "Covert Rifle" } })] })!.items;
     const rows = ingestRows("standin", Array(150).fill(items[0]));
     assert.equal(rows.length, INGEST_MAX_ITEMS);
-    assert.equal(rows[0].slug, "1145360-lord-hades");
+    assert.equal(rows[0].slug, "ak-47-nightwish-field-tested");
     assert.equal(rows[0].kind, "card");
+    assert.equal(rows[0].variant, "Field-Tested");
   });
 });
 

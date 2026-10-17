@@ -19,8 +19,8 @@ import { PriceChart } from "./PriceChart";
 
 /**
  * Pagine del tracker dei prezzi del mercato di Steam (17/10/2026): tabellone e scheda di un oggetto, per Origins TCG
- * (/market, /market/<oggetto>) e per la controfigura (/market/demo, /market/demo/<oggetto>, gli oggetti di Steam di
- * Hades per provare il motore prima che apra il mercato di Origins). ISR (`revalidate` nelle rotte), letture in
+ * (/market, /market/<oggetto>) e per la controfigura (/market/demo, /market/demo/<oggetto>: dal 18/10/2026 la
+ * collezione Dreams & Nightmares di Counter-Strike 2, per provare il motore prima che apra il mercato di Origins). ISR (`revalidate` nelle rotte), letture in
  * src/lib/market/queries.ts. Indicizzazione: il tabellone di Origins solo con almeno un oggetto, le schede degli oggetti
  * e tutta la controfigura mai (noindex, fuori da hreflang e sitemap). Le schede si indicizzeranno quando vedremo gli
  * oggetti veri (fase 2, decisione di Pierluigi).
@@ -127,7 +127,7 @@ export async function MarketBoardPage({ locale, source }: { locale: Locale; sour
 
       {items.length ? (
         <div className="mt-8">
-          <MarketBoard items={items} usdPerEur={latestFx(board!.fx)} locale={locale} labels={l} base={path} icons={MARKET_SOURCES[source].icons} />
+          <MarketBoard items={items} usdPerEur={latestFx(board!.fx)} locale={locale} labels={l} base={path} icons={MARKET_SOURCES[source].icons} demo={demo} />
         </div>
       ) : !demo ? (
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -205,7 +205,7 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
         {icons && item.icon ? <Image src={iconUrl(item.icon)} alt={item.name} width={96} height={96} className="shrink-0 rounded-lg bg-night-3 object-contain" priority /> : null}
         <div className="min-w-0 flex-1 basis-64">
           <h1 className="t-page break-words">{item.name}</h1>
-          <p className="mt-1 text-sm text-pale-muted">{[variant, item.item_type, l.board.kinds[item.kind]].filter(Boolean).join(" · ")}</p>
+          <p className="mt-1 text-sm text-pale-muted">{[variant, item.item_type, (demo ? l.board.demoKinds : l.board.kinds)[item.kind]].filter(Boolean).join(" · ")}</p>
           {card ? (
             <p className="mt-1 text-sm">
               <Link href={href(locale, `/cards/${card.slug}`)} className="link-mint">

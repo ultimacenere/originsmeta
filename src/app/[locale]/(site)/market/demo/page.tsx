@@ -3,8 +3,8 @@ import { resolveLocale, type LocaleParams } from "@/lib/page";
 import { MarketBoardPage, marketBoardMeta } from "@/components/market/MarketPages";
 
 /*
-  Prova del motore del tracker dei prezzi (17/10/2026) su un gioco già sul Mercato di Steam (gli oggetti di Steam di
-  Hades, fonte `standin` di src/lib/market/market.ts), finché non apre quello di Origins TCG. Noindex, fuori da hreflang
+  Prova del motore del tracker dei prezzi (17/10/2026) su un gioco già sul Mercato di Steam (dal 18/10/2026 la
+  collezione Dreams & Nightmares di Counter-Strike 2, fonte `standin` di src/lib/market/market.ts), finché non apre quello di Origins TCG. Noindex, fuori da hreflang
   e sitemap; la pagina lo dice in cima.
 */
 export const revalidate = 300;

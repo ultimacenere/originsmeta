@@ -11,8 +11,12 @@
  * supabase/schema.sql. Gli euro si calcolano con il cambio BCE del giorno, e le pagine lo dicono.
  *
  * Fonti (`MARKET_SOURCES`): `origins`, il mercato di Origins TCG (chiuso il 17/10/2026: le pagine dicono "in arrivo"
- * finché non c'è un oggetto), e `standin`, la controfigura con cui si prova il motore prima del giorno 1 (gli oggetti di
- * Steam di Hades: carte, carte foil, emoticon e sfondi, cioè carte con varianti), mostrata solo su /market/demo.
+ * finché non c'è un oggetto), e `standin`, la controfigura con cui si prova il motore prima del giorno 1, mostrata solo
+ * su /market/demo: dal 18/10/2026 la collezione Dreams & Nightmares di Counter-Strike 2 (Pierluigi: "il gioco che hai
+ * scelto è un po' morto, prova con Counter-Strike, che dovrebbe essere il punto di riferimento per il CEO di Koin Games";
+ * prima gli oggetti di Steam di Hades). 182 oggetti, un giro in circa 50 secondi, e le stesse dimensioni che avranno le
+ * carte di Origins: rarità (Covert, Classified…), usura come la gradazione (Factory New → Battle-Scarred), StatTrak e
+ * Souvenir come varianti, la cassa (la più scambiata di Steam) come busta.
  */
 
 export type MarketSourceId = "origins" | "standin";
@@ -33,7 +37,8 @@ export type MarketSource = {
 
 export const MARKET_SOURCES: Record<MarketSourceId, MarketSource> = {
   origins: { id: "origins", appid: 4429430, query: "", listingAppid: 4429430, icons: true },
-  standin: { id: "standin", appid: 753, query: "category_753_Game%5B%5D=tag_app_1145360", listingAppid: 753, icons: false },
+  // Counter-Strike 2, collezione Dreams & Nightmares (tag del filtro "Collection" di market/appfilters/730)
+  standin: { id: "standin", appid: 730, query: "category_730_ItemSet%5B%5D=tag_set_community_30", listingAppid: 730, icons: false },
 };
 export const MARKET_SOURCE_IDS = Object.keys(MARKET_SOURCES) as MarketSourceId[];
 
@@ -139,20 +144,26 @@ export type MarketClass = { kind: MarketKind; card: string | null; variant: stri
 /** Le carte del database, per riconoscere un oggetto di Origins (nome e slug bastano). */
 export type MarketCardRef = { slug: string; name: string };
 
-const PACK_RE = /\b(pack|booster|box|case|capsule|bundle|crate|chest|bustina|busta)\b/i;
+/** Nome di una skin di CS2: prefisso (StatTrak™, Souvenir, ★), arma | skin, usura fra parentesi. */
+const CS2_NAME = /^((?:★ )?(?:StatTrak™ |Souvenir )?)(.+?)(?: \((Factory New|Minimal Wear|Field-Tested|Well-Worn|Battle-Scarred)\))?$/;
+
+const PACK_RE =/\b(pack|booster|box|case|capsule|bundle|crate|chest|bustina|busta)\b/i;
 
 /**
- * Classifica un oggetto. Controfigura (oggetti di Steam di Hades): "<gioco> Trading Card" e "<gioco> Foil Trading
- * Card" sono carte con variante Normale/Foil; emoticon, sfondi e il resto sono "altro". Origins: il formato dei nomi lo
+ * Classifica un oggetto. Controfigura (CS2): le casse ("Container") sono buste; le skin sono "carte" con la variante
+ * scritta nel nome di Steam, StatTrak™ o Souvenir più l'usura ("StatTrak™ AK-47 | Nightwish (Field-Tested)" →
+ * variante "StatTrak™ · Field-Tested"). Origins: il formato dei nomi lo
  * vedremo il giorno 1; fino ad allora un oggetto il cui nome contiene il nome di una carta del database è quella carta
  * (il nome più lungo vince: "Baby Bear" prima di "Bear"), e la variante è il resto del nome; buste e confezioni sono
  * "pack" (dal tipo di Steam, o dal nome se non c'è una carta). Da rivedere con i nomi veri (fase 2).
  */
 export function classifyItem(source: MarketSourceId, item: Pick<RawMarketItem, "name" | "type">, cards: readonly MarketCardRef[] = []): MarketClass {
   if (source === "standin") {
-    if (/\bfoil trading card$/i.test(item.type)) return { kind: "card", card: null, variant: "foil" };
-    if (/\btrading card$/i.test(item.type)) return { kind: "card", card: null, variant: "normal" };
-    return { kind: "other", card: null, variant: null };
+    if (/\bcontainer\b/i.test(item.type)) return { kind: "pack", card: null, variant: null };
+    const m = CS2_NAME.exec(item.name);
+    if (!m || !/\|/.test(m[2])) return { kind: "other", card: null, variant: null };
+    const variant = [m[1]?.trim(), m[3]].filter(Boolean).join(" · ");
+    return { kind: "card", card: null, variant: variant || null };
   }
   // il tipo di Steam che dice "busta" vince; nel nome conta solo se non c'è una carta (Jack-in-the-Box è una carta)
   if (PACK_RE.test(item.type)) return { kind: "pack", card: null, variant: null };

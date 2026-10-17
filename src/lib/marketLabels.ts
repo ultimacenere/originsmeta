@@ -24,6 +24,8 @@ type Labels = {
     searchPlaceholder: string;
     kind: string;
     kinds: Record<"all" | MarketKind, string>;
+    /** i tipi nella prova del motore (CS2): skin e casse al posto di carte e buste */
+    demoKinds: Record<"all" | MarketKind, string>;
     sort: string;
     sorts: { name: string; price: string; change: string; listings: string };
     columns: { item: string; price: string; change24h: string; change7d: string; listings: string };
@@ -90,11 +92,11 @@ const en: Labels = {
   },
   demoLink: {
     title: "See the engine at work",
-    text: "Until Origins TCG trading opens, the tracker runs on a game that is already on the Steam Market.",
+    text: "Until Origins TCG trading opens, the tracker runs on a collection of Counter-Strike 2, the biggest market on Steam.",
     cta: "Open the engine test",
   },
   demo: {
-    banner: "This is a test of the engine on the Steam items of Hades (Supergiant Games), a game that is already on the market: they are not Origins TCG cards.",
+    banner: "This is a test of the engine on the Dreams & Nightmares collection of Counter-Strike 2 (Valve), the biggest market on Steam: skins with rarities, wear and StatTrak versions, the way Origins TCG cards will have rarities, grades and variants. They are not Origins TCG cards.",
     back: "Back to Origins TCG prices",
   },
   currency: { label: "Currency" },
@@ -103,6 +105,7 @@ const en: Labels = {
     searchPlaceholder: "Item name…",
     kind: "Type",
     kinds: { all: "All", card: "Cards", pack: "Packs", other: "Other items" },
+    demoKinds: { all: "All", card: "Skins", pack: "Cases", other: "Other items" },
     sort: "Sort by",
     sorts: { name: "Name", price: "Price", change: "24h change", listings: "Listings" },
     columns: { item: "Item", price: "Lowest price", change24h: "24h", change7d: "7 days", listings: "Listings" },
@@ -177,11 +180,11 @@ const it: Labels = {
   },
   demoLink: {
     title: "Guarda il motore al lavoro",
-    text: "Finché non aprono gli scambi di Origins TCG, il tracker gira su un gioco che è già sul Mercato di Steam.",
+    text: "Finché non aprono gli scambi di Origins TCG, il tracker gira su una collezione di Counter-Strike 2, il mercato più grande di Steam.",
     cta: "Apri la prova del motore",
   },
   demo: {
-    banner: "Questa è una prova del motore con gli oggetti di Steam di Hades (Supergiant Games), un gioco che è già sul mercato: non sono carte di Origins TCG.",
+    banner: "Questa è una prova del motore con la collezione Dreams & Nightmares di Counter-Strike 2 (Valve), il mercato più grande di Steam: skin con rarità, usura e versioni StatTrak, come le carte di Origins TCG avranno rarità, gradazione e varianti. Non sono carte di Origins TCG.",
     back: "Torna ai prezzi di Origins TCG",
   },
   currency: { label: "Valuta" },
@@ -190,6 +193,7 @@ const it: Labels = {
     searchPlaceholder: "Nome dell'oggetto…",
     kind: "Tipo",
     kinds: { all: "Tutti", card: "Carte", pack: "Buste", other: "Altri oggetti" },
+    demoKinds: { all: "Tutti", card: "Skin", pack: "Casse", other: "Altri oggetti" },
     sort: "Ordina per",
     sorts: { name: "Nome", price: "Prezzo", change: "Variazione 24 ore", listings: "Offerte" },
     columns: { item: "Oggetto", price: "Prezzo più basso", change24h: "24 ore", change7d: "7 giorni", listings: "Offerte" },
@@ -264,11 +268,11 @@ const es: Labels = {
   },
   demoLink: {
     title: "Mira el motor en marcha",
-    text: "Hasta que se abran los intercambios de Origins TCG, el rastreador funciona con un juego que ya está en el Mercado de Steam.",
+    text: "Hasta que se abran los intercambios de Origins TCG, el rastreador funciona con una colección de Counter-Strike 2, el mercado más grande de Steam.",
     cta: "Abre la prueba del motor",
   },
   demo: {
-    banner: "Esto es una prueba del motor con los objetos de Steam de Hades (Supergiant Games), un juego que ya está en el mercado: no son cartas de Origins TCG.",
+    banner: "Esto es una prueba del motor con la colección Dreams & Nightmares de Counter-Strike 2 (Valve), el mercado más grande de Steam: skins con rarezas, desgaste y versiones StatTrak, como las cartas de Origins TCG tendrán rarezas, graduación y variantes. No son cartas de Origins TCG.",
     back: "Volver a los precios de Origins TCG",
   },
   currency: { label: "Moneda" },
@@ -277,6 +281,7 @@ const es: Labels = {
     searchPlaceholder: "Nombre del objeto…",
     kind: "Tipo",
     kinds: { all: "Todos", card: "Cartas", pack: "Sobres", other: "Otros objetos" },
+    demoKinds: { all: "Todos", card: "Skins", pack: "Cajas", other: "Otros objetos" },
     sort: "Ordenar por",
     sorts: { name: "Nombre", price: "Precio", change: "Variación 24 horas", listings: "Ofertas" },
     columns: { item: "Objeto", price: "Precio más bajo", change24h: "24 horas", change7d: "7 días", listings: "Ofertas" },
@@ -351,11 +356,11 @@ const fr: Labels = {
   },
   demoLink: {
     title: "Voir le moteur à l'œuvre",
-    text: "En attendant l'ouverture des échanges d'Origins TCG, le suivi tourne sur un jeu déjà présent sur le Marché Steam.",
+    text: "En attendant l'ouverture des échanges d'Origins TCG, le suivi tourne sur une collection de Counter-Strike 2, le plus grand marché de Steam.",
     cta: "Ouvrir le test du moteur",
   },
   demo: {
-    banner: "Ceci est un test du moteur avec les objets Steam de Hades (Supergiant Games), un jeu déjà présent sur le marché : ce ne sont pas des cartes d'Origins TCG.",
+    banner: "Ceci est un test du moteur avec la collection Dreams & Nightmares de Counter-Strike 2 (Valve), le plus grand marché de Steam : des skins avec raretés, usure et versions StatTrak, comme les cartes d'Origins TCG auront raretés, gradation et variantes. Ce ne sont pas des cartes d'Origins TCG.",
     back: "Retour aux prix d'Origins TCG",
   },
   currency: { label: "Devise" },
@@ -364,6 +369,7 @@ const fr: Labels = {
     searchPlaceholder: "Nom de l'objet…",
     kind: "Type",
     kinds: { all: "Tous", card: "Cartes", pack: "Boosters", other: "Autres objets" },
+    demoKinds: { all: "Tous", card: "Skins", pack: "Caisses", other: "Autres objets" },
     sort: "Trier par",
     sorts: { name: "Nom", price: "Prix", change: "Variation 24 heures", listings: "Offres" },
     columns: { item: "Objet", price: "Prix le plus bas", change24h: "24 heures", change7d: "7 jours", listings: "Offres" },

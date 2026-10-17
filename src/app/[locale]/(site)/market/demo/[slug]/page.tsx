@@ -3,7 +3,7 @@ import { resolveLocale } from "@/lib/page";
 import { MarketItemPage, marketItemMeta } from "@/components/market/MarketPages";
 
 /*
-  Scheda di un oggetto della prova del motore (gli oggetti di Steam di Hades, tracker dei prezzi del 17/10/2026).
+  Scheda di un oggetto della prova del motore (collezione Dreams & Nightmares di Counter-Strike 2, tracker dei prezzi del 17/10/2026).
   ISR, noindex.
 */
 export const revalidate = 300;
