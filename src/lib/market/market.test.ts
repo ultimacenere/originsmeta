@@ -32,6 +32,8 @@ import {
   pricePoints,
   rangePoints,
   searchUrl,
+  sortBoard,
+  defaultSortDir,
   type BoardItem,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./market.ts";
@@ -179,6 +181,25 @@ describe("tabellone e storico", () => {
     const rows = boardRows([{ hash_name: "a", slug: "a", name: "A", kind: "card", price: "12", listings: 3, price_24h: null }, { hash_name: "b", slug: "b", name: "B", kind: "weird" }, null]);
     assert.equal(rows.length, 1);
     assert.equal(rows[0].price, 12, "i numeri come testo diventano numeri");
+  });
+  test("ordinamenti: A→Z e Z→A, prezzo e offerte nei due versi, senza prezzo sempre in fondo", () => {
+    const list = [
+      item({ hash_name: "b", name: "Beta", price: 300, listings: 1 }),
+      item({ hash_name: "a", name: "alfa", price: 100, listings: 50 }),
+      item({ hash_name: "n", name: "Nullo", price: null, listings: 0 }),
+      item({ hash_name: "g", name: "Gamma", price: 200, listings: 7, price_24h: 100 }),
+    ];
+    const names = (key: "name" | "price" | "listings" | "change", dir: "asc" | "desc") => sortBoard(list, key, dir, "it").map((x) => x.hash_name).join("");
+    assert.equal(names("name", "asc"), "abgn", "A→Z senza badare alle maiuscole");
+    assert.equal(names("name", "desc"), "ngba");
+    assert.equal(names("price", "desc"), "bgan");
+    assert.equal(names("price", "asc"), "agbn", "senza prezzo in fondo anche dal più basso");
+    assert.equal(names("listings", "desc"), "agbn");
+    assert.equal(names("listings", "asc"), "nbga");
+    assert.equal(names("change", "desc")[0], "g", "chi ha una variazione prima di chi non ce l'ha");
+    assert.equal(list[0].hash_name, "b", "l'elenco di partenza non cambia");
+    assert.equal(defaultSortDir("name"), "asc");
+    assert.equal(defaultSortDir("price"), "desc");
   });
   test("chi sale e chi scende in 24 ore, senza i fermi e senza storico", () => {
     const list = [item({ slug: "a", price: 150, price_24h: 100 }), item({ slug: "b", price: 50, price_24h: 100 }), item({ slug: "c", price: 100, price_24h: 100 }), item({ slug: "d", price: 999 })];

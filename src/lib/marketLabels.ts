@@ -28,6 +28,8 @@ type Labels = {
     demoKinds: Record<"all" | MarketKind, string>;
     sort: string;
     sorts: { name: string; price: string; change: string; listings: string };
+    /** il verso dell'ordinamento (18/10/2026): nei tasti e nelle intestazioni della tabella */
+    sortDirs: { az: string; za: string; high: string; low: string };
     columns: { item: string; price: string; change24h: string; change7d: string; listings: string };
     count: string;
     countOne: string;
@@ -108,6 +110,7 @@ const en: Labels = {
     demoKinds: { all: "All", card: "Skins", pack: "Cases", other: "Other items" },
     sort: "Sort by",
     sorts: { name: "Name", price: "Price", change: "24h change", listings: "Listings" },
+    sortDirs: { az: "A to Z", za: "Z to A", high: "highest first", low: "lowest first" },
     columns: { item: "Item", price: "Lowest price", change24h: "24h", change7d: "7 days", listings: "Listings" },
     count: "{n} items",
     countOne: "1 item",
@@ -196,6 +199,7 @@ const it: Labels = {
     demoKinds: { all: "Tutti", card: "Skin", pack: "Casse", other: "Altri oggetti" },
     sort: "Ordina per",
     sorts: { name: "Nome", price: "Prezzo", change: "Variazione 24 ore", listings: "Offerte" },
+    sortDirs: { az: "dalla A alla Z", za: "dalla Z alla A", high: "dal più alto", low: "dal più basso" },
     columns: { item: "Oggetto", price: "Prezzo più basso", change24h: "24 ore", change7d: "7 giorni", listings: "Offerte" },
     count: "{n} oggetti",
     countOne: "1 oggetto",
@@ -284,6 +288,7 @@ const es: Labels = {
     demoKinds: { all: "Todos", card: "Skins", pack: "Cajas", other: "Otros objetos" },
     sort: "Ordenar por",
     sorts: { name: "Nombre", price: "Precio", change: "Variación 24 horas", listings: "Ofertas" },
+    sortDirs: { az: "de la A a la Z", za: "de la Z a la A", high: "de mayor a menor", low: "de menor a mayor" },
     columns: { item: "Objeto", price: "Precio más bajo", change24h: "24 horas", change7d: "7 días", listings: "Ofertas" },
     count: "{n} objetos",
     countOne: "1 objeto",
@@ -372,6 +377,7 @@ const fr: Labels = {
     demoKinds: { all: "Tous", card: "Skins", pack: "Caisses", other: "Autres objets" },
     sort: "Trier par",
     sorts: { name: "Nom", price: "Prix", change: "Variation 24 heures", listings: "Offres" },
+    sortDirs: { az: "de A à Z", za: "de Z à A", high: "du plus élevé au plus bas", low: "du plus bas au plus élevé" },
     columns: { item: "Objet", price: "Prix le plus bas", change24h: "24 heures", change7d: "7 jours", listings: "Offres" },
     count: "{n} objets",
     countOne: "1 objet",

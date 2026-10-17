@@ -409,6 +409,32 @@ export function movers(items: readonly BoardItem[], n = 3): { up: BoardItem[]; d
   return { up, down };
 }
 
+export type MarketSortKey = "name" | "price" | "listings" | "change";
+export type MarketSortDir = "asc" | "desc";
+export const MARKET_SORT_KEYS: readonly MarketSortKey[] = ["name", "price", "listings", "change"];
+
+/** Il verso di partenza di un ordinamento: il nome dalla A alla Z, i numeri dal più alto. */
+export function defaultSortDir(key: MarketSortKey): MarketSortDir {
+  return key === "name" ? "asc" : "desc";
+}
+
+/**
+ * Ordina le righe del tabellone (18/10/2026, Pierluigi: "metti gli ordinamenti per prezzo, dalla A alla Z, per
+ * offerte"). Nei due versi; senza prezzo (o senza variazione) sempre in fondo; a pari valore il nome. Non cambia `items`.
+ */
+export function sortBoard(items: readonly BoardItem[], key: MarketSortKey, dir: MarketSortDir, locale: string): BoardItem[] {
+  const sign = dir === "asc" ? 1 : -1;
+  const byName = (a: BoardItem, c: BoardItem) => a.name.localeCompare(c.name, locale) || a.hash_name.localeCompare(c.hash_name);
+  const value = (it: BoardItem): number | null => (key === "price" ? it.price : key === "listings" ? it.listings : key === "change" ? changePct(it.price, it.price_24h) : null);
+  return [...items].sort((a, c) => {
+    if (key === "name") return sign * byName(a, c);
+    const va = value(a);
+    const vc = value(c);
+    if (va === null || vc === null) return va === vc ? byName(a, c) : va === null ? 1 : -1;
+    return sign * (va - vc) || byName(a, c);
+  });
+}
+
 /** Il nome del gruppo di un oggetto nel tabellone: la carta (Origins), il nome (controfigura), o l'oggetto stesso. */
 export function groupKey(item: Pick<BoardItem, "card" | "name" | "kind">): string {
   return item.card ?? (item.kind === "card" ? item.name : `${item.kind}:${item.name}`);

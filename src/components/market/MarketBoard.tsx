@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { changePct, iconUrl, movers, type BoardItem, type MarketKind } from "@/lib/market/market";
+import { MARKET_SORT_KEYS, defaultSortDir, iconUrl, movers, sortBoard, type BoardItem, type MarketKind, type MarketSortDir, type MarketSortKey } from "@/lib/market/market";
 import { fillMarket, type MarketLabels } from "@/lib/marketLabels";
 import { Change } from "./Change";
 import { CurrencySwitch, MarketMoney } from "./currency";
@@ -14,8 +14,6 @@ import { CurrencySwitch, MarketMoney } from "./currency";
  * cambiano nel browser. Le icone degli oggetti passano da /_next/image (nessuna richiesta del browser a Steam) e ci sono
  * per le fonti che le accendono (`icons`: Origins e la controfigura CS2).
  */
-
-type Sort = "name" | "price" | "change" | "listings";
 
 /** Icona di un oggetto in un riquadro 4:3 (le skin di CS2 sono larghe, le carte stanno dentro con `object-contain`). */
 function Thumb({ it, size, icons }: { it: BoardItem; size: number; icons: boolean }) {
@@ -45,7 +43,18 @@ export function MarketBoard({
   const kindLabels = demo ? b.demoKinds : b.kinds;
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"all" | MarketKind>("all");
-  const [sort, setSort] = useState<Sort>("name");
+  // ordinamento (18/10/2026, Pierluigi: "metti gli ordinamenti per prezzo, dalla A alla Z, per offerte"): un clic sceglie,
+  // un secondo clic sullo stesso inverte il verso; tasti sopra la tabella e intestazioni delle colonne fanno lo stesso
+  const [sort, setSort] = useState<{ key: MarketSortKey; dir: MarketSortDir }>({ key: "name", dir: "asc" });
+  const chooseSort = (key: MarketSortKey) =>
+    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: defaultSortDir(key) }));
+  const dirOf = (key: MarketSortKey) => (sort.key === key ? sort.dir : defaultSortDir(key));
+  const dirText = (key: MarketSortKey, dir: MarketSortDir) => (key === "name" ? (dir === "asc" ? b.sortDirs.az : b.sortDirs.za) : dir === "desc" ? b.sortDirs.high : b.sortDirs.low);
+  const sortLabel = (key: MarketSortKey) => {
+    const dir = dirOf(key);
+    return key === "name" ? (dir === "asc" ? "A → Z" : "Z → A") : `${b.sorts[key]} ${dir === "desc" ? "↓" : "↑"}`;
+  };
+  const ariaSort = (key: MarketSortKey) => (sort.key === key ? (sort.dir === "asc" ? "ascending" : "descending") : "none");
 
   const kinds = useMemo(() => {
     const count = { all: items.length, card: 0, pack: 0, other: 0 } as Record<"all" | MarketKind, number>;
@@ -56,14 +65,7 @@ export function MarketBoard({
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = items.filter((it) => (kind === "all" || it.kind === kind) && (!q || `${it.name} ${it.item_type} ${it.variant ?? ""}`.toLowerCase().includes(q)));
-    const byName = (a: BoardItem, c: BoardItem) => a.name.localeCompare(c.name, locale);
-    const nullsLast = (a: number | null, c: number | null) => (a === null ? (c === null ? 0 : 1) : c === null ? -1 : c - a);
-    return list.sort((a, c) => {
-      if (sort === "price") return nullsLast(a.price, c.price) || byName(a, c);
-      if (sort === "listings") return c.listings - a.listings || byName(a, c);
-      if (sort === "change") return nullsLast(changePct(a.price, a.price_24h), changePct(c.price, c.price_24h)) || byName(a, c);
-      return byName(a, c);
-    });
+    return sortBoard(list, sort.key, sort.dir, locale);
   }, [items, query, kind, sort, locale]);
 
   const move = useMemo(() => movers(items, 3), [items]);
@@ -121,17 +123,23 @@ export function MarketBoard({
             className="w-full rounded-lg border border-sky bg-night px-3 py-2 text-sm text-chalk placeholder:text-chalk-muted"
           />
         </label>
-        <label className="flex flex-col gap-1">
-          <span className="kicker text-chalk-muted">{b.sort}</span>
-          <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="rounded-lg border border-sky bg-night px-3 py-2 text-sm text-chalk">
-            {(Object.keys(b.sorts) as Sort[]).map((s) => (
-              <option key={s} value={s}>
-                {b.sorts[s]}
-              </option>
-            ))}
-          </select>
-        </label>
         <CurrencySwitch locale={locale} label={labels.currency.label} />
+        <div role="group" aria-label={b.sort} className="flex basis-full flex-wrap items-center gap-1.5">
+          <span className="kicker mr-1 text-chalk-muted">{b.sort}</span>
+          {MARKET_SORT_KEYS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => chooseSort(key)}
+              aria-pressed={sort.key === key}
+              aria-label={`${b.sorts[key]}, ${dirText(key, dirOf(key))}`}
+              title={dirText(key, dirOf(key))}
+              className={`btn btn-choice px-3 py-1 text-xs ${sort.key === key ? "is-on" : ""}`}
+            >
+              {sortLabel(key)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {kinds.length > 2 ? (
@@ -155,21 +163,28 @@ export function MarketBoard({
           <table className="w-full text-left text-sm">
             <thead className="text-xs text-chalk-muted">
               <tr className="border-b-2 border-night-3">
-                <th scope="col" className="w-1/2 px-3 py-2 font-semibold">
-                  {b.columns.item}
-                </th>
-                <th scope="col" className="px-3 py-2 text-right font-semibold">
-                  {b.columns.price}
-                </th>
-                <th scope="col" className="px-3 py-2 text-right font-semibold">
-                  {b.columns.change24h}
-                </th>
-                <th scope="col" className="hidden px-3 py-2 text-right font-semibold sm:table-cell">
-                  {b.columns.change7d}
-                </th>
-                <th scope="col" className="hidden px-3 py-2 text-right font-semibold sm:table-cell">
-                  {b.columns.listings}
-                </th>
+                {(
+                  [
+                    ["name", b.columns.item, "w-1/2 text-left"],
+                    ["price", b.columns.price, "text-right"],
+                    ["change", b.columns.change24h, "text-right"],
+                    [null, b.columns.change7d, "hidden text-right sm:table-cell"],
+                    ["listings", b.columns.listings, "hidden text-right sm:table-cell"],
+                  ] as const
+                ).map(([key, title, cls]) => (
+                  <th key={title} scope="col" aria-sort={key ? ariaSort(key) : undefined} className={`px-3 py-2 font-semibold ${cls}`}>
+                    {key ? (
+                      <button type="button" onClick={() => chooseSort(key)} title={dirText(key, dirOf(key))} className={`inline-flex items-center gap-1 hover:text-mint ${sort.key === key ? "text-mint" : ""}`}>
+                        {title}
+                        <span aria-hidden="true" className={sort.key === key ? "" : "opacity-40"}>
+                          {dirOf(key) === "asc" ? "↑" : "↓"}
+                        </span>
+                      </button>
+                    ) : (
+                      title
+                    )}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
