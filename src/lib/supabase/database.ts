@@ -140,6 +140,26 @@ export type DeckVoteRow = { deck_id: string; user_id: string; stars: number; ver
 export type DeckFavoriteRow = { user_id: string; deck_id: string; created_at: string };
 /** Voto a una carta da 1 a 10 (blocco VOTI ALLE CARTE, 06/10/2026): `card` è lo slug della scheda; ognuno legge solo i suoi. */
 export type CardVoteRow = { card: string; user_id: string; score: number; created_at: string; updated_at: string };
+/** Tracker dei prezzi del mercato di Steam (blocco MERCATO, 17/10/2026): righe pubbliche, le scrive solo market_ingest. */
+export type MarketSourceRow = { id: string; appid: number; cursor_start: number; total: number | null; sweep_started_at: string | null; last_sweep_at: string | null; last_page_at: string | null };
+export type MarketItemRow = {
+  source: string;
+  hash_name: string;
+  slug: string;
+  name: string;
+  item_type: string;
+  kind: "card" | "pack" | "other";
+  card: string | null;
+  variant: string | null;
+  icon: string | null;
+  name_color: string | null;
+  price: number | null;
+  listings: number;
+  first_seen: string;
+  last_seen: string;
+};
+export type MarketPriceRow = { source: string; hash_name: string; open: number; low: number; high: number; close: number; listings: number; samples: number };
+type ReadOnly<Row> = { Row: Row; Insert: Partial<Row>; Update: Partial<Row>; Relationships: [] };
 /** Versioni di prima delle carte di un mazzo (blocco VERSIONI, 30/09/2026): solo lettura, le scrive il trigger. */
 export type CommunityDeckVersionRow = {
   deck_id: string;
@@ -503,6 +523,12 @@ export type Database = {
           },
         ];
       };
+      /** mercato di Steam (blocco MERCATO, 17/10/2026): lettura per tutti, scrittura solo con market_ingest */
+      market_sources: ReadOnly<MarketSourceRow>;
+      market_items: ReadOnly<MarketItemRow>;
+      market_prices_hourly: ReadOnly<MarketPriceRow & { hour: string }>;
+      market_prices_daily: ReadOnly<MarketPriceRow & { day: string }>;
+      market_fx: ReadOnly<{ day: string; usd_per_eur: number | string }>;
       /** voti alle carte da 1 a 10 (blocco VOTI ALLE CARTE, 06/10/2026): ognuno legge e scrive solo i suoi; gli aggregati da card_ratings */
       card_votes: {
         Row: CardVoteRow;
@@ -1012,6 +1038,16 @@ export type Database = {
       twitch_live_state: { Args: { p_channel: string }; Returns: { state: unknown; updated_at: string }[] };
       /** un clic sul tasto di download dell'app (blocco DOWNLOAD DEL TRACKER, 15/10/2026), solo dalla rotta /api/tracker/download con il segreto del server */
       tracker_download_log: { Args: { p_key: string; p_owner: string | null; p_lang: string }; Returns: undefined };
+      /** una pagina del giro del mercato di Steam (blocco MERCATO, 17/10/2026), solo dalla rotta /api/cron/market con il segreto del server; restituisce quanti oggetti ha salvato */
+      market_ingest: {
+        Args: { p_key: string; p_source: string; p_appid: number; p_items: unknown[]; p_next: number; p_total: number; p_done: boolean; p_usd_per_eur: number | null };
+        Returns: number;
+      };
+      /** il tabellone di una fonte con i prezzi di 24 ore, 7 e 30 giorni fa (anon) */
+      market_board: {
+        Args: { p_source: string };
+        Returns: (Omit<MarketItemRow, "source"> & { price_24h: number | null; price_7d: number | null; price_30d: number | null })[];
+      };
       /** partite dall'app (anon, con il token, dalla rotta /api/tracker/sync); restituisce quante aggiunte */
       tracker_submit: { Args: { p_token: string; p_matches: unknown[] }; Returns: number };
       /** scollega un proprio PC; true se c'era */

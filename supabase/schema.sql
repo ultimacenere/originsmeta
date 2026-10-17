@@ -6599,3 +6599,211 @@ begin
 end $$;
 revoke all on function public.tracker_download_log(text, uuid, text) from public;
 grant execute on function public.tracker_download_log(text, uuid, text) to anon, authenticated;
+
+-- =====================================================================================================
+-- ===== 17/10/2026: MERCATO =====
+-- =====================================================================================================
+-- 17/10/2026 — TRACKER DEI PREZZI DEL MERCATO DI STEAM (Pierluigi: "il tool che risulterà un gamechanger è un tracker
+-- dei prezzi delle carte in tempo reale, quindi vedere l'andamento di ogni singola variante e singolo oggetto").
+--   Steam non dà lo storico dei prezzi senza un accesso (market/pricehistory risponde 400): lo storico lo costruisce il
+--   sito, fotografando a ogni giro del cron /api/cron/market il prezzo più basso in vendita e il numero di offerte di
+--   ogni oggetto (market/search/render, pubblico, 10 oggetti per pagina). Una "fonte" è un gioco sul mercato:
+--   `origins` (Origins TCG, appid 4429430, mercato ancora chiuso il 17/10/2026) e `standin` (la controfigura per
+--   provare il motore prima del giorno 1: gli oggetti di Steam di Hades, appid 753). Prezzi in centesimi di dollaro
+--   (search/render dà solo dollari); gli euro si calcolano con il cambio BCE del giorno (market_fx).
+--   Scrive SOLO la rotta del cron con il segreto del server (market_ingest, notify_key_ok/CRON_SECRET); tutti leggono
+--   (sono prezzi pubblici di Steam). Storico orario per 30 giorni, giornaliero per sempre. Idempotente.
+-- =====================================================================================================
+
+create table if not exists public.market_sources (
+  id text primary key check (id ~ '^[a-z][a-z0-9-]{1,30}$'),
+  appid integer not null check (appid > 0),
+  cursor_start integer not null default 0 check (cursor_start >= 0),
+  total integer check (total >= 0),
+  sweep_started_at timestamptz,
+  last_sweep_at timestamptz,
+  last_page_at timestamptz
+);
+comment on table public.market_sources is 'Giochi seguiti dal tracker dei prezzi (17/10/2026): dove è arrivato il giro in corso e quando è finito l''ultimo.';
+
+create table if not exists public.market_items (
+  source text not null references public.market_sources(id) on delete cascade,
+  hash_name text not null check (char_length(hash_name) between 1 and 300),
+  slug text not null check (char_length(slug) between 1 and 120 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  name text not null check (char_length(name) between 1 and 300),
+  item_type text not null default '' check (char_length(item_type) <= 200),
+  kind text not null check (kind in ('card', 'pack', 'other')),
+  card text check (card is null or (char_length(card) <= 120 and card ~ '^[a-z0-9]+(-[a-z0-9]+)*$')),
+  variant text check (variant is null or char_length(variant) <= 120),
+  icon text check (icon is null or (char_length(icon) <= 1000 and icon ~ '^[A-Za-z0-9_-]+$')),
+  name_color text check (name_color is null or name_color ~ '^[0-9a-fA-F]{6}$'),
+  price integer check (price is null or price between 0 and 100000000),
+  listings integer not null default 0 check (listings between 0 and 100000000),
+  first_seen timestamptz not null default now(),
+  last_seen timestamptz not null default now(),
+  primary key (source, hash_name),
+  unique (source, slug)
+);
+create index if not exists market_items_card_idx on public.market_items (source, card) where card is not null;
+comment on table public.market_items is 'Oggetti del mercato di Steam (17/10/2026): prezzo più basso in vendita in centesimi di dollaro (null senza offerte) e offerte all''ultimo giro.';
+
+create table if not exists public.market_prices_hourly (
+  source text not null,
+  hash_name text not null,
+  hour timestamptz not null,
+  open integer not null check (open between 0 and 100000000),
+  low integer not null check (low between 0 and 100000000),
+  high integer not null check (high between 0 and 100000000),
+  close integer not null check (close between 0 and 100000000),
+  listings integer not null check (listings between 0 and 100000000),
+  samples smallint not null default 1,
+  primary key (source, hash_name, hour),
+  foreign key (source, hash_name) references public.market_items (source, hash_name) on delete cascade
+);
+create index if not exists market_prices_hourly_hour_idx on public.market_prices_hourly (hour);
+
+create table if not exists public.market_prices_daily (
+  source text not null,
+  hash_name text not null,
+  day date not null,
+  open integer not null check (open between 0 and 100000000),
+  low integer not null check (low between 0 and 100000000),
+  high integer not null check (high between 0 and 100000000),
+  close integer not null check (close between 0 and 100000000),
+  listings integer not null check (listings between 0 and 100000000),
+  samples integer not null default 1,
+  primary key (source, hash_name, day),
+  foreign key (source, hash_name) references public.market_items (source, hash_name) on delete cascade
+);
+
+-- Cambio BCE usato quel giorno (dollari per un euro), per gli euro dello storico.
+create table if not exists public.market_fx (
+  day date primary key,
+  usd_per_eur numeric(10, 6) not null check (usd_per_eur between 0.2 and 5)
+);
+
+alter table public.market_sources enable row level security;
+alter table public.market_items enable row level security;
+alter table public.market_prices_hourly enable row level security;
+alter table public.market_prices_daily enable row level security;
+alter table public.market_fx enable row level security;
+revoke all on public.market_sources, public.market_items, public.market_prices_hourly, public.market_prices_daily, public.market_fx from anon, authenticated;
+grant select on public.market_sources, public.market_items, public.market_prices_hourly, public.market_prices_daily, public.market_fx to anon, authenticated;
+drop policy if exists market_sources_read on public.market_sources;
+create policy market_sources_read on public.market_sources for select using (true);
+drop policy if exists market_items_read on public.market_items;
+create policy market_items_read on public.market_items for select using (true);
+drop policy if exists market_prices_hourly_read on public.market_prices_hourly;
+create policy market_prices_hourly_read on public.market_prices_hourly for select using (true);
+drop policy if exists market_prices_daily_read on public.market_prices_daily;
+create policy market_prices_daily_read on public.market_prices_daily for select using (true);
+drop policy if exists market_fx_read on public.market_fx;
+create policy market_fx_read on public.market_fx for select using (true);
+
+-- Una pagina del giro (fino a 100 oggetti), dalla rotta del cron con il segreto del server. Ogni oggetto si salva da
+-- solo: uno che non rispetta i vincoli si salta senza fermare gli altri (il giro non resta bloccato). `p_next` è da dove
+-- riprendere, `p_done` dice che il giro è finito: allora gli oggetti non visti in questo giro restano senza offerte e lo
+-- storico orario oltre i 30 giorni si cancella. Restituisce quanti oggetti ha salvato.
+create or replace function public.market_ingest(p_key text, p_source text, p_appid integer, p_items jsonb, p_next integer, p_total integer, p_done boolean, p_usd_per_eur numeric)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_hour timestamptz := date_trunc('hour', now());
+  v_day date := (now() at time zone 'utc')::date;
+  v_started timestamptz;
+  v_cursor integer;
+  v_saved integer := 0;
+  v_it jsonb;
+  v_hash text;
+  v_slug text;
+  v_price integer;
+  v_listings integer;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  if p_source is null or p_source !~ '^[a-z][a-z0-9-]{1,30}$' or p_appid is null or p_appid <= 0 then raise exception 'bad_source'; end if;
+  if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) > 100 then raise exception 'bad_items'; end if;
+  if p_next is null or p_next < 0 then raise exception 'bad_cursor'; end if;
+
+  insert into market_sources (id, appid) values (p_source, p_appid)
+    on conflict (id) do update set appid = excluded.appid;
+  select cursor_start, sweep_started_at into v_cursor, v_started from market_sources where id = p_source for update;
+  -- un giro nuovo comincia dalla prima pagina
+  if v_cursor = 0 or v_started is null then v_started := now(); end if;
+
+  for v_it in select value from jsonb_array_elements(p_items) loop
+    begin
+      v_hash := v_it ->> 'hash_name';
+      v_listings := greatest(coalesce((v_it ->> 'listings')::integer, 0), 0);
+      v_price := case when v_listings > 0 then (v_it ->> 'price')::integer end;
+      v_slug := v_it ->> 'slug';
+      -- lo slug di un oggetto non cambia mai (indirizzo stabile); uno nuovo già preso da un altro oggetto riceve una coda
+      if exists (select 1 from market_items m where m.source = p_source and m.slug = v_slug and m.hash_name <> v_hash) then
+        v_slug := left(v_slug, 110) || '-' || substr(md5(v_hash), 1, 6);
+      end if;
+      insert into market_items as m (source, hash_name, slug, name, item_type, kind, card, variant, icon, name_color, price, listings, last_seen)
+      values (p_source, v_hash, v_slug, v_it ->> 'name', coalesce(v_it ->> 'type', ''), v_it ->> 'kind', v_it ->> 'card',
+              v_it ->> 'variant', nullif(v_it ->> 'icon', ''), nullif(v_it ->> 'name_color', ''), v_price, v_listings, now())
+      on conflict (source, hash_name) do update set
+        name = excluded.name, item_type = excluded.item_type, kind = excluded.kind, card = excluded.card,
+        variant = excluded.variant, icon = excluded.icon, name_color = excluded.name_color,
+        price = excluded.price, listings = excluded.listings, last_seen = excluded.last_seen;
+      if v_price is not null then
+        insert into market_prices_hourly as h (source, hash_name, hour, open, low, high, close, listings)
+        values (p_source, v_hash, v_hour, v_price, v_price, v_price, v_price, v_listings)
+        on conflict (source, hash_name, hour) do update set
+          low = least(h.low, excluded.low), high = greatest(h.high, excluded.high), close = excluded.close,
+          listings = excluded.listings, samples = least(h.samples + 1, 30000);
+        insert into market_prices_daily as d (source, hash_name, day, open, low, high, close, listings)
+        values (p_source, v_hash, v_day, v_price, v_price, v_price, v_price, v_listings)
+        on conflict (source, hash_name, day) do update set
+          low = least(d.low, excluded.low), high = greatest(d.high, excluded.high), close = excluded.close,
+          listings = excluded.listings, samples = d.samples + 1;
+      end if;
+      v_saved := v_saved + 1;
+    exception when others then
+      raise warning 'market_ingest: oggetto saltato (%): %', left(coalesce(v_hash, '?'), 80), sqlerrm;
+    end;
+  end loop;
+
+  if p_usd_per_eur is not null and p_usd_per_eur between 0.2 and 5 then
+    insert into market_fx (day, usd_per_eur) values (v_day, p_usd_per_eur)
+      on conflict (day) do update set usd_per_eur = excluded.usd_per_eur;
+  end if;
+
+  if p_done then
+    update market_items set price = null, listings = 0
+     where source = p_source and last_seen < v_started and (price is not null or listings > 0);
+    delete from market_prices_hourly where hour < now() - interval '30 days';
+    update market_sources set cursor_start = 0, total = greatest(coalesce(p_total, 0), 0), sweep_started_at = null,
+           last_sweep_at = now(), last_page_at = now()
+     where id = p_source;
+  else
+    update market_sources set cursor_start = p_next, total = greatest(coalesce(p_total, 0), 0), sweep_started_at = v_started,
+           last_page_at = now()
+     where id = p_source;
+  end if;
+  return v_saved;
+end $$;
+revoke all on function public.market_ingest(text, text, integer, jsonb, integer, integer, boolean, numeric) from public;
+grant execute on function public.market_ingest(text, text, integer, jsonb, integer, integer, boolean, numeric) to anon, authenticated;
+
+-- Il tabellone di una fonte: ogni oggetto con il prezzo di adesso e quelli di 24 ore, 7 e 30 giorni fa (null se lo
+-- storico non arriva così indietro), per le variazioni. Letta da /market (ISR) con il client anonimo, a pagine.
+create or replace function public.market_board(p_source text)
+returns table (hash_name text, slug text, name text, item_type text, kind text, card text, variant text, icon text,
+               name_color text, price integer, listings integer, first_seen timestamptz, last_seen timestamptz,
+               price_24h integer, price_7d integer, price_30d integer)
+language sql stable security invoker set search_path = public, pg_temp as $$
+  select i.hash_name, i.slug, i.name, i.item_type, i.kind, i.card, i.variant, i.icon, i.name_color, i.price, i.listings,
+         i.first_seen, i.last_seen,
+         (select h.close from market_prices_hourly h where h.source = i.source and h.hash_name = i.hash_name
+            and h.hour <= date_trunc('hour', now()) - interval '24 hours' order by h.hour desc limit 1),
+         (select d.close from market_prices_daily d where d.source = i.source and d.hash_name = i.hash_name
+            and d.day <= (now() at time zone 'utc')::date - 7 order by d.day desc limit 1),
+         (select d.close from market_prices_daily d where d.source = i.source and d.hash_name = i.hash_name
+            and d.day <= (now() at time zone 'utc')::date - 30 order by d.day desc limit 1)
+    from market_items i
+   where i.source = p_source
+   order by i.name, i.hash_name;
+$$;
+revoke all on function public.market_board(text) from public;
+grant execute on function public.market_board(text) to anon, authenticated;

@@ -60,6 +60,8 @@ const sections = [
   "guides",
   "live",
   "locations",
+  // tracker dei prezzi del mercato di Steam (17/10/2026)
+  "market",
   "login",
   "metashifting",
   "news",
@@ -107,7 +109,11 @@ const nextConfig: NextConfig = {
   // hqdefault.jpg, senza query: con "/vi/**" /_next/image faceva da proxy per ogni file di ogni video di YouTube, a
   // qualsiasi larghezza (ogni combinazione una trasformazione nuova, pagata sul piano di Vercel).
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/*/hqdefault.jpg", search: "" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/*/hqdefault.jpg", search: "" },
+      // icone degli oggetti del Mercato di Steam (tracker dei prezzi, 17/10/2026): passano da /_next/image, il browser non chiama Steam
+      { protocol: "https", hostname: "community.fastly.steamstatic.com", pathname: "/economy/image/**", search: "" },
+    ],
   },
   async headers() {
     return [
