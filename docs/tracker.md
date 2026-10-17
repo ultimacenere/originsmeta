@@ -862,3 +862,9 @@ dipende.
   `panelVisibility.test.ts`) rimostra le finestre minimizzate e riporta in primo piano pannelli e overlay
   (`setAlwaysOnTop` + `moveTop`, senza prendere il fuoco), mai mentre il giocatore li usa o li allarga. Causa non
   riprodotta dal vivo: da confermare sul gioco.
+- **Crash all'avvio con il gioco** (0.4.8, 17/10/2026, segnalato da un giocatore: "TypeError: Cannot read properties
+  of undefined (reading 'token')" in `main.js:3006`): con `--wait-game` `boot()` aspetta il gioco prima di creare
+  l'account, ma il timer dell'estensione Twitch (a livello di modulo, ogni `LIVE_MIN_MS`) leggeva subito
+  `account.token`, e l'errore tornava a ogni giro. Ora guarda prima `engineOn` e legge `account?.token`. Sulla 0.4.7
+  l'aggiornamento automatico parte solo quando il gioco è aperto e si installa a gioco chiuso, quindi a chi ha l'errore
+  conviene scaricare la 0.4.8 a mano.
