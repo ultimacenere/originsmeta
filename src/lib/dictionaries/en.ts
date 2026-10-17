@@ -17,6 +17,8 @@ export const en = {
     guidesMenu: "Database",
     guides: "Guides",
     locations: "Locations",
+    // tracker dei prezzi del Mercato di Steam (/market), nel sottomenu Database (18/10/2026)
+    market: "Market",
     analytics: "Analytics",
     /** la pagina dell'app OriginsMeta Tracker (12/10/2026), nel sottomenu di Analytics */
     tracker: "Tracker",

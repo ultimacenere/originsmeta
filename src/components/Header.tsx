@@ -55,6 +55,8 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: dict.nav.guides, path: "/guides" },
         { label: dict.nav.cards, path: "/cards", mobile: true },
         { label: dict.nav.locations, path: "/locations", mobile: true },
+        // il tracker dei prezzi del Mercato di Steam (18/10/2026, Pierluigi: "Metti \"Mercato\" nel sottomenu Database")
+        { label: dict.nav.market, path: "/market", mobile: true },
       ],
     },
     // Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina", poi "non si chiama più win rate ma

@@ -19,6 +19,8 @@ export const it: Dictionary = {
     guidesMenu: "Database",
     guides: "Guide",
     locations: "Luoghi",
+    // tracker dei prezzi del Mercato di Steam (/market), nel sottomenu Database (18/10/2026)
+    market: "Mercato",
     analytics: "Analytics",
     /** la pagina dell'app OriginsMeta Tracker (12/10/2026), nel sottomenu di Analytics */
     tracker: "Tracker",
