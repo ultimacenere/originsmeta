@@ -84,6 +84,7 @@ describe("slug e classificazione", () => {
     assert.equal(marketSlug("1145360-Lord Hades"), "1145360-lord-hades");
     assert.equal(marketSlug("Mérlin (Foil) & Co."), "merlin-foil-and-co");
     assert.equal(marketSlug("Demo"), "demo-item");
+    assert.equal(marketSlug("★ StatTrak™ AK-47 | Nightwish (Factory New)"), "stattrak-ak-47-nightwish-factory-new");
     assert.match(marketSlug(":::"), /^item-[a-z0-9]+$/);
     assert.ok(marketSlug("x".repeat(300)).length <= 100);
   });

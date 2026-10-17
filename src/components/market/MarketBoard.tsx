@@ -12,14 +12,15 @@ import { CurrencySwitch, MarketMoney } from "./currency";
  * Tabellone del tracker dei prezzi (17/10/2026): tutti gli oggetti di una fonte con prezzo più basso, variazioni a 24 ore
  * e 7 giorni e offerte, più chi sale e chi scende di più. Dati già nell'HTML (la pagina è ISR): filtri, ordine e valuta si
  * cambiano nel browser. Le icone degli oggetti passano da /_next/image (nessuna richiesta del browser a Steam) e ci sono
- * solo per Origins (`icons`).
+ * per le fonti che le accendono (`icons`: Origins e la controfigura CS2).
  */
 
 type Sort = "name" | "price" | "change" | "listings";
 
+/** Icona di un oggetto in un riquadro 4:3 (le skin di CS2 sono larghe, le carte stanno dentro con `object-contain`). */
 function Thumb({ it, size, icons }: { it: BoardItem; size: number; icons: boolean }) {
   if (!icons || !it.icon) return null;
-  return <Image src={iconUrl(it.icon)} alt="" width={size} height={size} className="shrink-0 rounded-md bg-night-3 object-contain" />;
+  return <Image src={iconUrl(it.icon)} alt="" width={size} height={Math.round((size * 3) / 4)} className="shrink-0 rounded-md bg-night-3 object-contain p-0.5" />;
 }
 
 export function MarketBoard({
@@ -91,7 +92,7 @@ export function MarketBoard({
                 <ul className="mt-2 grid grid-cols-1 gap-2">
                   {list.map((it) => (
                     <li key={it.hash_name} className="flex min-w-0 items-center gap-3">
-                      <Thumb it={it} size={36} icons={icons} />
+                      <Thumb it={it} size={56} icons={icons} />
                       <Link href={`${base}/${it.slug}`} className="link-mint min-w-0 flex-1 truncate">
                         {it.name}
                         {variant(it) ? <span className="text-pale-muted"> · {variant(it)}</span> : null}
@@ -176,7 +177,7 @@ export function MarketBoard({
                 <tr key={it.hash_name} className="border-b border-night-3 last:border-0">
                   <td className="max-w-0 px-3 py-2">
                     <div className="flex min-w-0 items-center gap-3">
-                      <Thumb it={it} size={40} icons={icons} />
+                      <Thumb it={it} size={72} icons={icons} />
                       <div className="min-w-0">
                         <Link href={`${base}/${it.slug}`} className="link-mint block truncate font-semibold">
                           {it.name}

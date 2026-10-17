@@ -202,7 +202,7 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
         ← {l.item.back}
       </Link>
       <div className="mt-4 flex min-w-0 flex-wrap items-center gap-4">
-        {icons && item.icon ? <Image src={iconUrl(item.icon)} alt={item.name} width={96} height={96} className="shrink-0 rounded-lg bg-night-3 object-contain" priority /> : null}
+        {icons && item.icon ? <Image src={iconUrl(item.icon)} alt={item.name} width={200} height={150} className="shrink-0 rounded-lg bg-night-3 object-contain p-2" priority /> : null}
         <div className="min-w-0 flex-1 basis-64">
           <h1 className="t-page break-words">{item.name}</h1>
           <p className="mt-1 text-sm text-pale-muted">{[variant, item.item_type, (demo ? l.board.demoKinds : l.board.kinds)[item.kind]].filter(Boolean).join(" · ")}</p>

@@ -31,14 +31,15 @@ export type MarketSource = {
   query: string;
   /** l'appid dell'indirizzo della scheda su Steam (per la controfigura è 753, la comunità di Steam) */
   listingAppid: number;
-  /** icone degli oggetti sulle pagine: sì per Origins (illustrazioni delle carte, contenuto), no per la controfigura */
+  /** icone degli oggetti sulle pagine: Origins (illustrazioni delle carte, contenuto) e, dal 18/10/2026, la controfigura CS2 */
   icons: boolean;
 };
 
 export const MARKET_SOURCES: Record<MarketSourceId, MarketSource> = {
   origins: { id: "origins", appid: 4429430, query: "", listingAppid: 4429430, icons: true },
-  // Counter-Strike 2, collezione Dreams & Nightmares (tag del filtro "Collection" di market/appfilters/730)
-  standin: { id: "standin", appid: 730, query: "category_730_ItemSet%5B%5D=tag_set_community_30", listingAppid: 730, icons: false },
+  // Counter-Strike 2, collezione Dreams & Nightmares (tag del filtro "Collection" di market/appfilters/730); con le
+  // immagini delle skin dal 18/10/2026 (Pierluigi: "servono per la demo con Koin")
+  standin: { id: "standin", appid: 730, query: "category_730_ItemSet%5B%5D=tag_set_community_30", listingAppid: 730, icons: true },
 };
 export const MARKET_SOURCE_IDS = Object.keys(MARKET_SOURCES) as MarketSourceId[];
 
@@ -116,6 +117,8 @@ export function parseSearchPage(json: unknown): { total: number; items: RawMarke
 /** Slug stabile dal nome dell'oggetto su Steam ("demo" è riservato a /market/demo). */
 export function marketSlug(hashName: string): string {
   const base = hashName
+    // marchi e simboli via prima della normalizzazione (NFKD fa di ™ "TM": "stattraktm-ak-47")
+    .replace(/[™®©]/g, "")
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
