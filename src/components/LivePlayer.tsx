@@ -13,7 +13,22 @@ import { trackEvent } from "@/lib/analytics";
  * e il tasto e la nota lo dicono prima. Niente immagini del media kit come sfondo: il materiale Koin non è interfaccia.
  * Misura: `video_play` con provider twitch e placement live_page.
  */
-export function LivePlayer({ login, name, labels, privacyHref }: { login: string; name: string; labels: LivePageLabels; privacyHref: string }) {
+export function LivePlayer({
+  login,
+  name,
+  labels,
+  privacyHref,
+  placement = "live_page",
+  className = "mt-4",
+}: {
+  login: string;
+  name: string;
+  labels: LivePageLabels;
+  privacyHref: string;
+  /** dove sta il lettore, per `video_play`: la pagina /live o la home (diretta ufficiale al posto dello slider, 18/10/2026) */
+  placement?: "live_page" | "home_hero";
+  className?: string;
+}) {
   const [src, setSrc] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -35,10 +50,12 @@ export function LivePlayer({ login, name, labels, privacyHref }: { login: string
   }, []);
 
   const play = () => {
-    trackEvent("video_play", { provider: "twitch", placement: "live_page" });
+    trackEvent("video_play", { provider: "twitch", placement });
     const el = box.current;
     const url = liveEmbedSrc(login, twitchParents(window.location.hostname));
     if (!url || !el || !twitchFits(el.clientWidth, el.clientHeight)) {
+      // dalla diretta ufficiale in home il lettore troppo piccolo porta su Twitch: conta come clic verso Twitch (18/10/2026)
+      if (placement === "home_hero") trackEvent("official_live_twitch", { placement, method: "player" });
       window.open(channelUrl, "_blank", "noopener");
       return;
     }
@@ -46,7 +63,7 @@ export function LivePlayer({ login, name, labels, privacyHref }: { login: string
   };
 
   return (
-    <figure className="mt-4 min-w-0">
+    <figure className={`${className} min-w-0`}>
       <div ref={box} className="relative aspect-video overflow-hidden rounded-xl border-2 border-crimson bg-night">
         {src ? (
           <iframe

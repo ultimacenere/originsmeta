@@ -43,6 +43,7 @@
  *     video_play          "riproduci" su un video a clic (VideoEmbed, 26/09/2026): provider (youtube | twitch),
  *                         solo da qui si carica il lettore di YouTube o Twitch;     placement (deck_page | guide | profile |
  *                         anche la diretta a clic della pagina /live (LivePlayer)   live_page | home: video dei creator, 08/10/2026)
+ *                         e quella ufficiale in home al posto dello slider          home_hero, 18/10/2026)
  *     deck_link_click     link delle Risorse di un mazzo (attributi); uno verso     host, placement (deck_resources)
  *                         Discord o Steam manda anche discord_click / steam_click
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
@@ -85,6 +86,12 @@
  *                         discord_click (server=other), come deck_link_click;      e dal 28/09/2026 live_page (la pagina /live)
  *     live_now_open       clic su "Ora live" nella striscia del calendario        placement (calendar)
  *                         (28/09/2026, compare solo se qualcuno è in diretta; attributi sul link, TickerMarquee)
+ *     official_live_view  la diretta ufficiale di Origins TCG compare in home al   placement (home_hero)
+ *                         posto dello slider (18/10/2026, OfficialLiveHero): una volta per pagina vista; chi la
+ *                         avvia sul sito è video_play con placement home_hero
+ *     official_live_twitch clic dalla diretta in home verso Twitch: il tasto        placement (home_hero), method
+ *                         "Apri su Twitch" o il lettore troppo piccolo per        (button | player)
+ *                         l'embed, che apre Twitch (18/10/2026)
  *     stream_tools_open   apertura del menu "Per le dirette" di un mazzo, o delle placement (deck_page | account |
  *                         istruzioni per le dirette in /account (pacchetto STREAM, deck_set_page: la scheda di un
  *                         26/09/2026)                                             mazzo torneo, 04/10/2026)
@@ -227,6 +234,8 @@ export type EventParams = {
   tier_entry_click: { tier_source: string; target: string };
   creator_link_click: { kind: string; placement: string };
   live_now_open: { placement: string };
+  official_live_view: { placement: "home_hero" };
+  official_live_twitch: { placement: "home_hero"; method: "button" | "player" };
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
@@ -280,6 +289,8 @@ export const VERCEL_PROPS = {
   tier_entry_click: ["tier_source", "target"],
   creator_link_click: ["kind", "placement"],
   live_now_open: ["placement"],
+  official_live_view: ["placement"],
+  official_live_twitch: ["placement", "method"],
   stream_tools_open: ["placement"],
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],

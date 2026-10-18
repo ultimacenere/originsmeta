@@ -16,6 +16,10 @@ export const revalidate = 90;
 
 export async function GET() {
   let body: LiveResponse;
+  // Solo in sviluppo (`next dev`): LIVE_FIXTURE='{"enabled":true,"users":{…}}' in .env.development.local simula una
+  // diretta, per provare in locale la diretta ufficiale in home (18/10/2026) senza le chiavi di Twitch. Mai in produzione.
+  const fixture = process.env.NODE_ENV === "development" ? process.env.LIVE_FIXTURE : undefined;
+  if (fixture) return NextResponse.json(JSON.parse(fixture) as LiveResponse, { headers: { "Cache-Control": "no-store" } });
   try {
     body = await liveStatus();
   } catch (error) {

@@ -13,6 +13,9 @@ import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
+import { OfficialLiveHero } from "@/components/OfficialLiveHero";
+import { officialLiveLabels } from "@/lib/officialLive";
+import { creatorLabels } from "@/lib/creatorLabels";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
 import { Postit, type PostitKind } from "@/components/Postit";
@@ -189,7 +192,11 @@ export default async function Home({ params }: { params: LocaleParams }) {
   return (
     <>
       {/* Slider a tutta larghezza con le immagini ufficiali del media kit: fa da hero */}
-      <HeroSlider slides={slides} labels={d.home.slider} interval={4500} />
+      {/* Quando il canale ufficiale di Origins TCG è in diretta su Twitch, al posto dello slider c'è la diretta (18/10/2026,
+          OfficialLiveHero: lo decide il browser con /api/live, la home resta ISR e nell'HTML c'è sempre lo slider) */}
+      <OfficialLiveHero locale={locale} labels={officialLiveLabels[locale]} playerLabels={creatorLabels[locale].liveNow.page} privacyHref={`${href(locale, "/privacy")}#video`}>
+        <HeroSlider slides={slides} labels={d.home.slider} interval={4500} />
+      </OfficialLiveHero>
       <EventTicker locale={locale} dict={d} />
       <main id="main" className="flex-1">
         {/* Unico H1 della pagina: invisibile, ma letto dai motori e dagli screen reader (il blocco titolo visibile è stato tolto il 22/09/2026) */}
