@@ -1,0 +1,40 @@
+# Prezzi del Mercato di Steam (tracker dei prezzi, 18/10/2026). Steam risponde 429 alle richieste dei server di Vercel,
+# quindi il giro lo fa questo job ogni 10 minuti: scripts/market-collect.mjs legge le pagine di market/search/render per
+# Origins TCG e per la controfigura (CS2) e le salva con la funzione market_ingest del database (blocco MERCATO di
+# supabase/schema.sql). Il repository è pubblico: i minuti di Actions non si pagano. GitHub può ritardare i job
+# programmati di qualche minuto: lo storico è orario, non cambia niente.
+#
+# Secret (Settings → Secrets and variables → Actions → New repository secret): CRON_SECRET, lo stesso valore di Vercel
+# (e di .env.local per scripts/set-cron-key.mjs). Senza, il job si ferma con un errore che lo dice.
+name: Prezzi del Mercato di Steam
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+# un giro alla volta: se uno è ancora in corso, il successivo aspetta invece di leggere lo stesso cursore
+concurrency:
+  group: market-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/market-collect.mjs
+            src/lib/market/market.ts
+            src/lib/supabase/env.ts
+            src/lib/data/woo-cards.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Giro del mercato
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: node scripts/market-collect.mjs --budget 300

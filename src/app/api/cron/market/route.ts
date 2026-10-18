@@ -4,8 +4,11 @@ import { CRON_SECRET_MIN, cronAuthorized } from "@/lib/community/notifications";
 import { collectMarket } from "@/lib/market/collect";
 
 /**
- * Prezzi del mercato di Steam (17/10/2026, tracker dei prezzi): a ogni giro del cron di Vercel (vercel.json, ogni 10
- * minuti, `Authorization: Bearer <CRON_SECRET>`) legge le pagine di market/search/render per Origins TCG e per la
+ * Dal 18/10/2026 NON è più nel cron di Vercel: Steam risponde 429 alle richieste dei server di Vercel già alla prima
+ * pagina (`rateLimited: true`). Il giro lo fa GitHub Actions con scripts/market-collect.mjs
+ * (.github/workflows/market-collect.yml, ogni 10 minuti); la rotta resta per un giro a mano.
+ *
+ * Prezzi del mercato di Steam (17/10/2026, tracker dei prezzi): a ogni chiamata (`Authorization: Bearer <CRON_SECRET>`) legge le pagine di market/search/render per Origins TCG e per la
  * controfigura e le salva con market_ingest (src/lib/market/collect.ts, blocco MERCATO di supabase/schema.sql). Stesse
  * regole di /api/cron/live: senza CRON_SECRET risponde `skipped`, con il segreto sbagliato 401, prima della migrazione
  * `unavailable`. Mai in cache. Ha fino a 120 secondi: il raccoglitore se ne prende 100.
