@@ -32,6 +32,7 @@ import {
   pricePoints,
   rangePoints,
   searchUrl,
+  workflowDispatchRequest,
   sortBoard,
   defaultSortDir,
   type BoardItem,
@@ -329,5 +330,23 @@ describe("prova riservata del Mercato (18/10/2026)", () => {
   });
   test("pagina riservata e lucchetto nelle quattro lingue", () => {
     for (const l of Object.values(marketLabels)) assert.ok(l.locked.text.length > 40 && l.locked.kicker && l.locked.back);
+  });
+});
+
+describe("giro avviato da Vercel su GitHub (18/10/2026)", () => {
+  test("richiesta di workflow_dispatch per market-collect.yml su main, con il token", () => {
+    const { url, init } = workflowDispatchRequest("tok123");
+    assert.equal(url, "https://api.github.com/repos/ultimacenere/originsmeta/actions/workflows/market-collect.yml/dispatches");
+    assert.equal(init.method, "POST");
+    assert.equal(init.headers.authorization, "Bearer tok123");
+    assert.deepEqual(JSON.parse(init.body), { ref: "main" });
+  });
+  test("il file del lavoro esiste, il cron di Vercel chiama la rotta, GitHub tiene la riserva oraria", () => {
+    const wf = fs.readFileSync(new URL("../../../.github/workflows/market-collect.yml", import.meta.url), "utf8");
+    assert.match(wf, /workflow_dispatch:/);
+    assert.ok(wf.includes('cron: "17 * * * *"'), "riserva oraria di GitHub");
+    const vercel = JSON.parse(fs.readFileSync(new URL("../../../vercel.json", import.meta.url), "utf8"));
+    assert.ok(vercel.crons.some((c: { path: string; schedule: string }) => c.path === "/api/cron/market-dispatch" && c.schedule === "*/10 * * * *"));
+    assert.ok(!vercel.crons.some((c: { path: string }) => c.path === "/api/cron/market"), "il giro su Vercel riceve 429 da Steam: non va nel cron");
   });
 });

@@ -1,5 +1,7 @@
 # Prezzi del Mercato di Steam (tracker dei prezzi, 18/10/2026). Steam risponde 429 alle richieste dei server di Vercel,
-# quindi il giro lo fa questo job ogni 10 minuti: scripts/market-collect.mjs legge le pagine di market/search/render per
+# quindi il giro lo fa questo job. Lo avvia ogni 10 minuti il cron di Vercel (/api/cron/market-dispatch, con il token
+# GITHUB_DISPATCH_TOKEN su Vercel), perché GitHub non garantisce i giri programmati frequenti (il 18/10 uno ogni 2 ore
+# circa); il giro programmato qui sotto, una volta l'ora, resta come riserva se il token manca o scade. Il job: scripts/market-collect.mjs legge le pagine di market/search/render per
 # Origins TCG e per la controfigura (CS2) e le salva con la funzione market_ingest del database (blocco MERCATO di
 # supabase/schema.sql). Il repository è pubblico: i minuti di Actions non si pagano. GitHub può ritardare i job
 # programmati di qualche minuto: lo storico è orario, non cambia niente.
@@ -10,7 +12,8 @@ name: Prezzi del Mercato di Steam
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # riserva: una volta l'ora (minuto 17, lontano dai giri di Vercel); i giri ogni 10 minuti li avvia Vercel
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 # un giro alla volta: se uno è ancora in corso, il successivo aspetta invece di leggere lo stesso cursore
