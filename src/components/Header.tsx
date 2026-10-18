@@ -18,7 +18,7 @@ import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
  * ora sono la voce "Analytics", che con OriginsMeta Tracker chiuso non c'è; i ruoli in prova arrivano all'app dal menu
  * dell'account, `AnalyticsNavLink`.)
  */
-type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean; locked?: boolean }[] };
+type NavItem = { label: string; path: string; locked?: boolean; sub?: { label: string; path: string; mobile?: boolean; locked?: boolean }[] };
 
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
@@ -57,9 +57,8 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: dict.nav.guides, path: "/guides" },
         { label: dict.nav.cards, path: "/cards", mobile: true },
         { label: dict.nav.locations, path: "/locations", mobile: true },
-        // il tracker dei prezzi del Mercato di Steam (18/10/2026, Pierluigi: "Metti \"Mercato\" nel sottomenu Database"),
-        // con il lucchetto finché è in prova riservata (MARKET_PUBLIC spento: "solo io e Davdas possiamo vederla")
-        { label: dict.nav.market, path: "/market", mobile: true, locked: !MARKET_PUBLIC },
+        // le FAQ (18/10/2026, Pierluigi: "metti FAQ sotto database"): prima erano una voce del menu principale
+        { label: dict.nav.faq, path: "/faq", mobile: true },
       ],
     },
     // Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina", poi "non si chiama più win rate ma
@@ -98,7 +97,10 @@ export function navItems(dict: Dictionary): NavItem[] {
       ],
     },
     { label: dict.nav.events, path: "/tournaments" },
-    { label: dict.nav.faq, path: "/faq" },
+    // il tracker dei prezzi del Mercato di Steam fra le voci principali, al posto delle FAQ (18/10/2026, Pierluigi: "sposta
+    // mercato e il suo lucchetto nel main menu, voglio che gli utenti vedano"; il 18/10 era stato per poche ore nel
+    // sottomenu Database): con il lucchetto finché è in prova riservata (MARKET_PUBLIC spento: "solo io e Davdas")
+    { label: dict.nav.market, path: "/market", locked: !MARKET_PUBLIC },
   ];
 }
 
@@ -151,6 +153,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             ) : (
               <NavLink key={it.path} href={href(locale, it.path)}>
                 {it.label}
+                {it.locked ? <LockMark label={dict.nav.locked} /> : null}
               </NavLink>
             ),
           )}
@@ -185,6 +188,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             {items.flatMap((it) => [
               <NavLink key={it.path} href={href(locale, it.path)} className="nav-link-block">
                 {it.label}
+                {it.locked ? <LockMark label={dict.nav.locked} /> : null}
               </NavLink>,
               ...(it.sub ?? [])
                 .filter((s) => s.mobile)

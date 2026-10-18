@@ -1,0 +1,13 @@
+{
+  "_nota": "Profilo pubblico OriginsTCG (18/10/2026, richiesta di Pierluigi: \"questo è il profilo twitch ufficiale https://www.twitch.tv/originstcg di origins, crea un utente OriginsTCG e con i suoi link ufficiali\"). Raccoglie i canali ufficiali del gioco: Twitch (dato da Pierluigi), YouTube, X, Discord, sito e pagina Steam (gli stessi di officialLinks in src/components/Footer.tsx). La bio dice che il profilo lo gestisce OriginsMeta e non Koin Games: il sito è un sito fan non affiliato. Lo scrive scripts/set-profile.mjs.",
+  "bio": "Official channels of Origins TCG, the digital trading card game by Koin Games, collected in one place: live streams on Twitch, videos on YouTube, news on X and the official Discord.\nThis profile is run by OriginsMeta, an unofficial fan site: it is not managed by Koin Games and it is not affiliated with them.",
+  "links": [
+    { "kind": "twitch", "url": "https://www.twitch.tv/originstcg" },
+    { "kind": "youtube", "url": "https://www.youtube.com/@origins_tcg" },
+    { "kind": "x", "url": "https://x.com/origins_tcg" },
+    { "kind": "discord", "url": "https://discord.gg/originstcg" },
+    { "kind": "website", "url": "https://origins-tcg.com/" },
+    { "kind": "website", "url": "https://store.steampowered.com/app/4429430/Origins_TCG/" }
+  ],
+  "content_langs": ["en"]
+}
