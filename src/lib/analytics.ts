@@ -86,10 +86,12 @@
  *                         discord_click (server=other), come deck_link_click;      e dal 28/09/2026 live_page (la pagina /live)
  *     live_now_open       clic su "Ora live" nella striscia del calendario        placement (calendar)
  *                         (28/09/2026, compare solo se qualcuno è in diretta; attributi sul link, TickerMarquee)
- *     official_live_view  la diretta ufficiale di Origins TCG compare in home al   placement (home_hero)
+ *     official_live_view  la diretta compare in home al posto dello slider: quella placement (home_hero), stream
+ *                         ufficiale di Origins TCG o il cast della Crimson Cup     (official | coachcrono)
+ *                         in italiano (18/10/2026)
  *                         posto dello slider (18/10/2026, OfficialLiveHero): una volta per pagina vista; chi la
  *                         avvia sul sito è video_play con placement home_hero
- *     official_live_twitch clic dalla diretta in home verso Twitch: il tasto        placement (home_hero), method
+ *     official_live_twitch clic dalla diretta in home verso Twitch: il tasto        placement (home_hero), method, stream
  *                         "Apri su Twitch" o il lettore troppo piccolo per        (button | player)
  *                         l'embed, che apre Twitch (18/10/2026)
  *     stream_tools_open   apertura del menu "Per le dirette" di un mazzo, o delle placement (deck_page | account |
@@ -234,8 +236,8 @@ export type EventParams = {
   tier_entry_click: { tier_source: string; target: string };
   creator_link_click: { kind: string; placement: string };
   live_now_open: { placement: string };
-  official_live_view: { placement: "home_hero" };
-  official_live_twitch: { placement: "home_hero"; method: "button" | "player" };
+  official_live_view: { placement: "home_hero"; stream: "official" | "coachcrono" };
+  official_live_twitch: { placement: "home_hero"; method: "button" | "player"; stream: "official" | "coachcrono" };
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };
@@ -289,8 +291,8 @@ export const VERCEL_PROPS = {
   tier_entry_click: ["tier_source", "target"],
   creator_link_click: ["kind", "placement"],
   live_now_open: ["placement"],
-  official_live_view: ["placement"],
-  official_live_twitch: ["placement", "method"],
+  official_live_view: ["placement", "stream"],
+  official_live_twitch: ["method", "stream"],
   stream_tools_open: ["placement"],
   stream_tool_copy: ["tool", "placement"],
   deck_image_download: ["format", "placement"],

@@ -28,15 +28,16 @@ export function loadLive(): Promise<LiveResponse | null> {
 /**
  * Chi è in diretta adesso, ricontrollato da `safeLiveUsers`; null finché la prima risposta non arriva. Con `refreshMs`
  * si rilegge a intervalli, solo a scheda visibile (la striscia del calendario resta montata fra una pagina e l'altra,
- * la pagina /live resta aperta). `enabled` è false quando il sito non ha le chiavi di Twitch.
+ * la pagina /live resta aperta). `enabled` è false quando il sito non ha le chiavi di Twitch; `at` è quando è arrivata la
+ * risposta (per chi ha regole a tempo, come la diretta in home del 18/10/2026: niente orologio letto durante il render).
  */
-export function useLiveUsers(refreshMs?: number): { users: LiveUsers; enabled: boolean } | null {
-  const [state, setState] = useState<{ users: LiveUsers; enabled: boolean } | null>(null);
+export function useLiveUsers(refreshMs?: number): { users: LiveUsers; enabled: boolean; at: number } | null {
+  const [state, setState] = useState<{ users: LiveUsers; enabled: boolean; at: number } | null>(null);
   useEffect(() => {
     let alive = true;
     const read = () => {
       loadLive().then((res) => {
-        if (alive) setState({ users: safeLiveUsers(res?.users), enabled: res?.enabled === true });
+        if (alive) setState({ users: safeLiveUsers(res?.users), enabled: res?.enabled === true, at: Date.now() });
       });
     };
     read();

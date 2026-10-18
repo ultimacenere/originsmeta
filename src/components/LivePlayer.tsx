@@ -20,6 +20,7 @@ export function LivePlayer({
   privacyHref,
   placement = "live_page",
   className = "mt-4",
+  onOpenTwitch,
 }: {
   login: string;
   name: string;
@@ -28,6 +29,8 @@ export function LivePlayer({
   /** dove sta il lettore, per `video_play`: la pagina /live o la home (diretta ufficiale al posto dello slider, 18/10/2026) */
   placement?: "live_page" | "home_hero";
   className?: string;
+  /** il lettore troppo piccolo per l'embed apre Twitch: chi lo usa può contarlo (diretta in home, 18/10/2026) */
+  onOpenTwitch?: () => void;
 }) {
   const [src, setSrc] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
@@ -54,8 +57,7 @@ export function LivePlayer({
     const el = box.current;
     const url = liveEmbedSrc(login, twitchParents(window.location.hostname));
     if (!url || !el || !twitchFits(el.clientWidth, el.clientHeight)) {
-      // dalla diretta ufficiale in home il lettore troppo piccolo porta su Twitch: conta come clic verso Twitch (18/10/2026)
-      if (placement === "home_hero") trackEvent("official_live_twitch", { placement, method: "player" });
+      onOpenTwitch?.();
       window.open(channelUrl, "_blank", "noopener");
       return;
     }
