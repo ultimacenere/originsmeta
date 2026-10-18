@@ -25,9 +25,13 @@ export const BASE_COPIES = 2;
 
 export const LIMITS = { player: 24, title: 40, tournament: 40, number: 12, tag: 12, phase: 28, sponsor: 32, url: 300 } as const;
 
-/** Sponsor a rotazione nello spazio dedicato (idea di Davdas del 19/10/2026): fino a 3, ognuno per qualche secondo. */
+/**
+ * Sponsor (idea di Davdas del 19/10/2026; dal 19/10 sera, Pierluigi: "deve apparire in alternanza dove c'è lo score,
+ * 20 secondi lo score e 7 secondi lo sponsor"): fino a 3, uno per volta al posto del punteggio, a giro.
+ */
 export const MAX_SPONSORS = 3;
-export const SPONSOR_SECONDS = { min: 4, max: 60, default: 8 } as const;
+export const SPONSOR_SECONDS = { min: 3, max: 60, default: 7 } as const;
+export const SCORE_SECONDS = { min: 5, max: 120, default: 20 } as const;
 
 export type ListSide = "left" | "right" | "off";
 
@@ -48,16 +52,17 @@ export type BroadcastPlayer = {
 
 /**
  * Formati dell'immagine di uno sponsor (19/10/2026, Pierluigi: "la possibilità con misure esplicite del caricamento di
- * un logo dello sponsor o un bannerino"). Il riquadro dell'overlay è 282 × 192 px sul palco di 1920 × 1080; tolti
- * cornice ed etichetta restano 276 × 160 px.
- * - logo: intero, mai tagliato, dentro 248 × 104 px con il nome sotto; si carica fino a 496 × 208 (il doppio, nitido
- *   anche sugli schermi densi), almeno 248 px di larghezza o 104 di altezza; PNG trasparente consigliato.
- * - banner: riempie tutto il riquadro, 276 × 160 px; si carica a 552 × 320 (proporzioni 69:40), almeno 276 × 160, e
+ * un logo dello sponsor o un bannerino"). Lo sponsor prende il posto del punteggio, un riquadro fisso di 332 × 128 px
+ * sul palco di 1920 × 1080: tolta la cornice restano 326 × 122 px. Niente scritta "Sponsor": solo il logo, solo il
+ * bannerino o solo il nome.
+ * - logo: intero, mai tagliato, dentro 306 × 102 px (il riquadro meno il margine); si carica fino a 612 × 204 (il
+ *   doppio, nitido anche sugli schermi densi), almeno 306 px di larghezza o 102 di altezza; PNG trasparente consigliato.
+ * - banner: riempie tutto il riquadro, 326 × 122 px; si carica a 652 × 244 (il doppio), almeno 326 × 122, e
  *   un'immagine in altre proporzioni si ritaglia al centro.
  */
 export const SPONSOR_FORMATS = {
-  logo: { width: 496, height: 208, shown: { width: 248, height: 104 } },
-  banner: { width: 552, height: 320, shown: { width: 276, height: 160 } },
+  logo: { width: 612, height: 204, shown: { width: 306, height: 102 } },
+  banner: { width: 652, height: 244, shown: { width: 326, height: 122 } },
 } as const;
 export type SponsorKind = keyof typeof SPONSOR_FORMATS;
 /** Peso massimo di un file scelto dal computer, prima della ricodifica. */
@@ -73,8 +78,11 @@ const DATA_IMAGE = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
  */
 export type BroadcastSponsor = { name: string; kind: SponsorKind; logo: string; url: string };
 
-/** Lo spazio sponsor: spento di default, si accende dalla regia quando il torneo ha degli sponsor. */
-export type BroadcastSponsors = { on: boolean; seconds: number; items: BroadcastSponsor[] };
+/**
+ * Lo spazio sponsor: spento di default, si accende dalla regia quando il torneo ha degli sponsor. `scoreSeconds` è il
+ * tempo del punteggio, `seconds` quello di ogni sponsor.
+ */
+export type BroadcastSponsors = { on: boolean; scoreSeconds: number; seconds: number; items: BroadcastSponsor[] };
 
 export const emptySponsor = (): BroadcastSponsor => ({ name: "", kind: "logo", logo: "", url: "" });
 
@@ -102,7 +110,7 @@ export function emptyState(lang: BroadcastLang = "en"): BroadcastState {
     tournament: { name: "", number: "", tag: "", phase: "", bestOf: 3 },
     // come il mockup: la lista del giocatore in alto a destra, quella del giocatore in basso a sinistra
     players: [emptyPlayer("right"), emptyPlayer("left")],
-    sponsors: { on: false, seconds: SPONSOR_SECONDS.default, items: [emptySponsor()] },
+    sponsors: { on: false, scoreSeconds: SCORE_SECONDS.default, seconds: SPONSOR_SECONDS.default, items: [emptySponsor()] },
   };
 }
 
@@ -241,10 +249,12 @@ function cleanSponsors(raw: unknown): BroadcastSponsors {
     const o = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
     return { name: cleanText(o.name, LIMITS.sponsor), kind: o.kind === "banner" ? ("banner" as const) : ("logo" as const), logo: cleanImage(o.logo), url: cleanUrl(o.url) };
   });
-  const sec = typeof r.seconds === "number" && Number.isFinite(r.seconds) ? Math.trunc(r.seconds) : SPONSOR_SECONDS.default;
+  const secs = (v: unknown, lim: { min: number; max: number; default: number }) =>
+    Math.min(Math.max(typeof v === "number" && Number.isFinite(v) ? Math.trunc(v) : lim.default, lim.min), lim.max);
   return {
     on: r.on === true,
-    seconds: Math.min(Math.max(sec, SPONSOR_SECONDS.min), SPONSOR_SECONDS.max),
+    scoreSeconds: secs(r.scoreSeconds, SCORE_SECONDS),
+    seconds: secs(r.seconds, SPONSOR_SECONDS),
     items: items.length ? items : [emptySponsor()],
   };
 }
@@ -252,6 +262,22 @@ function cleanSponsors(raw: unknown): BroadcastSponsors {
 /** Gli sponsor da mostrare: solo con lo spazio acceso e almeno un nome o un logo. */
 export function visibleSponsors(s: BroadcastSponsors): BroadcastSponsor[] {
   return s.on ? s.items.filter((x) => x.name || x.logo) : [];
+}
+
+/**
+ * Il giro del riquadro del punteggio: il passo 0 è il punteggio, il 1 il primo sponsor, il 2 di nuovo il punteggio, il
+ * 3 il secondo sponsor, e così via (con un solo sponsor sempre lui). Senza sponsor da mostrare, sempre il punteggio.
+ */
+export type ScoreSlot = { show: "score" } | { show: "sponsor"; index: number };
+
+export function scoreSlot(step: number, sponsorCount: number): ScoreSlot {
+  if (sponsorCount < 1 || step % 2 === 0) return { show: "score" };
+  return { show: "sponsor", index: Math.floor(step / 2) % sponsorCount };
+}
+
+/** Quanto resta in onda il passo: i secondi del punteggio o quelli dello sponsor. */
+export function slotSeconds(step: number, sponsors: Pick<BroadcastSponsors, "scoreSeconds" | "seconds">, sponsorCount: number): number {
+  return scoreSlot(step, sponsorCount).show === "score" ? sponsors.scoreSeconds : sponsors.seconds;
 }
 
 /** Stato pulito da qualunque cosa (indirizzo, altra finestra, risposta di rete): mai un errore, al peggio lo stato vuoto. */

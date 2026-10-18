@@ -26,6 +26,9 @@ import {
   visibleSponsors,
   MAX_SPONSORS,
   SPONSOR_SECONDS,
+  SCORE_SECONDS,
+  scoreSlot,
+  slotSeconds,
   encodeState,
   markPlayed,
   phaseOf,
@@ -165,13 +168,24 @@ describe("spazio sponsor", () => {
     const s = sanitizeState({ sponsors: { on: true, seconds: 1, items: Array.from({ length: 6 }, (_, i) => ({ name: "Sponsor ".repeat(10) + i, logo: "http://x.com/a.png", url: "https://x.com" })) } }, isCard);
     assert.equal(s.sponsors.items.length, MAX_SPONSORS);
     assert.equal(s.sponsors.seconds, SPONSOR_SECONDS.min);
+    assert.equal(s.sponsors.scoreSeconds, SCORE_SECONDS.default);
     assert.ok(s.sponsors.items.every((x) => x.name.length <= 32 && x.logo === "" && x.url === "https://x.com/"));
     assert.equal(sanitizeState({ sponsors: { seconds: 999 } }, isCard).sponsors.seconds, SPONSOR_SECONDS.max);
+    assert.equal(sanitizeState({ sponsors: { scoreSeconds: 1 } }, isCard).sponsors.scoreSeconds, SCORE_SECONDS.min);
+    assert.deepEqual([SCORE_SECONDS.default, SPONSOR_SECONDS.default], [20, 7], "20 secondi il punteggio, 7 lo sponsor");
   });
-  test("formati con misure esplicite: logo 496 × 208 mostrato a metà, bannerino 552 × 320 nelle proporzioni del riquadro", () => {
-    assert.deepEqual([SPONSOR_FORMATS.logo.width, SPONSOR_FORMATS.logo.height], [SPONSOR_FORMATS.logo.shown.width * 2, SPONSOR_FORMATS.logo.shown.height * 2]);
-    assert.deepEqual([SPONSOR_FORMATS.banner.width, SPONSOR_FORMATS.banner.height], [552, 320]);
-    assert.equal(SPONSOR_FORMATS.banner.width / SPONSOR_FORMATS.banner.height, 276 / 160);
+  test("il punteggio si alterna con gli sponsor, uno per giro", () => {
+    assert.deepEqual([0, 1, 2, 3, 4, 5, 6].map((n) => scoreSlot(n, 0).show), Array(7).fill("score"));
+    assert.deepEqual([0, 1, 2, 3].map((n) => scoreSlot(n, 1)), [{ show: "score" }, { show: "sponsor", index: 0 }, { show: "score" }, { show: "sponsor", index: 0 }]);
+    assert.deepEqual([1, 3, 5, 7].map((n) => (scoreSlot(n, 3) as { index: number }).index), [0, 1, 2, 0]);
+    const t = { scoreSeconds: 20, seconds: 7 };
+    assert.deepEqual([0, 1, 2].map((n) => slotSeconds(n, t, 2)), [20, 7, 20]);
+    assert.equal(slotSeconds(1, t, 0), 20, "senza sponsor resta il punteggio");
+  });
+  test("formati con misure esplicite: logo 612 × 204 e bannerino 652 × 244, il doppio di quello che va in onda", () => {
+    for (const f of Object.values(SPONSOR_FORMATS)) assert.deepEqual([f.width, f.height], [f.shown.width * 2, f.shown.height * 2], "si carica al doppio della misura in onda");
+    assert.deepEqual([SPONSOR_FORMATS.banner.shown.width, SPONSOR_FORMATS.banner.shown.height], [326, 122], "il bannerino riempie il riquadro del punteggio");
+    assert.deepEqual([SPONSOR_FORMATS.logo.width, SPONSOR_FORMATS.logo.height], [612, 204]);
   });
   test("immagini: data URL raster entro il peso, https; mai SVG, HTML o testo", () => {
     const png = "data:image/png;base64,iVBORw0KGgo=";
@@ -201,8 +215,8 @@ describe("spazio sponsor", () => {
   });
   test("si mostrano solo con lo spazio acceso e un nome o un logo", () => {
     const items = [{ name: "", kind: "logo" as const, logo: "", url: "https://a.com/" }, { name: "Acme", kind: "logo" as const, logo: "", url: "" }];
-    assert.deepEqual(visibleSponsors({ on: false, seconds: 8, items }), []);
-    assert.deepEqual(visibleSponsors({ on: true, seconds: 8, items }).map((x) => x.name), ["Acme"]);
+    assert.deepEqual(visibleSponsors({ on: false, scoreSeconds: 20, seconds: 7, items }), []);
+    assert.deepEqual(visibleSponsors({ on: true, scoreSeconds: 20, seconds: 7, items }).map((x) => x.name), ["Acme"]);
   });
   test("la partita di prova ha lo spazio acceso con un segnaposto, nessun marchio vero", () => {
     const s = demoState("it");
@@ -272,7 +286,6 @@ describe("testi e partita di prova", () => {
     const keys = (o: object) => JSON.stringify(Object.keys(o).sort());
     for (const lang of ["it", "es", "fr"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
     for (const l of Object.values(overlayLabels)) assert.match(l.unofficial, /Koin Games/);
-    for (const l of Object.values(overlayLabels)) assert.ok(l.sponsor.length > 0);
     assert.match(overlayLabels.fr.copied, / !$/, "francese: spazio insecabile prima del punto esclamativo");
   });
   test("la partita di prova è quella del mockup: Aldry 1, Dav 0, Bo3, Dav con il terzo mazzo", () => {

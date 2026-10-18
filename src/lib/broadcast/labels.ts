@@ -19,8 +19,6 @@ export type OverlayLabels = {
   bestOf: string;
   wins: string;
   unofficial: string;
-  /** etichetta dello spazio sponsor */
-  sponsor: string;
   phases: PhaseLabels;
 };
 
@@ -40,7 +38,6 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "{name} wins",
     unofficial: "OriginsMeta · not affiliated with Koin Games",
-    sponsor: "Sponsored by",
     phases: { final: "Final", semi: "Semifinal", quarter: "Quarterfinal", round: "Round {n}" },
   },
   it: {
@@ -56,7 +53,6 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "Vince {name}",
     unofficial: "OriginsMeta · non affiliato a Koin Games",
-    sponsor: "Sponsor",
     phases: { final: "Finale", semi: "Semifinale", quarter: "Quarti di finale", round: "Turno {n}" },
   },
   es: {
@@ -72,7 +68,6 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "Gana {name}",
     unofficial: "OriginsMeta · no afiliado a Koin Games",
-    sponsor: "Patrocinado por",
     phases: { final: "Final", semi: "Semifinal", quarter: "Cuartos de final", round: "Ronda {n}" },
   },
   fr: {
@@ -88,7 +83,6 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: `Victoire de ${"{name}"}`,
     unofficial: "OriginsMeta · non affilié à Koin Games",
-    sponsor: "Sponsorisé par",
     phases: { final: "Finale", semi: "Demi-finale", quarter: "Quart de finale", round: "Tour {n}" },
   },
 };
@@ -153,15 +147,15 @@ export const regiaLabels = {
     noBackground: "Nessuno",
     screen: "Partita {n}",
     sponsors: "Sponsor",
-    sponsorsText: "Lo spazio sta in alto a sinistra, sotto il nome del giocatore e sopra la lista del mazzo. Resta spento finché non lo accendi; con più sponsor girano da soli.",
+    sponsorsText: "Lo sponsor compare al posto del punteggio, a turno: il punteggio resta in onda per i suoi secondi, poi lo sponsor per i suoi, e si ricomincia (con più sponsor, uno per giro). Solo il logo, solo il bannerino o solo il nome, senza scritte. Resta spento finché non lo accendi.",
     sponsorsOn: "Mostra lo spazio sponsor",
     sponsorName: "Nome",
     sponsorLogo: "Oppure l'indirizzo https dell'immagine",
     sponsorKind: "Formato",
     kinds: { logo: "Logo", banner: "Bannerino" },
     specs: {
-      logo: "Logo: {w} × {h} px (minimo {mw} px di larghezza o {mh} di altezza), PNG con fondo trasparente, JPG o WebP, fino a 2 MB. Si vede intero, mai tagliato, a {mw} × {mh} px con il nome sotto.",
-      banner: "Bannerino: {w} × {h} px (minimo {mw} × {mh}, proporzioni 69:40), PNG, JPG o WebP, fino a 2 MB. Riempie tutto il riquadro a {mw} × {mh} px; in altre proporzioni si ritaglia al centro.",
+      logo: "Logo: {w} × {h} px (minimo {mw} px di larghezza o {mh} di altezza), PNG con fondo trasparente, JPG o WebP, fino a 2 MB. Si vede intero, mai tagliato, dentro {mw} × {mh} px al posto del punteggio.",
+      banner: "Bannerino: {w} × {h} px (minimo {mw} × {mh}), PNG, JPG o WebP, fino a 2 MB. Riempie tutto il riquadro del punteggio a {mw} × {mh} px; in altre proporzioni si ritaglia al centro.",
     },
     uploadFile: { logo: "Carica il logo", banner: "Carica il bannerino" },
     replaceFile: "Cambia il file",
@@ -174,7 +168,9 @@ export const regiaLabels = {
       tooBig: "Anche ridotta, l'immagine pesa troppo: prova con un file più semplice.",
     },
     sponsorUrl: "Sito (https, facoltativo)",
-    sponsorSeconds: "Secondi per sponsor",
+    sponsorSeconds: "Secondi dello sponsor",
+    scoreSeconds: "Secondi del punteggio",
+    showSponsorNow: "Mostra lo sponsor adesso",
     addSponsor: "Aggiungi uno sponsor",
     badUrl: "Serve un indirizzo che comincia con https://",
     errors: {
@@ -237,15 +233,15 @@ export const regiaLabels = {
     noBackground: "None",
     screen: "Match {n}",
     sponsors: "Sponsors",
-    sponsorsText: "The space sits top left, under the player's name and above the decklist. It stays off until you turn it on; with more sponsors they rotate on their own.",
+    sponsorsText: "The sponsor takes the place of the score in turns: the score stays on air for its seconds, then the sponsor for its own, and again (with more sponsors, one per round). Only the logo, only the banner or only the name, with no label. It stays off until you turn it on.",
     sponsorsOn: "Show the sponsor space",
     sponsorName: "Name",
     sponsorLogo: "Or the https address of the image",
     sponsorKind: "Format",
     kinds: { logo: "Logo", banner: "Banner" },
     specs: {
-      logo: "Logo: {w} × {h} px (at least {mw} px wide or {mh} tall), PNG with a transparent background, JPG or WebP, up to 2 MB. Shown whole, never cropped, at {mw} × {mh} px with the name below.",
-      banner: "Banner: {w} × {h} px (at least {mw} × {mh}, 69:40 ratio), PNG, JPG or WebP, up to 2 MB. Fills the whole box at {mw} × {mh} px; other ratios are cropped to the centre.",
+      logo: "Logo: {w} × {h} px (at least {mw} px wide or {mh} tall), PNG with a transparent background, JPG or WebP, up to 2 MB. Shown whole, never cropped, within {mw} × {mh} px in place of the score.",
+      banner: "Banner: {w} × {h} px (at least {mw} × {mh}), PNG, JPG or WebP, up to 2 MB. Fills the whole score box at {mw} × {mh} px; other ratios are cropped to the centre.",
     },
     uploadFile: { logo: "Upload the logo", banner: "Upload the banner" },
     replaceFile: "Change the file",
@@ -258,7 +254,9 @@ export const regiaLabels = {
       tooBig: "Even reduced, the image is too heavy: try a simpler file.",
     },
     sponsorUrl: "Website (https, optional)",
-    sponsorSeconds: "Seconds per sponsor",
+    sponsorSeconds: "Sponsor seconds",
+    scoreSeconds: "Score seconds",
+    showSponsorNow: "Show the sponsor now",
     addSponsor: "Add a sponsor",
     badUrl: "Use an address that starts with https://",
     errors: {

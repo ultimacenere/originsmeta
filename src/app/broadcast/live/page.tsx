@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { broadcastCatalog } from "@/lib/broadcast/catalog";
+import { broadcastCatalog, broadcastPeekLabels } from "@/lib/broadcast/catalog";
 import { BroadcastLive } from "@/components/broadcast/BroadcastLive";
 
 /**
@@ -9,5 +9,5 @@ import { BroadcastLive } from "@/components/broadcast/BroadcastLive";
 export const metadata: Metadata = { title: "Broadcasting OM · Live" };
 
 export default function BroadcastLivePage() {
-  return <BroadcastLive catalog={broadcastCatalog()} />;
+  return <BroadcastLive catalog={broadcastCatalog()} peekLabels={broadcastPeekLabels()} />;
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { decodeGameCode } from "@/lib/deckcode";
-import type { BroadcastCard } from "@/lib/broadcast/catalog";
+import type { BroadcastCard, PeekLabels } from "@/lib/broadcast/catalog";
 import { demoState } from "@/lib/broadcast/demo";
 import { fillLabel, overlayLabels, regiaLabels, type RegiaLang } from "@/lib/broadcast/labels";
 import {
@@ -14,6 +14,7 @@ import {
   SPONSOR_FORMATS,
   isUploadedImage,
   SPONSOR_SECONDS,
+  SCORE_SECONDS,
   bumpScore,
   clampScore,
   cyclePlayed,
@@ -53,7 +54,7 @@ const UI_KEY = "originsmeta.broadcast.ui.v1";
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
 
-export function BroadcastRegia({ catalog: list, initialUi }: { catalog: BroadcastCard[]; initialUi: RegiaLang }) {
+export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catalog: BroadcastCard[]; peekLabels: PeekLabels; initialUi: RegiaLang }) {
   const catalog = useMemo(() => new Map(list.map((c) => [c.slug, c])), [list]);
   const byKey = useMemo(() => new Map(list.filter((c) => c.key).map((c) => [c.key as string, { slug: c.slug, legendary: c.legendary }])), [list]);
   const isCard = useCallback((slug: string) => catalog.has(slug), [catalog]);
@@ -63,6 +64,8 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
   const [state, setState] = useState<BroadcastState>(() => demoState(initialUi === "it" ? "it" : "en"));
   const [ready, setReady] = useState(false);
   const [bgId, setBgId] = useState<string>("reveals");
+  // "Mostra lo sponsor adesso": a ogni clic l'anteprima passa subito allo sponsor (senza aspettare i secondi del punteggio)
+  const [sponsorNow, setSponsorNow] = useState(0);
   const [linkCopied, setLinkCopied] = useState(false);
   const channel = useRef<BroadcastChannel | null>(null);
 
@@ -258,6 +261,11 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
         <div className="bcr-preview">
           <div className="bcr-box-head">
             <h2>{L.preview}</h2>
+            {state.sponsors.on ? (
+              <button type="button" className="bcr-btn bcr-btn-ghost" onClick={() => setSponsorNow((n) => n + 1)}>
+                {L.showSponsorNow}
+              </button>
+            ) : null}
             <label className="bcr-inline">
               <span>{L.background}</span>
               <select value={bgId} onChange={(e) => setBgId(e.target.value)}>
@@ -271,7 +279,7 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
             </label>
           </div>
           <div className="bcr-stage" data-transparent={bgId ? undefined : ""}>
-            <BroadcastOverlay state={state} catalog={catalog} mode="regia" onCardClick={onCardClick} background={backgroundSrc(bgId)} />
+            <BroadcastOverlay state={state} catalog={catalog} peekLabels={peekLabels} mode="regia" onCardClick={onCardClick} background={backgroundSrc(bgId)} sponsorNow={sponsorNow} />
           </div>
           <p className="bcr-note">{L.previewHint}</p>
         </div>
@@ -574,22 +582,29 @@ function SponsorsBox({ L, sponsors, onChange }: { L: (typeof regiaLabels)[RegiaL
               + {L.addSponsor}
             </button>
           ) : null}
-          {sponsors.items.length > 1 ? (
-            <label className="bcr-inline">
-              <span>{L.sponsorSeconds}</span>
+        </div>
+        <div className="bcr-row">
+          {(
+            [
+              ["scoreSeconds", L.scoreSeconds, SCORE_SECONDS],
+              ["seconds", L.sponsorSeconds, SPONSOR_SECONDS],
+            ] as const
+          ).map(([field, label, lim]) => (
+            <label key={field} className="bcr-inline">
+              <span>{label}</span>
               <input
                 className="bcr-input bcr-num"
                 type="number"
-                min={SPONSOR_SECONDS.min}
-                max={SPONSOR_SECONDS.max}
-                value={sponsors.seconds}
+                min={lim.min}
+                max={lim.max}
+                value={sponsors[field]}
                 onChange={(e) => {
                   const n = Math.trunc(Number(e.target.value));
-                  if (Number.isFinite(n)) onChange({ ...sponsors, seconds: Math.min(Math.max(n, SPONSOR_SECONDS.min), SPONSOR_SECONDS.max) });
+                  if (Number.isFinite(n)) onChange({ ...sponsors, [field]: Math.min(Math.max(n, lim.min), lim.max) });
                 }}
               />
             </label>
-          ) : null}
+          ))}
         </div>
       </div>
     </section>

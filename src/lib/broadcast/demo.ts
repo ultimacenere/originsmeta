@@ -47,6 +47,6 @@ export function demoState(lang: BroadcastLang = "en"): BroadcastState {
         ],
       },
     ],
-    sponsors: { on: true, seconds: 8, items: [{ name: SPONSOR_PLACEHOLDER[lang], kind: "logo", logo: "", url: "" }] },
+    sponsors: { on: true, scoreSeconds: 20, seconds: 7, items: [{ name: SPONSOR_PLACEHOLDER[lang], kind: "logo", logo: "", url: "" }] },
   };
 }

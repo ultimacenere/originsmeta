@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { encodeGameCode } from "@/lib/deckcode";
-import type { BroadcastCard } from "@/lib/broadcast/catalog";
+import type { BroadcastCard, PeekLabels } from "@/lib/broadcast/catalog";
 import { fillLabel, overlayLabels } from "@/lib/broadcast/labels";
-import { copiesLeft, copiesOf, seriesWinner, visibleSponsors, type BroadcastDeck, type BroadcastSponsors, type BroadcastState, type ListSide } from "@/lib/broadcast/state";
+import { copiesLeft, copiesOf, scoreSlot, seriesWinner, slotSeconds, visibleSponsors, type BroadcastDeck, type BroadcastLang, type BroadcastSponsor, type BroadcastState, type ListSide } from "@/lib/broadcast/state";
 
 /**
  * Broadcasting OM (prototipo del 16/10/2026): il livello sopra la partita, disegnato su un palco di 1920 × 1080
@@ -22,11 +22,15 @@ export type OverlayMode = "live" | "regia";
 type Props = {
   state: BroadcastState;
   catalog: Map<string, BroadcastCard>;
+  /** tipo e allineamento nelle lingue dell'overlay, per l'anteprima della carta */
+  peekLabels: PeekLabels;
   mode: OverlayMode;
   /** regia: clic su una carta della lista (giocatore, slug) */
   onCardClick?: (player: 0 | 1, slug: string) => void;
   /** sfondo del palco (solo anteprima): un'immagine della partita o niente (trasparente) */
   background?: string | null;
+  /** regia: cambia a ogni clic su "Mostra lo sponsor adesso" (il riquadro del punteggio passa subito allo sponsor) */
+  sponsorNow?: number;
 };
 
 const STAGE_W = 1920;
@@ -44,6 +48,54 @@ function deckRows(deck: BroadcastDeck, catalog: Map<string, BroadcastCard>): Bro
   return legendary ? [legendary, ...base] : base;
 }
 
+/** Altezza massima del pannello d'anteprima sul palco: serve a tenerlo dentro lo schermo. */
+const PEEK_H = 300;
+
+/**
+ * Anteprima della carta al passaggio del mouse (19/10/2026, Pierluigi: "devono mostrare le loro statistiche e non solo
+ * l'immagine"): lo stesso pannello del deck builder e delle schede (classi .deck-peek-* di globals.css), metà carta
+ * intera con i crediti, metà costo, nome, potenza e salute, tipo, allineamento e testo nella lingua dell'overlay.
+ * Si apre verso il centro dello schermo, accanto alla lista.
+ */
+function CardPeekPanel({ card, side, top, lang, labels }: { card: BroadcastCard; side: "left" | "right"; top: number; lang: BroadcastLang; labels: PeekLabels[BroadcastLang] }) {
+  const ability = card.ability?.[lang] ?? card.ability?.en;
+  return (
+    <div className={`bc-peek bc-peek-${side}`} style={{ top }} aria-hidden="true">
+      <span className={`deck-peek-panel${card.legendary ? " is-legendary" : ""}`}>
+        {card.image ?? card.thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element -- carta intera già in WebP, come CardPeek
+          <img className="deck-peek-art" src={card.image ?? card.thumb} alt="" />
+        ) : (
+          <span />
+        )}
+        <span className="deck-peek-body">
+          <span className="flex items-start gap-2">
+            {card.mana !== undefined ? <span className="deck-peek-mana shrink-0">{card.mana}</span> : null}
+            <span className="deck-peek-name min-w-0 self-center">
+              {card.legendary ? (
+                <span className="legendary-star" aria-hidden="true">
+                  ★{" "}
+                </span>
+              ) : null}
+              {card.name}
+            </span>
+          </span>
+          <span className="deck-peek-tags">
+            {!card.spell && card.power !== undefined ? (
+              <span className="deck-peek-stats">
+                {card.power} / {card.health ?? "?"}
+              </span>
+            ) : null}
+            <span className="deck-peek-type">{card.spell ? labels.spell : labels.unit}</span>
+            {card.alignment ? <span className={`deck-peek-align is-${card.alignment}`}>{labels[card.alignment]}</span> : null}
+          </span>
+          {ability ? <span className="deck-peek-text">{ability}</span> : null}
+        </span>
+      </span>
+    </div>
+  );
+}
+
 async function gameCodeOf(deck: BroadcastDeck, catalog: Map<string, BroadcastCard>): Promise<string | null> {
   const slugs = [deck.legendary, ...deck.cards].filter((s): s is string => Boolean(s));
   if (!slugs.length) return null;
@@ -56,7 +108,7 @@ async function gameCodeOf(deck: BroadcastDeck, catalog: Map<string, BroadcastCar
   }
 }
 
-export function BroadcastOverlay({ state, catalog, mode, onCardClick, background }: Props) {
+export function BroadcastOverlay({ state, catalog, peekLabels, mode, onCardClick, background, sponsorNow = 0 }: Props) {
   const labels = overlayLabels[state.lang];
   const frame = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -74,6 +126,25 @@ export function BroadcastOverlay({ state, catalog, mode, onCardClick, background
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // riquadro del punteggio: il punteggio per scoreSeconds, poi uno sponsor per seconds, a giro (`scoreSlot`)
+  const sponsors = visibleSponsors(state.sponsors);
+  const sponsorCount = sponsors.length;
+  const [step, setStep] = useState(0);
+  const [nowSeen, setNowSeen] = useState(sponsorNow);
+  if (sponsorNow !== nowSeen) {
+    // clic in regia: si passa subito allo sponsor che tocca (stato aggiornato durante il render, come vuole React)
+    setNowSeen(sponsorNow);
+    setStep((n) => (n % 2 === 0 ? n + 1 : n));
+  }
+  const delay = slotSeconds(step, state.sponsors, sponsorCount);
+  useEffect(() => {
+    if (!sponsorCount) return;
+    const id = window.setTimeout(() => setStep((n) => n + 1), delay * 1000);
+    return () => window.clearTimeout(id);
+  }, [step, sponsorCount, delay]);
+  const slot = scoreSlot(step, sponsorCount);
+  const [broken, setBroken] = useState<Record<string, true>>({});
 
   const winner = seriesWinner(state);
   const { tournament } = state;
@@ -136,22 +207,33 @@ export function BroadcastOverlay({ state, catalog, mode, onCardClick, background
           );
         })}
 
-        <div className="bc-score" aria-live="polite">
-          {meta ? <div className="bc-score-meta">{meta}</div> : null}
-          <div className="bc-score-row">
-            <span className="bc-score-label">{labels.score}</span>
-            {players.map((p) => (
-              <div key={p} className="bc-score-side" data-winner={winner === p ? "" : undefined}>
-                <span className="bc-score-player">{state.players[p].name || "—"}</span>
-                <span className="bc-score-digit">{state.players[p].score}</span>
+        <div className="bc-score" data-show={slot.show}>
+          {slot.show === "sponsor" && sponsors[slot.index] ? (
+            <SponsorSlot
+              key={`sponsor-${step}`}
+              item={sponsors[slot.index]}
+              mode={mode}
+              broken={Boolean(broken[sponsors[slot.index].logo])}
+              onBroken={(src) => setBroken((x) => ({ ...x, [src]: true }))}
+            />
+          ) : (
+            <div className="bc-score-in" key={`score-${step}`} aria-live="polite">
+              {meta ? <div className="bc-score-meta">{meta}</div> : null}
+              <div className="bc-score-row">
+                <span className="bc-score-label">{labels.score}</span>
+                {players.map((p) => (
+                  <div key={p} className="bc-score-side" data-winner={winner === p ? "" : undefined}>
+                    <span className="bc-score-player">{state.players[p].name || "—"}</span>
+                    <span className="bc-score-digit">{state.players[p].score}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {winner !== null ? <div className="bc-score-win">{fillLabel(labels.wins, { name: state.players[winner].name })}</div> : null}
-          <div className="bc-score-note">{labels.unofficial}</div>
+              {winner !== null ? <div className="bc-score-win">{fillLabel(labels.wins, { name: state.players[winner].name })}</div> : null}
+            </div>
+          )}
         </div>
-
-        <SponsorBox sponsors={state.sponsors} label={labels.sponsor} mode={mode} />
+        {/* la dicitura su Koin Games resta sempre in onda, anche mentre c'è lo sponsor */}
+        <div className="bc-score-note">{labels.unofficial}</div>
 
         {players.map((p) => {
           if (!listOpen(p)) return null;
@@ -173,19 +255,19 @@ export function BroadcastOverlay({ state, catalog, mode, onCardClick, background
               mode={mode}
               onCardClick={onCardClick}
               onPeek={(slug, top) => setPeek(slug ? { player: p, slug, top } : null)}
+              peekLabels={peekLabels}
+              lang={state.lang}
             />
           );
         })}
 
-        {peek && peekCard?.image ? (
-          // eslint-disable-next-line @next/next/no-img-element -- carta intera già in WebP, come CardPeek
-          <img
-            className={`bc-peek bc-peek-${sides[peek.player]}`}
-            src={peekCard.image}
-            alt={peekCard.name}
-            width={240}
-            height={336}
-            style={{ top: Math.min(Math.max(peek.top - 168, 130), STAGE_H - 336 - 20) }}
+        {peek && peekCard ? (
+          <CardPeekPanel
+            card={peekCard}
+            side={sides[peek.player]}
+            top={Math.min(Math.max(peek.top - PEEK_H / 2, 120), STAGE_H - PEEK_H - 20)}
+            lang={state.lang}
+            labels={peekLabels[state.lang]}
           />
         ) : null}
       </div>
@@ -205,9 +287,11 @@ type PanelProps = {
   mode: OverlayMode;
   onCardClick?: (player: 0 | 1, slug: string) => void;
   onPeek: (slug: string | null, top: number) => void;
+  peekLabels: PeekLabels;
+  lang: BroadcastLang;
 };
 
-function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, mode, onCardClick, onPeek }: PanelProps) {
+function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, mode, onCardClick, onPeek, peekLabels, lang }: PanelProps) {
   const rows = useMemo(() => deckRows(deck, catalog), [deck, catalog]);
   // codice del gioco calcolato nel browser (Web Crypto): vale solo per la lista da cui è fatto
   const sig = [deck.legendary, ...deck.cards].join("|");
@@ -262,23 +346,39 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
           const total = copiesOf(deck, card.slug);
           const left = copiesLeft(deck, card.slug);
           const Tag = mode === "regia" ? "button" : "div";
+          const artSrc = card.art ?? card.image ?? card.thumb;
+          // stessa riga del deck builder (classi .builder-row di globals.css): costo, miniatura, nome e statistiche,
+          // illustrazione sfumata sulla metà destra, magie su fondo rosa, Leggendaria con la cornice oro
           return (
             <li key={card.slug}>
               <Tag
                 {...(mode === "regia" ? { type: "button" as const, onClick: () => onCardClick?.(player, card.slug) } : { tabIndex: 0 })}
-                className="bc-row"
-                data-kind={card.legendary ? "legendary" : card.spell ? "spell" : "unit"}
+                className={["builder-row is-in-deck bc-brow", card.legendary ? "is-legendary" : "", card.spell ? "row-spell" : ""].filter(Boolean).join(" ")}
+                style={artSrc ? ({ ["--row-art" as string]: `url(${artSrc})` } as React.CSSProperties) : undefined}
                 data-out={left === 0 ? "" : undefined}
                 onMouseEnter={(e: React.MouseEvent<HTMLElement>) => onPeek(card.slug, rowTop(e.currentTarget))}
                 onFocus={(e: React.FocusEvent<HTMLElement>) => onPeek(card.slug, rowTop(e.currentTarget))}
                 onBlur={() => onPeek(null, 0)}
               >
-                <span className="bc-mana">{card.mana ?? "–"}</span>
-                <span className="bc-row-name">
-                  {card.legendary ? <span className="bc-star" aria-hidden="true">★</span> : null}
-                  {card.name}
+                <span className="bc-brow-mana">{card.mana ?? "?"}</span>
+                <span className={`card-chip-art bc-brow-art ${card.legendary ? "is-legendary" : ""}`}>
+                  {card.art ?? card.thumb ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- finestra d'illustrazione, come la miniatura del deck builder
+                    <img src={card.art ?? card.thumb} alt="" loading="lazy" decoding="async" />
+                  ) : null}
                 </span>
-                <span className="bc-copies" aria-label={`${left}/${total} ${labels.left}`}>
+                <span className="builder-row-text">
+                  <span className="builder-row-name">
+                    {card.legendary ? (
+                      <span className="legendary-star" aria-hidden="true">
+                        ★
+                      </span>
+                    ) : null}
+                    {card.name}
+                  </span>
+                  <span className="builder-row-stats">{card.spell ? peekLabels[lang].spell : `${card.power ?? "?"}/${card.health ?? "?"}`}</span>
+                </span>
+                <span className="builder-row-copies bc-brow-copies" aria-label={`${left}/${total} ${labels.left}`}>
                   {left}/{total}
                 </span>
               </Tag>
@@ -294,54 +394,27 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
 }
 
 /**
- * Spazio sponsor (idea di Davdas del 19/10/2026): in alto a sinistra, sotto la targhetta del giocatore del gioco e
- * sopra la lista del mazzo. Si vede solo se la regia lo accende e c'è almeno un nome o un logo; con più sponsor
- * girano da soli. Il logo è un'immagine dello sponsor (indirizzo https scelto dalla regia): se non si carica resta il
- * nome. Il pubblico può aprire il sito dello sponsor (link "sponsored"); in regia il riquadro non è un link.
+ * Uno sponsor nel riquadro del punteggio (19/10/2026; Pierluigi: "in alternanza dove c'è lo score… non deve apparire
+ * la scritta sponsor ma solo la scritta o solo il logo o il banner"): il bannerino riempie il riquadro (326 × 122), il
+ * logo sta intero dentro 306 × 102, senza immagine (o se non si carica) il nome. Nessuna etichetta. Il pubblico può
+ * aprire il sito dello sponsor (link "sponsored"); in regia non è un link.
  */
-function SponsorBox({ sponsors, label, mode }: { sponsors: BroadcastSponsors; label: string; mode: OverlayMode }) {
-  const items = visibleSponsors(sponsors);
-  const [tick, setTick] = useState(0);
-  const [broken, setBroken] = useState<Record<string, true>>({});
-  const count = items.length;
-
-  useEffect(() => {
-    if (count < 2) return;
-    const id = window.setInterval(() => setTick((t) => t + 1), sponsors.seconds * 1000);
-    return () => window.clearInterval(id);
-  }, [count, sponsors.seconds]);
-
-  if (!count) return null;
-  const item = items[tick % count];
-  const showLogo = Boolean(item.logo) && !broken[item.logo];
-  const body = (
-    <>
-      <span className="bc-sponsor-label">{label}</span>
-      {/* bannerino: l'immagine riempie il riquadro (276 × 160), il nome resta nel testo alternativo; logo: intero con il nome sotto */}
-      <span
-        className={showLogo && item.kind === "banner" ? "bc-sponsor-body bc-sponsor-banner" : "bc-sponsor-body"}
-        key={`${tick % count}-${item.kind}-${item.name}-${item.logo.length}-${item.logo.slice(-24)}`}
-      >
-        {showLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- immagine dello sponsor scelta dalla regia (file caricato o indirizzo https)
-          <img className="bc-sponsor-logo" src={item.logo} alt={item.name} referrerPolicy="no-referrer" onError={() => setBroken((b) => ({ ...b, [item.logo]: true }))} />
-        ) : null}
-        {item.name && !(showLogo && item.kind === "banner") ? <span className={showLogo ? "bc-sponsor-caption" : "bc-sponsor-name"}>{item.name}</span> : null}
-      </span>
-      {count > 1 ? (
-        <span className="bc-sponsor-dots" aria-hidden="true">
-          {items.map((_, i) => (
-            <i key={i} data-on={i === tick % count ? "" : undefined} />
-          ))}
-        </span>
-      ) : null}
-    </>
+function SponsorSlot({ item, mode, broken, onBroken }: { item: BroadcastSponsor; mode: OverlayMode; broken: boolean; onBroken: (src: string) => void }) {
+  const showImage = Boolean(item.logo) && !broken;
+  const kind = showImage ? item.kind : "name";
+  const body = showImage ? (
+    // eslint-disable-next-line @next/next/no-img-element -- immagine dello sponsor scelta dalla regia (file caricato o indirizzo https)
+    <img className="bc-slot-img" src={item.logo} alt={item.name} referrerPolicy="no-referrer" onError={() => onBroken(item.logo)} />
+  ) : (
+    <span className="bc-slot-name">{item.name}</span>
   );
   return mode === "live" && item.url ? (
-    <a className="bc-sponsor" href={item.url} target="_blank" rel="sponsored noopener noreferrer">
+    <a className="bc-slot" data-kind={kind} href={item.url} target="_blank" rel="sponsored noopener noreferrer">
       {body}
     </a>
   ) : (
-    <div className="bc-sponsor">{body}</div>
+    <div className="bc-slot" data-kind={kind}>
+      {body}
+    </div>
   );
 }

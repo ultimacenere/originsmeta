@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { broadcastCatalog } from "@/lib/broadcast/catalog";
+import { broadcastCatalog, broadcastPeekLabels } from "@/lib/broadcast/catalog";
 import type { RegiaLang } from "@/lib/broadcast/labels";
 import { BroadcastRegia } from "@/components/broadcast/BroadcastRegia";
 
@@ -20,7 +20,7 @@ export default async function BroadcastRegiaPage({ searchParams }: Props) {
   else ui = ((await headers()).get("accept-language") ?? "").trim().toLowerCase().startsWith("it") ? "it" : "en";
   return (
     <main lang={ui}>
-      <BroadcastRegia catalog={broadcastCatalog()} initialUi={ui} />
+      <BroadcastRegia catalog={broadcastCatalog()} peekLabels={broadcastPeekLabels()} initialUi={ui} />
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { BroadcastCard } from "@/lib/broadcast/catalog";
+import type { BroadcastCard, PeekLabels } from "@/lib/broadcast/catalog";
 import { demoState } from "@/lib/broadcast/demo";
 import { STORED_STATE_MAX, decodeState, preferStored, stateFromHash, type BroadcastState } from "@/lib/broadcast/state";
 import { BROADCAST_STORAGE_KEY, backgroundSrc, openChannel, readStored } from "@/lib/broadcast/sync";
@@ -13,7 +13,7 @@ import { BroadcastOverlay } from "./BroadcastOverlay";
  * a ogni modifica della regia (canale e localStorage) e a ogni cambio dell'hash. `?demo=1` mostra la partita di prova,
  * `?bg=<id>` mette dietro una schermata della partita (per provarlo senza OBS).
  */
-export function BroadcastLive({ catalog: list }: { catalog: BroadcastCard[] }) {
+export function BroadcastLive({ catalog: list, peekLabels }: { catalog: BroadcastCard[]; peekLabels: PeekLabels }) {
   const catalog = useMemo(() => new Map(list.map((c) => [c.slug, c])), [list]);
   const isCard = useMemo(() => (slug: string) => catalog.has(slug), [catalog]);
   const [state, setState] = useState<BroadcastState | null>(null);
@@ -61,5 +61,5 @@ export function BroadcastLive({ catalog: list }: { catalog: BroadcastCard[] }) {
       </div>
     );
   }
-  return <BroadcastOverlay state={state} catalog={catalog} mode="live" background={bg} />;
+  return <BroadcastOverlay state={state} catalog={catalog} peekLabels={peekLabels} mode="live" background={bg} />;
 }

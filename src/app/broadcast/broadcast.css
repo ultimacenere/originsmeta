@@ -163,17 +163,31 @@
   box-shadow: 0 0 0 2px var(--color-night);
 }
 
-/* ---------- punteggio ---------- */
+/* ---------- punteggio ----------
+   Riquadro fisso di 332 × 128 px (326 × 122 dentro la cornice): a turno il punteggio e lo sponsor (19/10/2026), che ha
+   le misure del suo formato su questo spazio (SPONSOR_FORMATS in state.ts). La dicitura su Koin Games sta sotto, sempre. */
 .bc-score {
   position: absolute;
   top: 12px;
   left: 1208px;
   width: 332px;
-  padding: 8px 12px 7px;
+  height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 6px 12px;
   border: 3px solid var(--color-sky);
   border-radius: 14px;
   background: color-mix(in srgb, var(--color-night) 94%, transparent);
   box-shadow: 0 6px 18px rgba(8, 4, 20, 0.45);
+}
+.bc-score[data-show="sponsor"] {
+  padding: 0;
+}
+.bc-score-in,
+.bc-slot {
+  animation: bc-slot-in 0.45s ease-out;
 }
 .bc-score-meta {
   overflow: hidden;
@@ -230,7 +244,7 @@
   text-align: center;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 40px;
+  font-size: 34px;
   line-height: 1.12;
   color: var(--color-chalk);
 }
@@ -250,11 +264,67 @@
   font-weight: 800;
 }
 .bc-score-note {
-  margin-top: 5px;
+  position: absolute;
+  top: 144px;
+  left: 1208px;
+  width: 332px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-night) 88%, transparent);
   text-align: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--color-pale-muted);
+  color: var(--color-pale);
+}
+
+/* sponsor nel riquadro: solo il logo (intero, dentro 306 × 102), solo il bannerino (326 × 122) o solo il nome */
+.bc-slot {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  text-decoration: none;
+}
+.bc-slot[data-kind="logo"] {
+  padding: 10px;
+}
+.bc-slot[data-kind="name"] {
+  padding: 10px 14px;
+}
+.bc-slot-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.bc-slot[data-kind="banner"] .bc-slot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bc-slot-name {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-chalk);
+  overflow-wrap: anywhere;
+}
+@keyframes bc-slot-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bc-score-in,
+  .bc-slot {
+    animation: none;
+  }
 }
 
 /* ---------- lista del mazzo ---------- */
@@ -316,73 +386,6 @@
   flex-direction: column;
   gap: 3px;
 }
-.bc-row {
-  display: grid;
-  grid-template-columns: 26px 1fr auto;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 30px;
-  padding: 0 8px 0 4px;
-  border: 0;
-  border-left: 5px solid var(--color-mint);
-  border-radius: 7px;
-  background: var(--color-night-2);
-  color: var(--color-chalk);
-  text-align: left;
-  font: inherit;
-  cursor: default;
-  transition: background 0.12s, opacity 0.12s;
-}
-button.bc-row {
-  cursor: pointer;
-}
-.bc-row:hover,
-.bc-row:focus-visible {
-  background: var(--color-night-3);
-}
-.bc-row[data-kind="spell"] {
-  border-left-color: var(--color-sky);
-}
-.bc-row[data-kind="legendary"] {
-  border-left-color: var(--color-gold);
-  background: color-mix(in srgb, var(--color-gold) 12%, var(--color-night-2));
-}
-.bc-row[data-out] {
-  opacity: 0.38;
-}
-.bc-row[data-out] .bc-row-name {
-  text-decoration: line-through;
-}
-.bc-mana {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--color-sky-deep);
-  color: var(--color-chalk);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-}
-.bc-row-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 800;
-}
-.bc-star {
-  margin-right: 4px;
-  color: var(--color-gold);
-}
-.bc-copies {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-pale);
-}
 .bc-copy {
   margin: 2px 8px 8px;
   padding: 7px 10px;
@@ -407,13 +410,68 @@ button.bc-row {
   cursor: not-allowed;
 }
 
-/* anteprima della carta: intera, con i crediti stampati, verso il centro dello schermo */
+/* ---------- righe della lista: quelle del deck builder (19/10/2026) ----------
+   Pierluigi: "la lista delle carte come la lista nel deck builder con il loro sfondo". Le classi .builder-row,
+   .card-chip-art, .row-spell, .builder-row-name e -stats sono quelle di globals.css (illustrazione sfumata sulla metà
+   destra, magie su fondo rosa, cornice oro della Leggendaria); qui solo la misura compatta per stare in 13 righe
+   sopra il tabellone, il costo, le copie rimaste e le copie finite. */
+.bc-list .bc-brow {
+  min-height: 30px;
+  padding: 0 8px 0 4px;
+  gap: 6px;
+  cursor: default;
+  text-align: left;
+  font: inherit;
+}
+.bc-list button.bc-brow {
+  cursor: pointer;
+}
+.bc-list .bc-brow[data-out] {
+  opacity: 0.38;
+}
+.bc-list .bc-brow[data-out] .builder-row-name {
+  text-decoration: line-through;
+}
+.bc-brow-mana {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-mint);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+.bc-list .bc-brow-art {
+  flex: none;
+  width: 22px;
+  height: 26px;
+  border-radius: 4px;
+}
+.bc-list .builder-row-name {
+  font-size: 13px;
+}
+.bc-list .builder-row-stats {
+  font-size: 11px;
+  line-height: 1.1;
+}
+.bc-brow-copies {
+  font-size: 13px;
+}
+.bc-rows {
+  gap: 2px;
+  padding: 5px 6px;
+}
+
+/* anteprima della carta: il pannello delle schede del sito (.deck-peek-panel), accanto alla lista, verso il centro */
 .bc-peek {
   position: absolute;
-  width: 240px;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 14px 34px rgba(8, 4, 20, 0.6);
+  width: 440px;
   pointer-events: none;
 }
 .bc-peek-left {
@@ -421,6 +479,9 @@ button.bc-row {
 }
 .bc-peek-right {
   right: 304px;
+}
+.bc-peek .deck-peek-text {
+  font-size: 13px;
 }
 
 /* ---------------- regia ---------------- */
@@ -774,149 +835,9 @@ button.bc-row {
 }
 @media (prefers-reduced-motion: reduce) {
   .bc-plate-name,
-  .bc-row {
+  .bc-brow {
     transition: none;
   }
-}
-
-/* ---------- spazio sponsor (19/10/2026, idea di Davdas) ----------
-   In alto a sinistra: sotto la targhetta del giocatore del gioco (che finisce a y 102) e sopra la lista di sinistra
-   (che comincia a y 318). Stessa cornice delle altre parti dell'overlay; il logo dello sponsor sta intero, mai tagliato. */
-.bc-sponsor {
-  position: absolute;
-  left: 10px;
-  top: 112px;
-  width: 282px;
-  height: 192px;
-  display: flex;
-  flex-direction: column;
-  border: 3px solid var(--color-sky);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--color-night) 95%, transparent);
-  box-shadow: 0 10px 28px rgba(8, 4, 20, 0.55);
-  overflow: hidden;
-  color: inherit;
-  text-decoration: none;
-}
-a.bc-sponsor:hover {
-  border-color: var(--color-mint);
-}
-.bc-sponsor-label {
-  padding: 5px 12px 4px;
-  background: var(--color-night-3);
-  border-bottom: 2px solid var(--color-sky);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-sky);
-}
-.bc-sponsor-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 14px;
-  animation: bc-sponsor-in 0.5s ease-out;
-}
-.bc-sponsor-logo {
-  max-width: 100%;
-  max-height: 104px;
-  min-height: 0;
-  object-fit: contain;
-}
-.bc-sponsor-name {
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--color-chalk);
-  overflow-wrap: anywhere;
-}
-.bc-sponsor-caption {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--color-pale);
-}
-.bc-sponsor-dots {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  display: flex;
-  gap: 4px;
-}
-.bc-sponsor-dots i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-pale-muted);
-}
-.bc-sponsor-dots i[data-on] {
-  background: var(--color-mint);
-}
-@keyframes bc-sponsor-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bc-sponsor-body {
-    animation: none;
-  }
-}
-
-/* regia: interruttore dello spazio sponsor e campo dei secondi */
-.bcr-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: var(--color-chalk);
-  cursor: pointer;
-}
-.bcr-switch input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-mint);
-}
-.bcr-decks[data-off] {
-  opacity: 0.55;
-}
-.bcr-num {
-  width: 72px;
-}
-.bcr-input[aria-invalid] {
-  border-color: var(--color-crimson);
-}
-
-/* bannerino dello sponsor (19/10/2026): riempie tutto il riquadro sotto l'etichetta, 276 × 160 px, nelle proporzioni
-   del file caricato (69:40), quindi object-fit non taglia nulla; un'immagine da indirizzo in altre proporzioni si
-   ritaglia al centro come il file caricato */
-.bc-sponsor-banner {
-  padding: 0;
-  gap: 0;
-}
-.bc-sponsor-banner .bc-sponsor-logo {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
 }
 
 /* regia: misure del formato, anteprima del file e tasti */
@@ -966,3 +887,28 @@ a.bc-sponsor:hover {
   outline: 2px solid var(--color-mint);
   outline-offset: 3px;
 }
+/* regia: interruttore dello spazio sponsor e campo dei secondi */
+.bcr-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-chalk);
+  cursor: pointer;
+}
+.bcr-switch input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-mint);
+}
+.bcr-decks[data-off] {
+  opacity: 0.55;
+}
+.bcr-num {
+  width: 72px;
+}
+.bcr-input[aria-invalid] {
+  border-color: var(--color-crimson);
+}
+
