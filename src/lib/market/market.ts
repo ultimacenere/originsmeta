@@ -43,6 +43,31 @@ export const MARKET_SOURCES: Record<MarketSourceId, MarketSource> = {
 };
 export const MARKET_SOURCE_IDS = Object.keys(MARKET_SOURCES) as MarketSourceId[];
 
+/**
+ * Il giro del mercato su GitHub Actions avviato dal cron di Vercel (18/10/2026): Steam risponde 429 ai server di Vercel,
+ * mentre GitHub non garantisce i giri programmati frequenti (ieri ne partiva uno ogni 2 ore circa). Ogni 10 minuti Vercel,
+ * che è puntuale, chiama l'API di GitHub e avvia il lavoro .github/workflows/market-collect.yml sul branch main.
+ */
+export const MARKET_WORKFLOW = { repo: "ultimacenere/originsmeta", file: "market-collect.yml", ref: "main" } as const;
+
+/** La richiesta all'API di GitHub che avvia il giro (workflow_dispatch): risponde 204 se l'ha accettata. */
+export function workflowDispatchRequest(token: string): { url: string; init: { method: "POST"; headers: Record<string, string>; body: string } } {
+  return {
+    url: `https://api.github.com/repos/${MARKET_WORKFLOW.repo}/actions/workflows/${MARKET_WORKFLOW.file}/dispatches`,
+    init: {
+      method: "POST",
+      headers: {
+        accept: "application/vnd.github+json",
+        authorization: `Bearer ${token}`,
+        "x-github-api-version": "2022-11-28",
+        "content-type": "application/json",
+        "user-agent": "originsmeta-market-dispatch",
+      },
+      body: JSON.stringify({ ref: MARKET_WORKFLOW.ref }),
+    },
+  };
+}
+
 /** Oggetti per pagina di market/search/render (Steam ignora `count` e ne dà 10). */
 export const STEAM_PAGE_SIZE = 10;
 /** Pausa fra due pagine dello stesso giro: Steam risponde 429 a chi va troppo veloce. */
