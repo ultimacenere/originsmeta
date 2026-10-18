@@ -778,3 +778,128 @@ button.bc-row {
     transition: none;
   }
 }
+
+/* ---------- spazio sponsor (19/10/2026, idea di Davdas) ----------
+   In alto a sinistra: sotto la targhetta del giocatore del gioco (che finisce a y 102) e sopra la lista di sinistra
+   (che comincia a y 318). Stessa cornice delle altre parti dell'overlay; il logo dello sponsor sta intero, mai tagliato. */
+.bc-sponsor {
+  position: absolute;
+  left: 10px;
+  top: 112px;
+  width: 282px;
+  height: 192px;
+  display: flex;
+  flex-direction: column;
+  border: 3px solid var(--color-sky);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-night) 95%, transparent);
+  box-shadow: 0 10px 28px rgba(8, 4, 20, 0.55);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+a.bc-sponsor:hover {
+  border-color: var(--color-mint);
+}
+.bc-sponsor-label {
+  padding: 5px 12px 4px;
+  background: var(--color-night-3);
+  border-bottom: 2px solid var(--color-sky);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-sky);
+}
+.bc-sponsor-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  animation: bc-sponsor-in 0.5s ease-out;
+}
+.bc-sponsor-logo {
+  max-width: 100%;
+  max-height: 104px;
+  min-height: 0;
+  object-fit: contain;
+}
+.bc-sponsor-name {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-chalk);
+  overflow-wrap: anywhere;
+}
+.bc-sponsor-caption {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-pale);
+}
+.bc-sponsor-dots {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  display: flex;
+  gap: 4px;
+}
+.bc-sponsor-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-pale-muted);
+}
+.bc-sponsor-dots i[data-on] {
+  background: var(--color-mint);
+}
+@keyframes bc-sponsor-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bc-sponsor-body {
+    animation: none;
+  }
+}
+
+/* regia: interruttore dello spazio sponsor e campo dei secondi */
+.bcr-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-chalk);
+  cursor: pointer;
+}
+.bcr-switch input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-mint);
+}
+.bcr-decks[data-off] {
+  opacity: 0.55;
+}
+.bcr-num {
+  width: 72px;
+}
+.bcr-input[aria-invalid] {
+  border-color: var(--color-crimson);
+}

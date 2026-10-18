@@ -23,7 +23,11 @@ export const MAX_DECKS = 4;
 export const BASE_CARDS = 12;
 export const BASE_COPIES = 2;
 
-export const LIMITS = { player: 24, title: 40, tournament: 40, number: 12, tag: 12, phase: 28 } as const;
+export const LIMITS = { player: 24, title: 40, tournament: 40, number: 12, tag: 12, phase: 28, sponsor: 32, url: 300 } as const;
+
+/** Sponsor a rotazione nello spazio dedicato (idea di Davdas del 19/10/2026): fino a 3, ognuno per qualche secondo. */
+export const MAX_SPONSORS = 3;
+export const SPONSOR_SECONDS = { min: 4, max: 60, default: 8 } as const;
 
 export type ListSide = "left" | "right" | "off";
 
@@ -42,6 +46,14 @@ export type BroadcastPlayer = {
   list: ListSide;
 };
 
+/** Uno sponsor: nome, logo (indirizzo https di un'immagine) e sito (https, facoltativo: cliccabile dal pubblico). */
+export type BroadcastSponsor = { name: string; logo: string; url: string };
+
+/** Lo spazio sponsor: spento di default, si accende dalla regia quando il torneo ha degli sponsor. */
+export type BroadcastSponsors = { on: boolean; seconds: number; items: BroadcastSponsor[] };
+
+export const emptySponsor = (): BroadcastSponsor => ({ name: "", logo: "", url: "" });
+
 export type BroadcastTournament = { name: string; number: string; tag: string; phase: string; bestOf: BroadcastBestOf };
 
 export type BroadcastState = {
@@ -50,6 +62,7 @@ export type BroadcastState = {
   tournament: BroadcastTournament;
   /** [0] = il giocatore in alto nella schermata del gioco, [1] = quello in basso */
   players: [BroadcastPlayer, BroadcastPlayer];
+  sponsors: BroadcastSponsors;
 };
 
 export const emptyDeck = (): BroadcastDeck => ({ name: "", legendary: null, cards: [], played: {} });
@@ -65,6 +78,7 @@ export function emptyState(lang: BroadcastLang = "en"): BroadcastState {
     tournament: { name: "", number: "", tag: "", phase: "", bestOf: 3 },
     // come il mockup: la lista del giocatore in alto a destra, quella del giocatore in basso a sinistra
     players: [emptyPlayer("right"), emptyPlayer("left")],
+    sponsors: { on: false, seconds: SPONSOR_SECONDS.default, items: [emptySponsor()] },
   };
 }
 
@@ -132,7 +146,7 @@ export function cyclePlayed(deck: BroadcastDeck, slug: string): BroadcastDeck {
 
 /* ---------------- pulizia ---------------- */
 
-const CONTROL = /[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁠-⁤﻿]/g;
+const CONTROL = /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]/g;
 
 /** Testo semplice, una riga, senza caratteri invisibili, tagliato al massimo. */
 export function cleanText(raw: unknown, max: number): string {
@@ -171,6 +185,39 @@ function cleanPlayer(raw: unknown, isCard: (slug: string) => boolean, bestOf: Br
   return { name: cleanText(r.name, LIMITS.player), title: cleanText(r.title, LIMITS.title), score: clampScore(r.score, bestOf), decks, active, list };
 }
 
+/** Indirizzo https pulito (logo o sito di uno sponsor), oppure "": mai altri protocolli, credenziali o spazi. */
+export function cleanUrl(raw: unknown, max: number = LIMITS.url): string {
+  if (typeof raw !== "string") return "";
+  const t = raw.trim();
+  if (!t || t.length > max) return "";
+  try {
+    const u = new URL(t);
+    if (u.protocol !== "https:" || u.username || u.password || !u.hostname.includes(".")) return "";
+    return u.toString().length > max ? "" : u.toString();
+  } catch {
+    return "";
+  }
+}
+
+function cleanSponsors(raw: unknown): BroadcastSponsors {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const items = (Array.isArray(r.items) ? r.items : []).slice(0, MAX_SPONSORS).map((x) => {
+    const o = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
+    return { name: cleanText(o.name, LIMITS.sponsor), logo: cleanUrl(o.logo), url: cleanUrl(o.url) };
+  });
+  const sec = typeof r.seconds === "number" && Number.isFinite(r.seconds) ? Math.trunc(r.seconds) : SPONSOR_SECONDS.default;
+  return {
+    on: r.on === true,
+    seconds: Math.min(Math.max(sec, SPONSOR_SECONDS.min), SPONSOR_SECONDS.max),
+    items: items.length ? items : [emptySponsor()],
+  };
+}
+
+/** Gli sponsor da mostrare: solo con lo spazio acceso e almeno un nome o un logo. */
+export function visibleSponsors(s: BroadcastSponsors): BroadcastSponsor[] {
+  return s.on ? s.items.filter((x) => x.name || x.logo) : [];
+}
+
 /** Stato pulito da qualunque cosa (indirizzo, altra finestra, risposta di rete): mai un errore, al peggio lo stato vuoto. */
 export function sanitizeState(raw: unknown, isCard: (slug: string) => boolean): BroadcastState {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
@@ -189,6 +236,7 @@ export function sanitizeState(raw: unknown, isCard: (slug: string) => boolean): 
       bestOf,
     },
     players: [cleanPlayer(p[0], isCard, bestOf, "right"), cleanPlayer(p[1], isCard, bestOf, "left")],
+    sponsors: cleanSponsors(r.sponsors),
   };
 }
 

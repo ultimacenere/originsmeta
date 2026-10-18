@@ -10,12 +10,16 @@ import {
   BROADCAST_LANGS,
   LIMITS,
   MAX_DECKS,
+  MAX_SPONSORS,
+  SPONSOR_SECONDS,
   bumpScore,
   clampScore,
   cyclePlayed,
   decodeState,
   deckFromKeys,
+  cleanUrl,
   emptyDeck,
+  emptySponsor,
   emptyState,
   encodeState,
   phaseOf,
@@ -27,6 +31,7 @@ import {
   type BroadcastState,
   type BroadcastTournamentResponse,
   type ListSide,
+  type BroadcastSponsor,
 } from "@/lib/broadcast/state";
 import { BROADCAST_BACKGROUNDS, backgroundSrc, openChannel, readStored, writeStored } from "@/lib/broadcast/sync";
 import { BroadcastOverlay } from "./BroadcastOverlay";
@@ -222,6 +227,8 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
             </div>
           </section>
 
+          <SponsorsBox L={L} sponsors={state.sponsors} onChange={(sponsors) => setState((s) => ({ ...s, sponsors }))} />
+
           <section className="bcr-box">
             <h2>{L.output}</h2>
             <p className="bcr-note">{L.outputText}</p>
@@ -395,6 +402,106 @@ function TournamentBox({
             ))}
           </select>
         </label>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- sponsor ---------------- */
+
+/**
+ * Spazio sponsor (idea di Davdas del 19/10/2026): acceso o spento, fino a 3 sponsor con nome, logo e sito, secondi per
+ * sponsor. Logo e sito si scrivono liberi ma nello stato entrano solo se sono indirizzi https (`cleanUrl`): finché il
+ * campo non lo è, l'overlay non lo usa e la regia lo dice.
+ */
+function SponsorsBox({ L, sponsors, onChange }: { L: (typeof regiaLabels)[RegiaLang]; sponsors: BroadcastState["sponsors"]; onChange: (s: BroadcastState["sponsors"]) => void }) {
+  // testo scritto nei campi degli indirizzi, anche quando non è ancora valido (lo stato tiene solo quelli validi)
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const setItem = (i: number, patch: Partial<BroadcastSponsor>) => onChange({ ...sponsors, items: sponsors.items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+  const urlField = (i: number, field: "logo" | "url", label: string) => {
+    const id = `${i}-${field}`;
+    const value = drafts[id] ?? sponsors.items[i][field];
+    const bad = value.trim() !== "" && !cleanUrl(value);
+    return (
+      <label className="bcr-field">
+        <span>{label}</span>
+        <input
+          className="bcr-input bcr-mono"
+          value={value}
+          inputMode="url"
+          placeholder="https://"
+          aria-invalid={bad || undefined}
+          onChange={(e) => {
+            const v = e.target.value;
+            setDrafts((d) => ({ ...d, [id]: v }));
+            setItem(i, { [field]: cleanUrl(v) });
+          }}
+        />
+        {bad ? <span className="bcr-notice bcr-notice-error">{L.badUrl}</span> : null}
+      </label>
+    );
+  };
+
+  return (
+    <section className="bcr-box">
+      <div className="bcr-box-head">
+        <h2>{L.sponsors}</h2>
+        <label className="bcr-switch">
+          <input type="checkbox" checked={sponsors.on} onChange={(e) => onChange({ ...sponsors, on: e.target.checked })} />
+          <span>{L.sponsorsOn}</span>
+        </label>
+      </div>
+      <p className="bcr-note">{L.sponsorsText}</p>
+      <div className="bcr-decks" data-off={sponsors.on ? undefined : ""}>
+        {sponsors.items.map((item, i) => (
+          <div key={i} className="bcr-deck">
+            <div className="bcr-deck-head">
+              <strong>Sponsor {i + 1}</strong>
+              <span className="bcr-deck-sum" />
+              {sponsors.items.length > 1 ? (
+                <button
+                  type="button"
+                  className="bcr-link"
+                  onClick={() => {
+                    setDrafts({});
+                    onChange({ ...sponsors, items: sponsors.items.filter((_, j) => j !== i) });
+                  }}
+                >
+                  {L.removeDeck}
+                </button>
+              ) : null}
+            </div>
+            <label className="bcr-field">
+              <span>{L.sponsorName}</span>
+              <input className="bcr-input" value={item.name} maxLength={LIMITS.sponsor} onChange={(e) => setItem(i, { name: e.target.value })} />
+            </label>
+            {urlField(i, "logo", L.sponsorLogo)}
+            {urlField(i, "url", L.sponsorUrl)}
+          </div>
+        ))}
+        <div className="bcr-row">
+          {sponsors.items.length < MAX_SPONSORS ? (
+            <button type="button" className="bcr-btn bcr-btn-ghost" onClick={() => onChange({ ...sponsors, items: [...sponsors.items, emptySponsor()] })}>
+              + {L.addSponsor}
+            </button>
+          ) : null}
+          {sponsors.items.length > 1 ? (
+            <label className="bcr-inline">
+              <span>{L.sponsorSeconds}</span>
+              <input
+                className="bcr-input bcr-num"
+                type="number"
+                min={SPONSOR_SECONDS.min}
+                max={SPONSOR_SECONDS.max}
+                value={sponsors.seconds}
+                onChange={(e) => {
+                  const n = Math.trunc(Number(e.target.value));
+                  if (Number.isFinite(n)) onChange({ ...sponsors, seconds: Math.min(Math.max(n, SPONSOR_SECONDS.min), SPONSOR_SECONDS.max) });
+                }}
+              />
+            </label>
+          ) : null}
+        </div>
       </div>
     </section>
   );

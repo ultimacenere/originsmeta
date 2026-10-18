@@ -17,6 +17,10 @@ import {
   decodeState,
   deckFromKeys,
   emptyState,
+  cleanUrl,
+  visibleSponsors,
+  MAX_SPONSORS,
+  SPONSOR_SECONDS,
   encodeState,
   markPlayed,
   phaseOf,
@@ -103,7 +107,7 @@ describe("pulizia dello stato", () => {
     }
   });
   test("testi su una riga, senza invisibili, tagliati", () => {
-    assert.equal(cleanText("  Ald​ry\n\tcup  ", 20), "Ald ry cup");
+    assert.equal(cleanText("  Ald\u200bry\n\tcup  ", 20), "Ald ry cup");
     assert.equal(cleanText("x".repeat(100), LIMITS.player).length, LIMITS.player);
     assert.equal(cleanText(42, 10), "");
     assert.equal([...cleanText("🃏".repeat(30), LIMITS.player)].length, LIMITS.player, "si taglia per caratteri, mai a metà emoji");
@@ -136,6 +140,39 @@ describe("pulizia dello stato", () => {
     assert.equal(s.lang, "en");
     assert.equal(s.players[0].list, "right");
     assert.equal(s.players[1].list, "off");
+  });
+});
+
+describe("spazio sponsor", () => {
+  test("spento di default, anche quando manca nello stato", () => {
+    assert.equal(emptyState().sponsors.on, false);
+    assert.equal(sanitizeState({}, isCard).sponsors.on, false);
+    assert.equal(sanitizeState({ sponsors: { on: "yes" } }, isCard).sponsors.on, false);
+  });
+  test("solo indirizzi https, senza credenziali", () => {
+    assert.equal(cleanUrl("https://example.com/logo.png"), "https://example.com/logo.png");
+    assert.equal(cleanUrl(" https://shop.example.it "), "https://shop.example.it/");
+    for (const bad of ["http://example.com/a.png", "javascript:alert(1)", "data:image/png;base64,AAAA", "https://user:pw@example.com/", "https://localhost/a.png", "ftp://example.com", "https://" + "a".repeat(400) + ".com", 42, ""]) {
+      assert.equal(cleanUrl(bad), "", String(bad).slice(0, 40));
+    }
+  });
+  test("al massimo 3 sponsor, secondi fra i limiti, nomi tagliati", () => {
+    const s = sanitizeState({ sponsors: { on: true, seconds: 1, items: Array.from({ length: 6 }, (_, i) => ({ name: "Sponsor ".repeat(10) + i, logo: "http://x.com/a.png", url: "https://x.com" })) } }, isCard);
+    assert.equal(s.sponsors.items.length, MAX_SPONSORS);
+    assert.equal(s.sponsors.seconds, SPONSOR_SECONDS.min);
+    assert.ok(s.sponsors.items.every((x) => x.name.length <= 32 && x.logo === "" && x.url === "https://x.com/"));
+    assert.equal(sanitizeState({ sponsors: { seconds: 999 } }, isCard).sponsors.seconds, SPONSOR_SECONDS.max);
+  });
+  test("si mostrano solo con lo spazio acceso e un nome o un logo", () => {
+    const items = [{ name: "", logo: "", url: "https://a.com/" }, { name: "Acme", logo: "", url: "" }];
+    assert.deepEqual(visibleSponsors({ on: false, seconds: 8, items }), []);
+    assert.deepEqual(visibleSponsors({ on: true, seconds: 8, items }).map((x) => x.name), ["Acme"]);
+  });
+  test("la partita di prova ha lo spazio acceso con un segnaposto, nessun marchio vero", () => {
+    const s = demoState("it");
+    assert.equal(s.sponsors.on, true);
+    assert.equal(s.sponsors.items[0].name, "Il tuo sponsor qui");
+    assert.equal(s.sponsors.items[0].logo, "");
   });
 });
 
@@ -199,6 +236,7 @@ describe("testi e partita di prova", () => {
     const keys = (o: object) => JSON.stringify(Object.keys(o).sort());
     for (const lang of ["it", "es", "fr"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
     for (const l of Object.values(overlayLabels)) assert.match(l.unofficial, /Koin Games/);
+    for (const l of Object.values(overlayLabels)) assert.ok(l.sponsor.length > 0);
     assert.match(overlayLabels.fr.copied, / !$/, "francese: spazio insecabile prima del punto esclamativo");
   });
   test("la partita di prova è quella del mockup: Aldry 1, Dav 0, Bo3, Dav con il terzo mazzo", () => {

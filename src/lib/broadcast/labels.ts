@@ -19,10 +19,12 @@ export type OverlayLabels = {
   bestOf: string;
   wins: string;
   unofficial: string;
+  /** etichetta dello spazio sponsor */
+  sponsor: string;
   phases: PhaseLabels;
 };
 
-const NB = " ";
+const NB = "\u00a0";
 
 export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
   en: {
@@ -38,6 +40,7 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "{name} wins",
     unofficial: "OriginsMeta · not affiliated with Koin Games",
+    sponsor: "Sponsored by",
     phases: { final: "Final", semi: "Semifinal", quarter: "Quarterfinal", round: "Round {n}" },
   },
   it: {
@@ -53,6 +56,7 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "Vince {name}",
     unofficial: "OriginsMeta · non affiliato a Koin Games",
+    sponsor: "Sponsor",
     phases: { final: "Finale", semi: "Semifinale", quarter: "Quarti di finale", round: "Turno {n}" },
   },
   es: {
@@ -68,6 +72,7 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: "Gana {name}",
     unofficial: "OriginsMeta · no afiliado a Koin Games",
+    sponsor: "Patrocinado por",
     phases: { final: "Final", semi: "Semifinal", quarter: "Cuartos de final", round: "Ronda {n}" },
   },
   fr: {
@@ -83,6 +88,7 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     bestOf: "Bo{n}",
     wins: `Victoire de ${"{name}"}`,
     unofficial: "OriginsMeta · non affilié à Koin Games",
+    sponsor: "Sponsorisé par",
     phases: { final: "Finale", semi: "Demi-finale", quarter: "Quart de finale", round: "Tour {n}" },
   },
 };
@@ -146,6 +152,15 @@ export const regiaLabels = {
     background: "Sfondo dell'anteprima",
     noBackground: "Nessuno",
     screen: "Partita {n}",
+    sponsors: "Sponsor",
+    sponsorsText: "Lo spazio sta in alto a sinistra, sotto il nome del giocatore e sopra la lista del mazzo. Resta spento finché non lo accendi; con più sponsor girano da soli.",
+    sponsorsOn: "Mostra lo spazio sponsor",
+    sponsorName: "Nome",
+    sponsorLogo: "Logo (indirizzo https dell'immagine)",
+    sponsorUrl: "Sito (https, facoltativo)",
+    sponsorSeconds: "Secondi per sponsor",
+    addSponsor: "Aggiungi uno sponsor",
+    badUrl: "Serve un indirizzo che comincia con https://",
     errors: {
       code: "Codice non valido: copialo di nuovo dal gioco.",
       unknown: "{n} carte del codice non sono nel nostro database.",
@@ -205,6 +220,15 @@ export const regiaLabels = {
     background: "Preview background",
     noBackground: "None",
     screen: "Match {n}",
+    sponsors: "Sponsors",
+    sponsorsText: "The space sits top left, under the player's name and above the decklist. It stays off until you turn it on; with more sponsors they rotate on their own.",
+    sponsorsOn: "Show the sponsor space",
+    sponsorName: "Name",
+    sponsorLogo: "Logo (https address of the image)",
+    sponsorUrl: "Website (https, optional)",
+    sponsorSeconds: "Seconds per sponsor",
+    addSponsor: "Add a sponsor",
+    badUrl: "Use an address that starts with https://",
     errors: {
       code: "Invalid code: copy it again from the game.",
       unknown: "{n} cards in the code are not in our database.",

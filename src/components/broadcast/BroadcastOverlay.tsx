@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { encodeGameCode } from "@/lib/deckcode";
 import type { BroadcastCard } from "@/lib/broadcast/catalog";
 import { fillLabel, overlayLabels } from "@/lib/broadcast/labels";
-import { copiesLeft, copiesOf, seriesWinner, type BroadcastDeck, type BroadcastState, type ListSide } from "@/lib/broadcast/state";
+import { copiesLeft, copiesOf, seriesWinner, visibleSponsors, type BroadcastDeck, type BroadcastSponsors, type BroadcastState, type ListSide } from "@/lib/broadcast/state";
 
 /**
  * Broadcasting OM (prototipo del 16/10/2026): il livello sopra la partita, disegnato su un palco di 1920 × 1080
@@ -151,6 +151,8 @@ export function BroadcastOverlay({ state, catalog, mode, onCardClick, background
           <div className="bc-score-note">{labels.unofficial}</div>
         </div>
 
+        <SponsorBox sponsors={state.sponsors} label={labels.sponsor} mode={mode} />
+
         {players.map((p) => {
           if (!listOpen(p)) return null;
           const player = state.players[p];
@@ -288,5 +290,54 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
         {copied ? labels.copied : code === null ? labels.noCode : labels.copyDeck}
       </button>
     </div>
+  );
+}
+
+/**
+ * Spazio sponsor (idea di Davdas del 19/10/2026): in alto a sinistra, sotto la targhetta del giocatore del gioco e
+ * sopra la lista del mazzo. Si vede solo se la regia lo accende e c'è almeno un nome o un logo; con più sponsor
+ * girano da soli. Il logo è un'immagine dello sponsor (indirizzo https scelto dalla regia): se non si carica resta il
+ * nome. Il pubblico può aprire il sito dello sponsor (link "sponsored"); in regia il riquadro non è un link.
+ */
+function SponsorBox({ sponsors, label, mode }: { sponsors: BroadcastSponsors; label: string; mode: OverlayMode }) {
+  const items = visibleSponsors(sponsors);
+  const [tick, setTick] = useState(0);
+  const [broken, setBroken] = useState<Record<string, true>>({});
+  const count = items.length;
+
+  useEffect(() => {
+    if (count < 2) return;
+    const id = window.setInterval(() => setTick((t) => t + 1), sponsors.seconds * 1000);
+    return () => window.clearInterval(id);
+  }, [count, sponsors.seconds]);
+
+  if (!count) return null;
+  const item = items[tick % count];
+  const showLogo = Boolean(item.logo) && !broken[item.logo];
+  const body = (
+    <>
+      <span className="bc-sponsor-label">{label}</span>
+      <span className="bc-sponsor-body" key={`${tick % count}-${item.name}-${item.logo}`}>
+        {showLogo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- logo di uno sponsor su un altro dominio, scelto dalla regia
+          <img className="bc-sponsor-logo" src={item.logo} alt={item.name} referrerPolicy="no-referrer" onError={() => setBroken((b) => ({ ...b, [item.logo]: true }))} />
+        ) : null}
+        {item.name ? <span className={showLogo ? "bc-sponsor-caption" : "bc-sponsor-name"}>{item.name}</span> : null}
+      </span>
+      {count > 1 ? (
+        <span className="bc-sponsor-dots" aria-hidden="true">
+          {items.map((_, i) => (
+            <i key={i} data-on={i === tick % count ? "" : undefined} />
+          ))}
+        </span>
+      ) : null}
+    </>
+  );
+  return mode === "live" && item.url ? (
+    <a className="bc-sponsor" href={item.url} target="_blank" rel="sponsored noopener noreferrer">
+      {body}
+    </a>
+  ) : (
+    <div className="bc-sponsor">{body}</div>
   );
 }

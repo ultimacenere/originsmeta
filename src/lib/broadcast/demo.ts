@@ -6,6 +6,14 @@ import type { BroadcastDeck, BroadcastLang, BroadcastState } from "./state";
  * a mostrare l'overlay pieno nella call con Koin. Dav ha in campo il terzo mazzo, quello con Spellbook e Roo, come
  * nello screenshot, e ne ha già giocata una copia.
  */
+/** Segnaposto dello spazio sponsor nella partita di prova: nessun marchio vero, solo il posto da vendere. */
+const SPONSOR_PLACEHOLDER: Record<BroadcastLang, string> = {
+  en: "Your sponsor here",
+  it: "Il tuo sponsor qui",
+  es: "Tu patrocinador aquí",
+  fr: "Votre sponsor ici",
+};
+
 const deck = (name: string, legendary: string, cards: string[], played: Record<string, number> = {}): BroadcastDeck => ({ name, legendary, cards, played });
 
 export function demoState(lang: BroadcastLang = "en"): BroadcastState {
@@ -39,5 +47,6 @@ export function demoState(lang: BroadcastLang = "en"): BroadcastState {
         ],
       },
     ],
+    sponsors: { on: true, seconds: 8, items: [{ name: SPONSOR_PLACEHOLDER[lang], logo: "", url: "" }] },
   };
 }
