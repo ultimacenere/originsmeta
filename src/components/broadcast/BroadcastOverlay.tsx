@@ -255,8 +255,6 @@ export function BroadcastOverlay({ state, catalog, peekLabels, mode, onCardClick
               mode={mode}
               onCardClick={onCardClick}
               onPeek={(slug, top) => setPeek(slug ? { player: p, slug, top } : null)}
-              peekLabels={peekLabels}
-              lang={state.lang}
             />
           );
         })}
@@ -287,11 +285,9 @@ type PanelProps = {
   mode: OverlayMode;
   onCardClick?: (player: 0 | 1, slug: string) => void;
   onPeek: (slug: string | null, top: number) => void;
-  peekLabels: PeekLabels;
-  lang: BroadcastLang;
 };
 
-function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, mode, onCardClick, onPeek, peekLabels, lang }: PanelProps) {
+function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, mode, onCardClick, onPeek }: PanelProps) {
   const rows = useMemo(() => deckRows(deck, catalog), [deck, catalog]);
   // codice del gioco calcolato nel browser (Web Crypto): vale solo per la lista da cui è fatto
   const sig = [deck.legendary, ...deck.cards].join("|");
@@ -347,8 +343,10 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
           const left = copiesLeft(deck, card.slug);
           const Tag = mode === "regia" ? "button" : "div";
           const artSrc = card.art ?? card.image ?? card.thumb;
-          // stessa riga del deck builder (classi .builder-row di globals.css): costo, miniatura, nome e statistiche,
-          // illustrazione sfumata sulla metà destra, magie su fondo rosa, Leggendaria con la cornice oro
+          // riga del deck builder (classi .builder-row di globals.css) ridotta all'essenziale (19/10/2026, Pierluigi:
+          // "rimuovi l'icona delle carte e le statistiche o magia sotto i nomi"): costo, nome e copie rimaste, con
+          // l'illustrazione sfumata sulla metà destra, magie su fondo rosa, Leggendaria con la cornice oro. Le
+          // statistiche stanno nell'anteprima al passaggio del mouse
           return (
             <li key={card.slug}>
               <Tag
@@ -361,12 +359,6 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
                 onBlur={() => onPeek(null, 0)}
               >
                 <span className="bc-brow-mana">{card.mana ?? "?"}</span>
-                <span className={`card-chip-art bc-brow-art ${card.legendary ? "is-legendary" : ""}`}>
-                  {card.art ?? card.thumb ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- finestra d'illustrazione, come la miniatura del deck builder
-                    <img src={card.art ?? card.thumb} alt="" loading="lazy" decoding="async" />
-                  ) : null}
-                </span>
                 <span className="builder-row-text">
                   <span className="builder-row-name">
                     {card.legendary ? (
@@ -376,7 +368,6 @@ function DeckPanel({ player, side, deck, index, inPlay, owner, catalog, labels, 
                     ) : null}
                     {card.name}
                   </span>
-                  <span className="builder-row-stats">{card.spell ? peekLabels[lang].spell : `${card.power ?? "?"}/${card.health ?? "?"}`}</span>
                 </span>
                 <span className="builder-row-copies bc-brow-copies" aria-label={`${left}/${total} ${labels.left}`}>
                   {left}/{total}

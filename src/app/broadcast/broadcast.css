@@ -411,10 +411,11 @@
 }
 
 /* ---------- righe della lista: quelle del deck builder (19/10/2026) ----------
-   Pierluigi: "la lista delle carte come la lista nel deck builder con il loro sfondo". Le classi .builder-row,
-   .card-chip-art, .row-spell, .builder-row-name e -stats sono quelle di globals.css (illustrazione sfumata sulla metà
-   destra, magie su fondo rosa, cornice oro della Leggendaria); qui solo la misura compatta per stare in 13 righe
-   sopra il tabellone, il costo, le copie rimaste e le copie finite. */
+   Pierluigi: "la lista delle carte come la lista nel deck builder con il loro sfondo", poi "rimuovi l'icona delle carte
+   e le statistiche o magia sotto i nomi": restano costo, nome e copie rimaste. Le classi .builder-row, .row-spell e
+   .builder-row-name sono quelle di globals.css (illustrazione sfumata sulla metà destra, magie su fondo rosa, cornice
+   oro della Leggendaria); qui solo la misura compatta per stare in 13 righe sopra il tabellone, il costo, le copie
+   rimaste e le copie finite. */
 .bc-list .bc-brow {
   min-height: 30px;
   padding: 0 8px 0 4px;
@@ -447,18 +448,8 @@
   font-weight: 700;
   line-height: 1;
 }
-.bc-list .bc-brow-art {
-  flex: none;
-  width: 22px;
-  height: 26px;
-  border-radius: 4px;
-}
 .bc-list .builder-row-name {
-  font-size: 13px;
-}
-.bc-list .builder-row-stats {
-  font-size: 11px;
-  line-height: 1.1;
+  font-size: 14px;
 }
 .bc-brow-copies {
   font-size: 13px;
