@@ -7,11 +7,10 @@ import { MarketItemPage, marketItemMeta } from "@/components/market/MarketPages"
   offerte e grafico dello storico costruito dal sito. ISR, nessuna scheda pregenerata; noindex finché
   MARKET_ITEMS_INDEXABLE è spento (fase 2).
 */
+// Niente generateStaticParams (18/10/2026): con il Mercato in prova riservata la pagina legge la sessione (marketAccess)
+// e una rotta pre-generabile che legge i cookie in produzione risponde 500. Così è dinamica, come il tabellone; quando
+// MARKET_PUBLIC si accende torna una pagina con la cache di `revalidate`.
 export const revalidate = 300;
-export const dynamicParams = true;
-export function generateStaticParams() {
-  return [];
-}
 
 type Params = Promise<{ locale: string; slug: string }>;
 
