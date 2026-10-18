@@ -8,6 +8,8 @@ import { dropHreflang } from "@/lib/community/deckQuality";
 import { getCard } from "@/lib/data/cards";
 import { MARKET_CRON_MINUTES, MARKET_SOURCES, STEAM_PAGE_SIZE, iconUrl, listingUrl, type MarketSourceId } from "@/lib/market/market";
 import { loadMarketBoard, loadMarketItem, type MarketStatus } from "@/lib/market/queries";
+import { marketAccess } from "@/lib/market/access";
+import { MARKET_PUBLIC } from "@/lib/community/badges";
 import { fillMarket, marketLabels } from "@/lib/marketLabels";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { LocalTime } from "@/components/LocalTime";
@@ -35,6 +37,8 @@ const latestFx = (fx: { usdPerEur: number }[]) => (fx.length ? fx[fx.length - 1]
 export async function marketBoardMeta(locale: Locale, source: MarketSourceId): Promise<Metadata> {
   const x = marketLabels[locale].meta;
   if (source === "standin") return dropHreflang(pageMeta(locale, basePath(source), x.demoTitle, x.demoDescription, undefined, { noindex: true }));
+  // in prova riservata (MARKET_PUBLIC spento) anche il tabellone di Origins è noindex, per tutti
+  if (!MARKET_PUBLIC) return dropHreflang(pageMeta(locale, basePath(source), x.title, x.description, undefined, { noindex: true }));
   const board = await loadMarketBoard(source);
   const indexable = Boolean(board?.items.length);
   const meta = pageMeta(locale, basePath(source), x.title, x.description, undefined, { noindex: !indexable });
@@ -103,8 +107,30 @@ function DemoBanner({ locale }: { locale: Locale }) {
   );
 }
 
+/** Pagina per chi non può ancora aprire il Mercato (prova riservata): titolo, lucchetto, due righe. */
+function MarketLocked({ locale }: { locale: Locale }) {
+  const l = marketLabels[locale];
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <p className="kicker flex items-center gap-2 text-gold">
+        <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" stroke="none" />
+          <path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" strokeLinecap="round" />
+        </svg>
+        {l.locked.kicker}
+      </p>
+      <h1 className="t-page mt-3">{l.h1}</h1>
+      <p className="mt-4 text-pale">{l.locked.text}</p>
+      <Link href={href(locale)} className="btn btn-ghost mt-6 inline-flex text-xs">
+        {l.locked.back}
+      </Link>
+    </div>
+  );
+}
+
 export async function MarketBoardPage({ locale, source }: { locale: Locale; source: MarketSourceId }) {
   const l = marketLabels[locale];
+  if (!(await marketAccess())) return <MarketLocked locale={locale} />;
   const board = await loadMarketBoard(source);
   const demo = source === "standin";
   const path = href(locale, basePath(source));
@@ -159,11 +185,12 @@ export async function MarketBoardPage({ locale, source }: { locale: Locale; sour
 }
 
 export async function marketItemMeta(locale: Locale, source: MarketSourceId, slug: string): Promise<Metadata> {
+  if (!(await marketAccess())) notFound();
   const data = await loadMarketItem(source, slug);
   if (!data) notFound();
   const x = marketLabels[locale].meta;
   const path = `${basePath(source)}/${data.item.slug}`;
-  const indexable = source === "origins" && MARKET_ITEMS_INDEXABLE;
+  const indexable = source === "origins" && MARKET_ITEMS_INDEXABLE && MARKET_PUBLIC;
   const image = MARKET_SOURCES[source].icons && data.item.icon ? iconUrl(data.item.icon, 512) : undefined;
   const meta = pageMeta(locale, path, pageTitleWith(data.item.name, x.itemSuffix), fillMarket(x.itemDescription, { name: data.item.name }), image, { noindex: !indexable, imageAlt: data.item.name });
   return indexable ? meta : dropHreflang(meta);
@@ -171,6 +198,8 @@ export async function marketItemMeta(locale: Locale, source: MarketSourceId, slu
 
 export async function MarketItemPage({ locale, source, slug }: { locale: Locale; source: MarketSourceId; slug: string }) {
   const l = marketLabels[locale];
+  // in prova riservata le schede degli oggetti, per chi non è admin, non esistono
+  if (!(await marketAccess())) notFound();
   const data = await loadMarketItem(source, slug);
   if (!data) notFound();
   const { item } = data;

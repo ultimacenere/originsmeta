@@ -39,6 +39,8 @@ import {
 } from "./market.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { marketLabels } from "../marketLabels.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { MARKET_PUBLIC, canSeeMarket } from "../community/badges.ts";
 
 const steamRow = (over: Record<string, unknown> = {}) => ({
   name: "Lord Hades",
@@ -311,5 +313,21 @@ describe("blocco MERCATO di schema.sql", () => {
   });
   test("le fonti del codice rispettano il vincolo dell'SQL", () => {
     for (const id of Object.keys(MARKET_SOURCES)) assert.match(id, /^[a-z][a-z0-9-]{1,30}$/);
+  });
+});
+
+describe("prova riservata del Mercato (18/10/2026)", () => {
+  test("finché è chiuso lo aprono solo gli admin (Pierluigi e Davdas)", () => {
+    assert.equal(MARKET_PUBLIC, false);
+    assert.equal(canSeeMarket("admin"), true);
+    for (const role of ["user", null, undefined, "staff", "creator"]) assert.equal(canSeeMarket(role), false, String(role));
+  });
+  test("le pagine /market passano dal proxy, che rinnova la sessione", () => {
+    const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\)\/market"/);
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\)\/market\/:path\*"/);
+  });
+  test("pagina riservata e lucchetto nelle quattro lingue", () => {
+    for (const l of Object.values(marketLabels)) assert.ok(l.locked.text.length > 40 && l.locked.kicker && l.locked.back);
   });
 });

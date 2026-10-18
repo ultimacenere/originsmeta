@@ -5,6 +5,7 @@ import { linkLabels } from "@/lib/linkLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
+import { LockMark } from "./LockMark";
 import { NEW_TAB_HINT_ID, NEW_TAB_REL, NewTabIcon, SteamLogo } from "./SteamButton";
 import { DiscordButton, DiscordLogo } from "./DiscordButton";
 import { CookiePreferencesButton } from "./CookieBanner";
@@ -107,6 +108,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 <li key={it.path}>
                   <Link className={linkCls} href={href(locale, it.path)}>
                     {it.label}
+                    {"locked" in it && it.locked ? <LockMark label={dict.nav.locked} /> : null}
                   </Link>
                 </li>
               ))}

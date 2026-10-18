@@ -52,6 +52,10 @@ export async function proxy(request: NextRequest) {
 // nuova va aggiunta a mano su ogni riga, come lo spagnolo il 25/09/2026 (ES-06).
 export const config = {
   matcher: [
+    // Mercato in prova riservata (18/10/2026, MARKET_PUBLIC spento): le pagine leggono la sessione per sapere se chi guarda
+    // è admin; quando il Mercato si apre a tutti queste due righe si possono togliere
+    "/:locale(en|it|es|fr)/market",
+    "/:locale(en|it|es|fr)/market/:path*",
     "/:locale(en|it|es|fr)/account",
     // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
     "/:locale(en|it|es|fr)/account/profile",

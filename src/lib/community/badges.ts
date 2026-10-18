@@ -95,6 +95,19 @@ export const ANALYTICS_PUBLIC: boolean = true;
  */
 export const DECK_WINRATE_PUBLIC = true;
 
+/**
+ * Tracker dei prezzi del Mercato di Steam in prova riservata (18/10/2026, Pierluigi: "mettiamo nel menu la voce Mercato ma
+ * chiusa con un lucchetto, solo io e Davdas possiamo vederla"): finché `MARKET_PUBLIC` è false la voce del menu ha il
+ * lucchetto e le pagine /market le aprono solo gli admin (Pierluigi e Davdas, `canSeeMarket`); gli altri trovano la pagina
+ * "in prova riservata" e le schede degli oggetti rispondono 404 (src/lib/market/access.ts). Per aprire a tutti: true.
+ */
+export const MARKET_PUBLIC: boolean = false;
+
+/** Vede il Mercato durante la prova riservata: solo gli admin. Non guarda `MARKET_PUBLIC` (lo fa chi la chiama). */
+export function canSeeMarket(role?: string | null): boolean {
+  return role === "admin";
+}
+
 type Who = { badge?: string | null; role?: string | null } | null | undefined;
 
 export function isBadge(value: unknown): value is Badge {

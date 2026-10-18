@@ -2,6 +2,8 @@ import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { Wordmark } from "./Wordmark";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { LockMark } from "./LockMark";
+import { MARKET_PUBLIC } from "@/lib/community/badges";
 import { AccountMenu } from "./AccountMenu";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
@@ -16,7 +18,7 @@ import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
  * ora sono la voce "Analytics", che con OriginsMeta Tracker chiuso non c'è; i ruoli in prova arrivano all'app dal menu
  * dell'account, `AnalyticsNavLink`.)
  */
-type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean }[] };
+type NavItem = { label: string; path: string; sub?: { label: string; path: string; mobile?: boolean; locked?: boolean }[] };
 
 export function navItems(dict: Dictionary): NavItem[] {
   const t = dict.tier;
@@ -55,8 +57,9 @@ export function navItems(dict: Dictionary): NavItem[] {
         { label: dict.nav.guides, path: "/guides" },
         { label: dict.nav.cards, path: "/cards", mobile: true },
         { label: dict.nav.locations, path: "/locations", mobile: true },
-        // il tracker dei prezzi del Mercato di Steam (18/10/2026, Pierluigi: "Metti \"Mercato\" nel sottomenu Database")
-        { label: dict.nav.market, path: "/market", mobile: true },
+        // il tracker dei prezzi del Mercato di Steam (18/10/2026, Pierluigi: "Metti \"Mercato\" nel sottomenu Database"),
+        // con il lucchetto finché è in prova riservata (MARKET_PUBLIC spento: "solo io e Davdas possiamo vederla")
+        { label: dict.nav.market, path: "/market", mobile: true, locked: !MARKET_PUBLIC },
       ],
     },
     // Analytics nel menu (12/10/2026, Pierluigi: "Tracker mettiamo sul menu la pagina", poi "non si chiama più win rate ma
@@ -139,6 +142,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                       // esatta solo la voce uguale a quella principale (/tier-list, /decks…): /cards/<slug> accende "Carte"
                       <NavLink key={s.path} href={href(locale, s.path)} exact={s.path === it.path} className="nav-link-block">
                         {s.label}
+                        {s.locked ? <LockMark label={dict.nav.locked} /> : null}
                       </NavLink>
                     ))}
                   </div>
@@ -162,7 +166,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             locale={locale}
             labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout, player: dict.nav.playerFallback }}
           />
-          <LocaleSwitcher locale={locale} label={dict.nav.language} className="hidden sm:flex" />
+          <LocaleSwitcher locale={locale} label={dict.nav.language} className="hidden sm:block" />
           {/* "Dona ora" verso PayPal (Pierluigi, 06/10/2026: "in alto sul menu dopo i selettori"); sotto 640 px sta nel menu.
               Da 640 a 1535 px la riga è piena e il tasto si accorcia per fasce (vedi PayPalButton.tsx): solo il testo,
               testo e marchio, e fra 1280 e 1535 px il tondo col monogramma, come il loghino Discord. */}
@@ -187,6 +191,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 .map((s) => (
                   <NavLink key={s.path} href={href(locale, s.path)} className="nav-link-block pl-6">
                     {s.label}
+                    {s.locked ? <LockMark label={dict.nav.locked} /> : null}
                   </NavLink>
                 )),
             ])}
@@ -196,7 +201,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             {/* sotto 640 px il selettore lingua e il Discord stanno qui: nella riga dell'header non c'è spazio */}
             <div className="mt-2 flex items-center justify-between gap-3 border-t border-felt-line px-3 pt-3 sm:hidden">
               <span className="text-xs text-chalk-muted">{dict.nav.language}</span>
-              <LocaleSwitcher locale={locale} label={dict.nav.language} />
+              <LocaleSwitcher locale={locale} label={dict.nav.language} variant="pills" />
             </div>
             <div className="mt-3 flex flex-col gap-2 px-3 pb-1 sm:hidden">
               <DiscordButton href={ORIGINSMETA_DISCORD} size="sm" className="w-full justify-center">

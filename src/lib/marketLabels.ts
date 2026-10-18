@@ -13,6 +13,8 @@ type Labels = {
   meta: { title: string; description: string; demoTitle: string; demoDescription: string; itemSuffix: string; itemDescription: string };
   h1: string;
   demoH1: string;
+  /** pagina per chi non può ancora aprire il Mercato (prova riservata, 18/10/2026) */
+  locked: { kicker: string; text: string; back: string };
   crumb: string;
   status: { closed: string; checking: string; lastCheck: string; neverChecked: string; unavailable: string; live: string; utc: string; sweep: string };
   soon: { title: string; points: string[]; when: string; sets: string; guide: string };
@@ -70,6 +72,7 @@ const en: Labels = {
   },
   h1: "Origins TCG prices on the Steam Market",
   demoH1: "Price tracker: engine test",
+  locked: { kicker: "Private test", text: "The Steam Community Market price tracker is in a private test with the OriginsMeta team. It opens to everyone when Origins TCG trading starts.", back: "Back to the home page" },
   crumb: "Market",
   status: {
     closed: "The Steam Community Market for Origins TCG is not open yet.",
@@ -159,6 +162,7 @@ const it: Labels = {
   },
   h1: "Prezzi di Origins TCG sul Mercato di Steam",
   demoH1: "Tracker dei prezzi: prova del motore",
+  locked: { kicker: "Prova riservata", text: "Il tracker dei prezzi del Mercato della Comunità di Steam è in prova riservata con lo staff di OriginsMeta. Si apre a tutti quando partono gli scambi di Origins TCG.", back: "Torna alla home" },
   crumb: "Mercato",
   status: {
     closed: "Il Mercato della Comunità di Steam per Origins TCG non è ancora aperto.",
@@ -248,6 +252,7 @@ const es: Labels = {
   },
   h1: "Precios de Origins TCG en el Mercado de Steam",
   demoH1: "Rastreador de precios: prueba del motor",
+  locked: { kicker: "Prueba privada", text: "El rastreador de precios del Mercado de la Comunidad de Steam está en prueba privada con el equipo de OriginsMeta. Se abrirá a todos cuando empiecen los intercambios de Origins TCG.", back: "Volver al inicio" },
   crumb: "Mercado",
   status: {
     closed: "El Mercado de la Comunidad de Steam de Origins TCG todavía no está abierto.",
@@ -337,6 +342,7 @@ const fr: Labels = {
   },
   h1: "Prix d'Origins TCG sur le Marché Steam",
   demoH1: "Suivi des prix : test du moteur",
+  locked: { kicker: "Test privé", text: "Le suivi des prix du Marché de la communauté Steam est en test privé avec l'équipe d'OriginsMeta. Il s'ouvrira à tous au début des échanges d'Origins TCG.", back: "Retour à l'accueil" },
   crumb: "Marché",
   status: {
     closed: "Le Marché de la communauté Steam d'Origins TCG n'est pas encore ouvert.",
