@@ -317,12 +317,16 @@ function SponsorBox({ sponsors, label, mode }: { sponsors: BroadcastSponsors; la
   const body = (
     <>
       <span className="bc-sponsor-label">{label}</span>
-      <span className="bc-sponsor-body" key={`${tick % count}-${item.name}-${item.logo}`}>
+      {/* bannerino: l'immagine riempie il riquadro (276 × 160), il nome resta nel testo alternativo; logo: intero con il nome sotto */}
+      <span
+        className={showLogo && item.kind === "banner" ? "bc-sponsor-body bc-sponsor-banner" : "bc-sponsor-body"}
+        key={`${tick % count}-${item.kind}-${item.name}-${item.logo.length}-${item.logo.slice(-24)}`}
+      >
         {showLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- logo di uno sponsor su un altro dominio, scelto dalla regia
+          // eslint-disable-next-line @next/next/no-img-element -- immagine dello sponsor scelta dalla regia (file caricato o indirizzo https)
           <img className="bc-sponsor-logo" src={item.logo} alt={item.name} referrerPolicy="no-referrer" onError={() => setBroken((b) => ({ ...b, [item.logo]: true }))} />
         ) : null}
-        {item.name ? <span className={showLogo ? "bc-sponsor-caption" : "bc-sponsor-name"}>{item.name}</span> : null}
+        {item.name && !(showLogo && item.kind === "banner") ? <span className={showLogo ? "bc-sponsor-caption" : "bc-sponsor-name"}>{item.name}</span> : null}
       </span>
       {count > 1 ? (
         <span className="bc-sponsor-dots" aria-hidden="true">

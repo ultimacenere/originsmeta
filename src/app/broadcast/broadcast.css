@@ -903,3 +903,66 @@ a.bc-sponsor:hover {
 .bcr-input[aria-invalid] {
   border-color: var(--color-crimson);
 }
+
+/* bannerino dello sponsor (19/10/2026): riempie tutto il riquadro sotto l'etichetta, 276 × 160 px, nelle proporzioni
+   del file caricato (69:40), quindi object-fit non taglia nulla; un'immagine da indirizzo in altre proporzioni si
+   ritaglia al centro come il file caricato */
+.bc-sponsor-banner {
+  padding: 0;
+  gap: 0;
+}
+.bc-sponsor-banner .bc-sponsor-logo {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+/* regia: misure del formato, anteprima del file e tasti */
+.bcr-spec {
+  font-size: 0.75rem;
+  color: var(--color-pale);
+}
+.bcr-upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.bcr-upload-preview {
+  width: 184px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px dashed var(--color-night-3);
+  border-radius: 8px;
+  background: var(--color-night-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-pale-muted);
+}
+.bcr-upload-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.bcr-upload-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bcr-upload-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.bcr-upload-actions label.bcr-btn {
+  cursor: pointer;
+}
+.bcr-upload-actions label.bcr-btn:focus-within {
+  outline: 2px solid var(--color-mint);
+  outline-offset: 3px;
+}

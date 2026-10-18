@@ -18,6 +18,11 @@ import {
   deckFromKeys,
   emptyState,
   cleanUrl,
+  cleanImage,
+  withoutUploads,
+  preferStored,
+  SPONSOR_FORMATS,
+  STORED_STATE_MAX,
   visibleSponsors,
   MAX_SPONSORS,
   SPONSOR_SECONDS,
@@ -163,8 +168,39 @@ describe("spazio sponsor", () => {
     assert.ok(s.sponsors.items.every((x) => x.name.length <= 32 && x.logo === "" && x.url === "https://x.com/"));
     assert.equal(sanitizeState({ sponsors: { seconds: 999 } }, isCard).sponsors.seconds, SPONSOR_SECONDS.max);
   });
+  test("formati con misure esplicite: logo 496 × 208 mostrato a metà, bannerino 552 × 320 nelle proporzioni del riquadro", () => {
+    assert.deepEqual([SPONSOR_FORMATS.logo.width, SPONSOR_FORMATS.logo.height], [SPONSOR_FORMATS.logo.shown.width * 2, SPONSOR_FORMATS.logo.shown.height * 2]);
+    assert.deepEqual([SPONSOR_FORMATS.banner.width, SPONSOR_FORMATS.banner.height], [552, 320]);
+    assert.equal(SPONSOR_FORMATS.banner.width / SPONSOR_FORMATS.banner.height, 276 / 160);
+  });
+  test("immagini: data URL raster entro il peso, https; mai SVG, HTML o testo", () => {
+    const png = "data:image/png;base64,iVBORw0KGgo=";
+    assert.equal(cleanImage(png), png);
+    assert.equal(cleanImage("https://cdn.example.com/logo.webp"), "https://cdn.example.com/logo.webp");
+    for (const bad of ["data:image/svg+xml;base64,PHN2Zz4=", "data:text/html;base64,PGI+", "data:image/png;base64,abc def", "data:image/png;base64," + "A".repeat(300_000)]) {
+      assert.equal(cleanImage(bad), "", bad.slice(0, 30));
+    }
+    const s = sanitizeState({ sponsors: { on: true, items: [{ name: "A", kind: "banner", logo: png }, { name: "B", kind: "poster" }] } }, isCard);
+    assert.equal(s.sponsors.items[0].kind, "banner");
+    assert.equal(s.sponsors.items[0].logo, png);
+    assert.equal(s.sponsors.items[1].kind, "logo");
+  });
+  test("le immagini caricate restano nel browser: fuori dall'indirizzo, rimesse quando è la stessa diretta", () => {
+    const png = "data:image/png;base64," + "A".repeat(20_000);
+    const full = sanitizeState({ sponsors: { on: true, items: [{ name: "Acme", kind: "banner", logo: png }] } }, isCard);
+    const url = withoutUploads(full);
+    assert.equal(url.sponsors.items[0].logo, "");
+    assert.equal(url.sponsors.items[0].name, "Acme");
+    assert.ok(encodeState(url).length < 8000, "l'indirizzo resta corto");
+    assert.equal(decodeState(encodeState(full), isCard), null, "con l'immagine non entra nell'indirizzo");
+    assert.equal(decodeState(encodeState(full), isCard, STORED_STATE_MAX)?.sponsors.items[0].logo, png);
+    assert.equal(preferStored(url, full), full);
+    const other = { ...url, tournament: { ...url.tournament, name: "Altro" } };
+    assert.equal(preferStored(other, full), other, "un indirizzo di un'altra diretta vince");
+    assert.equal(preferStored(null, full), full);
+  });
   test("si mostrano solo con lo spazio acceso e un nome o un logo", () => {
-    const items = [{ name: "", logo: "", url: "https://a.com/" }, { name: "Acme", logo: "", url: "" }];
+    const items = [{ name: "", kind: "logo" as const, logo: "", url: "https://a.com/" }, { name: "Acme", kind: "logo" as const, logo: "", url: "" }];
     assert.deepEqual(visibleSponsors({ on: false, seconds: 8, items }), []);
     assert.deepEqual(visibleSponsors({ on: true, seconds: 8, items }).map((x) => x.name), ["Acme"]);
   });

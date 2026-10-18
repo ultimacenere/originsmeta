@@ -46,13 +46,37 @@ export type BroadcastPlayer = {
   list: ListSide;
 };
 
-/** Uno sponsor: nome, logo (indirizzo https di un'immagine) e sito (https, facoltativo: cliccabile dal pubblico). */
-export type BroadcastSponsor = { name: string; logo: string; url: string };
+/**
+ * Formati dell'immagine di uno sponsor (19/10/2026, Pierluigi: "la possibilità con misure esplicite del caricamento di
+ * un logo dello sponsor o un bannerino"). Il riquadro dell'overlay è 282 × 192 px sul palco di 1920 × 1080; tolti
+ * cornice ed etichetta restano 276 × 160 px.
+ * - logo: intero, mai tagliato, dentro 248 × 104 px con il nome sotto; si carica fino a 496 × 208 (il doppio, nitido
+ *   anche sugli schermi densi), almeno 248 px di larghezza o 104 di altezza; PNG trasparente consigliato.
+ * - banner: riempie tutto il riquadro, 276 × 160 px; si carica a 552 × 320 (proporzioni 69:40), almeno 276 × 160, e
+ *   un'immagine in altre proporzioni si ritaglia al centro.
+ */
+export const SPONSOR_FORMATS = {
+  logo: { width: 496, height: 208, shown: { width: 248, height: 104 } },
+  banner: { width: 552, height: 320, shown: { width: 276, height: 160 } },
+} as const;
+export type SponsorKind = keyof typeof SPONSOR_FORMATS;
+/** Peso massimo di un file scelto dal computer, prima della ricodifica. */
+export const SPONSOR_FILE_MAX_BYTES = 2 * 1024 * 1024;
+/** Peso massimo dell'immagine ricodificata (WebP o JPEG), che viaggia nello stato come data URL. */
+export const SPONSOR_IMAGE_MAX_BYTES = 140 * 1024;
+const SPONSOR_DATA_MAX = Math.ceil((SPONSOR_IMAGE_MAX_BYTES * 4) / 3) + 40;
+const DATA_IMAGE = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
+
+/**
+ * Uno sponsor: nome, immagine (logo o bannerino: indirizzo https o file caricato dalla regia, che resta nel browser come
+ * data URL) e sito (https, facoltativo: cliccabile dal pubblico).
+ */
+export type BroadcastSponsor = { name: string; kind: SponsorKind; logo: string; url: string };
 
 /** Lo spazio sponsor: spento di default, si accende dalla regia quando il torneo ha degli sponsor. */
 export type BroadcastSponsors = { on: boolean; seconds: number; items: BroadcastSponsor[] };
 
-export const emptySponsor = (): BroadcastSponsor => ({ name: "", logo: "", url: "" });
+export const emptySponsor = (): BroadcastSponsor => ({ name: "", kind: "logo", logo: "", url: "" });
 
 export type BroadcastTournament = { name: string; number: string; tag: string; phase: string; bestOf: BroadcastBestOf };
 
@@ -199,11 +223,23 @@ export function cleanUrl(raw: unknown, max: number = LIMITS.url): string {
   }
 }
 
+/** Un'immagine caricata dalla regia (data URL di un PNG, JPEG o WebP entro il peso massimo)? */
+export function isUploadedImage(src: string): boolean {
+  return src.startsWith("data:");
+}
+
+/** Immagine di uno sponsor pulita: data URL di un'immagine raster entro il peso massimo, o indirizzo https; altrimenti "". */
+export function cleanImage(raw: unknown): string {
+  if (typeof raw !== "string") return "";
+  if (raw.startsWith("data:")) return raw.length <= SPONSOR_DATA_MAX && DATA_IMAGE.test(raw) ? raw : "";
+  return cleanUrl(raw);
+}
+
 function cleanSponsors(raw: unknown): BroadcastSponsors {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const items = (Array.isArray(r.items) ? r.items : []).slice(0, MAX_SPONSORS).map((x) => {
     const o = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
-    return { name: cleanText(o.name, LIMITS.sponsor), logo: cleanUrl(o.logo), url: cleanUrl(o.url) };
+    return { name: cleanText(o.name, LIMITS.sponsor), kind: o.kind === "banner" ? ("banner" as const) : ("logo" as const), logo: cleanImage(o.logo), url: cleanUrl(o.url) };
   });
   const sec = typeof r.seconds === "number" && Number.isFinite(r.seconds) ? Math.trunc(r.seconds) : SPONSOR_SECONDS.default;
   return {
@@ -261,16 +297,34 @@ function fromBase64Url(s: string): string {
 export const STATE_PREFIX = "B1.";
 /** Tetto all'indirizzo: due giocatori con 4 mazzi pieni stanno sotto i 4.000 caratteri. */
 export const STATE_MAX = 8000;
+/**
+ * Tetto allo stato che passa nel browser (localStorage e canale fra regia e overlay): può portare le immagini caricate
+ * degli sponsor, che nell'indirizzo non entrano (`withoutUploads`).
+ */
+export const STORED_STATE_MAX = 900_000;
 
-/** Stato → testo per l'indirizzo dell'overlay (#s=…). */
+/** Stato → testo per l'indirizzo dell'overlay (#s=…) o per il browser. */
 export function encodeState(state: BroadcastState): string {
   return STATE_PREFIX + toBase64Url(JSON.stringify(state));
 }
 
-/** Testo dell'indirizzo → stato pulito, o null se non è un nostro stato. */
-export function decodeState(raw: string | null | undefined, isCard: (slug: string) => boolean): BroadcastState | null {
+/** Lo stato senza le immagini caricate dal computer (per l'indirizzo: resta il nome dello sponsor). */
+export function withoutUploads(state: BroadcastState): BroadcastState {
+  if (!state.sponsors.items.some((x) => isUploadedImage(x.logo))) return state;
+  return { ...state, sponsors: { ...state.sponsors, items: state.sponsors.items.map((x) => (isUploadedImage(x.logo) ? { ...x, logo: "" } : x)) } };
+}
+
+/** Lo stato del browser quando l'indirizzo è la stessa diretta senza le immagini: si tiene quello del browser, che le ha. */
+export function preferStored(fromUrl: BroadcastState | null, stored: BroadcastState | null): BroadcastState | null {
+  if (!fromUrl) return stored;
+  if (stored && encodeState(withoutUploads(stored)) === encodeState(fromUrl)) return stored;
+  return fromUrl;
+}
+
+/** Testo dell'indirizzo (o del browser, con `max` = STORED_STATE_MAX) → stato pulito, o null se non è un nostro stato. */
+export function decodeState(raw: string | null | undefined, isCard: (slug: string) => boolean, max: number = STATE_MAX): BroadcastState | null {
   const s = (raw ?? "").trim();
-  if (!s.startsWith(STATE_PREFIX) || s.length > STATE_MAX) return null;
+  if (!s.startsWith(STATE_PREFIX) || s.length > max) return null;
   try {
     return sanitizeState(JSON.parse(fromBase64Url(s.slice(STATE_PREFIX.length))), isCard);
   } catch {

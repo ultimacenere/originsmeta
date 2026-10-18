@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { BroadcastCard } from "@/lib/broadcast/catalog";
 import { demoState } from "@/lib/broadcast/demo";
-import { decodeState, stateFromHash, type BroadcastState } from "@/lib/broadcast/state";
+import { STORED_STATE_MAX, decodeState, preferStored, stateFromHash, type BroadcastState } from "@/lib/broadcast/state";
 import { BROADCAST_STORAGE_KEY, backgroundSrc, openChannel, readStored } from "@/lib/broadcast/sync";
 import { BroadcastOverlay } from "./BroadcastOverlay";
 
@@ -23,12 +23,18 @@ export function BroadcastLive({ catalog: list }: { catalog: BroadcastCard[] }) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setBg(backgroundSrc(params.get("bg")));
+    // dal browser (regia aperta qui o nel dock di OBS): lo stato intero, immagini degli sponsor comprese
     const apply = (code: string | null) => {
-      const next = decodeState(code, isCard);
+      const next = decodeState(code, isCard, STORED_STATE_MAX);
       if (next) setState(next);
       return Boolean(next);
     };
-    const fromHash = () => apply(stateFromHash(window.location.hash));
+    // dall'indirizzo: senza le immagini caricate, che si riprendono dal browser se è la stessa diretta
+    const fromHash = () => {
+      const next = preferStored(decodeState(stateFromHash(window.location.hash), isCard), decodeState(readStored(), isCard, STORED_STATE_MAX));
+      if (next && stateFromHash(window.location.hash)) setState(next);
+      return Boolean(next && stateFromHash(window.location.hash));
+    };
     if (!fromHash()) {
       if (params.get("demo") === "1") setState(demoState((params.get("lang") as BroadcastState["lang"]) || "en"));
       else apply(readStored());

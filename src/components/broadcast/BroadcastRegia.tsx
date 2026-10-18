@@ -11,11 +11,16 @@ import {
   LIMITS,
   MAX_DECKS,
   MAX_SPONSORS,
+  SPONSOR_FORMATS,
+  isUploadedImage,
   SPONSOR_SECONDS,
   bumpScore,
   clampScore,
   cyclePlayed,
   decodeState,
+  preferStored,
+  STORED_STATE_MAX,
+  withoutUploads,
   deckFromKeys,
   cleanUrl,
   emptyDeck,
@@ -35,6 +40,7 @@ import {
 } from "@/lib/broadcast/state";
 import { BROADCAST_BACKGROUNDS, backgroundSrc, openChannel, readStored, writeStored } from "@/lib/broadcast/sync";
 import { BroadcastOverlay } from "./BroadcastOverlay";
+import { sponsorImage } from "./sponsorImage";
 
 /**
  * Broadcasting OM, la regia (/broadcast, prototipo del 16/10/2026): chi trasmette il torneo prepara qui quello che il
@@ -63,7 +69,7 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
   // primo avvio: lo stato dell'indirizzo, altrimenti l'ultimo di questo browser, altrimenti la partita di prova
   /* eslint-disable react-hooks/set-state-in-effect -- lettura una tantum di indirizzo e localStorage al montaggio */
   useEffect(() => {
-    const saved = decodeState(stateFromHash(window.location.hash), isCard) ?? decodeState(readStored(), isCard);
+    const saved = preferStored(decodeState(stateFromHash(window.location.hash), isCard), decodeState(readStored(), isCard, STORED_STATE_MAX));
     if (saved) setState(saved);
     try {
       const u = window.localStorage.getItem(UI_KEY);
@@ -78,13 +84,15 @@ export function BroadcastRegia({ catalog: list, initialUi }: { catalog: Broadcas
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // ogni modifica va all'overlay (canale + localStorage) e nell'indirizzo della regia
-  const code = useMemo(() => encodeState(state), [state]);
+  // `full` va all'overlay nel browser (con le immagini caricate degli sponsor), `code` negli indirizzi (senza)
+  const full = useMemo(() => encodeState(state), [state]);
+  const code = useMemo(() => encodeState(withoutUploads(state)), [state]);
   useEffect(() => {
     if (!ready) return;
-    writeStored(code);
-    channel.current?.postMessage(code);
+    writeStored(full);
+    channel.current?.postMessage(full);
     window.history.replaceState(null, "", `#s=${code}`);
-  }, [code, ready]);
+  }, [full, code, ready]);
 
   const changeUi = (u: RegiaLang) => {
     setUi(u);
@@ -410,13 +418,16 @@ function TournamentBox({
 /* ---------------- sponsor ---------------- */
 
 /**
- * Spazio sponsor (idea di Davdas del 19/10/2026): acceso o spento, fino a 3 sponsor con nome, logo e sito, secondi per
- * sponsor. Logo e sito si scrivono liberi ma nello stato entrano solo se sono indirizzi https (`cleanUrl`): finché il
- * campo non lo è, l'overlay non lo usa e la regia lo dice.
+ * Spazio sponsor (idea di Davdas del 19/10/2026): acceso o spento, fino a 3 sponsor, secondi per sponsor. Ogni sponsor
+ * ha un nome, un formato (logo o bannerino, con le misure scritte accanto: `SPONSOR_FORMATS`), l'immagine caricata dal
+ * computer (ricodificata alle misure del formato, `sponsorImage`) oppure il suo indirizzo https, e il sito facoltativo.
+ * Gli indirizzi entrano nello stato solo se sono https (`cleanUrl`): finché non lo sono, la regia lo dice.
  */
 function SponsorsBox({ L, sponsors, onChange }: { L: (typeof regiaLabels)[RegiaLang]; sponsors: BroadcastState["sponsors"]; onChange: (s: BroadcastState["sponsors"]) => void }) {
   // testo scritto nei campi degli indirizzi, anche quando non è ancora valido (lo stato tiene solo quelli validi)
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<number, string>>({});
+  const [busy, setBusy] = useState<number | null>(null);
   const setItem = (i: number, patch: Partial<BroadcastSponsor>) => onChange({ ...sponsors, items: sponsors.items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
   const urlField = (i: number, field: "logo" | "url", label: string) => {
     const id = `${i}-${field}`;
@@ -441,6 +452,19 @@ function SponsorsBox({ L, sponsors, onChange }: { L: (typeof regiaLabels)[RegiaL
       </label>
     );
   };
+  const upload = async (i: number, file: File | undefined) => {
+    if (!file) return;
+    setBusy(i);
+    setErrors((e) => ({ ...e, [i]: "" }));
+    const res = await sponsorImage(file, sponsors.items[i].kind);
+    setBusy(null);
+    if (!res.ok) {
+      setErrors((e) => ({ ...e, [i]: L.imageErrors[res.error] }));
+      return;
+    }
+    setDrafts((d) => ({ ...d, [`${i}-logo`]: "" }));
+    setItem(i, { logo: res.src });
+  };
 
   return (
     <section className="bcr-box">
@@ -453,32 +477,97 @@ function SponsorsBox({ L, sponsors, onChange }: { L: (typeof regiaLabels)[RegiaL
       </div>
       <p className="bcr-note">{L.sponsorsText}</p>
       <div className="bcr-decks" data-off={sponsors.on ? undefined : ""}>
-        {sponsors.items.map((item, i) => (
-          <div key={i} className="bcr-deck">
-            <div className="bcr-deck-head">
-              <strong>Sponsor {i + 1}</strong>
-              <span className="bcr-deck-sum" />
-              {sponsors.items.length > 1 ? (
-                <button
-                  type="button"
-                  className="bcr-link"
-                  onClick={() => {
-                    setDrafts({});
-                    onChange({ ...sponsors, items: sponsors.items.filter((_, j) => j !== i) });
-                  }}
-                >
-                  {L.removeDeck}
-                </button>
-              ) : null}
+        {sponsors.items.map((item, i) => {
+          const uploaded = isUploadedImage(item.logo);
+          const spec = SPONSOR_FORMATS[item.kind];
+          return (
+            <div key={i} className="bcr-deck">
+              <div className="bcr-deck-head">
+                <strong>Sponsor {i + 1}</strong>
+                <span className="bcr-deck-sum" />
+                {sponsors.items.length > 1 ? (
+                  <button
+                    type="button"
+                    className="bcr-link"
+                    onClick={() => {
+                      setDrafts({});
+                      setErrors({});
+                      onChange({ ...sponsors, items: sponsors.items.filter((_, j) => j !== i) });
+                    }}
+                  >
+                    {L.removeDeck}
+                  </button>
+                ) : null}
+              </div>
+              <label className="bcr-field">
+                <span>{L.sponsorName}</span>
+                <input className="bcr-input" value={item.name} maxLength={LIMITS.sponsor} onChange={(e) => setItem(i, { name: e.target.value })} />
+              </label>
+              <div className="bcr-field">
+                <span>{L.sponsorKind}</span>
+                <div className="bcr-seg">
+                  {(["logo", "banner"] as const).map((k) => (
+                    <button
+                      key={k}
+                      type="button"
+                      aria-pressed={item.kind === k}
+                      onClick={() => {
+                        // un'immagine caricata per l'altro formato ha le misure sbagliate: si toglie
+                        setItem(i, { kind: k, ...(uploaded && k !== item.kind ? { logo: "" } : {}) });
+                        setErrors((e) => ({ ...e, [i]: "" }));
+                      }}
+                    >
+                      {L.kinds[k]} · {SPONSOR_FORMATS[k].width} × {SPONSOR_FORMATS[k].height}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="bcr-spec">{fillLabel(L.specs[item.kind], { w: spec.width, h: spec.height, mw: spec.shown.width, mh: spec.shown.height })}</p>
+              <div className="bcr-upload">
+                <div className={`bcr-upload-preview bcr-upload-${item.kind}`} style={{ aspectRatio: `${spec.shown.width} / ${spec.shown.height}` }}>
+                  {item.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- anteprima di un file scelto dal computer o di un indirizzo https
+                    <img src={item.logo} alt={item.name} referrerPolicy="no-referrer" />
+                  ) : (
+                    <span>
+                      {spec.width} × {spec.height}
+                    </span>
+                  )}
+                </div>
+                <div className="bcr-upload-actions">
+                  <label className="bcr-btn">
+                    {busy === i ? L.loading : uploaded ? L.replaceFile : L.uploadFile[item.kind]}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
+                      disabled={busy !== null}
+                      onChange={(e) => {
+                        upload(i, e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {item.logo ? (
+                    <button
+                      type="button"
+                      className="bcr-link"
+                      onClick={() => {
+                        setDrafts((d) => ({ ...d, [`${i}-logo`]: "" }));
+                        setItem(i, { logo: "" });
+                      }}
+                    >
+                      {L.removeImage}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              {errors[i] ? <p className="bcr-notice bcr-notice-error">{errors[i]}</p> : null}
+              {uploaded ? <p className="bcr-note">{L.uploadedNote}</p> : urlField(i, "logo", L.sponsorLogo)}
+              {urlField(i, "url", L.sponsorUrl)}
             </div>
-            <label className="bcr-field">
-              <span>{L.sponsorName}</span>
-              <input className="bcr-input" value={item.name} maxLength={LIMITS.sponsor} onChange={(e) => setItem(i, { name: e.target.value })} />
-            </label>
-            {urlField(i, "logo", L.sponsorLogo)}
-            {urlField(i, "url", L.sponsorUrl)}
-          </div>
-        ))}
+          );
+        })}
         <div className="bcr-row">
           {sponsors.items.length < MAX_SPONSORS ? (
             <button type="button" className="bcr-btn bcr-btn-ghost" onClick={() => onChange({ ...sponsors, items: [...sponsors.items, emptySponsor()] })}>
