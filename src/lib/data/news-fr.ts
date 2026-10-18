@@ -818,7 +818,7 @@ Ce que publie la communauté est aussi traduit en français, automatiquement, ap
 
 ## Pourquoi le français {#pourquoi-le-francais}
 
-Origins TCG est traduit en français : la page Steam du jeu compte le français parmi ses 13 langues, interface et audio compris. Après [l'espagnol, arrivé le 25 septembre](/fr/news/upgrade-meta-0925), le français est la quatrième langue d'OriginsMeta, pour la même raison : être lu dans les langues que parle le jeu.
+Origins TCG est traduit en français : la page Steam du jeu compte le français parmi ses 13 langues d'interface (l'audio complet est en anglais seulement). Après [l'espagnol, arrivé le 25 septembre](/fr/news/upgrade-meta-0925), le français est la quatrième langue d'OriginsMeta, pour la même raison : être lu dans les langues que parle le jeu.
 
 ## Aidez-nous à bien faire {#aidez-nous}
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
-import { cleanDescription, pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
+import { cleanDescription, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { comicMovedTo, getPublishedComic, listPublishedComics } from "@/lib/community/comicQueries";
 import { COMIC_COVER_SIZE, comicDate, comicFeedCards, comicImageUrl, comicIndexing, comicPath, comicPathOk, localizedComic, type CommunityComic } from "@/lib/community/comics";
 import { dropHreflang, fillLabel } from "@/lib/community/deckQuality";
@@ -39,9 +39,25 @@ export function generateStaticParams() {
   return [];
 }
 
-/** La presentazione nella lingua della pagina, pulita per la description. */
+const DESCRIPTION_MIN = 120;
+
+/**
+ * La presentazione nella lingua della pagina, pulita per la description. Sotto i 120 caratteri (le presentazioni dei
+ * fumetti sono spesso una riga, il 17/10/2026 72–87 caratteri) ci va in coda chi l'ha disegnato e il gioco: la frase
+ * lunga se ci sta nei 158, altrimenti quella corta.
+ */
 function comicDescription(comic: CommunityComic, locale: Locale): string {
-  return cleanDescription(localizedComic(comic, locale).text.summary);
+  const view = localizedComic(comic, locale);
+  const summary = cleanDescription(view.text.summary);
+  if (summary.length >= DESCRIPTION_MIN) return summary;
+  const L = comicLabels[locale].page;
+  const pages = view.pages.length === 1 ? L.pagesOne : fillLabel(L.pagesMany, { n: String(view.pages.length) });
+  const vars = { name: authorName(comic.profile), pages };
+  for (const tail of [L.descriptionTail, L.descriptionTailShort]) {
+    const full = `${summary} — ${fillLabel(tail, vars)}`;
+    if (full.length <= DESCRIPTION_MAX) return full;
+  }
+  return summary;
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {

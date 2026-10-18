@@ -95,23 +95,23 @@ describe("cardTitle", () => {
     assert.equal(cardTitle(card("merlin"), "en"), "Merlin: Origins TCG Legendary card");
     assert.equal(cardTitle(card("merlin"), "it"), "Merlin: carta Leggendaria di Origins TCG");
     assert.equal(cardTitle(card("merlin"), "es"), "Merlin: carta Legendaria de Origins TCG");
-    assert.equal(cardTitle(card("merlin"), "fr"), "Merlin: carte Légendaire d'Origins TCG");
+    assert.equal(cardTitle(card("merlin"), "fr"), "Merlin\u00a0: carte Légendaire d'Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "en"), "Aladdin: Origins TCG card");
     assert.equal(cardTitle(card("aladdin"), "it"), "Aladdin: carta di Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "es"), "Aladdin: carta de Origins TCG");
-    assert.equal(cardTitle(card("aladdin"), "fr"), "Aladdin: carte d'Origins TCG");
+    assert.equal(cardTitle(card("aladdin"), "fr"), "Aladdin\u00a0: carte d'Origins TCG");
     assert.equal(cardTitle(card("garlic"), "en"), "Garlic: Origins TCG created card");
     assert.equal(cardTitle(card("garlic"), "it"), "Garlic: carta generata di Origins TCG");
     assert.equal(cardTitle(card("garlic"), "es"), "Garlic: carta creada de Origins TCG");
-    assert.equal(cardTitle(card("garlic"), "fr"), "Garlic: carte créée d'Origins TCG");
+    assert.equal(cardTitle(card("garlic"), "fr"), "Garlic\u00a0: carte créée d'Origins TCG");
     assert.equal(cardTitle(card("baker"), "en"), "Baker: Origins TCG card, not in the demo");
     assert.equal(cardTitle(card("baker"), "it"), "Baker: carta di Origins TCG non nella demo");
     assert.equal(cardTitle(card("baker"), "es"), "Baker: carta de Origins TCG fuera de la demo");
-    assert.equal(cardTitle(card("baker"), "fr"), "Baker: carte d'Origins TCG hors de la démo");
+    assert.equal(cardTitle(card("baker"), "fr"), "Baker\u00a0: carte d'Origins TCG hors de la démo");
     assert.equal(cardTitle(card("alice"), "en"), "Alice: Origins TCG Legendary, not in the demo");
     assert.equal(cardTitle(card("alice"), "it"), "Alice: Leggendaria di Origins TCG non nella demo");
     assert.equal(cardTitle(card("alice"), "es"), "Alice: Legendaria de Origins TCG fuera de la demo");
-    assert.equal(cardTitle(card("alice"), "fr"), "Alice: Légendaire d'Origins TCG hors de la démo");
+    assert.equal(cardTitle(card("alice"), "fr"), "Alice\u00a0: Légendaire d'Origins TCG hors de la démo");
   });
 
   test("ogni carta, in ogni lingua: nome in testa, Origins TCG dentro, title finale entro 60 caratteri", () => {
@@ -119,7 +119,7 @@ describe("cardTitle", () => {
     for (const c of cards)
       for (const locale of locales) {
         const title = cardTitle(c, locale);
-        if (title.length > CARD_TITLE_MAX || !title.includes("Origins TCG") || !title.startsWith(`${c.name}: `) || pageTitle(title).length > 60) bad.push(`${locale} ${title} (${title.length})`);
+        if (title.length > CARD_TITLE_MAX || !title.includes("Origins TCG") || !title.startsWith(`${c.name}${locale === "fr" ? " : " : ": "}`) || pageTitle(title).length > 60) bad.push(`${locale} ${title} (${title.length})`);
       }
     assert.deepEqual(bad, []);
   });
@@ -314,10 +314,11 @@ describe("cardDates", () => {
   test("una guida che cita la carta, più recente delle sue patch, sposta il giorno; mai oltre oggi", () => {
     const merlin = cardsModule.getCard("merlin");
     assert.ok(merlin);
-    const guide = { ...guidesModule.getGuides("en")[0], updated: "2026-10-10", tags: { cards: ["merlin"] } };
-    assert.equal(cardLastmod(merlin, "en", "2026-12-31", [guide]), "2026-10-10");
-    assert.ok(cardLastmod(merlin, "en", "2026-12-31", []) < "2026-10-10");
-    assert.equal(cardLastmod(merlin, "en", "2026-10-01", [guide]), "2026-10-01");
+    // date dopo l'ultimo cambio del modello delle schede carta (PAGE_UPDATED["/cards/[slug]"])
+    const guide = { ...guidesModule.getGuides("en")[0], updated: "2026-11-10", tags: { cards: ["merlin"] } };
+    assert.equal(cardLastmod(merlin, "en", "2026-12-31", [guide]), "2026-11-10");
+    assert.ok(cardLastmod(merlin, "en", "2026-12-31", []) < "2026-11-10");
+    assert.equal(cardLastmod(merlin, "en", "2026-11-01", [guide]), "2026-11-01");
   });
 });
 

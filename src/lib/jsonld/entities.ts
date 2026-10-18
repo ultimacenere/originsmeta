@@ -147,8 +147,8 @@ export const gameLinks = {
  * Solo fatti già pubblicati sul sito (fonti: pagina Steam ufficiale, origins-tcg.com, guide): niente date di uscita non
  * confermate e nessun logo o icona di Koin Games, che non è il nostro marchio. `alternateName` è la dicitura del logo
  * ufficiale; `disambiguatingDescription` separa il gioco da Riftbound: Origins, che riempie le ricerche con "Origins";
- * `inLanguage` sono le lingue della pagina Steam (inglese, francese, italiano, tedesco) più lo spagnolo, che la demo ha
- * dal 25/09/2026 (verificato nel gioco, guida play-the-demo).
+ * `inLanguage` sono le 13 lingue dell'interfaccia elencate dalla pagina Steam dalla patch 0.7 (29/09/2026; letta di nuovo
+ * il 18/10/2026, audio completo solo in inglese), in codici BCP 47: es-ES e es-419, pt-BR e pt-PT, zh-Hans.
  */
 export const videoGame: Json = {
   "@context": "https://schema.org",
@@ -163,7 +163,7 @@ export const videoGame: Json = {
   url: gameLinks.site,
   gamePlatform: ["PC", "Steam"],
   genre: ["Trading card game", "Digital collectible card game"],
-  inLanguage: ["en", "fr", "it", "de", "es"],
+  inLanguage: ["en", "fr", "it", "de", "es-ES", "es-419", "pt-BR", "pt-PT", "ja", "ko", "pl", "ru", "zh-Hans"],
   developer: { "@id": koinGamesId },
   publisher: { "@id": koinGamesId },
   sameAs: [gameLinks.steam, gameLinks.site, gameLinks.x, gameLinks.youtube],
