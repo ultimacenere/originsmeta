@@ -391,7 +391,9 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
 
   const vs = frames.filter((f) => f.vs);
   const opponentCards: string[] = [];
-  const oppLegendary = mode(vs.map((f) => f.vs!.opp)) ?? plays.find((p) => !p.me && cards.legendary(p.card))?.card ?? null;
+  // solo Leggendarie vere: una magia letta al posto della carta della schermata VS (Defense Matrix, patch 0.7, 19/10/2026)
+  // finiva nelle statistiche come Leggendaria avversaria
+  const oppLegendary = mode(vs.map((f) => f.vs!.opp).filter((k) => cards.legendary(k))) ?? plays.find((p) => !p.me && cards.legendary(p.card))?.card ?? null;
   if (oppLegendary) opponentCards.push(oppLegendary);
   for (const p of plays) if (p.me) drawn[p.card] = Math.max(drawn[p.card] ?? 0, plays.filter((q) => q.me && q.card === p.card).length);
   for (const p of plays) if (!p.me && !opponentCards.includes(p.card)) opponentCards.push(p.card);
@@ -399,7 +401,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
   return {
     startMs: frames[0]?.ms ?? 0,
     endMs: frames[frames.length - 1]?.ms ?? 0,
-    myLegendary: mode(vs.map((f) => f.vs!.me)),
+    myLegendary: mode(vs.map((f) => f.vs!.me).filter((k) => cards.legendary(k))),
     oppLegendary,
     turns: rounds.length ? rounds[rounds.length - 1] : null,
     plays,

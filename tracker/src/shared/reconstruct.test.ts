@@ -61,6 +61,14 @@ test("ricostruzione: round, copie, sparizioni, spostamenti e carte create", () =
   assert.deepEqual(m.opponentCards, ["L_OPP", "X"]);
 });
 
+test("Leggendarie della schermata VS: una carta che non è Leggendaria non conta (Defense Matrix, 19/10/2026)", () => {
+  const frames = game(0).map((f) => (f.vs ? { ...f, vs: { me: "A", opp: "S_SPELL" } } : f));
+  const m = reconstruct(frames, info);
+  assert.equal(m.myLegendary, null);
+  // resta la Leggendaria che l'avversario gioca nel round 3
+  assert.equal(m.oppLegendary, "L_OPP");
+});
+
 test("mana: una lettura isolata o lontana nel tempo non vale", () => {
   const f = confirmMana([frame(0, 2), frame(1000, 2), frame(2000, 9), frame(3000, 2), frame(60_000, 3)]);
   assert.deepEqual(f.map((x) => x.maxMana), [2, 2, null, 2, null]);

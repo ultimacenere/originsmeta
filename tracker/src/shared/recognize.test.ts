@@ -119,6 +119,18 @@ test("schermata VS: le due Leggendarie, anche nella teca della carta gradata", (
   assert.equal(readVersus(blank(), refs).opp.key, null);
 });
 
+test("schermata VS: una carta che non è Leggendaria non vale (Defense Matrix, patch 0.7, 19/10/2026)", () => {
+  const img = blank();
+  const area = gameArea(W, H);
+  const art = { x: 40 / 480, y: 62 / 690, w: 395 / 480, h: 303 / 690 };
+  paint(img, inside(inside(area, VS_CARDS.me[0]), art), ref("Queen of Hearts"));
+  paint(img, inside(inside(area, VS_CARDS.opp[1]), art), ref("Defense Matrix"));
+  const vs = readVersus(img, refs);
+  assert.equal(vs.me.key, ref("Queen of Hearts").key);
+  assert.equal(vs.opp.key, null);
+  assert.equal(vs.opp.best, ref("Defense Matrix").key);
+});
+
 test("area di gioco 16:9 dentro immagini di altre proporzioni", () => {
   assert.deepEqual(gameArea(2560, 1440), { x: 0, y: 0, w: 2560, h: 1440 });
   assert.deepEqual(gameArea(3440, 1440), { x: 440, y: 0, w: 2560, h: 1440 });

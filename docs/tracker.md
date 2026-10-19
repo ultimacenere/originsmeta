@@ -484,6 +484,17 @@ quelle ore restano sulla patch precedente. Dopo averla registrata (procedura "Pa
 con una riga nel SQL Editor di Supabase (esempio per la 0.8 con l'ora del post):
 `update public.tracked_matches set patch = '0.8' where ended_at >= '2026-10-20T18:00:00Z' and patch is distinct from '0.8';`
 
+**Solo Leggendarie vere (19/10/2026).** In /analytics (patch 0.7) c'era Defense Matrix, una magia, come Leggendaria: lo
+scanner confrontava le caselle della schermata VS con tutte le carte e la magia è finita (con ogni probabilità) in
+`opponent_legendary`; `deck_legendary` invece viene dalle chiavi del mazzo, che hanno la forma delle Leggendarie. Ora
+c'è un filtro a ogni passaggio: `readVersus` (recognize.ts) e `reconstruct` (reconstruct.ts) dell'app tengono solo
+Leggendarie, `enrichUpload` (enrich.ts) svuota all'invio una Leggendaria che non è nel database carte (un'app vecchia
+può mandarne ancora), `onlyLegendaries` (stats.ts) le toglie dalle statistiche lette per la pagina e il Meta Report.
+Le righe già salvate si correggono nel SQL Editor (le chiavi delle Leggendarie finiscono in `_MC`/`_SC`; la partita
+resta, con la Leggendaria sconosciuta):
+`update public.tracked_matches set opponent_legendary = null where opponent_legendary !~ '_[A-Z]C$';`
+`update public.tracked_matches set deck_legendary = null where deck_legendary !~ '_[A-Z]C$';`
+
 ### Win rate sul sito
 
 **Dal 02/10/2026 la pagina dei win rate e il riquadro nelle schede dei mazzi non ci sono più** (Pierluigi: "togliamo la

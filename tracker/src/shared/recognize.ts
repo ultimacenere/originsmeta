@@ -266,10 +266,19 @@ export function readBoard(img: Img, refs: readonly CardRef[], area: Rect = gameA
   return BOARD_SLOTS.map((s) => bestMatch(artVector(img, inside(inside(area, s.rect), ART_IN_SLOT)), refs));
 }
 
-/** Le due Leggendarie della schermata VS (key null: non è la schermata VS o non si riconosce). */
+/** Chiave di gioco di una Leggendaria (C00176_MC, C00042_SC): come `isLegendaryKey` di src/lib/tracker/replay.ts. */
+const LEGENDARY_KEY = /_[A-Z]C(?:_V\d+)?$/;
+
+/**
+ * Le due Leggendarie della schermata VS (key null: non è la schermata VS o non si riconosce). Il confronto resta con
+ * tutte le carte, ma vale solo se la più somigliante è una Leggendaria: il 19/10/2026 la magia Defense Matrix è entrata
+ * nelle statistiche della patch 0.7 come Leggendaria avversaria.
+ */
 export function readVersus(img: Img, refs: readonly CardRef[], area: Rect = gameArea(img.width, img.height)): Record<Side, Match> {
   const at = (side: Side): Match => {
-    const all = VS_CARDS[side].map((r) => bestMatch(artVector(img, inside(inside(area, r), ART_IN_CARD)), refs));
+    const all = VS_CARDS[side]
+      .map((r) => bestMatch(artVector(img, inside(inside(area, r), ART_IN_CARD)), refs))
+      .map((m) => (m.key && !LEGENDARY_KEY.test(m.key) ? { ...m, key: null } : m));
     return all.filter((m) => m.key).sort((a, b) => b.score - a.score)[0] ?? all[0];
   };
   return { me: at("me"), opp: at("opp") };
