@@ -247,6 +247,15 @@ describe("fumetti: traduzioni e indicizzazione", () => {
       ["f2", "a", "f1", "b", "c"],
     );
   });
+
+  test("home: al massimo un fumetto fra le tre in evidenza, gli altri in bacheca (19/10/2026)", () => {
+    const n = (slug: string) => ({ kind: "news" as const, slug });
+    const c = (slug: string) => ({ kind: "comic" as const, slug });
+    const { featured, board } = C.splitHomeFeed([c("cap5"), c("cap4"), n("meta-report"), n("crimson"), n("x"), c("cap3")]);
+    assert.deepEqual(featured.map((e) => e.slug), ["cap5", "meta-report", "crimson"]);
+    assert.deepEqual(board.map((e) => e.slug), ["cap4", "x", "cap3"]);
+    assert.equal(C.splitHomeFeed(Array.from({ length: 12 }, (_, i) => n(`n${i}`))).board.length, 6);
+  });
 });
 
 describe("fumetti: versioni disegnate in altre lingue (30/09/2026)", () => {

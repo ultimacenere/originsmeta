@@ -615,3 +615,23 @@ export function mergeFeed<N extends { date: string }>(news: readonly N[], comics
   ];
   return all.sort((a, b) => (a.date === b.date ? 0 : a.date < b.date ? 1 : -1));
 }
+
+/**
+ * Le tre in evidenza e la bacheca della home (19/10/2026). Vega ha pubblicato il capitolo 5 a pochi giorni dal 4 e i due
+ * fumetti hanno preso due dei tre posti, spingendo in bacheca l'articolo sulle qualificazioni della Crimson Cup; Pierluigi:
+ * "il capitolo 4 di vega toglilo dalle 3 notizie [...] e rimetti l'articolo della crimson". Fra le tre in evidenza c'è al
+ * massimo un fumetto, il più recente; gli altri restano nel feed nell'ordine di sempre e scendono in bacheca.
+ */
+export function splitHomeFeed<E extends { kind: "news" | "comic" }>(feed: readonly E[], featuredCount = 3, boardCount = 6): { featured: E[]; board: E[] } {
+  const featured: E[] = [];
+  const rest: E[] = [];
+  let comics = 0;
+  for (const entry of feed) {
+    const isComic = entry.kind === "comic";
+    if (featured.length < featuredCount && (!isComic || comics === 0)) {
+      featured.push(entry);
+      if (isComic) comics++;
+    } else rest.push(entry);
+  }
+  return { featured, board: rest.slice(0, boardCount) };
+}

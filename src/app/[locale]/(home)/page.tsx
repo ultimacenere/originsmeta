@@ -25,7 +25,7 @@ import { supabaseEnabled } from "@/lib/supabase/env";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
 import { TierInvite } from "@/components/TierInvite";
 import { listPublishedComics } from "@/lib/community/comicQueries";
-import { comicFeedCards, mergeFeed, type ComicFeedCard } from "@/lib/community/comics";
+import { comicFeedCards, mergeFeed, splitHomeFeed, type ComicFeedCard } from "@/lib/community/comics";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { authorName } from "@/lib/community/util";
 import { supabaseUrl } from "@/lib/supabase/env";
@@ -137,10 +137,10 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const top = movers(latestPatch).slice(0, 3);
   const startGuides = START_GUIDES.map((s) => getGuide(locale, s)).filter((g): g is Guide => g !== undefined);
   const economyGuide = getGuide(locale, "collector-economy");
-  // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, sei in bacheca
+  // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, con al massimo
+  // un fumetto (splitHomeFeed, 19/10/2026), e sei in bacheca
   const feed = mergeFeed(sortedNews, comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
-  const featured = feed.slice(0, 3);
-  const board = feed.slice(3, 9);
+  const { featured, board } = splitHomeFeed(feed);
   const C = comicLabels[locale];
   // Video dei creator sotto le news in evidenza (08/10/2026): dai feed YouTube dei profili vetrina, cache di mezz'ora
   const VL = creatorVideoLabels[locale];
