@@ -155,3 +155,17 @@ export function parseOpponentStats(data: unknown): OpponentStat[] {
     return opponent && c ? [{ opponent, ...c }] : [];
   });
 }
+
+/**
+ * Solo le righe con Leggendarie vere (`isLegendary`: il database carte del sito). Il 19/10/2026 la magia Defense Matrix
+ * era in /analytics come Leggendaria, letta dallo scanner al posto della Leggendaria avversaria della schermata VS: le
+ * partite già salvate restano nel database finché non si puliscono, la pagina e il Meta Report non le mostrano.
+ */
+export function onlyLegendaries<T extends { legendaries: LegendaryStat[]; matchups: MatchupStat[]; opponents: OpponentStat[] }>(data: T, isLegendary: (key: string) => boolean): T {
+  return {
+    ...data,
+    legendaries: data.legendaries.filter((s) => isLegendary(s.legendary)),
+    matchups: data.matchups.filter((s) => isLegendary(s.legendary) && isLegendary(s.opponent)),
+    opponents: data.opponents.filter((s) => isLegendary(s.opponent)),
+  };
+}

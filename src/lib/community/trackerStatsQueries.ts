@@ -10,6 +10,7 @@ import {
   parseMatchupStats,
   parseOpponentStats,
   parseOverview,
+  onlyLegendaries,
   type ArchetypeStat,
   type CardStat,
   type LegendaryStat,
@@ -18,6 +19,7 @@ import {
   type OpponentStat,
   type Overview,
 } from "@/lib/tracker/stats";
+import { isLegendaryKey } from "@/lib/tracker/enrich";
 import { isMissing } from "./achievements";
 
 /**
@@ -105,17 +107,20 @@ export async function readWinrate(): Promise<WinrateRead> {
   const [legendaries, lists, archetypes, cards, matchups, opponents] = results;
   return {
     status: "ok",
-    data: {
-      patch: picked.patch,
-      fallback: picked.patch !== latestPatch,
-      overview: picked.overview,
-      legendaries: parseLegendaryStats(legendaries.data),
-      lists: parseListStats(lists.data),
-      archetypes: parseArchetypeStats(archetypes.data),
-      cards: parseCardStats(cards.data),
-      matchups: parseMatchupStats(matchups.data),
-      opponents: parseOpponentStats(opponents.data),
-    },
+    data: onlyLegendaries(
+      {
+        patch: picked.patch,
+        fallback: picked.patch !== latestPatch,
+        overview: picked.overview,
+        legendaries: parseLegendaryStats(legendaries.data),
+        lists: parseListStats(lists.data),
+        archetypes: parseArchetypeStats(archetypes.data),
+        cards: parseCardStats(cards.data),
+        matchups: parseMatchupStats(matchups.data),
+        opponents: parseOpponentStats(opponents.data),
+      },
+      isLegendaryKey,
+    ),
   };
 }
 

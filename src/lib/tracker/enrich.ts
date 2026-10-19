@@ -20,13 +20,30 @@ export type EnrichDeps = {
   patchOf: (iso: string) => string | null;
   /** archetipo delle 13 carte (chiavi del gioco), null se non si sa */
   archetypeOf: (keys: readonly string[]) => string | null;
+  /** la chiave è una Leggendaria del nostro database */
+  isLegendary: (key: string) => boolean;
 };
 
+/**
+ * La riga da salvare. Leggendaria del mazzo e dell'avversario passano solo se sono Leggendarie del database carte: il
+ * 19/10/2026 la magia Defense Matrix, letta dallo scanner al posto della Leggendaria della schermata VS, era nelle
+ * statistiche della patch 0.7 come Leggendaria; un'app vecchia può mandarne ancora.
+ */
 export function enrichUpload(u: TrackerUpload, deps: EnrichDeps, now = Date.now()): TrackerRow {
   const patch = deps.patchOf(u.endedAt ?? new Date(now).toISOString());
   const archetype = u.deckCards.length === LIST_SIZE ? deps.archetypeOf(u.deckCards) : null;
-  return { ...u, patch: patch && PATCH_RE.test(patch) ? patch : null, archetype: archetype && ARCHETYPE_RE.test(archetype) ? archetype : null };
+  const legendary = (k: string | null) => (k && deps.isLegendary(k) ? k : null);
+  return {
+    ...u,
+    deckLegendary: legendary(u.deckLegendary),
+    oppLegendary: legendary(u.oppLegendary),
+    patch: patch && PATCH_RE.test(patch) ? patch : null,
+    archetype: archetype && ARCHETYPE_RE.test(archetype) ? archetype : null,
+  };
 }
+
+/** Una Leggendaria del database carte, anche se oggi non è più nel gioco (le statistiche delle patch passate). */
+export const isLegendaryKey = (key: string): boolean => getCardByKey(key)?.legendary === true;
 
 /** Archetipo di un mazzo dalle chiavi delle sue 13 carte, con le regole del modulo di pubblicazione dei mazzi. */
 export function archetypeOfKeys(keys: readonly string[]): string | null {
@@ -42,4 +59,5 @@ export function archetypeOfKeys(keys: readonly string[]): string | null {
 export const siteEnrichDeps: EnrichDeps = {
   patchOf: (iso) => patchAt(iso) ?? null,
   archetypeOf: archetypeOfKeys,
+  isLegendary: isLegendaryKey,
 };

@@ -326,13 +326,45 @@ describe("enrich: patch e archetipo aggiunti dal sito", () => {
   const up = U.toUpload(tracked, NOW);
 
   test("con dipendenze finte: valori validi passano, gli altri diventano null", () => {
-    const ok = E.enrichUpload(up, { patchOf: () => "0.7", archetypeOf: () => "midrange" }, NOW);
+    const ok = E.enrichUpload(up, { patchOf: () => "0.7", archetypeOf: () => "midrange", isLegendary: () => true }, NOW);
     assert.deepEqual([ok.patch, ok.archetype], ["0.7", "midrange"]);
-    const odd = E.enrichUpload(up, { patchOf: () => "0.7<x", archetypeOf: () => "Mid Range" }, NOW);
+    const odd = E.enrichUpload(up, { patchOf: () => "0.7<x", archetypeOf: () => "Mid Range", isLegendary: () => true }, NOW);
     assert.deepEqual([odd.patch, odd.archetype], [null, null]);
     let asked = "";
-    E.enrichUpload({ ...up, endedAt: null, deckCards: up.deckCards.slice(0, 5) }, { patchOf: (iso) => ((asked = iso), null), archetypeOf: () => assert.fail("mazzo a metà") }, NOW);
+    E.enrichUpload({ ...up, endedAt: null, deckCards: up.deckCards.slice(0, 5) }, { patchOf: (iso) => ((asked = iso), null), archetypeOf: () => assert.fail("mazzo a metà"), isLegendary: () => true }, NOW);
     assert.equal(asked, new Date(NOW).toISOString());
+  });
+
+  test("Leggendarie: passano solo quelle del database carte (Defense Matrix, patch 0.7, 19/10/2026)", () => {
+    const defenseMatrix = C.cards.find((c) => c.name === "Defense Matrix")!.key!;
+    const pigs = C.cards.find((c) => c.name === "Three Not So Little Pigs")!.key!;
+    const removed = C.cards.find((c) => c.legendary && c.status === "removed" && c.key)!.key!;
+    assert.equal(E.isLegendaryKey(defenseMatrix), false);
+    assert.equal(E.isLegendaryKey(pigs), true);
+    assert.equal(E.isLegendaryKey(removed), true, "una Leggendaria tolta dal gioco resta buona per le patch passate");
+    assert.equal(E.isLegendaryKey("C99999_MC"), false);
+    const row = E.enrichUpload({ ...up, deckLegendary: pigs, oppLegendary: defenseMatrix }, E.siteEnrichDeps, NOW);
+    assert.deepEqual([row.deckLegendary, row.oppLegendary], [pigs, null]);
+    const mine = E.enrichUpload({ ...up, deckLegendary: defenseMatrix, oppLegendary: pigs }, E.siteEnrichDeps, NOW);
+    assert.deepEqual([mine.deckLegendary, mine.oppLegendary], [null, pigs]);
+  });
+
+  test("statistiche lette: fuori le righe con una carta che non è Leggendaria", () => {
+    const n = { games: 1, wins: 1, players: 1 };
+    const known = new Set(["C00046_MC", "C00176_MC"]);
+    const data = S.onlyLegendaries(
+      {
+        patch: "0.7",
+        legendaries: [{ legendary: "C00062_SB", ...n }, { legendary: "C00046_MC", ...n }],
+        matchups: [{ legendary: "C00062_SB", opponent: "C00046_MC", ...n }, { legendary: "C00046_MC", opponent: "C00062_SB", ...n }, { legendary: "C00176_MC", opponent: "C00046_MC", ...n }],
+        opponents: [{ opponent: "C00062_SB", ...n }, { opponent: "C00176_MC", ...n }],
+      },
+      (k) => known.has(k),
+    );
+    assert.equal(data.patch, "0.7");
+    assert.deepEqual(data.legendaries.map((s) => s.legendary), ["C00046_MC"]);
+    assert.deepEqual(data.matchups.map((s) => `${s.legendary}|${s.opponent}`), ["C00176_MC|C00046_MC"]);
+    assert.deepEqual(data.opponents.map((s) => s.opponent), ["C00176_MC"]);
   });
 
   test("patch vera: quella in vigore all'ora di fine partita", () => {
