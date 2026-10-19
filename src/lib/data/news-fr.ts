@@ -20,6 +20,101 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "crimson-cup-qualifiers-where-to-watch": {
+    title: "Qualifications de la Crimson Cup : dates et horaires, où les regarder et Broadcasting OM pour les streamers",
+    metaTitle: "Crimson Cup d'Origins TCG : dates, horaires, où la voir",
+    description:
+      "Qualifications de la Crimson Cup d'Origins TCG du 19 au 22 octobre : dates, horaires, check-in, où les voir sur Twitch et Broadcasting OM, notre overlay.",
+    summary:
+      "La Crimson Cup commence ce soir, 19 octobre, avec la qualification AMER à 19:00 EST : cinq qualifications jusqu'au 22 octobre, puis les playoffs le 24 et les finales le 25. Koin Games diffuse chaque événement sur sa chaîne Twitch officielle, qui apparaît aussi sur l'accueil d'OriginsMeta pendant le direct, et tout le monde peut faire du co-streaming. Pour ceux qui le font, nous avons créé Broadcasting OM : un overlay gratuit pour OBS avec les noms, le score, les trois decks et les cartes restantes de chaque liste.",
+    highlights: [
+      { label: "Cinq qualifications, du 19 au 22 octobre", text: "la première est AMER ce soir à 19:00 EST, la dernière EMEA jeudi à 19:00 CEST", anchor: "calendrier" },
+      { label: "Check-in et inscriptions", text: "le check-in ouvre deux heures avant et ferme cinq minutes avant le début, avec vos decks", anchor: "check-in" },
+      { label: "Où les regarder", text: "la chaîne Twitch officielle de Koin, sur notre accueil pendant le direct, et les co-streams des créateurs", anchor: "ou-regarder" },
+      { label: "Broadcasting OM", text: "notre overlay gratuit pour diffuser un match : noms, score, trois decks, cartes restantes, sponsors", anchor: "broadcasting-om" },
+      { label: "L'installer dans OBS", text: "un panneau de contrôle et une source navigateur, en cinq minutes", anchor: "obs" },
+    ],
+    body: `## Dates et horaires des qualifications {#calendrier}
+
+La Crimson Cup, le tournoi de Koin Games pour le Steam Next Fest, commence ce soir. Il y a cinq qualifications de 512 places chacune, ouvertes à tous quel que soit le pays, et 32 joueurs se qualifient dans chacune :
+
+| Jour | Heure officielle | Région |
+|---|---|---|
+| Lundi 19 octobre | 19:00 EST | AMER (ajoutée le 5 octobre) |
+| Mardi 20 octobre | 19:00 CEST | EMEA |
+| Mercredi 21 octobre | 21:00 EST | AMER |
+| Jeudi 22 octobre | 19:00 SGT | APAC |
+| Jeudi 22 octobre | 19:00 CEST | EMEA (ajoutée le 5 octobre, clôt les qualifications) |
+
+Aux 160 qualifiés s'ajoutent 96 wild cards : 256 joueurs aux **playoffs du samedi 24 octobre à 10:00 EST** (16:00 CEST, 22:00 SGT), dont quatre atteignent les **finales du dimanche 25 octobre à 10:00 EST**. Les horaires sont ceux du visuel officiel de Koin, sans conversion de notre part. Les prix, avec la carte promo Dracula 1/1, sont dans notre [article sur les prix et les qualifications](/fr/news/crimson-cup-prizepool-qualifiers#prix).
+
+## Check-in, inscriptions et format {#check-in}
+
+- **Inscriptions** sur le [Discord officiel](https://discord.gg/originstcg). Vous pouvez vous inscrire à plus d'une qualification, mais Koin demande de ne le faire que pour celles auxquelles vous pouvez vraiment participer.
+- **Check-in** : il ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la remise des decks : si vous le manquez, vous ne jouez pas ([les règles](/fr/news/crimson-cup-format-check-in#check-in)).
+- **Format** : [Conquest](/fr/guides/origins-tcg-conquest) à trois decks, matchs au meilleur des trois manches, listes cachées jusqu'au top 4 (lors du ban, vous ne voyez que la Légendaire), grande finale au meilleur des cinq. Sept lieux sont hors du pool : la liste est dans l'[article sur les prix](/fr/news/crimson-cup-prizepool-qualifiers#lieux).
+- La page 8 du règlement explique comment gérer les problèmes techniques et le suivi des decks : lisez-la avant votre premier match ([ce qui a changé le 14 octobre](/fr/news/playtest-closing-crimson-cup-twitch#reglement)).
+
+Si vous choisissez encore vos trois decks, partez des [decks de tournoi](/fr/decks/tournament) et du [deck builder](/fr/deck-builder), qui vérifie tout seul la règle du Conquest.
+
+## Où regarder les matchs {#ou-regarder}
+
+- **La chaîne Twitch officielle de Koin**, [twitch.tv/originstcg](https://www.twitch.tv/originstcg) : Koin a annoncé le 14 octobre qu'elle y diffusera tous les événements de la Crimson Cup.
+- **L'[accueil d'OriginsMeta](/fr)** : quand la chaîne officielle est en direct sur Origins TCG, son direct prend la place de notre slider, qui revient à la fin du direct.
+- **Les co-streams des créateurs** : Koin permet à chacun de faire du co-streaming de la Crimson Cup ou de diffuser ses propres matchs. Notre [page Live](/fr/live) montre les créateurs en direct sur Origins TCG à ce moment-là, avec leur lecteur.
+
+## Broadcasting OM : notre overlay pour diffuser un match {#broadcasting-om}
+
+Si vous faites du co-streaming de la Crimson Cup, ou si vous commentez votre propre tournoi, OriginsMeta vous offre un habillage graphique à poser sur le jeu : **Broadcasting OM**. Il tient en deux pages :
+
+- le **panneau de contrôle**, [originsmeta.com/broadcast](https://originsmeta.com/broadcast), où vous remplissez le match ;
+- l'**overlay**, [originsmeta.com/broadcast/live](https://originsmeta.com/broadcast/live), à fond transparent, prévu pour une source navigateur d'OBS en 1920 × 1080.
+
+Ce qu'il affiche en direct :
+
+- les **plaques des deux joueurs**, avec Deck 1, 2 et 3 et un point sur le deck en jeu ;
+- le **score de la série**, avec le nom du tournoi, la phase (qualification, playoffs, finale) et le format (Bo1, Bo3, Bo5) ;
+- les **listes des decks**, à gauche, à droite ou masquées, avec les **exemplaires restants** de chaque carte : dans le panneau, un clic sur la carte marque un exemplaire joué, et « Next game » les remet tous ;
+- la **carte entière au survol**, avec coût, puissance, santé, type et texte dans la langue de l'overlay (anglais, italien, espagnol ou français), et un bouton **Copier le deck** avec le code du jeu ;
+- un **espace sponsor** facultatif, qui alterne avec le score (par défaut 20 secondes de score et 7 de sponsor, réglables), avec jusqu'à trois logos ou bannières à importer ;
+- la mention « non affilié à Koin Games », toujours à l'écran.
+
+Le match se remplit de quatre façons : avec le tag d'un tournoi de l'[organisateur de tournois d'OriginsMeta](/fr/tournaments) (OM-XXXX), avec le lien d'un [deck de tournoi](/fr/decks/tournament) publié sur le site, en collant le code du deck du jeu, ou à la main. « Demo match » charge un exemple pour l'essayer (le panneau est en anglais ou en italien).
+
+**Une règle de la Crimson Cup à respecter** : les listes sont cachées jusqu'au top 4. D'ici là, gardez les listes masquées et n'utilisez que les plaques et le score ; à partir du top 4, vous pouvez les afficher.
+
+## L'installer dans OBS {#obs}
+
+1. Ouvrez [originsmeta.com/broadcast](https://originsmeta.com/broadcast) comme dock d'OBS : Docks → Custom Browser Docks, collez l'adresse.
+2. Ajoutez l'overlay comme source : Sources → + → Navigateur, adresse [originsmeta.com/broadcast/live](https://originsmeta.com/broadcast/live), largeur 1920, hauteur 1080, au-dessus de la capture du jeu.
+3. Remplissez le match dans le dock : l'overlay se met à jour en direct, puisque les deux tournent dans le même OBS.
+
+Si l'overlay tourne ailleurs (un autre PC, un co-caster), copiez l'adresse de l'overlay depuis le panneau : elle porte l'état de ce moment-là, il faut donc la recopier après chaque modification. Pour les decks de vos propres matchs, il y a aussi la commande !deck pour le chat et l'overlay du deck, expliqués dans notre [guide pour les streamers](/fr/guides/streaming-tools).
+
+## En test : ce qui manque encore {#en-test}
+
+Broadcasting OM est une première version, prête à temps pour la Crimson Cup. Rien n'est enregistré sur nos serveurs : l'état, images des sponsors comprises, vit dans votre navigateur. Le public de Twitch ne peut pas encore cliquer sur l'overlay (il faut une extension Twitch, qui viendra plus tard), et le score et les exemplaires se mettent à jour à la main depuis le panneau. Si vous l'utilisez pendant les qualifications, dites-nous ce qui manque sur [notre Discord](https://discord.gg/54EctHTZzM).
+
+## D'où ça vient {#sources}
+
+- La publication Steam de Koin Games du 5 octobre 2026, [« Prizepool announcement & key update to our biggest tournament ever »](https://store.steampowered.com/news/app/4429430/view/1845383656394214), et son visuel officiel du calendrier.
+- Les règles annoncées sur le [Discord officiel](https://discord.gg/originstcg) le 24 septembre et l'annonce de la chaîne Twitch du 14 octobre 2026.
+- Broadcasting OM est un outil d'OriginsMeta, pas de Koin Games.`,
+    faq: [
+      {
+        q: "Quand ont lieu les qualifications de la Crimson Cup ?",
+        a: "Cinq qualifications du 19 au 22 octobre 2026 : AMER le lundi 19 à 19:00 EST, EMEA le mardi 20 à 19:00 CEST, AMER le mercredi 21 à 21:00 EST, APAC le jeudi 22 à 19:00 SGT et EMEA le jeudi 22 à 19:00 CEST. Playoffs le 24 octobre et finales le 25 octobre, tous deux à 10:00 EST.",
+      },
+      {
+        q: "Où regarder la Crimson Cup ?",
+        a: "Sur la chaîne Twitch officielle de Koin Games, twitch.tv/originstcg, qui diffuse chaque événement ; pendant le direct, on le voit aussi sur l'accueil d'OriginsMeta. Les créateurs peuvent faire du co-streaming, et la page Live d'OriginsMeta montre ceux qui sont en direct sur Origins TCG.",
+      },
+      {
+        q: "Qu'est-ce que Broadcasting OM ?",
+        a: "Un overlay gratuit d'OriginsMeta pour diffuser un match d'Origins TCG avec OBS : noms, score de la série, les trois decks avec les cartes restantes, aperçu des cartes, code du deck et espace sponsor. On le remplit depuis originsmeta.com/broadcast et on ajoute originsmeta.com/broadcast/live comme source navigateur. Ce n'est pas un outil de Koin Games.",
+      },
+    ],
+  },
   "demo-patch-notes-0-7-1": {
     title: "Démo 0.7.1 d'Origins TCG : le mode classé ouvre avant le Steam Next Fest, et une centaine de bugs corrigés",
     metaTitle: "Démo 0.7.1 d'Origins TCG : le mode classé arrive",
