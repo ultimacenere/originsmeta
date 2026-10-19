@@ -20,6 +20,103 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "meta-report-2026-10-19": {
+    title: "Meta Report du 19 octobre : Pigs, Van Helsing et Robin Hood en tête de la 0.7 au début de la Crimson Cup",
+    metaTitle: "Meta Report d'Origins TCG du 19 octobre : le méta",
+    description:
+      "Le méta d'Origins TCG au 19 octobre sur 2 478 parties : le triangle Pigs, Van Helsing et Robin Hood, archétypes et cartes forts, et l'effet sur le Conquest.",
+    summary:
+      "Notre premier Meta Report, qui sortira chaque lundi : l'état du patch 0.7 d'après les 2 478 parties enregistrées avec OriginsMeta Tracker, le jour où commencent les qualifications de la Crimson Cup. Trois Légendaires gagnent autour de 60 % et se battent en cercle, le Contrôle est l'archétype le plus joué et la Défausse celui qui gagne le plus, et aucun patch d'équilibrage n'arrivera avant le tournoi.",
+    highlights: [
+      { label: "Trois Légendaires en tête", text: "Pigs 61,2 %, Van Helsing 61,0 %, Robin Hood 59,9 %", anchor: "legendaires" },
+      { label: "Un triangle, pas un roi", text: "Van Helsing bat Pigs, Pigs bat Robin Hood, Robin Hood bat Van Helsing", anchor: "triangle" },
+      { label: "Dracula et Legion, deux mesures", text: "sous les 50 % en comptant les deux camps, bien plus haut pour ceux qui les enregistrent", anchor: "deux-mesures" },
+      { label: "Archétypes et cartes", text: "le Contrôle est le plus joué, Défausse et Swarm gagnent le plus, Obliterate conclut les parties", anchor: "archetypes" },
+      { label: "Aucun patch avant la Crimson Cup", text: "et ce que disent les chiffres pour vos trois decks du Conquest", anchor: "crimson-cup" },
+    ],
+    body: `## Ce qu'est le Meta Report {#meta-report}
+
+À partir d'aujourd'hui, chaque lundi, nous regardons comment bouge le méta d'Origins TCG : quelles Légendaires gagnent, quels archétypes et quelles cartes montent, ce que changent les patchs. Les chiffres viennent de notre [page Analytics](/fr/analytics), construite à partir des parties que les joueurs enregistrent avec [OriginsMeta Tracker](/fr/tracker) ; les lectures sont les nôtres, écrites avec ce que nous savons du jeu.
+
+Voici le numéro zéro, le point de départ : patch 0.7, avec **2 478 parties** enregistrées, normales et classées ensemble. Lundi prochain, nous comparerons avec ces chiffres.
+
+## Trois Légendaires en tête {#legendaires}
+
+| Légendaire | Win rate | Parties |
+|---|---|---|
+| Three Not So Little Pigs | 61,2 % | 709 |
+| Van Helsing | 61,0 % | 575 |
+| Robin Hood | 59,9 % | 362 |
+| Queen of Hearts | 50,3 % | 306 |
+| Merlin | 45,9 % | 368 |
+| Legion of the Dead | 43,6 % | 617 |
+| Dracula | 43,3 % | 436 |
+| Mulan | 42,3 % | 293 |
+| King Arthur | 36,5 % | 197 |
+| Wicked Stepmother | 28,6 % | 105 |
+| Dorothy | 20,0 % | 85 |
+
+Ici, les deux camps de chaque partie comptent, donc la moyenne est de 50 %. Pigs, Van Helsing et Robin Hood restent au-dessus de 50 % même au point le plus bas de leur fourchette ; Queen of Hearts est sur la ligne. En bas, les deux cartes que Koin a renforcées le 21 septembre, Wicked Stepmother et Dorothy, ne suffisent toujours pas à faire tourner leurs decks. Tout sur chaque Légendaire est dans notre [guide des Légendaires](/fr/guides/origins-tcg-legendaries).
+
+## Un triangle, pas un roi {#triangle}
+
+Les trois du haut ne se dominent pas, elles se battent en cercle :
+
+- **Van Helsing bat Pigs**, 56 % des parties entre elles ;
+- **Pigs bat Robin Hood**, 54 % (28–33 du côté de Robin Hood sur 61 parties) ;
+- **Robin Hood bat Van Helsing**, 55 %.
+
+Robin Hood est aussi le deck du match-up le plus déséquilibré du patch : **26 victoires sur 30 contre Dracula**. Notre lecture : il n'y a pas un meilleur deck à copier, il y a un cercle dans lequel choisir, et dans un format à trois decks, cela pèse lourd.
+
+## Dracula et Legion : deux mesures qui ne collent pas {#deux-mesures}
+
+Dracula (43,3 %) et Legion of the Dead (43,6 %) sont parmi les plus jouées et, en comptant les deux camps, sous les 50 %. Mais si l'on regarde seulement les decks de ceux qui enregistrent leurs parties, les deux mêmes Légendaires gagnent bien plus : le 18 octobre, Dracula était à 75,9 % et Legion à 74,0 % de ce côté. Jusqu'à la version 0.4.7 du 14 octobre, le Tracker enregistrait aussi les parties contre les bots, et Dracula est le boss des missions de la démo : une partie de ces « défaites de Dracula » étaient probablement des bots. Tant que l'échantillon n'est pas nettoyé, aucune des deux mesures ne se lit seule, et nous ne dirons pas que ces deux decks sont faibles.
+
+## Archétypes et cartes {#archetypes}
+
+Archétypes et cartes ne comptent que les decks de ceux qui enregistrent, qui gagnent 66,0 % de leurs parties : on les lit les uns par rapport aux autres, pas par rapport à 50 %.
+
+- Le **Contrôle** est l'archétype le plus joué (38 % des parties) et gagne 66,7 %, pile dans la moyenne.
+- La **Défausse** (75,7 %, 210 parties) et le **Swarm** (75,6 %, 127) gagnent le plus ; le **Midrange** (63,1 %, 33 % des parties) et le **Combo** (61,4 %) sont en dessous.
+- **Baby Bear** est dans 53 % des decks enregistrés : la carte la plus jouée du patch.
+- **Obliterate**, quand elle est jouée, gagne 87,3 % du temps, vers la manche 8 : c'est la carte qui conclut les parties.
+- **Wicked Stepsisters** passe de 26,7 % dans le deck à 64,5 % quand elle est jouée : une carte de situation qui gagne quand elle trouve son moment, pas une carte faible.
+
+## Patchs : rien de nouveau avant la Crimson Cup {#patch}
+
+Le patch 0.7 du 29 septembre est le dernier patch d'équilibrage avant le tournoi, et la [démo 0.7.1 du 15 octobre](/fr/news/demo-patch-notes-0-7-1) a apporté le mode classé mais aucun changement d'équilibrage, donc ses parties comptent comme 0.7. Dans son AMA du 2 octobre, Koin a dit que les cartes ne seront pas touchées avant la Crimson Cup : en cas de problème grave, la carte est bannie. Le méta décrit ici est donc celui du tournoi.
+
+## Ce que cela veut dire pour la Crimson Cup {#crimson-cup}
+
+Notre lecture pour ceux qui apportent trois decks au [Conquest](/fr/guides/origins-tcg-conquest), où l'adversaire en bannit un :
+
+- deux decks du triangle sont une base solide, mais quelle que soit la paire choisie, l'un des trois bat l'un des vôtres ;
+- le troisième deck bouche ce trou : contre Pigs, Van Helsing ; contre Van Helsing, Robin Hood ;
+- le ban est la décision qui pèse le plus : cherchez son deck qui bat deux des vôtres, pas le plus fort dans l'absolu.
+
+Le calendrier des qualifications et où les regarder sont dans l'[article du jour](/fr/news/crimson-cup-qualifiers-where-to-watch).
+
+## Comment nous lisons les chiffres {#methode}
+
+- Source : parties enregistrées avec OriginsMeta Tracker sur le patch 0.7, normales et classées ensemble ; lues le 19 octobre 2026.
+- Les Légendaires et les match-ups comptent les deux joueurs ; les decks, les archétypes et les cartes seulement ceux qui enregistrent.
+- Les classements utilisent le win rate prudent, le bas de la fourchette probable, si bien que 300 parties comptent plus que 30.
+- Chaque chiffre est sur la [page Analytics](/fr/analytics), mise à jour toutes les cinq minutes. Si vous jouez, enregistrez vos parties : plus il y en a, plus le report de lundi prochain sera juste.`,
+    faq: [
+      {
+        q: "Quelle est la Légendaire la plus forte d'Origins TCG en ce moment ?",
+        a: "Au 19 octobre 2026, patch 0.7, trois Légendaires gagnent autour de 60 % en comptant les deux camps de chaque partie : Three Not So Little Pigs (61,2 %), Van Helsing (61,0 %) et Robin Hood (59,9 %). Elles se battent en cercle, donc aucune n'est la meilleure contre toutes.",
+      },
+      {
+        q: "D'où viennent les chiffres du Meta Report ?",
+        a: "Des parties que les joueurs enregistrent avec OriginsMeta Tracker, notre application Windows, affichées sur la page Analytics d'OriginsMeta. Les Légendaires et les match-ups comptent les deux joueurs ; les decks, les archétypes et les cartes seulement ceux qui enregistrent.",
+      },
+      {
+        q: "Y aura-t-il un patch d'équilibrage avant la Crimson Cup ?",
+        a: "Non. Le patch 0.7 du 29 septembre 2026 est le dernier patch d'équilibrage avant le tournoi, et Koin a dit que les cartes ne seront pas touchées avant la Crimson Cup : une carte avec un problème grave serait bannie.",
+      },
+    ],
+  },
   "crimson-cup-qualifiers-where-to-watch": {
     title: "Qualifications de la Crimson Cup : dates et horaires, où les regarder et Broadcasting OM pour les streamers",
     metaTitle: "Crimson Cup d'Origins TCG : dates, horaires, où la voir",

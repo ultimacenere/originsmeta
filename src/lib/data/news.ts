@@ -110,6 +110,317 @@ function withFrench(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Meta Report del lunedì, numero zero (19/10/2026). Pierluigi: "un nuovo articolo con cadenza settimanale, ogni lunedì,
+    // dove analizziamo come si sta muovendo il meta basandoci sui nostri analytics e su eventuali patch", nome "Meta Report",
+    // bozza automatica ogni lunedì, Discord sui canali di sempre (niente #metashifting), numero zero subito. Numeri dalla
+    // pagina /analytics in produzione letta il 19/10/2026 verso le 11 (patch 0.7, 2.478 partite, normali e classificate
+    // insieme; chi registra vince il 66,0%). Letture dal cervello di gioco (70-meta-log, 40-archetypes, 50-matchups) solo
+    // [FONTE] e [DEDOTTO], mai [APERTO]. Regole del 12/10: mai il numero di giocatori, mai la soglia delle statistiche.
+    // "Due misure" di Dracula e Legion: sempre tutte e due insieme. Fuori "Defense Matrix", che /analytics mostra come
+    // Leggendaria con 1 partita ma non è fra le 11 Leggendarie (riconoscimento sbagliato dell'app, segnalato a Pierluigi).
+    // Copertina: il podio delle Leggendarie di /en/analytics fotografato lo stesso giorno.
+    slug: "meta-report-2026-10-19",
+    image: "/media/news-meta-report-1019.webp",
+    guides: ["origins-tcg-legendaries", "origins-tcg-conquest"],
+    cards: ["three-not-so-little-pigs", "van-helsing", "robin-hood", "dracula", "legion-of-the-dead", "baby-bear", "obliterate", "wicked-stepsisters"],
+    date: "2026-10-19",
+    title: n(
+      "Meta Report, 19 October: Pigs, Van Helsing and Robin Hood on top of patch 0.7 as the Crimson Cup starts",
+      "Meta Report del 19 ottobre: Pigs, Van Helsing e Robin Hood in cima alla 0.7 mentre parte la Crimson Cup",
+      "Meta Report del 19 de octubre: Pigs, Van Helsing y Robin Hood arriba en la 0.7 al empezar la Crimson Cup",
+    ),
+    metaTitle: n(
+      "Origins TCG Meta Report, 19 October: the 0.7 meta",
+      "Meta Report di Origins TCG del 19 ottobre: il meta",
+      "Meta Report de Origins TCG del 19 de octubre: el meta",
+    ),
+    description: n(
+      "Origins TCG meta on 19 October from 2,478 matches: the Pigs, Van Helsing and Robin Hood triangle, top archetypes and cards, and what it means for Conquest.",
+      "Il meta di Origins TCG al 19 ottobre da 2.478 partite: il triangolo Pigs, Van Helsing e Robin Hood, archetipi e carte più forti e cosa cambia per il Conquest.",
+      "El meta de Origins TCG al 19 de octubre en 2.478 partidas: el triángulo Pigs, Van Helsing y Robin Hood, los mejores arquetipos y cartas, y el Conquest.",
+    ),
+    summary: n(
+      "Our first Meta Report, which will come out every Monday: the state of patch 0.7 from the 2,478 matches recorded with OriginsMeta Tracker, on the day the Crimson Cup qualifiers start. Three Legendaries win around 60% and beat each other in a circle, Control is the most played archetype and Discard the one that wins most, and no balance patch will arrive before the tournament.",
+      "Il nostro primo Meta Report, che uscirà ogni lunedì: lo stato della patch 0.7 dalle 2.478 partite registrate con OriginsMeta Tracker, nel giorno in cui partono le qualificazioni della Crimson Cup. Tre Leggendarie vincono intorno al 60% e si battono a giro, il Controllo è l'archetipo più giocato e lo Scarto quello che vince di più, e prima del torneo non arriverà nessuna patch di bilanciamento.",
+      "Nuestro primer Meta Report, que saldrá cada lunes: el estado del parche 0.7 a partir de las 2.478 partidas registradas con OriginsMeta Tracker, el día en que empiezan los clasificatorios de la Crimson Cup. Tres Legendarias ganan alrededor del 60% y se vencen en círculo, el Control es el arquetipo más jugado y el Descarte el que más gana, y antes del torneo no llegará ningún parche de equilibrio.",
+    ),
+    highlights: {
+      en: [
+        { label: "Three Legendaries on top", text: "Pigs 61.2%, Van Helsing 61.0%, Robin Hood 59.9%", anchor: "legendaries" },
+        { label: "A triangle, not a king", text: "Van Helsing beats Pigs, Pigs beats Robin Hood, Robin Hood beats Van Helsing", anchor: "triangle" },
+        { label: "Dracula and Legion, two measures", text: "under 50% counting both sides, far higher for those who record them", anchor: "two-measures" },
+        { label: "Archetypes and cards", text: "Control most played, Discard and Swarm win most, Obliterate closes games", anchor: "archetypes" },
+        { label: "No patch before the Crimson Cup", text: "and what the numbers mean for your three Conquest decks", anchor: "crimson-cup" },
+      ],
+      it: [
+        { label: "Tre Leggendarie in cima", text: "Pigs 61,2%, Van Helsing 61,0%, Robin Hood 59,9%", anchor: "leggendarie" },
+        { label: "Un triangolo, non un re", text: "Van Helsing batte Pigs, Pigs batte Robin Hood, Robin Hood batte Van Helsing", anchor: "triangolo" },
+        { label: "Dracula e Legion, due misure", text: "sotto il 50% contando i due lati, molto più in alto per chi li registra", anchor: "due-misure" },
+        { label: "Archetipi e carte", text: "il Controllo è il più giocato, Scarto e Swarm vincono di più, Obliterate chiude le partite", anchor: "archetipi" },
+        { label: "Nessuna patch prima della Crimson Cup", text: "e che cosa dicono i numeri per i tuoi tre mazzi del Conquest", anchor: "crimson-cup" },
+      ],
+      es: [
+        { label: "Tres Legendarias arriba", text: "Pigs 61,2%, Van Helsing 61,0%, Robin Hood 59,9%", anchor: "legendarias" },
+        { label: "Un triángulo, no un rey", text: "Van Helsing gana a Pigs, Pigs gana a Robin Hood, Robin Hood gana a Van Helsing", anchor: "triangulo" },
+        { label: "Dracula y Legion, dos medidas", text: "por debajo del 50% contando los dos lados, mucho más arriba para quien las registra", anchor: "dos-medidas" },
+        { label: "Arquetipos y cartas", text: "el Control es el más jugado, Descarte y Swarm ganan más, Obliterate cierra las partidas", anchor: "arquetipos" },
+        { label: "Ningún parche antes de la Crimson Cup", text: "y qué dicen los números para tus tres mazos del Conquest", anchor: "crimson-cup" },
+      ],
+    },
+    body: n(
+      `## What the Meta Report is {#meta-report}
+
+From today, every Monday, we look at how the Origins TCG meta is moving: which Legendaries win, which archetypes and cards are rising, and what patches change. The numbers come from our [Analytics page](/en/analytics), built on the matches players record with [OriginsMeta Tracker](/en/tracker); the readings are ours, written with what we know about the game.
+
+This is issue zero, the starting point: patch 0.7, with **2,478 matches** recorded, normal and ranked together. Next Monday we will compare against these numbers.
+
+## Three Legendaries on top {#legendaries}
+
+| Legendary | Win rate | Matches |
+|---|---|---|
+| Three Not So Little Pigs | 61.2% | 709 |
+| Van Helsing | 61.0% | 575 |
+| Robin Hood | 59.9% | 362 |
+| Queen of Hearts | 50.3% | 306 |
+| Merlin | 45.9% | 368 |
+| Legion of the Dead | 43.6% | 617 |
+| Dracula | 43.3% | 436 |
+| Mulan | 42.3% | 293 |
+| King Arthur | 36.5% | 197 |
+| Wicked Stepmother | 28.6% | 105 |
+| Dorothy | 20.0% | 85 |
+
+Here both sides of each match count, so the average is 50%. Pigs, Van Helsing and Robin Hood stay above 50% even at the bottom of their probable range; Queen of Hearts is right on the line. At the bottom, the two cards Koin buffed on 21 September, Wicked Stepmother and Dorothy, are still not enough to make their decks work. Everything about each Legendary is in our [Legendaries guide](/en/guides/origins-tcg-legendaries).
+
+## A triangle, not a king {#triangle}
+
+The three at the top don't dominate each other, they beat each other in a circle:
+
+- **Van Helsing beats Pigs**, 56% of the matches between them;
+- **Pigs beats Robin Hood**, 54% (28–33 from Robin Hood's side over 61 matches);
+- **Robin Hood beats Van Helsing**, 55%.
+
+Robin Hood is also the deck with the most lopsided matchup of the patch: **26 wins out of 30 against Dracula**. A reading of ours: there is no single best deck to copy, there is a circle to choose from, and that matters a lot in a three-deck format.
+
+## Dracula and Legion: two measures that don't agree {#two-measures}
+
+Dracula (43.3%) and Legion of the Dead (43.6%) are among the most played and, counting both sides, under 50%. But when we look only at the decks of those who record their matches, the same two Legendaries win far more: on 18 October Dracula was at 75.9% and Legion at 74.0% from that side. Until version 0.4.7 of 14 October the Tracker also recorded matches against bots, and Dracula is the boss of the demo missions: part of those "Dracula losses" were probably bots. Until we have cleaned the sample, neither measure can be read on its own, and we won't call these two decks weak.
+
+## Archetypes and cards {#archetypes}
+
+Archetypes and cards count only the decks of those who record, who win 66.0% of their matches: you read them against each other, not against 50%.
+
+- **Control** is the most played archetype (38% of matches) and wins 66.7%, right in the average.
+- **Discard** (75.7%, 210 matches) and **Swarm** (75.6%, 127) win the most; **Midrange** (63.1%, 33% of matches) and **Combo** (61.4%) are below.
+- **Baby Bear** is in 53% of the decks recorded: the most played card of the patch.
+- **Obliterate**, when it is played, wins 87.3% of the time, around round 8: it is the card that closes games.
+- **Wicked Stepsisters** goes from 26.7% in the deck to 64.5% when it is played: a situational card that wins when it finds its moment, not a weak card.
+
+## Patches: nothing new before the Crimson Cup {#patch}
+
+Patch 0.7 of 29 September is the last balance patch before the tournament, and the [demo 0.7.1 of 15 October](/en/news/demo-patch-notes-0-7-1) brought ranked but no balance changes, so its matches count as 0.7. In its AMA of 2 October Koin said that cards won't be touched before the Crimson Cup: if something serious comes up, it gets banned. The meta we describe here is therefore the one of the tournament.
+
+## What it means for the Crimson Cup {#crimson-cup}
+
+Our reading for those bringing three decks to [Conquest](/en/guides/origins-tcg-conquest), where the opponent bans one:
+
+- two of the triangle are a solid base, but whatever pair you bring, one of the three beats one of yours;
+- the third deck covers that hole: against Pigs, Van Helsing; against Van Helsing, Robin Hood;
+- the ban is the decision that weighs most: look for the deck of theirs that beats two of yours, not the strongest one in absolute terms.
+
+The schedule of the qualifiers and where to watch them are in [today's article](/en/news/crimson-cup-qualifiers-where-to-watch).
+
+## How we read the numbers {#method}
+
+- Source: matches recorded with OriginsMeta Tracker on patch 0.7, normal and ranked together; read on 19 October 2026.
+- Legendaries and matchups count both players; decks, archetypes and cards only those who record.
+- Rankings use the cautious win rate, the low edge of the probable range, so 300 matches count more than 30.
+- Every number is on the [Analytics page](/en/analytics), updated every five minutes. If you play, record your matches: the more there are, the truer next Monday's report.`,
+      `## Che cos'è il Meta Report {#meta-report}
+
+Da oggi, ogni lunedì, guardiamo come si muove il meta di Origins TCG: quali Leggendarie vincono, quali archetipi e carte salgono, che cosa cambiano le patch. I numeri arrivano dalla nostra [pagina Analytics](/it/analytics), fatta con le partite che i giocatori registrano con [OriginsMeta Tracker](/it/tracker); le letture sono nostre, scritte con quello che sappiamo del gioco.
+
+Questo è il numero zero, il punto di partenza: patch 0.7, con **2.478 partite** registrate, normali e classificate insieme. Lunedì prossimo ci confronteremo con questi numeri.
+
+## Tre Leggendarie in cima {#leggendarie}
+
+| Leggendaria | Win rate | Partite |
+|---|---|---|
+| Three Not So Little Pigs | 61,2% | 709 |
+| Van Helsing | 61,0% | 575 |
+| Robin Hood | 59,9% | 362 |
+| Queen of Hearts | 50,3% | 306 |
+| Merlin | 45,9% | 368 |
+| Legion of the Dead | 43,6% | 617 |
+| Dracula | 43,3% | 436 |
+| Mulan | 42,3% | 293 |
+| King Arthur | 36,5% | 197 |
+| Wicked Stepmother | 28,6% | 105 |
+| Dorothy | 20,0% | 85 |
+
+Qui contano tutti e due i lati di ogni partita, quindi la media è il 50%. Pigs, Van Helsing e Robin Hood restano sopra il 50% anche nel punto più basso della loro forbice; Queen of Hearts sta sulla linea. In fondo, le due carte che Koin ha potenziato il 21 settembre, Wicked Stepmother e Dorothy, non bastano ancora a far funzionare i loro mazzi. Tutto su ogni Leggendaria è nella nostra [guida alle Leggendarie](/it/guides/origins-tcg-legendaries).
+
+## Un triangolo, non un re {#triangolo}
+
+Le tre in cima non si dominano, si battono a giro:
+
+- **Van Helsing batte Pigs**, il 56% delle partite fra loro;
+- **Pigs batte Robin Hood**, il 54% (28–33 dal lato di Robin Hood su 61 partite);
+- **Robin Hood batte Van Helsing**, il 55%.
+
+Robin Hood è anche il mazzo dello scontro più sbilanciato della patch: **26 vittorie su 30 contro Dracula**. Una lettura nostra: non c'è un mazzo migliore da copiare, c'è un giro da cui scegliere, e in un formato a tre mazzi conta parecchio.
+
+## Dracula e Legion: due misure che non tornano {#due-misure}
+
+Dracula (43,3%) e Legion of the Dead (43,6%) sono fra le più giocate e, contando i due lati, sotto il 50%. Ma se guardiamo solo i mazzi di chi registra le proprie partite, le stesse due Leggendarie vincono molto di più: il 18 ottobre Dracula era al 75,9% e Legion al 74,0% da quel lato. Fino alla versione 0.4.7 del 14 ottobre il Tracker registrava anche le partite contro i bot, e Dracula è il boss delle missioni della demo: parte di quelle "sconfitte di Dracula" erano probabilmente bot. Finché non abbiamo ripulito il campione nessuna delle due misure si legge da sola, e non diremo che questi due mazzi sono deboli.
+
+## Archetipi e carte {#archetipi}
+
+Archetipi e carte contano solo i mazzi di chi registra, che vince il 66,0% delle sue partite: si leggono uno contro l'altro, non contro il 50%.
+
+- Il **Controllo** è l'archetipo più giocato (38% delle partite) e vince il 66,7%, giusto nella media.
+- **Scarto** (75,7%, 210 partite) e **Swarm** (75,6%, 127) vincono di più; **Midrange** (63,1%, 33% delle partite) e **Combo** (61,4%) stanno sotto.
+- **Baby Bear** è nel 53% dei mazzi registrati: la carta più giocata della patch.
+- **Obliterate**, quando viene giocata, vince l'87,3% delle volte, intorno al round 8: è la carta che chiude le partite.
+- **Wicked Stepsisters** passa dal 26,7% nel mazzo al 64,5% quando viene giocata: una carta situazionale che vince quando trova il suo momento, non una carta scarsa.
+
+## Patch: niente di nuovo prima della Crimson Cup {#patch}
+
+La patch 0.7 del 29 settembre è l'ultima di bilanciamento prima del torneo, e la [demo 0.7.1 del 15 ottobre](/it/news/demo-patch-notes-0-7-1) ha portato la classificata ma nessun cambio di bilanciamento, quindi le sue partite contano come 0.7. Nell'AMA del 2 ottobre Koin ha detto che prima della Crimson Cup le carte non si toccano: se salta fuori un problema grave, si bandisce. Il meta che raccontiamo qui è quindi quello del torneo.
+
+## Che cosa vuol dire per la Crimson Cup {#crimson-cup}
+
+La nostra lettura per chi porta tre mazzi al [Conquest](/it/guides/origins-tcg-conquest), dove l'avversario ne bandisce uno:
+
+- due del triangolo sono una base solida, ma qualunque coppia porti, una delle tre ne batte una tua;
+- il terzo mazzo copre quel buco: contro Pigs, Van Helsing; contro Van Helsing, Robin Hood;
+- il ban è la scelta che pesa di più: cerca il suo mazzo che batte due dei tuoi, non il più forte in assoluto.
+
+Calendario delle qualificazioni e dove guardarle sono nell'[articolo di oggi](/it/news/crimson-cup-qualifiers-where-to-watch).
+
+## Come leggiamo i numeri {#metodo}
+
+- Fonte: partite registrate con OriginsMeta Tracker sulla patch 0.7, normali e classificate insieme; lette il 19 ottobre 2026.
+- Leggendarie e scontri contano tutti e due i giocatori; mazzi, archetipi e carte solo chi registra.
+- Le classifiche usano il win rate prudente, il bordo basso della forbice probabile, così 300 partite contano più di 30.
+- Ogni numero è nella [pagina Analytics](/it/analytics), aggiornata ogni cinque minuti. Se giochi, registra le tue partite: più sono, più è vero il report di lunedì prossimo.`,
+      `## Qué es el Meta Report {#meta-report}
+
+Desde hoy, cada lunes, miramos cómo se mueve el meta de Origins TCG: qué Legendarias ganan, qué arquetipos y cartas suben y qué cambian los parches. Los números salen de nuestra [página Analytics](/es/analytics), hecha con las partidas que los jugadores registran con [OriginsMeta Tracker](/es/tracker); las lecturas son nuestras, escritas con lo que sabemos del juego.
+
+Este es el número cero, el punto de partida: parche 0.7, con **2.478 partidas** registradas, normales y clasificatorias juntas. El lunes que viene nos compararemos con estos números.
+
+## Tres Legendarias arriba {#legendarias}
+
+| Legendaria | Win rate | Partidas |
+|---|---|---|
+| Three Not So Little Pigs | 61,2% | 709 |
+| Van Helsing | 61,0% | 575 |
+| Robin Hood | 59,9% | 362 |
+| Queen of Hearts | 50,3% | 306 |
+| Merlin | 45,9% | 368 |
+| Legion of the Dead | 43,6% | 617 |
+| Dracula | 43,3% | 436 |
+| Mulan | 42,3% | 293 |
+| King Arthur | 36,5% | 197 |
+| Wicked Stepmother | 28,6% | 105 |
+| Dorothy | 20,0% | 85 |
+
+Aquí cuentan los dos lados de cada partida, así que la media es el 50%. Pigs, Van Helsing y Robin Hood siguen por encima del 50% incluso en el punto más bajo de su horquilla; Queen of Hearts está en la línea. Abajo, las dos cartas que Koin mejoró el 21 de septiembre, Wicked Stepmother y Dorothy, todavía no bastan para que sus mazos funcionen. Todo sobre cada Legendaria está en nuestra [guía de las Legendarias](/es/guides/origins-tcg-legendaries).
+
+## Un triángulo, no un rey {#triangulo}
+
+Las tres de arriba no se dominan, se vencen en círculo:
+
+- **Van Helsing gana a Pigs**, el 56% de las partidas entre ellas;
+- **Pigs gana a Robin Hood**, el 54% (28–33 desde el lado de Robin Hood en 61 partidas);
+- **Robin Hood gana a Van Helsing**, el 55%.
+
+Robin Hood es también el mazo del enfrentamiento más desequilibrado del parche: **26 victorias de 30 contra Dracula**. Una lectura nuestra: no hay un mejor mazo que copiar, hay un círculo entre el que elegir, y en un formato de tres mazos eso pesa mucho.
+
+## Dracula y Legion: dos medidas que no cuadran {#dos-medidas}
+
+Dracula (43,3%) y Legion of the Dead (43,6%) están entre las más jugadas y, contando los dos lados, por debajo del 50%. Pero si miramos solo los mazos de quien registra sus partidas, las mismas dos Legendarias ganan mucho más: el 18 de octubre Dracula estaba en el 75,9% y Legion en el 74,0% desde ese lado. Hasta la versión 0.4.7 del 14 de octubre el Tracker registraba también las partidas contra bots, y Dracula es el jefe de las misiones de la demo: parte de esas "derrotas de Dracula" eran probablemente bots. Hasta que no limpiemos la muestra ninguna de las dos medidas se lee sola, y no diremos que estos dos mazos son débiles.
+
+## Arquetipos y cartas {#arquetipos}
+
+Arquetipos y cartas cuentan solo los mazos de quien registra, que gana el 66,0% de sus partidas: se leen unos contra otros, no contra el 50%.
+
+- El **Control** es el arquetipo más jugado (38% de las partidas) y gana el 66,7%, justo en la media.
+- **Descarte** (75,7%, 210 partidas) y **Swarm** (75,6%, 127) son los que más ganan; **Midrange** (63,1%, 33% de las partidas) y **Combo** (61,4%) quedan por debajo.
+- **Baby Bear** está en el 53% de los mazos registrados: la carta más jugada del parche.
+- **Obliterate**, cuando se juega, gana el 87,3% de las veces, hacia la ronda 8: es la carta que cierra las partidas.
+- **Wicked Stepsisters** pasa del 26,7% en el mazo al 64,5% cuando se juega: una carta situacional que gana cuando encuentra su momento, no una carta mala.
+
+## Parches: nada nuevo antes de la Crimson Cup {#parche}
+
+El parche 0.7 del 29 de septiembre es el último de equilibrio antes del torneo, y la [demo 0.7.1 del 15 de octubre](/es/news/demo-patch-notes-0-7-1) trajo la clasificatoria pero ningún cambio de equilibrio, así que sus partidas cuentan como 0.7. En su AMA del 2 de octubre Koin dijo que antes de la Crimson Cup no se tocan las cartas: si aparece un problema grave, se prohíbe. El meta que contamos aquí es, por tanto, el del torneo.
+
+## Qué significa para la Crimson Cup {#crimson-cup}
+
+Nuestra lectura para quien lleva tres mazos al [Conquest](/es/guides/origins-tcg-conquest), donde el rival prohíbe uno:
+
+- dos del triángulo son una base sólida, pero lleves la pareja que lleves, una de las tres gana a una de las tuyas;
+- el tercer mazo tapa ese hueco: contra Pigs, Van Helsing; contra Van Helsing, Robin Hood;
+- el ban es la decisión que más pesa: busca su mazo que gana a dos de los tuyos, no el más fuerte en absoluto.
+
+El calendario de los clasificatorios y dónde verlos están en el [artículo de hoy](/es/news/crimson-cup-qualifiers-where-to-watch).
+
+## Cómo leemos los números {#metodo}
+
+- Fuente: partidas registradas con OriginsMeta Tracker en el parche 0.7, normales y clasificatorias juntas; leídas el 19 de octubre de 2026.
+- Legendarias y enfrentamientos cuentan a los dos jugadores; mazos, arquetipos y cartas solo a quien registra.
+- Las clasificaciones usan el win rate prudente, el borde bajo de la horquilla probable, así que 300 partidas cuentan más que 30.
+- Cada número está en la [página Analytics](/es/analytics), actualizada cada cinco minutos. Si juegas, registra tus partidas: cuantas más haya, más fiel será el report del lunes que viene.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "What is the strongest Legendary in Origins TCG right now?",
+          a: "On 19 October 2026, on patch 0.7, three Legendaries win around 60% counting both sides of each match: Three Not So Little Pigs (61.2%), Van Helsing (61.0%) and Robin Hood (59.9%). They beat each other in a circle, so none of them is the best against everything.",
+        },
+        {
+          q: "Where do the Meta Report numbers come from?",
+          a: "From the matches players record with OriginsMeta Tracker, our Windows app, shown on the OriginsMeta Analytics page. Legendaries and matchups count both players; decks, archetypes and cards count only those who record.",
+        },
+        {
+          q: "Will there be a balance patch before the Crimson Cup?",
+          a: "No. Patch 0.7 of 29 September 2026 is the last balance patch before the tournament, and Koin said that cards won't be touched before the Crimson Cup: a card with a serious problem would be banned instead.",
+        },
+      ],
+      it: [
+        {
+          q: "Qual è la Leggendaria più forte di Origins TCG adesso?",
+          a: "Al 19 ottobre 2026, patch 0.7, tre Leggendarie vincono intorno al 60% contando i due lati di ogni partita: Three Not So Little Pigs (61,2%), Van Helsing (61,0%) e Robin Hood (59,9%). Si battono a giro, quindi nessuna è la migliore contro tutte.",
+        },
+        {
+          q: "Da dove arrivano i numeri del Meta Report?",
+          a: "Dalle partite che i giocatori registrano con OriginsMeta Tracker, la nostra app per Windows, mostrate nella pagina Analytics di OriginsMeta. Leggendarie e scontri contano tutti e due i giocatori; mazzi, archetipi e carte solo chi registra.",
+        },
+        {
+          q: "Ci sarà una patch di bilanciamento prima della Crimson Cup?",
+          a: "No. La patch 0.7 del 29 settembre 2026 è l'ultima di bilanciamento prima del torneo, e Koin ha detto che prima della Crimson Cup le carte non si toccano: una carta con un problema grave verrebbe bandita.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Cuál es la Legendaria más fuerte de Origins TCG ahora?",
+          a: "Al 19 de octubre de 2026, parche 0.7, tres Legendarias ganan alrededor del 60% contando los dos lados de cada partida: Three Not So Little Pigs (61,2%), Van Helsing (61,0%) y Robin Hood (59,9%). Se vencen en círculo, así que ninguna es la mejor contra todas.",
+        },
+        {
+          q: "¿De dónde salen los números del Meta Report?",
+          a: "De las partidas que los jugadores registran con OriginsMeta Tracker, nuestra app para Windows, mostradas en la página Analytics de OriginsMeta. Legendarias y enfrentamientos cuentan a los dos jugadores; mazos, arquetipos y cartas solo a quien registra.",
+        },
+        {
+          q: "¿Habrá un parche de equilibrio antes de la Crimson Cup?",
+          a: "No. El parche 0.7 del 29 de septiembre de 2026 es el último de equilibrio antes del torneo, y Koin dijo que antes de la Crimson Cup no se tocan las cartas: una carta con un problema grave se prohibiría.",
+        },
+      ],
+    },
+    url: "/analytics",
+    source: "site",
+  },
+  {
     // Qualificazioni della Crimson Cup, dove guardarle e Broadcasting OM (19/10/2026, richiesta di Pierluigi: "crea un
     // articolo sulla crimson, le date e gli orari dell'inizio qualificazioni, dove vedere le partite e il servizio che
     // forniamo noi sul sito di streaming del broadcasting"). Calendario dal post Steam del 05/10 (gid 1845383656394214) e
