@@ -29,6 +29,11 @@ describe("dirette su Origins TCG", () => {
     assert.ok(isOriginsStream({ game_name: "Games + Demos", title: "prima partita #OriginsTCG" }));
     assert.ok(isOriginsStream({ game_name: "Just Chatting", title: "tier list con la chat su OriginsMeta" }));
     assert.ok(isOriginsStream({ game_name: "", title: "ORIGINS-TCG day 3" }));
+    assert.ok(isOriginsStream({ title: "Crimson Cup Qualifier Day 1 | $10k Prizepool | Origins Trading Card Game" }), "nome per esteso, senza categoria");
+  });
+  test("il canale ufficiale conta sempre, anche senza categoria né titolo", () => {
+    assert.ok(isOriginsStream({ user_login: "OriginsTCG", title: "Qualifier Day 2" }));
+    assert.ok(!isOriginsStream({ user_login: "originstcg", title: "", type: "rerun" }), "solo dirette vere");
   });
   test("un altro gioco, o un titolo che dice solo 'origins', no", () => {
     assert.ok(!isOriginsStream({ game_name: "Assassin's Creed Origins", title: "Egypt 100%" }));

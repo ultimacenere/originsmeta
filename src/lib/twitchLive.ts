@@ -4,7 +4,8 @@
  * rotta in src/app/api/live/route.ts, il badge nel browser in src/components/LiveBadge.tsx.
  *
  * Si guarda solo chi ha il ruolo Creator, Autore, Pro o Staff e un canale Twitch nel profilo. Una diretta conta se è su Origins TCG: la
- * categoria del gioco su Twitch oppure il titolo che lo nomina ("Origins TCG", "#originstcg", "OriginsMeta"). Chi è in
+ * categoria del gioco su Twitch oppure il titolo che lo nomina ("Origins TCG", "Origins Trading Card Game", "#originstcg", "OriginsMeta");
+ * il canale ufficiale twitch.tv/originstcg conta sempre. Chi è in
  * diretta su un altro gioco non riceve il badge: il sito parla di Origins, e il badge promette una diretta di Origins.
  */
 
@@ -38,12 +39,19 @@ export const HELIX_BATCH = 100;
 /** Nomi della categoria del gioco su Twitch, ridotti a lettere e cifre minuscole. */
 const ORIGINS_GAMES = new Set(["originstcg", "originstradingcardgame"]);
 
-/** Un titolo che parla di Origins TCG: il nome del gioco, l'hashtag o il nostro sito. */
-const ORIGINS_TITLE = /\borigins[\s_-]*tcg\b|#originstcg\b|\boriginsmeta\b/i;
+/**
+ * Un titolo che parla di Origins TCG: il nome del gioco (anche per esteso, "Origins Trading Card Game", come il canale
+ * ufficiale il 19/10/2026 alla prima giornata delle qualificazioni, senza categoria), l'hashtag o il nostro sito.
+ */
+const ORIGINS_TITLE = /\borigins[\s_-]*tcg\b|\borigins\s*:?\s*trading\s+card\s+game\b|#originstcg\b|\boriginsmeta\b/i;
 
-/** La diretta è su Origins TCG? Categoria del gioco o titolo che lo nomina; con `gameId` basta l'id della categoria. */
-export function isOriginsStream(stream: Pick<TwitchStream, "game_id" | "game_name" | "title" | "type">, gameId?: string): boolean {
+/** Il canale ufficiale del gioco: le sue dirette sono di Origins anche senza categoria né titolo che lo nomina. */
+const OFFICIAL_CHANNELS = new Set(["originstcg"]);
+
+/** La diretta è su Origins TCG? Canale ufficiale, categoria del gioco o titolo che lo nomina; con `gameId` basta l'id della categoria. */
+export function isOriginsStream(stream: Pick<TwitchStream, "game_id" | "game_name" | "title" | "type"> & { user_login?: string }, gameId?: string): boolean {
   if (stream.type && stream.type !== "live") return false;
+  if (stream.user_login && OFFICIAL_CHANNELS.has(stream.user_login.toLowerCase())) return true;
   if (gameId && stream.game_id === gameId) return true;
   const game = (stream.game_name ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
   return ORIGINS_GAMES.has(game) || ORIGINS_TITLE.test(stream.title ?? "");
