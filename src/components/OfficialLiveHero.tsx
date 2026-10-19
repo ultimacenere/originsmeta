@@ -14,7 +14,8 @@ import { LivePlayer } from "./LivePlayer";
  * striscia del calendario) e mostra la prima diretta in corso fra quelle di `HERO_STREAMS` (src/lib/officialLive.ts):
  * il canale ufficiale di Origins TCG e, sulle pagine italiane dal 19 al 21 ottobre 2026, prima il cast della Crimson Cup
  * di CoachCrono. Ricontrolla ogni minuto a scheda visibile; quando la diretta finisce torna lo slider (o l'altra diretta).
- * Il lettore è quello di /live (`LivePlayer`): prima del clic nessuna richiesta a Twitch, come dice l'informativa #video.
+ * Il lettore è quello di /live (`LivePlayer`), ma dal 20/10/2026 parte da solo e muto (`autoStart`; Pierluigi: "rendi il
+ * player già attivo, lascialo muto così non disturbiamo ma che si veda il video di default"): l'informativa #video lo dice.
  * Misura (Pierluigi: "voglio anche un tracker di quanti guardano la diretta e quanti cliccano per andare su Twitch"):
  * `official_live_view` quando il riquadro compare (una volta per pagina vista e per diretta), `video_play` con placement
  * home_hero quando la si avvia sul sito, `official_live_twitch` per chi va su Twitch; `stream` dice quale diretta.
@@ -58,6 +59,7 @@ export function OfficialLiveHero({
           privacyHref={privacyHref}
           placement="home_hero"
           className="mt-0"
+          autoStart
           onOpenTwitch={() => toTwitch("player")}
         />
         <div className="min-w-0">

@@ -251,12 +251,14 @@ export function embedSrc(v: ParsedVideo, parents: readonly string[]): string {
 /**
  * Il lettore di Twitch per la diretta di un canale (pagina /live, 28/09/2026), solo DOPO il clic come i video:
  * `parent` obbligatori, `autoplay` perché il clic sul nostro tasto vale come gesto dell'utente. Il nome del canale deve
- * essere quello di Twitch (3–25 lettere minuscole, cifre e trattini bassi), altrimenti null e niente iframe.
+ * essere quello di Twitch (3–25 lettere minuscole, cifre e trattini bassi), altrimenti null e niente iframe. Con
+ * `muted` il lettore parte senza audio: è la diretta della home che si avvia da sola (20/10/2026), e i browser
+ * riproducono da soli solo i video muti.
  */
-export function liveEmbedSrc(login: string, parents: readonly string[]): string | null {
+export function liveEmbedSrc(login: string, parents: readonly string[], muted = false): string | null {
   if (!/^[a-z0-9_]{3,25}$/.test(login)) return null;
   const parent = parents.map((p) => `parent=${encodeURIComponent(p)}`).join("&");
-  return `https://player.twitch.tv/?channel=${login}&${parent}&autoplay=true`;
+  return `https://player.twitch.tv/?channel=${login}&${parent}&autoplay=true${muted ? "&muted=true" : ""}`;
 }
 
 /** Il video sulla sua piattaforma, con il minuto di partenza: il link "Apri su YouTube/Twitch". */

@@ -12,6 +12,10 @@ import { trackEvent } from "@/lib/analytics";
  * riproduce un embed più piccolo di 400×300: in un riquadro più piccolo (il telefono) il clic apre la diretta su Twitch,
  * e il tasto e la nota lo dicono prima. Niente immagini del media kit come sfondo: il materiale Koin non è interfaccia.
  * Misura: `video_play` con provider twitch e placement live_page.
+ * Con `autoStart` (la diretta in home, 20/10/2026, Pierluigi: "rendi il player già attivo, lascialo muto così non
+ * disturbiamo ma che si veda il video di default") l'iframe si carica da solo, muto, appena il riquadro è misurato e
+ * abbastanza grande per Twitch; sotto 400×300 resta il tasto che apre Twitch. L'avvio automatico non conta `video_play`
+ * (lo conta già `official_live_view`) e non sposta il focus.
  */
 export function LivePlayer({
   login,
@@ -21,6 +25,7 @@ export function LivePlayer({
   placement = "live_page",
   className = "mt-4",
   onOpenTwitch,
+  autoStart = false,
 }: {
   login: string;
   name: string;
@@ -31,28 +36,36 @@ export function LivePlayer({
   className?: string;
   /** il lettore troppo piccolo per l'embed apre Twitch: chi lo usa può contarlo (diretta in home, 18/10/2026) */
   onOpenTwitch?: () => void;
+  /** parte da solo, muto, senza clic (la diretta in home, 20/10/2026) */
+  autoStart?: boolean;
 }) {
   const [src, setSrc] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLIFrameElement>(null);
+  const clicked = useRef(false);
   const channelUrl = `https://www.twitch.tv/${login}`;
   const title = fillCreator(labels.playerTitle, { name });
 
   useEffect(() => {
-    if (src) frame.current?.focus();
+    if (src && clicked.current) frame.current?.focus();
   }, [src]);
 
   useEffect(() => {
     const el = box.current;
     if (!el || typeof ResizeObserver === "undefined") return;
     // la prima misura arriva subito dopo observe(): niente setState sincrono nell'effetto
-    const ro = new ResizeObserver(() => setNarrow(!twitchFits(el.clientWidth, el.clientHeight)));
+    const ro = new ResizeObserver(() => {
+      const fits = twitchFits(el.clientWidth, el.clientHeight);
+      setNarrow(!fits);
+      if (autoStart && fits) setSrc((cur) => cur ?? liveEmbedSrc(login, twitchParents(window.location.hostname), true));
+    });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [autoStart, login]);
 
   const play = () => {
+    clicked.current = true;
     trackEvent("video_play", { provider: "twitch", placement });
     const el = box.current;
     const url = liveEmbedSrc(login, twitchParents(window.location.hostname));

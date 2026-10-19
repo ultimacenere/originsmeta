@@ -171,6 +171,8 @@ describe("lettore e link esterni", () => {
     assert.equal(liveEmbedSrc("Aldrymus", ["originsmeta.com"]), null);
     assert.equal(liveEmbedSrc("ab", ["originsmeta.com"]), null);
     assert.equal(liveEmbedSrc("x&parent=evil.com", ["originsmeta.com"]), null);
+    // la diretta della home parte da sola, muta (20/10/2026)
+    assert.equal(liveEmbedSrc("originstcg", ["originsmeta.com"], true), "https://player.twitch.tv/?channel=originstcg&parent=originsmeta.com&autoplay=true&muted=true");
   });
 
   test("twitchParents: i domini del sito più quello della pagina, senza doppioni né valori strani", () => {
