@@ -24,6 +24,8 @@ export const en = {
     analytics: "Analytics",
     /** la pagina dell'app OriginsMeta Tracker (12/10/2026), nel sottomenu di Analytics */
     tracker: "Tracker",
+    // i numeri ufficiali della Crimson Cup nel sottomenu Analytics (20/10/2026, Pierluigi: "si metti la voce crimson cup")
+    crimsonCup: "Crimson Cup",
     cards: "Cards",
     decks: "Decks",
     events: "Tournaments & Events",

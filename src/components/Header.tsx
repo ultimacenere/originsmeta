@@ -73,6 +73,9 @@ export function navItems(dict: Dictionary): NavItem[] {
             sub: [
               { label: dict.nav.analytics, path: "/analytics" },
               { label: dict.nav.tracker, path: "/tracker", mobile: true },
+              // i numeri ufficiali della Crimson Cup (20/10/2026, Pierluigi: "si metti la voce crimson cup"), anche nella
+              // tendina del telefono e nel footer
+              { label: dict.nav.crimsonCup, path: "/analytics/crimson-cup", mobile: true },
             ],
           },
         ]
