@@ -3,9 +3,9 @@ import type { Dictionary } from "../i18n";
 /**
  * Dizionario tedesco (20/10/2026): stessa struttura di en.ts, che resta il tipo di riferimento.
  * Tedesco standard con il "du" minuscolo; nomi delle carte, dei mazzi e degli eventi in inglese; parole chiave del gioco
- * con il glossario PROVVISORIO di docs/tedesco.md (Beim Aufdecken, Trampeln, Erstschlag, Feld, Ort, Legendär…): i testi
- * tedeschi del gioco non sono ancora stati letti, quindi i testi delle carte in tedesco sono una traduzione nostra e le
- * righe sui dati lo dicono. Ruoli: Staff, Creator, Autor, Pro, Community; "Rolle" per il ruolo del profilo,
+ * con il glossario del gioco di docs/tedesco.md (Beim Aufdecken, Bei Tod, Überrennen, Kraft/Leben, Feld, Ort,
+ * Legendär…): i testi tedeschi delle 122 carte della collezione sono quelli del gioco, letti il 20/10/2026; carte create
+ * e rimosse e luoghi restano una traduzione nostra, e le righe sui dati lo dicono. Ruoli: Staff, Creator, Autor, Pro, Community; "Rolle" per il ruolo del profilo,
  * "Veröffentlicht von" per chi pubblica un mazzo.
  */
 export const de: Dictionary = {
@@ -96,7 +96,7 @@ export const de: Dictionary = {
     all: "Alle",
     allMasculine: "Alle",
     mana: "Mana",
-    power: "Stärke",
+    power: "Kraft",
     health: "Leben",
     type: "Typ",
     unit: "Charakter",
@@ -125,7 +125,7 @@ export const de: Dictionary = {
     stats: "Werte",
     unknownStats: "Werte noch nicht veröffentlicht",
     asOf: "Werte vom Demo-Patch des 21. September 2026: Die 122 Karten der Demo wurden am 22. September im Spiel geprüft, die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
-    alignment: "Ausrichtung",
+    alignment: "Gesinnung",
     good: "Good",
     evil: "Evil",
     neutral: "Neutral",
@@ -142,7 +142,7 @@ export const de: Dictionary = {
     sortBy: "Sortieren",
     sortName: "Name",
     sortMana: "Mana",
-    sortPower: "Stärke",
+    sortPower: "Kraft",
     sortHealth: "Leben",
     removed: "Nicht in der Demo",
     steamNews: "Offizieller Steam-Beitrag",
@@ -256,7 +256,7 @@ export const de: Dictionary = {
   cards: {
     title: "Origins TCG Kartenliste",
     metaTitle: "Origins TCG Karten: die komplette Kartenliste der Demo 2.0",
-    intro: "Jede Karte der Demo 2.0, dazu die Karten, die sie erschaffen, und die in früheren Builds entfernten: aktuelle Werte, der offizielle Text auf Englisch, Italienisch, Spanisch, Französisch und Portugiesisch, wie er im Spiel steht, der deutsche Text als unsere Übersetzung (noch nicht im Spiel geprüft), Balance-Historie und die Legende, aus der jede Karte stammt.",
+    intro: "Jede Karte der Demo 2.0, dazu die Karten, die sie erschaffen, und die in früheren Builds entfernten: aktuelle Werte, der offizielle Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch, wie er im Spiel steht, Balance-Historie und die Legende, aus der jede Karte stammt.",
     description: "Alle Karten der Demo 2.0 von Origins TCG, dem Kartenspiel von Koin Games: Kartentext, Werte und Balance-Historie, mit Filtern nach Typ, Saga und Seltenheit.",
     searchHint: "Name oder Text: Merlin, Beim Aufdecken…",
     exploreLocations: "Orte entdecken",
@@ -265,7 +265,7 @@ export const de: Dictionary = {
     countRemoved: "in früheren Builds entfernt",
     legendNote: "Legendäre Karten führen ein Deck an: eine pro Deck, markiert mit dem Stern. Die Sagas sind eine eigene Einteilung von OriginsMeta nach der Ursprungslegende; das Spiel zeigt sie nicht.",
     sourceNote:
-      "Kosten, Werte, Ausrichtungen und Texte der Karten der Demo 2.0 sind im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch und Portugiesisch; die Balance-Änderungen stammen aus den offiziellen Patchnotes. Der deutsche Kartentext ist eine Übersetzung von OriginsMeta und noch nicht im Spiel geprüft. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der italienische, spanische, französische, portugiesische und deutsche Text der erschaffenen und entfernten Karten stammen von OriginsMeta.",
+      "Kosten, Werte, Gesinnungen und Texte der Karten der Demo 2.0 sind im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch; die Balance-Änderungen stammen aus den offiziellen Patchnotes. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der italienische, spanische, französische, portugiesische und deutsche Text der erschaffenen und entfernten Karten stammen von OriginsMeta.",
     detailKicker: "Karte",
     collectible: "Sammelkarte",
     changesTitle: "Balance-Historie",
@@ -749,8 +749,8 @@ export const de: Dictionary = {
   metashifting: {
     title: "Origins TCG Patchnotes: jede Balance-Änderung",
     h1: "MetaShifting: jede Balance-Änderung",
-    description: "Jede Balance-Änderung von Origins TCG aus den offiziellen Patchnotes, die neueste zuerst: Werte, Fähigkeiten, Ausrichtungen, als Buff, Nerf oder Rework.",
-    intro: "Jede Änderung der offiziellen Patches, die neueste zuerst: Werte, Fähigkeiten und Ausrichtungen, markiert als Buff, Nerf oder Rework. Jede Karte führt zu ihrer Seite mit der vollständigen Balance-Historie.",
+    description: "Jede Balance-Änderung von Origins TCG aus den offiziellen Patchnotes, die neueste zuerst: Werte, Fähigkeiten, Gesinnungen, als Buff, Nerf oder Rework.",
+    intro: "Jede Änderung der offiziellen Patches, die neueste zuerst: Werte, Fähigkeiten und Gesinnungen, markiert als Buff, Nerf oder Rework. Jede Karte führt zu ihrer Seite mit der vollständigen Balance-Historie.",
     latest: "Der neueste Patch von Origins TCG ist {patch}, erschienen am {date}: {changes}.",
     latestDated: "Der neueste Patch von Origins TCG ist am {date} erschienen: {changes}.",
     changesMany: "{n} Kartenänderungen",
@@ -769,16 +769,16 @@ export const de: Dictionary = {
     facts: [
       "Die drei Orte eines Spiels werden in den ersten drei Runden aufgedeckt, einer pro Runde: Ab der vierten Runde spielst du mit dem ganzen Spielfeld im Blick.",
       "Ein Ort wirkt für beide Spieler, nicht nur für den, der ihn zuerst nutzt.",
-      "Ein Ort kann verändern, was eine Karte wert ist: Derselbe Charakter ist viel besser, wo sich der Schaden verdoppelt oder wo alle Trampeln haben.",
+      "Ein Ort kann verändern, was eine Karte wert ist: Derselbe Charakter ist viel besser, wo sich der Schaden verdoppelt oder wo alle Überrennen haben.",
     ],
     search: "Ort suchen",
-    searchPlaceholder: "Name oder Effekt: Mana, Trampeln, Barriere…",
+    searchPlaceholder: "Name oder Effekt: Mana, Überrennen, Barriere…",
     results: "Orte",
     noResults: "Kein Ort passt zu dieser Suche.",
     related: "Passende Karten",
     clear: "Filter zurücksetzen",
     source: "Namen und Effekte der Orte beziehen sich auf {patch}.",
-    notVerified: "Wir haben sie noch nicht einzeln im Spiel geprüft: Das holen wir nach, wie bei den Karten, und diese Zeile wird es sagen. Die deutschen Effekte sind unsere Übersetzung.",
+    notVerified: "Wir haben sie noch nicht einzeln im Spiel geprüft: Das holen wir nach, wie bei den Karten, und diese Zeile wird es sagen. Die deutschen Effekte sind unsere Übersetzung, mit dem Glossar des Spiels.",
     rarity: "Seit Patch 0.7 vom 29. September 2026 hat jeder Ort eine Seltenheit, gewöhnlich, selten, sehr selten oder ultraselten, die bestimmt, wie oft er auftaucht. Die Patchnotes sagen nicht, welcher Ort welche Seltenheit hat.",
     verified: "Einzeln im Spiel geprüft: {n} Orte.",
     guideCta: "Den Guide zu den Orten lesen",
@@ -1004,8 +1004,8 @@ export const de: Dictionary = {
     intro: "Bau ein legales Origins-Deck: eine Legendäre plus zwölf verschiedene Karten, jede in zwei Kopien gespielt (25 Karten). Dein Deck wird beim Bauen in diesem Browser gespeichert: Teile es per Link oder Spielcode, speichere es privat in deinem Profil oder veröffentliche es mit einem Guide, und prüfe drei Decks auf einmal für das Turnierformat Conquest.",
     description: "Kostenloser Deck builder für Origins TCG: 1 Legendäre plus 12 Basiskarten, Legalitätsprüfung, Conquest-Modus für drei Decks, teilbare Links und Spielcodes.",
     dataKicker: "Kartendaten",
-    dataNotice: "Karten auf dem Stand der Demo 2.0 vom {date}: Kosten, Werte und Text aller {count} Karten einzeln im Spiel geprüft, einschließlich des Patches vom {patchDate}. Die deutschen Kartentexte sind unsere Übersetzung, noch nicht im Spiel geprüft.",
-    dataNoticePatch: "Karten am {date} einzeln im Spiel geprüft: Kosten, Werte und Text aller {count} Karten. Der Patch vom {patchDate} kam danach: Seine Änderungen stammen aus den offiziellen Patchnotes, und die Texte, die er geändert hat, sind noch nicht im Spiel geprüft. Die deutschen Kartentexte sind unsere Übersetzung, noch nicht im Spiel geprüft.",
+    dataNotice: "Karten auf dem Stand der Demo 2.0 vom {date}: Kosten, Werte und Text aller {count} Karten einzeln im Spiel geprüft, einschließlich des Patches vom {patchDate}. Die deutschen Kartentexte sind die des Spiels, am 20. Oktober 2026 gelesen.",
+    dataNoticePatch: "Karten am {date} einzeln im Spiel geprüft: Kosten, Werte und Text aller {count} Karten. Der Patch vom {patchDate} kam danach: Seine Änderungen stammen aus den offiziellen Patchnotes, und die Texte, die er geändert hat, sind noch nicht im Spiel geprüft. Die deutschen Kartentexte sind die des Spiels, am 20. Oktober 2026 gelesen.",
     rulesTitle: "Deckregeln",
     rules: ["1 Legendäre Karte führt das Deck an.", "12 verschiedene Basiskarten; das Spiel fügt die zweite Kopie jeder Karte automatisch hinzu.", "25 Karten im Spiel: 1 + 12 × 2."],
     rulesSource: "Quelle: AMA des Teams von Koin Games. Der Conquest-Modus folgt der Regel der Crimson Cup, angekündigt am 24. September 2026: mindestens 8 einzigartige Karten Unterschied zwischen je zwei Decks (jede Karte zählt einmal, egal wie viele Kopien). Mit verschiedenen Legendären heißt das höchstens 5 gemeinsame Basiskarten.",
@@ -1105,7 +1105,7 @@ export const de: Dictionary = {
     typeUnit: "Charaktere",
     typeSpell: "Zauber",
     typeLegendary: "Legendäre",
-    typeHint: "Charaktere: Karten mit Stärke und Leben, die aufs Spielfeld kommen. Zauber: nur ein Effekt, ohne Stärke und Leben.",
+    typeHint: "Charaktere: Karten mit Kraft und Leben, die aufs Spielfeld kommen. Zauber: nur ein Effekt, ohne Kraft und Leben.",
     viewDeck: "Zum Deck",
     summaryBar: "Deck-Übersicht",
   },

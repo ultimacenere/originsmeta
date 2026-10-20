@@ -1099,8 +1099,8 @@ const pt: DraftLabels = {
   },
 };
 
-// Tedesco dal 20/10/2026 (docs/tedesco.md): du minuscolo, parole chiave del gioco col glossario PROVVISORIO (Beim
-// Aufdecken, Beim Tod, Bewegen); il bot è "das Gehirn", i formati Tausch, Trio e Packs; "Runde" è sia il giro di scelta
+// Tedesco dal 20/10/2026 (docs/tedesco.md): du minuscolo, parole chiave col glossario del gioco (Beim
+// Aufdecken, Bei Tod, Bewegen); il bot è "das Gehirn", i formati Tausch, Trio e Packs; "Runde" è sia il giro di scelta
 // del draft sia il round della partita, il contesto li distingue.
 const de: DraftLabels = {
   meta: {
@@ -1235,7 +1235,7 @@ const de: DraftLabels = {
     heal: "Heilung",
     move: "Bewegen",
     reveal: "Beim Aufdecken",
-    death: "Beim Tod",
+    death: "Bei Tod",
     evil: "böse Charaktere",
     good: "gute Charaktere",
     wide: "viele Charaktere",
@@ -1299,7 +1299,7 @@ const de: DraftLabels = {
     formatsTitle: "Die drei Formate",
     botTitle: "Wie das Gehirn spielt",
     bot: [
-      "Es bewertet jede Karte mit unseren Spielnotizen: was sie tut, was sie kostet, zu welchen Paketen sie gehört (Abwerfen, Zauber, Heilung, Bewegen, Beim Aufdecken, Beim Tod, gute und böse Charaktere).",
+      "Es bewertet jede Karte mit unseren Spielnotizen: was sie tut, was sie kostet, zu welchen Paketen sie gehört (Abwerfen, Zauber, Heilung, Bewegen, Beim Aufdecken, Bei Tod, gute und böse Charaktere).",
       "Je weiter der Draft läuft, desto mehr achtet es auf das, was dein Deck braucht: Karten mit Kosten 2 für die erste Runde der Partie, Removal, Schaden an der Barriere, Kartenziehen.",
       "Wenn du direkt nach ihm wählst, nimmt es dir die Karte weg, die du am liebsten hättest, wenn der Preis stimmt; beim Tausch gibt es dir die Karte, die dir am wenigsten hilft.",
       "Es baut sein Deck, indem es die besten 12 zusammen sucht, nicht eine nach der anderen.",

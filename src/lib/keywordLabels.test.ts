@@ -50,7 +50,7 @@ describe("keywordLabel", () => {
   });
   test("in tedesco il glossario provvisorio del 20/10/2026 (docs/tedesco.md)", () => {
     assert.equal(keywordLabel("On Reveal", "de"), "Beim Aufdecken");
-    assert.equal(keywordLabel("Trample", "de"), "Trampeln");
+    assert.equal(keywordLabel("Trample", "de"), "Überrennen");
     assert.equal(keywordLabel("Snipe", "de"), "Präzisionsschuss");
     assert.equal(keywordLabel("Summon", "de"), "Beschwöre");
   });

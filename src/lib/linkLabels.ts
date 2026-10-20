@@ -177,7 +177,7 @@ export const linkLabels: Record<Locale, LinkLabels> = {
       swapsMany: "{n} Karten gehören zu den Änderungen an den vorgefertigten Decks des Playtests.",
       linksOne: "Ihr Name öffnet die Kartenseite mit der gesamten Balance-Historie.",
       linksMany: "Jeder Name öffnet die Kartenseite mit der gesamten Balance-Historie.",
-      numbers: "Die Zahlen sind Mana · Stärke/Leben, vorher und nachher.",
+      numbers: "Die Zahlen sind Mana · Kraft/Leben, vorher und nachher.",
       metashifting: "Alle Balance-Änderungen in MetaShifting",
     },
     deckChange: "Deck-Änderung",

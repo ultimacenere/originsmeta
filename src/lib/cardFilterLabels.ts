@@ -86,7 +86,7 @@ const de: CardFilterLabels = {
   keyword: "Schlüsselwort",
   gameKeywords: "Schlüsselwörter des Spiels",
   effects: "Effekte",
-  power: "Stärke",
+  power: "Kraft",
   health: "Leben",
   min: "min.",
   max: "max.",

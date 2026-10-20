@@ -1,4 +1,4 @@
-# Testi di gioco in italiano e spagnolo (dal 25/09/2026), in francese (dall'08/10/2026), in portoghese (dal 20/10/2026) e, provvisori, in tedesco
+# Testi di gioco in italiano e spagnolo (dal 25/09/2026), in francese (dall'08/10/2026), in portoghese e in tedesco (dal 20/10/2026)
 
 Il gioco è tradotto: nella Demo 2.0 le carte hanno un testo ufficiale anche in italiano e in spagnolo, con le parole
 chiave tradotte. Il 25/09/2026 li abbiamo letti tutti nel gioco (122 carte, collezione con le carte non possedute) e
@@ -21,20 +21,15 @@ testi della patch 0.7, tasto "Não obtidas" acceso), trascrizione in `docs/testi
 "se ainda lá não estiver" (Van Helsing) ed "Escolhe uma", "Mover um aliado" all'infinito (En Passant), "volto" minuscolo
 dopo i due punti (Koschei). Anche qui Twister Toss ha già il testo della patch 0.7.
 
-**Tedesco (20/10/2026, provvisorio)**: il gioco è tradotto anche in tedesco (pagina Steam, patch 0.7), ma i testi
-tedeschi **non li abbiamo ancora letti nel gioco** (Pierluigi: "per le carte testi provvisori finché non apro il game e
-ti avviso"). Quindi in `src/lib/data/card-lore-de.ts` TUTTI i testi, anche quelli delle 122 carte della collezione,
-sono una traduzione nostra dall'inglese (campo `en` di `card-lore.ts`, altrimenti il testo dell'import, stessi a capo)
-con il glossario provvisorio di `docs/tedesco.md` (Beim Aufdecken, Beim Tod, Beim Töten, Schild, Trampeln,
-Todesberührung, Verteidiger, Wiedergeburt, Erstschlag, Doppelangriff, Präzisionsschuss, Bewegen, Feld, Ort, Barriere,
-JEDEN / ALLE; "Essen" per il Food è una scelta nostra), e `de` NON sta in `officialTextLocales`: le schede dicono che il
-testo tedesco non è verificato nel gioco e il JSON-LD non lo dichiara. Twister Toss ha il testo inglese di prima della
-patch 0.7 ("Bewege einen Verbündeten."). Manca la trascrizione `docs/testi-ufficiali/de.tsv` (senza, `node
-scripts/official-texts.mjs de` si ferma e lo dice). Si completa come il francese l'08/10/2026: si legge nel gioco in
-tedesco la collezione (carte non possedute comprese), si scrive `de.tsv`, si lancia `node scripts/official-texts.mjs
-de` per vedere le differenze e poi `--apply`, si aggiunge `de` a `officialTextLocales` in `cards.ts`, si aggiorna il
-glossario di `docs/tedesco.md` con le parole del gioco e lo si applica a carte create e rimosse, luoghi, pastiglie
-(`keywordLabels.ts`), `GAME_KEYWORDS`, guide, news e storico (`note.de` di `card-history.ts`).
+**Tedesco (20/10/2026)**: il gioco è tradotto anche in tedesco. Il sito è partito il pomeriggio del 20/10/2026 con
+testi provvisori (Pierluigi: "per le carte testi provvisori finché non apro il game e ti avviso"); la sera stessa abbiamo
+letto nel gioco in tedesco le 122 carte della collezione (demo 0.7.1, testi della patch 0.7, filtro "Nicht im Besitz"):
+trascrizione in `docs/testi-ufficiali/de.tsv`, `node scripts/official-texts.mjs de --apply` (79 testi cambiati, 36
+uguali), `de` in `officialTextLocales`. Il glossario del gioco (Beim Aufdecken, Bei Tod, Bei Vernichtung, Überrennen,
+Todesberührung, Erstschlag, Präzisionsschuss, Feld, Ort, EINEN BELIEBIGEN, Kraft e Leben) sta in `docs/tedesco.md`
+e vale per carte create e rimosse, luoghi, guide, news ed etichette, che restano traduzioni nostre ("Essen" per il Food
+è una scelta nostra). Il provvisorio sbagliava quattro parole: Beim Tod, Beim Töten, Trampeln, Stärke. Anche qui Twister
+Toss ha già il testo della patch 0.7.
 
 ## La regola
 

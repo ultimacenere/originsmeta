@@ -93,7 +93,7 @@ describe("frase d'attacco: esempi", () => {
     );
     assert.equal(
       lead("merlin", "de", decks),
-      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Stärke und 5 Leben und ist Neutral. Die Karte ist in der Demo 2.0 (am 22. September 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
+      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Demo 2.0 (am 22. September 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
     );
   });
 
@@ -188,7 +188,7 @@ describe("frase d'attacco: esempi", () => {
     );
     assert.equal(
       lead("baker", "de"),
-      "Baker ist nicht in der Demo 2.0 und lässt sich daher im Deckbuilder nicht hinzufügen. Er war ein Charakter aus früheren Builds von Origins TCG, dem digitalen Kartenspiel von Koin Games. Zuletzt bekannte Werte: Er kostete 3 Mana, hatte 2 Stärke und 1 Leben und war Evil.",
+      "Baker ist nicht in der Demo 2.0 und lässt sich daher im Deckbuilder nicht hinzufügen. Er war ein Charakter aus früheren Builds von Origins TCG, dem digitalen Kartenspiel von Koin Games. Zuletzt bekannte Werte: Er kostete 3 Mana, hatte 2 Kraft und 1 Leben und war Evil.",
     );
   });
 
@@ -268,7 +268,7 @@ describe("In breve", () => {
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "es")[1].a), "Sí: el parche 0.6.3 del 27 de agosto de 2026 cambió su Poder de 3 a 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "pt")[1].a), "Sim: o patch 0.6.3 de 27 de agosto de 2026 mudou o Poder de 3 para 5.");
     assert.equal(cardBrief(card("merlin"), facts("merlin"), "pt")[0].q, "Merlin está na demo de Origins TCG?");
-    assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "de")[1].a), "Ja: Patch 0.6.3 vom 27. August 2026 änderte die Stärke von 3 auf 5.");
+    assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "de")[1].a), "Ja: Patch 0.6.3 vom 27. August 2026 änderte die Kraft von 3 auf 5.");
     assert.equal(cardBrief(card("merlin"), facts("merlin"), "de")[0].q, "Ist Merlin in der Demo von Origins TCG?");
     assert.ok(items[1].a.some((p) => typeof p !== "string" && "path" in p && p.path === "/news/patch-0-6-3"));
   });
@@ -397,8 +397,9 @@ describe("etichette e fonti", () => {
     assert.equal(cardLabels.en.textWoo, "Card text (not checked in the game)");
     assert.equal(cardLabels.pt.textOurs, "Tradução do OriginsMeta (glossário do jogo)");
     assert.equal(cardLabels.pt.brief, "Em resumo");
-    // tedesco (20/10/2026): i testi non sono ancora letti nel gioco, quindi la traduzione nostra lo dice
-    assert.equal(cardLabels.de.textOurs, "Übersetzung von OriginsMeta (nicht im Spiel überprüft)");
+    // tedesco: dal 20/10/2026 i testi della collezione sono quelli del gioco, la traduzione nostra (create e rimosse) usa
+    // il glossario del gioco come nelle altre lingue
+    assert.equal(cardLabels.de.textOurs, "Übersetzung von OriginsMeta (Glossar des Spiels)");
     assert.equal(cardLabels.de.brief, "Kurz gesagt");
   });
 
@@ -418,10 +419,8 @@ describe("etichette e fonti", () => {
     const merlin = cardLdTexts(card("merlin"), false);
     assert.deepEqual(
       merlin.map((t) => t.lang),
-      ["en", "it", "es", "fr", "pt"],
+      ["en", "it", "es", "fr", "pt", "de"],
     );
-    // il tedesco non è fra le lingue lette nel gioco (`officialTextLocales`): la nostra traduzione non va nel JSON-LD
-    assert.ok(!merlin.some((t) => (t.lang as string) === "de"));
     assert.ok(merlin.every((t) => !/\n| {2}/.test(t.text)));
     // carte create e rimosse: il solo inglese, mai la nostra traduzione
     for (const slug of ["garlic", "baker"]) assert.deepEqual(cardLdTexts(card(slug), false).map((t) => t.lang), card(slug).ability ? ["en"] : [], slug);

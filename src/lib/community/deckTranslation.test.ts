@@ -158,12 +158,13 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
   });
 
-  test("le istruzioni dei mazzi sono quelle del 20/10/2026 (impronta SHA-256: tedesco con il glossario provvisorio)", () => {
+  test("le istruzioni dei mazzi sono quelle del 20/10/2026 (impronta SHA-256: tedesco con il glossario del gioco)", () => {
     // fino al 06/10/2026: cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413 (tre lingue)
     // 07/10/2026: 20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882 (francese con il glossario provvisorio)
     // 08/10/2026: 4bc9eff49034ca648f06a32c32f63a986f35abb34e2805d2806e440e25ebcee4 (glossario francese letto nel gioco)
     // 20/10/2026: d115ffa7dac5a08bdc60921cc6ffa6a3ca2dbd4c43c0e511675adbbe178b5f27 (portoghese del Brasile con il glossario del gioco)
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "5c2cd841a7dc0da9302babb3bfbc6e0b4cece42e24b61898f7d03c2b3c081ae5");
+    // 20/10/2026: 5c2cd841a7dc0da9302babb3bfbc6e0b4cece42e24b61898f7d03c2b3c081ae5 (tedesco con il glossario provvisorio)
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "ea952f1787a0fa3418d202a8034956c0b7bc9e67c7b08ce815d9ea20bd872aec");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 

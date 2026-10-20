@@ -39,7 +39,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…) and German (/de/cards/…) with the same slug, the official text of the game in Italian, Spanish, French and Portuguese (German: our translation, not yet checked in the game), and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…) and German (/de/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese and German, and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -228,7 +228,7 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Eigene Tier-List erstellen](https://originsmeta.com/de/tier-list/create): deine eigene Tier-List für Origins TCG, indem du die Karten der Demo 2.0 in die Stufen S bis D ziehst, mit den Legendären separat, per Link teilbar. Kostenlos, ohne Konto.
 - [Tier-List der Kartenbewertungen](https://originsmeta.com/de/tier-list/votes): jede Karte von Origins TCG von 1 (schwach) bis 10 (stark) bewertet; der Durchschnitt der Stimmen der Mitglieder ergibt eine Tier-List der Legendären und Basiskarten.
 - [MetaShifting](https://originsmeta.com/de/metashifting): die Patchnotes von Origins TCG: jede Balance-Änderung, Karte für Karte und Patch für Patch, neueste zuerst, aus den offiziellen Beiträgen von Koin Games.
-- [Kartenliste](https://originsmeta.com/de/cards): alle Karten der Demo 2.0 mit aktuellen Werten, dem offiziellen englischen Text und unserer deutschen Übersetzung (noch nicht im Spiel geprüft), der Änderungshistorie und der Legende hinter jeder Karte.
+- [Kartenliste](https://originsmeta.com/de/cards): alle Karten der Demo 2.0 mit aktuellen Werten, dem offiziellen Text auf Englisch und Deutsch, wie er im Spiel steht, der Änderungshistorie und der Legende hinter jeder Karte.
 - [Orte](https://originsmeta.com/de/locations): die Orte der Demo 2.0 mit ihrem Effekt, mit Suche und Filtern.
 - [Decks](https://originsmeta.com/de/decks): von der Community im Deck builder veröffentlichte Decklists, jede mit Guide und einer Bewertung von 1 bis 5 Sternen.
 - [Turnierdecks](https://originsmeta.com/de/decks/tournament): Conquest-Trios aus drei Decks für Turniere wie den Crimson Cup, von Spielern mit einem gemeinsamen Guide veröffentlicht: drei verschiedene Legendäre, Spielcodes und Bewertungen.
@@ -258,7 +258,7 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Steam news and patch notes](https://steamcommunity.com/app/4429430/allnews/): the source of every balance note on this site.
 - [Official Discord](https://discord.gg/originstcg): announcements, AMAs and tournament sign-ups.
 - [origins-tcg.com](https://origins-tcg.com/): the official game site by Koin Games.
-- The game itself: costs, stats, alignments and English texts of the cards of the Demo 2.0 collection were checked one by one in the game on 22 September 2026, the Italian and Spanish texts on 25 September 2026, the French texts on 8 October 2026, the Brazilian Portuguese texts on 20 October 2026. The German card texts are still our own translation and have not been checked in the game yet. Created and removed cards are not in the game's collection and have not been checked there.
+- The game itself: costs, stats, alignments and English texts of the cards of the Demo 2.0 collection were checked one by one in the game on 22 September 2026, the Italian and Spanish texts on 25 September 2026, the French texts on 8 October 2026, the Brazilian Portuguese texts on 20 October 2026. The German texts on 20 October 2026 too. Created and removed cards are not in the game's collection and have not been checked there.
 
 ## Optional
 
@@ -267,5 +267,5 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 ## Notes
 
 - OriginsMeta is an independent project and is not affiliated with Koin Games.
-- Card art and card text © Koin Games (the Italian, Spanish, French and Portuguese card texts are the game's own). Sagas, origin notes and the Italian, Spanish, French, Portuguese and German text of created and removed cards (and, for now, all German card texts) are written by OriginsMeta.
+- Card art and card text © Koin Games (the Italian, Spanish, French, Portuguese and German card texts are the game's own). Sagas, origin notes and the Italian, Spanish, French, Portuguese and German text of created and removed cards are written by OriginsMeta.
 - Contact: staff@originsmeta.com

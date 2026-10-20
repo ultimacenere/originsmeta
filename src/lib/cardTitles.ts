@@ -103,7 +103,7 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     removed: "carta de Origins TCG fora da demo",
     removedLegendary: "Lendária de Origins TCG fora da demo",
   },
-  // tedesco (docs/tedesco.md): "aus Origins TCG", "Legendäre" come aggettivo del gioco (glossario provvisorio),
+  // tedesco (docs/tedesco.md): "aus Origins TCG", "Legendäre" come aggettivo del gioco (glossario del gioco),
   // "erschaffene Karte" per i token; "Demo" è il nome comune, "Demo 2.0" il prodotto
   de: {
     legendary: "Legendäre Karte aus Origins TCG",
@@ -241,7 +241,7 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Estatísticas, decks publicados e origem da lenda no OriginsMeta.",
     shortTail: "Ficha completa no OriginsMeta.",
   },
-  // Tedesco: il tipo del glossario provvisorio (Charakter e Zauber, maschili: "Legendärer Charakter", "Legendärer
+  // Tedesco: il tipo del glossario del gioco (Charakter e Zauber, maschili: "Legendärer Charakter", "Legendärer
   // Zauber"), l'allineamento in inglese dopo il tipo come nelle altre lingue; "Mana" con la maiuscola (sostantivo).
   de: {
     stats: (m, p, h) => (p === undefined ? `${m ?? "?"} Mana` : `${m ?? "?"} Mana, ${p}/${h ?? "?"}`),

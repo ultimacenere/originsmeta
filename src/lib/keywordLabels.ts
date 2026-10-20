@@ -15,8 +15,8 @@ import type { Locale } from "./i18n";
  *   glossario provvisorio nostro (First Strike era "Initiative", ora "Première frappe").
  * - Il portoghese del Brasile (20/10/2026) usa le parole del gioco lette quel giorno (docs/portoghese.md); le categorie
  *   hanno il verbo dei testi delle carte in terza persona, come il gioco (Invoca, Compra, Descarta).
- * - Il tedesco (20/10/2026) usa il glossario PROVVISORIO di docs/tedesco.md: i testi tedeschi del gioco non sono ancora
- *   stati letti; le categorie hanno il verbo all'imperativo dei nostri testi delle carte (Beschwöre, Ziehe, Wirf ab).
+ * - Il tedesco (20/10/2026) usa il glossario del gioco letto quel giorno (docs/tedesco.md: Bei Tod, Bei Vernichtung,
+ *   Überrennen…); le categorie hanno il verbo all'imperativo dei testi delle carte (Beschwöre, Ziehe, Wirf ab).
  * Un tag nuovo portato da `npm run import:woo` senza etichetta qui si mostra in inglese e fa fallire il test.
  */
 type Label = { it: string; es: string; fr: string; pt: string; de: string; game?: true };
@@ -24,10 +24,10 @@ type Label = { it: string; es: string; fr: string; pt: string; de: string; game?
 export const keywordLabels: Record<string, Label> = {
   // parole chiave del gioco: nomi ufficiali
   "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", de: "Beim Aufdecken", game: true },
-  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", de: "Beim Tod", game: true },
-  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", de: "Beim Töten", game: true },
+  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", de: "Bei Tod", game: true },
+  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", de: "Bei Vernichtung", game: true },
   Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", pt: "Escudo", de: "Schild", game: true },
-  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", de: "Trampeln", game: true },
+  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", de: "Überrennen", game: true },
   Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", pt: "Toque mortífero", de: "Todesberührung", game: true },
   Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", de: "Verteidiger", game: true },
   Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", pt: "Renascimento", de: "Wiedergeburt", game: true },

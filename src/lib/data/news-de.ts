@@ -5,7 +5,7 @@ import type { NewsCopy } from "./news-fr";
  * (`NewsCopy` di news-fr.ts): `title` (H1, entro 110 caratteri), `metaTitle` (con "Origins TCG" entro 60),
  * `description` (120–158), `summary`, `body` in Markdown, `highlights` e `faq` quando l'articolo li ha nelle altre
  * lingue. news.ts li unisce (`withTranslations`) e si rifiuta di compilare se a una news manca il tedesco o se il
- * tedesco ha un campo che l'articolo non ha. Regole, glossario (provvisorio per i testi di gioco) e SEO in
+ * tedesco ha un campo che l'articolo non ha. Regole, glossario (quello del gioco, letto il 20/10/2026) e SEO in
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
@@ -276,7 +276,7 @@ Was es im Stream zeigt:
 - die **Namensschilder der beiden Spieler**, mit Deck 1, 2 und 3 und einem Punkt beim Deck, das gerade gespielt wird;
 - den **Spielstand der Serie**, mit dem Namen des Turniers, der Phase (Qualifikation, Playoffs, Finale) und dem Format (Bo1, Bo3, Bo5);
 - die **Decklists**, links, rechts oder ausgeblendet, mit den **übrigen Exemplaren** jeder Karte: Im Steuerpult markiert ein Klick auf eine Karte ein Exemplar als gespielt, und „Next game“ legt alle zurück;
-- die **ganze Karte beim Darüberfahren**, mit Kosten, Stärke, Leben, Typ und Text in der Sprache des Overlays (Englisch, Italienisch, Spanisch oder Französisch), und einen Button **Copy deck** mit dem Spielcode;
+- die **ganze Karte beim Darüberfahren**, mit Kosten, Kraft, Leben, Typ und Text in der Sprache des Overlays (Englisch, Italienisch, Spanisch oder Französisch), und einen Button **Copy deck** mit dem Spielcode;
 - einen optionalen **Sponsorplatz**, der sich mit dem Spielstand abwechselt (standardmäßig 20 Sekunden Spielstand und 7 Sponsor, beides einstellbar), mit bis zu drei Logos oder Bannern zum Hochladen;
 - die Zeile „not affiliated with Koin Games“, immer im Bild.
 
@@ -600,7 +600,7 @@ Koin prüft außerdem sammelbare, anpassbare Hüllen und Binder, um in den Samml
 
 [Patch 0.7](/de/news/patch-0-7#kosten) hat alle drei um 1 Mana verteuert. Ben sagte, das Team habe keine Änderungen geplant, dann hätten die Karten, die die Spieler immer wieder gemeldet hatten, „bessere Spielraten bekommen“, bis die Zahlen nicht mehr gesund waren. Win-Rates hat er nicht genannt, nur, dass sie „in gesunden Bereichen“ gelegen hatten.
 
-- **Bagheera** ist eine Karte, die „für uns sehr wichtig ist, richtig hinzubekommen“: Sie gibt das Tempo zu Beginn vor und zeigt neuen Spielern, wo eine Bedrohung auftauchen wird, „an denselben drei Stellen“, den mittleren Feldern, auf denen ihre Beim-Aufdecken-Fähigkeit sie wachsen lässt. Als 3/3 für 1 Mana steckte sie in zu vielen Decks, vor allem in Three Not So Little Pigs. Koin will, dass sie eine Karte für Mulan ist, die Beim-Aufdecken-Fähigkeiten wiederholt, deshalb hat es den großen Bonus behalten und die Kosten erhöht. Ein stärkeres Mulan-Deck, merkte Ben an, könnte wiederum Ellen Trechend stärker machen.
+- **Bagheera** ist eine Karte, die „für uns sehr wichtig ist, richtig hinzubekommen“: Sie gibt das Tempo zu Beginn vor und zeigt neuen Spielern, wo eine Bedrohung auftauchen wird, „an denselben drei Stellen“, den mittleren Feldern, auf denen ihre Beim Aufdecken-Fähigkeit sie wachsen lässt. Als 3/3 für 1 Mana steckte sie in zu vielen Decks, vor allem in Three Not So Little Pigs. Koin will, dass sie eine Karte für Mulan ist, die Beim Aufdecken-Fähigkeiten wiederholt, deshalb hat es den großen Bonus behalten und die Kosten erhöht. Ein stärkeres Mulan-Deck, merkte Ben an, könnte wiederum Ellen Trechend stärker machen.
 - **Spellbook** wird sich am stärksten verändern, wenn sich der Kartenpool verdoppelt, weil ihre Zauber aus diesem Pool kommen. Kevin hat heute rund 22 Zauber gezählt, eine Legion of the Dead kommt also ungefähr „einmal von 22“, eine Quote, die „nicht sehr lange halten wird“.
 - **Ellen Trechend**: „keine Maßnahme“, und „in nächster Zeit“ ist nichts zu erwarten.
 
@@ -616,7 +616,7 @@ Christopher Robin ging von 5/4 auf 4/5, weil er in vielen Decks mit einer guten 
 - **Daten und Gefühle**: Zahlen plus Feedback, denn „the player sentiment is actually data too“ (Kevin), auch die Stimmung der Spieler ist ein Datum, und ein Ziel, das sie „net positive joy“ nennen: Wer eine Interaktion gewinnt, fühlt sich gut, ohne dass sich der Verlierer schrecklich fühlt.
 - **Wenige, gewichtige Entscheidungen**: 12 Basiskarten plus eine Legendäre ergeben „13 Entscheidungen“, deshalb wiegt eine Änderung der Manakosten mehr als in größeren Decks.
 - **Gleichzeitige Züge, drei Orte und eine Legendäre, die du „nicht ziehen musst“**, in einem Spiel, das „von Anfang an“ unterhaltsam zum Zuschauen sein sollte.
-- **Absichtlich freundlichere Regeln**: Das Entfernen eines laufenden Buffs tötet nie einen Charakter, und Schild stoppt Trampeln vollständig.
+- **Absichtlich freundlichere Regeln**: Das Entfernen eines laufenden Buffs tötet nie einen Charakter, und Schild stoppt Überrennen vollständig.
 
 ## Was wir noch nicht wissen {#was-wir-noch-nicht-wissen}
 
@@ -1188,12 +1188,12 @@ Baue deine drei Decks im [Deckbuilder](/de/deck-builder), veröffentliche sie un
     description:
       "Neu auf OriginsMeta: ein Draft für Origins TCG gegen unseren Bot oder einen Freund, Deck-Updates für Patch 0.7, gespeicherte Decks, Trends, neue Kartenfilter.",
     summary:
-      "In den letzten Tagen hat OriginsMeta einen kostenlosen Draft für Origins TCG bekommen, gegen unseren Bot oder gegen einen Freund, und du kannst deine veröffentlichten Decks jetzt auf Patch 0.7 aktualisieren, ohne Name, Guide und Bewertungen zu verlieren. Außerdem kannst du Decks speichern, die dir gefallen, die angesagten finden, Karten nach Kosten, Schlüsselwort, Stärke und Leben filtern und die Karten sehen, die jeder Patch verändert hat, vorher und nachher.",
+      "In den letzten Tagen hat OriginsMeta einen kostenlosen Draft für Origins TCG bekommen, gegen unseren Bot oder gegen einen Freund, und du kannst deine veröffentlichten Decks jetzt auf Patch 0.7 aktualisieren, ohne Name, Guide und Bewertungen zu verlieren. Außerdem kannst du Decks speichern, die dir gefallen, die angesagten finden, Karten nach Kosten, Schlüsselwort, Kraft und Leben filtern und die Karten sehen, die jeder Patch verändert hat, vorher und nachher.",
     highlights: [
       { label: "Draft", text: "drei Formate gegen das Gehirn, unseren Bot, oder gegen einen Freund in einem Online-Raum", anchor: "draft" },
       { label: "Deck-Versionen", text: "ein veröffentlichtes Deck auf Patch 0.7 aktualisieren und Name, Guide und Link behalten", anchor: "deck-versionen" },
       { label: "Gespeicherte und angesagte Decks", text: "der Button Speichern, die Sortierungen Im Trend und Am meisten gespeichert und der Filter nach Spielversion", anchor: "gespeicherte-decks" },
-      { label: "Karten und MetaShifting", text: "Filter nach Kosten, Schlüsselwort, Stärke und Leben, und jeder Patch vorher und nachher", anchor: "karten" },
+      { label: "Karten und MetaShifting", text: "Filter nach Kosten, Schlüsselwort, Kraft und Leben, und jeder Patch vorher und nachher", anchor: "karten" },
       { label: "OriginsMeta Analytics", text: "unser Match-Tracker, seit Patch 0.7 pausiert: sag uns, ob du ihn willst", anchor: "analytics" },
       { label: "Anmeldung und Profil", text: "der Code aus der E-Mail neben dem Link und eine eigene Seite für dein öffentliches Profil", anchor: "konto" },
       { label: "Guides und Comics", text: "der Guide zu den Streaming-Tools und Comics, die in mehr als einer Sprache gezeichnet sind", anchor: "guides-comics" },
@@ -1224,8 +1224,8 @@ Die früheren Versionen bleiben auf der Seite des Decks, unter „Versionen dies
 
 ## Karten und MetaShifting {#karten}
 
-- In [Karten](/de/cards) gibt es eine Reihe von Kostenfiltern (0 bis 6 und 7+), die immer sichtbar ist, und unter „Weitere Filter“ das Schlüsselwort und die Bereiche für Stärke und Leben, dazu einen Button, um alle zurückzusetzen.
-- In [MetaShifting](/de/metashifting) beginnt jeder Patch jetzt mit „Vorher und nachher“: jede Karte, deren Kosten, Stärke oder Leben sich geändert haben, nebeneinander, mit den geänderten Werten hervorgehoben.
+- In [Karten](/de/cards) gibt es eine Reihe von Kostenfiltern (0 bis 6 und 7+), die immer sichtbar ist, und unter „Weitere Filter“ das Schlüsselwort und die Bereiche für Kraft und Leben, dazu einen Button, um alle zurückzusetzen.
+- In [MetaShifting](/de/metashifting) beginnt jeder Patch jetzt mit „Vorher und nachher“: jede Karte, deren Kosten, Kraft oder Leben sich geändert haben, nebeneinander, mit den geänderten Werten hervorgehoben.
 
 ## OriginsMeta Analytics {#analytics}
 
@@ -1311,7 +1311,7 @@ Animationen und die Pausen dazwischen sind schneller. „Daran muss noch viel ge
 
 ## Kartenbalance: alles schon auf OriginsMeta {#balance}
 
-Die zehn Balance-Änderungen in den Notes sind die, die die Hauptdemo mit dem Update vom 21. September und mit Patch 0.7 bekommen hat: Kartenseiten, [Deckbuilder](/de/deck-builder) und [MetaShifting](/de/metashifting) nutzen sie schon. Format: Mana · Stärke/Leben für Charaktere, nur Mana für Zauber.
+Die zehn Balance-Änderungen in den Notes sind die, die die Hauptdemo mit dem Update vom 21. September und mit Patch 0.7 bekommen hat: Kartenseiten, [Deckbuilder](/de/deck-builder) und [MetaShifting](/de/metashifting) nutzen sie schon. Format: Mana · Kraft/Leben für Charaktere, nur Mana für Zauber.
 
 | Karte | Vorher | Nachher | In der Demo seit |
 | --- | --- | --- | --- |
@@ -1348,7 +1348,7 @@ Wir wissen noch nicht, ob sie schon in der Hauptdemo sind: Wir prüfen das im Sp
 - Heroic Charge stapelt sich korrekt, wenn sie mehr als einmal gewirkt wird (21. September).
 - Spellbook und Humpty können sich nicht mehr selbst als zufällige Karte erzeugen (Patch 0.7).
 - Charaktere mit „Wähle eins“ können erneut wählen, wenn sie auf deine Hand zurückkehren, und behalten ihre Werte (21. September, für Frog Prince und Magic Carpet).
-- Karten behalten ihre Werte im Friedhof: Eine gebuffte Mummy kommt mit ihrer ganzen Stärke zurück (21. September).
+- Karten behalten ihre Werte im Friedhof: Eine gebuffte Mummy kommt mit ihrer ganzen Kraft zurück (21. September).
 
 ## Orte {#orte}
 
@@ -1417,7 +1417,7 @@ Das offizielle Bild nennt ihn Steam Demo Update #2, Version 0.7: Es ist das zwei
 
 ## Alle Balance-Änderungen {#balance}
 
-Format: Mana · Stärke/Leben für Charaktere, nur Mana für Zauber.
+Format: Mana · Kraft/Leben für Charaktere, nur Mana für Zauber.
 
 | Karte | Vorher | Nachher | Was sich ändert |
 | --- | --- | --- | --- |
@@ -1459,11 +1459,11 @@ Für den Rest des Spiels fügt Spellbook zu Beginn jeder Runde einen zufälligen
 
 ### Humpty und Spellbook geben sich nicht mehr selbst {#humpty-spellbook}
 
-Die zufälligen Karten, die sie dir geben, können nicht mehr sie selbst sein. Humptys Fähigkeit Beim Tod fügt deiner Hand eine zufällige Karte hinzu: Sie kann nicht mehr Humpty sein. Der zufällige Zauber, den Spellbook jede Runde hinzufügt, kann nicht mehr Spellbook sein.
+Die zufälligen Karten, die sie dir geben, können nicht mehr sie selbst sein. Humptys Fähigkeit Bei Tod fügt deiner Hand eine zufällige Karte hinzu: Sie kann nicht mehr Humpty sein. Der zufällige Zauber, den Spellbook jede Runde hinzufügt, kann nicht mehr Spellbook sein.
 
 ### Volle Hand: Eine zurückgegebene Karte wird verbrannt {#volle-hand}
 
-Wenn eine Karte auf eine Hand zurückkehrt, die schon voll ist, wird sie jetzt verbrannt (sie geht verloren), statt dass die Fähigkeit verpufft. Unter den Karten der Demo 2.0 betrifft das die, die eine Karte auf die Hand zurückbringen: White Queen und Stroke of Midnight, die einen BELIEBIGEN Charakter auf die Hand seines Besitzers zurückbringen, sowie Koschei und Dracula, die sich selbst zurückbringen.
+Wenn eine Karte auf eine Hand zurückkehrt, die schon voll ist, wird sie jetzt verbrannt (sie geht verloren), statt dass die Fähigkeit verpufft. Unter den Karten der Demo 2.0 betrifft das die, die eine Karte auf die Hand zurückbringen: White Queen und Stroke of Midnight, die EINEN BELIEBIGEN Charakter auf die Hand seines Besitzers zurückbringen, sowie Koschei und Dracula, die sich selbst zurückbringen.
 
 ### Freeze! und Dorothy: Schlüsselwörter erklärt {#schluesselwoerter}
 
@@ -1473,7 +1473,7 @@ Fährst du mit der Maus darüber, erklären sie jetzt die Schlüsselwörter, die
 
 ### Heroic Charge {#heroic-charge}
 
-Heroic Charge gibt Verbündeten in dieser Runde +2⚔️ und Trampeln. Verliert ein Charakter, den sie verstärkt hat, seine Fähigkeiten, bleiben die +2⚔️ jetzt erhalten; Trampeln wird weiterhin entfernt.
+Heroic Charge gibt Verbündeten in dieser Runde +2⚔️ und Überrennen. Verliert ein Charakter, den sie verstärkt hat, seine Fähigkeiten, bleiben die +2⚔️ jetzt erhalten; Überrennen wird weiterhin entfernt.
 
 ### Mehr als ein Verteidiger {#verteidiger}
 
@@ -1489,7 +1489,7 @@ Das Spiel unterstützt jetzt 13 Sprachen: Englisch, Französisch, Italienisch, D
 
 ## Boogeyman {#boogeyman}
 
-Die Zusammenfassung oben in den Patchnotes sagt, dass sich „Twister Toss, Heroic Charge und Boogeyman jetzt anders verhalten“, aber keine Zeile der Notes sagt, was sich bei Boogeyman ändert. Seine Fähigkeit Beim Aufdecken zerstört den Verbündeten an seinem Ort mit der niedrigsten Stärke, auch ihn selbst. Wir aktualisieren diesen Artikel, sobald das Team es erklärt.
+Die Zusammenfassung oben in den Patchnotes sagt, dass sich „Twister Toss, Heroic Charge und Boogeyman jetzt anders verhalten“, aber keine Zeile der Notes sagt, was sich bei Boogeyman ändert. Seine Fähigkeit Beim Aufdecken zerstört den Verbündeten an seinem Ort mit der niedrigsten Kraft, auch ihn selbst. Wir aktualisieren diesen Artikel, sobald das Team es erklärt.
 
 ## Was wir noch nicht wissen {#was-wir-nicht-wissen}
 
@@ -1817,7 +1817,7 @@ Das Feedback-Fenster ist seit ein paar Tagen offen, und unser Staff liest jede N
       "Die Balance-Änderungen des Demo-Updates vom 21. September, verglichen mit dem letzten Playtest-Build: Dorothy sinkt auf 4 Mana, acht Karten ändern ihre Werte, Itsy Bitsy Spider wird Evil, sechs Karten ändern, was sie tun, und zwei Spielregeln sowie The Gallows werden korrigiert.",
     highlights: [
       { label: "Dorothy kostet 4", text: "ein Mana weniger für die Legendäre, die jedes Mal wächst, wenn sich ein Verbündeter bewegt", anchor: "dorothy" },
-      { label: "Wicked Stepmother auf 4 Stärke", text: "die Legendäre mit Todesberührung geht von 3/6 auf 4/6", anchor: "wicked-stepmother" },
+      { label: "Wicked Stepmother auf 4 Kraft", text: "die Legendäre mit Todesberührung geht von 3/6 auf 4/6", anchor: "wicked-stepmother" },
       { label: "Christopher Robin wieder 5/4", text: "die Werte, die er vor Patch 0.6.3 hatte", anchor: "christopher-robin" },
       { label: "Fünf weitere Werteänderungen", text: "Guy of Gisborne, Quasimodo, Beauty, Magic Carpet und Roo", anchor: "werte" },
       { label: "Itsy Bitsy Spider wird Evil", text: "statt Neutral, mit allen Evil-Synergien, die daraus folgen", anchor: "itsy-bitsy-spider" },
@@ -1827,17 +1827,17 @@ Das Feedback-Fenster ist seit ein paar Tagen offen, und unser Staff liest jede N
     ],
     body: `## Alle Werteänderungen {#werte}
 
-Die Zahlen sind mit dem letzten Playtest-Build verglichen, 0.6.3: dieselben Werte, die die Kartendatenbank dieser Website bis zu diesem Patch verwendet hat. Format: Mana · Stärke/Leben; ★ markiert die Legendären.
+Die Zahlen sind mit dem letzten Playtest-Build verglichen, 0.6.3: dieselben Werte, die die Kartendatenbank dieser Website bis zu diesem Patch verwendet hat. Format: Mana · Kraft/Leben; ★ markiert die Legendären.
 
 | Karte | Vorher | Nachher | Was sich ändert |
 | --- | --- | --- | --- |
 | Dorothy ★ | 5 · 1/1 | 4 · 1/1 | kostet 1 weniger |
-| Wicked Stepmother ★ | 4 · 3/6 | 4 · 4/6 | +1 Stärke |
+| Wicked Stepmother ★ | 4 · 3/6 | 4 · 4/6 | +1 Kraft |
 | Christopher Robin | 4 · 4/5 | 4 · 5/4 | zurück zu den Werten vor 0.6.3 |
-| Guy of Gisborne | 6 · 3/3 | 6 · 4/4 | +1 Stärke, +1 Leben |
-| Quasimodo | 3 · 2/5 | 3 · 3/4 | +1 Stärke, −1 Leben |
-| Beauty | 4 · 1/1 | 4 · 2/1 | +1 Stärke |
-| Magic Carpet | 4 · 3/4 | 4 · 4/4 | +1 Stärke und eine neue Regel für seine Buffs |
+| Guy of Gisborne | 6 · 3/3 | 6 · 4/4 | +1 Kraft, +1 Leben |
+| Quasimodo | 3 · 2/5 | 3 · 3/4 | +1 Kraft, −1 Leben |
+| Beauty | 4 · 1/1 | 4 · 2/1 | +1 Kraft |
+| Magic Carpet | 4 · 3/4 | 4 · 4/4 | +1 Kraft und eine neue Regel für seine Buffs |
 | Roo | 2 · 2/3 | 2 · 2/4 | +1 Leben |
 | Itsy Bitsy Spider | 0 · 1/1, Neutral | 0 · 1/1, Evil | wechselt die Gesinnung |
 
@@ -1847,7 +1847,7 @@ Die Zahlen sind mit dem letzten Playtest-Build verglichen, 0.6.3: dieselben Wert
 
 Dorothy kann sich jede Runde bewegen und hat +1/+1 für jedes Mal, das sich in diesem Spiel ein Verbündeter bewegt hat. Mit 4 Mana kommt sie eine Runde früher aufs Spielfeld und hat eine Runde mehr zum Wachsen. Im selben Patch bekommt Roo, ein Charakter für 2 Mana mit Bewegen, 1 Leben dazu.
 
-### Wicked Stepmother auf 4 Stärke {#wicked-stepmother}
+### Wicked Stepmother auf 4 Kraft {#wicked-stepmother}
 
 Die Legendäre mit Todesberührung, deren Beim Aufdecken deinen bösen Charakteren Todesberührung gibt, geht von 3/6 auf 4/6.
 
@@ -1871,11 +1871,11 @@ Er hat Verteidiger bekommen: Mehr sagen die Patchnotes über ihn nicht.
 
 ### Heroic Charge {#heroic-charge}
 
-Der Zauber gibt Verbündeten in dieser Runde +2 Stärke und Trampeln. Wenn er wiederholt wird, gilt der Buff von +2 Stärke jetzt erneut.
+Der Zauber gibt Verbündeten in dieser Runde +2 Kraft und Überrennen. Wenn er wiederholt wird, gilt der Buff von +2 Kraft jetzt erneut.
 
 ### Frog Prince und Magic Carpet {#frog-prince-magic-carpet}
 
-Beide haben ein Beim Aufdecken mit „Wähle eins“. Buffs, die sie schon hatten, werden beim Ausspielen nicht mehr gelöscht, und wenn sie auf die Hand zurückkehren, können sie erneut wählen. Magic Carpet bekommt außerdem 1 Stärke dazu.
+Beide haben ein Beim Aufdecken mit „Wähle eins“. Buffs, die sie schon hatten, werden beim Ausspielen nicht mehr gelöscht, und wenn sie auf die Hand zurückkehren, können sie erneut wählen. Magic Carpet bekommt außerdem 1 Kraft dazu.
 
 ### Wooden Stake {#wooden-stake}
 
@@ -1893,7 +1893,7 @@ Fähigkeiten mit „Vor dem Kampf“ lösen jetzt aus, bevor Temporär-Karten ab
 
 ## The Gallows {#the-gallows}
 
-Der Ort zerstört immer den Gegner gegenüber dem Feld, das ein Charakter betreten hat. Wenn eine Beim-Aufdecken-Fähigkeit diesen Charakter an einen anderen Ort bewegt, zerstört The Gallows den gegnerischen Charakter am neuen Ort nicht mehr.
+Der Ort zerstört immer den Gegner gegenüber dem Feld, das ein Charakter betreten hat. Wenn eine Beim Aufdecken-Fähigkeit diesen Charakter an einen anderen Ort bewegt, zerstört The Gallows den gegnerischen Charakter am neuen Ort nicht mehr.
 
 ## Woher diese Patchnotes kommen {#quellen}
 
@@ -2051,7 +2051,7 @@ Ein anderer Spieler antwortete, es sei ein bekannter Bug im Zusammenhang mit Spe
 Am 19. September beschrieb ein anderer Spieler einen Kampf am Ort The Colosseum:
 
 1. Sein Golden Egg wurde vom Beim Aufdecken von Black Knight zerbrochen, das dem Gegner gegenüber 2 Schaden zufügt;
-2. das Ei beschwor die Golden Goose, eine 5/5, auf demselben Feld;
+2. das Ei beschwor das Golden Goose, eine 5/5, auf demselben Feld;
 3. im Kampf fügte die Goose keinen Schaden zu: Black Knight, eine 2/2, überlebte, und die Goose blieb bei 5/3.
 
 Es sieht nach der Regel aus, die Entwickler Fenchurch am 15. September im Forum erklärt hat: Ein Charakter, der mitten im Kampf beschworen wird, greift auf dem Feld, auf dem er landet, erst in der nächsten Runde an. Beschworen zu werden schützt ihn nicht vor Schaden, was die 5/3 erklärt. Was das Colosseum hinzufügt, ist noch nicht klar: Der Thread hat bisher keine Antwort.
@@ -2147,7 +2147,7 @@ Am 21. September kam das [erste große Demo-Update](/de/news/demo-first-big-upda
 
 ## Der Bug von Off With Your Head! {#off-with-your-head}
 
-Ein neuer Spieler beschrieb Kopien von Christopher Robin, die ohne Artwork erschienen, nur mit sichtbarer Stärke und sichtbarem Leben. Entwickler Fenchurch fand die Karte dahinter: Off With Your Head!, die einen Verbündeten zerstört und an jedem anderen Ort eine einfache Kopie davon beschwört. Die halb unsichtbaren Kopien sind ein bekannter Bug, und er „wird behoben, wenn wir hier sehr bald Demo v2 veröffentlichen“.
+Ein neuer Spieler beschrieb Kopien von Christopher Robin, die ohne Artwork erschienen, nur mit sichtbarer Kraft und sichtbarem Leben. Entwickler Fenchurch fand die Karte dahinter: Off With Your Head!, die einen Verbündeten zerstört und an jedem anderen Ort eine einfache Kopie davon beschwört. Die halb unsichtbaren Kopien sind ein bekannter Bug, und er „wird behoben, wenn wir hier sehr bald Demo v2 veröffentlichen“.
 
 ## Audio {#audio}
 
@@ -2165,7 +2165,7 @@ In denselben Tagen kursierte in den sozialen Medien ein Satz: eine „Demo Seaso
     description:
       "Midrange-Deck für Origins TCG mit Three Not So Little Pigs, für Ladder und Competitive: früh das Feld nehmen, einen Ort gewinnen, mit En Passant schließen.",
     summary:
-      "Das zweite Deck von Davdas, Staff von OriginsMeta, ist eine Midrange-Liste mit Three Not So Little Pigs, markiert für Ladder und Competitive. Der Plan: in den ersten Runden das Spielfeld nehmen, mindestens einen Ort gewinnen und dann mit En Passant, dem Trampeln von Ellen Trechend und den Lightning Strikes abschließen, die Impundulu erzeugt. Die Deckseite hat die vollständige Liste mit Diagrammen zur Zusammensetzung, die Mulligan-Notizen des Autors, den Spielcode und die Taste, um es im Deck builder zu öffnen, dazu zwei Guides, wie man es spielt.",
+      "Das zweite Deck von Davdas, Staff von OriginsMeta, ist eine Midrange-Liste mit Three Not So Little Pigs, markiert für Ladder und Competitive. Der Plan: in den ersten Runden das Spielfeld nehmen, mindestens einen Ort gewinnen und dann mit En Passant, dem Überrennen von Ellen Trechend und den Lightning Strikes abschließen, die Impundulu erzeugt. Die Deckseite hat die vollständige Liste mit Diagrammen zur Zusammensetzung, die Mulligan-Notizen des Autors, den Spielcode und die Taste, um es im Deck builder zu öffnen, dazu zwei Guides, wie man es spielt.",
   },
   "davdas-healing-healsing": {
     title: "Healing Healsing, das erste Community-Deck: eine Control-Liste mit Van Helsing für die Ladder",

@@ -21,7 +21,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 5, power: 3, health: 5 },
       to: { mana: 4, power: 3, health: 3 },
-      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo colpo oltre a ripetere le abilità Alla morte degli alleati.", es: "Más barata y más pequeña; obtiene Primer golpe además de repetir las habilidades Al morir de los aliados.", fr: "Moins chère et plus petite ; gagne Première frappe en plus de répéter les capacités À la mort des alliés.", pt: "Mais barata e menor; ganha Primeiro golpe, além de repetir as habilidades Ao morrer dos aliados.", de: "Billiger und kleiner; erhält Erstschlag und wiederholt weiterhin die Fähigkeiten Beim Tod der Verbündeten." },
+      note: { en: "Cheaper and smaller; gains First Strike on top of repeating allies' On Death abilities.", it: "Più economica e più piccola; ottiene Primo colpo oltre a ripetere le abilità Alla morte degli alleati.", es: "Más barata y más pequeña; obtiene Primer golpe además de repetir las habilidades Al morir de los aliados.", fr: "Moins chère et plus petite ; gagne Première frappe en plus de répéter les capacités À la mort des alliés.", pt: "Mais barata e menor; ganha Primeiro golpe, além de repetir as habilidades Ao morrer dos aliados.", de: "Billiger und kleiner; erhält Erstschlag und wiederholt weiterhin die Fähigkeiten Bei Tod der Verbündeten." },
     },
   ],
   "king-arthur": [
@@ -48,7 +48,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 5, power: 3, health: 5 },
       to: { mana: 5, power: 5, health: 5 },
-      note: { en: "+2 Power.", it: "+2 Potenza.", es: "+2 de Poder.", fr: "+2 Puissance.", pt: "+2 de Poder.", de: "+2 Stärke." },
+      note: { en: "+2 Power.", it: "+2 Potenza.", es: "+2 de Poder.", fr: "+2 Puissance.", pt: "+2 de Poder.", de: "+2 Kraft." },
     },
   ],
   "merlins-prophecy": [
@@ -110,7 +110,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 4, power: 2, health: 3 },
       to: { mana: 4, power: 3, health: 3 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
   ],
   "card-soldier": [
@@ -119,7 +119,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 2, power: 2, health: 1 },
       to: { mana: 2, power: 3, health: 1 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
   ],
   "christopher-robin": [
@@ -149,7 +149,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "0.6.2",
       kind: "nerf",
-      note: { en: "On Reveal now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla rivelazione dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al revelar ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "Sa capacité À la révélation ne donne plus que +1 Puissance ; elle ne donne plus de Santé.", pt: "Ao revelar agora dá só +1 de Poder; não dá mais Vida.", de: "Beim Aufdecken gibt jetzt nur noch +1 Stärke, kein Leben mehr." },
+      note: { en: "On Reveal now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla rivelazione dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al revelar ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "Sa capacité À la révélation ne donne plus que +1 Puissance ; elle ne donne plus de Santé.", pt: "Ao revelar agora dá só +1 de Poder; não dá mais Vida.", de: "Beim Aufdecken gibt jetzt nur noch +1 Kraft, kein Leben mehr." },
     },
   ],
   kanga: [
@@ -210,7 +210,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 6, power: 3, health: 3 },
       to: { mana: 6, power: 4, health: 4 },
-      note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute.", es: "+1 de Poder, +1 de Salud.", fr: "+1 Puissance, +1 Santé.", pt: "+1 de Poder, +1 de Vida.", de: "+1 Stärke, +1 Leben." },
+      note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute.", es: "+1 de Poder, +1 de Salud.", fr: "+1 Puissance, +1 Santé.", pt: "+1 de Poder, +1 de Vida.", de: "+1 Kraft, +1 Leben." },
     },
   ],
   "brides-of-dracula": [
@@ -290,7 +290,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 5, power: 4, health: 6 },
       to: { mana: 5, power: 5, health: 6 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
   ],
   rumple: [
@@ -326,7 +326,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 3, power: 3, health: 1 },
       to: { mana: 3, power: 4, health: 1 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
     {
       patch: "0.7",
@@ -368,7 +368,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 2, power: 2, health: 2 },
       to: { mana: 2, power: 1, health: 3 },
-      note: { en: "-1 Power, +1 Health.", it: "-1 Potenza, +1 Salute.", es: "-1 de Poder, +1 de Salud.", fr: "-1 Puissance, +1 Santé.", pt: "-1 de Poder, +1 de Vida.", de: "-1 Stärke, +1 Leben." },
+      note: { en: "-1 Power, +1 Health.", it: "-1 Potenza, +1 Salute.", es: "-1 de Poder, +1 de Salud.", fr: "-1 Puissance, +1 Santé.", pt: "-1 de Poder, +1 de Vida.", de: "-1 Kraft, +1 Leben." },
     },
   ],
   basilisk: [
@@ -402,7 +402,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "0.6.2",
       kind: "nerf",
-      note: { en: "On Death now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla morte dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al morir ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "Sa capacité À la mort ne donne plus que +1 Puissance ; elle ne donne plus de Santé.", pt: "Ao morrer agora dá só +1 de Poder; não dá mais Vida.", de: "Beim Tod gibt jetzt nur noch +1 Stärke, kein Leben mehr." },
+      note: { en: "On Death now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla morte dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al morir ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "Sa capacité À la mort ne donne plus que +1 Puissance ; elle ne donne plus de Santé.", pt: "Ao morrer agora dá só +1 de Poder; não dá mais Vida.", de: "Bei Tod gibt jetzt nur noch +1 Kraft, kein Leben mehr." },
     },
   ],
   koschei: [
@@ -457,7 +457,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "rework",
       from: { mana: 3, power: 2, health: 5 },
       to: { mana: 3, power: 3, health: 4 },
-      note: { en: "+1 Power, -1 Health.", it: "+1 Potenza, -1 Salute.", es: "+1 de Poder, -1 de Salud.", fr: "+1 Puissance, -1 Santé.", pt: "+1 de Poder, -1 de Vida.", de: "+1 Stärke, -1 Leben." },
+      note: { en: "+1 Power, -1 Health.", it: "+1 Potenza, -1 Salute.", es: "+1 de Poder, -1 de Salud.", fr: "+1 Puissance, -1 Santé.", pt: "+1 de Poder, -1 de Vida.", de: "+1 Kraft, -1 Leben." },
     },
   ],
   beauty: [
@@ -466,7 +466,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 4, power: 1, health: 1 },
       to: { mana: 4, power: 2, health: 1 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
   ],
   "wicked-stepmother": [
@@ -475,7 +475,7 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "buff",
       from: { mana: 4, power: 3, health: 6 },
       to: { mana: 4, power: 4, health: 6 },
-      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Stärke." },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft." },
     },
   ],
   "magic-carpet": [
@@ -490,7 +490,7 @@ export const cardHistory: Record<string, Change[]> = {
         es: "+1 de Poder. Cuando se juega, ya no pierde las mejoras que tenía; si vuelve a la mano, puede elegir de nuevo.",
         fr: "+1 Puissance. Les bonus qu'il avait déjà ne sont plus effacés quand il est joué ; s'il revient en main, il peut choisir de nouveau.",
         pt: "+1 de Poder. Os buffs que já tinha não são mais apagados quando é jogado; se voltar para a mão, pode escolher de novo.",
-        de: "+1 Stärke. Buffs, die er schon hatte, gehen beim Ausspielen nicht mehr verloren; kehrt er auf die Hand zurück, kann er erneut wählen.",
+        de: "+1 Kraft. Buffs, die er schon hatte, gehen beim Ausspielen nicht mehr verloren; kehrt er auf die Hand zurück, kann er erneut wählen.",
       },
     },
   ],
@@ -531,7 +531,7 @@ export const cardHistory: Record<string, Change[]> = {
     {
       patch: "demo-0921",
       kind: "buff",
-      note: { en: "Its +2 Power buff now applies again when the spell is repeated.", it: "Il bonus di +2 Potenza ora si applica di nuovo quando la magia viene ripetuta.", es: "Su mejora de +2 de Poder ahora se aplica de nuevo cuando se repite el hechizo.", fr: "Son bonus de +2 Puissance s'applique de nouveau quand le sort est répété.", pt: "O buff de +2 de Poder agora volta a valer quando o feitiço é repetido.", de: "Der Buff von +2 Stärke greift jetzt erneut, wenn der Zauber wiederholt wird." },
+      note: { en: "Its +2 Power buff now applies again when the spell is repeated.", it: "Il bonus di +2 Potenza ora si applica di nuovo quando la magia viene ripetuta.", es: "Su mejora de +2 de Poder ahora se aplica de nuevo cuando se repite el hechizo.", fr: "Son bonus de +2 Puissance s'applique de nouveau quand le sort est répété.", pt: "O buff de +2 de Poder agora volta a valer quando o feitiço é repetido.", de: "Der Buff von +2 Kraft greift jetzt erneut, wenn der Zauber wiederholt wird." },
     },
     {
       patch: "0.7",
@@ -543,7 +543,7 @@ export const cardHistory: Record<string, Change[]> = {
         es: "Corrección de un error: si un personaje al que ha potenciado pierde sus habilidades, el +2 de Poder ahora se mantiene; Arrollar se sigue quitando.",
         fr: "Correction d'un bug : si un personnage qu'il a renforcé perd ses capacités, le +2 Puissance reste désormais ; Piétinement est toujours retiré.",
         pt: "Correção de bug: se um personagem que recebeu o buff perde as habilidades, o +2 de Poder agora permanece; Atropelar continua sendo removido.",
-        de: "Bugfix: Verliert ein Charakter, den die Karte gebufft hat, seine Fähigkeiten, bleiben die +2 Stärke jetzt erhalten; Trampeln wird weiterhin entfernt.",
+        de: "Bugfix: Verliert ein Charakter, den die Karte gebufft hat, seine Fähigkeiten, bleiben die +2 Kraft jetzt erhalten; Überrennen wird weiterhin entfernt.",
       },
     },
   ],

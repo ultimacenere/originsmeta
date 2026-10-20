@@ -26,11 +26,11 @@ export type L10n = Record<Locale, string>;
  * italiano e spagnolo (25/09/2026, card-lore.ts), francese (08/10/2026, card-lore-fr.ts; trascrizione in
  * docs/testi-ufficiali/fr.tsv, prima era una traduzione nostra con un glossario provvisorio) e portoghese del Brasile
  * (20/10/2026, card-lore-pt.ts; trascrizione in docs/testi-ufficiali/pt.tsv). Una lingua fuori da questo
- * elenco avrebbe il testo etichettato come traduzione nostra, e il JSON-LD non lo dichiarerebbe (cardLdTexts): è il caso
- * del tedesco (20/10/2026, card-lore-de.ts), tutto tradotto da noi con un glossario provvisorio finché il gioco non si
- * legge in tedesco (poi `node scripts/official-texts.mjs de --apply` e `de` qui).
+ * elenco avrebbe il testo etichettato come traduzione nostra, e il JSON-LD non lo dichiarerebbe (cardLdTexts). Il tedesco
+ * (card-lore-de.ts) è partito il 20/10/2026 con una traduzione nostra provvisoria ed è entrato qui la sera stessa, letti
+ * nel gioco i 122 testi (docs/testi-ufficiali/de.tsv, `node scripts/official-texts.mjs de --apply`).
  */
-export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt"];
+export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt", "de"];
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
@@ -312,7 +312,7 @@ export const cards: Card[] = data.cards.map((w) => {
   // Il portoghese (card-lore-pt.ts, dal 20/10/2026) segue lo stesso schema: testo ufficiale letto nel gioco, traduzione nostra per create e rimosse.
   const fr = frLore[w.slug];
   const pt = ptLore[w.slug];
-  // Il tedesco (card-lore-de.ts, dal 20/10/2026) è tutto una traduzione nostra provvisoria: `de` non sta in officialTextLocales.
+  // Il tedesco (card-lore-de.ts, dal 20/10/2026) come il portoghese: testo ufficiale letto nel gioco (dalla sera del 20/10), traduzione nostra per create e rimosse.
   const de = deLore[w.slug];
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn, pt: pt?.text ?? abilityEn, de: de?.text ?? abilityEn };
   if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en, pt: pt?.origin ?? lore.origin.en, de: de?.origin ?? lore.origin.en };

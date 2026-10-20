@@ -237,12 +237,12 @@ export const entityLabels: Record<Locale, EntityLabels> = {
       ],
     },
   },
-  // tedesco (20/10/2026): i testi tedeschi delle carte sono una traduzione nostra, non ancora letti nel gioco
-  // (docs/tedesco.md), e la description e "So prüfen wir unsere Daten" lo dicono
+  // tedesco (20/10/2026): i testi tedeschi delle carte della collezione sono quelli del gioco, letti il 20/10/2026
+  // (docs/tedesco.md); carte create e rimosse e luoghi restano nostri, e "So prüfen wir unsere Daten" lo dice
   de: {
     about: {
       description:
-        "Wer OriginsMeta macht, die unabhängige Fanseite zu Origins TCG: offizielle Quellen, Demo-Karten im Spiel geprüft (deutsche Texte noch nicht) und Kontakt.",
+        "Wer OriginsMeta macht, die unabhängige Fanseite zu Origins TCG: offizielle Quellen, Demo-Karten einzeln im Spiel geprüft und Kontakt.",
       p2: "Wir sind Spieler, nicht der Publisher. Daten, Regeln und Events kommen nur aus offiziellen Quellen; die Karten der Demo 2.0 werden einzeln im Spiel geprüft; und jede Seite sagt, wann sie zuletzt aktualisiert wurde.",
       newToGame: "Neu im Spiel? Hier erfährst du, {link}.",
       newToGameLink: "was Origins TCG ist",
@@ -250,8 +250,8 @@ export const entityLabels: Record<Locale, EntityLabels> = {
       check: [
         "Daten, Regeln, Events und Balance-Änderungen stammen nur aus offiziellen Quellen: der Steam-Seite, den Patchnotes auf Steam, dem offiziellen Discord und den Mitteilungen von Koin Games. Steht ein Detail nur im Discord, sagt der Artikel das.",
         "Die Balance-Änderungen jedes neuen Patches übertragen wir aus den offiziellen Patchnotes auf die Kartenseiten, mit Datum und Link zum Beitrag.",
-        "Am {date} haben wir alle {count} Karten der Demo einzeln mit der Sammlung im Spiel verglichen: Kosten, Werte und Ausrichtungen stimmten überein, und die englischen Texte, die zurückgeblieben waren, sind jetzt die des Spiels. Auch die italienischen und spanischen Kartentexte sind die offiziellen, am {textsDate} im Spiel gelesen. Wir wiederholen die Prüfung nach jedem Patch. Die deutschen Kartentexte sind vorerst eine Übersetzung von OriginsMeta und noch nicht im Spiel geprüft.",
-        "Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft, und ihre Seiten sagen das; ihre Texte in den anderen Sprachen stammen von uns (auf Deutsch mit einem vorläufigen Glossar, bis wir die deutschen Texte im Spiel gelesen haben). Auch die Orte wurden noch nicht einzeln im Spiel geprüft: Die Seite der Orte sagt es, sobald das passiert ist, und ihre Effekte in den anderen Sprachen stammen ebenfalls von uns. Auch die Sagen und die Notizen zu jeder Legende sind von uns.",
+        "Am {date} haben wir alle {count} Karten der Demo einzeln mit der Sammlung im Spiel verglichen: Kosten, Werte und Gesinnungen stimmten überein, und die englischen Texte, die zurückgeblieben waren, sind jetzt die des Spiels. Auch die italienischen und spanischen Kartentexte sind die offiziellen, am {textsDate} im Spiel gelesen. Die deutschen Kartentexte sind ebenfalls die offiziellen, am 20. Oktober 2026 im Spiel gelesen. Wir wiederholen die Prüfung nach jedem Patch.",
+        "Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft, und ihre Seiten sagen das; ihre Texte in den anderen Sprachen stammen von uns, mit dem Glossar des Spiels. Auch die Orte wurden noch nicht einzeln im Spiel geprüft: Die Seite der Orte sagt es, sobald das passiert ist, und ihre Effekte in den anderen Sprachen stammen ebenfalls von uns. Auch die Sagen und die Notizen zu jeder Legende sind von uns.",
       ],
       checkErrors: "Einen Fehler gefunden? Schreib an {email}: Wir korrigieren ihn, und die Seite zeigt das neue Datum.",
       disclaimer:

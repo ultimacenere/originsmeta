@@ -40,7 +40,7 @@ export function translationEnabled(): boolean {
  * dopo la migrazione. Era vuoto dall'08/10/2026, a migrazione applicata; dal 20/10/2026 contiene il portoghese e il
  * tedesco (blocchi "20/10/2026: PORTOGHESE" e "20/10/2026: TEDESCO") fino alla loro migrazione: poi torna vuoto.
  */
-export const DB_PENDING_LOCALES: readonly Locale[] = ["pt", "de"]; // 20/10/2026: da svuotare dopo db-migrate
+export const DB_PENDING_LOCALES: readonly Locale[] = []; // vuoto dal 20/10/2026: migrazione di portoghese e tedesco applicata
 
 type SaveResult = PromiseLike<{ error: { code?: string; message: string } | null }>;
 

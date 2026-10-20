@@ -26,8 +26,8 @@ import type { PatchId } from "./cards";
  *   glossario del gioco letto l'08/10/2026 (`docs/francese.md`: À la révélation, Piétinement, Déplacer, case, lieu…).
  *   Il portoghese del Brasile (dal 20/10/2026) è nostro con il glossario del gioco letto quel giorno (`docs/portoghese.md`:
  *   Ao revelar, Atropelar, Mover, espaço, local, barreira…), in terza persona come i testi delle carte ("Compra uma carta").
- *   Il tedesco (dal 20/10/2026) è nostro con il glossario PROVVISORIO di `docs/tedesco.md` (Beim Aufdecken, Trampeln,
- *   Bewegen, Feld, Ort, Barriere…: il gioco in tedesco non è ancora stato letto), all'imperativo con il du ("Ziehe eine Karte").
+ *   Il tedesco (dal 20/10/2026) è nostro con il glossario del gioco letto quel giorno (`docs/tedesco.md`: Beim Aufdecken,
+ *   Bei Tod, Überrennen, Kraft, Bewegen, Feld, Ort, Barriere…), all'imperativo con il du ("Ziehe eine Karte").
  * - `tags`: come si comporta il luogo, per i filtri della pagina. Un luogo può averne più d'uno.
  * - `cards`: slug delle carte del nostro database citate dall'effetto, per i collegamenti incrociati.
  */
@@ -148,7 +148,7 @@ export const locations: GameLocation[] = [
   {
     slug: "burial-grounds",
     name: "Burial Grounds",
-    effect: { en: "On Death abilities happen twice here.", it: "Le abilità Alla morte avvengono due volte qui.", es: "Las habilidades Al morir ocurren dos veces aquí.", fr: "Les capacités À la mort se produisent deux fois ici.", pt: "As habilidades Ao morrer acontecem duas vezes aqui.", de: "Fähigkeiten Beim Tod werden hier zweimal ausgelöst." },
+    effect: { en: "On Death abilities happen twice here.", it: "Le abilità Alla morte avvengono due volte qui.", es: "Las habilidades Al morir ocurren dos veces aquí.", fr: "Les capacités À la mort se produisent deux fois ici.", pt: "As habilidades Ao morrer acontecem duas vezes aqui.", de: "Fähigkeiten Bei Tod werden hier zweimal ausgelöst." },
     tags: ["ability"],
   },
   {
@@ -215,7 +215,7 @@ export const locations: GameLocation[] = [
       es: "Cuando juegas un personaje aquí, destrúyelo e inflige a la barrera del oponente un daño igual a su poder.",
       fr: "Quand vous jouez un personnage ici, détruisez-le et infligez des dégâts égaux à sa puissance à la barrière de l'adversaire.",
       pt: "Quando você joga um personagem aqui, destrói-o e causa dano igual ao Poder dele à barreira do oponente.",
-      de: "Wenn du hier einen Charakter spielst, zerstöre ihn und füge der gegnerischen Barriere Schaden in Höhe seiner Stärke zu.",
+      de: "Wenn du hier einen Charakter spielst, zerstöre ihn und füge der gegnerischen Barriere Schaden in Höhe seiner Kraft zu.",
     },
     tags: ["destroy", "barrier", "damage"],
   },
@@ -303,7 +303,7 @@ export const locations: GameLocation[] = [
   {
     slug: "stomping-grounds",
     name: "Stomping Grounds",
-    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Travolgere.", es: "Los personajes de aquí tienen Arrollar.", fr: "Les personnages ici ont Piétinement.", pt: "Os personagens aqui têm Atropelar.", de: "Charaktere hier haben Trampeln." },
+    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Travolgere.", es: "Los personajes de aquí tienen Arrollar.", fr: "Les personnages ici ont Piétinement.", pt: "Os personagens aqui têm Atropelar.", de: "Charaktere hier haben Überrennen." },
     tags: ["keyword"],
   },
   {
@@ -327,7 +327,7 @@ export const locations: GameLocation[] = [
       es: "Después del combate, si hay más de un personaje aquí, destruye a TODOS los personajes que compartan el poder más bajo.",
       fr: "Après le combat, s'il y a plus d'un personnage ici, détruisez TOUS les personnages qui ont la puissance la plus basse.",
       pt: "Depois do combate, se houver mais de um personagem aqui, destrói TODOS os personagens empatados com o menor Poder.",
-      de: "Nach dem Kampf: Wenn hier mehr als ein Charakter ist, zerstöre ALLE Charaktere mit der niedrigsten Stärke.",
+      de: "Nach dem Kampf: Wenn hier mehr als ein Charakter ist, zerstöre ALLE Charaktere mit der niedrigsten Kraft.",
     },
     tags: ["destroy"],
   },
@@ -359,7 +359,7 @@ export const locations: GameLocation[] = [
   {
     slug: "training-dojo",
     name: "Training Dojo",
-    effect: { en: "After combat, ALL characters here get +1 power.", it: "Dopo il combattimento, TUTTI i personaggi qui ottengono +1 potenza.", es: "Después del combate, TODOS los personajes de aquí obtienen +1 de poder.", fr: "Après le combat, TOUS les personnages ici obtiennent +1 puissance.", pt: "Depois do combate, TODOS os personagens aqui recebem +1 de Poder.", de: "Nach dem Kampf: ALLE Charaktere hier erhalten +1 Stärke." },
+    effect: { en: "After combat, ALL characters here get +1 power.", it: "Dopo il combattimento, TUTTI i personaggi qui ottengono +1 potenza.", es: "Después del combate, TODOS los personajes de aquí obtienen +1 de poder.", fr: "Après le combat, TOUS les personnages ici obtiennent +1 puissance.", pt: "Depois do combate, TODOS os personagens aqui recebem +1 de Poder.", de: "Nach dem Kampf: ALLE Charaktere hier erhalten +1 Kraft." },
     tags: ["buff"],
   },
   {
@@ -371,7 +371,7 @@ export const locations: GameLocation[] = [
   {
     slug: "vacant-armory",
     name: "Vacant Armory",
-    effect: { en: "Characters here have +1 power.", it: "I personaggi qui hanno +1 potenza.", es: "Los personajes de aquí tienen +1 de poder.", fr: "Les personnages ici ont +1 puissance.", pt: "Os personagens aqui têm +1 de Poder.", de: "Charaktere hier haben +1 Stärke." },
+    effect: { en: "Characters here have +1 power.", it: "I personaggi qui hanno +1 potenza.", es: "Los personajes de aquí tienen +1 de poder.", fr: "Les personnages ici ont +1 puissance.", pt: "Os personagens aqui têm +1 de Poder.", de: "Charaktere hier haben +1 Kraft." },
     tags: ["buff"],
   },
   {

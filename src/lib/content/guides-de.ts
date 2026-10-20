@@ -5,7 +5,8 @@ import type { GuideCopy, GuideSlug } from "./guides";
  * Categoria, carte, lista del mazzo, copertina, data e tempo di lettura vengono dalla versione inglese in guides.ts
  * (`getGuides`). Una guida nuova si scrive in tutte le lingue: il tipo pretende anche il tedesco. Regole: link interni
  * con /de/, ancore {#…} in tedesco senza umlaut né ß, nomi delle carte in inglese, "du" al lettore, parole chiave col
- * glossario PROVVISORIO di docs/tedesco.md finché il gioco non si legge in tedesco (poi si riallineano).
+ * glossario del gioco di docs/tedesco.md (letto il 20/10/2026); le citazioni dei testi delle carte della collezione
+ * coincidono con docs/testi-ufficiali/de.tsv.
  */
 export const deText: Record<GuideSlug, GuideCopy> = {
   "origins-tcg-legendaries": {
@@ -43,7 +44,7 @@ Die Legendären unten sind nach Kosten sortiert und bei gleichen Kosten alphabet
 
 ## Die 11 Legendären im Überblick {#ueberblick}
 
-| Legendäre | Kosten | Stärke/Leben | Ausrichtung | Decks |
+| Legendäre | Kosten | Kraft/Leben | Gesinnung | Decks |
 | --- | --- | --- | --- | --- |
 | [Dorothy](/de/cards/dorothy) | 4 | 1/1 | Good | 2 |
 | [Dracula](/de/cards/dracula) | 4 | 3/2 | Evil | 2 |
@@ -65,15 +66,15 @@ Die letzte Spalte zählt die Decks, die jede Legendäre unter den 20 anführt, d
 - **Dein Gegner sieht sie.** Patch 0.6.1 des geschlossenen Playtests (14. August 2026) hat während des Mulligans eine Vorschau auf die Legendäre des Gegners eingeführt, laut den [offiziellen Patchnotes](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **Im Conquest gibt sie dem Deck seinen Namen.** Bei der Crimson Cup bringt jeder Spieler drei Decks mit, und wenn du eines der Decks deines Gegners bannst, siehst du nur seine Legendäre ([Regeln der Crimson Cup](/de/news/crimson-cup-format-check-in)). Ob sich die drei Legendären unterscheiden müssen, sagen die Ankündigungen nicht; bei Big Bob's Playtest Battle mussten sie es. Wie du drei Decks zusammenstellst, erklärt unser [Conquest-Guide](/de/guides/origins-tcg-conquest).
 
-Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Texte, die wir im Spiel gelesen haben: Die deutschen Texte des Spiels haben wir noch nicht abgeglichen. Kosten und Werte wurden am 22. September 2026 Karte für Karte geprüft. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026 und Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat. Die legendäre Kraft behandeln wir hier nicht: Wir haben sie noch nicht aus dem Spiel übertragen, und jede Kartenseite zeigt sie, sobald wir es tun.
+Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 im Spiel auf Deutsch gelesen; Kosten und Werte wurden am 22. September 2026 Karte für Karte geprüft. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026 und Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat. Die legendäre Kraft behandeln wir hier nicht: Wir haben sie noch nicht aus dem Spiel übertragen, und jede Kartenseite zeigt sie, sobald wir es tun.
 
 ## Dorothy {#dorothy}
 
 **4 Mana · 1/1 · Einheit · Good** · Saga: Land Oz
 
-> Ich kann mich jede Runde bewegen.
+> Ich kann mich jede Runde Bewegen.
 >
-> Ich habe +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie.
+> Ich habe +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in diesem Spiel.
 
 - **Die Legende.** Das Mädchen aus Kansas, das in L. Frank Baums Roman von 1900 von einem Tornado nach Oz getragen wird.
 - **Patches.** Demo-Patch vom 21. September 2026: Mana 5 → 4 ([Patchnotes](/de/news/demo-patch-notes-0921)).
@@ -85,7 +86,7 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 **4 Mana · 3/2 · Einheit · Evil** · Saga: Gothic Horror
 
-> Wenn du abwirfst, bringe mich aus deinem Friedhof auf die Hand zurück.
+> Wenn du abwirfst, kehre ich aus deinem Friedhof auf die Hand zurück.
 >
 > Beim Aufdecken: Beschwöre Brides of Dracula [2⚔️/2❤️] auf einem zufälligen Feld hier.
 
@@ -102,10 +103,10 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 > Doppelangriff
 >
-> Wenn die Fähigkeit Beim Aufdecken eines Verbündeten ausgelöst wird, wiederhole sie.
+> Wenn eine Beim Aufdecken-Fähigkeit eines Verbündeten eintritt, wiederhole sie.
 
 - **Die Legende.** Die Kriegerin, die den Platz ihres Vaters in der Armee einnimmt, aus einer chinesischen Ballade des 6. Jahrhunderts.
-- **Patches.** Patch 0.6.2: Werte unverändert, sie erhält Doppelangriff zusätzlich dazu, dass sie die Beim-Aufdecken-Fähigkeiten ihrer Verbündeten wiederholt ([Patchnotes](/de/news/patch-0-6-2)).
+- **Patches.** Patch 0.6.2: Werte unverändert, sie erhält Doppelangriff zusätzlich dazu, dass sie die Beim Aufdecken-Fähigkeiten ihrer Verbündeten wiederholt ([Patchnotes](/de/news/patch-0-6-2)).
 - **Decks auf OriginsMeta, 25. September 2026.** Eines: [On Reveal Mid Range](/de/decks/community/on-reveal-mid-range-772e).
 - **Guide.** [Guide zum Mulan-Deck: On Reveal Mid Range](/de/guides/on-reveal-midrange-guide).
 - **Kartenseite.** [Mulan, Legendäre Karte: Werte und Text](/de/cards/mulan).
@@ -116,10 +117,10 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 > Erstschlag
 >
-> Wenn die Fähigkeit Beim Tod eines Verbündeten ausgelöst wird, wiederhole sie.
+> Wenn eine Bei Tod-Fähigkeit eines Verbündeten eintritt, wiederhole sie.
 
 - **Die Legende.** Die jähzornige Herrscherin des Wunderlands, deren Antwort auf alles „Kopf ab!“ lautet.
-- **Patches.** Patch 0.6.2: von 5 Mana 3/5 auf 4 Mana 3/3, und sie erhält Erstschlag zusätzlich dazu, dass sie die Beim-Tod-Fähigkeiten ihrer Verbündeten wiederholt ([Patchnotes](/de/news/patch-0-6-2)).
+- **Patches.** Patch 0.6.2: von 5 Mana 3/5 auf 4 Mana 3/3, und sie erhält Erstschlag zusätzlich dazu, dass sie die Bei Tod-Fähigkeiten ihrer Verbündeten wiederholt ([Patchnotes](/de/news/patch-0-6-2)).
 - **Decks auf OriginsMeta, 25. September 2026.** Zwei: [Qoh](/de/decks/community/qoh-f876) und [Just f\\*\\*\\*in em](/de/decks/community/just-f-in-em-bdf2).
 - **Guide.** Noch keiner: [Schick uns deinen](/de/guides/submit).
 - **Kartenseite.** [Queen of Hearts, Legendäre Karte: Werte und Text](/de/cards/queen-of-hearts).
@@ -128,7 +129,7 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 **4 Mana · 3/4 · Einheit · Good** · Saga: Gothic Horror
 
-> Füge vor dem Kampf deiner Hand Van Helsing's Tools hinzu, falls die Karte nicht schon dort ist.
+> Vor dem Kampf füge deiner Hand Van Helsing's Tools hinzu, wenn es nicht schon dort ist.
 
 - **Die Legende.** Abraham Van Helsing, der niederländische Professor, der die Jagd auf Dracula anführt.
 - **Erschaffene Karten.** [Van Helsing's Tools](/de/cards/van-helsings-tools), mit denen du eine von vier erschaffenen Karten wählst und spielst: [Holy Water](/de/cards/holy-water), [Silver Bullet](/de/cards/silver-bullet), [Garlic](/de/cards/garlic) oder [Wooden Stake](/de/cards/wooden-stake) (erschaffene Karten: Ihre Texte sind im Spiel nicht verifiziert, und die Seite von Silver Bullet zeigt noch den Text von vor Patch 0.6.2; die Änderungen stehen in ihrer Balance-Historie).
@@ -146,7 +147,7 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 > Beim Aufdecken: Gib deinen bösen Charakteren Todesberührung.
 
 - **Die Legende.** Die grausame Stiefmutter der Märchen, von Aschenputtels Haushalt bis an Schneewittchens Hof.
-- **Patches.** Demo-Patch vom 21. September 2026: Stärke 3 → 4 ([Patchnotes](/de/news/demo-patch-notes-0921)).
+- **Patches.** Demo-Patch vom 21. September 2026: Kraft 3 → 4 ([Patchnotes](/de/news/demo-patch-notes-0921)).
 - **Decks auf OriginsMeta, 25. September 2026.** Keines der 20 bisher veröffentlichten: Bau eines im [Deckbuilder](/de/deck-builder) und veröffentliche es mit einem Guide.
 - **Guide.** Noch keiner: [Schick uns deinen](/de/guides/submit).
 - **Kartenseite.** [Wicked Stepmother, Legendäre Karte: Werte und Text](/de/cards/wicked-stepmother).
@@ -155,10 +156,10 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 **5 Mana · 5/5 · Einheit · Neutral** · Saga: Artussage
 
-> Wiederhole den ersten Zauber, den du jede Runde ausspielst.
+> Wiederhole den ersten Zauber, den du jede Runde spielst.
 
 - **Die Legende.** Der Zauberer hinter Artus' Geburt und seinem Aufstieg auf den Thron, von Geoffrey of Monmouth bis Malory.
-- **Patches.** Patch 0.6.3: von 3/5 auf 5/5, +2 Stärke ([Patchnotes](/de/news/patch-0-6-3)).
+- **Patches.** Patch 0.6.3: von 3/5 auf 5/5, +2 Kraft ([Patchnotes](/de/news/patch-0-6-3)).
 - **Decks auf OriginsMeta, 25. September 2026.** Eines: [Spellcast](/de/decks/community/spellcast-250f).
 - **Guide.** Noch keiner: [Schick uns deinen](/de/guides/submit).
 - **Kartenseite.** [Merlin, Legendäre Karte: Werte und Text](/de/cards/merlin).
@@ -195,12 +196,12 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 **7 Mana · 3/3 · Einheit · Neutral** · Saga: Märchen
 
-> Trampeln
+> Überrennen
 >
-> Beim Aufdecken: Beschwöre an jedem anderen Ort ein Not So Little Pig [3⚔️/3❤️] mit Trampeln auf einem zufälligen Feld.
+> Beim Aufdecken: Beschwöre ein Not So Little Pig [3⚔️/3❤️] mit Überrennen auf einem zufälligen Feld an jedem anderen Ort.
 
 - **Die Legende.** Die drei Schweinchen aus Stroh, Holz und Ziegeln, erwachsen geworden und nicht mehr so leicht umzupusten.
-- **Erschaffene Karten.** [Not So Little Pig](/de/cards/not-so-little-pig), eine 3/3 mit Trampeln, je eine an den beiden anderen Orten.
+- **Erschaffene Karten.** [Not So Little Pig](/de/cards/not-so-little-pig), eine 3/3 mit Überrennen, je eine an den beiden anderen Orten.
 - **Patches.** Patch 0.6.2: von 4/4 auf 3/3, und die beschworenen Schweine wurden passend dazu ebenfalls 3/3 ([Patchnotes](/de/news/patch-0-6-2)).
 - **Decks auf OriginsMeta, 25. September 2026.** Vier: [3 Pigs Mid Range](/de/decks/community/3-pigs-mid-range-6311), [Value Board](/de/decks/community/value-board-c44a), [VALUE MAXXING](/de/decks/community/value-maxxing-739d) und [AGGRO /MIDRANGE PIGS GM](/de/decks/community/aggro-midrange-pigs-gm-6931).
 - **Guides.** [Guide zum Three-Not-So-Little-Pigs-Deck](/de/guides/three-pigs-midrange-guide) und [seine Matchups](/de/guides/three-pigs-midrange-matchups).
@@ -212,7 +213,7 @@ Die zitierten Kartentexte sind unsere Übersetzung der offiziellen englischen Te
 
 > Präzisionsschuss 3
 >
-> Beim Aufdecken: Füge allen Feinden 2 Schaden zu.
+> Beim Aufdecken: Füge allen Gegnern 2 Schaden zu.
 
 - **Die einzige Legendäre für 8 Mana** in der Demo 2.0.
 - **Die Legende.** Der geächtete Bogenschütze aus dem Sherwood Forest, der die Reichen bestiehlt, um die Armen zu ernähren, besungen in Balladen seit dem 14. Jahrhundert.
@@ -227,7 +228,7 @@ Unsere Datenbank führt außerdem neun Legendäre, die nicht in der Demo 2.0 sin
 
 ## Woher die Zahlen kommen {#quellen}
 
-- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und englische Texte der Demo-Karten am 22. September 2026 einzeln im Spiel geprüft, italienische und spanische Texte am 25. September 2026 im Spiel gelesen. Die deutschen Kartentexte sind vorerst unsere Übersetzung.
+- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und englische Texte der Demo-Karten am 22. September 2026 einzeln im Spiel geprüft, italienische und spanische Texte am 25. September 2026 und deutsche am 20. Oktober 2026 im Spiel gelesen.
 - **Patches:** die offiziellen Patchnotes auf Steam, Karte für Karte in [MetaShifting](/de/metashifting).
 - **Decks:** die 20 Decks, die vom 15. September bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden ([alle Decks von Origins TCG](/de/decks)); die Zählung danach steht unter [Meistgespielt](/de/tier-list/most-played).
 
@@ -477,19 +478,19 @@ In unserer Liste sind die Orte danach gruppiert, was sie mit dem Spiel machen, u
 - **Ziehen und Abwerfen.** The Sultan's Court gibt dir jede Runde eine Karte, die du ausgeben musst, Knowledge Vault belohnt den, der die Lane zuerst füllt, Junkyard nimmt beiden Spielern eine Karte weg, Nostradamus' Call zerstört zu Beginn von Runde sechs beide Decks.
 - **Bewegung.** Conveyor Belt schiebt nach dem Kampf alle nach rechts, Ballroom schickt einen zufälligen Charakter auf die Hand zurück, Open Meadow verleiht Bewegen (Move).
 - **Beschwörungen und Kopien.** Cloning Lab füllt deine Felder mit Kopien dessen, was du gerade gespielt hast, Reflecting Pool kopiert es an einen anderen Ort, Sherwood Forest bringt immer neue [Merry Men](/de/cards/merry-man) hervor, Hundred Acre Woods setzt einen [Christopher Robin](/de/cards/christopher-robin) auf beide Seiten.
-- **Verliehene Schlüsselwörter.** Stomping Grounds verleiht Trampeln (Trample), The Colosseum Doppelangriff (Double Attack), Windmill Ridge Verteidiger (Defender), Poison Grounds gibt bösen Charakteren Todesberührung (Deathtouch), Blessed Grounds guten Charakteren Schild (Shield).
-- **Fähigkeiten.** Mirror Dimension wiederholt Beim Aufdecken (On Reveal), Burial Grounds wiederholt Beim Tod (On Death), Anti-Magic Vault nimmt alle Fähigkeiten weg, Wonderland kehrt die Angriffsreihenfolge um.
-- **Zerstörung und Barrieren.** The Gallows zerstört den Gegner gegenüber von allem, was dort landet, The Hill tötet nach dem Kampf alles, was mit der niedrigsten Stärke gleichauf liegt, Wall of Dumpty frisst den ersten Charakter, den du spielst, Broken Gate lässt Barrieren mit 10 Leben statt 40 zurückkehren.
+- **Verliehene Schlüsselwörter.** Stomping Grounds verleiht Überrennen (Trample), The Colosseum Doppelangriff (Double Attack), Windmill Ridge Verteidiger (Defender), Poison Grounds gibt bösen Charakteren Todesberührung (Deathtouch), Blessed Grounds guten Charakteren Schild (Shield).
+- **Fähigkeiten.** Mirror Dimension wiederholt Beim Aufdecken (On Reveal), Burial Grounds wiederholt Bei Tod (On Death), Anti-Magic Vault nimmt alle Fähigkeiten weg, Wonderland kehrt die Angriffsreihenfolge um.
+- **Zerstörung und Barrieren.** The Gallows zerstört den Gegner gegenüber von allem, was dort landet, The Hill tötet nach dem Kampf alles, was mit der niedrigsten Kraft gleichauf liegt, Wall of Dumpty frisst den ersten Charakter, den du spielst, Broken Gate lässt Barrieren mit 10 Leben statt 40 zurückkehren.
 
 ## Die Orte, die Partien entscheiden
 
 Einige davon solltest du erkennen, sobald sie auftauchen, weil sie ändern, was du mit deiner Hand tun solltest.
 
-- **Cloning Lab.** Was du dort spielst, wird in deine freien Felder dieser Lane kopiert. Ein günstiger Körper mit einer guten Beim-Aufdecken-Fähigkeit wird zu dreien, und die Lane ist in einem Zug entschieden.
+- **Cloning Lab.** Was du dort spielst, wird in deine freien Felder dieser Lane kopiert. Ein günstiger Körper mit einer guten Beim Aufdecken-Fähigkeit wird zu dreien, und die Lane ist in einem Zug entschieden.
 - **Mirror Dimension.** Jedes Beim Aufdecken wird zweimal ausgelöst. Für eine ganze Lane tut sie, was [Mulan](/de/cards/mulan) für ein Deck tut, und sie stapelt sich mit ihr.
 - **The Gallows.** Alles, was dort ins Spiel kommt, zerstört den Gegner gegenüber. Der Ort macht deinen billigsten Charakter zu Removal und bestraft den, der sich zuerst festlegt.
 - **Anti-Magic Vault.** Charaktere verlieren alle Fähigkeiten. Ein Deck, das auf Auslöser gebaut ist, hat dort nichts zu tun; ein Deck aus schlichten Körpern ist plötzlich in seinem Element.
-- **Amplifying Amphitheatre.** Jeder Schaden wird verdoppelt, in beide Richtungen. Ein Finisher mit Trampeln wie [Ellen Trechend](/de/cards/ellen-trechend) beendet die Partie durch die Barriere hindurch; der des Gegners genauso.
+- **Amplifying Amphitheatre.** Jeder Schaden wird verdoppelt, in beide Richtungen. Ein Finisher mit Überrennen wie [Ellen Trechend](/de/cards/ellen-trechend) beendet die Partie durch die Barriere hindurch; der des Gegners genauso.
 - **Nostradamus' Call.** Beide Decks werden zu Beginn von Runde sechs zerstört. Was auch immer dein Plan ist, er muss bis Runde fünf aufgehen.
 
 ## Mit den Orten im Kopf bauen
@@ -520,7 +521,7 @@ Diese Liste entspricht der Rotation der Demo 2.0. Wir sind die Orte noch nicht e
       },
       {
         q: "Wie viele Karten hat ein Deck?",
-        a: "In der aktuellen Demo fünfundzwanzig, aufgebaut um eine Legendäre mit einer eigenen Signaturfähigkeit. Mulan wiederholt die Beim-Aufdecken-Fähigkeiten (On Reveal) deiner Verbündeten, die Queen of Hearts ihre Beim-Tod-Fähigkeiten (On Death).",
+        a: "In der aktuellen Demo fünfundzwanzig, aufgebaut um eine Legendäre mit einer eigenen Signaturfähigkeit. Mulan wiederholt die Beim Aufdecken-Fähigkeiten (On Reveal) deiner Verbündeten, die Queen of Hearts ihre Bei Tod-Fähigkeiten (On Death).",
       },
       {
         q: "Kann ich Origins TCG kostenlos spielen?",
@@ -538,9 +539,9 @@ Das Versprechen heißt **Free-to-Compete**: Jede Karte, die du für kompetitives
 
 - **Drei Lanes.** Du und dein Gegner kämpft auf drei Spielfeldern gleichzeitig. Jede Lane hat ihren eigenen Ort, gezogen aus einem Pool von mehr als hundert, die rotieren und die Regeln dieses Spielfelds ändern.
 - **Gleichzeitige Züge.** Beide Spieler handeln zur selben Zeit, also gibt es kein Warten. Eine Partie dauert etwa sieben Minuten.
-- **Karten greifen an.** Anders als in Spielen, in denen man nur Lanes auszählt, kämpfen die Einheiten gegeneinander: Stärke ist, wie viel Schaden du austeilst, Leben, wie viel du einstecken kannst.
-- **Schlüsselwörter.** Die Demo nutzt unter anderem Beim Aufdecken (On Reveal: wird ausgelöst, wenn die Karte gespielt wird), Beim Tod (On Death), Erstschlag (First Strike), Doppelangriff (Double Attack) und Todesberührung (Deathtouch).
-- **Eine Legendäre führt das Deck an.** In der aktuellen Demo haben Decks 25 Karten, und jedes Deck ist um eine Legendäre Karte mit einer eigenen Signaturfähigkeit gebaut: Mulan wiederholt die Beim-Aufdecken-Fähigkeiten deiner Verbündeten, die Queen of Hearts ihre Beim-Tod-Fähigkeiten. Die Demo 2.0 hat elf davon: [alle 11 Legendären, Karte für Karte](/de/guides/origins-tcg-legendaries).
+- **Karten greifen an.** Anders als in Spielen, in denen man nur Lanes auszählt, kämpfen die Einheiten gegeneinander: Kraft ist, wie viel Schaden du austeilst, Leben, wie viel du einstecken kannst.
+- **Schlüsselwörter.** Die Demo nutzt unter anderem Beim Aufdecken (On Reveal: wird ausgelöst, wenn die Karte gespielt wird), Bei Tod (On Death), Erstschlag (First Strike), Doppelangriff (Double Attack) und Todesberührung (Deathtouch).
+- **Eine Legendäre führt das Deck an.** In der aktuellen Demo haben Decks 25 Karten, und jedes Deck ist um eine Legendäre Karte mit einer eigenen Signaturfähigkeit gebaut: Mulan wiederholt die Beim Aufdecken-Fähigkeiten deiner Verbündeten, die Queen of Hearts ihre Bei Tod-Fähigkeiten. Die Demo 2.0 hat elf davon: [alle 11 Legendären, Karte für Karte](/de/guides/origins-tcg-legendaries).
 
 ## Modi
 
@@ -564,7 +565,7 @@ Die Steam-Seite nennt als Release das vierte Quartal 2026, ohne genaueres Datum.
     faq: [
       {
         q: "Was macht Mulan in diesem Deck?",
-        a: "Mulan ist eine 2/4 für 4 Mana mit Doppelangriff, und wenn die Beim-Aufdecken-Fähigkeit eines Verbündeten ausgelöst wird, wiederholt sie sie. Neun Karten der Liste haben ein Beim Aufdecken, also macht sie aus jeder davon zwei.",
+        a: "Mulan ist eine 2/4 für 4 Mana mit Doppelangriff, und wenn die Beim Aufdecken-Fähigkeit eines Verbündeten ausgelöst wird, wiederholt sie sie. Neun Karten der Liste haben ein Beim Aufdecken, also macht sie aus jeder davon zwei.",
       },
       {
         q: "Was behältst du im Mulligan?",
@@ -584,7 +585,7 @@ Die Steam-Seite nennt als Release das vierte Quartal 2026, ohne genaueres Datum.
 
 ## Das Deck in einem Absatz
 
-**On Reveal Mid Range** ist eine **Midrange**-Liste mit [Mulan](/de/cards/mulan) an der Spitze, am 22. September 2026 auf OriginsMeta veröffentlicht von [Davdas](/de/authors/davdas), einem Mitglied des Staffs der Website, und für **Ladder**, **kompetitives Spiel** und **Turniere** markiert. Die Idee ist die, die der Autor auf der [Seite des Decks](/de/decks/community/on-reveal-mid-range-772e) beschreibt: Mulan „lässt dich Beim-Aufdecken-Fähigkeiten voll ausnutzen“, und die Liste ist so gebaut, dass sie in jeder Runde eine hat, die sich zu wiederholen lohnt. Sie hält gegen ein aggressives Deck stand und setzt ein Control-Deck unter Druck, weil dieselben Karten Zeit gewinnen und ein Spielfeld aufbauen.
+**On Reveal Mid Range** ist eine **Midrange**-Liste mit [Mulan](/de/cards/mulan) an der Spitze, am 22. September 2026 auf OriginsMeta veröffentlicht von [Davdas](/de/authors/davdas), einem Mitglied des Staffs der Website, und für **Ladder**, **kompetitives Spiel** und **Turniere** markiert. Die Idee ist die, die der Autor auf der [Seite des Decks](/de/decks/community/on-reveal-mid-range-772e) beschreibt: Mulan „lässt dich Beim Aufdecken-Fähigkeiten voll ausnutzen“, und die Liste ist so gebaut, dass sie in jeder Runde eine hat, die sich zu wiederholen lohnt. Sie hält gegen ein aggressives Deck stand und setzt ein Control-Deck unter Druck, weil dieselben Karten Zeit gewinnen und ein Spielfeld aufbauen.
 
 ## Die Liste
 
@@ -599,12 +600,12 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | [Black Knight](/de/cards/black-knight) | 3 | 2/2; Beim Aufdecken fügt er dem Gegner gegenüber 2 Schaden zu |
 | [Frog Prince](/de/cards/frog-prince) | 3 | 2/2; Beim Aufdecken +3⚔️ oder +3❤️, nach deiner Wahl |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3; zieht eine Karte, wann immer er der gegnerischen Barriere Schaden zufügt |
-| [White Queen](/de/cards/white-queen) | 4 | 3/3; Beim Aufdecken schickt sie einen BELIEBIGEN Charakter auf die Hand seines Besitzers zurück |
+| [White Queen](/de/cards/white-queen) | 4 | 3/3; Beim Aufdecken schickt sie EINEN BELIEBIGEN Charakter auf die Hand seines Besitzers zurück |
 | [Fairy Godmother](/de/cards/fairy-godmother) | 5 | 3/3; Beim Aufdecken gibt sie einem anderen Verbündeten +3⚔️/+3❤️ |
 | [Mowgli](/de/cards/mowgli) | 6 | 2/2; Beim Aufdecken beschwört er Baloo (6/6) an einem anderen zufälligen Ort |
-| [Ellen Trechend](/de/cards/ellen-trechend) | 8 | Trampeln; Beim Aufdecken erhält sie +3⚔️/+3❤️ für jede gegnerische Karte an ihrem Ort |
-| [Bullseye](/de/cards/bullseye) | 1 | Zauber: Füge einem BELIEBIGEN Charakter 3 Schaden zu |
-| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten und füge dem Charakter gegenüber Schaden in Höhe seiner Stärke zu |
+| [Ellen Trechend](/de/cards/ellen-trechend) | 8 | Überrennen; Beim Aufdecken erhält sie +3⚔️/+3❤️ für jede gegnerische Karte an ihrem Ort |
+| [Bullseye](/de/cards/bullseye) | 1 | Zauber: Füge EINEM BELIEBIGEN Charakter 3 Schaden zu |
+| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten. Er fügt dem Charakter ihm gegenüber Schaden in Höhe seiner ⚔️ zu |
 
 Zehn Einheiten und zwei Zauber, neun davon mit einem Beim Aufdecken. Das ist der ganze Sinn des Decks: Mulan ist kein Finisher, sie ist ein Multiplikator.
 
@@ -613,7 +614,7 @@ Zehn Einheiten und zwei Zauber, neun davon mit einem Beim Aufdecken. Das ist der
 Mulan wiederholt das Beim Aufdecken eines Verbündeten, also zählt jede Karte, die nach ihr gespielt wird, doppelt. Die drei besten Doppelungen:
 
 - **Mowgli** kostet sechs und beschwört einen 6/6-Baloo an einem anderen zufälligen Ort. Wiederholt sind es zwei Baloos: eine einzige Karte, die zwei Lanes füllt, um die du gar nicht gekämpft hast.
-- **Ellen Trechend** wächst um +3⚔️/+3❤️ für jede gegnerische Karte an ihrem Ort, und sie hat Trampeln. In einer vollen Lane ist sie schon allein eine Bedrohung; wiederholt kommt der Buff vor dem Kampf zweimal.
+- **Ellen Trechend** wächst um +3⚔️/+3❤️ für jede gegnerische Karte an ihrem Ort, und sie hat Überrennen. In einer vollen Lane ist sie schon allein eine Bedrohung; wiederholt kommt der Buff vor dem Kampf zweimal.
 - **Fairy Godmother** gibt einem anderen Verbündeten +3⚔️/+3❤️. Die zwei Auslösungen kannst du auf denselben Körper lenken oder auf zwei verteilen, je nachdem, was der Gegner entfernen kann.
 
 Mulan hat außerdem **Doppelangriff**, also tauscht ihr eigener 2/4-Körper besser, als es aussieht.
@@ -626,8 +627,8 @@ Such eine Kurve, die dich in Runde vier zu Mulan bringt, ohne zurückzufallen: *
 
 1. **Runden 1–3: Platz nehmen, ohne zu viel zu investieren.** Bagheera in die Mitte, Baby Bear dorthin, wo du die ersten Angriffe erwartest, Black Knight gegenüber von etwas, das weg soll. Eine Karte pro Lane reicht: Das Deck will, dass das Spielfeld ausgeglichen ist, nicht überfüllt, wenn Mulan kommt.
 2. **Runde 4: Mulan.** Ab hier zählt die Reihenfolge deiner Züge mehr als die Karten. Frag dich jede Runde, welches Beim Aufdecken sich zu verdoppeln lohnt, und spiel es an Mulans Ort.
-3. **Runden 5–6: die Value-Karten.** Fairy Godmother, dann Mowgli bei sechs Mana. White Queen ist die Antwortkarte der Liste: Sie schickt einen BELIEBIGEN Charakter auf die Hand seines Besitzers zurück, kann also einen Finisher in der Runde entfernen, in der er landet, oder deine eigene Mary aufnehmen, damit du sie erneut spielst.
-4. **Runden 7–8: abschließen.** Ellen Trechend in die Lane, die der Gegner gefüllt hat; En Passant, um einen Verbündeten zu bewegen, das zu treffen, was ihm gegenübersteht, und dem Schaden mit Trampeln den Weg zu öffnen.
+3. **Runden 5–6: die Value-Karten.** Fairy Godmother, dann Mowgli bei sechs Mana. White Queen ist die Antwortkarte der Liste: Sie schickt EINEN BELIEBIGEN Charakter auf die Hand seines Besitzers zurück, kann also einen Finisher in der Runde entfernen, in der er landet, oder deine eigene Mary aufnehmen, damit du sie erneut spielst.
+4. **Runden 7–8: abschließen.** Ellen Trechend in die Lane, die der Gegner gefüllt hat; En Passant, um einen Verbündeten zu bewegen, das zu treffen, was ihm gegenübersteht, und dem Schaden mit Überrennen den Weg zu öffnen.
 
 ## Die Karten, die Zeit gewinnen
 
@@ -639,7 +640,7 @@ Ranked-Daten sind nicht öffentlich, also ist das Folgende die Lesart der Listen
 
 - **Gegen aggressive Decks.** Baby Bear und Frog Prince als 2/5 gespielt halten die Lanes; Bullseye erledigt Körper mit drei Leben für ein Mana. Verbrauche White Queen nicht früh: Du wirst sie für die erste große Bedrohung brauchen.
 - **Gegen Control-Decks.** Ali Baba ist die Karte, die deine Hand voll hält, während du Druck auf eine Barriere machst. Leg nicht alles an einen Ort: Einen Board-Wipe, den ein einziger Mowgli beantwortet, kannst du dir leisten, eine leere Hand nicht.
-- **Gegen andere Midrange-Listen.** Das Deck spielt dasselbe Spiel wie [3 Pigs Mid Range](/de/decks/community/3-pigs-mid-range-6311) und [King of Value Trade](/de/decks/community/king-of-value-trade-fd14): Wer mehr aus jeder Karte herausholt, gewinnt. Ein Beim Aufdecken zu verdoppeln ist genau das, also schütze Mulan und spiel die günstigen Beim-Aufdecken-Karten nur dann vor ihr, wenn du musst.
+- **Gegen andere Midrange-Listen.** Das Deck spielt dasselbe Spiel wie [3 Pigs Mid Range](/de/decks/community/3-pigs-mid-range-6311) und [King of Value Trade](/de/decks/community/king-of-value-trade-fd14): Wer mehr aus jeder Karte herausholt, gewinnt. Ein Beim Aufdecken zu verdoppeln ist genau das, also schütze Mulan und spiel die günstigen Beim Aufdecken-Karten nur dann vor ihr, wenn du musst.
 
 ## Die Schwächen, in den Worten des Autors
 
@@ -692,7 +693,7 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | [Roo](/de/cards/roo) | 2 | 2/4 mit Bewegen |
 | [Shahrazad](/de/cards/shahrazad) | 2 | 1/4; heilt hier 1 Schaden an deiner Barriere, wann immer eine Karte auf deine Hand kommt |
 | [Shield Maiden](/de/cards/shield-maiden) | 3 | 3/1 mit Schild |
-| [Dark Omen](/de/cards/dark-omen) | 3 | Zauber: Zerstöre einen BELIEBIGEN Charakter |
+| [Dark Omen](/de/cards/dark-omen) | 3 | Zauber: Zerstöre EINEN BELIEBIGEN Charakter |
 | [Cowardly Lion](/de/cards/cowardly-lion) | 3 | 2/5 mit Verteidiger |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3; zieht eine Karte, wann immer er der gegnerischen Barriere Schaden zufügt |
 | [Spellbook](/de/cards/spellbook) | 4 | Zauber: Ab jetzt jede Runde ein zufälliger Zauber auf der Hand, der vor dem Kampf abgeworfen wird |
@@ -721,7 +722,7 @@ Drei Schlüsselwörter erledigen die Arbeit.
 1. **Runden 1–3: nach oben tauschen.** Bagheera in die Mitte, Musketeer gegenüber von einem Körper mit 1 oder 2 Leben, Roo dorthin, wo du dich später vielleicht bewegen willst. Jeder Kampf, den du gewinnst, ohne den Körper zu verlieren, ist eine gewonnene Karte.
 2. **Runden 4–5: eine Lane halten.** Lancelot, dann spielst du die guten Charaktere an seinem Ort: Jeder kommt um +2⚔️/+2❤️ größer an, als er sein sollte. Boitata bei fünf Mana ist eine 5/5, die außerdem gegnerischen Zauberschaden gegen deine Barrieren auf deren Barrieren umlenkt.
 3. **Runden 6–7: die Legendäre.** King Arthur ist eine 7/7 mit Schild, und sein Beim Aufdecken gibt allem Guten, das du schon auf dem Spielfeld hast, Schild. Spiel ihn nicht auf ein leeres Spielfeld: Der Value steckt in den Schilden, nicht im Körper.
-4. **Dark Omen, wann immer es darauf ankommt.** Drei Mana, um einen BELIEBIGEN Charakter zu zerstören, sind die Antwort auf die eine Karte, die du im Kampf nicht schlagen kannst: einen gebufften Körper, einen Verteidiger in der falschen Lane, eine gegnerische Legendäre.
+4. **Dark Omen, wann immer es darauf ankommt.** Drei Mana, um EINEN BELIEBIGEN Charakter zu zerstören, sind die Antwort auf die eine Karte, die du im Kampf nicht schlagen kannst: einen gebufften Körper, einen Verteidiger in der falschen Lane, eine gegnerische Legendäre.
 
 ## Zwei Hinweise des Autors
 
@@ -757,7 +758,7 @@ Die Seite des Decks nennt drei: **kein Flächen-Removal**, **Dark Omen muss prä
       },
       {
         q: "Welche Move-Combos sucht das Deck?",
-        a: "Card Soldier, der nach einer Bewegung eine Kopie von sich auf seinem vorherigen Feld beschwört; Pegasus, der nach einer Bewegung seine Stärke verdoppelt; und Magic Carpet, der Beim Aufdecken deine anderen Verbündeten ein Feld nach links oder rechts bewegt.",
+        a: "Card Soldier, der nach einer Bewegung eine Kopie von sich auf seinem vorherigen Feld beschwört; Pegasus, der nach einer Bewegung seine Kraft verdoppelt; und Magic Carpet, der Beim Aufdecken deine anderen Verbündeten ein Feld nach links oder rechts bewegt.",
       },
       {
         q: "Ist das Deck kompetitiv?",
@@ -782,15 +783,15 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | Karte | Kosten | Was sie tut |
 | --- | --- | --- |
 | [Dorothy](/de/cards/dorothy) ★ | 4 | 1/1; kann sich jede Runde bewegen und erhält +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie |
-| [Twister Toss](/de/cards/twister-toss) | 1 | Zauber: Bewege einen Verbündeten auf ein beliebiges Feld; steht dort schon eine andere Karte, tauschen die beiden die Plätze |
+| [Twister Toss](/de/cards/twister-toss) | 1 | Zauber: Bewege einen Verbündeten auf ein beliebiges Feld. Steht dort bereits eine Karte, tauschen sie die Felder |
 | [Card Soldier](/de/cards/card-soldier) | 2 | 3/1; nachdem er sich bewegt hat, beschwört er eine Kopie von sich auf seinem vorherigen Feld |
 | [Roo](/de/cards/roo) | 2 | 2/4 mit Bewegen |
 | [Basilisk](/de/cards/basilisk) | 2 | 1/2 mit Todesberührung |
-| [Pegasus](/de/cards/pegasus) | 3 | 2/4; nachdem er sich bewegt hat, verdoppelt er seine Stärke |
-| [Flying Monkey](/de/cards/flying-monkey) | 3 | 4/1; Beim Aufdecken bewegt er einen BELIEBIGEN anderen Charakter auf ein zufälliges Feld hier |
+| [Pegasus](/de/cards/pegasus) | 3 | 2/4; nachdem er sich bewegt hat, verdoppelt er seine Kraft |
+| [Flying Monkey](/de/cards/flying-monkey) | 3 | 4/1; Beim Aufdecken bewegt er EINEN BELIEBIGEN anderen Charakter auf ein zufälliges Feld hier |
 | [Wicked Witch of the West](/de/cards/wicked-witch-of-the-west) | 3 | 1/5; wenn sie Schaden überlebt, fügt sie deiner Hand einen Flying Monkey hinzu und bewegt sich ein Feld nach links |
 | [Kanga](/de/cards/kanga) | 3 | 2/3; vor dem Kampf erhalten Verbündete, die sich in dieser Runde bewegt haben, +1⚔️/+1❤️ |
-| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten und füge dem Charakter gegenüber Schaden in Höhe seiner Stärke zu |
+| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten. Er fügt dem Charakter ihm gegenüber Schaden in Höhe seiner ⚔️ zu |
 | [Spellbook](/de/cards/spellbook) | 4 | Zauber: Ab jetzt jede Runde ein zufälliger Zauber auf der Hand, der vor dem Kampf abgeworfen wird |
 | [Magic Carpet](/de/cards/magic-carpet) | 4 | 4/4; Beim Aufdecken bewegt er deine anderen Verbündeten ein Feld nach links oder ein Feld nach rechts |
 | [Hare](/de/cards/hare) | 5 | 4/1 mit Erstschlag und Bewegen |
@@ -804,7 +805,7 @@ Dorothy ist eine 1/1, die mitzählt: **+1⚔️/+1❤️ für jede Bewegung eine
 Drei Combos sind der Sinn der Liste:
 
 1. **Card Soldier plus eine beliebige Bewegung.** Eine 3/1 für zwei Mana, die bei jeder Bewegung eine Kopie von sich zurücklässt: Mit Twister Toss oder Magic Carpet füllt sie allein eine Lane.
-2. **Pegasus plus eine beliebige Bewegung.** Nach einer Bewegung verdoppelt er seine Stärke: Aus 2/4 wird 4/4, und mit Kangas +1⚔️ vor dem Kampf ist er ein Körper mit 5 Stärke, den der Gegner mit drei Mana bewertet hat.
+2. **Pegasus plus eine beliebige Bewegung.** Nach einer Bewegung verdoppelt er seine Kraft: Aus 2/4 wird 4/4, und mit Kangas +1⚔️ vor dem Kampf ist er ein Körper mit 5 Kraft, den der Gegner mit drei Mana bewertet hat.
 3. **Magic Carpet als Motor.** Er bewegt *alle* deine anderen Verbündeten um ein Feld, in die Richtung, die du wählst: eine Karte, mehrere Auslöser — eine Kopie von Card Soldier, ein verdoppelter Pegasus, Punkte auf Dorothy und Kangas Buff auf allem, was sich bewegt hat.
 
 ## Mulligan
@@ -848,7 +849,7 @@ Ranked-Daten sind nicht öffentlich: Das ist eine Lesart der Listen, keine Win-R
       },
       {
         q: "Was ist die Combo aus Golden Egg und Boogeyman?",
-        a: "Boogeyman ist eine 7/7 für 4 Mana, deren Beim Aufdecken den Verbündeten mit der niedrigsten Stärke an ihrem Ort zerstört, notfalls sich selbst. Golden Egg ist eine 0/1, die beim Tod eine 5/5-Golden Goose auf ihrem Feld beschwört: Leg das Egg zuerst, und die Fähigkeit von Boogeyman macht daraus eine Goose, statt deinen eigenen Körper zu töten.",
+        a: "Boogeyman ist eine 7/7 für 4 Mana, deren Beim Aufdecken den Verbündeten mit der niedrigsten Kraft an ihrem Ort zerstört, notfalls sich selbst. Golden Egg ist eine 0/1, die beim Tod ein 5/5-Golden Goose auf ihrem Feld beschwört: Leg das Egg zuerst, und die Fähigkeit von Boogeyman macht daraus eine Goose, statt deinen eigenen Körper zu töten.",
       },
       {
         q: "Was behältst du im Mulligan?",
@@ -873,17 +874,17 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | Karte | Kosten | Was sie tut |
 | --- | --- | --- |
 | [Legion of the Dead](/de/cards/legion-of-the-dead) ★ | 7 | Legendärer Zauber: Fülle dein Spielfeld mit Zombies (2⚔️/2❤️) |
-| [Bullseye](/de/cards/bullseye) | 1 | Zauber: Füge einem BELIEBIGEN Charakter 3 Schaden zu |
+| [Bullseye](/de/cards/bullseye) | 1 | Zauber: Füge EINEM BELIEBIGEN Charakter 3 Schaden zu |
 | [Thumbelina](/de/cards/thumbelina) | 1 | 2/2, keine Fähigkeit |
 | [Bagheera](/de/cards/bagheera) | 2 | 1/1; Beim Aufdecken auf einem mittleren Feld erhält er +2⚔️/+2❤️ |
-| [Morgiana](/de/cards/morgiana) | 2 | 2/3; verhindert, dass an ihrem Ort ALLE Beim-Aufdecken-Fähigkeiten ausgelöst werden |
+| [Morgiana](/de/cards/morgiana) | 2 | 2/3; verhindert, dass an ihrem Ort ALLE Beim Aufdecken-Fähigkeiten ausgelöst werden |
 | [Mind Palace](/de/cards/mind-palace) | 3 | Zauber: Ziehe 2 Karten |
 | [Asanbosam](/de/cards/asanbosam) | 3 | 5/5; Beim Aufdecken wirft er eine zufällige Karte mit geraden Kosten ab |
-| [Golden Egg](/de/cards/golden-egg) | 3 | 0/1; Beim Tod beschwört es eine Golden Goose (5/5) auf seinem Feld |
-| [Flying Monkey](/de/cards/flying-monkey) | 3 | 4/1; Beim Aufdecken bewegt er einen BELIEBIGEN anderen Charakter auf ein zufälliges Feld hier |
-| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten und füge dem Charakter gegenüber Schaden in Höhe seiner Stärke zu |
-| [Boogeyman](/de/cards/boogeyman) | 4 | 7/7; Beim Aufdecken zerstört er den Verbündeten hier mit der niedrigsten Stärke, notfalls sich selbst |
-| [White Queen](/de/cards/white-queen) | 4 | 3/3; Beim Aufdecken schickt sie einen BELIEBIGEN Charakter auf die Hand seines Besitzers zurück |
+| [Golden Egg](/de/cards/golden-egg) | 3 | 0/1; Bei Tod beschwört es ein Golden Goose (5/5) auf seinem Feld |
+| [Flying Monkey](/de/cards/flying-monkey) | 3 | 4/1; Beim Aufdecken bewegt er EINEN BELIEBIGEN anderen Charakter auf ein zufälliges Feld hier |
+| [En Passant](/de/cards/en-passant) | 3 | Zauber: Bewege einen Verbündeten. Er fügt dem Charakter ihm gegenüber Schaden in Höhe seiner ⚔️ zu |
+| [Boogeyman](/de/cards/boogeyman) | 4 | 7/7; Beim Aufdecken zerstört er den Verbündeten hier mit der niedrigsten Kraft, notfalls sich selbst |
+| [White Queen](/de/cards/white-queen) | 4 | 3/3; Beim Aufdecken schickt sie EINEN BELIEBIGEN Charakter auf die Hand seines Besitzers zurück |
 | [Impundulu](/de/cards/impundulu) | 5 | 3/6; wenn er angreift, fügt er deiner Hand einen Lightning Strike hinzu, der in der nächsten Runde vor dem Kampf abgeworfen wird |
 
 Zehn Einheiten und drei Zauber. Die drei günstigen Karten sind keine Lückenfüller: Dieses Deck braucht das Spielfeld für sich, bevor die Legendäre kommt, weil die Zombies nur *freie* Felder füllen.
@@ -892,7 +893,7 @@ Zehn Einheiten und drei Zauber. Die drei günstigen Karten sind keine Lückenfü
 
 Drei Karten machen den Schaden — **Boogeyman, Asanbosam und Impundulu** —, und alles andere ist dazu da, sie zu schützen oder ihnen den Weg zu öffnen.
 
-- **Boogeyman** ist eine 7/7 für vier Mana, die beste Rate der Liste, mit einem Haken: Beim Aufdecken zerstört er den Verbündeten mit der niedrigsten Stärke an seinem Ort, sich selbst eingeschlossen. Stellst du ihn in eine leere Lane, tötet er sich selbst; stellst du ihn neben ein [Golden Egg](/de/cards/golden-egg), stirbt das Egg und hinterlässt eine 5/5-Golden Goose auf seinem Feld. Das ist die Combo, auf die der Autor hinweist: zwei Karten, eine 7/7 und eine 5/5.
+- **Boogeyman** ist eine 7/7 für vier Mana, die beste Rate der Liste, mit einem Haken: Beim Aufdecken zerstört er den Verbündeten mit der niedrigsten Kraft an seinem Ort, sich selbst eingeschlossen. Stellst du ihn in eine leere Lane, tötet er sich selbst; stellst du ihn neben ein [Golden Egg](/de/cards/golden-egg), stirbt das Egg und hinterlässt ein 5/5-Golden Goose auf seinem Feld. Das ist die Combo, auf die der Autor hinweist: zwei Karten, eine 7/7 und eine 5/5.
 - **Asanbosam** ist eine 5/5 für drei, und Beim Aufdecken lässt er den Gegner eine zufällige Karte mit geraden Kosten abwerfen.
 - **Impundulu** macht aus jedem Angriff einen [Lightning Strike](/de/cards/lightning-strike) auf deiner Hand: wiederholbarer Schaden, solange du ihn vor dem nächsten Kampf ausgibst.
 
@@ -902,11 +903,11 @@ Die **Legendäre** beendet die Partie eher, als dass sie sie eröffnet: Für sie
 
 [En Passant](/de/cards/en-passant), [Flying Monkey](/de/cards/flying-monkey) und [White Queen](/de/cards/white-queen) meint der Autor, wenn er davon spricht, jede Runde einen Streich zu spielen.
 
-- **En Passant** bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Stärke zu: Auf Boogeyman oder einer Golden Goose sind das fünf bis sieben Schaden, die zugleich neu positionieren.
+- **En Passant** bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Kraft zu: Auf Boogeyman oder einem Golden Goose sind das fünf bis sieben Schaden, die zugleich neu positionieren.
 - **Flying Monkey** bewegt JEDEN anderen Charakter auf ein zufälliges Feld an seinem Ort: Er zieht einen gegnerischen Blocker aus der Lane oder bringt deinen eigenen Körper dorthin, wo gekämpft wird. Das Feld ist zufällig, also ist es ein Streich, kein Plan.
 - **White Queen** schickt JEDEN Charakter auf die Hand seines Besitzers zurück: Ein gegnerischer Finisher verschwindet für eine Runde, oder dein eigenes Golden Egg kommt zurück, um neben einem zweiten Boogeyman erneut gespielt zu werden.
 
-[Morgiana](/de/cards/morgiana) ist die Unauffällige: An ihrem Ort wird überhaupt kein Beim Aufdecken ausgelöst, für keine der beiden Seiten. Spiel sie dort, wo die Beim-Aufdecken-Fähigkeiten des Gegners am meisten wehtun — aber denk daran, dass sie auch deine stoppt, einschließlich der von Boogeyman.
+[Morgiana](/de/cards/morgiana) ist die Unauffällige: An ihrem Ort wird überhaupt kein Beim Aufdecken ausgelöst, für keine der beiden Seiten. Spiel sie dort, wo die Beim Aufdecken-Fähigkeiten des Gegners am meisten wehtun — aber denk daran, dass sie auch deine stoppt, einschließlich der von Boogeyman.
 
 ## Mulligan
 
@@ -926,11 +927,11 @@ Ranked-Daten sind nicht öffentlich, also ist das die Lesart der Listen durch Or
 
 - **Gegen Go-wide-Decks.** Die Zombies kommen auf freie Felder, also bringt dir die Legendäre umso weniger, je breiter der Gegner steht. Nutze Bullseye und Boogeyman, um zuerst das Spielfeld zu öffnen, und heb Flying Monkey für den gebufften Körper auf.
 - **Gegen Control-Decks.** Das Abwerfen von Asanbosam und die Strikes von Impundulu sind der Druck, der nicht davon abhängt, dass das Spielfeld überlebt. Halte nach einem Wipe einen Boogeyman zurück: Eine 7/7 für vier ist der schnellste Weg zum Wiederaufbau.
-- **Gegen Beim-Aufdecken-Decks** (zum Beispiel [On Reveal Mid Range](/de/decks/community/on-reveal-mid-range-772e), das mit Mulan jedes Beim Aufdecken wiederholt). Hier verdient sich Morgiana ihren Platz: Stell sie an den Ort, an dem der Gegner Fähigkeiten stapelt, nimm hin, dass dort auch deine eigenen Beim-Aufdecken-Fähigkeiten aufhören, und kämpf in den anderen beiden Lanes normal.
+- **Gegen Beim Aufdecken-Decks** (zum Beispiel [On Reveal Mid Range](/de/decks/community/on-reveal-mid-range-772e), das mit Mulan jedes Beim Aufdecken wiederholt). Hier verdient sich Morgiana ihren Platz: Stell sie an den Ort, an dem der Gegner Fähigkeiten stapelt, nimm hin, dass dort auch deine eigenen Beim Aufdecken-Fähigkeiten aufhören, und kämpf in den anderen beiden Lanes normal.
 
 ## Die Schwächen, in den Worten des Autors
 
-Zwei, von der Seite des Decks: **Mind Palace ist sehr wichtig, damit dir nicht zu früh die Karten ausgehen**, und **Boogeyman braucht ein gültiges Ziel, oder Morgiana**. Das Zweite lohnt sich zu wiederholen: Der 7/7-Körper ist nur gut, wenn an diesem Ort etwas anderes weniger Stärke hat. Das Golden Egg ist die günstigste Versicherung, die Zombies der Legendären die fürs späte Spiel.
+Zwei, von der Seite des Decks: **Mind Palace ist sehr wichtig, damit dir nicht zu früh die Karten ausgehen**, und **Boogeyman braucht ein gültiges Ziel, oder Morgiana**. Das Zweite lohnt sich zu wiederholen: Der 7/7-Körper ist nur gut, wenn an diesem Ort etwas anderes weniger Kraft hat. Das Golden Egg ist die günstigste Versicherung, die Zombies der Legendären die fürs späte Spiel.
 
 ## Wie es weitergeht
 
@@ -945,7 +946,7 @@ Zwei, von der Seite des Decks: **Mind Palace ist sehr wichtig, damit dir nicht z
     faq: [
       {
         q: "Welche Legendäre führt 3 Pigs Mid Range an?",
-        a: "Three Not So Little Pigs, eine 3/3 für 7 Mana mit Trampeln: Ihr Beim Aufdecken beschwört an jedem anderen Ort ein Not So Little Pig mit Trampeln, also bringt eine Karte einen Körper in jede Lane.",
+        a: "Three Not So Little Pigs, eine 3/3 für 7 Mana mit Überrennen: Ihr Beim Aufdecken beschwört an jedem anderen Ort ein Not So Little Pig mit Überrennen, also bringt eine Karte einen Körper in jede Lane.",
       },
       {
         q: "Was behältst du im Mulligan?",
@@ -953,7 +954,7 @@ Zwei, von der Seite des Decks: **Mind Palace ist sehr wichtig, damit dir nicht z
       },
       {
         q: "Wie beendet das Deck eine Partie?",
-        a: "Mit En Passant, das einen Verbündeten bewegt und den Charakter gegenüber trifft; mit Ellen Trechend, deren Trampeln den Schaden bis in die Barriere durchdrückt; und mit den Lightning Strikes, die Impundulu bei jedem Angriff deiner Hand hinzufügt.",
+        a: "Mit En Passant, das einen Verbündeten bewegt und den Charakter gegenüber trifft; mit Ellen Trechend, deren Überrennen den Schaden bis in die Barriere durchdrückt; und mit den Lightning Strikes, die Impundulu bei jedem Angriff deiner Hand hinzufügt.",
       },
       {
         q: "Wie probiere ich das Deck aus?",
@@ -973,7 +974,7 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 
 | Karte | Kosten | Rolle |
 | --- | --- | --- |
-| [Three Not So Little Pigs](/de/cards/three-not-so-little-pigs) ★ | 7 | Legendäre: Trampeln, und Beim Aufdecken beschwört sie an jedem anderen Ort ein Not So Little Pig mit Trampeln |
+| [Three Not So Little Pigs](/de/cards/three-not-so-little-pigs) ★ | 7 | Legendäre: Überrennen, und Beim Aufdecken beschwört sie an jedem anderen Ort ein Not So Little Pig mit Überrennen |
 | [Bagheera](/de/cards/bagheera) | 2 | Zwei-Mana-Karte, die wächst, wenn sie auf einem mittleren Feld gespielt wird |
 | [Rumple](/de/cards/rumple) | 2 | 2/2, der dir in der nächsten Runde +1 Mana gibt |
 | [Axe Throw](/de/cards/axe-throw) | 2 | 4 Schaden an einem beliebigen Charakter |
@@ -981,11 +982,11 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | [Mind Palace](/de/cards/mind-palace) | 3 | Ziehe 2 Karten |
 | [Big Bad Wolf](/de/cards/big-bad-wolf) | 3 | 3/3, der nach jedem Kampf +1/+1 erhält |
 | [Wicked Witch of the West](/de/cards/wicked-witch-of-the-west) | 3 | 1/5: Wenn sie Schaden überlebt, fügt sie deiner Hand einen Flying Monkey hinzu und bewegt sich ein Feld nach links |
-| [En Passant](/de/cards/en-passant) | 3 | Bewege einen Verbündeten und füge dem Charakter gegenüber Schaden in Höhe seiner Stärke zu |
+| [En Passant](/de/cards/en-passant) | 3 | Bewege einen Verbündeten. Er fügt dem Charakter ihm gegenüber Schaden in Höhe seiner ⚔️ zu |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3, der eine Karte zieht, wenn er der gegnerischen Barriere Schaden zufügt |
-| [Frog Prince](/de/cards/frog-prince) | 3 | Wähle Beim Aufdecken +3 Stärke oder +3 Leben |
+| [Frog Prince](/de/cards/frog-prince) | 3 | Wähle Beim Aufdecken +3 Kraft oder +3 Leben |
 | [Impundulu](/de/cards/impundulu) | 5 | 3/6: Bei jedem Angriff fügt er deiner Hand einen Lightning Strike hinzu |
-| [Ellen Trechend](/de/cards/ellen-trechend) | 8 | Trampeln; Beim Aufdecken wächst sie für jede gegnerische Karte an ihrem Ort |
+| [Ellen Trechend](/de/cards/ellen-trechend) | 8 | Überrennen; Beim Aufdecken wächst sie für jede gegnerische Karte an ihrem Ort |
 
 Neun Einheiten und drei Zauber. Alles außer Impundulu, den Pigs und Ellen Trechend kostet drei Mana oder weniger, deshalb nennt der Autor die Kurve „sehr solide“: In den Runden eins bis vier gibt es immer etwas zu spielen.
 
@@ -993,11 +994,11 @@ Neun Einheiten und drei Zauber. Alles außer Impundulu, den Pigs und Ellen Trech
 
 Der Plan, laut der Seite des Decks: in den ersten Runden die Kontrolle über das Spielfeld übernehmen, an mindestens einem Ort vorne liegen und dann mit drei Karten abschließen.
 
-- **En Passant** bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Stärke zu: Es räumt einem deiner großen Körper den Weg frei oder macht aus einem gewachsenen Big Bad Wolf Removal.
-- **Ellen Trechend** hat Trampeln und wächst Beim Aufdecken für jede gegnerische Karte an ihrem Ort: Je mehr der Gegner in eine Lane gesteckt hat, desto härter schlägt sie zu, und Trampeln schickt den überschüssigen Schaden durch den Blocker in die Barriere. Die Seite des Decks nennt sie „einen Finisher an der Grenze zum Verbotenen“.
+- **En Passant** bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Kraft zu: Es räumt einem deiner großen Körper den Weg frei oder macht aus einem gewachsenen Big Bad Wolf Removal.
+- **Ellen Trechend** hat Überrennen und wächst Beim Aufdecken für jede gegnerische Karte an ihrem Ort: Je mehr der Gegner in eine Lane gesteckt hat, desto härter schlägt sie zu, und Überrennen schickt den überschüssigen Schaden durch den Blocker in die Barriere. Die Seite des Decks nennt sie „einen Finisher an der Grenze zum Verbotenen“.
 - **Impundulu** belohnt dich, wenn du die ersten Runden gut gespielt hast, bei jedem Angriff mit einem Lightning Strike. Jeder Strike muss vor dem nächsten Kampf eingesetzt werden, sonst wird er abgeworfen, also plane jede Runde zwei Mana dafür ein.
 
-Die Legendäre ist die Brücke zwischen den beiden Phasen. Für sieben Mana stellt Three Not So Little Pigs mit einer einzigen Karte an jedem der beiden anderen Orte ein Schwein mit Trampeln auf, zusätzlich zu ihrem eigenen 3/3-Körper mit Trampeln. Auf Kurve gespielt, füllt sie das ganze Spielfeld in der Runde, bevor Ellen Trechend ins Spiel kommt.
+Die Legendäre ist die Brücke zwischen den beiden Phasen. Für sieben Mana stellt Three Not So Little Pigs mit einer einzigen Karte an jedem der beiden anderen Orte ein Schwein mit Überrennen auf, zusätzlich zu ihrem eigenen 3/3-Körper mit Überrennen. Auf Kurve gespielt, füllt sie das ganze Spielfeld in der Runde, bevor Ellen Trechend ins Spiel kommt.
 
 ## Mulligan
 
@@ -1027,7 +1028,7 @@ Die Seite des Decks ist bei der Hauptschwäche deutlich: „Von der Kurve abzufa
     faq: [
       {
         q: "Was macht Ellen Trechend gegen ein breites Spielfeld?",
-        a: "Beim Aufdecken wächst sie für jede gegnerische Karte an ihrem Ort und hat Trampeln. Eine Lane, die der Gegner vollgestellt hat, wird so zu ihrem besten Ziel: Der Schaden, der über das Leben des Blockers hinausgeht, trifft die Barriere.",
+        a: "Beim Aufdecken wächst sie für jede gegnerische Karte an ihrem Ort und hat Überrennen. Eine Lane, die der Gegner vollgestellt hat, wird so zu ihrem besten Ziel: Der Schaden, der über das Leben des Blockers hinausgeht, trifft die Barriere.",
       },
       {
         q: "Wie spielst du gegen Van-Helsing-Decks?",
@@ -1048,10 +1049,10 @@ Dies ist der zweite Teil des Guides zu **3 Pigs Mid Range**, dem Midrange-Deck m
 ## Fünf Interaktionen, die du kennen solltest
 
 1. **Rumple vor den Finishern.** Rumple gibt dir in der nächsten Runde +1 Mana. Spielst du ihn in Runde fünf, kannst du Three Not So Little Pigs schon in Runde sechs aufdecken, eine ganze Runde bevor der Gegner mit einer Sieben-Mana-Karte rechnet; spielst du ihn in Runde sechs, bringt er Ellen Trechend in Runde sieben aufs Spielfeld.
-2. **Die Wicked Witch und ihr Flying Monkey.** Die Witch ist eine 1/5: Sie stirbt selten an einem einzigen Treffer, und jedes Mal, wenn sie Schaden überlebt, bekommst du einen [Flying Monkey](/de/cards/flying-monkey) auf die Hand und sie bewegt sich ein Feld nach links. Die Fähigkeit Beim Aufdecken des Monkey bewegt einen beliebigen anderen Charakter, deinen oder einen gegnerischen, auf ein zufälliges Feld an seinem Ort: Damit ziehst du einen gegnerischen Blocker aus der Lane, durch die du trampelst, oder holst einen Wolf dorthin, wo gekämpft wird.
-3. **En Passant auf einem gewachsenen Charakter.** Der Zauber bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Stärke zu. Auf einem Big Bad Wolf, der schon zweimal gekämpft hat, sind das fünf Schaden plus eine neue Position; auf Ellen Trechend ist es Removal, das ihr Trampeln zugleich dorthin bringt, wo die Barriere am schwächsten ist. Außerdem ist es die Antwort auf einen Blocker, der vor einem deiner Schweine steht.
+2. **Die Wicked Witch und ihr Flying Monkey.** Die Witch ist eine 1/5: Sie stirbt selten an einem einzigen Treffer, und jedes Mal, wenn sie Schaden überlebt, bekommst du einen [Flying Monkey](/de/cards/flying-monkey) auf die Hand und sie bewegt sich ein Feld nach links. Die Fähigkeit Beim Aufdecken des Monkey bewegt einen beliebigen anderen Charakter, deinen oder einen gegnerischen, auf ein zufälliges Feld an seinem Ort: Damit ziehst du einen gegnerischen Blocker aus der Lane, die du überrennst, oder holst einen Wolf dorthin, wo gekämpft wird.
+3. **En Passant auf einem gewachsenen Charakter.** Der Zauber bewegt einen Verbündeten und fügt dem Charakter gegenüber Schaden in Höhe seiner Kraft zu. Auf einem Big Bad Wolf, der schon zweimal gekämpft hat, sind das fünf Schaden plus eine neue Position; auf Ellen Trechend ist es Removal, das ihr Überrennen zugleich dorthin bringt, wo die Barriere am schwächsten ist. Außerdem ist es die Antwort auf einen Blocker, der vor einem deiner Schweine steht.
 4. **Die Lightning Strikes von Impundulu.** Jeder Angriff gibt dir einen [Lightning Strike](/de/cards/lightning-strike): zwei Mana für drei Schaden an einem beliebigen Charakter oder einer Barriere, einzusetzen vor dem nächsten Kampf. Das sind wiederholbare, gezielte drei Schaden: genug für die meisten frühen Karten im aktuellen Kartenpool oder ein direkter Treffer auf eine Barriere, wenn das Spielfeld schon dir gehört.
-5. **Piglet bei den Schweinen.** Die Fähigkeit Beim Aufdecken von Piglet verstärkt die anderen Verbündeten an seinem Ort. In der Runde nach den Pigs macht ein Piglet neben einem Not So Little Pig einen Charakter mit Trampeln, der härter zuschlägt: Laut Deckseite „unterstützen“ die Mulligan-Karten „die Schweine, die schon auf dem Spielfeld sind“.
+5. **Piglet bei den Schweinen.** Die Fähigkeit Beim Aufdecken von Piglet verstärkt die anderen Verbündeten an seinem Ort. In der Runde nach den Pigs macht ein Piglet neben einem Not So Little Pig einen Charakter mit Überrennen, der härter zuschlägt: Laut Deckseite „unterstützen“ die Mulligan-Karten „die Schweine, die schon auf dem Spielfeld sind“.
 
 ## Matchups
 
@@ -1059,7 +1060,7 @@ Ranked-Daten sind noch nicht öffentlich, daher ist das Folgende eine Lektüre d
 
 **Gegen Van-Helsing-Control, zum Beispiel [Healing Healsing](/de/decks/community/healing-healsing-9411) vom selben Autor.** An dieses Matchup denkt die Mulligan-Notiz, wenn sie rät, Axe Throw zu behalten: Van Helsing ist ein 3/4, und vier Schaden beseitigen ihn, bevor seine Tools in jedem Kampf kommen. Mach früh Schaden, denn das Control-Deck will acht Mana für Forbidden Knowledge erreichen, das alle Charaktere auf dem Spielfeld zerstört, deine und seine. Leg die Pigs und Ellen Trechend nicht im selben Zeitfenster hin: Heb einen Finisher für die Runde nach dem Wipe auf. Solange Boitata im Spiel ist, wird Zauberschaden an den gegnerischen Barrieren stattdessen deinen zugefügt, also ziele mit den Lightning Strikes auf Charaktere, bis Boitata weg ist.
 
-**Gegen breite Spielfelder (Swarm-Listen, Mulan).** Je breiter der Gegner spielt, desto größer wird Ellen Trechend: Sie wächst für jede gegnerische Karte an ihrem Ort. Lass die Witch als Mauer auf der Lane stehen, die er überflutet, spiel Frog Prince als 2/5 statt als 5/2 und heb Axe Throw für die Karte auf, die die anderen verstärkt. [Mulan](/de/cards/mulan) wiederholt die Beim-Aufdecken-Fähigkeiten ihrer Verbündeten, also ist sie das wichtigste Ziel.
+**Gegen breite Spielfelder (Swarm-Listen, Mulan).** Je breiter der Gegner spielt, desto größer wird Ellen Trechend: Sie wächst für jede gegnerische Karte an ihrem Ort. Lass die Witch als Mauer auf der Lane stehen, die er überflutet, spiel Frog Prince als 2/5 statt als 5/2 und heb Axe Throw für die Karte auf, die die anderen verstärkt. [Mulan](/de/cards/mulan) wiederholt die Beim Aufdecken-Fähigkeiten ihrer Verbündeten, also ist sie das wichtigste Ziel.
 
 **Gegen andere Midrange-Decks (King Arthur, Robin Hood).** Tempo entscheidet: Wer von der Kurve fällt, verliert. Hier ist Rumple am stärksten, und die Strikes von Impundulu machen auf einem ausgeglichenen Spielfeld den Unterschied. Die Fähigkeit Beim Aufdecken von [Robin Hood](/de/cards/robin-hood) fügt allen Gegnern 2 Schaden zu; das tötet Bagheera, Piglet und einen frisch gespielten Rumple, aber nicht die Witch oder einen als 2/5 gespielten Frog Prince: Bei acht Mana solltest du eine Lane nicht mit kleinen Einheiten überladen. [King Arthur](/de/cards/king-arthur) gibt guten Charakteren Schild, also heb Axe Throw auf, bis der Schild verbraucht ist.
 
@@ -1111,18 +1112,18 @@ Fünfundzwanzig Karten: die Legendäre plus zwölf Karten in je zwei Exemplaren.
 | Karte | Kosten | Rolle |
 | --- | --- | --- |
 | [Van Helsing](/de/cards/van-helsing) ★ | 4 | Legendär: Vor dem Kampf gibt er dir Van Helsing's Tools auf die Hand, falls du die Karte nicht hast |
-| [Baby Bear](/de/cards/baby-bear) | 2 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Beim Tod: Papa Bear auf deine Hand |
+| [Baby Bear](/de/cards/baby-bear) | 2 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Bei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu |
 | [Scarecrow](/de/cards/scarecrow) | 2 | Beim Aufdecken: Ziehe eine Karte |
 | [Shahrazad](/de/cards/shahrazad) | 2 | 1/4: heilt 1 Schaden an deiner Barriere, jedes Mal wenn eine Karte auf deine Hand kommt |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3, der eine Karte zieht, wenn er der gegnerischen Barriere Schaden zufügt |
 | [Jill](/de/cards/jill) | 3 | 2/4: heilt 2 Schaden an deiner Barriere, jedes Mal wenn sie Schaden erleidet |
 | [Spellbook](/de/cards/spellbook) | 4 | Für den Rest der Partie zu Beginn jeder Runde ein zufälliger Zauber auf die Hand |
 | [Phuong Hoang](/de/cards/phuong-hoang) | 4 | Wiedergeburt, Bewegen; erhält +1/+1, jedes Mal wenn ein Verbündeter oder eine Barriere geheilt wird |
-| [Jekyll](/de/cards/jekyll) | 4 | Beim Aufdecken heilt er 3; ist er nach dem Kampf noch auf der Hand, wird er zu Hyde, einem 5/3 mit Trampeln |
+| [Jekyll](/de/cards/jekyll) | 4 | Beim Aufdecken heilt er 3; ist er nach dem Kampf noch auf der Hand, wird er zu Hyde, einem 5/3 mit Überrennen |
 | [Searing Light](/de/cards/searing-light) | 4 | 4 Schaden an einem Gegner und 4 Heilung für deine Barriere an diesem Ort |
 | [Boitata](/de/cards/boitata) | 5 | 5/5: Schaden durch Zauber und Fähigkeiten an deinen Barrieren wird stattdessen der gegnerischen Barriere zugefügt |
 | [Tin Woodman](/de/cards/tin-woodman) | 6 | Beim Aufdecken heilt er 8 an einem anderen Charakter oder einer Barriere an seinem Ort |
-| [Forbidden Knowledge](/de/cards/forbidden-knowledge) | 8 | Zerstöre alle Charaktere |
+| [Forbidden Knowledge](/de/cards/forbidden-knowledge) | 8 | Zerstöre ALLE Charaktere |
 
 Neun Einheiten und drei Zauber; fast alles kostet zwischen zwei und vier, darüber stehen Boitata, Tin Woodman und Forbidden Knowledge. Drei Karten ziehen, fünf heilen, eine räumt das Spielfeld leer.
 
@@ -1177,7 +1178,7 @@ Behalte **Ali Baba, Baby Bear, Scarecrow, Van Helsing und Spellbook**. Gegen agg
       },
       {
         q: "Wie spielst du gegen 3 Pigs Mid Range?",
-        a: "Füll keine Lane auf: Ellen Trechend wächst für jede gegnerische Karte an ihrem Ort. Heb Boitata für die Lightning Strikes auf, heile den Trampel-Schaden der Schweine weg und spar dir Forbidden Knowledge für die Runde, nachdem die Pigs gekommen sind.",
+        a: "Füll keine Lane auf: Ellen Trechend wächst für jede gegnerische Karte an ihrem Ort. Heb Boitata für die Lightning Strikes auf, heile den Überrennen-Schaden der Schweine weg und spar dir Forbidden Knowledge für die Runde, nachdem die Pigs gekommen sind.",
       },
       {
         q: "Womit verlierst du mit diesem Deck Partien?",
@@ -1195,7 +1196,7 @@ Dies ist der zweite Teil des Guides zu **Healing Healsing**, dem Van-Helsing-Con
 
 1. **Shahrazad und alles, was dir eine Karte auf die Hand gibt.** [Shahrazad](/de/cards/shahrazad) heilt 1 Schaden an deiner Barriere an ihrem Ort, sobald eine Karte auf deine Hand kommt. Van Helsing gibt dir vor jedem Kampf seine Tools, Spellbook zu Beginn jeder Runde einen Zauber, Scarecrow und Ali Baba ziehen, der Tod von Baby Bear bringt Papa Bear. Mit Shahrazad und Van Helsing auf dem Spielfeld heilst du in jeder einzelnen Runde, ohne eine Karte auszugeben.
 2. **Jede Heilung füttert Phuong Hoang.** [Phuong Hoang](/de/cards/phuong-hoang) erhält +1/+1, sobald ein Verbündeter oder eine Barriere geheilt wird. Die Fähigkeit Beim Aufdecken von Tin Woodman ist eine einzige Heilung von acht Punkten, also ein +1/+1; die vielen kleinen Heilungen von Shahrazad sind für Phuong mehr wert als eine große.
-3. **Jekyll und Hyde.** Die Fähigkeit Beim Aufdecken von [Jekyll](/de/cards/jekyll) heilt 3 an einem anderen Charakter oder einer Barriere an seinem Ort. Bleibt er nach dem Kampf auf der Hand, wird er zu [Hyde](/de/cards/hyde), einem 5/3 mit Trampeln, und ein Hyde auf der Hand wird wieder zu Jekyll: Dieselbe Karte ist Heiler oder Finisher, je nachdem, wann du sie spielst.
+3. **Jekyll und Hyde.** Die Fähigkeit Beim Aufdecken von [Jekyll](/de/cards/jekyll) heilt 3 an einem anderen Charakter oder einer Barriere an seinem Ort. Bleibt er nach dem Kampf auf der Hand, wird er zu [Hyde](/de/cards/hyde), einem 5/3 mit Überrennen, und ein Hyde auf der Hand wird wieder zu Jekyll: Dieselbe Karte ist Heiler oder Finisher, je nachdem, wann du sie spielst.
 4. **Boitata gegen Burn.** Würde ein Zauber oder eine Fähigkeit einer deiner Barrieren Schaden zufügen, fügt [Boitata](/de/cards/boitata) diesen Schaden stattdessen der gegnerischen Barriere an diesem Ort zu. Gegen Decks, die Partien mit Lightning Strike oder Searing Light beenden, macht Boitata ihre Reichweite zu deiner.
 5. **Die Familie von Baby Bear.** [Baby Bear](/de/cards/baby-bear) fügt jedem Gegner Schaden zu, der deiner Barriere an seinem Ort schadet, und gibt dir bei seinem Tod [Papa Bear](/de/cards/papa-bear) auf die Hand; Papa Bear trifft härter und bringt bei seinem Tod [Mama Bear](/de/cards/mama-bear), und Mama Bear zerstört Gegner, die deiner Barriere schaden. Drei Körper für eine Karte mit zwei Mana, und genau das, was du auf dem Spielfeld haben willst, wenn Forbidden Knowledge abgehandelt wird.
 
@@ -1203,11 +1204,11 @@ Dies ist der zweite Teil des Guides zu **Healing Healsing**, dem Van-Helsing-Con
 
 Ranked-Daten sind noch nicht öffentlich, daher ist das Folgende eine Lektüre der Listen, keine Win-Rate.
 
-**Gegen 3 Pigs Mid Range (das [andere Deck](/de/decks/community/3-pigs-mid-range-6311) desselben Autors) und andere Midrange-Listen.** Ihr Finisher, Ellen Trechend, wächst für jede gegnerische Karte an ihrem Ort: Verteile deine Einheiten, statt eine Lane zu stapeln. Gegen die Lightning Strikes von Impundulu ist Boitata genau das richtige Mittel. Axe Throw fügt vier Schaden zu, genau das Leben von Van Helsing: Rechne damit, dass er beantwortet wird, und verlass dich beim Removal nicht nur auf ihn. Die Pigs kommen mit sieben Mana und füllen jede Lane mit Trampeln: Für diese Runde hebst du Forbidden Knowledge auf, eine Runde später.
+**Gegen 3 Pigs Mid Range (das [andere Deck](/de/decks/community/3-pigs-mid-range-6311) desselben Autors) und andere Midrange-Listen.** Ihr Finisher, Ellen Trechend, wächst für jede gegnerische Karte an ihrem Ort: Verteile deine Einheiten, statt eine Lane zu stapeln. Gegen die Lightning Strikes von Impundulu ist Boitata genau das richtige Mittel. Axe Throw fügt vier Schaden zu, genau das Leben von Van Helsing: Rechne damit, dass er beantwortet wird, und verlass dich beim Removal nicht nur auf ihn. Die Pigs kommen mit sieben Mana und füllen jede Lane mit Überrennen: Für diese Runde hebst du Forbidden Knowledge auf, eine Runde später.
 
 **Gegen Aggro und breite Decks.** An dieses Matchup denkt die Mulligan-Notiz, wenn sie rät, Jill zu behalten: Jedes Mal, wenn sie Schaden erleidet, heilt sie 2 an deiner Barriere. Baby Bear bestraft jeden Angreifer, der durchkommt, Jekyll heilt, was zählt, die acht Punkte von Tin Woodman setzen eine Barriere zurück. Jag die gegnerischen Einheiten nicht einzeln mit den Tools; stabilisiere die Barriere, erreiche acht Mana und lass Forbidden Knowledge das ganze Spielfeld abräumen.
 
-**Gegen andere Control-Decks.** Kartenvorteil entscheidet, und dieses Deck zieht mehr als die meisten: Spellbook ist die Karte, die du schützen und zuerst spielen solltest. Heb Hyde für eine Lane auf, die leer geblieben ist, und spar dir Holy Water für eine Legendäre auf, deren Fähigkeit das gegnerische Deck trägt, etwa [Mulan](/de/cards/mulan), die die Beim-Aufdecken-Fähigkeiten ihrer Verbündeten wiederholt, oder die [Queen of Hearts](/de/cards/queen-of-hearts), die ihre Beim-Tod-Fähigkeiten wiederholt.
+**Gegen andere Control-Decks.** Kartenvorteil entscheidet, und dieses Deck zieht mehr als die meisten: Spellbook ist die Karte, die du schützen und zuerst spielen solltest. Heb Hyde für eine Lane auf, die leer geblieben ist, und spar dir Holy Water für eine Legendäre auf, deren Fähigkeit das gegnerische Deck trägt, etwa [Mulan](/de/cards/mulan), die die Beim Aufdecken-Fähigkeiten ihrer Verbündeten wiederholt, oder die [Queen of Hearts](/de/cards/queen-of-hearts), die ihre Bei Tod-Fähigkeiten wiederholt.
 
 ## Fehler, die du vermeiden solltest
 
@@ -1507,7 +1508,7 @@ Sprachen: Seit [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026 unterstüt
 1. **Installiere Steam** und melde dich an (ein kostenloses Konto reicht).
 2. **Öffne die [Seite der Origins TCG Demo](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/)** und klicke auf den Download-Button der Demo; oder such in Steam nach „Origins TCG“ und wähle die Demo. Die Installation dauert ein paar Minuten.
 3. **Stell das Spiel auf Deutsch.** Öffne im Spiel die Einstellungen (im englischen Menü Settings → Change Language) und wähle „Deutsch“. Startet die Demo in einer anderen Sprache und findest du das Menü nicht, geht es auch über Steam: Rechtsklick auf das Spiel in der Bibliothek, Eigenschaften, Sprache. Die Sprachausgabe ist auf Englisch; die anderen Sprachen übersetzen die Oberfläche und die Texte.
-4. **Spiel das Tutorial** und dann die Missionen: Sie bringen dir die drei Lanes, die gleichzeitigen Züge und die Schlüsselwörter bei: Beim Aufdecken (On Reveal), Beim Tod (On Death), Erstschlag (First Strike), Doppelangriff (Double Attack) und Todesberührung (Deathtouch). Unser [Fünf-Minuten-Guide](/de/guides/origins-tcg-explained) erklärt dasselbe als Text.
+4. **Spiel das Tutorial** und dann die Missionen: Sie bringen dir die drei Lanes, die gleichzeitigen Züge und die Schlüsselwörter bei: Beim Aufdecken (On Reveal), Bei Tod (On Death), Erstschlag (First Strike), Doppelangriff (Double Attack) und Todesberührung (Deathtouch). Unser [Fünf-Minuten-Guide](/de/guides/origins-tcg-explained) erklärt dasselbe als Text.
 5. **Geh online** und probier die vorgefertigten Decks aus. Wenn du mehr willst, lies die [von der Community veröffentlichten Decks](/de/decks), bau sie im [Deckbuilder](/de/deck-builder) nach und prüf die aktuellen Kartenwerte in der [Kartendatenbank](/de/cards) (Demo 2.0 mit Patch 0.7 vom 29. September 2026).
 
 ## Was Demo-Spieler freischalten

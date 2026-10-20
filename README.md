@@ -1,6 +1,6 @@
 # OriginsMeta
 
-Sito community non ufficiale su **Origins TCG** (Koin Games): database carte, mazzi, tier list, tracker delle patch, calendario tornei e guide. Cinque lingue: inglese (`/en`), italiano (`/it`), dal 25/09/2026 spagnolo (`/es`), dal 07/10/2026 francese (`/fr`, ritirato il 15/09/2026 e rifatto da zero) dal 20/10/2026 portoghese del Brasile (`/pt`) e tedesco (`/de`). Regole e glossario dello spagnolo in `docs/spagnolo.md`, del francese in `docs/francese.md`, del portoghese in `docs/portoghese.md`, del tedesco in `docs/tedesco.md`; i testi delle carte in italiano, spagnolo, francese e portoghese sono quelli ufficiali letti nel gioco, quelli tedeschi per ora una traduzione nostra (provvisoria). Online su [originsmeta.com](https://originsmeta.com).
+Sito community non ufficiale su **Origins TCG** (Koin Games): database carte, mazzi, tier list, tracker delle patch, calendario tornei e guide. Cinque lingue: inglese (`/en`), italiano (`/it`), dal 25/09/2026 spagnolo (`/es`), dal 07/10/2026 francese (`/fr`, ritirato il 15/09/2026 e rifatto da zero) dal 20/10/2026 portoghese del Brasile (`/pt`) e tedesco (`/de`). Regole e glossario dello spagnolo in `docs/spagnolo.md`, del francese in `docs/francese.md`, del portoghese in `docs/portoghese.md`, del tedesco in `docs/tedesco.md`; i testi delle carte in italiano, spagnolo, francese, portoghese e tedesco sono quelli ufficiali letti nel gioco. Online su [originsmeta.com](https://originsmeta.com).
 
 ## Stack
 
@@ -111,7 +111,7 @@ In `src/lib/data/news.ts` (array `raw`): `slug`, `date` (data dell'evento), `tit
 
 ## Tedesco, sesta lingua (dal 20/10/2026)
 
-Richiesta di Pierluigi del 20/10/2026 ("ora facciamo DE, per le carte testi provvisori finché non apro il game e ti avviso"). Stesso schema del portoghese (sezione qui sotto) con la chiave `de`: `dictionaries/de.ts`, `news-de.ts`, `guides-de.ts`, `card-lore-de.ts`, blocco `-- ===== 20/10/2026: TEDESCO =====` di `schema.sql`, hreflang `de`, redirect dei browser `de*`. Regole e glossario in `docs/tedesco.md`. **Testi delle carte provvisori**: traduzione nostra finché la demo non si legge in tedesco (`de` non è in `officialTextLocales`, le schede dicono "non verificato nel gioco"); poi `docs/testi-ufficiali/de.tsv` e `node scripts/official-texts.mjs de --apply`.
+Richiesta di Pierluigi del 20/10/2026 ("ora facciamo DE, per le carte testi provvisori finché non apro il game e ti avviso"). Stesso schema del portoghese (sezione qui sotto) con la chiave `de`: `dictionaries/de.ts`, `news-de.ts`, `guides-de.ts`, `card-lore-de.ts`, blocco `-- ===== 20/10/2026: TEDESCO =====` di `schema.sql`, hreflang `de`, redirect dei browser `de*`. Regole e glossario in `docs/tedesco.md`. **Testi delle carte**: provvisori il pomeriggio del 20/10/2026, ufficiali dalla sera stessa (letti nel gioco: `docs/testi-ufficiali/de.tsv`, `node scripts/official-texts.mjs de --apply`, `de` in `officialTextLocales`); create, rimosse e luoghi restano nostri, col glossario del gioco.
 
 ## Portoghese del Brasile, quinta lingua (dal 20/10/2026)
 
@@ -120,7 +120,7 @@ Richiesta di Pierluigi del 20/10/2026 ("procediamo con la lingua portoghese"; sc
 - **Dove sta**: dizionario `src/lib/dictionaries/pt.ts`; news in `src/lib/data/news-pt.ts` (unite con il francese da `withTranslations` in news.ts, la build fallisce se ne manca una); guide in `src/lib/content/guides-pt.ts`; carte in `src/lib/data/card-lore-pt.ts`; chiave `pt` accanto a `fr` in etichette, luoghi, eventi, FAQ e storico.
 - **Testi di gioco**: i 122 testi della collezione sono quelli ufficiali letti nel gioco in "Português - Brasil" il 20/10/2026 (`docs/testi-ufficiali/pt.tsv`, `node scripts/official-texts.mjs pt`); carte create, rimosse e luoghi sono una traduzione nostra con il glossario del gioco.
 - **SEO**: `hreflang="pt"` (anche per il Portogallo), `<html lang="pt-BR">` (`htmlLang` in i18n.ts), `og:locale` pt_BR, sitemap per lingua, feed RSS `/pt/news/feed.xml`, radice e sezioni senza lingua verso `/pt` per i browser `pt*`; `LOCALE_SINCE.pt` e `SITE_WIDE_CHANGE` al 20/10/2026.
-- **Database**: blocco `-- ===== 20/10/2026: PORTOGHESE =====` di `supabase/schema.sql` (vincoli con `'pt'`, lingue del profilo fino a 5), da migrare con `node scripts/db-migrate.mjs`. Finché manca, `DB_PENDING_LOCALES` in `translate.ts` salva le traduzioni senza portoghese e tedesco; dopo la migrazione va svuotato e gli arretrati si recuperano con `scripts/translate-decks.mjs` e `scripts/translate-guides.mjs`.
+- **Database**: blocco `-- ===== 20/10/2026: PORTOGHESE =====` di `supabase/schema.sql` (vincoli con `'pt'`, lingue del profilo fino a 5), da migrare con `node scripts/db-migrate.mjs`. Migrazione fatta il 20/10/2026 (portoghese e tedesco insieme): `DB_PENDING_LOCALES` in `translate.ts` è vuoto; gli arretrati si recuperano con `scripts/translate-decks.mjs` e `scripts/translate-guides.mjs`. Per una lingua futura: la si mette in `DB_PENDING_LOCALES` finché la sua migrazione non è fatta.
 
 ## Francese, quarta lingua (dal 07/10/2026)
 

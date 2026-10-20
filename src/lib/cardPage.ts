@@ -24,8 +24,8 @@ import type { RelCard } from "./cardSynergy";
  * c'è lo spazio insecabile prima di : ; ? !, scritto `\u00a0` nelle stringhe (il carattere nudo si perde negli editor).
  * In portoghese (docs/portoghese.md) si dà del "você", il tipo è quello del gioco (personagem/feitiço/carta criada,
  * Poder/Vida, Lendária) e il soggetto si sottintende ("Custa 5 de mana…"). In tedesco (docs/tedesco.md, dal 20/10/2026) si
- * dà del "du", il glossario è PROVVISORIO (Charakter/Zauber/erschaffene Karte, Stärke/Leben, Legendär: il gioco in tedesco
- * non è ancora stato letto), il pronome segue il tipo ("Er" per Charakter e Zauber, "Sie" per la carta creata) e i
+ * dà del "du", il glossario è quello del gioco letto il 20/10/2026 (Charakter/Zauber/erschaffene Karte, Kraft/Leben,
+ * Legendär), il pronome segue il tipo ("Er" per Charakter e Zauber, "Sie" per la carta creata) e i
  * verbi vanno in fondo alla subordinata (catene con l'apposizione "ihrerseits erschaffen von"). Nessun dato nuovo: tutto viene da `cards.ts`, dai mazzi
  * pubblicati e dai testi.
  * Dove compare una patch si usa `patchLabel`, mai l'id (CLAUDE.md).
@@ -444,9 +444,9 @@ export const cardLabels: Record<Locale, CardLabels> = {
     kind: { unit: "personagem", spell: "feitiço", token: "carta criada", legendaryUnit: "personagem Lendário", legendarySpell: "feitiço Lendário" },
     creditText: "Ilustração de {illus} · © Koin Games",
   },
-  // Tedesco (20/10/2026): glossario PROVVISORIO di docs/tedesco.md; "Deckbuilder" nel testo corrente. Il testo tedesco
-  // delle carte è una traduzione nostra non ancora confrontata con il gioco (`de` non è in `officialTextLocales`), e
-  // `textOurs` lo dice invece di "glossario del gioco".
+  // Tedesco (20/10/2026): glossario del gioco di docs/tedesco.md; "Deckbuilder" nel testo corrente. I testi delle carte
+  // della collezione sono quelli del gioco (`de` è in `officialTextLocales` dal 20/10/2026); `textOurs` resta per carte
+  // create e rimosse, come nelle altre lingue.
   de: {
     decksLed: "Von {name} angeführte Decks",
     decksWith: "Decks mit {name}",
@@ -477,7 +477,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOfficial: "Offizieller Spieltext",
     textEnglish: "Englischer Spieltext",
     textEnglishWoo: "Englischer Text (nicht im Spiel überprüft)",
-    textOurs: "Übersetzung von OriginsMeta (nicht im Spiel überprüft)",
+    textOurs: "Übersetzung von OriginsMeta (Glossar des Spiels)",
     textWoo: "Kartentext (nicht im Spiel überprüft)",
     textOutdated: "Ein späterer Patch hat diesen Text geändert: siehe den Balance-Verlauf weiter unten.",
     asOfToken:
@@ -594,7 +594,7 @@ function statsClause(card: LeadCard, locale: Locale, tense: Tense): string {
   }
   if (locale === "de") {
     if (m !== undefined) clauses.push(`${past ? "kostete" : "kostet"} ${m} Mana`);
-    if (p !== undefined) clauses.push(`${past ? "hatte" : "hat"} ${p} Stärke und ${h ?? "?"} Leben`);
+    if (p !== undefined) clauses.push(`${past ? "hatte" : "hat"} ${p} Kraft und ${h ?? "?"} Leben`);
     if (align) clauses.push(`${past ? "war" : "ist"} ${align}`);
     return clauses.reduce((acc, c, i) => (i === 0 ? c : i === clauses.length - 1 ? `${acc} und ${c}` : `${acc}, ${c}`), "");
   }
@@ -884,7 +884,7 @@ function changeWhat(ch: Change, locale: Locale): string {
     fr: { mana: "son coût", power: "sa Puissance", health: "sa Santé" },
     pt: { mana: "o custo", power: "o Poder", health: "a Vida" },
     // all'accusativo, dopo "änderte"
-    de: { mana: "die Kosten", power: "die Stärke", health: "das Leben" },
+    de: { mana: "die Kosten", power: "die Kraft", health: "das Leben" },
   }[locale];
   const fromTo = {
     en: (a: number, b: number) => `from ${a} to ${b}`,
@@ -901,7 +901,7 @@ function changeWhat(ch: Change, locale: Locale): string {
     if (a !== undefined && b !== undefined && a !== b) bits.push(`${stat[k]} ${fromTo(a, b)}`);
   }
   if (ch.alignment) {
-    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"], de: ["die Ausrichtung", "von", "auf"] }[locale];
+    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"], de: ["die Gesinnung", "von", "auf"] }[locale];
     bits.push(`${what} ${from} ${alignWord[ch.alignment.from]} ${to} ${alignWord[ch.alignment.to]}`);
   }
   if (!bits.length) return { en: "its text", it: "il testo", es: "su texto", fr: "son texte", pt: "o texto", de: "den Text" }[locale];

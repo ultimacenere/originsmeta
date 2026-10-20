@@ -12,7 +12,7 @@ import { initials, sagaHue } from "@/lib/cardArt";
  * Parole chiave del gioco da evidenziare nel testo. I testi italiani e spagnoli delle carte sono quelli ufficiali del
  * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle sei lingue (glossario in `docs/testi-di-gioco.md`;
  * il francese, letto nel gioco l'08/10/2026, in `docs/francese.md`; il portoghese del Brasile, letto il 20/10/2026, in
- * `docs/portoghese.md`; il tedesco, glossario PROVVISORIO del 20/10/2026 non ancora letto nel gioco, in `docs/tedesco.md`).
+ * `docs/portoghese.md`; il tedesco, letto il 20/10/2026, in `docs/tedesco.md`).
  */
 const KEYWORDS = [
   // inglese
@@ -30,9 +30,9 @@ const KEYWORDS = [
   // portoghese del Brasile (Defensor ed Escudo come lo spagnolo)
   ...["Ao revelar", "Ao morrer", "Ao matar", "Primeiro golpe", "Ataque duplo", "Toque mortífero", "Renascimento"],
   ...["Tiro certeiro", "Atordoa", "Atropelar"],
-  // tedesco (glossario provvisorio, docs/tedesco.md)
-  ...["Beim Aufdecken", "Beim Tod", "Beim Töten", "Erstschlag", "Doppelangriff", "Todesberührung", "Verteidiger", "Wiedergeburt"],
-  ...["Schild", "Präzisionsschuss", "Betäube", "Trampeln"],
+  // tedesco (glossario del gioco, docs/tedesco.md)
+  ...["Beim Aufdecken", "Bei Tod", "Bei Vernichtung", "Erstschlag", "Doppelangriff", "Todesberührung", "Verteidiger", "Wiedergeburt"],
+  ...["Schild", "Präzisionsschuss", "Betäube", "Überrennen"],
 ];
 /** Le più lunghe prima: nell'alternativa della regex vince la prima che combacia. */
 const KEYWORD_PATTERN = [...KEYWORDS].sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
@@ -75,7 +75,7 @@ const line = (t: L10n | undefined, locale: Locale) => (t ? t[locale] ?? t.en : "
  * Tipo della carta sulla riga del tipo, nella lingua della pagina (corto, come sulla carta del gioco). Le carte create
  * con il glossario del sito (docs/spagnolo.md, docs/francese.md, docs/portoghese.md): "created card", "carta generata",
  * "carta creada", "carte créée", "carta criada", "erschaffene Karte"; in portoghese il tipo del gioco è "Personagem", in
- * tedesco "Charakter" (glossario provvisorio, docs/tedesco.md).
+ * tedesco "Charakter" (glossario del gioco, docs/tedesco.md).
  */
 const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
   en: { unit: "Unit", spell: "Spell", token: "Created" },
